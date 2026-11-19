@@ -68,13 +68,26 @@ test("scraped organiser: every upcoming listing allowed makes it eligible",
   });
 
 test("scraped organiser: an ambiguous or excluded label stays unknown", () => {
-  for (const kind of ["openActivity", "socialRun", "dinner", "barCrawl"]) {
+  for (const kind of ["openActivity", "barCrawl"]) {
     assert.equal(classifyAt([], [scraped("yoga"), scraped(kind)]), "unknown");
   }
   assert.equal(classifyAt([], [{...scraped("yoga"), activity: undefined}]),
     "unknown");
   assert.equal(classifyAt([run()], [scraped("openActivity")]), "unknown");
 });
+
+test("scraped runs and dinners qualify, but blocked words still exclude them",
+  () => {
+    assert.equal(classifyAt([], [scraped("socialRun", "Sunday 5K"),
+      scraped("dinner", "Supper club")]), "eligible");
+    assert.equal(classifyAt([], [scraped("socialRun", "Singles run")]),
+      "sensitive");
+    assert.equal(classifyAt([], [scraped("dinner", "Dinner mixer")]),
+      "sensitive");
+    // Native events in the same classes stay excluded by the policy classes.
+    assert.equal(classifyAt([run("socialRun")], []), "sensitive");
+    assert.equal(classifyAt([run("dinner")], [scraped("yoga")]), "sensitive");
+  });
 
 test("scraped organiser: dating words make it sensitive", () => {
   for (const title of ["Singles yoga", "Padel mixer night", "Quiz for singles",

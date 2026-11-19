@@ -79,11 +79,12 @@ export const organizerTrackingPublicationPolicy:
       ["pairedRotations", "seatedTable", "freeFormMixer", "routeStops"]),
     externalListingsCountAsUnknown: false,
     externalListingAllowance: Object.freeze({
-      // Supply intake labels every run "socialRun" and every dinner "dinner",
-      // both excluded classes above, so they are not allowed here until the
-      // owner decides otherwise.
-      activityKinds: Object.freeze(
-        ["pubQuiz", "yoga", "padel", "pickleball", "tennis", "cycling"]),
+      // Supply intake labels every run "socialRun" and every dinner "dinner".
+      // The owner allowed both for scraped listings (relayed 19 Nov 2026,
+      // #2063), still subject to the blocked words; native events in those
+      // classes stay excluded above. barCrawl and openActivity stay unknown.
+      activityKinds: Object.freeze(["pubQuiz", "yoga", "padel", "pickleball",
+        "tennis", "cycling", "socialRun", "dinner"]),
       blockedWords: Object.freeze(["single", "singles", "dating", "date night",
         "speed date", "speed dating", "mixer", "matchmaking", "matchmaker"]),
     }),
