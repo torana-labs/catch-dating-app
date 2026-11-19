@@ -1409,6 +1409,30 @@
       "role": "gate"
     },
     {
+      "id": "ci:listing-cohort-withdraw-workflow",
+      "category": "ci",
+      "path": "tool/ci/listing_cohort_withdraw_workflow.test.mjs",
+      "command": "node --test tool/ci/listing_cohort_withdraw_workflow.test.mjs",
+      "surface": "local-read",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/listing-cohort-withdraw.yml",
+        "tool/ci/listing_cohort_withdraw_workflow.test.mjs"
+      ],
+      "description": "Keeps the listing cohort withdraw workflow dispatch-only from main, keyless and least-privileged, with only environment, mode, a cohort id, a city slug and a manifest SHA-256 as checked inputs, a prod apply gated by the credential-free prod-takedown environment, no artifacts, a counts-only summary, and --allow-prod only for a prod apply.",
+      "checks": [
+        "node --check tool/ci/listing_cohort_withdraw_workflow.test.mjs",
+        "node --test tool/ci/listing_cohort_withdraw_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:main-marketing-validation",
       "category": "ci",
       "path": "tool/ci/wait_main_marketing_validation.mjs",
@@ -2571,6 +2595,37 @@
         "node --check tool/data/hygiene_media_paths.mjs"
       ],
       "runbook": "tool/README.md#storage-media-path-hygiene"
+    },
+    {
+      "id": "data:listing-cohort-withdraw",
+      "category": "data",
+      "path": "tool/data/listing_cohort_withdraw.mjs",
+      "command": "node tool/data/listing_cohort_withdraw.mjs --env <dev|prod> --cohort-id <cohort> [--city <slug>] --mode <plan|apply|verify> [--manifest-sha256 <hash>]",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "description": "Withdraws one programmatic listing cohort: counts-only plan of the public, unclaimed organisers whose listingProgram.cohortId matches, with a manifest SHA-256; apply only with the matching hash, suppressing each page (noindex) in re-checked transactions with one admin audit row per organiser; idempotent re-run and verify.",
+      "checks": [
+        "node --check tool/data/listing_cohort_withdraw.mjs",
+        "node --test tool/data/listing_cohort_withdraw.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/listing_cohort_withdraw.test.mjs",
+        "tool/data/lib/listing_cohort_withdraw/withdraw.mjs",
+        "tool/data/fixtures/listing_cohort_withdraw/fakes.mjs",
+        "tool/data/fixtures/listing_cohort_withdraw/world.mjs",
+        "contracts/shared/listing_program_common.schema.json",
+        "contracts/shared/profile_common.schema.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "role": "operator",
+      "runbook": "docs/release_operations.md#listing-cohort-withdraw"
     },
     {
       "id": "data:migrate-firestore-consolidation",
