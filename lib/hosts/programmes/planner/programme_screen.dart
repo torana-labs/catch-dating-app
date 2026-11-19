@@ -45,37 +45,35 @@ class HostProgrammeScreen extends ConsumerWidget {
                 : context.goNamed(Routes.hostEventsScreen.name),
           ),
           actions: [
-            CatchIconAction(
-              key: const ValueKey<String>('host-programme-open-branding'),
-              tooltip: l10n.hostProgrammeBrandingTitle,
-              variant: CatchIconActionVariant.plain,
-              child: CatchIcon(CatchIcons.brand),
-              onPressed: () => openHostProgrammePage(
-                context,
-                programId,
-                HostProgrammePage.branding,
-              ),
-            ),
-            CatchIconAction(
-              key: const ValueKey<String>('host-programme-open-photos'),
-              tooltip: l10n.hostProgrammePhotosTitle,
-              variant: CatchIconActionVariant.plain,
-              child: CatchIcon(CatchIcons.photos),
-              onPressed: () => openHostProgrammePage(
-                context,
-                programId,
-                HostProgrammePage.photos,
-              ),
-            ),
-            CatchIconAction(
-              key: const ValueKey<String>('host-programme-open-ids'),
-              tooltip: l10n.hostProgrammeIdsTitle,
-              variant: CatchIconActionVariant.plain,
-              child: CatchIcon(CatchIcons.protected),
-              onPressed: () => openHostProgrammePage(
-                context,
-                programId,
-                HostProgrammePage.idTracker,
+            // The drawing keeps the bar to Back and the countdown; the
+            // setup pages sit behind one More menu.
+            CatchMenu<HostProgrammePage>.anchored(
+              items: [
+                CatchMenuItem(
+                  value: HostProgrammePage.branding,
+                  label: l10n.hostProgrammeBrandingTitle,
+                  icon: CatchIcons.brand,
+                ),
+                CatchMenuItem(
+                  value: HostProgrammePage.photos,
+                  label: l10n.hostProgrammePhotosTitle,
+                  icon: CatchIcons.photos,
+                ),
+                CatchMenuItem(
+                  value: HostProgrammePage.idTracker,
+                  label: l10n.hostProgrammeIdsTitle,
+                  icon: CatchIcons.protected,
+                ),
+              ],
+              onSelected: (page, _) =>
+                  openHostProgrammePage(context, programId, page),
+              builder: (context, controller, _) => CatchIconAction(
+                key: const ValueKey<String>('host-programme-more'),
+                tooltip: l10n.hostPeopleMoreActions,
+                size: GeneratedCatchSizeTokens.controlMd,
+                onPressed: () =>
+                    controller.isOpen ? controller.close() : controller.open(),
+                child: CatchIcon(CatchIcons.more),
               ),
             ),
             if (days != null && days >= 0)
