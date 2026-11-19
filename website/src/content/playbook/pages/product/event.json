@@ -6,7 +6,7 @@
     "title": "Running the event | {{brand.name}} for hosts",
     "description": "QR self check-in with no app to download, a live console, dress rehearsals, attendance on every guest’s record, and door staff whose access ends with the night. Check-ins made without signal sync when you’re back online.",
     "socialDescription": "Everything behind the scenes, on one screen. Running the event on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

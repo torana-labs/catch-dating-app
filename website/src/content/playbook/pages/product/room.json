@@ -6,7 +6,7 @@
     "title": "The room | {{brand.name}} for hosts",
     "description": "A first hello with a mission at check-in, groups, tables, teams and rotations built for each format, and Help me say hi for introductions you make. No app for guests, and joining in is always optional.",
     "socialDescription": "Nobody comes to stand by the wall. The room on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
