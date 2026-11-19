@@ -638,13 +638,18 @@ a recorded receipt.
   - Single-page navigation to any other page stops sending.
 - **Catch's own tags on organiser profiles.** Organiser tags must never
   reduce Catch's own tracking (owner condition, 19 Nov 2026), so Catch's tags
-  are meant to cover organiser profiles too, through
-  `catchOrganizerProfilePage` (the same profile routes and flow exclusions as
-  `organizerAdPage`). They skip dating-classified and unclassified organisers,
-  failing closed: the server's `profileTagsEligible` (#2192) answers whether a
-  profile qualifies, and the excluded classes come from the publication policy
-  version. Until that answer is wired into the page lifecycle, `publicAdPage`
-  keeps every organiser page closed for Catch's tags, as before.
+  cover organiser profiles too, through `catchOrganizerProfilePage` (the same
+  profile routes and flow exclusions as `organizerAdPage`). They skip
+  dating-classified and unclassified organisers, failing closed: the server's
+  `profileTagsEligible` (#2192) answers whether a profile qualifies, and the
+  excluded classes come from the publication policy version.
+  `observeOrganizerProviders` reads it under any current analytics choice and
+  admits that one profile to Catch's tags (`adTags.admitOrganizerProfile`);
+  without a yes, `publicAdPage` keeps every organiser page closed. Campaign
+  labels and click identifiers are still captured only on `publicAdPage`.
+  - **Owner view.** While the owner view is shown on a profile, every tag,
+    Catch's and the organiser set's, stays silent
+    (`adTags.holdForPrivateSurface`).
 - **Event map.** The table shows the event pairs. Every page field is the fixed
   Catch origin plus path, with a fixed title and an empty referrer. Catch
   payment, request and organiser ids, guest data, answers, dating words, campaign
