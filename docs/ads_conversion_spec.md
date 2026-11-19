@@ -581,7 +581,7 @@ a recorded receipt.
 | --- | --- | --- |
 | Separation | Option A chosen (owner, 19 Nov 2026); Catch side isolated, organiser set next | `adTags.ts` destination sets and `trackSingle`; `adTagsIsolation.test.ts` |
 | Consent gate | Blocked with separation | One v5 receipt (`catch_marketing_consent_v5`), via `adTags.sync` |
-| Eligible routes | Route class proposed (#2102); lifecycle wiring waits on separation | `organizerAdPage` beside `publicAdPage`; server projection checks publication |
+| Eligible routes | Route class built (#2102, ad-click keys #2139); lifecycle wiring with the organiser set | `organizerAdPage` beside `publicAdPage`; server projection checks publication |
 | Event map | Builders and payload tests proposed (#2102) | `website/src/analytics/organizerTagEvents.ts` |
 | Publication policy | Built, disabled | `organizerTrackingPublicationPolicy.ts` |
 | Owner settings | Saved IDs shown; live state and reason pending | Catch Host tracking section; website owner view settings |
@@ -622,9 +622,22 @@ a recorded receipt.
   server's public projection.
   - Never claim, `/f/` forms, offers, OTP, booking receipts, account, demo or
     token links. Never while the owner view is open on the organiser page.
-  - Any query string or non-anchor hash fails closed, because the Pixel reports
-    the page address itself.
+  - A query may carry only the ad-click keys `fbclid`, `gclid` and
+    `utm_source`/`medium`/`campaign`/`content`/`term`/`id` (owner decision,
+    19 Nov 2026), so visits from the organiser's own ads are measured. Any
+    other key, a repeated key or a non-anchor hash fails closed, because the
+    Pixel reports the page address itself. Organiser events still report the
+    path only.
   - Single-page navigation to any other page stops sending.
+- **Catch's own tags on organiser profiles.** Organiser tags must never
+  reduce Catch's own tracking (owner condition, 19 Nov 2026), so Catch's tags
+  are meant to cover organiser profiles too, through
+  `catchOrganizerProfilePage` (the same profile routes and flow exclusions as
+  `organizerAdPage`). They skip dating-classified and unclassified organisers,
+  failing closed: the server's `profileTagsEligible` (#2192) answers whether a
+  profile qualifies, and the excluded classes come from the publication policy
+  version. Until that answer is wired into the page lifecycle, `publicAdPage`
+  keeps every organiser page closed for Catch's tags, as before.
 - **Event map.** The table shows the event pairs. Every page field is the fixed
   Catch origin plus path, with a fixed title and an empty referrer. Catch
   payment, request and organiser ids, guest data, answers, dating words, campaign
@@ -685,7 +698,8 @@ it against production, a live organiser or real IDs.**
    - Navigate in-app from the organiser page to `/claim/`, an `/f/` form,
      `/offer/`, `/account/`, `/demo/…`, a `/booking/` receipt, a token link and
      the open owner view. Each must send nothing.
-   - The same page with `?fbclid=…` or `?utm_source=…` must send nothing.
+   - The same page with `?fbclid=…`, `?gclid=…` or `?utm_source=…` sends;
+     with any other key (for example `?ref=…` or `?gbraid=…`) it sends nothing.
 6. **Dedupe and separation.** On the same page view, Catch's own events reach
    only Catch's destinations with their own ids. Organiser events use `org_…`
    ids. A reload does not repeat `Purchase`.
