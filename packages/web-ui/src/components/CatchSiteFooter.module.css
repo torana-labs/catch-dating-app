@@ -125,6 +125,12 @@
 
 .groups[data-layout="row"] .group { padding-bottom: 0; }
 
+/* For one synchronous read: each title and link at its one-line width. */
+.groups[data-measuring] :is(.heading, .link) {
+  width: max-content;
+  white-space: nowrap;
+}
+
 .heading {
   margin: 0 0 var(--catch-space-micro14);
   font-size: var(--catch-typography-role-body-size);

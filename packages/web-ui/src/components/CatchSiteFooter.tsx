@@ -70,9 +70,11 @@ export interface CatchSiteFooterProps {
 
 /**
  * Sizes the link columns from their content. Each column is as narrow as the
- * longest link or group title on one line, measured in the page's own font
+ * longest link or group title on one line, measured as the page draws it
  * (`--catch-site-footer-column-min`), so adding or renaming a link needs no
- * other change. When every group fits side by side at that width the groups
+ * other change. It measures by letting every link and title take its
+ * one-line width for a moment (`data-measuring`) and reading it back in the
+ * same task, so nothing is painted in between. When every group fits side by side at that width the groups
  * sit in one row (`data-layout="row"`); otherwise they flow down as many
  * columns as fit. It measures again when the footer resizes or a web font
  * arrives. Before it runs (server render, no ResizeObserver) the groups flow
@@ -81,16 +83,15 @@ export interface CatchSiteFooterProps {
 function useContentSizedColumns(navRef: RefObject<HTMLElement | null>, columns: number, groups: readonly CatchSiteFooterGroup[]) {
   useEffect(() => {
     const nav = navRef.current;
-    const context = typeof document === "undefined" ? null : document.createElement("canvas").getContext?.("2d");
-    if (!nav || !context || typeof ResizeObserver === "undefined") return;
+    if (!nav || typeof ResizeObserver === "undefined") return;
     let frame = 0;
     const measure = () => {
+      nav.dataset.measuring = "";
       let longest = 0;
       for (const item of nav.querySelectorAll<HTMLElement>(`.${styles.heading}, .${styles.link}`)) {
-        const style = getComputedStyle(item);
-        context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-        longest = Math.max(longest, context.measureText(item.textContent ?? "").width);
+        longest = Math.max(longest, item.getBoundingClientRect().width);
       }
+      delete nav.dataset.measuring;
       if (longest === 0) return;
       const width = Math.ceil(longest) + 1;
       const flow = nav.firstElementChild;

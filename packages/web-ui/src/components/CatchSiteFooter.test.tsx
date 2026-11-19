@@ -137,7 +137,8 @@ describe("CatchSiteFooter", () => {
   });
 
   /**
-   * Sizes columns in a page with ResizeObserver: each character measures 7px,
+   * Sizes columns in a page with ResizeObserver: each character of a title or
+   * link at its one-line width measures 7px,
    * so the longest item ("A much longer sample link", 25 characters) is 175px
    * and its column 176px (one spare pixel against rounding), and the nav is
    * `width` wide.
@@ -150,9 +151,10 @@ describe("CatchSiteFooter", () => {
       disconnect() {}
     });
     vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => { callback(0); return 0; });
-    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
-      {font: "", measureText: (text: string) => ({width: text.length * 7})} as unknown as CanvasRenderingContext2D,
-    );
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      const measuring = this.closest("nav")?.hasAttribute("data-measuring") ?? false;
+      return {width: measuring ? (this.textContent ?? "").length * 7 : 0} as DOMRect;
+    });
     const widthSpy = vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(width);
     const measured = groups.slice(0, 3).map((group, index) =>
       index === 1 ? {...group, links: [...group.links, {href: "/long/", label: "A much longer sample link"}]} : group);
