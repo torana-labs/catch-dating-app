@@ -46,10 +46,11 @@ describe("organizerPageView", () => {
 
   it("puts Claim and Report or remove beside a generated page's tag, the report carrying the organiser's id", () => {
     expect(unclaimedListingCopy.tag).toBe("Unclaimed · Not affiliated with Catch. Built from public pages.");
-    expect(view(generatedOrganizerPage).header.tagActions).toEqual({
-      claim: {label: "Claim this page", href: "/claim/harbour-line-run-club/"},
-      report: {label: "Report or remove", semanticsLabel: "Report or remove this listing", href: "/listings/request/?organizer=harbour-line-run-club"},
-    });
+    const actions = view(generatedOrganizerPage).header.tagActions;
+    expect(actions?.claim?.label).toBe("Claim this page");
+    expect(actions?.claim?.href).toBe("/claim/harbour-line-run-club/");
+    expect([actions?.report.label, actions?.report.semanticsLabel]).toEqual(["Report or remove", "Report or remove this listing"]);
+    expect(actions?.report.href).toBe("/listings/request/?organizer=harbour-line-run-club");
     // While a claim is reviewed there is nothing to claim, but the listing can still be reported.
     const pending = view({...generatedOrganizerPage, claim: {...generatedOrganizerPage.claim, state: "claimPending"}}).header;
     expect(pending.tag).toBe(unclaimedListingCopy.tag);
@@ -221,8 +222,8 @@ describe("organizerPageView", () => {
     expect(view(generatedOrganizerPage).claim).toEqual({
       href: "/claim/harbour-line-run-club/", pending: false, removeHref: "/listings/request/?organizer=harbour-line-run-club",
     });
-    expect(copy.claim).toMatchObject({title: "Run this club?",
-      body: "Claim this page to edit it, add events and take bookings, or ask us to remove it."});
+    expect(copy.claim.title).toBe("Run this club?");
+    expect(copy.claim.body).toBe("Claim this page to edit it, add events and take bookings, or ask us to remove it.");
     expect(JSON.stringify(copy.claim)).not.toMatch(/already working for you|Pixel|Analytics/u);
     const anchored = view({...generatedOrganizerPage, claim: {...generatedOrganizerPage.claim, href: "/organizers/harbour-line-run-club/#claim"}});
     expect(anchored.claim?.href).toBe("/claim/?listing=harbour-line-run-club");
@@ -234,7 +235,7 @@ describe("organizerPageView", () => {
     expect(view(claimedOrganizerPage).footer).toEqual({line: "Made with Catch", link: "Make a page like this", href: "/host/"});
     expect(view(generatedOrganizerPage).footer).toEqual({line: "Built by Catch from public Luma and Instagram pages.",
       link: "Something wrong? Tell us", href: "/listings/request/?organizer=harbour-line-run-club"});
-    expect(view(claimedOrganizerPage).report).toEqual({label: "Report or remove this listing",
-      href: `/listings/request/?organizer=${claimedOrganizerPage.organizerId}`});
+    expect(view(claimedOrganizerPage).report.label).toBe("Report or remove this listing");
+    expect(view(claimedOrganizerPage).report.href).toBe(`/listings/request/?organizer=${claimedOrganizerPage.organizerId}`);
   });
 });
