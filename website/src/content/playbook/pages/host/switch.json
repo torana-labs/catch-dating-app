@@ -6,7 +6,7 @@
     "title": "Switch to {{brand.name}} | {{brand.stores.hostAppName}}",
     "description": "Moving off WhatsApp polls, Google Forms and UPI screenshots, or another ticketing site? Send us your list and we’ll set it up with you, or import it yourself.",
     "socialDescription": "Leave the spreadsheet. Keep your people.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

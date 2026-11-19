@@ -20,14 +20,23 @@ import {
   type HostRosterIntakeManageDeps,
   type ManageHostRosterIntakeResponse,
 } from "../events/hostRosterIntakeApply";
-import type {HostRosterIntakePreview} from "../events/hostRosterIntakeCore";
-import type {CanonicalGuestRead, GuestColumnMapping} from
-  "../guestImport/canonical";
+import {
+  proposeHostRosterMapping,
+  type HostRosterIntakePreview,
+  type HostRosterMappingProposalProvider,
+} from "../events/hostRosterIntakeCore";
+import {guestMappingProposalProvider} from "../guestImport/mappingFallback";
+import type {
+  CanonicalGuestRead,
+  GuestColumnMapping,
+  GuestField,
+} from "../guestImport/canonical";
 import {columnShapes, type ColumnShape} from "../guestImport/columnShapes";
 import {readGuestFile, type GuestFileRead} from "../guestImport/file";
 import {countUnrecognisedHeaderShape} from "../guestImport/headerShapes";
 import {guestIntakeInput} from "../guestImport/intakeRows";
 import {
+  guestFields,
   suggestExtraMapping,
   type GuestExtraMapping,
 } from "../guestImport/mapping";
@@ -75,6 +84,8 @@ export interface ImportGuestListDeps {
   increment: (by: number) => FirebaseFirestore.FieldValue;
   checkRateLimit: typeof defaultCheckRateLimit;
   intake: () => HostRosterIntakeManageDeps;
+  /** The model fallback for unknown columns; null while it is off. */
+  mappingProvider: () => HostRosterMappingProposalProvider | null;
 }
 
 const defaultDeps: ImportGuestListDeps = {
@@ -83,6 +94,7 @@ const defaultDeps: ImportGuestListDeps = {
   increment: (by) => admin.firestore.FieldValue.increment(by),
   checkRateLimit: defaultCheckRateLimit,
   intake: () => defaultHostRosterIntakeApplyDeps(),
+  mappingProvider: () => guestMappingProposalProvider(),
 };
 
 const fileErrors: Record<string, string> = {
@@ -151,24 +163,38 @@ export async function importGuestListHandler(
       column >= headers.length)) {
     throw refusal("roster_invalid_mapping");
   }
-  let read: CanonicalGuestRead;
-  try {
-    read = readGuestTable(file.matrix, {
-      converterId: file.converterId ?? undefined,
-      mapping: input.mapping ?
-        canonicalMapping as Partial<GuestColumnMapping> : undefined,
-      reviewStatuses: true,
-      reservedColumns: Object.values(extraMapping)
-        .filter((column): column is number => column !== null),
+  const reservedColumns = Object.values(extraMapping)
+    .filter((column): column is number => column !== null);
+  const readWith = (mapping?: Partial<GuestColumnMapping>) =>
+    readGuestTable(file.matrix, {
+      converterId: file.converterId ?? undefined, mapping,
+      reviewStatuses: true, reservedColumns,
     });
+  let read: CanonicalGuestRead;
+  let modelProposal: {fields: GuestField[]; confidence: number} | null = null;
+  try {
+    read = readWith(input.mapping ?
+      canonicalMapping as Partial<GuestColumnMapping> : undefined);
   } catch (error) {
     const code = errorCode(error);
     if (code !== "roster_missing_name_column") throw refusal(code);
     if (data.mode === "preview" && !input.mapping) {
       await countShape(db, deps, headers);
     }
-    return needsInput(caller.uid, requestInput, file, headers, shapes,
-      input.mapping);
+    const proposed = input.mapping ? null :
+      await modelMapping(deps, headers, shapes, reservedColumns);
+    if (!proposed) {
+      return needsInput(caller.uid, requestInput, file, headers, shapes,
+        input.mapping);
+    }
+    try {
+      read = readWith(proposed.mapping);
+    } catch {
+      return needsInput(caller.uid, requestInput, file, headers, shapes,
+        input.mapping);
+    }
+    modelProposal = {fields: Object.keys(proposed.mapping) as GuestField[],
+      confidence: proposed.confidence};
   }
   if (read.rows.length === 0) {
     throw refusal("roster_missing_guest_names",
@@ -181,7 +207,7 @@ export async function importGuestListHandler(
 
   const intakeDeps = deps.intake();
   const intake = guestIntakeInput(read, {extraMapping,
-    fallbackRevenue: input.fallbackRevenue ?? null});
+    fallbackRevenue: input.fallbackRevenue ?? null, modelProposal});
   const review = await asHttps(async () => {
     let draft = await startHostRosterIntake(intakeDeps, {
       hostUid: caller.uid, organizerId, eventId: input.eventId,
@@ -207,7 +233,8 @@ export async function importGuestListHandler(
     throw new HttpsError("internal", "Roster intake review is missing.");
   }
   const previewHash = commandPreviewHash(COMMAND_ID, caller.uid,
-    requestInput, {reviewHash: preview.reviewHash});
+    requestInput, {reviewHash: preview.reviewHash,
+      modelMapping: modelProposal ? read.mapping : null});
   const suggestions = review.draft.state === "review" ?
     await suggestGuestMergesAndTags(db, organizerId, preview) : [];
 
@@ -215,7 +242,7 @@ export async function importGuestListHandler(
     return describe({status: review.draft.state === "applied" ? "applied" :
       "previewed", previewHash, receiptId: null, file, read, shapes,
     review, preview, eventId: input.eventId, imported: null, suggestions,
-    extraMapping});
+    extraMapping, mappedBy: mappedBy(input.mapping, modelProposal)});
   }
 
   const requestHash = commandRequestHash(COMMAND_ID, caller.uid,
@@ -240,7 +267,7 @@ export async function importGuestListHandler(
   const applied = describe({status: "applied", previewHash, receiptId, file,
     read, shapes, review, preview, eventId: input.eventId, imported,
     receiptImportId: review.receipt?.importId ?? null, suggestions,
-    extraMapping});
+    extraMapping, mappedBy: mappedBy(input.mapping, modelProposal)});
   return db.runTransaction(async (tx) => {
     const now = deps.now();
     const again = await replayCommand<Response>(tx, db, {
@@ -263,6 +290,52 @@ export async function importGuestListHandler(
 
 export const importGuestList = onCall(appCheckCallableOptions,
   (request) => importGuestListHandler(request));
+
+/**
+ * Asks the model fallback for a mapping from headers and column shapes. Null
+ * while it is off, or when its proposal is unusable: the host maps instead.
+ * @return {Promise<object|null>} The proposed mapping and confidence.
+ */
+async function modelMapping(deps: ImportGuestListDeps, headers: string[],
+  shapes: ColumnShape[], reservedColumns: number[]):
+  Promise<{mapping: Partial<GuestColumnMapping>; confidence: number} | null> {
+  let provider: HostRosterMappingProposalProvider | null;
+  try {
+    provider = deps.mappingProvider();
+  } catch (error) {
+    logger.warn("Guest mapping fallback is not ready.",
+      {error: error instanceof Error ? error.message : String(error)});
+    return null;
+  }
+  if (!provider || headers.length > 40) return null;
+  try {
+    const proposal = await proposeHostRosterMapping({
+      headers: headers.map((header) => header.slice(0, 120)),
+      sampleRows: [shapes.slice(0, headers.length)],
+      deterministicMapping: {}, provider,
+    });
+    const mapping: Partial<GuestColumnMapping> = {};
+    for (const field of guestFields) {
+      const column = proposal.mapping[field];
+      if (column !== undefined && !reservedColumns.includes(column)) {
+        mapping[field] = column;
+      }
+    }
+    return mapping.displayName === undefined ? null :
+      {mapping, confidence: proposal.confidence};
+  } catch (error) {
+    logger.warn("Guest mapping proposal was not usable.",
+      {error: error instanceof Error ? error.message : String(error)});
+    return null;
+  }
+}
+
+function mappedBy(hostMapping: Input["mapping"],
+  modelProposal: {fields: GuestField[]} | null): "converter" | "host" |
+  "model" {
+  if (hostMapping) return "host";
+  return modelProposal ? "model" : "converter";
+}
 
 async function countShape(db: FirebaseFirestore.Firestore,
   deps: ImportGuestListDeps, headers: string[]): Promise<void> {
@@ -294,7 +367,8 @@ function needsInput(uid: string, requestInput: unknown, file: GuestFileRead,
       fileFormat: file.format,
       converter: {id: "generic-v1", support: "generic", confidence: 0},
       headers: headers.map((header) => header.slice(0, 120)),
-      columnShapes: shapes, mapping, needsMapping: true, sessionId: null,
+      columnShapes: shapes, mapping, mappedBy: hostMapping ? "host" :
+        "converter", needsMapping: true, sessionId: null,
       revision: null, reviewHash: null, eligibleForApply: false,
       counts: {add: 0, update: 0, unchanged: 0, excluded: 0, needsReview: 0,
         identityConflict: 0, skipped: 0},
@@ -317,6 +391,7 @@ function describe(params: {
   receiptImportId?: string | null;
   suggestions: GuestSuggestion[];
   extraMapping: GuestExtraMapping;
+  mappedBy: "converter" | "host" | "model";
 }): Response {
   const {status, preview, read, review, imported} = params;
   const counts = {...preview.counts, skipped: read.skipped.length};
@@ -329,6 +404,10 @@ function describe(params: {
       `Saved: ${guests(imported?.createdCount ?? 0)} added, ` +
         `${guests(imported?.updatedCount ?? 0)} updated.`;
   const lines = [`Read as ${converterLabel(read.adapter.adapterId)}.`];
+  if (params.mappedBy === "model") {
+    lines.push("We guessed which column is which from the headers; check " +
+      "the columns before you confirm.");
+  }
   if (counts.needsReview + counts.identityConflict > 0) {
     lines.push(`${guests(counts.needsReview + counts.identityConflict)} ` +
       "need a look first: fix them in the file, or leave them out.");
@@ -379,7 +458,8 @@ function describe(params: {
         confidence: read.adapter.confidence},
       headers: read.headers.map((header) => header.slice(0, 120)),
       columnShapes: params.shapes.slice(0, read.headers.length),
-      mapping, needsMapping: false, sessionId: preview.sessionId,
+      mapping, mappedBy: params.mappedBy, needsMapping: false,
+      sessionId: preview.sessionId,
       revision: preview.revision, reviewHash: preview.reviewHash,
       eligibleForApply: preview.eligibleForApply, counts,
       rows: preview.rows.map((row) => ({rowId: row.rowId,

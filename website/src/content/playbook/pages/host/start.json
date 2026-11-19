@@ -5,7 +5,7 @@
   "meta": {
     "title": "Start your free trial | {{brand.stores.hostAppName}}",
     "description": "Download {{brand.stores.hostAppName}}, set up your first event, and run it tonight if you like. Free for 30 days from your first event, or 90 for founding hosts.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "minimal",

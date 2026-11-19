@@ -3,6 +3,8 @@ import type {ListingRequestHTTPRequest} from
   "../shared/generated/listingRequestHTTPRequest";
 import type {TakedownRequestDocument} from
   "../shared/generated/firestoreAdminTypes";
+import {staffReviewMethod} from
+  "../organizers/identityVerification/staffReviewMethods";
 
 /**
  * Structured listing requests: the fixed menu behind /listings/request/.
@@ -269,23 +271,13 @@ export function typeRuleProblem(request: ListingRequestHTTPRequest):
   case "claim":
   case "removeAndDoNotList":
   case "impersonation": {
+    // The channel proofs live in the one verification registry.
     const proof = request.verification;
-    if (proof.proofMethod === "instagramCode" && !proof.officialHandle) {
-      return "handle";
-    }
-    if (proof.proofMethod === "domainEmail") {
-      if (!proof.officialDomain) return "domain";
-      const emailDomain = request.requester.email.split("@")[1] ?? "";
-      if (emailDomain !== proof.officialDomain &&
-          !emailDomain.endsWith(`.${proof.officialDomain}`)) {
-        return "domainEmail";
-      }
-    }
-    if (proof.proofMethod === "letterhead" && !proof.officialDomain &&
-        !proof.officialHandle) {
-      return "domain";
-    }
-    return null;
+    return staffReviewMethod(proof.proofMethod).requestProblem({
+      officialHandle: proof.officialHandle,
+      officialDomain: proof.officialDomain,
+      requesterEmail: request.requester.email,
+    });
   }
   case "trademark": {
     const mark = request.verification;

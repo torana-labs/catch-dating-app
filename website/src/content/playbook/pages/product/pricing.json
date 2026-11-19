@@ -6,7 +6,7 @@
     "title": "Pricing for hosts | 5% of ticket sales, capped at ₹10,000 a month | {{brand.name}}",
     "description": "One plan for every host: 5% of ticket sales, net of refunds, never more than ₹10,000 a month. Free events stay free, and your first 30 days from your first event are free.",
     "socialDescription": "Free events stay free. Paid events: 5% of ticket sales, never more than ₹10,000 a month.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

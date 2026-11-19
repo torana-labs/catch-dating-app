@@ -25,10 +25,13 @@ import {
   validateToolPaths,
   validateToolRoles,
   validateToolRules,
+  validateToolSurfaces,
+  validateRemoteOpsEntrypoints,
 } from "./lib/tool_manifest_rules.mjs";
 
 const manifestPath = "tool/tools_manifest.json";
 const componentGraphPath = "tool/harness/component_graph.json";
+const remoteOpsManifestPath = "tool/remote_ops_manifest.json";
 let capturedRepositorySnapshot = null;
 
 const command = process.argv[2] ?? "help";
@@ -510,6 +513,17 @@ function validateManifest(manifest, componentGraph) {
     exists: (file) => repositorySnapshot().exists(file),
     read: readUnlessSparseOmitted,
   }));
+  errors.push(...validateToolSurfaces(manifest.tools, {
+    exists: (file) => repositorySnapshot().exists(file),
+  }));
+  // The CI planner's structural preflight runs on a sparse, blobless checkout
+  // where this file's blob may be absent; the Tools lane checks it in full.
+  const remoteOpsText = repositorySnapshot().exists(remoteOpsManifestPath)
+    ? readUnlessSparseOmitted(remoteOpsManifestPath)
+    : null;
+  if (remoteOpsText != null) {
+    errors.push(...validateRemoteOpsEntrypoints(manifest.tools, JSON.parse(remoteOpsText)));
+  }
 
   const activeById = new Map(
     manifest.tools

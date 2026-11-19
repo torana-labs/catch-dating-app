@@ -24,6 +24,22 @@ abstract final class CatchFieldTokens {
   static double get valueLineExtent => valueFontSize * valueLineHeight;
   static const double supportingTopGap = CatchSpacing.micro6;
 
+  // Outlined text entry, as every guest and host form board draws it: the
+  // label sits above a bordered box that holds the value, hint and slots.
+  static const double boxMinHeight = GeneratedCatchSizeTokens.fieldLg;
+  static const double boxRadius = 12;
+  static const double boxBorderWidth = CatchStroke.control;
+  static const double boxHorizontalPadding = CatchSpacing.micro14;
+  static const double boxMultilineVerticalPadding = CatchSpacing.s3;
+  static const double boxMultilineLineExtent = 22;
+  static const double boxLabelGap = CatchSpacing.s2;
+  static const double boxSlotGap = CatchSpacing.micro10;
+
+  /// Row inset above and below an outlined box; two stacked boxes sit one
+  /// form-field gap apart.
+  static const double boxRowVerticalPadding =
+      GeneratedCatchGapTokens.formField / 2;
+
   static const double trailingGap = CatchSpacing.s2;
   static const double disclosureGlyphExtent = CatchSpacing.s4;
   static const double largeGlyphExtent = CatchSpacing.micro18;

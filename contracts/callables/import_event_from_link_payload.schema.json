@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/import_event_from_link_payload.schema.json",
+  "title": "ImportEventFromLinkCallablePayload",
+  "description": "Command event.import-from-link (contracts/commands/catalog.json). A phone-verified caller with a try-it workspace sends one public event page or calendar (Luma, District, Urbanaut, or a page the generic reader can follow). The first preview with an idempotency key starts reading it and answers running; previewing again lists the upcoming events found, and with input.eventKey answers the private draft event apply would create in the workspace. Apply creates it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode", "idempotencyKey", "surface", "input"],
+  "properties": {
+    "mode": {"$ref": "../shared/command_envelope.schema.json#/definitions/mode"},
+    "idempotencyKey": {"$ref": "../shared/command_envelope.schema.json#/definitions/idempotencyKey"},
+    "surface": {"$ref": "../shared/command_envelope.schema.json#/definitions/surface"},
+    "confirm": {"$ref": "../shared/command_envelope.schema.json#/definitions/confirm"},
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["link"],
+      "properties": {
+        "link": {"type": "string", "minLength": 8, "maxLength": 2000, "pattern": "^https?://",
+          "description": "One public event page or calendar."},
+        "eventKey": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+          "description": "Which found event to draft, from result.events. Needed when the page lists more than one."}
+      }
+    }
+  }
+}

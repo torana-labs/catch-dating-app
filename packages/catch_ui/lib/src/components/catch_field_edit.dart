@@ -6,31 +6,35 @@ extension _CatchFieldEdit on _CatchFieldState {
   }
 
   EdgeInsets get _rowPadding {
+    final vertical = widget._outlinedTextEntry
+        ? CatchFieldTokens.boxRowVerticalPadding
+        : CatchFieldTokens.rowVerticalPadding;
     final contentInsets = CatchFieldGeometryScope.contentInsetsOf(context);
     if (contentInsets != null) {
-      return contentInsets.copyWith(
-        top: CatchFieldTokens.rowVerticalPadding,
-        bottom: CatchFieldTokens.rowVerticalPadding,
-      );
+      return contentInsets.copyWith(top: vertical, bottom: vertical);
     }
     final containerOwnsGutter =
         CatchFieldGeometryScope.gutterOwnershipOf(context) ==
         CatchFieldGeometryScopeMode.container;
+    // Outside every field section the parent pads the page, and an outlined
+    // box has no band to bleed into that gutter, so it meets the content edge.
+    if (widget._outlinedTextEntry &&
+        CatchFieldGeometryScope.maybeInteractionShapeOf(context) == null) {
+      return EdgeInsets.symmetric(vertical: vertical);
+    }
     if (_compactTextEntry) {
       return containerOwnsGutter
           ? EdgeInsets.zero
           : const EdgeInsets.symmetric(horizontal: CatchSpacing.s1);
     }
     if (containerOwnsGutter) {
-      return const EdgeInsets.symmetric(
-        vertical: CatchFieldTokens.rowVerticalPadding,
-      );
+      return EdgeInsets.symmetric(vertical: vertical);
     }
-    return const EdgeInsets.fromLTRB(
+    return EdgeInsets.fromLTRB(
       CatchFieldTokens.rowHorizontalPadding,
-      CatchFieldTokens.rowVerticalPadding,
+      vertical,
       CatchFieldTokens.rowHorizontalPadding,
-      CatchFieldTokens.rowVerticalPadding,
+      vertical,
     );
   }
 

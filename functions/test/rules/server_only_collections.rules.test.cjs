@@ -47,7 +47,6 @@ const SERVER_ONLY = [
   "hostOrganizerActivations",
   "hostPilotEventReviews",
   "launchWaitlist",
-  "marketingConversionEvents",
   "marketingOpsDashboards",
   "metaLeadgenEvents",
   "nativeRefundRecoveryCursors",

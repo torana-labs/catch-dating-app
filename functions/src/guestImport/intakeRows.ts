@@ -42,7 +42,10 @@ export function guestIntakeInput(read: CanonicalGuestRead,
     extraMapping?: GuestExtraMapping;
     /** The host's ticket price for rows the file gives no amount for. */
     fallbackRevenue?: {amountMinor: number; currency: string} | null;
+    /** Fields whose column the model fallback chose, and its confidence. */
+    modelProposal?: {fields: GuestField[]; confidence: number} | null;
   } = {}): GuestIntakeInput {
+  const model = options.modelProposal ?? null;
   const extra = options.extraMapping ??
     {city: null, revenueAmount: null, revenueCurrency: null};
   const headers = read.headers.map((header) =>
@@ -72,8 +75,9 @@ export function guestIntakeInput(read: CanonicalGuestRead,
       const provenance: HostRosterSourceField = {column: source.column,
         header: headers[source.column] ?? source.header.slice(0,
           MAX_HEADER_LENGTH),
-        origin: corrected.has(field) ? "hostCorrection" : "upload",
-        confidence: null};
+        origin: model?.fields.includes(field) ? "modelProposal" :
+          corrected.has(field) ? "hostCorrection" : "upload",
+        confidence: model?.fields.includes(field) ? model.confidence : null};
       fields[field] = provenance;
     }
     const source = (column: number | null, origin:

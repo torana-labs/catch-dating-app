@@ -27,6 +27,19 @@ mixin _CatchFieldProperties implements CatchFieldDividerGeometry {
           ? CatchFieldTokens.textLaneInset
           : 0);
 
+  @override
+  bool get suppressesFieldDividers => _outlinedTextEntry;
+
+  /// Always-editable text entry drawn as the canvas form box: a label above a
+  /// bordered box. Explicit-save rows, bare and underline inputs, and the
+  /// unlabelled floating search entry keep their own chrome.
+  bool get _outlinedTextEntry =>
+      _editConfig != null &&
+      !_explicitSaveInput &&
+      variant == CatchFieldVariant.row &&
+      !(size == CatchFieldSize.floating && !showLabel);
+
+  CatchFieldVariant get variant;
   Record get _config;
   Set<WidgetState> get states;
   bool get enabled => !states.contains(WidgetState.disabled);

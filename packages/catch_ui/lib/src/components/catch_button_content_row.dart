@@ -19,6 +19,9 @@ class CatchButtonContentRow extends StatelessWidget {
     this.mode = CatchButtonContentRowMode.label,
   });
 
+  /// Above this text scale a label may wrap between words.
+  static const double wrapTextScale = 1.3;
+
   final String label;
   final Color color;
   final Widget? leading;
@@ -37,13 +40,31 @@ class CatchButtonContentRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final iconWidget = leading;
-    final labelWidget = Text(
-      label,
-      maxLines: allowMultiline ? null : 1,
-      overflow: allowMultiline ? TextOverflow.visible : TextOverflow.ellipsis,
-      textAlign: TextAlign.center,
-      style: textStyle.copyWith(color: color),
-    );
+    // A label keeps to one line, shrinking a little to fit a narrow button
+    // ("WhatsApp", never "WhatsA / pp"). Only at large text sizes may it
+    // wrap, between words, so the type stays readable.
+    final wraps =
+        allowMultiline &&
+        MediaQuery.textScalerOf(context).scale(CatchSpacing.s4) >
+            CatchSpacing.s4 * CatchButtonContentRow.wrapTextScale;
+    final style = textStyle.copyWith(color: color);
+    final labelWidget = wraps
+        ? Text(
+            label,
+            overflow: TextOverflow.visible,
+            textAlign: TextAlign.center,
+            style: style,
+          )
+        : FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              maxLines: 1,
+              softWrap: false,
+              textAlign: TextAlign.center,
+              style: style,
+            ),
+          );
     final content = Row(
       mainAxisSize: allowMultiline && fullWidth
           ? MainAxisSize.max

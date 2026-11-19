@@ -131,16 +131,17 @@ void main() {
         );
         expect(tester.takeException(), isNull);
         if (scale == 2) {
+          // Each empty field shows its full label above an outlined box.
           for (final (key, label, hint) in [
             (
               const ValueKey('event-profile-first-name'),
               'first name for this event',
-              'First name',
+              'First name for this event',
             ),
             (
               const ValueKey('event-profile-introduction'),
               'introduction for this event',
-              'About you',
+              'Introduction for this event',
             ),
           ]) {
             expect(
@@ -163,7 +164,7 @@ void main() {
             expect(
               hints.every((paragraph) => !paragraph.didExceedMaxLines),
               isTrue,
-              reason: '$hint action must remain readable at 2× text',
+              reason: '$hint label must remain readable at 2× text',
             );
           }
         }
