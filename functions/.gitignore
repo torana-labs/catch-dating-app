@@ -16,4 +16,5 @@ lcov.info
 
 # Build-copied Operations runtime; canonical sources remain outside Functions.
 lib/operations/
+lib/packages/command-client/
 lib/contracts/operations/

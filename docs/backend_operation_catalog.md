@@ -89,7 +89,7 @@ applies through the host roster intake session.
 
 The `catch` CLI (`operations/src/catch-cli/main.mjs`) is the CLI client: it
 previews by default and its effect-class confirmation rules live in
-`operations/src/command-client/confirmation-policy.mjs`.
+`packages/command-client/src/confirmation-policy.mjs`.
 `operations/scripts/check-command-catalog.mjs` keeps the catalog in step with
 its clients ([Product Command CLI](operations_platform.md#product-command-cli)).
 

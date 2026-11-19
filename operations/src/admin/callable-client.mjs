@@ -1,7 +1,7 @@
 import {
   CallableTransport,
   callableBaseUrl as sharedCallableBaseUrl,
-} from "../command-client/transport.mjs";
+} from "../../../packages/command-client/src/transport.mjs";
 
 // The admin action CLI's view of the shared callable transport. It keeps the
 // ADMIN_CALLABLE_* and ADMIN_CLI_* error codes that receipts and runbooks use.

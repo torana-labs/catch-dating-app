@@ -1,4 +1,4 @@
-import {OperationsError} from "../platform/errors.mjs";
+import {OperationsError} from "./errors.mjs";
 
 // One HTTPS client for Firebase callables, shared by every catalog-driven CLI
 // (the admin action catalog and the product command catalog). It sends the

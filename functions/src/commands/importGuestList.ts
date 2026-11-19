@@ -55,6 +55,11 @@ import {
   replayCommand,
   requirePhoneVerifiedCaller,
 } from "./envelope";
+import {
+  recordTryItEvent,
+  resolveGuestListTarget,
+  type GuestListTarget,
+} from "./guestListTarget";
 
 // Command guests.import-list (contracts/commands/catalog.json; #2061). One
 // guest importer for every surface: the file is read on the server by the
@@ -69,6 +74,8 @@ import {
 //   columns. The model fallback stays off until go-live (owner decision).
 // - Apply recomputes the preview, refuses a confirm whose preview changed,
 //   applies exactly the reviewed rows and records a command receipt.
+// - With no input.eventId, the guests go on the caller's try-it workspace's
+//   private draft event, made if needed (guestListTarget.ts).
 
 export const COMMAND_ID = "guests.import-list";
 const HOUR_MS = 60 * 60 * 1000;
@@ -82,6 +89,8 @@ export interface ImportGuestListDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => Date;
   increment: (by: number) => FirebaseFirestore.FieldValue;
+  serverTimestamp: () => FirebaseFirestore.FieldValue;
+  timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
   checkRateLimit: typeof defaultCheckRateLimit;
   intake: () => HostRosterIntakeManageDeps;
   /** The model fallback for unknown columns; null while it is off. */
@@ -92,6 +101,9 @@ const defaultDeps: ImportGuestListDeps = {
   firestore: () => admin.firestore(),
   now: () => new Date(),
   increment: (by) => admin.firestore.FieldValue.increment(by),
+  serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  timestampFromMillis: (millis) =>
+    admin.firestore.Timestamp.fromMillis(millis),
   checkRateLimit: defaultCheckRateLimit,
   intake: () => defaultHostRosterIntakeApplyDeps(),
   mappingProvider: () => guestMappingProposalProvider(),
@@ -126,19 +138,6 @@ export async function importGuestListHandler(
     throw refusal("roster_file_too_large");
   }
   const fileFingerprint = createHash("sha256").update(bytes).digest("hex");
-  // What the preview hash and the receipt cover: the file by fingerprint,
-  // never its contents.
-  const requestInput = {eventId: input.eventId, fileFingerprint,
-    fileName: input.file.fileName, mapping: input.mapping ?? null,
-    fallbackRevenue: input.fallbackRevenue ?? null,
-    excludedRowIds: [...(input.excludedRowIds ?? [])].sort()};
-
-  const eventSnap = await db.collection("events").doc(input.eventId).get();
-  const organizerId = eventSnap.data()?.organizerId;
-  if (!eventSnap.exists || typeof organizerId !== "string") {
-    throw new HttpsError("not-found", "Event not found.");
-  }
-
   let file: GuestFileRead;
   try {
     file = await readGuestFile({fileName: input.file.fileName, bytes});
@@ -146,6 +145,17 @@ export async function importGuestListHandler(
     throw refusal(errorCode(error));
   }
   if (file.matrix.length < 2) throw refusal("roster_missing_rows");
+
+  const target = await resolveGuestListTarget(db, deps, {uid: caller.uid,
+    eventId: input.eventId, commandId: COMMAND_ID, surface: data.surface});
+  const {eventId, organizerId} = target;
+  // What the preview hash and the receipt cover: the event, and the file by
+  // fingerprint, never its contents.
+  const requestInput = {eventId, fileFingerprint,
+    fileName: input.file.fileName, mapping: input.mapping ?? null,
+    fallbackRevenue: input.fallbackRevenue ?? null,
+    excludedRowIds: [...(input.excludedRowIds ?? [])].sort()};
+
   const headers = uniqueHeaders(file.matrix[0]).slice(0, 41);
   const shapes = columnShapes(headers, file.matrix.slice(1));
 
@@ -210,7 +220,7 @@ export async function importGuestListHandler(
     fallbackRevenue: input.fallbackRevenue ?? null, modelProposal});
   const review = await asHttps(async () => {
     let draft = await startHostRosterIntake(intakeDeps, {
-      hostUid: caller.uid, organizerId, eventId: input.eventId,
+      hostUid: caller.uid, organizerId, eventId,
       fileFingerprint, fileName: input.file.fileName,
       // The review session and import receipt know csv and xlsx; a vCard is
       // tabular text, and its file name and converter id record the source.
@@ -241,8 +251,9 @@ export async function importGuestListHandler(
   if (data.mode === "preview") {
     return describe({status: review.draft.state === "applied" ? "applied" :
       "previewed", previewHash, receiptId: null, file, read, shapes,
-    review, preview, eventId: input.eventId, imported: null, suggestions,
-    extraMapping, mappedBy: mappedBy(input.mapping, modelProposal)});
+    review, preview, eventId, imported: null, suggestions,
+    extraMapping, mappedBy: mappedBy(input.mapping, modelProposal),
+    target});
   }
 
   const requestHash = commandRequestHash(COMMAND_ID, caller.uid,
@@ -265,9 +276,10 @@ export async function importGuestListHandler(
   const receiptId = commandReceiptDocumentId(db, COMMAND_ID, caller.uid,
     data.idempotencyKey);
   const applied = describe({status: "applied", previewHash, receiptId, file,
-    read, shapes, review, preview, eventId: input.eventId, imported,
+    read, shapes, review, preview, eventId, imported,
     receiptImportId: review.receipt?.importId ?? null, suggestions,
-    extraMapping, mappedBy: mappedBy(input.mapping, modelProposal)});
+    extraMapping, mappedBy: mappedBy(input.mapping, modelProposal),
+    target});
   return db.runTransaction(async (tx) => {
     const now = deps.now();
     const again = await replayCommand<Response>(tx, db, {
@@ -275,12 +287,18 @@ export async function importGuestListHandler(
       idempotencyKey: data.idempotencyKey, requestHash,
       nowMillis: now.getTime()});
     if (again) return {...again.response, status: "replayed" as const};
+    if (target.source !== "event") {
+      // Reads come first in a transaction: the workspace before any write.
+      await recordTryItEvent(db, deps, {uid: caller.uid, eventId,
+        commandId: COMMAND_ID, surface: data.surface,
+        organizerName: null}, tx);
+    }
     recordCommand(tx, db, {commandId: COMMAND_ID, uid: caller.uid,
       idempotencyKey: data.idempotencyKey, requestHash,
       nowMillis: now.getTime(), response: applied});
     if (imported) {
       // Counts only: names, phones and the file stay out of logs.
-      logger.info("Guest list imported.", {eventId: input.eventId,
+      logger.info("Guest list imported.", {eventId,
         converter: read.adapter.adapterId, surface: data.surface,
         created: imported.createdCount, updated: imported.updatedCount});
     }
@@ -392,6 +410,7 @@ function describe(params: {
   suggestions: GuestSuggestion[];
   extraMapping: GuestExtraMapping;
   mappedBy: "converter" | "host" | "model";
+  target: GuestListTarget;
 }): Response {
   const {status, preview, read, review, imported} = params;
   const counts = {...preview.counts, skipped: read.skipped.length};
@@ -404,6 +423,13 @@ function describe(params: {
       `Saved: ${guests(imported?.createdCount ?? 0)} added, ` +
         `${guests(imported?.updatedCount ?? 0)} updated.`;
   const lines = [`Read as ${converterLabel(read.adapter.adapterId)}.`];
+  if (params.target.source === "try_it_placeholder" ||
+      params.target.source === "try_it_draft") {
+    lines.push(params.target.source === "try_it_placeholder" ?
+      "Guests go on a private draft event called \"Guest list\" in your " +
+        "profile; rename or date it in the Host app." :
+      "Guests go on your private draft event in your profile.");
+  }
   if (params.mappedBy === "model") {
     lines.push("We guessed which column is which from the headers; check " +
       "the columns before you confirm.");

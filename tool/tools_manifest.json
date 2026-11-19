@@ -2424,6 +2424,21 @@
       "runbook": "docs/release_operations.md#explore-event-discovery-rollout"
     },
     {
+      "id": "data:backfill-host-read-models",
+      "category": "data",
+      "path": "functions/scripts/backfill-host-read-models.cjs",
+      "command": "npm --prefix functions run build && node functions/scripts/backfill-host-read-models.cjs --project <id> --model <model> [--apply]",
+      "surface": "remote-write",
+      "guard": "apply-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "Rebuilds one named host read model (contact summaries, group progress views, accountability views and others) for every environment under the clean-schema rule. Dry run unless --apply.",
+      "checks": [
+        "node --check functions/scripts/backfill-host-read-models.cjs"
+      ],
+      "runbook": "docs/data_contracts.md#host-today-attention-contract"
+    },
+    {
       "id": "data:backfill-organizer-admin-search",
       "category": "data",
       "path": "tool/data/backfill_organizer_admin_search.mjs",
@@ -2438,6 +2453,70 @@
       ],
       "role": "generator",
       "runbook": "docs/release_operations.md#explore-event-discovery-rollout"
+    },
+    {
+      "id": "data:backfill-organizer-insights",
+      "category": "data",
+      "path": "functions/scripts/backfill-organizer-insights.cjs",
+      "command": "npm --prefix functions run build && node functions/scripts/backfill-organizer-insights.cjs --project <id> [--days 30] [--apply]",
+      "surface": "remote-write",
+      "guard": "apply-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "Rolls up the last N complete UTC days of organizerInsights from the host analytics marts and organizerFollows. Dry run unless --apply; each day's documents are replaced, so reruns are safe.",
+      "checks": [
+        "node --check functions/scripts/backfill-organizer-insights.cjs"
+      ],
+      "runbook": "docs/backend_operation_catalog.md#organizer-owner-view-1109"
+    },
+    {
+      "id": "data:backfill-program-whatsapp-endpoint-index",
+      "category": "data",
+      "path": "functions/scripts/backfill-program-whatsapp-endpoint-index.cjs",
+      "command": "npm --prefix functions run build && node functions/scripts/backfill-program-whatsapp-endpoint-index.cjs --project <id> --program <programId> [--apply]",
+      "surface": "remote-write",
+      "guard": "apply-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "Seeds programWhatsappEndpointIndex for one programme's households and guests that predate the endpoint-index trigger. Dry run unless --apply; it only adds or updates index documents.",
+      "checks": [
+        "node --check functions/scripts/backfill-program-whatsapp-endpoint-index.cjs"
+      ],
+      "runbook": "docs/data_contracts.md#programme-whatsapp-threads"
+    },
+    {
+      "id": "data:backfill-public-organizers",
+      "category": "data",
+      "path": "functions/scripts/backfill-public-organizers.cjs",
+      "command": "npm --prefix functions run build && node functions/scripts/backfill-public-organizers.cjs --project <id> [--apply]",
+      "surface": "remote-write",
+      "guard": "apply-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "Creates or refreshes publicOrganizers/{id} for every organizer from the current organizer record. Dry run unless --apply; writes only publicOrganizers documents.",
+      "checks": [
+        "node --check functions/scripts/backfill-public-organizers.cjs"
+      ],
+      "runbook": "docs/backend_operation_catalog.md#cloud-functions-inventory"
+    },
+    {
+      "id": "data:backfill-public-pages",
+      "category": "data",
+      "path": "functions/scripts/backfill-public-pages.cjs",
+      "command": "npm --prefix functions run build && node functions/scripts/backfill-public-pages.cjs --project <id> [--check|--apply] [--allow-prod]",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "Rebuilds the public page read models; --check compares without writing, --apply writes, and production needs --allow-prod.",
+      "checks": [
+        "node --check functions/scripts/backfill-public-pages.cjs",
+        "node --test functions/scripts/backfill-public-pages.test.cjs"
+      ],
+      "impactPaths": [
+        "functions/scripts/backfill-public-pages.test.cjs"
+      ],
+      "runbook": "docs/data_contracts.md#public-page-read-models"
     },
     {
       "id": "data:delete-reviews",
@@ -6408,6 +6487,33 @@
       "runbook": "docs/marketing_app_media_pipeline.md#ci-behavior"
     },
     {
+      "id": "marketing:public-contact-operator",
+      "category": "marketing",
+      "path": "website/scripts/next/publicContactOperator.mjs",
+      "command": "node --experimental-strip-types website/scripts/next/publicContactOperator.mjs --project <id> [--apply] [--allow-prod]",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "Reads and, with --apply, writes the public contact configuration the website shows; production needs --allow-prod.",
+      "checks": [
+        "node --check website/scripts/next/publicContactOperator.mjs",
+        "node --experimental-strip-types --test website/scripts/next/publicContactOperator.test.mjs"
+      ],
+      "impactPaths": [
+        "website/scripts/next/publicContactOperator.test.mjs",
+        "website/src/content/publicContact.ts"
+      ],
+      "runbook": "docs/web_surface_architecture.md#public-contact-configuration",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      }
+    },
+    {
       "id": "marketing:verify-hosting-404",
       "category": "marketing",
       "path": "website/scripts/verifyHosting404.mjs",
@@ -7002,6 +7108,7 @@
         "node --test operations/test/admin-cli.test.mjs"
       ],
       "impactPaths": [
+        "packages/command-client/**",
         "operations/test/admin-cli.test.mjs",
         "operations/src/**"
       ],
@@ -7078,6 +7185,7 @@
         "node --test operations/test/catch-cli.test.mjs operations/test/command-catalog.test.mjs operations/test/command-client.test.mjs operations/test/command-tools.test.mjs"
       ],
       "impactPaths": [
+        "packages/command-client/**",
         "operations/src/catch-cli/**",
         "operations/src/command-client/**",
         "operations/src/command-tools/**",
@@ -7104,6 +7212,35 @@
       "runbook": "docs/operations_platform.md#product-command-cli"
     },
     {
+      "id": "operations:catch-whatsapp-operator-setup",
+      "category": "operations",
+      "path": "functions/scripts/operations/setup-catch-whatsapp-reply.cjs",
+      "command": "node functions/scripts/operations/setup-catch-whatsapp-reply.cjs",
+      "surface": "remote-write",
+      "guard": "none",
+      "guardReason": "Only apply and reconcile write, and each needs --plan-id naming a plan produced and reviewed earlier by plan/inspect-plan, run inside the delegated operator's protected runtime.",
+      "status": "active",
+      "role": "operator",
+      "alsoEnforces": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "description": "Protected Catch WhatsApp operator setup: offline plan inspection, then a reviewed, signed session handoff. The runtime, readiness and handoff files beside it are its custody chain.",
+      "checks": [
+        "node --check functions/scripts/operations/setup-catch-whatsapp-reply.cjs",
+        "node --check functions/scripts/operations/catch-whatsapp-operator-runtime.cjs",
+        "node --check functions/scripts/operations/catch-whatsapp-operator-readiness.cjs",
+        "node --check functions/scripts/operations/catch-whatsapp-session-handoff.cjs",
+        "node --check functions/scripts/operations/catch-whatsapp-session-handoff-ui.cjs"
+      ],
+      "impactPaths": [
+        "functions/scripts/operations/catch-whatsapp-operator-runtime.cjs",
+        "functions/scripts/operations/catch-whatsapp-operator-readiness.cjs",
+        "functions/scripts/operations/catch-whatsapp-session-handoff.cjs",
+        "functions/scripts/operations/catch-whatsapp-session-handoff-ui.cjs"
+      ],
+      "runbook": "docs/release_operations.md#protected-catch-whatsapp-operator-cli"
+    },
+    {
       "id": "operations:cli",
       "category": "operations",
       "path": "operations/src/cli/main.mjs",
@@ -7127,6 +7264,58 @@
         ]
       },
       "runbook": "docs/operations_platform.md"
+    },
+    {
+      "id": "operations:host-revenue-migration",
+      "category": "operations",
+      "path": "operations/src/domains/host-revenue/migration-cli.mjs",
+      "command": "node operations/src/domains/host-revenue/migration-cli.mjs <subcommand> <private files...>",
+      "surface": "remote-write",
+      "guard": "none",
+      "guardReason": "Only the apply, compensation-apply and history-apply steps write, and each needs the approved review or preview hash as an argument plus CATCH_ADMIN ID and App Check tokens; the other steps write local private files.",
+      "status": "active",
+      "role": "operator",
+      "description": "Host revenue migration over private mapped-source and decision files: templates, freeze and review run locally; apply, compensation and history-apply call admin callables (CATCH_ADMIN_* tokens, App Check) only with the approved review or preview hash. Refuses to overwrite an existing private output.",
+      "checks": [
+        "node --check operations/src/domains/host-revenue/migration-cli.mjs",
+        "node --test operations/test/host-revenue-migration.test.mjs"
+      ],
+      "impactPaths": [
+        "operations/test/host-revenue-migration.test.mjs"
+      ],
+      "runbook": "docs/operations_platform.md#private-sales-qualification-and-outreach-drafts",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      }
+    },
+    {
+      "id": "operations:host-revenue-preflight",
+      "category": "operations",
+      "path": "operations/src/domains/host-revenue/preflight-cli.mjs",
+      "command": "npm --prefix operations run revenue:preflight -- <normalized-import.json>",
+      "surface": "local-read",
+      "status": "active",
+      "role": "operator",
+      "description": "Read-only preflight of one normalized host revenue import: validates and summarises it without writing anything.",
+      "checks": [
+        "node --check operations/src/domains/host-revenue/preflight-cli.mjs",
+        "node --test operations/test/host-revenue-foundation.test.mjs"
+      ],
+      "impactPaths": [
+        "operations/test/host-revenue-foundation.test.mjs"
+      ],
+      "runbook": "docs/operations_platform.md#private-sales-qualification-and-outreach-drafts",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      }
     },
     {
       "id": "operations:import-admin-projection",

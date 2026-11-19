@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import {inputJsonSchema, schemaIssues} from "../command-client/command-catalog.mjs";
-import {confirmationPolicy} from "../command-client/confirmation-policy.mjs";
+import {confirmationPolicy} from "../../../packages/command-client/src/confirmation-policy.mjs";
 import {OperationsError} from "../platform/errors.mjs";
 
 // Turns contracts/commands/catalog.json into AI tool definitions, and runs the
