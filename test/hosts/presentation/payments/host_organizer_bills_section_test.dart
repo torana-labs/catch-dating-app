@@ -139,9 +139,9 @@ void main() {
     final opened = <Uri>[];
     await _pump(tester, HostOrganizerBillSheet(bill: _bill()), opened: opened);
     expect(find.text('Invoice 2026-27/031'), findsOneWidget);
-    expect(find.text('₹160,000'), findsOneWidget);
+    expect(find.text('₹1,60,000'), findsOneWidget);
     expect(find.text('Due Nov 15'), findsOneWidget);
-    for (final charge in ['-₹6,400', '₹6,400', '-₹3,776', '₹149,824']) {
+    for (final charge in ['-₹6,400', '₹6,400', '-₹3,776', '₹1,49,824']) {
       expect(find.text(charge), findsNothing, reason: charge);
     }
     expect(find.byKey(const ValueKey('host-bill-pay')), findsNothing);
