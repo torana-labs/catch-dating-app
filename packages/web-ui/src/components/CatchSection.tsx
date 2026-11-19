@@ -99,6 +99,8 @@ export function CatchSection({
           </span>
           {actionNode}
         </div>
+      ) : kicker ? (
+        <h2 className={styles.kicker}>{kicker}</h2>
       ) : null}
       <div
         className={styles.list}
