@@ -183,6 +183,28 @@ test("CLI audits remote refs, protects open PRs, and fails on abandoned code", (
   );
 });
 
+test("a branch with no history in common with main is audited, not a crash", () => {
+  const repo = fs.mkdtempSync(path.join(os.tmpdir(), "catch-branch-hygiene-"));
+  git(repo, ["init", "-q", "-b", "main"]);
+  git(repo, ["config", "user.email", "test@example.com"]);
+  git(repo, ["config", "user.name", "Catch Test"]);
+  write(repo, "base.txt", "base\n");
+  commitAll(repo, "base", "2026-01-01T00:00:00Z");
+  const main = git(repo, ["rev-parse", "HEAD"]);
+  git(repo, ["switch", "-q", "--orphan", "screenshots"]);
+  fs.rmSync(path.join(repo, "base.txt"), {force: true});
+  write(repo, "shot.png", "png\n");
+  commitAll(repo, "screenshots", "2026-01-02T00:00:00Z");
+  const orphan = git(repo, ["rev-parse", "HEAD"]);
+  git(repo, ["update-ref", "refs/remotes/origin/main", main]);
+  git(repo, ["update-ref", "refs/remotes/origin/screenshots", orphan]);
+  const report = auditBranches({repo, base: "origin/main", remote: "origin", staleDays: 14,
+    pruneAfterDays: 7, now: new Date("2026-03-01T00:00:00Z")});
+  const branch = report.branches.find((entry) => entry.name === "screenshots");
+  assert.equal(branch.category, "abandoned");
+  assert.equal(branch.safeToPrune, false);
+});
+
 test("prune deletes only integrated refs that did not move after the audit", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-branch-prune-"));
   const remote = path.join(root, "remote.git");

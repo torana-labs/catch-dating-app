@@ -345,6 +345,11 @@ creates it when missing.
   through `/{audience_id}/usersreplace` in one session of 10,000-row batches,
   so removals and opt-outs leave Meta within a day. When no one qualifies, the
   job deletes the audience, since a replace needs at least one row.
+- **Use.** The host lead campaign excludes the audience, so existing hosts
+  stop seeing host ads: `tool/ads/meta_campaigns.json` names it under
+  `targeting.excludeAudiences`, and `apply_meta_campaigns.mjs` adds it to the ad
+  set's `excluded_custom_audiences` once the audience exists, keeping any
+  exclusion added in Ads Manager.
 - **Never uploaded.** Gender, age, orientation, matching, dating or
   attendance-pairing data; date of birth is read only to exclude under-18s.
 - **Receipt.** `adAudienceRuns/meta_active_hosts` keeps the latest run's
@@ -352,7 +357,7 @@ creates it when missing.
   members, rows received and invalid, exclusions by reason). It never holds an
   identifier or digest.
 - **Gate.** `AD_AUDIENCES_MODE` is `off` (the default, and the setting in every
-  environment until the owner turns it on) or `live`. Off, the job only
+  environment but prod, which the owner set to `live` on 2026-11-19) or `live`. Off, the job only
   deletes an audience an earlier live run left (the receipt names it), so a
   list that would miss later opt-outs never lingers; otherwise it reads the
   receipt and sends nothing. Live needs `AD_CONVERSIONS_META_TOKEN_VERSION`,

@@ -883,7 +883,7 @@ node tool/git/branch_hygiene.mjs --base origin/main --local --json
 
 Firebase deploy and data-validation workflows use GitHub OIDC rather than
 long-lived service-account JSON secrets. Use GitHub Environments named `dev`,
-`staging`, `prod-hosting`, `prod-mobile`, `backend-review`, `prod-backend`, and `prod`. `prod-hosting` is
+`staging`, `prod-hosting`, `prod-mobile`, `prod-mobile-release`, and `prod`. `prod-hosting` is
 approval-free and limited to the automatic web Hosting workflows and the
 main-only `Next Website Preview` and `Next Website Promotion` workflows. The preview builds a commit
 of main (its `source_sha` input, or main's head) that is not older than live and
@@ -903,15 +903,14 @@ for the operator steps. `prod-mobile` is approval-free and `main`-only; it conta
 only mobile signing, Maps, App Store Connect, and Play-publisher credentials, and
 `Mobile Beta` checks the ref again before building. `prod-mobile-release` holds
 the same store credentials for `Mobile Production` and requires a reviewer's
-approval; see [Mobile releases](#mobile-releases). `prod-backend` served only the
-retired Delivery workflow and is now unused; `Deploy backend` deploys prod
-through `prod`. The `prod-backend` OIDC provider binds the immutable repository and owner IDs, ref,
-environment, caller workflow, reusable workflow, and automatic event type; both
-workflow paths are compared with the token's own repository name, never a
-hardcoded one. It reuses the existing deployment identity; it does not add
-project permissions. That identity's federation grant is restricted to the
-`attribute.repository_environment` values `1170579691:prod`,
-`1170579691:prod-hosting`, and `1170579691:prod-backend`. The older production
+approval; see [Mobile releases](#mobile-releases). `Deploy backend` deploys
+prod through `prod`. Nothing uses the retired `prod-backend` and
+`backend-review` environments, the `prod-backend` OIDC provider or its
+`1170579691:prod-backend` federation grant; the owner removes them by hand.
+The deployment
+identity's federation grant is restricted to the
+`attribute.repository_environment` values `1170579691:prod` and
+`1170579691:prod-hosting`. The older production
 provider accepts only main jobs in `prod`, `prod-hosting`, or `prod-mobile` from
 repository `1170579691`. Every provider and grant uses immutable IDs, so renaming
 or transferring the repository or its owner cannot break deployment sign-in
@@ -929,9 +928,7 @@ its own reviewer on `prod-mobile-release`.
 
 Functions pull requests complete Required CI after the selected automated
 validation; CI no longer creates or requires the credential-free
-`backend-review` job. That environment no longer has required reviewers; its
-identity, `refs/pull/*/merge` branch policy and prohibition on administrator
-bypass remain.
+`backend-review` job, and nothing uses that environment.
 
 Dev and prod run independently, one deploy per environment at a time.
 
@@ -1917,7 +1914,7 @@ Fixed values:
 - Instagram account: @catch_dates, id `17841476918450741`. This is the
   `entry.id` in webhooks. The "Catch-IG" id `1404389366089349` is the
   Instagram app id, not the account id.
-- GitHub variables in `prod` and `prod-backend`:
+- GitHub variables in `prod`:
   `CATCH_INSTAGRAM_ACCOUNT_ID=17841476918450741` and
   `CATCH_INSTAGRAM_HANDLE=catch_dates`. Leave them unset in dev and staging.
   `CATCH_INSTAGRAM_GRAPH_VERSION` is optional; the default is `v26.0`.
@@ -1945,7 +1942,7 @@ After a prod deploy that includes the webhook:
    story replies, Message controls, Connected tools, Allow access to messages.
 5. From an Instagram account with a role on the Meta app, send a message to
    @catch_dates. The webhook acknowledges it and logs nothing on success.
-6. Set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` in `prod` and `prod-backend`,
+6. Set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` in `prod`,
    then run Deploy backend for `prod` with `functions` set to
    `instagramClaimWebhook,getOrganizerClaimVerificationOptions,startOrganizerClaimVerification,confirmOrganizerClaimVerification`.
 

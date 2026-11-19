@@ -59,11 +59,11 @@ const discoverySources = new Set(["functions-param", "materialized-param",
   "github-variable", "dart-define", "remote-config-template"]);
 const environments = ["dev", "staging", "prod"];
 // GitHub environments whose variables feed each Firebase environment's builds
-// and deploys. Production promotion may approve through either backend env.
+// and deploys. Production Functions deploy through \`prod\`.
 const githubEnvironmentsFor = Object.freeze({
   dev: ["dev"],
   staging: ["staging"],
-  prod: ["prod", "prod-backend", "prod-hosting", "prod-mobile"],
+  prod: ["prod", "prod-hosting", "prod-mobile"],
 });
 
 export const surfaceIds = Object.freeze([
@@ -662,9 +662,8 @@ export function compareFunctionParams({repo, policy, liveParams, githubVariables
         }
       }
       const github = githubVariables?.byEnvironment;
-      const sourceEnv = env === "prod" ? "prod-backend" : env;
-      columns[`${env}:next`] = github?.[sourceEnv] === undefined ?
-        UNAVAILABLE : github[sourceEnv][name] ?? MISSING;
+      columns[`${env}:next`] = github?.[env] === undefined ?
+        UNAVAILABLE : github[env][name] ?? MISSING;
     }
     const row = classifySwitchRow({
       columns,

@@ -17159,6 +17159,54 @@ abstract class AppLocalizations {
   /// **'Checking your columns…'**
   String get hostsGuestListChecking;
 
+  /// Button next to the live check-in QR that opens the printable, join-only door poster.
+  ///
+  /// In en, this message translates to:
+  /// **'Door poster'**
+  String get hostsDoorPosterAction;
+
+  /// Title of the door poster sheet, and the subject when the poster image is shared.
+  ///
+  /// In en, this message translates to:
+  /// **'Door poster'**
+  String get hostsDoorPosterTitle;
+
+  /// Explains that the poster cannot check guests in by itself.
+  ///
+  /// In en, this message translates to:
+  /// **'Print it or show it at the entrance. Guests get ready while they queue; you still check them in with your live code or by hand.'**
+  String get hostsDoorPosterSubtitle;
+
+  /// Poster headline shown to guests above the QR code.
+  ///
+  /// In en, this message translates to:
+  /// **'On the guest list? Get ready here'**
+  String get hostsDoorPosterHeadline;
+
+  /// Poster line: what scanning the QR does for a guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan to confirm your phone and find your name.'**
+  String get hostsDoorPosterStepJoin;
+
+  /// Poster line: check-in still needs the host's live QR.
+  ///
+  /// In en, this message translates to:
+  /// **'At the door, scan the host’s live code to check in.'**
+  String get hostsDoorPosterStepCheckIn;
+
+  /// File name of the shared door poster image.
+  ///
+  /// In en, this message translates to:
+  /// **'catch-door-poster.png'**
+  String get hostsDoorPosterFileName;
+
+  /// Sheet button that shares the poster as an image to print or save.
+  ///
+  /// In en, this message translates to:
+  /// **'Share poster'**
+  String get hostsDoorPosterShare;
+
   /// CTA to create secure per-event email or WhatsApp roster-forwarding instructions.
   ///
   /// In en, this message translates to:
