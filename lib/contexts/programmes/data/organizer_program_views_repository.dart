@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/account/account.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_access_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/organizer_program_views.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/live_paged_query.dart';
+import 'package:catch_platform/streams/combine_latest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -18,11 +22,17 @@ part 'organizer_program_views_repository.g.dart';
 /// overview and rollup counts stay with those callables (server-trust).
 ///
 /// Rules admit the programme's creator, the organiser's current managers and a
-/// live programme administration duty. That authority is not only the access
-/// view's (an organiser manager who did not create the programme has none), so
-/// these reads are not gated on it: rules end them online.
+/// live programme administration duty, and end the reads online. Offline the
+/// phone applies the same authority from the account's access views, which
+/// carry the organiser manager flag (#2175): the detail is gated on its
+/// programme's view, and the list shows only the rows whose programme's view
+/// lists it.
 class OrganizerProgramViewsRepository {
-  const OrganizerProgramViewsRepository(this._firestore);
+  const OrganizerProgramViewsRepository(
+    this._firestore,
+    this._access,
+    this._clock,
+  );
 
   static const collection = 'organizerProgramViews';
 
@@ -31,6 +41,8 @@ class OrganizerProgramViewsRepository {
   static const maxRows = 500;
 
   final FirebaseFirestore _firestore;
+  final ProgramAccessRepository _access;
+  final AppClock _clock;
 
   static const _context = BackendErrorContext(
     service: BackendService.firestore,
@@ -38,7 +50,16 @@ class OrganizerProgramViewsRepository {
     resource: collection,
   );
 
-  Stream<Map<Object?, Object?>> watchProgramme(String programId) =>
+  /// One programme's setup view while the account may open it
+  /// ([ProgramAccessView.holdsSetup]).
+  Stream<Map<Object?, Object?>> watchProgramme(String programId, String uid) =>
+      _access.gatedSetup<Map<Object?, Object?>>(
+        programId,
+        uid,
+        data: (state) => _programme(programId),
+      );
+
+  Stream<Map<Object?, Object?>> _programme(String programId) =>
       withBackendErrorStream(
         () => _firestore
             .collection(collection)
@@ -52,8 +73,18 @@ class OrganizerProgramViewsRepository {
         context: _context,
       );
 
-  /// Every programme of [organizerId], soonest start first.
-  Stream<List<Map<Object?, Object?>>> watchProgrammes(String organizerId) {
+  /// Every programme of [organizerId], soonest start first, that the
+  /// account's own access views list ([ProgramAccessView.listsSetup]).
+  Stream<List<Map<Object?, Object?>>> watchProgrammes(
+    String organizerId,
+    String uid,
+  ) => combineLatest(
+    _programmes(organizerId),
+    _access.watchOrganizerViews(organizerId, uid, limit: maxRows),
+    (rows, views) => organizerProgramRowsListed(rows, views, _clock.now()),
+  );
+
+  Stream<List<Map<Object?, Object?>>> _programmes(String organizerId) {
     final rows = _firestore
         .collection(collection)
         .where('organizerId', isEqualTo: organizerId);
@@ -84,25 +115,43 @@ class OrganizerProgramViewsRepository {
 // keepalive: a stateless repository over account-free SDK singletons.
 @Riverpod(keepAlive: true)
 OrganizerProgramViewsRepository organizerProgramViewsRepository(Ref ref) =>
-    OrganizerProgramViewsRepository(ref.watch(firebaseFirestoreProvider));
+    OrganizerProgramViewsRepository(
+      ref.watch(firebaseFirestoreProvider),
+      ref.watch(programAccessRepositoryProvider),
+      ref.watch(appClockProvider),
+    );
 
 /// One programme's setup view, live.
 @riverpod
 Stream<Map<Object?, Object?>> organizerProgramViewStream(
   Ref ref,
   String programId,
-) => ref
-    .watch(organizerProgramViewsRepositoryProvider)
-    .watchProgramme(programId);
+) {
+  final uid = ref.watch(uidProvider).asData?.value;
+  if (uid == null || uid.isEmpty) {
+    return Stream.error(const SignInRequiredException('view the program'));
+  }
+  return ref
+      .watch(organizerProgramViewsRepositoryProvider)
+      .watchProgramme(programId, uid);
+}
 
 /// The organiser's programmes as lifecycle summaries, live.
 @riverpod
 Stream<List<OrganizerProgramSummary>> organizerProgramSummariesStream(
   Ref ref,
   String organizerId,
-) => ref
-    .watch(organizerProgramViewsRepositoryProvider)
-    .watchProgrammes(organizerId)
-    .map(
-      (rows) => [for (final row in rows) organizerProgramSummaryFromView(row)],
-    );
+) {
+  final uid = ref.watch(uidProvider).asData?.value;
+  if (uid == null || uid.isEmpty) {
+    return Stream.error(const SignInRequiredException('view your programs'));
+  }
+  return ref
+      .watch(organizerProgramViewsRepositoryProvider)
+      .watchProgrammes(organizerId, uid)
+      .map(
+        (rows) => [
+          for (final row in rows) organizerProgramSummaryFromView(row),
+        ],
+      );
+}

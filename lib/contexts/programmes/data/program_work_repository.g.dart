@@ -615,15 +615,17 @@ final class ProgramIdTrackerFamily extends $Family
 }
 
 /// One album (or every photo), live from `programPhotos` (#1339). The
-/// album names come from the work shell's functions; the signed URLs from
-/// the server, in calls of at most 60 photos.
+/// album names come from the programme's function labels, which the
+/// communications duty reads whatever its work list reaches (#2175); the
+/// signed URLs from the server, in calls of at most 60 photos.
 
 @ProviderFor(programPhotosView)
 final programPhotosViewProvider = ProgramPhotosViewFamily._();
 
 /// One album (or every photo), live from `programPhotos` (#1339). The
-/// album names come from the work shell's functions; the signed URLs from
-/// the server, in calls of at most 60 photos.
+/// album names come from the programme's function labels, which the
+/// communications duty reads whatever its work list reaches (#2175); the
+/// signed URLs from the server, in calls of at most 60 photos.
 
 final class ProgramPhotosViewProvider
     extends
@@ -636,8 +638,9 @@ final class ProgramPhotosViewProvider
         $FutureModifier<ProgramReadView<ProgramPhotos>>,
         $FutureProvider<ProgramReadView<ProgramPhotos>> {
   /// One album (or every photo), live from `programPhotos` (#1339). The
-  /// album names come from the work shell's functions; the signed URLs from
-  /// the server, in calls of at most 60 photos.
+  /// album names come from the programme's function labels, which the
+  /// communications duty reads whatever its work list reaches (#2175); the
+  /// signed URLs from the server, in calls of at most 60 photos.
   ProgramPhotosViewProvider._({
     required ProgramPhotosViewFamily super.from,
     required (String, String?) super.argument,
@@ -682,11 +685,12 @@ final class ProgramPhotosViewProvider
   }
 }
 
-String _$programPhotosViewHash() => r'4ee65e5a876336c20230a9adf582b60c6f3669d8';
+String _$programPhotosViewHash() => r'3201b0a2800e33e25d7bfafee3b2dbbf917b4bfb';
 
 /// One album (or every photo), live from `programPhotos` (#1339). The
-/// album names come from the work shell's functions; the signed URLs from
-/// the server, in calls of at most 60 photos.
+/// album names come from the programme's function labels, which the
+/// communications duty reads whatever its work list reaches (#2175); the
+/// signed URLs from the server, in calls of at most 60 photos.
 
 final class ProgramPhotosViewFamily extends $Family
     with
@@ -704,8 +708,9 @@ final class ProgramPhotosViewFamily extends $Family
       );
 
   /// One album (or every photo), live from `programPhotos` (#1339). The
-  /// album names come from the work shell's functions; the signed URLs from
-  /// the server, in calls of at most 60 photos.
+  /// album names come from the programme's function labels, which the
+  /// communications duty reads whatever its work list reaches (#2175); the
+  /// signed URLs from the server, in calls of at most 60 photos.
 
   ProgramPhotosViewProvider call(String programId, String? functionId) =>
       ProgramPhotosViewProvider._(

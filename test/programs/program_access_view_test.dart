@@ -93,6 +93,35 @@ void main() {
       expect(owner.listsHotel('any', at(5000)), isTrue);
     });
 
+    test('an organizer manager holds setup authority, never a duty', () {
+      final setupOnly = view({
+        ...raw(status: 'inactive', duties: {}, pickupScoped: {}),
+        'expiresAtMillis': null,
+        'organizerManager': true,
+      });
+      expect(setupOnly.organizerManager, isTrue);
+      expect(setupOnly.isLiveAt(at(1)), isFalse);
+      expect(
+        setupOnly.holdsDuty(ProgramStaffDuty.communications, at(1)),
+        false,
+      );
+      expect(setupOnly.holdsSetup(at(100000)), isTrue);
+      expect(setupOnly.listsSetup(at(100000)), isTrue);
+      expect(setupOnly.liveKeys(at(1)), {'organizerManager'});
+      // Views written before the flag read as no organizer management.
+      expect(view().organizerManager, isFalse);
+      // A programme administration duty opens the detail but lists nothing.
+      final admin = view(raw(duties: {'programAdmin': ms(at(60))}));
+      expect(admin.holdsSetup(at(59)), isTrue);
+      expect(admin.holdsSetup(at(60)), isFalse);
+      expect(admin.listsSetup(at(1)), isFalse);
+      // The creator holds both, with no end.
+      final owner = view(raw(role: 'manager'));
+      expect(owner.holdsSetup(at(100000)), isTrue);
+      expect(owner.listsSetup(at(100000)), isTrue);
+      expect(view().holdsSetup(at(1)), isFalse);
+    });
+
     test('revoked, expired and not-yet-approved views deny with a reason', () {
       expect(
         view(raw(status: 'inactive')).denialAt(at(1)),
@@ -153,6 +182,19 @@ void main() {
       final staff = view();
       expect(tracker.evaluate(staff, at(59)).epoch, 0);
       expect(tracker.evaluate(staff, at(60)).epoch, 1);
+    });
+
+    test('losing organizer management bumps the epoch', () {
+      final tracker = ProgramAccessTracker('p1');
+      final managing = view({
+        ...raw(status: 'inactive'),
+        'organizerManager': true,
+      });
+      final first = tracker.evaluate(managing, at(1));
+      expect(first.liveKeys, {'organizerManager'});
+      expect(first.isLive, isFalse, reason: 'no duty is live');
+      final second = tracker.evaluate(view(raw(status: 'inactive')), at(2));
+      expect(second.epoch, greaterThan(first.epoch));
     });
 
     test('revocation and a missing view deny and bump', () {

@@ -58,6 +58,95 @@ final class ProgramPhotoViewsRepositoryProvider
 String _$programPhotoViewsRepositoryHash() =>
     r'97606c0ce26e3cfe7b87bf16823d000bd494264b';
 
+/// The programme's functions, soonest first, live, for the album names.
+
+@ProviderFor(programPhotoFunctionsStream)
+final programPhotoFunctionsStreamProvider =
+    ProgramPhotoFunctionsStreamFamily._();
+
+/// The programme's functions, soonest first, live, for the album names.
+
+final class ProgramPhotoFunctionsStreamProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ProgramFunction>>,
+          List<ProgramFunction>,
+          Stream<List<ProgramFunction>>
+        >
+    with
+        $FutureModifier<List<ProgramFunction>>,
+        $StreamProvider<List<ProgramFunction>> {
+  /// The programme's functions, soonest first, live, for the album names.
+  ProgramPhotoFunctionsStreamProvider._({
+    required ProgramPhotoFunctionsStreamFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programPhotoFunctionsStreamProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programPhotoFunctionsStreamHash();
+
+  @override
+  String toString() {
+    return r'programPhotoFunctionsStreamProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<ProgramFunction>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<ProgramFunction>> create(Ref ref) {
+    final argument = this.argument as String;
+    return programPhotoFunctionsStream(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramPhotoFunctionsStreamProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programPhotoFunctionsStreamHash() =>
+    r'eb621c700c3ea8787d11d2ce84e4229f746522f3';
+
+/// The programme's functions, soonest first, live, for the album names.
+
+final class ProgramPhotoFunctionsStreamFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<ProgramFunction>>, String> {
+  ProgramPhotoFunctionsStreamFamily._()
+    : super(
+        retry: null,
+        name: r'programPhotoFunctionsStreamProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The programme's functions, soonest first, live, for the album names.
+
+  ProgramPhotoFunctionsStreamProvider call(String programId) =>
+      ProgramPhotoFunctionsStreamProvider._(argument: programId, from: this);
+
+  @override
+  String toString() => r'programPhotoFunctionsStreamProvider';
+}
+
 /// The programme's photo records, newest first, live.
 
 @ProviderFor(programPhotoRowsStream)
