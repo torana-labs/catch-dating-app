@@ -162,12 +162,12 @@ test("the reader masks fields, joins in chunks of 30 and skips organisers outsid
       {id: "lr-1", data: {requestType: "impersonation", status: "received", createdAt: {toMillis: () => now},
         target: {kind: "organizer", id: "lantern-lane-social-30", path: null}}},
       {id: "lr-2", data: {requestType: "copyright", status: "received", createdAt: {toMillis: () => now},
-        target: {kind: "url", id: null, path: "/indore/run-clubs/"}}},
+        target: {kind: "url", id: null, path: "/indore/studios/"}}},
     ],
     organizerClaimRequests: [{id: "c-1", data: {organizerId: "lantern-lane-social-0", status: "pending"}}],
     organizerIntakeFieldCorrections: [],
     listingSuppressions: [{id: "TD-0001", data: {active: true, blockedIntakeCount: 2, lastBlockedAtMillis: now}}],
-    cityPlans: [{id: "indore", data: {citySlug: "indore", formatPages: {runClubs: {indexing: "index, follow"},
+    cityPlans: [{id: "indore", data: {citySlug: "indore", formatPages: {quizNights: {indexing: "index, follow"},
       studios: {indexing: "noindex, follow"}}}}],
   });
   const read = await readListingProgramSources(db);
