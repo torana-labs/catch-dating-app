@@ -392,7 +392,7 @@
     ]
   },
   "nightPlanFormats": {
-    "description": "The try-it plan-a-night formats (#2062 C4, owner-accepted 19 Nov 2026): the playbook each card format uses, how guests are grouped, the default stop count, and which moment is the mixing moment. structureDefault groups use structureDefaults for the playbook's interaction model; rotation moments use that model's rotationIntervalMinutes.",
+    "description": "The try-it plan-a-night formats (#2062 C4, owner-accepted 19 Nov 2026): the playbook each card format uses, how guests are grouped, the default stop count, and which moment is the mixing moment. Pace groups scale with head count (owner decision, 19 Nov 2026: no cap); each is named by its pace band. structureDefault groups use structureDefaults for the playbook's interaction model; rotation moments use that model's rotationIntervalMinutes.",
     "formats": [
       {
         "format": "run",
@@ -401,12 +401,7 @@
           "kind": "paceGroups",
           "guestsPerGroup": 10,
           "minGroups": 1,
-          "maxGroups": 4,
-          "labels": [
-            "easy",
-            "steady",
-            "quick"
-          ]
+          "naming": "paceBand"
         },
         "defaultStops": null,
         "mixingMoment": {
