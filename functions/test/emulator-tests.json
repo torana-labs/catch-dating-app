@@ -129,5 +129,6 @@
   "lib/customDomains/domainRegistry.emulator.test.js",
   "lib/publicPages/rebuild.emulator.test.js",
   "lib/cityPlans/rebuild.emulator.test.js",
-  "lib/foundingHosts/foundingHostGrant.emulator.test.js"
+  "lib/foundingHosts/foundingHostGrant.emulator.test.js",
+  "lib/money/organizerReferrals.emulator.test.js"
 ]

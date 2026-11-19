@@ -6,6 +6,10 @@ import {onSchedule} from "firebase-functions/v2/scheduler";
 import {growthFactsCollection} from "../growth/organizerGrowthFacts";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {dayMillis} from "../money/hostTrial";
+import {
+  attachOrganizerReferralLogged,
+  defaultPhoneOf,
+} from "../money/organizerReferrals";
 import {validateFoundingHostOfferDocument} from
   "../shared/generated/validators/foundingHostOfferDocument";
 import {
@@ -39,8 +43,10 @@ export function gainedOwner(before: Record<string, unknown> | undefined,
 
 /**
  * A host starts on Catch when its organizer gains an owner, so that is when
- * it takes a founding place. Not retried on failure, like the growth
- * triggers; the daily reconcile takes any place this missed.
+ * it takes a founding place, and when a host referral naming it attaches
+ * (functions/src/money/organizerReferrals.ts), both before its trial starts.
+ * Not retried on failure, like the growth triggers; the daily reconciles
+ * take any place or referral this missed.
  */
 export const onFoundingHostOrganizerWritten = onDocumentWritten({
   document: "organizers/{organizerId}",
@@ -48,11 +54,26 @@ export const onFoundingHostOrganizerWritten = onDocumentWritten({
   if (!gainedOwner(event.data?.before.data(), event.data?.after.data())) {
     return;
   }
-  await takeFoundingHostPlaceLogged({db: admin.firestore(), now: Date.now}, {
-    organizerId: event.params.organizerId,
-    ownedAtMillis: Date.parse(event.time),
-    source: "ownershipTrigger",
-  });
+  const db = admin.firestore();
+  const organizerId = event.params.organizerId;
+  let failure: unknown = null;
+  try {
+    await takeFoundingHostPlaceLogged({db, now: Date.now}, {
+      organizerId, ownedAtMillis: Date.parse(event.time),
+      source: "ownershipTrigger",
+    });
+  } catch (error) {
+    failure = error;
+  }
+  // A referral attaches whether or not a founding place was taken; both
+  // write the longer of the two trials, so their order does not matter.
+  await attachOrganizerReferralLogged({db, now: Date.now,
+    phoneOf: defaultPhoneOf}, {organizerId, source: "ownershipTrigger"})
+    .catch((error) => {
+      logger.error("Host referral was not attached.", {organizerId,
+        error: error instanceof Error ? error.message : String(error)});
+    });
+  if (failure) throw failure;
 });
 
 /**

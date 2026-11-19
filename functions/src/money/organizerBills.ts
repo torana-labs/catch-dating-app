@@ -38,6 +38,11 @@ import {readOrganizerTrialStatus} from "./organizerBillingStatus";
 import {readBillingPlan} from "./organizerBillingPlan";
 import {prepareNominatorCredit} from "./nominatorCredits";
 import {
+  defaultPhoneOf,
+  prepareReferralReward,
+  reconcileOrganizerReferrals,
+} from "./organizerReferrals";
+import {
   autoSendToleranceMillis,
   checkedPointer,
   generateCycleBills,
@@ -160,6 +165,7 @@ async function actOnBill(deps: BillDeps, actor: AdminContext | null,
     let next: Bill = {...bill, revision: bill.revision + 1,
       updatedAtMillis: now};
     let credit: () => unknown = () => null;
+    let earned: () => unknown = () => null;
     if (action === "hold") {
       next = {...next, sendHold: {atMillis: now, byUid: actor?.uid ?? null,
         note}};
@@ -181,6 +187,7 @@ async function actOnBill(deps: BillDeps, actor: AdminContext | null,
       next = {...next, status: "paid", paidAtMillis: now,
         paidMinor: bill.totalMinor, paidVia: "manual"};
       credit = await prepareNominatorCredit(db, tx, next, now);
+      earned = await prepareReferralReward(db, tx, next, now);
     } else {
       next = {...next, status: "writtenOff", writtenOffAtMillis: now};
     }
@@ -191,6 +198,7 @@ async function actOnBill(deps: BillDeps, actor: AdminContext | null,
       actor?.uid ?? null, note)};
     tx.set(ref, checked(next));
     credit();
+    earned();
     if (actor && request) {
       setAdminAuditLogInTransaction(tx, db, actor, {
         action: `adminManageOrganizerBills.${action}`, targetPath: ref.path,
@@ -389,8 +397,10 @@ export async function markBillPaidFromInvoice(
       revision: bill.revision + 1, updatedAtMillis: now,
       history: withHistory(bill, "paid", now, null, "Paid by invoice")};
     const credit = await prepareNominatorCredit(db, tx, next, now);
+    const earned = await prepareReferralReward(db, tx, next, now);
     tx.set(ref, checked(next));
     credit();
+    earned();
     return true;
   });
 }
@@ -423,8 +433,10 @@ export async function markBillPaidFromLink(
       revision: bill.revision + 1, updatedAtMillis: now,
       history: withHistory(bill, "paid", now, null, "Paid by payment link")};
     const credit = await prepareNominatorCredit(db, tx, next, now);
+    const earned = await prepareReferralReward(db, tx, next, now);
     tx.set(ref, checked(next));
     credit();
+    earned();
     return true;
   });
 }
@@ -561,14 +573,25 @@ export const adminManageOrganizerBills = onCall(
   (request) => adminManageOrganizerBillsHandler(request));
 
 /**
- * Once a day, India time: every cycle that closed is billed in arrears, then
- * every cycle bill due to go out automatically is sent. Until staff have sent
+ * Once a day, India time: host referrals the ownership trigger missed are
+ * attached, every cycle that closed is billed in arrears, then every cycle
+ * bill due to go out automatically is sent. Until staff have sent
  * two of a host's cycle bills, its bills wait for staff instead.
  */
 export const generateOrganizerCycleBillsDaily = onSchedule({
   schedule: "15 6 * * *", timeZone: "Asia/Kolkata", timeoutSeconds: 540,
   maxInstances: 1, secrets: [razorpayKeySecret],
 }, async () => {
+  // Host referrals the ownership trigger missed attach first, so a referred
+  // host's longer trial is in place before any cycle is anchored.
+  const referrals = await reconcileOrganizerReferrals({
+    db: defaultBillDeps.db(), now: defaultBillDeps.now,
+    phoneOf: defaultPhoneOf}).catch((error) => {
+    logger.error("Host referrals were not reconciled.", {
+      error: error instanceof Error ? error.message : String(error)});
+    return null;
+  });
+  if (referrals) logger.info("Host referrals reconciled.", referrals);
   const written = await generateCycleBills(defaultBillDeps, null);
   const sent = await sendDueCycleBills(defaultBillDeps);
   logger.info("Organizer cycle bills made and sent.", {written, sent});

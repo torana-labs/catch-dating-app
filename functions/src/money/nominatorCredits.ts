@@ -28,6 +28,7 @@ import {
   type MoneySettings,
 } from "./billComputation";
 import {moneyRoles, readMoneySettings} from "./moneySettings";
+import {organizerReferralsCollection} from "./organizerReferrals";
 
 export const nominatorCreditsCollection = "nominatorCredits";
 const dayMillis = 24 * 60 * 60 * 1000;
@@ -49,10 +50,17 @@ export function creditForPaidBill(input: {
   firstPaidMonth: string;
   rule: MoneySettings["nominatorCredit"];
   nowMillis: number;
+  /** The host who referred the organizer, when a host referral attached. */
+  hostReferrerUid?: string | null;
 }): NominatorCreditDocument | null {
   const {bill, facts, rule} = input;
   const nominator = facts?.nominator;
   if (!nominator || !rule.earningRoles.includes(nominator.role)) return null;
+  // A host who referred the organizer earns a free month instead of cash
+  // (owner, 19 Nov 2026: no cash payouts for host referrals).
+  if (input.hostReferrerUid && nominator.uid === input.hostReferrerUid) {
+    return null;
+  }
   const claimedAt = facts.milestones.claimedAt?.toMillis();
   if (claimedAt === undefined || claimedAt - nominator.nominatedAt.toMillis() >
     rule.lapseDays * dayMillis) return null;
@@ -85,20 +93,25 @@ export async function prepareNominatorCredit(db: Db, tx: Tx,
   bill: OrganizerBillDocument, nowMillis: number):
   Promise<() => NominatorCreditDocument | null> {
   const creditRef = db.collection(nominatorCreditsCollection).doc(bill.billId);
-  const [facts, paidBills, existing, {settings}] = await Promise.all([
-    tx.get(db.collection(growthFactsCollection).doc(bill.organizerId)),
-    tx.get(db.collection("organizerBills")
-      .where("organizerId", "==", bill.organizerId)
-      .where("status", "==", "paid")),
-    tx.get(creditRef),
-    readMoneySettings(db, tx),
-  ]);
+  const [facts, paidBills, existing, {settings}, referral] =
+    await Promise.all([
+      tx.get(db.collection(growthFactsCollection).doc(bill.organizerId)),
+      tx.get(db.collection("organizerBills")
+        .where("organizerId", "==", bill.organizerId)
+        .where("status", "==", "paid")),
+      tx.get(creditRef),
+      readMoneySettings(db, tx),
+      tx.get(db.collection(organizerReferralsCollection)
+        .doc(bill.organizerId)),
+    ]);
   if (existing.exists) return () => null;
   const months = [bill.month, ...paidBills.docs.map((doc) =>
     String(doc.data().month))].sort();
   const credit = creditForPaidBill({bill,
     facts: facts.data() as OrganizerGrowthFactsDocument | undefined,
-    firstPaidMonth: months[0], rule: settings.nominatorCredit, nowMillis});
+    firstPaidMonth: months[0], rule: settings.nominatorCredit, nowMillis,
+    hostReferrerUid: referral.exists ?
+      String(referral.data()?.referrerUid ?? "") || null : null});
   return () => {
     if (!credit) return null;
     if (!validateNominatorCreditDocument(credit)) {
