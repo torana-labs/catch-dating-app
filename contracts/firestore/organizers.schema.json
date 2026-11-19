@@ -593,6 +593,11 @@
       },
       "x-catch-ownership": "server-only"
     },
+    "listingProgram": {
+      "$ref": "../shared/listing_program_common.schema.json#/definitions/listingProgram",
+      "description": "The programmatic listing cohort this organizer was approved into ({cohortId, approvedAt}). Written only by listing approval (adminApproveOrganizerListing); absent for every organizer approved without a cohort or made any other way.",
+      "x-catch-ownership": "server-only"
+    },
     "intakeLearningSource": {
       "type": "object",
       "additionalProperties": false,

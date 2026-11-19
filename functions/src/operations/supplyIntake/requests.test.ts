@@ -29,7 +29,8 @@ function nominationRequest(uid: string | null, data: Record<string, unknown>,
 
 const payload = (overrides: Record<string, unknown> = {}) => ({
   requestId: "nomination-001", name: "Moonmoth", market: "Mumbai",
-  urls: ["https://lu.ma/moonmoth"], notes: "Weekly socials in Bandra.", categories: ["social"], ...overrides,
+  urls: ["https://lu.ma/moonmoth"], notes: "Weekly socials in Bandra.", categories: ["social"],
+  formats: ["runClubs", "quizNights"], ...overrides,
 });
 
 function deps(db: FakeFirestore) {
@@ -73,6 +74,36 @@ test("nominations need a sales or admin role and a name or a link", async () => 
     payload({urls: ["javascript:alert(1)"]})), deps(db)));
   const admin = await adminNominateOrganizerHandler(nominationRequest("admin-1", payload(), {admin: true}), deps(db));
   assert.equal(admin.created, true);
+});
+
+test("a nomination names at least one format, which travels as its intake categories", async () => {
+  const db = new FakeFirestore();
+  const response = await adminNominateOrganizerHandler(nominationRequest("associate-1", payload()), deps(db));
+  const stored = db.read(`supplyIntakeRequests/${response.requestId}`) as {request: {seed: {categories: string[]}}};
+  assert.deepEqual(stored.request.seed.categories, ["quiz_nights", "run_clubs", "social"]);
+  await assert.rejects(adminNominateOrganizerHandler(nominationRequest("associate-1",
+    payload({requestId: "nomination-002", formats: undefined})), deps(db)), /at least one format/u);
+  await assert.rejects(adminNominateOrganizerHandler(nominationRequest("associate-1",
+    payload({requestId: "nomination-003", formats: []})), deps(db)));
+  // Nightlife (and singles, which has no format) is never a programmatic format.
+  await assert.rejects(adminNominateOrganizerHandler(nominationRequest("associate-1",
+    payload({requestId: "nomination-004", formats: ["nightlife"]})), deps(db)));
+});
+
+test("a paused listing programme refuses every nomination and queues nothing", async () => {
+  const db = new FakeFirestore();
+  db.write("listingProgramSettings/platform", {schemaVersion: 1, settingsId: "platform", revision: 1, paused: true,
+    reason: "Legal notice received; paused while counsel reviews.", updatedAtMillis: NOW.getTime(), updatedByUid: "owner-1"});
+  await assert.rejects(adminNominateOrganizerHandler(nominationRequest("associate-1", payload()), deps(db)),
+    /paused \(Settings → Intake\): Legal notice received; paused while counsel reviews\. Nothing was queued\./u);
+  assert.equal(db.entries().filter(([path]) => path.startsWith("supplyIntakeRequests/")).length, 0);
+  // A switch that fails its contract fails closed.
+  db.write("listingProgramSettings/platform", {paused: false});
+  await assert.rejects(adminNominateOrganizerHandler(nominationRequest("associate-1", payload()), deps(db)), /paused/u);
+  // Resumed, the same nomination queues.
+  db.write("listingProgramSettings/platform", {schemaVersion: 1, settingsId: "platform", revision: 2, paused: false,
+    reason: "Counsel cleared the notice; resuming.", updatedAtMillis: NOW.getTime(), updatedByUid: "owner-1"});
+  assert.equal((await adminNominateOrganizerHandler(nominationRequest("associate-1", payload()), deps(db))).created, true);
 });
 
 test("website host applications and partner nominations become intake requests", () => {

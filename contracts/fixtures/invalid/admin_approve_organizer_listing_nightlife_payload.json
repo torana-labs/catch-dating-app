@@ -1,0 +1,30 @@
+{
+  "requestId": "approve-lantern-1",
+  "listingWorkItemId": "supply-intake-listing-lantern",
+  "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "name": "Lantern Trail Runners",
+  "publicSlug": "lantern-trail-runners",
+  "marketId": "in-mp-indore",
+  "organizerType": "club",
+  "checklist": {
+    "identityReviewed": true,
+    "surfaceInventoryReviewed": true,
+    "ownerSafeCopyReviewed": true,
+    "marketScopeReviewed": true,
+    "mediaRightsReviewed": true,
+    "crawlDisabledReviewed": true,
+    "claimTargetReviewed": true,
+    "takedownPathReviewed": true,
+    "impersonationReviewed": true,
+    "cityEvidenceReviewed": true,
+    "formatsReviewed": true,
+    "datingFramingReviewed": true,
+    "personalDataReviewed": true
+  },
+  "formats": [
+    "nightlife"
+  ],
+  "cohortId": "pilot-indore-1",
+  "salesRecords": false,
+  "note": "City from its Luma events; formats from its calendar."
+}

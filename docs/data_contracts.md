@@ -5890,6 +5890,51 @@ including tax, and `taxPaise`, the GST within it) from the provider's payment
 entity on booking and checkout `guestPayments`. It is written once, when the capture is first observed
 with a reported fee; refunds stay in each record's existing refund fields.
 
+## Programmatic Listings
+
+Programmatic listings are the organizer pages Catch sources itself (an Admin or
+message nomination, or discovery) and staff approve through
+`adminApproveOrganizerListing` (owner decisions, 19 Nov 2026). An organizer's
+own submission and a website instant draft are not programmatic; none of the
+rules below apply to them.
+
+- **Formats.** `contracts/shared/listing_program_common.schema.json#/definitions/format`
+  is every city-by-format page format (`functions/src/cityPlans/discoveryFormats.ts`)
+  except `nightlife`; singles has no format of its own (owner decision 10).
+  `adminNominateOrganizer` requires at least one (`formats`, at most four) and
+  carries them to the listing as Supply Intake categories (`run_clubs`,
+  `quiz_nights`). Staff approval of a programmatic listing requires the
+  reviewer's `formats` and writes their page labels to
+  `organizers.publicProfile.formats`, with the first as `publicCategoryLabel`,
+  so `cityPlansModel.ts` counts the organizer toward those format pages.
+  Auto-publishing takes the formats its categories name. Without formats an
+  approval writes the listing's categories, as before.
+- **Checklist.** Staff approval of a programmatic listing also requires
+  `cityEvidenceReviewed` (the city comes from the organizer's events or own
+  pages, not from the nominator), `formatsReviewed`, `datingFramingReviewed`
+  and `personalDataReviewed` (no founder names or personal numbers). They are
+  optional `const: true` items in the approval payload and optional booleans on
+  `organizerIntakeReviewDecisions/{entityId}.checklist`; the gate is
+  `assertProgrammaticListingChecklist` in `supplyVisibilityPolicy.ts`.
+- **Cohort.** `organizers/{organizerId}.listingProgram` is
+  `{cohortId, approvedAt}`, server-only, written once by the approval
+  transaction when the reviewer names a `cohortId` (Admin suggests
+  `pilot-indore-1`). A cohort is refused for a non-programmatic listing. It is
+  absent on every other organizer and is never copied to `publicOrganizers`.
+  A cohort approval opens no Sales account, opportunity, tasks or activity
+  unless the payload sets `salesRecords: true` (owner decision 9).
+- **Pause switch.** `listingProgramSettings/platform` (`paused`, `reason`,
+  `revision`, `updatedAtMillis`, `updatedByUid`) is server-only and written
+  only by `adminManageListingProgram`; absent means running. While it is
+  paused, or when a stored document fails its contract, `adminNominateOrganizer`
+  refuses every nomination and listing approval refuses every programmatic
+  listing with `failed-precondition` (`details.reason: listing_program_paused`)
+  and writes nothing; both read the switch inside their transaction. A replay
+  of an approval made before the pause still answers. Ops may pause; only the
+  owner roles may resume. The same callable's `format_report` action counts
+  live organizers by city with and without a format the city pages count
+  (counts only, at most 5,000 organizers read).
+
 ## Organizer Bills And Nominator Credit
 
 `organizerBills/{billId}` is Catch's bill to one organizer for one billing
