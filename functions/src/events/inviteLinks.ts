@@ -133,20 +133,8 @@ export async function createEventInviteLinkHandler(
   const destinationKind = payload.destinationKind ?? "catchEvent";
 
   await db.runTransaction(async (tx) => {
-    const eventSnap = await tx.get(eventRef);
-    if (!eventSnap.exists) {
-      throw new HttpsError("not-found", "Event not found.");
-    }
-    const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-    const organizerSnap = await tx.get(eventOrganizerRef(db, event));
-    const organizer = requireEventOrganizer(organizerSnap, event);
-    if (!isEventOrganizerManager(organizer, event, hostUid)) {
-      throw new HttpsError(
-        "permission-denied",
-        "Only an organizer manager can create invite links."
-      );
-    }
-    const organizerId = event.organizerId;
+    const {event, organizerId} = await authorizeInviteLinkManager(tx, db,
+      eventRef, hostUid);
     const intendedRecipientContactId = stringOrNull(
       payload.intendedRecipientContactId
     );
@@ -196,27 +184,92 @@ export async function createEventInviteLinkHandler(
       );
     }
 
-    const now = deps.serverTimestamp();
-    tx.create(inviteRef, {
-      eventId: payload.eventId,
-      organizerId,
-      hostUid,
-      label,
-      source,
-      tokenHash: inviteLinkTokenHash(inviteToken),
-      contractVersion: 2,
-      linkKind,
-      ownerContactId: null,
-      ownerUid: null,
-      intendedRecipientContactId,
+    const documents = hostInviteLinkDocuments({
+      eventId: payload.eventId, organizerId, hostUid, label, source,
+      inviteToken, linkKind, destinationKind, intendedRecipientContactId,
       campaignId: stringOrNull(payload.campaignId),
-      issuanceChannel: "hostApp",
-      destinationKind,
-      tokenVersion: 2,
       attributionWindowEndsAt: admin.firestore.Timestamp.fromMillis(
         deps.timestamp().toMillis() + (payload.attributionWindowDays ?? 30) *
           24 * 60 * 60 * 1000
       ),
+      now: deps.serverTimestamp(),
+    });
+    tx.create(inviteRef, documents.link);
+    tx.create(secretRef, documents.secret);
+  });
+
+  return {
+    inviteLinkId: inviteRef.id,
+    inviteToken,
+    eventId: payload.eventId,
+    label,
+    source,
+  };
+}
+
+/**
+ * Reads the event and its organizer in the transaction and checks the caller
+ * manages it: the authority every host-issued invite link needs.
+ */
+export async function authorizeInviteLinkManager(
+  tx: FirebaseFirestore.Transaction,
+  db: FirebaseFirestore.Firestore,
+  eventRef: FirebaseFirestore.DocumentReference,
+  hostUid: string
+): Promise<{event: EventDocument; organizerId: string}> {
+  const eventSnap = await tx.get(eventRef);
+  if (!eventSnap.exists) {
+    throw new HttpsError("not-found", "Event not found.");
+  }
+  const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+  const organizerSnap = await tx.get(eventOrganizerRef(db, event));
+  const organizer = requireEventOrganizer(organizerSnap, event);
+  if (!isEventOrganizerManager(organizer, event, hostUid)) {
+    throw new HttpsError(
+      "permission-denied",
+      "Only an organizer manager can create invite links."
+    );
+  }
+  return {event, organizerId: event.organizerId};
+}
+
+/**
+ * The invite link document and its secret for one host-issued link, with
+ * every counter at zero. Pure: the caller creates both in its transaction.
+ */
+export function hostInviteLinkDocuments(params: {
+  eventId: string;
+  organizerId: string;
+  hostUid: string;
+  label: string;
+  source: string | null;
+  inviteToken: string;
+  linkKind: NonNullable<EventInviteLinkDocument["linkKind"]>;
+  destinationKind: string;
+  intendedRecipientContactId: string | null;
+  campaignId: string | null;
+  attributionWindowEndsAt: FirebaseFirestore.Timestamp;
+  now: FirebaseFirestore.FieldValue;
+}): {link: Record<string, unknown>; secret: Record<string, unknown>} {
+  const {now} = params;
+  return {
+    link: {
+      eventId: params.eventId,
+      organizerId: params.organizerId,
+      hostUid: params.hostUid,
+      label: params.label,
+      source: params.source,
+      tokenHash: inviteLinkTokenHash(params.inviteToken),
+      contractVersion: 2,
+      linkKind: params.linkKind,
+      ownerContactId: null,
+      ownerUid: null,
+      intendedRecipientContactId: params.intendedRecipientContactId,
+      campaignId: params.campaignId,
+      issuanceChannel: "hostApp",
+      destinationKind: params.destinationKind,
+      tokenVersion: 2,
+      attributionWindowEndsAt: params.attributionWindowEndsAt,
       openCount: 0,
       likelyHumanOpenCount: 0,
       shareIntentCount: 0,
@@ -233,24 +286,16 @@ export async function createEventInviteLinkHandler(
       disabledAt: null,
       createdAt: now,
       updatedAt: now,
-    });
-    tx.create(secretRef, {
-      eventId: payload.eventId,
-      organizerId,
-      token: inviteToken,
-      tokenHash: inviteLinkTokenHash(inviteToken),
+    },
+    secret: {
+      eventId: params.eventId,
+      organizerId: params.organizerId,
+      token: params.inviteToken,
+      tokenHash: inviteLinkTokenHash(params.inviteToken),
       tokenVersion: 2,
       createdAt: now,
       updatedAt: now,
-    });
-  });
-
-  return {
-    inviteLinkId: inviteRef.id,
-    inviteToken,
-    eventId: payload.eventId,
-    label,
-    source,
+    },
   };
 }
 
