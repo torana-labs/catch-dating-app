@@ -43,6 +43,12 @@ export interface StoredTryItWorkspace {
    * written before 19 Nov 2026.
    */
   tryItEventIds?: string[];
+  /**
+   * Private draft forms try-it commands made in this workspace
+   * (form.import-from-link), newest last. Absent on records written before
+   * that command existed. Kept to MAX_TRY_IT_EVENTS like events.
+   */
+  tryItFormIds?: string[];
 }
 
 /** At most this many try-it draft events are tracked per workspace. */
@@ -141,13 +147,24 @@ export async function stageTryItWorkspace(
     organizerName: string; marketId: string;
     serverTimestamp: () => FirebaseFirestore.FieldValue;
     /** A private draft event this command made, recorded as try-it. */
-    draftEventId?: string}
+    draftEventId?: string;
+    /** A private draft form this command made, recorded as try-it. */
+    draftFormId?: string}
 ): Promise<StoredTryItWorkspace> {
   const at = params.now.toISOString();
   const pointerRef = db.collection(TRY_IT_WORKSPACES).doc(params.uid);
-  const withEvent = (record: StoredTryItWorkspace): StoredTryItWorkspace =>
-    params.draftEventId ? {...record, tryItEventIds: withTryItEvent(
-      record.tryItEventIds, params.draftEventId)} : record;
+  const withEvent = (record: StoredTryItWorkspace): StoredTryItWorkspace => {
+    let next = record;
+    if (params.draftEventId) {
+      next = {...next, tryItEventIds: withTryItEvent(
+        next.tryItEventIds, params.draftEventId)};
+    }
+    if (params.draftFormId) {
+      next = {...next, tryItFormIds: withTryItEvent(
+        next.tryItFormIds, params.draftFormId)};
+    }
+    return next;
+  };
   if (lookup.kind === "existing") {
     const touched: StoredTryItWorkspace = withEvent({...lookup.pointer,
       lastCommandAt: at,
