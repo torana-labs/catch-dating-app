@@ -6357,7 +6357,19 @@ organisers in the city and whether the city is `live` or `launchingSoon`
   organisers or 5 or more upcoming plans in the format (owner decision, 16 Nov
   2026), whether or not the city has launched (owner decision, 17 Nov 2026).
   A city that has not launched counts the published organisers joining it and
-  no plans, so only its organiser count can reach the bar. The 13 formats and their explicit activity-kind and
+  no plans, so only its organiser count can reach the bar. The owner can keep
+  every format page out of search, whatever its counts, with the server-only
+  `config/discoveryIndexing` document (listings plan B6, 19 Nov 2026): with
+  `forceNoindex: true` every rebuild stores `indexing: noindex, follow`, which
+  also drops the page from the sitemap; with no document or
+  `forceNoindex: false` the bar decides. To flip it, open Firestore in the
+  Firebase console for the project, create or edit `config/discoveryIndexing`,
+  set the boolean `forceNoindex` (optionally a `reason` string, `updatedAt`
+  timestamp and `updatedBy`), and save; the hourly rebuild applies it within 60
+  minutes, sooner for a city whose organiser page changes. Any other shape is
+  read as on, so a malformed switch fails closed. Clients cannot read it
+  (`match /config/{docId}`); `functions/src/cityPlans/indexingOverride.ts`
+  owns the shape. The 13 formats and their explicit activity-kind and
   keyword tables are in `functions/src/cityPlans/discoveryFormats.ts`. Plans
   and organisers carry the `discoveryFormats` they count toward and their
   resolved `womenLed` label, and `womenLedPlanCount` counts the women-led plans
