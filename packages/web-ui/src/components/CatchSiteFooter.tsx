@@ -1,4 +1,4 @@
-import type {ReactNode} from "react";
+import {useEffect, useRef, type ReactNode, type RefObject} from "react";
 import {CatchWordmark} from "./CatchWordmark";
 import styles from "./CatchSiteFooter.module.css";
 
@@ -9,14 +9,21 @@ export interface CatchSiteFooterLink {
   note?: string;
 }
 
+/**
+ * An item that does something on the page instead of going somewhere, such as
+ * the site's "Privacy choices", which reopens the consent banner. The footer
+ * draws it exactly as it draws its links.
+ */
+export interface CatchSiteFooterAction {
+  label: string;
+  onPressed: () => void;
+}
+
 export interface CatchSiteFooterGroup {
   title: string;
   links: readonly CatchSiteFooterLink[];
-  /**
-   * A control after the links, drawn in the links' type and colour, such as
-   * the site's "Privacy choices" at the end of Help and legal.
-   */
-  trailing?: ReactNode;
+  /** One action after the links, such as "Privacy choices" at the end of Help and legal. */
+  action?: CatchSiteFooterAction;
 }
 
 /** How many link columns a wide page shows. */
@@ -26,7 +33,12 @@ export interface CatchSiteFooterProps {
   brandHref: string;
   /** The wordmark, such as "Catch". */
   brandLabel: string;
-  /** In `columns` columns on a wide page, two on a phone; none leaves out the navigation. */
+  /**
+   * Side by side in `columns` columns when every column is wide enough for
+   * its longest link; on narrower pages the groups flow down as many columns
+   * as fit, each group starting where the one above it ends, and two on a
+   * phone. None leaves out the navigation.
+   */
   groups: readonly CatchSiteFooterGroup[];
   /** The accessible name of the footer navigation, such as "Footer". */
   navLabel: string;
@@ -38,7 +50,7 @@ export interface CatchSiteFooterProps {
   note?: string;
   /** Called when a link is followed, such as to record the click. */
   onLinkPressed?: (link: CatchSiteFooterLink) => void;
-  /** Link columns on a wide page; defaults to 4. On a phone there are always two. */
+  /** Link columns on a wide page; defaults to 4. Narrower pages flow the groups into fewer columns, and a phone always has two. */
   columns?: CatchSiteFooterColumns;
   /**
    * The top band's title, such as a help line, set at the canvas's 22px. With
@@ -57,9 +69,55 @@ export interface CatchSiteFooterProps {
 }
 
 /**
+ * Sizes the link columns from their content. Each column is as narrow as the
+ * longest link or group title on one line, measured in the page's own font
+ * (`--catch-site-footer-column-min`), so adding or renaming a link needs no
+ * other change. When every group fits side by side at that width the groups
+ * sit in one row (`data-layout="row"`); otherwise they flow down as many
+ * columns as fit. It measures again when the footer resizes or a web font
+ * arrives. Before it runs (server render, no ResizeObserver) the groups flow
+ * at the canvas's column width.
+ */
+function useContentSizedColumns(navRef: RefObject<HTMLElement | null>, columns: number, groups: readonly CatchSiteFooterGroup[]) {
+  useEffect(() => {
+    const nav = navRef.current;
+    const context = typeof document === "undefined" ? null : document.createElement("canvas").getContext?.("2d");
+    if (!nav || !context || typeof ResizeObserver === "undefined") return;
+    let frame = 0;
+    const measure = () => {
+      let longest = 0;
+      for (const item of nav.querySelectorAll<HTMLElement>(`.${styles.heading}, .${styles.link}`)) {
+        const style = getComputedStyle(item);
+        context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        longest = Math.max(longest, context.measureText(item.textContent ?? "").width);
+      }
+      if (longest === 0) return;
+      const width = Math.ceil(longest) + 1;
+      const flow = nav.firstElementChild;
+      const gap = flow ? Number.parseFloat(getComputedStyle(flow).columnGap) || 0 : 0;
+      nav.style.setProperty("--catch-site-footer-column-min", `${width}px`);
+      nav.dataset.layout = nav.clientWidth >= columns * width + (columns - 1) * gap ? "row" : "flow";
+    };
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    };
+    measure();
+    const observer = new ResizeObserver(schedule);
+    observer.observe(nav);
+    document.fonts?.addEventListener("loadingdone", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      document.fonts?.removeEventListener("loadingdone", schedule);
+    };
+  }, [navRef, columns, groups]);
+}
+
+/**
  * The design canvas's site footer (playbook KitFooter, `.pg .foot`): an inset
  * card on the ink ground with 36px corners (28px on phones). An optional top
- * band over a hairline, titled link columns, optional footnotes, the giant
+ * band over a hairline, titled link groups, optional footnotes, the giant
  * coral wordmark across the card, and the legal line under it.
  */
 export function CatchSiteFooter({
@@ -77,6 +135,8 @@ export function CatchSiteFooter({
   onLinkPressed,
   tagline,
 }: CatchSiteFooterProps) {
+  const navRef = useRef<HTMLElement>(null);
+  useContentSizedColumns(navRef, columns, groups);
   const top = headerTitle != null || headerActions != null ? (
     <div className={styles.top}>
       {headerTitle != null ? <h2 className={styles.title}>{headerTitle}</h2> : null}
@@ -88,23 +148,29 @@ export function CatchSiteFooter({
       <div className={styles.card}>
         {top}
         {groups.length > 0 ? (
-          <nav aria-label={navLabel} className={styles.groups} data-columns={columns}>
-            {groups.map((group) => (
-              <div key={group.title}>
-                <h2 className={styles.heading}>{group.title}</h2>
-                <ul className={styles.links}>
-                  {group.links.map((link) => (
-                    <li key={`${link.href}-${link.label}`}>
-                      <a className={styles.link} href={link.href} onClick={onLinkPressed ? () => onLinkPressed(link) : undefined}>
-                        {link.label}
-                        {link.note ? <>{" "}<span className={styles.note}>{`· ${link.note}`}</span></> : null}
-                      </a>
-                    </li>
-                  ))}
-                  {group.trailing ? <li className={styles.link}>{group.trailing}</li> : null}
-                </ul>
-              </div>
-            ))}
+          <nav aria-label={navLabel} className={styles.groups} data-columns={columns} ref={navRef}>
+            <div className={styles.flow}>
+              {groups.map((group) => (
+                <div className={styles.group} key={group.title}>
+                  <h2 className={styles.heading}>{group.title}</h2>
+                  <ul className={styles.links}>
+                    {group.links.map((link) => (
+                      <li key={`${link.href}-${link.label}`}>
+                        <a className={styles.link} href={link.href} onClick={onLinkPressed ? () => onLinkPressed(link) : undefined}>
+                          {link.label}
+                          {link.note ? <>{" "}<span className={styles.note}>{`· ${link.note}`}</span></> : null}
+                        </a>
+                      </li>
+                    ))}
+                    {group.action ? (
+                      <li>
+                        <button className={styles.link} onClick={group.action.onPressed} type="button">{group.action.label}</button>
+                      </li>
+                    ) : null}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </nav>
         ) : null}
         {footnotes.length > 0 ? (

@@ -7,9 +7,14 @@
  *   corners, on the ink ground; 8px insets and 28px corners on phones;
  * - padding 64px above and 40px below, and at least 72px at the sides, more
  *   once the page is wider than the 1200px content;
- * - a top band over a hairline: a 22px title and 38px pill buttons;
- * - link columns 24px apart with 15px bold titles and 14px links on a 2.0
- *   row rhythm; two columns 28px apart on phones;
+ * - a top band over a hairline: a 22px title and 38px pill buttons, side
+ *   by side while they fit;
+ * - link groups with 15px bold titles and 14px links on a 28px row, their
+ *   wrapped lines at 1.4 so a two-line link reads as one. Columns are as
+ *   narrow as the longest link or title (measured by the component); the
+ *   groups sit side by side when they all fit, and otherwise flow down as
+ *   many columns as fit, 24px apart, each group starting 32px under the one
+ *   above it. Two flowing columns on phones;
  * - the giant coral wordmark, 120px to 330px with the page width (31% of it
  *   on phones), then the 12px legal line.
  *
@@ -84,15 +89,41 @@
   color: var(--catch-palette-white);
 }
 
+/*
+ * The groups flow down columns: each column is at least as wide as the
+ * longest link or title, which the component measures into
+ * --catch-site-footer-column-min (the canvas's width until it has), and
+ * each group starts right where the one above it ends. The negative margin
+ * takes back the last group's space so the columns end flush.
+ */
 .groups {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--catch-space-s6);
+  --catch-site-footer-columns: 4;
 }
 
-.groups[data-columns="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.groups[data-columns="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.groups[data-columns="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.groups[data-columns="2"] { --catch-site-footer-columns: 2; }
+.groups[data-columns="3"] { --catch-site-footer-columns: 3; }
+.groups[data-columns="5"] { --catch-site-footer-columns: 5; }
+
+.flow {
+  columns: var(--catch-site-footer-column-min, var(--catch-website-footer-column-min));
+  column-gap: var(--catch-space-s6);
+  margin-bottom: calc(-1 * var(--catch-space-s8));
+}
+
+.group {
+  break-inside: avoid;
+  padding-bottom: var(--catch-space-s8);
+}
+
+/* Every group fits side by side at its measured width: one row of `columns` columns. */
+.groups[data-layout="row"] .flow {
+  display: grid;
+  grid-template-columns: repeat(var(--catch-site-footer-columns), minmax(0, 1fr));
+  gap: var(--catch-space-s6);
+  margin-bottom: 0;
+}
+
+.groups[data-layout="row"] .group { padding-bottom: 0; }
 
 .heading {
   margin: 0 0 var(--catch-space-micro14);
@@ -107,17 +138,35 @@
   list-style: none;
 }
 
+/*
+ * A link, or an action drawn exactly as one (a button with every button
+ * style cleared). The padding keeps a one-line link on a 28px row while a
+ * wrapped link's lines sit at the tighter leading.
+ */
 .link {
   display: block;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: var(--catch-website-footer-link-pad-block) 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  appearance: none;
   color: var(--catch-ground-ink-ink-secondary);
+  font-family: inherit;
   font-size: var(--catch-typography-role-body-small-size);
+  font-weight: inherit;
+  letter-spacing: inherit;
   line-height: var(--catch-website-footer-link-line-height);
+  text-align: start;
   text-decoration: none;
+  cursor: pointer;
 }
 
-a.link:hover { color: var(--catch-ground-ink-ink); }
+.link:hover { color: var(--catch-ground-ink-ink); }
 
-a.link:focus-visible {
+.link:focus-visible {
   border-radius: var(--catch-radius-xs);
   outline: var(--catch-stroke-focus-ring) solid var(--catch-ground-ink-ink);
   outline-offset: var(--catch-space-micro2);
@@ -158,17 +207,14 @@ a.link:focus-visible {
     border-radius: var(--catch-radius-mat);
   }
 
-  .groups,
-  .groups[data-columns] {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: var(--catch-space-s7);
+  /* Two flowing columns on a phone, whatever the measured width. */
+  .groups[data-columns] .flow {
+    display: block;
+    columns: 2;
+    margin-bottom: calc(-1 * var(--catch-space-s8));
   }
 
-  /* The canvas stacks the top band's buttons on phones, each as wide as the widest. */
-  .actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
+  .groups[data-columns] .group { padding-bottom: var(--catch-space-s8); }
 
   .mark {
     margin-top: var(--catch-space-s10);
