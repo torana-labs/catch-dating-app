@@ -784,6 +784,30 @@ abstract class AppLocalizations {
   /// **'New event'**
   String get hostNavigationNewEvent;
 
+  /// Screen reader name of a weddings company's rail and sidebar navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Weddings'**
+  String get hostPlannerNavigationLabel;
+
+  /// Weddings company navigation destination: the planner home listing its weddings.
+  ///
+  /// In en, this message translates to:
+  /// **'Weddings'**
+  String get hostPlannerNavigationWeddings;
+
+  /// Weddings company navigation destination: the organiser's team.
+  ///
+  /// In en, this message translates to:
+  /// **'Crew'**
+  String get hostPlannerNavigationCrew;
+
+  /// Weddings company rail and sidebar primary action that starts creating a wedding.
+  ///
+  /// In en, this message translates to:
+  /// **'New wedding'**
+  String get hostPlannerNavigationNewWedding;
+
   /// Host sign-in kicker above the stats.
   ///
   /// In en, this message translates to:

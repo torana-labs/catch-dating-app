@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_entitlement_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
@@ -45,6 +46,7 @@ class HostShellScreen extends ConsumerStatefulWidget {
 class _HostShellScreenState extends ConsumerState<HostShellScreen> {
   String? _consumedRequestedOrganizerId;
   String? _scheduledSelection;
+  String? _scheduledPlannerHome;
 
   @override
   void didUpdateWidget(covariant HostShellScreen oldWidget) {
@@ -151,52 +153,99 @@ class _HostShellScreenState extends ConsumerState<HostShellScreen> {
           )
         : null;
     final l10n = context.l10n;
+    final placement = hostShellPlacement(size);
+    final plannerOrganizer =
+        isAuthenticated &&
+            selectedOrganizer != null &&
+            hostShowsPlannerNavigation(
+              size: size,
+              hasWeddingsPlan:
+                  catchAsyncStateFromAsyncValue(
+                    ref.watch(
+                      organizerEntitlementProvider(selectedOrganizer.id),
+                    ),
+                  ).value?.hasWeddingsPlan ??
+                  false,
+            )
+        ? selectedOrganizer
+        : null;
+    final header = selectedOrganizer == null
+        ? null
+        : CatchTabBarIdentity(
+            key: const ValueKey<String>('host-shell-organizer-identity'),
+            name: selectedOrganizer.name,
+            photoUrl: selectedOrganizer.logoPhotoUrl,
+            switcher: canSwitch,
+            note: canSwitch ? l10n.hostsHostTodayTooltipSwitchOrganizer : null,
+            onTap: onSwitchOrganizer,
+          );
+    final footer = profile == null
+        ? null
+        : CatchTabBarIdentity(
+            key: const ValueKey<String>('host-shell-person-identity'),
+            name: profile.accountDisplayName,
+            photoUrl: profile.primaryPhotoThumbnailUrl,
+          );
+
+    if (plannerOrganizer != null) {
+      _schedulePlannerHome(GoRouter.of(context).state.uri, plannerOrganizer.id);
+    }
+    final CatchTabBar<Object?> navigation = plannerOrganizer != null
+        ? CatchTabBar<HostPlannerDestination>(
+            key: AppShellKeys.navigationBar,
+            layout: placement,
+            label: l10n.hostPlannerNavigationLabel,
+            active:
+                GoRouter.of(context).state.uri.path ==
+                    Routes.hostOrganizerTeamScreen.path
+                ? HostPlannerDestination.crew
+                : HostPlannerDestination.weddings,
+            onChanged: (destination) => context.go(
+              hostPlannerDestinationLocation(destination, plannerOrganizer.id),
+            ),
+            items: hostPlannerDestinations(l10n: l10n),
+            primaryAction: hostPlannerNewWedding(
+              l10n: l10n,
+              onPressed: () => unawaited(
+                GoRouter.of(context).pushNamed(
+                  Routes.hostCreateProgramScreen.name,
+                  pathParameters: {'organizerId': plannerOrganizer.id},
+                ),
+              ),
+            ),
+            header: header,
+            footer: footer,
+          )
+        : CatchTabBar<HostShellDestination>(
+            key: AppShellKeys.navigationBar,
+            layout: placement,
+            label: l10n.appTitleHost,
+            active: HostShellDestination
+                .values[widget.navigationShell.currentIndex],
+            onChanged: (destination) => widget.navigationShell.goBranch(
+              destination.index,
+              initialLocation:
+                  destination.index == widget.navigationShell.currentIndex,
+            ),
+            items: hostShellDestinations(
+              l10n: l10n,
+              unreadCount: unreadCount,
+              organizerName: selectedOrganizer?.name,
+              onSwitchOrganizer: onSwitchOrganizer,
+            ),
+            primaryAction: hostShellNewEvent(
+              l10n: l10n,
+              onPressed: selectedOrganizer == null
+                  ? null
+                  : () => unawaited(_openCreateEvent(selectedOrganizer)),
+            ),
+            header: header,
+            footer: footer,
+          );
 
     return CatchWorkspaceHeaderLayout(
       child: CatchAppShell(
-        navigation: CatchTabBar<HostShellDestination>(
-          key: AppShellKeys.navigationBar,
-          layout: hostShellPlacement(size),
-          label: l10n.appTitleHost,
-          active:
-              HostShellDestination.values[widget.navigationShell.currentIndex],
-          onChanged: (destination) => widget.navigationShell.goBranch(
-            destination.index,
-            initialLocation:
-                destination.index == widget.navigationShell.currentIndex,
-          ),
-          items: hostShellDestinations(
-            l10n: l10n,
-            unreadCount: unreadCount,
-            organizerName: selectedOrganizer?.name,
-            onSwitchOrganizer: onSwitchOrganizer,
-          ),
-          primaryAction: hostShellNewEvent(
-            l10n: l10n,
-            onPressed: selectedOrganizer == null
-                ? null
-                : () => unawaited(_openCreateEvent(selectedOrganizer)),
-          ),
-          header: selectedOrganizer == null
-              ? null
-              : CatchTabBarIdentity(
-                  key: const ValueKey<String>('host-shell-organizer-identity'),
-                  name: selectedOrganizer.name,
-                  photoUrl: selectedOrganizer.logoPhotoUrl,
-                  switcher: canSwitch,
-                  note: canSwitch
-                      ? l10n.hostsHostTodayTooltipSwitchOrganizer
-                      : null,
-                  onTap: onSwitchOrganizer,
-                ),
-          footer: profile == null
-              ? null
-              : CatchTabBarIdentity(
-                  key: const ValueKey<String>('host-shell-person-identity'),
-                  name: profile.accountDisplayName,
-                  photoUrl: profile.primaryPhotoThumbnailUrl,
-                ),
-        ),
+        navigation: navigation,
         // A branch navigator's modal barrier drops the semantics painted
         // before it; confined to the screen it cannot hide a rail or sidebar.
         child: Semantics(
@@ -208,6 +257,25 @@ class _HostShellScreenState extends ConsumerState<HostShellScreen> {
         ),
       ),
     );
+  }
+
+  /// A Host tab's home has no place in the weddings navigation, so it opens
+  /// the weddings instead. Records and deep links inside a tab stay put.
+  void _schedulePlannerHome(Uri location, String organizerId) {
+    if (!hostPlannerOpensWeddingsFrom(location)) return;
+    final target = hostPlannerDestinationLocation(
+      HostPlannerDestination.weddings,
+      organizerId,
+    );
+    if (_scheduledPlannerHome == target) return;
+    _scheduledPlannerHome = target;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_scheduledPlannerHome == target) _scheduledPlannerHome = null;
+      if (hostPlannerOpensWeddingsFrom(GoRouter.of(context).state.uri)) {
+        context.go(target);
+      }
+    });
   }
 
   void _scheduleSelectionSync({
