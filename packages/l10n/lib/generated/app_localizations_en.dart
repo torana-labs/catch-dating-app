@@ -27518,7 +27518,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCreateChange => 'Change';
 
   @override
-  String get hostCreateHowToFindYou => 'How to find you · optional';
+  String get hostCreateHowToFindYou => 'How to find you';
 
   @override
   String hostCreateOnTheMap({required String place}) {
@@ -27620,7 +27620,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCreateStepWhat => 'What happens';
 
   @override
-  String get hostCreateStepNote => 'Note · optional';
+  String get hostCreateStepNote => 'Note';
 
   @override
   String get hostCreateMinutes => 'Minutes';

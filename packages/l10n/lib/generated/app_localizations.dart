@@ -44253,7 +44253,7 @@ abstract class AppLocalizations {
   /// Create when-and-where directions field title.
   ///
   /// In en, this message translates to:
-  /// **'How to find you · optional'**
+  /// **'How to find you'**
   String get hostCreateHowToFindYou;
 
   /// Create when-and-where map semantic label.
@@ -44397,7 +44397,7 @@ abstract class AppLocalizations {
   /// Create plan step sheet note field.
   ///
   /// In en, this message translates to:
-  /// **'Note · optional'**
+  /// **'Note'**
   String get hostCreateStepNote;
 
   /// Create plan step sheet duration title.
