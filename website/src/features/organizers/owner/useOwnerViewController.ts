@@ -228,6 +228,8 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
     tracking: {
       ready: tracking.isSuccess,
       canEdit: tracking.data?.canEdit ?? false,
+      live: tracking.data?.live ?? false,
+      notLiveReason: tracking.data?.notLiveReason ?? null,
       pixel,
       ga,
       changePixel: (value: string) => {setPixelDraft(value); setNotice(null);},

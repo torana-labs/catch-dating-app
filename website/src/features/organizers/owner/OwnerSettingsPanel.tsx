@@ -31,6 +31,9 @@ export function OwnerSettingsPanel({controller, displayUrl, events}: {
           <CatchSection dividers="none" note={copy.settings.trackingNote} title={copy.settings.trackingTitle}>
             {tracking.ready ? (
               <CatchStack gap={12}>
+                <CatchIndexRow title={tracking.live ? copy.settings.statusLive : copy.settings.statusNotLive} wrap
+                  subtitle={tracking.notLiveReason === "policyReview" ? copy.settings.whyPolicyReview :
+                    tracking.notLiveReason === "nothingSaved" ? copy.settings.whyNothingSaved : undefined} />
                 {!tracking.canEdit ? <CatchText as="p" tone="secondary" variant="body-small">{copy.settings.blocked}</CatchText> : null}
                 <CatchField inputHint={copy.settings.pixelHint} keyboardType="number" maxLength={20}
                   onChanged={tracking.changePixel} recipe="input" title={copy.settings.pixelField} value={tracking.pixel} />
