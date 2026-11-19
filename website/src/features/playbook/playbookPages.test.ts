@@ -27,7 +27,8 @@ import {
   registeredPlaybookPages,
   resolvePlaybookPage,
 } from "./playbookPages";
-import {matchPlaybookRoute, playbookFamilyRoutes, playbookFixedRoutes, playbookTopSegment, siteRouteHrefs} from "./playbookRoutes";
+import {matchPlaybookRoute, playbookFamilyRoutes, playbookFixedRoutes, playbookPathForContentKey, playbookTopSegment, siteRouteHrefs} from "./playbookRoutes";
+import {playbookTryItTool, playbookTryItTools, tryItToolCommands, websiteReadyTryItCommands} from "../tryIt/tryItModel";
 
 const websiteRoot = path.resolve(__dirname, "../../..");
 const captureSlots = new Set<string>(
@@ -172,24 +173,57 @@ describe("playbook page indexes", () => {
 
   const productV2 = loaded.filter(({ref}) => ref.match.route.group === "product" && ref.match.contentKey !== "pricing");
 
-  it("hides every try-it band and button until its command ships, on every product page", () => {
+  // The pages whose try-it band, buttons and closing tool form are live now.
+  // A page joins when its command is in production and its sections flip to
+  // built; its command must be website-ready (features/tryIt/tryItModel.ts).
+  const liveTryItPages = ["product_your_page"];
+
+  it("hides every try-it band and button unless its command's website tool is ready, on every product page", () => {
     expect(productV2.map(({ref}) => ref.match.contentKey).sort()).toEqual([
       "how_it_works", "product_bookings", "product_event", "product_forms", "product_guests", "product_messages",
       "product_reports", "product_room", "product_your_page",
     ]);
     for (const {ref, raw} of productV2) {
       const key = ref.match.contentKey;
-      expect(raw.sections.find((section) => section.id === "try")?.status, `${key} #try`).toBe("tryIt");
+      const ready = playbookTryItTool(key) !== null;
+      const tryBand = raw.sections.find((section) => section.id === "try");
+      const toolForms = raw.sections.flatMap((section) => "leadForm" in section && section.leadForm?.requestKind === "tool" ? [{section, form: section.leadForm}] : []);
       for (const section of raw.sections) {
-        if (section.type === "cta" && section.leadForm?.input && section.leadForm.input !== "tel") expect(section.status, `${key} ${section.id}`).toBe("tryIt");
         if (!playbookIsLive(section)) expect(section.statusNote, `${key} ${section.id} says why it is hidden`).toBeTruthy();
+        if (ready) continue;
+        if (section.type === "cta" && section.leadForm?.input && section.leadForm.input !== "tel") expect(section.status, `${key} ${section.id}`).toBe("tryIt");
         forEachAction(section, (item, at) => {
           if ("anchor" in item.to && item.to.anchor === "try") expect(playbookIsLive(item), `${key} ${section.id}.${at}`).toBe(false);
         });
       }
       const live = livePlaybookPage(raw);
-      expect(JSON.stringify(live), key).not.toMatch(/"anchor":"try"|"requestKind":"tool"/u);
+      if (!ready) {
+        expect(tryBand?.status, `${key} #try`).toBe("tryIt");
+        expect(JSON.stringify(live), key).not.toMatch(/"anchor":"try"|"requestKind":"tool"/u);
+        continue;
+      }
+      // A ready page's try band holds its tool form, which the tool slot draws.
+      expect(tryBand && "leadForm" in tryBand ? tryBand.leadForm?.requestKind : undefined, `${key} #try holds its tool form`).toBe("tool");
+      for (const {section, form} of toolForms) expect(form.input, `${key} ${section.id} reads a link`).toBe("url");
+      const liveTry = live.sections.some((section) => section.id === "try");
+      expect(liveTry, `${key} #try is live only once listed in liveTryItPages`).toBe(liveTryItPages.includes(key));
     }
+    for (const key of liveTryItPages) expect(playbookTryItTool(key), `${key} has a website-ready tool`).not.toBeNull();
+  });
+
+  it("maps every website-ready command to a product page tool, and the tools to the commands they run", () => {
+    const tools = Object.values(playbookTryItTools);
+    for (const command of websiteReadyTryItCommands) {
+      expect(tools.some((tool) => tryItToolCommands[tool] === command), `${command} has a page`).toBe(true);
+    }
+    for (const key of Object.keys(playbookTryItTools)) expect(resolvePlaybookPage(playbookPathForContentKey(key) ?? "/none/"), key).not.toBeNull();
+    expect(playbookTryItTool("product_guests")).toBeNull();
+  });
+
+  it("refuses a live link to a hidden try band", () => {
+    const {raw} = loaded.find(({ref}) => ref.match.contentKey === "product_your_page")!;
+    const hidden = {...raw, sections: raw.sections.map((section) => section.id === "try" ? {...section, status: "tryIt" as const, statusNote: "Hidden."} : section)};
+    expect(validatePlaybookPage(hidden, context).join("\n")).toMatch(/try/u);
   });
 
   it("never links a live page to a hidden section of another page", () => {

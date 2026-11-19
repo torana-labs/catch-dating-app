@@ -55,14 +55,14 @@ describe("usePlaybookPageController", () => {
 
   it("renders a lead form only from its kind's filled slot, telling it where it sits", () => {
     const empty = renderHook(() => usePlaybookPageController(page));
-    expect(empty.result.current.leadForm(form, "start")).toBeNull();
-    expect(empty.result.current.leadForm(undefined, "start")).toBeNull();
+    expect(empty.result.current.leadForm(form, "start", "cta")).toBeNull();
+    expect(empty.result.current.leadForm(undefined, "start", "cta")).toBeNull();
 
     const slot = vi.fn(() => "form");
     const filled = renderHook(() => usePlaybookPageController(page, {guide: slot}));
-    expect(filled.result.current.leadForm(form, "start")).toBe("form");
-    expect(slot).toHaveBeenCalledWith({form, pageId: "host_run_clubs", sectionId: "start"});
+    expect(filled.result.current.leadForm(form, "start", "cta")).toBe("form");
+    expect(slot).toHaveBeenCalledWith({form, pageId: "host_run_clubs", sectionId: "start", placement: "cta"});
     const other = renderHook(() => usePlaybookPageController(page, {venue: slot}));
-    expect(other.result.current.leadForm(form, "start")).toBeNull();
+    expect(other.result.current.leadForm(form, "start", "cta")).toBeNull();
   });
 });
