@@ -4464,6 +4464,17 @@ and the no-download runtime both resolve the reveal from the same
 `revealStartedAt` server anchor and saved reveal countdown. The shared seed is
 derived from event id, moment kind, reveal round, and that anchor. This is one
 moment model for every event format; there is no event-type presentation fork.
+
+Playbook shapes have one source too:
+`contracts/catalogs/event_success_playbook_shapes.json` holds each playbook's
+capacity and run-of-show stages, minutes and module ids, each interaction
+model's default structure and default playbook, and the try-it plan-a-night
+formats (#2062 C4). Copy text stays in `copy/structured_domain_copy_en.json`.
+`tool/copy/sync_structured_domain_copy.dart` fills the playbook library's
+`playbookShape.*` placeholders from the catalog, so `library.dart` keeps its
+const literals. `EventSuccessStructureConfig.defaultForInteractionModel` reads
+the generated `event_success_playbook_shapes.g.dart`, and Functions'
+`defaultEventSuccessPlaybookIdFor` reads `eventSuccessPlaybookShapes.ts`.
 Web retains the metadata for parity and ships no per-attendee audio.
 
 - **Portable marquee assets.** Three checked-in Lottie vector documents under
