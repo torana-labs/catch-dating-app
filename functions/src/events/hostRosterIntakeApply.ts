@@ -144,7 +144,7 @@ export function defaultHostRosterIntakeApplyDeps():
     importCanonical: (input) => importEventAttendeesForHost(input)};
 }
 
-type ManageHostRosterIntakeResponse = {
+export type ManageHostRosterIntakeResponse = {
   draft: HostRosterIntakeDraft;
   preview: ReturnType<typeof previewHostRosterIntake> | null;
   receipt: HostRosterAppliedReview | null;
@@ -167,10 +167,7 @@ export async function manageHostRosterIntakeHandler(
     throw new HttpsError("invalid-argument", "Invalid roster intake action.");
   }
   if (action === "start") {
-    const mapping = numberMap(data.mapping, "mapping");
-    const rows = objectArray(data.rows, "rows") as unknown as
-      HostRosterIntakeRow[];
-    let draft = await deps.store.createOrResume({
+    const draft = await startHostRosterIntake(deps, {
       hostUid,
       organizerId: stringValue(data.organizerId, "organizerId"),
       eventId: stringValue(data.eventId, "eventId"),
@@ -178,19 +175,10 @@ export async function manageHostRosterIntakeHandler(
       fileName: stringValue(data.fileName, "fileName"),
       format: enumValue(data.format, ["csv", "xlsx"], "format"),
       headers: stringArray(data.headers, "headers"),
-      mapping,
-      rows,
-    }, deps.authorize);
-    if (draft.state === "review" &&
-        (JSON.stringify(draft.mapping) !== JSON.stringify(mapping) ||
-          JSON.stringify(draft.rows) !== JSON.stringify(rows))) {
-      draft = await deps.store.revise({sessionId: draft.sessionId, hostUid,
-        expectedRevision: draft.revision, rows,
-        // A deliberate remap starts a fresh row decision pass. Keeping an old
-        // exclusion would make a corrected row impossible to restore in UI.
-        excludedRowIds: [], mapping,
-      }, deps.authorize);
-    }
+      mapping: numberMap(data.mapping, "mapping"),
+      rows: objectArray(data.rows, "rows") as unknown as
+        HostRosterIntakeRow[],
+    });
     return reviewResponse(draft, deps);
   }
   const sessionId = stringValue(data.sessionId, "sessionId");
@@ -229,7 +217,34 @@ export async function manageHostRosterIntakeHandler(
   return reviewResponse(draft, deps);
 }
 
-async function reviewResponse(draft: HostRosterIntakeDraft,
+/**
+ * Starts a review session for one file, or resumes the one already open for
+ * it. A resumed session whose rows or mapping differ is revised to them.
+ * Shared by manageHostRosterIntake (rows parsed by the app) and the
+ * guests.import-list command (rows parsed on the server).
+ * @return {Promise<HostRosterIntakeDraft>} The current draft.
+ */
+export async function startHostRosterIntake(
+  deps: HostRosterIntakeManageDeps,
+  input: Parameters<HostRosterIntakeSessionStore["createOrResume"]>[0]
+): Promise<HostRosterIntakeDraft> {
+  const {hostUid, mapping, rows} = input;
+  let draft = await deps.store.createOrResume(input, deps.authorize);
+  if (draft.state === "review" &&
+      (JSON.stringify(draft.mapping) !== JSON.stringify(mapping) ||
+        JSON.stringify(draft.rows) !== JSON.stringify(rows))) {
+    draft = await deps.store.revise({sessionId: draft.sessionId, hostUid,
+      expectedRevision: draft.revision, rows,
+      // A deliberate remap starts a fresh row decision pass. Keeping an old
+      // exclusion would make a corrected row impossible to restore in UI.
+      excludedRowIds: [], mapping,
+    }, deps.authorize);
+  }
+  return draft;
+}
+
+/** The review (or the applied receipt) for one draft. */
+export async function reviewResponse(draft: HostRosterIntakeDraft,
   deps: HostRosterIntakeManageDeps): Promise<ManageHostRosterIntakeResponse> {
   if (draft.state === "applied") {
     const receipt = await deps.store.getAppliedReview({

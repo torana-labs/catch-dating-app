@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/import_guest_list_payload.schema.json",
+  "title": "ImportGuestListCallablePayload",
+  "description": "Command guests.import-list (contracts/commands/catalog.json). A phone-verified organizer manager sends one guest-list file (CSV, XLSX or vCard) for an event. The server reads it with the converter for its format, and the host's review session (hostRosterIntakeSessions) holds the rows. Preview shows what would be added or updated; apply saves exactly the reviewed preview. Files are read only to import them, and are never used to train models.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode", "idempotencyKey", "surface", "input"],
+  "properties": {
+    "mode": {"$ref": "../shared/command_envelope.schema.json#/definitions/mode"},
+    "idempotencyKey": {"$ref": "../shared/command_envelope.schema.json#/definitions/idempotencyKey"},
+    "surface": {"$ref": "../shared/command_envelope.schema.json#/definitions/surface"},
+    "confirm": {"$ref": "../shared/command_envelope.schema.json#/definitions/confirm"},
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventId", "file"],
+      "properties": {
+        "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "file": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fileName", "contentBase64"],
+          "description": "The guest list. Send the same file for preview and apply; the review session is keyed by its contents.",
+          "properties": {
+            "fileName": {"type": "string", "minLength": 5, "maxLength": 255, "pattern": "\\.(?:[Cc][Ss][Vv]|[Xx][Ll][Ss][Xx]|[Vv][Cc][Ff])$"},
+            "contentBase64": {"type": "string", "minLength": 4, "maxLength": 7000000, "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+              "description": "The file's bytes, base64. At most 5 MB before encoding."}
+          }
+        },
+        "mapping": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "The host's column choices, by column index in result.headers; null leaves a field unmapped. Fields left out keep the converter's choice. Required when result.needsMapping is true.",
+          "properties": {
+            "displayName": {"$ref": "#/definitions/column"},
+            "phone": {"$ref": "#/definitions/column"},
+            "email": {"$ref": "#/definitions/column"},
+            "externalReference": {"$ref": "#/definitions/column"},
+            "arrivalGroup": {"$ref": "#/definitions/column"},
+            "ticketType": {"$ref": "#/definitions/column"},
+            "status": {"$ref": "#/definitions/column"},
+            "city": {"$ref": "#/definitions/column"},
+            "revenueAmount": {"$ref": "#/definitions/column"},
+            "revenueCurrency": {"$ref": "#/definitions/column"}
+          }
+        },
+        "fallbackRevenue": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["amountMinor", "currency"],
+          "description": "The ticket price for guests the file gives no amount for, recorded as the host's estimate (as Catch Host's import sheet does).",
+          "properties": {
+            "amountMinor": {"type": "integer", "minimum": 0, "maximum": 100000000},
+            "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
+          }
+        },
+        "excludedRowIds": {"type": "array", "maxItems": 250, "uniqueItems": true,
+          "description": "Rows the host leaves out of this import, by result.rows[].rowId.",
+          "items": {"type": "string", "minLength": 1, "maxLength": 120}}
+      }
+    }
+  },
+  "definitions": {
+    "column": {"type": ["integer", "null"], "minimum": 0, "maximum": 40}
+  }
+}
