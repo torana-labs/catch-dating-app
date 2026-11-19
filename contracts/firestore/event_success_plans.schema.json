@@ -8,7 +8,7 @@
   "x-firestore-collection": "eventSuccessPlans",
   "x-firestore-path": "eventSuccessPlans/{eventId}",
   "x-document-id-field": "id",
-  "x-owner": "organizer manager direct write; event participants read",
+  "x-owner": "setup fields through saveEventSuccessPlanSetup and night.plan (functions/src/eventSuccess/planSetup.ts); create and older Catch Host builds by organizer manager direct write; event participants read",
   "x-internal-demo-fields": [
     "synthetic",
     "seedPrefix",
