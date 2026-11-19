@@ -2,6 +2,7 @@ import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/labelled.dart';
 import 'package:catch_kernel/sentinels.dart';
 import 'package:catch_l10n/generated/structured_domain_copy.g.dart';
+import 'package:catch_platform/schema_contracts/generated/event_success_playbook_shapes.g.dart';
 
 enum EventSuccessUnitKind implements Labelled {
   wholeGroup(StructuredDomainCopy.eventSuccessUnitWholeGroupLabel),
@@ -288,57 +289,34 @@ class EventSuccessStructureConfig {
     targetAttendeeCount: targetAttendeeCount,
   );
 
+  /// The interaction model's default structure, from the shared playbook
+  /// shapes catalog (contracts/catalogs/event_success_playbook_shapes.json).
   factory EventSuccessStructureConfig.defaultForInteractionModel(
     EventInteractionModel interactionModel, {
     int targetAttendeeCount = 20,
   }) {
     final safeTarget = targetAttendeeCount.clamp(1, 1000).toInt();
-    return switch (interactionModel) {
-      EventInteractionModel.pacePods => EventSuccessStructureConfig(
-        unitKind: EventSuccessUnitKind.wholeGroup,
-        unitSize: safeTarget,
-        unitCount: 1,
-      ),
-      EventInteractionModel.pairedRotations =>
-        const EventSuccessStructureConfig(
-          unitKind: EventSuccessUnitKind.pairs,
-          unitSize: 2,
-          rotationIntervalMinutes: 15,
-          topology: EventSuccessTopology.sequence,
-          resourceCapacity: EventSuccessResourceCapacity(
-            concurrentUnits: null,
-            resourceLabelId: EventSuccessResourceLabelId.court,
-            seatsPerUnit: null,
-          ),
-        ),
-      EventInteractionModel.teamRotations => const EventSuccessStructureConfig(
-        unitKind: EventSuccessUnitKind.teams,
-        unitSize: 5,
-      ),
-      EventInteractionModel.seatedTable => EventSuccessStructureConfig(
-        unitKind: EventSuccessUnitKind.tables,
-        unitSize: 4,
-        rotationIntervalMinutes: 30,
-        topology: EventSuccessTopology.adjacency,
-        resourceCapacity: EventSuccessResourceCapacity(
-          concurrentUnits: (safeTarget / 4).ceil(),
-          resourceLabelId: EventSuccessResourceLabelId.table,
-          seatsPerUnit: 4,
-        ),
-      ),
-      EventInteractionModel.freeFormMixer => const EventSuccessStructureConfig(
-        unitKind: EventSuccessUnitKind.pairs,
-        unitSize: 2,
-        rotationIntervalMinutes: 15,
-      ),
-      EventInteractionModel.routeStops ||
-      EventInteractionModel.hostLedProgram ||
-      EventInteractionModel.openFormat => EventSuccessStructureConfig(
-        unitKind: EventSuccessUnitKind.wholeGroup,
-        unitSize: safeTarget,
-        unitCount: 1,
-      ),
-    };
+    final shape =
+        eventSuccessStructureDefaultsByInteractionModel[interactionModel.name]!;
+    final resource = shape.resource;
+    return EventSuccessStructureConfig(
+      unitKind: EventSuccessUnitKind.values.byName(shape.unitKind),
+      unitSize: shape.unitSizeIsAttendees ? safeTarget : shape.unitSize!,
+      unitCount: shape.unitCount,
+      rotationIntervalMinutes: shape.rotationIntervalMinutes,
+      topology: EventSuccessTopology.values.byName(shape.topology),
+      resourceCapacity: resource == null
+          ? null
+          : EventSuccessResourceCapacity(
+              concurrentUnits: resource.concurrentUnitsFromAttendees
+                  ? (safeTarget / resource.seatsPerUnit!).ceil()
+                  : null,
+              resourceLabelId: EventSuccessResourceLabelId.values.byName(
+                resource.labelId,
+              ),
+              seatsPerUnit: resource.seatsPerUnit,
+            ),
+    );
   }
 
   factory EventSuccessStructureConfig.fromJson(Map<String, dynamic> json) {

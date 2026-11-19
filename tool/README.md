@@ -284,6 +284,11 @@ Success moment choreography is authored in
 the existing Dart and Functions TypeScript generated-contract directories.
 Its generator validation owns exhaustive moment coverage and the shared
 timeline/seed fixture; generated outputs are never edited directly.
+Event Success playbook shapes (capacity, run of show, structure defaults and
+the plan-a-night formats) are authored in
+`contracts/catalogs/event_success_playbook_shapes.json` and emitted the same
+way; `tool/copy/sync_structured_domain_copy.dart` also reads that catalog to
+fill the playbook library's numeric placeholders.
 
 ## Shared CLI Parsing
 
