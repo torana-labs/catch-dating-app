@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_nominate_organizer_payload.schema.json",
   "title": "AdminNominateOrganizerCallablePayload",
-  "description": "A Catch sales associate nominates an organizer. Supply Intake builds the listing from the name and links; nothing is published until staff review it.",
+  "description": "A Catch sales associate nominates an organizer. Supply Intake builds the listing from the name and links; nothing is published until staff review it. Refused while programmatic listings are paused (listingProgramSettings/platform).",
   "type": "object",
   "additionalProperties": false,
   "required": ["requestId", "name", "market", "urls", "notes", "categories"],
@@ -17,6 +17,10 @@
       "items": {"type": "string", "minLength": 1, "maxLength": 2000, "pattern": "^https?://"}
     },
     "notes": {"type": ["string", "null"], "minLength": 1, "maxLength": 2000},
+    "formats": {
+      "$ref": "../shared/listing_program_common.schema.json#/definitions/formats",
+      "description": "The formats the nominator says the organizer runs. Travels to the listing as Supply Intake categories (run_clubs, quiz_nights) and pre-fills the reviewer's choice. Required by the callable; optional in the schema only so an older Admin build gets a clear refusal instead of a validation error. Nightlife is never offered."
+    },
     "categories": {
       "type": "array",
       "maxItems": 8,

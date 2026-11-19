@@ -1,6 +1,6 @@
 import {catchAvatarInitialsOf, catchFormatAccentOf, catchFormatOf, type CatchMonogramGround, type CatchFormat, type CatchIconName} from "@catch/web-ui";
-import {organizerPageCopy as copy} from "../../content/organizerPage";
-import {listingRequestCopy} from "../../content/listingRequest";
+import {organizerPageCopy as copy, unclaimedListingCopy as unclaimed} from "../../content/organizerPage";
+import {listingRequestCopy, listingRequestHref} from "../../content/listingRequest";
 import type {OrganizerPageEvent, OrganizerPageRecord, OrganizerPageReview} from "./organizerPage";
 import {brand} from "@catch/brand";
 
@@ -101,7 +101,16 @@ export interface OrganizerPageView {
     monogram: string;
     monogramGround: CatchMonogramGround;
     verified: boolean;
+    /** An unclaimed page's label: unclaimed and not affiliated with the brand. */
     tag?: string;
+    /**
+     * An unclaimed page's actions beside its tag: claim it (while a claim can
+     * start) and report or remove it on the listing request form.
+     */
+    tagActions?: {
+      claim: {label: string; href: string} | null;
+      report: {label: string; semanticsLabel: string; href: string};
+    };
     /** Labels under the name, such as women-led. */
     labels: string[];
     headline: string;
@@ -138,13 +147,16 @@ export interface OrganizerPageView {
   claim: null | {
     href: string | null;
     pending: boolean;
-    followers: string | null;
-    reviewers: string | null;
-    reviewVerb: string;
-    built: string;
+    /** Asking for the page to come down: the listing request form with this organiser filled in. */
+    removeHref: string;
   };
+  /** An unclaimed page's link opens the listing request form with this organiser filled in. */
   footer: {line: string; link: string; href: string};
-  /** Report or remove this listing: the listing request form with this organiser filled in. */
+  /**
+   * Report or remove this listing: the listing request form with this
+   * organiser filled in. A claimed page shows it at its foot; an unclaimed
+   * one beside its tag, where the footer link opens the same form.
+   */
   report: {label: string; href: string};
 }
 
@@ -180,6 +192,8 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
   const coverEvent = allEvents.find((item) => item.source === "catch" && item.event.photoUrl?.trim());
   const pastCount = record.pastMoments.length;
   const titles = new Map(allEvents.map((item) => [item.eventId, item.event.title]));
+  const reportHref = listingRequestHref({kind: "organizer", id: record.organizerId});
+  const claimHref = record.claim.claimable && record.claim.state === "unclaimed" ? claimHrefOf(record) : null;
 
   const stats = [
     ...(record.followerCount > 0 ? [{
@@ -207,7 +221,13 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
       // The hero sets more of the logo below the cover than the board's rail did, so a generated page's logo takes paper, not white on white.
       monogramGround: generated ? "paper" : accent,
       verified: record.identity.verified,
-      ...(generated ? {tag: copy.generatedTag} : {}),
+      ...(generated ? {
+        tag: copy.generatedTag,
+        tagActions: {
+          claim: claimHref ? {label: unclaimed.claimAction, href: claimHref} : null,
+          report: {label: unclaimed.reportAction, semanticsLabel: unclaimed.reportActionLabel, href: reportHref},
+        },
+      } : {}),
       labels: record.womenLed ? [copy.labels.womenLed] : [],
       headline: record.identity.headline,
       meta: [placeOf(record), generated ? copy.summarisedFrom(sourceNames) : null].filter(Boolean).join(" · "),
@@ -248,18 +268,11 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
         initials: catchAvatarInitialsOf(record.profile.host.name),
       } : null,
     },
-    claim: generated ? {
-      href: record.claim.claimable && record.claim.state === "unclaimed" ? claimHrefOf(record) : null,
-      pending: record.claim.state === "claimPending",
-      followers: record.followerCount > 0 ? copy.claim.people(record.followerCount) : null,
-      reviewers: reviewCount > 0 ? copy.claim.people(reviewCount) : null,
-      reviewVerb: reviewCount === 1 ? copy.claim.reviewer : copy.claim.reviewers,
-      built: copy.claim.built(sourceNames),
-    } : null,
+    claim: generated ? {href: claimHref, pending: record.claim.state === "claimPending", removeHref: reportHref} : null,
     footer: generated ?
-      {line: copy.footer.generated(sourceNames), link: copy.footer.generatedLink, href: "/help/"} :
+      {line: copy.footer.generated(sourceNames), link: copy.footer.generatedLink, href: reportHref} :
       {line: copy.footer.claimed, link: copy.footer.claimedLink, href: "/host/"},
-    report: {label: listingRequestCopy.reportLink, href: `/listings/request/?organizer=${encodeURIComponent(record.organizerId)}`},
+    report: {label: listingRequestCopy.reportLink, href: reportHref},
   };
 }
 

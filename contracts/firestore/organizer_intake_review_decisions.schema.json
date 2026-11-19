@@ -65,7 +65,11 @@
         "impersonationReviewed": {"type": "boolean"},
         "operatingStatusReviewed": {"type": "boolean"},
         "eventAccuracyReviewed": {"type": "boolean"},
-        "unclaimedAffordancesReviewed": {"type": "boolean"}
+        "unclaimedAffordancesReviewed": {"type": "boolean"},
+        "cityEvidenceReviewed": {"type": "boolean", "description": "The city comes from the organizer's events or own pages, not from the nomination. Required when staff approve a listing Catch sourced."},
+        "formatsReviewed": {"type": "boolean", "description": "The formats chosen match what the organizer runs. Required when staff approve a listing Catch sourced."},
+        "datingFramingReviewed": {"type": "boolean", "description": "Nothing frames the organizer as dating or singles. Required when staff approve a listing Catch sourced."},
+        "personalDataReviewed": {"type": "boolean", "description": "The listing carries no personal data, such as founder names or personal numbers. Required when staff approve a listing Catch sourced."}
       }
     },
     "note": {"type": "string", "minLength": 1, "maxLength": 1000},

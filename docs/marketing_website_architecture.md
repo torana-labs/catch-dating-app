@@ -666,6 +666,15 @@ The website is already split out of the old monolithic shell:
   rail, then the claim pitch, events, past moments, reviews, about and footer.
   Every visual part is a `@catch/web-ui` component (D18); the sections bind
   data and copy only.
+- An unclaimed listing (read-model claim state `unclaimed` or `claimPending`)
+  says so wherever it shows: the organiser page's hero tag with Claim and
+  Report or remove beside it, the footer link, the claim block, and the
+  short label and Report link on discovery organiser cards (listings plan B4,
+  issue 2162). Every report link is `listingRequestHref` in
+  `website/src/content/listingRequest.ts`, so the form prefills the organiser.
+  All of that wording is `unclaimedListingCopy` in
+  `website/src/content/organizerPage.ts`, the one place counsel edits it.
+  Claimed and verified organisers show none of it.
 - Organiser and event pages render reviews with `CatchReviewItem` from
   `@catch/web-ui`, including the organiser's reply. The old listing review
   shells (`ReviewSignalLane`, `ReviewSignalCard` and the `ListingReview*`

@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   assertEventVisibilityWithinOrganizerCeiling,
+  assertProgrammaticListingChecklist,
   effectiveEventVisibility,
+  programmaticListingChecklistFields,
   SupplyVisibilityControls,
 } from "./supplyVisibilityPolicy";
 
@@ -43,4 +45,18 @@ test("event visibility at the organizer ceiling is allowed", () => {
   assert.doesNotThrow(
     () => assertEventVisibilityWithinOrganizerCeiling(visible, visible)
   );
+});
+
+test("a programmatic listing needs city evidence, formats, no dating " +
+  "framing and no personal data confirmed", () => {
+  const confirmed = Object.fromEntries(programmaticListingChecklistFields
+    .map((field) => [field, true]));
+  assert.deepEqual(programmaticListingChecklistFields, ["cityEvidenceReviewed",
+    "formatsReviewed", "datingFramingReviewed", "personalDataReviewed"]);
+  assert.doesNotThrow(() => assertProgrammaticListingChecklist(confirmed));
+  for (const field of programmaticListingChecklistFields) {
+    assert.throws(
+      () => assertProgrammaticListingChecklist({...confirmed, [field]: false}),
+      new RegExp(`checklist confirmation: ${field}\\.`));
+  }
 });

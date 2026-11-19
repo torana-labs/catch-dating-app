@@ -1,4 +1,6 @@
 import {bookingPayments} from "../payments/bookingPayments";
+import {eventSuccessStructureDefaults} from
+  "../shared/generated/eventSuccessPlaybookShapes";
 import {normalizeEventItinerary, assertValidEventItinerary} from
   "./event_itinerary";
 import {eventDistanceLabel, eventTitleLabel} from "../shared/eventLabels";
@@ -1293,26 +1295,14 @@ function defaultEventSuccessPlaybookIdFor(
   interactionModel: EventFormatSnapshot["interactionModel"],
   primitives: ResolvedEventSuccessPrimitives
 ): string {
-  switch (interactionModel) {
-  case "pairedRotations":
-    return "pickleball_rotations";
-  case "teamRotations":
-    return "pub_quiz_team_mixer";
-  case "seatedTable":
-    return "dinner_table_mixer";
-  case "routeStops":
-    return "bar_crawl_route";
-  case "freeFormMixer":
-    return primitives.compatibilityPolicy === "mutualInterestOnly" ?
-      "algorithmic_mixer_reveal" :
-      "host_led_social";
-  case "hostLedProgram":
-  case "openFormat":
-    return "host_led_social";
-  case "pacePods":
-  default:
-    return "social_run_light";
-  }
+  // contracts/catalogs/event_success_playbook_shapes.json; an unknown model
+  // falls back to the pace-pod run, as it always has.
+  const shape = eventSuccessStructureDefaults[interactionModel] ??
+    eventSuccessStructureDefaults.pacePods;
+  return primitives.compatibilityPolicy === "mutualInterestOnly" &&
+    shape.mutualInterestOnlyPlaybookId ?
+    shape.mutualInterestOnlyPlaybookId :
+    shape.defaultPlaybookId;
 }
 
 /**

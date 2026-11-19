@@ -18,13 +18,29 @@ import type {OrganizerPageController} from "../../useOrganizerPageController";
  * The hero across the content width (owner-approved layout, 17 Nov 2026):
  * the cover, a past event's photo or the organiser's colour, with the logo
  * over its foot; then the name with its verified seal, the generated page's
- * tag, the women-led label, the headline, the place, and one line of numbers
+ * tag with Claim and Report or remove right under it (listings plan B4,
+ * 19 Nov 2026), the women-led label, the headline, the place, and one line of numbers
  * that each have data behind them on the left, and Follow and Share on the
  * right. A phone stacks the buttons under the numbers.
  */
 export function OrganizerIdentitySection({controller}: {controller: OrganizerPageController}) {
   const {follow, share, view} = controller;
   const {header} = view;
+  const tagActions = header.tagActions ? (
+    <CatchStack direction="row" gap={8} wrap>
+      {header.tagActions.claim ? (
+        <CatchButton href={header.tagActions.claim.href} label={header.tagActions.claim.label} onPressed={controller.openClaim}
+          size="sm" variant="secondary" />
+      ) : null}
+      <CatchButton href={header.tagActions.report.href} label={header.tagActions.report.label}
+        semanticsLabel={header.tagActions.report.semanticsLabel} size="sm" variant="quiet" />
+    </CatchStack>
+  ) : null;
+  const labels = header.labels.length ? (
+    <CatchStack direction="row" gap={8} wrap>
+      {header.labels.map((label) => <CatchBadge key={label} label={label} size="md" tone="brand" />)}
+    </CatchStack>
+  ) : null;
   return (
     <CatchProfileHeader
       actions={(
@@ -43,11 +59,7 @@ export function OrganizerIdentitySection({controller}: {controller: OrganizerPag
           {follow.byPhone ? <CatchText as="p" tone="secondary" variant="body-small">{copy.followNote}</CatchText> : null}
         </CatchStack>
       )}
-      badges={header.labels.length ? (
-        <CatchStack direction="row" gap={8} wrap>
-          {header.labels.map((label) => <CatchBadge key={label} label={label} size="md" tone="brand" />)}
-        </CatchStack>
-      ) : undefined}
+      badges={tagActions || labels ? <CatchStack gap={8}>{tagActions}{labels}</CatchStack> : undefined}
       coverAlt={header.coverUrl ? header.coverAlt ?? copy.coverAlt(view.name) : undefined}
       coverGround={header.accent}
       coverUrl={header.coverUrl}

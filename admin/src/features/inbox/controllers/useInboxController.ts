@@ -195,7 +195,7 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
     },
     isPublishingEvent: eventPublish.isPending,
     /** A stuck nomination starts again from typed details: Intake builds a new listing, and this item closes. */
-    fillInByHand: async (input: Pick<NominationInput, "name" | "market" | "urls" | "notes" | "categories">, itemId: string) => {
+    fillInByHand: async (input: Pick<NominationInput, "name" | "market" | "urls" | "notes" | "categories" | "formats">, itemId: string) => {
       const key = JSON.stringify([itemId, input]);
       const requestId = nominationRequestIds.current.get(key) ?? crypto.randomUUID();
       nominationRequestIds.current.set(key, requestId);

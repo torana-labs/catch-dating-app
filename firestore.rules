@@ -1166,6 +1166,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // The programmatic listings pause switch (Settings → Intake): read by
+    // listing approval and adminNominateOrganizer, written only by
+    // adminManageListingProgram.
+    match /listingProgramSettings/{settingsId} {
+      allow read, write: if false;
+    }
+
     match /nominatorCredits/{creditId} {
       allow read, write: if false;
     }

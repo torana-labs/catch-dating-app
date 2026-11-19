@@ -1,3 +1,5 @@
+import type {ListingFormat} from "../../../shared/config/listingFormats";
+
 export type SalesResearchStatus =
   | "new" | "needs_research" | "ready_for_review" | "qualified"
   | "benchmark_only" | "no_fit" | "archived";
@@ -344,6 +346,8 @@ export interface SalesNominateOrganizerInput {
   urls: string[];
   notes: string | null;
   categories: string[];
+  /** The formats the organizer runs (at least one; never nightlife). */
+  formats: ListingFormat[];
 }
 
 export interface SalesNomination {
