@@ -4,6 +4,8 @@ import {
   buildMultipartUpload,
   canaryObjectName,
   CanaryStageError,
+  exchangeAppCheckDebugToken,
+  exchangeCustomToken,
   parseArgs,
   probeStorage,
   redact,
@@ -98,3 +100,31 @@ function response(status, body) {
     },
   };
 }
+
+test("token exchanges keep this probe's CanaryStageError and stage", async () => {
+  const failing = async () => new Response(JSON.stringify({error: {message: "INVALID_CUSTOM_TOKEN"}}),
+    {status: 400, headers: {"content-type": "application/json"}});
+  await assert.rejects(
+    exchangeCustomToken({fetchImpl: failing, apiKey: "key", customToken: "custom"}),
+    (error) => error instanceof CanaryStageError && error.stage === "auth" &&
+      error.message === "auth: INVALID_CUSTOM_TOKEN"
+  );
+  await assert.rejects(
+    exchangeAppCheckDebugToken({fetchImpl: failing, apiKey: "key", appId: "1:123:web:abc",
+      projectNumber: "123", debugToken: "debug"}),
+    (error) => error instanceof CanaryStageError && error.stage === "app-check"
+  );
+  const calls = [];
+  const idToken = await exchangeCustomToken({
+    fetchImpl: async (url, options) => {
+      calls.push({url, body: JSON.parse(options.body)});
+      return new Response(JSON.stringify({idToken: "id-token"}), {status: 200});
+    },
+    apiKey: "k y",
+    customToken: "custom",
+  });
+  assert.equal(idToken, "id-token");
+  assert.equal(calls[0].url,
+    "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=k%20y");
+  assert.deepEqual(calls[0].body, {token: "custom", returnSecureToken: true});
+});

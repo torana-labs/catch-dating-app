@@ -11,12 +11,15 @@ import type {ConfigureEventRegistrationCallablePayload as Command} from
   "../../shared/generated/configureEventRegistrationCallablePayload";
 import type {ConfigureEventRegistrationCallableResponse as Result} from
   "../../shared/generated/configureEventRegistrationCallableResponse";
-import {validateEventRegistrationReceiptDocument} from
-  "../../shared/generated/validators/eventRegistrationReceiptDocument";
 import {validateConfigureEventRegistrationCallablePayload} from
   "../../shared/generated/validators/configureEventRegistrationInput";
+import {
+  classifyCommandReceipt,
+  commandReceiptRef,
+  commandRequestHash,
+  writeCommandReceipt,
+} from "../../shared/commandReceipts";
 import {readRegistrationManager} from "./authority";
-import {canonicalJson} from "../eventSetupPreferences/resolve";
 import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {
   assertPublicRegistrationAvailability,
@@ -43,15 +46,11 @@ export async function configureEventRegistration(input: {
       "Invalid registration change.",
     );
   }
-  const requestHash = createHash("sha256")
-    .update(canonicalJson({actorUid, ...command}))
-    .digest("hex");
-  const receiptId = registrationChangeReceiptId(command);
+  const requestHash = registrationRequestHash(actorUid, command);
+  const nowMillis = input.nowMillis ?? Date.now;
   return db.runTransaction(async (tx) => {
     const eventRef = db.collection("events").doc(command.eventId);
-    const receiptRef = db
-      .collection("eventRegistrationReceipts")
-      .doc(receiptId);
+    const receiptRef = registrationReceiptRef(db, command);
     const [{event, organizer}, receiptSnap] = await Promise.all([
       readRegistrationManager({
         db,
@@ -62,15 +61,16 @@ export async function configureEventRegistration(input: {
       }),
       tx.get(receiptRef),
     ]);
-    if (receiptSnap.exists) {
-      const receipt = receiptSnap.data();
-      if (
-        !validateEventRegistrationReceiptDocument(receipt) ||
-        receipt.requestHash !== requestHash ||
-        receipt.actorUid !== actorUid ||
-        receipt.eventId !== command.eventId ||
-        receipt.organizerId !== command.organizerId
-      ) {
+    const lookup = classifyCommandReceipt<{registrationRevision?: number}>(
+      receiptSnap,
+      {command: registrationReceiptCommand, requestHash,
+        nowMillis: nowMillis()},
+    );
+    if (lookup.kind !== "none") {
+      const revision = lookup.kind === "replay" ?
+        lookup.result?.registrationRevision : undefined;
+      if (typeof revision !== "number" || !Number.isSafeInteger(revision) ||
+          revision < 1) {
         throw new HttpsError(
           "already-exists",
           "Request identity was reused.",
@@ -78,8 +78,8 @@ export async function configureEventRegistration(input: {
       }
       return {
         eventId: command.eventId,
-        registrationRevision: receipt.registrationRevision,
-        mode: receipt.mode,
+        registrationRevision: revision,
+        mode: command.mode,
         replayed: true,
       };
     }
@@ -93,7 +93,7 @@ export async function configureEventRegistration(input: {
         "Registration changed. Refresh and retry.",
       );
     }
-    const now = (input.nowMillis ?? Date.now)();
+    const now = nowMillis();
     if (command.mode !== "closed") {
       assertPublicRegistrationAvailability(event, organizer, command.mode, now);
       if (
@@ -127,25 +127,19 @@ export async function configureEventRegistration(input: {
       });
     }
     const next = revision + 1;
-    const receipt = {
-      organizerId: command.organizerId,
-      eventId: command.eventId,
-      actorUid,
-      requestHash,
-      registrationRevision: next,
-      mode: command.mode,
-      createdAt: Timestamp.fromMillis(now),
-    };
-    if (!validateEventRegistrationReceiptDocument(receipt)) {
-      throw new HttpsError("internal", "Invalid registration receipt.");
-    }
     tx.update(eventRef, {
       publicRegistrationMode: command.mode,
       publicRegistrationEnabled: command.mode !== "closed",
       publicRegistrationRevision: next,
       updatedAt: Timestamp.fromMillis(now),
     });
-    tx.create(receiptRef, receipt);
+    writeCommandReceipt(tx, receiptRef, {
+      command: registrationReceiptCommand,
+      retention: "request",
+      requestHash,
+      result: {registrationRevision: next},
+      nowMillis: now,
+    });
     return {
       eventId: command.eventId,
       registrationRevision: next,
@@ -153,6 +147,42 @@ export async function configureEventRegistration(input: {
       replayed: false,
     };
   });
+}
+
+const registrationReceiptCommand = "configureEventRegistration";
+
+/** The replay receipt for one registration change request. */
+export function registrationReceiptRef(
+  db: FirebaseFirestore.Firestore,
+  command: Pick<Command, "organizerId" | "requestId">,
+): FirebaseFirestore.DocumentReference {
+  return commandReceiptRef(db, registrationReceiptCommand,
+    registrationChangeReceiptId(command));
+}
+
+/** What a registration change request asked for, the actor included. */
+export function registrationRequestHash(
+  actorUid: string,
+  command: Command,
+): string {
+  return commandRequestHash(actorUid, command);
+}
+
+/**
+ * Whether the receipt [stored] replays, conflicts with, or is absent for
+ * this request; the callable reads it before preparing payment routing.
+ */
+export function classifyRegistrationReceipt(
+  stored: FirebaseFirestore.DocumentSnapshot,
+  actorUid: string,
+  command: Command,
+  nowMillis: number,
+): "none" | "replay" | "conflict" {
+  return classifyCommandReceipt(stored, {
+    command: registrationReceiptCommand,
+    requestHash: registrationRequestHash(actorUid, command),
+    nowMillis,
+  }).kind;
 }
 
 export function registrationChangeReceiptId(

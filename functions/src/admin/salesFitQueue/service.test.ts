@@ -299,7 +299,7 @@ test("refresh persists current source projection and exact receipt once", async 
   assert.equal(db.rows.get("salesFitQueueEntries/org-a")?.sourceHash,
     result.entry.sourceHash);
   assert.equal([...db.rows.keys()].filter((key) =>
-    key.startsWith("salesFitQueueReceipts/")).length, 1);
+    key.startsWith("commandReceipts/adminRefreshSalesFitQueue_")).length, 1);
   assert.deepEqual(await refreshFitQueue(deps(db), employee, payload), result);
   assert.equal(db.rows.get("salesFitQueueMeta/current")?.generation, 4);
   await assert.rejects(refreshFitQueue(deps(db), employee,

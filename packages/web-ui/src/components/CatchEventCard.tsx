@@ -112,7 +112,7 @@ export function CatchEventCard({
         {photo ? <img alt="" className={styles.image} loading="lazy" onError={() => setFailed(true)} src={photo} /> : (
           <span className={styles.mediaTitle}>
             {formatLabel ? <CatchText variant="label-kicker">{formatLabel}</CatchText> : null}
-            <CatchText variant={variant === "compact" ? "display-xs" : "display-section"}>{title}</CatchText>
+            <CatchText maxLines={3} variant={variant === "compact" ? "display-xs" : "display-section"}>{title}</CatchText>
           </span>
         )}
         {when ? <span className={styles.when}><CatchBadge label={when} size="md" /></span> : null}

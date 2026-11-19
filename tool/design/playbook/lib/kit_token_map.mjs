@@ -325,12 +325,20 @@ export const declarationMap = [
   P(".pg .foot .top", "gap", "space.s4", match),
   P(".pg .foot .top", "border-bottom", "theme.dark.color.line", {...match, pick: {regex: "(rgba\\([^)]*\\))"}}),
   P(".pg .foot .top h3", "font-size", "website.footer.titleSize", {description: "The footer's top band title."}),
-  P(".pg .foot .cols", "gap", "space.s6", match),
-  P(".pg .foot .cols", "row-gap", "space.s7", {...match, ...onPhone}),
+  P(".pg .foot .cols", "columns", "website.footer.columnMin", {
+    description: "The narrowest a footer link column gets before the groups flow into fewer columns: wide enough for the longest link on one line.",
+  }),
+  P(".pg .foot .cols", "column-gap", "space.s6", match),
+  P(".pg .foot .cols>div", "padding-bottom", "space.s8", match),
   P(".pg .foot h4", "margin", "space.micro14", {...match, pick: {part: 2}}),
   P(".pg .foot h4", "font-size", "typography.role.body.size", match),
   P(".pg .foot a", "font-size", "typography.role.bodySmall.size", match),
-  P(".pg .foot a", "line-height", "website.footer.linkLineHeight", {description: "The footer links' leading, which sets their row rhythm."}),
+  P(".pg .foot a", "line-height", "website.footer.linkLineHeight", {
+    description: "The footer links' leading: a wrapped link's second line sits this close, so it reads as one link.",
+  }),
+  P(".pg .foot a", "padding", "website.footer.linkPadBlock", {
+    pick: {part: 0}, description: "Space above and below each footer link, so a one-line link keeps a 28px row.",
+  }),
   P(".pg .legal", "margin-top", "space.s7", match),
   P(".pg .legal", "font-size", "typography.role.labelBadge.size", match),
   P(".pg .legal", "gap", "space.s4", match),

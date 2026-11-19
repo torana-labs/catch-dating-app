@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
+import {isDeepStrictEqual} from "node:util";
 import {
   effectiveOrganizerCommunicationStatus,
   organizerCommunicationPreferenceId,
@@ -784,9 +785,29 @@ export async function projectHostMembershipToContacts(params: {
   return contacts.size;
 }
 
+const SAVINGS_FIELDS = ["savedInPaise", "memberPricedBookings"];
+
+/**
+ * Whether a membership write changed only the savings totals the benefit-use
+ * trigger keeps, which no contact trait reads.
+ * @param {FirebaseFirestore.DocumentData|undefined} before The old document.
+ * @param {FirebaseFirestore.DocumentData|undefined} after The new document.
+ * @return {boolean} True when nothing but the totals changed.
+ */
+export function onlySavingsChanged(
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): boolean {
+  if (!before || !after) return false;
+  const strip = (data: FirebaseFirestore.DocumentData) => Object.fromEntries(
+    Object.entries(data).filter(([key]) => !SAVINGS_FIELDS.includes(key)));
+  return isDeepStrictEqual(strip(before), strip(after));
+}
+
 export const onHostMembershipAudienceProjected = onDocumentWritten(
   "hostMemberships/{membershipId}",
   async (event) => {
+    if (onlySavingsChanged(event.data?.before.data(),
+      event.data?.after.data())) return;
     const membership = (event.data?.after.data() ??
       event.data?.before.data()) as HostMembershipDocument | undefined;
     if (!membership?.organizerId || !membership.uid) return;

@@ -1,0 +1,126 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "playbooks",
+  "route": "playbooks",
+  "meta": {
+    "title": "Host playbooks | {{brand.name}}",
+    "description": "Short, practical guides for running a run club, a supper club, a quiz night or a racket sports social: before, on the day, afterwards, and a checklist.",
+    "socialDescription": "Practical guides for hosts, from the first event on.",
+    "noindex": false
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        }
+      ],
+      "current": "Host playbooks"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "paper",
+      "kicker": "Host playbooks",
+      "title": "Guides for the people who bring others together.",
+      "lead": "Short, practical guides for people who bring others together around an activity: a Sunday run, a long-table dinner, a quiz in a café, a few courts of pickleball. Each guide covers the same four stages: getting ready before the first event, running the night, following up afterwards, and a checklist to finish on.",
+      "actions": [
+        {
+          "label": "See the guides",
+          "to": {
+            "anchor": "guides"
+          },
+          "emphasis": "primary"
+        }
+      ],
+      "note": "Each one is written for someone running their first few events, but regulars may find a useful idea or two. Where {{brand.name}} can take a job off your hands, the guide says so plainly. Everything else works with or without it."
+    },
+    {
+      "type": "tiles",
+      "id": "guides",
+      "ground": "white",
+      "kicker": "The playbooks",
+      "title": "Pick your format.",
+      "columns": 4,
+      "items": [
+        {
+          "title": "How to start a run club",
+          "body": "The route, the time, pace groups with a lead and a sweep, the morning itself and following up.",
+          "ground": "coral",
+          "link": {
+            "label": "Read the guide",
+            "to": {
+              "page": "playbook_guide/run-club"
+            }
+          }
+        },
+        {
+          "title": "How to host a supper club",
+          "body": "The venue, the format, pricing per seat, the guest mix, the night itself and following up.",
+          "ground": "yellow",
+          "link": {
+            "label": "Read the guide",
+            "to": {
+              "page": "playbook_guide/supper-club"
+            }
+          }
+        },
+        {
+          "title": "How to run a quiz or game night",
+          "body": "The venue, rounds and teams, running the quiz, the night itself and following up.",
+          "ground": "mint",
+          "link": {
+            "label": "Read the guide",
+            "to": {
+              "page": "playbook_guide/quiz-night"
+            }
+          }
+        },
+        {
+          "title": "How to run a racket sports social",
+          "body": "Courts, rotating doubles, capacity from court time, the session itself and following up.",
+          "ground": "indigo",
+          "link": {
+            "label": "Read the guide",
+            "to": {
+              "page": "playbook_guide/racket-sports"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Your next event",
+      "title": "Run your next event on {{brand.name}}.",
+      "lead": "Start the free trial, or book a walkthrough and we’ll set it up with you.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Book a walkthrough",
+          "to": {
+            "route": "host_walkthrough"
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    }
+  ]
+}

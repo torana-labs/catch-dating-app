@@ -2701,141 +2701,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Airbnb Experiences';
 
   @override
-  String get hostsHostEventManageScreenTitleCancelThisEvent =>
-      'Cancel this event?';
-
-  @override
-  String get hostsHostEventManageScreenMessageCancellingRemovesItFrom =>
-      'Cancelling removes it from schedules but keeps attendee, payment, and history records. Attendees are notified and refunded per your cancellation policy.';
-
-  @override
-  String get hostsHostEventManageScreenTitleDeleteUnusedEvent =>
-      'Delete unused event?';
-
-  @override
-  String get hostsHostEventManageScreenMessageOnlyEventsWithNo =>
-      'Only events with no bookings, waitlist, attendance, payments, or reviews can be deleted. This permanently removes the event.';
-
-  @override
-  String get hostsHostEventManageScreenTitleDisableInviteLink =>
-      'Disable invite link?';
-
-  @override
-  String get hostsHostEventManageScreenTextLoadingInviteAccess =>
-      'Loading invite access...';
-
-  @override
-  String get hostsHostEventManageScreenTextPrivateAccess => 'Private access';
-
-  @override
-  String get hostsHostEventManageScreenLabelCode => 'Code';
-
-  @override
-  String get hostsHostEventManageScreenLabelLink => 'Link';
-
-  @override
-  String get hostsHostEventManageScreenLabelSharePrivateLink =>
-      'Share private link';
-
-  @override
-  String get hostsHostEventManageScreenLabelNewLink => 'New link';
-
-  @override
-  String get hostsHostEventManageScreenTextNamedInviteLinks =>
-      'Named invite links';
-
-  @override
-  String get hostsHostEventManageScreenTextTrackWhichChannelsCreate =>
-      'Track which channels create demand, bookings, arrivals, connections and chats.';
-
-  @override
-  String get hostsHostEventManageScreenTextLoadingInviteLinks =>
-      'Loading invite links...';
-
-  @override
-  String get hostsHostEventManageScreenMessageCopyLink => 'Copy link';
-
-  @override
-  String get hostsHostEventManageScreenMessageDisableLink => 'Disable link';
-
-  @override
-  String get hostsHostEventManageScreenTitleNewInviteLink => 'New invite link';
-
-  @override
-  String get hostsHostEventManageScreenLabelCancel => 'Cancel';
-
-  @override
-  String get hostsHostEventManageScreenLabelCreate => 'Create';
-
-  @override
-  String get hostsHostEventManageScreenTitleLabel => 'Label';
-
-  @override
-  String get hostsHostEventManageScreenPlaceholderInstagramBio =>
-      'Instagram bio';
-
-  @override
-  String get hostsHostEventManageScreenTitleSource => 'Source';
-
-  @override
-  String get hostsHostEventManageScreenPlaceholderInstagram => 'instagram';
-
-  @override
-  String get hostsHostEventManageScreenLabelBooked => 'Booked';
-
-  @override
-  String get hostsHostEventManageScreenLabelWaitlist => 'Waitlist';
-
-  @override
-  String get hostsHostEventManageScreenDetail1ToReview => '1 to review';
-
-  @override
-  String get hostsHostEventManageScreenLabelRevenueEst => 'Revenue est';
-
-  @override
-  String get hostsHostEventManageScreenLabelRefundPolicy => 'Refund policy';
-
-  @override
-  String get hostsHostEventManageScreenTextFullCapacityReached =>
-      'FULL - CAPACITY REACHED';
-
-  @override
-  String get hostsHostEventManageScreenTextWaitlistOpen => 'WAITLIST OPEN';
-
-  @override
-  String get hostsHostEventManageScreenTextHostActions => 'HOST ACTIONS';
-
-  @override
-  String get hostsHostEventManageScreenLabelEditEventDetails =>
-      'Edit event details';
-
-  @override
-  String get hostsHostEventManageScreenDetailScheduleLocation =>
-      'Schedule · location';
-
-  @override
-  String get hostsHostEventManageScreenTextDangerZone => 'DANGER ZONE';
-
-  @override
-  String get hostsHostEventManageScreenLabelCancelEvent => 'Cancel event';
-
-  @override
-  String get hostsHostEventManageScreenLabelDeleteUnusedEvent =>
-      'Delete unused event';
-
-  @override
-  String get hostsHostEventManageScreenLabelOrganizer => 'Organizer';
-
-  @override
-  String get hostsHostEventManageScreenLabelMeet => 'Meet';
-
-  @override
-  String get hostsHostEventManageScreenLabelEvent => 'Event';
-
-  @override
-  String get hostsHostEventManageScreenLabelPrice => 'Price';
-
-  @override
   String get hostsHostBroadcastComposerSheetTitleNewBroadcast =>
       'New broadcast';
 
@@ -3044,35 +2909,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not post this update. Please try again.';
 
   @override
-  String get hostsHostEventAttendancePanelTitleEventNotFound =>
-      'Event not found';
-
-  @override
-  String get hostsHostEventAttendancePanelMessageThisEventIsNo =>
-      'This event is no longer available.';
-
-  @override
-  String get hostsHostEventAttendancePanelTitleParticipation => 'Participation';
-
-  @override
-  String get hostsHostEventAttendancePanelSubtitleReviewProfilesAndApprove =>
-      'Review profiles and approve requests before launch.';
-
-  @override
-  String get hostsHostEventAttendancePanelSubtitleReviewBookingStatusBefore =>
-      'Review booking status before launch.';
-
-  @override
-  String get hostsHostEventAttendancePanelLabelSearchPeople => 'Search people';
-
-  @override
-  String get hostsHostEventAttendancePanelTitleCheckInBoard => 'Check-in board';
-
-  @override
-  String get hostsHostEventAttendancePanelSubtitleUseTheStatusTiles =>
-      'Use the status tiles to focus the roster as people arrive.';
-
-  @override
   String get hostsHostEventAttendancePanelTitleCheckInQr => 'Check-in QR';
 
   @override
@@ -3097,29 +2933,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostEventAttendancePanelRuntimeShareReady =>
       'Attendee link ready to share';
-
-  @override
-  String get hostsHostEventAttendancePanelLabelSearchRoster => 'Search roster';
-
-  @override
-  String get hostsHostEventAttendancePanelTitleEventReport => 'Event report';
-
-  @override
-  String get hostsHostEventAttendancePanelSubtitleAttendancePayoutAndExport =>
-      'Attendance, payout, and export-ready roster history.';
-
-  @override
-  String get hostsHostEventAttendancePanelLabelOpsCsv => 'Ops CSV';
-
-  @override
-  String get hostsHostEventAttendancePanelLabelRevenueCsv => 'Revenue CSV';
-
-  @override
-  String get hostsHostEventAttendancePanelLabelExport => 'Export report';
-
-  @override
-  String get hostsHostEventAttendancePanelTextWaitlistMovement =>
-      'Waitlist movement';
 
   @override
   String get hostsHostTeamManagementSectionTitleHostTeam => 'Host team';
@@ -4201,32 +4014,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsWhereStepLabelMeetingLocation => 'Meeting location';
 
   @override
-  String get hostsHostEventManageScreenBodyHostEventManageScroll =>
-      'host_event_manage_scroll_view';
-
-  @override
-  String get hostsHostEventManageScreenLabelKeepEvent => 'Keep event';
-
-  @override
-  String get hostsHostEventManageScreenLabelKeepActive => 'Keep active';
-
-  @override
-  String get hostsHostEventManageScreenLabelDisable => 'Disable';
-
-  @override
-  String get hostsHostEventManageScreenLabelInvite => 'Invite';
-
-  @override
-  String get hostsHostEventManageScreenLabelDisabled => 'Disabled';
-
-  @override
-  String get hostsHostEventManageScreenLabelEventCancelled => 'Event cancelled';
-
-  @override
-  String get hostsHostEventManageScreenDetailRecordsAreRetained =>
-      'Records are retained';
-
-  @override
   String get hostsHostInboxScreenTitleNoGeneralInquiries =>
       'No general inquiries';
 
@@ -4450,25 +4237,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String hostsHostEventManageScreenMessageThisStopsNewAttribution({
-    required Object label,
-  }) {
-    return 'This stops new attribution for $label, but keeps its history in reporting.';
-  }
-
-  @override
-  String hostsHostEventManageScreenDetailOpenOpen({required Object open}) {
-    return '$open open';
-  }
-
-  @override
-  String hostsHostEventManageScreenDetailWaitlistedToReview({
-    required Object waitlisted,
-  }) {
-    return '$waitlisted to review';
-  }
-
-  @override
   String hostsHostBroadcastComposerSheetLabelBookedBookedcount({
     required Object bookedCount,
   }) {
@@ -4530,13 +4298,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object value1,
   }) {
     return '$value1 characters left';
-  }
-
-  @override
-  String hostsHostEventAttendancePanelLabelOfferNextCount({
-    required Object count,
-  }) {
-    return 'Offer next $count';
   }
 
   @override
@@ -7474,82 +7235,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Clear filters';
 
   @override
-  String get hostsHostEventManageScreenStateDescriptionThisEventCanStay =>
-      'This event can stay listed; only people with this code or private link can book.';
-
-  @override
-  String get hostsHostEventManageScreenStateDescriptionThisEventRequiresAn =>
-      'This event requires an invite, but no host-readable access code was found.';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelAll => 'All';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelBooked => 'Booked';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelRequests => 'Requests';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelWaitlist => 'Waitlist';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelSlots => 'Slots';
-
-  @override
-  String get hostsHostEventManageScreenStateEmptytitleNoMatches => 'No matches';
-
-  @override
-  String get hostsHostEventManageScreenStateEmptytitleOpenSlotsAreNot =>
-      'Open slots are not people';
-
-  @override
-  String get hostsHostEventManageScreenStateEmptytitleNoParticipantsYet =>
-      'No participants yet';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelDue => 'Due';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelIn => 'In';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelAttended => 'Attended';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelNoShow => 'No-show';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelSetup => 'Setup';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelGuests => 'Guests';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelLive => 'Live';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelReport => 'Report';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelOffered => 'Offered';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelAccepted => 'Accepted';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelRequest => 'Request';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelWait => 'Wait';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelExpired => 'Expired';
-
-  @override
-  String get hostsHostEventManageScreenStateLabelNew => 'New';
-
-  @override
   String get eventsEventDetailDesignPrimitivesActionViewMap => 'View map';
 
   @override
@@ -8189,18 +7874,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get organizersOrganizerDetailDockLabelNewEvent => 'New event';
-
-  @override
-  String get hostsHostEventAttendancePanelLabelAccepted => 'Accepted';
-
-  @override
-  String get hostsHostEventAttendancePanelLabelOffered => 'Offered';
-
-  @override
-  String get hostsHostEventAttendancePanelLabelOffer => 'Offer';
-
-  @override
-  String get hostsHostEventAttendancePanelLabelProfile => 'Profile';
 
   @override
   String get hostsOrganizerHostDefaultsStepLabelOpen => 'OPEN';
@@ -9400,244 +9073,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsEditHostedEventScreenVisiblecopyFree => 'Free';
 
   @override
-  String get hostsHostEventManageScreenVisiblecopyEventCancelled =>
-      'Event cancelled.';
-
-  @override
-  String get hostsHostEventManageScreenVisiblecopyEventDeleted =>
-      'Event deleted.';
-
-  @override
-  String hostsHostEventManageScreenVisiblecopyLabelCopied({
-    required Object label,
-  }) {
-    return '$label copied.';
-  }
-
-  @override
-  String
-  get hostsHostEventManageScreenVisiblecopyHosteventmanagescreenCreatenamedinvitelinkFailed =>
-      'HostEventManageScreen._createNamedInviteLink failed';
-
-  @override
-  String
-  get hostsHostEventManageScreenVisiblecopyHosteventmanagescreenCopynamedinvitelinkFailed =>
-      'HostEventManageScreen._copyNamedInviteLink failed';
-
-  @override
-  String hostsHostEventManageScreenVisiblecopyLabelDisabled({
-    required Object label,
-  }) {
-    return '$label disabled.';
-  }
-
-  @override
-  String
-  get hostsHostEventManageScreenVisiblecopyHosteventmanagescreenDisablenamedinvitelinkFailed =>
-      'HostEventManageScreen._disableNamedInviteLink failed';
-
-  @override
-  String
-  get hostsHostEventManageScreenVisiblecopyHosteventmanagescreenSharehostprivatelinkFailed =>
-      'HostEventManageScreen._shareHostPrivateLink failed';
-
-  @override
-  String get hostsHostEventManageScreenVisiblecopyFree => 'Free';
-
-  @override
-  String hostsHostEventManageScreenVisiblecopyBooked({required Object booked}) {
-    return '$booked';
-  }
-
-  @override
-  String hostsHostEventManageScreenVisiblecopyCapacitylimit({
-    required Object capacityLimit,
-  }) {
-    return '/$capacityLimit';
-  }
-
-  @override
-  String hostsHostEventManageScreenVisiblecopyWaitlisted({
-    required Object waitlisted,
-  }) {
-    return '$waitlisted';
-  }
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyNoPeopleMatchThis =>
-      'No people match this search.';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopySlotsShowCapacityLeft =>
-      'Slots show capacity left after booked people. New people appear here once they book or request access.';
-
-  @override
-  String
-  get hostsHostEventManageScreenStateVisiblecopyBookedAndWaitlistedPeople =>
-      'Booked and waitlisted people will appear here.';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyNoLiveRosterRows =>
-      'No live roster rows match this search.';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyNoReportRowsMatch =>
-      'No report rows match this search.';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyCheckedIn =>
-      'Checked in';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyUndo => 'Undo';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyCheckIn => 'Check in';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyFree => 'Free';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopySharing => 'Sharing...';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyPublicEventLink =>
-      'Public event link';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyLoadingLink =>
-      'Loading link';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyInviteSetupUnavailable =>
-      'Invite setup unavailable';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyPrivateInviteLink =>
-      'Private invite link';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyInviteLinksUnavailable =>
-      'Invite links unavailable';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopy1InviteLink =>
-      '1 invite link';
-
-  @override
-  String hostsHostEventManageScreenStateVisiblecopyCountInviteLinks({
-    required Object count,
-  }) {
-    return '$count invite links';
-  }
-
-  @override
-  String
-  get hostsHostEventManageScreenStateVisiblecopyEveryoneVisibleIsChecked =>
-      'Everyone visible is checked in';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyNoCheckedInPeople =>
-      'No checked-in people yet';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyNoWaitlistedPeople =>
-      'No waitlisted people';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyRosterIsEmpty =>
-      'Roster is empty';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopySwitchToInTo =>
-      'Switch to In to review arrivals or All to see the full roster.';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill =>
-      'Checked-in people will appear here during the event.';
-
-  @override
-  String
-  get hostsHostEventManageScreenStateVisiblecopyWaitlistedPeopleWillAppear =>
-      'Waitlisted people will appear here for context.';
-
-  @override
-  String
-  get hostsHostEventManageScreenStateVisiblecopySignedUpParticipantsWill =>
-      'Signed-up participants will appear here when they book.';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyNoAttendedPeopleYet =>
-      'No attended people yet';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyNoNoShowsYet =>
-      'No no-shows yet';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyNoParticipantsYet =>
-      'No participants yet';
-
-  @override
-  String
-  get hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill186cb6 =>
-      'Checked-in people will appear here after the event.';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyBookedPeopleWhoDid =>
-      'Booked people who did not check in will appear here.';
-
-  @override
-  String
-  get hostsHostEventManageScreenStateVisiblecopyWaitlistHistoryWillAppear =>
-      'Waitlist history will appear here when people queue for this event.';
-
-  @override
-  String
-  get hostsHostEventManageScreenStateVisiblecopyAttendanceAndWaitlistHistory =>
-      'Attendance and waitlist history will appear here once people sign up.';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyOfferSent =>
-      'Offer sent';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyAcceptedOffer =>
-      'Accepted offer';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyOfferExpired =>
-      'Offer expired';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyApproved => 'Approved';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyViewProfile =>
-      'View profile';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyWaitlisted =>
-      'Waitlisted';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyProfileReady =>
-      'Profile ready';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyBooked => 'Booked';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyCancelled => 'Cancelled';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyDeleted => 'Deleted';
-
-  @override
-  String get hostsHostEventManageScreenStateVisiblecopyParticipant =>
-      'Participant';
-
-  @override
   String get hostsHostOrganizerTeamScreenVisiblecopyHostProfileSaved =>
       'Host profile saved.';
 
@@ -9759,67 +9194,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String
   get hostsHostPaymentAccountControllerCardVisiblecopyHostpaymentaccountcontrollercardRefreshFailed =>
       'HostPaymentAccountControllerCard.refresh failed';
-
-  @override
-  String get hostsHostEventAttendancePanelVisiblecopyRevenueCsvReady =>
-      'Revenue CSV ready.';
-
-  @override
-  String get hostsHostEventAttendancePanelVisiblecopySharerevenuereportFailed =>
-      '_shareRevenueReport failed';
-
-  @override
-  String get hostsHostEventAttendancePanelVisiblecopyOpsCsvReady =>
-      'Ops CSV ready.';
-
-  @override
-  String get hostsHostEventAttendancePanelVisiblecopyShareopsreportFailed =>
-      '_shareOpsReport failed';
-
-  @override
-  String get hostsHostEventAttendancePanelVisiblecopyGuest => 'Guest';
-
-  @override
-  String get hostsHostEventAttendancePanelVisiblecopySignal => 'Signal';
-
-  @override
-  String get hostsHostEventAttendancePanelVisiblecopyHostAction =>
-      'Host action';
-
-  @override
-  String get hostsHostEventAttendancePanelVisiblecopyStatus => 'Status';
-
-  @override
-  String get hostsHostEventAttendancePanelVisiblecopyName => 'Name';
-
-  @override
-  String get hostsHostEventAttendancePanelVisiblecopyAttendance => 'Attendance';
-
-  @override
-  String get hostsHostEventAttendancePanelVisiblecopyPayment => 'Payment';
-
-  @override
-  String hostsHostEventAttendancePanelVisiblecopyValue({
-    required Object value,
-  }) {
-    return '$value';
-  }
-
-  @override
-  String
-  hostsHostEventAttendancePanelVisiblecopyRemainingaftersendStillWaitingAfter({
-    required Object remainingAfterSend,
-  }) {
-    return '$remainingAfterSend still waiting after this offer';
-  }
-
-  @override
-  String hostsHostEventAttendancePanelVisiblecopyNextCountPersonnounOn({
-    required Object count,
-    required Object personNoun,
-  }) {
-    return 'Next $count $personNoun on the waitlist';
-  }
 
   @override
   String
@@ -10724,17 +10098,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'A photo from an event helps people recognise you.';
 
   @override
-  String
-  hostsHostEventManageScreenStateVisiblecopyPriceinpaiseGrossEstimateCheckedincount({
-    required Object priceInPaise,
-    required Object checkedInCount,
-    required Object noShowCount,
-    required Object waitlistCount,
-  }) {
-    return '$priceInPaise gross estimate · $checkedInCount attended · $noShowCount no-shows · $waitlistCount waitlisted.';
-  }
-
-  @override
   String get coreAppErrorMessageVisiblecopySomethingWentWrongPlease =>
       'Something went wrong. Please try again.';
 
@@ -11303,18 +10666,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsProfileStatusSuspended => 'Profile suspended';
-
-  @override
-  String get hostsEventActionCancelling => 'Cancelling...';
-
-  @override
-  String get hostsEventActionCancelDetail => 'Keeps records · notifies guests';
-
-  @override
-  String get hostsEventActionDeleting => 'Deleting...';
-
-  @override
-  String get hostsEventActionDeleteDetail => 'Permanent removal';
 
   @override
   String get hostsEventEditSaveChanges => 'Save changes';
@@ -12235,17 +11586,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsOperationalRosterManualNameRequired =>
       'Enter the guest\'s name.';
-
-  @override
-  String get hostsHostEventReviewsTitlePublicReviews => 'Public reviews';
-
-  @override
-  String get hostsHostEventReviewsSubtitlePublicResponse =>
-      'Reply from Catch for Hosts. Your response appears with the review on the public organizer page.';
-
-  @override
-  String get hostsHostEventReviewsMessageEmpty =>
-      'Reviews for this event will appear here, including reviews submitted on your public Catch page.';
 
   @override
   String get hostsHostOrganizerPublicationTitle => 'Public visibility';
@@ -14600,67 +13940,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventSuccessHostResourceEventReport => 'Event report';
 
   @override
-  String get hostsHostEventManageWorkspacePreparation => 'Event preparation';
-
-  @override
-  String get hostsHostEventManagePreparationEventDetails => 'EVENT DETAILS';
-
-  @override
-  String get hostsHostEventManagePreparationGuestSources => 'GUEST SOURCES';
-
-  @override
-  String get hostsHostEventManagePreparationTeamAccess => 'TEAM & ACCESS';
-
-  @override
-  String get hostsHostEventManageWorkspaceRuntime => 'Live operations';
-
-  @override
-  String get hostsHostEventManageWorkspaceRecap => 'Event recap';
-
-  @override
-  String get hostsHostEventManageWorkspaceCancelled => 'Cancelled event';
-
-  @override
-  String get hostsHostEventManageReviewSetupTitle => 'Review event setup';
-
-  @override
-  String get hostsHostEventManageReviewSetupBody =>
-      'Event details, Host actions, and Event Success configuration remain available for audit.';
-
-  @override
-  String get hostsHostEventRosterDrawerTitle => 'Guest roster';
-
-  @override
-  String hostsHostEventRosterDrawerCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count booked guests',
-      one: '1 booked guest',
-      zero: 'No booked guests',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String hostsHostEventRosterDrawerOpen({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'Open guest roster, $count booked guests',
-      one: 'Open guest roster, 1 booked guest',
-      zero: 'Open guest roster',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get hostsHostEventRosterDrawerClose => 'Close guest roster';
-
-  @override
-  String get hostsHostEventRosterDrawerMessageGuests => 'Message guests';
-
-  @override
   String get hostApplicationsUnavailable => 'Applications unavailable';
 
   @override
@@ -15565,13 +14844,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return 'Step $step of $total. Open section overview.';
   }
-
-  @override
-  String get hostEventRehearsalEntryTitle => 'Run a dress rehearsal';
-
-  @override
-  String get hostEventRehearsalEntryBody =>
-      'Practice the Host and guest experience with synthetic people. Nothing touches a real event.';
 
   @override
   String get hostEventRehearsalTitle => 'Dress rehearsal';
@@ -20977,125 +20249,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Only answers you allow for this event can be used. You can withdraw permission later.';
 
   @override
-  String get eventMatchingHostTitle => 'Form answer matching';
-
-  @override
-  String get eventMatchingHostDescription =>
-      'Choose published custom questions as soft preferences. Guest permission is separate, and safety and admission rules always apply.';
-
-  @override
-  String get eventMatchingHostUnsupported =>
-      'Structured answer matching is not available for sequence layouts.';
-
-  @override
-  String get eventMatchingHostSelectForm => 'Choose a published form';
-
-  @override
-  String get eventMatchingHostNoForms =>
-      'No published forms are available for this organizer.';
-
-  @override
-  String get eventMatchingHostNoQuestions =>
-      'This published version has no custom choice or number questions.';
-
-  @override
-  String get eventMatchingHostLoadMore => 'Load more forms';
-
-  @override
-  String get eventMatchingHostAddQuestion => 'Add matching question';
-
-  @override
-  String get eventMatchingHostSavedRules => 'Matching preferences';
-
-  @override
-  String get eventMatchingHostCategory => 'Choice category';
-
-  @override
-  String get eventMatchingHostSet => 'Choice set';
-
-  @override
-  String get eventMatchingHostNumber => 'Number';
-
-  @override
-  String get eventMatchingHostOrdinal => 'Ordered choices';
-
-  @override
-  String get eventMatchingHostSimilar => 'Prefer similar answers';
-
-  @override
-  String get eventMatchingHostDifferent => 'Prefer different answers';
-
-  @override
-  String get eventMatchingHostBalance => 'Balance answers across groups';
-
-  @override
-  String get eventMatchingHostCover => 'Give every group a mix of answers';
-
-  @override
-  String get eventMatchingHostWeight => 'Preference strength';
-
-  @override
-  String get eventMatchingHostMinimum => 'Minimum answer';
-
-  @override
-  String get eventMatchingHostMaximum => 'Maximum answer';
-
-  @override
-  String get eventMatchingHostMissingBounds =>
-      'This form did not publish a number range. Set a finite minimum and maximum before using this question.';
-
-  @override
-  String get eventMatchingHostPreview => 'Preview roster coverage';
-
-  @override
-  String eventMatchingHostCoverage({required int usable, required int roster}) {
-    return '$usable of $roster current roster members have usable permitted answers';
-  }
-
-  @override
-  String get eventMatchingHostCoverageNote =>
-      'Coverage uses the current event roster; live assignment eligibility may differ.';
-
-  @override
-  String get eventMatchingHostSave => 'Save matching preferences';
-
-  @override
-  String get eventMatchingHostRemove => 'Remove question';
-
-  @override
-  String get eventMatchingHostRefresh => 'Refresh matching setup';
-
-  @override
-  String get eventMatchingHostConflict =>
-      'Matching setup changed elsewhere. Review the latest version before saving again.';
-
-  @override
-  String get eventMatchingHostValidation =>
-      'Review the question mapping before previewing or saving.';
-
-  @override
-  String get eventMatchingHostActiveVersion => 'Active published version';
-
-  @override
-  String get eventMatchingHostLimit =>
-      'Choose up to eight matching questions for this event.';
-
-  @override
-  String get eventMatchingHostTransform => 'Answer type';
-
-  @override
-  String get eventMatchingHostPreference => 'Matching preference';
-
-  @override
-  String get eventMatchingHostMoveEarlier => 'Move this choice earlier';
-
-  @override
-  String get eventMatchingHostDecreaseWeight => 'Decrease preference strength';
-
-  @override
-  String get eventMatchingHostIncreaseWeight => 'Increase preference strength';
-
-  @override
   String get hostsOperationalRosterFieldCity => 'City';
 
   @override
@@ -21251,9 +20404,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsPrivateEventPayments => 'Payments';
-
-  @override
-  String get hostsPrivateEventPublicListing => 'Public listing';
 
   @override
   String get hostsEventDefaultsBasics => 'Basics';
@@ -21915,10 +21065,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsPublicationNeedsReview =>
       'Review the event details before publishing';
-
-  @override
-  String get hostsPublicationPublishedBody =>
-      'This event is published. Visibility and registration are managed separately.';
 
   @override
   String get paymentsCancellationLabel => 'Booking cancelled';

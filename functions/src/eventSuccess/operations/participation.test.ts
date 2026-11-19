@@ -10,7 +10,7 @@ import type {EventAssistanceParticipationCallableResponse as Response} from
   "../../shared/generated/eventAssistanceParticipationCallableResponse";
 import type {EventAssistanceMessageIntent as Intent} from
   "../../shared/generated/eventAssistanceMessageIntent";
-import {EventParticipationStore, PARTICIPATION_RECEIPTS} from
+import {EventParticipationStore, PARTICIPATION_RECEIPT_COMMAND} from
   "./participationStore";
 import {getEventAssistanceParticipationHandler,
   setEventAssistanceParticipationHandler} from "./participationHandlers";
@@ -22,6 +22,10 @@ import {Guest, guestCollections, guestIdentity, parseGuest} from
 import {readEventAssistanceMessageGate} from "./guestMessageGate";
 import {validateEventAssistanceCommand} from
   "../../shared/generated/validators/eventAssistanceCommand";
+import {COMMAND_RECEIPTS} from "../../shared/commandReceipts";
+
+const PARTICIPATION_RECEIPT_PREFIX =
+  `${COMMAND_RECEIPTS}/${PARTICIPATION_RECEIPT_COMMAND}_`;
 
 const manager = progressFixtureManager;
 const guestUid = "guest-1";
@@ -112,7 +116,7 @@ test("participation is explicit and independent of physical attendance",
     assert.equal(changed.length, 2);
     assert.ok(changed.every(([path]) =>
       path.startsWith(guestCollections.guests + "/") ||
-      path.startsWith(PARTICIPATION_RECEIPTS + "/")));
+      path.startsWith(PARTICIPATION_RECEIPT_PREFIX)));
     assert.deepEqual(h.fake.read(h.attendeePath),
       before.find(([path]) => path === h.attendeePath)?.[1]);
     assert.equal((await h.store.set(guestUid, input)).outcome, "replayed");
@@ -178,7 +182,7 @@ test("stale commands and failed commits cannot overwrite participation",
       command(saved.view, "departed", "change")), {code: "aborted"});
     const snapshot = h.fake.entries();
     h.fake.beforeRead = (path) => {
-      if (path.startsWith(PARTICIPATION_RECEIPTS + "/")) {
+      if (path.startsWith(PARTICIPATION_RECEIPT_PREFIX)) {
         h.clock.now = 3_000_000;
       }
     };

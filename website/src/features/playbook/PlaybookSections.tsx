@@ -42,6 +42,8 @@ import {playbookCustomSections, type PlaybookCustomSectionProps} from "./custom/
 import {brand} from "../../content/brand";
 import {citiesPageCopy} from "../../content/citiesPage";
 import {websiteCities} from "../../content/markets";
+import {publishedHostStories} from "../../content/stories/hostStories";
+import {hostStoryCards} from "../marketing/hostStoryCards";
 import {playbookHref} from "./playbookHrefs";
 import type {PlaybookPageController} from "./usePlaybookPageController";
 
@@ -213,7 +215,7 @@ const SplitBinding: Binding<"split"> = ({section, context}) => (
     kicker={section.kicker}
     lead={section.lead}
     level={section.pageTitle ? 1 : 2}
-    media={section.leadForm ? context.controller.leadForm(section.leadForm, section.id) ?? undefined : media(section, context.captures)}
+    media={section.leadForm ? context.controller.leadForm(section.leadForm, section.id, "split") ?? undefined : media(section, context.captures)}
     metric={section.callout ? {value: section.callout.figure, label: section.callout.text} : undefined}
     steps={section.steps?.map((step) => ({marker: step.label, title: step.title, body: step.body}))}
     ticks={section.ticks}
@@ -280,7 +282,7 @@ const CtaBinding: Binding<"cta"> = ({section, context}) => {
   return (
     <CatchCtaSection
       actions={context.controller.actions(section.actions, section.id)}
-      capture={<CtaCapture form={context.controller.leadForm(section.leadForm, section.id)} whatsapp={opensWhatsApp(section.actions)} />}
+      capture={<CtaCapture form={context.controller.leadForm(section.leadForm, section.id, "cta")} whatsapp={opensWhatsApp(section.actions)} />}
       ground={section.ground}
       id={section.id}
       kicker={section.kicker}
@@ -433,8 +435,9 @@ function playbookCityCards(): CatchCardGridCity[] {
 }
 
 /**
- * A cards band through CatchCardGrid. Its one bound source is the market's
- * cities; a page naming any other source is held back (./playbookBindings).
+ * A cards band through CatchCardGrid. Its bound sources are the market's
+ * cities and the published host stories; a page naming any other source, or
+ * a stories band with no story published, is held back (./playbookBindings).
  */
 const CardsBinding: Binding<"cards"> = ({section, context}) => (
   <CatchCardGrid
@@ -443,12 +446,13 @@ const CardsBinding: Binding<"cards"> = ({section, context}) => (
     empty={section.empty ? {title: section.empty.title, message: section.empty.body} : undefined}
     ground={section.ground}
     id={section.id}
-    items={playbookCityCards()}
     kicker={section.kicker}
-    kind="city"
     lead={section.lead}
     level={section.pageTitle ? 1 : 2}
     title={section.title}
+    {...(section.source.kind === "stories" ?
+      {kind: "story" as const, items: hostStoryCards(publishedHostStories, playbookCopy.storyFigure)} :
+      {kind: "city" as const, items: playbookCityCards()})}
   />
 );
 

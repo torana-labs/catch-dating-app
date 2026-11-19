@@ -6,6 +6,8 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 
 const _catalogPath = 'copy/structured_domain_copy_en.json';
+const _playbookShapesPath =
+    'contracts/catalogs/event_success_playbook_shapes.json';
 const _files = <String, String>{
   'coach': 'lib/contexts/formats/domain/event_success_coach.dart',
   'library': 'lib/contexts/formats/domain/event_success_playbooks/library.dart',
@@ -193,6 +195,9 @@ void _sync() {
   final moduleMetadata = _validatedModuleMetadata(
     catalog['eventSuccessModuleMetadata']! as Map<String, Object?>,
   );
+  final playbookShapes = _playbookShapeValues(
+    jsonDecode(File(_playbookShapesPath).readAsStringSync()),
+  );
 
   final constantFields = constants.entries
       .map(
@@ -210,6 +215,7 @@ void _sync() {
 
   final used = <String>{};
   final usedModuleMetadata = <String>{};
+  final usedPlaybookShapes = <String>{};
   for (final entry in _files.entries) {
     final template = File(
       'tool/copy/templates/structured_domain_copy/${entry.key}.dart.template',
@@ -218,6 +224,16 @@ void _sync() {
       match,
     ) {
       final key = match.group(1)!;
+      const shapePrefix = 'playbookShape.';
+      if (key.startsWith(shapePrefix)) {
+        final shapeKey = key.substring(shapePrefix.length);
+        final value = playbookShapes[shapeKey];
+        if (value == null) {
+          throw FormatException('Template references missing $key.');
+        }
+        usedPlaybookShapes.add(shapeKey);
+        return value;
+      }
       const metadataPrefix = 'eventSuccessModuleMetadata.';
       const metadataSuffix = '.hostConfigurable';
       if (key.startsWith(metadataPrefix) && key.endsWith(metadataSuffix)) {
@@ -259,9 +275,84 @@ void _sync() {
       '${unusedModuleMetadata.join(', ')}',
     );
   }
+  final unusedPlaybookShapes = playbookShapes.keys.toSet().difference(
+    usedPlaybookShapes,
+  );
+  if (unusedPlaybookShapes.isNotEmpty) {
+    throw FormatException(
+      '$_playbookShapesPath has values no template uses: '
+      '${unusedPlaybookShapes.join(', ')}',
+    );
+  }
   stdout.writeln(
     'Synchronized ${messages.length} templates and ${constants.length} structured constants.',
   );
+}
+
+/// The playbook library's capacity and run-of-show values from the shared
+/// playbook shapes catalog, keyed `<playbookId>.capacity.min`,
+/// `<playbookId>.runOfShow.<index>.stage` and so on, rendered as the Dart
+/// literal each template placeholder takes. A step without moduleIds has no
+/// moduleIds key, so its template keeps the constructor's default.
+Map<String, String> _playbookShapeValues(Object? catalog) {
+  if (catalog is! Map<String, Object?> ||
+      catalog['schemaVersion'] != 1 ||
+      catalog['kind'] != 'eventSuccessPlaybookShapes' ||
+      catalog['playbooks'] is! List<Object?>) {
+    throw const FormatException(
+      '$_playbookShapesPath must be a version 1 eventSuccessPlaybookShapes catalog.',
+    );
+  }
+  final values = <String, String>{};
+  for (final raw in catalog['playbooks']! as List<Object?>) {
+    if (raw is! Map<String, Object?> ||
+        raw['playbookId'] is! String ||
+        raw['capacity'] is! Map<String, Object?> ||
+        raw['runOfShow'] is! List<Object?>) {
+      throw const FormatException(
+        'Each playbook shape needs an id, capacity and run of show.',
+      );
+    }
+    final id = raw['playbookId']! as String;
+    final capacity = raw['capacity']! as Map<String, Object?>;
+    for (final bound in const ['min', 'max']) {
+      final value = capacity[bound];
+      if (value is! int || value < 1) {
+        throw FormatException(
+          '$id capacity.$bound must be a positive integer.',
+        );
+      }
+      values['$id.capacity.$bound'] = '$value';
+    }
+    final steps = raw['runOfShow']! as List<Object?>;
+    for (var index = 0; index < steps.length; index += 1) {
+      final step = steps[index];
+      if (step is! Map<String, Object?> ||
+          step['stage'] is! String ||
+          !RegExp(r'^[a-z][A-Za-z]*$').hasMatch(step['stage']! as String) ||
+          step['durationMinutes'] is! int) {
+        throw FormatException(
+          '$id run of show step $index needs a stage and minutes.',
+        );
+      }
+      values['$id.runOfShow.$index.stage'] = step['stage']! as String;
+      values['$id.runOfShow.$index.durationMinutes'] =
+          '${step['durationMinutes']}';
+      final moduleIds = step['moduleIds'];
+      if (moduleIds == null) continue;
+      if (moduleIds is! List<Object?> ||
+          moduleIds.any(
+            (id) => id is! String || !RegExp(r'^[a-z][a-z_]*$').hasMatch(id),
+          )) {
+        throw FormatException(
+          '$id run of show step $index has invalid moduleIds.',
+        );
+      }
+      values['$id.runOfShow.$index.moduleIds'] =
+          '[${moduleIds.map((id) => "'$id'").join(', ')}]';
+    }
+  }
+  return values;
 }
 
 Map<String, bool> _validatedModuleMetadata(Map<String, Object?> raw) {

@@ -1588,10 +1588,8 @@ describe("firestore.rules", () => {
       }
     });
 
-    it("keeps organizer event setup defaults and receipts server-only", async () => {
-      for (const collectionName of ["organizerEventSetupDefaults",
-        "organizerEventSetupDefaultReceipts",
-        "eventOfferConfigurationReceipts"]) {
+    it("keeps organizer event setup defaults server-only", async () => {
+      for (const collectionName of ["organizerEventSetupDefaults"]) {
         await seed([collectionName, "organizer-1"], {
           organizerId: "organizer-1", revision: 1,
           eventSetup: {paymentInstructions: "Manager-only instructions"},
@@ -1634,9 +1632,8 @@ describe("firestore.rules", () => {
       }
     });
 
-    it("keeps public checkout and registration receipts server-only", async () => {
-      for (const collectionName of ["publicEventAdmissionReceipts",
-        "eventRegistrationReceipts"]) {
+    it("keeps public checkout receipts server-only", async () => {
+      for (const collectionName of ["publicEventAdmissionReceipts"]) {
         await seed([collectionName, "receipt-1"], {
           organizerId: "organizer-1", eventId: "event-1",
           responseId: "response-1", actorUid: "owner-1",
@@ -1698,9 +1695,7 @@ describe("firestore.rules", () => {
     });
 
     it("keeps event offer receipts and audits server-only", async () => {
-      for (const collectionName of [
-        "organizerEventOfferActionReceipts", "organizerEventOfferBatchReceipts",
-        "organizerEventOfferAudits"]) {
+      for (const collectionName of ["organizerEventOfferAudits"]) {
         await seed([collectionName, "offer-1"], {
           organizerId: "organizer-1", eventId: "event-1", revision: 1,
           manualPayment: {status: "none"},

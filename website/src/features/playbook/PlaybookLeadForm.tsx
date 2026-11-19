@@ -27,9 +27,10 @@ function ConsentLine({action}: {action: string}) {
  * labelled fields with the number last and a filled button. Under either sit
  * the page's note and the consent line. Once sent, the thanks takes the
  * form's place; after a failed send its words show and the button offers to
- * try again with the same request.
+ * try again with the same request. A `leadIn` (the referral form's sign-in)
+ * sits above the form element, not inside it, until the form is sent.
  */
-function PlaybookLeadForm({form, kind}: {form: PlaybookLeadFormContent; kind: PlaybookSendableLeadKind}) {
+function PlaybookLeadForm({form, kind, leadIn}: {form: PlaybookLeadFormContent; kind: PlaybookSendableLeadKind; leadIn?: ReactNode}) {
   const lead = usePlaybookLeadFormController(form, kind);
   const fields = form.fields ?? [];
   const card = fields.length > 0;
@@ -70,6 +71,7 @@ function PlaybookLeadForm({form, kind}: {form: PlaybookLeadFormContent; kind: Pl
   );
   const content = (
     <CatchStack gap={12}>
+      {lead.sent ? null : leadIn}
       {lead.sent ? null : (
         <Form aria-label={form.submitLabel} noValidate onSubmit={lead.handleSubmit} pending={lead.submitting}>{body}</Form>
       )}
@@ -83,9 +85,9 @@ function PlaybookLeadForm({form, kind}: {form: PlaybookLeadFormContent; kind: Pl
  * A band's lead form when the website lead intake can take what it asks for
  * (./playbookLeadModel: playbookSendableLeadKind); otherwise nothing, and the
  * band's WhatsApp actions stand alone. Keyed by page, band and form, so a
- * form starts empty on every page.
+ * form starts empty on every page. `leadIn` goes above the form element.
  */
-export function playbookLeadFormNode({form, pageId, sectionId}: PlaybookLeadFormProps): ReactNode {
+export function playbookLeadFormNode({form, pageId, sectionId}: PlaybookLeadFormProps, leadIn?: ReactNode): ReactNode {
   const kind = playbookSendableLeadKind(form);
-  return kind ? <PlaybookLeadForm form={form} key={`${pageId}-${sectionId}-${form.id}`} kind={kind} /> : null;
+  return kind ? <PlaybookLeadForm form={form} key={`${pageId}-${sectionId}-${form.id}`} kind={kind} leadIn={leadIn} /> : null;
 }

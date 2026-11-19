@@ -37,7 +37,22 @@ export interface StoredTryItWorkspace {
   keptAt: string | null;
   keptReason: WorkspaceKeptReason | null;
   expiredAt: string | null;
+  /**
+   * Private draft events try-it commands made in this workspace (an imported
+   * event, or the guest list's placeholder), newest last. Absent on records
+   * written before 19 Nov 2026.
+   */
+  tryItEventIds?: string[];
+  /**
+   * Private draft forms try-it commands made in this workspace
+   * (form.import-from-link), newest last. Absent on records written before
+   * that command existed. Kept to MAX_TRY_IT_EVENTS like events.
+   */
+  tryItFormIds?: string[];
 }
+
+/** At most this many try-it draft events are tracked per workspace. */
+export const MAX_TRY_IT_EVENTS = 20;
 
 /**
  * The workspace organizer's id: a 20-character id derived from the account
@@ -130,15 +145,31 @@ export async function stageTryItWorkspace(
   lookup: WorkspaceLookup,
   params: {uid: string; now: Date; commandId: string; surface: CommandSurface;
     organizerName: string; marketId: string;
-    serverTimestamp: () => FirebaseFirestore.FieldValue}
+    serverTimestamp: () => FirebaseFirestore.FieldValue;
+    /** A private draft event this command made, recorded as try-it. */
+    draftEventId?: string;
+    /** A private draft form this command made, recorded as try-it. */
+    draftFormId?: string}
 ): Promise<StoredTryItWorkspace> {
   const at = params.now.toISOString();
   const pointerRef = db.collection(TRY_IT_WORKSPACES).doc(params.uid);
+  const withEvent = (record: StoredTryItWorkspace): StoredTryItWorkspace => {
+    let next = record;
+    if (params.draftEventId) {
+      next = {...next, tryItEventIds: withTryItEvent(
+        next.tryItEventIds, params.draftEventId)};
+    }
+    if (params.draftFormId) {
+      next = {...next, tryItFormIds: withTryItEvent(
+        next.tryItFormIds, params.draftFormId)};
+    }
+    return next;
+  };
   if (lookup.kind === "existing") {
-    const touched: StoredTryItWorkspace = {...lookup.pointer,
+    const touched: StoredTryItWorkspace = withEvent({...lookup.pointer,
       lastCommandAt: at,
       expiresAt: lookup.pointer.state === "active" ?
-        expiryFrom(params.now) : lookup.pointer.expiresAt};
+        expiryFrom(params.now) : lookup.pointer.expiresAt});
     tx.set(pointerRef, touched);
     return touched;
   }
@@ -147,8 +178,8 @@ export async function stageTryItWorkspace(
     createdVia: {commandId: params.commandId, surface: params.surface},
     createdAt: at, lastCommandAt: at, expiredAt: null};
   if (lookup.kind === "adopt") {
-    const adopted: StoredTryItWorkspace = {...base, state: "kept",
-      expiresAt: null, keptAt: at, keptReason: "existing_organizer"};
+    const adopted: StoredTryItWorkspace = withEvent({...base, state: "kept",
+      expiresAt: null, keptAt: at, keptReason: "existing_organizer"});
     tx.set(pointerRef, adopted);
     return adopted;
   }
@@ -161,12 +192,23 @@ export async function stageTryItWorkspace(
     market,
     serverTimestamp: params.serverTimestamp,
   });
-  const created: StoredTryItWorkspace = {...base, state: "active",
-    expiresAt: expiryFrom(params.now), keptAt: null, keptReason: null};
+  const created: StoredTryItWorkspace = withEvent({...base, state: "active",
+    expiresAt: expiryFrom(params.now), keptAt: null, keptReason: null});
   tx.set(pointerRef, created);
   return created;
 }
 
 export function expiryFrom(now: Date): string {
   return new Date(now.getTime() + WORKSPACE_TTL_DAYS * DAY_MS).toISOString();
+}
+
+/**
+ * The workspace's try-it event ids with [eventId] added last, once, keeping
+ * the newest MAX_TRY_IT_EVENTS.
+ * @return {string[]} The ids to store.
+ */
+export function withTryItEvent(current: string[] | undefined,
+  eventId: string): string[] {
+  return [...(current ?? []).filter((id) => id !== eventId), eventId]
+    .slice(-MAX_TRY_IT_EVENTS);
 }

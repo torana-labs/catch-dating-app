@@ -6,7 +6,6 @@ import {
   CatchCheckboxInput,
   CatchChip,
   CatchCtaSection,
-  CatchDeviceFrame,
   CatchFaqSection,
   CatchField,
   CatchGroundCard,
@@ -25,7 +24,7 @@ import type {ReactNode} from "react";
 import {homeCityAreas, homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {activeMarket} from "@content/markets";
-import {guestAppActionLabel, guestAppLive, whatsappChatCopy, whatsappChatHref} from "@content/site";
+import {guestAppActionLabel, guestAppHref, guestAppLive, whatsappChatCopy, whatsappChatHref} from "@content/site";
 import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
@@ -33,7 +32,7 @@ import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
 import {useFoundingHostOffer} from "../../marketing/useFoundingHostOffer";
 import {CityPicker} from "./CityPicker";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
-import {useAppNoticeController} from "../useAppNoticeController";
+import {useAppNoticeController} from "../../marketing/useAppNoticeController";
 import {useLaunchNoticeController} from "../useLaunchNoticeController";
 import {useCityAlertsController} from "../leads/useCityAlertsController";
 import {useHostReferralController, type HostReferralField} from "../leads/useHostReferralController";
@@ -61,7 +60,7 @@ function HomeHero({captures, home, offerOpen}: {captures: CaptureSlots; home: Ho
         kicker={home.heroEyebrow}
         lead={offerOpen ? copy.launchHero.foundingBody : copy.launchHero.body}
         link={home.liveCity ? {label: fill(copy.soon.liveCityAction, {city: home.liveCity.label}), href: home.cityHref(home.liveCity.slug)} : undefined}
-        media={tablet ? <CatchDeviceFrame kind="tablet" tilt="left"><CatchAppCaptureImage {...tablet} caption={undefined} /></CatchDeviceFrame> : undefined}
+        media={tablet ? <CatchAppCaptureImage {...tablet} caption={undefined} tilt="left" /> : undefined}
         title={fill(copy.launchHero.title, {city})}
       />
     );
@@ -86,7 +85,7 @@ function HomeHero({captures, home, offerOpen}: {captures: CaptureSlots; home: Ho
       lead={copy.hero.body}
       // The board's proof line ("Every host verified · ★ … from … guests") waits for real data: nothing reads verified hosts
       // or a review count yet, so it is left out rather than shown with placeholders.
-      media={explore ? <CatchAppCaptureImage {...explore} bezel bleed caption={undefined} size="hero" tilt="left" /> : undefined}
+      media={explore ? <CatchAppCaptureImage {...explore} bleed caption={undefined} size="hero" tilt="left" /> : undefined}
       // Before the app is on a store, no "Coming soon" badges that capture nothing (leak 2): the notify card instead.
       notice={guestAppLive ? undefined : {title: copy.hero.notice.title, body: fill(copy.hero.notice.body, {city}), children: <AppNoticeForm compact home={home} />}}
       title={copy.hero.title}
@@ -316,7 +315,7 @@ function HomeHosts({captures, home, offerOpen}: {captures: CaptureSlots; home: H
   const early = home.state !== "busy";
   const tablet = captureSlot(captures, "host-live-tablet");
   const media = home.state !== "launching" && tablet ?
-    <CatchDeviceFrame kind="tablet" tilt="left"><CatchAppCaptureImage {...tablet} caption={undefined} /></CatchDeviceFrame> : undefined;
+    <CatchAppCaptureImage {...tablet} caption={undefined} tilt="left" /> : undefined;
   const actions: CatchBandAction[] = early ?
     [{label: copy.host.trial, href: "/host/#start"}, {label: copy.host.whatsapp, href: whatsappChatHref(whatsappChatCopy.hostQuestionMessage), newTab: true}] :
     [{label: copy.host.trial, href: "/host/#start"}, {label: copy.host.action, href: "/host/"}];
@@ -571,7 +570,7 @@ export function HomePageSections({captures, downloadUrl, home}: {captures: Captu
         <HomeRefer home={home} />
         <HomeFaq />
       </WebsitePageMain>
-      <PublicSiteFooter appHref="#app" cities={footerCities(home.cities)} cityFormats={chrome.cityFormats} exploreHref={home.exploreHref} />
+      <PublicSiteFooter appHref={guestAppHref} cities={footerCities(home.cities)} cityFormats={chrome.cityFormats} exploreHref={home.exploreHref} />
       <CatchSiteDock
         label={copy.dock.label}
         primary={{label: guestAppActionLabel, href: home.live ? "#app" : "#whats-on", accent: "pink"}}

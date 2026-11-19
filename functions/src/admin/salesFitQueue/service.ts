@@ -3,6 +3,8 @@ import {assertSalesPrivacyOpen} from "../salesPrivacy/model";
 import {filterSalesPrivacyRows} from "../sales/privacyBoundary";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
+import {classifyCommandReceiptData, commandReceiptRef, commandRequestHash,
+  writeCommandReceipt} from "../../shared/commandReceipts";
 import type {SalesAccount, SalesPrincipal} from "../sales/types";
 import {evaluateQualification, readQualificationPolicy} from "../sales/qualificationPolicy";
 import {evaluateScore, hash, parsePolicy, type Assessment,
@@ -21,6 +23,12 @@ const qualificationPath = "salesSettings/qualificationPolicy";
 const metaPath = "salesFitQueueMeta/current";
 const maxEvidence = 50;
 const pageScan = 100;
+const receiptCommand = "adminRefreshSalesFitQueue";
+/** What a replay needs to prove the live entry is still the one it made. */
+interface FitRefreshReceipt {
+  sourceHash: string;
+  qualificationPolicyHash: string | null;
+}
 
 function employee(principal: SalesPrincipal): void {
   if (!principal.uid || principal.clientId ||
@@ -83,9 +91,10 @@ export async function refreshFitQueue(deps: FitQueueDeps,
   if (expected !== undefined && (!Number.isSafeInteger(expected) ||
       (expected as number) < 1)) invalid("Expected account revision is invalid.");
   await deps.authorize(principal);
-  const materialHash = hash({organizerId, expected: expected ?? null});
-  const receiptRef = deps.db.collection("salesFitQueueReceipts")
-    .doc(receiptId(principal.uid, requestId));
+  const requestHash = commandRequestHash(principal.uid, organizerId,
+    expected ?? null);
+  const receiptRef = commandReceiptRef(deps.db, receiptCommand,
+    receiptId(principal.uid, requestId));
   return deps.db.runTransaction(async (tx) => {
     await deps.authorize(principal);
     await assertSalesPrivacyOpen(tx, deps.db, organizerId);
@@ -94,10 +103,12 @@ export async function refreshFitQueue(deps: FitQueueDeps,
     if (currentAccount?.researchStatus === "archived") {
       failed("Reopen this Sales account before refreshing fit.");
     }
-    const prior = (await tx.get(receiptRef)).data();
-    if (prior) {
-      if (prior.actorUid !== principal.uid || prior.requestId !== requestId ||
-          prior.materialHash !== materialHash) {
+    const lookup = classifyCommandReceiptData<FitRefreshReceipt>(
+      (await tx.get(receiptRef)).data(), {command: receiptCommand,
+        requestHash, nowMillis: deps.now().getTime()});
+    if (lookup.kind !== "none") {
+      const prior = lookup.kind === "replay" ? lookup.result : undefined;
+      if (typeof prior?.sourceHash !== "string") {
         throw new HttpsError("already-exists", "Fit refresh request ID has different material.");
       }
       const [projection, policySnap, qualificationSnap] = await Promise.all([
@@ -107,7 +118,7 @@ export async function refreshFitQueue(deps: FitQueueDeps,
       const entry = projection.data() as FitQueueEntry | undefined;
       const policy = currentPolicy(policySnap.data());
       const now = deps.now().toISOString();
-      if (!entry || entry.sourceHash !== prior.result?.entry?.sourceHash ||
+      if (!entry || entry.sourceHash !== prior.sourceHash ||
           entry.accountRevision !== currentAccount?.revision ||
           entry.policyRevision !== policy.revision ||
           prior.qualificationPolicyHash !==
@@ -117,7 +128,8 @@ export async function refreshFitQueue(deps: FitQueueDeps,
             null && entry.qualificationExpiresAt <= now) {
         failed("The earlier refresh is no longer current. Start a new review.");
       }
-      return prior.result as {entry: FitQueueEntry; receipt: {requestId: string; sourceHash: string}};
+      // The fences above prove the live entry is the one this request made.
+      return {entry: entry!, receipt: {requestId, sourceHash: prior.sourceHash}};
     }
     const [accountSnap, policySnap, qualificationSnap, metaSnap, evidenceSnap] =
       await Promise.all([
@@ -164,10 +176,10 @@ export async function refreshFitQueue(deps: FitQueueDeps,
       classification: "sales_private", metaId: "current",
       generation: nextGeneration, updatedAt: now});
     const result = {entry, receipt: {requestId, sourceHash: snapshot.sourceHash}};
-    tx.create(receiptRef, {schemaVersion: 1, classification: "sales_private",
-      receiptId: receiptRef.id, actorUid: principal.uid, requestId,
-      materialHash, qualificationPolicyHash: qualificationHash,
-      result, createdAt: now});
+    writeCommandReceipt(tx, receiptRef, {command: receiptCommand,
+      retention: "request", requestHash, nowMillis: deps.now().getTime(),
+      result: {sourceHash: snapshot.sourceHash,
+        qualificationPolicyHash: qualificationHash} satisfies FitRefreshReceipt});
     return result;
   });
 }

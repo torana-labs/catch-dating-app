@@ -47,8 +47,7 @@
           "to": {
             "anchor": "try"
           },
-          "emphasis": "secondary",
-          "status": "tryIt"
+          "emphasis": "secondary"
         },
         {
           "label": "Claim your page",
@@ -302,34 +301,23 @@
       "type": "split",
       "id": "try",
       "ground": "paper",
-      "status": "tryIt",
-      "statusNote": "Command: import an organiser from a link, in an unclaimed draft. Show this when the command ships.",
+      "status": "built",
       "kicker": "Try it with your page",
       "title": "See your page on {{brand.name}} before you sign up.",
-      "lead": "Paste your Instagram handle, Luma calendar, Linktree or website. {{brand.name}} builds your page with your photos, bio, links and upcoming events in about a minute. Like it? Claim it with your phone number and it’s yours to edit in {{brand.stores.hostAppName}}.",
+      "lead": "Paste your Instagram handle, Luma calendar, Linktree or website. {{brand.name}} builds your page with your bio, links and upcoming events in about a minute. Like it? Claim it with your phone number and it’s yours to edit in {{brand.stores.hostAppName}}.",
       "ticks": [
         "Works from Instagram, Luma, Linktree or your own website",
         "Your upcoming events come in as drafts, ready to open for booking",
         "Already listed on {{brand.name}}? We take you straight to claiming it",
         "Nothing goes live until you claim it"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "label": "Try it",
-          "title": "Build your page from a link",
-          "fields": [
-            {
-              "label": "Your Instagram, Luma or website",
-              "placeholder": "instagram.com/driftwoodbayrunners"
-            }
-          ],
-          "actions": [
-            "Build my page",
-            "Send it to my WhatsApp"
-          ],
-          "note": "Private until you claim it. Takes about a minute."
-        }
+      "leadForm": {
+        "id": "try_page",
+        "requestKind": "tool",
+        "input": "url",
+        "label": "Your Instagram, Luma or website",
+        "submitLabel": "Build my page",
+        "note": "Private until you claim it. Takes about a minute."
       }
     },
     {
@@ -395,21 +383,6 @@
       "ground": "coral",
       "status": "built",
       "kicker": "Free to set up",
-      "title": "Make your page tonight.",
-      "lead": "Download {{brand.stores.hostAppName}}, set up your page and first event, and put the link in your bio.",
-      "storeBadges": "host",
-      "media": {
-        "kind": "capture",
-        "slot": "host-today"
-      }
-    },
-    {
-      "type": "cta",
-      "id": "start-try",
-      "ground": "coral",
-      "status": "tryIt",
-      "statusNote": "The closing band of the import-an-organiser tool. Show it, in place of the band above, when the command ships.",
-      "kicker": "Free to set up",
       "title": "See your page in a minute.",
       "lead": "Paste a link to your Instagram, Luma or website. We’ll build your page and you can claim it with your phone number.",
       "leadForm": {
@@ -419,6 +392,7 @@
         "label": "Your Instagram, Luma or website link",
         "submitLabel": "Build my page"
       },
+      "storeBadges": "host",
       "media": {
         "kind": "capture",
         "slot": "host-today"

@@ -18,7 +18,7 @@ export type RuntimeContext = RuntimeConfig["context"];
 export type RuntimeConfiguration = NonNullable<RuntimeConfig["configuration"]>;
 export type RuntimeBinding = NonNullable<LateJoinAutomation["runtimeBinding"]>;
 export const RUNTIME_CONFIGS = "eventAssistanceRuntimeConfigs";
-export const RUNTIME_CONFIG_RECEIPTS = "eventAssistanceRuntimeConfigReceipts";
+export const RUNTIME_CONFIG_RECEIPT_COMMAND = "eventAssistanceRuntimeConfig";
 export type RuntimeUnavailable = "missing" | "paused" |
   "configurationChanged" | "sourceChanged" | "expired" | "eventClosed";
 

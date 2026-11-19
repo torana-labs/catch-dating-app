@@ -13,7 +13,7 @@ import {
   LocalReceiptStore,
   parseCommandLine,
   successEnvelope,
-} from "../src/command-client/index.mjs";
+} from "../../packages/command-client/src/index.mjs";
 import {hashValue} from "../src/platform/canonical-json.mjs";
 import {OperationsError} from "../src/platform/errors.mjs";
 
@@ -156,4 +156,68 @@ test("local receipt store is idempotent and refuses a different receipt", async 
   assert.equal(await store.put({...receipt}), first);
   await assert.rejects(store.put({...receipt, status: "failed"}),
     {code: "CATCH_RECEIPT_CONFLICT"});
+});
+
+test("operations and the shared package throw one error class", async () => {
+  const platform = await import("../src/platform/errors.mjs");
+  const shared = await import("../../packages/command-client/src/errors.mjs");
+  assert.equal(platform.OperationsError, shared.OperationsError);
+  const error = new shared.OperationsError("X_FAILED", "no");
+  assert.ok(error instanceof platform.OperationsError);
+  assert.equal(platform.asOperationsError(error), error);
+  const platformJson = await import("../src/platform/canonical-json.mjs");
+  const sharedJson = await import("../../packages/command-client/src/canonical-json.mjs");
+  assert.equal(platformJson.hashValue, sharedJson.hashValue);
+  // Pinned from the implementation before the move: stored hashes must not change.
+  assert.equal(platformJson.hashValue({b: 1, a: [2, {z: null, y: "é"}]}),
+    "ec16434fd977b8278695259ef46f4abb10fc5095b65acc000e1987bed40a04f9");
+});
+
+test("tool/ and operations/ read the admin action catalog through one reader", async () => {
+  const shared = await import("../../packages/command-client/src/admin-catalog.mjs");
+  const tool = await import("../../tool/lib/admin_registries.mjs");
+  assert.equal(tool.readAdminActionCatalog, shared.readAdminActionCatalog);
+  const catalog = shared.readAdminActionCatalog();
+  const ids = catalog.actions.map((action) => action.actionId);
+  assert.deepEqual(ids, [...ids].sort());
+  for (const workflow of catalog.workflows) {
+    assert.deepEqual(workflow.actions, catalog.actions
+      .filter((action) => action.workflowIds.includes(workflow.workflowId))
+      .map((action) => action.actionId));
+  }
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "admin-catalog-"));
+  const fixture = path.join(directory, "catalog.json");
+  await fs.writeFile(fixture, JSON.stringify({catalogVersion: "fixture", actions: [], workflows: []}));
+  assert.deepEqual(shared.readAdminActionCatalog(fixture),
+    {catalogVersion: "fixture", actions: [], workflows: []});
+});
+
+test("callableUrl builds the deployed function address the probes used", async () => {
+  const {callableUrl} = await import("../../packages/command-client/src/transport.mjs");
+  assert.equal(callableUrl({projectId: "catch-project-123", region: "asia-south1", name: "getStatus"}),
+    "https://asia-south1-catch-project-123.cloudfunctions.net/getStatus");
+  assert.equal(callableBaseUrl({project: "catch-project-123", region: "asia-south1"}),
+    "https://asia-south1-catch-project-123.cloudfunctions.net");
+});
+
+test("token exchanges post to Google's REST endpoints and fail with a staged error", async () => {
+  const {exchangeAppCheckDebugToken, exchangeCustomToken} =
+    await import("../../packages/command-client/src/tokens.mjs");
+  const calls = [];
+  const token = await exchangeAppCheckDebugToken({
+    fetchImpl: async (url, options) => {
+      calls.push({url, body: JSON.parse(options.body)});
+      return new Response(JSON.stringify({token: "app-check"}), {status: 200});
+    },
+    apiKey: "key", appId: "1:123:web:abc", projectNumber: "123", debugToken: "debug",
+  });
+  assert.equal(token, "app-check");
+  assert.equal(calls[0].url, "https://firebaseappcheck.googleapis.com/v1/projects/123/apps/" +
+    "1%3A123%3Aweb%3Aabc:exchangeDebugToken?key=key");
+  assert.deepEqual(calls[0].body, {debugToken: "debug"});
+  await assert.rejects(exchangeCustomToken({
+    fetchImpl: async () => new Response("not json", {status: 500}),
+    apiKey: "key", customToken: "custom",
+  }), (error) => error instanceof OperationsError && error.code === "TOKEN_AUTH_FAILED" &&
+    error.message === "auth: HTTP 500" && error.details.stage === "auth");
 });

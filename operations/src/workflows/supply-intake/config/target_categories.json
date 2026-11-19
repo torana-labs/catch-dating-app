@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-10",
+  "updatedAt": "2026-11-19",
   "batchSizeTarget": {
     "minimum": 25,
     "maximum": 50
@@ -78,13 +78,6 @@
       "entityKinds": ["club", "brand", "eventOrganizer"],
       "whyItFits": "Shared activity, recurring attendance, natural post-run social layer, and strong need for RSVP, waitlist, and host analytics.",
       "seedThreshold": "At least one stable public source plus city evidence and current or recent event cadence."
-    },
-    {
-      "id": "singles_event_operator",
-      "label": "Singles event operators",
-      "entityKinds": ["eventOrganizer", "creatorCommunity"],
-      "whyItFits": "Dating intent, guest curation, ratio management, payments, and post-event matching are core operational pain points.",
-      "seedThreshold": "Official site or public event profile confirming singles programming in the target city."
     },
     {
       "id": "board_game_social",

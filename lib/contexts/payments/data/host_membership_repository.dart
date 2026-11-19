@@ -48,26 +48,39 @@ class HostMembershipRepository {
         ),
       );
 
-  Stream<List<HostMembershipBenefitUse>> watchMyBenefitUses(String uid) =>
-      withBackendErrorStream(
-        () => _db
-            .collection(_benefitUses)
-            .where('uid', isEqualTo: uid)
-            .limit(ReadLimitPolicy.boundedWorkingSet)
-            .snapshots()
-            .map(
-              (snap) => List.unmodifiable(
-                snap.docs.map(
-                  (doc) => HostMembershipBenefitUse.fromMap(doc.id, doc.data()),
-                ),
-              ),
+  /// The member's booked member-price uses with one organizer whose event
+  /// starts after [startingAfterMillis], earliest first and at most [limit].
+  /// The server's cap reader runs the same query in
+  /// `functions/src/hostMemberships/entitlementReader.ts`.
+  Stream<List<HostMembershipBenefitUse>> watchUpcomingBenefitUses({
+    required String uid,
+    required String organizerId,
+    required int startingAfterMillis,
+    required int limit,
+  }) => withBackendErrorStream(
+    // firestore-index: hostMembershipBenefitUses (uid:ASCENDING,organizerId:ASCENDING,state:ASCENDING,eventStartMillis:ASCENDING)
+    () => _db
+        .collection(_benefitUses)
+        .where('uid', isEqualTo: uid)
+        .where('organizerId', isEqualTo: organizerId)
+        .where('state', isEqualTo: HostMembershipBenefitUse.bookedState)
+        .where('eventStartMillis', isGreaterThan: startingAfterMillis)
+        .orderBy('eventStartMillis')
+        .limit(limit)
+        .snapshots()
+        .map(
+          (snap) => List<HostMembershipBenefitUse>.unmodifiable(
+            snap.docs.map(
+              (doc) => HostMembershipBenefitUse.fromMap(doc.id, doc.data()),
             ),
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'watch membership savings',
-          resource: _benefitUses,
+          ),
         ),
-      );
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch upcoming member-priced bookings',
+      resource: _benefitUses,
+    ),
+  );
 
   Stream<List<HostMembershipPlan>> watchPublishedPlans(
     String organizerId,
@@ -174,10 +187,20 @@ Stream<List<HostMembership>> watchMyHostMemberships(Ref ref, String uid) =>
     ref.watch(hostMembershipRepositoryProvider).watchMyMemberships(uid);
 
 @riverpod
-Stream<List<HostMembershipBenefitUse>> watchMyHostMembershipBenefitUses(
-  Ref ref,
-  String uid,
-) => ref.watch(hostMembershipRepositoryProvider).watchMyBenefitUses(uid);
+Stream<List<HostMembershipBenefitUse>> watchUpcomingHostMembershipBenefitUses(
+  Ref ref, {
+  required String uid,
+  required String organizerId,
+  required int startingAfterMillis,
+  required int limit,
+}) => ref
+    .watch(hostMembershipRepositoryProvider)
+    .watchUpcomingBenefitUses(
+      uid: uid,
+      organizerId: organizerId,
+      startingAfterMillis: startingAfterMillis,
+      limit: limit,
+    );
 
 @riverpod
 Stream<List<HostMembershipPlan>> watchPublishedHostMembershipPlans(

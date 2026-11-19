@@ -19,6 +19,7 @@ import type {OrganizerIntakeCurationDecisionDocument} from
 import type {OrganizerIntakeReviewDecisionDocument} from
   "../shared/generated/organizerIntakeReviewDecisionDocument";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
+import {discoveryFormatsForText} from "../cityPlans/discoveryFormats";
 import {contractValidator} from "../shared/contractTestValidators";
 
 const validateAdminApproveOrganizerListingCallableResponse =
@@ -120,7 +121,9 @@ async function harness({submittedBy = {role: "associate", uid: "associate-1", pa
     marketId: "in-mh-mumbai", organizerType: "community",
     checklist: {identityReviewed: true, surfaceInventoryReviewed: true, ownerSafeCopyReviewed: true,
       marketScopeReviewed: true, mediaRightsReviewed: true, crawlDisabledReviewed: true,
-      claimTargetReviewed: true, takedownPathReviewed: true, impersonationReviewed: true},
+      claimTargetReviewed: true, takedownPathReviewed: true, impersonationReviewed: true,
+      cityEvidenceReviewed: true, formatsReviewed: true, datingFramingReviewed: true, personalDataReviewed: true},
+    formats: ["runClubs"],
     note: "Checked the Luma calendar and the description against it.", ...overrides,
   });
   const call = (data: Record<string, unknown>, token: Record<string, unknown> = {admin: true}, uid = "admin-1") =>
@@ -219,4 +222,82 @@ test("a request that has not finished, or was already approved, cannot be approv
   h.db.write(requestPath, {...stored, approval: {approvalId: "listing-" + "0".repeat(40), organizerId: "other",
     approvedByUid: "admin-2", approvedAt: NOW, materialHash: "0".repeat(64), salesOwnerUid: "admin-2"}});
   await assert.rejects(h.call(h.payload()), /not ready for approval/);
+});
+
+const PAUSED = {schemaVersion: 1, settingsId: "platform", revision: 1, paused: true,
+  reason: "Two removals this week; paused while the owner reviews.", updatedAtMillis: 1792828800000, updatedByUid: "owner-1"};
+
+test("approval writes the reviewer's formats, so the city-by-format pages count the organizer", async () => {
+  const h = await harness();
+  const response = await h.call(h.payload({formats: ["quizNights", "pickleball"]}));
+  const organizer = h.db.read(`organizers/${response.organizerId}`)!;
+  valid(validateOrganizerDocument, organizer, "OrganizerDocument");
+  const profile = organizer.publicProfile as {formats: string[]};
+  assert.deepEqual(profile.formats, ["Pickleball", "Quiz nights"]);
+  assert.equal(organizer.publicCategoryLabel, "Pickleball");
+  // The same free-text match cityPlans counts organizers with.
+  assert.deepEqual(discoveryFormatsForText([String(organizer.publicCategoryLabel), ...profile.formats]),
+    ["racketSports", "pickleball", "quizNights"]);
+  assert.equal(organizer.listingProgram, undefined, "no cohort, no tag");
+  // Without a cohort, Sales work opens as before.
+  assert.ok(h.db.read(`organizerSalesAccounts/${response.organizerId}`));
+});
+
+test("a cohort tags the organizer and opens no Sales records unless asked", async () => {
+  const h = await harness();
+  const response = await h.call(h.payload({cohortId: "pilot-indore-1"}));
+  valid(validateAdminApproveOrganizerListingCallableResponse, response, "AdminApproveOrganizerListingCallableResponse");
+  const organizer = h.db.read(`organizers/${response.organizerId}`)!;
+  valid(validateOrganizerDocument, organizer, "OrganizerDocument");
+  // The fake store keeps a Timestamp's fields, not its class.
+  const program = organizer.listingProgram as {cohortId: string; approvedAt: {_seconds: number}};
+  assert.equal(program.cohortId, "pilot-indore-1");
+  assert.equal(new Date(program.approvedAt._seconds * 1000).toISOString(), NOW);
+  assert.deepEqual((organizer.publicProfile as {formats: string[]}).formats, ["Run clubs"]);
+  for (const prefix of ["organizerSalesAccounts/", "salesOpportunities/", "salesTasks/", "salesActivities/"]) {
+    assert.equal(h.db.entries().filter(([key]) => key.startsWith(prefix)).length, 0, `${prefix} stays empty`);
+  }
+  const audit = h.db.entries().find(([key]) => key.startsWith("adminAuditLogs/"))?.[1] as {after: Record<string, unknown>};
+  assert.deepEqual([audit.after.cohortId, audit.after.formats, audit.after.salesRecords], ["pilot-indore-1", ["runClubs"], false]);
+
+  const opted = await harness();
+  const withSales = await opted.call(opted.payload({cohortId: "pilot-indore-1", salesRecords: true}));
+  assert.ok(opted.db.read(`organizerSalesAccounts/${withSales.organizerId}`), "an explicit salesRecords: true still opens them");
+});
+
+test("a programmatic listing needs formats and the programmatic checklist; nightlife is never one", async () => {
+  const h = await harness();
+  const {formats: _formats, ...withoutFormats} = h.payload(); // eslint-disable-line @typescript-eslint/no-unused-vars
+  await assert.rejects(h.call(withoutFormats), /at least one format/);
+  await assert.rejects(h.call(h.payload({formats: ["nightlife"]})));
+  for (const item of ["cityEvidenceReviewed", "formatsReviewed", "datingFramingReviewed", "personalDataReviewed"]) {
+    const checklist = {...h.payload().checklist} as Record<string, unknown>;
+    delete checklist[item];
+    await assert.rejects(h.call(h.payload({checklist})), new RegExp(`checklist confirmation: ${item}`));
+  }
+  await assert.rejects(h.call(h.payload({cohortId: "Pilot Indore"})));
+  assert.equal(h.db.entries().filter(([key]) => key.startsWith("organizers/")).length, 0, "nothing was published");
+});
+
+test("a paused listing programme refuses approval; a replay of an earlier approval still answers", async () => {
+  const h = await harness();
+  h.db.write("listingProgramSettings/platform", PAUSED);
+  await assert.rejects(h.call(h.payload()),
+    /Programmatic listings are paused \(Settings → Intake\): Two removals this week; paused while the owner reviews\. Nothing was published\./);
+  assert.equal(h.db.entries().filter(([key]) => key.startsWith("organizers/")).length, 0, "nothing was published");
+
+  h.db.write("listingProgramSettings/platform", {...PAUSED, revision: 2, paused: false, reason: "Owner reviewed; resuming."});
+  const response = await h.call(h.payload());
+  h.db.write("listingProgramSettings/platform", {...PAUSED, revision: 3});
+  assert.deepEqual(await h.call(h.payload({requestId: "approve-moonmoth-retry"})), {...response, created: false});
+});
+
+test("an organizer's own submission is outside the programme: no pause, no formats needed, no cohort", async () => {
+  const h = await harness({submittedBy: {role: "organizer", uid: "organizer-1", partnerId: null}});
+  h.db.write("listingProgramSettings/platform", PAUSED);
+  const {formats: _formats, ...payload} = h.payload(); // eslint-disable-line @typescript-eslint/no-unused-vars
+  await assert.rejects(h.call({...payload, cohortId: "pilot-indore-1"}), /only for a listing Catch sourced/);
+  const response = await h.call(payload);
+  const organizer = h.db.read(`organizers/${response.organizerId}`)!;
+  assert.deepEqual([organizer.listingProgram, organizer.publicCategoryLabel], [undefined, null]);
 });

@@ -28,8 +28,7 @@ void main() {
     ) async {
       final actions = <HostMembershipAction>[];
       final state = MyMembershipsState.from(
-        memberships: [testMembership()],
-        benefitUses: [testBenefitUse()],
+        memberships: [testMembership(savedInPaise: 50000)],
       );
       await tester.pumpWidget(
         _wrap(
@@ -74,7 +73,6 @@ void main() {
             pause: {'initiator': 'host', 'pausedAtMillis': 1},
           ),
         ],
-        benefitUses: const [],
       );
       await tester.pumpWidget(
         _wrap(
@@ -93,10 +91,7 @@ void main() {
           SizedBox(
             height: 600,
             child: MyMembershipsList(
-              state: MyMembershipsState.from(
-                memberships: const [],
-                benefitUses: const [],
-              ),
+              state: MyMembershipsState.from(memberships: const []),
               now: testNow,
               onAction: (_, _) {},
             ),

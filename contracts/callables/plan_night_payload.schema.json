@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/plan_night_payload.schema.json",
+  "title": "PlanNightCallablePayload",
+  "description": "Command night.plan (contracts/commands/catalog.json; #2062 C4). A phone-verified caller with a try-it workspace names a format and a guest count. Preview answers the night: groups, the mixing moment, the run of show, three missions and a rehearsal setup, all from the shared playbook-shape catalog. Apply saves it as the event-success plan of the workspace's private draft event (or input.eventId, which must belong to the workspace) once that event's activity matches the format.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode", "idempotencyKey", "surface", "input"],
+  "properties": {
+    "mode": {"$ref": "../shared/command_envelope.schema.json#/definitions/mode"},
+    "idempotencyKey": {"$ref": "../shared/command_envelope.schema.json#/definitions/idempotencyKey"},
+    "surface": {"$ref": "../shared/command_envelope.schema.json#/definitions/surface"},
+    "confirm": {"$ref": "../shared/command_envelope.schema.json#/definitions/confirm"},
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "guestCount"],
+      "properties": {
+        "format": {"type": "string", "enum": ["run", "dinner", "quiz", "courts", "crawl"]},
+        "guestCount": {"type": "integer", "minimum": 2, "maximum": 200},
+        "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId",
+          "description": "A draft event in the caller's try-it workspace to plan. Defaults to the workspace's newest private try-it draft."}
+      }
+    }
+  }
+}

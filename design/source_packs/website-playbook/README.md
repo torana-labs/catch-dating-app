@@ -199,12 +199,14 @@ The canvas owns these values (blueprint D26). `tool/design/playbook/import_kit_t
 | `.pg .foot .top` gap | `16px` | `space.s4` | match |
 | `.pg .foot .top` border-bottom | `rgba(246,239,230,.12)` | `theme.dark.color.line` | match |
 | `.pg .foot .top h3` font-size | `22px` | `website.footer.titleSize` | own |
-| `.pg .foot .cols` gap | `24px` | `space.s6` | match |
-| `.pg .foot .cols` row-gap (phone) | `28px` | `space.s7` | match |
+| `.pg .foot .cols` columns | `192px` | `website.footer.columnMin` | own |
+| `.pg .foot .cols` column-gap | `24px` | `space.s6` | match |
+| `.pg .foot .cols>div` padding-bottom | `32px` | `space.s8` | match |
 | `.pg .foot h4` margin | `14px` | `space.micro14` | match |
 | `.pg .foot h4` font-size | `15px` | `typography.role.body.size` | match |
 | `.pg .foot a` font-size | `14px` | `typography.role.bodySmall.size` | match |
-| `.pg .foot a` line-height | `2` | `website.footer.linkLineHeight` | own |
+| `.pg .foot a` line-height | `1.4` | `website.footer.linkLineHeight` | own |
+| `.pg .foot a` padding | `4.2px` | `website.footer.linkPadBlock` | own |
 | `.pg .legal` margin-top | `28px` | `space.s7` | match |
 | `.pg .legal` font-size | `12px` | `typography.role.labelBadge.size` | match |
 | `.pg .legal` gap | `16px` | `space.s4` | match |

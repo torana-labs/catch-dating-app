@@ -65,7 +65,8 @@ test("catch CLI previews by default and sends the shared envelope", async () => 
   }});
   assert.equal(result.status, "previewed");
   assert.equal(result.previewHash, previewHash);
-  assert.deepEqual(result.applyWith, ["--apply", "--preview-hash", previewHash]);
+  assert.deepEqual(result.applyWith,
+    ["--idempotency-key", key, "--apply", "--preview-hash", previewHash]);
   assert.deepEqual(result.warnings, []);
 });
 
@@ -196,4 +197,24 @@ test("catch CLI text output shows the summary and how to apply", async () => {
     "--idempotency-key", key], {catalog, client: recordingClient()});
   assert.match(out.text, /^Your workspace is ready\n {2}Lantern Social Club/u);
   assert.match(out.text, /--apply --preview-hash a{64}/u);
+});
+
+test("catch CLI apply run built from applyWith reuses the preview's key", async () => {
+  const catalog = await loadCommandCatalog();
+  const client = recordingClient();
+  const preview = await runCommand({catalog, commandId: "workspace.ensure",
+    flags: {json: JSON.stringify(input)}, dependencies: {client,
+      newIdempotencyKey: () => "cli_previewkey0000000000000000001"}});
+  const flags = {json: JSON.stringify(input)};
+  for (let index = 0; index < preview.applyWith.length; index += 1) {
+    const flag = preview.applyWith[index];
+    const name = flag.slice(2).replace(/-([a-z])/gu, (_m, letter) => letter.toUpperCase());
+    if (flag === "--apply") flags.apply = true;
+    else flags[name] = preview.applyWith[++index];
+  }
+  await runCommand({catalog, commandId: "workspace.ensure", flags, dependencies: {client,
+    receiptStore: memoryReceipts(),
+    newIdempotencyKey: () => "cli_differentkey000000000000000002"}});
+  assert.equal(client.calls[1].payload.mode, "apply");
+  assert.equal(client.calls[1].payload.idempotencyKey, client.calls[0].payload.idempotencyKey);
 });

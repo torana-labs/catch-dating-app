@@ -13,7 +13,9 @@ import {
   guestMappingProposalProvider,
   type GuestMappingModelRunner,
 } from "../guestImport/mappingFallback";
+import {ensureTryItWorkspaceHandler} from "./ensureTryItWorkspace";
 import {importGuestListHandler, type ImportGuestListDeps} from "./importGuestList";
+import {tryItWorkspaceOrganizerId} from "./workspace";
 
 // Every name, number and address below is fictional.
 
@@ -25,6 +27,7 @@ const ORGANIZER = "organizer-1";
 const validate = {
   response: contractValidator("ImportGuestListCallableResponse"),
   shape: contractValidator("GuestImportHeaderShapeDocument"),
+  workspace: contractValidator("TryItWorkspaceDocument"),
 };
 
 function valid(validator: ((value: unknown) => boolean) & {errors?: unknown}, value: unknown, label: string) {
@@ -62,6 +65,9 @@ function harness(options: {authorize?: () => Promise<void>;
     firestore: () => db as unknown as FirebaseFirestore.Firestore,
     now: () => new Date("2026-11-18T08:00:00.000Z"),
     increment: ((by: number) => ({__increment: by})) as never,
+    serverTimestamp: () => "server-time" as unknown as FirebaseFirestore.FieldValue,
+    timestampFromMillis: (millis: number) => ({_seconds: Math.floor(millis / 1000), _nanoseconds: 0}) as unknown as
+      FirebaseFirestore.Timestamp,
     checkRateLimit: (async () => undefined) as never,
     intake: () => intake,
     mappingProvider: options.mappingProvider ?? (() => guestMappingProposalProvider()),
@@ -270,4 +276,86 @@ test("an unusable model proposal falls back to the host mapping", async () => {
   const {deps} = harness({mappingProvider: () => guestMappingProposalProvider({policy, runner})});
   const response = await importGuestListHandler(call(envelope("preview", "Attendee,Contact\nAsha Sample,9876543210\n")), deps);
   assert.equal(response.status, "needs_input");
+});
+
+// Try-it workspace target (owner decision on #2061, question 1 (a)).
+
+const WORKSPACE_ORGANIZER = tryItWorkspaceOrganizerId(UID, 1);
+
+async function withWorkspace() {
+  const h = harness();
+  await ensureTryItWorkspaceHandler(call({mode: "apply", idempotencyKey: "workspace-request-01", surface: "website",
+    input: {organizerName: "Sunrise Social Club", marketId: "in-mh-mumbai"}}), {
+      firestore: h.deps.firestore, now: h.deps.now, serverTimestamp: h.deps.serverTimestamp,
+      checkRateLimit: h.deps.checkRateLimit,
+    } as never);
+  return h;
+}
+
+function websiteEnvelope(mode: "preview" | "apply", csv: string, extra: Record<string, unknown> = {}) {
+  const envelopeData = envelope(mode, csv, {surface: "website", ...extra});
+  delete (envelopeData.input as {eventId?: string}).eventId;
+  return envelopeData;
+}
+
+const events = (db: FakeFirestore) => db.entries().filter(([key]) => /^events\/[^/]+$/u.test(key));
+
+test("with no event and no workspace, the caller is asked to set up their profile", async () => {
+  const {db, deps} = harness();
+  await assert.rejects(importGuestListHandler(call(websiteEnvelope("preview", LUMA_CSV)), deps),
+    (error: {details?: {reason?: string}}) => error.details?.reason === "no_workspace");
+  assert.equal(events(db).length, 1, "only the seeded event");
+});
+
+test("with no event, guests go on one private placeholder draft recorded on the workspace", async () => {
+  const {db, deps, imports} = await withWorkspace();
+  const preview = await importGuestListHandler(call(websiteEnvelope("preview", LUMA_CSV)), deps);
+  valid(validate.response, preview, "preview");
+  assert.equal(preview.status, "previewed");
+  const eventId = preview.result.eventId;
+  assert.notEqual(eventId, EVENT);
+  const event = db.read(`events/${eventId}`)!;
+  assert.equal(event.organizerId, WORKSPACE_ORGANIZER);
+  assert.equal(event.name, "Guest list");
+  assert.deepEqual([event.publicationState, event.publicRegistrationEnabled, event.status], ["private", false, "active"]);
+  assert.deepEqual([event.eventLocalDate, event.eventLocalStartTime, event.eventTimezone], ["2026-12-02", "19:00", "Asia/Kolkata"]);
+  assert.ok(preview.summary.lines.some((line) => line.includes("\"Guest list\"")));
+  const pointer = db.read(`tryItWorkspaces/${UID}`);
+  valid(validate.workspace, pointer, "workspace");
+  assert.deepEqual(pointer?.tryItEventIds, [eventId]);
+
+  const again = await importGuestListHandler(call(websiteEnvelope("preview", LUMA_CSV)), deps);
+  assert.equal(again.result.eventId, eventId, "the same draft is reused");
+  assert.equal(again.previewHash, preview.previewHash);
+
+  const confirm = {commandId: "guests.import-list", previewHash: preview.previewHash};
+  const applied = await importGuestListHandler(call(websiteEnvelope("apply", LUMA_CSV, {confirm})), deps);
+  valid(validate.response, applied, "apply");
+  assert.equal(applied.status, "applied");
+  assert.equal(applied.result.eventId, eventId);
+  assert.equal(imports.length, 1);
+  assert.deepEqual(db.read(`tryItWorkspaces/${UID}`)?.tryItEventIds, [eventId]);
+  assert.equal(events(db).length, 2, "the seeded event and one placeholder");
+});
+
+test("with no event, guests go on the workspace's imported draft while it stays private", async () => {
+  const {db, deps} = await withWorkspace();
+  db.write("events/imported-1", {organizerId: WORKSPACE_ORGANIZER, publicationState: "private", status: "active"});
+  db.write("events/older-1", {organizerId: WORKSPACE_ORGANIZER, publicationState: "private", status: "active"});
+  db.write(`tryItWorkspaces/${UID}`, {...db.read(`tryItWorkspaces/${UID}`), tryItEventIds: ["older-1", "imported-1"]});
+  const preview = await importGuestListHandler(call(websiteEnvelope("preview", LUMA_CSV)), deps);
+  assert.equal(preview.result.eventId, "imported-1", "the newest try-it draft");
+  assert.ok(preview.summary.lines.includes("Guests go on your private draft event in your profile."));
+
+  db.write("events/imported-1", {organizerId: WORKSPACE_ORGANIZER, publicationState: "published", status: "active"});
+  const published = await importGuestListHandler(call(websiteEnvelope("preview", LUMA_CSV)), deps);
+  assert.equal(published.result.eventId, "older-1", "a published event is no longer a try-it draft");
+});
+
+test("a named event is used as it is, and the workspace is not touched", async () => {
+  const {db, deps} = await withWorkspace();
+  const before = db.read(`tryItWorkspaces/${UID}`);
+  const preview = await importGuestListHandler(call(envelope("preview", LUMA_CSV, {surface: "website"})), deps);
+  assert.equal(preview.result.eventId, EVENT);
+  assert.deepEqual(db.read(`tryItWorkspaces/${UID}`), before);
 });

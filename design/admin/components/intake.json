@@ -12,13 +12,14 @@
         "story": "admin/src/stories/AdminSettingsIntake.stories.tsx",
         "exportName": "IntakeSettingsStory",
         "states": [
+          "listing-program",
           "policies",
           "limits",
           "nominators",
           "launch-cities"
         ]
       },
-      "notes": "Settings \u2192 Intake: what Intake does on its own (each decision recorded in a dialog with its checklist, switched on only by a reviewed change), limits, who can nominate by message (the add-someone sheet) and launch cities, replacing the Supply Intake policy and nominator panels."
+      "notes": "Settings \u2192 Intake: the programmatic listings pause switch (paused or flipped back in a dialog that asks why; ops may pause, only the owner resumes) with the counts-only report of live organizers that list no format, what Intake does on its own (each decision recorded in a dialog with its checklist, switched on only by a reviewed change), limits, who can nominate by message (the add-someone sheet) and launch cities, replacing the Supply Intake policy and nominator panels."
     },
     {
       "id": "route_settings_intake_live_controller",
@@ -34,7 +35,7 @@
           "route-lazy-boundary"
         ]
       },
-      "notes": "Lazy live wrapper owns the policy and nominator controllers; deterministic visual coverage remains on route_settings_intake."
+      "notes": "Lazy live wrapper owns the pause switch, policy and nominator controllers; deterministic visual coverage remains on route_settings_intake."
     }
   ]
 }

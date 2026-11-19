@@ -8,6 +8,7 @@ import {
   listFirebaseFunctionExports,
   listFirebaseFunctionTargets,
 } from "./list_firebase_function_targets.mjs";
+import {callableUrl} from "../../packages/command-client/src/transport.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
@@ -225,7 +226,7 @@ export async function probeCallable({
   fetchImpl = fetch,
   wait = () => sleep(2_000),
 }) {
-  const url = `https://${region}-${projectId}.cloudfunctions.net/${callable}`;
+  const url = callableUrl({projectId, region, name: callable});
   const response = await fetchRetryingDroppedConnections(fetchImpl, url, {
     method: "POST",
     redirect: "manual",

@@ -29,7 +29,7 @@ function strings(value: unknown): string[] {
 
 describe("the host fee model", () => {
   it("holds the owner's facts: 5%, capped at ₹10,000 per 30-day billing cycle, 30 days free or 90 for founding hosts", () => {
-    expect(hostPricing).toEqual({rateBasisPoints: 500, cap: 10_000, cycleDays: 30, trialDays: 30, foundingTrialDays: 90});
+    expect(hostPricing).toEqual({rateBasisPoints: 500, cap: 10_000, cycleDays: 30, trialDays: 30, foundingTrialDays: 90, referralTrialDays: 60});
     expect(hostPricingFacts).toMatchObject({rate: "5%", cap: "₹10,000", capReachedAt: "₹2,00,000", zero: "₹0"});
   });
 

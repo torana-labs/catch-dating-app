@@ -2005,6 +2005,7 @@
                   "noShowCalculator",
                   "eventPageFromLink",
                   "walkthroughSlots",
+                  "appLaunchNotice",
                   "pricingCalculator",
                   "pricingExamples",
                   "pricingCap",
@@ -2538,7 +2539,10 @@
                   "capacity",
                   "nights",
                   "orgType",
-                  "orgName"
+                  "orgName",
+                  "hostName",
+                  "hostLink",
+                  "relationship"
                 ]
               },
               "label": {

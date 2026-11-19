@@ -88,7 +88,7 @@ function Hero({captures}: {captures: CaptureSlots}) {
       kicker={hero.kicker}
       lead={hero.body}
       link={{label: hero.walkthrough, href: hostWalkthroughHref}}
-      media={today ? <CatchAppCaptureImage {...today} bezel bleed caption={undefined} size="hero" tilt="left" /> : undefined}
+      media={today ? <CatchAppCaptureImage {...today} bleed caption={undefined} size="hero" tilt="left" /> : undefined}
       note={hero.terms}
       // A phone already has the stores a tap away (the start band and the dock); the card is for a laptop.
       notice={sizeClass === "compact" ? undefined : {
@@ -167,7 +167,7 @@ function Night({captures, host}: {captures: CaptureSlots; host: Host}) {
         id="night"
         kicker={copy.night.kicker}
         lead={copy.night.lead}
-        media={screen ? <CatchAppCaptureImage {...screen} bezel bleed caption={undefined} size="md" /> : undefined}
+        media={screen ? <CatchAppCaptureImage {...screen} bleed caption={undefined} size="md" /> : undefined}
         moments={night.moments.map((item) => ({time: item.time, title: item.title, body: item.body}))}
         onSelect={host.pickMoment}
         picker={(
@@ -248,7 +248,7 @@ function Talk({captures}: {captures: CaptureSlots}) {
               key={path.title}
               kicker={path.kicker}
               kind="button"
-              media={index === 1 && tablet ? <CatchAppCaptureImage {...tablet} caption={undefined} /> : undefined}
+              media={index === 1 && tablet ? <CatchAppCaptureImage {...tablet} caption={undefined} device={undefined} /> : undefined}
               title={path.title}
             />
           ))}
@@ -303,7 +303,7 @@ function Start({captures}: {captures: CaptureSlots}) {
       id="start"
       kicker={start.kicker}
       lead={start.body}
-      media={explore ? <CatchAppCaptureImage {...explore} bezel bleed caption={undefined} size="md" /> : undefined}
+      media={explore ? <CatchAppCaptureImage {...explore} bleed caption={undefined} size="md" /> : undefined}
       stores={stores.map((store) => ({badgeSrc: store.badgeSrc, comingSoon: store.comingSoon, href: store.href || undefined, label: store.accessibleLabel,
         onClick: store.onClick, store: store.store}))}
       title={start.title}

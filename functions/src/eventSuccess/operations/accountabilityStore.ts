@@ -9,9 +9,6 @@ import {validateResolveEventAssistanceAccountabilityCallablePayload} from
   "../../shared/generated/validators/resolveEventAssistanceAccountabilityInput";
 import {validateEventAssistanceAccountabilityCallableResponse} from
   "../../shared/generated/validators/eventAssistanceAccountabilityOutput";
-import {validateEventAssistanceAccountabilityReceiptDocument} from
-  // eslint-disable-next-line max-len -- Canonical individual validator path.
-  "../../shared/generated/validators/eventAssistanceAccountabilityReceiptDocument";
 import {validateEventAttendeeDocument} from
   "../../shared/generated/validators/eventAttendeeDocument";
 import {assertCommandContext, assertCommandRole} from "./commands";
@@ -29,8 +26,22 @@ import {
   accountabilityState,
 } from "./accountabilityProjection";
 import {runAssistanceTransaction} from "./transactionCallback";
+import {assistanceReceiptRef, isDigest, isMillis, isRevision,
+  replayAssistanceReceipt, writeAssistanceReceipt} from "./assistanceReceipts";
 
-export const ACCOUNTABILITY_RECEIPTS = "eventAssistanceAccountabilityReceipts";
+export const ACCOUNTABILITY_RECEIPT_COMMAND = "eventAssistanceAccountability";
+
+/** What a replay re-checks against the live attendee and checkpoint. */
+type AccountabilityReceipt = {
+  revision: number; createdAt: number; sourceGeneration: string;
+  attendeeGeneration: string; checkInHash: string; episodeId: string | null;
+  checkpointHash: string;
+};
+const validReceipt = (r: Record<string, unknown>) => isRevision(r.revision) &&
+  isMillis(r.createdAt) && isDigest(r.sourceGeneration) &&
+  isDigest(r.attendeeGeneration) && isDigest(r.checkInHash) &&
+  (r.episodeId === null || typeof r.episodeId === "string") &&
+  isDigest(r.checkpointHash);
 
 /** Records a visit disposition for a sweep or an explicit departure. */
 export class EventAccountabilityStore {
@@ -66,15 +77,15 @@ export class EventAccountabilityStore {
     const scope: Scope = {context, groupId: input.groupId,
       attendeeId: payload.attendeeId,
       ...(input.checkpoint ? {checkpoint: input.checkpoint} : {})};
-    const guestId = guestIdentity(context, payload.attendeeId);
+    guestIdentity(context, payload.attendeeId);
     const requestHash = operationContentHash([actorUid, input]);
-    const receiptId = "accountability-action:" + operationContentHash([
-      context, payload.attendeeId, command.operationId]);
+    const receiptRef = assistanceReceiptRef(this.db,
+      ACCOUNTABILITY_RECEIPT_COMMAND, operationContentHash([
+        context, payload.attendeeId, command.operationId]));
     return runAssistanceTransaction(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, scope);
       assertCommandRole(command, [state.access.role]);
-      const ref = this.db.collection(ACCOUNTABILITY_RECEIPTS).doc(receiptId);
-      const receipt = (await tx.get(ref)).data();
+      const stored = (await tx.get(receiptRef)).data();
       const now = this.clock();
       if (!Number.isSafeInteger(now) || now < state.member.now) {
         throw invalidSource();
@@ -82,19 +93,20 @@ export class EventAccountabilityStore {
       if (now >= state.access.validUntil) throw denied();
       state.member.now = now;
       const revision = state.member.attendee.accountabilityRevision ?? 0;
-      if (receipt !== undefined) {
-        if (!validateEventAssistanceAccountabilityReceiptDocument(receipt) ||
-            receipt.receiptId !== receiptId || receipt.guestId !== guestId ||
-            receipt.requestHash !== requestHash ||
-            receipt.sourceGeneration !== state.member.source.sourceGeneration ||
+      const checkpointHash =
+        operationContentHash(state.checkpoint?.proof ?? null);
+      const receipt = replayAssistanceReceipt<AccountabilityReceipt>(stored, {
+        command: ACCOUNTABILITY_RECEIPT_COMMAND, requestHash, nowMillis: now,
+      }, validReceipt, conflict);
+      if (receipt !== null) {
+        if (receipt.sourceGeneration !==
+              state.member.source.sourceGeneration ||
             receipt.attendeeGeneration !==
               state.member.source.attendeeGeneration ||
             receipt.checkInHash !==
               accountabilityCheckInHash(state.member.attendee) ||
             receipt.episodeId !== accountabilityEpisodeId(state.member) ||
-            operationContentHash(receipt.checkpoint ?? null) !==
-              operationContentHash(state.checkpoint?.proof ?? null) ||
-            receipt.disposition !== payload.disposition ||
+            receipt.checkpointHash !== checkpointHash ||
             receipt.revision > revision || receipt.createdAt > now) {
           throw conflict();
         }
@@ -112,23 +124,21 @@ export class EventAccountabilityStore {
         payload.disposition, actorUid, Timestamp.fromMillis(now));
       const attendee = {...state.member.attendee, ...fields};
       if (!validateEventAttendeeDocument(attendee)) throw invalidSource();
-      const saved = {receiptId, guestId, requestHash,
+      const saved: AccountabilityReceipt = {
         sourceGeneration: state.member.source.sourceGeneration,
         attendeeGeneration: state.member.source.attendeeGeneration,
         checkInHash: accountabilityCheckInHash(state.member.attendee),
         episodeId: accountabilityEpisodeId(state.member),
-        revision: fields.accountabilityRevision,
-        disposition: payload.disposition, createdAt: now,
-        ...(state.checkpoint?.proof ?
-          {checkpoint: state.checkpoint.proof} : {})};
-      if (!validateEventAssistanceAccountabilityReceiptDocument(saved)) {
-        throw invalidSource();
-      }
+        revision: fields.accountabilityRevision, createdAt: now,
+        checkpointHash};
+      if (!validReceipt(saved)) throw invalidSource();
       const result = response("applied", {...state,
         member: {...state.member, attendee}}, saved.revision);
       tx.set(this.db.collection("eventAttendees").doc(scope.attendeeId),
         attendee);
-      tx.create(ref, saved);
+      writeAssistanceReceipt(tx, receiptRef, {
+        command: ACCOUNTABILITY_RECEIPT_COMMAND, requestHash, nowMillis: now,
+        result: saved});
       return result;
     });
   }

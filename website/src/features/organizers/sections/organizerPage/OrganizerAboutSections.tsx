@@ -45,40 +45,25 @@ export function OrganizerAboutSection({controller}: {controller: OrganizerPageCo
 }
 
 /**
- * Generated pages only, at the top of the main column: the board's claim
- * card on indigo, with the people already waiting, what claiming gives the
- * organiser, and the way into the claim flow on /claim/ (or that a claim is
- * being reviewed).
+ * Generated pages only, at the top of the main column: a plain card on
+ * indigo that says what claiming does and offers the other way out, asking
+ * for the page to come down (listings plan B4, 19 Nov 2026), then the way
+ * into the claim flow on /claim/ (or that a claim is being reviewed).
  */
 export function OrganizerClaimSection({controller}: {controller: OrganizerPageController}) {
   const {claim} = controller.view;
   const titleId = `${useId()}-title`;
   if (!claim) return null;
-  const pitch = copy.claim;
-  const waiting = [
-    claim.followers ? `${claim.followers} ${pitch.followers}` : null,
-    claim.reviewers ? `${claim.reviewers} ${claim.reviewVerb}` : null,
-  ].filter(Boolean).join(pitch.and);
+  const words = copy.claim;
   return (
     <CatchGroundCard aria-labelledby={titleId} as="section" ground="indigo" id="claim" padding="spacious">
       <CatchStack gap={16}>
-        <CatchBandHeader ground="indigo" kicker={pitch.label} lead={waiting ? `${waiting}. ${claim.built}` : claim.built}
-          size="profile" title={pitch.title} titleId={titleId} />
-        <CatchGrid columns={2} compactColumns={1}>
-          {pitch.points.map((point) => (
-            <CatchGroundCard ground="white" key={point.title} padding="compact">
-              <CatchText as="p" variant="body">
-                <CatchText as="span" variant="label-action">{point.title}</CatchText>{` ${point.body}`}
-              </CatchText>
-            </CatchGroundCard>
-          ))}
-        </CatchGrid>
-        {claim.pending ? <CatchText as="p" variant="label-action">{pitch.pending}</CatchText> : null}
-        {claim.href ? (
-          <CatchStack align="start">
-            <CatchButton href={claim.href} label={pitch.action} onPressed={controller.openClaim} size="lg" />
-          </CatchStack>
-        ) : null}
+        <CatchBandHeader ground="indigo" lead={words.body} size="profile" title={words.title} titleId={titleId} />
+        {claim.pending ? <CatchText as="p" variant="label-action">{words.pending}</CatchText> : null}
+        <CatchStack align="center" direction="row" gap={12} wrap>
+          {claim.href ? <CatchButton href={claim.href} label={words.action} onPressed={controller.openClaim} size="lg" /> : null}
+          <CatchButton href={claim.removeHref} label={words.remove} size="lg" variant="secondary" />
+        </CatchStack>
       </CatchStack>
     </CatchGroundCard>
   );
@@ -86,11 +71,12 @@ export function OrganizerClaimSection({controller}: {controller: OrganizerPageCo
 
 /**
  * The end of the main column: "Made with Catch" and "Make a page like
- * this" on a claimed page, or on a generated page where it came from and how
- * to report a mistake.
+ * this" on a claimed page, then its report link; on a generated page, where
+ * it came from and a link to the listing request form, whose report link
+ * already sits beside the page's tag.
  */
 export function OrganizerPageFooter({controller}: {controller: OrganizerPageController}) {
-  const {footer, report} = controller.view;
+  const {footer, kind, report} = controller.view;
   return (
     // Not a <footer>: the site footer is the page's one contentinfo landmark.
     <CatchStack gap={4}>
@@ -98,9 +84,11 @@ export function OrganizerPageFooter({controller}: {controller: OrganizerPageCont
         <CatchText tone="secondary" variant="body-small">{footer.line}</CatchText>
         <CatchButton href={footer.href} label={footer.link} size="sm" variant="quiet" />
       </CatchStack>
-      <CatchStack align="start">
-        <CatchButton href={report.href} label={report.label} recipe="text" tone="neutral" />
-      </CatchStack>
+      {kind === "claimed" ? (
+        <CatchStack align="start">
+          <CatchButton href={report.href} label={report.label} recipe="text" tone="neutral" />
+        </CatchStack>
+      ) : null}
     </CatchStack>
   );
 }

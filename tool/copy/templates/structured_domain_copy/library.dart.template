@@ -17,8 +17,8 @@ abstract final class EventSuccessPlaybookLibrary {
     hostPromise:
         {{library.socialRun.hostPromise.1}},
     capacity: EventCapacityGuidance(
-      min: 8,
-      max: 36,
+      min: {{playbookShape.social_run_light.capacity.min}},
+      max: {{playbookShape.social_run_light.capacity.max}},
       rationale: {{library.socialRun.rationale.1}},
     ),
     modules: [
@@ -37,48 +37,48 @@ abstract final class EventSuccessPlaybookLibrary {
     ],
     runOfShow: [
       EventRunOfShowStep(
-        stage: EventSuccessStage.arrival,
+        stage: EventSuccessStage.{{playbookShape.social_run_light.runOfShow.0.stage}},
         title: {{library.socialRun.title.2}},
-        durationMinutes: 10,
+        durationMinutes: {{playbookShape.social_run_light.runOfShow.0.durationMinutes}},
         hostInstruction: {{library.socialRun.hostInstruction.1}},
         attendeeExperience: {{library.socialRun.attendeeExperience.1}},
-        moduleIds: ['qr_check_in', 'micro_pods'],
+        moduleIds: {{playbookShape.social_run_light.runOfShow.0.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.opening,
+        stage: EventSuccessStage.{{playbookShape.social_run_light.runOfShow.1.stage}},
         title: {{library.socialRun.title.3}},
-        durationMinutes: 2,
+        durationMinutes: {{playbookShape.social_run_light.runOfShow.1.durationMinutes}},
         hostInstruction: {{library.socialRun.hostInstruction.2}},
         attendeeExperience:
             {{library.socialRun.attendeeExperience.2}},
-        moduleIds: ['host_script', 'safety_controls'],
+        moduleIds: {{playbookShape.social_run_light.runOfShow.1.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.activity,
+        stage: EventSuccessStage.{{playbookShape.social_run_light.runOfShow.2.stage}},
         title: {{library.socialRun.title.4}},
-        durationMinutes: 35,
+        durationMinutes: {{playbookShape.social_run_light.runOfShow.2.durationMinutes}},
         hostInstruction: {{library.socialRun.hostInstruction.3}},
         attendeeExperience: {{library.socialRun.attendeeExperience.3}},
-        moduleIds: ['micro_pods'],
+        moduleIds: {{playbookShape.social_run_light.runOfShow.2.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.mixing,
+        stage: EventSuccessStage.{{playbookShape.social_run_light.runOfShow.3.stage}},
         title: {{library.socialRun.title.5}},
-        durationMinutes: 12,
+        durationMinutes: {{playbookShape.social_run_light.runOfShow.3.durationMinutes}},
         hostInstruction:
             {{library.socialRun.hostInstruction.4}},
         attendeeExperience: {{library.socialRun.attendeeExperience.4}},
-        moduleIds: ['social_missions'],
+        moduleIds: {{playbookShape.social_run_light.runOfShow.3.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.closing,
+        stage: EventSuccessStage.{{playbookShape.social_run_light.runOfShow.4.stage}},
         title: {{library.socialRun.title.6}},
-        durationMinutes: 3,
+        durationMinutes: {{playbookShape.social_run_light.runOfShow.4.durationMinutes}},
         hostInstruction:
             {{library.socialRun.hostInstruction.5}},
         attendeeExperience:
             {{library.socialRun.attendeeExperience.5}},
-        moduleIds: ['wingman_requests'],
+        moduleIds: {{playbookShape.social_run_light.runOfShow.4.moduleIds}},
       ),
     ],
     metrics: EventSuccessMetricCatalog.core,
@@ -111,8 +111,8 @@ abstract final class EventSuccessPlaybookLibrary {
     hostPromise:
         {{library.pickleball.hostPromise.1}},
     capacity: EventCapacityGuidance(
-      min: 12,
-      max: 32,
+      min: {{playbookShape.pickleball_rotations.capacity.min}},
+      max: {{playbookShape.pickleball_rotations.capacity.max}},
       rationale: {{library.pickleball.rationale.1}},
     ),
     modules: [
@@ -132,37 +132,37 @@ abstract final class EventSuccessPlaybookLibrary {
     ],
     runOfShow: [
       EventRunOfShowStep(
-        stage: EventSuccessStage.arrival,
+        stage: EventSuccessStage.{{playbookShape.pickleball_rotations.runOfShow.0.stage}},
         title: {{library.pickleball.title.2}},
-        durationMinutes: 10,
+        durationMinutes: {{playbookShape.pickleball_rotations.runOfShow.0.durationMinutes}},
         hostInstruction: {{library.pickleball.hostInstruction.1}},
         attendeeExperience: {{library.pickleball.attendeeExperience.1}},
-        moduleIds: ['qr_check_in', 'guided_rotations'],
+        moduleIds: {{playbookShape.pickleball_rotations.runOfShow.0.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.opening,
+        stage: EventSuccessStage.{{playbookShape.pickleball_rotations.runOfShow.1.stage}},
         title: {{library.pickleball.title.3}},
-        durationMinutes: 5,
+        durationMinutes: {{playbookShape.pickleball_rotations.runOfShow.1.durationMinutes}},
         hostInstruction: {{library.pickleball.hostInstruction.2}},
         attendeeExperience: {{library.pickleball.attendeeExperience.2}},
-        moduleIds: ['host_script', 'safety_controls', 'live_reveal'],
+        moduleIds: {{playbookShape.pickleball_rotations.runOfShow.1.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.activity,
+        stage: EventSuccessStage.{{playbookShape.pickleball_rotations.runOfShow.2.stage}},
         title: {{library.pickleball.title.4}},
-        durationMinutes: 50,
+        durationMinutes: {{playbookShape.pickleball_rotations.runOfShow.2.durationMinutes}},
         hostInstruction: {{library.pickleball.hostInstruction.3}},
         attendeeExperience:
             {{library.pickleball.attendeeExperience.3}},
-        moduleIds: ['guided_rotations', 'live_reveal'],
+        moduleIds: {{playbookShape.pickleball_rotations.runOfShow.2.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.closing,
+        stage: EventSuccessStage.{{playbookShape.pickleball_rotations.runOfShow.3.stage}},
         title: {{library.pickleball.title.5}},
-        durationMinutes: 8,
+        durationMinutes: {{playbookShape.pickleball_rotations.runOfShow.3.durationMinutes}},
         hostInstruction: {{library.pickleball.hostInstruction.4}},
         attendeeExperience: {{library.pickleball.attendeeExperience.4}},
-        moduleIds: ['social_missions'],
+        moduleIds: {{playbookShape.pickleball_rotations.runOfShow.3.moduleIds}},
       ),
     ],
     metrics: EventSuccessMetricCatalog.core,
@@ -192,8 +192,8 @@ abstract final class EventSuccessPlaybookLibrary {
     hostPromise:
         {{library.pubQuiz.hostPromise.1}},
     capacity: EventCapacityGuidance(
-      min: 16,
-      max: 60,
+      min: {{playbookShape.pub_quiz_team_mixer.capacity.min}},
+      max: {{playbookShape.pub_quiz_team_mixer.capacity.max}},
       rationale: {{library.pubQuiz.rationale.1}},
     ),
     modules: [
@@ -213,32 +213,32 @@ abstract final class EventSuccessPlaybookLibrary {
     ],
     runOfShow: [
       EventRunOfShowStep(
-        stage: EventSuccessStage.arrival,
+        stage: EventSuccessStage.{{playbookShape.pub_quiz_team_mixer.runOfShow.0.stage}},
         title: {{library.pubQuiz.title.2}},
-        durationMinutes: 12,
+        durationMinutes: {{playbookShape.pub_quiz_team_mixer.runOfShow.0.durationMinutes}},
         hostInstruction:
             {{library.pubQuiz.hostInstruction.1}},
         attendeeExperience: {{library.pubQuiz.attendeeExperience.1}},
-        moduleIds: ['qr_check_in', 'live_reveal'],
+        moduleIds: {{playbookShape.pub_quiz_team_mixer.runOfShow.0.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.activity,
+        stage: EventSuccessStage.{{playbookShape.pub_quiz_team_mixer.runOfShow.1.stage}},
         title: {{library.pubQuiz.title.3}},
-        durationMinutes: 60,
+        durationMinutes: {{playbookShape.pub_quiz_team_mixer.runOfShow.1.durationMinutes}},
         hostInstruction: {{library.pubQuiz.hostInstruction.2}},
         attendeeExperience:
             {{library.pubQuiz.attendeeExperience.2}},
-        moduleIds: ['social_missions'],
+        moduleIds: {{playbookShape.pub_quiz_team_mixer.runOfShow.1.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.closing,
+        stage: EventSuccessStage.{{playbookShape.pub_quiz_team_mixer.runOfShow.2.stage}},
         title: {{library.pubQuiz.title.4}},
-        durationMinutes: 4,
+        durationMinutes: {{playbookShape.pub_quiz_team_mixer.runOfShow.2.durationMinutes}},
         hostInstruction:
             {{library.pubQuiz.hostInstruction.3}},
         attendeeExperience:
             {{library.pubQuiz.attendeeExperience.3}},
-        moduleIds: ['wingman_requests'],
+        moduleIds: {{playbookShape.pub_quiz_team_mixer.runOfShow.2.moduleIds}},
       ),
     ],
     metrics: EventSuccessMetricCatalog.core,
@@ -268,8 +268,8 @@ abstract final class EventSuccessPlaybookLibrary {
     hostPromise:
         {{library.dinner.hostPromise.1}},
     capacity: EventCapacityGuidance(
-      min: 12,
-      max: 48,
+      min: {{playbookShape.dinner_table_mixer.capacity.min}},
+      max: {{playbookShape.dinner_table_mixer.capacity.max}},
       rationale: {{library.dinner.rationale.1}},
     ),
     modules: [
@@ -289,40 +289,40 @@ abstract final class EventSuccessPlaybookLibrary {
     ],
     runOfShow: [
       EventRunOfShowStep(
-        stage: EventSuccessStage.arrival,
+        stage: EventSuccessStage.{{playbookShape.dinner_table_mixer.runOfShow.0.stage}},
         title: {{library.dinner.title.2}},
-        durationMinutes: 12,
+        durationMinutes: {{playbookShape.dinner_table_mixer.runOfShow.0.durationMinutes}},
         hostInstruction:
             {{library.dinner.hostInstruction.1}},
         attendeeExperience: {{library.dinner.attendeeExperience.1}},
-        moduleIds: ['qr_check_in', 'live_reveal'],
+        moduleIds: {{playbookShape.dinner_table_mixer.runOfShow.0.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.opening,
+        stage: EventSuccessStage.{{playbookShape.dinner_table_mixer.runOfShow.1.stage}},
         title: {{library.dinner.title.3}},
-        durationMinutes: 4,
+        durationMinutes: {{playbookShape.dinner_table_mixer.runOfShow.1.durationMinutes}},
         hostInstruction: {{library.dinner.hostInstruction.2}},
         attendeeExperience: {{library.dinner.attendeeExperience.2}},
-        moduleIds: ['host_script', 'safety_controls'],
+        moduleIds: {{playbookShape.dinner_table_mixer.runOfShow.1.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.activity,
+        stage: EventSuccessStage.{{playbookShape.dinner_table_mixer.runOfShow.2.stage}},
         title: {{library.dinner.title.4}},
-        durationMinutes: 30,
+        durationMinutes: {{playbookShape.dinner_table_mixer.runOfShow.2.durationMinutes}},
         hostInstruction:
             {{library.dinner.hostInstruction.3}},
         attendeeExperience: {{library.dinner.attendeeExperience.3}},
-        moduleIds: ['micro_pods', 'live_reveal'],
+        moduleIds: {{playbookShape.dinner_table_mixer.runOfShow.2.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.closing,
+        stage: EventSuccessStage.{{playbookShape.dinner_table_mixer.runOfShow.3.stage}},
         title: {{library.dinner.title.5}},
-        durationMinutes: 5,
+        durationMinutes: {{playbookShape.dinner_table_mixer.runOfShow.3.durationMinutes}},
         hostInstruction:
             {{library.dinner.hostInstruction.4}},
         attendeeExperience:
             {{library.dinner.attendeeExperience.4}},
-        moduleIds: ['wingman_requests'],
+        moduleIds: {{playbookShape.dinner_table_mixer.runOfShow.3.moduleIds}},
       ),
     ],
     metrics: EventSuccessMetricCatalog.core,
@@ -355,8 +355,8 @@ abstract final class EventSuccessPlaybookLibrary {
     hostPromise:
         {{library.barCrawl.hostPromise.1}},
     capacity: EventCapacityGuidance(
-      min: 8,
-      max: 40,
+      min: {{playbookShape.bar_crawl_route.capacity.min}},
+      max: {{playbookShape.bar_crawl_route.capacity.max}},
       rationale:
           {{library.barCrawl.rationale.1}},
     ),
@@ -378,51 +378,51 @@ abstract final class EventSuccessPlaybookLibrary {
     ],
     runOfShow: [
       EventRunOfShowStep(
-        stage: EventSuccessStage.arrival,
+        stage: EventSuccessStage.{{playbookShape.bar_crawl_route.runOfShow.0.stage}},
         title: {{library.barCrawl.title.2}},
-        durationMinutes: 15,
+        durationMinutes: {{playbookShape.bar_crawl_route.runOfShow.0.durationMinutes}},
         hostInstruction:
             {{library.barCrawl.hostInstruction.1}},
         attendeeExperience:
             {{library.barCrawl.attendeeExperience.1}},
-        moduleIds: ['qr_check_in'],
+        moduleIds: {{playbookShape.bar_crawl_route.runOfShow.0.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.opening,
+        stage: EventSuccessStage.{{playbookShape.bar_crawl_route.runOfShow.1.stage}},
         title: {{library.barCrawl.title.3}},
-        durationMinutes: 3,
+        durationMinutes: {{playbookShape.bar_crawl_route.runOfShow.1.durationMinutes}},
         hostInstruction:
             {{library.barCrawl.hostInstruction.2}},
         attendeeExperience: {{library.barCrawl.attendeeExperience.2}},
-        moduleIds: ['host_script', 'safety_controls'],
+        moduleIds: {{playbookShape.bar_crawl_route.runOfShow.1.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.activity,
+        stage: EventSuccessStage.{{playbookShape.bar_crawl_route.runOfShow.2.stage}},
         title: {{library.barCrawl.title.4}},
-        durationMinutes: 40,
+        durationMinutes: {{playbookShape.bar_crawl_route.runOfShow.2.durationMinutes}},
         hostInstruction:
             {{library.barCrawl.hostInstruction.3}},
         attendeeExperience: {{library.barCrawl.attendeeExperience.3}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.mixing,
+        stage: EventSuccessStage.{{playbookShape.bar_crawl_route.runOfShow.3.stage}},
         title: {{library.barCrawl.title.5}},
-        durationMinutes: 10,
+        durationMinutes: {{playbookShape.bar_crawl_route.runOfShow.3.durationMinutes}},
         hostInstruction:
             {{library.barCrawl.hostInstruction.4}},
         attendeeExperience:
             {{library.barCrawl.attendeeExperience.4}},
-        moduleIds: ['social_missions'],
+        moduleIds: {{playbookShape.bar_crawl_route.runOfShow.3.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.closing,
+        stage: EventSuccessStage.{{playbookShape.bar_crawl_route.runOfShow.4.stage}},
         title: {{library.barCrawl.title.6}},
-        durationMinutes: 10,
+        durationMinutes: {{playbookShape.bar_crawl_route.runOfShow.4.durationMinutes}},
         hostInstruction:
             {{library.barCrawl.hostInstruction.5}},
         attendeeExperience:
             {{library.barCrawl.attendeeExperience.5}},
-        moduleIds: ['wingman_requests'],
+        moduleIds: {{playbookShape.bar_crawl_route.runOfShow.4.moduleIds}},
       ),
     ],
     metrics: EventSuccessMetricCatalog.core,
@@ -454,8 +454,8 @@ abstract final class EventSuccessPlaybookLibrary {
     hostPromise:
         {{library.hostLedSocial.hostPromise.1}},
     capacity: EventCapacityGuidance(
-      min: 6,
-      max: 80,
+      min: {{playbookShape.host_led_social.capacity.min}},
+      max: {{playbookShape.host_led_social.capacity.max}},
       rationale: {{library.hostLedSocial.rationale.1}},
     ),
     modules: [
@@ -476,42 +476,42 @@ abstract final class EventSuccessPlaybookLibrary {
     ],
     runOfShow: [
       EventRunOfShowStep(
-        stage: EventSuccessStage.arrival,
+        stage: EventSuccessStage.{{playbookShape.host_led_social.runOfShow.0.stage}},
         title: {{library.hostLedSocial.title.2}},
-        durationMinutes: 10,
+        durationMinutes: {{playbookShape.host_led_social.runOfShow.0.durationMinutes}},
         hostInstruction: {{library.hostLedSocial.hostInstruction.1}},
         attendeeExperience: {{library.hostLedSocial.attendeeExperience.1}},
-        moduleIds: ['qr_check_in'],
+        moduleIds: {{playbookShape.host_led_social.runOfShow.0.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.opening,
+        stage: EventSuccessStage.{{playbookShape.host_led_social.runOfShow.1.stage}},
         title: {{library.hostLedSocial.title.3}},
-        durationMinutes: 3,
+        durationMinutes: {{playbookShape.host_led_social.runOfShow.1.durationMinutes}},
         hostInstruction:
             {{library.hostLedSocial.hostInstruction.2}},
         attendeeExperience:
             {{library.hostLedSocial.attendeeExperience.2}},
-        moduleIds: ['host_script', 'safety_controls'],
+        moduleIds: {{playbookShape.host_led_social.runOfShow.1.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.mixing,
+        stage: EventSuccessStage.{{playbookShape.host_led_social.runOfShow.2.stage}},
         title: {{library.hostLedSocial.title.4}},
-        durationMinutes: 8,
+        durationMinutes: {{playbookShape.host_led_social.runOfShow.2.durationMinutes}},
         hostInstruction:
             {{library.hostLedSocial.hostInstruction.3}},
         attendeeExperience:
             {{library.hostLedSocial.attendeeExperience.3}},
-        moduleIds: ['social_missions'],
+        moduleIds: {{playbookShape.host_led_social.runOfShow.2.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.closing,
+        stage: EventSuccessStage.{{playbookShape.host_led_social.runOfShow.3.stage}},
         title: {{library.hostLedSocial.title.5}},
-        durationMinutes: 3,
+        durationMinutes: {{playbookShape.host_led_social.runOfShow.3.durationMinutes}},
         hostInstruction:
             {{library.hostLedSocial.hostInstruction.4}},
         attendeeExperience:
             {{library.hostLedSocial.attendeeExperience.4}},
-        moduleIds: ['wingman_requests'],
+        moduleIds: {{playbookShape.host_led_social.runOfShow.3.moduleIds}},
       ),
     ],
     metrics: EventSuccessMetricCatalog.core,
@@ -543,8 +543,8 @@ abstract final class EventSuccessPlaybookLibrary {
     hostPromise:
         {{library.algorithmicMixer.hostPromise.1}},
     capacity: EventCapacityGuidance(
-      min: 20,
-      max: 80,
+      min: {{playbookShape.algorithmic_mixer_reveal.capacity.min}},
+      max: {{playbookShape.algorithmic_mixer_reveal.capacity.max}},
       rationale:
           {{library.algorithmicMixer.rationale.1}},
     ),
@@ -565,39 +565,39 @@ abstract final class EventSuccessPlaybookLibrary {
     ],
     runOfShow: [
       EventRunOfShowStep(
-        stage: EventSuccessStage.before,
+        stage: EventSuccessStage.{{playbookShape.algorithmic_mixer_reveal.runOfShow.0.stage}},
         title: {{library.algorithmicMixer.title.2}},
-        durationMinutes: 4,
+        durationMinutes: {{playbookShape.algorithmic_mixer_reveal.runOfShow.0.durationMinutes}},
         hostInstruction:
             {{library.algorithmicMixer.hostInstruction.1}},
         attendeeExperience: {{library.algorithmicMixer.attendeeExperience.1}},
-        moduleIds: ['compatibility_questionnaire'],
+        moduleIds: {{playbookShape.algorithmic_mixer_reveal.runOfShow.0.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.arrival,
+        stage: EventSuccessStage.{{playbookShape.algorithmic_mixer_reveal.runOfShow.1.stage}},
         title: {{library.algorithmicMixer.title.3}},
-        durationMinutes: 12,
+        durationMinutes: {{playbookShape.algorithmic_mixer_reveal.runOfShow.1.durationMinutes}},
         hostInstruction: {{library.algorithmicMixer.hostInstruction.2}},
         attendeeExperience: {{library.algorithmicMixer.attendeeExperience.2}},
-        moduleIds: ['qr_check_in', 'compatibility_questionnaire'],
+        moduleIds: {{playbookShape.algorithmic_mixer_reveal.runOfShow.1.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.mixing,
+        stage: EventSuccessStage.{{playbookShape.algorithmic_mixer_reveal.runOfShow.2.stage}},
         title: {{library.algorithmicMixer.title.4}},
-        durationMinutes: 45,
+        durationMinutes: {{playbookShape.algorithmic_mixer_reveal.runOfShow.2.durationMinutes}},
         hostInstruction: {{library.algorithmicMixer.hostInstruction.3}},
         attendeeExperience: {{library.algorithmicMixer.attendeeExperience.3}},
-        moduleIds: ['guided_rotations', 'live_reveal', 'social_missions'],
+        moduleIds: {{playbookShape.algorithmic_mixer_reveal.runOfShow.2.moduleIds}},
       ),
       EventRunOfShowStep(
-        stage: EventSuccessStage.closing,
+        stage: EventSuccessStage.{{playbookShape.algorithmic_mixer_reveal.runOfShow.3.stage}},
         title: {{library.algorithmicMixer.title.5}},
-        durationMinutes: 5,
+        durationMinutes: {{playbookShape.algorithmic_mixer_reveal.runOfShow.3.durationMinutes}},
         hostInstruction:
             {{library.algorithmicMixer.hostInstruction.4}},
         attendeeExperience:
             {{library.algorithmicMixer.attendeeExperience.4}},
-        moduleIds: ['wingman_requests'],
+        moduleIds: {{playbookShape.algorithmic_mixer_reveal.runOfShow.3.moduleIds}},
       ),
     ],
     metrics: EventSuccessMetricCatalog.core,

@@ -2,10 +2,6 @@ import {runAssistanceTransaction as transact} from "./transactionCallback";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {operationContentHash} from "../../operations/durableActions";
-import type {EventRcsCallbackReceiptDocument as Receipt} from
-  "../../shared/generated/eventRcsCallbackReceiptDocument";
-import {validateEventRcsCallbackReceiptDocument} from
-  "../../shared/generated/validators/eventRcsCallbackReceiptDocument";
 import {RcsCallbackStore} from "./rcsCallbackStore";
 import {RcsCallbackDocument, rcsCallbackClock, requireRcsCallbackId} from
   "./rcsCallbackRecords";
@@ -21,17 +17,66 @@ import {guestCollections, parseGuest} from "./guestRecords";
 import {readEventAssistanceMessageGate} from "./guestMessageGate";
 import {applyGuestChoice} from "./guestChoiceActions";
 import {rcsPhoneHash} from "./rcsProtocol";
+import {assistanceReceiptRef, replayAssistanceReceipt,
+  writeAssistanceReceipt} from "./assistanceReceipts";
 
-export const RCS_CALLBACK_RECEIPTS = "eventAssistanceRcsCallbackReceipts";
-type Outcome = Receipt["outcome"];
-type Rejection = Extract<Outcome, {kind: "rejected"}>["reason"];
-type Ignored = Extract<Outcome, {kind: "ignored"}>["reason"];
+export const RCS_CALLBACK_RECEIPT_COMMAND = "eventAssistanceRcsCallback";
+const DISPOSITIONS = ["applied", "duplicateOrOlder",
+  "conflictingEvidence"] as const;
+const REPLY_RESULTS = ["accepted", "replayed"] as const;
+const IGNORED = ["subscription", "unstructured", "guestPage",
+  "unknownSuggestion", "unconfirmedRevocation", "unrelatedMessage"] as const;
+const REJECTED = ["unavailable", "scopeMismatch", "staleIntent",
+  "invalidChoice", "expired", "alreadyResponded", "noLongerNeeded",
+  "factsStale", "guestStateChanged"] as const;
+type Rejection = typeof REJECTED[number];
+type Ignored = typeof IGNORED[number];
+/** What consuming one callback did; a redelivery replays it unchanged. */
+export type RcsCallbackOutcome =
+  | {kind: "delivery"; messageId: string; attemptId: string;
+    disposition: typeof DISPOSITIONS[number]}
+  | {kind: "reply"; messageId: string; attemptId: string;
+    result: typeof REPLY_RESULTS[number]}
+  | {kind: "ignored"; reason: Ignored}
+  | {kind: "rejected"; reason: Rejection};
+type Outcome = RcsCallbackOutcome;
+const MESSAGE_ID = /^outbox:[a-f0-9]{64}$/;
+const ATTEMPT_ID = /^attempt:[a-f0-9]{64}$/;
+const oneOf = (values: readonly string[], value: unknown) =>
+  typeof value === "string" && values.includes(value);
+/** The outcome's stored shape; a receipt that fails it is inconsistent. */
+function validOutcome(value: unknown): value is Outcome {
+  if (!value || typeof value !== "object") return false;
+  const o = value as Record<string, unknown>;
+  const keys = Object.keys(o).sort().join(",");
+  switch (o.kind) {
+  case "ignored": return keys === "kind,reason" && oneOf(IGNORED, o.reason);
+  case "rejected": return keys === "kind,reason" && oneOf(REJECTED, o.reason);
+  case "delivery": case "reply": {
+    const ids = typeof o.messageId === "string" &&
+      MESSAGE_ID.test(o.messageId) && typeof o.attemptId === "string" &&
+      ATTEMPT_ID.test(o.attemptId);
+    return ids && (o.kind === "delivery" ?
+      keys === "attemptId,disposition,kind,messageId" &&
+        oneOf(DISPOSITIONS, o.disposition) :
+      keys === "attemptId,kind,messageId,result" &&
+        oneOf(REPLY_RESULTS, o.result));
+  }
+  default: return false;
+  }
+}
+const inconsistent = () => new Error("RCS callback receipt is inconsistent");
 type Evidence = RcsCallbackDocument["evidence"];
 type Correlated = {dispatch: RcsDispatch; message: MessageRecord;
   attempt: LiveAttempt};
 const reject = (reason: Rejection): Outcome => ({kind: "rejected", reason});
 const ignore = (reason: Ignored): Outcome => ({kind: "ignored", reason});
 const CLOCK_TOLERANCE = 300_000;
+
+/** The 64-hex part of an `rcs-event:` callback id. */
+function rcsCallbackDigest(callbackId: string): string {
+  return callbackId.slice("rcs-event:".length);
+}
 
 /** Authenticate evidence and commit domain effects with a terminal receipt. */
 export class RcsCallbackConsumer {
@@ -48,29 +93,24 @@ export class RcsCallbackConsumer {
       const read = await this.inbox.readForConsumption(tx, callbackId);
       if (read.kind !== "ready") return read;
       const callback = read.record;
-      const ref = this.db.collection(RCS_CALLBACK_RECEIPTS).doc(callbackId);
+      const ref = assistanceReceiptRef(this.db, RCS_CALLBACK_RECEIPT_COMMAND,
+        rcsCallbackDigest(callbackId));
       const receiptSnap = await tx.get(ref);
       const now = rcsCallbackClock(this.clock());
       if (now < callback.storedAt) throw new Error("RCS clock moved backwards");
       const callbackHash = operationContentHash(callback);
-      if (receiptSnap.exists) {
-        const receipt = receiptSnap.data();
-        if (!validateEventRcsCallbackReceiptDocument(receipt) ||
-            receipt.callbackId !== callbackId ||
-            receipt.callbackHash !== callbackHash ||
-            receipt.processedAt < callback.storedAt ||
-            receipt.processedAt > now) {
-          throw new Error("RCS callback receipt is inconsistent");
-        }
-        return receipt.outcome;
-      }
+      const replay = replayAssistanceReceipt<{outcome: Outcome}>(
+        receiptSnap.data(), {command: RCS_CALLBACK_RECEIPT_COMMAND,
+          requestHash: callbackHash, nowMillis: now},
+        (result) => validOutcome(result.outcome), inconsistent);
+      if (replay !== null) return replay.outcome;
       const outcome = await this.apply(tx, callback, now);
-      const receipt = {schemaVersion: 1, callbackId, callbackHash,
-        processedAt: this.now(now), outcome};
-      if (!validateEventRcsCallbackReceiptDocument(receipt)) {
+      if (!validOutcome(outcome)) {
         throw new Error("Invalid RCS callback result");
       }
-      tx.create(ref, receipt);
+      writeAssistanceReceipt(tx, ref, {command: RCS_CALLBACK_RECEIPT_COMMAND,
+        retention: "trigger", requestHash: callbackHash,
+        nowMillis: this.now(now), result: {outcome}});
       return outcome;
     });
   }

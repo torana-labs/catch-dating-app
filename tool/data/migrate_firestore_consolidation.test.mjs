@@ -344,6 +344,46 @@ test("event-organizer-summary fills missing and stale summaries and nothing else
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("host-membership-savings recomputes stored totals from benefit uses", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-membership-savings");
+  const membershipId = (n) => `hm_${String(n).repeat(64)}`;
+  const use = (membership, eventId, savingsInPaise, state = "booked") => ({
+    schemaVersion: 1, membershipId: membership, organizerId: "organizer-1", uid: "member-1",
+    eventId, planId: "hmp_AbCdEfGhIjKlMnOpQrSt", listPriceInPaise: 50000,
+    paidPriceInPaise: 50000 - savingsInPaise, savingsInPaise,
+    eventStartMillis: 1_800_000_000_000, state, createdAtMillis: 1_700_000_000_000,
+  });
+  const db = fakeDb({
+    [`hostMemberships/${membershipId(1)}`]: {status: "active"},
+    [`hostMemberships/${membershipId(2)}`]: {status: "active", savedInPaise: 1, memberPricedBookings: 9},
+    [`hostMemberships/${membershipId(3)}`]: {status: "active", savedInPaise: 15000, memberPricedBookings: 1},
+    [`hostMemberships/${membershipId(4)}`]: {status: "active"},
+    "hostMembershipBenefitUses/e1_member-1": use(membershipId(1), "e1", 20000),
+    "hostMembershipBenefitUses/e2_member-1": use(membershipId(1), "e2", 10000),
+    "hostMembershipBenefitUses/e3_member-1": use(membershipId(1), "e3", 7000, "released"),
+    "hostMembershipBenefitUses/e4_member-1": use(membershipId(2), "e4", 5000, "released"),
+    "hostMembershipBenefitUses/e5_member-1": use(membershipId(3), "e5", 15000),
+  });
+  const before = JSON.stringify(db.data);
+
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 4, toCreate: 2, alreadyCopied: 0, conflicts: 0, skipped: 0});
+  assert.equal(JSON.stringify(db.data), before);
+
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data[`hostMemberships/${membershipId(1)}`],
+    {status: "active", savedInPaise: 30000, memberPricedBookings: 2});
+  assert.deepEqual(db.data[`hostMemberships/${membershipId(2)}`],
+    {status: "active", savedInPaise: 0, memberPricedBookings: 0});
+  // Current totals and a membership with nothing to count are untouched.
+  assert.deepEqual(db.data[`hostMemberships/${membershipId(3)}`],
+    {status: "active", savedInPaise: 15000, memberPricedBookings: 1});
+  assert.deepEqual(db.data[`hostMemberships/${membershipId(4)}`], {status: "active"});
+  assert.equal(db.data["hostMembershipBenefitUses/e3_member-1"].state, "released");
+
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("host-form-version-filters creates each missing view once", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "host-form-version-filters");
   const definition = {sections: [{sectionId: "one", questions: [

@@ -70,7 +70,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_st
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_operator_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';

@@ -53,6 +53,12 @@ import {
 import {requireEventOperatorPermission} from
   "../shared/eventOperatorAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
+import {
+  classifyCommandReceipt,
+  commandReceiptRef,
+  commandRequestHash,
+  writeCommandReceipt,
+} from "../shared/commandReceipts";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
   organizerCommunicationPreferenceId,
@@ -93,7 +99,7 @@ const defaultDeps: EventAttendeeDeps = {
   timestamp: () => admin.firestore.Timestamp.now(),
 };
 
-const attendanceReceiptRetentionMillis = 30 * 24 * 60 * 60 * 1000;
+const attendanceReceiptCommand = "setEventAttendeeAttendance";
 
 function occupiesSeat(status: EventAttendeeDocument["status"]): boolean {
   return status === "registered" || status === "checkedIn";
@@ -652,8 +658,16 @@ export async function setEventAttendeeAttendanceHandler(
     actorUid: hostUid,
     clientOperationId: payload.clientOperationId,
   });
-  const receiptRef = db.collection("eventAttendeeAttendanceReceipts")
-    .doc(receiptId);
+  // The receipt id is already a digest of event, actor and operation id; it
+  // also seeds the seat request id below, so both stay one identity.
+  const receiptRef = commandReceiptRef(db, attendanceReceiptCommand,
+    receiptId);
+  const requestHash = commandRequestHash(hostUid, {
+    eventId: payload.eventId,
+    attendeeId: payload.attendeeId,
+    desiredCheckedIn: payload.desiredCheckedIn,
+    clientOperationId: payload.clientOperationId,
+  });
   return db.runTransaction(async (tx) => {
     const [eventSnap, receiptSnap] = await Promise.all([
       tx.get(eventRef),
@@ -680,19 +694,18 @@ export async function setEventAttendeeAttendanceHandler(
       now: deps.timestamp(),
       transaction: tx,
     });
-    if (receiptSnap.exists) {
-      const receipt = receiptSnap.data() as {
-        eventId?: string;
-        attendeeId?: string;
-        desiredCheckedIn?: boolean;
-        acceptedRevision?: number;
-        changed?: boolean;
-      };
-      if (receipt.eventId !== payload.eventId ||
-          receipt.attendeeId !== payload.attendeeId ||
-          receipt.desiredCheckedIn !== payload.desiredCheckedIn ||
-          typeof receipt.acceptedRevision !== "number" ||
-          typeof receipt.changed !== "boolean") {
+    const lookup = classifyCommandReceipt<{
+      acceptedRevision?: number;
+      changed?: boolean;
+    }>(receiptSnap, {
+      command: attendanceReceiptCommand,
+      requestHash,
+      nowMillis: deps.timestamp().toMillis(),
+    });
+    if (lookup.kind !== "none") {
+      const result = lookup.kind === "replay" ? lookup.result : undefined;
+      if (typeof result?.acceptedRevision !== "number" ||
+          typeof result.changed !== "boolean") {
         throw new HttpsError(
           "failed-precondition",
           "This attendance operation id was already used differently."
@@ -700,10 +713,10 @@ export async function setEventAttendeeAttendanceHandler(
       }
       return {
         attendeeId: payload.attendeeId,
-        checkedIn: receipt.desiredCheckedIn,
-        acceptedRevision: receipt.acceptedRevision,
+        checkedIn: payload.desiredCheckedIn,
+        acceptedRevision: result.acceptedRevision,
         replayed: true,
-        changed: receipt.changed,
+        changed: result.changed,
       };
     }
     const attendeeSnap = await tx.get(attendeeRef);
@@ -769,20 +782,12 @@ export async function setEventAttendeeAttendanceHandler(
         updatedAt: now,
       });
     }
-    tx.create(receiptRef, {
-      eventId: payload.eventId,
-      organizerId: event.organizerId,
-      attendeeId: payload.attendeeId,
-      actorUid: hostUid,
-      clientOperationId: payload.clientOperationId,
-      desiredCheckedIn: payload.desiredCheckedIn,
-      priorRevision,
-      acceptedRevision,
-      changed,
-      createdAt: now,
-      expiresAt: admin.firestore.Timestamp.fromMillis(
-        now.toMillis() + attendanceReceiptRetentionMillis
-      ),
+    writeCommandReceipt(tx, receiptRef, {
+      command: attendanceReceiptCommand,
+      retention: "request",
+      requestHash,
+      result: {acceptedRevision, changed},
+      nowMillis: now.toMillis(),
     });
     return {
       attendeeId: payload.attendeeId,

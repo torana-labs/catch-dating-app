@@ -347,23 +347,13 @@
         "A membership plan priced from your tickets and how often people come",
         "Open it for booking when you claim it"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "label": "Try it",
-          "title": "Build your event from a link",
-          "fields": [
-            {
-              "label": "Link to an event",
-              "placeholder": "lu.ma/sundaysupper"
-            }
-          ],
-          "actions": [
-            "Build my event page",
-            "Send it to my WhatsApp"
-          ],
-          "note": "Private until you claim it. Takes about a minute."
-        }
+      "leadForm": {
+        "id": "try_event",
+        "requestKind": "tool",
+        "input": "url",
+        "label": "Link to an event",
+        "submitLabel": "Build my event page",
+        "note": "Private until you claim it. Takes about a minute."
       }
     },
     {

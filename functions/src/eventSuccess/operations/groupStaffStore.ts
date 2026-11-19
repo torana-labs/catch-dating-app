@@ -13,14 +13,19 @@ import type {EventAssistanceGroupStaffCallableResponse as Response} from
   "../../shared/generated/eventAssistanceGroupStaffCallableResponse";
 import {validateSetEventAssistanceGroupStaffCallablePayload} from
   "../../shared/generated/validators/setEventAssistanceGroupStaffInput";
-import {validateEventAssistanceStaffReceiptDocument} from
-  "../../shared/generated/validators/eventAssistanceStaffReceiptDocument";
 import {validateEventAssistanceGroupStaffCallableResponse} from
   "../../shared/generated/validators/eventAssistanceGroupStaffOutput";
 import {ProgressContext, invalidSource} from "./groupProgressSource";
 import {parseStaff, readGroupDutySource} from "./groupStaffAuthority";
+import {assistanceReceiptRef, isDigest, isMillis, isRevision,
+  replayAssistanceReceipt, writeAssistanceReceipt} from "./assistanceReceipts";
 
-export const STAFF_RECEIPTS = "eventAssistanceStaffReceipts";
+export const STAFF_RECEIPT_COMMAND = "eventAssistanceStaff";
+
+/** What a replay re-checks against the live staff record. */
+type StaffReceipt = {revision: number; createdAt: number; sourceHash: string};
+const validReceipt = (r: Record<string, unknown>) => isRevision(r.revision) &&
+  isMillis(r.createdAt) && isDigest(r.sourceHash);
 export interface StaffIdentity {
   uid: string; displayName: string; phoneLastFour: string;
 }
@@ -53,12 +58,11 @@ export class EventGroupStaffStore {
     if (target.uid !== input.expectedUid) throw conflict();
     const scope: StaffScope = {context: input.context, groupId: input.groupId};
     const requestHash = operationContentHash([actorUid, target.uid, input]);
-    const receiptId = "staff-action:" + operationContentHash([
-      scope, target.uid, input.requestId]);
+    const receiptRef = assistanceReceiptRef(this.db, STAFF_RECEIPT_COMMAND,
+      operationContentHash([scope, target.uid, input.requestId]));
     return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, target, scope);
-      const receiptRef = this.db.collection(STAFF_RECEIPTS).doc(receiptId);
-      const receipt = (await tx.get(receiptRef)).data();
+      const stored = (await tx.get(receiptRef)).data();
       const active = input.decision.kind === "assign" &&
         (!state.staff || state.staff.status !== "active" ||
           staffTimestampMillis(state.staff.expiresAt) <= state.now) ?
@@ -70,12 +74,11 @@ export class EventGroupStaffStore {
       const now = this.clock();
       if (!Number.isSafeInteger(now) || now < state.now) throw invalidSource();
       state.now = now;
-      if (receipt !== undefined) {
-        if (!validateEventAssistanceStaffReceiptDocument(receipt) ||
-            receipt.receiptId !== receiptId ||
-            receipt.staffGrantId !== state.staffId ||
-            receipt.requestHash !== requestHash ||
-            receipt.sourceHash !== state.source.hash || !state.staff ||
+      const receipt = replayAssistanceReceipt<StaffReceipt>(stored, {
+        command: STAFF_RECEIPT_COMMAND, requestHash, nowMillis: now,
+      }, validReceipt, conflict);
+      if (receipt !== null) {
+        if (receipt.sourceHash !== state.source.hash || !state.staff ||
             receipt.revision > state.staff.revision ||
             receipt.createdAt > now) throw conflict();
         return response("replayed", state, receipt.revision);
@@ -120,15 +123,13 @@ export class EventGroupStaffStore {
         revokedBy: enabled ? null : actorUid, revokedAt: enabled ? null : stamp,
         revision: (prior?.revision ?? 0) + 1};
       parseStaff(staff, scope.context, target.uid, now);
-      const savedReceipt = {receiptId, staffGrantId: state.staffId,
-        sourceHash: state.source.hash, requestHash, revision: staff.revision,
-        createdAt: now};
-      if (!validateEventAssistanceStaffReceiptDocument(savedReceipt)) {
-        throw invalidSource();
-      }
+      const savedReceipt: StaffReceipt = {sourceHash: state.source.hash,
+        revision: staff.revision, createdAt: now};
+      if (!validReceipt(savedReceipt)) throw invalidSource();
       const result = response("applied", {...state, staff}, staff.revision);
       tx.set(this.db.collection("eventStaffGrants").doc(state.staffId), staff);
-      tx.create(receiptRef, savedReceipt);
+      writeAssistanceReceipt(tx, receiptRef, {command: STAFF_RECEIPT_COMMAND,
+        requestHash, nowMillis: now, result: savedReceipt});
       return result;
     });
   }

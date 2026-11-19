@@ -14,7 +14,7 @@ const forbiddenLiveCollections = [
   "eventSuccessPlans",
   "eventAssistanceMessages",
   "eventAssistanceCases",
-  "eventAssistanceCaseReceipts",
+  "commandReceipts",
   "eventAssistanceGuests",
   "users",
   "profiles",

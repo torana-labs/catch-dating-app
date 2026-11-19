@@ -1,0 +1,468 @@
+{
+  "schemaVersion": 1,
+  "kind": "eventSuccessPlaybookShapes",
+  "description": "The numbers and structure behind each Event Success playbook, shared by the Host app and Functions. Copy text stays in copy/structured_domain_copy_en.json. tool/copy/sync_structured_domain_copy.dart fills the playbook library's capacity and run-of-show placeholders from playbooks; the schema generator emits structureDefaults and nightPlanFormats for Dart (event_success_playbook_shapes.g.dart) and Functions (eventSuccessPlaybookShapes.ts).",
+  "playbooks": [
+    {
+      "playbookId": "social_run_light",
+      "activityKind": "socialRun",
+      "capacity": {
+        "min": 8,
+        "max": 36
+      },
+      "runOfShow": [
+        {
+          "stage": "arrival",
+          "durationMinutes": 10,
+          "moduleIds": [
+            "qr_check_in",
+            "micro_pods"
+          ]
+        },
+        {
+          "stage": "opening",
+          "durationMinutes": 2,
+          "moduleIds": [
+            "host_script",
+            "safety_controls"
+          ]
+        },
+        {
+          "stage": "activity",
+          "durationMinutes": 35,
+          "moduleIds": [
+            "micro_pods"
+          ]
+        },
+        {
+          "stage": "mixing",
+          "durationMinutes": 12,
+          "moduleIds": [
+            "social_missions"
+          ]
+        },
+        {
+          "stage": "closing",
+          "durationMinutes": 3,
+          "moduleIds": [
+            "wingman_requests"
+          ]
+        }
+      ]
+    },
+    {
+      "playbookId": "pickleball_rotations",
+      "activityKind": "pickleball",
+      "capacity": {
+        "min": 12,
+        "max": 32
+      },
+      "runOfShow": [
+        {
+          "stage": "arrival",
+          "durationMinutes": 10,
+          "moduleIds": [
+            "qr_check_in",
+            "guided_rotations"
+          ]
+        },
+        {
+          "stage": "opening",
+          "durationMinutes": 5,
+          "moduleIds": [
+            "host_script",
+            "safety_controls",
+            "live_reveal"
+          ]
+        },
+        {
+          "stage": "activity",
+          "durationMinutes": 50,
+          "moduleIds": [
+            "guided_rotations",
+            "live_reveal"
+          ]
+        },
+        {
+          "stage": "closing",
+          "durationMinutes": 8,
+          "moduleIds": [
+            "social_missions"
+          ]
+        }
+      ]
+    },
+    {
+      "playbookId": "pub_quiz_team_mixer",
+      "activityKind": "pubQuiz",
+      "capacity": {
+        "min": 16,
+        "max": 60
+      },
+      "runOfShow": [
+        {
+          "stage": "arrival",
+          "durationMinutes": 12,
+          "moduleIds": [
+            "qr_check_in",
+            "live_reveal"
+          ]
+        },
+        {
+          "stage": "activity",
+          "durationMinutes": 60,
+          "moduleIds": [
+            "social_missions"
+          ]
+        },
+        {
+          "stage": "closing",
+          "durationMinutes": 4,
+          "moduleIds": [
+            "wingman_requests"
+          ]
+        }
+      ]
+    },
+    {
+      "playbookId": "dinner_table_mixer",
+      "activityKind": "dinner",
+      "capacity": {
+        "min": 12,
+        "max": 48
+      },
+      "runOfShow": [
+        {
+          "stage": "arrival",
+          "durationMinutes": 12,
+          "moduleIds": [
+            "qr_check_in",
+            "live_reveal"
+          ]
+        },
+        {
+          "stage": "opening",
+          "durationMinutes": 4,
+          "moduleIds": [
+            "host_script",
+            "safety_controls"
+          ]
+        },
+        {
+          "stage": "activity",
+          "durationMinutes": 30,
+          "moduleIds": [
+            "micro_pods",
+            "live_reveal"
+          ]
+        },
+        {
+          "stage": "closing",
+          "durationMinutes": 5,
+          "moduleIds": [
+            "wingman_requests"
+          ]
+        }
+      ]
+    },
+    {
+      "playbookId": "bar_crawl_route",
+      "activityKind": "barCrawl",
+      "capacity": {
+        "min": 8,
+        "max": 40
+      },
+      "runOfShow": [
+        {
+          "stage": "arrival",
+          "durationMinutes": 15,
+          "moduleIds": [
+            "qr_check_in"
+          ]
+        },
+        {
+          "stage": "opening",
+          "durationMinutes": 3,
+          "moduleIds": [
+            "host_script",
+            "safety_controls"
+          ]
+        },
+        {
+          "stage": "activity",
+          "durationMinutes": 40,
+          "moduleIds": null
+        },
+        {
+          "stage": "mixing",
+          "durationMinutes": 10,
+          "moduleIds": [
+            "social_missions"
+          ]
+        },
+        {
+          "stage": "closing",
+          "durationMinutes": 10,
+          "moduleIds": [
+            "wingman_requests"
+          ]
+        }
+      ]
+    },
+    {
+      "playbookId": "host_led_social",
+      "activityKind": "openActivity",
+      "capacity": {
+        "min": 6,
+        "max": 80
+      },
+      "runOfShow": [
+        {
+          "stage": "arrival",
+          "durationMinutes": 10,
+          "moduleIds": [
+            "qr_check_in"
+          ]
+        },
+        {
+          "stage": "opening",
+          "durationMinutes": 3,
+          "moduleIds": [
+            "host_script",
+            "safety_controls"
+          ]
+        },
+        {
+          "stage": "mixing",
+          "durationMinutes": 8,
+          "moduleIds": [
+            "social_missions"
+          ]
+        },
+        {
+          "stage": "closing",
+          "durationMinutes": 3,
+          "moduleIds": [
+            "wingman_requests"
+          ]
+        }
+      ]
+    },
+    {
+      "playbookId": "algorithmic_mixer_reveal",
+      "activityKind": "singlesMixer",
+      "capacity": {
+        "min": 20,
+        "max": 80
+      },
+      "runOfShow": [
+        {
+          "stage": "before",
+          "durationMinutes": 4,
+          "moduleIds": [
+            "compatibility_questionnaire"
+          ]
+        },
+        {
+          "stage": "arrival",
+          "durationMinutes": 12,
+          "moduleIds": [
+            "qr_check_in",
+            "compatibility_questionnaire"
+          ]
+        },
+        {
+          "stage": "mixing",
+          "durationMinutes": 45,
+          "moduleIds": [
+            "guided_rotations",
+            "live_reveal",
+            "social_missions"
+          ]
+        },
+        {
+          "stage": "closing",
+          "durationMinutes": 5,
+          "moduleIds": [
+            "wingman_requests"
+          ]
+        }
+      ]
+    }
+  ],
+  "structureDefaults": {
+    "description": "Per interaction model: the default group structure (EventSuccessStructureConfig.defaultForInteractionModel) and the server's default playbook (mutateEvent defaultEventSuccessPlaybookIdFor). unitSize 'attendees' and unitCount 1 mean one whole group of everyone; resource.concurrentUnits 'attendeesPerSeat' means ceil(attendees / seatsPerUnit). mutualInterestOnlyPlaybookId replaces defaultPlaybookId when the format's compatibility policy is mutualInterestOnly.",
+    "models": [
+      {
+        "interactionModel": "pacePods",
+        "defaultPlaybookId": "social_run_light",
+        "unitKind": "wholeGroup",
+        "unitSize": "attendees",
+        "unitCount": 1,
+        "rotationIntervalMinutes": null,
+        "topology": "set",
+        "resource": null,
+        "mutualInterestOnlyPlaybookId": null
+      },
+      {
+        "interactionModel": "pairedRotations",
+        "defaultPlaybookId": "pickleball_rotations",
+        "unitKind": "pairs",
+        "unitSize": 2,
+        "unitCount": null,
+        "rotationIntervalMinutes": 15,
+        "topology": "sequence",
+        "resource": {
+          "labelId": "court",
+          "seatsPerUnit": null,
+          "concurrentUnits": null
+        },
+        "mutualInterestOnlyPlaybookId": null
+      },
+      {
+        "interactionModel": "teamRotations",
+        "defaultPlaybookId": "pub_quiz_team_mixer",
+        "unitKind": "teams",
+        "unitSize": 5,
+        "unitCount": null,
+        "rotationIntervalMinutes": null,
+        "topology": "set",
+        "resource": null,
+        "mutualInterestOnlyPlaybookId": null
+      },
+      {
+        "interactionModel": "seatedTable",
+        "defaultPlaybookId": "dinner_table_mixer",
+        "unitKind": "tables",
+        "unitSize": 4,
+        "unitCount": null,
+        "rotationIntervalMinutes": 30,
+        "topology": "adjacency",
+        "resource": {
+          "labelId": "table",
+          "seatsPerUnit": 4,
+          "concurrentUnits": "attendeesPerSeat"
+        },
+        "mutualInterestOnlyPlaybookId": null
+      },
+      {
+        "interactionModel": "freeFormMixer",
+        "defaultPlaybookId": "host_led_social",
+        "unitKind": "pairs",
+        "unitSize": 2,
+        "unitCount": null,
+        "rotationIntervalMinutes": 15,
+        "topology": "set",
+        "resource": null,
+        "mutualInterestOnlyPlaybookId": "algorithmic_mixer_reveal"
+      },
+      {
+        "interactionModel": "routeStops",
+        "defaultPlaybookId": "bar_crawl_route",
+        "unitKind": "wholeGroup",
+        "unitSize": "attendees",
+        "unitCount": 1,
+        "rotationIntervalMinutes": null,
+        "topology": "set",
+        "resource": null,
+        "mutualInterestOnlyPlaybookId": null
+      },
+      {
+        "interactionModel": "hostLedProgram",
+        "defaultPlaybookId": "host_led_social",
+        "unitKind": "wholeGroup",
+        "unitSize": "attendees",
+        "unitCount": 1,
+        "rotationIntervalMinutes": null,
+        "topology": "set",
+        "resource": null,
+        "mutualInterestOnlyPlaybookId": null
+      },
+      {
+        "interactionModel": "openFormat",
+        "defaultPlaybookId": "host_led_social",
+        "unitKind": "wholeGroup",
+        "unitSize": "attendees",
+        "unitCount": 1,
+        "rotationIntervalMinutes": null,
+        "topology": "set",
+        "resource": null,
+        "mutualInterestOnlyPlaybookId": null
+      }
+    ]
+  },
+  "nightPlanFormats": {
+    "description": "The try-it plan-a-night formats (#2062 C4, owner-accepted 19 Nov 2026): the playbook each card format uses, how guests are grouped, the default stop count, and which moment is the mixing moment. structureDefault groups use structureDefaults for the playbook's interaction model; rotation moments use that model's rotationIntervalMinutes.",
+    "formats": [
+      {
+        "format": "run",
+        "playbookId": "social_run_light",
+        "groups": {
+          "kind": "paceGroups",
+          "guestsPerGroup": 10,
+          "minGroups": 1,
+          "maxGroups": 4,
+          "labels": [
+            "easy",
+            "steady",
+            "quick"
+          ]
+        },
+        "defaultStops": null,
+        "mixingMoment": {
+          "kind": "runOfShowStage",
+          "stage": "mixing"
+        }
+      },
+      {
+        "format": "dinner",
+        "playbookId": "dinner_table_mixer",
+        "groups": {
+          "kind": "structureDefault"
+        },
+        "defaultStops": null,
+        "mixingMoment": {
+          "kind": "rotation",
+          "stage": "activity"
+        }
+      },
+      {
+        "format": "quiz",
+        "playbookId": "pub_quiz_team_mixer",
+        "groups": {
+          "kind": "structureDefault"
+        },
+        "defaultStops": null,
+        "mixingMoment": {
+          "kind": "teamRevealAtRoundBreak",
+          "stage": "activity"
+        }
+      },
+      {
+        "format": "courts",
+        "playbookId": "pickleball_rotations",
+        "groups": {
+          "kind": "courts",
+          "seatsPerCourt": 4
+        },
+        "defaultStops": null,
+        "mixingMoment": {
+          "kind": "rotation",
+          "stage": "activity"
+        }
+      },
+      {
+        "format": "crawl",
+        "playbookId": "bar_crawl_route",
+        "groups": {
+          "kind": "wholeGroup"
+        },
+        "defaultStops": 3,
+        "mixingMoment": {
+          "kind": "runOfShowStage",
+          "stage": "mixing"
+        }
+      }
+    ]
+  }
+}

@@ -9,7 +9,7 @@ import {
   trackMarketingEvent,
   waitlistAnalyticsPayload,
 } from "../../analytics";
-import {launchNoticePhone, launchNoticeRequest, postLaunchNotice, type LaunchNoticePlace} from "./launchNoticeModel";
+import {launchNoticePhone, launchNoticeRequest, postLaunchNotice, type LaunchNoticePlace} from "../marketing/launchNoticeModel";
 
 type LaunchNoticeStatus = {phase: "idle" | "sending" | "joined"; message: string; tone: "" | "is-error" | "is-success"};
 

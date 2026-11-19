@@ -40,24 +40,6 @@
     ]
   },
   {
-    "id": "singles_events_city_v1",
-    "category": "singles_event_operator",
-    "sources": ["web_search", "event_platforms", "instagram_manual"],
-    "queryTemplates": [
-      "singles events {city}",
-      "speed dating {city}",
-      "singles mixer {city}",
-      "curated singles dinner {city}"
-    ],
-    "fitSignals": [
-      "single adults",
-      "paid or RSVP events",
-      "guest curation",
-      "repeat cadence",
-      "post-event introduction pain"
-    ]
-  },
-  {
     "id": "racket_social_city_v1",
     "category": "racket_sport_social",
     "sources": ["web_search", "places_text_search", "instagram_manual"],

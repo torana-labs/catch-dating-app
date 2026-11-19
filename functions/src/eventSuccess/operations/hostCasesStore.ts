@@ -15,16 +15,22 @@ import {validateResolveEventAssistanceCaseCallablePayload} from
   "../../shared/generated/validators/resolveEventAssistanceCaseInput";
 import {validateEventAssistanceCaseCallableResponse} from
   "../../shared/generated/validators/eventAssistanceCaseOutput";
-import {validateEventAssistanceCaseReceiptDocument} from
-  "../../shared/generated/validators/eventAssistanceCaseReceiptDocument";
 import {assertCommandContext, assertCommandRole} from "./commands";
 import {guestCollections} from "./guestRecords";
 import {invalidSource} from "./groupProgressSource";
 import {resolvePracticalCaseHandling} from "./practicalCaseHandling";
 import {HostCase, hostCaseBindingHash, parseHostCase, projectHostCase} from
   "./hostCaseRecords";
+import {assistanceReceiptRef, isDigest, isMillis, isRevision,
+  replayAssistanceReceipt, writeAssistanceReceipt} from "./assistanceReceipts";
 
-export const CASE_RECEIPTS = "eventAssistanceCaseReceipts";
+export const CASE_RECEIPT_COMMAND = "eventAssistanceCase";
+
+/** What a replay re-checks against the live help request. */
+type CaseReceipt = {revision: number; createdAt: number;
+  caseBindingHash: string};
+const validReceipt = (r: Record<string, unknown>) => isRevision(r.revision) &&
+  isMillis(r.createdAt) && isDigest(r.caseBindingHash);
 
 /**
  * Practical guest request commands. Safety ownership never crosses this
@@ -48,15 +54,14 @@ export class EventAssistanceCasesStore {
     } catch {
       throw new HttpsError("invalid-argument", "Help request scope mismatch.");
     }
-    const receiptId = "case-action:" + operationContentHash([
-      context, payload.caseId, command.operationId]);
+    const receiptRef = assistanceReceiptRef(this.db, CASE_RECEIPT_COMMAND,
+      operationContentHash([context, payload.caseId, command.operationId]));
     const requestHash = operationContentHash([actorUid, input]);
     return transact(this.db, async (tx) => {
       const {organizer, event} = await this.access(tx, actorUid, context);
       assertCommandRole(command, ["eventLead"]);
       const caseRef = this.db.collection(guestCollections.cases)
         .doc(payload.caseId);
-      const receiptRef = this.db.collection(CASE_RECEIPTS).doc(receiptId);
       const [caseSnap, receiptSnap] = await tx.getAll(caseRef, receiptRef);
       const raw = caseSnap.data();
       if (!raw || raw.owner !== "eventLead" ||
@@ -70,17 +75,11 @@ export class EventAssistanceCasesStore {
         .doc(request.attendeeId));
       const view = projectHostCase(request, event, attendee, organizer);
       const bindingHash = hostCaseBindingHash(request);
-      const receipt = receiptSnap.data();
-      if (receipt !== undefined) {
-        if (!validateEventAssistanceCaseReceiptDocument(receipt) ||
-            receipt.receiptId !== receiptId ||
-            receipt.caseId !== request.caseId ||
-            operationContentHash(receipt.context) !==
-              operationContentHash(context) ||
-            receipt.actorUid !== actorUid ||
-            receipt.outcome !== payload.outcome ||
-            receipt.caseBindingHash !== bindingHash ||
-            receipt.requestHash !== requestHash ||
+      const receipt = replayAssistanceReceipt<CaseReceipt>(receiptSnap.data(), {
+        command: CASE_RECEIPT_COMMAND, requestHash, nowMillis: now,
+      }, validReceipt, conflict);
+      if (receipt !== null) {
+        if (receipt.caseBindingHash !== bindingHash ||
             receipt.revision > (view.revision ?? -1) ||
             receipt.createdAt < request.receivedAt ||
             receipt.createdAt > now) throw conflict();
@@ -97,16 +96,14 @@ export class EventAssistanceCasesStore {
       const handling = changed.handling;
       const updated: HostCase = parseHostCase({...request, ...changed},
         request.caseId, context, now);
-      const savedReceipt = {receiptId, context, caseId: request.caseId,
-        caseBindingHash: bindingHash, requestHash, revision: handling.revision,
-        actorUid, outcome: payload.outcome, createdAt: now};
-      if (!validateEventAssistanceCaseReceiptDocument(savedReceipt)) {
-        throw invalidSource();
-      }
+      const savedReceipt: CaseReceipt = {caseBindingHash: bindingHash,
+        revision: handling.revision, createdAt: now};
+      if (!validReceipt(savedReceipt)) throw invalidSource();
       const result = this.response("applied", context, now, handling.revision,
         projectHostCase(updated, event, attendee, organizer));
       tx.set(caseRef, updated);
-      tx.create(receiptRef, savedReceipt);
+      writeAssistanceReceipt(tx, receiptRef, {command: CASE_RECEIPT_COMMAND,
+        requestHash, nowMillis: now, result: savedReceipt});
       return result;
     });
   }

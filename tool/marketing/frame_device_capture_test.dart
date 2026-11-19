@@ -4,10 +4,10 @@ import 'package:image/image.dart' as img;
 
 import 'frame_device_capture.dart' as frame;
 
-/// Framed sizes and the canvas-to-screen offset (2x margin + inset) per
-/// device; tool/marketing/lib/capture_devices.mjs must agree.
+/// Framed sizes and the canvas-to-screen offset (2x margin + inset) of the
+/// one device still framed here; tool/marketing/lib/capture_devices.mjs must
+/// agree. Generic devices are unframed (checked below).
 const _devices = <String, ({int width, int height, int offset})>{
-  'generic-phone': (width: 980, height: 1924, offset: 88),
   'iphone-17-pro': (width: 1020, height: 1964, offset: 108),
 };
 
@@ -52,28 +52,30 @@ void main() {
       if (red.r != 255 || red.b != 0 || blue.r != 0 || blue.b != 255) {
         throw StateError('$device: native source pixels were resampled.');
       }
-      // The centre of the screen's top edge: the island covers it on the
-      // iPhone frame; the generic frame draws nothing over the screen.
+      // The centre of the screen's top edge: the island covers it.
       final topCentre = framed.getPixel(
         framed.width ~/ 2,
         expected.offset + 24 * 2 + 12,
       );
-      final covered = topCentre.r < 64;
-      if (covered != (device == 'iphone-17-pro')) {
-        throw StateError('$device: unexpected camera cut-out over the screen.');
+      if (topCentre.r >= 64) {
+        throw StateError('$device: the island must cover the screen top.');
       }
       output.deleteSync();
     }
 
+    // The default device is the generic phone, which passes through unframed.
     frame.main(['--input', input.path, '--output', output.path]);
-    final defaultFramed = img.decodePng(output.readAsBytesSync())!;
-    if (defaultFramed.width != _devices['generic-phone']!.width) {
-      throw StateError('The default frame must be the generic phone.');
+    final defaultOutput = img.decodePng(output.readAsBytesSync())!;
+    if (defaultOutput.width != 804 || defaultOutput.height != 1748) {
+      throw StateError(
+        'The default device must be the unframed generic phone.',
+      );
     }
     output.deleteSync();
 
     // Unframed devices pass the native screen through, pixel for pixel.
     for (final (device, width, height) in [
+      ('generic-phone', 804, 1748),
       ('generic-tablet', 2388, 1668),
       ('desktop-browser', 2880, 1800),
     ]) {
@@ -103,9 +105,13 @@ void main() {
       }
       output.deleteSync();
 
-      // A phone-sized screen is not a tablet or desktop screen.
+      // A screen of another device's size is refused.
       input.writeAsBytesSync(
-        img.encodePng(img.Image(width: 804, height: 1748)),
+        img.encodePng(
+          device == 'generic-phone'
+              ? img.Image(width: 2388, height: 1668)
+              : img.Image(width: 804, height: 1748),
+        ),
       );
       frame.main([
         '--input',
@@ -128,7 +134,7 @@ void main() {
     }
     exitCode = 0;
     stdout.writeln(
-      'Native framing dimensions, pixel preservation, generic bezel, unframed '
+      'Native framing dimensions, pixel preservation, island, unframed '
       'pass-through and rejection passed.',
     );
   } finally {

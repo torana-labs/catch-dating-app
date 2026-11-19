@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_action_receipts.schema.json",
   "title": "SalesActionReceiptDocument",
-  "description": "Actor- and scope-bound immutable idempotency receipt; result is bounded and never public. Kept as its own collection (L8 decision, 18 Nov 2026): the sales privacy inventory enumerates it for erasure and review, so it stays with the sales records it describes.",
+  "description": "Actor- and scope-bound immutable idempotency receipt; result is bounded and never public. Kept as its own collection (L8 decision, 18 Nov 2026): it is a sales-review proof other commands read: partner marketing grants check the approval receipt and receipts.get serves it later.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "salesActionReceipts",

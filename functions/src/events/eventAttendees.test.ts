@@ -19,6 +19,7 @@ import {
   setEventAttendeeAttendanceHandler,
 } from "./eventAttendees";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
+import {commandReceiptId} from "../shared/commandReceipts";
 import {seatIdentityAliasId, seatIdentityValueHash} from
   "./seatIdentityAuthority";
 
@@ -1143,9 +1144,10 @@ test("ready Host attendance reserves and releases one canonical guest seat",
         expectedRevision: 4, clientOperationId,
       }), deps);
     const noOpReceipt = (clientOperationId: string) =>
-      firestore.get(`eventAttendeeAttendanceReceipts/${attendanceReceiptId({
-        eventId: "event-1", actorUid: "host-1", clientOperationId,
-      })}`);
+      firestore.get(`commandReceipts/${commandReceiptId(
+        "setEventAttendeeAttendance", attendanceReceiptId({
+          eventId: "event-1", actorUid: "host-1", clientOperationId,
+        }))}`);
     const reservationPath = `eventSeatReservations/${createHash("sha256")
       .update("event-1\u001fguest_1").digest("hex")}`;
     firestore.update("eventParticipations/event-1_user-1", {

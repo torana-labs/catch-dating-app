@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_attendance_disposition_receipts.schema.json",
   "title": "EventAttendanceDispositionReceiptDocument",
+  "description": "Kept as its own collection (L8 decision, 18 Nov 2026): the only history of earlier no-show decisions and who made them; the disposition document is overwritten.",
   "$ref": "../shared/event_attendance_disposition.schema.json#/definitions/Receipt",
   "x-firestore-collection": "eventAttendanceDispositionReceipts",
   "x-firestore-path": "eventAttendanceDispositionReceipts/{receiptId}",

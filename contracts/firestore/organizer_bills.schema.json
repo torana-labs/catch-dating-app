@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_bills.schema.json",
   "title": "OrganizerBillDocument",
-  "description": "Catch's bill to one organizer for one billing period, made from the bookings paid into the organizer's own account (hostCollected). Since the move to rolling cycles (#1126) a period is one commission cycle: commission.cycleDays days, anchored at the end of the organizer's free trial, billed in arrears when it closes, with the cap applied per cycle. Bills made before then are calendar months, India time (periodKind absent or calendarMonth); cycle bills never count a payment captured before the end of the organizer's last calendar-month bill or 1 November 2026, India time. A cycle is billed for tools-only OR ticketing, never both: a tools-only cycle bills the flat tools-only fee and no commission. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. A host's first two billing cycles wait for staff to review and send them; later cycle bills are sent automatically unless held (autoSendAtMillis, sendHold). A refund recorded after a cycle bill was sent or paid is credited on the organizer's next cycle bill (refundCredit), never making a bill negative. An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
+  "description": "Catch's bill to one organizer for one billing period, made from the bookings paid into the organizer's own account (hostCollected). Since the move to rolling cycles (#1126) a period is one commission cycle: commission.cycleDays days, anchored at the end of the organizer's free trial, billed in arrears when it closes, with the cap applied per cycle. Bills made before then are calendar months, India time (periodKind absent or calendarMonth); cycle bills never count a payment captured before the end of the organizer's last calendar-month bill or 1 November 2026, India time. A cycle is billed for tools-only OR ticketing, never both: a tools-only cycle bills the flat tools-only fee and no commission. Commission uses each payment's frozen terms (or the organizer's current terms when a payment has none), the free trial, and the cap from the organizer's current terms. GST is added only while Settings → Payments says Catch is GST registered. A host's first two billing cycles wait for staff to review and send them; later cycle bills are sent automatically unless held (autoSendAtMillis, sendHold). A refund recorded after a cycle bill was sent or paid is credited on the organizer's next cycle bill (refundCredit), never making a bill negative. A host that referred another host gets one cycle bill free once the referred host has paid its first bill (referralReward). An invoice number is taken from the financial year's unbroken sequence when the bill is sent. Server-only; Admin reads and acts on it through adminManageOrganizerBills.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerBills",
@@ -131,6 +131,18 @@
                 "appliedMinor": {"$ref": "#/definitions/minor", "description": "The part of it taken off this bill."}
               }
             }}
+          }},
+        {"type": "null"}
+      ]
+    },
+    "referralReward": {
+      "description": "Cycle bills only: the free month a host earns by referring another host (owner, 19 Nov 2026). Set when the bill is made for the referrer's next cycle that has something to bill after the referred host paid its first bill (organizerReferrals/{referredOrganizerId}.reward). The bill is free: its commission, GST and total are zero, waivedMinor is what it would have billed before refund credit, and refund credit owed carries forward untouched. A recomputed bill keeps the reward while it still has something to waive; one left with nothing to bill gives the reward back to wait for a later cycle. Null or absent on every other bill.",
+      "anyOf": [
+        {"type": "object", "additionalProperties": false,
+          "required": ["referredOrganizerId", "waivedMinor"],
+          "properties": {
+            "referredOrganizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "description": "The referred organizer whose first paid bill earned the reward: its organizerReferrals document id."},
+            "waivedMinor": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "description": "What this cycle would have billed, GST included, before refund credit."}
           }},
         {"type": "null"}
       ]

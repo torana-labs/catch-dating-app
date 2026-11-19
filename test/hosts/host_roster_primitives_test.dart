@@ -1,5 +1,3 @@
-import 'package:catch_dating_app/hosts/presentation/host_roster_display_state.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_participants_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/participant_table.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -65,48 +63,6 @@ void main() {
     expect(find.text('STATUS'), findsOneWidget);
     expect(find.text('ACTION'), findsOneWidget);
   });
-
-  testWidgets(
-    'host roster controls use canonical search and metric primitives',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          Column(
-            children: [
-              HostRosterFilterHeader(
-                title: 'Participation',
-                subtitle: 'Review attendance.',
-                filters: const [
-                  HostRosterFilterSpec(
-                    filter: HostRosterFilter.all,
-                    label: 'All',
-                    value: 2,
-                    tone: CatchBadgeTone.neutral,
-                  ),
-                  HostRosterFilterSpec(
-                    filter: HostRosterFilter.attended,
-                    label: 'Attended',
-                    value: 1,
-                    tone: CatchBadgeTone.success,
-                  ),
-                ],
-                selectedFilter: HostRosterFilter.all,
-                onFilterChanged: (_) {},
-              ),
-              HostRosterSearchField(
-                value: '',
-                label: 'Search roster',
-                onChanged: (_) {},
-              ),
-            ],
-          ),
-        ),
-      );
-
-      expect(find.byType(CatchMetricSection), findsOneWidget);
-      expect(find.byType(CatchSearchField), findsOneWidget);
-    },
-  );
 }
 
 Widget _wrap(Widget child) {

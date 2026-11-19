@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/listing_program_common.schema.json",
+  "title": "ListingProgramCommon",
+  "description": "Shared definitions for programmatic organizer listings (the listings Catch sources itself and staff approve): the cohort an approval tags an organizer with, and the formats such a listing may carry. Owner decision 10 (19 Nov 2026): nightlife and singles are never programmatic formats.",
+  "definitions": {
+    "cohortId": {
+      "type": "string",
+      "description": "A listing cohort, such as pilot-indore-1: lowercase letters, digits and hyphens.",
+      "minLength": 3,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$"
+    },
+    "format": {
+      "description": "A city-by-format page format a programmatic listing may carry: every format in functions/src/cityPlans/discoveryFormats.ts except nightlife.",
+      "enum": ["runClubs", "racketSports", "pickleball", "padel", "tennis", "badminton", "supper", "quizNights", "studios", "workshops", "books", "outdoors"]
+    },
+    "formats": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {"$ref": "#/definitions/format"}
+    },
+    "listingProgram": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The programmatic listing cohort an organizer was approved into. Server-written by listing approval only; a bulk withdrawal or a cohort report selects organizers by cohortId.",
+      "required": ["cohortId", "approvedAt"],
+      "properties": {
+        "cohortId": {"$ref": "#/definitions/cohortId"},
+        "approvedAt": {"$ref": "event_common.schema.json#/definitions/timestamp"}
+      }
+    }
+  }
+}
