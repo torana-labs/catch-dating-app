@@ -84,9 +84,17 @@ test("scraped runs and dinners qualify, but blocked words still exclude them",
       "sensitive");
     assert.equal(classifyAt([], [scraped("dinner", "Dinner mixer")]),
       "sensitive");
-    // Native events in the same classes stay excluded by the policy classes.
-    assert.equal(classifyAt([run("socialRun")], []), "sensitive");
-    assert.equal(classifyAt([run("dinner")], [scraped("yoga")]), "sensitive");
+  });
+
+test("native runs and dinners qualify; singles, crawls, seated tables do not",
+  () => {
+    assert.equal(classifyAt([run("socialRun")], []), "eligible");
+    assert.equal(classifyAt([run("dinner")], [scraped("yoga")]), "eligible");
+    assert.equal(classifyAt([run("dinner", "seatedTable")], []), "sensitive");
+    assert.equal(classifyAt([run("singlesMixer")], []), "sensitive");
+    assert.equal(classifyAt([run("barCrawl")], []), "sensitive");
+    assert.equal(classifyAt([run("running", "freeFormMixer")], []),
+      "sensitive");
   });
 
 test("scraped organiser: dating words make it sensitive", () => {

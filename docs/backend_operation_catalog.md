@@ -1230,7 +1230,10 @@ active native event is canonically classified and none is in the policy
 version's excluded classes, and every captured upcoming external listing
 passes the policy's `externalListingAllowance` (a supply-intake activity label
 on its allow list, which includes scraped runs and dinners, and no blocked
-dating word; owner decisions relayed 19 Nov 2026). An organiser with neither a native event nor an upcoming listing stays
+dating word; owner decisions relayed 19 Nov 2026). Native runs and dinners are
+no longer excluded classes; singles and crawl classes and the excluded
+interaction models (paired rotations, seated tables, free-form mixers, route
+stops) still are. An organiser with neither a native event nor an upcoming listing stays
 unknown, and `externalListingsCountAsUnknown` can still exclude every
 organiser with a public listing. The answer
 is a boolean, never the class, because public pages do not reveal dating
