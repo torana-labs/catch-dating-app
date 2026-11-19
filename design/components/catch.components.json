@@ -15268,20 +15268,20 @@
         ]
       },
       "react": {
-        "symbol": "CheckboxControl",
-        "file": "packages/web-ui/src/primitives.tsx",
-        "api": "headless-control",
+        "symbol": "CatchToggleInput",
+        "file": "packages/web-ui/src/components/CatchToggleInput.tsx",
+        "api": "styled",
         "storybook": {
           "status": "ready",
-          "story": "packages/web-ui/src/primitives.stories.tsx",
-          "exportName": "Checkbox",
+          "story": "packages/web-ui/src/components/CatchToggleInput.stories.tsx",
+          "exportName": "Contract",
           "states": [
-            "unchecked",
-            "checked",
+            "off",
+            "on",
             "disabled"
           ]
         },
-        "notes": "Native checkbox for the one-boolean input responsibility, adopted through the website and admin CheckboxField adapters. Flutter renders the same responsibility as a switch; checkbox or switch rendering on web is decided when Phase 7e builds the styled component."
+        "notes": "The settings switch on web, a role=switch button with the Flutter geometry and the toggle and field recipes; Admin settings use it. Acknowledgements and checklists use CatchCheckboxInput."
       },
       "design": {
         "figma": {

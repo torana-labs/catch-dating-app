@@ -287,3 +287,50 @@
   outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-primary);
   outline-offset: var(--catch-space-micro2);
 }
+
+/*
+ * The toggle recipe (Flutter CatchField.toggle): the title and body read as
+ * the row's value, the switch keeps its own width at the end, and a long title
+ * wraps rather than pushing the switch out.
+ */
+.field[data-recipe="toggle"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--catch-space-s4);
+  align-items: center;
+}
+
+.field[data-recipe="toggle"] .support {
+  grid-column: 1 / -1;
+}
+
+.field .toggleCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+  min-width: 0;
+}
+
+.field[data-input-mode="readOnly"] .toggleTitle {
+  cursor: default;
+}
+
+.field .toggleTitle {
+  cursor: pointer;
+  color: var(--catch-theme-ink);
+  font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--catch-typography-web-field-value-size);
+  font-weight: var(--catch-typography-web-field-value-weight);
+  line-height: var(--catch-typography-web-field-value-line-height);
+  letter-spacing: var(--catch-typography-web-field-value-tracking);
+}
+
+.field .toggleBody {
+  color: var(--catch-theme-ink2);
+  font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--catch-typography-web-field-label-size);
+  font-weight: var(--catch-typography-web-field-label-weight);
+  line-height: var(--catch-typography-web-field-label-line-height);
+}

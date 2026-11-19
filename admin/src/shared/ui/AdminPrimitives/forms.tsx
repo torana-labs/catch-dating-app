@@ -1,7 +1,7 @@
 import {AdminWorkbenchStack} from "./workbench";
 // Slightly above the family target because the generic decision footer shares the review form-state types.
-import type {InputHTMLAttributes, ReactNode} from "react";
-import {CatchAdminIntakeDecisionActions, CatchAdminIntakeDecisionState, CatchField, CheckboxControl} from "@catch/web-ui";
+import type {ReactNode} from "react";
+import {CatchAdminIntakeDecisionActions, CatchAdminIntakeDecisionState, CatchCheckboxInput, CatchField} from "@catch/web-ui";
 import {CheckCircle2, FileWarning} from "lucide-react";
 
 import {
@@ -33,27 +33,24 @@ export function AdminStateRow({
   );
 }
 
+/** An acknowledgement or checklist item: the shared CatchCheckboxInput. */
 export function CheckboxField({
   checked,
-  className = "check-row",
+  disabled = false,
   label,
   onChange,
-  ...props
 }: {
   checked: boolean;
-  className?: string;
-  label: ReactNode;
+  disabled?: boolean;
+  label: string;
   onChange: (checked: boolean) => void;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, "checked" | "className" | "onChange" | "type">) {
+}) {
   return (
-    <label className={className}>
-      <CheckboxControl
-        checked={checked}
-        onChange={(event) => onChange(event.currentTarget.checked)}
-        {...props}
-      />
-      <span>{label}</span>
-    </label>
+    <CatchCheckboxInput
+      label={label}
+      onChanged={disabled ? null : onChange}
+      value={checked}
+    />
   );
 }
 

@@ -6,6 +6,7 @@ import {
   useId,
   useState,
 } from "react";
+import {CatchToggleInput} from "./CatchToggleInput";
 import styles from "./CatchField.module.css";
 
 /** Flutter `CatchFieldLabelTextMode`; hidden labels keep their accessible name. */
@@ -104,7 +105,21 @@ export interface CatchFieldSelectProps<T> extends CatchFieldCommonProps {
   values: readonly T[];
 }
 
-export type CatchFieldProps<T = string> = CatchFieldInputProps | CatchFieldSelectProps<T>;
+/**
+ * Flutter `CatchField.toggle`: a setting's title, an optional body line under
+ * it, and the switch at the end of the row. The title is the switch's label,
+ * so a click on the title flips it.
+ */
+export interface CatchFieldToggleProps extends Omit<CatchFieldCommonProps, "labelMode" | "leading"> {
+  /** Flutter `body`: a line under the title. */
+  body?: string | null;
+  /** Null disables the switch, as in Flutter. */
+  onChanged: ((value: boolean) => void) | null;
+  recipe: "toggle";
+  value: boolean;
+}
+
+export type CatchFieldProps<T = string> = CatchFieldInputProps | CatchFieldSelectProps<T> | CatchFieldToggleProps;
 
 const nativeKeyboard: Record<CatchFieldKeyboardType, {type: string; inputMode?: "decimal" | "email" | "numeric" | "tel" | "url"}> = {
   text: {type: "text"},
@@ -120,7 +135,8 @@ const nativeKeyboard: Record<CatchFieldKeyboardType, {type: string; inputMode?: 
 
 /**
  * A labelled form field in one recipe of Flutter's `CatchField`: `input` for
- * text (a text area when it spans lines) and `select` for one of a list. The
+ * text (a text area when it spans lines), `select` for one of a list and
+ * `toggle` for a setting that is on or off. The
  * field paints a quiet row at rest and an active tile while focused; the
  * caller passes resolved copy. Inside a `CatchGroundCard` it takes the Website
  * v2 boards' boxed input at rest instead, from the card's
@@ -138,7 +154,31 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
   const inputMode = props.inputMode ?? "editable";
   const error = props.errorText?.trim() ? props.errorText.trim() : null;
   const support = error ?? (props.helperText?.trim() ? props.helperText.trim() : null);
-  const labelHidden = props.labelMode === "hidden";
+  const labelHidden = props.recipe !== "toggle" && props.labelMode === "hidden";
+
+  if (props.recipe === "toggle") {
+    const body = props.body?.trim() ? props.body.trim() : null;
+    const bodyId = `${id}-body`;
+    const describedBy = [body ? bodyId : null, support ? supportId : null].filter(Boolean).join(" ");
+    const editable = inputMode === "editable" && props.onChanged !== null;
+    return (
+      <div className={styles.field} data-input-mode={editable ? "editable" : "readOnly"}
+        data-recipe="toggle" data-status={error ? "error" : undefined}>
+        <span className={styles.toggleCopy}>
+          <label className={styles.toggleTitle} htmlFor={id}>{props.title}</label>
+          {body ? <span className={styles.toggleBody} id={bodyId}>{body}</span> : null}
+        </span>
+        <CatchToggleInput describedBy={describedBy || undefined} id={id}
+          onChanged={editable ? props.onChanged : null} recipe="field" value={props.value} />
+        {support ? (
+          <div className={styles.support}>
+            <p className={styles.supportText} data-tone={error ? "danger" : props.helperTone ?? "neutral"}
+              id={supportId} role={error ? "alert" : undefined}>{support}</p>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
 
   const focusHandlers = {
     onFocus: () => setFocused(true),
