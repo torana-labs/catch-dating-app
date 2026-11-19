@@ -517,7 +517,7 @@ Source: `.github/workflows/mobile-internal-promote.yml` and the
 **Apple / App Store Connect**
 
 - ASC app ids: Consumer **`6765646860`**, Host **`6778927317`** (tool/app_targets.json:84, 107, 391, 452).
-- Prod bundle ids: **`com.catchdates.app`** (app_targets.json:377) and **`com.catchdates.host`** (:438). Dev/staging use `.dev` and `.staging` suffixes (:169, :221, :273, :325); PROMOTE only ever resolves `--environment prod` (PROMOTE:426-429).
+- Prod bundle ids: **`com.catchdates.app`** (app_targets.json:377) and **`com.catchdates.host`** (:438). Dev uses the `.dev` suffix; PROMOTE only ever resolves `--environment prod` (PROMOTE:426-429).
 - Upload tool: `xcrun altool --upload-package` (PROMOTE:1067-1075). The manifest declares `"uploadTool": "altool"` (app_targets.json:50), and `check_app_targets.mjs` enforces the manifest strings.
 - Auth: an ASC **API key (.p8, team key with issuer id)**, used by both altool (`--api-key`/`--api-issuer`, key file in `~/.appstoreconnect/private_keys/AuthKey_<id>.p8`) and the REST JWTs. Secret names: **`APP_STORE_CONNECT_API_KEY_ID`**, **`APP_STORE_CONNECT_API_ISSUER_ID`**, **`APP_STORE_CONNECT_API_KEY_BASE64`** (PROMOTE:998-1000, 1018-1019, 1319-1321). They live in Environment `prod-mobile`. The producer uses the same three for `xcodebuild -allowProvisioningUpdates` (mobile-internal-release.yml:503-536).
 - Distribution policy: `all-existing-internal-groups-with-testers` (app_targets.json:45; PROMOTE:1374). Only internal groups (`isInternalGroup`) with >0 testers are used. It never creates groups or touches membership, and it does not use external groups or Beta App Review.

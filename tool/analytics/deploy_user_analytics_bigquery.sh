@@ -4,7 +4,7 @@ set -euo pipefail
 usage() {
   cat >&2 <<'USAGE'
 Usage:
-  tool/analytics/deploy_user_analytics_bigquery.sh <dev|staging|prod> [options]
+  tool/analytics/deploy_user_analytics_bigquery.sh <dev|prod> [options]
 
 Options:
   --project-id <id>        Override the Firebase project alias in .firebaserc.
@@ -33,7 +33,7 @@ environment="$1"
 shift
 
 case "$environment" in
-  dev|staging|prod) ;;
+  dev|prod) ;;
   *) usage ;;
 esac
 

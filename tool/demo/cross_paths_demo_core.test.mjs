@@ -36,7 +36,7 @@ test("production seeding accepts only the pinned Mumbai fixture", () => {
   }), /restricted to the exact Mumbai QA fixture/);
   assert.throws(() => assertProductionCrossPathsFixtureRequest({
     ...exact,
-    projectId: "catchdates-staging",
+    projectId: "catchdates-other",
   }), /supports only dev, the emulator, or the exact production/);
 });
 

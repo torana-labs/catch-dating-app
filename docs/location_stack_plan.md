@@ -183,7 +183,7 @@ labels at rest.
   docs is moot under wipe-and-reseed; its one-off script is retired.
 - `latlong2.LatLng` has been removed from app-facing code and the dependency
   graph; SDK-specific coordinate types now stay at Google Maps adapter edges.
-- `tool/firebase/validate_google_maps_config.mjs` validates dev/staging/prod local Maps
+- `tool/firebase/validate_google_maps_config.mjs` validates dev and prod local Maps
   SDK config for iOS and Android without printing secrets. It can also validate
   the server-side `GOOGLE_MAPS_PLACES_API_KEY` Secret Manager value with
   `--include-places-secret`, including rejecting accidental `keyString:`
@@ -244,11 +244,10 @@ References:
 4. Create an iOS-restricted Maps SDK key:
    - API restriction: Maps SDK for iOS only.
    - App restriction: iOS apps.
-   - Add each Catch bundle ID used by dev, staging, and prod.
+   - Add each Catch bundle ID used by dev and prod.
    - Copy `apps/<role>/ios/Flutter/GoogleMapsKeys.xcconfig.example` to
      `apps/<role>/ios/Flutter/GoogleMapsKeys.xcconfig` and set the environment-specific
-     entries `GOOGLE_MAPS_IOS_API_KEY_DEV`,
-     `GOOGLE_MAPS_IOS_API_KEY_STAGING`, and
+     entries `GOOGLE_MAPS_IOS_API_KEY_DEV` and
      `GOOGLE_MAPS_IOS_API_KEY_PROD`.
 5. Create a server-side Places API key:
    - API restriction: Places API (New) only.

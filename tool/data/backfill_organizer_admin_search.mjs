@@ -158,7 +158,7 @@ Options:
   --allow-prod            Required with --apply against prod.
   --json                  Print summary as JSON.
   --summary-only          Omit per-document repair details from output.
-  --env <dev|staging|prod> Resolve project id from .firebaserc.
+  --env <dev|prod> Resolve project id from .firebaserc.
   --project <id>          Firebase project id.
   --emulator              Use Firestore emulator at 127.0.0.1:8080.
   --emulator-host <host>  Use a custom Firestore emulator host.

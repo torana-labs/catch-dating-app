@@ -2,8 +2,8 @@
 # One-time, idempotent bootstrap for infra/ (Terraform for Firebase settings).
 #
 # Run once by the owner on a Mac with gcloud signed in as a project owner of
-# catch-dating-app-64e51, catchdates-staging and catchdates-dev, and gh signed
-# in as a torana-labs/catch-dating-app admin:
+# catch-dating-app-64e51 and catchdates-dev, and gh signed in as a
+# torana-labs/catch-dating-app admin:
 #
 #   gcloud auth login
 #   gh auth login
@@ -42,10 +42,9 @@ set -euo pipefail
 
 PROD_PROJECT=catch-dating-app-64e51
 PROD_NUMBER=574779808785
-STAGING_PROJECT=catchdates-staging
 DEV_PROJECT=catchdates-dev
 DEV_NUMBER=619661127800
-MANAGED_PROJECTS=("$PROD_PROJECT" "$STAGING_PROJECT" "$DEV_PROJECT")
+MANAGED_PROJECTS=("$PROD_PROJECT" "$DEV_PROJECT")
 
 REPOSITORY=torana-labs/catch-dating-app
 REPOSITORY_ID=1170579691
@@ -122,9 +121,7 @@ step "Enable the APIs Terraform and keyless sign-in use"
 gcloud services enable iam.googleapis.com iamcredentials.googleapis.com sts.googleapis.com \
   storage.googleapis.com firebase.googleapis.com firebaseappcheck.googleapis.com \
   --project="$PROD_PROJECT"
-for project in "$STAGING_PROJECT" "$DEV_PROJECT"; do
-  gcloud services enable firebase.googleapis.com firebaseappcheck.googleapis.com --project="$project"
-done
+gcloud services enable firebase.googleapis.com firebaseappcheck.googleapis.com --project="$DEV_PROJECT"
 for project in "$PROD_PROJECT" "$DEV_PROJECT"; do
   gcloud services enable secretmanager.googleapis.com --project="$project"
 done

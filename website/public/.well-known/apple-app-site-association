@@ -13,12 +13,6 @@
         "paths": [
           "/clubs/run-clubs/*"
         ]
-      },
-      {
-        "appID": "2HQBK4UMUT.com.catchdates.app.staging",
-        "paths": [
-          "/clubs/run-clubs/*"
-        ]
       }
     ]
   }

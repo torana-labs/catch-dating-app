@@ -12,7 +12,7 @@
  * are fingerprinted; only feature gates and release state print literally.
  *
  *   node tool/firebase/report_environment_parity.mjs
- *   node tool/firebase/report_environment_parity.mjs --env dev,staging,prod --json
+ *   node tool/firebase/report_environment_parity.mjs --env dev,prod --json
  *   node tool/firebase/report_environment_parity.mjs --surfaces functions,rules
  *   node tool/firebase/report_environment_parity.mjs --policy-only
  */
@@ -57,12 +57,11 @@ const policyPath = "tool/firebase/environment_difference_policy.json";
 const policyClasses = new Set(["identity", "feature-gate", "release-state"]);
 const discoverySources = new Set(["functions-param", "materialized-param",
   "github-variable", "dart-define", "remote-config-template"]);
-const environments = ["dev", "staging", "prod"];
+const environments = ["dev", "prod"];
 // GitHub environments whose variables feed each Firebase environment's builds
 // and deploys. Production Functions deploy through \`prod\`.
 const githubEnvironmentsFor = Object.freeze({
   dev: ["dev"],
-  staging: ["staging"],
   prod: ["prod", "prod-hosting", "prod-mobile"],
 });
 
@@ -450,7 +449,7 @@ export function evaluatePolicy(state, {now = new Date()} = {}) {
       violations.push(`${label}: expired on ${entry.expires}; flip the gate or renew it.`);
     }
   }
-  const gateDefines = ["dev", "staging", "prod"].filter((env) => state.dartDefines[env]);
+  const gateDefines = ["dev", "prod"].filter((env) => state.dartDefines[env]);
   for (const name of new Set(gateDefines.flatMap((env) => Object.keys(state.dartDefines[env])))) {
     if (policy.switches[name]?.class !== "feature-gate") continue;
     const values = new Set(gateDefines.map((env) => String(state.dartDefines[env][name] ?? "")));
@@ -1403,7 +1402,7 @@ function usage() {
     "client callable gates, Remote Config, build modes and source release holds.",
     "",
     "Options:",
-    "  --env <csv>        Environments to compare (dev,staging,prod; default dev,prod).",
+    "  --env <csv>        Environments to compare (dev,prod; default dev,prod).",
     `  --surfaces <csv>   Subset of: ${surfaceIds.join(", ")}.`,
     "  --policy-only      Offline CI guard: every environment-conditional switch is",
     `                     classified in ${policyPath} and allowed`,

@@ -617,7 +617,7 @@ tool reads from its own allowance of 300 a month
 policy `supply-acquisition-v4`), counted at
 `supplyIntakeUsage/instant-draft-pages-{monthKey}`, so drafts can never
 starve the 600 staff nominations and the other front doors share. Every environment's worker
-reads its own copy of the decision, so dev and staging hold the same accepted
+reads its own copy of the decision, so dev holds the same accepted
 record as production; without it a nomination fails closed with
 `ACQUISITION_POLICY_DECISION_REQUIRED`. The other four capabilities stay off.
 
@@ -1467,7 +1467,7 @@ held message, but does not prove a pending submission failed.
 ### Read-only event messaging setup review
 
 Trusted operators can inspect one event, channel and sender with
-`npm --prefix functions run operations:review-event-messaging -- --environment <dev|staging|prod> --project <matching-project> --organizer <id> --event <id> --route <catchEventSms|organizerEventWhatsapp|catchEventRcs> --sender <id> --purpose <joiningUpdate|joiningInstructions|planChanged|eventCancelled|eventFinished|guestRequirement|assignmentChanged|participationCheck|followUp>`.
+`npm --prefix functions run operations:review-event-messaging -- --environment <dev|prod> --project <matching-project> --organizer <id> --event <id> --route <catchEventSms|organizerEventWhatsapp|catchEventRcs> --sender <id> --purpose <joiningUpdate|joiningInstructions|planChanged|eventCancelled|eventFinished|guestRequirement|assignmentChanged|participationCheck|followUp>`.
 The command requires an explicit project matching the repository's environment
 alias and existing read access. It has no apply option, and it does not load
 provider credentials or invoke a messaging provider. The command is registered

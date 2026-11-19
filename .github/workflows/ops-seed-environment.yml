@@ -17,7 +17,6 @@ on:
         type: choice
         options:
           - dev
-          - staging
           - prod
       scenario:
         description: Seed scenario (see --list-scenarios).

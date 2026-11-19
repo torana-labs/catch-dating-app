@@ -10,7 +10,7 @@
  *   node tool/firebase/check_deploy_parity.mjs --env prod
  *   node tool/firebase/check_deploy_parity.mjs --env prod \
  *     --targets functions:firstCallable,functions:secondCallable
- *   node tool/firebase/check_deploy_parity.mjs --env staging --json
+ *   node tool/firebase/check_deploy_parity.mjs --env dev --json
  *   node tool/firebase/check_deploy_parity.mjs --env prod \
  *     --client-callables website --client-root .
  *
@@ -497,7 +497,7 @@ export function formatReport(report) {
 function usage() {
   return [
     "Usage: node tool/firebase/check_deploy_parity.mjs " +
-      "--env <dev|staging|prod> [options]",
+      "--env <dev|prod> [options]",
     "",
     "Options:",
     "  --repo-root <path>  Read exports and defineSecret declarations here.",

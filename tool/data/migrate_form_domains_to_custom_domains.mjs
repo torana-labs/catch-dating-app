@@ -19,7 +19,7 @@ export function parseMigrationArgs(argv) {
     throw new Error("--retire-legacy deletes legacy documents; it requires --apply.");
   }
   if (!args.help && !args.env && !args.project && !args.emulatorHost) {
-    throw new Error("Choose an explicit --env dev|staging|prod, --project or --emulator.");
+    throw new Error("Choose an explicit --env dev|prod, --project or --emulator.");
   }
   return {...args, retireLegacy};
 }
@@ -56,7 +56,7 @@ async function main(argv = process.argv.slice(2)) {
   const args = parseMigrationArgs(argv);
   if (args.help) {
     console.log(`Usage: node tool/data/migrate_form_domains_to_custom_domains.mjs \\
-  (--env <dev|staging|prod> | --project <id> | --emulator) [--apply [--retire-legacy]] [--allow-prod]
+  (--env <dev|prod> | --project <id> | --emulator) [--apply [--retire-legacy]] [--allow-prod]
 
 Counts organizerFormDomains and plans each document's customDomains record.
 Default is a read-only dry run. Production writes also need --allow-prod.`);

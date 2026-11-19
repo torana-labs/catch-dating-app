@@ -24,18 +24,5 @@
         "30:88:F7:63:A6:0F:D9:F7:CA:99:20:4D:6A:68:EF:93:A3:02:63:A6:97:E5:63:EF:88:3B:29:DB:BC:7A:E2:3E"
       ]
     }
-  },
-  {
-    "relation": [
-      "delegate_permission/common.handle_all_urls"
-    ],
-    "target": {
-      "namespace": "android_app",
-      "package_name": "com.catchdates.app.staging",
-      "sha256_cert_fingerprints": [
-        "F0:E1:D3:E1:2C:44:3C:00:EC:AC:33:45:96:46:73:D5:B3:A1:F4:6F:1D:59:AB:AD:CD:19:CF:14:26:F2:30:02",
-        "30:88:F7:63:A6:0F:D9:F7:CA:99:20:4D:6A:68:EF:93:A3:02:63:A6:97:E5:63:EF:88:3B:29:DB:BC:7A:E2:3E"
-      ]
-    }
   }
 ]

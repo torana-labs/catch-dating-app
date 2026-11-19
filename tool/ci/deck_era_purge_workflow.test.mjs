@@ -277,7 +277,7 @@ test("a missing, empty or foreign manifest fails before any BigQuery call", () =
     assert.deepEqual(refused.calls, [], `${manifest} never reaches bq`);
   }
   assert.notEqual(cleanBigQuery({manifest: `${factLine("a")}\n`, env: {SOURCE_COMPLETED_EPOCH: ""}}).result.status, 0);
-  assert.notEqual(cleanBigQuery({manifest: `${factLine("a")}\n`, targetEnv: "staging"}).result.status, 0);
+  assert.notEqual(cleanBigQuery({manifest: `${factLine("a")}\n`, targetEnv: "qa"}).result.status, 0);
 });
 
 test("bigquery mode counts, dry-runs, deletes and recounts only the manifest's signal facts", () => {

@@ -156,10 +156,6 @@ test("Firebase environments resolve only through .firebaserc aliases", () => {
     "catchdates-dev",
   );
   assert.equal(
-    resolveFirebaseProjectId({environment: "staging", aliases}),
-    "catchdates-staging",
-  );
-  assert.equal(
     resolveFirebaseProjectId({environment: "prod", aliases}),
     "catch-dating-app-64e51",
   );
@@ -191,7 +187,7 @@ test("target and capability filtering selects only relevant prerequisites", () =
   // The event-assistance guest keyring is read only by dormant Functions.
   // The ad conversions Meta token is an optional pinned reference.
   assert.equal(selected("dev", ["functions"]).length, 36);
-  for (const environment of ["dev", "staging", "prod"]) {
+  for (const environment of ["dev", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
       ["flightAlertWebhook", []],
@@ -264,7 +260,7 @@ test("Catch webhook requires its own secrets and active receipt TTL", () => {
     "functions.secret.catch-whatsapp-app-secret",
     "functions.secret.catch-whatsapp-webhook-verify-token",
   ];
-  for (const environment of ["dev", "staging", "prod"]) {
+  for (const environment of ["dev", "prod"]) {
     const requirements = selectReadinessRequirements({
       manifest, environment, targets: ["functions:catchWhatsappWebhook"],
       capabilities: [],
@@ -281,7 +277,7 @@ test("Catch webhook requires its own secrets and active receipt TTL", () => {
 });
 
 test("Instagram claim webhook requires its three secrets and the do-not-list key", () => {
-  for (const environment of ["dev", "staging", "prod"]) {
+  for (const environment of ["dev", "prod"]) {
     const requirements = selectReadinessRequirements({
       manifest, environment, targets: ["functions:instagramClaimWebhook"],
       capabilities: [],
@@ -305,7 +301,7 @@ test("Instagram claim webhook requires its three secrets and the do-not-list key
 });
 
 test("Instagram token renewal needs only the token it renews", () => {
-  for (const environment of ["dev", "staging", "prod"]) {
+  for (const environment of ["dev", "prod"]) {
     const requirements = selectReadinessRequirements({
       manifest, environment,
       targets: ["functions:refreshInstagramAccessToken"], capabilities: [],
@@ -571,7 +567,7 @@ test("injected runner receives resolved project and returns a known-missing exit
   const report = runEnvironmentReadiness({
     aliases,
     capabilities: ["cross-paths"],
-    environments: ["staging"],
+    environments: ["dev"],
     manifest,
     runCommand: (spec) => {
       commands.push(spec);
@@ -581,13 +577,13 @@ test("injected runner receives resolved project and returns a known-missing exit
           stderr: "",
           stdout: JSON.stringify({
             lifecycleState: "ACTIVE",
-            projectId: "catchdates-staging",
+            projectId: "catchdates-dev",
             projectNumber: "123",
           }),
         };
       }
       if (spec.args[0] === "functions") return metadata([fakeFunction("getCrossPathsSuggestions",
-        "CROSS_PATHS_SUGGESTION_SIGNING_KEY", "catchdates-staging")]);
+        "CROSS_PATHS_SUGGESTION_SIGNING_KEY", "catchdates-dev")]);
       if (spec.args[0] === "secrets") {
         if (spec.args[1] === "versions") {
           return {status: 1, stderr: "NOT_FOUND", stdout: ""};
@@ -615,7 +611,7 @@ test("injected runner receives resolved project and returns a known-missing exit
   assert.equal(report.status, "not-ready");
   assert.equal(commands.length, 5);
   assert.ok(commands.slice(1).every((spec) =>
-    spec.args.includes("--project=catchdates-staging")));
+    spec.args.includes("--project=catchdates-dev")));
   assert.ok(commands.every((spec) =>
     !spec.args.join(" ").includes("secrets versions access")));
 });
@@ -624,7 +620,7 @@ test("live CLI distinguishes ready from indeterminate metadata", () => {
   const readyExecution = executeReadinessCli(
     [
       "--env",
-      "staging",
+      "dev",
       "--targets",
       "functions:exploreSearch",
       "--json",
@@ -636,7 +632,7 @@ test("live CLI distinguishes ready from indeterminate metadata", () => {
   );
   assert.equal(readyExecution.exitCode, 0);
   assert.equal(readyExecution.report.environments[0].projectId,
-    "catchdates-staging");
+    "catchdates-dev");
 
   const unknownExecution = executeReadinessCli(
     ["--env", "dev", "--targets", "functions:exploreSearch"],
@@ -687,7 +683,7 @@ test("project identity mismatch is confirmed not-ready", () => {
       stderr: "",
       stdout: JSON.stringify({
         lifecycleState: "ACTIVE",
-        projectId: "catchdates-staging",
+        projectId: "catch-dating-app-64e51",
         projectNumber: "123",
       }),
     },
@@ -1242,7 +1238,7 @@ function readyMetadataRunner(spec) {
       }),
     };
   }
-  if (spec.args[0] === "functions") return metadata([fakeFunction("exploreSearch", "ALGOLIA_SEARCH_API_KEY", "catchdates-staging")]);
+  if (spec.args[0] === "functions") return metadata([fakeFunction("exploreSearch", "ALGOLIA_SEARCH_API_KEY", "catchdates-dev")]);
   const project = spec.args.find((arg) => arg.startsWith("--project=")).slice(10);
   const secret = spec.args.find((arg) => arg.startsWith("--secret=")).slice(9);
   return metadata({name: `projects/${project}/secrets/${secret}/versions/${spec.args[3]}`, state: "ENABLED"});
@@ -1349,12 +1345,12 @@ test("IAM uses the explicit identity and catches a reader inheriting the provisi
 test("candidate readiness is distinct from deployed equivalence and preserves exact source provenance", () => {
   const requirement = manifest.requirements.find((entry) => entry.name === "ALGOLIA_SEARCH_API_KEY");
   const sourceSha = "a".repeat(40);
-  const candidate = {version: 1, environment: "staging", projectId: "catchdates-staging", sourceSha,
+  const candidate = {version: 1, environment: "dev", projectId: "catchdates-dev", sourceSha,
     paramsSha256: "c".repeat(64), functions: [{consumer: "exploreSearch", serviceAccount: "123-compute@developer.gserviceaccount.com"}],
     bindings: [{requirementId: requirement.id, consumer: "exploreSearch", active: true,
       serviceAccount: "123-compute@developer.gserviceaccount.com",
-      reference: "projects/catchdates-staging/secrets/ALGOLIA_SEARCH_API_KEY/versions/2"}]};
-  const options = {aliases, environments: ["staging"], manifest, sourceSha, candidate,
+      reference: "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/2"}]};
+  const options = {aliases, environments: ["dev"], manifest, sourceSha, candidate,
     targets: ["functions:exploreSearch"], runCommand: readyMetadataRunner};
   const proposed = runEnvironmentReadiness({...options, phase: "candidate"});
   assert.equal(proposed.exitCode, 0);
@@ -1367,12 +1363,12 @@ test("candidate readiness is distinct from deployed equivalence and preserves ex
     (c) => { c.sourceSha = "b".repeat(40); },
     (c) => { c.bindings[0].consumer = "unsupportedConsumer"; },
     (c) => { c.bindings[0].reference = "projects/other-project/secrets/KEY/versions/2"; },
-    (c) => { c.bindings[0].reference = "projects/catchdates-staging/secrets/ALGOLIA_SEARCH_API_KEY/versions/latest"; },
+    (c) => { c.bindings[0].reference = "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/latest"; },
     (c) => { c.environmentVariables = {SECRET: "must-never-escape"}; },
     (c) => { c.bindings[0].payload = "must-never-escape"; },
   ]) {
     const copy = structuredClone(candidate); mutate(copy);
-    assert.throws(() => validateCandidateBindings(copy, {environment: "staging", projectId: "catchdates-staging", sourceSha, manifest}),
+    assert.throws(() => validateCandidateBindings(copy, {environment: "dev", projectId: "catchdates-dev", sourceSha, manifest}),
       (error) => error.exitCode === 64 && !error.message.includes("must-never-escape"));
   }
 });

@@ -183,7 +183,7 @@ export function parseArgs(argv) {
     else if (arg === "--help" || arg === "-h") args.help = true;
     else throw new Error(`Unknown argument: ${arg}`);
   }
-  if (args.env != null && !["dev", "staging", "prod"].includes(args.env)) {
+  if (args.env != null && !["dev", "prod"].includes(args.env)) {
     throw new Error(`Unsupported Firebase environment: ${args.env}`);
   }
   if (args.apply && (args.env == null || args.env === "prod") && !args.allowProd) {
@@ -202,7 +202,7 @@ async function main() {
   }
   const aliases = readFirebaseProjectAliases();
   const environments = args.env == null
-    ? ["dev", "staging", "prod"]
+    ? ["dev", "prod"]
     : [args.env];
   const targets = environments.map((env) =>
     targetForEnvironment({env, aliases})
@@ -257,8 +257,8 @@ Usage:
   node tool/firebase/storage_rules_firestore_iam.mjs [options]
 
 Options:
-  --all                         Check dev, staging, and prod (default).
-  --env <dev|staging|prod>      Check one environment.
+  --all                         Check dev and prod (default).
+  --env <dev|prod>      Check one environment.
   --apply                       Add only missing bindings.
   --allow-prod                  Required when apply includes prod.
   --json                        Emit machine-readable output.

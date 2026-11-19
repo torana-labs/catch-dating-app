@@ -1672,7 +1672,7 @@ function helpText() {
 Usage:
   node tool/firebase/check_environment_readiness.mjs --manifest-only [--json]
   node tool/firebase/check_environment_readiness.mjs \\
-    (--env <dev|staging|prod> | --all) \\
+    (--env <dev|prod> | --all) \\
     [--targets <csv>] [--capabilities <csv>] [--json]
     [--candidate <names-only-receipt.json>] [--phase deployed|candidate]
     [--source-root <approved-checkout> --source-sha <sha>]

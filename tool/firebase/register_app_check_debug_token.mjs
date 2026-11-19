@@ -121,7 +121,7 @@ function parseArgs(argv) {
     }
   }
 
-  if (!["dev", "staging", "prod"].includes(parsed.env)) {
+  if (!["dev", "prod"].includes(parsed.env)) {
     fail(`Unsupported env: ${parsed.env}`);
   }
   if (!["consumer", "host"].includes(parsed.role)) {
@@ -279,7 +279,7 @@ Usage:
   node tool/firebase/register_app_check_debug_token.mjs [options]
 
 Options:
-  --env <dev|staging|prod>       Firebase environment. Defaults to dev.
+  --env <dev|prod>       Firebase environment. Defaults to dev.
   --role <consumer|host>         App role. Defaults to host.
   --platform <ios|macos>         Apple config to read. Defaults to ios.
   --config <path>                Read GOOGLE_APP_ID from this plist.
@@ -288,7 +288,7 @@ Options:
   --quota-project <project-id>   Quota project header. Defaults to env alias.
   --display-name <name>          Debug-token display name in Firebase.
   --env-file <path>              File containing FIREBASE_APP_CHECK_DEBUG_TOKEN.
-  --allow-non-dev                Allow staging/prod token registration.
+  --allow-non-dev                Allow prod token registration.
   --dry-run                      Print target app id without registering.
 
 The token is read from FIREBASE_APP_CHECK_DEBUG_TOKEN or .env.local and is never

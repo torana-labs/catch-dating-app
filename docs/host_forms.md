@@ -895,7 +895,7 @@ conversion behavior. No delivery status may weaken those requirements.
   bootstrap, configured identity modes, autosave, review/submit/withdraw,
   refresh, duplicate submit, pause/version replacement, auth expiry, upload
   failure, completion, QR/link/embed resolution, and no private-data leakage.
-- Verify dev/staging/production contract versions, exact deployed callable
+- Verify dev and production contract versions, exact deployed callable
   revisions, Hosting probes, released-client behavior, public availability,
   submission/automation/export failures, load/abuse thresholds, and support
   runbooks. Source or test presence is not deployment evidence.

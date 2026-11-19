@@ -1,4 +1,3 @@
 // Copy to ios/Flutter/GoogleMapsKeys.xcconfig and keep that file out of git.
 GOOGLE_MAPS_IOS_API_KEY_DEV=replace-with-dev-ios-restricted-key
-GOOGLE_MAPS_IOS_API_KEY_STAGING=replace-with-staging-ios-restricted-key
 GOOGLE_MAPS_IOS_API_KEY_PROD=replace-with-prod-ios-restricted-key

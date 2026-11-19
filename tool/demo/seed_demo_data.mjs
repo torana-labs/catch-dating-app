@@ -3524,7 +3524,7 @@ Usage:
   node tool/demo/seed_demo_data.mjs --env prod --scenario beta-full --anchor-file anchors.txt --apply --allow-prod --reset-synthetic
 
 Options:
-  --env <dev|staging|prod>       Resolve project id from .firebaserc.
+  --env <dev|prod>       Resolve project id from .firebaserc.
   --project <firebase-project>   Explicit Firebase/GCP project id.
   --scenario <name>              Scenario to generate. Default: beta-full.
   --list-scenarios               Print scenario names and exit.

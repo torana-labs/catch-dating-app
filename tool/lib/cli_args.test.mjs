@@ -45,7 +45,7 @@ test("common arguments retain repeat and emulator precedence in token order", ()
     "custom:9000",
   );
   assert.equal(
-    parseCommonArgs(["--env", "staging", "--env=prod"]).env,
+    parseCommonArgs(["--env", "dev", "--env=prod"]).env,
     "prod",
   );
   assert.equal(parseCommonArgs(["-h"]).help, true);

@@ -353,7 +353,7 @@ function printUsage() {
   node tool/analytics/host_analytics_live_status.mjs [options]
 
 Options:
-  --env <dev|staging|prod>       Firebase alias. Defaults to prod.
+  --env <dev|prod>       Firebase alias. Defaults to prod.
   --project-id <id>              Override the Firebase project id.
   --location <location>          BigQuery transfer location. Defaults to asia-south1.
   --schedule-display-name <name> Scheduled query display name.

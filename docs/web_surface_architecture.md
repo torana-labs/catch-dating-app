@@ -824,7 +824,7 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
 The admin shell has one product identity, `Catch Admin`, and one plain route
 title in the global top bar. Prototype labels such as `sample console`, route
 kickers, and decorative subtitles are not production chrome. The production
-environment badge is omitted; Development, Local, or Staging is shown only when
+environment badge is omitted; Development or Local is shown only when
 the non-production context changes operator risk. Account identity, roles,
 local-data context, and sign-out live in the account disclosure.
 

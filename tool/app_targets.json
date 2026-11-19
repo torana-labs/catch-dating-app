@@ -106,10 +106,6 @@
       "firebaseProjectId": "catchdates-dev",
       "firebaseProjectNumber": "619661127800"
     },
-    "staging": {
-      "firebaseProjectId": "catchdates-staging",
-      "firebaseProjectNumber": "822303414140"
-    },
     "prod": {
       "firebaseProjectId": "catch-dating-app-64e51",
       "firebaseProjectNumber": "574779808785"
@@ -218,110 +214,6 @@
         "flavor": "hostDev",
         "applicationId": "com.catchdates.host.dev",
         "iconSourceSet": "hostDev"
-      }
-    },
-    {
-      "id": "consumer-staging",
-      "role": "consumer",
-      "environment": "staging",
-      "displayName": "Catch Staging",
-      "projectRoot": "apps/consumer",
-      "entrypoint": "apps/consumer/lib/main_staging.dart",
-      "packageEntrypoint": "lib/main_staging.dart",
-      "firebase": {
-        "projectId": "catchdates-staging",
-        "dartOptionsFile": "lib/firebase_options_staging.dart",
-        "dartOptionsMembers": {
-          "android": "android",
-          "ios": "ios",
-          "macos": "macos",
-          "web": "web"
-        },
-        "android": {
-          "appId": "1:822303414140:android:e843ef30968cea960c76f9",
-          "configPath": "firebase/staging/android/google-services.json"
-        },
-        "ios": {
-          "appId": "1:822303414140:ios:6bae8cc0e1781e890c76f9",
-          "configPath": "firebase/staging/ios/GoogleService-Info.plist"
-        },
-        "macos": {
-          "appId": "1:822303414140:ios:6bae8cc0e1781e890c76f9",
-          "configPath": "firebase/staging/macos/GoogleService-Info.plist"
-        },
-        "web": {
-          "appId": "1:822303414140:web:6c5d5c7179dcd8f60c76f9",
-          "configPath": "firebase/staging/web/firebase-messaging-sw.js"
-        }
-      },
-      "ios": {
-        "nativeTarget": "Runner",
-        "scheme": "staging",
-        "configurations": {
-          "debug": "Debug-staging",
-          "profile": "Profile-staging",
-          "release": "Release-staging"
-        },
-        "bundleId": "com.catchdates.app.staging",
-        "iconSet": "AppIcon-staging",
-        "urlScheme": "app-1-822303414140-ios-6bae8cc0e1781e890c76f9"
-      },
-      "android": {
-        "flavor": "consumerStaging",
-        "applicationId": "com.catchdates.app.staging",
-        "iconSourceSet": "consumerStaging"
-      }
-    },
-    {
-      "id": "host-staging",
-      "role": "host",
-      "environment": "staging",
-      "displayName": "Catch Host Staging",
-      "projectRoot": "apps/host",
-      "entrypoint": "apps/host/lib/main_staging.dart",
-      "packageEntrypoint": "lib/main_staging.dart",
-      "firebase": {
-        "projectId": "catchdates-staging",
-        "dartOptionsFile": "lib/firebase_options_staging.dart",
-        "dartOptionsMembers": {
-          "android": "hostAndroid",
-          "ios": "hostIos",
-          "macos": "hostMacos",
-          "web": "hostWeb"
-        },
-        "android": {
-          "appId": "1:822303414140:android:87fbdade02a935810c76f9",
-          "configPath": "firebase/staging/host/android/google-services.json"
-        },
-        "ios": {
-          "appId": "1:822303414140:ios:1faa9261df8f53970c76f9",
-          "configPath": "firebase/staging/host/ios/GoogleService-Info.plist"
-        },
-        "macos": {
-          "appId": "1:822303414140:ios:1faa9261df8f53970c76f9",
-          "configPath": "firebase/staging/host/macos/GoogleService-Info.plist"
-        },
-        "web": {
-          "appId": "1:822303414140:web:e0b734801d2c06ca0c76f9",
-          "configPath": "firebase/staging/host/web/firebase-messaging-sw.js"
-        }
-      },
-      "ios": {
-        "nativeTarget": "Runner",
-        "scheme": "host-staging",
-        "configurations": {
-          "debug": "Debug-host-staging",
-          "profile": "Profile-host-staging",
-          "release": "Release-host-staging"
-        },
-        "bundleId": "com.catchdates.host.staging",
-        "iconSet": "AppIcon-host-staging",
-        "urlScheme": "app-1-822303414140-ios-1faa9261df8f53970c76f9"
-      },
-      "android": {
-        "flavor": "hostStaging",
-        "applicationId": "com.catchdates.host.staging",
-        "iconSourceSet": "hostStaging"
       }
     },
     {

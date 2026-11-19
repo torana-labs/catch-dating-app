@@ -3505,7 +3505,7 @@ with synthetic attendees, and reviews the recap after the real event.
 Rehearsal is a required next product slice: a read-only or isolated synthetic
 roster, explicit `REHEARSAL` chrome, no production attendance/messages/outcome
 writes, and a resettable clock. Until that isolation exists, onboarding may use
-staging fixtures but the product must not label a production event as safely
+dev fixtures but the product must not label a production event as safely
 rehearsable.
 
 Pilot success is activation and repeated operational use, not account creation:
@@ -4295,7 +4295,7 @@ Current theatrical implementation state:
 The former dev-only Event Success lab, preview, and manual-QA routes were
 removed after the functionality became available through Host event setup and
 Manage plus the attendee companion. Review production widgets directly through
-their focused tests, Widgetbook coverage, and real dev/staging event flows.
+their focused tests, Widgetbook coverage, and real dev event flows.
 
 Check:
 
@@ -4322,7 +4322,7 @@ Check:
 - host-help candidate filtering by attendance and interested-in/cohort
   eligibility.
 
-Use a real dev/staging event for write-path proof:
+Use a real dev event for write-path proof:
 
 1. Save event-success setup as host.
 2. Book/check in at least two attendee accounts.
@@ -4346,12 +4346,12 @@ Current implemented foundation:
 - counters: `participantMetricCounters/{uid}`;
 - event scorecards: `eventSuccessScorecards/{eventId}`;
 - client access to raw/admin metrics denied by rules;
-- dev/staging Firestore-to-BigQuery extension manifests and datasets exist for
+- dev Firestore-to-BigQuery extension manifests and datasets exist for
   marketplace metrics exports.
 
 Remaining gates:
 
-- Enable Firebase Analytics BigQuery export in dev/staging when
+- Enable Firebase Analytics BigQuery export in dev when
   Analytics-scoped console/API access is available.
 - Add client-side profile impression batching only after the product question is
   concrete.
