@@ -20295,8 +20295,7 @@
             "naming": {
               "useCase": "TimelineStep",
               "comparedWith": [
-                "catch.index_row",
-                "catch.section"
+                "catch.index_row"
               ],
               "reason": "Publishes a timeline section's step position to the row inside, however a feature wraps it; CatchIndexRow owns the marker and draws the line."
             }
