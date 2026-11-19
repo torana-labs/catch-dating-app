@@ -73,6 +73,7 @@ class HostFormResponseRow extends StatelessWidget {
     return CatchIndexRow(
       title: name ?? l10n.hostFormsAnonymous,
       onTap: onTap,
+      chevron: onTap != null,
       density: CatchIndexRowSize.compact,
       leading: CatchAvatar.system(size: CatchAvatarSize.md, name: name ?? ''),
       subtitle: answers.isEmpty ? null : answers,
