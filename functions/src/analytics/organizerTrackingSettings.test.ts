@@ -283,8 +283,15 @@ test("public organiser read says whether Catch's tags may run on the profile",
     docs["events/event-2"].status = "cancelled";
     assert.equal(await read(), true);
     docs["externalEvents/external-1"] = {canonicalHostId: "org-1",
-      publicationStatus: "public", status: "active"};
+      publicationStatus: "public", status: "active",
+      startTime: {toMillis: () => Date.now() + 86400000},
+      title: "Open session", description: "All welcome.",
+      activity: {version: 1, activityKind: "openActivity",
+        interactionModel: "openFormat", source: "heuristic"}};
     assert.equal(await read(), false);
+    (docs["externalEvents/external-1"].activity as Record<string, unknown>)
+      .activityKind = "yoga";
+    assert.equal(await read(), true);
   });
 
 test("event reads never claim profile eligibility; no class is revealed",

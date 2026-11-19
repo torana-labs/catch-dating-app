@@ -1225,10 +1225,14 @@ it. The same public read answers `profileTagsEligible` for an organiser page rea
 (`eventId` null): whether Catch's own tags may run on that profile (owner
 decision, 19 Nov 2026, #2063). `organizerProfileClassification.ts` reads the
 organiser's native and external events by owner (at most 200 each; more fails
-closed) and classifies the profile: eligible only with at least one published,
-active native event, every such event canonically classified, none in the
-policy version's excluded classes and, while the policy's
-`externalListingsCountAsUnknown` holds, no public external listing. The answer
+closed) and classifies the profile: eligible only when every published,
+active native event is canonically classified and none is in the policy
+version's excluded classes, and every captured upcoming external listing
+passes the policy's `externalListingAllowance` (a supply-intake activity label
+on its allow list and no blocked dating word; owner decision relayed 19 Nov
+2026). An organiser with neither a native event nor an upcoming listing stays
+unknown, and `externalListingsCountAsUnknown` can still exclude every
+organiser with a public listing. The answer
 is a boolean, never the class, because public pages do not reveal dating
 classification. Event reads always answer false. Saving an ID
 does not constitute connecting a provider or permission to transmit advertising
