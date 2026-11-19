@@ -3135,10 +3135,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingInstagramPageLabelSkipForNow => 'Skip for now';
 
   @override
-  String get onboardingInstagramPageTitleHandle => 'HANDLE';
+  String get onboardingInstagramPageTitleHandle => 'Handle';
 
   @override
-  String get onboardingInstagramPagePlaceholderYourhandle => '@yourhandle';
+  String get onboardingInstagramPagePlaceholderYourhandle => 'yourhandle';
 
   @override
   String get onboardingNameDobPageLabelContinue => 'Continue';
@@ -4369,7 +4369,7 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object clampedStep,
     required Object total,
   }) {
-    return 'STEP $clampedStep OF $total';
+    return 'Step $clampedStep of $total';
   }
 
   @override

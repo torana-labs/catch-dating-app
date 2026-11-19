@@ -261,10 +261,13 @@ class CatchFieldInput extends StatelessWidget {
                     color: _fieldLabelColor(t, hasError: hasError),
                   )
                 : null,
+            // With the title above the box there is no label to float, and
+            // `always` keeps a prefix such as ₹ or @ in front of the hint
+            // instead of an empty gap where the prefix would be.
             floatingLabelBehavior:
                 _useFloatingLabel(effectiveVariant, effectiveShowLabel)
                 ? FloatingLabelBehavior.auto
-                : FloatingLabelBehavior.never,
+                : FloatingLabelBehavior.always,
             hint: effectiveHintWidget != null
                 ? ExcludeSemantics(child: effectiveHintWidget)
                 : visualOnlyHint

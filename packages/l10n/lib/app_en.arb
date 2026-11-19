@@ -5663,14 +5663,14 @@
     "x-owner": "product",
     "x-surface": "onboarding.presentation.pages.instagram_page"
   },
-  "onboardingInstagramPageTitleHandle": "HANDLE",
+  "onboardingInstagramPageTitleHandle": "Handle",
   "@onboardingInstagramPageTitleHandle": {
     "description": "Product copy used by lib/onboarding/presentation/pages/instagram_page.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.pages.instagram_page"
   },
-  "onboardingInstagramPagePlaceholderYourhandle": "@yourhandle",
+  "onboardingInstagramPagePlaceholderYourhandle": "yourhandle",
   "@onboardingInstagramPagePlaceholderYourhandle": {
     "description": "Product copy used by lib/onboarding/presentation/pages/instagram_page.dart (placeholder).",
     "x-audience": "consumer",
@@ -8023,7 +8023,7 @@
     "x-owner": "product",
     "x-surface": "core.widgets.catch_startup_loading_screen"
   },
-  "coreCatchStepFlowHeaderTextStepClampedstepOfTotal": "STEP {clampedStep} OF {total}",
+  "coreCatchStepFlowHeaderTextStepClampedstepOfTotal": "Step {clampedStep} of {total}",
   "@coreCatchStepFlowHeaderTextStepClampedstepOfTotal": {
     "description": "Product copy resolved by packages/platform/lib/l10n/catch_ui_copy.dart for the shared wizard step counter.",
     "placeholders": {
