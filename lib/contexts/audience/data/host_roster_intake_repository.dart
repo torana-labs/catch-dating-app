@@ -41,6 +41,36 @@ class HostRosterIntakeRepository {
     ),
   );
 
+  /// The newest draft still in review for this event, such as a guest list
+  /// forwarded by email or WhatsApp, or null when none is waiting.
+  Future<String?> latestInReviewSessionId({
+    required String eventId,
+    required String organizerId,
+  }) => withBackendErrorContext(
+    () async {
+      try {
+        final result = await _functions
+            .httpsCallable('manageHostRosterIntake')
+            .call<Object?>(
+              ManageHostRosterIntakeCallableRequest(
+                action: 'latest',
+                organizerId: organizerId,
+                eventId: eventId,
+              ).toJson(),
+            );
+        return HostRosterIntakeReview.fromCallableData(result.data).sessionId;
+      } on FirebaseFunctionsException catch (error) {
+        if (error.code == 'not-found') return null;
+        rethrow;
+      }
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'find a guest list waiting for review',
+      resource: 'hostRosterIntakeSessions',
+    ),
+  );
+
   Future<HostRosterIntakeReview> resume(String sessionId) => _call(
     ManageHostRosterIntakeCallableRequest(
       action: 'preview',

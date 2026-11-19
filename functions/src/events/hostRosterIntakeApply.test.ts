@@ -184,3 +184,32 @@ test("authenticated callable starts and previews a resumable session",
     assert.deepEqual(remapped.draft.excludedRowIds, []);
     assert.equal(remapped.draft.rows[0].value.displayName, "Asha Remapped");
   });
+
+test("latest returns the newest draft in review for the event, or not-found",
+  async () => {
+    let waiting: ReturnType<typeof fixture> | null = fixture();
+    const scopes: unknown[] = [];
+    const deps = {
+      rateLimit: async () => undefined,
+      store: {
+        latestInReview: async (scope: unknown) => {
+          scopes.push(scope);
+          return waiting;
+        },
+      },
+      authorize: async () => undefined,
+      loadInitialCurrentRows: async () => new Map(),
+    } as unknown as HostRosterIntakeManageDeps;
+    const request = {auth: {uid: "host-1"}, data: {action: "latest",
+      organizerId: "organizer-1", eventId: "event-1"}} as never;
+    const response = await manageHostRosterIntakeHandler(request, deps);
+    assert.equal(response.draft.sessionId, waiting.sessionId);
+    assert.ok(response.preview);
+    assert.deepEqual(scopes, [{hostUid: "host-1", organizerId: "organizer-1",
+      eventId: "event-1"}]);
+    waiting = null;
+    await assert.rejects(manageHostRosterIntakeHandler(request, deps),
+      (error: {code?: string; details?: {reason?: string}}) =>
+        error.code === "not-found" &&
+        error.details?.reason === "no_draft_in_review");
+  });
