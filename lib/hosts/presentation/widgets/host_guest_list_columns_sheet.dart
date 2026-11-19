@@ -7,6 +7,7 @@ import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -97,7 +98,7 @@ class _HostGuestListColumnsSheetState extends State<HostGuestListColumnsSheet> {
     setState(() {});
     _debounce?.cancel();
     if (_invalidFallback) return;
-    _debounce = Timer(const Duration(milliseconds: 400), _repreview);
+    _debounce = Timer(CatchMotion.searchDebounce, _repreview);
   }
 
   Future<void> _repreview() async {

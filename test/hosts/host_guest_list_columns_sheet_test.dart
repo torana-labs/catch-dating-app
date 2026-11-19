@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/audience/domain/guest_list_import_prev
 import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_guest_list_columns_sheet.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -68,11 +69,7 @@ void main() {
                       repreview: (mapping, fallbackRevenue) async {
                         asked.add(mapping);
                         return GuestListImportPreview.fromCallableData(
-                          _response(
-                            needsMapping: false,
-                            nameColumn: 0,
-                            add: 1,
-                          ),
+                          _response(needsMapping: false, nameColumn: 0, add: 1),
                         );
                       },
                     );
@@ -100,8 +97,8 @@ void main() {
       // The host picks the name column; the server reads the file again.
       await tester.tap(find.text('Guest name'));
       await pumpFeatureUi(tester);
-      await tester.tap(find.text('Attendee').last);
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.text('Attendee'));
+      await pumpFeatureUiFor(tester, CatchMotion.searchDebounce);
       await pumpFeatureUi(tester);
 
       expect(asked.single[HostRosterField.displayName], 0);
@@ -109,7 +106,7 @@ void main() {
       expect(review().onPressed, isNotNull);
 
       review().onPressed!();
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(chosen?.sessionId, 'hri_${'a' * 48}');
     },
   );
