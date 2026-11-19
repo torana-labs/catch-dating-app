@@ -4936,7 +4936,10 @@
       "alsoEnforces": [
         "APP-TARGET-IDENTITY-001"
       ],
-      "runbook": "tool/README.md#firebase-deploy-and-client-callable-gates"
+      "runbook": "tool/README.md#firebase-deploy-and-client-callable-gates",
+      "impactPaths": [
+        "packages/command-client/**"
+      ]
     },
     {
       "id": "firebase:create-config-brand",
@@ -5502,7 +5505,8 @@
         "tool/firebase/check_platform_availability.test.mjs",
         ".github/workflows/_backend-deploy.yml",
         ".github/workflows/_web-hosting-build.yml",
-        ".github/workflows/website-next-preview.yml"
+        ".github/workflows/website-next-preview.yml",
+        "packages/command-client/**"
       ],
       "runbook": "docs/release_operations.md#platform-unavailable-deploys-and-releases-defer"
     },
@@ -5523,7 +5527,10 @@
       "alsoEnforces": [
         "STORAGE-IAM-001"
       ],
-      "runbook": "docs/release_operations.md#storage-rules-cross-service-readiness"
+      "runbook": "docs/release_operations.md#storage-rules-cross-service-readiness",
+      "impactPaths": [
+        "packages/command-client/**"
+      ]
     },
     {
       "id": "firebase:project-resolver",
@@ -5693,7 +5700,10 @@
         "node --test tool/firebase/synthetic_backend_probe.test.mjs"
       ],
       "role": "operator",
-      "runbook": "tool/README.md"
+      "runbook": "tool/README.md",
+      "impactPaths": [
+        "packages/command-client/**"
+      ]
     },
     {
       "id": "functions:emulator-test-selection",
