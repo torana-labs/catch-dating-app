@@ -188,15 +188,16 @@ class _HostShellScreenState extends ConsumerState<HostShellScreen> {
           );
 
     if (plannerOrganizer != null) {
-      final location = GoRouter.of(context).state.uri;
-      _schedulePlannerHome(location, plannerOrganizer.id);
-      return CatchWorkspaceHeaderLayout(
-        child: CatchAppShell(
-          navigation: CatchTabBar<HostPlannerDestination>(
+      _schedulePlannerHome(GoRouter.of(context).state.uri, plannerOrganizer.id);
+    }
+    final CatchTabBar<Object?> navigation = plannerOrganizer != null
+        ? CatchTabBar<HostPlannerDestination>(
             key: AppShellKeys.navigationBar,
             layout: placement,
             label: l10n.hostPlannerNavigationLabel,
-            active: location.path == Routes.hostOrganizerTeamScreen.path
+            active:
+                GoRouter.of(context).state.uri.path ==
+                    Routes.hostOrganizerTeamScreen.path
                 ? HostPlannerDestination.crew
                 : HostPlannerDestination.weddings,
             onChanged: (destination) => context.go(
@@ -214,46 +215,37 @@ class _HostShellScreenState extends ConsumerState<HostShellScreen> {
             ),
             header: header,
             footer: footer,
-          ),
-          child: Semantics(
-            container: true,
-            child: CatchWorkspacePaneScope(
-              isSinglePane: true,
-              child: widget.navigationShell,
+          )
+        : CatchTabBar<HostShellDestination>(
+            key: AppShellKeys.navigationBar,
+            layout: placement,
+            label: l10n.appTitleHost,
+            active: HostShellDestination
+                .values[widget.navigationShell.currentIndex],
+            onChanged: (destination) => widget.navigationShell.goBranch(
+              destination.index,
+              initialLocation:
+                  destination.index == widget.navigationShell.currentIndex,
             ),
-          ),
-        ),
-      );
-    }
+            items: hostShellDestinations(
+              l10n: l10n,
+              unreadCount: unreadCount,
+              organizerName: selectedOrganizer?.name,
+              onSwitchOrganizer: onSwitchOrganizer,
+            ),
+            primaryAction: hostShellNewEvent(
+              l10n: l10n,
+              onPressed: selectedOrganizer == null
+                  ? null
+                  : () => unawaited(_openCreateEvent(selectedOrganizer)),
+            ),
+            header: header,
+            footer: footer,
+          );
 
     return CatchWorkspaceHeaderLayout(
       child: CatchAppShell(
-        navigation: CatchTabBar<HostShellDestination>(
-          key: AppShellKeys.navigationBar,
-          layout: placement,
-          label: l10n.appTitleHost,
-          active:
-              HostShellDestination.values[widget.navigationShell.currentIndex],
-          onChanged: (destination) => widget.navigationShell.goBranch(
-            destination.index,
-            initialLocation:
-                destination.index == widget.navigationShell.currentIndex,
-          ),
-          items: hostShellDestinations(
-            l10n: l10n,
-            unreadCount: unreadCount,
-            organizerName: selectedOrganizer?.name,
-            onSwitchOrganizer: onSwitchOrganizer,
-          ),
-          primaryAction: hostShellNewEvent(
-            l10n: l10n,
-            onPressed: selectedOrganizer == null
-                ? null
-                : () => unawaited(_openCreateEvent(selectedOrganizer)),
-          ),
-          header: header,
-          footer: footer,
-        ),
+        navigation: navigation,
         // A branch navigator's modal barrier drops the semantics painted
         // before it; confined to the screen it cannot hide a rail or sidebar.
         child: Semantics(
