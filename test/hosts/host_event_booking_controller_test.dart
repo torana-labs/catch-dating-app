@@ -260,13 +260,6 @@ void main() {
         ),
         (eventId: 'event-1', userId: 'user-1'),
       );
-      expect(
-        HostEventBookingController.markAttendanceMutationKey(
-          eventId: 'event-1',
-          userId: 'user-1',
-        ),
-        (eventId: 'event-1', userId: 'user-1'),
-      );
     });
 
     test('scopes bulk waitlist offers by event', () {

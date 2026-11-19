@@ -22,12 +22,8 @@
       "eventId"
     ],
     "configureEventAssignmentFeaturesCallablePayload": [
-      "rules.items.kind",
-      "rules.items.maximum",
-      "rules.items.minimum",
       "rules.items.mode",
-      "rules.items.questionId",
-      "rules.items.weight"
+      "rules.items.questionId"
     ],
     "configureEventOfferPreferencesCallablePayload": [
       "intents.currency.value",
@@ -68,10 +64,6 @@
       "itinerary.items.offsetMinutes",
       "itinerary.items.routeDistanceMeters",
       "itinerary.items.title"
-    ],
-    "createEventInviteLinkCallablePayload": [
-      "label",
-      "source"
     ],
     "createEventRehearsalCallablePayload": [
       "actorCount"
@@ -266,8 +258,6 @@
       "exploreJoinedOnly",
       "hostBroadcastTemplate",
       "hostInboxAudienceSegment",
-      "hostRosterFilter",
-      "hostRosterSearchQuery",
       "onboardingDateOfBirthText",
       "suvbotTesterPhoneNumber"
     ],

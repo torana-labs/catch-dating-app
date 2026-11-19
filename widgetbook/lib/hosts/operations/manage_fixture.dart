@@ -18,7 +18,7 @@ import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going_section.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,7 +75,6 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
     this.wingmanProfiles = const <PublicProfile>[],
     this.participations,
     this.initialSection = HostEventManageSection.setup,
-    this.initialParticipantSearchQuery = '',
   });
 
   final Widget? child;
@@ -99,7 +98,6 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
   final List<PublicProfile> wingmanProfiles;
   final List<EventParticipation>? participations;
   final HostEventManageSection initialSection;
-  final String initialParticipantSearchQuery;
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +238,6 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
                 eventId: effectiveEvent.id,
                 initialEvent: _initialManageEvent(eventValue, effectiveEvent),
                 initialSection: initialSection,
-                initialParticipantSearchQuery: initialParticipantSearchQuery,
                 referenceNow: referenceNow,
               ),
         ),

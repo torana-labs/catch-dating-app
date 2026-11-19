@@ -296,8 +296,8 @@ measure the result.
 | --- | --- |
 | Headline | **Keep the door moving** |
 | Support | Check guests in and offer open spots without losing the room. |
-| Route | `hostAppEventManageScreen` / `/host/organizers/:organizerId/events/:eventId/manage` |
-| Source capture | Promote `host_manage_attendance_roster`; compare with `host_manage_full_waitlist_apron`. |
+| Route | `hostEventRosterScreen` / `/host/organizers/:organizerId/events/:eventId/guests` |
+| Source capture | Promote `host_door_arriving`; compare with `host_door_in`. The old event screen's roster captures retired with that screen. |
 | Source status | Deterministic captures exist; store-specific crop is needed. |
 | Required state | Populated attendance roster with due and checked-in guests plus one visible waitlist movement action. |
 | Fixture requirements | Same counts as H01; no mutation pending or error state. |
@@ -311,7 +311,7 @@ measure the result.
 | Headline | **Let the Playbook work the room** |
 | Support | Run prompts, pods, rotations, and private introductions. |
 | Route | `hostAppEventManageScreen` / `/host/organizers/:organizerId/events/:eventId/manage` |
-| Source capture | Compare `host_manage_live_guided_rotations_assigned`, `host_manage_live_micro_pods_assigned`, and `host_manage_live_wingman_requests`. |
+| Source capture | Compare `host_formats_mix_phone`, `host_formats_pods_phone` and `host_live_room_workspace`. The old event screen's live module captures retired with that screen. |
 | Source status | Deterministic captures exist; choose one primary module and register it for marketing. |
 | Required state | Live event with a single legible Playbook module, clear host action, and assigned guests or request count. |
 | Fixture requirements | Assignments must use checked-in guests; opt-outs and group counts must remain coherent. |

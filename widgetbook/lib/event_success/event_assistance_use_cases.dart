@@ -18,7 +18,6 @@ import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehe
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_visit_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_group_roster_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_groups_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_live_sweep_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_membership_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_membership_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_sweep_section.dart';
@@ -98,14 +97,6 @@ Widget assistanceSweepStates(BuildContext context) => const Scaffold(
     ),
   ),
 );
-
-@widgetbook.UseCase(
-  name: 'Live roster to visit',
-  type: EventAssistanceLiveSweepSection,
-  path: _path,
-)
-Widget assistanceLiveSweep(BuildContext context) =>
-    const _AssistancePreview(surface: _Surface.liveSweep);
 
 @widgetbook.UseCase(
   name: 'Live observation with exact retry',
@@ -203,7 +194,6 @@ enum _Surface {
   liveMembership,
   practiceGroups,
   practiceMembership,
-  liveSweep,
   liveVisit,
   practiceSweep,
   practiceVisit,
@@ -263,10 +253,6 @@ class _AssistancePreviewState extends State<_AssistancePreview> {
         _Surface.practiceMembership => EventRehearsalMembershipSheet(
           scope: rehearsal.membershipReviews!.rows.first.scope,
           guestName: rehearsal.actors.first.displayName,
-        ),
-        _Surface.liveSweep => EventAssistanceLiveSweepSection(
-          event: event,
-          attendees: AsyncData([guest]),
         ),
         _Surface.liveVisit => EventAssistanceVisitSheet(
           guestName: guest.displayName,

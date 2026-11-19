@@ -1,7 +1,7 @@
 // Marketing capture `host_post_event_report`. One file per marketing capture keeps each
 // capture's inputs to its own imports; see docs/marketing_app_media_pipeline.md.
 
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import '../../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';
@@ -20,11 +20,9 @@ final hostPostEventReportCapture = ScreenCaptureEntry(
     marketingHostReportEvent,
     complete: true,
   ),
-  builder: (context) => HostEventManageScreen(
+  builder: (context) => HostEventReportScreen(
     organizer: marketingHostOrganizer,
     event: marketingHostReportEvent,
-    onBackToSuccess: () {},
-    initialSection: HostEventManageSection.report,
-    referenceNow: hostMarketingIndiaScenario.clock('followUp'),
+    now: hostMarketingIndiaScenario.clock('followUp'),
   ),
 );
