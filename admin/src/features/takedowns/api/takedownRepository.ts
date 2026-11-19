@@ -52,6 +52,7 @@ export const sampleTakedownDetail: TakedownDetail = {
   caseOutcomes: ["removedAndSuppressed"],
   canDecide: true,
   canDecideAppeal: false,
+  canSuspendOrganizer: true,
 };
 
 let sampleDetail = sampleTakedownDetail;
@@ -65,8 +66,10 @@ export async function updateTakedownRequest(step: TakedownStep): Promise<Takedow
   if (dataMode() !== "sample") {
     return (await call<TakedownStep, AdminUpdateTakedownRequestCallableResponse>("adminUpdateTakedownRequest", step)).request;
   }
+  const current = sampleDetail.request.status;
   const status: TakedownStatus = step.action === "acknowledge" ? "acknowledged" : step.action === "requestInfo" ? "verifying" :
-    step.action === "action" ? "actioned" : step.action === "decline" ? "declined" : step.action === "recordAppeal" ? "appealed" : "closed";
+    step.action === "action" ? "actioned" : step.action === "decline" ? "declined" : step.action === "recordAppeal" ? "appealed" :
+    step.action === "suspendOrganizer" ? (current === "received" ? "acknowledged" : current) : "closed";
   sampleDetail = {...sampleDetail, request: {...sampleDetail.request, status, outcome: step.outcome ?? sampleDetail.request.outcome,
     caseId: step.caseId ?? sampleDetail.request.caseId, declineReason: step.declineReason ?? sampleDetail.request.declineReason}};
   return sampleDetail.request;

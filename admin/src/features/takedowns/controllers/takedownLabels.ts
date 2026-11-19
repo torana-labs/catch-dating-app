@@ -115,4 +115,5 @@ export const takedownStepNotices = {
   recordAppeal: "Appeal recorded. Someone else decides it.",
   decideAppeal: "Appeal decided.",
   close: "Closed.",
+  suspendOrganizer: "Page suspended. Run the takedown tool, then action the request with its case id.",
 } as const;

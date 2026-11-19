@@ -467,6 +467,21 @@
       ]
     },
     {
+      "id": "config_discovery_indexing",
+      "path": "config/discoveryIndexing",
+      "rulesMatch": "/config/{docId}",
+      "rulesTestFile": "functions/test/rules/public_config.rules.test.cjs",
+      "rulesTestNames": [
+        "denies clients the discovery indexing override"
+      ],
+      "owner": "the owner's format page indexing switch, validated by functions/src/cityPlans/indexingOverride.ts",
+      "read": "server only, by the city plans rebuild; clients denied",
+      "write": "the owner in the Firebase console (Admin credentials); clients denied",
+      "migrationNotes": [
+        "Absent or forceNoindex false: the indexing bar decides. forceNoindex true forces every city-by-format page to noindex, follow. Only forceNoindex, reason, updatedAt and updatedBy are allowed; any other shape fails closed to noindex."
+      ]
+    },
+    {
       "id": "users",
       "path": "users/{uid}",
       "rulesMatch": "/users/{uid}",

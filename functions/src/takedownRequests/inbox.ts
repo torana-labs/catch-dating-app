@@ -21,12 +21,12 @@ const dueLabel = (value: string) => new Intl.DateTimeFormat("en-IN", {day: "nume
 const historyTitles: Record<string, string> = {
   received: "Request received", acknowledged: "Acknowledged", infoRequested: "Asked for more",
   actioned: "Actioned", declined: "Declined", appealRecorded: "Appeal recorded", appealDecided: "Appeal decided",
-  closed: "Closed",
+  closed: "Closed", organizerSuspended: "Organiser page suspended",
 };
 
 const historyTones: Record<string, JourneyStep["tone"]> = {
   received: "ink", acknowledged: "ink", infoRequested: "warning", actioned: "success", declined: "danger",
-  appealRecorded: "warning", appealDecided: "ink", closed: "muted",
+  appealRecorded: "warning", appealDecided: "ink", closed: "muted", organizerSuspended: "warning",
 };
 
 const targetLabels = {organizer: "Organiser page", event: "Event page", url: "Page"} as const;
