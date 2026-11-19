@@ -89,7 +89,7 @@ test("payloads: paused, lead objective, on-ad leads, Catch links", () => {
   assert.ok(cadence.options.every((option) => /^[a-z0-9_]+$/.test(option.key)));
 });
 
-function fakeApi({pages = [], forms = [], campaigns = [], adSets = [], failOn = null} = {}) {
+function fakeApi({pages = [], forms = [], campaigns = [], adSets = [], audiences = [], failOn = null} = {}) {
   const calls = [];
   let next = 100;
   return {
@@ -100,6 +100,7 @@ function fakeApi({pages = [], forms = [], campaigns = [], adSets = [], failOn = 
       if (route.endsWith("/leadgen_forms")) return {data: forms};
       if (route.endsWith("/campaigns")) return {data: campaigns};
       if (route.endsWith("/adsets")) return {data: adSets};
+      if (route.endsWith("/customaudiences")) return {data: audiences};
       if (route === "search") {
         return {data: {cities: Object.fromEntries(JSON.parse(JSON.stringify(params.cities))
           .map((key) => [key, {name: `City ${key}`}]))}};
@@ -165,6 +166,33 @@ test("an existing campaign's cities follow the catalog", async () => {
   assert.ok(api.calls.some(([m, r, mode]) => m === "POST" && r === "9" && mode === "validate"));
   await applyMetaCampaigns({policy, plan: drifted, api, render});
   assert.ok(api.calls.some(([m, r, mode]) => m === "POST" && r === "9" && mode !== "validate"));
+});
+
+test("the host list is excluded once it exists, keeping exclusions set by hand", async () => {
+  const pages = [{id: policy.pageId, access_token: "page-token"}];
+  const forms = [{id: "555", name: policy.leadForms[0].name, status: "ACTIVE"}];
+  const campaigns = [{id: "1", name: campaign.name, status: "PAUSED"}];
+  const cities = campaign.targeting.cities.map((key) => ({key}));
+  const adSets = (excluded) => [{id: "9", name: `${campaign.name} | All cities`,
+    targeting: {age_min: 21, geo_locations: {cities},
+      ...(excluded ? {excluded_custom_audiences: excluded} : {})}}];
+  assert.deepEqual(campaign.targeting.excludeAudiences, ["Catch | Active hosts"]);
+  const waiting = await planMetaCampaigns({policy, render, api: fakeApi({pages, forms, campaigns,
+    adSets: adSets(null)})});
+  assert.deepEqual(waiting.changes.map((c) => c.kind), ["keep", "keep"]);
+  assert.match(waiting.notes[0], /does not exist yet/);
+  const audiences = [{id: "777", name: "Catch | Active hosts"}];
+  const api = fakeApi({pages, forms, campaigns, audiences, adSets: adSets([{id: "42", name: "by hand"}])});
+  const plan = await planMetaCampaigns({policy, render, api});
+  const sync = plan.changes.find((c) => c.kind === "sync");
+  assert.deepEqual(sync.excludeAudiences, ["Catch | Active hosts"]);
+  assert.deepEqual(sync.targeting.excluded_custom_audiences, [{id: "42"}, {id: "777"}]);
+  assert.deepEqual(plan.notes, []);
+  const done = await planMetaCampaigns({policy, render, api: fakeApi({pages, forms, campaigns, audiences,
+    adSets: adSets([{id: "777"}])})});
+  assert.deepEqual(done.changes.map((c) => c.kind), ["keep", "keep"]);
+  const created = adSetParams(policy, campaign, "1", ["777"]);
+  assert.deepEqual(created.targeting.excluded_custom_audiences, [{id: "777"}]);
 });
 
 test("a failure part-way deletes the campaign made in that run", async () => {

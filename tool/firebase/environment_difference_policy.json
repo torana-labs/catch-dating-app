@@ -123,6 +123,13 @@
   },
   "allowedDifferences": [
     {
+      "switch": "AD_AUDIENCES_MODE",
+      "owner": "Suvrat Garg",
+      "reason": "The host customer list uploads only from prod, where real hosts are; Meta takes one Catch ad account. Prod runs live from 2026-11-19 so host ads exclude existing hosts; dev and staging stay off and never upload.",
+      "ticket": "CAT-183",
+      "expires": "2027-02-28"
+    },
+    {
       "switch": "AD_CONVERSIONS_MODE",
       "owner": "Suvrat Garg",
       "reason": "Ad conversions go only from prod, where real hosts sign up; Meta and Google take one Catch dataset and one Ads account. Prod runs validate (Meta test events, Google validate-only) from 2026-11-18 and then live; dev and staging stay off and never send.",
