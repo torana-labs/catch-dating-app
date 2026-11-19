@@ -38,7 +38,7 @@ const known = new Set([
   // Set inline: CatchRatingSummary for each bar, CatchQrCode for its module count,
   // CatchDeviceFrame for the geometry it computes from each kind's spec,
   // CatchBanner for each status band's colour, CatchNavMenu for a sectioned
-// panel's column count.
+// panel's column count, CatchSiteFooter for the link column width it measures.
   "--catch-rating-share",
   "--catch-qr-modules",
   "--catch-device-aspect",
@@ -49,6 +49,7 @@ const known = new Set([
   "--catch-device-camera-top",
   "--catch-banner-status",
   "--catch-nav-menu-sections",
+  "--catch-site-footer-column-min",
 ]);
 
 // CatchStoreButton draws as a D20 button, so its heights are the large and

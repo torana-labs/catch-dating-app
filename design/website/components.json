@@ -438,10 +438,6 @@
       "owner": "shared/site",
       "source": "website/src/shared/site/PublicSiteChrome.tsx",
       "exportName": "PrivacyChoicesButton",
-      "comparedWith": [
-        "catch.button"
-      ],
-      "comparisonReason": "Configures CatchButton's text recipe to read as a link in its footer's own type and colour; it is the footer's consent reopen control, not a new button contract.",
       "css": [
         "packages/web-ui/src/components/CatchButton.module.css"
       ],

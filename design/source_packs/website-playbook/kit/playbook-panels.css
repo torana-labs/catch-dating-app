@@ -208,9 +208,11 @@
 .pg .foot{margin:16px 24px 0;border-radius:36px;background:#1B171B;color:#F6EFE6;padding:64px max(72px,calc((100% - 1200px)/2 - 24px)) 40px;overflow:hidden}
 .pg .foot .top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding-bottom:36px;margin-bottom:40px;border-bottom:1px solid rgba(246,239,230,.12)}
 .pg .foot .top h3{margin:0;font-size:22px}
-.pg .foot .cols{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:24px}
+.pg .foot .cols{columns:192px;column-gap:24px;margin-bottom:-32px}
+.pg .foot .cols>div{break-inside:avoid;padding-bottom:32px}
+@container pg (min-width: 1248px){.pg .foot .cols{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:24px;margin-bottom:0}.pg .foot .cols>div{padding-bottom:0}}
 .pg .foot h4{margin:0 0 14px;font-size:15px}
-.pg .foot a{display:block;color:#BDB3A7;font-size:14px;line-height:2;text-decoration:none}
+.pg .foot a{display:block;color:#BDB3A7;font-size:14px;line-height:1.4;padding:4.2px 0;text-decoration:none}
 .pg .bigwm{margin:56px 0 0;font-family:Archivo,'Arial Narrow',sans-serif;font-weight:800;font-stretch:78%;font-variation-settings:"wdth" 78;letter-spacing:-.05em;line-height:.8;font-size:clamp(120px,24cqi,330px);color:#F07A55}
 .pg .legal{margin-top:28px;font-size:12px;color:#8a8079;display:flex;justify-content:space-between;gap:16px}
 .pg .fn{margin:24px 0 0;padding:0;list-style:none;font-size:12px;line-height:1.6;color:#8a8079}
@@ -245,7 +247,7 @@
   .pg .price{font-size:130px}.pg .calc2 .sv{font-size:40px}
   .pg .card{padding:20px}
   .pg .faq{grid-template-columns:1fr;gap:12px}
-  .pg .foot{margin:8px 8px 0;border-radius:28px;padding:36px 20px 26px}.pg .foot .cols{grid-template-columns:1fr 1fr;row-gap:28px}
+  .pg .foot{margin:8px 8px 0;border-radius:28px;padding:36px 20px 26px}.pg .foot .cols{columns:2}.pg .foot .top .btns{flex-direction:row;align-items:center}.pg .foot .top .btns .b{width:auto}
   .pg .bigwm{font-size:31cqi;margin-top:40px}.pg .legal{flex-direction:column}
   .pg .note{display:none}
   .pg .mbar{display:flex;position:sticky;bottom:8px;z-index:20;margin:8px;gap:8px;padding:8px;border-radius:999px;background:#141114;box-shadow:0 16px 40px -12px rgba(0,0,0,.5)}
