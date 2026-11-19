@@ -88,7 +88,7 @@ test("empty GitHub repository variables default Meta to disabled", () => {
   const functionsDir = fixture();
   const result = prepareFunctionsParamsForDeploy({
     functionsDir,
-    projectId: "catchdates-staging",
+    projectId: "catchdates-dev",
     environment: {
       ...publicIds,
       META_WHATSAPP_ENABLED: "",
@@ -317,7 +317,7 @@ test("Instagram discovery pins a project-local token and needs Catch's account",
     new RegExp(`CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION="${version}"`));
   for (const [environment, message] of [
     [{CATCH_INSTAGRAM_ACCOUNT_ID: "17841400000000001",
-      CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION: version.replace("catchdates-dev", "catchdates-staging")},
+      CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION: version.replace("catchdates-dev", "catch-dating-app-64e51")},
     /must pin CATCH_INSTAGRAM_DISCOVERY_TOKEN in this project/],
     [{CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION: version}, /requires CATCH_INSTAGRAM_ACCOUNT_ID/],
   ]) {
@@ -502,8 +502,7 @@ test("unconfigured Catch account ids keep the receiver inert", () => {
 
 
 test("flight policy stays blank across environments even with stored credentials", () => {
-  for (const projectId of ["catchdates-dev", "catchdates-staging",
-    "catch-dating-app-64e51"]) {
+  for (const projectId of ["catchdates-dev", "catch-dating-app-64e51"]) {
     for (const policy of [undefined, "", "  "]) {
       const functionsDir = fixture();
       const output = path.join(functionsDir, `.env.${projectId}`);
@@ -690,7 +689,7 @@ test("malformed Catch scope rejects unsafe identities endpoints digests and vers
     CATCH_WHATSAPP_REPLY_RECIPIENT_E164: ["919876543210", "+01234567",
       "+123456", "+" + "1".repeat(16), "+919876543210\nx=y"],
     CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION: [
-      credential.replace("catchdates-dev", "catchdates-staging"),
+      credential.replace("catchdates-dev", "catch-dating-app-64e51"),
       credential.replace("CATCH_WHATSAPP_ACCESS_TOKEN", "ORGANIZER_WHATSAPP_ACCESS_TOKENS"),
       ...["latest", "0", "01", "-1", "12/extra"].map((value) =>
         credential.replace("/12", `/${value}`)), "token-value", `${credential}\nx=y`],

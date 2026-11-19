@@ -31,7 +31,7 @@
     "revision": {"type": "integer", "minimum": 0},
     "environment": {
       "type": "string",
-      "enum": ["development", "staging", "production"]
+      "enum": ["development", "production"]
     },
     "mode": {"type": "string", "enum": ["shadow", "dry_run", "apply"]},
     "status": {

@@ -59,8 +59,8 @@ fields and paths are not local source contracts or alternate sources of truth.
 `tool/check_organizer_nomenclature.mjs` enforces the selected cutover points.
 
 Flutter organizer reads now use `organizers` exclusively. The temporary
-permission-denied fallback to `clubs` was retired on 2026-07-22 after staging
-and production rules were deployed and production parity reached 41 clubs, 41
+permission-denied fallback to `clubs` was retired on 2026-07-22 after
+production rules were deployed and production parity reached 41 clubs, 41
 organizers, zero remaining writes, and zero blockers. The legacy collections
 are not local read/write projections, callable aliases, or rule paths. Existing
 remote synthetic data must be reset or migrated before a deployment that removes
@@ -74,7 +74,7 @@ edges into `organizerTeamMemberships` and `organizerFollows`, backfilled
 `organizerId` on dependent documents, and copied Storage objects from `clubs/`
 to `organizers/`. It never deleted source data.
 
-The read-only dry run ran on 2026-07-20. Staging and production were applied
+The read-only dry run ran on 2026-07-20. Production was applied
 and reached parity on 2026-07-22: production created 41 canonical organizers
 through 6,780 writes, and an independent reread found zero remaining writes,
 blockers, or Storage copies.

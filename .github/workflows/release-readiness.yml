@@ -9,7 +9,6 @@ on:
         default: prod
         type: choice
         options:
-          - staging
           - prod
       app_role:
         description: App role to verify.

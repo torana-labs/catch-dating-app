@@ -72,7 +72,7 @@ test("production runs only rules-checked reads unless callables are allowed", ()
     "hosted-organizers",
     "active-organizer-events",
   ]);
-  for (const environment of ["dev", "staging"]) {
+  for (const environment of ["dev"]) {
     assert.equal(
       buildSyntheticProbePlan({...fixture, environment, now}).callables.length,
       1,

@@ -1219,7 +1219,7 @@ coverage in the same UI slice; do not change golden baselines without review.
 - Account deletion and program archival traverse new references and projections;
   finance retention must minimize identity and honor the approved policy.
 - API secrets remain in existing secret management; no real credentials or
-  provider payloads in fixtures. Separate dev/staging/prod adapters and quotas.
+  provider payloads in fixtures. Separate dev/prod adapters and quotas.
 - Pilot sizing: 500 named guests, several hotels, two airport stations and
   approximately 20 concurrent staff. Validate query/write limits and latency at
   that load before increasing advertised scale. No unbounded listener over all

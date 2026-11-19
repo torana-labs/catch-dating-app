@@ -60,7 +60,7 @@ export function parseWithdrawArgs(argv) {
   });
   if (args.help) return args;
   if (!args.env && !args.project && !args.emulatorHost) {
-    throw new WithdrawError("Name the target with --env <dev|staging|prod>, --project <id> or --emulator. " +
+    throw new WithdrawError("Name the target with --env <dev|prod>, --project <id> or --emulator. " +
       "This tool never falls back to an ambient project.");
   }
   args.mode = args.mode ?? "plan";

@@ -11,17 +11,12 @@ import {
 test("resolveFirebaseProjectId reads project aliases from .firebaserc", () => {
   const firebaseRcPath = writeFirebaseRc({
     dev: "catchdates-dev",
-    staging: "catchdates-staging",
     prod: "catch-dating-app-64e51",
   });
 
   assert.equal(
     resolveFirebaseProjectId({env: "dev", firebaseRcPath}),
     "catchdates-dev"
-  );
-  assert.equal(
-    resolveFirebaseProjectId({env: "staging", firebaseRcPath}),
-    "catchdates-staging"
   );
   assert.equal(
     resolveFirebaseProjectId({env: "prod", firebaseRcPath}),

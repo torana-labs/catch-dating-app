@@ -3,7 +3,7 @@ set +x  # Local configuration values must never enter shell tracing.
 set -euo pipefail
 
 if [[ $# -lt 2 ]]; then
-  echo "Usage: ./tool/flutter_with_env.sh <local|dev|staging|prod> [--role <consumer|host>] [--platform <android|ios|macos|web>] [--config-sources | <flutter args...>]"
+  echo "Usage: ./tool/flutter_with_env.sh <local|dev|prod> [--role <consumer|host>] [--platform <android|ios|macos|web>] [--config-sources | <flutter args...>]"
   exit 1
 fi
 
@@ -41,7 +41,7 @@ if [[ "${1:-}" == --config-sources ]]; then
 fi
 
 case "$environment" in
-  dev|staging|prod) ;;
+  dev|prod) ;;
   *)
     echo "Unsupported environment: $environment"
     exit 1
@@ -83,9 +83,8 @@ config_names=(
   ALLOW_RANDOM_APP_CHECK_DEBUG_TOKEN VERBOSE_AUTH_DEBUG_LOGS
   DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING ENABLE_OBSERVABILITY_COLLECTION
   EMIT_OBSERVABILITY_SMOKE_EVENT GOOGLE_MAPS_ANDROID_API_KEY
-  GOOGLE_MAPS_ANDROID_API_KEY_DEV GOOGLE_MAPS_ANDROID_API_KEY_STAGING
-  GOOGLE_MAPS_ANDROID_API_KEY_PROD GOOGLE_MAPS_IOS_API_KEY_DEV
-  GOOGLE_MAPS_IOS_API_KEY_STAGING GOOGLE_MAPS_IOS_API_KEY_PROD
+  GOOGLE_MAPS_ANDROID_API_KEY_DEV GOOGLE_MAPS_ANDROID_API_KEY_PROD
+  GOOGLE_MAPS_IOS_API_KEY_DEV GOOGLE_MAPS_IOS_API_KEY_PROD
 )
 config_sources=()
 for config_name in "${config_names[@]}"; do

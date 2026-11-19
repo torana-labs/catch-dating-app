@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/firebase_options.dart';
 import 'package:catch_dating_app/firebase_options_dev.dart';
 import 'package:catch_dating_app/firebase_options_prod.dart';
-import 'package:catch_dating_app/firebase_options_staging.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -36,15 +35,7 @@ void main() {
     );
   });
 
-  test('staging and prod expose host iOS app ids', () {
-    expect(
-      DefaultFirebaseOptionsStaging.hostIos.appId,
-      '1:822303414140:ios:1faa9261df8f53970c76f9',
-    );
-    expect(
-      DefaultFirebaseOptionsStaging.hostIos.iosBundleId,
-      'com.catchdates.host.staging',
-    );
+  test('prod exposes host iOS app ids', () {
     expect(
       DefaultFirebaseOptionsProd.hostIos.appId,
       '1:574779808785:ios:dafe636b607e071f8ea5b0',

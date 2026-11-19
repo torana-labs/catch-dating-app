@@ -109,7 +109,7 @@ test("the input check accepts only a cohort id, a city slug and, for apply only,
   }
   assert.notEqual(checkInputs({MODE: "plan", MANIFEST_SHA256: HASH}).status, 0, "a hash is for apply only");
   assert.notEqual(checkInputs({MODE: "delete"}).status, 0);
-  assert.notEqual(checkInputs({TARGET_ENV: "staging"}).status, 0);
+  assert.notEqual(checkInputs({TARGET_ENV: "qa"}).status, 0);
 });
 
 function run(env) {

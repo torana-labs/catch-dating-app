@@ -20,7 +20,7 @@ targets_csv="$2"
 shift 2
 
 case "$environment" in
-  dev|staging|prod) ;;
+  dev|prod) ;;
   *) echo "Unsupported environment: $environment" >&2; exit 64 ;;
 esac
 

@@ -10,7 +10,6 @@
       "safety": "local-writes-config",
       "environments": [
         "dev",
-        "staging",
         "prod-hosting",
         "prod"
       ],
@@ -86,11 +85,10 @@
       "safety": "remote-deploy",
       "environments": [
         "dev",
-        "staging",
         "prod-hosting",
         "prod"
       ],
-      "purpose": "Deploy an exact main commit's Firebase backend to dev on merge, to prod once dev succeeds, and to staging when run by hand, in index, Functions, Firestore-rules and Storage-rules order, deploying only what changed since the environment's deployed/<env> tag.",
+      "purpose": "Deploy an exact main commit's Firebase backend to dev on merge, then to prod once dev succeeds, in index, Functions, Firestore-rules and Storage-rules order, deploying only what changed since the environment's deployed/<env> tag.",
       "entrypoints": [
         {
           "kind": "tool-id",
@@ -147,8 +145,8 @@
       ],
       "requiredChecks": [
         "node tool/firebase/check_environment_readiness.mjs --manifest-only",
-        "node tool/firebase/check_environment_readiness.mjs --env <dev|staging|prod> --targets <csv>",
-        "node tool/firebase/check_deploy_parity.mjs --env <dev|staging|prod>",
+        "node tool/firebase/check_environment_readiness.mjs --env <dev|prod> --targets <csv>",
+        "node tool/firebase/check_deploy_parity.mjs --env <dev|prod>",
         "node tool/contracts/check_firestore_contract.mjs",
         "npm --prefix functions run lint",
         "npm --prefix functions test",
@@ -171,7 +169,6 @@
       "safety": "remote-read-write-apply-guarded",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "purpose": "Validate, repair, backfill, or intentionally delete Firestore data with dry-run defaults and apply guards.",
@@ -286,7 +283,6 @@
       "safety": "remote-console-security",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "purpose": "Track App Check provider setup, callable enforcement, debug/release tokens, and abuse-control prerequisites that are partly managed in Firebase/GCP consoles.",
@@ -298,10 +294,6 @@
         {
           "kind": "config",
           "ref": "tool/env/dart_defines/dev.json"
-        },
-        {
-          "kind": "config",
-          "ref": "tool/env/dart_defines/staging.json"
         },
         {
           "kind": "config",
@@ -351,8 +343,8 @@
         "No local script should pretend to prove console enforcement by itself.",
         "The debug-token helper only registers an explicitly configured local token for a selected Firebase app; it does not verify provider enforcement.",
         "The manifest makes the manual console dependency explicit for future automation.",
-        "Host Android Firebase apps were registered on 2026-06-10 and mirror the matching consumer app SHA fingerprints for dev, staging, and prod.",
-        "Host App Check provider registrations were verified in Firebase Console on 2026-06-10 for dev, staging, and prod: Android uses Play Integrity, iOS uses App Attest, and web uses reCAPTCHA Enterprise.",
+        "Host Android Firebase apps were registered on 2026-06-10 and mirror the matching consumer app SHA fingerprints for dev and prod.",
+        "Host App Check provider registrations were verified in Firebase Console on 2026-06-10 for dev and prod: Android uses Play Integrity, iOS uses App Attest, and web uses reCAPTCHA Enterprise.",
         "Firebase CLI 15.34.2 manages only App Check debug tokens, and gcloud 566.0.0 exposes no App Check app-management commands."
       ]
     },
@@ -393,7 +385,6 @@
       "safety": "local-ci-remote-optional",
       "environments": [
         "dev",
-        "staging",
         "prod-hosting",
         "prod"
       ],
@@ -555,7 +546,6 @@
       "safety": "remote-read-write-apply-guarded",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "purpose": "Reserve, verify, provision and activate an exact client form subdomain, or revoke routing and remove exact origin grants, through a trusted read-only-default operator.",

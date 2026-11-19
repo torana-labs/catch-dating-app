@@ -1546,7 +1546,7 @@ Usage:
   node tool/demo/demo_ops.mjs persona-image-generate --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
 
 Common options:
-  --env <dev|staging|prod>       Resolve project id from .firebaserc.
+  --env <dev|prod>       Resolve project id from .firebaserc.
   --project <firebase-project>   Explicit project id.
   --apply                        Write/delete documents. Default is dry run.
   --update                       Update local generated artifacts for commands that support it.

@@ -8,8 +8,7 @@ const run = promisify(execFile);
 const cwd = path.resolve(__dirname, "../..");
 
 test("Host alert manifest separates intake and mailer identities", async () => {
-  for (const project of ["catchdates-dev", "catchdates-staging",
-    "catch-dating-app-64e51"]) {
+  for (const project of ["catchdates-dev", "catch-dating-app-64e51"]) {
     const {stdout} = await run(process.execPath, ["-e", `
       const r = require("./lib/hostAlerts/runtime");
       const intake = r.onHostApplicationAccepted;

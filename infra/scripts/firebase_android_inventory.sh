@@ -2,7 +2,7 @@
 # Print a complete infra/firebase/terraform.tfvars from the live Firebase apps.
 #
 #   FIREBASE_ACCESS_TOKEN=... infra/scripts/firebase_android_inventory.sh \
-#     [--play play.jsonl] prod=catch-dating-app-64e51 staging=catchdates-staging dev=catchdates-dev
+#     [--play play.jsonl] prod=catch-dating-app-64e51 dev=catchdates-dev
 #
 # Read-only. Lists each project's ACTIVE Android apps through the Firebase
 # Management API, reads every app the way Terraform does (androidApps.get),
@@ -33,7 +33,7 @@ get() {
 for pair in "$@"; do
   environment="${pair%%=*}"
   project="${pair#*=}"
-  [[ "$environment" =~ ^(dev|staging|prod)$ && -n "$project" && "$project" != "$pair" ]] || {
+  [[ "$environment" =~ ^(dev|prod)$ && -n "$project" && "$project" != "$pair" ]] || {
     echo "Bad environment mapping: $pair" >&2; exit 2; }
   get "$api/projects/$project/androidApps?pageSize=100" > "$work/list.json"
   if [[ "$(jq -r '.nextPageToken // ""' "$work/list.json")" != "" ]]; then
@@ -76,7 +76,7 @@ jq -r --slurpfile play "$work/play.json" '
     reduce $new[] as $hash ($existing;
       if (map(ascii_downcase) | index($hash | ascii_downcase)) then . else . + [$hash] end);
   def hcl_list: if length == 0 then "[]" else "[\n" + (map("      \"\(.)\",\n") | join("")) + "    ]" end;
-  def order: {prod: 0, staging: 1, dev: 2}[.environment] * 10 + {consumer: 0, host: 1}[.role];
+  def order: {prod: 0, dev: 1}[.environment] * 10 + {consumer: 0, host: 1}[.role];
 
   [.[] | select(.role != null)] | sort_by(order) | map(
     . as $app

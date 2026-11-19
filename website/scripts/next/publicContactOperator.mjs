@@ -36,10 +36,10 @@ async function main() {
     valueFlags: ["--email", "--expect-revision"], allowPositionals: false,
   });
   if (args.help) {
-    console.log("Usage: node --experimental-strip-types website/scripts/next/publicContactOperator.mjs --env dev|staging|prod --email <address> --expect-revision absent|<number> [--apply] [--allow-prod] [--emulator]\nDry-run is the default. Only config/publicContact is read or written. Roll back by writing the previous email as a new revision.");
+    console.log("Usage: node --experimental-strip-types website/scripts/next/publicContactOperator.mjs --env dev|prod --email <address> --expect-revision absent|<number> [--apply] [--allow-prod] [--emulator]\nDry-run is the default. Only config/publicContact is read or written. Roll back by writing the previous email as a new revision.");
     return;
   }
-  if (!["dev", "staging", "prod"].includes(args.env) || !args.email || !args.expect_revision) {
+  if (!["dev", "prod"].includes(args.env) || !args.email || !args.expect_revision) {
     throw new Error("Explicit environment, email and expected revision are required");
   }
   const expectedRevision = args.expect_revision === "absent" ? "absent" : Number(args.expect_revision);

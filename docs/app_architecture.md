@@ -3925,8 +3925,8 @@ scanner is deliberately narrower than a global “reachable” enum:
 
 ### Installable App Target Contract
 
-`tool/app_targets.json` is the source of truth for the six installable target
-combinations: Consumer and Host across dev, staging, and prod. It explicitly
+`tool/app_targets.json` is the source of truth for the four installable target
+combinations: Consumer and Host across dev and prod. It explicitly
 owns each target's entrypoint, display name, Apple scheme/configurations/bundle
 id/icon/URL scheme, Android flavor/application id/icon source set, Firebase
 project and app registrations, capability policy, deep-link ownership,
@@ -3952,9 +3952,9 @@ tool/app_targets.json
 
 Current native policy:
 
-- Android uses six explicit app-target flavors across two role-pinned Gradle
+- Android uses four explicit app-target flavors across two role-pinned Gradle
   projects rather than an environment flavor plus a mutable global role
-  property. Each project exposes only its three environments and compiles the
+  property. Each project exposes only its two environments and compiles the
   package-local entrypoint. Release manifests embed checked target/role and
   Firebase app/project markers; the signed-AAB gate compares those markers,
   Maps key, debug policy, package/version, and upload certificate against the

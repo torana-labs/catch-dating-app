@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ $# -lt 2 ]]; then
-  echo "Usage: ./tool/firebase_with_env.sh <dev|staging|prod> <firebase args...>"
+  echo "Usage: ./tool/firebase_with_env.sh <dev|prod> <firebase args...>"
   exit 1
 fi
 
@@ -10,7 +10,7 @@ environment="$1"
 shift
 
 case "$environment" in
-  dev|staging|prod) ;;
+  dev|prod) ;;
   *)
     echo "Unsupported environment: $environment"
     exit 1

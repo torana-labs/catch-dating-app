@@ -36,8 +36,8 @@ test("publishes on main only: push of the brand inputs or dispatch, never a pull
   // A change to the workflows alone must not write to production on merge.
   const paths = caller.split("    paths:\n")[1].split("  workflow_dispatch:")[0];
   assert.doesNotMatch(paths, /\.github/u);
-  assert.match(caller, /workflow_dispatch:\n {4}inputs:\n {6}environment:[\s\S]*options: \[dev-then-prod, dev, staging, prod\]/u);
-  for (const job of ["dev", "prod", "staging"]) {
+  assert.match(caller, /workflow_dispatch:\n {4}inputs:\n {6}environment:[\s\S]*options: \[dev-then-prod, dev, prod\]/u);
+  for (const job of ["dev", "prod"]) {
     const block = caller.split(`\n  ${job}:\n`)[1].split(/\n {2}[a-z]+:\n/u)[0];
     assert.match(block, /github\.ref == 'refs\/heads\/main'/u, `${job} runs only from main`);
     assert.match(block, /uses: \.\/\.github\/workflows\/_brand-config-publish\.yml/u);
@@ -46,11 +46,11 @@ test("publishes on main only: push of the brand inputs or dispatch, never a pull
 });
 
 test("prod follows a successful dev publish, as the backend deploy does", () => {
-  const prod = caller.split("\n  prod:\n")[1].split("\n  staging:\n")[0];
+  const prod = caller.split("\n  prod:\n")[1];
   assert.match(prod, /needs: dev\n/u);
   assert.match(prod, /needs\.dev\.result == 'success'/u);
   assert.match(prod, /!cancelled\(\)/u);
-  assert.match(caller.split("\n  staging:\n")[1], /github\.event_name == 'workflow_dispatch' && inputs\.environment == 'staging'/u);
+  assert.match(prod, /github\.event_name == 'workflow_dispatch' && inputs\.environment == 'prod'/u);
 });
 
 test("runs in the environment with keyless Workload Identity and least permissions", () => {
@@ -59,8 +59,8 @@ test("runs in the environment with keyless Workload Identity and least permissio
     assert.match(source, /\npermissions:\n {2}contents: read\n\n/u);
     assert.doesNotMatch(source, /contents: write|credentials_json|FIREBASE_SERVICE_ACCOUNT|secrets\./u);
   }
-  assert.equal(caller.match(/\n {4}permissions:\n {6}contents: read\n {6}id-token: write\n {4}uses: /gu)?.length, 3,
-    "each of dev, prod and staging grants id-token at job level");
+  assert.equal(caller.match(/\n {4}permissions:\n {6}contents: read\n {6}id-token: write\n {4}uses: /gu)?.length, 2,
+    "each of dev and prod grants id-token at job level");
   assert.match(reusable, /\n {4}permissions:\n {6}contents: read\n {6}id-token: write\n/u);
   assert.match(reusable, /environment: \$\{\{ inputs\.environment \}\}\n/u);
   assert.match(reusable, /concurrency:\n {6}group: brand-config-\$\{\{ inputs\.environment \}\}\n {6}cancel-in-progress: false\n/u);
@@ -114,9 +114,9 @@ test("publishes with --apply, adding --allow-prod only for prod, and fails when 
 });
 
 test("a verify that finds drift fails the run", () => {
-  const ok = runWithFakeNode("Verify config/brand matches brand.json", {TARGET_ENV: "staging"});
+  const ok = runWithFakeNode("Verify config/brand matches brand.json", {TARGET_ENV: "dev"});
   assert.equal(ok.result.status, 0, ok.result.stderr);
-  assert.deepEqual(ok.args, ["tool/firebase/create_config_brand.mjs", "--env", "staging", "--verify"]);
+  assert.deepEqual(ok.args, ["tool/firebase/create_config_brand.mjs", "--env", "dev", "--verify"]);
   const drift = runWithFakeNode("Verify config/brand matches brand.json", {TARGET_ENV: "prod", NODE_EXIT: "1"});
   assert.notEqual(drift.result.status, 0, "pipefail keeps the writer's exit through tee");
 });

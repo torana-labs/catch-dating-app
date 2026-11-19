@@ -5,7 +5,7 @@ name: Publish brand config
 # by hand. A merge to main that changes the brand record (or what writes it)
 # publishes to dev, then to prod once dev succeeds, in the same order and with
 # the same environment protection as the backend deploy. Dispatch it to
-# publish on demand: dev then prod, or one environment, staging included.
+# publish on demand: dev then prod, or one environment.
 # It never runs for a pull request. A change to these workflow files alone does
 # not publish; dispatch once after such a change.
 
@@ -23,7 +23,7 @@ on:
       environment:
         description: Where to publish config/brand
         type: choice
-        options: [dev-then-prod, dev, staging, prod]
+        options: [dev-then-prod, dev, prod]
         default: dev-then-prod
 
 permissions:
@@ -55,14 +55,3 @@ jobs:
     uses: ./.github/workflows/_brand-config-publish.yml
     with:
       environment: prod
-
-  staging:
-    if: >-
-      ${{ github.ref == 'refs/heads/main' &&
-        github.event_name == 'workflow_dispatch' && inputs.environment == 'staging' }}
-    permissions:
-      contents: read
-      id-token: write
-    uses: ./.github/workflows/_brand-config-publish.yml
-    with:
-      environment: staging

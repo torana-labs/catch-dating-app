@@ -43,7 +43,7 @@ exit "$VALIDATOR_EXIT"
       env: {
         ...process.env,
         PATH: `${bin}${path.delimiter}${process.env.PATH}`,
-        TARGET_ENV: "staging",
+        TARGET_ENV: "dev",
         MAX_DOCS: "10",
         FAIL_ON_WARNING: failOnWarning,
         VALIDATOR_EXIT: String(exitCode),
@@ -77,7 +77,7 @@ test("successful validator remains successful and explicit output saves its JSON
   assert.equal(result.stdout, `${report}\n`);
   assert.equal(output, `${report}\n`);
   assert.deepEqual(args, [
-    "tool/data/validate_firestore_data.mjs", "--env", "staging", "--json", "--max-docs", "10", "--output", artifact,
+    "tool/data/validate_firestore_data.mjs", "--env", "dev", "--json", "--max-docs", "10", "--output", artifact,
   ]);
 });
 

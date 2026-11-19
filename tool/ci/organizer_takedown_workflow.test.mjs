@@ -99,7 +99,7 @@ test("the input check accepts only the opaque case id form and known modes", () 
     assert.ok(!refused.stdout.includes(caseId) || caseId === "", "a refused case id is never echoed");
   }
   assert.notEqual(checkInputs({MODE: "delete"}).status, 0);
-  assert.notEqual(checkInputs({TARGET_ENV: "staging"}).status, 0);
+  assert.notEqual(checkInputs({TARGET_ENV: "qa"}).status, 0);
 });
 
 function run(env) {

@@ -679,7 +679,7 @@ export function validateOperationPublicationPlan(value: unknown):
   checkString(plan.runId, "runId", issues, ID_PATTERN);
   checkInteger(plan.revision, "revision", issues);
   checkEnum(plan.environment, "environment", [
-    "development", "staging", "production",
+    "development", "production",
   ], issues);
   checkEnum(plan.mode, "mode", ["shadow", "dry_run", "apply"], issues);
   checkEnum(plan.status, "status", [

@@ -18,13 +18,13 @@ Google holds, and Firebase knew only the upload-key fingerprints.
 
 ## What is managed
 
-One Terraform root module, `infra/firebase`, with one state, covers dev,
-staging and prod.
+One Terraform root module, `infra/firebase`, with one state, covers dev
+and prod.
 
 | Resource | Apps | Managed fields |
 |---|---|---|
-| `google_firebase_android_app` (google-beta provider) | Consumer and Host in `catchdates-dev`, `catchdates-staging` and `catch-dating-app-64e51` | display name, package name, SHA-1 and SHA-256 certificate fingerprints |
-| `google_firebase_app_check_play_integrity_config` (google provider) | The same six apps | adopted as is; `token_ttl` keeps its live value |
+| `google_firebase_android_app` (google-beta provider) | Consumer and Host in `catchdates-dev` and `catch-dating-app-64e51` | display name, package name, SHA-1 and SHA-256 certificate fingerprints |
+| `google_firebase_app_check_play_integrity_config` (google provider) | The same four apps | adopted as is; `token_ttl` keeps its live value |
 | `google_secret_manager_secret` and `google_secret_manager_secret_iam_member` (google provider) | `catchdates-dev` and `catch-dating-app-64e51` | Forms payment secret containers and their runtime grants, never values; see [Forms payment secrets](#forms-payment-secrets) |
 | `google_firestore_database` and `google_firestore_backup_schedule` (google provider) | The `(default)` database in `catch-dating-app-64e51` | Point-in-time recovery, delete protection and a daily 14-day backup; see [Firestore recovery](#firestore-recovery) |
 | `google_monitoring_alert_policy` and `google_monitoring_uptime_check_config` (google provider) | `catch-dating-app-64e51` | The Functions error and out-of-memory alerts, and the website-origin uptime check with its alert; see [Monitoring](#monitoring) |
@@ -200,7 +200,7 @@ repository, so the first PR reads them:
      `infra/firebase/terraform.tfvars`; the job log prints it too, and the run
      keeps it as an artifact.
 2. Replace `infra/firebase/terraform.tfvars` with it in a PR. Infra Plan should
-   show, for each of the six apps, an import of the Android app and of its Play
+   show, for each of the four apps, an import of the Android app and of its Play
    Integrity config, and in-place updates only on `prod-consumer` and
    `prod-host`, each adding one SHA-1 and one SHA-256. Until the Forms
    payment secrets exist, the same plan also creates the four secrets and

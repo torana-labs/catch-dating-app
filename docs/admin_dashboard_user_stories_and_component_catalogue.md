@@ -508,7 +508,7 @@ Current adherence:
 
 Recommended next work:
 
-- Dry-run `tool/data/backfill_organizer_admin_search.mjs` in dev/staging/prod
+- Dry-run `tool/data/backfill_organizer_admin_search.mjs` in dev and prod
   and apply it after reviewing counts.
 - Consider a dedicated search service only if operators need typo tolerance,
   ranking, or cross-field relevance scoring beyond deterministic token match.
@@ -591,7 +591,7 @@ Current adherence:
 
 Recommended next work:
 
-- Dry-run `tool/data/backfill_event_admin_search.mjs` in dev/staging/prod and
+- Dry-run `tool/data/backfill_event_admin_search.mjs` in dev and prod and
   apply it after reviewing counts.
 - Add event lifecycle actions only through a shared admin/host mutation service
   that preserves schedule locks, participant guards, private access sync,

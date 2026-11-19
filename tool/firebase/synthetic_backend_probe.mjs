@@ -73,8 +73,8 @@ export function parseArgs(argv, env = process.env) {
     else throw new SyntheticProbeError(`Unknown argument: ${arg}`, 64);
   }
   if (args.help) return args;
-  if (!["dev", "staging", "prod"].includes(args.environment)) {
-    throw new SyntheticProbeError("--env <dev|staging|prod> is required.", 64);
+  if (!["dev", "prod"].includes(args.environment)) {
+    throw new SyntheticProbeError("--env <dev|prod> is required.", 64);
   }
   if (!args.uid || !args.organizerId) {
     throw new SyntheticProbeError(
@@ -448,7 +448,7 @@ async function main() {
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/firebase/synthetic_backend_probe.mjs --env <dev|staging|prod> [options]
+  console.log(`Usage: node tool/firebase/synthetic_backend_probe.mjs --env <dev|prod> [options]
 
 Options:
   --uid <uid>                 Synthetic Host identity (users/{uid}.synthetic).

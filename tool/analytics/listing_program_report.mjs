@@ -235,7 +235,7 @@ export function renderListingProgramReport(report) {
 }
 
 function printHelp() {
-  process.stdout.write(`Usage: node tool/analytics/listing_program_report.mjs (--env <dev|staging|prod> | --project <id>) [--json] [--no-pilot]
+  process.stdout.write(`Usage: node tool/analytics/listing_program_report.mjs (--env <dev|prod> | --project <id>) [--json] [--no-pilot]
 
 Read-only. Prints counts per listing program cohort and PAUSE RECOMMENDED when
 an owner pause threshold triggers. Uses Application Default Credentials
@@ -253,7 +253,7 @@ export async function main(argv, {firestore, now = Date.now(), stdout = process.
   let app = null;
   let projectId = null;
   if (!db) {
-    if (!args.env && !args.project) throw new Error("Name the project: --env <dev|staging|prod> or --project <id>.");
+    if (!args.env && !args.project) throw new Error("Name the project: --env <dev|prod> or --project <id>.");
     projectId = resolveFirebaseProjectId({env: args.env, project: args.project, defaultEnv: null});
     const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
     const admin = createRequire(path.join(repoRoot, "functions/package.json"))("firebase-admin");

@@ -14420,7 +14420,7 @@
           "kind": "mutation",
           "status": "captured",
           "source": "HostBroadcastComposerSheet and HostInboxBroadcastController own request-id rotation, bounded message input, pending/error state, retry, and sanitized response handling.",
-          "nextAction": "Keep production disabled until the live callable dependency preflight passes, then record dev/staging/prod delivery evidence.",
+          "nextAction": "Keep production disabled until the live callable dependency preflight passes, then record dev and prod delivery evidence.",
           "previewIds": [
             "HostBroadcastComposerSheet/Lifecycle states"
           ],

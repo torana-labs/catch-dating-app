@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "principle": "dev, staging and prod differ only in identity: project ids, credentials, endpoints, provider account ids and local test tooling. Which features exist must be identical. A feature gate may differ between environments only through one unexpired allowedDifferences entry naming its owner, expiry and Linear ticket.",
+  "principle": "dev and prod differ only in identity: project ids, credentials, endpoints, provider account ids and local test tooling. Which features exist must be identical. A feature gate may differ between environments only through one unexpired allowedDifferences entry naming its owner, expiry and Linear ticket.",
   "classes": {
     "identity": "Environment identity, credentials, provider account ids, endpoints, secret version references and local test tooling. Values may differ and are fingerprinted, never printed.",
     "feature-gate": "Decides whether a feature or behavior exists. Must be identical in every environment unless an allowedDifferences entry applies.",
@@ -8,13 +8,13 @@
     "retired": "A removed switch. It may not reappear in source, the Remote Config template or a workflow outside its allowedIn sources; live leftovers are reported for cleanup."
   },
   "switches": {
-    "AD_AUDIENCES_MODE": {"class": "feature-gate", "note": "Host customer list upload to Meta (docs/ads_conversion_spec.md, Customer lists). Off everywhere; when prod is switched to live, that difference needs an allowedDifferences entry, since dev and staging never upload."},
+    "AD_AUDIENCES_MODE": {"class": "feature-gate", "note": "Host customer list upload to Meta (docs/ads_conversion_spec.md, Customer lists). Off everywhere; when prod is switched to live, that difference needs an allowedDifferences entry, since dev never uploads."},
     "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT": {"class": "identity"},
     "AD_CONVERSIONS_META_TEST_EVENT_CODE": {"class": "identity"},
     "AD_CONVERSIONS_META_TOKEN_VERSION": {"class": "identity"},
-    "AD_CONVERSIONS_MODE": {"class": "feature-gate", "note": "Ad conversion delivery (docs/ads_conversion_spec.md). Off everywhere until prod is switched to validate or live; that difference then needs an allowedDifferences entry, since dev and staging never send."},
+    "AD_CONVERSIONS_MODE": {"class": "feature-gate", "note": "Ad conversion delivery (docs/ads_conversion_spec.md). Off everywhere until prod is switched to validate or live; that difference then needs an allowedDifferences entry, since dev never sends."},
     "META_LEADGEN_CREDENTIAL_VERSION": {"class": "identity"},
-    "META_LEADGEN_PAGE_IDS": {"class": "identity", "note": "The Facebook page IDs whose lead forms Catch takes; prod names Catch's page, dev and staging none."},
+    "META_LEADGEN_PAGE_IDS": {"class": "identity", "note": "The Facebook page IDs whose lead forms Catch takes; prod names Catch's page, dev none."},
     "ALGOLIA_APPLICATION_ID": {"class": "identity"},
     "ANTHROPIC_ORGANIZATION_ID": {"class": "feature-gate", "note": "The Anthropic organization UUID. One organization serves every environment, so a difference is a misconfiguration; each environment differs only in its PROGRAM_ASSISTANT_FEDERATION_RULE_ID."},
     "APP_ENV": {"class": "identity"},
@@ -125,21 +125,21 @@
     {
       "switch": "AD_AUDIENCES_MODE",
       "owner": "Suvrat Garg",
-      "reason": "The host customer list uploads only from prod, where real hosts are; Meta takes one Catch ad account. Prod runs live from 2026-11-19 so host ads exclude existing hosts; dev and staging stay off and never upload.",
+      "reason": "The host customer list uploads only from prod, where real hosts are; Meta takes one Catch ad account. Prod runs live from 2026-11-19 so host ads exclude existing hosts; dev stays off and never uploads.",
       "ticket": "CAT-183",
       "expires": "2027-02-28"
     },
     {
       "switch": "AD_CONVERSIONS_MODE",
       "owner": "Suvrat Garg",
-      "reason": "Ad conversions go only from prod, where real hosts sign up; Meta and Google take one Catch dataset and one Ads account. Prod runs validate (Meta test events, Google validate-only) from 2026-11-18 and then live; dev and staging stay off and never send.",
+      "reason": "Ad conversions go only from prod, where real hosts sign up; Meta and Google take one Catch dataset and one Ads account. Prod runs validate (Meta test events, Google validate-only) from 2026-11-18 and then live; dev stays off and never sends.",
       "ticket": "CAT-183",
       "expires": "2027-02-28"
     },
     {
       "switch": "CATCH_INSTAGRAM_CLAIMS_ENABLED",
       "owner": "Suvrat Garg",
-      "reason": "Instagram claim verification runs only in prod. A Meta app sends webhooks to one callback URL, and @catch_dates is a real account, so its messages go to prod. Dev and staging name no Instagram account, and their webhooks answer 503.",
+      "reason": "Instagram claim verification runs only in prod. A Meta app sends webhooks to one callback URL, and @catch_dates is a real account, so its messages go to prod. Dev names no Instagram account, and its webhooks answer 503.",
       "ticket": "CAT-256",
       "expires": "2026-12-31"
     }

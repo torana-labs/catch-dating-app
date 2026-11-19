@@ -18,7 +18,7 @@ function parseFlags(argv) {
     flags[name] = value;
   }
   if (names.some((name) => !flags[name]) ||
-      !["dev", "staging", "prod"].includes(flags.environment) ||
+      !["dev", "prod"].includes(flags.environment) ||
       !/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(flags.project) ||
       !["catchEventSms", "catchEventRcs", "organizerEventWhatsapp"].includes(flags.route) ||
       !MESSAGE_PURPOSES.includes(flags.purpose) ||

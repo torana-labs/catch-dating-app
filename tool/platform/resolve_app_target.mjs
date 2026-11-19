@@ -41,7 +41,7 @@ function runCli() {
   const args = process.argv.slice(2);
   if (args.includes("--help") || args.includes("-h")) {
     console.log(
-      "Usage: node tool/platform/resolve_app_target.mjs --role <consumer|host> --environment <dev|staging|prod> [--field path | --fields a,b,c]",
+      "Usage: node tool/platform/resolve_app_target.mjs --role <consumer|host> --environment <dev|prod> [--field path | --fields a,b,c]",
     );
     return;
   }

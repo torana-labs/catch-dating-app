@@ -21,7 +21,7 @@
     {
       "id": "count_and_backfill",
       "status": "pending",
-      "description": "Operator runs tool/data/migrate_form_domains_to_custom_domains.mjs read-only per environment (dev, staging, prod) to count organizerFormDomains. An empty collection needs nothing; otherwise --apply copies each document, then --apply --retire-legacy deletes exact copies. The manager callable was retired on 16 Nov 2026 and no client domain was provisioned, so zero documents are expected but must be measured before deploy."
+      "description": "Operator runs tool/data/migrate_form_domains_to_custom_domains.mjs read-only per environment (dev, prod) to count organizerFormDomains. An empty collection needs nothing; otherwise --apply copies each document, then --apply --retire-legacy deletes exact copies. The manager callable was retired on 16 Nov 2026 and no client domain was provisioned, so zero documents are expected but must be measured before deploy."
     }
   ],
   "knownConsumers": [

@@ -49,7 +49,6 @@ function validManifest() {
   };
   const environments = {
     dev: {},
-    staging: {},
     prod: {},
   };
   const targets = [];
@@ -140,8 +139,8 @@ packages:
 
 test("validateManifestShape rejects a duplicate role/environment target", () => {
   const manifest = validManifest();
-  manifest.targets[5] = {
-    ...manifest.targets[5],
+  manifest.targets[3] = {
+    ...manifest.targets[3],
     id: "host-prod-copy",
     role: "consumer",
     environment: "prod",
@@ -385,9 +384,9 @@ test("resolveAppTarget returns explicit target fields", () => {
   const target = resolveAppTarget({
     manifest,
     role: "host",
-    environment: "staging",
+    environment: "dev",
   });
 
-  assert.equal(target.id, "host-staging");
-  assert.equal(valueAtPath(target, "ios.bundleId"), "com.catch.host.staging");
+  assert.equal(target.id, "host-dev");
+  assert.equal(valueAtPath(target, "ios.bundleId"), "com.catch.host.dev");
 });
