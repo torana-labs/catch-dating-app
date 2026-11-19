@@ -3813,8 +3813,18 @@ also records the takedown tool's opaque `caseId` (`TD-0001`), never a name or
 slug. A declined request records one fixed reason. One appeal is allowed
 within 30 days of the decision, due 7 days after it is recorded and decided by
 someone other than the decider; upheld closes the request and overturned
-reopens it for a new decision. Every step is a `history` entry and an audit
-log. The intake follows Website Leads: App Check, hashed network (10 an hour)
+reopens it for a new decision. While a removal, trademark, copyright, privacy,
+impersonation or order request that names an organiser is undecided, an admin
+or the owner can suspend that organiser's page in one step
+(`suspendOrganizer`): the same transaction sets `publicPage.publishStatus`
+`suppressed`, `indexStatus` `noindex` and `robots` `noindex, follow`, appends an
+`organizerSuspended` history entry, acknowledges a new request, and writes an
+audit log for the organiser and one for the request. It leaves the decision
+open, so the takedown tool and its case id still follow. A missing organiser
+or one with no public page refuses the step and writes nothing; a page already
+`suppressed` or `removed` is recorded without a second write, and repeating a
+recorded suspension changes nothing. Every step is a `history` entry and an
+audit log. The intake follows Website Leads: App Check, hashed network (10 an hour)
 and email (5 an hour) limits, one record per email and client request id, 409
 on changed answers. It is never a `salesInboundIntents` row. Nothing is sent
 automatically; staff acknowledge and reply by email and record the step.
