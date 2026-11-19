@@ -14,7 +14,9 @@ import {
 import {
   deleteOrganizerContacts,
   deleteTryItDrafts,
+  deleteTryItForms,
   readWorkspaceEvents,
+  readWorkspaceForms,
 } from "./workspaceDisposal";
 
 // An untouched try-it workspace is removed 30 days after its last command
@@ -24,9 +26,11 @@ import {
 //
 // - kept: the organizer was published, has an event the host made (any
 //   event that is not a private try-it draft the workspace recorded), has a
-//   second team member, or no longer belongs to the account. The workspace
+//   form the host made or published (has_forms), has a second team member,
+//   or no longer belongs to the account. The workspace
 //   stops expiring (expiresAt null) and its organizer is never touched.
-// - otherwise: its try-it draft events go with their guests, then its
+// - otherwise: its try-it draft events go with their guests, and its
+//   try-it draft forms (tryItFormIds) with their draft definitions, then its
 //   contacts, then the private organizer with its owner membership and
 //   growth facts, and its page address reservation is released
 //   (workspaceDisposal.ts; owner decision on #2061, 19 Nov 2026). It was
@@ -96,20 +100,24 @@ export async function expireTryItWorkspace(deps: WorkspaceExpiryDeps,
       return "not_due" as const;
     }
     const organizerRef = db.collection("organizers").doc(pointer.organizerId);
-    const [organizerSnap, events] = await Promise.all([
+    const [organizerSnap, events, forms] = await Promise.all([
       tx.get(organizerRef),
       readWorkspaceEvents((query) => tx.get(query), db, pointer),
+      readWorkspaceForms((query) => tx.get(query), db, pointer),
     ]);
     const organizer = organizerSnap.data();
     const keptReason = organizer ? reasonToKeep(organizer, uid,
-      events.kind === "host_events") : null;
+      events.kind === "host_events") ??
+      (forms.kind === "host_forms" ? "has_forms" as const : null) : null;
     if (keptReason) {
       tx.set(pointerRef, {...pointer, state: "kept", expiresAt: null,
         keptAt: at, keptReason});
       return keptReason;
     }
     // A try-it draft made since the guest data went waits for the next run.
-    if (events.kind === "try_it_only") return "disposing" as const;
+    if (events.kind === "try_it_only" || forms.kind === "try_it_only") {
+      return "disposing" as const;
+    }
 
     const page = organizer?.publicPage as {canonicalPath?: unknown} |
       undefined;
@@ -182,6 +190,16 @@ async function disposeGuestData(deps: WorkspaceExpiryDeps,
   const events = await readWorkspaceEvents((query) => query.get(), db,
     pointer);
   if (events.kind === "host_events") return "ready";
+  const forms = await readWorkspaceForms((query) => query.get(), db,
+    pointer);
+  // A form the host made or published keeps the workspace (has_forms).
+  if (forms.kind === "host_forms") return "ready";
+  if (forms.kind === "try_it_only") {
+    const deleted = await deleteTryItForms(db, pointer.organizerId,
+      forms.formIds);
+    logger.info("Try-it draft forms removed.",
+      {organizerId: pointer.organizerId, deleted});
+  }
   if (events.kind === "try_it_only") {
     const pass = await deleteTryItDrafts(db, events.eventIds);
     logger.info("Try-it drafts removed with their guests.",

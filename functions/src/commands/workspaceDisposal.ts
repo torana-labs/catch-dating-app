@@ -97,6 +97,71 @@ export function isTryItDraft(event: Record<string, unknown>): boolean {
     event.status === "active" && event.seatMode !== "ready";
 }
 
+export type WorkspaceForms =
+  | {kind: "none"}
+  | {kind: "try_it_only"; formIds: string[]}
+  | {kind: "host_forms"};
+
+/**
+ * Sorts the organizer's forms the same way as its events: none, only
+ * unpublished try-it drafts the workspace recorded
+ * (tryItWorkspaces/{uid}.tryItFormIds, from form.import-from-link), or at
+ * least one form the host made or published.
+ * @return {Promise<WorkspaceForms>} What the organizer's forms are.
+ */
+export async function readWorkspaceForms(
+  read: (query: FirebaseFirestore.Query) =>
+    Promise<FirebaseFirestore.QuerySnapshot>,
+  db: FirebaseFirestore.Firestore,
+  pointer: StoredTryItWorkspace
+): Promise<WorkspaceForms> {
+  const forms = await read(db.collection("organizerForms")
+    .where("organizerId", "==", pointer.organizerId).limit(MAX_EVENTS_READ));
+  if (forms.empty) return {kind: "none"};
+  const recorded = new Set(pointer.tryItFormIds ?? []);
+  if (forms.size >= MAX_EVENTS_READ) return {kind: "host_forms"};
+  for (const doc of forms.docs) {
+    if (!recorded.has(doc.id) ||
+        !isTryItFormDraft(doc.data(), pointer.organizerId)) {
+      return {kind: "host_forms"};
+    }
+  }
+  return {kind: "try_it_only", formIds: forms.docs.map((doc) => doc.id)};
+}
+
+/**
+ * A try-it form is disposable while it is still an unpublished draft of the
+ * workspace's own organizer.
+ * @return {boolean} Whether the form can go with the workspace.
+ */
+export function isTryItFormDraft(form: Record<string, unknown>,
+  organizerId: string): boolean {
+  return form.status === "draft" && form.organizerId === organizerId;
+}
+
+/**
+ * Pass 1, forms: deletes each try-it draft form with its draft definition,
+ * each in a transaction that checks it is still an unpublished draft.
+ * @return {Promise<number>} How many documents were deleted.
+ */
+export async function deleteTryItForms(db: FirebaseFirestore.Firestore,
+  organizerId: string, formIds: string[]): Promise<number> {
+  let deleted = 0;
+  for (const formId of formIds) {
+    deleted += await db.runTransaction(async (tx) => {
+      const formRef = db.collection("organizerForms").doc(formId);
+      const form = (await tx.get(formRef)).data();
+      // A form published since the sweep looked keeps the workspace on the
+      // next run.
+      if (form && !isTryItFormDraft(form, organizerId)) return 0;
+      tx.delete(formRef);
+      tx.delete(db.collection("organizerFormDrafts").doc(formId));
+      return 2;
+    });
+  }
+  return deleted;
+}
+
 /** What one disposal pass did. */
 export interface DisposalPass {
   deleted: number;

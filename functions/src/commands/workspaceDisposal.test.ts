@@ -5,7 +5,7 @@ import {FakeFirestore} from "../operations/testFirestore";
 import {contractValidator} from "../shared/contractTestValidators";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
 import {TRY_IT_WORKSPACES, type StoredTryItWorkspace} from "./workspace";
-import {ORGANIZER_SCOPED, deleteTryItDrafts, isTryItDraft} from "./workspaceDisposal";
+import {ORGANIZER_SCOPED, deleteTryItDrafts, isTryItDraft, isTryItFormDraft} from "./workspaceDisposal";
 import {expireDueTryItWorkspaces} from "./workspaceExpiry";
 
 // Every name and number below is fictional.
@@ -28,11 +28,12 @@ function harness() {
   return {db, deps};
 }
 
-function seedPointer(db: FakeFirestore, tryItEventIds: string[]) {
+function seedPointer(db: FakeFirestore, tryItEventIds: string[], tryItFormIds?: string[]) {
   const pointer: StoredTryItWorkspace = {schemaVersion: 1, uid: UID, organizerId: ORGANIZER, generation: 1,
     state: "active", createdVia: {commandId: "workspace.ensure", surface: "website"},
     createdAt: "2026-11-18T08:00:00.000Z", lastCommandAt: "2026-11-18T08:00:00.000Z",
-    expiresAt: "2026-12-18T08:00:00.000Z", keptAt: null, keptReason: null, expiredAt: null, tryItEventIds};
+    expiresAt: "2026-12-18T08:00:00.000Z", keptAt: null, keptReason: null, expiredAt: null, tryItEventIds,
+    ...(tryItFormIds ? {tryItFormIds} : {})};
   db.write(`${TRY_IT_WORKSPACES}/${UID}`, pointer as never);
 }
 
@@ -141,4 +142,45 @@ test("only private, active drafts without a seat ledger are disposable", () => {
   assert.equal(isTryItDraft({...draft, publicationState: "published"}), false);
   assert.equal(isTryItDraft({...draft, status: "cancelled"}), false);
   assert.equal(isTryItDraft({...draft, seatMode: "ready"}), false);
+});
+
+// Try-it draft forms (tryItFormIds, from form.import-from-link).
+
+function seedForm(db: FakeFirestore, formId: string, status = "draft", organizerId = ORGANIZER) {
+  db.write(`organizerForms/${formId}`, {organizerId, status, title: "Run club sign-up"});
+  db.write(`organizerFormDrafts/${formId}`, {organizerId, formId, revision: 1});
+}
+
+test("try-it draft forms go with the workspace", async () => {
+  const {db, deps} = harness();
+  seedPointer(db, [], ["form-1"]);
+  seedForm(db, "form-1");
+  assert.deepEqual(await expireDueTryItWorkspaces(deps), {expired: 1});
+  assert.equal(db.read("organizerForms/form-1"), undefined);
+  assert.equal(db.read("organizerFormDrafts/form-1"), undefined);
+  assert.equal(db.read(`organizers/${ORGANIZER}`), undefined);
+});
+
+test("a published try-it form, or a form the host made, keeps the workspace as has_forms", async () => {
+  for (const extra of [
+    {recorded: ["form-1"], seed: (db: FakeFirestore) => seedForm(db, "form-1", "published")},
+    {recorded: [], seed: (db: FakeFirestore) => seedForm(db, "host-form")},
+  ]) {
+    const {db, deps} = harness();
+    seedPointer(db, ["placeholder-1"], extra.recorded);
+    seedDraft(db, "placeholder-1", 1);
+    extra.seed(db);
+    assert.deepEqual(await expireDueTryItWorkspaces(deps), {has_forms: 1});
+    const pointer = db.read(`${TRY_IT_WORKSPACES}/${UID}`);
+    assert.equal(validatePointer(pointer), true, schemaErrorMessages(validatePointer as never).join("; "));
+    assert.equal(pointer?.keptReason, "has_forms");
+    assert.equal(left(db, "eventAttendees/"), 1, "guests stay");
+    assert.equal(left(db, "organizerForms/"), 1, "the form stays");
+  }
+});
+
+test("only unpublished forms of the workspace's own organizer are disposable", () => {
+  assert.equal(isTryItFormDraft({status: "draft", organizerId: ORGANIZER}, ORGANIZER), true);
+  assert.equal(isTryItFormDraft({status: "published", organizerId: ORGANIZER}, ORGANIZER), false);
+  assert.equal(isTryItFormDraft({status: "draft", organizerId: "OtherOrganizerId0001"}, ORGANIZER), false);
 });
