@@ -50,6 +50,7 @@ export type {CatchArticleBodyProps, CatchArticleBodySection, CatchArticleBodyTip
 export {CatchCardGrid} from "./components/CatchCardGrid";
 export type {
   CatchCardGridChip,
+  CatchCardGridChipGroup,
   CatchCardGridCity,
   CatchCardGridColumns,
   CatchCardGridEmpty,
@@ -338,7 +339,7 @@ export type {CatchMetaEntry, CatchMetaRowProps} from "./components/CatchMetaRow"
 export {CatchMetricSection} from "./components/CatchMetricSection";
 export type {CatchMetricData, CatchMetricSectionProps} from "./components/CatchMetricSection";
 export {CatchNavMenu} from "./components/CatchNavMenu";
-export type {CatchNavMenuLink, CatchNavMenuProps} from "./components/CatchNavMenu";
+export type {CatchNavMenuLink, CatchNavMenuProps, CatchNavMenuSection} from "./components/CatchNavMenu";
 export {CatchNotice} from "./components/CatchNotice";
 export type {CatchNoticeData, CatchNoticeProps, CatchNoticeTone} from "./components/CatchNotice";
 export {CatchNoticeRegion} from "./components/CatchNoticeRegion";

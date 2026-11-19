@@ -2,6 +2,7 @@
 import {logger} from "firebase-functions";
 import {onDocumentUpdated} from "firebase-functions/v2/firestore";
 import {
+  appliedTryItOrganizerId,
   claimedBy,
   defaultListingEventPublicationDeps,
   publishListingEvents,
@@ -20,7 +21,10 @@ import {record, storedInstantDraft} from "./model";
 // idempotency receipts, and every automated check (dating framing,
 // attribution, price) must pass or the event waits for staff. Nothing
 // publishes before the claim, an organizer that was never an instant draft
-// is ignored, and a redelivered event replays its receipts.
+// is ignored, and a redelivered event replays its receipts. A try-it
+// workspace whose owner applied an import from a link (owner decision,
+// 18 Nov 2026) follows the same path: its owner already owns it, and an
+// identity imported from a third party's page must be verified first.
 
 /** The page is live: published, active and not archived. */
 function pageLive(organizer: Record<string, unknown> | undefined): boolean {
@@ -38,19 +42,33 @@ export async function publishClaimedDraftEvents(organizerId: string, before: Rec
   if (!after || !pageLive(after) || pageLive(before)) return null;
   const ownerUid = typeof after.ownerUserId === "string" ? after.ownerUserId : null;
   if (!ownerUid || !claimedBy(after, ownerUid)) return null;
-  const db = deps.firestore();
-  const requests = await db.collection(supplyIntakeCollections.requests)
-    .where("approval.organizerId", "==", organizerId).limit(5).get();
-  const found = requests.docs.find((doc) => storedInstantDraft(doc.data().instantDraft) !== null);
+  const found = await ownerPublishableRequest(deps.firestore(), organizerId, after);
   if (!found) return null;
-  if (storedInstantDraft(found.data().instantDraft)?.outcome?.state === "expired") return null;
-  const result = record(found.data().result);
+  const result = record(found.data()?.result);
   const eventWorkItemIds = Array.isArray(result?.eventWorkItemIds) ?
     result.eventWorkItemIds.filter((id): id is string => typeof id === "string") : [];
   if (eventWorkItemIds.length === 0) return [];
   const {results} = await publishListingEvents({intakeRequestId: found.id, eventWorkItemIds,
     actor: {kind: "owner", ownerUid}, executionMode: "apply", idempotencyKey: `owner-publish:${found.id}`}, deps);
   return results;
+}
+
+/**
+ * The intake request whose events the owner's publish takes live: the
+ * website instant draft that saved this organizer, or the try-it import
+ * (organizer.import-from-link) its owner applied to it, as its provenance
+ * names. Null for any other organizer, or for an expired draft.
+ */
+async function ownerPublishableRequest(db: FirebaseFirestore.Firestore, organizerId: string,
+  organizer: Record<string, unknown>): Promise<FirebaseFirestore.DocumentSnapshot | null> {
+  const requests = await db.collection(supplyIntakeCollections.requests)
+    .where("approval.organizerId", "==", organizerId).limit(5).get();
+  const draft = requests.docs.find((doc) => storedInstantDraft(doc.data().instantDraft) !== null);
+  if (draft) return storedInstantDraft(draft.data().instantDraft)?.outcome?.state === "expired" ? null : draft;
+  const requestId = record(organizer.importProvenance)?.requestId;
+  if (typeof requestId !== "string" || !requestId.startsWith("tryit-")) return null;
+  const imported = await db.collection(supplyIntakeCollections.requests).doc(requestId).get();
+  return imported.exists && appliedTryItOrganizerId(imported.data() ?? null) === organizerId ? imported : null;
 }
 
 export const onInstantDraftOrganizerPublished = onDocumentUpdated({

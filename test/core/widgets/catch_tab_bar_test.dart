@@ -12,7 +12,8 @@ import '../../test_pump_helpers.dart';
 void main() {
   for (final platform in [TargetPlatform.iOS, TargetPlatform.android]) {
     testWidgets(
-      'floating nav retains its label and pill geometry on $platform',
+      'floating nav labels every destination and pills the selected icon on '
+      '$platform',
       (tester) async {
         await _pumpTabBar(tester);
         final label = find.byKey(const ValueKey('catch_tab_bar.label.Events'));
@@ -21,38 +22,30 @@ void main() {
               find.descendant(of: label, matching: find.byType(Text)),
             )
             .style!;
-        expect(style.fontSize, 13);
-        expect(style.height, 1);
-        expect(style.fontWeight, FontWeight.w600);
-        expect(style.letterSpacing, 0);
-        final painter = TextPainter(
-          text: TextSpan(text: 'Events', style: style),
-          textDirection: TextDirection.ltr,
-        )..layout();
-        addTearDown(painter.dispose);
-        final chrome = tester.getRect(
-          find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
+        expect(style.fontSize, CatchLayout.tabBarLabelFontSize);
+        expect(style.fontWeight, FontWeight.w700);
+        for (final name in ['Customers', 'Forms', 'Inbox', 'Organizer']) {
+          expect(
+            find.byKey(ValueKey('catch_tab_bar.label.$name')),
+            findsOneWidget,
+          );
+        }
+        final events = tester.getRect(
+          find.byKey(
+            const ValueKey<Object>('catch_tab_bar.destination.events'),
+          ),
         );
         final indicator = tester.getRect(
           find.byKey(const ValueKey('catch_tab_bar.indicator')),
         );
-        expect(indicator.height, CatchLayout.tabBarIndicatorExtent);
-        expect(
-          indicator.width,
-          CatchLayout.tabBarSelectedExtentFor(
-            availableWidth:
-                chrome.width -
-                CatchLayout.tabBarFloatingContentHorizontalPadding * 2,
-            itemCount: 5,
-            labelWidth: painter.width,
-          ),
-        );
+        _expectPill(indicator.size);
+        expect(indicator.center.dx, closeTo(events.center.dx, 0.5));
       },
       variant: TargetPlatformVariant.only(platform),
     );
   }
 
-  testWidgets('floating tab indicator owns exact inset geometry', (
+  testWidgets('floating tab indicator sits behind the selected icon', (
     tester,
   ) async {
     await _pumpTabBar(tester);
@@ -63,21 +56,23 @@ void main() {
     final indicatorRect = tester.getRect(
       find.byKey(const ValueKey('catch_tab_bar.indicator')),
     );
+    final slots = [
+      for (final id in ['events', 'customers', 'forms', 'inbox', 'organizer'])
+        tester.getRect(
+          find.byKey(ValueKey<Object>('catch_tab_bar.destination.$id')),
+        ),
+    ];
 
     expect(chromeRect.height, CatchLayout.tabBarExtent);
-    expect(indicatorRect.height, CatchLayout.tabBarIndicatorExtent);
+    expect(indicatorRect.height, CatchLayout.tabBarIconPillHeight);
     expect(
       indicatorRect.top - chromeRect.top,
-      (CatchLayout.tabBarExtent - CatchLayout.tabBarIndicatorExtent) / 2,
+      closeTo(CatchLayout.tabBarIconPillTop, 0.5),
     );
-    expect(
-      chromeRect.bottom - indicatorRect.bottom,
-      (CatchLayout.tabBarExtent - CatchLayout.tabBarIndicatorExtent) / 2,
-    );
-    expect(
-      indicatorRect.left - chromeRect.left,
-      CatchLayout.tabBarFloatingContentHorizontalPadding,
-    );
+    // Every destination takes an equal slot.
+    for (final slot in slots) {
+      expect(slot.width, closeTo(slots.first.width, 0.01));
+    }
   });
 
   testWidgets(
@@ -97,12 +92,11 @@ void main() {
         find.byKey(const ValueKey('catch_tab_bar.indicator')),
       );
       expect(changes, isEmpty);
-      expect(indicatorRect.size, const Size.square(48));
+      _expectPill(indicatorRect.size);
       expect(
         indicatorRect.center.dx,
         closeTo(tester.getCenter(customers).dx, 0.5),
       );
-      expect(find.text('Events'), findsNothing);
       expect(
         tester
             .widget<CatchNavigationButton<String>>(customers)
@@ -154,13 +148,10 @@ void main() {
         find.byKey(const ValueKey('catch_tab_bar.indicator')),
       );
       expect(changes, isEmpty);
-      expect(
-        previewRect.width,
-        closeTo(CatchLayout.tabBarCompactItemExtent, 0.01),
-      );
+      expect(previewRect.width, closeTo(CatchLayout.tabBarIconPillWidth, 0.01));
       expect(
         previewRect.height,
-        closeTo(CatchLayout.tabBarIndicatorExtent, 0.01),
+        closeTo(CatchLayout.tabBarIconPillHeight, 0.01),
       );
       expect(previewRect.center.dx, closeTo(tester.getCenter(inbox).dx, 0.5));
 
@@ -242,7 +233,7 @@ void main() {
     final hoverRect = tester.getRect(
       find.byKey(const ValueKey('catch_tab_bar.interaction_indicator')),
     );
-    expect(hoverRect.size, const Size.square(48));
+    _expectPill(hoverRect.size);
     expect(hoverRect.center.dx, closeTo(tester.getCenter(customers).dx, 0.5));
     expect(
       tester.getRect(find.byKey(const ValueKey('catch_tab_bar.indicator'))),
@@ -265,13 +256,13 @@ void main() {
       );
       expect(rect.height, CatchLayout.tabBarExtent);
     }
+    // Labels stay, their growth capped so they keep to their line.
     expect(
       find.byKey(const ValueKey('catch_tab_bar.label.Events')),
-      findsNothing,
+      findsOneWidget,
     );
-    expect(
+    _expectPill(
       tester.getSize(find.byKey(const ValueKey('catch_tab_bar.indicator'))),
-      const Size.square(CatchLayout.tabBarCompactItemExtent),
     );
     final eventsSemantics = tester.getSemantics(
       find.byKey(const ValueKey<Object>('catch_tab_bar.destination.events')),
@@ -352,4 +343,10 @@ Future<void> _pumpTabBar(
     ),
   );
   await pumpFeatureUi(tester);
+}
+
+/// The pill behind a destination's icon: 56 by 32, to a hair.
+void _expectPill(Size size) {
+  expect(size.width, closeTo(CatchLayout.tabBarIconPillWidth, 0.01));
+  expect(size.height, closeTo(CatchLayout.tabBarIconPillHeight, 0.01));
 }

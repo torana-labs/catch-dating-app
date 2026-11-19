@@ -382,12 +382,18 @@ class CatchIndexRow extends StatelessWidget {
         ? null
         : SizedBox(
             width: timeWidth,
-            child: CatchText(
-              time,
-              variant: CatchTextVariant.bodyMeta,
-              tone: CatchTextTone.secondary,
-              numeric: true,
-              maxLines: 1,
+            // A time a hair wider than its column shrinks to fit instead of
+            // ending in "…" ("10:0…").
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: AlignmentDirectional.centerStart,
+              child: CatchText(
+                time,
+                variant: CatchTextVariant.bodyMeta,
+                tone: CatchTextTone.secondary,
+                numeric: true,
+                maxLines: 1,
+              ),
             ),
           );
     final lead = timeText != null && main != null

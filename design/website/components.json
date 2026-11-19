@@ -112,7 +112,7 @@
           "global-links"
         ]
       },
-      "notes": "The one site footer on every public marketing page (CatchSiteFooter on the ink band). Guest pages: Explore, Hosts (with Weddings) and Help and legal ending in Privacy choices; the homepage and city pages add Cities. Host pages: Product, Get started, the brand's column and Legal ending in Privacy choices. The help band (a person answers on WhatsApp; host pages add the walkthrough) leads it unless the page turns it off for a one-job flow. Product pages name themselves. Replaces the legacy SiteFooter and SiteFooterBand."
+      "notes": "The one site footer on every public marketing page (CatchSiteFooter on the ink band). Guest pages: Explore (with Safety and, on a page with a city, New to the city), Cities, Hosts (with Weddings) and Help and legal ending in Privacy choices; a page that knows its city adds Things to do in the city, its format pages that render. Host pages, every one: the canvas's five, Product, Hosts by format, Get started, Resources and the brand's column ending in Privacy choices (siteFooterCopy.host.columns). The help band (a person answers on WhatsApp; host pages add the walkthrough) leads it unless the page turns it off for a one-job flow. Product pages name themselves. Replaces the legacy SiteFooter and SiteFooterBand."
     },
     {
       "id": "shared_public_site_header",
@@ -155,7 +155,7 @@
           "global-navigation"
         ]
       },
-      "notes": "Canonical public chrome: the one header every public route renders, in three variants (the playbook kit's KitHeader). guest: What's on and For hosts, then the guest app. host: What's on and Help, the For hosts dropdown (CatchNavMenu), a WhatsApp link and Start free trial. minimal: the wordmark alone, for one-job flows (booking, invitation, offer, public form). An optional offer strip (CatchBanner) above the bar shows only when a page passes one, and an optional breadcrumb row (CatchBreadcrumbRow) sits below it. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells (event runtime, rehearsal, assistance, RSVP, programmes, sales demo) do not use this owner.",
+      "notes": "Canonical public chrome: the one header every public route renders, in three variants (the playbook kit's KitHeader). guest: What's on, New to the city where the page has one, Safety and For hosts, then the guest app. host: What's on, the For hosts menu (CatchNavMenu with the canvas's titled columns: Product, By format, By organisation, Programmes, Where you are), Pricing and Help, a WhatsApp link and Start free trial. minimal: the wordmark alone, for one-job flows (booking, invitation, offer, public form). An optional offer strip (CatchBanner) above the bar shows only when a page passes one, and an optional breadcrumb row (CatchBreadcrumbRow) sits below it. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells (event runtime, rehearsal, assistance, RSVP, programmes, sales demo) do not use this owner.",
       "comparedWith": [
         "catch.step_header",
         "catch.surface",
@@ -1951,9 +1951,10 @@
         "catch.button",
         "catch.empty_state",
         "catch.stack",
-        "catch.surface"
+        "catch.surface",
+        "catch.text"
       ],
-      "comparisonReason": "A band of cards: a band header, filters and links, then plan, organiser, city, review, story or person cards in a three- or four-column grid, with an empty state and the band's actions. It lays out CatchButton, CatchEmptyState, CatchStack and CatchSurface and implements none of those contracts.",
+      "comparisonReason": "A band of cards: a band header, filters and links, then plan, organiser, city, review, story or person cards in a three- or four-column grid, with chip rows (a titled row's kicker set in CatchText), an empty state and the band's actions. It lays out CatchButton, CatchEmptyState, CatchStack, CatchSurface and CatchText and implements none of those contracts.",
       "css": [
         "packages/web-ui/src/components/CatchCardGrid.module.css"
       ],
@@ -1967,7 +1968,7 @@
           "person"
         ]
       },
-      "notes": "Website T4 under D18: KitCards. First consumer: the homepage's plans and organisers bands. The playbook renderer's cards section binds it for the cities source (/about/'s where-we-are band, from the market catalog); its other sources (plans, organisers, stories, playbook guides, people) wait on their read-model adapters, and a page naming one 404s. Search aliases: CardGrid, Cards, Directory."
+      "notes": "Website T4 under D18: KitCards. First consumer: the homepage's plans and organisers bands. Titled chip rows after the chips (chipGroups) carry the host landing's By organisation; a chip without a dot is its label alone. The playbook renderer's cards section binds it for the cities source (/about/'s where-we-are band, from the market catalog); its other sources (plans, organisers, stories, playbook guides, people) wait on their read-model adapters, and a page naming one 404s. Search aliases: CardGrid, Cards, Directory."
     },
     {
       "id": "shared_story_card",
@@ -6136,10 +6137,11 @@
           "open",
           "current-section",
           "end-aligned",
-          "on-ink"
+          "on-ink",
+          "sections"
         ]
       },
-      "notes": "Website T4 under D18. The playbook kit's header dropdowns, drawn by PublicSiteHeader's host variant: For hosts (Catch for hosts, Weddings, Claim your page). A group with one page draws a plain link instead (Resources is Help alone today), and an empty group is left out. It sits with the bar's actions until CatchTopBar's site variant takes a navigation slot. The library's stories (packages/web-ui/src/components/CatchNavMenu.stories.tsx) do not declare catchComponent yet, so coverage stays planned; the website's PublicSiteChrome stories show it at 1280. Search aliases: NavDropdown, MegaMenu, Disclosure, DropdownNav, HeaderMenu."
+      "notes": "Website T4 under D18. The playbook kit's header dropdowns, drawn by PublicSiteHeader's host variant: For hosts, with sections, titled columns side by side in a wider panel that stays inside the window (Product, By format, By organisation, Programmes, Where you are). A group with one page draws a plain link instead (Resources is Help alone today), and an empty group is left out. It sits with the bar's actions until CatchTopBar's site variant takes a navigation slot. The library's stories (packages/web-ui/src/components/CatchNavMenu.stories.tsx) do not declare catchComponent yet, so coverage stays planned; the website's PublicSiteChrome stories show it at 1280. Search aliases: NavDropdown, MegaMenu, Disclosure, DropdownNav, HeaderMenu."
     },
     {
       "id": "shared_feature_tile",

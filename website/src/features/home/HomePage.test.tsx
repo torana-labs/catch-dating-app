@@ -5,6 +5,7 @@ import {brand} from "@catch/brand";
 import {homeCatalogFixture, mumbaiLiveCatalog, mumbaiThinCatalog, puneLaunchingSoonCatalog} from "../../stories/fixtures/homeCatalogs";
 import type {HomeReview} from "./homeModel";
 import {HomePage} from "./HomePage";
+import {mumbaiDiscoveryCatalog} from "../discovery/discoveryCatalogFixtures";
 
 const trackMarketingEvent = vi.hoisted(() => vi.fn());
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent}));
@@ -77,12 +78,12 @@ describe("homepage", {timeout: 20_000}, () => {
     ]);
   });
 
-  it("opens six entry tiles to the city's plans or the band they name, the safety tile with no claim it cannot stand behind", () => {
+  it("opens six entry tiles to the city's new-to-the-city page, its plans or the band they name, the safety tile with no claim it cannot stand behind", () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const tiles = within(screen.getByRole("region", {name: "Whoever you are, there’s an easy first plan."}));
     const links = tiles.getAllByRole("link");
     expect(links).toHaveLength(6);
-    expect(tiles.getByRole("link", {name: /New to Mumbai/}).getAttribute("href")).toBe("/mumbai/");
+    expect(tiles.getByRole("link", {name: /New to Mumbai/}).getAttribute("href")).toBe("/new-to-mumbai/");
     expect(tiles.getByRole("link", {name: /Coming on your own/}).getAttribute("href")).toBe("#how");
     const safety = tiles.getByRole("link", {name: /Safety first/});
     expect(safety.getAttribute("href")).toBe("#safety");
@@ -100,6 +101,28 @@ describe("homepage", {timeout: 20_000}, () => {
     // No approved photo for these yet: the activity artwork, never a placeholder photo.
     for (const name of [/Racket sports/, /Games and quizzes/, /Nights out/]) expect(formats.getByRole("link", {name}).querySelector("img")).toBeNull();
     expect(formats.getByRole("link", {name: "Yoga, spin and fitness"}).getAttribute("href")).toBe("/mumbai/?q=yoga");
+  });
+
+  it("links each format to the city's page for it where that page exists, and filters the plans where it does not", () => {
+    render(<HomePage captures={captures} catalog={mumbaiDiscoveryCatalog} />);
+    const formats = within(screen.getByRole("region", {name: "Start with what you feel like doing."}));
+    expect([/Runs and walks/, /Racket sports/, /Dinners/, /Games and quizzes/, /Nights out/].map((name) => formats.getByRole("link", {name}).getAttribute("href")))
+      .toEqual(["/mumbai/run-clubs/", "/mumbai/racket-sports/", "/mumbai/supper-clubs/", "/mumbai/quiz-nights/", "/mumbai/nightlife/"]);
+    expect(formats.getByRole("link", {name: "Book clubs and open mics"}).getAttribute("href")).toBe("/mumbai/book-clubs/");
+    // No organiser or plan in the format here, so no page: the chip searches the city's plans as before.
+    expect(formats.getByRole("link", {name: "Yoga, spin and fitness"}).getAttribute("href")).toBe("/mumbai/?q=yoga");
+  });
+
+  it("puts the city's new-to-the-city page in the header and footer, and its format pages in the footer's own column", () => {
+    render(<HomePage captures={captures} catalog={mumbaiDiscoveryCatalog} />);
+    expect(within(screen.getByRole("navigation", {name: "Primary"})).getByRole("link", {name: "New to Mumbai"}).getAttribute("href")).toBe("/new-to-mumbai/");
+    const footer = within(screen.getByRole("navigation", {name: "Footer"}));
+    expect(footer.getByRole("link", {name: "New to Mumbai"}).getAttribute("href")).toBe("/new-to-mumbai/");
+    expect(footer.getByRole("link", {name: "Safety"}).getAttribute("href")).toBe("/safety/");
+    const column = footer.getByRole("heading", {level: 2, name: "Things to do in Mumbai"}).parentElement!;
+    expect(within(column).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual([
+      "/mumbai/run-clubs/", "/mumbai/racket-sports/", "/mumbai/pickleball/", "/mumbai/supper-clubs/", "/mumbai/quiz-nights/", "/mumbai/nightlife/", "/mumbai/book-clubs/",
+    ]);
   });
 
   it("floats the soonest plan over the hero's phone with its date, and draws the phone in the canvas bezel", () => {

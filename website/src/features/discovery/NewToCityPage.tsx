@@ -87,7 +87,7 @@ function NewToCityMonth({page}: {page: Page}) {
 function NewToCityPageSections({captures, page}: {captures: CaptureSlots; page: Page}) {
   const checkedIn = captureSlot(captures, "guest-checked-in");
   return (
-    <CitySiteChrome cities={page.cities} city={page.city} dock={<DiscoveryDock href={page.dock.href} label={page.dock.label} message={page.notify.message} />}
+    <CitySiteChrome cities={page.cities} city={page.city} discovery={page.discovery} dock={<DiscoveryDock href={page.dock.href} label={page.dock.label} message={page.notify.message} />}
       exploreHref={page.exploreHref} onChooseCity={page.chooseCity} showWhatsOn={page.showWhatsOn}>
       <NewToCityHero page={page} />
       {page.unavailable ? (

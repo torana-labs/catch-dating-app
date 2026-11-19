@@ -95,8 +95,14 @@ export interface CatchCardGridFormat {
 export interface CatchCardGridChip {
   label: string;
   href: string;
-  /** The dot's colour. */
-  dot: Ground;
+  /** The dot's colour; a chip without one is the label alone. */
+  dot?: Ground;
+}
+
+/** A titled row of chip links after the chips, such as the host landing's "By organisation". */
+export interface CatchCardGridChipGroup {
+  title: string;
+  chips: readonly CatchCardGridChip[];
 }
 
 /** What an empty grid shows instead of cards. */
@@ -144,6 +150,8 @@ interface CatchCardGridBaseProps extends Omit<HTMLAttributes<HTMLElement>, "chil
   headerAction?: CatchBandAction;
   /** Chip links under the cards, such as more formats. */
   chips?: readonly CatchCardGridChip[];
+  /** Titled rows of chip links after the chips, each list named by its title. */
+  chipGroups?: readonly CatchCardGridChipGroup[];
   /** A row under the cards and chips, before the actions, such as a thin week's notify bar. The page owns its state. */
   footer?: ReactNode;
   /** Defaults to 3. */
@@ -257,7 +265,7 @@ function cards(props: CatchCardGridItems, heading: "h2" | "h3"): {id: string; no
  */
 export function CatchCardGrid(props: CatchCardGridProps) {
   const {
-    title, label, level = 2, kicker, kickerTone, kickerAccent, lead, align = "start", filters, links, empty, actions, headerAction, chips, footer,
+    title, label, level = 2, kicker, kickerTone, kickerAccent, lead, align = "start", filters, links, empty, actions, headerAction, chips, chipGroups, footer,
     columns = 3, layout = "grid", ground, kind, items, ...rest
   } = props;
   const titleId = `${useId()}-title`;
@@ -297,15 +305,31 @@ export function CatchCardGrid(props: CatchCardGridProps) {
       ) : empty ? (
         <CatchEmptyState actions={empty.actions} announce="polite" message={empty.message} surface title={empty.title} />
       ) : null}
-      {chips && chips.length > 0 ? (
-        <ul className={styles.chips}>
-          {chips.map((chip) => (
-            <li key={chip.href}><a className={styles.chip} href={chip.href}><span aria-hidden="true" className={styles.dot} data-ground={chip.dot} />{chip.label}</a></li>
-          ))}
-        </ul>
-      ) : null}
+      {chips && chips.length > 0 ? <ChipList chips={chips} /> : null}
+      {chipGroups?.filter((group) => group.chips.length > 0).map((group, index) => (
+        <div className={styles.chipGroup} key={group.title}>
+          <CatchText as="p" className={styles.chipGroupTitle} id={`${titleId}-chips-${index}`} variant="label-kicker">{group.title}</CatchText>
+          <ChipList chips={group.chips} labelledBy={`${titleId}-chips-${index}`} />
+        </div>
+      ))}
       {footer}
       {catchBandActions(actions)}
     </CatchSurface>
+  );
+}
+
+/** Chip links in a wrapping row: a coloured dot when the chip names one, then its label. */
+function ChipList({chips, labelledBy}: {chips: readonly CatchCardGridChip[]; labelledBy?: string}) {
+  return (
+    <ul aria-labelledby={labelledBy} className={styles.chips}>
+      {chips.map((chip) => (
+        <li key={chip.href}>
+          <a className={styles.chip} href={chip.href}>
+            {chip.dot ? <span aria-hidden="true" className={styles.dot} data-ground={chip.dot} /> : null}
+            {chip.label}
+          </a>
+        </li>
+      ))}
+    </ul>
   );
 }

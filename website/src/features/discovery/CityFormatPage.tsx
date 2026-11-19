@@ -113,7 +113,7 @@ function CityFormatPageSections({captures, page}: {captures: CaptureSlots; page:
   const checkedIn = captureSlot(captures, "guest-checked-in");
   const explore = captureSlot(captures, "guest-explore");
   return (
-    <CitySiteChrome cities={page.cities} city={page.city} dock={<DiscoveryDock href={page.dock.href} label={page.dock.label} message={page.notify.message} />}
+    <CitySiteChrome cities={page.cities} city={page.city} discovery={page.discovery} dock={<DiscoveryDock href={page.dock.href} label={page.dock.label} message={page.notify.message} />}
       exploreHref={page.exploreHref} onChooseCity={page.chooseCity} showWhatsOn={page.showWhatsOn}>
       {page.status === "unavailable" ? (
         <CatchBand aria-labelledby={heroTitleId} as="section">

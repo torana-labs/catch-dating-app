@@ -29,7 +29,7 @@ export function CitiesPageSections({cities}: {cities: CitiesPageController}) {
   const status = cities.unavailable ? <CatchText as="p" role="status" variant="body">{copy.unavailable}</CatchText> :
     first?.note ? <CatchText as="p" tone="secondary" variant="body">{first.note}</CatchText> : undefined;
   return (
-    <CitySiteChrome cities={cities.cities} city={cities.city} exploreHref={cities.exploreHref} onChooseCity={cities.chooseCity}>
+    <CitySiteChrome cities={cities.cities} city={cities.city} discovery={cities.discovery} exploreHref={cities.exploreHref} onChooseCity={cities.chooseCity}>
       <CatchCardGrid
         columns={4}
         empty={{title: copy.unavailable}}

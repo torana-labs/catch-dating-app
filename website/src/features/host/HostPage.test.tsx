@@ -39,7 +39,7 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(banner.getByRole("button", {name: "For hosts"}).getAttribute("aria-expanded")).toBe("false");
     expect(banner.getByRole("link", {name: /WhatsApp/u}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\//u);
     expect(within(screen.getByRole("navigation", {name: "Footer"})).getAllByRole("heading", {level: 2}).map((heading) => heading.textContent))
-      .toEqual(["Product", "Get started", brand.name, "Legal"]);
+      .toEqual(["Product", "Hosts by format", "Get started", "Resources", brand.name]);
     const sections = within(screen.getByRole("navigation", {name: copy.sections.label, hidden: true}));
     const sectionLinks = sections.getAllByRole("link", {hidden: true}).map((link) => link.getAttribute("href"));
     expect(sectionLinks).toEqual(["#ways", "#night", "#pricing", "#faq", "#start"]);
@@ -75,14 +75,26 @@ describe("host landing", {timeout: 20_000}, () => {
     }
   });
 
-  it("links each format card to its night, which the night band follows moment by moment", () => {
+  it("finds every host their page: each format card, chip and organisation to its own page", () => {
     renderPage();
     const ways = within(screen.getByRole("region", {name: copy.ways.title}));
-    expect(ways.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(hostNightFormats.map((item) => hostNightHref(item.format)));
+    expect(ways.getByText(copy.ways.kicker)).toBeTruthy();
+    const hrefs = ways.getAllByRole("link").map((link) => link.getAttribute("href"));
+    expect(hrefs).toEqual([...hostNightFormats.map((item) => item.page), ...copy.ways.chips.map((chip) => chip.href), ...copy.ways.organisations.map((item) => item.href)]);
+    expect(ways.getByRole("link", {name: /Run and walk clubs/u}).textContent).toContain("For run clubs");
+    // All fifteen organiser type pages, then weddings and programmes.
+    expect(hrefs.filter((href) => href?.startsWith("/host/")).sort()).toEqual(["brands", "colleges", "communities", "creators", "facilities", "nightlife", "outdoors",
+      "quiz-nights", "racket-sports", "run-clubs", "studios", "supper-clubs", "teams", "venues", "workshops"].map((type) => `/host/${type}/`));
+    expect(within(ways.getByRole("list", {name: copy.ways.organisationsTitle})).getAllByRole("link").map((link) => link.getAttribute("href")))
+      .toEqual(copy.ways.organisations.map((item) => item.href));
+  });
+
+  it("follows the night a link names, moment by moment", () => {
+    renderPage();
     const timeline = within(screen.getByRole("list", {name: `${hostNightFormats[0].event}, moment by moment`}));
     expect(timeline.getByRole("button", {name: new RegExp(hostNightFormats[0].moments[0].title)}).getAttribute("aria-current")).toBe("step");
     expect(timeline.getByText(hostNightFormats[0].moments[0].body)).toBeTruthy();
-    // A card's hash picks its format.
+    // A night's hash, from a link made before the cards opened their pages, picks its format.
     act(() => {
       window.history.replaceState(null, "", hostNightHref("courts"));
       window.dispatchEvent(new HashChangeEvent("hashchange"));

@@ -7,6 +7,9 @@ import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {assertPublicOrganizerPageEligible} from "../shared/publicOrganizerPage";
 import {validateCallableWithAjv} from "../shared/validation";
+import {organizerTrackingEventPolicyReason,
+  organizerTrackingPublicationPolicy} from
+  "./organizerTrackingPublicationPolicy";
 import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import type {OrganizerTrackingSettingsDocument} from
   "../shared/generated/organizerTrackingSettingsDocument";
@@ -35,10 +38,9 @@ const defaultDeps: TrackingSettingsDependencies = {
   now: () => Date.now(),
 };
 
-// No existing reviewed advertising policy permits live publication. This gate
-// is code-owned: neither organizer IDs,
+// The versioned, code-owned publication policy record. Neither organizer IDs,
 // saved fields nor claim approval lift it.
-const publicationAllowed = false;
+const {publicationAllowed} = organizerTrackingPublicationPolicy;
 
 export function trackingConfigurationEligible(organizer: OrganizerDocument) {
   return !organizer.archived && organizer.status !== "archived" &&
@@ -60,8 +62,8 @@ function projection(organizerId: string, stored: unknown, canEdit = true) {
   const result = {organizerId, revision: settings?.revision ?? 0,
     metaPixelId: settings?.metaPixelId ?? null,
     googleMeasurementId: settings?.googleMeasurementId ?? null,
-    enabled: false as const, publicationAllowed,
-    policyReason: "policyReviewRequired" as const, canEdit,
+    enabled: publicationAllowed, publicationAllowed,
+    policyReason: organizerTrackingPublicationPolicy.blockedReason, canEdit,
     editBlockedReason: canEdit ? "none" as const : "unclaimed" as const};
   if (!validateOrganizerTrackingSettingsCallableResponse(result)) {
     throw new HttpsError("internal", "Tracking settings need review.");
@@ -133,7 +135,8 @@ export async function setOrganizerTrackingSettingsHandler(
     const next: OrganizerTrackingSettingsDocument = {
       organizerId: command.organizerId, revision: current.revision + 1,
       metaPixelId: command.metaPixelId,
-      googleMeasurementId: command.googleMeasurementId, enabled: false,
+      googleMeasurementId: command.googleMeasurementId,
+      enabled: publicationAllowed,
       updatedByUid: actorUid, updatedAtMillis: deps.now(),
     };
     if (!validateOrganizerTrackingSettingsDocument(next)) {
@@ -146,19 +149,7 @@ export async function setOrganizerTrackingSettingsHandler(
 
 /** Classification is canonical eventFormat, never free-text names/answers. */
 export function trackingEventPolicyReason(event: Record<string, unknown>) {
-  const format = event.eventFormat as Record<string, unknown> | undefined;
-  if (!format || format.version !== 1 ||
-      typeof format.activityKind !== "string" ||
-      typeof format.interactionModel !== "string") {
-    return "eventClassificationUnavailable" as const;
-  }
-  if (["socialRun", "singlesMixer", "barCrawl", "dinner"]
-    .includes(format.activityKind) ||
-    ["pairedRotations", "seatedTable", "freeFormMixer", "routeStops"]
-      .includes(format.interactionModel)) {
-    return "sensitiveEvent" as const;
-  }
-  return "policyReviewRequired" as const;
+  return organizerTrackingEventPolicyReason(event);
 }
 
 export async function readPublicOrganizerTrackingSettingsHandler(
@@ -185,7 +176,8 @@ export async function readPublicOrganizerTrackingSettingsHandler(
       "Organizer tracking is unavailable.");
   }
   let policyReason: "policyReviewRequired" | "sensitiveEvent" |
-    "eventClassificationUnavailable" = "policyReviewRequired";
+    "eventClassificationUnavailable" =
+    organizerTrackingPublicationPolicy.blockedReason;
   if (eventId) {
     const nativeEvent = await db.collection("events").doc(eventId).get();
     const event = nativeEvent.exists ? nativeEvent :
@@ -212,7 +204,7 @@ export async function readPublicOrganizerTrackingSettingsHandler(
   }
   // Never read private settings here while publication is blocked. Public
   // projection cannot expose IDs, staff audit, private URLs or form values.
-  const result = {organizerId, eventId, enabled: false as const,
+  const result = {organizerId, eventId, enabled: publicationAllowed,
     metaPixelId: null, googleMeasurementId: null, policyReason};
   if (!validatePublicOrganizerTrackingSettingsCallableResponse(result)) {
     throw new HttpsError("internal", "Public tracking settings need review.");

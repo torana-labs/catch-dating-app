@@ -132,23 +132,35 @@ picks one explicitly:
 
 | Variant | Bar | Routes |
 |---|---|---|
-| `guest` (default) | What's on and For hosts; Get the app (or Get notified) | home, Explore, city pages, `/cities/`, organiser pages, event pages, account, legal and help pages, 404 |
-| `host` | What's on, Pricing and Help; the For hosts dropdown (`CatchNavMenu`: Catch for hosts, Weddings, Claim your page); a WhatsApp link; Start free trial | `/host/`, `/host/billing/`, `/weddings/`, `/claim/` and `/claim/:listing/`, the demo continuation |
+| `guest` (default) | What's on, New to the city (on a page with a city), Safety and For hosts; Get the app (or Get notified) | home, Explore, city pages, `/cities/`, the discovery pages, organiser pages, event pages, account, legal and help pages, 404 |
+| `host` | What's on, the For hosts menu, Pricing and Help; a WhatsApp link; Start free trial | `/host/`, every playbook host page (the organiser types, product pages, ways in, About, Safety, `/programmes/`), `/host/billing/`, `/weddings/`, `/claim/` and `/claim/:listing/`, the demo continuation |
 | `minimal` | the wordmark alone | one-job flows on the site chrome: `/booking/…`, `/invite/…`, `/offer/`, `/f/…` |
 
 The bar opens pages, never a section of the current one (navigation proposal,
-15 Nov), with one exception the owner made on 16 Nov: the host bar's Pricing
-opens the pricing band of `/host/` until `/pricing/` ships. A header group
-with a single page draws a plain link (Resources is Help alone today), and an
-empty group is left out. `CatchNavMenu` renders nothing under 600px, so the
-phone menu lists its pages after the links. It sits with the bar's actions
-until `CatchTopBar`'s site variant takes a navigation slot. What's on is
-conditional on `showWhatsOn` (default shown); a city with no events in the
-coming month will hide it once a 30-day read exists. A city's pages point it
-at their own Explore with `whatsOnHref`. Links name only routes in
+15 Nov). The For hosts menu is the canvas's (`KitHeader` with nav `hosts`,
+the sitemap board's "For hosts menu open"): a `CatchNavMenu` with titled
+columns, Product (Catch for hosts and the nine product pages), By format
+(nine organiser type pages), By organisation (venues, facilities, teams,
+colleges, creators, brands), Programmes (weddings and `/programmes/`) and
+Where you are (first event, switch, demo night, claim and the walkthrough).
+The board's featured cards are left out: their targets (the trial, compare
+and pricing) are on the bar or not built. `content/site.ts` owns the
+columns; `playbookPages.test.ts` holds every link to a page that renders and
+every shipped playbook page to a link from the menu, the host footer or
+`/host/`. A header group with a single page draws a plain link (Resources
+is Help alone today), and an empty group is left out. `CatchNavMenu`
+renders nothing under 600px, so the phone menu lists its pages after the
+links, with a divider before each column. What's on is conditional on
+`showWhatsOn` (default shown); a city with no events in the coming month
+hides it. A city's pages point it at their own Explore with
+`whatsOnHref`, and pass their new-to-the-city page as `newToCity` (the
+canvas guest bar's "New to Mumbai") when it renders (`cityDiscoveryLinks`
+in `features/discovery/discoveryModel.ts`). For hosts on guest pages stays a
+plain link to `/host/`, the canvas's quiet link. Links name only routes in
 `design/website/routes.json`; the agreed future paths (`/refer/`,
-`/stories/`, `/tools/no-show-calculator/`, `/new-to-<city>/`, `/host/demo/`,
-`/host/nightlife/`, `/host/colleges/`) join their groups when the pages ship.
+`/stories/`, `/compare/`, `/playbooks/`, `/tools/no-show-calculator/`,
+`/tools/event-page-from-link/`) join Resources and the host footer when the
+pages ship.
 An optional offer strip (`CatchBanner`, persistent, no dismiss) sits above the
 bar when a page passes `offer`; no page does yet, because the founding-host
 offer waits for its live counter. An optional breadcrumb row
@@ -162,15 +174,22 @@ Start free trial) and weddings do.
 `PublicSiteFooter` is the one site footer, `CatchSiteFooter` on the ink band,
 in `guest` or `host` columns (`KitFooter`), each link flush with its column
 title on one row rhythm, then the wordmark with the tagline on its baseline and
-the operator line. Guest: Explore, Hosts (with Weddings) and Help and legal;
-the homepage and the city pages add their Cities column. Host: Product, Get
-started, the brand's column (What's on, Help, Contact) and Legal. Help and
-legal, and the brand's column, list a quiet "Report or remove a listing" link
-to the `/listings/request/` form after Contact. The last column ends with
-Privacy choices. A playbook page may pass its own `footer.columns` in place
-of the variant's (the kit's KitFooter `cols`): the product pages v2 pass the
-canvas's five (Product, Hosts by format, Get started, Resources with Forms,
-and the brand's column with the report link and the legal links). The help band leads the footer on every guest and host page
+the operator line. Guest: Explore (What's on, the city's New to the city,
+Safety, Get the app), Cities, Hosts (with Weddings) and Help and legal; a
+page that knows its city (home, Explore and the city pages, `/cities/`, the
+discovery pages) adds "Things to do in <city>", its format pages that
+render (`cityFormatPageStatus` says `page`, indexed or not), after Explore.
+Host, on every host page: the canvas's five (`KitFooter` host columns, as
+the product pages v2 drew them), Product (the product pages), Hosts by
+format (ten organiser type pages), Get started (the start page, pricing,
+first event, switch, the demo night, programmes), Resources (Forms, the
+walkthrough, Help) and the brand's column (What's on, About, Safety,
+Contact, the report link and the legal links), from
+`siteFooterCopy.host.columns`. Help and legal, and the brand's column, list a
+quiet "Report or remove a listing" link to the `/listings/request/` form
+after Contact. The last column ends with Privacy choices. A page may still
+pass its own `columns` (a playbook page's `footer.columns`, the kit's
+KitFooter `cols`), but no page does. The help band leads the footer on every guest and host page
 ("We reply on WhatsApp, usually within an hour.", with the WhatsApp link and,
 on host pages, Book a walkthrough to the `/host/walkthrough/` request form);
 one-job flows (booking, invitation, the demo continuation) turn it off, and ad
@@ -283,7 +302,12 @@ page's unavailable state with a 503. A format page is indexed, and listed in
 the Next sitemap (`server/discoverySitemap.ts`), only when the read model's
 `formatPages[format].indexing` says `index, follow`; a new-to-the-city page
 is indexed and listed for every website city, since the owner approved it
-(18 Nov 2026). Neither has static output. Indexing before a city launches is the read model's decision
+(18 Nov 2026). Neither has static output. The city's other pages link them only where
+they render (`cityDiscoveryLinks`): the header's New to the city and the
+footer's Explore and "Things to do in <city>" columns on home, Explore, the
+city pages, `/cities/` and the discovery pages themselves, the homepage's
+"New to <city>" tile, and its format cards and chips, which open the format
+page when it exists and otherwise keep filtering with `?format=` or `?q=`. Indexing before a city launches is the read model's decision
 too (`formatPageIndexingFor`, owner decision of 17 Nov 2026). Their closing
 "Get new plans on WhatsApp" form, also on Explore, sends a `city_alerts` lead
 through the site's lead client (`createSiteLeadSubmission`), which carries the
@@ -1497,7 +1521,11 @@ ownership without recreating duplicate marketing destinations.
 ### Host landing
 
 `/host/` renders the RbWebHostV2 board band for band on `@catch/web-ui`, on the
-white ground: hero, kinds of night, a night on Catch (chapters on a joined
+white ground: hero, find your page (the PlaybookHosts board's band: five format
+cards, chips for four more formats and a "By organisation" row, each to its
+`/host/<type>/` page, weddings or `/programmes/`; a `#night-<format>` link
+still picks that night), where you are today (the first event, switch and
+walkthrough pages), a night on Catch (chapters on a joined
 timeline with the phone following), the iPad, the applicant board (replayable),
 guests, growth links, layers (a segmented control over what Catch runs), pricing
 (a slider over the 5% fee capped at ₹10,000), the FAQ and the free-trial start

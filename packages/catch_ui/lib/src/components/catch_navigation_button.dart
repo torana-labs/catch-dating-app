@@ -225,75 +225,62 @@ class _CatchNavigationButtonState<T> extends State<CatchNavigationButton<T>> {
         : selected
         ? CatchOpacity.tabBarPillFill
         : CatchOpacity.none;
-    final content = TweenAnimationBuilder<double>(
-      key: ValueKey<Object>('catch_tab_bar.pill.${widget.item.id}'),
-      duration: duration,
-      curve: CatchMotion.standardCurve,
-      tween: Tween<double>(end: showSelectedLabel ? 1 : 0),
-      builder: (context, progress, child) => AnimatedContainer(
-        duration: duration,
-        curve: CatchMotion.standardCurve,
-        constraints: const BoxConstraints(
-          minWidth: CatchLayout.tabBarCompactItemExtent,
-        ),
-        height: CatchLayout.tabBarIndicatorExtent,
-        padding: EdgeInsetsDirectional.only(
-          start: showSelectedLabel
-              ? CatchLayout.tabBarPillLeadingPadding
-              : CatchLayout.tabBarCompactItemHorizontalPadding,
-          end: showSelectedLabel
-              ? CatchLayout.tabBarPillTrailingPadding
-              : CatchLayout.tabBarCompactItemHorizontalPadding,
-        ),
-        decoration: ShapeDecoration(
-          color: widget.ownsIndicator
-              ? t.ink.withValues(alpha: indicatorOpacity)
-              : Colors.transparent,
-          shape: StadiumBorder(
-            side: widget.ownsIndicator && _focused
-                ? CatchBorder.resolve(t, CatchBorderRole.focus).side
-                : BorderSide.none,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            icon,
-            if (progress > 0.001)
-              Flexible(
-                child: ClipRect(
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    widthFactor: progress,
-                    child: Opacity(
-                      opacity: progress,
-                      child: ExcludeSemantics(
-                        key: ValueKey(
-                          'catch_tab_bar.label.${widget.item.label}',
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.only(
-                            start: CatchLayout.tabBarLabelGap,
-                          ),
-                          child: Text(
-                            widget.item.label,
-                            maxLines: 1,
-                            softWrap: false,
-                            overflow: TextOverflow.fade,
-                            style: CatchTextStyles.navigationLabel(
-                              context,
-                              color: t.ink,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+    // The system bottom bar: the icon on its pill (the selected one, or the
+    // one pressed, focused or hovered), and the label under it on every
+    // destination, bolder when selected.
+    final content = SizedBox(
+      height: CatchLayout.tabBarExtent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AnimatedContainer(
+            key: ValueKey<Object>('catch_tab_bar.pill.${widget.item.id}'),
+            duration: duration,
+            curve: CatchMotion.standardCurve,
+            width: CatchLayout.tabBarIconPillWidth,
+            height: CatchLayout.tabBarIconPillHeight,
+            alignment: Alignment.center,
+            decoration: ShapeDecoration(
+              color: widget.ownsIndicator
+                  ? t.ink.withValues(alpha: indicatorOpacity)
+                  : Colors.transparent,
+              shape: StadiumBorder(
+                side: widget.ownsIndicator && _focused
+                    ? CatchBorder.resolve(t, CatchBorderRole.focus).side
+                    : BorderSide.none,
               ),
-          ],
-        ),
+            ),
+            child: icon,
+          ),
+          const SizedBox(height: CatchLayout.tabBarIconLabelGap),
+          SizedBox(
+            height: CatchLayout.tabBarLabelLine,
+            child: ExcludeSemantics(
+              key: ValueKey('catch_tab_bar.label.${widget.item.label}'),
+              child: Text(
+                widget.item.label,
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                // The label line keeps its height; very large text stops
+                // growing where it would leave the line.
+                textScaler: MediaQuery.textScalerOf(
+                  context,
+                ).clamp(maxScaleFactor: CatchLayout.tabBarLabelMaxTextScale),
+                style:
+                    CatchTextStyles.navigationLabel(
+                      context,
+                      color: selected || showSelectedLabel ? t.ink : t.ink2,
+                    ).copyWith(
+                      fontSize: CatchLayout.tabBarLabelFontSize,
+                      height: CatchLayout.tabBarLabelLineHeight,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                    ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
 

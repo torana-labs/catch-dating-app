@@ -5,3 +5,5 @@ export {successEnvelope, failureEnvelope, runCli} from "./envelope.mjs";
 export {executeWithReceipts} from "./execution.mjs";
 export {LocalReceiptStore} from "./receipt-store.mjs";
 export {CallableTransport, callableBaseUrl, isIndeterminateTransportError} from "./transport.mjs";
+export {EFFECT_CONFIRMATION_POLICY, confirmationPolicy} from "./confirmation-policy.mjs";
+export {inputJsonSchema, loadCommandCatalog, publicCommand, requireCommand, schemaIssues} from "./command-catalog.mjs";

@@ -553,6 +553,23 @@ abstract final class CatchLayout {
   static const double tabBarPillTrailingPadding = CatchSpacing.s3;
   static const double tabBarLabelGap = CatchSpacing.micro6;
   static const double tabBarIconBoxExtent = 30.0;
+  // The system bottom bar: every destination labelled under its icon, the
+  // selected icon on a 56 by 32 pill, centred in the bar over a 16 px label
+  // line 4 px below.
+  static const double tabBarIconPillWidth = 56.0;
+  static const double tabBarIconPillHeight = 32.0;
+  static const double tabBarLabelLine = 16.0;
+  static const double tabBarIconLabelGap = 4.0;
+  static const double tabBarLabelFontSize = 12.0;
+  static const double tabBarLabelMaxTextScale = 1.3;
+  static const double tabBarLabelLineHeight =
+      tabBarLabelLine / tabBarLabelFontSize;
+  static const double tabBarIconPillTop =
+      (tabBarExtent -
+          tabBarIconPillHeight -
+          tabBarIconLabelGap -
+          tabBarLabelLine) /
+      2;
   static const double tabBarIconSize = 22.0;
   static const double tabBarDragHysteresis = CatchSpacing.s2;
   static const double tabBarDragCancelSlop = CatchSpacing.s6;

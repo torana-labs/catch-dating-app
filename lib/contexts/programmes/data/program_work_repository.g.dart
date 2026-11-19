@@ -614,12 +614,16 @@ final class ProgramIdTrackerFamily extends $Family
   String toString() => r'programIdTrackerProvider';
 }
 
-/// One album (or every photo), from the live read or a bounded snapshot.
+/// One album (or every photo), live from `programPhotos` (#1339). The
+/// album names come from the work shell's functions; the signed URLs from
+/// the server, in calls of at most 60 photos.
 
 @ProviderFor(programPhotosView)
 final programPhotosViewProvider = ProgramPhotosViewFamily._();
 
-/// One album (or every photo), from the live read or a bounded snapshot.
+/// One album (or every photo), live from `programPhotos` (#1339). The
+/// album names come from the work shell's functions; the signed URLs from
+/// the server, in calls of at most 60 photos.
 
 final class ProgramPhotosViewProvider
     extends
@@ -631,7 +635,9 @@ final class ProgramPhotosViewProvider
     with
         $FutureModifier<ProgramReadView<ProgramPhotos>>,
         $FutureProvider<ProgramReadView<ProgramPhotos>> {
-  /// One album (or every photo), from the live read or a bounded snapshot.
+  /// One album (or every photo), live from `programPhotos` (#1339). The
+  /// album names come from the work shell's functions; the signed URLs from
+  /// the server, in calls of at most 60 photos.
   ProgramPhotosViewProvider._({
     required ProgramPhotosViewFamily super.from,
     required (String, String?) super.argument,
@@ -676,9 +682,11 @@ final class ProgramPhotosViewProvider
   }
 }
 
-String _$programPhotosViewHash() => r'fd06a615b640a3b0a789b1f6d1e6cd1a46d14251';
+String _$programPhotosViewHash() => r'4ee65e5a876336c20230a9adf582b60c6f3669d8';
 
-/// One album (or every photo), from the live read or a bounded snapshot.
+/// One album (or every photo), live from `programPhotos` (#1339). The
+/// album names come from the work shell's functions; the signed URLs from
+/// the server, in calls of at most 60 photos.
 
 final class ProgramPhotosViewFamily extends $Family
     with
@@ -695,7 +703,9 @@ final class ProgramPhotosViewFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One album (or every photo), from the live read or a bounded snapshot.
+  /// One album (or every photo), live from `programPhotos` (#1339). The
+  /// album names come from the work shell's functions; the signed URLs from
+  /// the server, in calls of at most 60 photos.
 
   ProgramPhotosViewProvider call(String programId, String? functionId) =>
       ProgramPhotosViewProvider._(
@@ -763,12 +773,14 @@ final class ProgrammeInboxCommandsProvider
 String _$programmeInboxCommandsHash() =>
     r'6e9249961f2c67699c62a3575d281d45845871a2';
 
-/// One inbox segment, from the live read or a bounded snapshot.
+/// One inbox segment, live from `programWhatsappThreadViews` (#1339). The
+/// wedding's number comes from the server; without it the inbox still shows.
 
 @ProviderFor(programWhatsappInbox)
 final programWhatsappInboxProvider = ProgramWhatsappInboxFamily._();
 
-/// One inbox segment, from the live read or a bounded snapshot.
+/// One inbox segment, live from `programWhatsappThreadViews` (#1339). The
+/// wedding's number comes from the server; without it the inbox still shows.
 
 final class ProgramWhatsappInboxProvider
     extends
@@ -780,7 +792,8 @@ final class ProgramWhatsappInboxProvider
     with
         $FutureModifier<ProgramReadView<ProgramWhatsappInbox>>,
         $FutureProvider<ProgramReadView<ProgramWhatsappInbox>> {
-  /// One inbox segment, from the live read or a bounded snapshot.
+  /// One inbox segment, live from `programWhatsappThreadViews` (#1339). The
+  /// wedding's number comes from the server; without it the inbox still shows.
   ProgramWhatsappInboxProvider._({
     required ProgramWhatsappInboxFamily super.from,
     required (String, ProgramWhatsappFilter) super.argument,
@@ -826,9 +839,10 @@ final class ProgramWhatsappInboxProvider
 }
 
 String _$programWhatsappInboxHash() =>
-    r'8a41cd1419e5354ac4c2ea134b569836e8767d14';
+    r'5a03f173c32e3efa1bd173b623cd0b4fdc28ad70';
 
-/// One inbox segment, from the live read or a bounded snapshot.
+/// One inbox segment, live from `programWhatsappThreadViews` (#1339). The
+/// wedding's number comes from the server; without it the inbox still shows.
 
 final class ProgramWhatsappInboxFamily extends $Family
     with
@@ -845,7 +859,8 @@ final class ProgramWhatsappInboxFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One inbox segment, from the live read or a bounded snapshot.
+  /// One inbox segment, live from `programWhatsappThreadViews` (#1339). The
+  /// wedding's number comes from the server; without it the inbox still shows.
 
   ProgramWhatsappInboxProvider call(
     String programId,
@@ -857,12 +872,104 @@ final class ProgramWhatsappInboxFamily extends $Family
   String toString() => r'programWhatsappInboxProvider';
 }
 
-/// One conversation, from the live read or a bounded snapshot.
+/// The wedding's WhatsApp number for the inbox header, or null when it
+/// cannot be read now.
+
+@ProviderFor(programWhatsappSender)
+final programWhatsappSenderProvider = ProgramWhatsappSenderFamily._();
+
+/// The wedding's WhatsApp number for the inbox header, or null when it
+/// cannot be read now.
+
+final class ProgramWhatsappSenderProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramWhatsappSender?>,
+          ProgramWhatsappSender?,
+          FutureOr<ProgramWhatsappSender?>
+        >
+    with
+        $FutureModifier<ProgramWhatsappSender?>,
+        $FutureProvider<ProgramWhatsappSender?> {
+  /// The wedding's WhatsApp number for the inbox header, or null when it
+  /// cannot be read now.
+  ProgramWhatsappSenderProvider._({
+    required ProgramWhatsappSenderFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programWhatsappSenderProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programWhatsappSenderHash();
+
+  @override
+  String toString() {
+    return r'programWhatsappSenderProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramWhatsappSender?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramWhatsappSender?> create(Ref ref) {
+    final argument = this.argument as String;
+    return programWhatsappSender(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramWhatsappSenderProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programWhatsappSenderHash() =>
+    r'2c9b0510d69191eaa47515f14715cc704da323a2';
+
+/// The wedding's WhatsApp number for the inbox header, or null when it
+/// cannot be read now.
+
+final class ProgramWhatsappSenderFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ProgramWhatsappSender?>, String> {
+  ProgramWhatsappSenderFamily._()
+    : super(
+        retry: null,
+        name: r'programWhatsappSenderProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The wedding's WhatsApp number for the inbox header, or null when it
+  /// cannot be read now.
+
+  ProgramWhatsappSenderProvider call(String programId) =>
+      ProgramWhatsappSenderProvider._(argument: programId, from: this);
+
+  @override
+  String toString() => r'programWhatsappSenderProvider';
+}
+
+/// One conversation, live.
 
 @ProviderFor(programWhatsappThread)
 final programWhatsappThreadProvider = ProgramWhatsappThreadFamily._();
 
-/// One conversation, from the live read or a bounded snapshot.
+/// One conversation, live.
 
 final class ProgramWhatsappThreadProvider
     extends
@@ -874,7 +981,7 @@ final class ProgramWhatsappThreadProvider
     with
         $FutureModifier<ProgramReadView<ProgramWhatsappThread>>,
         $FutureProvider<ProgramReadView<ProgramWhatsappThread>> {
-  /// One conversation, from the live read or a bounded snapshot.
+  /// One conversation, live.
   ProgramWhatsappThreadProvider._({
     required ProgramWhatsappThreadFamily super.from,
     required (String, String) super.argument,
@@ -920,9 +1027,9 @@ final class ProgramWhatsappThreadProvider
 }
 
 String _$programWhatsappThreadHash() =>
-    r'1bea45390c5f583051d290006811bbdf831b5653';
+    r'391aa3bf873af8343893c5df48dc4b0d83ffdf17';
 
-/// One conversation, from the live read or a bounded snapshot.
+/// One conversation, live.
 
 final class ProgramWhatsappThreadFamily extends $Family
     with
@@ -939,7 +1046,7 @@ final class ProgramWhatsappThreadFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One conversation, from the live read or a bounded snapshot.
+  /// One conversation, live.
 
   ProgramWhatsappThreadProvider call(String programId, String threadId) =>
       ProgramWhatsappThreadProvider._(
@@ -951,12 +1058,12 @@ final class ProgramWhatsappThreadFamily extends $Family
   String toString() => r'programWhatsappThreadProvider';
 }
 
-/// The programme's saved replies.
+/// The programme's saved replies, live.
 
 @ProviderFor(programCannedReplies)
 final programCannedRepliesProvider = ProgramCannedRepliesFamily._();
 
-/// The programme's saved replies.
+/// The programme's saved replies, live.
 
 final class ProgramCannedRepliesProvider
     extends
@@ -968,7 +1075,7 @@ final class ProgramCannedRepliesProvider
     with
         $FutureModifier<ProgramReadView<List<ProgramCannedReply>>>,
         $FutureProvider<ProgramReadView<List<ProgramCannedReply>>> {
-  /// The programme's saved replies.
+  /// The programme's saved replies, live.
   ProgramCannedRepliesProvider._({
     required ProgramCannedRepliesFamily super.from,
     required String super.argument,
@@ -1013,9 +1120,9 @@ final class ProgramCannedRepliesProvider
 }
 
 String _$programCannedRepliesHash() =>
-    r'58d66f21999e2695d6e1f574a3b98e53f0bdc5dc';
+    r'2b3ee4a2c9ace7dc6d88600358f30410fedff593';
 
-/// The programme's saved replies.
+/// The programme's saved replies, live.
 
 final class ProgramCannedRepliesFamily extends $Family
     with
@@ -1032,7 +1139,7 @@ final class ProgramCannedRepliesFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The programme's saved replies.
+  /// The programme's saved replies, live.
 
   ProgramCannedRepliesProvider call(String programId) =>
       ProgramCannedRepliesProvider._(argument: programId, from: this);

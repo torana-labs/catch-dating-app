@@ -1,7 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 List<CatchTabBarItem<String>> _items({bool pinned = false}) => [
@@ -196,29 +195,29 @@ void main() {
     );
   });
 
-  testWidgets('the selected pill gives its label its whole width at 390', (
+  testWidgets('every destination shows its label under its icon at 390', (
     tester,
   ) async {
+    await _pump(
+      tester,
+      CatchTabBar<String>(items: _items(), active: 'events'),
+      width: 390,
+    );
+    await tester.pumpAndSettle();
     for (final item in _items()) {
-      await _pump(
-        tester,
-        CatchTabBar<String>(items: _items(), active: item.id),
-        width: 390,
+      final label = find.byKey(ValueKey('catch_tab_bar.label.${item.label}'));
+      expect(label, findsOneWidget, reason: '${item.label} has no label');
+      final pill = tester.getRect(
+        find.byKey(ValueKey<Object>('catch_tab_bar.pill.${item.id}')),
       );
-      await tester.pumpAndSettle();
-      final paragraph = tester.renderObject<RenderParagraph>(
-        find.descendant(
-          of: find.byKey(ValueKey('catch_tab_bar.label.${item.label}')),
-          matching: find.byType(RichText),
-        ),
+      final text = tester.getRect(label);
+      // The label sits under the icon pill, inside the destination's slot.
+      expect(text.top, greaterThanOrEqualTo(pill.bottom));
+      final slot = tester.getRect(
+        find.byKey(ValueKey<Object>('catch_tab_bar.destination.${item.id}')),
       );
-      // A label laid out even a fraction narrower than its text fades its
-      // last letter.
-      expect(
-        paragraph.size.width,
-        greaterThanOrEqualTo(paragraph.getMaxIntrinsicWidth(double.infinity)),
-        reason: '${item.label} is clipped',
-      );
+      expect(text.left, greaterThanOrEqualTo(slot.left - 0.5));
+      expect(text.right, lessThanOrEqualTo(slot.right + 0.5));
     }
   });
 }

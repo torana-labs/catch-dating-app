@@ -4,7 +4,7 @@ import {useMemo} from "react";
 import {cityAlertsCopy} from "@content/discovery/cityAlerts";
 import {exploreAlertInterests} from "../discovery/cityAlertsModel";
 import {discoveryOrganizerCard, discoveryPlanCard} from "../discovery/discoveryCards";
-import {showWhatsOnFor} from "../discovery/discoveryModel";
+import {cityDiscoveryLinks, showWhatsOnFor} from "../discovery/discoveryModel";
 import {weekPlans} from "./homeModel";
 import type {HomeCatalog} from "./homeTypes";
 import {cityPagePath} from "./sections/cityChrome";
@@ -91,6 +91,8 @@ export function useExplorePageController(catalog: HomeCatalog, location: {pathna
       count(matchedOrganizers.length, copy.organiserCountOne, copy.organiserCount),
     exploreHref: cityPagePath(city.slug),
     cityHref: cityPagePath,
+    /** The city's new-to-the-city page and its format pages that exist, for the header and footer. */
+    discovery: cityDiscoveryLinks(catalog),
     /** The WhatsApp form's city_alerts lead: this page, and the format filter's interest. */
     notify: {place: {citySlug: city.slug, cityLabel: city.label, sourcePage: location.pathname, entry: "ex-wa"},
       interests: exploreAlertInterests(filters.format)},

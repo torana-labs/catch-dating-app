@@ -9,14 +9,17 @@ export function hostLandingHref(to: HostLandingTarget): string {
   return "href" in to ? to.href : whatsappChatHref(to.whatsapp);
 }
 
-/** The link from a format card to its night: `#night-<format>`, which picks the format and lands on the night band. */
+/**
+ * A format's night on this page: `#night-<format>`, which picks the format
+ * and lands on the night band. The format cards now open each format's page;
+ * links made before still land on the night.
+ */
 export function hostNightHref(format: string): string {
   return `#night-${format}`;
 }
 
 function formatForHash(hash: string): number {
-  const match = /^#night-(.+)$/u.exec(hash);
-  return match ? hostNightFormats.findIndex((item) => item.format === match[1]) : -1;
+  return hostNightFormats.findIndex((item) => hostNightHref(item.format) === hash);
 }
 
 function scrollToNight() {
@@ -26,10 +29,9 @@ function scrollToNight() {
 }
 
 /**
- * The host landing's interactive state: the format the ways band's cards and
- * the night band share, and the moment of that night on show. A format card
- * links to `#night-<format>`; the hash picks the format and lands on the
- * night band. The fee band's calculator owns its own state
+ * The host landing's interactive state: the format the night band follows,
+ * and the moment of that night on show. A `#night-<format>` hash picks the
+ * format and lands on the night band. The fee band's calculator owns its own state
  * (features/marketing/usePricingFeeCalculator).
  */
 export function useHostLandingController() {

@@ -6958,6 +6958,47 @@
       }
     },
     {
+      "id": "operations:catch-cli",
+      "category": "operations",
+      "path": "operations/src/catch-cli/main.mjs",
+      "command": "node operations/src/catch-cli/main.mjs",
+      "safety": "remote-read-write-apply-guarded",
+      "status": "active",
+      "role": "operator",
+      "alsoEnforces": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "description": "The catch CLI: calls product commands from contracts/commands/catalog.json with the shared command envelope. Previews by default; --apply runs it, with --confirm <commandId> for publishing and --preview-hash for messaging or money, plus App Check and a local receipt keyed by idempotency key.",
+      "checks": [
+        "node --check operations/src/catch-cli/main.mjs",
+        "node operations/scripts/check-command-catalog.mjs",
+        "node --test operations/test/catch-cli.test.mjs operations/test/command-catalog.test.mjs operations/test/command-client.test.mjs"
+      ],
+      "impactPaths": [
+        "operations/src/catch-cli/**",
+        "operations/src/command-client/**",
+        "operations/src/platform/canonical-json.mjs",
+        "operations/src/platform/errors.mjs",
+        "operations/src/platform/schema-dependencies.mjs",
+        "operations/scripts/check-command-catalog.mjs",
+        "operations/test/catch-cli.test.mjs",
+        "operations/test/command-catalog.test.mjs",
+        "operations/test/command-client.test.mjs",
+        "contracts/commands/**",
+        "contracts/shared/command_envelope.schema.json",
+        "contracts/callables/**",
+        "contracts/callable_responses/**"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
+      "runbook": "docs/operations_platform.md#product-command-cli"
+    },
+    {
       "id": "operations:cli",
       "category": "operations",
       "path": "operations/src/cli/main.mjs",
