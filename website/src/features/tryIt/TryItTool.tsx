@@ -136,7 +136,7 @@ function StartStep({controller, form, tool, placement}: {controller: TryItToolCo
   ) : null;
   return (
     <CatchStack gap={12}>
-      <Form aria-label={form.submitLabel} noValidate onSubmit={controller.submit} pending={state.busy}>
+      <Form aria-label={placement === "split" ? card.title : form.submitLabel} noValidate onSubmit={controller.submit} pending={state.busy}>
         {placement === "cta" ? (
           <CatchStack align="start" collapseBelow="medium" direction="row" gap={8} railWidth="fit">{link}{button}</CatchStack>
         ) : (
@@ -203,7 +203,7 @@ function ChannelsStep({controller, name}: {controller: TryItToolController; name
   const kit = copy.tools.kit;
   const links = tryItKitLinks(state.channels, state.people);
   return (
-    <Form aria-label={kit.makeLinks} noValidate onSubmit={controller.makeLinks} pending={state.busy}>
+    <Form aria-label={fill(kit.linksFor, {name})} noValidate onSubmit={controller.makeLinks} pending={state.busy}>
       <CatchStack gap={12}>
         <CatchText as="h3" variant="display-xs">{fill(kit.linksFor, {name})}</CatchText>
         <CatchField errorText={fieldText(state.fields.channels)} helperText={kit.channelsHint} inputHint={kit.channelsPlaceholder}

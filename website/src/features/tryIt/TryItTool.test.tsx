@@ -23,7 +23,7 @@ describe("try-it tool on a product page", () => {
     render(<PlaybookPage captures={{}} page={yourPage} />);
     const band = within(document.getElementById("try")!);
     expect(band.getByRole("heading", {name: tryItCopy.tools.organizer.title})).toBeTruthy();
-    expect(band.getByRole("form", {name: "Build my page"})).toBeTruthy();
+    expect(band.getByRole("form", {name: tryItCopy.tools.organizer.title})).toBeTruthy();
     expect(within(document.getElementById("start")!).getByRole("form", {name: "Build my page"})).toBeTruthy();
     expect(within(document.getElementById("top")!).getByRole("link", {name: "Build it from your Instagram"}).getAttribute("href")).toBe("#try");
   });
