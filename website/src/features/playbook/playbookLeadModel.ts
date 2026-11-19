@@ -78,7 +78,7 @@ export function playbookGuideFormat(slug: string | undefined): WebsiteLeadGuideF
  * form does not render, and the page's WhatsApp actions stand alone.
  */
 export function playbookSendableLeadKind(form: PlaybookLeadForm): PlaybookSendableLeadKind | null {
-  // A link or text input is a try-it tool's: no backend reads one until its command ships.
+  // A link or text input is a try-it tool form: the tool slot draws it (playbookLeadForms.ts), never the lead intake.
   if ((form.input ?? "tel") !== "tel") return null;
   if (!isSendableKind(form.requestKind)) return null;
   const kind = form.requestKind;
