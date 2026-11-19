@@ -12,7 +12,7 @@ vi.mock("../../analytics", async (original) => ({...await original<typeof import
 afterEach(cleanup);
 
 const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in"].map((id) => [id, {
-  id, webPath: `/captures/${id}.png`, width: 980, height: 1924, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: [],
+  id, device: "generic-phone", webPath: `/captures/${id}.png`, width: 804, height: 1748, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: [],
 }]));
 
 const show = (catalog: HomeCatalog, format: DiscoveryFormatKey, url = "/mumbai/run-clubs/") =>

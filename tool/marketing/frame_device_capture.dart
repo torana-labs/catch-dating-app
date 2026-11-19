@@ -46,8 +46,8 @@ void main(List<String> args) {
     return;
   }
 
-  // An unframed device (a tablet or desktop browser screen) is passed through
-  // at its native size: the website draws its frame in CSS.
+  // An unframed device (a phone, tablet or desktop browser screen) is passed
+  // through at its native size: the website draws its frame in CSS.
   final framed = spec.framed
       ? _renderDeviceFrame(screenshot, spec)
       : screenshot;
@@ -88,34 +88,8 @@ img.Image _renderDeviceFrame(img.Image screenshot, _DeviceFrameSpec spec) {
     );
   }
 
-  final island = spec.dynamicIsland;
-  if (island == null) {
-    // Generic body: a dark outer edge, a faint light rim just inside it, then
-    // the near-black body, the website's CatchDeviceFrame in pixels.
-    for (final (inset, color) in [
-      (0, _rgba(0, 0, 0, 140)),
-      (1, _rgba(42, 40, 43)),
-      (2, _rgba(18, 16, 19)),
-    ]) {
-      img.fillRect(
-        canvas,
-        x1: deviceX + inset * scale,
-        y1: deviceY + inset * scale,
-        x2: deviceX + deviceW - inset * scale - 1,
-        y2: deviceY + deviceH - inset * scale - 1,
-        radius: (spec.outerRadius - inset) * scale,
-        color: color,
-      );
-    }
-    _copyRounded(
-      canvas,
-      screenshot,
-      dstX: screenX,
-      dstY: screenY,
-      radius: spec.screenRadius * scale,
-    );
-    return canvas;
-  }
+  // Only the iPhone frame is still drawn here; generic devices are unframed.
+  final island = spec.dynamicIsland!;
 
   img.fillRect(
     canvas,
@@ -290,17 +264,17 @@ class _DeviceFrameSpec {
   /// Sizes in points; tool/marketing/lib/capture_devices.mjs holds the same.
   factory _DeviceFrameSpec.forId(String id) {
     return switch (id) {
-      // Bezel 12/426 = 0.028 and outer radius 70/426 = 0.165 of the frame
-      // width, the website's CatchDeviceFrame kind "phone".
+      // Unframed: the PNG is the screen alone (CatchDeviceFrame kind phone).
       'generic-phone' => const _DeviceFrameSpec(
         id: 'generic-phone',
         logicalWidth: 402,
         logicalHeight: 874,
         outputScale: 2,
-        canvasMargin: 32,
-        frameInset: 12,
-        outerRadius: 70,
-        screenRadius: 58,
+        canvasMargin: 0,
+        frameInset: 0,
+        outerRadius: 0,
+        screenRadius: 0,
+        framed: false,
       ),
       'iphone-17-pro' => const _DeviceFrameSpec(
         id: 'iphone-17-pro',

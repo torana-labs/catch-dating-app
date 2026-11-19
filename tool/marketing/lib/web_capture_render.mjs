@@ -13,7 +13,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {pathToFileURL} from "node:url";
 import {fromRepo, repoRoot} from "../../lib/repo_paths.mjs";
-import {captureDevice, isFramedCaptureDevice} from "./capture_devices.mjs";
+import {captureDevice, isPhoneCaptureDevice} from "./capture_devices.mjs";
 import {safariScreen, safariScreenHtml, safariViewport} from "./web_capture_screen.mjs";
 
 const defaultStorybook = "website/storybook-static";
@@ -36,7 +36,7 @@ export async function renderWebCaptures(captures, {storybook = defaultStorybook,
     for (const capture of captures) {
       const raw = fromRepo(path.join(rawOutputDir, `${capture.id}.png`));
       fs.mkdirSync(path.dirname(raw), {recursive: true});
-      if (isFramedCaptureDevice(capture.device)) {
+      if (isPhoneCaptureDevice(capture.device)) {
         const page = await renderStory(browser, phoneContext(devices[descriptorName], capture), server.origin, capture);
         fs.writeFileSync(raw, await composeSafariScreen(browser, page, capture));
       } else {

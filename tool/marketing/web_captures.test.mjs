@@ -72,7 +72,7 @@ function fixture(t) {
     placeholderPath: "website/public/assets/app-screenshots/placeholders/guest-join-phone.svg",
     alt: "Check-in page in iPhone Safari", caption: "Guests check in in the browser.", walkthroughStep: "Check in", pages: ["/host/"]};
   const writeManifest = (entry = capture) => write("tool/marketing/capture_manifest.json",
-    JSON.stringify({version: 1, updated: "2026-10-25", previewDisclosure: "Fictional app preview.", captures: [entry]}));
+    JSON.stringify({version: 1, updated: "2026-10-25", captures: [entry]}));
   writeManifest();
   write("fonts/native.ttf", "native font fixture");
   const git = write("bin/git", `#!${process.execPath}\nprocess.stdout.write("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\n");\n`);

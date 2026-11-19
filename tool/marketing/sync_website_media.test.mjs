@@ -41,7 +41,7 @@ test("website records carry the framed size and the pages that show them", () =>
   const [record] = buildWebsiteManifest(manifestWith({})).captures;
   assert.deepEqual({width: record.width, height: record.height}, framedSize(liveConsole.device));
   assert.deepEqual(record.pages, liveConsole.pages);
-  assert.equal(record.caption, `${authored.previewDisclosure} ${liveConsole.caption}`);
+  assert.equal(record.caption, liveConsole.caption);
   assert.equal("scenario" in record, false);
 });
 

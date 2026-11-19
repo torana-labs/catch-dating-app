@@ -143,9 +143,6 @@ export function validateSourceManifest(manifest) {
   if (!Number.isInteger(manifest.version)) {
     errors.push("Manifest version must be an integer.");
   }
-  if (typeof manifest.previewDisclosure !== "string" || manifest.previewDisclosure.trim() === "") {
-    errors.push("Manifest previewDisclosure is required for synthetic app previews.");
-  }
   if (!Array.isArray(manifest.captures)) {
     errors.push("Manifest captures must be an array.");
     return errors;
@@ -280,7 +277,7 @@ export function buildWebsiteManifest(manifest) {
         // The framed PNG's size, so pages reserve the image's space before it loads.
         ...framedSize(capture.device),
         alt: capture.alt,
-        caption: `${manifest.previewDisclosure} ${capture.caption}`,
+        caption: capture.caption,
         walkthroughStep: capture.walkthroughStep,
         pages: capture.pages ?? [],
       };
