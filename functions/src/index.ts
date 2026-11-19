@@ -223,6 +223,7 @@ export {
 } from "./publicPages/triggers";
 export {
   onCityPlansOrganizerPageWritten,
+  onDiscoverySettingsWritten,
   rebuildCityPlansHourly,
 } from "./cityPlans/triggers";
 export {updateOrganizer} from "./organizers/mutateOrganizer";
@@ -532,6 +533,8 @@ export {adminDecideSafetyAppeal, submitSafetyAppeal} from
   "./safety/safetyAppeals";
 export {adminGetSafetySettings, adminUpdateSafetySettings} from
   "./safety/safetySettings";
+export {adminGetDiscoverySettings, adminUpdateDiscoverySettings} from
+  "./discovery/discoverySettings";
 export {listOrganizerGuestBlocks, manageOrganizerGuestBlock} from
   "./safety/organizerGuestBlocks";
 export {

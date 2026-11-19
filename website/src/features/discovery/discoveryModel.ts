@@ -1,6 +1,7 @@
 import {discoveryFormatCopy} from "@content/discovery/discoveryFormats";
 import {websiteCities} from "@content/markets";
 import type {HomeCatalog, HomeCityPlans, HomePlan} from "../home/homeTypes";
+import {cityOrganizers} from "../home/homeDiscovery";
 import {upcomingPlans, weekPlans} from "../home/homeModel";
 import {
   discoveryFormatKeys,
@@ -114,7 +115,7 @@ export function cityFormatModel(catalog: HomeCatalog, format: DiscoveryFormatKey
   const plans = discoveryPlansOf(catalog);
   const page: DiscoveryFormatPage | null = plans.formatPages?.[format] ?? null;
   const formatPlans = upcomingPlans(plans.plans, catalog.readAt).filter(inFormat(format) as (plan: DiscoveryPlan) => boolean);
-  const organizers = (plans.organizers as DiscoveryOrganizer[]).filter(inFormat(format));
+  const organizers = (cityOrganizers(plans) as DiscoveryOrganizer[]).filter(inFormat(format));
   const others = discoveryFormatKeys.filter((key) => key !== format);
   const links: CityFormatLink[] = others
     .filter((key) => plans.formatPages?.[key]?.indexing === "index, follow")
