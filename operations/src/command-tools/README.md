@@ -3,7 +3,7 @@
 Turns `contracts/commands/catalog.json` into AI tool definitions and runs the
 preview-then-confirm protocol around them, for an agent client such as the
 later WhatsApp surface. It shares the catalog loader and the effect-class
-confirmation policy with the `catch` CLI (`../command-client/`).
+confirmation policy with the `catch` CLI (`packages/command-client`).
 
 - A tool's input schema is the command's `input` only, with `$ref`s resolved.
   The model cannot set mode, idempotency key, surface or confirm.
