@@ -101,6 +101,25 @@ export interface OwnerTrackingSettings {
   metaPixelId: string | null;
   googleMeasurementId: string | null;
   canEdit: boolean;
+  /** Whether saved IDs load on the public page now: only when the server says it is enabled and allowed. */
+  live: boolean;
+  /** Why saved IDs are not live: Catch's publication policy review (#2063), or nothing saved. */
+  notLiveReason: "policyReview" | "nothingSaved" | null;
+}
+
+/** The server's tracking response. Live only when both `enabled` and `publicationAllowed` are true. */
+interface RawTrackingSettings {
+  organizerId: string; revision: number; metaPixelId?: string | null; googleMeasurementId?: string | null;
+  canEdit?: boolean; enabled?: boolean; publicationAllowed?: boolean;
+}
+
+export function ownerTrackingSettings(raw: RawTrackingSettings): OwnerTrackingSettings {
+  const metaPixelId = raw.metaPixelId ?? null;
+  const googleMeasurementId = raw.googleMeasurementId ?? null;
+  const saved = metaPixelId !== null || googleMeasurementId !== null;
+  const live = saved && raw.enabled === true && raw.publicationAllowed === true;
+  return {organizerId: raw.organizerId, revision: raw.revision, metaPixelId, googleMeasurementId,
+    canEdit: raw.canEdit === true, live, notLiveReason: live ? null : saved ? "policyReview" : "nothingSaved"};
 }
 
 const roles: readonly string[] = ["owner", "editor", "analyst"];
