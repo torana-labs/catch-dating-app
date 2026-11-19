@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/hosts/organizer/settings_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
@@ -128,7 +129,10 @@ class OrganizerSettingsBody extends StatelessWidget {
         CatchButton(
           key: const ValueKey<String>('settings-sign-out'),
           label: l10n.hostOrganizerSettingsSignOut,
-          variant: CatchButtonVariant.danger,
+          // The drawing signs out from a white outlined button in red text,
+          // not a filled destructive one.
+          variant: CatchButtonVariant.secondary,
+          foregroundColor: CatchTokens.of(context).danger,
           fullWidth: true,
           onPressed: busy
               ? null
