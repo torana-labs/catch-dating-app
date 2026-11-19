@@ -7,10 +7,13 @@ import type {StoreCtaCopy} from "./types";
 /**
  * True once the guest app is on either store (packages/brand/brand.json).
  * Until then every "Get the app" button reads "Get notified" and leads to
- * the homepage's app band, so no primary button ends at "Coming soon".
+ * the guest app page (/app/), whose form asks for one WhatsApp message on
+ * launch, so no primary button ends at "Coming soon".
  */
 export const guestAppLive = Boolean(brand.stores.consumer.ios || brand.stores.consumer.android);
 export const guestAppActionLabel = guestAppLive ? "Get the app" : "Get notified";
+/** The guest app page (/app/, a playbook page): every "Get the app" link off the homepage goes here. */
+export const guestAppHref = "/app/";
 
 /** A WhatsApp chat on the support number in brand.json, with the message already typed. */
 export function whatsappChatHref(message: string) {
@@ -82,6 +85,9 @@ const reportListingLink = {href: "/listings/request/", label: "Report or remove 
 export const hostWalkthroughHref = "/host/walkthrough/";
 const aboutLink = {href: "/about/", label: "About"} as const;
 const safetyLink = {href: "/safety/", label: "Safety"} as const;
+/** The free host tools and guides under Resources (the canvas's Resources menu and footer column). */
+const noShowCalculatorLink = {href: "/tools/no-show-calculator/", label: "No-show calculator"} as const;
+const hostPlaybooksLink = {href: "/playbooks/", label: "Host playbooks"} as const;
 
 /**
  * The host product pages (product pages v2), in the canvas's order. Each is a
@@ -124,7 +130,7 @@ export const publicSiteCopy = {
   forHosts: forHostsLink,
   nav: [whatsOnLink, forHostsLink],
   /** The general pages' one primary action, the homepage's own. */
-  getApp: {label: guestAppActionLabel, href: "/#app"},
+  getApp: {label: guestAppActionLabel, href: guestAppHref},
   footerOperator: publishedLegalContent.ui.footerBody,
   /** The footer control that reopens the consent banner. */
   privacyChoices: marketingConsentPreferencesCopy.preferences,
@@ -134,8 +140,10 @@ export const publicSiteCopy = {
  * The header variants (the playbook kit's KitHeader). Every variant starts
  * with the wordmark; What's on leads guest and host pages unless the page
  * hides it. Link only pages that exist in design/website/routes.json:
- * Resources gains host stories, host playbooks, compare, the no-show
- * calculator and the event page from a link once those pages ship.
+ * Resources is Help alone, a plain link; the canvas's Resources menu (host
+ * stories, host playbooks, compare, the no-show calculator and the event
+ * page from a link) is a separate change to the bar. The playbooks and the
+ * calculator are in the host footer's Resources column meanwhile.
  */
 export const siteHeaderCopy = {
   /** The breadcrumb row's accessible name. */
@@ -148,7 +156,7 @@ export const siteHeaderCopy = {
     nav: [safetyLink, forHostsLink] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
     /** The city's new-to-the-city page (/new-to-<city>/), after What's on. */
     newToCity: "New to {city}",
-    action: {href: "/#app", label: guestAppActionLabel},
+    action: {href: guestAppHref, label: guestAppActionLabel},
   },
   /**
    * Host pages: What's on, the For hosts menu (the canvas's columns:
@@ -215,7 +223,7 @@ export const siteFooterCopy = {
   },
   explore: [
     whatsOnLink,
-    {href: "/#app", label: guestAppActionLabel},
+    {href: guestAppHref, label: guestAppActionLabel},
   ],
   /** Explore's Safety link, after What's on and the page's New to the city. */
   safety: safetyLink,
@@ -233,9 +241,10 @@ export const siteFooterCopy = {
    * The host footer's five columns on every host page (the canvas's KitFooter
    * host columns, as the product pages v2 drew them): the product pages,
    * the organiser type pages, the ways to start, resources and the brand's
-   * column with the listing request and the legal links. Pages the canvas
-   * names that are not built yet (host stories, compare, the no-show
-   * calculator, refer a host, event page from a link) join when they ship.
+   * column with the listing request and the legal links. Resources lists
+   * Forms, the host playbooks, the no-show calculator, the walkthrough and
+   * Help; pages the canvas names that are not built yet (host stories,
+   * compare, refer a host, event page from a link) join when they ship.
    */
   host: {
     columns: [
@@ -263,7 +272,7 @@ export const siteFooterCopy = {
         {href: hostDemoHref, label: "Try a demo night"},
         {href: programmesHref, label: "Programmes"},
       ]},
-      {title: "Resources", links: [productPageLinks.forms, {href: hostWalkthroughHref, label: "Book a walkthrough"}, helpLink]},
+      {title: "Resources", links: [productPageLinks.forms, hostPlaybooksLink, noShowCalculatorLink, {href: hostWalkthroughHref, label: "Book a walkthrough"}, helpLink]},
       {title: brand.name, links: [
         whatsOnLink, aboutLink, safetyLink, {href: "/contact/", label: "Contact"}, reportListingLink,
         {href: "/terms/", label: "Terms"}, {href: "/privacy/", label: "Privacy"}, {href: "/refunds/", label: "Refunds"},
@@ -299,7 +308,7 @@ export const siteFooterCopy = {
  */
 export const publicPageChromeCopy = {
   getApp: guestAppActionLabel,
-  getAppHref: "/#app",
+  getAppHref: guestAppHref,
   wordmark: brand.name,
   footerLabel: "Site links",
   footerLinks: [

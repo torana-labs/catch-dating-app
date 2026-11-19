@@ -1,4 +1,5 @@
 import type {PlaybookPageDocument, PlaybookSectionOf, PlaybookSectionType} from "../../content/playbook/playbookContract.ts";
+import {publishedHostStories} from "../../content/stories/hostStories.ts";
 import {readyPlaybookCustomComponents} from "./custom/readyCustomSections.ts";
 
 /**
@@ -14,11 +15,12 @@ export type BoundPlaybookSectionType = Exclude<PlaybookSectionType, PendingPlayb
 
 /**
  * The card sources the cards section draws (CatchCardGrid): the market's
- * cities, from the catalog. The other sources (plans, organisers, stories,
+ * cities, from the catalog, and the published host stories
+ * (content/stories/hostStories.ts). The other sources (plans, organisers,
  * playbook guides, people) have no adapter to their read model yet, so a
  * page naming one is not rendered.
  */
-export const readyPlaybookCardSources = ["cities"] as const satisfies readonly PlaybookCardSourceKind[];
+export const readyPlaybookCardSources = ["cities", "stories"] as const satisfies readonly PlaybookCardSourceKind[];
 type PlaybookCardSourceKind = PlaybookSectionOf<"cards">["source"]["kind"];
 
 /**
@@ -44,6 +46,8 @@ export function pendingPlaybookBindings(page: PlaybookPageDocument): string[] {
     if (section.type === "cards") {
       const readySources: readonly string[] = readyPlaybookCardSources;
       if (!readySources.includes(section.source.kind)) pending.add(`cards:${section.source.kind}`);
+      // A stories band never renders empty: a page of host stories needs real ones (content/stories/README.md).
+      if (section.source.kind === "stories" && publishedHostStories.length === 0) pending.add("cards:stories");
       if (section.filters) pending.add("cardsFilters" satisfies PendingPlaybookFeature);
     }
     const ready: readonly string[] = readyPlaybookCustomComponents;

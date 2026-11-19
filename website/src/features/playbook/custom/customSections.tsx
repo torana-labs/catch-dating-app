@@ -1,6 +1,8 @@
 import type {ComponentType} from "react";
 import type {PlaybookSectionOf} from "../../../content/playbook/playbookContract";
 import type {CaptureSlots} from "../../../shared/media/captureSlot";
+import {AppLaunchNotice} from "../../marketing/AppLaunchNotice";
+import {NoShowCalculator} from "../../marketing/NoShowCalculator";
 import {PricingFeeCalculator} from "../../marketing/PricingFeeCalculator";
 import {PricingCapBand, PricingExamplesBand, PricingFeeBand, PricingIncludedBand, PricingOrganisationsBand} from "../../marketing/PricingBands";
 import type {PlaybookPageController} from "../usePlaybookPageController";
@@ -62,6 +64,18 @@ function PricingOrganisationsSection({section, labels, controller}: PlaybookCust
   return <PricingOrganisationsBand actions={actions} ground={section.ground} id={section.id} kicker={section.kicker} lead={section.lead} title={section.title} />;
 }
 
+/** /tools/no-show-calculator/'s calculator (noShowCalculator): the host's own numbers in, what no-shows cost out, with its words from its labels. */
+function NoShowCalculatorSection({section, labels}: PlaybookCustomSectionProps) {
+  if (section.type !== "custom") return null;
+  return <NoShowCalculator ground={section.ground} id={section.id} kicker={section.kicker} labels={labels} lead={section.lead} pageTitle={section.pageTitle} title={section.title} />;
+}
+
+/** /app/'s launch notice (appLaunchNotice): the homepage's app notice form, with a city picker; its city label from its labels. */
+function AppLaunchNoticeSection({section, labels}: PlaybookCustomSectionProps) {
+  if (section.type !== "custom") return null;
+  return <AppLaunchNotice ground={section.ground} id={section.id} kicker={section.kicker} labels={labels} lead={section.lead} title={section.title} />;
+}
+
 /**
  * The closed registry of custom section components, by the key a page names
  * (`"component": "noShowCalculator"`, or a pricing section's
@@ -74,4 +88,6 @@ export const playbookCustomSections: {readonly [K in ReadyPlaybookCustomComponen
   pricingCap: PricingCapSection,
   pricingIncluded: PricingIncludedSection,
   pricingOrganisations: PricingOrganisationsSection,
+  noShowCalculator: NoShowCalculatorSection,
+  appLaunchNotice: AppLaunchNoticeSection,
 };

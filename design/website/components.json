@@ -1552,7 +1552,13 @@
           "product-event",
           "product-guests",
           "product-reports",
-          "product-forms"
+          "product-forms",
+          "no-show-calculator",
+          "playbooks",
+          "playbook-guide",
+          "app",
+          "stories-fixture",
+          "story-fixture"
         ]
       },
       "notes": "Every redesign page (design/website/routes.json contentFamily routes), drawn from its content file under website/src/content/playbook/pages/ by the playbook renderer: the site header in the page's variant, each section through its kit component (features/playbook/PlaybookSections.tsx) and the site footer. A route without a page, or whose page uses a section no kit component draws yet, is a 404. Sections and actions whose product brief status is not built stay in the content file, hidden (show-when-live, livePlaybookPage). The route stories render /host/run-clubs/, /pricing/, /about/, /host/start/, /host/first-event/, /host/switch/, /programmes/ and the nine product pages v2 at 1280 and at 390."
@@ -7098,6 +7104,57 @@
         ]
       },
       "notes": "'Who runs them' on Explore and the city-by-format pages (the kit's KitCards org band on the tint panel): CatchOrganizerCard on its white ground as the kit's Follow card, whose Follow opens the organiser's page (where following happens), then a mint CatchFeatureTile for an organiser who is not listed."
+    },
+    {
+      "id": "no_show_calculator",
+      "kind": "supporting-component",
+      "routeIds": [
+        "tools_no_show_calculator"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/NoShowCalculator.tsx",
+      "exportName": "NoShowCalculator",
+      "css": [
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchBarIndicator.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchMetricTile.module.css",
+        "packages/web-ui/src/components/CatchRangeInput.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/NoShowCalculator.stories.tsx",
+        "exportName": "PaidEvent",
+        "states": [
+          "paid",
+          "free"
+        ]
+      },
+      "notes": "The no-show calculator on /tools/no-show-calculator/ (the playbook page's noShowCalculator custom section, PlaybookNoShow board): the host's own places or tickets, events a month, ticket price (or on a free event what each held place costs) and no-show rate, then what no-shows cost per event and per month and the same sums at a what-if rate the host slides to. Every figure is worked out from the host's inputs (noShowCalculatorModel.ts); the page states no rate, benchmark or result of its own. Its words come from the section's labels; the fee line is the shared fee model's (website/src/content/pricing.ts). It owns its state (useNoShowCalculator)."
+    },
+    {
+      "id": "app_launch_notice",
+      "kind": "supporting-component",
+      "routeIds": [
+        "app_notify"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/AppLaunchNotice.tsx",
+      "exportName": "AppLaunchNotice",
+      "css": [
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchField.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/AppLaunchNotice.stories.tsx",
+        "exportName": "AppLaunchNoticeForm",
+        "states": [
+          "form"
+        ]
+      },
+      "notes": "/app/'s Get notified band (the playbook page's appLaunchNotice custom section, PlaybookStart board's app state): a WhatsApp number and a city picker for one WhatsApp message the day the guest app is on the stores, and new plans in that city only if ticked. It sends the homepage app band's request through the same controller (features/marketing/useAppNoticeController: joinWaitlist with whatsapp.launchNotice and notice appLaunch) with the homepage's consent line and version (app-launch-whatsapp-v1)."
     }
   ]
 }

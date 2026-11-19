@@ -1,5 +1,6 @@
 import {expect, fireEvent, within} from "storybook/test";
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {CatchCardGrid, CatchRoot} from "@catch/web-ui";
 import {applyBrand} from "@content/brand";
 import runClubs from "@content/playbook/pages/host/run-clubs.json";
 import firstEvent from "@content/playbook/pages/host/first-event.json";
@@ -17,11 +18,19 @@ import reports from "@content/playbook/pages/product/reports.json";
 import room from "@content/playbook/pages/product/room.json";
 import yourPage from "@content/playbook/pages/product/your-page.json";
 import about from "@content/playbook/pages/resources/about.json";
+import app from "@content/playbook/pages/resources/app.json";
+import playbookRunClub from "@content/playbook/pages/resources/playbook-run-club.json";
+import playbooks from "@content/playbook/pages/resources/playbooks.json";
+import stories from "@content/playbook/pages/resources/stories.json";
+import noShowCalculator from "@content/playbook/pages/resources/tools-no-show-calculator.json";
+import {playbookCopy} from "@content/playbook/playbookCopy";
 import {livePlaybookPage, validatedPlaybookPage, type PlaybookPageDocument} from "@content/playbook/playbookContract";
 import {hostFeeCalculatorCopy} from "@content/pricing";
 import {marketingCaptures} from "../app/marketingCaptures";
+import {hostStoryCards} from "../features/marketing/hostStoryCards";
 import {PlaybookPage} from "../features/playbook/PlaybookPage";
 import {PageShell} from "../shared/site";
+import {fixtureHostStories, fixtureHostStoryPage} from "./fixtures/hostStories";
 
 const meta = {
   title: "Marketing Website/Playbook pages",
@@ -368,4 +377,100 @@ export const ProductForms390: Story = {
   name: "/product/forms/ · 390",
   parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_forms"], states: ["product-forms"]}},
   render: () => <PlaybookAt page={formsPage} width={390} />,
+};
+
+// Resources: the no-show calculator, the host playbooks, the guest app page, and the shelved stories pages with fictional fixtures.
+// The pages as the renderer gets them: validated, with their brand tokens resolved.
+const calculatorPage = applyBrand(validatedPlaybookPage(noShowCalculator));
+const playbooksPage = applyBrand(validatedPlaybookPage(playbooks));
+const runClubGuidePage = applyBrand(validatedPlaybookPage(playbookRunClub));
+const appPage = applyBrand(validatedPlaybookPage(app));
+const storiesPage = applyBrand(validatedPlaybookPage(stories));
+const storyFixturePage = applyBrand(validatedPlaybookPage(fixtureHostStoryPage));
+
+
+/** The PlaybookNoShow board: the hero, the calculator, the sums in plain words, what you can change and the closing band. */
+export const NoShowCalculatorPage: Story = {
+  name: "/tools/no-show-calculator/ · 1280",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["tools_no_show_calculator"], states: ["no-show-calculator"]}},
+  render: () => <PlaybookAt page={calculatorPage} width={1280} />,
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("heading", {level: 1, name: "What do empty places cost you?"})).toBeInTheDocument();
+    await expect(canvas.getByRole("status")).toHaveTextContent("At 20%, no-shows cost you ₹16,000 a month.");
+    await expect(canvas.getAllByRole("link", {name: "Book a walkthrough"}).every((link) => link.getAttribute("href") === "/host/walkthrough/")).toBe(true);
+  },
+};
+/** The PlaybookNoShow390 board: the calculator's two columns stack. */
+export const NoShowCalculatorPage390: Story = {
+  name: "/tools/no-show-calculator/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["tools_no_show_calculator"], states: ["no-show-calculator"]}},
+  render: () => <PlaybookAt page={calculatorPage} width={390} />,
+};
+
+/** The PlaybookPlaybooks board without its readership card and city band: the intro and one tile per guide. */
+export const PlaybooksHub: Story = {
+  name: "/playbooks/ · 1280",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["playbooks"], states: ["playbooks"]}},
+  render: () => <PlaybookAt page={playbooksPage} width={1280} />,
+};
+export const PlaybooksHub390: Story = {
+  name: "/playbooks/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["playbooks"], states: ["playbooks"]}},
+  render: () => <PlaybookAt page={playbooksPage} width={390} />,
+};
+
+/** The PlaybookGuide board, city-neutral: the article with its contents, the pricing aside, keep reading and the closing band. */
+export const RunClubGuide: Story = {
+  name: "/playbooks/run-club/ · 1280",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["playbook_guide"], states: ["playbook-guide"]}},
+  render: () => <PlaybookAt page={runClubGuidePage} width={1280} />,
+};
+export const RunClubGuide390: Story = {
+  name: "/playbooks/run-club/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["playbook_guide"], states: ["playbook-guide"]}},
+  render: () => <PlaybookAt page={runClubGuidePage} width={390} />,
+};
+
+/** The PlaybookStart board's app state: the guest app is coming, with the homepage's launch notice. */
+export const AppPage: Story = {
+  name: "/app/ · 1280",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["app_notify"], states: ["app"]}},
+  render: () => <PlaybookAt page={appPage} width={1280} />,
+};
+export const AppPage390: Story = {
+  name: "/app/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["app_notify"], states: ["app"]}},
+  render: () => <PlaybookAt page={appPage} width={390} />,
+};
+
+/**
+ * /stories/ is shelved (not served) until real stories exist. This is its
+ * stories band with fictional fixture stories, then the rest of the page;
+ * the shipped page draws no story and does not render without real ones.
+ */
+export const StoriesShelvedWithFixtures: Story = {
+  name: "/stories/ · shelved · fictional stories",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["stories"], states: ["stories-fixture"]}},
+  render: () => {
+    const band = storiesPage.sections.find((section) => section.type === "cards");
+    return (
+      <div style={{margin: "0 auto", width: 1280}}>
+        <CatchRoot theme="day">
+          <CatchCardGrid columns={3} id="stories" items={hostStoryCards(fixtureHostStories, playbookCopy.storyFigure)} kicker={band?.kicker}
+            kind="story" lead={band?.lead} level={2} title={band?.title} />
+        </CatchRoot>
+        <PageShell pageClassName="home-page">
+          <PlaybookPage captures={marketingCaptures} page={{...storiesPage, sections: storiesPage.sections.filter((section) => section.type !== "cards")}} />
+        </PageShell>
+      </div>
+    );
+  },
+};
+
+/** A fictional story page (story_detail), the template a real story fills: never registered, Storybook only. */
+export const StoryPageFixture: Story = {
+  name: "/stories/<slug>/ · fictional story",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["story_detail"], states: ["story-fixture"]}},
+  render: () => <PlaybookAt page={storyFixturePage} width={1280} />,
 };
