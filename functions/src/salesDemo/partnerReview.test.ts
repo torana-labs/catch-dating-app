@@ -663,14 +663,11 @@ test(
     );
     const demoReceipt = owner.fake
       .entries()
-      .find(([p]) => p.startsWith("salesDemoReceipts/"))![1];
-    const demoReceiptValidator = ajv.compile(
-      contractFile("firestore/sales_demo_receipts.schema.json"),
-    );
-    assert.equal(
-      demoReceiptValidator(demoReceipt),
-      true,
-      JSON.stringify(demoReceiptValidator.errors),
+      .find(([p]) => p.startsWith("commandReceipts/salesDemo_"))![1];
+    assert.equal(demoReceipt.command, "salesDemo");
+    assert.deepEqual(
+      Object.keys(demoReceipt).sort(),
+      ["command", "createdAt", "expiresAt", "requestHash", "result"],
     );
   },
 );

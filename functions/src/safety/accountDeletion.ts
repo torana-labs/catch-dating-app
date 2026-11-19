@@ -376,7 +376,7 @@ async function queueParticipantPrivateStateCleanup(
   writer: BatchQueue
 ) {
   for (const collection of ["participantFormProfileProposals",
-    "participantOrganizerCards", "participantProfileClaimReceipts",
+    "participantOrganizerCards",
     "eventChatMemberships", "eventChatAccessReceipts",
     "eventChatReactions", "eventChatPresence", "eventChatProfileShares",
     "eventAssignmentFeatureConsents", "organizerCommunityMemberships",

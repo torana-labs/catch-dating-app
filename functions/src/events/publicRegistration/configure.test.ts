@@ -7,7 +7,11 @@ import type {
 } from "../../shared/generated/firestoreAdminTypes";
 import {actorUid} from "../../organizerFormAdmission/admissionTestFixture";
 import {publicFixture, now, org, eventId} from "./testFixture";
-import {configureEventRegistration} from "./configure";
+import {
+  classifyRegistrationReceipt,
+  configureEventRegistration,
+  registrationReceiptRef,
+} from "./configure";
 import {
   assertPublicRegistrationPolicy,
   publicRegistrationMode,
@@ -33,6 +37,13 @@ test("paid opt-in is explicit, revision-checked and replay-safe", async () => {
     });
   assert.equal((await change()).registrationRevision, 2);
   assert.equal((await change()).replayed, true);
+  // The callable's pre-read skips routing only for this exact request.
+  const prior = await h.store.db().runTransaction((tx) =>
+    tx.get(registrationReceiptRef(h.store.db(), command)));
+  assert.equal(classifyRegistrationReceipt(prior, actorUid, command, now),
+    "replay");
+  assert.equal(classifyRegistrationReceipt(prior, actorUid,
+    {...command, mode: "free"}, now), "conflict");
   assert.deepEqual(h.event.eventOrigin, {
     kind: "catchNative",
     label: "Original source",

@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_admin.dart';
-import 'package:catch_dating_app/contexts/payments/domain/host_membership_benefit_use.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_state.dart';
@@ -24,6 +23,7 @@ HostMembership widgetbookMembership({
   String status = 'active',
   String? pausedBy,
   bool cancelAtPeriodEnd = false,
+  int savedInPaise = 0,
 }) => HostMembership.fromMap(id, {
   'schemaVersion': 1,
   'organizerId': widgetbookMembershipOrganizerId,
@@ -58,6 +58,10 @@ HostMembership widgetbookMembership({
   'revision': 3,
   'createdAtMillis': 1,
   'updatedAtMillis': 1,
+  if (savedInPaise > 0) ...{
+    'savedInPaise': savedInPaise,
+    'memberPricedBookings': 2,
+  },
 });
 
 HostMembershipPlan widgetbookMembershipPlan({
@@ -107,34 +111,13 @@ final widgetbookMembershipPlans = [
   ),
 ];
 
-HostMembershipBenefitUse widgetbookMembershipBenefitUse(
-  String eventId,
-  int savingsInPaise,
-) => HostMembershipBenefitUse.fromMap(
-  '${eventId}_$widgetbookMembershipViewerUid',
-  {
-    'schemaVersion': 1,
-    'membershipId': widgetbookMembershipId,
-    'organizerId': widgetbookMembershipOrganizerId,
-    'uid': widgetbookMembershipViewerUid,
-    'eventId': eventId,
-    'planId': widgetbookMembershipPlanId,
-    'listPriceInPaise': savingsInPaise,
-    'paidPriceInPaise': 0,
-    'savingsInPaise': savingsInPaise,
-    'eventStartMillis': 1,
-    'state': 'booked',
-    'createdAtMillis': 1,
-  },
-);
-
 MyMembershipsState widgetbookMyMembershipsState({
   bool empty = false,
 }) => MyMembershipsState.from(
   memberships: empty
       ? const []
       : [
-          widgetbookMembership(),
+          widgetbookMembership(savedInPaise: 85000),
           widgetbookMembership(
             id: 'hm_cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
             planName: 'Track Club',
@@ -146,12 +129,6 @@ MyMembershipsState widgetbookMyMembershipsState({
             planName: 'Trail Crew',
             status: 'expired',
           ),
-        ],
-  benefitUses: empty
-      ? const []
-      : [
-          widgetbookMembershipBenefitUse('event-a', 50000),
-          widgetbookMembershipBenefitUse('event-b', 35000),
         ],
 );
 

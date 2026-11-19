@@ -5,7 +5,8 @@ import type {Firestore} from "firebase-admin/firestore";
 import {FakeFirestore} from "../../operations/testFirestore";
 import type {RuntimeFieldId} from "../runtimeProfile";
 import {EventRuntimeRequiredDataStore, RUNTIME_DATA_REQUESTS,
-  RUNTIME_DATA_REQUEST_RECEIPTS} from "./runtimeRequiredDataStore";
+  REQUEST_REQUIRED_DATA_COMMAND} from "./runtimeRequiredDataStore";
+import {COMMAND_RECEIPTS} from "../../shared/commandReceipts";
 
 const now = Date.parse("2026-05-15T12:00:00.000Z");
 const stamp = (at: number) => ({_seconds: Math.floor(at / 1000),
@@ -99,8 +100,8 @@ test("one source-fenced command writes a request and immutable receipt",
     assert.deepEqual(applied.view.request?.fieldIds, ["paceBand"]);
     assert.equal(h.fake.entries().filter(([path]) =>
       path.startsWith(RUNTIME_DATA_REQUESTS + "/")).length, 1);
-    assert.equal(h.fake.entries().filter(([path]) =>
-      path.startsWith(RUNTIME_DATA_REQUEST_RECEIPTS + "/")).length, 1);
+    assert.equal(h.fake.entries().filter(([path]) => path.startsWith(
+      `${COMMAND_RECEIPTS}/${REQUEST_REQUIRED_DATA_COMMAND}_`)).length, 1);
     assert.deepEqual(h.fake.read("events/" + h.context.eventId), h.event);
     assert.deepEqual(h.fake.read("eventAttendees/" + h.attendeeId),
       h.attendee);
@@ -112,6 +113,12 @@ test("one source-fenced command writes a request and immutable receipt",
     await assert.rejects(h.store.request({...input,
       payload: {...input.payload, fieldIds: ["gender"]}}),
     {code: "aborted"});
+    // A repeat participant write re-derives the same operation with the moved
+    // request revision; it replays instead of conflicting.
+    const repeated = await h.store.request({...input, payload: {
+      ...input.payload, expectedRequestRevision: 1}});
+    assert.equal(repeated.outcome, "replayed");
+    assert.equal(repeated.operationRevision, 1);
   });
 
 test("profile, request and source revisions fence stale automation",

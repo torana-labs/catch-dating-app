@@ -4,7 +4,7 @@
   "title": "OperationActionReceipt",
   "x-firestore-collection": "operationActionReceipts",
   "x-firestore-path": "operationActionReceipts/{actionId}",
-  "description": "Append-only evidence for one attempted work-item action.",
+  "description": "Append-only evidence for one attempted work-item action. Kept as its own collection (L8 decision, 18 Nov 2026): append-only audit of Operations actions; checkpoint verification and the takedown tool read it.",
   "type": "object",
   "additionalProperties": false,
   "required": [

@@ -97,14 +97,14 @@ export const adminListSalesDemoInvitations = onCall(
   async (request) => adminListInvitations(deps(), identity(request),
     request.data));
 
-/** Bounded cleanup of expired synthetic state and trial receipts. */
+/** Bounded cleanup of expired synthetic sessions and continuations. Request
+ * replay receipts live in commandReceipts and expire by its TTL policy. */
 export const expireSalesDemos = onSchedule({schedule: "every 60 minutes",
   timeZone: "UTC", maxInstances: 1}, async () => {
   const db = admin.firestore();
   const cutoff = new Date().toISOString();
   const collections = [
     "salesDemoSessions",
-    "salesDemoReceipts",
     "salesDemoContinuations",
   ];
   for (const collection of collections) {

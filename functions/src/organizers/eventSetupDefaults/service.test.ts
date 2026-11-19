@@ -51,6 +51,7 @@ function harness() {
     db: db as unknown as FirebaseFirestore.Firestore,
     serverTimestamp: () => "server-time" as unknown as
       FirebaseFirestore.FieldValue,
+    nowMillis: () => Date.UTC(2026, 10, 19),
     validateAndHashPreferences: eventSetupDefaultsDependencies(
       db as unknown as FirebaseFirestore.Firestore
     ).validateAndHashPreferences,
@@ -93,6 +94,13 @@ test("manager reads coherent public and private defaults", async () => {
   assert.deepEqual(h.rows.get("organizerEventOffers/historical"),
     {status: "offered"});
   assert.equal(h.writes, 2);
+  const receipts = [...h.rows].filter(([path]) => path.startsWith(
+    "commandReceipts/updateOrganizerEventSetupDefaults_"));
+  assert.equal(receipts.length, 1);
+  const receipt = receipts[0][1];
+  assert.deepEqual(receipt.result, {appliedRevision: 1});
+  assert.equal(receipt.command, "updateOrganizerEventSetupDefaults");
+  assert.equal("actorUid" in receipt, false);
 });
 
 test("CAS, replay and mismatched reuse preserve later choices", async () => {

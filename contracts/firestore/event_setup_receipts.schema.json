@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_setup_receipts.schema.json",
   "title": "EventSetupReceiptDocument",
-  "description": "Kept as its own collection (L8 decision, 18 Nov 2026): the receipt carries seat-migration workflow state that reconciliation reads, so it is not pure replay.",
+  "description": "Kept as its own collection (L8 decision, 18 Nov 2026): it holds setup workflow state; seat reconciliation and details read discarded receipts.",
   "type": "object",
   "additionalProperties": false,
   "required": [
