@@ -109,7 +109,7 @@ void main() {
           copy: _copy,
           title: 'Venue',
           initialValue: 'Harbour hall',
-          leading: const Icon(CatchIcons.location),
+          leading: Icon(CatchIcons.location),
           showClearButton: true,
         ),
       ),
