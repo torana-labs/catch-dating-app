@@ -127,7 +127,8 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
         ]
       },
       "runbook": "tool/README.md#google-ads-campaigns"
@@ -154,7 +155,8 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
         ]
       },
       "runbook": "docs/ads_conversion_spec.md"
