@@ -71,11 +71,11 @@ class HostAnalyticsMetricTile extends StatelessWidget {
                 locale,
               ).format(value.round()),
               HostAnalyticsFigure.money => NumberFormat.compactSimpleCurrency(
-                locale: locale,
+                locale: _moneyLocale(locale, currencyCode),
                 name: currencyCode,
               ).format(value / 100),
               HostAnalyticsFigure.moneyExact => NumberFormat.simpleCurrency(
-                locale: locale,
+                locale: _moneyLocale(locale, currencyCode),
                 name: currencyCode,
                 decimalDigits: 0,
               ).format(value / 100),
@@ -110,3 +110,9 @@ int? hostAnalyticsChangePercent(num value, num? previous) {
   if (previous == null || previous <= 0) return null;
   return ((value - previous) / previous * 100).round();
 }
+
+/// Rupees in English group the Indian way: ₹1.48L, not ₹148K.
+String _moneyLocale(String locale, String? currencyCode) =>
+    currencyCode == 'INR' && locale.split(RegExp('[-_]')).first == 'en'
+    ? 'en_IN'
+    : locale;

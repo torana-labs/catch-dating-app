@@ -36,6 +36,11 @@ void main() {
             note: 'from 24 payments',
           ),
           HostAnalyticsMetricTile(
+            label: 'Bookings',
+            value: 14800000,
+            currencyCode: 'INR',
+          ),
+          HostAnalyticsMetricTile(
             label: 'Rating',
             value: 4.75,
             figure: HostAnalyticsFigure.rating,
@@ -46,6 +51,7 @@ void main() {
     );
 
     expect(find.text('₹12,974'), findsOneWidget);
+    expect(find.text('₹1.48L'), findsOneWidget);
     expect(find.text('from 24 payments'), findsOneWidget);
     expect(find.textContaining('Up'), findsNothing);
     expect(find.text('4.8'), findsOneWidget);
