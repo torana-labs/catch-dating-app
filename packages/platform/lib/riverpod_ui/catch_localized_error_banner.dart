@@ -48,7 +48,8 @@ class CatchLocalizedErrorBanner extends StatelessWidget {
       message: descriptor.message,
       retryLabel: context.l10n.coreCatchErrorBannerLabelTryAgain,
       // Caller recovery is authoritative; metadata cannot infer every action.
-      onRetry: onRetry,
+      // An unconfirmed write offers none: a repeat could apply it twice.
+      onRetry: isUnconfirmedWrite(error) ? null : onRetry,
     );
   }
 }
