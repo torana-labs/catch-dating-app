@@ -397,7 +397,8 @@ export const NoShowCalculatorPage: Story = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole("heading", {level: 1, name: "What do empty places cost you?"})).toBeInTheDocument();
-    await expect(canvas.getByRole("link", {name: "Book a walkthrough"})).toHaveAttribute("href", "/host/walkthrough/");
+    await expect(canvas.getByRole("status")).toHaveTextContent("At 20%, no-shows cost you ₹16,000 a month.");
+    await expect(canvas.getAllByRole("link", {name: "Book a walkthrough"}).every((link) => link.getAttribute("href") === "/host/walkthrough/")).toBe(true);
   },
 };
 /** The PlaybookNoShow390 board: the calculator's two columns stack. */
