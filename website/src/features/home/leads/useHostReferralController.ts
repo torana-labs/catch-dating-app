@@ -1,11 +1,12 @@
 import {type FormEvent, useState} from "react";
 import {homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
-import {activeMarket} from "@content/markets";
 import {websiteLeadCopy} from "@content/websiteLead";
-import {websiteLeadPhone, type WebsiteLeadSubmission} from "../../../shared/api/websiteLead";
+import {type WebsiteLeadSubmission} from "../../../shared/api/websiteLead";
 import {useWebsiteLeadController} from "../../marketing/useWebsiteLeadController";
 import {homeLeadCityFields, type HomeLeadCity} from "./homeLeadCity";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 export type HostReferralField = "fullName" | "phone" | "hostName" | "hostLink" | "relationship";
 type Answers = Record<HostReferralField, string>;
@@ -18,7 +19,7 @@ function referralProblems(answers: Answers): Partial<Record<HostReferralField, s
   const problems: Partial<Record<HostReferralField, string>> = {};
   // The intake needs at least two letters of a name.
   if (typed(answers.fullName).length < 2) problems.fullName = copy.refer.required.fullName;
-  if (!websiteLeadPhone(answers.phone, activeMarket.dialCode)) problems.phone = websiteLeadCopy.problems.invalid_phone;
+  if (!catchPhoneE164(answers.phone, activePhoneCountry)) problems.phone = websiteLeadCopy.problems.invalid_phone;
   if (!typed(answers.hostName)) problems.hostName = copy.refer.required.hostName;
   if (!typed(answers.hostLink)) problems.hostLink = copy.refer.required.hostLink;
   if (!typed(answers.relationship)) problems.relationship = copy.refer.required.relationship;

@@ -35,6 +35,7 @@ export const publicFormsCopy = {
   phoneCountryLabel: "Country code",
   phoneOtherCountry: "Other country code",
   phoneNationalPlaceholder: "98765 43210",
+  phoneInvalid: "Check your mobile number.",
   editPhone: "Edit number",
   phoneVerificationHelp: `Verify now to bring in your saved ${brand.name} details. You can keep filling the form while the code arrives.`,
   phoneVerificationRequired: "Verify your mobile number before submitting. Your answers are still here.",

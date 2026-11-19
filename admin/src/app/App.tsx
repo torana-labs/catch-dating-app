@@ -186,7 +186,10 @@ function AdminRouteApp() {
   }, [canResolveNavigation, currentNav, navigate, route.redirect, routeNav]);
 
   const handleRequestPhoneCode = useCallback(async () => {
-    const normalizedPhoneNumber = normalizeAdminPhoneNumber(phoneNumber);
+    // A number without a dialling code is read as Indian; the hint shows +91.
+    // The check's country metadata loads here, off the initial bundle.
+    const {catchPhoneE164} = await import("@catch/web-ui/phone");
+    const normalizedPhoneNumber = catchPhoneE164(phoneNumber, "IN");
     if (!normalizedPhoneNumber) {
       setAuthError(
         "Enter a valid phone number with country code, such as +91 90000 00000."
@@ -378,11 +381,6 @@ function hasAnyAdminRole(
   allowedRoles: readonly AdminRoleClaim[]
 ): boolean {
   return allowedRoles.some((role) => roles.includes(role));
-}
-
-function normalizeAdminPhoneNumber(value: string): string | null {
-  const normalized = value.replace(/[\s()-]+/gu, "");
-  return /^\+[1-9]\d{7,14}$/u.test(normalized) ? normalized : null;
 }
 
 function SignInScreen({

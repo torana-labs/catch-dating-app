@@ -20,6 +20,8 @@ import {type SalesDemoAuth, type SalesDemoPhoneChallenge, websiteSalesDemoAuth} 
 import type {SalesDemoContinuation, SalesDemoContinuationApi} from "../../shared/domain/salesDemoHandoff";
 import {salesDemoFormEditorUrl} from "../../shared/domain/salesDemoHandoff";
 import {useDemoContinuationController} from "./useDemoContinuationController";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 const continuationApi: SalesDemoContinuationApi = {
   get: (input) => invokeSalesDemoCallable("getSalesDemoContinuation", input),
@@ -47,7 +49,7 @@ function ContinuationWorkspace({continuationId, api, auth}: {
     try {
       if (challenge) {
         await challenge.confirm(code.trim()); setChallenge(null); setCode(""); setPhone("");
-      } else setChallenge(await auth.beginPhone(phone.trim(), "continuation-recaptcha"));
+      } else setChallenge(await auth.beginPhone(catchPhoneE164(phone, activePhoneCountry) ?? phone.trim(), "continuation-recaptcha"));
     } catch (error) {setAuthError(claimAccountLinkingErrorMessage(error, continuationCopy.restartContact));}
     finally {setSigningIn(false);}
   };
@@ -82,7 +84,7 @@ function ContinuationWorkspace({continuationId, api, auth}: {
       onChanged={(value) => setCode(value)}
       keyboardType="number"
     /> : null}
-    <Button disabled={signingIn || (challenge ? !code.trim() : !/^\+[1-9][0-9]{7,14}$/u.test(phone.trim()))}
+    <Button disabled={signingIn || (challenge ? !code.trim() : catchPhoneE164(phone, activePhoneCountry) === null)}
       onClick={() => void verifyPhone()}>{challenge ? continuationCopy.verifyPhone : continuationCopy.sendCode}</Button>
     {challenge ? <Button disabled={signingIn} onClick={() => {setChallenge(null); setCode("");}}>
       {continuationCopy.restartPhone}</Button> : null}

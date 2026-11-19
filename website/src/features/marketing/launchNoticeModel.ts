@@ -11,18 +11,6 @@ export type LaunchNoticeReceipt = Extract<JoinWaitlistHTTPResponse, {ok: true}>;
 /** How the site came to its city, as the waitlist contract records it (features/home/cityChoice's CitySource). */
 type CitySource = NonNullable<JoinWaitlistHTTPRequest["citySource"]>;
 
-/**
- * A typed mobile number as E.164, or null. A number without a dialling code
- * takes the market's, after dropping the trunk zero people often type.
- */
-export function launchNoticePhone(input: string, dialCode: string): string | null {
-  const typed = input.replace(/[\s().-]/gu, "");
-  const phone = typed.startsWith("+") ? typed :
-    typed.startsWith("00") ? `+${typed.slice(2)}` :
-      `${dialCode}${typed.replace(/^0/u, "")}`;
-  return /^\+[1-9][0-9]{7,14}$/u.test(phone) ? phone : null;
-}
-
 /** Which catalog city the notice is for, and how the site reached it. */
 export interface LaunchNoticePlace {
   readonly slug: string;

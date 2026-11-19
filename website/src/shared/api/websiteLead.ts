@@ -1,3 +1,4 @@
+import {catchPhoneE164, type CatchPhoneCountryCode} from "@catch/web-ui/phone";
 import {
   parseJoinWaitlistHttpResponse,
   type JoinWaitlistHTTPRequest,
@@ -79,18 +80,6 @@ export type WebsiteLeadOutcome =
   | {readonly status: "sent"; readonly leadId: string | null; readonly isNew: boolean}
   | {readonly status: WebsiteLeadProblem; readonly message: string};
 
-/**
- * A typed mobile number as E.164, or null. A number without a dialling code
- * takes the market's, after dropping the trunk zero people often type.
- */
-export function websiteLeadPhone(input: string, dialCode: string): string | null {
-  const typed = input.replace(/[\s().-]/gu, "");
-  const phone = typed.startsWith("+") ? typed :
-    typed.startsWith("00") ? `+${typed.slice(2)}` :
-      `${dialCode}${typed.replace(/^0/u, "")}`;
-  return /^\+[1-9][0-9]{7,14}$/u.test(phone) ? phone : null;
-}
-
 /** The page path the lead says it came from: the pathname alone, as the contract asks. */
 export function websiteLeadSourcePage(path: string): string {
   const pathname = path.split(/[?#]/u)[0] || "/";
@@ -150,8 +139,8 @@ async function siteReferrerIdToken(): Promise<string | null> {
 export interface WebsiteLeadSubmissionOptions {
   /** The words for each failure state, from the content layer. */
   readonly messages: WebsiteLeadMessages;
-  /** The market's dialling code for a number typed without one, such as +91. */
-  readonly dialCode: string;
+  /** The country a number typed without a dialling code is read in, such as "IN". */
+  readonly phoneCountry: CatchPhoneCountryCode;
   /** Supplies the X-Firebase-AppCheck token; the site's by default. */
   readonly appCheckToken?: () => Promise<string | null>;
   /**
@@ -188,7 +177,7 @@ const problemByStatus: Readonly<Record<number, WebsiteLeadProblem>> = {
  * referral also carries the signed-in referrer's ID token when there is one.
  */
 export function createWebsiteLeadSubmission(options: WebsiteLeadSubmissionOptions): WebsiteLeadSubmission {
-  const {messages, dialCode, appCheckToken = siteAppCheckToken, referrerIdToken = siteReferrerIdToken,
+  const {messages, phoneCountry, appCheckToken = siteAppCheckToken, referrerIdToken = siteReferrerIdToken,
     post = (...args) => fetch(...args), newRequestId = () => websiteLeadRequestId()} = options;
   let current: {signature: string; requestId: string} | null = null;
   const problem = (status: WebsiteLeadProblem): WebsiteLeadOutcome => ({status, message: messages[status]});
@@ -198,7 +187,7 @@ export function createWebsiteLeadSubmission(options: WebsiteLeadSubmissionOption
       current = null;
     },
     async submit(form) {
-      const phone = websiteLeadPhone(form.phone, dialCode);
+      const phone = catchPhoneE164(form.phone, phoneCountry);
       if (!phone) return problem("invalid_phone");
       const signature = JSON.stringify(websiteLeadRequest(form, phone, ""));
       if (current?.signature !== signature) current = {signature, requestId: newRequestId()};

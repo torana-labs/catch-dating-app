@@ -1,5 +1,7 @@
 import {interpolateContent as fill} from "@content/interpolate";
 import {weddingsCopy} from "@content/weddings";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 const stepOneCopy = weddingsCopy.stepOne;
 const stepTwoCopy = weddingsCopy.stepTwo;
@@ -60,11 +62,6 @@ export const initialStepTwoDraft: WeddingsStepTwoDraft = {
   heard: "",
 };
 
-/** An Indian mobile number: ten digits starting 6 to 9, spaces allowed. */
-export function isIndianMobile(phone: string) {
-  return /^[6-9]\d{9}$/u.test(phone.replace(/\s+/gu, ""));
-}
-
 /** What step 1 still needs, as the board words it. */
 export function stepOneErrors(draft: WeddingsStepOneDraft): WeddingsErrors<WeddingsStepOneDraft> {
   const errors: WeddingsErrors<WeddingsStepOneDraft> = {};
@@ -73,7 +70,7 @@ export function stepOneErrors(draft: WeddingsStepOneDraft): WeddingsErrors<Weddi
   if (!draft.what) errors.what = stepOneCopy.what.error;
   if (!draft.name.trim()) errors.name = stepOneCopy.name.error;
   if (!digits) errors.phone = stepOneCopy.phone.missing;
-  else if (!isIndianMobile(digits)) errors.phone = stepOneCopy.phone.invalid;
+  else if (!catchPhoneE164(draft.phone, activePhoneCountry)) errors.phone = stepOneCopy.phone.invalid;
   if (!/^\d{4}-\d{2}-\d{2}$/u.test(draft.date)) errors.date = stepOneCopy.date.error;
   if (!draft.destination.trim()) errors.destination = stepOneCopy.destination.error;
   if (!draft.guests) errors.guests = stepOneCopy.guests.error;

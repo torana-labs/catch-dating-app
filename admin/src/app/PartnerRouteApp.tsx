@@ -16,6 +16,7 @@ import {
   StatusBanner,
 } from "../shared/ui/AdminPrimitives";
 import {AdminFeatureLoadingState} from "./AdminLoadingState";
+import {catchPhoneE164} from "@catch/web-ui/phone";
 const PartnerWorkspaceScreen = lazy(() => import("../features/partners/ui/PartnerWorkspaceScreen")
   .then((m) => ({default: m.PartnerWorkspaceScreen})));
 
@@ -61,8 +62,9 @@ function PartnerSignIn({error: sessionError}: {error: string | null}) {
       }
       void run(async () => {await confirmPhoneSignInCode(value);});
     } else {
-      const value = phone.replace(/[\s()-]+/gu, "");
-      if (!/^\+[1-9]\d{7,14}$/u.test(value)) {
+      // A number without a dialling code is read as Indian; the hint shows +91.
+      const value = catchPhoneE164(phone, "IN");
+      if (!value) {
         setError("Enter a valid phone number with country code, such as +91 90000 00000."); return;
       }
       void run(async () => {
