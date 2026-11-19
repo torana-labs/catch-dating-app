@@ -34,6 +34,22 @@ export const onCityPlansOrganizerPageWritten = onDocumentWritten({
 });
 
 /**
+ * Settings → Discovery decides which organisers, plans and counts every city
+ * shows, so a change to it rebuilds every city.
+ */
+export const onDiscoverySettingsWritten = onDocumentWritten({
+  document: "discoverySettings/{settingsId}", retry: true,
+  memory: "512MiB", timeoutSeconds: 540,
+}, async (event) => {
+  const summary = await rebuildCities(admin.firestore());
+  logger.info("City plans rebuilt after discovery settings changed.", {
+    settingsId: event.params.settingsId, ...summary});
+  if (summary.failed.length) {
+    throw new Error(`${summary.failed.length} cities failed to rebuild.`);
+  }
+});
+
+/**
  * Hourly, every city rebuilds: plans move into the 14-day window, ended
  * plans leave it, and cities that have not launched pick up organisers.
  */

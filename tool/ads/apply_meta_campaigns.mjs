@@ -113,6 +113,11 @@ export function loadMetaCampaigns(file = POLICY_PATH, catalog = readMarketCatalo
     if (!(Number.isInteger(targeting.ageMin) && targeting.ageMin >= 18 && targeting.ageMin <= 25)) {
       throw new Error(`${where} ageMin must be between 18 and 25.`);
     }
+    targeting.excludeAudiences ??= [];
+    if (!Array.isArray(targeting.excludeAudiences) ||
+        !targeting.excludeAudiences.every((name) => typeof name === "string" && name.trim())) {
+      throw new Error(`${where} targeting.excludeAudiences must list custom audience names.`);
+    }
     if (!campaign.ads?.length || campaign.ads.length > 6) throw new Error(`${where} needs 1 to 6 ads.`);
     const names = new Set();
     for (const ad of campaign.ads) {
@@ -162,7 +167,7 @@ export function campaignParams(campaign) {
     is_adset_budget_sharing_enabled: false};
 }
 
-export function adSetParams(policy, campaign, campaignId) {
+export function adSetParams(policy, campaign, campaignId, excludedIds = []) {
   const {targeting} = campaign;
   return {
     name: `${campaign.name} | All cities`,
@@ -179,6 +184,7 @@ export function adSetParams(policy, campaign, campaignId) {
       age_min: targeting.ageMin,
       age_max: 65,
       targeting_automation: {advantage_audience: targeting.advantageAudience ? 1 : 0},
+      ...(excludedIds.length ? {excluded_custom_audiences: excludedIds.map((id) => ({id}))} : {}),
     },
   };
 }
@@ -268,6 +274,20 @@ export async function planMetaCampaigns({policy, api, render = renderFeedImage})
     formIds = new Map((forms.data ?? []).filter((form) => form.status === "ACTIVE")
       .map((form) => [form.name, form.id]));
   }
+  // Exclusions are named audiences Catch maintains (the daily host list). One
+  // that does not exist yet is skipped with a note, never a blocker: it is
+  // created by its own job and added on the next run after that.
+  const audiences = await api.get(`${act}/customaudiences`, {fields: "id,name", limit: "200"});
+  const audienceIds = new Map((audiences.data ?? []).map((row) => [row.name, String(row.id)]));
+  const notes = [];
+  const excludedFor = (campaign) => {
+    const ids = [];
+    for (const name of campaign.targeting.excludeAudiences ?? []) {
+      if (audienceIds.has(name)) ids.push(audienceIds.get(name));
+      else notes.push(`${campaign.name}: audience "${name}" does not exist yet, so it is not excluded.`);
+    }
+    return ids;
+  };
   const changes = [];
   for (const form of policy.leadForms) {
     changes.push(formIds.has(form.name) ?
@@ -277,6 +297,7 @@ export async function planMetaCampaigns({policy, api, render = renderFeedImage})
   for (const campaign of policy.campaigns) {
     const missing = campaign.targeting.cities.filter((key) => !cityNames.has(key));
     if (missing.length) throw new Error(`Unknown Meta city keys: ${missing.join(", ")}.`);
+    const excludedIds = excludedFor(campaign);
     if (campaigns.has(campaign.name)) {
       const row = campaigns.get(campaign.name);
       const adSets = await api.get(`${row.id}/adsets`, {fields: "id,name,targeting", limit: "50"});
@@ -285,16 +306,23 @@ export async function planMetaCampaigns({policy, api, render = renderFeedImage})
       const want = new Set(campaign.targeting.cities);
       const add = [...want].filter((key) => !have.has(key));
       const remove = [...have].filter((key) => !want.has(key));
-      if (!adSet || (!add.length && !remove.length)) {
+      const haveExcluded = new Set((adSet?.targeting?.excluded_custom_audiences ?? []).map((row) => String(row.id)));
+      const excludeAdd = excludedIds.filter((id) => !haveExcluded.has(id));
+      if (!adSet || (!add.length && !remove.length && !excludeAdd.length)) {
         changes.push({kind: "keep", target: campaign.name, what: "campaign", id: row.id, status: row.status});
         continue;
       }
-      // Keep the ad set's own targeting (age, automation) and replace only its cities.
+      // Keep the ad set's own targeting (age, automation, exclusions added in
+      // Ads Manager); replace its cities and add the declared exclusions.
+      const excluded = [...haveExcluded, ...excludeAdd].map((id) => ({id}));
       const targeting = {...adSet.targeting,
-        geo_locations: {...adSet.targeting.geo_locations, cities: campaign.targeting.cities.map((key) => ({key}))}};
+        geo_locations: {...adSet.targeting.geo_locations, cities: campaign.targeting.cities.map((key) => ({key}))},
+        ...(excluded.length ? {excluded_custom_audiences: excluded} : {})};
       await api.post(adSet.id, {targeting, execution_options: ["validate_only"]});
       changes.push({kind: "sync", target: campaign.name, what: "campaign", id: row.id, status: row.status,
-        adSetId: adSet.id, targeting, addCities: add.map((key) => cityNames.get(key) ?? key), removeCities: remove});
+        adSetId: adSet.id, targeting, addCities: add.map((key) => cityNames.get(key) ?? key), removeCities: remove,
+        excludeAudiences: excludeAdd.length ? campaign.targeting.excludeAudiences
+          .filter((name) => excludeAdd.includes(audienceIds.get(name))) : []});
       continue;
     }
     for (const ad of campaign.ads) {
@@ -303,18 +331,18 @@ export async function planMetaCampaigns({policy, api, render = renderFeedImage})
     }
     await api.post(`${act}/campaigns`, {...campaignParams(campaign),
       execution_options: ["validate_only"]});
-    changes.push({kind: "create", target: campaign.name, what: "campaign", campaign,
+    changes.push({kind: "create", target: campaign.name, what: "campaign", campaign, excludedIds,
       cities: campaign.targeting.cities.map((key) => cityNames.get(key))});
   }
-  return {adAccountId: policy.adAccountId, pageId: policy.pageId, blockers, changes};
+  return {adAccountId: policy.adAccountId, pageId: policy.pageId, blockers, notes, changes};
 }
 
-async function createCampaign({policy, api, campaign, leadFormId, render}) {
+async function createCampaign({policy, api, campaign, leadFormId, excludedIds = [], render}) {
   const act = `act_${policy.adAccountId}`;
   const {id: campaignId} = await api.post(`${act}/campaigns`, campaignParams(campaign));
   const creatives = [];
   try {
-    const {id: adSetId} = await api.post(`${act}/adsets`, adSetParams(policy, campaign, campaignId));
+    const {id: adSetId} = await api.post(`${act}/adsets`, adSetParams(policy, campaign, campaignId, excludedIds));
     for (const ad of campaign.ads) {
       const bytes = (await render(ad.image)).toString("base64");
       const uploaded = await api.post(`${act}/adimages`, {bytes});
@@ -350,13 +378,14 @@ export async function applyMetaCampaigns({policy, plan, api, render = renderFeed
   for (const change of plan.changes) {
     if (change.kind !== "create" || change.what !== "campaign") continue;
     const leadFormId = formIds.get(change.campaign.leadForm);
-    await createCampaign({policy, api, campaign: change.campaign, leadFormId, render});
+    await createCampaign({policy, api, campaign: change.campaign, leadFormId,
+      excludedIds: change.excludedIds, render});
     created.push(`campaign ${change.target}`);
   }
   for (const change of plan.changes) {
     if (change.kind !== "sync") continue;
     await api.post(change.adSetId, {targeting: change.targeting});
-    created.push(`cities synced on ${change.target}`);
+    created.push(`targeting synced on ${change.target}`);
   }
   return created;
 }
@@ -377,11 +406,12 @@ async function main() {
   const policy = loadMetaCampaigns();
   const api = metaGraph({token: accessToken()});
   const plan = await planMetaCampaigns({policy, api});
-  const summary = plan.changes.map(({kind, target, what, id, status, cities, campaign, addCities, removeCities}) =>
+  const summary = plan.changes.map(({kind, target, what, id, status, cities, campaign, addCities, removeCities,
+    excludeAudiences}) =>
     ({kind, what, target, ...(id ? {id} : {}), ...(status ? {status} : {}),
       ...(cities ? {cities, ads: campaign.ads.length, dailyBudgetInr: campaign.dailyBudgetInr} : {}),
-      ...(addCities ? {addCities, removeCities} : {})}));
-  if (args.json) console.log(JSON.stringify({blockers: plan.blockers, changes: summary}, null, 2));
+      ...(addCities ? {addCities, removeCities, excludeAudiences} : {})}));
+  if (args.json) console.log(JSON.stringify({blockers: plan.blockers, notes: plan.notes, changes: summary}, null, 2));
   else {
     console.log(`Meta plan for act_${plan.adAccountId} (Page ${plan.pageId}):`);
     for (const change of summary) {
@@ -389,7 +419,8 @@ async function main() {
         console.log(`- keep ${change.what} ${change.target} (exists${change.status ? `, ${change.status}` : ""}; matches)`);
       } else if (change.kind === "sync") {
         const parts = [change.addCities.length ? `add ${change.addCities.join(", ")}` : "",
-          change.removeCities.length ? `remove city keys ${change.removeCities.join(", ")}` : ""].filter(Boolean);
+          change.removeCities.length ? `remove city keys ${change.removeCities.join(", ")}` : "",
+          change.excludeAudiences.length ? `exclude ${change.excludeAudiences.join(", ")}` : ""].filter(Boolean);
         console.log(`- sync campaign ${change.target} (exists, ${change.status}; validated): ${parts.join("; ")}`);
       } else if (change.what === "campaign") {
         console.log(`- create campaign ${change.target} (PAUSED, ₹${change.dailyBudgetInr}/day, ` +
@@ -398,6 +429,7 @@ async function main() {
         console.log(`- create ${change.what} ${change.target}`);
       }
     }
+    for (const note of plan.notes) console.log(`Note: ${note}`);
     for (const blocker of plan.blockers) console.log(`Blocked: ${blocker}`);
   }
   if (!args.apply) {

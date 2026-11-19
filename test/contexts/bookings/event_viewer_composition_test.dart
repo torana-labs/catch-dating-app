@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation.da
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_composition.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_benefit_use.dart';
 import 'package:catch_dating_app/contexts/payments/payments.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
 import 'package:catch_platform/cache/app_clock.dart';
@@ -202,8 +203,15 @@ void main() {
     );
   });
 
-  test('the provider composes the guest\'s listeners', () async {
-    final target = event(price: 50000);
+  Future<EventViewerState> viewerFromProvider(
+    Event target, {
+    List<HostMembershipBenefitUse> uses = const [],
+    List<Event> signedUp = const [],
+    void Function(
+      ({String uid, String organizerId, int startingAfterMillis, int limit}),
+    )?
+    onUsesRead,
+  }) async {
     final container = ProviderContainer(
       overrides: [
         appClockProvider.overrideWithValue(AppClock.custom(() => now)),
@@ -233,12 +241,16 @@ void main() {
         watchPublishedHostMembershipPlansProvider(
           'organizer-1',
         ).overrideWith((ref) => Stream.value([testPlan()])),
-        watchMyHostMembershipBenefitUsesProvider(
-          'runner-1',
-        ).overrideWith((ref) => Stream.value(const [])),
+        watchUpcomingHostMembershipBenefitUsesProvider.overrideWith((
+          ref,
+          args,
+        ) {
+          onUsesRead?.call(args);
+          return Stream.value(uses);
+        }),
         watchSignedUpEventCardsProvider(
           'runner-1',
-        ).overrideWith((ref) => Stream.value(const [])),
+        ).overrideWith((ref) => Stream.value(guestEventCardsOf(signedUp))),
       ],
       retry: (count, error) => null,
     );
@@ -246,9 +258,48 @@ void main() {
     final provider = eventViewerStateProvider(target.id, 'runner-1');
     final subscription = container.listen(provider, (_, _) {});
     addTearDown(subscription.close);
-    final viewer = await container.read(provider.future);
+    return container.read(provider.future);
+  }
+
+  test('the provider composes the guest\'s listeners', () async {
+    final target = event(price: 50000);
+    final viewer = await viewerFromProvider(target);
     expect(viewer.route, EventViewerRoute.catchFreeBooking);
     expect(viewer.quotedPriceInPaise, 0);
     expect(viewer.hostMembership?.memberPriceApplied, isTrue);
+  });
+
+  test('the cap reads only a cap-bounded window of booked uses', () async {
+    final target = event(price: 50000);
+    final reads =
+        <
+          ({String uid, String organizerId, int startingAfterMillis, int limit})
+        >[];
+    final signedUp = [
+      buildEvent(id: 'event-a', startTime: now.add(const Duration(days: 3))),
+      buildEvent(id: 'event-b', startTime: now.add(const Duration(days: 4))),
+    ];
+    final viewer = await viewerFromProvider(
+      target,
+      signedUp: signedUp,
+      uses: [
+        testBenefitUse(id: 'event-a_runner-1'),
+        testBenefitUse(id: 'event-b_runner-1'),
+        // This event and a booking the guest cancelled never count.
+        testBenefitUse(id: '${target.id}_runner-1'),
+        testBenefitUse(id: 'event-c_runner-1'),
+      ],
+      onUsesRead: reads.add,
+    );
+    final nowMillis = now.millisecondsSinceEpoch;
+    expect(reads.single, (
+      uid: 'runner-1',
+      organizerId: 'organizer-1',
+      startingAfterMillis: nowMillis - nowMillis % Duration.millisecondsPerHour,
+      // The plan caps upcoming member-priced bookings at 2.
+      limit: 6,
+    ));
+    expect(viewer.hostMembership?.memberPriceApplied, isFalse);
+    expect(viewer.quotedPriceInPaise, 50000);
   });
 }

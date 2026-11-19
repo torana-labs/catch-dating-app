@@ -345,6 +345,11 @@ creates it when missing.
   through `/{audience_id}/usersreplace` in one session of 10,000-row batches,
   so removals and opt-outs leave Meta within a day. When no one qualifies, the
   job deletes the audience, since a replace needs at least one row.
+- **Use.** The host lead campaign excludes the audience, so existing hosts
+  stop seeing host ads: `tool/ads/meta_campaigns.json` names it under
+  `targeting.excludeAudiences`, and `apply_meta_campaigns.mjs` adds it to the ad
+  set's `excluded_custom_audiences` once the audience exists, keeping any
+  exclusion added in Ads Manager.
 - **Never uploaded.** Gender, age, orientation, matching, dating or
   attendance-pairing data; date of birth is read only to exclude under-18s.
 - **Receipt.** `adAudienceRuns/meta_active_hosts` keeps the latest run's
@@ -352,7 +357,7 @@ creates it when missing.
   members, rows received and invalid, exclusions by reason). It never holds an
   identifier or digest.
 - **Gate.** `AD_AUDIENCES_MODE` is `off` (the default, and the setting in every
-  environment until the owner turns it on) or `live`. Off, the job only
+  environment but prod, which the owner set to `live` on 2026-11-19) or `live`. Off, the job only
   deletes an audience an earlier live run left (the receipt names it), so a
   list that would miss later opt-outs never lingers; otherwise it reads the
   receipt and sends nothing. Live needs `AD_CONVERSIONS_META_TOKEN_VERSION`,
@@ -579,7 +584,7 @@ a recorded receipt.
 
 | Item | State | Where |
 | --- | --- | --- |
-| Separation | Blocked: transport choice open on #2063 | `adTags.ts` cannot host an isolated set as it stands (see below) |
+| Separation | Option A chosen (owner, 19 Nov 2026); Catch side isolated, organiser set next | `adTags.ts` destination sets and `trackSingle`; `adTagsIsolation.test.ts` |
 | Consent gate | Blocked with separation | One v5 receipt (`catch_marketing_consent_v5`), via `adTags.sync` |
 | Eligible routes | Route class proposed (#2102); lifecycle wiring waits on separation | `organizerAdPage` beside `publicAdPage`; server projection checks publication |
 | Event map | Builders and payload tests proposed (#2102) | `website/src/analytics/organizerTagEvents.ts` |
@@ -596,10 +601,16 @@ a recorded receipt.
   diagnostic `dataLayer`, `catchTagLayer`, campaign labels, click identifiers or
   acquisition context. Catch events never reach an organiser destination, and
   organiser events never reach Catch's destinations.
-  - Today Catch's Meta calls use `fbq("track", …)`, which reaches every
-    initialised pixel, and Catch's `gtag("set", …)` applies to every tag on its
-    layer. The proposal on #2063 moves Catch to `trackSingle` and gives the
-    organiser GA4 its own layer and `cookie_prefix`.
+  - The owner chose Option A on #2063 (19 Nov 2026): one transport, two
+    isolated destination sets, the iframe retired, and organiser tags must
+    never reduce Catch's own tracking. `createAdTags` takes a frozen Catch
+    destination set and sends every Catch Meta event with
+    `fbq("trackSingle", catchPixel, …)`, never the broadcasting `track`.
+    `adTagsIsolation.test.ts` pins that Catch's Google and Meta commands are
+    identical with and without another pixel and Google layer on the page.
+    The organiser set will use `trackSingle` with its own pixel and its own
+    Google layer and `cookie_prefix`, so Catch's `gtag("set", …)` never
+    reaches it.
   - `_fbp` stays shared on the Catch domain whichever option is chosen. The
     owner sign-off decides whether that is acceptable.
   - The existing sandboxed iframe runtime (`website/public/organizer-tracking-runtime.*`,

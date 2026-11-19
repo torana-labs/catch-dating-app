@@ -4,12 +4,6 @@
  */
 export const signedInHintKey = "catch.account.signedIn";
 
-export const phonePattern = /^\+[1-9][0-9]{7,14}$/u;
-
-export function normalizePhone(value: string): string {
-  return value.replace(/[\s()-]/gu, "");
-}
-
 export function readLocal(key: string): string | null {
   try {
     return window.localStorage.getItem(key);

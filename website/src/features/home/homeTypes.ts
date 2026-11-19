@@ -1,3 +1,4 @@
+import type {HomeDiscovery} from "./homeDiscovery";
 import type {CatchFormat} from "@catch/web-ui";
 
 /**
@@ -49,6 +50,8 @@ export interface HomeCityPlans {
   formatCounts: Record<HomeFormat, number>;
   plans: HomePlan[];
   organizers: HomeOrganizer[];
+  /** Settings → Discovery as the city was built with it; absent on an older document or a city built from the catalog. */
+  discovery?: HomeDiscovery;
 }
 
 /** A city in the picker and the footer. */

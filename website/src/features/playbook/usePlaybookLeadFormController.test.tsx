@@ -29,7 +29,7 @@ function leadClientWith(referrerIdToken: () => Promise<string | null>, ...answer
   for (const answer of answers) post.mockImplementationOnce(async () => answer());
   let id = 0;
   const submission = createWebsiteLeadSubmission({
-    messages: websiteLeadCopy.problems, dialCode: "+91", post, appCheckToken: async () => "token", referrerIdToken,
+    messages: websiteLeadCopy.problems, phoneCountry: "IN", post, appCheckToken: async () => "token", referrerIdToken,
     newRequestId: () => `request${String(++id).padStart(12, "0")}`,
   });
   const bodies = () => post.mock.calls.map(([, init]) => JSON.parse(String(init?.body)) as {requestKind: string; lead: Record<string, unknown>});

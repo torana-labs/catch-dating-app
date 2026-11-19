@@ -324,7 +324,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchLocalizedSliverErrorState</code> | <code>packages/platform/lib/riverpod_ui/catch_localized_sliver_error_state.dart</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchSliverErrorState]. |
 | <code>CatchNoticeOverlay</code> | <code>packages/platform/lib/riverpod_ui/catch_notice_overlay.dart</code> | <code>Overlay</code> | <code>catch.notice</code> | One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchBanner.statuses below tabs. |
 
-### L5 (980)
+### L5 (981)
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
@@ -1022,7 +1022,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostRazorpayConnectionSection</code> | <code>lib/hosts/presentation/payments/host_razorpay_connection_section.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostAttendanceOutboxNotice</code> | <code>lib/hosts/presentation/widgets/host_attendance_outbox_notice.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostBookingProviderSection</code> | <code>lib/hosts/presentation/widgets/host_booking_provider_section.dart</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventCheckInQrSection</code> | <code>lib/hosts/presentation/widgets/host_event_check_in_qr_section.dart</code> | — | — | The venue check-in QR for a night that runs on the web runtime, with a button that shares the runtime link. |
+| <code>HostDoorPoster</code> | <code>lib/hosts/presentation/widgets/host_door_poster_sheet.dart</code> | — | — | The poster itself: what guests see at the entrance. |
+| <code>HostEventCheckInQrSection</code> | <code>lib/hosts/presentation/widgets/host_event_check_in_qr_section.dart</code> | — | — | The venue check-in QR for a night that runs on the web runtime, with a button that shares the runtime link and one that opens the join-only door poster. |
 | <code>HostEventLiveLocationField</code> | <code>lib/hosts/presentation/widgets/host_event_live_location_field.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostPublicRegistrationField</code> | <code>lib/hosts/presentation/widgets/host_event_manage_section.dart</code> | — | — | Website registration for one event: whether guests can book on the organiser's web page, and the switch that turns it on or off. |
 | <code>HostEventStaffSection</code> | <code>lib/hosts/presentation/widgets/host_event_staff_section.dart</code> | — | — | No class documentation or registry summary. |

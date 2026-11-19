@@ -37,6 +37,8 @@ import {
   notEnoughPlacesLeft,
   resizeGuestNames,
 } from "./checkoutPlaces";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 type Attempt = Extract<Command, { action: "prepare" }>;
 type Phase = "loading" | "phone" | "otp" | "ready" | "unavailable";
@@ -540,13 +542,14 @@ export function usePublicCheckoutController(
   const sendCode = (event: FormEvent) => {
     event.preventDefault();
     return run(async (epoch) => {
-      if (!/^\+[1-9][0-9]{7,14}$/u.test(phone.trim())) {
+      const e164 = catchPhoneE164(phone, activePhoneCountry);
+      if (!e164) {
         setStatus({ message: eventOfferCopy.phoneError, tone: "is-error" });
         return;
       }
       challenge.current?.clear();
       const next = await beginPublicEventPhoneVerification(
-        phone.trim(),
+        e164,
         recaptchaId,
       );
       if (!current(epoch)) {

@@ -62,7 +62,7 @@ export function ownerViewFixture(role: OwnerRole,
 /** Storybook backends: reads answer from the fixture, writes succeed without a server. */
 export function ownerViewStoryBackends(view: OwnerViewData): OwnerViewBackends {
   const tracking = {organizerId: view.organizerId, revision: 3, metaPixelId: "481516234200", googleMeasurementId: "G-LANTERN42",
-    canEdit: true};
+    canEdit: true, live: false, notLiveReason: "policyReview" as const};
   return {
     watchUser: () => () => undefined,
     getView: async () => view,

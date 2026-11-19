@@ -34,7 +34,7 @@ test("Firestore serializes payment reservations, finalization and late capture",
       "guestPayments", "organizerFormPaymentWebhooks",
       "organizerFormResponses",
       "participantFormProfileProposals", "participantOrganizerCards",
-      "participantProfileClaimReceipts", "users", "participantIntakeProfiles",
+      "commandReceipts", "users", "participantIntakeProfiles",
       "organizerCommunicationPreferences",
       "organizerCommunicationPermissionReceipts",
       "catchCommunicationPreferences", "catchCommunicationPermissionReceipts"];
@@ -176,8 +176,8 @@ test("Firestore serializes payment reservations, finalization and late capture",
         [false, true]);
       assert.equal((await db.doc("users/person").get())
         .get("profileRevision"), 1);
-      assert.equal((await db.collection("participantProfileClaimReceipts")
-        .get()).size, 1);
+      assert.equal((await db.collection("commandReceipts")
+        .where("command", "==", "claimParticipantFormProfile").get()).size, 1);
       await assert.rejects(claimParticipantFormProfileHandler({
         ...claimRequest, data: {...claimRequest.data,
           requestId: "claim-emulator-00000002"},

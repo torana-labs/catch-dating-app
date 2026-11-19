@@ -5,6 +5,8 @@ import {useEffect, useId, useRef, useState, type FormEvent} from "react";
 import {beginWebsiteAccountPhoneVerification, manageWebsiteAccount,
   watchWebsiteAccountAuthState, type PublicEventPhoneVerification, type User, type WebsiteAccountSection} from "../../firebase";
 import type {FormStatus} from "../../shared/forms/types";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 /** Private account data is keyed by UID and discarded when its observer leaves. */
 export function useWebsiteAccountController(scope: {organizerId?: string; eventId?: string;
@@ -69,9 +71,9 @@ export function useWebsiteAccountController(scope: {organizerId?: string; eventI
     event.preventDefault();
     if (busy.current) return;
     const name = displayName.trim();
-    const phone = phoneNumber.replace(/[\s()-]/gu, "");
+    const phone = catchPhoneE164(phoneNumber, activePhoneCountry) ?? "";
     const missing = missingProfileFields("account", (field) =>
-      field === "name" ? Boolean(name) : field === "phoneNumber" ? /^\+[1-9][0-9]{7,14}$/u.test(phone) : false);
+      field === "name" ? Boolean(name) : field === "phoneNumber" ? phone !== "" : false);
     if (missing.length > 0) {
       setStatus({message: accountCopy.invalidDetails, tone: "is-error"}); return;
     }

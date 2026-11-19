@@ -8690,25 +8690,6 @@
       ]
     },
     {
-      "collectionGroup": "salesDemoReceipts",
-      "fieldPath": "expiresAt",
-      "ttl": true,
-      "indexes": [
-        {
-          "order": "ASCENDING",
-          "queryScope": "COLLECTION"
-        },
-        {
-          "order": "DESCENDING",
-          "queryScope": "COLLECTION"
-        },
-        {
-          "arrayConfig": "CONTAINS",
-          "queryScope": "COLLECTION"
-        }
-      ]
-    },
-    {
       "collectionGroup": "transportOperationReceipts",
       "fieldPath": "expiresAt",
       "ttl": true,

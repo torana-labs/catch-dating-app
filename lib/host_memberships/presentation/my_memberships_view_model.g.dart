@@ -8,9 +8,14 @@ part of 'my_memberships_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// My memberships reads only the member's memberships: each carries the
+/// savings total the server keeps from its member-priced bookings.
 
 @ProviderFor(myMembershipsViewModel)
 final myMembershipsViewModelProvider = MyMembershipsViewModelFamily._();
+
+/// My memberships reads only the member's memberships: each carries the
+/// savings total the server keeps from its member-priced bookings.
 
 final class MyMembershipsViewModelProvider
     extends
@@ -22,6 +27,8 @@ final class MyMembershipsViewModelProvider
     with
         $FutureModifier<MyMembershipsState>,
         $FutureProvider<MyMembershipsState> {
+  /// My memberships reads only the member's memberships: each carries the
+  /// savings total the server keeps from its member-priced bookings.
   MyMembershipsViewModelProvider._({
     required MyMembershipsViewModelFamily super.from,
     required String super.argument,
@@ -68,7 +75,10 @@ final class MyMembershipsViewModelProvider
 }
 
 String _$myMembershipsViewModelHash() =>
-    r'63e39b7339afd2ce2d1b78bd7694b8bf09cf4027';
+    r'48f1463acd4b965b1755cf9616d63b855307f207';
+
+/// My memberships reads only the member's memberships: each carries the
+/// savings total the server keeps from its member-priced bookings.
 
 final class MyMembershipsViewModelFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<MyMembershipsState>, String> {
@@ -80,6 +90,9 @@ final class MyMembershipsViewModelFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// My memberships reads only the member's memberships: each carries the
+  /// savings total the server keeps from its member-priced bookings.
 
   MyMembershipsViewModelProvider call(String uid) =>
       MyMembershipsViewModelProvider._(argument: uid, from: this);

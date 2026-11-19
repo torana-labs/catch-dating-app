@@ -11054,6 +11054,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOperationalRosterAddWalkIn => 'Add walk-in';
 
   @override
+  String get hostsDoorPosterAction => 'Door poster';
+
+  @override
+  String get hostsDoorPosterTitle => 'Door poster';
+
+  @override
+  String get hostsDoorPosterSubtitle =>
+      'Print it or show it at the entrance. Guests get ready while they queue; you still check them in with your live code or by hand.';
+
+  @override
+  String get hostsDoorPosterHeadline => 'On the guest list? Get ready here';
+
+  @override
+  String get hostsDoorPosterStepJoin =>
+      'Scan to confirm your phone and find your name.';
+
+  @override
+  String get hostsDoorPosterStepCheckIn =>
+      'At the door, scan the host’s live code to check in.';
+
+  @override
+  String get hostsDoorPosterFileName => 'catch-door-poster.png';
+
+  @override
+  String get hostsDoorPosterShare => 'Share poster';
+
+  @override
   String get hostsOperationalRosterForwardCsv => 'Forward CSV';
 
   @override
@@ -11061,7 +11088,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsOperationalRosterForwardSubtitle =>
-      'Forward one CSV from the email address or phone number on your Catch Host account. The private address and code expire after 30 days.';
+      'Forward one CSV from the email address or phone number on your Catch Host account. It waits here for you to review before any guest is added. The private address and code expire after 30 days.';
 
   @override
   String get hostsOperationalRosterForwardEmail => 'Forward by email';

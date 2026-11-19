@@ -1,7 +1,7 @@
 {
   "codebases": {
     "admin": ["admin"],
-    "events": ["events", "guestEvents", "publicPages", "marketplace", "search", "places", "cityPlans", "waitlist", "cityInterest"],
+    "events": ["events", "guestEvents", "publicPages", "marketplace", "search", "places", "cityPlans", "discovery", "waitlist", "cityInterest"],
     "eventsuccess": ["eventSuccess"],
     "host": ["hostReadModels", "hostWork"],
     "offers": ["organizerEventOffers", "organizerEventOfferRecipients", "organizerFormAdmission", "organizerResponseQuery", "acquisition"],

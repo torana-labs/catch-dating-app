@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_update_discovery_settings_payload.schema.json",
+  "title": "AdminUpdateDiscoverySettingsCallablePayload",
+  "description": "Owner-only. Replaces the discovery rules. Every city's plans read model rebuilds when they change.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "surfaces",
+    "homeOrganizersMinimum",
+    "homeClaimAction"
+  ],
+  "properties": {
+    "surfaces": {
+      "$ref": "../firestore/discovery_settings.schema.json#/definitions/surfaces"
+    },
+    "homeOrganizersMinimum": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 24
+    },
+    "homeClaimAction": {
+      "type": "boolean"
+    }
+  },
+  "x-callable-aliases": [
+    "adminUpdateDiscoverySettings"
+  ]
+}

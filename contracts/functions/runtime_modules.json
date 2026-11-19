@@ -36,6 +36,7 @@
     "AdminGetOrganizerOverviewCallablePayload",
     "AdminGetOverviewCallablePayload",
     "AdminGetSafetySettingsCallablePayload",
+    "AdminGetDiscoverySettingsCallablePayload",
     "AdminGetSalesDemoPartnerReviewCallablePayload",
     "AdminGetSupportConversationCallablePayload",
     "AdminGrantOrganizerEntitlementCallablePayload",
@@ -98,6 +99,7 @@
     "AdminUpdateTakedownRequestCallablePayload",
     "AdminUpdateOrganizerDetailsCallablePayload",
     "AdminUpdateSafetySettingsCallablePayload",
+    "AdminUpdateDiscoverySettingsCallablePayload",
     "AdminUpdateSupportConversationCallablePayload",
     "AdminUpsertSupportSavedReplyCallablePayload",
     "ApplyProgramFunctionInvitationsCallablePayload",
@@ -281,7 +283,6 @@
     "EventMessagingBudgetDecisionReceiptDocument",
     "EventMessagingSetupReview",
     "EventOfferCommitCallableResponse",
-    "EventOfferConfigurationReceiptDocument",
     "EventOfferDetailCallableResponse",
     "EventOfferHandoffCallableResponse",
     "EventOfferListCallableResponse",
@@ -302,14 +303,12 @@
     "EventRcsSubscriptionDocument",
     "EventRcsWithdrawalCallableResponse",
     "EventRcsWithdrawalGrantDocument",
-    "EventRegistrationReceiptDocument",
     "EventRehearsalCaseDocument",
     "EventRehearsalMessageDocument",
     "EventRehearsalMovementCallableResponse",
     "EventRehearsalMovementDocument",
     "EventRehearsalRouteDecisionDocument",
     "EventRuntimeDataRequestDocument",
-    "EventRuntimeDataRequestReceiptDocument",
     "EventRuntimeParticipantDocument",
     "EventStaffGrantDocument",
     "EventStaffPresenceDocument",
@@ -818,7 +817,8 @@
     "ImportGuestListCallablePayload",
     "ImportEventFromLinkCallablePayload",
     "CreatePromotionKitCallablePayload",
-    "ImportFormFromLinkCallablePayload"
+    "ImportFormFromLinkCallablePayload",
+    "PlanNightCallablePayload"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",
@@ -835,6 +835,7 @@
     "AdminGetOrganizerOverviewCallableResponse",
     "AdminGetOverviewCallableResponse",
     "AdminGetSafetySettingsCallableResponse",
+    "AdminGetDiscoverySettingsCallableResponse",
     "AdminGetSupportConversationCallableResponse",
     "AdminLiftAccountSafetyActionCallableResponse",
     "AdminListAccountSafetyActionsCallableResponse",
@@ -1055,6 +1056,7 @@
     "ImportGuestListCallableResponse",
     "ImportEventFromLinkCallableResponse",
     "CreatePromotionKitCallableResponse",
-    "ImportFormFromLinkCallableResponse"
+    "ImportFormFromLinkCallableResponse",
+    "PlanNightCallableResponse"
   ]
 }

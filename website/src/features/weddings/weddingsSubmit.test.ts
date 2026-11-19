@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {isJoinWaitlistHttpRequest} from "../../shared/api/joinWaitlistContract";
 import {initialStepTwoDraft, type WeddingsApplication} from "./weddingsModel";
-import {createWeddingsSubmit, weddingsApplicationRequest, weddingsPhone} from "./weddingsSubmit";
+import {createWeddingsSubmit, weddingsApplicationRequest} from "./weddingsSubmit";
 
 const application: WeddingsApplication = {
   who: "A wedding planner", what: "A wedding", name: " Meher Shah ", company: "Meher Shah Weddings", phone: "98201 44718", date: "2026-12-12",
@@ -14,7 +14,6 @@ function respond(status: number, body: unknown) {
 
 describe("weddings submit", () => {
   it("builds a phone-only Host application with the programme answers", () => {
-    expect(weddingsPhone("98201 44718")).toBe("+919820144718");
     const request = weddingsApplicationRequest(application);
     expect(request).toMatchObject({fullName: "Meher Shah", phone: "+919820144718", role: "host", programme: "weddings"});
     expect(request.programmeApplication).toMatchObject({planningCompany: "Meher Shah Weddings", weddingDate: "2026-12-12",

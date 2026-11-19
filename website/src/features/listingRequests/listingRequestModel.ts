@@ -1,6 +1,8 @@
 import {listingRequestCopy as copy} from "@content/listingRequest";
 import {interpolateContent as fill} from "@content/interpolate";
 import type {ListingRequestDraftBody} from "../../shared/api/listingRequest";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 /**
  * The listing request form's answers and rules. They mirror the intake's
@@ -130,10 +132,6 @@ export function normalizedDomain(value: string): string {
   return domainPattern.exec(value.trim())?.[1]?.toLowerCase() ?? "";
 }
 
-export function normalizedPhone(value: string): string {
-  return value.replace(/[\s().-]/gu, "");
-}
-
 export type DraftErrors = Partial<Record<string, string>>;
 
 const isUrl = (value: string) => urlPattern.test(value.trim()) && value.trim().length <= 512;
@@ -149,7 +147,7 @@ export function detailErrors(draft: ListingRequestDraft): DraftErrors {
   require("name", draft.name.trim().length >= 2, e.name);
   require("role", draft.role !== null && draft.type !== null && rolesByType[draft.type].includes(draft.role), e.role);
   require("email", emailPattern.test(draft.email.trim()), e.email);
-  if (draft.phone.trim()) require("phone", /^\+[1-9][0-9]{7,14}$/u.test(normalizedPhone(draft.phone)), e.phone);
+  if (draft.phone.trim()) require("phone", catchPhoneE164(draft.phone, activePhoneCountry) !== null, e.phone);
   require("context", draft.context.trim().length <= contextMax, fill(e.context, {max: contextMax}));
   switch (draft.type) {
   case "claim":
@@ -262,7 +260,7 @@ export function requestBody(draft: ListingRequestDraft, sourcePage: string): Lis
   const target = draft.target.kind === "organizer" ? {kind: "organizer", organizerId: draft.target.id} :
     draft.target.kind === "event" ? {kind: "event", eventId: draft.target.id} : {kind: "url", url: draft.target.url.trim()};
   const declarations = Object.fromEntries(declarationsFor(draft.type).map((key) => [key, true]));
-  const phone = draft.phone.trim() ? normalizedPhone(draft.phone) : undefined;
+  const phone = draft.phone.trim() ? catchPhoneE164(draft.phone, activePhoneCountry) ?? undefined : undefined;
   return {
     requestType: draft.type,
     target,

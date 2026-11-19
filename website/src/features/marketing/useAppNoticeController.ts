@@ -1,5 +1,4 @@
 import {type FormEvent, useRef, useState} from "react";
-import {activeMarket} from "@content/markets";
 import {homePageCopy as copy} from "@content/homePage";
 import {
   createMarketingEventId,
@@ -8,7 +7,9 @@ import {
   trackMarketingEvent,
   waitlistAnalyticsPayload,
 } from "../../analytics";
-import {appNoticeRequest, launchNoticePhone, postLaunchNotice, type LaunchNoticePlace} from "./launchNoticeModel";
+import {appNoticeRequest, postLaunchNotice, type LaunchNoticePlace} from "./launchNoticeModel";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 type AppNoticeStatus = {phase: "idle" | "sending" | "joined"; message: string; tone: "" | "is-error" | "is-success"};
 
@@ -26,7 +27,7 @@ export function useAppNoticeController(city: string, submit = postLaunchNotice, 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (inFlight.current) return;
-    const e164 = launchNoticePhone(phone, activeMarket.dialCode);
+    const e164 = catchPhoneE164(phone, activePhoneCountry);
     if (!e164) {
       setStatus({phase: "idle", message: copy.app.notify.invalidPhone, tone: "is-error"});
       return;

@@ -12,7 +12,6 @@ import {
   eventRuntimePreEventFieldId,
   eventVenueSessionTokenFromFragment,
   normalizeEventRuntimeLayoutUnits,
-  normalizeRuntimePhone,
   resolveEventRuntimeCeremony,
   resolveEventRuntimeQuestionnaire,
   resolveEventRuntimeSocialMission,
@@ -161,10 +160,6 @@ describe("eventRuntimeModel", () => {
     expect(eventRuntimeStageForParticipant({
       accessStatus: "pendingApproval",
     } as EventRuntimeParticipant)).toBe("approval");
-  });
-
-  it("normalizes display-formatted E.164 phone numbers", () => {
-    expect(normalizeRuntimePhone("+91 (98765) 43210")).toBe("+919876543210");
   });
 
   it("reads venue authority only from the URL fragment", () => {

@@ -1,0 +1,37 @@
+{
+  "components": [
+    {
+      "id": "route_discovery_settings_live_controller",
+      "kind": "route",
+      "owner": "features/discovery",
+      "source": "admin/src/features/discovery/ui/DiscoverySettingsRouteScreen.tsx",
+      "exportName": "DiscoverySettingsRouteScreen",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "live-query-wrapper"
+        ]
+      },
+      "notes": "Lazy live wrapper owns the discovery settings controller for the Settings → Discovery page; deterministic visual coverage remains on workspace_discovery_settings."
+    },
+    {
+      "id": "workspace_discovery_settings",
+      "kind": "workspace",
+      "owner": "features/discovery",
+      "source": "admin/src/features/discovery/ui/DiscoverySettingsWorkspace.tsx",
+      "exportName": "DiscoverySettingsWorkspace",
+      "css": [],
+      "preview": {
+        "status": "ready",
+        "story": "admin/src/stories/AdminRoutesDiscovery.stories.tsx",
+        "exportName": "DiscoverySettingsWorkspaceStory",
+        "states": [
+          "owner-edits",
+          "ops-reads"
+        ]
+      },
+      "notes": "Settings → Discovery: where organisers on Catch and organisers not on Catch yet appear on the website, as a CatchTable of rules with a switch per audience (stacked rows on phones), the fixed rules stated as text, the homepage organisers band minimum and the claim-your-page button, reset to defaults and save; only the owner edits."
+    }
+  ]
+}

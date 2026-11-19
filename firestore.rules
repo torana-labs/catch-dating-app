@@ -1087,6 +1087,10 @@ service cloud.firestore {
     match /safetySettings/{settingsId} {
       allow read, write: if false;
     }
+    // Settings → Discovery: owner-edited through Admin callables only.
+    match /discoverySettings/{settingsId} {
+      allow read, write: if false;
+    }
 
     // Message nominators are managed through Admin callables only; the
     // registry holds account ids and number hashes.
@@ -1267,9 +1271,6 @@ service cloud.firestore {
     match /publicEventAdmissionReceipts/{documentId} {
       allow read, write: if false;
     }
-    match /eventRegistrationReceipts/{documentId} {
-      allow read, write: if false;
-    }
     match /organizerEventOfferRecipients/{documentId} {
       allow read, write: if false;
     }
@@ -1289,16 +1290,7 @@ service cloud.firestore {
       allow list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
     }
-    match /organizerEventOfferActionReceipts/{documentId} {
-      allow read, write: if false;
-    }
-    match /organizerEventOfferBatchReceipts/{documentId} {
-      allow read, write: if false;
-    }
     match /organizerEventOfferAudits/{documentId} {
-      allow read, write: if false;
-    }
-    match /eventOfferConfigurationReceipts/{receiptId} {
       allow read, write: if false;
     }
     // An event's reviewed settings and payment terms. A current manager of
@@ -1345,9 +1337,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /organizerEventSetupDefaults/{organizerId} {
-      allow read, write: if false;
-    }
-    match /organizerEventSetupDefaultReceipts/{receiptId} {
       allow read, write: if false;
     }
 
@@ -1936,10 +1925,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /participantProfileClaimReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
     match /participantIntakeProfiles/{uid} {
       allow read, write: if false;
     }
@@ -2245,12 +2230,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Idempotency receipts reveal actor and operational state; the callable
-    // returns the bounded result and no client reads or writes this ledger.
-    match /eventAttendeeAttendanceReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
     // Live venue-session authority and redemption receipts are callable-only.
     // Printable join links never read or write either collection.
     match /eventVenueSessions/{sessionId} {
@@ -2276,12 +2255,9 @@ service cloud.firestore {
     }
 
     // Required-data automation is projected through bounded runtime/Host
-    // callables. Current requests and immutable command receipts are private.
+    // callables. Current requests are private; their command receipts are
+    // commandReceipts entries.
     match /eventRuntimeDataRequests/{requestId} {
-      allow read, write: if false;
-    }
-
-    match /eventRuntimeDataRequestReceipts/{receiptId} {
       allow read, write: if false;
     }
 
@@ -3763,9 +3739,6 @@ service cloud.firestore {
     match /salesFitQueueMeta/{privateDocument=**} {
       allow read, write: if false;
     }
-    match /salesFitQueueReceipts/{privateDocument=**} {
-      allow read, write: if false;
-    }
     match /salesImportHistoryRows/{privateDocument=**} {
       allow read, write: if false;
     }
@@ -3794,9 +3767,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /salesDemoSessions/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /salesDemoReceipts/{privateDocument=**} {
       allow read, write: if false;
     }
     match /salesPilotPlans/{privateDocument=**} {

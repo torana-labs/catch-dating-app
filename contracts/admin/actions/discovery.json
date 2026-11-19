@@ -1,0 +1,69 @@
+{
+  "workflow": {
+    "workflowId": "discovery",
+    "label": "Discovery settings",
+    "guiPath": "/settings/discovery"
+  },
+  "actions": [
+    {
+      "actionId": "discovery.settings.get",
+      "callable": "adminGetDiscoverySettings",
+      "workflowIds": [
+        "discovery"
+      ],
+      "guiPath": "/settings/discovery",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "safetyReviewer",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_discovery_settings_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_discovery_settings_response.schema.json",
+      "summary": "Read where organisers on Catch and not on Catch yet appear to guests, with the defaults.",
+      "example": {}
+    },
+    {
+      "actionId": "discovery.settings.update",
+      "callable": "adminUpdateDiscoverySettings",
+      "workflowIds": [
+        "discovery"
+      ],
+      "guiPath": "/settings/discovery",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "homeClaimAction",
+      "requestSchema": "contracts/callables/admin_update_discovery_settings_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_discovery_settings_response.schema.json",
+      "summary": "Owner-only: replace the discovery rules; every city's plans rebuild.",
+      "example": {
+        "surfaces": {
+          "homeOrganizers": {
+            "onCatch": true,
+            "notOnCatch": false
+          },
+          "cityOrganizers": {
+            "onCatch": true,
+            "notOnCatch": false
+          },
+          "plans": {
+            "onCatch": true,
+            "notOnCatch": false
+          },
+          "totals": {
+            "onCatch": true,
+            "notOnCatch": false
+          }
+        },
+        "homeOrganizersMinimum": 1,
+        "homeClaimAction": false
+      }
+    }
+  ]
+}

@@ -58,11 +58,15 @@ async () => {
   try {
     const market: CityMarket = {slug: h.slug, label: "Test City",
       launchStatus: "launched"};
-    for (const [index, id] of ["a", "b"].entries()) {
+    // Organiser c is not on Catch yet, so the default Settings → Discovery
+    // (nothing stored) hides it, its plans and its counts.
+    for (const [index, id] of ["a", "b", "c"].entries()) {
       const organizerId = `org-${id}-${h.run}`;
       await h.put(`organizerPublicPage/${organizerId}`, {...page,
         organizerId, path: `/organizers/${organizerId}/`,
         identity: {...(page.identity as Row), citySlug: h.slug},
+        claim: {...(page.claim as Row),
+          state: id === "c" ? "unclaimed" : "claimed"},
         upcomingEvents: [plan(`p${id}1-${h.run}`, (index + 1) * hour),
           plan(`p${id}2-${h.run}`, (index + 3) * 24 * hour)]});
     }
@@ -116,9 +120,11 @@ test("the owner's override keeps a format page that meets the bar noindex",
         launchStatus: "launched"};
       for (const id of ["a", "b", "c"]) {
         const organizerId = `org-${id}-${h.run}`;
+        // Claimed, so Settings → Discovery's defaults count them in the totals.
         await h.put(`organizerPublicPage/${organizerId}`, {...page,
           organizerId, path: `/organizers/${organizerId}/`,
           identity: {...(page.identity as Row), citySlug: h.slug},
+          claim: {...(page.claim as Row), state: "claimed"},
           upcomingEvents: [plan(`p${id}-${h.run}`, hour)]});
       }
       const runClubs = async (at: number) => {
@@ -155,10 +161,16 @@ test("a planned city lists published organisers without page links",
       const market: CityMarket = {slug: h.slug, label: "Soon City",
         launchStatus: "planned"};
       const organizerPage = organizer.publicPage as Row;
+      const claimed = {...(organizer.claim as Row), state: "claimed"};
       const joining = `joining-${h.run}`;
-      await h.put(`organizers/${joining}`, {...organizer,
+      await h.put(`organizers/${joining}`, {...organizer, claim: claimed,
         publicPage: {...organizerPage, citySlug: h.slug,
           slug: joining, canonicalPath: `/organizers/${joining}/`}});
+      // Not on Catch yet: hidden by the default Settings → Discovery.
+      const unclaimed = `unclaimed-${h.run}`;
+      await h.put(`organizers/${unclaimed}`, {...organizer,
+        publicPage: {...organizerPage, citySlug: h.slug,
+          slug: unclaimed, canonicalPath: `/organizers/${unclaimed}/`}});
       await h.put(`organizers/draft-${h.run}`, {...organizer,
         publicPage: {...organizerPage, citySlug: h.slug,
           publishStatus: "draft"}});
@@ -173,6 +185,8 @@ test("a planned city lists published organisers without page links",
       const organizers = stored.get("organizers") as Row[];
       assert.deepEqual(organizers.map((item) => [item.organizerId,
         item.path]), [[joining, null]]);
+      assert.deepEqual(stored.get("discovery.cityOrganizers"),
+        {onCatch: true, notOnCatch: false});
       const serialized = JSON.stringify(stored.data());
       assert(!serialized.includes("race.course@example.test"));
       assert(!serialized.includes("+918800000001"));

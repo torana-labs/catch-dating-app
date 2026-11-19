@@ -147,3 +147,16 @@ test("shared contract generated-type allowance remains narrow", (t) => {
     reason: "relative import leaves admin/src without an explicit allowlist",
   }]);
 });
+
+test("web-ui imports use the package or a subpath it exports, never a deep path", (t) => {
+  const files = fixture(t);
+  files.write("packages/web-ui/package.json", JSON.stringify({exports: {".": {}, "./phone": {}}}));
+  const source = files.write("admin/src/app/value.ts", importing(
+    "@catch/web-ui", "@catch/web-ui/phone", "@catch/web-ui/src/components/CatchField"));
+
+  assert.deepEqual(scanAdminImportBoundaries(files.root), [{
+    source: "app/value.ts",
+    specifier: "@catch/web-ui/src/components/CatchField",
+    reason: "shared web UI must be imported from @catch/web-ui or a subpath it exports, without deep imports",
+  }]);
+});

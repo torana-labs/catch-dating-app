@@ -138,6 +138,24 @@ test("tenure accumulates across pause, expiry and rejoin", () => {
     16 * dayMillis);
 });
 
+test("transitions carry the trigger-owned savings totals", () => {
+  const saved = {...activeMembership(), savedInPaise: 35000,
+    memberPricedBookings: 2};
+  const paused = apply(saved, "paused", now + dayMillis).next!;
+  assert.equal(paused.savedInPaise, 35000);
+  assert.equal(paused.memberPricedBookings, 2);
+  assert.ok(validateHostMembershipDocument(paused));
+  const expired = apply(paused, "cancelled", now + 2 * dayMillis).next!;
+  const rejoined = nextMembershipState({current: expired,
+    snapshot: subscription({id: "sub_TestSub2", status: "active"}),
+    observedAtMillis: now + 3 * dayMillis, nowMillis: now + 3 * dayMillis,
+    seed: {...seed, checkoutId: "hmc_ZyXwVuTsRqPoNmLkJiHg"}}).next!;
+  assert.equal(rejoined.savedInPaise, 35000);
+  assert.equal(rejoined.memberPricedBookings, 2);
+  // A membership without totals yet gets none invented.
+  assert.equal("savedInPaise" in activeMembership(), false);
+});
+
 test("evidence about another subscription never touches a live one", () => {
   const active = activeMembership();
   const other = nextMembershipState({current: active,

@@ -883,7 +883,7 @@ node tool/git/branch_hygiene.mjs --base origin/main --local --json
 
 Firebase deploy and data-validation workflows use GitHub OIDC rather than
 long-lived service-account JSON secrets. Use GitHub Environments named `dev`,
-`staging`, `prod-hosting`, `prod-mobile`, `backend-review`, `prod-backend`, and `prod`. `prod-hosting` is
+`staging`, `prod-hosting`, `prod-mobile`, `prod-mobile-release`, and `prod`. `prod-hosting` is
 approval-free and limited to the automatic web Hosting workflows and the
 main-only `Next Website Preview` and `Next Website Promotion` workflows. The preview builds a commit
 of main (its `source_sha` input, or main's head) that is not older than live and
@@ -903,15 +903,14 @@ for the operator steps. `prod-mobile` is approval-free and `main`-only; it conta
 only mobile signing, Maps, App Store Connect, and Play-publisher credentials, and
 `Mobile Beta` checks the ref again before building. `prod-mobile-release` holds
 the same store credentials for `Mobile Production` and requires a reviewer's
-approval; see [Mobile releases](#mobile-releases). `prod-backend` served only the
-retired Delivery workflow and is now unused; `Deploy backend` deploys prod
-through `prod`. The `prod-backend` OIDC provider binds the immutable repository and owner IDs, ref,
-environment, caller workflow, reusable workflow, and automatic event type; both
-workflow paths are compared with the token's own repository name, never a
-hardcoded one. It reuses the existing deployment identity; it does not add
-project permissions. That identity's federation grant is restricted to the
-`attribute.repository_environment` values `1170579691:prod`,
-`1170579691:prod-hosting`, and `1170579691:prod-backend`. The older production
+approval; see [Mobile releases](#mobile-releases). `Deploy backend` deploys
+prod through `prod`. Nothing uses the retired `prod-backend` and
+`backend-review` environments, the `prod-backend` OIDC provider or its
+`1170579691:prod-backend` federation grant; the owner removes them by hand.
+The deployment
+identity's federation grant is restricted to the
+`attribute.repository_environment` values `1170579691:prod` and
+`1170579691:prod-hosting`. The older production
 provider accepts only main jobs in `prod`, `prod-hosting`, or `prod-mobile` from
 repository `1170579691`. Every provider and grant uses immutable IDs, so renaming
 or transferring the repository or its owner cannot break deployment sign-in
@@ -929,9 +928,7 @@ its own reviewer on `prod-mobile-release`.
 
 Functions pull requests complete Required CI after the selected automated
 validation; CI no longer creates or requires the credential-free
-`backend-review` job. That environment no longer has required reviewers; its
-identity, `refs/pull/*/merge` branch policy and prohibition on administrator
-bypass remain.
+`backend-review` job, and nothing uses that environment.
 
 Dev and prod run independently, one deploy per environment at a time.
 
@@ -1917,7 +1914,7 @@ Fixed values:
 - Instagram account: @catch_dates, id `17841476918450741`. This is the
   `entry.id` in webhooks. The "Catch-IG" id `1404389366089349` is the
   Instagram app id, not the account id.
-- GitHub variables in `prod` and `prod-backend`:
+- GitHub variables in `prod`:
   `CATCH_INSTAGRAM_ACCOUNT_ID=17841476918450741` and
   `CATCH_INSTAGRAM_HANDLE=catch_dates`. Leave them unset in dev and staging.
   `CATCH_INSTAGRAM_GRAPH_VERSION` is optional; the default is `v26.0`.
@@ -1945,7 +1942,7 @@ After a prod deploy that includes the webhook:
    story replies, Message controls, Connected tools, Allow access to messages.
 5. From an Instagram account with a role on the Meta app, send a message to
    @catch_dates. The webhook acknowledges it and logs nothing on success.
-6. Set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` in `prod` and `prod-backend`,
+6. Set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` in `prod`,
    then run Deploy backend for `prod` with `functions` set to
    `instagramClaimWebhook,getOrganizerClaimVerificationOptions,startOrganizerClaimVerification,confirmOrganizerClaimVerification`.
 
@@ -3749,6 +3746,83 @@ lift it (for example the organiser later claims its page on its own
 instruction), an owner sets `active` to false on `listingSuppressions/<caseId>`.
 Self-created organisers that matched a case are listed in its `reviewFlags`;
 review them (they start private and unpublished).
+
+### Listing cohort withdraw
+
+When a whole programmatic listing cohort has to come down at once (a pilot
+is stopped, or a problem is found with how a batch was sourced), the owner
+withdraws it in one approved run. The tool is
+`tool/data/listing_cohort_withdraw.mjs`; it runs through the dispatch-only
+`Listing cohort withdraw` workflow
+(`.github/workflows/listing-cohort-withdraw.yml`). It selects organisers whose
+`listingProgram.cohortId` is the cohort (see
+[data contracts](data_contracts.md#programmatic-listings)), optionally only
+those whose page is in one city, and withdraws each one whose page is
+`published` and that no owner has claimed. It writes the same fields as the
+single-organiser suspend from a takedown request
+(`publicPage.publishStatus: suppressed`, `indexStatus: noindex`,
+`robots: noindex, follow`) and one `adminAuditLogs` row per organiser
+(`action: listingCohortWithdraw`, actor `workflow:listing-cohort-withdraw`,
+`after.cohortId`, `after.reason: cohortWithdrawal`, the manifest hash and the
+run id). The organiser triggers then rebuild the public page, city plans,
+`publicOrganizers` and search. A withdrawal deletes nothing; to stop new
+listings as well, also pause the programme (`adminManageListingProgram`).
+
+It skips, and counts: pages already `suppressed` or `removed`, pages not
+`published` (`draft`, `qa` or none), and claimed organisers (an owner or host
+user id, ownership `claimed` or `transferred`, or claim `claimed` or
+`verified`). A page with a claim still pending is withdrawn with the rest and
+counted on its own line.
+
+**Nothing about an organiser goes into GitHub.** The inputs are the
+environment, the mode, the cohort id (such as `pilot-indore-1`), an optional
+city slug, and for apply the manifest SHA-256. The tool prints counts only.
+Organiser ids can carry a name, so the manifest of ids is never printed or
+uploaded as an artifact; apply instead re-reads the cohort and proves it is
+the approved selection by recomputing the hash.
+
+Before the first prod run, check that the `prod-takedown` environment requires
+the owner as reviewer (see
+[Organiser takedown](#before-the-first-production-run-one-time), step 4).
+Only a prod apply waits there; prod plan and verify only read.
+
+Dispatch from `main`, one mode at a time, reading each summary before the
+next. Use the same `city` value (or none) for all three. Dev first when the
+cohort exists there.
+
+```bash
+gh workflow run listing-cohort-withdraw.yml --ref main -f environment=prod -f mode=plan -f cohort_id=pilot-indore-1
+gh workflow run listing-cohort-withdraw.yml --ref main -f environment=prod -f mode=apply -f cohort_id=pilot-indore-1 \
+  -f manifest_sha256=<the SHA-256 the plan run printed>
+gh workflow run listing-cohort-withdraw.yml --ref main -f environment=prod -f mode=verify -f cohort_id=pilot-indore-1
+```
+
+1. **plan** (the default, a dry run) prints: matched in the cohort, would
+   withdraw (and how many of those have a claim pending), already withdrawn by
+   this cohort withdrawal, skipped already suppressed or removed, skipped
+   claimed, skipped not published, matched and would withdraw by city, and
+   `Manifest: N organiser(s), SHA-256 <hash>`. The manifest is the cohort id,
+   the city filter and the sorted ids it would withdraw plus those an earlier
+   apply of this cohort already withdrew. Read the counts; if they are what
+   you expect, copy the hash.
+2. **apply** waits in `prod-takedown` until the owner approves the run. It
+   then re-reads the cohort and refuses, writing nothing, unless the manifest
+   hash equals `manifest_sha256`. If anything changed since the plan (a page
+   was claimed, published or taken down), run plan again and approve the new
+   hash; a refused apply never prints a hash to copy. It writes in
+   transactions of 100 organisers, re-reading each one and skipping (and
+   counting) any that is no longer in the cohort, no longer published or now
+   claimed. It ends with a re-check that should show `would withdraw 0`.
+   Re-running the same apply changes nothing: withdrawn pages stay in the
+   manifest through their audit rows, so the hash still matches, and there is
+   nothing left to write. An interrupted apply finishes the rest on a re-run.
+3. **verify** passes when nothing in the cohort (and city) is left to
+   withdraw.
+
+A withdrawn page comes back one organiser at a time through the audited Admin
+index review (`adminSetOrganizerIndexStatus`); there is no bulk undo. For a
+local run against the emulator, `--manifest-out <file>` on plan writes the
+manifest with its ids to a local file; never use it in CI.
 
 ## Smoke Tests
 

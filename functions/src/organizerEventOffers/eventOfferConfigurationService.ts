@@ -21,8 +21,12 @@ import type {ConfigureEventOfferPreferencesCallablePayload} from
   "../shared/generated/configureEventOfferPreferencesCallablePayload";
 import {validateConfigureEventOfferPreferencesCallablePayload} from
   "../shared/generated/validators/configureEventOfferPreferencesInput";
-import {validateEventOfferConfigurationReceiptDocument} from
-  "../shared/generated/validators/eventOfferConfigurationReceiptDocument";
+import {
+  classifyCommandReceipt,
+  commandReceiptRef,
+  commandRequestHash,
+  writeCommandReceipt,
+} from "../shared/commandReceipts";
 
 export type ConfigureEventOfferPreferencesCommand =
   ConfigureEventOfferPreferencesCallablePayload;
@@ -30,7 +34,10 @@ export type ConfigureEventOfferPreferencesCommand =
 export interface EventOfferConfigurationDependencies {
   db: FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  nowMillis: () => number;
 }
+
+const receiptCommand = "configureEventOfferPreferences";
 
 export interface EventOfferConfigurationResult {
   eventId: string;
@@ -77,12 +84,12 @@ export async function configureEventOfferPreferences(params:
   const {db} = deps;
   const receiptId = digest(["event-offer-configuration-v1", actorUid,
     command.organizerId, command.requestId]);
-  const requestHash = digest(["event-offer-configuration-v1", command]);
+  const requestHash = commandRequestHash(actorUid, command);
   const eventRef = db.collection("events").doc(command.eventId);
   const preferencesRef = db.collection("eventSetupPreferences")
     .doc(command.eventId);
-  const receiptRef = db.collection("eventOfferConfigurationReceipts")
-    .doc(receiptId);
+  // receiptId is already a SHA-256 digest, so no uid sits in the document id.
+  const receiptRef = commandReceiptRef(db, receiptCommand, receiptId);
   return db.runTransaction(async (tx) => {
     const [organizerSnap, deletedSnap, eventSnap, defaultsSnap,
       preferencesSnap, receiptSnap] = await Promise.all([
@@ -104,25 +111,25 @@ export async function configureEventOfferPreferences(params:
     if (!validateEventDocument(event)) {
       throw new HttpsError("failed-precondition", "Event is malformed.");
     }
-    if (receiptSnap.exists) {
+    // The receipt check stays ahead of the revision fences, so an exact
+    // retry replays even after later settings moved the revision on.
+    const lookup = classifyCommandReceipt<{
+      appliedPreferencesRevision?: number;
+    }>(receiptSnap, {command: receiptCommand, requestHash,
+      nowMillis: deps.nowMillis()});
+    if (lookup.kind !== "none") {
       if (params.previewOnly) {
         throw new HttpsError("already-exists",
           "This settings request is already committed. Reload settings.");
       }
-      const receipt = receiptSnap.data();
-      if (!validateEventOfferConfigurationReceiptDocument(receipt) ||
-          receipt.actorUid !== actorUid ||
-          receipt?.organizerId !== command.organizerId ||
-          receipt?.eventId !== command.eventId ||
-          receipt?.requestId !== command.requestId ||
-          receipt?.requestHash !== requestHash ||
-          !Number.isSafeInteger(receipt?.appliedPreferencesRevision) ||
-          receipt.appliedPreferencesRevision < 1) {
+      const applied = lookup.kind === "replay" ?
+        lookup.result?.appliedPreferencesRevision : undefined;
+      if (typeof applied !== "number" || !Number.isSafeInteger(applied) ||
+          applied < 1) {
         throw new HttpsError("already-exists",
           "Request ID was used for another offer setting.");
       }
-      return {eventId: command.eventId,
-        preferencesRevision: receipt.appliedPreferencesRevision,
+      return {eventId: command.eventId, preferencesRevision: applied,
         replayed: true};
     }
     if (event.status !== "active") {
@@ -186,10 +193,10 @@ export async function configureEventOfferPreferences(params:
     tx.set(preferencesRef, {organizerId: command.organizerId,
       eventId: command.eventId, revision: revision + 1, preferences,
       paymentTerms, updatedByUid: actorUid, updatedAt: deps.serverTimestamp()});
-    tx.create(receiptRef, {actorUid, organizerId: command.organizerId,
-      eventId: command.eventId, requestId: command.requestId, requestHash,
-      appliedPreferencesRevision: revision + 1,
-      createdAt: deps.serverTimestamp()});
+    writeCommandReceipt(tx, receiptRef, {command: receiptCommand,
+      retention: "request", requestHash,
+      result: {appliedPreferencesRevision: revision + 1},
+      nowMillis: deps.nowMillis()});
     return {eventId: command.eventId, preferencesRevision: revision + 1,
       replayed: false};
   });

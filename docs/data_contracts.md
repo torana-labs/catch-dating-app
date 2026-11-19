@@ -2017,7 +2017,7 @@ Everything else about a receipt is the shared module's job:
   hold was narrowed. The same approval covers the receipt collections that
   already write `expiresAt`: `eventRuntimeDataRequestReceipts`,
   `organizerAudienceProjectionReceipts`, `organizerEntitlementReceipts`,
-  `salesDemoReceipts`, `transportOperationReceipts` and `eventLiveCommandReceipts`.
+  `transportOperationReceipts` and `eventLiveCommandReceipts`.
   `instagramAccessTokens` has no policy on purpose: it is one pointer per
   account whose `expiresAt` says when Meta expires the renewed token, not that
   the document is dead, and the refresh job rewrites it.
@@ -2038,15 +2038,58 @@ the host checkpoint view and the Operations worker read it, and Operations
 action receipts hash it), and assistant delegation grants
 (`assistantManagementReceipts`: read by the owner's receipt lookup and by the
 sales privacy inventory's erasure checks).
+Others are
+kept because something other than a retry reads them: `eventSeatRequestReceipts`
+(one request-id space shared by every seat operation; its replays carry ledger
+and reservation revisions), `eventSetupReceipts` (setup workflow state: seat
+reconciliation and details read discarded receipts), `hostRosterIntakeReceipts`
+(applied-roster review the Host reopens; holds the reviewed payload with guest
+contact data), `operationActionReceipts` (append-only audit of Operations
+actions; checkpoint verification and the takedown tool read it),
+`organizerApplicationImportReceipts` (import provenance applications point to;
+its replay result can exceed 4096 bytes) and
+`eventAttendanceDispositionReceipts` (the only history of earlier no-show
+decisions and who made them; the disposition document is overwritten).
+Five more stay for these reasons: `salesActionReceipts` is a sales-review
+proof other commands read (partner marketing grants check the approval receipt and `receipts.get`
+serves it later); `salesIntelligenceReceipts` is an audit target (admin audit
+logs point at the receipt, and results hold draft and clause text);
+`salesPrivacyBatchReceipts` is privacy erasure evidence (who applied each batch
+of a deletion plan and the counts deleted and retained);
+`transportOperationReceipts` is a revision fence other commands read and holds
+resumable manifest-import progress; and `programLodgingReceipts` is the only
+record of who approved or published guest lodging.
 
 Moved so far: `functionEventReceipts`, `eventLiveCommandReceipts`,
 `eventChatAccessReceipts` (the five event-room commands),
-`organizerAudienceProjectionReceipts` (the audience projection's trigger dedupe)
-and `organizerEntitlementReceipts` (admin grant and revoke, one command name so
-an operation id reused across the two still conflicts). They are no longer
+`organizerAudienceProjectionReceipts` (the audience projection's trigger dedupe),
+`organizerEntitlementReceipts` (admin grant and revoke, one command name so
+an operation id reused across the two still conflicts),
+`eventAttendeeAttendanceReceipts` (`setEventAttendeeAttendance`; the receipt id
+still seeds the seat request id), `eventOfferConfigurationReceipts`
+(`configureEventOfferPreferences`), `eventRegistrationReceipts`
+(`configureEventRegistration`), `eventRuntimeDataRequestReceipts`
+(`requestRequiredData`), `organizerEventOfferActionReceipts` (`mutateEventOffer`,
+shared by the draft and offer steps a batch commit derives; the audit stays in
+`organizerEventOfferAudits`) and `organizerEventOfferBatchReceipts`
+(`commitEventOffers`, storing only per-offer results; the response's request
+digest is rebuilt, and the replay hash adds the acting manager, so a second
+manager reusing a batch request ID conflicts). They are no longer
 written or declared; their documents stay under the legal hold, and account
 deletion still removes old chat receipts by uid. An entitlement grant keeps its
-own operation hash and result revision, so its identity outlives the receipt. Replay windows are short and an
+own operation hash and result revision, so its identity outlives the receipt.
+Also moved: `organizerEventSetupDefaultReceipts` (command
+`updateOrganizerEventSetupDefaults`, result `appliedRevision`),
+`participantProfileClaimReceipts` (`claimParticipantFormProfile`; the claim
+time a person sees lives on `participantFormProfileProposals.claimedAt`, so
+account deletion no longer has a receipt to remove), `salesDemoReceipts` (one
+`salesDemo` command for every demo admin, start and session action, so a
+request id reused across actions still conflicts; its old ISO-string
+`expiresAt` never matched a TTL policy) and `salesFitQueueReceipts`
+(`adminRefreshSalesFitQueue`, which keeps only the source and qualification
+policy hashes and replays the live entry they fence). The Sales privacy
+inventory no longer lists the last two: their new receipts hold no organizer
+id. Replay windows are short and an
 in-flight retry across the deploy only re-runs a revision-fenced or idempotent
 command, so nothing was copied forward.
 
@@ -2722,10 +2765,11 @@ retain their frozen journal for recovery.
 `configureEventOfferPreferences` writes the same private preferences for owned
 published, legacy or private events. The transaction rechecks manager/deleted-user
 authority, event source revision, preference revision and reviewed organizer
-defaults. Its actor-scoped request receipt returns the original revision after a
-lost response; changed requests cannot reuse that identity. Events and issued
-offer snapshots are never rewritten. Clients cannot read or write the receipt
-collection directly.
+defaults. Its actor-scoped `commandReceipts` entry (command
+`configureEventOfferPreferences`) returns the original revision after a lost
+response; changed requests cannot reuse that identity, and preview rejects a
+request id that is already committed. Events and issued offer snapshots are
+never rewritten. Clients cannot read or write receipts directly.
 Offer preview and commit recheck these facts rather than trusting a picker row.
 
 ### Functions Runtime Schema Modules
@@ -3228,9 +3272,11 @@ the canonical runtime field enum, fields derived from the current event format
 and selected modules, and fields still missing from the event-scoped profile.
 The command is fenced by the profile revision, current request revision and a
 hash of the event, attendee and profile facts. Its deadline cannot outlive the
-event. `eventRuntimeDataRequestReceipts/{receiptId}` makes an exact operation
-retry idempotent and rejects reuse with changed content. Both collections deny
-all client access. The participant-write trigger creates the typed command for
+event. A `commandReceipts` entry (command `requestRequiredData`, 30-day
+retention, because the operation id absorbs repeat participant writes until the
+event ends) makes an exact operation retry idempotent and rejects reuse with
+changed content; the expected request revision fences applying, not the
+operation's identity. The collection denies all client access. The participant-write trigger creates the typed command for
 current missing required fields, runtime bootstrap returns the bounded request,
 and accepted profile submission reconciles it to completion. This completes the
 live source binding without granting Host authority or activating a deployment.
@@ -3259,12 +3305,13 @@ and writers before a client using SDK reads, then backfill and activate each
 organizer. `onHostDirectoryOrganizerCreated` activates every model for a new
 organizer, which has no sources yet. The Host app reads the contact, form,
 group, response and event directories only through their markers: a missing
-marker is an error to retry, never a callable fallback. The People contact
-list reads live pages (see [Live pages](#live-pages)): each 30-row page is its
-own listener, so asking for more reads only the new page, at most 2,500 rows.
-The form, response, group and draft lists still listen to a window of their
-first rows (`limit + 1`) that grows by a page on request, rereading the rows
-already shown, until they move to live pages. A server change shows in the
+marker is an error to retry, never a callable fallback. The People contacts,
+forms, form responses, campaigns and WhatsApp threads read live pages (see
+[Live pages](#live-pages)): each 30-row page is its own listener, so asking for
+more reads only the new page, at most 2,500 rows. Saved groups, requests and
+waitlists, the event directory and form search still listen to a window of
+their first rows (`limit + 1`) that grows by a page on request, rereading the
+rows already shown. A server change shows in the
 open list at once, a write needs no reread, and a list opens offline from the
 device cache. A page that fails keeps the rows above it and reports the
 failure under them; asking again retries it.
@@ -4098,8 +4145,9 @@ remains required before activation.
 ### Public paid event registration
 
 `configureEventRegistration` is the manager-owned, revision-checked opt-in for
-`closed`, `free` or `paid` public registration. Its immutable
-`eventRegistrationReceipts` make exact retries safe. It preserves event origin
+`closed`, `free` or `paid` public registration. Its `commandReceipts` entry
+(command `configureEventRegistration`) makes exact retries safe; only an exact
+retry skips payment-route preparation. It preserves event origin
 and native-booking provenance. A legacy enabled boolean authorizes free signup
 only. Paid enablement requires an open, published, future event, canonical paid
 price, reconciled seats and a ready event-admission payment route. Public phone
@@ -4544,8 +4592,8 @@ still have a continuation cursor. No caller-supplied UID or organizer filter
 can expand this scope. `claimParticipantFormProfile`
 requires explicit reviewed core values, selected question IDs, and versioned
 claim terms. It atomically updates `users`, private `participantOrganizerCards`
-answer pointers and a payload-bound `participantProfileClaimReceipts` receipt.
-Concurrent retries reuse the receipt; a newer core/intake revision aborts stale
+answer pointers and a payload-bound `commandReceipts` entry
+(`claimParticipantFormProfile`). Concurrent retries reuse the receipt; a newer core/intake revision aborts stale
 review. Normal `updateUserProfile` edits increment the same core revision.
 LinkedIn retains its existing private `participantIntakeProfiles` destination.
 Verified phone always comes from Auth, never an editable answer.
@@ -4574,8 +4622,9 @@ path; existing client initial-create, booking and social-readiness gates remain
 unchanged. Claiming does not admit someone to an event or grant room sharing.
 Owner cards contain only selected applicant-answer pointers, never CRM notes,
 tags or private review fields. Card reads must revalidate the source response.
-Account deletion removes proposals, cards, claim receipts and the
-participant's `participantIntakeProfiles/{uid}` saved answers.
+Account deletion removes proposals, cards and the participant's
+`participantIntakeProfiles/{uid}` saved answers; the claim's replay receipt
+holds no uid and expires on its own.
 
 A selected form photo must still match the owned response, form, version, draft
 and question. Its bytes and digest are verified, safety checked, stripped of
@@ -4822,6 +4871,28 @@ membership edges and decision receipts by subject `uid`. Decisions for other
 subjects retain their actor/source proof when their reviewer deletes an account.
 Direct client get/list/create/update/delete is denied for all four collections.
 
+### Host Membership Savings Totals
+
+A member's savings live on the membership, not in a scan of their bookings.
+`hostMemberships/{membershipId}.savedInPaise` and `memberPricedBookings` are
+the sum of `savingsInPaise` and the count of that membership's
+`hostMembershipBenefitUses` that are not `released`. Both are server-only and
+optional (absent reads as 0). `onHostMembershipBenefitUseWritten`
+(`functions/src/hostMemberships/savingsSummary.ts`) applies each use write's
+before/after difference, subtracting from the old membership and adding to the
+new one when a use moves, in one transaction with its `commandReceipts`
+dedupe receipt (retention `trigger`), so a redelivery changes nothing.
+`membershipStore.applySubscriptionSnapshot` carries both fields through every
+transition. My memberships reads only the member's memberships. The Consumer
+cap check reads at most the plan's cap plus two of the member's booked uses for
+the organizer that start after the current hour (`uid`, `organizerId`,
+`state`, `eventStartMillis`), the same index the server's
+`readHostMembershipContext` uses. Memberships that predate the trigger get
+their totals from the `host-membership-savings` migration in
+`tool/data/lib/firestore_consolidation_migrations.mjs`, which recomputes both
+fields from the uses with the trigger's own function and writes only a
+missing or differing total, with a last-update-time precondition.
+
 ### Authenticated Event Viewer Read Source
 
 The Consumer app shows event booking state from Firestore listeners:
@@ -5020,8 +5091,9 @@ send, ending 24 hours after it) or a cancelled or diverted flight or disrupted
 inbound journey (no duty, no end), merged with who took or finished it. It
 carries `duty`, `expiresAtMillis`, the resolution state and the assignee's
 account id, so a phone can tell its own alerts; clients hide an alert past
-`expiresAtMillis`, and the retention sweep's delete of the resolutions clears
-the assignee. A function lead reads the alerts stamped for a duty it holds
+`expiresAtMillis`, a TTL policy on `expiresAt` (the same end as a timestamp,
+null for travel alerts) deletes it, and the retention sweep's delete of the
+resolutions clears the assignee. A function lead reads the alerts stamped for a duty it holds
 (one listener per duty); full reach (coordinators and the owner) reads every
 alert and the counts. The phone computes the schedule's phases from its clock.
 `listProgramStaffAttention` reads the same alerts (source `staffAttention`).
@@ -5526,7 +5598,7 @@ The Host attendance outbox is local client state, not Firestore authority. It
 contains no names, phones or emails: only account/event/attendee ids, absolute
 desired attendance, expected revision, client operation id, timestamps and
 retry/conflict state. Server authority remains `setEventAttendeeAttendance`
-plus its 30-day receipt. Local operations review after seven days, expire after
+plus its 30-day `commandReceipts` entry. Local operations review after seven days, expire after
 30, cap at 200 and never turn a revision conflict into a silent toggle replay.
 
 Cross Paths visibility is a two-part, private consent contract. The optional
@@ -6391,6 +6463,33 @@ definitions in `contracts/shared/public_page_common.schema.json`.
   backfilled the website assembles a page without a read model from its
   sources under the same rules.
 
+### Discovery settings
+
+`discoverySettings/current` holds the owner's Settings → Discovery rules
+(`contracts/firestore/discovery_settings.schema.json`), edited through
+`adminUpdateDiscoverySettings`. Organisers not on Catch yet (`claimState`
+`unclaimed` or `claimPending`) exist to be found and claimed, so they must
+not appear where guests browse; organisers on Catch are `claimed` or
+`verified` (owner decision, 19 Nov 2026).
+
+- `surfaces` has a `{onCatch, notOnCatch}` rule for each place guests browse:
+  `homeOrganizers` (the homepage organisers band), `cityOrganizers` (city
+  pages and Explore's organisers tab), `plans` (their plans in This week and
+  Explore) and `totals` (organiser and upcoming event counts and the format
+  page indexing thresholds). `homeOrganizersMinimum` (1–24) is how many
+  organisers a city needs before the homepage shows its band;
+  `homeClaimAction` shows the claim-your-page button on the guest homepage.
+- A missing document, or a missing or malformed field, reads as the defaults
+  in `functions/src/discovery/discoveryPolicy.ts`: on Catch yes, not on Catch
+  no, on every surface; minimum 1; no claim button. Any other claim state
+  reads as not on Catch.
+- The rules only hide. A per-organiser switch can never make an organiser
+  appear where they hide it, and no rule shows an organiser a publication
+  rule hides. Search-engine indexing (unclaimed pages stay `noindex`) and the
+  app's Explore (`appVisibility`) are not governed here.
+- The collection is server-only in `firestore.rules`; each update writes an
+  `adminAuditLogs` entry with the rules before and after.
+
 ### City plans
 
 `cityPlans/{citySlug}` holds what the website shows for one city: the plans
@@ -6402,7 +6501,18 @@ organisers in the city and whether the city is `live` or `launchingSoon`
 
 - Every launched and planned market in `functions/src/locations/marketConfig.ts`
   has a document. A launched city is built only from its
-  `organizerPublicPage` documents, so it adds no publication rule of its own.
+  `organizerPublicPage` documents; the only rule it adds is Settings →
+  Discovery, which can only hide.
+- Each rebuild reads `discoverySettings/current`. Plans (and `planCount`,
+  `formatCounts`, `womenLedPlanCount`) come only from organisers its `plans`
+  rule allows; `organizers` lists those its `homeOrganizers` or
+  `cityOrganizers` rule allows, each with its `claimState`; the 30-day signal
+  and `formatPages` count only those its `totals` rule allows. A city that
+  has not launched applies the same rules to the organisers joining it by
+  their listing's `claimState`. The required `discovery` object copies the
+  two organiser rules, `homeOrganizersMinimum` and `homeClaimAction`, so the
+  website applies each surface's rule; `onDiscoverySettingsWritten` rebuilds
+  every city when the settings change.
 - A launched city is `live` however few plans it has; the website shows the
   honest count ("2 plans this week", or "new" before the first). Only a city
   that has not launched reads as `launchingSoon`.
@@ -7295,7 +7405,10 @@ score evaluator and qualification policy evaluator. Qualification-proof expiry
 is separate from score expiry. Unknown factors retain null scores. All account
 writes, accepted evidence and assessments invalidate the projection and advance
 its generation; cursors bind that generation and both policy identities.
-Historical refresh receipts cannot report current success after invalidation.
+Refresh replay receipts (`commandReceipts`, `adminRefreshSalesFitQueue`) keep
+only the source and qualification-policy hashes, so a retry returns the live
+entry only while it is still the one that request made; after invalidation it
+cannot report current success.
 Bounded refresh and list actions confer no contact or sending authority.
 
 New imports record exact per-organizer effects, account/cohort revisions and

@@ -96,7 +96,7 @@ async function setup(event = richEvent()) {
       expectedAmountMinor: {mode: "set", value: 25000}},
   };
   const deps = {db, serverTimestamp: () => Timestamp.fromMillis(50) as
-    unknown as FirebaseFirestore.FieldValue};
+    unknown as FirebaseFirestore.FieldValue, nowMillis: () => 50};
   return {rows, readPaths, writePaths, command, deps,
     save: (overrides: Partial<ConfigureEventOfferPreferencesCommand> = {},
       actorUid = "host1") => configureEventOfferPreferences({actorUid,
@@ -115,7 +115,7 @@ test("published events save private terms without event writes",
     assert.equal(JSON.stringify(h.rows.get("events/event1")), before);
     assert.equal(h.rows.get("eventSetupPreferences/event1")?.revision, 1);
     assert.deepEqual(h.writePaths.map((path) => path.split("/")[0]),
-      ["eventSetupPreferences", "eventOfferConfigurationReceipts"]);
+      ["eventSetupPreferences", "commandReceipts"]);
     for (const path of ["organizers/org1", "deletedUsers/host1",
       "events/event1", "organizerEventSetupDefaults/org1",
       "eventSetupPreferences/event1"]) {

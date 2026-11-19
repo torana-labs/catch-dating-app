@@ -10,6 +10,12 @@ import {organizerFormTemplateCatalog} from
 import {checkDemoSalesLinks, prepareDemoSalesActivity} from "./salesActivity";
 import {HttpsError} from "firebase-functions/v2/https";
 import {Timestamp} from "firebase-admin/firestore";
+import {
+  classifyCommandReceiptData,
+  commandReceiptRef,
+  commandRequestHash,
+  writeCommandReceipt,
+} from "../shared/commandReceipts";
 import {authorizeFormMutation} from "../organizers/organizerFormTarget";
 import {createOrganizerFormInTransaction} from "../organizers/organizerForms";
 import {currentSetupPlan, reviewedSetupPlan, setupPlanHash} from
@@ -25,7 +31,9 @@ import {DEMO_ACTIONS, DEMO_CAPABILITY, Blueprint, ContactBinding,
 const BLUEPRINTS = "salesDemoBlueprints";
 const INVITATIONS = "salesDemoInvitations";
 const SESSIONS = "salesDemoSessions";
-const RECEIPTS = "salesDemoReceipts";
+/** One replay command for every Sales demo request id, so an id reused
+ * across actions still conflicts. */
+const RECEIPT_COMMAND = "salesDemo";
 const CAPABILITIES = "salesDemoCapabilities";
 const MAX_SESSION_ACTIONS = 20;
 const MAX_START_RECEIPTS = 12;
@@ -54,6 +62,39 @@ function hmac(secret: Uint8Array, value: string): Buffer {
 }
 function receiptId(uid: string, stableRequestId: string): string {
   return hash(`${uid}\u0000${stableRequestId}`);
+}
+function receiptRefFor(deps: DemoDeps, uid: string,
+  stableRequestId: string): FirebaseFirestore.DocumentReference {
+  return commandReceiptRef(deps.db, RECEIPT_COMMAND,
+    receiptId(uid, stableRequestId));
+}
+function receiptRequestHash(identity: Identity, action: string,
+  target: string, digest: string): string {
+  return commandRequestHash(identity.uid, action, target, digest);
+}
+/** The stored result of an exact retry, or undefined for a new request. */
+function replayedResult(deps: DemoDeps, saved: unknown, identity: Identity,
+  action: string, target: string, digest: string):
+  Record<string, unknown> | undefined {
+  const lookup = classifyCommandReceiptData<Record<string, unknown>>(saved, {
+    command: RECEIPT_COMMAND,
+    requestHash: receiptRequestHash(identity, action, target, digest),
+    nowMillis: deps.now().getTime(),
+  });
+  if (lookup.kind === "none") return undefined;
+  if (lookup.kind === "conflict" || !lookup.result) {
+    return fail("already-exists", "Request id has different material.");
+  }
+  return lookup.result;
+}
+function writeReceipt(deps: DemoDeps, tx: FirebaseFirestore.Transaction,
+  ref: FirebaseFirestore.DocumentReference, identity: Identity,
+  action: string, target: string, digest: string,
+  result: Record<string, unknown>): void {
+  writeCommandReceipt(tx, ref, {command: RECEIPT_COMMAND,
+    retention: "request",
+    requestHash: receiptRequestHash(identity, action, target, digest),
+    result, nowMillis: deps.now().getTime()});
 }
 function invitationIdFor(secret: Uint8Array, uid: string,
   stableRequestId: string): string {
@@ -168,13 +209,17 @@ async function currentCapability(deps: DemoDeps,
 async function adminMutation(deps: DemoDeps, identity: Identity,
   action: string, target: string, stableRequestId: string,
   input: Record<string, unknown>, apply: (tx: FirebaseFirestore.Transaction) =>
-    Promise<MutationResult>): Promise<Record<string, unknown>> {
+    Promise<MutationResult>,
+  actorFields: string[] = []): Promise<Record<string, unknown>> {
   await owner(deps, identity);
   const digest = material(action, target, input);
-  const receiptRef = deps.db.collection(RECEIPTS)
-    .doc(receiptId(identity.uid, stableRequestId));
+  const receiptRef = receiptRefFor(deps, identity.uid, stableRequestId);
   const auditRef = deps.db.collection("adminAuditLogs")
-    .doc(`sales_demo_${receiptRef.id}`);
+    .doc(`sales_demo_${receiptId(identity.uid, stableRequestId)}`);
+  // The receipt keeps no actor ids; the request hash binds the actor, so a
+  // replay restores them from the caller.
+  const withActor = (result: Record<string, unknown>) => ({...result,
+    ...Object.fromEntries(actorFields.map((field) => [field, identity.uid]))});
   return deps.db.runTransaction(async (tx) => {
     await owner(deps, identity);
     await assertSalesMaterialPrivacyOpen(deps.db, input, tx);
@@ -188,22 +233,17 @@ async function adminMutation(deps: DemoDeps, identity: Identity,
         scopedTarget?.blueprintId ?? input.blueprintId, tx);
     }
     const receipt = await tx.get(receiptRef);
-    if (receipt.exists) {
-      const saved = receipt.data();
+    const saved = replayedResult(deps, receipt.data(), identity, action,
+      target, digest);
+    if (saved) {
       await assertSalesMaterialPrivacyOpen(deps.db, saved, tx);
-      if (saved?.actorUid !== identity.uid || saved?.action !== action ||
-          saved?.targetId !== target || saved?.materialHash !== digest) {
-        return fail("already-exists", "Request id has different material.");
-      }
-      return saved.result as Record<string, unknown>;
+      return withActor(saved);
     }
     const changed = await apply(tx);
     const createdAt = deps.now().toISOString();
-    tx.create(receiptRef, {schemaVersion: 1,
-      classification: "sales_private", receiptId: receiptRef.id,
-      actorUid: identity.uid, requestId: stableRequestId,
-      action, targetId: target, materialHash: digest,
-      result: changed.result, createdAt});
+    writeReceipt(deps, tx, receiptRef, identity, action, target, digest,
+      Object.fromEntries(Object.entries(changed.result)
+        .filter(([field]) => !actorFields.includes(field))));
     tx.create(auditRef, {actorUid: identity.uid, roles: ["adminOwner"],
       action, targetPath: action.includes("blueprint") ?
         `${BLUEPRINTS}/${target}` : `${INVITATIONS}/${target}`,
@@ -349,10 +389,21 @@ export async function issueInvitation(deps: DemoDeps, identity: Identity,
   const sessionCap = positive(body.sessionCap, 3);
   const secret = key(deps);
   await owner(deps, identity);
-  const prior = await deps.db.collection(RECEIPTS)
-    .doc(receiptId(identity.uid, stableRequestId)).get();
-  const previousId = prior.data()?.action === "salesDemo.invitation.issue" ?
-    prior.data()?.result?.invitationId : null;
+  const issueAction = "salesDemo.invitation.issue";
+  const issueInput = {blueprintId, blueprintRevision,
+    contactBinding: binding,
+    expiresAt: new Date(expiresAt).toISOString(), sessionCap};
+  // An exact retry keeps the invitation id it was first issued under, even
+  // after the signing key changes; anything else derives it afresh.
+  const prior = (await receiptRefFor(deps, identity.uid, stableRequestId)
+    .get()).data();
+  const priorId = (prior?.result as Record<string, unknown> | undefined)
+    ?.invitationId;
+  const previousId = typeof priorId === "string" &&
+    classifyCommandReceiptData(prior, {command: RECEIPT_COMMAND,
+      requestHash: receiptRequestHash(identity, issueAction, priorId,
+        material(issueAction, priorId, issueInput)),
+      nowMillis: deps.now().getTime()}).kind === "replay" ? priorId : null;
   const invitationId = typeof previousId === "string" ?
     id(previousId) : invitationIdFor(secret, identity.uid, stableRequestId);
   const issuedToken = tokenFor(secret, identity.uid, stableRequestId,
@@ -360,9 +411,7 @@ export async function issueInvitation(deps: DemoDeps, identity: Identity,
   const bindingDigest = binding ? contactDigest(secret, binding) : null;
   const ref = deps.db.collection(INVITATIONS).doc(invitationId);
   const result = await adminMutation(deps, identity,
-    "salesDemo.invitation.issue", invitationId, stableRequestId,
-    {blueprintId, blueprintRevision, contactBinding: binding,
-      expiresAt: new Date(expiresAt).toISOString(), sessionCap},
+    issueAction, invitationId, stableRequestId, issueInput,
     async (tx) => {
       const [old, blueprintSnap, gate] = await Promise.all([
         tx.get(ref),
@@ -430,7 +479,7 @@ export async function revokeInvitation(deps: DemoDeps, identity: Identity,
       tx.update(ref, result);
       return {result, beforeRevision: expected,
         afterRevision: expected + 1};
-    });
+    }, ["revokedByUid"]);
 }
 
 async function validInvitation(deps: DemoDeps,
@@ -539,13 +588,6 @@ function receiptMaterial(action: string, target: string,
   payload: Record<string, unknown>): string {
   return material(action, target, payload);
 }
-function assertReceipt(saved: FirebaseFirestore.DocumentData | undefined,
-  identity: Identity, action: string, target: string, digest: string): void {
-  if (saved?.actorUid !== identity.uid || saved?.action !== action ||
-      saved?.targetId !== target || saved?.materialHash !== digest) {
-    fail("already-exists", "Request id has different material.");
-  }
-}
 
 export async function startSession(deps: DemoDeps, identity: Identity,
   raw: unknown): Promise<Record<string, unknown>> {
@@ -556,8 +598,7 @@ export async function startSession(deps: DemoDeps, identity: Identity,
   const stableRequestId = requestId(body.requestId);
   const digest = receiptMaterial("salesDemo.session.start", invitationId, {});
   const inviteRef = deps.db.collection(INVITATIONS).doc(invitationId);
-  const receiptRef = deps.db.collection(RECEIPTS)
-    .doc(receiptId(identity.uid, stableRequestId));
+  const receiptRef = receiptRefFor(deps, identity.uid, stableRequestId);
   const candidateSessionId = hash(
     `session\u0000${invitationId}\u0000${identity.uid}`+
     `\u0000${stableRequestId}`).slice(0, 40);
@@ -573,10 +614,10 @@ export async function startSession(deps: DemoDeps, identity: Identity,
     ]);
     await grant(deps, identity, invitation,
       blueprintSnap.data() as Blueprint | undefined, token, tx);
-    if (receiptSnap.exists) {
-      assertReceipt(receiptSnap.data(), identity,
-        "salesDemo.session.start", invitationId, digest);
-      const savedId = receiptSnap.data()?.result?.sessionId;
+    const replay = replayedResult(deps, receiptSnap.data(), identity,
+      "salesDemo.session.start", invitationId, digest);
+    if (replay) {
+      const savedId = replay.sessionId;
       if (typeof savedId !== "string") {
         return fail("failed-precondition", "Invalid start receipt.");
       }
@@ -631,12 +672,8 @@ export async function startSession(deps: DemoDeps, identity: Identity,
         invitation.sessionCount : invitation.sessionCount + 1,
       startReceiptCount: invitation.startReceiptCount + 1,
       startWindowMinute: minute, startWindowCount: windowCount + 1});
-    tx.create(receiptRef, {schemaVersion: 1,
-      classification: "sales_private", receiptId: receiptRef.id,
-      actorUid: identity.uid, requestId: stableRequestId,
-      action: "salesDemo.session.start", targetId: invitationId,
-      materialHash: digest, result: {sessionId: active.sessionId},
-      createdAt: now.toISOString(), expiresAt: active.expiresAt});
+    writeReceipt(deps, tx, receiptRef, identity, "salesDemo.session.start",
+      invitationId, digest, {sessionId: active.sessionId});
     return sessionProjection(active);
   });
 }
@@ -734,8 +771,7 @@ export async function advanceSession(deps: DemoDeps, identity: Identity,
     {expected, ...(Object.prototype.hasOwnProperty.call(body, "choice") ?
       {choice: body.choice} : {})});
   const sessionRef = deps.db.collection(SESSIONS).doc(sessionId);
-  const receiptRef = deps.db.collection(RECEIPTS)
-    .doc(receiptId(identity.uid, stableRequestId));
+  const receiptRef = receiptRefFor(deps, identity.uid, stableRequestId);
   return deps.db.runTransaction(async (tx) => {
     const sessionSnap = await tx.get(sessionRef);
     const session = sessionSnap.data() as Session | undefined;
@@ -760,11 +796,9 @@ export async function advanceSession(deps: DemoDeps, identity: Identity,
         session.blueprintRevision !== invitation.blueprintRevision) {
       return fail("permission-denied", "Trial blueprint changed.");
     }
-    if (receiptSnap.exists) {
-      assertReceipt(receiptSnap.data(), identity,
-        `salesDemo.session.${action}`, sessionId, digest);
-      return receiptSnap.data()?.result as Record<string, unknown>;
-    }
+    const replay = replayedResult(deps, receiptSnap.data(), identity,
+      `salesDemo.session.${action}`, sessionId, digest);
+    if (replay) return replay;
     if (session.revision !== expected) {
       return fail("failed-precondition", "Session revision changed.");
     }
@@ -777,12 +811,8 @@ export async function advanceSession(deps: DemoDeps, identity: Identity,
         deps.now().toISOString()) : () => {};
     tx.update(sessionRef, next);
     recordCompleted();
-    tx.create(receiptRef, {schemaVersion: 1,
-      classification: "sales_private", receiptId: receiptRef.id,
-      actorUid: identity.uid, requestId: stableRequestId,
-      action: `salesDemo.session.${action}`, targetId: sessionId,
-      materialHash: digest, result, createdAt: deps.now().toISOString(),
-      expiresAt: session.expiresAt});
+    writeReceipt(deps, tx, receiptRef, identity,
+      `salesDemo.session.${action}`, sessionId, digest, result);
     return result;
   });
 }
