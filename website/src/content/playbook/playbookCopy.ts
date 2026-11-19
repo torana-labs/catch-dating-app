@@ -1,5 +1,6 @@
 // The playbook renderer's own words: the labels it adds around a page's
 // content. Page copy lives in each page's JSON under ./pages.
+import {brand} from "../brand.ts";
 
 export const playbookCopy = {
   /** The breadcrumb row's accessible name. */
@@ -13,6 +14,11 @@ export const playbookCopy = {
   /** A tab band's tab list and an article's contents: their accessible names. */
   tabsLabel: "Choose one",
   articleTocLabel: "On this page",
+  /** Under a host story's figure: what it counts and where it comes from (content/stories). */
+  storyFigure: {
+    line: "{label} · {source}",
+    sources: {catchRecords: `From ${brand.name} records`, selfReported: "Self-reported"},
+  },
   /** A flow's progress rail and tabs: their accessible names, and each step's status. */
   flowStepsLabel: "Steps",
   flowTabsLabel: "Sections",

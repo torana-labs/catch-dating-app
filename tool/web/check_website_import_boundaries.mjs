@@ -37,9 +37,13 @@ const allowedFeatureImports = new Map([
   ["hostBilling", new Set(["account"])],
   ["host", new Set(["marketing"])],
   ["organizers", new Set(["account", "claims", "events", "marketing", "reviews"])],
-  // A playbook page's closing band carries Catch Host's store badges.
-  ["playbook", new Set(["marketing"])],
+  // A playbook page's closing band carries Catch Host's store badges, and a
+  // tool form opens the page's try-it tool.
+  ["playbook", new Set(["marketing", "tryIt"])],
   ["reviews", new Set(["organizers"])],
+  // A try-it tool confirms the phone with the one shared sign-in sheet and
+  // ends with Catch Host's store badges.
+  ["tryIt", new Set(["account", "marketing"])],
 ]);
 
 if (args.selfTest) {

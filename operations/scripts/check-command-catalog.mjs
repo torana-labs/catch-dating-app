@@ -8,8 +8,8 @@ import {
   inputJsonSchema,
   loadCommandCatalog,
 } from "../src/command-client/command-catalog.mjs";
-import {EFFECT_CONFIRMATION_POLICY} from "../src/command-client/confirmation-policy.mjs";
-import {isMainModule} from "../src/command-client/argv.mjs";
+import {EFFECT_CONFIRMATION_POLICY} from "../../packages/command-client/src/confirmation-policy.mjs";
+import {isMainModule} from "../../packages/command-client/src/argv.mjs";
 
 // Client-side parity for contracts/commands/catalog.json. Functions'
 // catalog.test.ts keeps the catalog in step with the callables; this keeps it
@@ -42,7 +42,7 @@ export async function checkCommandCatalog({repoRoot = defaultRepoRoot, catalogPa
   for (const effect of declaredEffects) {
     if (!EFFECT_CONFIRMATION_POLICY[effect]) {
       findings.push({id: "effect-class-without-client-policy", effect,
-        message: "Add this effect class to operations/src/command-client/confirmation-policy.mjs."});
+        message: "Add this effect class to packages/command-client/src/confirmation-policy.mjs."});
     }
   }
   for (const effect of Object.keys(EFFECT_CONFIRMATION_POLICY)) {

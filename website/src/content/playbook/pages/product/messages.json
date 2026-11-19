@@ -405,27 +405,13 @@
         "Invite links for your guests, switched on",
         "Counting starts the moment you claim them"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "label": "Try it",
-          "title": "Make your links and messages",
-          "fields": [
-            {
-              "label": "Your event link",
-              "placeholder": "lu.ma/sunday-social"
-            },
-            {
-              "label": "Where you promote it",
-              "placeholder": "Instagram, run club WhatsApp, Kabir, Brindle Café"
-            }
-          ],
-          "actions": [
-            "Make my links",
-            "Send them to my WhatsApp"
-          ],
-          "note": "Private until you claim it. Takes about a minute."
-        }
+      "leadForm": {
+        "id": "try_links",
+        "requestKind": "tool",
+        "input": "url",
+        "label": "Your event link",
+        "submitLabel": "Make my links",
+        "note": "Private until you claim it. Takes about a minute."
       }
     },
     {

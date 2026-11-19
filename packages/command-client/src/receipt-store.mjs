@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import {stableStringify} from "../platform/canonical-json.mjs";
-import {OperationsError} from "../platform/errors.mjs";
+import {stableStringify} from "./canonical-json.mjs";
+import {OperationsError} from "./errors.mjs";
 
 // Immutable local receipts, one file per execution id. Writing the same
 // receipt again is a no-op; writing a different one under the same id fails.

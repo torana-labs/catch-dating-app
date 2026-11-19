@@ -6298,12 +6298,28 @@
       "linkLineHeight": {
         "$type": "number",
         "$description": "The footer links' leading, which sets their row rhythm.",
-        "$value": 2
+        "$value": 1.4
       },
       "noteLineHeight": {
         "$type": "number",
         "$description": "The footer footnotes' leading.",
         "$value": 1.6
+      },
+      "columnMin": {
+        "$type": "dimension",
+        "$description": "The narrowest a footer link column gets before the groups flow into fewer columns: wide enough for the longest link on one line.",
+        "$value": {
+          "value": 192,
+          "unit": "px"
+        }
+      },
+      "linkPadBlock": {
+        "$type": "dimension",
+        "$description": "Space above and below each footer link, so a one-line link keeps a 28px row.",
+        "$value": {
+          "value": 4.2,
+          "unit": "px"
+        }
       }
     },
     "panel": {

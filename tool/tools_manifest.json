@@ -7108,6 +7108,7 @@
         "node --test operations/test/admin-cli.test.mjs"
       ],
       "impactPaths": [
+        "packages/command-client/**",
         "operations/test/admin-cli.test.mjs",
         "operations/src/**"
       ],
@@ -7184,6 +7185,7 @@
         "node --test operations/test/catch-cli.test.mjs operations/test/command-catalog.test.mjs operations/test/command-client.test.mjs operations/test/command-tools.test.mjs"
       ],
       "impactPaths": [
+        "packages/command-client/**",
         "operations/src/catch-cli/**",
         "operations/src/command-client/**",
         "operations/src/command-tools/**",

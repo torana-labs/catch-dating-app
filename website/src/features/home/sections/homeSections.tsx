@@ -25,7 +25,7 @@ import type {ReactNode} from "react";
 import {homeCityAreas, homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {activeMarket} from "@content/markets";
-import {guestAppActionLabel, guestAppLive, whatsappChatCopy, whatsappChatHref} from "@content/site";
+import {guestAppActionLabel, guestAppHref, guestAppLive, whatsappChatCopy, whatsappChatHref} from "@content/site";
 import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
@@ -33,7 +33,7 @@ import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
 import {useFoundingHostOffer} from "../../marketing/useFoundingHostOffer";
 import {CityPicker} from "./CityPicker";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
-import {useAppNoticeController} from "../useAppNoticeController";
+import {useAppNoticeController} from "../../marketing/useAppNoticeController";
 import {useLaunchNoticeController} from "../useLaunchNoticeController";
 import {useCityAlertsController} from "../leads/useCityAlertsController";
 import {useHostReferralController, type HostReferralField} from "../leads/useHostReferralController";
@@ -571,7 +571,7 @@ export function HomePageSections({captures, downloadUrl, home}: {captures: Captu
         <HomeRefer home={home} />
         <HomeFaq />
       </WebsitePageMain>
-      <PublicSiteFooter appHref="#app" cities={footerCities(home.cities)} cityFormats={chrome.cityFormats} exploreHref={home.exploreHref} />
+      <PublicSiteFooter appHref={guestAppHref} cities={footerCities(home.cities)} cityFormats={chrome.cityFormats} exploreHref={home.exploreHref} />
       <CatchSiteDock
         label={copy.dock.label}
         primary={{label: guestAppActionLabel, href: home.live ? "#app" : "#whats-on", accent: "pink"}}

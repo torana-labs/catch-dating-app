@@ -1,0 +1,63 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "app_notify",
+  "route": "app_notify",
+  "meta": {
+    "title": "The {{brand.stores.consumerAppName}} app | Get notified",
+    "description": "The {{brand.stores.consumerAppName}} app is on its way. Browse and book on the web today, and leave your WhatsApp number for one message the day the app is on the App Store and Google Play.",
+    "socialDescription": "Be first in the {{brand.stores.consumerAppName}} app.",
+    "noindex": false
+  },
+  "header": {
+    "variant": "minimal"
+  },
+  "footer": {
+    "variant": "guest"
+  },
+  "sections": [
+    {
+      "type": "split",
+      "id": "app",
+      "ground": "pink",
+      "pageTitle": true,
+      "kicker": "The {{brand.stores.consumerAppName}} app · coming soon",
+      "title": "Be first in the {{brand.stores.consumerAppName}} app.",
+      "lead": "Browse and book on the web today. Leave your WhatsApp number and we’ll message you the day the app is on the App Store and Google Play.",
+      "actions": [
+        {
+          "label": "Get notified",
+          "to": {
+            "anchor": "notify"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "See what’s on",
+          "to": {
+            "route": "visitor_discovery"
+          },
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {
+        "kind": "capture",
+        "slot": "guest-explore"
+      }
+    },
+    {
+      "type": "custom",
+      "id": "notify",
+      "ground": "paper",
+      "component": "appLaunchNotice",
+      "kicker": "Get notified",
+      "title": "One message, the day it launches.",
+      "lead": "We’ll message you on WhatsApp when the app is in the stores. New plans in your city only if you tick the box.",
+      "labels": [
+        {
+          "key": "city",
+          "text": "Your city"
+        }
+      ]
+    }
+  ]
+}

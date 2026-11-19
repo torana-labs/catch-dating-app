@@ -40,7 +40,7 @@ describe("public route navigation targets", () => {
     const nav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href")))
       .toEqual(["/mumbai/", "/new-to-mumbai/", "/safety/", "/host/"]);
-    expect(within(screen.getByRole("banner")).getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("/#app");
+    expect(within(screen.getByRole("banner")).getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("/app/");
     expect(within(screen.getByRole("banner")).getByRole("button", {name: "Mumbai"})).toBeTruthy();
     expect(screen.getByRole("heading", {level: 1, name: "What’s on in Mumbai"})).toBeTruthy();
   });

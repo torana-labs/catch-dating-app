@@ -2,8 +2,12 @@
 // /pricing/ and the fee calculator both use. The facts are the owner's
 // (16 Nov 2026): 5% of ticket sales, net of refunds, never more than
 // ₹10,000 per 30-day billing cycle; 30 days free from the first event, 90
-// for founding hosts; venues and companies pay the same. Every figure a page
-// shows is worked out here from these facts, never typed as a string, so a
+// for founding hosts; venues and companies pay the same. On 19 Nov 2026 the
+// owner added host referrals: a referred host gets 60 free days instead of
+// 30 (a founding host keeps 90), and the referring host a month of fees free
+// once the referred host pays its first bill (functions/src/money/
+// organizerReferrals.ts grants the same 60 days). Every figure a page shows is
+// worked out here from these facts, never typed as a string, so a
 // change to the rate or the cap reaches every page at once. Marketing pages
 // say "a month", never "per billing cycle" (owner, 18 Nov 2026); the host
 // billing page states the 30-day cycle itself.
@@ -23,6 +27,8 @@ export const hostPricing = {
   trialDays: 30,
   /** Free days for a founding host. */
   foundingTrialDays: 90,
+  /** Free days for a host another host referred; a founding host keeps its 90. */
+  referralTrialDays: 60,
 } as const;
 
 /** The fee calculator's slider, in rupees of ticket sales in one billing cycle. */
@@ -85,6 +91,7 @@ export const hostPricingFacts = {
   cycleDays: hostPricing.cycleDays,
   trialDays: hostPricing.trialDays,
   foundingTrialDays: hostPricing.foundingTrialDays,
+  referralTrialDays: hostPricing.referralTrialDays,
   zero: formatPricingMoney(0),
 } as const;
 

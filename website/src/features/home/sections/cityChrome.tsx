@@ -2,7 +2,7 @@ import {CatchButton} from "@catch/web-ui";
 import {homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {countryName} from "@content/markets";
-import {siteFooterCopy, siteHeaderCopy} from "@content/site";
+import {guestAppHref, siteFooterCopy, siteHeaderCopy} from "@content/site";
 import type {ReactNode} from "react";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain, type SiteFooterCity, type SiteFooterCityPages, type SiteNavItem} from "../../../shared/site";
 import type {CityDiscoveryLinks} from "../../discovery/discoveryModel";
@@ -54,8 +54,8 @@ export function cityChromeLinks(city: HomeCity, discovery?: CityDiscoveryLinks):
  * with each city's status sits left of Get the app. The footer lists every
  * city, the ones not open marked soon.
  */
-export function CitySiteChrome({appHref = "/#app", children, cities, city, discovery, dock, exploreHref, onChooseCity, showWhatsOn = true}: {
-  /** The get-the-app band: on the homepage itself, its own anchor. */
+export function CitySiteChrome({appHref = guestAppHref, children, cities, city, discovery, dock, exploreHref, onChooseCity, showWhatsOn = true}: {
+  /** Where Get the app goes: the guest app page (/app/), or on the homepage itself its own band. */
   appHref?: string;
   children: ReactNode;
   cities: readonly HomeCity[];

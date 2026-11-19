@@ -3,7 +3,10 @@ import path from "node:path";
 import {describe, expect, it} from "vitest";
 import {citiesPageCopy} from "@content/citiesPage";
 import {hostLandingCopy, hostNightFormats} from "@content/hostLanding";
-import {siteFooterCopy, siteHeaderCopy} from "@content/site";
+import {guestAppLive, siteFooterCopy, siteHeaderCopy} from "@content/site";
+import {shelvedResourcesPlaybookPages} from "@content/playbook/pages/resources/index";
+import {publishedHostStories} from "@content/stories/hostStories";
+import {fixtureHostStoryPage} from "../../stories/fixtures/hostStories";
 import {websiteCities} from "@content/markets";
 import {hostPricingFacts} from "@content/pricing";
 import {
@@ -24,7 +27,8 @@ import {
   registeredPlaybookPages,
   resolvePlaybookPage,
 } from "./playbookPages";
-import {matchPlaybookRoute, playbookFamilyRoutes, playbookFixedRoutes, playbookTopSegment, siteRouteHrefs} from "./playbookRoutes";
+import {matchPlaybookRoute, playbookFamilyRoutes, playbookFixedRoutes, playbookPathForContentKey, playbookTopSegment, siteRouteHrefs} from "./playbookRoutes";
+import {playbookTryItTool, playbookTryItTools, tryItToolCommands, websiteReadyTryItCommands} from "../tryIt/tryItModel";
 
 const websiteRoot = path.resolve(__dirname, "../../..");
 const captureSlots = new Set<string>(
@@ -40,6 +44,7 @@ const pageAnchors = new Map(loaded.filter(({ref}) => !("path" in ref.match.route
   .map(({ref, raw}) => [ref.match.contentKey, new Set(raw.sections.map((section) => section.id))]));
 const context = {
   routeIds: new Set<string>([...Object.keys(siteRouteHrefs), ...playbookFixedRoutes.map((route) => route.id)]),
+  familyRouteIds: new Set<string>(playbookFamilyRoutes.map((route) => route.id)),
   captureSlots,
   alwaysNoindexRoutes: alwaysNoindexPlaybookRoutes,
   routeAnchors,
@@ -94,10 +99,12 @@ describe("playbook page indexes", () => {
     const hostFooter = siteFooterCopy.host.columns.flatMap((column) => column.links);
     const landing = [...hostNightFormats.map((item) => ({href: item.page})), ...hostLandingCopy.ways.chips, ...hostLandingCopy.ways.organisations,
       ...hostLandingCopy.ways.stages.flatMap((stage) => "href" in stage.to ? [{href: stage.to.href}] : [])];
-    const hrefs = [...hostMenu, ...hostFooter, ...landing].map((link) => link.href.split("#")[0]);
+    // The guest app page (/app/) is a guest page: the guest header's action and the guest footer's Explore column link it.
+    const guestChrome = [siteHeaderCopy.guest.action, ...siteFooterCopy.explore];
+    const hrefs = [...hostMenu, ...hostFooter, ...landing, ...guestChrome].map((link) => link.href.split("#")[0]);
     const siteRoutes = new Set<string>([...Object.values(siteRouteHrefs), "/explore/"]);
     for (const href of hrefs) expect(siteRoutes.has(href) || resolvePlaybookPage(href) !== null, `${href} has no page`).toBe(true);
-    // Every page that ships (the 15 organiser types, the product pages, About, Safety, the ways in) is one press from a host page.
+    // Every page that ships (the 15 organiser types, the product pages, About, Safety, the ways in, the tools and playbooks) is one press from a host page or the guest chrome.
     const linked = new Set(hrefs);
     for (const route of playbookFixedRoutes.filter((candidate) => fixedWithContent.has(candidate.id))) {
       expect(linked.has(route.path), `${route.path} is linked from no menu, host footer or /host/`).toBe(true);
@@ -128,8 +135,8 @@ describe("playbook page indexes", () => {
 
   it("holds back a page whose custom section has no component yet", async () => {
     const page = (await loadPlaybookPage(resolvePlaybookPage("/host/run-clubs/")!))!;
-    const withTool = {...page, sections: [...page.sections, {type: "custom" as const, id: "tool", ground: "white" as const, component: "noShowCalculator" as const}]};
-    expect(pendingPlaybookBindings(withTool)).toEqual(["custom:noShowCalculator"]);
+    const withTool = {...page, sections: [...page.sections, {type: "custom" as const, id: "tool", ground: "white" as const, component: "eventPageFromLink" as const}]};
+    expect(pendingPlaybookBindings(withTool)).toEqual(["custom:eventPageFromLink"]);
   });
 
   it("renders /pricing/ from its content: the fee band, the cap and what is included bound, indexed (owner, 19 Nov 2026)", async () => {
@@ -152,35 +159,71 @@ describe("playbook page indexes", () => {
 
   it("indexes only the pages the owner approved for search (18 and 19 Nov 2026); the walkthrough request form stays out", async () => {
     expect((await approvedPlaybookPaths()).sort()).toEqual([
-      "/about/", "/host/brands/", "/host/colleges/", "/host/communities/", "/host/creators/", "/host/demo/",
+      "/about/", "/app/", "/host/brands/", "/host/colleges/", "/host/communities/", "/host/creators/", "/host/demo/",
       "/host/facilities/", "/host/first-event/", "/host/nightlife/", "/host/outdoors/", "/host/quiz-nights/",
       "/host/racket-sports/", "/host/run-clubs/", "/host/start/", "/host/studios/", "/host/supper-clubs/", "/host/switch/",
-      "/host/teams/", "/host/venues/", "/host/workshops/", "/how-it-works/", "/pricing/", "/product/bookings-and-memberships/",
+      "/host/teams/", "/host/venues/", "/host/workshops/", "/how-it-works/",
+      "/playbooks/", "/playbooks/quiz-night/", "/playbooks/racket-sports/", "/playbooks/run-club/", "/playbooks/supper-club/",
+      "/pricing/", "/product/bookings-and-memberships/",
       "/product/forms/", "/product/guest-records/", "/product/messages-and-growth/", "/product/reports-and-payouts/",
       "/product/running-the-event/", "/product/the-room/", "/product/your-page/", "/programmes/", "/safety/",
+      "/tools/no-show-calculator/",
     ]);
   });
 
   const productV2 = loaded.filter(({ref}) => ref.match.route.group === "product" && ref.match.contentKey !== "pricing");
 
-  it("hides every try-it band and button until its command ships, on every product page", () => {
+  // The pages whose try-it band, buttons and closing tool form are live now.
+  // A page joins when its command is in production and its sections flip to
+  // built; its command must be website-ready (features/tryIt/tryItModel.ts).
+  const liveTryItPages = ["product_your_page"];
+
+  it("hides every try-it band and button unless its command's website tool is ready, on every product page", () => {
     expect(productV2.map(({ref}) => ref.match.contentKey).sort()).toEqual([
       "how_it_works", "product_bookings", "product_event", "product_forms", "product_guests", "product_messages",
       "product_reports", "product_room", "product_your_page",
     ]);
     for (const {ref, raw} of productV2) {
       const key = ref.match.contentKey;
-      expect(raw.sections.find((section) => section.id === "try")?.status, `${key} #try`).toBe("tryIt");
+      const ready = playbookTryItTool(key) !== null;
+      const tryBand = raw.sections.find((section) => section.id === "try");
+      const toolForms = raw.sections.flatMap((section) => "leadForm" in section && section.leadForm?.requestKind === "tool" ? [{section, form: section.leadForm}] : []);
       for (const section of raw.sections) {
-        if (section.type === "cta" && section.leadForm?.input && section.leadForm.input !== "tel") expect(section.status, `${key} ${section.id}`).toBe("tryIt");
         if (!playbookIsLive(section)) expect(section.statusNote, `${key} ${section.id} says why it is hidden`).toBeTruthy();
+        if (ready) continue;
+        if (section.type === "cta" && section.leadForm?.input && section.leadForm.input !== "tel") expect(section.status, `${key} ${section.id}`).toBe("tryIt");
         forEachAction(section, (item, at) => {
           if ("anchor" in item.to && item.to.anchor === "try") expect(playbookIsLive(item), `${key} ${section.id}.${at}`).toBe(false);
         });
       }
       const live = livePlaybookPage(raw);
-      expect(JSON.stringify(live), key).not.toMatch(/"anchor":"try"|"requestKind":"tool"/u);
+      if (!ready) {
+        expect(tryBand?.status, `${key} #try`).toBe("tryIt");
+        expect(JSON.stringify(live), key).not.toMatch(/"anchor":"try"|"requestKind":"tool"/u);
+        continue;
+      }
+      // A ready page's try band holds its tool form, which the tool slot draws.
+      expect(tryBand && "leadForm" in tryBand ? tryBand.leadForm?.requestKind : undefined, `${key} #try holds its tool form`).toBe("tool");
+      for (const {section, form} of toolForms) expect(form.input, `${key} ${section.id} reads a link`).toBe("url");
+      const liveTry = live.sections.some((section) => section.id === "try");
+      expect(liveTry, `${key} #try is live only once listed in liveTryItPages`).toBe(liveTryItPages.includes(key));
     }
+    for (const key of liveTryItPages) expect(playbookTryItTool(key), `${key} has a website-ready tool`).not.toBeNull();
+  });
+
+  it("maps every website-ready command to a product page tool, and the tools to the commands they run", () => {
+    const tools = Object.values(playbookTryItTools);
+    for (const command of websiteReadyTryItCommands) {
+      expect(tools.some((tool) => tryItToolCommands[tool] === command), `${command} has a page`).toBe(true);
+    }
+    for (const key of Object.keys(playbookTryItTools)) expect(resolvePlaybookPage(playbookPathForContentKey(key) ?? "/none/"), key).not.toBeNull();
+    expect(playbookTryItTool("product_guests")).toBeNull();
+  });
+
+  it("refuses a live link to a hidden try band", () => {
+    const {raw} = loaded.find(({ref}) => ref.match.contentKey === "product_your_page")!;
+    const hidden = {...raw, sections: raw.sections.map((section) => section.id === "try" ? {...section, status: "tryIt" as const, statusNote: "Hidden."} : section)};
+    expect(validatePlaybookPage(hidden, context).join("\n")).toMatch(/try/u);
   });
 
   it("never links a live page to a hidden section of another page", () => {
@@ -277,5 +320,83 @@ describe("playbook route resolution", () => {
       if (segment.endsWith("-")) expect(citySlugs.some((slug) => slug.startsWith(segment)), route.id).toBe(false);
     }
     for (const slug of citySlugs) expect(matchPlaybookRoute(`/${slug}/`), slug).toBeNull();
+  });
+});
+
+describe("shelved pages", () => {
+  const shelved = Object.entries(shelvedResourcesPlaybookPages);
+
+  it.each(shelved)("%s passes the contract, but no route serves it, no sitemap lists it and nothing links it", async (key, entry) => {
+    const raw = (await entry.load()).default as PlaybookPageDocument;
+    expect(validatePlaybookPage(raw, context)).toEqual([]);
+    expect(raw.id).toBe(key);
+    expect(raw.meta.noindex, `${key} stays noindex while shelved`).toBe(true);
+    const path = playbookFixedRoutes.find((route) => route.id === raw.route)!.path;
+    expect(matchPlaybookRoute(path)?.contentKey).toBe(key);
+    expect(resolvePlaybookPage(path), `${path} is shelved`).toBeNull();
+    expect(Object.values(playbookPageIndexes).some((index) => key in index), `${key} is in a served index`).toBe(false);
+    expect(await approvedPlaybookPaths()).not.toContain(path);
+    const chrome = [...siteHeaderCopy.host.nav.flatMap((item) => "links" in item ? item.links : [item]), ...siteHeaderCopy.guest.nav.flatMap((item) => "links" in item ? item.links : [item]),
+      ...siteFooterCopy.host.columns.flatMap((column) => column.links), ...siteFooterCopy.explore, ...siteFooterCopy.hosts];
+    expect(chrome.map((link) => link.href)).not.toContain(path);
+    for (const {raw: page} of loaded) expect(destinations(page).some((to) => "route" in to && to.route === raw.route), `${page.id} links ${raw.route}`).toBe(false);
+  });
+
+  it("holds /stories/ back while no host story is published: the page cannot render without real ones", async () => {
+    expect(publishedHostStories).toEqual([]);
+    const raw = (await shelvedResourcesPlaybookPages.stories.load()).default as PlaybookPageDocument;
+    expect(pendingPlaybookBindings(livePlaybookPage(raw))).toEqual(["cards:stories"]);
+    expect(resolvePlaybookPage("/stories/nobody/")).toBeNull();
+  });
+
+  it("keeps the fictional story page in fixtures: valid, family-routed, and registered nowhere", () => {
+    const pageAnchors = new Map([...context.pageAnchors, [fixtureHostStoryPage.id, new Set(fixtureHostStoryPage.sections.map((section) => section.id))]]);
+    expect(validatePlaybookPage(fixtureHostStoryPage, {...context, pageAnchors})).toEqual([]);
+    expect(pendingPlaybookBindings(fixtureHostStoryPage)).toEqual([]);
+    expect(resolvePlaybookPage("/stories/driftwood-bay-runners/")).toBeNull();
+  });
+});
+
+describe("tool, guide and guest app pages", () => {
+  it.each(["/tools/no-show-calculator/", "/playbooks/", "/playbooks/run-club/", "/playbooks/supper-club/", "/playbooks/quiz-night/", "/playbooks/racket-sports/", "/app/"])(
+    "renders %s: every section bound, brand resolved, indexed (owner, 19 Nov 2026)", async (path) => {
+      const page = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
+      expect(page, path).not.toBeNull();
+      expect(JSON.stringify(page)).not.toMatch(/\{\{/u);
+      expect(page.meta.noindex).toBe(false);
+    });
+
+  it("serves the guides as playbook_guide family pages, linked from the hub", async () => {
+    const hub = (await loadPlaybookPage(resolvePlaybookPage("/playbooks/")!))!;
+    const linked = destinations(hub).flatMap((to) => "page" in to ? [to.page] : []);
+    expect(linked).toEqual(["playbook_guide/run-club", "playbook_guide/supper-club", "playbook_guide/quiz-night", "playbook_guide/racket-sports"]);
+    for (const key of linked) expect(refs.some((ref) => ref.match.contentKey === key && ref.match.route.id === "playbook_guide"), key).toBe(true);
+  });
+
+  it("types no fee figure in the guides: one pricing line links /pricing/", () => {
+    for (const {ref, raw} of loaded.filter(({ref}) => ref.match.route.id === "playbook_guide" || ref.match.contentKey === "playbooks")) {
+      const text = JSON.stringify(raw);
+      expect(text, ref.match.contentKey).not.toMatch(/₹|\d+%/u);
+      if (ref.match.route.id === "playbook_guide") expect(destinations(raw).some((to) => "route" in to && to.route === "pricing"), ref.match.contentKey).toBe(true);
+    }
+  });
+
+  it("keeps the calculator's copy free of rates, benchmarks and typed fees: every figure is the host's", () => {
+    const calculator = loaded.find(({ref}) => ref.match.contentKey === "tools_no_show_calculator")!.raw;
+    const text = JSON.stringify(calculator);
+    expect(text).not.toMatch(/₹|\d+\s?%|\b(average|typical|industry|benchmark)\b/iu);
+    expect(calculator.sections.at(-1)!.type).toBe("cta");
+    const closing = calculator.sections.at(-1)! as Extract<PlaybookPageDocument["sections"][number], {type: "cta"}>;
+    expect(closing.actions?.map((item) => "route" in item.to ? item.to.route : null)).toEqual(["host_start", "host_walkthrough"]);
+  });
+
+  it("asks for the guest app launch notice only while the app is on no store, with no dating wording or release date", () => {
+    const app = loaded.find(({ref}) => ref.match.contentKey === "app_notify")!.raw;
+    // When the guest app reaches a store, /app/ becomes the download page: update app.json and this test together.
+    expect(guestAppLive).toBe(false);
+    const text = JSON.stringify(app);
+    expect(text).not.toMatch(/\b(dating|date night|matchmak\w*|matches|singles|romance|romantic|soulmates?)\b/iu);
+    expect(text).not.toMatch(/\b(20\d\d|january|february|march|april|may|june|july|august|september|october|november|december)\b/iu);
+    expect(app.sections.some((section) => section.type === "custom" && section.component === "appLaunchNotice")).toBe(true);
   });
 });

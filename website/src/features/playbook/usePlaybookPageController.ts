@@ -14,6 +14,8 @@ export interface PlaybookLeadFormProps {
   readonly form: PlaybookLeadForm;
   readonly pageId: string;
   readonly sectionId: string;
+  /** The band it sits in: a split's second column, or a closing band's capture. */
+  readonly placement: "split" | "cta";
 }
 
 /**
@@ -38,7 +40,7 @@ export interface PlaybookPageController {
   /** An action drawn as a plain link, where the kit has no click to tag. */
   readonly link: (item: PlaybookAction) => CatchBandLink;
   /** The section's lead form, or null while its kind's slot is empty or cannot draw it. */
-  readonly leadForm: (form: PlaybookLeadForm | undefined, sectionId: string) => ReactNode;
+  readonly leadForm: (form: PlaybookLeadForm | undefined, sectionId: string, placement: PlaybookLeadFormProps["placement"]) => ReactNode;
 }
 
 /** CTA analytics, route and WhatsApp destinations and lead-form slots for one page. */
@@ -59,9 +61,9 @@ export function usePlaybookPageController(page: PlaybookPageDocument, leadForms:
       action,
       actions: (items, sectionId) => items?.map((item) => action(item, sectionId)),
       link: (item) => ({label: item.label, href: playbookHref(item.to)}),
-      leadForm: (form, sectionId) => {
+      leadForm: (form, sectionId, placement) => {
         const slot = form ? leadForms[form.requestKind] : undefined;
-        return form && slot ? slot({form, pageId: page.id, sectionId}) : null;
+        return form && slot ? slot({form, pageId: page.id, sectionId, placement}) : null;
       },
     };
   }, [leadForms, page.id]);

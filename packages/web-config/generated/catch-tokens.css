@@ -475,8 +475,10 @@
   --catch-website-button-sm-compact-size: 13px;
   --catch-website-footer-compact-pad-bottom: 26px;
   --catch-website-footer-title-size: 22px;
-  --catch-website-footer-link-line-height: 2;
+  --catch-website-footer-link-line-height: 1.4;
   --catch-website-footer-note-line-height: 1.6;
+  --catch-website-footer-column-min: 192px;
+  --catch-website-footer-link-pad-block: 4.2px;
   --catch-website-panel-pad-block: 88px;
   --catch-website-panel-pad-inline: 72px;
   --catch-website-radius-field: 14px;

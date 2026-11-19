@@ -1,6 +1,5 @@
 import {homePageCopy as copy} from "@content/homePage";
 import {websiteCities} from "@content/markets";
-import type {CitySource} from "./cityChoice";
 import {
   parseJoinWaitlistHttpResponse,
   type JoinWaitlistHTTPRequest,
@@ -8,6 +7,9 @@ import {
 } from "../../shared/api/joinWaitlistContract";
 
 export type LaunchNoticeReceipt = Extract<JoinWaitlistHTTPResponse, {ok: true}>;
+
+/** How the site came to its city, as the waitlist contract records it (features/home/cityChoice's CitySource). */
+type CitySource = NonNullable<JoinWaitlistHTTPRequest["citySource"]>;
 
 /**
  * A typed mobile number as E.164, or null. A number without a dialling code

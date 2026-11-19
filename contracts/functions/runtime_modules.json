@@ -556,6 +556,7 @@
     "OrganizerMomentRunDocument",
     "OrganizerPaymentConnectionDocument",
     "OrganizerPublicPageDocument",
+    "OrganizerReferralDocument",
     "OrganizerSenderConnectionActionCallablePayload",
     "OrganizerSenderConnectionDocument",
     "OrganizerTrackingSettingsCallableResponse",
@@ -822,7 +823,8 @@
     "ImportOrganizerFromLinkCallablePayload",
     "ImportGuestListCallablePayload",
     "ImportEventFromLinkCallablePayload",
-    "CreatePromotionKitCallablePayload"
+    "CreatePromotionKitCallablePayload",
+    "ImportFormFromLinkCallablePayload"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",
@@ -1058,6 +1060,7 @@
     "ImportOrganizerFromLinkCallableResponse",
     "ImportGuestListCallableResponse",
     "ImportEventFromLinkCallableResponse",
-    "CreatePromotionKitCallableResponse"
+    "CreatePromotionKitCallableResponse",
+    "ImportFormFromLinkCallableResponse"
   ]
 }

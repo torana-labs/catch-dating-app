@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import {inputJsonSchema, schemaIssues} from "../command-client/command-catalog.mjs";
-import {confirmationPolicy} from "../command-client/confirmation-policy.mjs";
+import {confirmationPolicy} from "../../../packages/command-client/src/confirmation-policy.mjs";
 import {OperationsError} from "../platform/errors.mjs";
 
 // Turns contracts/commands/catalog.json into AI tool definitions, and runs the
@@ -17,6 +17,9 @@ import {OperationsError} from "../platform/errors.mjs";
 //    previewHash, so the server refuses if anything changed since.
 // 4. For effect classes that message guests or move money, the confirmation
 //    must also name the exact previewHash the person was shown.
+// 5. One idempotency key per action, from preview through apply. Commands
+//    that read a page find that read by the preview's key, so apply reuses
+//    it; a retried apply with the same key replays instead of applying twice.
 
 const DEFAULT_PENDING_TTL_MS = 15 * 60 * 1000;
 const PERSON_SOURCES = new Set(["person"]);
@@ -125,7 +128,6 @@ export class CommandToolSession {
       effect: command.effect,
       input: structuredClone(input),
       previewKey,
-      applyKey: existing?.applyKey ?? null,
       status: response?.status ?? null,
       previewHash: response?.previewHash ?? null,
       summary: response?.summary ?? null,
@@ -162,12 +164,12 @@ export class CommandToolSession {
         {details: {effect: record.effect}});
     }
     const command = this.catalog.commandsById.get(record.commandId);
-    // One apply key per pending preview: retrying after an unknown outcome
-    // replays the stored result instead of applying twice.
-    record.applyKey ??= this.newKey();
+    // The preview's key: the server finds the preview's work (such as a page
+    // read) by it, and a retry after an unknown outcome replays the stored
+    // result instead of applying twice.
     const payload = {
       mode: "apply",
-      idempotencyKey: record.applyKey,
+      idempotencyKey: record.previewKey,
       surface: this.surface,
       confirm: {commandId: record.commandId, previewHash: record.previewHash},
       input: record.input,
