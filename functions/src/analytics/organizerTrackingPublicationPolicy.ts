@@ -36,6 +36,14 @@ export interface OrganizerTrackingPublicationPolicy {
   readonly excludedActivityKinds: readonly string[];
   /** Canonical interaction models that never carry organiser tags. */
   readonly excludedInteractionModels: readonly string[];
+  /**
+   * Organiser profile classification for Catch's own tags (owner decision,
+   * 19 Nov 2026, #2063): whether an organiser with any public external
+   * listing counts as unknown, and so is excluded. External listings carry no
+   * reviewed canonical classification. Kept as its own switch because the
+   * owner may allow a narrow deterministic case for scraped organisers.
+   */
+  readonly externalListingsCountAsUnknown: boolean;
 }
 
 export const organizerTrackingPublicationPolicy:
@@ -57,6 +65,7 @@ export const organizerTrackingPublicationPolicy:
       ["socialRun", "singlesMixer", "barCrawl", "dinner"]),
     excludedInteractionModels: Object.freeze(
       ["pairedRotations", "seatedTable", "freeFormMixer", "routeStops"]),
+    externalListingsCountAsUnknown: true,
   });
 
 export type OrganizerTrackingEventPolicyReason =

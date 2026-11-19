@@ -7,6 +7,8 @@ import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
 import {assertPublicOrganizerPageEligible} from "../shared/publicOrganizerPage";
 import {validateCallableWithAjv} from "../shared/validation";
+import {readOrganizerProfileClassification} from
+  "./organizerProfileClassification";
 import {organizerTrackingEventPolicyReason,
   organizerTrackingPublicationPolicy} from
   "./organizerTrackingPublicationPolicy";
@@ -202,10 +204,15 @@ export async function readPublicOrganizerTrackingSettingsHandler(
     policyReason = nativeEvent.exists ? trackingEventPolicyReason(value) :
       "eventClassificationUnavailable";
   }
+  // Catch's own tags on the organiser profile: a yes/no from the server
+  // classification, never which class excluded it (CAT-247, #2063).
+  const profileTagsEligible = eventId ? false :
+    await readOrganizerProfileClassification(db, organizerId) === "eligible";
   // Never read private settings here while publication is blocked. Public
   // projection cannot expose IDs, staff audit, private URLs or form values.
   const result = {organizerId, eventId, enabled: publicationAllowed,
-    metaPixelId: null, googleMeasurementId: null, policyReason};
+    metaPixelId: null, googleMeasurementId: null, policyReason,
+    profileTagsEligible};
   if (!validatePublicOrganizerTrackingSettingsCallableResponse(result)) {
     throw new HttpsError("internal", "Public tracking settings need review.");
   }
