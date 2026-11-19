@@ -172,3 +172,22 @@ test("operations and the shared package throw one error class", async () => {
   assert.equal(platformJson.hashValue({b: 1, a: [2, {z: null, y: "é"}]}),
     "ec16434fd977b8278695259ef46f4abb10fc5095b65acc000e1987bed40a04f9");
 });
+
+test("tool/ and operations/ read the admin action catalog through one reader", async () => {
+  const shared = await import("../../packages/command-client/src/admin-catalog.mjs");
+  const tool = await import("../../tool/lib/admin_registries.mjs");
+  assert.equal(tool.readAdminActionCatalog, shared.readAdminActionCatalog);
+  const catalog = shared.readAdminActionCatalog();
+  const ids = catalog.actions.map((action) => action.actionId);
+  assert.deepEqual(ids, [...ids].sort());
+  for (const workflow of catalog.workflows) {
+    assert.deepEqual(workflow.actions, catalog.actions
+      .filter((action) => action.workflowIds.includes(workflow.workflowId))
+      .map((action) => action.actionId));
+  }
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "admin-catalog-"));
+  const fixture = path.join(directory, "catalog.json");
+  await fs.writeFile(fixture, JSON.stringify({catalogVersion: "fixture", actions: [], workflows: []}));
+  assert.deepEqual(shared.readAdminActionCatalog(fixture),
+    {catalogVersion: "fixture", actions: [], workflows: []});
+});
