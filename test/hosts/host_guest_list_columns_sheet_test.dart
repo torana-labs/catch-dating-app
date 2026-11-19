@@ -88,7 +88,7 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(
-        find.text("Choose the column that holds each guest’s name."),
+        find.text('Choose the column that holds each guest’s name.'),
         findsOneWidget,
       );
       expect(find.text('Looks like phone numbers'), findsOneWidget);
