@@ -109,7 +109,7 @@ void main() {
           copy: _copy,
           title: 'Venue',
           initialValue: 'Harbour hall',
-          leading: const Icon(Icons.place),
+          leading: const Icon(CatchIcons.location),
           showClearButton: true,
         ),
       ),
@@ -117,7 +117,7 @@ void main() {
 
     final boxRect = tester.getRect(find.byKey(_boxKey));
     expect(
-      boxRect.contains(tester.getCenter(find.byIcon(Icons.place))),
+      boxRect.contains(tester.getCenter(find.byIcon(CatchIcons.location))),
       isTrue,
     );
     expect(
