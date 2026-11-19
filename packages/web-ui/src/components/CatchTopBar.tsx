@@ -203,7 +203,7 @@ export function CatchTopBar({variant = "tool", title, kicker, back, action, acti
   if (variant === "step") {
     return (
       <header className={styles.bar} data-scrolled={scrolled ? "" : undefined} data-variant="step">
-        <span className={styles.row}>{backButton}<span className={styles.compactKicker}>{stepLabel ?? kicker}</span></span>
+        <span className={styles.row}>{backButton}<span className={styles.stepCounter}>{stepLabel ?? kicker}</span></span>
         {step ? (
           <span aria-label={stepLabel} className={styles.segments} role="img">
             {Array.from({length: step.total}, (_, index) => <span data-done={index < step.index ? "" : undefined} key={index} />)}
