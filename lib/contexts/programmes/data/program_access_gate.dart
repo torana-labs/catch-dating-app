@@ -27,12 +27,18 @@ import 'package:catch_platform/errors/app_exception.dart';
 ///
 /// [needs] are keys of [ProgramAccessView.liveKeys], or `'manager'`, which
 /// satisfies any need.
+///
+/// [admits], when given, replaces the duty check entirely ([needs] and
+/// [allows] are then ignored): the programme's setup reads admit an
+/// organizer manager whose view holds no live duty, which the duty check
+/// would deny.
 Stream<T> gateByProgramAccess<T>({
   required Stream<ProgramAccessState> access,
   required Stream<T> Function(ProgramAccessState state) data,
   required Set<String> needs,
   Object? Function(ProgramAccessState state)? scopeOf,
   bool Function(ProgramAccessState state)? allows,
+  bool Function(ProgramAccessState state)? admits,
 }) {
   late final StreamController<T> controller;
   // ignore: cancel_subscriptions
@@ -44,11 +50,14 @@ Stream<T> gateByProgramAccess<T>({
   Object? openScope;
   var denied = false;
 
-  bool permits(ProgramAccessState state) =>
-      state.isLive &&
-      (state.liveKeys.contains('manager') ||
-          state.liveKeys.containsAll(needs)) &&
-      (allows?.call(state) ?? true);
+  bool permits(ProgramAccessState state) {
+    final admitted = admits;
+    if (admitted != null) return admitted(state);
+    return state.isLive &&
+        (state.liveKeys.contains('manager') ||
+            state.liveKeys.containsAll(needs)) &&
+        (allows?.call(state) ?? true);
+  }
 
   Future<void> closeData() async {
     final subscription = dataSubscription;
@@ -63,6 +72,7 @@ Stream<T> gateByProgramAccess<T>({
     denied = true;
     controller.addError(
       PermissionException(switch (state.denial) {
+        _ when admits != null => 'This account cannot open this programme.',
         ProgramAccessDenial.expired => 'Program access expired.',
         ProgramAccessDenial.revoked => 'Program access was removed.',
         ProgramAccessDenial.notYetActive => 'Program access has not begun.',

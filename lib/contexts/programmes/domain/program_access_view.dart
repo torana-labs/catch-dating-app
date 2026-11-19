@@ -44,6 +44,7 @@ class ProgramAccessView {
     this.workFunction = const {},
     this.arrivalRoutes = const {},
     this.tripRoutes = const {},
+    this.organizerManager = false,
   });
 
   factory ProgramAccessView.fromMap(Map<Object?, Object?> map) {
@@ -90,6 +91,8 @@ class ProgramAccessView {
       // Views written before the transport read models carry no routes.
       arrivalRoutes: instants('arrivalRoutes', optional: true),
       tripRoutes: instants('tripRoutes', optional: true),
+      // Views written before the flag read as no organizer management.
+      organizerManager: map['organizerManager'] == true,
     );
   }
 
@@ -135,7 +138,25 @@ class ProgramAccessView {
   /// dispatcher and coordinator assignments reach.
   final Map<String, DateTime> tripRoutes;
 
+  /// Whether the account manages the programme's organizer: setup authority
+  /// over the programme's list row and detail, with no end and independent
+  /// of [isActive], and never a duty by itself. An organizer manager with no
+  /// live grant has an inactive view carrying only this.
+  final bool organizerManager;
+
   bool get isManager => role == ProgramActorRole.manager;
+
+  /// Whether the account may open the programme's setup view (its detail) at
+  /// [now], as `requireProgramSetupAccess` and the rules admit it: the
+  /// creator, an organizer manager, or a live programme administration duty.
+  bool holdsSetup(DateTime now) =>
+      organizerManager || holdsDuty(ProgramStaffDuty.programAdmin, now);
+
+  /// Whether the programme belongs on the account's organizer programme
+  /// list at [now]: the creator or an organizer manager. A programme
+  /// administration duty reads one programme by id and lists none.
+  bool listsSetup(DateTime now) =>
+      organizerManager || (isManager && isLiveAt(now));
 
   /// Identifies which resources the work lists reach, ignoring when they
   /// expire, so a data listener scoped to them reopens only when the set
@@ -148,7 +169,13 @@ class ProgramAccessView {
 
   /// Null when the account holds authority at [now], otherwise the reason.
   ProgramAccessDenial? denialAt(DateTime now) {
-    if (!isActive) return ProgramAccessDenial.revoked;
+    if (!isActive) {
+      // An organiser manager's setup-only view (revision 0: no grant behind
+      // it) was never granted a duty, rather than had one removed.
+      return organizerManager && revision == 0
+          ? ProgramAccessDenial.notGranted
+          : ProgramAccessDenial.revoked;
+    }
     if (activeFrom.isAfter(now)) return ProgramAccessDenial.notYetActive;
     final end = expiresAt;
     if (end != null && !end.isAfter(now)) return ProgramAccessDenial.expired;
@@ -285,9 +312,12 @@ class ProgramAccessView {
   /// same view give a narrower authority exactly when keys disappear, so
   /// this is what the narrowing check compares.
   Set<String> liveKeys(DateTime now) {
-    if (!isLiveAt(now)) return const {};
-    if (isManager) return const {'manager'};
+    // Organizer management has no end, so it is live whatever the duties.
+    final setup = organizerManager ? 'organizerManager' : null;
+    if (!isLiveAt(now)) return {?setup};
+    if (isManager) return {'manager', ?setup};
     return {
+      ?setup,
       for (final map in {
         'duty': duties,
         'pickupAll': pickupAll,

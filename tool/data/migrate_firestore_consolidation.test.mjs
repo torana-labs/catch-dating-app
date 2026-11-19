@@ -834,6 +834,55 @@ test("program-access-views-refresh repairs a stale view once and then writes not
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("program-access-views-organizer-managers adds manager views and the flag once", async () => {
+  const create = MIGRATIONS.find((entry) => entry.name === "program-access-views");
+  const managers = MIGRATIONS.find((entry) =>
+    entry.name === "program-access-views-organizer-managers");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const db = fakeDb({
+    "organizers/o1": {hostUserId: "owner-1", ownerUserId: "owner-1",
+      hostUserIds: ["owner-1", "host-2", "desk-1"], hostProfiles: []},
+    "organizers/o2": {hostUserId: "other-1", hostUserIds: ["other-1"], hostProfiles: []},
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active"},
+    "organizerPrograms/p2": {organizerId: "o1", createdBy: "host-2", status: "active"},
+    "organizerPrograms/p3": {organizerId: "o2", createdBy: "other-1", status: "active"},
+    "programStaffGrants/p1__desk-1": {organizerId: "o1", programId: "p1", uid: "desk-1",
+      displayName: "Arjun", phoneLastFour: "0001", status: "active", createdBy: "owner-1",
+      duties: [{duty: "hotelDesk", pickupPointIds: [], hotelIds: ["h1"], expiresAtMillis: later}],
+      expiresAt: at(later), revokedBy: null, revokedAt: null, revision: 2},
+  });
+  // Views the triggers wrote before the flag existed.
+  await applyMigrationPlan(db, await planMigration(db, create));
+  for (const id of ["p1__owner-1", "p1__desk-1", "p2__host-2", "p3__other-1"]) {
+    delete db.data[`programAccessViews/${id}`].organizerManager;
+  }
+  const plan = await planMigration(db, managers);
+  // p1: host-2 (desk-1 already has a staff view); p2: owner-1 and desk-1.
+  assert.equal(plan.steps[0].toCreate.length, 3);
+  // Every existing view gains the flag.
+  assert.equal(plan.steps[1].toFill.length, 4);
+  await applyMigrationPlan(db, plan);
+  const setupOnly = db.data["programAccessViews/p1__host-2"];
+  assert.equal(setupOnly.organizerManager, true);
+  assert.equal(setupOnly.status, "inactive");
+  assert.deepEqual(setupOnly.duties, {});
+  assert.equal(db.data["programAccessViews/p2__owner-1"].organizerManager, true);
+  const desk = db.data["programAccessViews/p1__desk-1"];
+  assert.equal(desk.organizerManager, true);
+  assert.equal(desk.status, "active");
+  assert.deepEqual(desk.hotelScoped, {"hotelDesk__h1": later});
+  assert.equal(db.data["programAccessViews/p1__owner-1"].role, "manager");
+  assert.equal(db.data["programAccessViews/p1__owner-1"].organizerManager, true);
+  // Another organizer's managers get nothing on this organizer's programmes.
+  assert.equal(db.data["programAccessViews/p1__other-1"], undefined);
+  assert.equal(db.data["programAccessViews/p3__other-1"].organizerManager, true);
+  assert.equal(db.data["organizers/o1"].hostUserIds.length, 3);
+  const again = await planMigration(db, managers);
+  assert.equal(again.totals.toCreate, 0, "a rerun writes nothing");
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-door-views creates headers, roster rows and journal views once, without contacts", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-door-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
