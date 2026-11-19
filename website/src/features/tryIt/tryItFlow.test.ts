@@ -352,3 +352,13 @@ describe("try-it flow: lifetime", () => {
     expect(stage().name).toBe("review");
   });
 });
+
+describe("try-it flow: unexpected failures", () => {
+  it("stops with a plain failure instead of staying busy when a step throws", async () => {
+    const client = scriptedTryItClient({});
+    const flow = createTryItFlow("organizer", {client, newKey: () => {throw new Error("no crypto");}});
+    flow.setLink(link);
+    await flow.submit();
+    expect(flow.getState()).toMatchObject({busy: false, stage: {name: "problem", reason: "failed"}});
+  });
+});

@@ -100,8 +100,13 @@ export function tryItProblemFor(error: unknown): {problem: TryItProblem; reason:
 
 const keyPattern = /^[A-Za-z0-9][A-Za-z0-9_-]{15,79}$/u;
 
+/** 32 random hex characters. getRandomValues works outside secure contexts and in browsers without randomUUID. */
+function randomHex(): string {
+  return Array.from(globalThis.crypto.getRandomValues(new Uint8Array(16)), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 /** A new idempotency key: `web_` and 32 hex characters, inside the envelope's pattern. */
-export function tryItIdempotencyKey(random: () => string = () => globalThis.crypto.randomUUID()): string {
+export function tryItIdempotencyKey(random: () => string = randomHex): string {
   const key = `web_${random().replace(/-/gu, "")}`;
   if (!keyPattern.test(key)) throw new Error("A try-it key must match the command envelope's pattern.");
   return key;

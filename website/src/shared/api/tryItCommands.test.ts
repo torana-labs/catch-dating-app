@@ -132,5 +132,6 @@ describe("try-it command client", () => {
   it("makes keys inside the envelope's pattern", () => {
     expect(tryItIdempotencyKey(() => "123e4567-e89b-12d3-a456-426614174000")).toBe("web_123e4567e89b12d3a456426614174000");
     expect(() => tryItIdempotencyKey(() => "")).toThrow();
+    expect(tryItIdempotencyKey()).toMatch(/^web_[0-9a-f]{32}$/u);
   });
 });

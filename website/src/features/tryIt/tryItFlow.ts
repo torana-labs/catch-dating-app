@@ -457,7 +457,16 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
     await previewImportOrChannels();
   }
 
-  return {
+  /** A step that throws (a bug, or a browser without crypto) stops with a plain failure instead of staying busy. */
+  const guarded = <A extends unknown[]>(work: (...args: A) => Promise<void>) => async (...args: A): Promise<void> => {
+    try {
+      await work(...args);
+    } catch {
+      stop("failed");
+    }
+  };
+
+  const api: TryItFlow = {
     getState: () => state,
     subscribe(listener) {
       listeners.add(listener);
@@ -491,7 +500,7 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
       draft = null;
       await begin();
     },
-    continueAccount,
+    continueAccount: guarded(continueAccount),
     async signedIn() {
       set({signIn: false});
       await continueAccount();
@@ -499,7 +508,7 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
     closeSignIn() {
       set({signIn: false});
     },
-    confirmWorkspace: () => applyWorkspace(),
+    confirmWorkspace: guarded(() => applyWorkspace()),
     async chooseEvent(eventKey) {
       if (!importing || state.busy) return;
       importing.eventKey = eventKey;
@@ -551,4 +560,9 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
       run += 1;
     },
   };
+  for (const name of ["submit", "signedIn", "chooseEvent", "confirm", "makeLinks", "useRemembered", "retry"] as const) {
+    const work = api[name] as (...args: unknown[]) => Promise<void>;
+    (api as unknown as Record<string, unknown>)[name] = guarded(work);
+  }
+  return api;
 }
