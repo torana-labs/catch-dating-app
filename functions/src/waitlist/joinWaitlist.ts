@@ -20,6 +20,7 @@ import {
 } from "./websiteLead";
 import {readCityAttribution, type CityAttribution} from "./cityAttribution";
 import {prepareCityInterest} from "../cityInterest/cityInterest";
+import {validMobileNumber} from "../shared/mobileNumber";
 
 interface NormalizedMarketingAnalytics {
   consent: Record<string, unknown> | null;
@@ -567,8 +568,8 @@ async function joinByWhatsapp(
   const {city, cityAttribution, submittedRole, marketingAnalytics,
     marketingAttribution} = context;
   const whatsapp = isRecord(body.whatsapp) ? body.whatsapp : {};
-  const phone = normalizeText(whatsapp.phone).replace(/[\s-]/g, "");
-  if (!/^\+[1-9][0-9]{7,14}$/.test(phone)) {
+  const phone = validMobileNumber(whatsapp.phone);
+  if (!phone) {
     sendWaitlistJson(response, 400, {
       error: "Please enter a valid mobile number.",
     });
@@ -754,7 +755,7 @@ export function createJoinWaitlistHandler(options: {
     }
 
     // A name and a way to reply: an email, a WhatsApp number, or both.
-    if (phone && !/^\+[1-9][0-9]{7,14}$/.test(phone)) {
+    if (phone && !validMobileNumber(phone)) {
       sendWaitlistJson(response, 400, {
         error: "Please enter a valid mobile number.",
       });

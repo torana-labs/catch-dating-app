@@ -5,7 +5,6 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 import {isJoinWaitlistHttpRequest, type JoinWaitlistHTTPRequest} from "./joinWaitlistContract";
 import {
   createWebsiteLeadSubmission,
-  websiteLeadPhone,
   websiteLeadProblems,
   websiteLeadRequest,
   websiteLeadRequestId,
@@ -92,13 +91,14 @@ describe("websiteLeadRequest", () => {
 });
 
 describe("website lead fields", () => {
-  it("normalises a typed number to E.164 with the market's dialling code", () => {
-    expect(websiteLeadPhone("98123 45678", "+91")).toBe("+919812345678");
-    expect(websiteLeadPhone("098123-45678", "+91")).toBe("+919812345678");
-    expect(websiteLeadPhone("+44 (20) 7946 0958", "+91")).toBe("+442079460958");
-    expect(websiteLeadPhone("0044 20 7946 0958", "+91")).toBe("+442079460958");
-    expect(websiteLeadPhone("12345", "+91")).toBeNull();
-    expect(websiteLeadPhone("not a number", "+91")).toBeNull();
+  it("sends the number as E.164 and refuses one that is not a mobile number", async () => {
+    const post = vi.fn(async () => receipt());
+    const lead = createWebsiteLeadSubmission({messages, phoneCountry: "IN", post: post as unknown as typeof fetch,
+      newRequestId: () => "request000000000001", appCheckToken: async () => null});
+    await expect(lead.submit({...forms.guide, phone: "12345678"})).resolves.toMatchObject({status: "invalid_phone"});
+    expect(post).not.toHaveBeenCalled();
+    await lead.submit({...forms.guide, phone: "098123-45678"});
+    expect(JSON.parse(String((post.mock.calls[0] as unknown as [string, RequestInit])[1].body)).lead.phone).toBe("+919812345678");
   });
 
   it("says where it came from without the query or fragment", () => {
@@ -116,7 +116,7 @@ describe("website lead fields", () => {
 describe("createWebsiteLeadSubmission", () => {
   const submission = (post: ReturnType<typeof vi.fn>, appCheckToken?: () => Promise<string | null>) => {
     let next = 0;
-    return createWebsiteLeadSubmission({messages, dialCode: "+91", post: post as unknown as typeof fetch,
+    return createWebsiteLeadSubmission({messages, phoneCountry: "IN", post: post as unknown as typeof fetch,
       newRequestId: () => `request${String(++next).padStart(12, "0")}`, ...(appCheckToken ? {appCheckToken} : {})});
   };
 

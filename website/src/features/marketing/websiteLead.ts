@@ -1,12 +1,12 @@
-import {activeMarket} from "@content/markets";
 import {websiteLeadCopy} from "@content/websiteLead";
 import {getMarketingConsent, trackHostLeadAccepted, trackWebsiteLeadFormEvent} from "../../analytics";
 import {
   createWebsiteLeadSubmission,
   type WebsiteLeadSubmission,
   type WebsiteLeadSubmissionOptions,
-  websiteLeadPhone,
 } from "../../shared/api/websiteLead";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 /**
  * One lead form's submissions with the site's words for each failure and the
@@ -21,9 +21,9 @@ import {
  * (`trackHostLeadAccepted`), with the number just typed for ad matching.
  */
 export function createSiteLeadSubmission(
-  overrides: Omit<WebsiteLeadSubmissionOptions, "messages" | "dialCode"> = {},
+  overrides: Omit<WebsiteLeadSubmissionOptions, "messages" | "phoneCountry"> = {},
 ): WebsiteLeadSubmission {
-  const lead = createWebsiteLeadSubmission({messages: websiteLeadCopy.problems, dialCode: activeMarket.dialCode, ...overrides});
+  const lead = createWebsiteLeadSubmission({messages: websiteLeadCopy.problems, phoneCountry: activePhoneCountry, ...overrides});
   return {
     reset: () => lead.reset(),
     async submit(form) {
@@ -34,7 +34,7 @@ export function createSiteLeadSubmission(
       if (outcome.status === "sent") {
         trackWebsiteLeadFormEvent("succeeded", identity);
         trackHostLeadAccepted({kind: form.kind, leadId: outcome.leadId,
-          phone: websiteLeadPhone(form.phone, activeMarket.dialCode)}, submissionConsent);
+          phone: catchPhoneE164(form.phone, activePhoneCountry)}, submissionConsent);
       } else trackWebsiteLeadFormEvent("failed", identity, outcome.status);
       return outcome;
     },

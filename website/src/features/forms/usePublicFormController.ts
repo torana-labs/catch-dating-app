@@ -36,6 +36,8 @@ import {
 import {acceptReviewedReuseAnswers, hasReusableOrganizerQuestions,
   reviewedReuseSuggestions, sameFormReuseSources,
   type PublicFormReuseSource} from "./publicFormAnswerReuse";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 export type PublicFormStage =
   "loading" | "unavailable" | "identity" | "phoneCode" |
@@ -575,11 +577,16 @@ export function usePublicFormController(publicFormId: string) {
 
   async function handlePhoneSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const phone = catchPhoneE164(phoneNumber, activePhoneCountry);
+    if (!phone) {
+      setStatus({message: publicFormsCopy.phoneInvalid, tone: "is-error"});
+      return;
+    }
     setStatus({message: "", tone: ""});
     await actionMutation.mutateAsync(async () => {
       verificationRef.current?.clear();
       verificationRef.current = await beginPublicEventPhoneVerification(
-        normalizePhone(phoneNumber),
+        phone,
         recaptchaContainerId
       );
       if (stage === "form" || stage === "review") {
@@ -598,7 +605,7 @@ export function usePublicFormController(publicFormId: string) {
       const verifiedUser = await verification.confirm(code);
       verification.clear();
       verificationRef.current = null;
-      setVerifiedPhone(verifiedUser.phoneNumber ?? normalizePhone(phoneNumber));
+      setVerifiedPhone(verifiedUser.phoneNumber ?? catchPhoneE164(phoneNumber, activePhoneCountry));
       setVerificationStep("verified");
       if (promotingConsentRef.current && receiptRef.current) {
         try {
@@ -1076,10 +1083,6 @@ function storedReceipt(publicFormId: string, ownerUid: string | null = null): Pu
   }
 }
 
-function normalizePhone(value: string) {
-  return value.replace(/[\s()-]/gu, "");
-}
-
 function hasMessagingEndpoint(form: PublicOrganizerForm,
   answers: PublicFormAnswers, verifiedPhone: string | null): boolean {
   if (form.definition.identityPolicy !== "anonymous" &&
@@ -1090,8 +1093,7 @@ function hasMessagingEndpoint(form: PublicOrganizerForm,
     section.questions).find((candidate) =>
     candidate.canonicalFieldId === "phoneNumber");
   const answer = question ? answers[question.questionId] : null;
-  return typeof answer === "string" &&
-    /^\+[1-9][0-9]{6,14}$/u.test(normalizePhone(answer));
+  return typeof answer === "string" && catchPhoneE164(answer, activePhoneCountry) !== null;
 }
 
 function sectionForFirstError(

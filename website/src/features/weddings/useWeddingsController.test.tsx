@@ -4,7 +4,6 @@ import {weddingsCopy as copy} from "@content/weddings";
 import {useWeddingsApplicationController, useWeddingsLandingController} from "./useWeddingsController";
 import {
   initialStepTwoDraft,
-  isIndianMobile,
   readStepOne,
   sentSummary,
   shortDate,
@@ -25,14 +24,13 @@ const storageKey = "catch_weddings_application_step_one_v2";
 
 describe("weddings model", () => {
   it("requires who, what, name, a ten-digit Indian mobile, the date, the destination and the guests; company and tools are optional", () => {
-    expect(isIndianMobile("98201 44718")).toBe(true);
-    expect(isIndianMobile("12345 67890")).toBe(false);
     expect(stepOneIsComplete(stepOne)).toBe(true);
     expect(stepOneIsComplete({...stepOne, company: "", tools: []})).toBe(true);
     const empty = stepOneErrors({...stepOne, who: "", what: "", name: " ", phone: "", date: "", destination: "", guests: ""});
     expect(empty).toEqual({who: copy.stepOne.who.error, what: copy.stepOne.what.error, name: copy.stepOne.name.error, phone: copy.stepOne.phone.missing,
       date: copy.stepOne.date.error, destination: copy.stepOne.destination.error, guests: copy.stepOne.guests.error});
     expect(stepOneErrors({...stepOne, phone: "12345"}).phone).toBe(copy.stepOne.phone.invalid);
+    expect(stepOneErrors({...stepOne, phone: "12345 67890"}).phone).toBe(copy.stepOne.phone.invalid);
     expect(shortDate("2026-12-12")).toBe("12 Dec");
   });
 

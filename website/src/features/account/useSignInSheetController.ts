@@ -4,7 +4,9 @@ import {signInCopy} from "../../content/account";
 import type {FormStatus} from "../../shared/forms/types";
 import type {PublicEventPhoneVerification} from "../../firebase";
 import {interpolateContent as fill} from "@content/interpolate";
-import {normalizePhone, phonePattern, signedInHintKey, writeLocal} from "./signInModel";
+import {signedInHintKey, writeLocal} from "./signInModel";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 export type SignInStage = "start" | "code";
 /** Seconds before another code may be sent: the apps' CatchMotion.authOtpResendCooldown. */
@@ -61,8 +63,8 @@ export function useSignInSheetController({onSignedIn}: {onSignedIn?: () => void}
   }
   async function sendCode(event?: FormEvent) {
     event?.preventDefault();
-    const number = normalizePhone(phone);
-    if (!phonePattern.test(number)) {setStatus({message: signInCopy.invalidPhone, tone: "is-error"}); return;}
+    const number = catchPhoneE164(phone, activePhoneCountry);
+    if (!number) {setStatus({message: signInCopy.invalidPhone, tone: "is-error"}); return;}
     await run(async () => {
       const {beginWebsiteAccountPhoneVerification} = await import("../../firebase");
       challenge.current?.clear();

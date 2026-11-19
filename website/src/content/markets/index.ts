@@ -2,8 +2,16 @@ import {generatedWebsiteCities, generatedWebsiteCountries} from "./generated/cat
 import {inMarket} from "./in";
 import type {MarketCity} from "./types";
 import {interpolateContent} from "../interpolate";
+import type {CatchPhoneCountryCode} from "@catch/web-ui/phone";
 
 export const activeMarket = inMarket;
+
+/**
+ * The country a phone number typed without a dialling code is read in, for
+ * the one mobile number check (@catch/web-ui/phone). phoneCountry.test.ts
+ * holds it to a country the check knows.
+ */
+export const activePhoneCountry = activeMarket.countryCode as CatchPhoneCountryCode;
 
 /** Every city the website lists, in every country, in catalog order. */
 export const websiteCities: readonly MarketCity[] = generatedWebsiteCities;
