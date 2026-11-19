@@ -87,7 +87,8 @@ class CreateTicketsBody extends StatelessWidget {
             direction: CatchStackDirection.row,
             gap: CatchStackGap.g16,
             equal: true,
-            align: CatchStackAlign.end,
+            // The two labels share a line, whatever sits under them.
+            align: CatchStackAlign.baseline,
             children: [
               CatchFieldLanes.single(
                 child: CatchField.input(

@@ -5215,13 +5215,13 @@ abstract class AppLocalizations {
   /// Product copy used by lib/onboarding/presentation/pages/instagram_page.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'HANDLE'**
+  /// **'Handle'**
   String get onboardingInstagramPageTitleHandle;
 
   /// Product copy used by lib/onboarding/presentation/pages/instagram_page.dart (placeholder).
   ///
   /// In en, this message translates to:
-  /// **'@yourhandle'**
+  /// **'yourhandle'**
   String get onboardingInstagramPagePlaceholderYourhandle;
 
   /// Product copy used by lib/onboarding/presentation/pages/name_dob_page.dart (label).
@@ -7183,7 +7183,7 @@ abstract class AppLocalizations {
   /// Product copy resolved by packages/platform/lib/l10n/catch_ui_copy.dart for the shared wizard step counter.
   ///
   /// In en, this message translates to:
-  /// **'STEP {clampedStep} OF {total}'**
+  /// **'Step {clampedStep} of {total}'**
   String coreCatchStepFlowHeaderTextStepClampedstepOfTotal({
     required Object clampedStep,
     required Object total,
