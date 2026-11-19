@@ -745,8 +745,11 @@ What apply needs comes from the command's effect class, through
 `--confirm <commandId>`; `messages-guests` and `moves-money` also need
 `--preview-hash` from the reviewed preview. A preview hash is passed through as
 `confirm` whenever one is given, so apply refuses when the result changed since
-the preview. A `running` preview (an asynchronous read) can be polled with
-`--idempotency-key <key> --wait`. The server's `commandReceipts` record each
+the preview. One idempotency key covers an action from preview through apply:
+a preview prints it in `applyWith` (`--idempotency-key <key> --apply ...`), and
+apply must reuse it, because commands that read a page find that read, and
+compute the preview hash, from it. A `running` preview (an asynchronous read)
+can be polled with `--idempotency-key <key> --wait`. The server's `commandReceipts` record each
 applied command; the CLI also writes a local hash-only receipt. An apply whose
 outcome is unknown (timeout, lost connection) reports `actionCompleted: null`
 and the idempotency key: re-running with that key replays the stored result
