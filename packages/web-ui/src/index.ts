@@ -184,6 +184,8 @@ export type {
 } from "./components/CatchButton";
 export {CatchCheckboxInput} from "./components/CatchCheckboxInput";
 export type {CatchCheckboxInputProps} from "./components/CatchCheckboxInput";
+export {CatchToggleInput} from "./components/CatchToggleInput";
+export type {CatchToggleInputProps} from "./components/CatchToggleInput";
 export {CatchFilePickerButton} from "./components/CatchFilePickerButton";
 export type {CatchFilePickerButtonProps} from "./components/CatchFilePickerButton";
 export {CatchChip} from "./components/CatchChip";
@@ -278,6 +280,7 @@ export type {
   CatchFieldProps,
   CatchFieldSelectProps,
   CatchFieldSupportRowTone,
+  CatchFieldToggleProps,
   CatchTextInputMode,
   CatchTextInputVariant,
 } from "./components/CatchField";
@@ -544,7 +547,6 @@ export type {
   CatchThemeMode,
 } from "./components/catchCoreVocabulary";
 export {
-  CheckboxControl,
   SelectControl,
   ToggleButtonControl,
   ToggleGroupControl,
@@ -552,7 +554,6 @@ export {
   classNames,
 } from "./primitives";
 export type {
-  CheckboxControlProps,
   SelectControlProps,
   ToggleButtonControlProps,
   ToggleGroupControlProps,

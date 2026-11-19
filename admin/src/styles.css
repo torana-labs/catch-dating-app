@@ -535,24 +535,6 @@ select {
   color: var(--ink);
 }
 
-.check-row {
-  display: grid;
-  grid-template-columns: 16px minmax(0, 1fr);
-  gap: var(--catch-space-s2);
-  align-items: start;
-  padding: var(--catch-space-micro10);
-  border: var(--catch-stroke-hairline) solid var(--line);
-  border-radius: var(--catch-radius-sm);
-  background: var(--surface-subtle);
-  color: var(--muted);
-  font-size: var(--catch-typography-web-context-size);
-  font-weight: var(--catch-typography-brand-kicker-weight);
-}
-
-.check-row input {
-  margin-top: var(--catch-space-micro2);
-}
-
 /* The segmented control's narrow-screen select; catch.chip.field replaces it. */
 .field-control {
   display: grid;

@@ -1,7 +1,6 @@
 import type {
   ButtonHTMLAttributes,
   HTMLAttributes,
-  InputHTMLAttributes,
   ReactNode,
   SelectHTMLAttributes,
 } from "react";
@@ -17,13 +16,6 @@ export interface UiLabelProps extends HTMLAttributes<HTMLElement> {
 
 export function UiLabel({as: Element = "span", children, ...props}: UiLabelProps) {
   return <Element {...props}>{children}</Element>;
-}
-
-export interface CheckboxControlProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {}
-
-export function CheckboxControl(props: CheckboxControlProps) {
-  return <input type="checkbox" {...props} />;
 }
 
 interface FieldControlValidationProps {

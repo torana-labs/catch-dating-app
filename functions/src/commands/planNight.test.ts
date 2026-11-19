@@ -6,6 +6,9 @@ import {FakeFirestore} from "../operations/testFirestore";
 import {contractValidator} from "../shared/contractTestValidators";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
 import {buildEventSuccessPlanDoc} from "../events/mutateEvent";
+import type {UpdatePrivateEventDetailsCommand} from "../events/progressiveSetup/details";
+import {validateUpdatePrivateEventDetailsCallablePayload} from
+  "../shared/generated/validators/updatePrivateEventDetailsInput";
 import {ensureTryItWorkspaceHandler} from "./ensureTryItWorkspace";
 import {planNightHandler} from "./planNight";
 import {tryItWorkspaceOrganizerId} from "./workspace";
@@ -42,8 +45,18 @@ function harness() {
     buildPlanDoc: ((params: Parameters<typeof buildEventSuccessPlanDoc>[0]) => buildEventSuccessPlanDoc({...params,
       event: {...params.event, startTime: withTime(params.event.startTime), endTime: withTime(params.event.endTime)} as never})) as
       typeof buildEventSuccessPlanDoc,
+    // Private event setup's details change has its own tests (progressiveSetup/details.test.ts); here
+    // it records the command night.plan sends and applies its effect to the fake event.
+    updateDraftDetails: async (_store: FirebaseFirestore.Firestore, actorUid: string,
+      command: UpdatePrivateEventDetailsCommand) => {
+      detailCalls.push({actorUid, command});
+      const event = db.read(`events/${command.eventId}`) as Record<string, unknown>;
+      const format = command.details.eventFormat;
+      if (format?.mode === "set") db.write(`events/${command.eventId}`, {...event, eventFormat: format.value});
+    },
   };
-  return {db, deps};
+  const detailCalls: Array<{actorUid: string; command: UpdatePrivateEventDetailsCommand}> = [];
+  return {db, deps, detailCalls};
 }
 
 function call(data: unknown) {
@@ -138,12 +151,50 @@ test("apply updates a plan still in setup, and leaves a live one alone", async (
   assert.deepEqual(locked.result.reasons, ["plan_locked"]);
 });
 
-test("apply refuses when the draft's activity is unset or doesn't match, or there is no draft", async () => {
-  const unset = await withWorkspace(null);
-  const needed = await planNightHandler(call(envelope("apply")), unset.deps);
-  valid(needed, "format needed");
-  assert.deepEqual(needed.result.reasons, ["event_format_needed"]);
+test("apply gives a try-it draft with no activity the format's activity, then saves the plan", async () => {
+  const h = await withWorkspace(null);
+  h.db.write(`events/${EVENT_ID}`, {...h.db.read(`events/${EVENT_ID}`) as object, setupRevision: 4});
+  const applied = await planNightHandler(call(envelope("apply", {format: "dinner", guestCount: 24})), h.deps);
+  valid(applied, "activity set");
+  assert.equal(applied.status, "applied");
+  assert.equal(h.detailCalls.length, 1);
+  const {actorUid, command} = h.detailCalls[0];
+  assert.equal(actorUid, UID);
+  assert.equal(command.organizerId, ORGANIZER_ID);
+  assert.equal(command.eventId, EVENT_ID);
+  assert.equal(command.expectedSetupRevision, 4);
+  assert.match(command.requestId, /^nightplan-[a-f0-9]{40}$/u);
+  assert.match(command.reviewedDefaultsHash, /^[a-f0-9]{64}$/u);
+  assert.deepEqual(command.details, {eventFormat: {mode: "set", value: {version: 1, activityKind: "dinner",
+    interactionModel: "seatedTable", defaultPlaybookId: "dinner_table_mixer"}}});
+  assert.equal(validateUpdatePrivateEventDetailsCallablePayload(command), true);
+  const plan = h.db.read(`eventSuccessPlans/${EVENT_ID}`) as Record<string, unknown>;
+  assert.equal(plan.playbookId, "dinner_table_mixer");
+  assert.equal(plan.targetAttendeeCount, 24);
 
+  // A retry with the same key sends the same setup request id, so private setup replays it.
+  const again = await planNightHandler(call(envelope("apply", {format: "dinner", guestCount: 24})), h.deps);
+  assert.equal(again.status, "replayed");
+});
+
+test("apply leaves an event that already has an activity as it is", async () => {
+  const h = await withWorkspace();
+  await planNightHandler(call(envelope("apply")), h.deps);
+  assert.equal(h.detailCalls.length, 0);
+});
+
+test("apply never changes an event that isn't the workspace's try-it draft", async () => {
+  // A draft with no activity that the workspace did not record as try-it keeps no activity.
+  const unset = await withWorkspace(null);
+  const pointer = unset.db.read(`tryItWorkspaces/${UID}`) as Record<string, unknown>;
+  unset.db.write(`tryItWorkspaces/${UID}`, {...pointer, tryItEventIds: []});
+  const needed = await planNightHandler(call(envelope("apply", {eventId: EVENT_ID})), unset.deps);
+  valid(needed, "not try-it");
+  assert.deepEqual(needed.result.reasons, ["event_format_needed"]);
+  assert.equal((unset.db.read(`events/${EVENT_ID}`) as Record<string, unknown>).eventFormat, undefined);
+});
+
+test("apply refuses when the draft's activity doesn't match, or there is no draft", async () => {
   const dinner = await withWorkspace({version: 1, activityKind: "dinner", interactionModel: "seatedTable"});
   const mismatch = await planNightHandler(call(envelope("apply")), dinner.deps);
   assert.deepEqual(mismatch.result.reasons, ["event_format_mismatch"]);

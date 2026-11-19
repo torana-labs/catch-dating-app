@@ -4,7 +4,8 @@ import {CatchToggleInput, type CatchToggleInputProps} from "./CatchToggleInput";
 afterEach(cleanup);
 describe("CatchToggleInput", () => {
   it("retains the native settings API and typed field recipe", () => {
-    expectTypeOf<keyof CatchToggleInputProps>().toEqualTypeOf<"value" | "onChanged" | "semanticLabel" | "recipe">();
+    // Flutter's four, plus two web-only attributes a visible label needs (CatchField's toggle recipe).
+    expectTypeOf<keyof CatchToggleInputProps>().toEqualTypeOf<"value" | "onChanged" | "semanticLabel" | "recipe" | "id" | "describedBy">();
     render(<CatchToggleInput value={false} onChanged={() => {}} semanticLabel="Show attendance reminders" />);
     const control = screen.getByRole("switch", {name: "Show attendance reminders"});
     expect(control.getAttribute("aria-checked")).toBe("false");
@@ -28,6 +29,12 @@ describe("CatchToggleInput", () => {
       fireEvent.click(control); expect(control.getAttribute("aria-checked")).toBe(String(value));
     });
   }
+  it("takes its name from a label and its description from the given ids", () => {
+    render(<><label htmlFor="sample-switch">Show reminders</label><p id="sample-body">Before each plan</p>
+      <CatchToggleInput describedBy="sample-body" id="sample-switch" onChanged={() => {}} value={false} /></>);
+    const control = screen.getByRole("switch", {name: "Show reminders"});
+    expect(control.getAttribute("aria-describedby")).toBe("sample-body");
+  });
   it("does not submit a form when activated", () => {
     const change = vi.fn(), submit = vi.fn((event) => event.preventDefault());
     render(<form onSubmit={submit}><CatchToggleInput value={false} onChanged={change} semanticLabel="Reminders" /></form>);

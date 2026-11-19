@@ -28,6 +28,7 @@ function Fields() {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("Sunday runs along the Yamuna.");
   const [city, setCity] = useState<string | null>("Mumbai");
+  const [reminders, setReminders] = useState(true);
   return (
     <CatchGap size="formField">
       <CatchField recipe="input" title="Name" inputHint="Your full name" value={name}
@@ -53,11 +54,16 @@ function Fields() {
       <CatchField recipe="input" title="Your mobile number" prefixText="+91" keyboardType="phone"
         autoComplete="tel-national" inputHint="98765 43210" helperText="Your pass and updates come by text." />
       <CatchField recipe="input" title="Longest run" suffixText="km" keyboardType="decimal" value="21.1" />
+      <CatchField recipe="toggle" title="Show reminders" body="A note the evening before each plan"
+        value={reminders} onChanged={setReminders} />
+      <CatchField recipe="toggle" title="Locked setting" value onChanged={null} />
+      <CatchField recipe="toggle" value={false} onChanged={() => {}}
+        title="A much longer setting title that wraps onto a second line before it reaches the switch" />
     </CatchGap>
   );
 }
 
-/** catch.field on the web: input, multiline input and select recipes. */
+/** catch.field on the web: input, multiline input, select and toggle recipes. */
 export const Contract: Story = {
   render: () => (
     <>

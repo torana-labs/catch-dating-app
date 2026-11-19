@@ -26,7 +26,7 @@ symbol outside `catch_ui`.
 | Marker | `catch.marker` | T1 | `CatchMarker` | `CatchMarker` | align; absorbs: `CatchStatusIndicator`, `CatchClockIndicator` |
 | Field | `catch.field` | T1 | `CatchField` | `CatchField` | align; absorbs: `CatchSearchField` |
 | Field | `catch.search_field` | T1 | `CatchSearchField` | `CatchSearchField` | align |
-| Switch | `catch.toggle` | T2 | `CatchToggleInput` | `CheckboxControl` | align |
+| Switch | `catch.toggle` | T2 | `CatchToggleInput` | `CatchToggleInput` | align |
 | Check | `catch.checkbox` | T1 | `CatchCheckboxInput` | `CatchCheckboxInput` | align |
 | ChoiceCard | `catch.option_card` | T1 | `CatchChoiceTile` | `CatchChoiceTile` | align |
 | Segmented | `catch.tab_rail` | T1 | `CatchPageTabBar` | `CatchPageTabBar` | align |

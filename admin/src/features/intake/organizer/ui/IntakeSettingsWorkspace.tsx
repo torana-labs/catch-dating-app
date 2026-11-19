@@ -204,7 +204,7 @@ function NominatorSheet({model, onClose}: {model: IntakeNominatorsModel; onClose
           helperText="The staff or partner account their nominations are credited to." />
         {model.myUid ? <CatchButton label="Use my account" variant="secondary" size="sm"
           onPressed={() => setUid(model.myUid ?? "")} /> : null}
-        <CatchCheckboxInput label="Can nominate" value={active} onChanged={setActive} />
+        <CatchField onChanged={setActive} recipe="toggle" title="Can nominate" value={active} />
       </CatchGap>
     </CatchSheet>
   );

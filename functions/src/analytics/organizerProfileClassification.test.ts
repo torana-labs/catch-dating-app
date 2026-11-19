@@ -45,16 +45,72 @@ test("excluded classes come from the policy version", () => {
     "freeFormMixer")], external: [], truncated: false}, lifted), "eligible");
 });
 
-test("external listings count as unknown only while the policy says so",
+const future = Date.UTC(2026, 11, 1);
+const now = Date.UTC(2026, 10, 19);
+const scraped = (activityKind: string, title = "Sunday session",
+  startTime: unknown = {toMillis: () => future}) => ({...listing, title,
+  description: "Open to all.", startTime,
+  activity: {version: 1, activityKind, interactionModel: "openFormat",
+    source: "heuristic"}});
+const classifyAt = (native: Record<string, unknown>[],
+  external: Record<string, unknown>[]) => classifyOrganizerProfile(
+  {native, external, truncated: false}, policy, now);
+
+test("scraped organiser: every upcoming listing allowed makes it eligible",
   () => {
-    assert.equal(policy.externalListingsCountAsUnknown, true);
-    assert.equal(classify([run()], [listing]), "unknown");
-    assert.equal(classify([run()], [{...listing, status: "cancelled"}]),
+    assert.equal(policy.externalListingsCountAsUnknown, false);
+    for (const kind of policy.externalListingAllowance.activityKinds) {
+      assert.equal(classifyAt([], [scraped(kind)]), "eligible");
+    }
+    assert.equal(classifyAt([], [scraped("yoga"), scraped("padel")]),
       "eligible");
-    const allowed = {...policy, externalListingsCountAsUnknown: false};
-    assert.equal(classifyOrganizerProfile({native: [run()],
-      external: [listing], truncated: false}, allowed), "eligible");
+    assert.equal(classifyAt([run()], [scraped("pubQuiz")]), "eligible");
   });
+
+test("scraped organiser: an ambiguous or excluded label stays unknown", () => {
+  for (const kind of ["openActivity", "socialRun", "dinner", "barCrawl"]) {
+    assert.equal(classifyAt([], [scraped("yoga"), scraped(kind)]), "unknown");
+  }
+  assert.equal(classifyAt([], [{...scraped("yoga"), activity: undefined}]),
+    "unknown");
+  assert.equal(classifyAt([run()], [scraped("openActivity")]), "unknown");
+});
+
+test("scraped organiser: dating words make it sensitive", () => {
+  for (const title of ["Singles yoga", "Padel mixer night", "Quiz for singles",
+    "Speed dating on bikes", "Matchmaking brunch ride", "Date night tennis"]) {
+    assert.equal(classifyAt([], [scraped("yoga", title)]), "sensitive");
+  }
+  assert.equal(classifyAt([], [scraped("yoga", "Single-origin coffee ride")]),
+    "sensitive");
+  assert.equal(classifyAt([], [scraped("pubQuiz", "Mixed doubles quiz")]),
+    "eligible");
+});
+
+test("scraped organiser: no captured upcoming listing stays unknown", () => {
+  assert.equal(classifyAt([], []), "unknown");
+  assert.equal(classifyAt([], [scraped("yoga", "Past class",
+    {toMillis: () => now - 1})]), "unknown");
+  assert.equal(classifyAt([], [scraped("yoga", "Undated", null)]),
+    "unknown");
+  assert.equal(classifyAt([], [{...scraped("yoga"), status: "cancelled"}]),
+    "unknown");
+  // Past listings do not count against an organiser with native events.
+  assert.equal(classifyAt([run()], [scraped("openActivity", "Old",
+    {toMillis: () => now - 1})]), "eligible");
+});
+
+test("the all-unknown switch still overrides the allowance", () => {
+  const strict = {...policy, externalListingsCountAsUnknown: true};
+  assert.equal(classifyOrganizerProfile({native: [run()],
+    external: [scraped("yoga")], truncated: false}, strict, now), "unknown");
+});
+
+test("blocked words are plain lowercase words", () => {
+  for (const word of policy.externalListingAllowance.blockedWords) {
+    assert.match(word, /^[a-z]+(?: [a-z]+)*$/u);
+  }
+});
 
 test("a truncated read fails closed", () => {
   assert.equal(classify([run()], [], true), "unknown");

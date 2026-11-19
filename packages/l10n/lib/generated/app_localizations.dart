@@ -17105,6 +17105,60 @@ abstract class AppLocalizations {
   /// **'Add walk-in'**
   String get hostsOperationalRosterAddWalkIn;
 
+  /// Hint under a guest-list column choice: the column has no values.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty column'**
+  String get hostsGuestListColumnShapeEmpty;
+
+  /// Hint under a guest-list column choice: the column holds phone numbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like phone numbers'**
+  String get hostsGuestListColumnShapePhone;
+
+  /// Hint under a guest-list column choice: the column holds email addresses.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like email addresses'**
+  String get hostsGuestListColumnShapeEmail;
+
+  /// Hint under a guest-list column choice: the column holds dates.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like dates'**
+  String get hostsGuestListColumnShapeDate;
+
+  /// Hint under a guest-list column choice: the column holds numbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Numbers'**
+  String get hostsGuestListColumnShapeNumber;
+
+  /// Hint under a guest-list column choice: the column holds text.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get hostsGuestListColumnShapeText;
+
+  /// Shown when the server could not tell which guest-list column holds names.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the column that holds each guest’s name.'**
+  String get hostsGuestListNeedsName;
+
+  /// Button that opens the review of a guest list read on the server.
+  ///
+  /// In en, this message translates to:
+  /// **'Review guests'**
+  String get hostsGuestListReviewAction;
+
+  /// Shown while the server reads the guest list again after a column change.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your columns…'**
+  String get hostsGuestListChecking;
+
   /// Button next to the live check-in QR that opens the printable, join-only door poster.
   ///
   /// In en, this message translates to:

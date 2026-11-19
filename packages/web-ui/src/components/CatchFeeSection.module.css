@@ -2,7 +2,8 @@
  * The fee band (PlaybookHosts .pg #pricing and PlaybookPricing's opening
  * panel, on playbook-panels.css): two columns 64px apart lined up at the top,
  * stacking below 840px. The rate is the canvas's .price: the display face at
- * 200px (130px on phones), line height .8, tracked -.05em, in coral; its
+ * 200px on a desktop column, scaling with its column down to 130px, line
+ * height .8, tracked -.05em, in coral; its
  * headline the small display size 18px under it (14px under a page
  * headline, which sits 28px over the rate). Label pills (.incl) are 13px on
  * a translucent fill; worked examples (.ex) three across 12px apart, 48px
@@ -19,10 +20,20 @@
 .copy,
 .calculator { min-width: 0; }
 
+/* The copy column is the rate's container, so the figure sizes to it. */
+.copy { container: catch-fee-copy / inline-size; }
+
+/*
+ * The rate scales with its column instead of stepping at a page breakpoint:
+ * the price size on the canvas's 568px desktop column (200 / 568, rounded up to 35.3cqi so the column reaches it),
+ * never under the compact size, and never wider than the column for a long
+ * figure (CatchText's display-giant rule; --catch-text-giant-chars is its length).
+ */
 .rate.rate {
   margin: 0;
   color: var(--catch-palette-coral);
-  font-size: var(--catch-website-type-price-size);
+  font-size: min(clamp(var(--catch-website-type-price-compact-size), 35.3cqi, var(--catch-website-type-price-size)),
+    calc(100cqi / (var(--catch-text-giant-chars, 2) * 0.64)));
   font-weight: var(--catch-website-type-figure-weight);
   line-height: var(--catch-website-type-price-line-height);
   letter-spacing: var(--catch-website-type-price-tracking);
@@ -75,6 +86,3 @@
   }
 }
 
-@media (max-width: 599px) {
-  .rate.rate { font-size: var(--catch-website-type-price-compact-size); }
-}
