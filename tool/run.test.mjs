@@ -321,11 +321,21 @@ test("a bucket with two failing checks runs every tool and reports both failures
   assert.doesNotMatch(result.stdout, /==> fixture:a-fails: node tool\/exit\.mjs 0 a-second-step/u);
   assert.match(result.stdout, /skipped, an earlier fixture:a-fails command failed/u);
   assert.doesNotMatch(result.stdout, /Tool checks passed/u);
-  for (const output of [result.stderr, fs.readFileSync(summary, "utf8")]) {
-    assert.match(output, /2 tool checks failed:/u);
-    assert.match(output, /- fixture:a-fails \(fixture\), exit 3: node tool\/exit\.mjs 3/u);
-    assert.match(output, /- fixture:c-fails \(fixture\), exit 1: node tool\/exit\.mjs 1/u);
-  }
+  // Each failing command leaves a searchable marker as it fails, once per tool.
+  assert.deepEqual(result.stderr.match(/^FAILED: .*$/gmu),
+    ["FAILED: fixture:a-fails (exit 3)", "FAILED: fixture:c-fails (exit 1)"]);
+  const list = [
+    "2 tool checks failed:",
+    "- fixture:a-fails (fixture), exit 3: node tool/exit.mjs 3",
+    "- fixture:c-fails (fixture), exit 1: node tool/exit.mjs 1",
+  ].join("\n");
+  // The log keeps plain text; the step summary fences the same list so
+  // backticks or pipes in a command render literally.
+  assert.ok(result.stderr.includes(`\n${list}\n`), result.stderr);
+  assert.doesNotMatch(result.stderr, /`{3}/u);
+  const fence = "`".repeat(3);
+  assert.equal(fs.readFileSync(summary, "utf8"),
+    `### Failed tool checks\n\n${fence}text\n${list}\n${fence}\n`);
 });
 
 const restoredProofOwners = [
