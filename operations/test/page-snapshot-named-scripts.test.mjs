@@ -12,7 +12,7 @@ const PAGE = [
   "<script type=\"application/ld+json\">{\"@type\":\"WebPage\"}</script>",
   "</head><body><p>Driftwood RSVP</p></body></html>",
 ].join("");
-const BASE = {url: "https://docs.google.com/forms/d/e/fictional/viewform", html: PAGE, fetchedAt: "2026-11-19T09:00:00.000Z"};
+const BASE = {url: "https://forms.example.com/d/e/fictional/viewform", html: PAGE, fetchedAt: "2026-11-19T09:00:00.000Z"};
 
 test("without namedScripts a snapshot is unchanged: inline scripts stay out", () => {
   const plain = snapshotFromHtml(BASE);
