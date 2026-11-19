@@ -617,11 +617,10 @@ void _registerCatchPrimitivesErrorAsyncTests() {
       ),
       findsOneWidget,
     );
-
-    await tester.tap(find.text('Try again'));
-    await pumpFeatureUi(tester);
-
-    expect(retryCount, 1);
+    // A write that may have landed offers no retry: a repeat could apply it
+    // twice, so the screen's own control is the only way to repeat it.
+    expect(find.text('Try again'), findsNothing);
+    expect(retryCount, 0);
   });
 
   testWidgets('shared subscription handles multiple mutation failures', (
