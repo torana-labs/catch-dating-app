@@ -708,7 +708,8 @@
         "declined",
         "appealRecorded",
         "appealDecided",
-        "closed"
+        "closed",
+        "organizerSuspended"
       ]
     },
     "adminHistoryEntry": {

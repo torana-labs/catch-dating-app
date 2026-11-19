@@ -65,7 +65,7 @@ const requests = (db: FakeFirestore) => db.entries().filter(([entry]) => entry.s
 function nominate(db: FakeFirestore, data: Record<string, unknown>) {
   return adminNominateOrganizerHandler({auth: {uid: "associate-1", token: {salesStaff: true}}, data: {
     requestId: `nomination-${Math.random().toString(36).slice(2, 10)}`, name: null, market: "Mumbai", urls: [],
-    notes: null, categories: [], ...data},
+    notes: null, categories: [], formats: ["runClubs"], ...data},
   rawRequest: {headers: {}}} as unknown as CallableRequest<unknown>, {
     firestore: () => db as unknown as Firestore, now: () => NOW,
     serverTimestamp: () => "SERVER_TIMESTAMP" as unknown as FirebaseFirestore.FieldValue,
@@ -217,8 +217,9 @@ function approve(db: FakeFirestore, listing: {workItemId: string; contentHash: s
     name: "Night Lantern Social", publicSlug: "night-lantern-social", marketId: "in-mh-mumbai", organizerType: "community",
     checklist: {identityReviewed: true, surfaceInventoryReviewed: true, ownerSafeCopyReviewed: true,
       marketScopeReviewed: true, mediaRightsReviewed: true, crawlDisabledReviewed: true,
-      claimTargetReviewed: true, takedownPathReviewed: true, impersonationReviewed: true},
-    note: "Checked the listing."}, rawRequest: {headers: {}}} as unknown as CallableRequest<unknown>, {
+      claimTargetReviewed: true, takedownPathReviewed: true, impersonationReviewed: true,
+      cityEvidenceReviewed: true, formatsReviewed: true, datingFramingReviewed: true, personalDataReviewed: true},
+    formats: ["runClubs"], note: "Checked the listing."}, rawRequest: {headers: {}}} as unknown as CallableRequest<unknown>, {
     firestore: () => db as unknown as Firestore,
     serverTimestamp: () => ({_seconds: 1795000000, _nanoseconds: 0}) as unknown as FirebaseFirestore.FieldValue,
     now: () => NOW, reserveCanonicalRoute: async () => undefined,

@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
-import 'package:catch_dating_app/contexts/payments/domain/host_membership_benefit_use.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_checkout.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
@@ -122,31 +121,31 @@ void main() {
   });
 
   group('savings', () {
-    test('sums unreleased member-priced bookings per membership', () {
-      final uses = [
-        testBenefitUse(),
-        testBenefitUse(id: 'event-2_member-1', savings: 20000),
-        testBenefitUse(id: 'event-3_member-1', savings: 9000, released: true),
-        testBenefitUse(
-          id: 'event-4_member-1',
-          savings: 1000,
-          membershipId: 'hm_other',
-        ),
-      ];
-      expect(hostMembershipSavingsInPaise(uses), 71000);
+    test('reads the server-kept totals and treats absent ones as 0', () {
+      final saved = testMembership(savedInPaise: 70000);
+      expect(saved.savedInPaise, 70000);
+      expect(saved.memberPricedBookings, 1);
+      expect(testMembership().savedInPaise, 0);
+      expect(testMembership().memberPricedBookings, 0);
       expect(
-        hostMembershipSavingsInPaise(uses, membershipId: testMembershipId),
-        70000,
+        () => HostMembership.fromMap(testMembershipId, {
+          ...membershipMap(),
+          'savedInPaise': -1,
+        }),
+        throwsFormatException,
       );
+    });
+
+    test('My memberships sums each membership total', () {
       final state = MyMembershipsState.from(
         memberships: [
-          testMembership(status: 'expired', id: 'hm_old'),
-          testMembership(),
+          testMembership(status: 'expired', id: 'hm_old', savedInPaise: 1000),
+          testMembership(savedInPaise: 70000),
         ],
-        benefitUses: uses,
       );
       expect(state.rows.first.membership.id, testMembershipId);
       expect(state.rows.first.savedInPaise, 70000);
+      expect(state.rows.last.savedInPaise, 1000);
       expect(state.totalSavedInPaise, 71000);
       expect(state.currentMemberships, hasLength(1));
     });

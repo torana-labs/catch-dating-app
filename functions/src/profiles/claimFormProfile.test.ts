@@ -257,8 +257,8 @@ test("withdrawal, deletion and profile edits during photo work abort claiming",
       assert.equal(cleaned, true);
       assert.equal(h.store.records.has(
         `participantOrganizerCards/${h.responseId}`), false);
-      assert.equal([...h.store.records.keys()].some((path) =>
-        path.startsWith("participantProfileClaimReceipts/")), false);
+      assert.equal([...h.store.records.keys()].some((path) => path
+        .startsWith("commandReceipts/claimParticipantFormProfile_")), false);
     }
   });
 

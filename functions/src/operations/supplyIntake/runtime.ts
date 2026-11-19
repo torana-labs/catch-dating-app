@@ -35,7 +35,7 @@ export interface IntakePageSnapshot {
 }
 
 export interface IntakePageSource {
-  capture(input: {runKey: string; url: string}): Promise<{
+  capture(input: {runKey: string; url: string; namedScripts?: string[]}): Promise<{
     snapshot: IntakePageSnapshot | null; receipt: IntakeCaptureReceipt}>;
 }
 

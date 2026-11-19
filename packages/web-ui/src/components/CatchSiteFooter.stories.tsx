@@ -30,19 +30,28 @@ const footer: CatchSiteFooterProps = {
       {href: "/hyderabad/", label: "Hyderabad", note: "soon"},
     ]},
     {title: "Hosts", links: [{href: "/host/", label: "Catch for hosts"}, {href: "/host/#pricing", label: "Pricing"}, {href: "/claim/", label: "Claim your page"}]},
-    {title: "Help and legal", links: [{href: "/help/", label: "Help"}, {href: "/privacy/", label: "Privacy"}, {href: "/terms/", label: "Terms"}]},
+    {
+      title: "Help and legal",
+      links: [{href: "/help/", label: "Help"}, {href: "/report/", label: "Report or remove a listing"}, {href: "/privacy/", label: "Privacy"}, {href: "/terms/", label: "Terms"}],
+      action: {label: "Privacy choices", onPressed: () => {}},
+    },
   ],
   navLabel: "Footer",
   tagline: "Meet people in real life, through hosts who bring them together.",
 };
 
-/** Four columns at 1280 and two at 390, with the cities not yet open marked soon. */
+/**
+ * One row at 1280; at 820 the groups flow down as many columns as fit, each
+ * as wide as the longest link; two flowing columns at 390. Cities not yet
+ * open are marked soon, and Help and legal ends with an action drawn as a link.
+ */
 export const Widths: Story = {
   parameters: {catchComponent: {id: "shared_catch_site_footer", routeIds: storyRoutes, states: ["wide", "compact", "soon-notes"]}},
   render: () => (
     // Each frame is a section, so its footer is not a second content info landmark.
     <CatchGap size="section">
       <section aria-label="1280px page"><PageFrame width={1280}><CatchSiteFooter {...footer} /></PageFrame></section>
+      <section aria-label="820px page"><PageFrame width={820}><CatchSiteFooter {...footer} navLabel="Footer, tablet" /></PageFrame></section>
       <section aria-label="390px page"><PageFrame width={390}><CatchSiteFooter {...footer} navLabel="Footer, phone" /></PageFrame></section>
     </CatchGap>
   ),

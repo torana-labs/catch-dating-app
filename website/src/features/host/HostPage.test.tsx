@@ -16,7 +16,7 @@ afterEach(() => {
 // bindings are checked against capture_manifest.json in marketingCaptures.test.tsx).
 const slotIds = ["host-today", "host-live-tablet", "guest-explore", ...new Set(hostNightFormats.flatMap((format) => format.moments.map((moment) => moment.slot)))];
 const marketingCaptures: CaptureSlots = Object.fromEntries(slotIds.map((id) => [id, {
-  id, audience: "host", surface: id, device: "generic-phone", webPath: `/captures/${id}.png`, width: 980, height: 1924,
+  id, audience: "host", surface: id, device: "generic-phone", webPath: `/captures/${id}.png`, width: 804, height: 1748,
   alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Run the night", pages: ["/host/"],
 }]));
 

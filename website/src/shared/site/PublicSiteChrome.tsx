@@ -233,24 +233,24 @@ function SiteOfferStrip({offer}: {offer: SiteOffer}) {
   );
 }
 
-// The footer's own type and colour. Beside a tagline it is underlined so it
-// reads as a link; in a link column it matches its siblings.
-const privacyChoicesText = {
-  inline: {font: "inherit", textDecoration: "underline", textUnderlineOffset: "0.2em"},
-  link: {font: "inherit", lineHeight: "inherit", textDecoration: "none", border: 0},
-} as const;
+// Beside a tagline it takes the surrounding type and is underlined so it reads as a link.
+const privacyChoicesText = {font: "inherit", textDecoration: "underline", textUnderlineOffset: "0.2em"} as const;
 
 /**
- * "Privacy choices": reopens the consent banner. It sits in each footer's
- * legal area in the surrounding colour and type, so no control floats over
- * the page once a choice exists.
+ * "Privacy choices": reopens the consent banner. Beside a line of text it
+ * takes the surrounding colour and type, so no control floats over the page
+ * once a choice exists. The site footer's link columns end with
+ * `privacyChoicesAction` instead, which the footer draws exactly as a link.
  */
-export function PrivacyChoicesButton({tone = "inline"}: {tone?: keyof typeof privacyChoicesText} = {}) {
+export function PrivacyChoicesButton() {
   return (
     <CatchButton foregroundColor="currentColor" label={publicSiteCopy.privacyChoices} minimumSize={{width: 0, height: 0}}
-      onPressed={openMarketingConsentPreferences} padding={0} recipe="text" textStyle={privacyChoicesText[tone]} />
+      onPressed={openMarketingConsentPreferences} padding={0} recipe="text" textStyle={privacyChoicesText} />
   );
 }
+
+/** "Privacy choices" as the last item of the site footer's last link column. */
+const privacyChoicesAction = {label: publicSiteCopy.privacyChoices, onPressed: openMarketingConsentPreferences};
 
 /**
  * The boards' short footer: the wordmark across from quiet links. The form,
@@ -407,7 +407,7 @@ function guestFooterGroups({appHref, cities, cityFormats, exploreHref}: {appHref
     ...(cityFormats && cityFormats.formats.length > 0 ? [{title: cityFormats.title, links: cityFormats.formats}] : []),
     ...(cities ? [{title: siteFooterCopy.groups.cities, links: cities.map((city) => ({href: city.href, label: city.label, note: city.note ?? (city.soon ? siteFooterCopy.soon : undefined)}))}] : []),
     {title: siteFooterCopy.groups.hosts, links: siteFooterCopy.hosts},
-    {title: siteFooterCopy.groups.help, links: siteLinks(siteFooterCopy.helpOrder), trailing: <PrivacyChoicesButton tone="link" />},
+    {title: siteFooterCopy.groups.help, links: siteLinks(siteFooterCopy.helpOrder), action: privacyChoicesAction},
   ];
 }
 
@@ -429,7 +429,7 @@ function columnFooterGroups(columns: readonly SiteFooterColumn[]): CatchSiteFoot
   return columns.map((column, index) => ({
     title: column.title,
     links: column.links,
-    ...(index === columns.length - 1 ? {trailing: <PrivacyChoicesButton tone="link" />} : {}),
+    ...(index === columns.length - 1 ? {action: privacyChoicesAction} : {}),
   }));
 }
 

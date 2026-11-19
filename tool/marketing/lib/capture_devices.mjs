@@ -1,29 +1,28 @@
-// The phones marketing captures render on and the frame the exporter draws
+// The devices marketing captures render on and the frame the exporter draws
 // around each, in points. tool/marketing/frame_device_capture.dart draws the
 // same frames (its test pins the framed sizes below), and
 // test/ui_captures/support/capture_device.dart holds the same screens and
 // safe areas for the Flutter render.
 //
 // generic-phone is the default (owner decision, 8 Nov 2026): the iPhone 17
-// Pro screen with a generic bezel, nothing unique to Apple hardware, the same
-// geometry as the website's CatchDeviceFrame kind "phone" (bezel 0.028 and
-// outer radius 0.165 of the frame width). iphone-17-pro keeps its older frame
-// with a drawn Dynamic Island for existing renders.
-//
-// generic-tablet and desktop-browser are unframed (frameInset and canvasMargin
-// 0): the PNG is the screen alone, and the website draws the frame in CSS
-// (CatchDeviceFrame kind "tablet", proposal L9, and kind "browser", W1).
-// frame_device_capture.dart passes their native screens through unframed.
+// Pro screen, nothing unique to Apple hardware. Like generic-tablet and
+// desktop-browser it is unframed (frameInset and canvasMargin 0): the PNG is
+// the screen alone and the website draws the only frame in CSS
+// (CatchDeviceFrame kind "phone", "tablet" or "browser"), so a page never
+// shows a frame inside a frame. iphone-17-pro keeps its older drawn frame
+// with a Dynamic Island for existing renders.
 
 const devices = Object.freeze({
   "generic-phone": Object.freeze({
+    kind: "phone",
     logicalWidth: 402, logicalHeight: 874, outputScale: 2,
     safeArea: Object.freeze({top: 62, right: 0, bottom: 34, left: 0}),
     // Safari's status bar fills the top safe area.
     safariStatusBar: 62,
-    canvasMargin: 32, frameInset: 12, outerRadius: 70, screenRadius: 58, dynamicIsland: null,
+    canvasMargin: 0, frameInset: 0, outerRadius: 0, screenRadius: 0, dynamicIsland: null, framed: false,
   }),
   "iphone-17-pro": Object.freeze({
+    kind: "phone",
     logicalWidth: 402, logicalHeight: 874, outputScale: 2,
     safeArea: Object.freeze({top: 59, right: 0, bottom: 34, left: 0}),
     safariStatusBar: 54,
@@ -31,12 +30,14 @@ const devices = Object.freeze({
     dynamicIsland: Object.freeze({width: 126, height: 37, top: 12}),
   }),
   "generic-tablet": Object.freeze({
+    kind: "tablet",
     logicalWidth: 1194, logicalHeight: 834, outputScale: 2,
     safeArea: Object.freeze({top: 24, right: 0, bottom: 20, left: 0}),
     safariStatusBar: 24,
     canvasMargin: 0, frameInset: 0, outerRadius: 0, screenRadius: 0, dynamicIsland: null, framed: false,
   }),
   "desktop-browser": Object.freeze({
+    kind: "desktop",
     logicalWidth: 1440, logicalHeight: 900, outputScale: 2,
     safeArea: Object.freeze({top: 0, right: 0, bottom: 0, left: 0}),
     safariStatusBar: 0,
@@ -57,12 +58,17 @@ export function captureDevice(id) {
   return devices[id];
 }
 
+/** Whether this device is a phone (a web capture then draws Safari's status and address bars). */
+export function isPhoneCaptureDevice(id) {
+  return captureDevice(id).kind === "phone";
+}
+
 /** Whether the exporter draws a device frame around this device's captures. */
 export function isFramedCaptureDevice(id) {
   return captureDevice(id).framed !== false;
 }
 
-/** The framed PNG's pixel size: native screen plus bezel and canvas margin on each side. */
+/** The PNG's pixel size: the native screen, plus bezel and canvas margin on each side for a framed device. */
 export function framedSize(id) {
   const {logicalWidth, logicalHeight, outputScale, canvasMargin, frameInset} = captureDevice(id);
   const edge = (canvasMargin + frameInset) * outputScale * 2;

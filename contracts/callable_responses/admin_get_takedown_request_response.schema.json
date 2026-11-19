@@ -39,6 +39,10 @@
     "canDecideAppeal": {
       "type": "boolean",
       "description": "An admin or the owner who did not make the decision."
+    },
+    "canSuspendOrganizer": {
+      "type": "boolean",
+      "description": "An admin or the owner may suspend the organiser page this undecided request names (suspendOrganizer). Absent from older servers, which read as false."
     }
   }
 }

@@ -12,6 +12,16 @@ const MAX_JSON_BLOCK_BYTES = 1024 * 1024;
 const DEFAULT_MAX_TEXT_CHARS = 20_000;
 const META_KEY = /^(?:og:[a-z:_]+|twitter:[a-z:_]+|description|keywords|author)$/u;
 
+/**
+ * Inline scripts that assign one JSON literal to a page variable, which a
+ * caller may ask the snapshot to keep. A public Google Form keeps its
+ * questions in `var FB_PUBLIC_LOAD_DATA_ = [...]`. Kept blocks join
+ * `embeddedJson` as `{id: "var:<name>", value}`. Without `namedScripts` the
+ * snapshot is exactly what it was before this option existed.
+ */
+export const NAMED_SCRIPT_VARIABLES = Object.freeze(["FB_PUBLIC_LOAD_DATA_"]);
+const NAMED_SCRIPT = /^\s*var\s+([A-Za-z_$][\w$]*)\s*=\s*([\s\S]*?);?\s*$/u;
+
 export function snapshotFromHtml({
   url,
   finalUrl = url,
@@ -20,6 +30,7 @@ export function snapshotFromHtml({
   html,
   fetchedAt = null,
   maxTextChars = DEFAULT_MAX_TEXT_CHARS,
+  namedScripts = [],
 }) {
   if (typeof html !== "string") {
     throw new OperationsError("PAGE_HTML_REQUIRED", "A page snapshot requires the fetched HTML.");
@@ -27,6 +38,7 @@ export function snapshotFromHtml({
   if (Buffer.byteLength(html, "utf8") > MAX_PAGE_HTML_BYTES) {
     throw new OperationsError("PAGE_HTML_TOO_LARGE", "The fetched page exceeds the snapshot size limit.");
   }
+  const keep = namedScriptSet(namedScripts);
   const jsonLd = [];
   const embeddedJson = [];
   let jsonParseFailures = 0;
@@ -34,7 +46,8 @@ export function snapshotFromHtml({
     const type = (attributes.type ?? "").toLowerCase();
     const isLd = type === "application/ld+json";
     const isState = type === "application/json" || attributes.id === "__NEXT_DATA__";
-    if (!isLd && !isState) continue;
+    const named = !isLd && !isState && keep.size > 0 ? namedScriptOf(type, body, keep) : null;
+    if (!isLd && !isState && !named) continue;
     if (jsonLd.length + embeddedJson.length >= MAX_JSON_BLOCKS) break;
     if (Buffer.byteLength(body, "utf8") > MAX_JSON_BLOCK_BYTES) {
       jsonParseFailures += 1;
@@ -42,12 +55,13 @@ export function snapshotFromHtml({
     }
     let value;
     try {
-      value = JSON.parse(body.trim());
+      value = JSON.parse(named ? named.literal : body.trim());
     } catch {
       jsonParseFailures += 1;
       continue;
     }
     if (isLd) jsonLd.push(value);
+    else if (named) embeddedJson.push({id: `var:${named.name}`, value});
     else embeddedJson.push({id: attributes.id ?? null, value});
   }
   const snapshot = {
@@ -75,6 +89,19 @@ export function scriptBlocks(html) {
     blocks.push({attributes: attributesOf(match[1]), body: match[2]});
   }
   return blocks;
+}
+
+function namedScriptSet(namedScripts) {
+  if (!Array.isArray(namedScripts) || namedScripts.some((name) => !NAMED_SCRIPT_VARIABLES.includes(name))) {
+    throw new OperationsError("PAGE_SNAPSHOT_NAMED_SCRIPT", "Only listed page variables may be kept in a snapshot.");
+  }
+  return new Set(namedScripts);
+}
+
+function namedScriptOf(type, body, keep) {
+  if (type !== "" && type !== "text/javascript" && type !== "application/javascript") return null;
+  const match = body.match(NAMED_SCRIPT);
+  return match && keep.has(match[1]) ? {name: match[1], literal: match[2]} : null;
 }
 
 function metaOf(html) {

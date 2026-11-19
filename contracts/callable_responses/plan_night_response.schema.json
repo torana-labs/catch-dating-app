@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/plan_night_response.schema.json",
+  "title": "PlanNightCallableResponse",
+  "description": "Response of night.plan. needs_input: set up a try-it workspace first (result.reasons no_workspace). previewed: result.plan is the night and result.rehearsalSetup a setup createEventRehearsal accepts for a practice session. refused: the plan can't be saved (result.reasons: no_draft_event, event_not_in_workspace, event_format_needed, event_format_mismatch, plan_locked). applied or replayed: result.eventId names the draft event whose plan was saved. Mission text is not included: each client renders result.plan.missions[].promptId from its own copy.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["commandId", "status", "previewHash", "summary", "effects", "result", "next", "receiptId"],
+  "definitions": {
+    "stage": {"type": "string", "pattern": "^[a-z][A-Za-z]{0,39}$"}
+  },
+  "properties": {
+    "commandId": {"const": "night.plan"},
+    "status": {"type": "string", "enum": ["previewed", "applied", "replayed", "needs_input", "refused"]},
+    "previewHash": {"$ref": "../shared/command_envelope.schema.json#/definitions/previewHash"},
+    "summary": {"$ref": "../shared/command_envelope.schema.json#/definitions/summary"},
+    "effects": {"type": "array", "maxItems": 12, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/effect"}},
+    "next": {"type": "array", "maxItems": 8, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/next"}},
+    "receiptId": {"type": ["string", "null"], "pattern": "^[a-z][A-Za-z0-9]{0,63}_[a-f0-9]{64}$"},
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organizerId", "plan", "rehearsalSetup", "eventId", "reasons"],
+      "properties": {
+        "organizerId": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9]{20}$"},
+        "eventId": {"anyOf": [{"type": "null"}, {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}]},
+        "reasons": {"type": "array", "maxItems": 4, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,79}$"}},
+        "rehearsalSetup": {"anyOf": [{"type": "null"}, {"$ref": "../shared/event_rehearsal_common.schema.json#/definitions/safeSetup"}]},
+        "plan": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["format", "guestCount", "playbookId", "activityKind", "interactionModel", "capacity", "groups",
+                "mixingMoment", "runOfShow", "durationMinutes", "stops", "missions"],
+              "properties": {
+                "format": {"type": "string", "enum": ["run", "dinner", "quiz", "courts", "crawl"]},
+                "guestCount": {"type": "integer", "minimum": 2, "maximum": 200},
+                "playbookId": {"type": "string", "minLength": 1, "maxLength": 120},
+                "activityKind": {"type": "string", "minLength": 1, "maxLength": 80},
+                "interactionModel": {"type": "string", "minLength": 1, "maxLength": 80},
+                "capacity": {
+                  "type": "object", "additionalProperties": false, "required": ["min", "max", "fit"],
+                  "properties": {
+                    "min": {"type": "integer", "minimum": 1}, "max": {"type": "integer", "minimum": 1},
+                    "fit": {"type": "string", "enum": ["below", "within", "above"]}
+                  }
+                },
+                "groups": {
+                  "type": "object", "additionalProperties": false,
+                  "required": ["kind", "count", "size", "unitKind", "labels", "benchCount"],
+                  "properties": {
+                    "kind": {"type": "string", "enum": ["paceGroups", "courts", "units", "wholeGroup"]},
+                    "count": {"type": "integer", "minimum": 1, "maximum": 200},
+                    "size": {"type": ["integer", "null"], "minimum": 1, "maximum": 1000},
+                    "unitKind": {"type": ["string", "null"], "enum": [null, "wholeGroup", "pods", "pairs", "teams", "tables"]},
+                    "labels": {"type": "array", "maxItems": 8, "items": {"type": "string", "pattern": "^[a-z][a-z_]{0,39}$"}},
+                    "benchCount": {"type": "integer", "minimum": 0, "maximum": 200}
+                  }
+                },
+                "mixingMoment": {
+                  "type": "object", "additionalProperties": false,
+                  "required": ["kind", "stage", "durationMinutes", "rotationIntervalMinutes"],
+                  "properties": {
+                    "kind": {"type": "string", "enum": ["runOfShowStage", "rotation", "teamRevealAtRoundBreak"]},
+                    "stage": {"$ref": "#/definitions/stage"},
+                    "durationMinutes": {"type": "integer", "minimum": 0, "maximum": 360},
+                    "rotationIntervalMinutes": {"type": ["integer", "null"], "minimum": 5, "maximum": 180}
+                  }
+                },
+                "runOfShow": {
+                  "type": "array", "minItems": 1, "maxItems": 40,
+                  "items": {
+                    "type": "object", "additionalProperties": false, "required": ["stage", "durationMinutes"],
+                    "properties": {"stage": {"$ref": "#/definitions/stage"}, "durationMinutes": {"type": "integer", "minimum": 0, "maximum": 360}}
+                  }
+                },
+                "durationMinutes": {"type": "integer", "minimum": 0, "maximum": 1440},
+                "stops": {"type": ["integer", "null"], "minimum": 1, "maximum": 20},
+                "missions": {
+                  "type": "array", "minItems": 3, "maxItems": 3,
+                  "items": {
+                    "type": "object", "additionalProperties": false, "required": ["promptId", "disclosureLevel"],
+                    "properties": {
+                      "promptId": {"type": "string", "pattern": "^[A-Za-z]+\\.[a-z]+$"},
+                      "disclosureLevel": {"type": "string", "enum": ["light", "personal", "reflective"]}
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

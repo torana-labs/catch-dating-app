@@ -5,7 +5,7 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import {OperationsError} from "../platform/errors.mjs";
 import {collectSchema} from "../platform/schema-dependencies.mjs";
-import {EFFECT_CONFIRMATION_POLICY} from "./confirmation-policy.mjs";
+import {EFFECT_CONFIRMATION_POLICY} from "../../../packages/command-client/src/confirmation-policy.mjs";
 
 const moduleDirectory = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepoRoot = path.resolve(moduleDirectory, "..", "..", "..");

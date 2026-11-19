@@ -35,7 +35,7 @@ function fixture(t, {second = false} = {}) {
     websitePath: 'website/public/assets/app-screenshots/other.png',
     placeholderPath: 'website/public/assets/app-screenshots/placeholders/other.svg'};
   const captures = second ? [capture, other] : [capture];
-  write('tool/marketing/capture_manifest.json', JSON.stringify({version: 1, updated: '2026-09-21', previewDisclosure: 'Fictional app preview.', captures}));
+  write('tool/marketing/capture_manifest.json', JSON.stringify({version: 1, updated: '2026-09-21', captures}));
   for (const entry of captures) write(entry.sourcePath, png());
   write('packages/sample/pubspec.yaml', 'name: sample\nflutter:\n  assets:\n    - assets/\n');
   write('packages/sample/assets/image.txt', 'asset fixture');
@@ -307,20 +307,13 @@ test('a computed data path cannot hide which file a capture reads', t => {
 });
 
 
-test('website captions disclose synthetic previews without changing captured pixels or source copy', t => {
+test('website captions are the authored captions, and syncing never changes captured pixels', t => {
   const f = fixture(t);
   assert.equal(f.run(sync, '--update').status, 0);
   const output = JSON.parse(fs.readFileSync(path.join(f.root, 'website/public/assets/app-screenshots/manifest.json'), 'utf8'));
-  assert.equal(output.captures[0].caption, 'Fictional app preview. Today');
-  const manifestPath = path.join(f.root, 'tool/marketing/capture_manifest.json');
-  const source = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  assert.equal(source.captures[0].caption, 'Today');
+  assert.equal(output.captures[0].caption, 'Today');
   assert.deepEqual(fs.readFileSync(path.join(f.root, f.capture.websitePath)), fs.readFileSync(path.join(f.root, f.capture.sourcePath)));
-  delete source.previewDisclosure;
-  fs.writeFileSync(manifestPath, JSON.stringify(source));
-  const result = f.run(sync, '--check');
-  assert.equal(result.status, 1);
-  assert.match(result.stderr, /previewDisclosure is required/);
+  assert.equal(f.run(sync, '--check').status, 0);
 });
 
 

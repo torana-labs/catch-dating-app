@@ -19,7 +19,7 @@ part 'event_viewer_state_provider.g.dart';
 /// published plans and their server-projected booking facts. Each listener
 /// delivers its own writes, so a booking command needs no invalidation. The
 /// UID isolates the account generation; it is never sent as authority.
-// provider-graph: high-fan-out:eventViewerStateProvider accepted -- The listeners form one booking-state read model for one guest and event: auth, the event, the booking, the profile, scheduled events for the overlap check, paid memberships, the event's membership rules, the organizer's published plans, the server-projected guest facts, and (for capped plans) benefit uses and signed-up events. Composing them in one place keeps the dock and the booking flow on the same rules as the server, which the shared parity cases pin.
+// provider-graph: high-fan-out:eventViewerStateProvider accepted -- The listeners form one booking-state read model for one guest and event: auth, the event, the booking, the profile, scheduled events for the overlap check, paid memberships, the event's membership rules, the organizer's published plans, the server-projected guest facts, and (for capped plans) the cap-bounded upcoming benefit uses and signed-up events. Composing them in one place keeps the dock and the booking flow on the same rules as the server, which the shared parity cases pin.
 @Riverpod(retry: _noViewerReadRetry)
 Future<EventViewerState> eventViewerState(
   Ref ref,
@@ -83,12 +83,10 @@ Future<EventViewerState> eventViewerState(
         uid: uid,
         eventId: eventId,
         membership: hostMembership,
-        capped:
-            plans
-                .where((plan) => plan.id == hostMembership?.planId)
-                .firstOrNull
-                ?.maxUpcomingMemberPricedBookings !=
-            null,
+        cap: plans
+            .where((plan) => plan.id == hostMembership?.planId)
+            .firstOrNull
+            ?.maxUpcomingMemberPricedBookings,
         now: now,
       ),
       scheduledEvents: await scheduledFuture,
@@ -98,22 +96,33 @@ Future<EventViewerState> eventViewerState(
 }
 
 /// Other upcoming signed-up bookings with this organizer that used a member
-/// price. Read only when the member's plan caps them.
+/// price. Read only when the member's plan caps them, and never more than
+/// the cap needs: the server's cap reader
+/// (`functions/src/hostMemberships/entitlementReader.ts`) counts the same
+/// booked uses.
 Future<int> _upcomingMemberPricedBookings(
   Ref ref, {
   required String uid,
   required String eventId,
   required HostMembership? membership,
-  required bool capped,
+  required int? cap,
   required DateTime now,
 }) async {
   if (membership == null ||
-      !capped ||
+      cap == null ||
       !hostMembershipIsEntitled(membership, now)) {
     return 0;
   }
+  // The window starts at the current hour so the listener survives the
+  // viewer's minute tick; events that already started are dropped below.
+  final nowMillis = now.millisecondsSinceEpoch;
   final usesFuture = ref.watch(
-    watchMyHostMembershipBenefitUsesProvider(uid).future,
+    watchUpcomingHostMembershipBenefitUsesProvider(
+      uid: uid,
+      organizerId: membership.organizerId,
+      startingAfterMillis: nowMillis - nowMillis % Duration.millisecondsPerHour,
+      limit: cap + _benefitUseWindowHeadroom,
+    ).future,
   );
   final signedUp = {
     for (final card in await ref.watch(
@@ -131,6 +140,10 @@ Future<int> _upcomingMemberPricedBookings(
       )
       .length;
 }
+
+/// Uses read beyond the cap: one to see the cap reached, one for this event
+/// and two for events that started earlier in the current hour.
+const _benefitUseWindowHeadroom = 4;
 
 /// Firestore listeners restart only on the user's reload, never on an
 /// automatic retry.

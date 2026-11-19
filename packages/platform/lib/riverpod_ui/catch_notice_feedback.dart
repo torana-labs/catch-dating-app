@@ -49,6 +49,8 @@ void showCatchNoticeError(
     context: errorContext,
   );
   final errorDedupeKey = dedupeKey ?? 'feedback.error.${descriptor.message}';
+  // An unconfirmed write offers no retry: a repeat could apply it twice.
+  final retry = isUnconfirmedWrite(error) ? null : onRetry;
   ProviderScope.containerOf(context, listen: false)
       .read(catchNoticeControllerProvider.notifier)
       .show(
@@ -58,8 +60,8 @@ void showCatchNoticeError(
           message: descriptor.message,
           icon: descriptor.icon,
           tone: CatchNoticeTone.danger,
-          actionLabel: onRetry == null ? null : descriptor.retryLabel,
-          onAction: onRetry,
+          actionLabel: retry == null ? null : descriptor.retryLabel,
+          onAction: retry,
           dedupeKey: errorDedupeKey,
         ),
       );

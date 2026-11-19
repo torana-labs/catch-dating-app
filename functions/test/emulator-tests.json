@@ -43,6 +43,7 @@
   "lib/organizers/organizerWhatsappWebhook.test.js",
   "lib/organizers/organizerClaimVerification.emulator.test.js",
   "lib/listingSuppressions/registry.emulator.test.js",
+  "lib/admin/listingProgram/listingProgram.emulator.test.js",
   "lib/eventSuccess/operations/whatsappReplies.test.js",
   "lib/eventSuccess/operations/whatsappPreference.test.js",
   "lib/eventSuccess/operations/whatsappDispatch.test.js",
@@ -129,5 +130,6 @@
   "lib/customDomains/domainRegistry.emulator.test.js",
   "lib/publicPages/rebuild.emulator.test.js",
   "lib/cityPlans/rebuild.emulator.test.js",
-  "lib/foundingHosts/foundingHostGrant.emulator.test.js"
+  "lib/foundingHosts/foundingHostGrant.emulator.test.js",
+  "lib/money/organizerReferrals.emulator.test.js"
 ]

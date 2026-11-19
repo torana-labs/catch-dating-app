@@ -1,0 +1,60 @@
+{
+  "name": "Lantern Trail Runners",
+  "description": "Sunday runs around the lake, built from public pages.",
+  "location": "in-mp-indore",
+  "locationCityId": "in-mp-indore",
+  "locationMarketId": "in-mp-indore",
+  "cityName": "Indore",
+  "regionName": "Madhya Pradesh",
+  "countryCode": "IN",
+  "countryName": "India",
+  "area": "",
+  "hostUserId": null,
+  "hostName": null,
+  "hostAvatarUrl": null,
+  "ownerUserId": null,
+  "hostUserIds": [],
+  "hostProfiles": [],
+  "createdAt": {
+    "_seconds": 1778803200,
+    "_nanoseconds": 0
+  },
+  "imageUrl": null,
+  "profileImageUrl": null,
+  "tags": [
+    "run_clubs"
+  ],
+  "memberCount": 0,
+  "rating": 0,
+  "reviewCount": 0,
+  "nextEventAt": null,
+  "nextEventLabel": null,
+  "instagramHandle": null,
+  "phoneNumber": null,
+  "email": null,
+  "status": "active",
+  "archived": false,
+  "archivedAt": null,
+  "archiveReason": null,
+  "organizerType": "club",
+  "organizerPhotos": [],
+  "followerCount": 0,
+  "publicCategoryLabel": "Run clubs",
+  "publicProfile": {
+    "headline": null,
+    "summary": null,
+    "sourceSummary": "Sunday runs around the lake, built from public pages.",
+    "formats": [
+      "Run clubs"
+    ],
+    "facts": [],
+    "eventEvidence": []
+  },
+  "listingProgram": {
+    "cohortId": "pilot-indore-1",
+    "approvedAt": {
+      "_seconds": 1795075200,
+      "_nanoseconds": 0
+    }
+  }
+}

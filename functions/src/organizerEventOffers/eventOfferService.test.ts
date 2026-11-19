@@ -7,7 +7,8 @@ import {
 } from "./eventOfferDomain";
 import {
   commitEventOffers, mutateEventOffer, OfferApplication, OfferAuditEntry,
-  OfferBatchInput, OfferBatchReceipt, OfferContact, OfferEvent, OfferOrigin,
+  OfferBatchInput, OfferBatchReceiptRecord, OfferContact, OfferEvent,
+  OfferOrigin,
   OfferRepository, OfferSourceState, OfferTransaction, previewEventOffers,
   getEventOffer, listEventOffers,
   prepareEventOfferHandoff,
@@ -33,7 +34,7 @@ type State = {
   paymentTerms: Map<string, EventPaymentTerms>;
   offers: Map<string, EventOffer>;
   receipts: Map<string, OfferActionReceipt>;
-  batches: Map<string, OfferBatchReceipt>;
+  batches: Map<string, OfferBatchReceiptRecord>;
   audit: OfferAuditEntry[];
 };
 
@@ -134,8 +135,13 @@ class AtomicStore implements OfferRepository {
       offer: async (id) => next.offers.get(id) ?? null,
       actionReceipt: async (id, requestId) =>
         next.receipts.get(`${id}|${requestId}`) ?? null,
-      batchReceipt: async (id, requestId) =>
-        next.batches.get(`${id}|${requestId}`) ?? null,
+      batchReceipt: async (id, requestId, requestHash) => {
+        const stored = next.batches.get(`${id}|${requestId}`);
+        if (!stored) return {kind: "none" as const};
+        return stored.requestHash === requestHash ?
+          {kind: "replay" as const, results: stored.results} :
+          {kind: "conflict" as const};
+      },
       listOffers: async (organizerId, eventId, cursor, limit) =>
         [...next.offers.values()].filter((offer) =>
           offer.organizerId === organizerId && offer.eventId === eventId &&
@@ -504,6 +510,16 @@ test("batch replay is idempotent and altered request conflicts", async () => {
   assert.equal([...store.state.offers.values()][0].status, "withdrawn");
   await assert.rejects(() => commitEventOffers({...command,
     input: {...command.input, mode: "draft"}}),
+  (error) => assertCode(error, "conflict"));
+  // The stored record keeps only results; the response is rebuilt.
+  const stored = [...store.state.batches.values()][0];
+  assert.deepEqual(Object.keys(stored).sort(),
+    ["organizerId", "requestHash", "requestId", "results"]);
+  assert.notEqual(stored.requestHash, first.requestHash);
+  // A second manager reusing the request ID conflicts rather than replaying.
+  store.state.managers.add(`${row.organizerId}|manager-two`);
+  await assert.rejects(() => commitEventOffers({...command,
+    actor: {uid: "manager-two"}}),
   (error) => assertCode(error, "conflict"));
 });
 

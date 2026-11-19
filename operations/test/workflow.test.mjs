@@ -286,8 +286,8 @@ test("workflow freshness planning cites immutable completed run coverage",
       },
     });
 
-    assert.equal(plan.freshness.summary.requested, 13);
-    assert.equal(plan.freshness.summary.scheduled, 12);
+    assert.equal(plan.freshness.summary.requested, 9);
+    assert.equal(plan.freshness.summary.scheduled, 8);
     assert.equal(plan.freshness.summary.skippedFresh, 1);
     assert.equal(
       plan.freshness.skippedFresh.find((entry) =>

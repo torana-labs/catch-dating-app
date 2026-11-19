@@ -9,8 +9,6 @@ import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
 import {validateOrganizerDocument} from
   "../../shared/generated/validators/organizerDocument";
-import {validateEventAssistanceSettingReceiptDocument} from
-  "../../shared/generated/validators/eventAssistanceSettingReceiptDocument";
 import {validateSetEventAssistanceSettingCallablePayload} from
   "../../shared/generated/validators/setEventAssistanceSettingInput";
 import {validateEventAssistanceSettingCallableResponse} from
@@ -19,12 +17,19 @@ import type {EventAssistanceSettingCallableResponse as Response} from
   "../../shared/generated/eventAssistanceSettingCallableResponse";
 import {invalidSource} from "./groupProgressSource";
 import {
-  Setting, SettingScope, SETTINGS, SETTING_RECEIPTS, Template,
+  Setting, SettingScope, SETTINGS, SETTING_RECEIPT_COMMAND, Template,
   settingId, settingSource, suggestedTemplate, templateTargetsAreCurrent,
 } from "./policySettings";
 import {parseSetting, resolveSetting, readSettingState} from
   "./policySettingsReader";
 import {readMessageSenderChoice} from "./runtimeSenderSetup";
+import {assistanceReceiptRef, isMillis, isRevision, replayAssistanceReceipt,
+  writeAssistanceReceipt} from "./assistanceReceipts";
+
+/** What a replay re-checks against the live setting. */
+type SettingReceipt = {revision: number; createdAt: number};
+const validReceipt = (r: Record<string, unknown>) => isRevision(r.revision) &&
+  isMillis(r.createdAt);
 
 /** Saves preferences; execution and provider authority remain separate. */
 export class EventAssistanceSettingsStore {
@@ -51,21 +56,20 @@ export class EventAssistanceSettingsStore {
         "Invalid assistance preference.");
     }
     const requestHash = operationContentHash([actorUid, input]);
-    const receiptId = "setting-action:" + operationContentHash([
-      input.context, input.groupId, input.workflowKind, input.requestId]);
+    const receiptRef = assistanceReceiptRef(this.db, SETTING_RECEIPT_COMMAND,
+      operationContentHash([input.context, input.groupId, input.workflowKind,
+        input.requestId]));
     return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, input);
-      const receiptRef = this.db.collection(SETTING_RECEIPTS).doc(receiptId);
-      const receipt = (await tx.get(receiptRef)).data();
+      const stored = (await tx.get(receiptRef)).data();
       const now = this.clock();
       if (!Number.isSafeInteger(now) || now < state.now) throw invalidSource();
       state.now = now;
-      if (receipt !== undefined) {
-        if (!validateEventAssistanceSettingReceiptDocument(receipt) ||
-            receipt.receiptId !== receiptId ||
-            receipt.settingId !== state.own?.settingId ||
-            receipt.requestHash !== requestHash ||
-            receipt.revision > state.own.revision ||
+      const receipt = replayAssistanceReceipt<SettingReceipt>(stored, {
+        command: SETTING_RECEIPT_COMMAND, requestHash, nowMillis: now,
+      }, validReceipt, conflict);
+      if (receipt !== null) {
+        if (!state.own || receipt.revision > state.own.revision ||
             receipt.createdAt > now) throw conflict();
         return response("replayed", state, receipt.revision);
       }
@@ -90,11 +94,9 @@ export class EventAssistanceSettingsStore {
         updatedBy: actorUid, createdAt: state.own?.createdAt ?? now,
         updatedAt: now};
       parseSetting(own, input, now);
-      const savedReceipt = {receiptId, settingId: own.settingId,
-        requestHash, revision: own.revision, createdAt: now};
-      if (!validateEventAssistanceSettingReceiptDocument(savedReceipt)) {
-        throw invalidSource();
-      }
+      const savedReceipt: SettingReceipt = {revision: own.revision,
+        createdAt: now};
+      if (!validReceipt(savedReceipt)) throw invalidSource();
       const result = response("applied", {...state, own}, own.revision);
       const committedAt = this.clock();
       if (!Number.isSafeInteger(committedAt) || committedAt < now) {
@@ -105,7 +107,8 @@ export class EventAssistanceSettingsStore {
           input.preference.template, committedAt);
       }
       tx.set(this.db.collection(SETTINGS).doc(own.settingId), own);
-      tx.create(receiptRef, savedReceipt);
+      writeAssistanceReceipt(tx, receiptRef, {command: SETTING_RECEIPT_COMMAND,
+        requestHash, nowMillis: now, result: savedReceipt});
       return result;
     });
   }

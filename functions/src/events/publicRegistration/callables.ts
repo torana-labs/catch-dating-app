@@ -58,8 +58,9 @@ import {publicPaymentExecutionFor} from "./runtime";
 import {projectPublicPayment} from "./projection";
 import {readPublicPaidAdmission} from "./admissionProof";
 import {
+  classifyRegistrationReceipt,
   configureEventRegistration as configure,
-  registrationChangeReceiptId,
+  registrationReceiptRef,
 } from "./configure";
 
 /** Clients match `details.reason`, never the message text. */
@@ -363,11 +364,13 @@ export async function configureEventRegistrationHandler(
       organizerId: command.organizerId,
     }),
   );
-  const prior = await db
-    .collection("eventRegistrationReceipts")
-    .doc(registrationChangeReceiptId(command))
-    .get();
-  if (prior.exists) return configure({db, actorUid, command});
+  // Only an exact retry skips routing; it replays without a provider call.
+  // A reused request id with another payload still fails in the transaction.
+  const prior = await registrationReceiptRef(db, command).get();
+  if (classifyRegistrationReceipt(prior, actorUid, command, Date.now()) ===
+      "replay") {
+    return configure({db, actorUid, command});
+  }
   const routing =
     command.mode === "paid" ?
       await routingOrNotReady(() => prepareRazorpayCollectionRouting({

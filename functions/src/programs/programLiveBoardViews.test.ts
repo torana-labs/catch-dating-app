@@ -35,6 +35,7 @@ test("a staff attention alert lasts the callable's window, then drops", () => {
   assert.equal(view.alertId, "run-1_functionLead");
   assert.equal(view.duty, "functionLead");
   assert.equal(view.expiresAtMillis, now - 1000 + momentAttentionWindowMillis);
+  assert.equal(view.expiresAt?.toMillis(), view.expiresAtMillis);
   assert.equal(view.state, "open");
   assert.equal(staffAttentionAlertView("program-1", "org-1", {
     runId: "run-1", momentId: "m", scopeKind: "program",
@@ -56,6 +57,7 @@ test("travel alerts follow flight status and readiness, never for others",
     assert.equal(cancelled.severity, "urgent");
     assert.equal(cancelled.duty, null);
     assert.equal(cancelled.expiresAtMillis, null);
+    assert.equal(cancelled.expiresAt, null);
     // A disrupted journey raises the readiness alert, not the flight one.
     const disrupted = leg({readiness: "disrupted"});
     assert.equal(travelAlertView("program-1", "flight_l1", "l1", disrupted,

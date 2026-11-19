@@ -2,7 +2,8 @@
  * A two-column website band (the playbook kit's split, timeline and
  * checklist): the copy and its second column 64px apart, stacking below
  * 840px. Ticks take the system check marker, as CatchFeatureTile's lines do.
- * Checks are ground tiles at radius lg, two across in a column of their own.
+ * Checks are ground tiles at radius lg, two across in a column of their own
+ * while each can be 14rem wide, else one.
  * A flush band drops its vertical padding (see .flush below).
  */
 .copy,
@@ -61,7 +62,8 @@
 
 .checks {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Two across while each check can be at least 14rem wide, else one. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, max(14rem, (100% - 1 * var(--catch-space-s3)) / 2)), 1fr));
   gap: var(--catch-space-s3);
 }
 
@@ -91,10 +93,6 @@
 .flush .text { padding-bottom: var(--catch-website-panel-pad-block); }
 
 .flush .end { justify-content: flex-end; }
-
-@container catch-page (width < 840px) {
-  .checks { grid-template-columns: minmax(0, 1fr); }
-}
 
 @media (max-width: 599px) {
   .flush { padding-top: var(--catch-space-s10); }

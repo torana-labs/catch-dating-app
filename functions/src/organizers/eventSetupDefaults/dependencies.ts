@@ -13,6 +13,7 @@ export function eventSetupDefaultsDependencies(
   return {
     db,
     serverTimestamp: admin.firestore.FieldValue.serverTimestamp,
+    nowMillis: () => Date.now(),
     validateAndHashPreferences: (source) => {
       try {
         return organizerEventDefaultsHash(source);

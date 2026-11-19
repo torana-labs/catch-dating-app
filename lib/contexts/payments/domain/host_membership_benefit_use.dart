@@ -24,8 +24,12 @@ class HostMembershipBenefitUse {
     listPriceInPaise: membershipInt(map, 'listPriceInPaise'),
     paidPriceInPaise: membershipInt(map, 'paidPriceInPaise'),
     savingsInPaise: membershipInt(map, 'savingsInPaise'),
-    released: membershipString(map, 'state') == 'released',
+    released: membershipString(map, 'state') == releasedState,
   );
+
+  /// Wire values of the use's `state`.
+  static const bookedState = 'booked';
+  static const releasedState = 'released';
 
   final String id;
   final String membershipId;
@@ -38,15 +42,3 @@ class HostMembershipBenefitUse {
   /// The booking was cancelled, so it saved the member nothing.
   final bool released;
 }
-
-/// Price members would otherwise have paid, minus what they paid.
-int hostMembershipSavingsInPaise(
-  Iterable<HostMembershipBenefitUse> uses, {
-  String? membershipId,
-}) => uses
-    .where(
-      (use) =>
-          !use.released &&
-          (membershipId == null || use.membershipId == membershipId),
-    )
-    .fold(0, (total, use) => total + use.savingsInPaise);

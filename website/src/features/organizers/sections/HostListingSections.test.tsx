@@ -51,7 +51,7 @@ describe("HostListingSections", () => {
     // Every organiser page carries the one site header, with the main site's links.
     const primary = screen.getByRole("navigation", {name: "Primary"});
     expect(within(primary).getAllByRole("link").map((link) => link.textContent)).toEqual(["What’s on", "Safety", "For hosts"]);
-    expect(within(screen.getByRole("banner")).getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("/#app");
+    expect(within(screen.getByRole("banner")).getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("/app/");
     // ...and the one site footer: Explore, Hosts and Help and legal.
     const footer = within(screen.getByRole("contentinfo"));
     expect(footer.getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/explore/");
@@ -97,19 +97,54 @@ describe("HostListingSections", () => {
   it("keeps the Catch header and the claim pitch on a generated page, and never shows intake notes", () => {
     const {container} = renderPage(generatedOrganizerPage);
     expect(screen.getByRole("navigation", {name: "Primary"})).toBeTruthy();
-    expect(screen.getByText("Built from public pages · not claimed yet")).toBeTruthy();
     const claim = container.querySelector("#claim") as HTMLElement;
     expect(follows(claim, container.querySelector("#events")!)).toBe(true);
+    expect(within(claim).getByRole("heading", {name: "Run this club?"})).toBeTruthy();
+    expect(claim.textContent).toContain("Claim this page to edit it, add events and take bookings, or ask us to remove it.");
     expect(within(claim).getByRole("link", {name: "Claim this page"}).getAttribute("href")).toBe("/claim/harbour-line-run-club/");
-    expect(claim.textContent).toContain("38 people asked to hear about your next event, and 2 people left reviews.");
+    expect(within(claim).getByRole("link", {name: "Ask us to remove it"}).getAttribute("href")).toBe("/listings/request/?organizer=harbour-line-run-club");
+    expect(container.textContent).not.toMatch(/already working for you|Meta Pixel|asked to hear about your next event/u);
     expect(screen.queryByText("Seeded by an operator")).toBeNull();
     expect(screen.queryByText(/Claim state|Unclaimed seed listing/u)).toBeNull();
     expect(screen.queryByRole("img", {name: "Verified organiser"})).toBeNull();
     expect(screen.getAllByText("Harbour Line Run Club hasn’t claimed this page, so they can’t reply yet.")).toHaveLength(2);
-    expect(screen.getByRole("link", {name: "Something wrong? Tell us"}).getAttribute("href")).toBe("/help/");
+    expect(screen.getByRole("link", {name: "Something wrong? Tell us"}).getAttribute("href")).toBe("/listings/request/?organizer=harbour-line-run-club");
     // No verified review yet, so no rating anywhere on the page.
     expect(screen.queryByText(/★ ·/u)).toBeNull();
     expect(screen.getByText("2 reviews, none from a Catch booking yet, so no rating.")).toBeTruthy();
+  });
+
+  it("labels an unclaimed page in words beside the name, with Claim and Report or remove, and a claimed page with neither", () => {
+    renderPage(generatedOrganizerPage);
+    const name = screen.getByRole("heading", {level: 1, name: "Harbour Line Run Club"});
+    const tag = screen.getByText("Unclaimed · Not affiliated with Catch. Built from public pages.");
+    const claim = screen.getAllByRole("link", {name: "Claim this page"})[0];
+    const report = screen.getByRole("link", {name: "Report or remove this listing"});
+    expect(report.textContent).toBe("Report or remove");
+    for (const [first, second] of [[name, tag], [tag, claim], [claim, report], [report, screen.getByRole("button", {name: "Follow"})]]) {
+      expect(follows(first, second)).toBe(true);
+    }
+    expect(claim.getAttribute("href")).toBe("/claim/harbour-line-run-club/");
+    // Every report link on an unclaimed page opens the request form with this organiser filled in.
+    // (The site footer's own link to the form, with no listing, is the site's, not this page's.)
+    const reportLinks = within(screen.getByRole("main")).getAllByRole("link").filter((link) => link.getAttribute("href")?.startsWith("/listings/request/"));
+    expect(reportLinks.map((link) => link.getAttribute("href"))).toEqual(Array(3).fill("/listings/request/?organizer=harbour-line-run-club"));
+    cleanup();
+    renderPage(claimedOrganizerPage);
+    expect(screen.queryByText(/Unclaimed|Not affiliated/u)).toBeNull();
+    expect(screen.queryByRole("link", {name: "Claim this page"})).toBeNull();
+    expect(document.querySelector("#claim")).toBeNull();
+    // A claimed page keeps its one report link at the foot.
+    expect(screen.getByRole("link", {name: "Report or remove this listing"}).getAttribute("href"))
+      .toBe(`/listings/request/?organizer=${claimedOrganizerPage.organizerId}`);
+  });
+
+  it("drops Claim from beside the tag while a claim is reviewed, and keeps the report link", () => {
+    renderPage({...generatedOrganizerPage, claim: {...generatedOrganizerPage.claim, state: "claimPending"}});
+    expect(screen.getByText("Unclaimed · Not affiliated with Catch. Built from public pages.")).toBeTruthy();
+    expect(screen.queryByRole("link", {name: "Claim this page"})).toBeNull();
+    expect(screen.getByText("A claim for this page is being reviewed.")).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Report or remove this listing"}).getAttribute("href")).toBe("/listings/request/?organizer=harbour-line-run-club");
   });
 
   it("says nothing about the organiser's own domain until custom domains ship", () => {

@@ -86,8 +86,10 @@ export function MarketingLoopList({
 
 export interface CaptureRecord {
   id: string;
+  /** The capture device (tool/marketing/lib/capture_devices.mjs), such as "generic-phone". */
+  device: string;
   webPath: string;
-  /** Framed PNG size in pixels. */
+  /** PNG size in pixels: the device's screen alone. */
   width: number;
   height: number;
   alt: string;

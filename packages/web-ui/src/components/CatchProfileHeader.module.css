@@ -143,9 +143,11 @@
   --catch-text-tracking: var(--catch-typography-role-display-hero-tracking);
 }
 
+/* The actions take the width their buttons need, up to the canvas's column, and leave the rest to the name. */
 .heroRow .actions {
-  flex: none;
-  width: var(--catch-website-profile-actions-width);
+  flex: 0 0 auto;
+  width: max-content;
+  max-width: var(--catch-website-profile-actions-width);
 }
 
 @container catch-page (width < 840px) {

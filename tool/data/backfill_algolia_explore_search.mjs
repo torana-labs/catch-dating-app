@@ -63,7 +63,7 @@ export async function main(argv = process.argv.slice(2)) {
 
 export async function buildAlgoliaExploreSearchPlan(firestore, helpers) {
   const [organizersSnap, eventsSnap] = await Promise.all([
-    firestore.collection("clubs").get(),
+    firestore.collection("organizers").get(),
     firestore.collection("events").get(),
   ]);
   const organizerDocs = new Map();
@@ -85,7 +85,7 @@ export async function buildAlgoliaExploreSearchPlan(firestore, helpers) {
     const organizer = organizerId ? organizerDocs.get(organizerId) : null;
     if (!organizer) {
       warnings.push(
-        `${doc.ref.path} references missing clubs/${organizerId ?? "<missing>"}; ` +
+        `${doc.ref.path} references missing organizers/${organizerId ?? "<missing>"}; ` +
         "event was skipped."
       );
       continue;
@@ -206,7 +206,7 @@ function readAlgoliaConfig(args) {
   return {
     appId,
     writeApiKey,
-    organizersIndex: args.organizersIndex || process.env.ALGOLIA_ORGANIZERS_INDEX || "clubs",
+    organizersIndex: args.organizersIndex || process.env.ALGOLIA_ORGANIZERS_INDEX || "organizers",
     eventsIndex: args.eventsIndex || process.env.ALGOLIA_EVENTS_INDEX ||
       "events",
   };
@@ -238,7 +238,7 @@ function parseArgs(argv) {
       parsed.project = requireValue(argv, ++i, arg);
     } else if (arg === "--app-id") {
       parsed.appId = requireValue(argv, ++i, arg);
-    } else if (arg === "--clubs-index") {
+    } else if (arg === "--organizers-index") {
       parsed.organizersIndex = requireValue(argv, ++i, arg);
     } else if (arg === "--events-index") {
       parsed.eventsIndex = requireValue(argv, ++i, arg);
@@ -295,7 +295,7 @@ Options:
   --env <dev|staging|prod>    Firebase project alias from .firebaserc.
   --project <project-id>      Firebase project id override.
   --app-id <app-id>           Algolia application id override.
-  --clubs-index <name>        Algolia clubs index name. Default: clubs.
+  --organizers-index <name>   Algolia organizers index name. Default: organizers.
   --events-index <name>       Algolia events index name. Default: events.
   --apply                     Write settings and records to Algolia.
   --allow-prod                Required with --apply for prod.

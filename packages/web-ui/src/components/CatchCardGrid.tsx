@@ -252,11 +252,11 @@ function cards(props: CatchCardGridItems, heading: "h2" | "h3"): {id: string; no
 /**
  * A band of cards (the playbook kit's card grid): an optional
  * CatchBandHeader, a filters slot, a row of links, then plan, organiser,
- * city, review, story or person cards, three or four across on a wide page
- * and one below 840px, an empty state when there are none, an optional
+ * city, review, story or person cards, up to `columns` across and as many
+ * as fit on a narrower page (each card keeps its kind's minimum width), an empty state when there are none, an optional
  * footer row the page fills (such as a notify bar), and D20 actions.
- * Entry tiles and format cards are the homepage's (six tiles across, two on
- * phones; five format cards in a rail), with chip links under them, and a
+ * Entry tiles and format cards are the homepage's (six tiles across, then
+ * three, then two as the grid narrows; five format cards in a rail), with chip links under them, and a
  * header can carry one button across from it.
  * Plans, organisers, reviews and stories draw through their library cards
  * (CatchPlanCard, CatchOrganizerCard, CatchReviewItem, CatchStoryCard).
@@ -299,9 +299,11 @@ export function CatchCardGrid(props: CatchCardGridProps) {
         </CatchStack>
       ) : null}
       {list.length > 0 ? (
-        <ul className={styles.grid} data-columns={columns} data-kind={kind} data-layout={layout}>
-          {list.map((card) => <li className={styles.cell} key={card.id}>{card.node}</li>)}
-        </ul>
+        <div className={styles.frame}>
+          <ul className={styles.grid} data-columns={columns} data-kind={kind} data-layout={layout}>
+            {list.map((card) => <li className={styles.cell} key={card.id}>{card.node}</li>)}
+          </ul>
+        </div>
       ) : empty ? (
         <CatchEmptyState actions={empty.actions} announce="polite" message={empty.message} surface title={empty.title} />
       ) : null}

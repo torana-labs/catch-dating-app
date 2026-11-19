@@ -2,6 +2,12 @@ import {createHash} from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventPolicyDefaults, OrganizerDocument} from
   "../../shared/generated/firestoreAdminTypes";
+import {
+  classifyCommandReceipt,
+  commandReceiptRef,
+  commandRequestHash,
+  writeCommandReceipt,
+} from "../../shared/commandReceipts";
 import {isOrganizerManager} from "../../shared/organizerHosts";
 
 export interface EventSetupPreferences {
@@ -60,6 +66,9 @@ export interface ManagerEventSetupDefaultsResult {
 export interface EventSetupDefaultsDependencies {
   db: FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  /** Clock for the replay receipt's createdAt and expiresAt; read-only
+   * projections never need it, so it defaults to the system clock. */
+  nowMillis?: () => number;
   /** Bind to eventSetupPreferences/resolve.organizerEventDefaultsHash. */
   validateAndHashPreferences: (source: {
     revision: number;
@@ -68,6 +77,8 @@ export interface EventSetupDefaultsDependencies {
     eventSetup: EventSetupPreferences;
   }) => string;
 }
+
+const receiptCommand = "updateOrganizerEventSetupDefaults";
 
 const fields = new Set<PreferenceField>([
   "usualDurationMinutes", "preferredVenueId", "offerValidityMinutes",
@@ -115,14 +126,14 @@ export async function updateManagerEventSetupDefaults(params: {
     throw new HttpsError("invalid-argument", "Invalid reviewed defaults.");
   }
   const changes = validatedChanges(command.changes);
-  const requestHash = digest(["organizer-event-setup-defaults-v1",
-    actorUid, command.organizerId, command.expectedRevision,
-    command.reviewedDefaultsHash, changes]);
+  const requestHash = commandRequestHash(actorUid, command.organizerId,
+    command.expectedRevision, command.reviewedDefaultsHash, changes);
   const {db} = deps;
   const refs = sourceRefs(db, actorUid, command.organizerId);
-  const receiptRef = db.collection("organizerEventSetupDefaultReceipts")
-    .doc(digest(["organizer-event-setup-defaults-receipt-v1", actorUid,
+  const receiptRef = commandReceiptRef(db, receiptCommand,
+    digest(["organizer-event-setup-defaults-receipt-v1", actorUid,
       command.organizerId, command.requestId]));
+  const nowMillis = (deps.nowMillis ?? Date.now)();
   return db.runTransaction(async (tx) => {
     const [organizerSnap, deletedSnap, defaultsSnap, receiptSnap] =
       await Promise.all([
@@ -132,18 +143,17 @@ export async function updateManagerEventSetupDefaults(params: {
     const organizer = authorize(organizerSnap, deletedSnap, actorUid);
     const current = projectManagerEventSetupDefaults(
       command.organizerId, organizer, defaultsSnap.data(), deps);
-    if (receiptSnap.exists) {
-      const receipt = receiptSnap.data();
-      if (receipt?.actorUid !== actorUid ||
-          receipt?.organizerId !== command.organizerId ||
-          receipt?.requestHash !== requestHash ||
-          !Number.isSafeInteger(receipt?.appliedRevision) ||
-          receipt.appliedRevision < 1) {
+    const lookup = classifyCommandReceipt<{appliedRevision?: unknown}>(
+      receiptSnap, {command: receiptCommand, requestHash, nowMillis});
+    if (lookup.kind !== "none") {
+      const appliedRevision = lookup.kind === "replay" ?
+        lookup.result?.appliedRevision : undefined;
+      if (typeof appliedRevision !== "number" ||
+          !Number.isSafeInteger(appliedRevision) || appliedRevision < 1) {
         throw new HttpsError("already-exists",
           "Request ID was used for another defaults change.");
       }
-      return {appliedRevision: receipt.appliedRevision as number,
-        current, replayed: true};
+      return {appliedRevision, current, replayed: true};
     }
     if (current.preferencesRevision !== command.expectedRevision) {
       throw new HttpsError("aborted", "Organizer defaults changed. Reload.");
@@ -173,11 +183,9 @@ export async function updateManagerEventSetupDefaults(params: {
       updatedAt: deps.serverTimestamp(),
       updatedByUid: actorUid,
     });
-    tx.create(receiptRef, {
-      actorUid, organizerId: command.organizerId,
-      requestId: command.requestId, requestHash,
-      appliedRevision: revision,
-      createdAt: deps.serverTimestamp(),
+    writeCommandReceipt(tx, receiptRef, {
+      command: receiptCommand, retention: "request", requestHash,
+      result: {appliedRevision: revision}, nowMillis,
     });
     return {appliedRevision: revision, current: next, replayed: false};
   });

@@ -12,7 +12,7 @@
   flex-direction: column;
   justify-content: flex-end;
   box-sizing: border-box;
-  height: 220px;
+  min-height: 220px;
   margin: 0;
   overflow: hidden;
   padding: var(--catch-space-micro14);
@@ -44,5 +44,5 @@
 }
 
 @container catch-page (width < 840px) {
-  .tile { height: 170px; }
+  .tile { min-height: 170px; }
 }

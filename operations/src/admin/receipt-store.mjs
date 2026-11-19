@@ -1,4 +1,4 @@
-import {LocalReceiptStore} from "../command-client/receipt-store.mjs";
+import {LocalReceiptStore} from "../../../packages/command-client/src/receipt-store.mjs";
 
 export class AdminActionReceiptStore extends LocalReceiptStore {
   constructor(root) {

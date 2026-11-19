@@ -367,8 +367,8 @@ test("partial cleanup replans after policy and source drift without orphaning ch
       {organizerId: "org-a"});
     privateRow(`salesImportJobs/job-a/rows/row-${index}`,
       {organizerId: "org-a"});
-    privateRow(`salesDemoReceipts/receipt-${index}`,
-      {targetId: "session-a"});
+    privateRow(`salesDemoSessions/session-${index}`,
+      {invitationId: "invitation-a"});
   }
   h.value.inventory = (_port, id) => liveInventory(h.db, id);
   const policyInput = {requestId: "policy-req-0001", expectedRevision: 0,
@@ -429,7 +429,7 @@ test("partial cleanup replans after policy and source drift without orphaning ch
   assert.equal([...h.db.docs.keys()].some((path) =>
     path.startsWith("organizerSalesAccounts/org-a/customValues/") ||
     path.startsWith("salesImportJobs/job-a/rows/") ||
-    path.startsWith("salesDemoReceipts/")), false);
+    path.startsWith("salesDemoSessions/")), false);
 });
 
 test("unrestricted case read rechecks current owner after reading policy", async () => {

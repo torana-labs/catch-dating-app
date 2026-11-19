@@ -24,6 +24,10 @@ export interface SupplyVisibilityChecklist {
   operatingStatusReviewed?: boolean;
   eventAccuracyReviewed?: boolean;
   unclaimedAffordancesReviewed?: boolean;
+  cityEvidenceReviewed?: boolean;
+  formatsReviewed?: boolean;
+  datingFramingReviewed?: boolean;
+  personalDataReviewed?: boolean;
 }
 
 type OrganizerDecision = "approve_public" | "hold" | "suppress";
@@ -58,6 +62,34 @@ const appChecklistFields: Array<keyof SupplyVisibilityChecklist> = [
   "eventAccuracyReviewed",
   "unclaimedAffordancesReviewed",
 ];
+
+/**
+ * What staff also confirm before approving a listing Catch sourced itself (a
+ * nomination or discovery) for the programmatic listings programme: the city
+ * comes from the organizer's events or own pages, not from whoever nominated
+ * it; the formats chosen match what it runs; nothing frames it as dating or
+ * singles; and it carries no personal data such as founder names or personal
+ * numbers.
+ */
+export const programmaticListingChecklistFields: Array<
+  keyof SupplyVisibilityChecklist> = [
+    "cityEvidenceReviewed",
+    "formatsReviewed",
+    "datingFramingReviewed",
+    "personalDataReviewed",
+  ];
+
+/**
+ * Refuses a staff approval of a programmatic listing until every
+ * programmatic checklist item is confirmed.
+ * @param {SupplyVisibilityChecklist} checklist The reviewer's checklist.
+ */
+export function assertProgrammaticListingChecklist(
+  checklist: Partial<SupplyVisibilityChecklist>
+): void {
+  requireChecklist(checklist as SupplyVisibilityChecklist,
+    programmaticListingChecklistFields, "A programmatic listing");
+}
 
 /**
  * Enforces approval and surface-specific gates without coupling approval to

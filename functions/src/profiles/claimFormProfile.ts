@@ -4,6 +4,12 @@ import {Timestamp} from "firebase-admin/firestore";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
+import {
+  classifyCommandReceipt,
+  commandReceiptRef,
+  commandRequestHash,
+  writeCommandReceipt,
+} from "../shared/commandReceipts";
 import {checkRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
@@ -27,8 +33,7 @@ import type {UserProfileDocument as User, ProfilePhoto,
   OrganizerFormAssetDocument as Asset,
   OrganizerFormResponseDocument as Response,
   ParticipantIntakeProfileDocument as Intake,
-  ParticipantOrganizerCardDocument as Card,
-  ParticipantProfileClaimReceiptDocument as Receipt} from
+  ParticipantOrganizerCardDocument as Card} from
   "../shared/generated/firestoreAdminTypes";
 import {readParticipantFormProfileProposal} from
   "../organizers/organizerFormProfileProposals";
@@ -46,6 +51,14 @@ interface ClaimDeps {
   copyPhoto: typeof copyFormProfilePhoto;
   cleanupDeletedPhoto?: typeof removeDeletedClaimPhoto;
 }
+/** The replay receipt keeps only what the response cannot rebuild. */
+interface ClaimReceiptResult {
+  profileRevision: number;
+  organizerCardId: string | null;
+  claimedAtMillis: number;
+}
+const receiptCommand = "claimParticipantFormProfile";
+
 const defaults: ClaimDeps = {db: () => admin.firestore(),
   now: () => Timestamp.now(), rateLimit: checkRateLimit,
   copyPhoto: copyFormProfilePhoto,
@@ -107,9 +120,9 @@ export async function claimParticipantFormProfileHandler(
     maxRequests: 10, windowMs: 60 * 1000,
   });
   const now = deps.now();
-  const fingerprint = hash(stableJson(data));
-  const receiptRef = db.collection("participantProfileClaimReceipts")
-    .doc(hash([uid, data.requestId].join("|")));
+  const requestHash = commandRequestHash(uid, data);
+  const receiptRef = commandReceiptRef(db, receiptCommand,
+    hash([uid, data.requestId].join("|")));
   const userRef = db.collection("users").doc(uid);
   const intakeRef = db.collection("participantIntakeProfiles").doc(uid);
   const cardRef = db.collection("participantOrganizerCards")
@@ -122,11 +135,11 @@ export async function claimParticipantFormProfileHandler(
     const user = userSnap.exists ? requireDoc<User>(userSnap,
       "UserProfileDocument") : undefined;
     if (deleted.exists || user?.deleted) throw unavailable();
-    if (receiptSnap.exists) {
-      const receipt = requireDoc<Receipt>(receiptSnap,
-        "ParticipantProfileClaimReceiptDocument");
-      if (receipt.uid !== uid || receipt.payloadHash !== fingerprint ||
-          receipt.responseId !== data.responseId) {
+    const lookup = classifyCommandReceipt<ClaimReceiptResult>(receiptSnap,
+      {command: receiptCommand, requestHash, nowMillis: now.toMillis()});
+    if (lookup.kind !== "none") {
+      const receipt = lookup.kind === "replay" ? lookup.result : undefined;
+      if (!isClaimReceiptResult(receipt)) {
         throw new HttpsError("already-exists",
           "This profile claim request was already used for another decision.");
       }
@@ -198,9 +211,9 @@ export async function claimParticipantFormProfileHandler(
       field.destination === "organizerCard" && selected.has(field.questionId))
       .map((field) => field.questionId);
     const organizerCardId = questionIds.length ? data.responseId : null;
-    const receipt: Receipt = {uid, responseId: data.responseId,
-      payloadHash: fingerprint, profileRevision: updated.profileRevision!,
-      organizerCardId, createdAt: now};
+    const receipt: ClaimReceiptResult = {
+      profileRevision: updated.profileRevision!, organizerCardId,
+      claimedAtMillis: now.toMillis()};
     tx.set(userRef, updated);
     tx.update(db.collection("participantFormProfileProposals")
       .doc(data.responseId), {claimedAt: now});
@@ -222,7 +235,10 @@ export async function claimParticipantFormProfileHandler(
         revision: (card?.revision ?? 0) + 1,
         createdAt: card?.createdAt ?? now, updatedAt: now} satisfies Card);
     }
-    tx.create(receiptRef, receipt);
+    writeCommandReceipt(tx, receiptRef, {
+      command: receiptCommand, retention: "request", requestHash,
+      result: {...receipt}, nowMillis: now.toMillis(),
+    });
     return receiptResult(receipt, false);
   }).catch(async (error: unknown) => {
     if (photo) await deps.cleanupDeletedPhoto?.({db, uid, photo});
@@ -333,26 +349,24 @@ export function requireVerifiedParticipant(request: CallableRequest<unknown>) {
   return {uid, phone};
 }
 
-function receiptResult(receipt: Receipt, replayed: boolean): Result {
+function receiptResult(receipt: ClaimReceiptResult, replayed: boolean):
+  Result {
   return {profileRevision: receipt.profileRevision,
     organizerCardId: receipt.organizerCardId,
-    claimedAtMillis: receipt.createdAt.toMillis(), replayed};
+    claimedAtMillis: receipt.claimedAtMillis, replayed};
+}
+function isClaimReceiptResult(value: ClaimReceiptResult | undefined):
+  value is ClaimReceiptResult {
+  return !!value && Number.isSafeInteger(value.profileRevision) &&
+    (value.organizerCardId === null ||
+      typeof value.organizerCardId === "string") &&
+    Number.isSafeInteger(value.claimedAtMillis);
 }
 function unavailable() {
   return new HttpsError("not-found", "This private profile is unavailable.");
 }
 function hash(value: string) {
   return createHash("sha256").update(value).digest("hex");
-}
-function stableJson(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(stableJson).join(",")}]`;
-  if (value && typeof value === "object") {
-    return "{" +
-    Object.entries(value).sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, item]) => `${JSON.stringify(key)}:${stableJson(item)}`)
-      .join(",") + "}";
-  }
-  return JSON.stringify(value);
 }
 
 export const getParticipantFormProfile = onCall(

@@ -371,6 +371,8 @@ abstract final class GeneratedCatchWebsiteTokens {
   static const double headerContactIconSize = 20.0;
   static const double footerCompactPadBottom = 26.0;
   static const double footerTitleSize = 22.0;
+  static const double footerColumnMin = 192.0;
+  static const double footerLinkPadBlock = 4.2;
   static const double panelPadBlock = 88.0;
   static const double panelPadInline = 72.0;
   static const double radiusField = 14.0;

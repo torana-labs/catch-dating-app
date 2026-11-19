@@ -257,14 +257,6 @@
       "occurrences": 4
     },
     {
-      "path": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "role": "workspace",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar",
-      "surface": "CatchRouteScaffold",
-      "reason": "Host Event Manage spans responsive setup, live, and recap workspaces."
-    },
-    {
       "path": "lib/hosts/presentation/host_event_operator_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",
@@ -470,13 +462,6 @@
       "owner": "CatchLegacyTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
-    },
-    {
-      "path": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
-      "role": "compact",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar",
-      "surface": "CatchRouteScaffold"
     }
   ],
   "rawChromeExceptions": [

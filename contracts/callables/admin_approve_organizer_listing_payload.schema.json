@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_approve_organizer_listing_payload.schema.json",
   "title": "AdminApproveOrganizerListingCallablePayload",
-  "description": "Staff approve a listing Supply Intake built from a nomination, an organizer's own submission or discovery. One transaction publishes the organizer page claimable and noindex, hidden in the app, records the review decision and receipt, and opens the organizer's Sales account, opportunity, tasks and activity.",
+  "description": "Staff approve a listing Supply Intake built from a nomination, an organizer's own submission or discovery. One transaction publishes the organizer page claimable and noindex, hidden in the app, records the review decision and receipt, and opens the organizer's Sales account, opportunity, tasks and activity unless the approval names a cohort. Refused for a listing Catch sourced while programmatic listings are paused (listingProgramSettings/platform).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -70,8 +70,24 @@
         "crawlDisabledReviewed": {"const": true},
         "claimTargetReviewed": {"const": true},
         "takedownPathReviewed": {"const": true},
-        "impersonationReviewed": {"const": true}
+        "impersonationReviewed": {"const": true},
+        "cityEvidenceReviewed": {"const": true},
+        "formatsReviewed": {"const": true},
+        "datingFramingReviewed": {"const": true},
+        "personalDataReviewed": {"const": true}
       }
+    },
+    "formats": {
+      "$ref": "../shared/listing_program_common.schema.json#/definitions/formats",
+      "description": "The formats the reviewer chose. Written to the organizer page (publicProfile.formats and publicCategoryLabel) so the city-by-format pages count it. Required for a listing Catch sourced (a nomination or discovery), together with the city evidence, formats, dating framing and personal data checklist items. Nightlife is never offered."
+    },
+    "cohortId": {
+      "$ref": "../shared/listing_program_common.schema.json#/definitions/cohortId",
+      "description": "The programmatic listing cohort, such as pilot-indore-1. Tags the organizer with listingProgram {cohortId, approvedAt} and, unless salesRecords is true, opens no Sales records. Only for a listing Catch sourced."
+    },
+    "salesRecords": {
+      "type": "boolean",
+      "description": "Whether approving opens the organizer's Sales account, opportunity, tasks and activity. Defaults to true, or to false when cohortId is set (owner decision 9, 19 Nov 2026)."
     },
     "note": {
       "type": "string",

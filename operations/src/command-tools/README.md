@@ -3,7 +3,7 @@
 Turns `contracts/commands/catalog.json` into AI tool definitions and runs the
 preview-then-confirm protocol around them, for an agent client such as the
 later WhatsApp surface. It shares the catalog loader and the effect-class
-confirmation policy with the `catch` CLI (`../command-client/`).
+confirmation policy with the `catch` CLI (`packages/command-client`).
 
 - A tool's input schema is the command's `input` only, with `$ref`s resolved.
   The model cannot set mode, idempotency key, surface or confirm.
@@ -13,9 +13,11 @@ confirmation policy with the `catch` CLI (`../command-client/`).
   confirmation whose `source` is `"person"`, and always sends the reviewed
   `previewHash`. For `messages-guests` and `moves-money` the confirmation must
   also echo that exact hash.
-- Pending previews expire (15 minutes by default). A `running` preview is
-  refreshed with the same idempotency key. A retried confirmation reuses its
-  apply key, so the server replays instead of applying twice.
+- One idempotency key per action, from preview through apply: a `running`
+  preview is refreshed with it, and apply sends it too, because commands that
+  read a page find that read by it. A retried confirmation after an unknown
+  outcome reuses it, so the server replays instead of applying twice.
+- Pending previews expire (15 minutes by default).
 - `agentTools()` returns the `{name, description, inputSchema, handler}` shape
   `platform/model/guarded-agent-runner.mjs` takes; `anthropicTool()` gives the
   Messages API shape.

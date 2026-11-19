@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_listing_program_response.schema.json",
+  "title": "AdminManageListingProgramCallableResponse",
+  "description": "The pause switch in force (not paused, revision 0, when none is stored), the cohort id approvals default to, and, for format_report only, counts of live (published) organizers by city and whether they list a format the city-by-format pages count. Counts only: no organizer names or ids.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["revision", "paused", "reason", "updatedAtMillis", "updatedByUid", "defaultCohortId", "formatReport"],
+  "properties": {
+    "revision": {"type": "integer", "minimum": 0},
+    "paused": {"type": "boolean"},
+    "reason": {"type": ["string", "null"], "maxLength": 500},
+    "updatedAtMillis": {"type": ["integer", "null"], "minimum": 1},
+    "updatedByUid": {"type": ["string", "null"], "maxLength": 128},
+    "defaultCohortId": {"$ref": "../shared/listing_program_common.schema.json#/definitions/cohortId"},
+    "formatReport": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["generatedAtMillis", "live", "withFormat", "withoutFormat", "truncated", "cities"],
+          "properties": {
+            "generatedAtMillis": {"type": "integer", "minimum": 1},
+            "live": {"type": "integer", "minimum": 0},
+            "withFormat": {"type": "integer", "minimum": 0},
+            "withoutFormat": {"type": "integer", "minimum": 0},
+            "truncated": {"type": "boolean", "description": "True when more live organizers exist than one report reads; the counts cover the first ones."},
+            "cities": {
+              "type": "array",
+              "maxItems": 200,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["citySlug", "live", "withFormat", "withoutFormat"],
+                "properties": {
+                  "citySlug": {"type": "string", "minLength": 1, "maxLength": 80},
+                  "live": {"type": "integer", "minimum": 0},
+                  "withFormat": {"type": "integer", "minimum": 0},
+                  "withoutFormat": {"type": "integer", "minimum": 0}
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

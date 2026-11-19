@@ -31,6 +31,12 @@
     "expiresAt": {"type": ["string", "null"], "format": "date-time", "description": "Null once kept or expired, so the expiry sweep's range query never reads it again."},
     "keptAt": {"type": ["string", "null"], "format": "date-time"},
     "keptReason": {"type": ["string", "null"], "enum": ["published", "has_events", "team_member", "owner_kept", "not_owner", "existing_organizer", null]},
-    "expiredAt": {"type": ["string", "null"], "format": "date-time"}
+    "expiredAt": {"type": ["string", "null"], "format": "date-time"},
+    "tryItEventIds": {"type": "array", "maxItems": 20, "uniqueItems": true,
+      "description": "Private draft events try-it commands made in this workspace (event.import-from-link, or the guest list's placeholder from guests.import-list), newest last. Absent on records written before 19 Nov 2026.",
+      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}},
+    "tryItFormIds": {"type": "array", "maxItems": 20, "uniqueItems": true,
+      "description": "Private draft organizer forms try-it commands made in this workspace (form.import-from-link), newest last. Absent on records written before that command existed.",
+      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}}
   }
 }

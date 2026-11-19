@@ -38,8 +38,11 @@ describe("a stuck nomination in the inbox", () => {
     expect((screen.getByRole("textbox", {name: /City/u}) as HTMLInputElement).value).toBe("Mumbai");
     fireEvent.change(screen.getByRole("textbox", {name: /Links/u}), {target: {value: "https://saffrontable.example\n"}});
     fireEvent.click(screen.getByRole("button", {name: "Build a new listing"}));
+    expect(fillInByHand).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("checkbox", {name: "Supper clubs"}));
+    fireEvent.click(screen.getByRole("button", {name: "Build a new listing"}));
     await waitFor(() => expect(fillInByHand).toHaveBeenCalledWith({name: "Saffron Table", market: "Mumbai",
-      urls: ["https://saffrontable.example"], notes: null, categories: []}, stuck.itemId));
+      urls: ["https://saffrontable.example"], notes: null, categories: [], formats: ["supper"]}, stuck.itemId));
     await waitFor(() => expect(screen.queryByRole("button", {name: "Build a new listing"})).toBeNull());
   });
 
@@ -114,5 +117,76 @@ describe("a host enquiry in the inbox", () => {
     fireEvent.click(screen.getByRole("button", {name: "Back in the inbox"}));
     expect(inbox.updateItem).toHaveBeenCalledWith({itemId: closed.itemId, action: "reopen", assigneeUid: null,
       snoozedUntil: null, note: null}, "It's back in the inbox.");
+  });
+});
+
+describe("a listing Catch sourced, in review", () => {
+  beforeAll(() => {
+    HTMLDialogElement.prototype.showModal = function showModal() { this.open = true; };
+    HTMLDialogElement.prototype.close = function close() { this.open = false; };
+  });
+  afterEach(cleanup);
+
+  const listing = {...stuck, itemId: "listing-lantern", type: "listing", sourceId: "nom-lantern",
+    sourcePath: "supplyIntakeRequests/nom-lantern", title: "Lantern Trail Runners", city: "indore",
+    state: {code: "ready", label: "Ready to review", tone: "neutral"}};
+  const review = (kind: string) => ({requestId: "nom-lantern", listingWorkItemId: "item-lantern", kind,
+    submittedByRole: "associate", submittedAt: "2026-11-19T08:00:00.000Z", origin: "admin_nomination",
+    market: {slug: "indore", marketId: "in-mp-indore", label: "Indore", open: true}, suggestedSlug: "lantern-trail-runners",
+    listing: {name: "Lantern Trail Runners", description: "Sunday runs by the lake.", categories: ["run_clubs"],
+      links: [{platform: "luma", url: "https://lantern.example/runs"}], gaps: [], eventCount: 2, researchNeeded: false,
+      contentHash: "a".repeat(64), pageCount: 1, fetchedPageCount: 1}, duplicateCheck: null});
+  const open = (kind: string) => {
+    const approveListing = vi.fn(async () => true);
+    const inbox = {...model(), items: [listing], approveListing, isApproving: false,
+      detail: {item: listing, journey: [], canWork: true, canDecideClaim: false},
+      listingReview: {review: review(kind), canApprove: true}} as unknown as InboxScreenModel;
+    render(<InboxScreen canFillIn={false} model={inbox} onSelect={vi.fn()} selectedItemId={listing.itemId} uid="uid-1" />);
+    return approveListing;
+  };
+  const formatLabels = new Set(["Run clubs", "Racket sports", "Pickleball", "Padel", "Tennis", "Badminton", "Supper clubs",
+    "Quiz nights", "Yoga and fitness", "Workshops", "Book clubs", "Outdoors"]);
+  // Ticks every checklist item, leaving the format choices alone.
+  const checkAll = () => screen.getAllByRole<HTMLInputElement>("checkbox")
+    .filter((box) => !formatLabels.has(box.closest("label")?.textContent?.trim() ?? ""))
+    .forEach((box) => { if (!box.checked) fireEvent.click(box); });
+
+  it("needs its formats and the programmatic checks, and tags the pilot cohort without Sales work", async () => {
+    const approveListing = open("nomination");
+    const approve = () => screen.getByRole<HTMLButtonElement>("button", {name: "Approve and publish unclaimed"});
+    // The nomination's format comes pre-picked; nightlife is never offered.
+    expect(screen.getByRole<HTMLInputElement>("checkbox", {name: "Run clubs"}).checked).toBe(true);
+    expect(screen.queryByRole("checkbox", {name: /Nights out|Nightlife/u})).toBeNull();
+    expect((screen.getByRole("textbox", {name: /Listing cohort/u}) as HTMLInputElement).value).toBe("pilot-indore-1");
+    for (const label of ["The city comes from their events or their own pages, not from the nomination",
+      "The formats match what they run", "Nothing frames them as dating or singles",
+      "No personal data: no founder names or personal phone numbers"]) {
+      expect(screen.getByRole("checkbox", {name: label})).toBeTruthy();
+    }
+    fireEvent.change(screen.getByRole("textbox", {name: /Review note/u}), {target: {value: "Checked the Luma calendar."}});
+    expect(approve().disabled).toBe(true);
+    checkAll();
+    expect(screen.getByRole<HTMLInputElement>("checkbox", {name: "Open Sales work for it now"}).checked).toBe(true);
+    fireEvent.click(screen.getByRole("checkbox", {name: "Open Sales work for it now"}));
+    fireEvent.click(screen.getByRole("checkbox", {name: "Quiz nights"}));
+    fireEvent.click(approve());
+    await waitFor(() => expect(approveListing).toHaveBeenCalled());
+    expect(approveListing.mock.calls[0]).toMatchObject([{formats: ["runClubs", "quizNights"], cohortId: "pilot-indore-1",
+      salesRecords: false, checklist: {cityEvidenceReviewed: true, formatsReviewed: true, datingFramingReviewed: true,
+        personalDataReviewed: true}}, "nom-lantern"]);
+  });
+
+  it("asks nothing extra of an organizer's own submission", async () => {
+    const approveListing = open("self_submission");
+    expect(screen.queryByRole("textbox", {name: /Listing cohort/u})).toBeNull();
+    expect(screen.queryByRole("checkbox", {name: "Nothing frames them as dating or singles"})).toBeNull();
+    fireEvent.change(screen.getByRole("textbox", {name: /Review note/u}), {target: {value: "Checked the Luma calendar."}});
+    checkAll();
+    fireEvent.click(screen.getByRole("button", {name: "Approve and publish unclaimed"}));
+    await waitFor(() => expect(approveListing).toHaveBeenCalled());
+    const [input] = approveListing.mock.calls[0] as unknown as [Record<string, unknown>];
+    expect([input.cohortId, input.salesRecords, (input.checklist as Record<string, unknown>).cityEvidenceReviewed])
+      .toEqual([undefined, undefined, undefined]);
+    expect(input.formats).toEqual(["runClubs"]);
   });
 });

@@ -1,4 +1,34 @@
-part of 'host_event_manage_screen.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/events/event_guests_screen.dart';
+import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
+import 'package:catch_dating_app/hosts/events/event_workspace_screen.dart';
+import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
+import 'package:catch_dating_app/hosts/live/formats/formats_crawl_screen.dart';
+import 'package:catch_dating_app/hosts/live/formats/formats_moving_night.dart';
+import 'package:catch_dating_app/hosts/live/formats/formats_run_screen.dart';
+import 'package:catch_dating_app/hosts/live/live_controller.dart';
+import 'package:catch_dating_app/hosts/live/live_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_route_destination.dart';
+import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/catch_async_state.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+export 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart'
+    show HostEventManageSection;
 
 typedef _HostEventManageRouteData = ({
   String? uid,
@@ -13,7 +43,6 @@ class HostEventManageRouteScreen extends ConsumerWidget {
     required this.eventId,
     this.initialEvent,
     this.initialSection = HostEventManageSection.setup,
-    this.initialParticipantSearchQuery = '',
     this.referenceNow,
   });
 
@@ -21,19 +50,19 @@ class HostEventManageRouteScreen extends ConsumerWidget {
   final String eventId;
   final Event? initialEvent;
   final HostEventManageSection initialSection;
-  final String initialParticipantSearchQuery;
   final DateTime? referenceNow;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // The rebuilt workspace and guest lists read and check access themselves.
     if (hostEventRouteOpensWithoutEvent(initialSection)) {
-      final request = HostEventRequest(
-        organizerId: organizerId,
-        eventId: eventId,
-      );
       return initialSection == HostEventManageSection.guests
-          ? HostEventGuestsScreen(request: request)
+          ? HostEventGuestsScreen(
+              request: HostEventRequest(
+                organizerId: organizerId,
+                eventId: eventId,
+              ),
+            )
           : HostEventWorkspaceScreen(
               organizerId: organizerId,
               eventId: eventId,
@@ -187,17 +216,17 @@ class HostEventManageRouteScreen extends ConsumerWidget {
             onOpenGuests: openGuests,
             now: referenceNow,
           ),
-          // Setup and guests return above, and every night that moves has a
-          // run or crawl board, so the old screen is a fallback only.
-          HostEventRouteDestination.workspace ||
-          HostEventRouteDestination.guests ||
-          HostEventRouteDestination.movementConsole => HostEventManageScreen(
-            organizer: organizer,
-            event: event,
-            onBackToSuccess: onBack,
-            initialSection: initialSection,
-            initialParticipantSearchQuery: initialParticipantSearchQuery,
-            referenceNow: referenceNow,
+          // Setup and guests return above.
+          HostEventRouteDestination.workspace => HostEventWorkspaceScreen(
+            organizerId: organizerId,
+            eventId: eventId,
+            now: referenceNow,
+          ),
+          HostEventRouteDestination.guests => HostEventGuestsScreen(
+            request: HostEventRequest(
+              organizerId: organizerId,
+              eventId: eventId,
+            ),
           ),
         };
       },

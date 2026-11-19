@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_roster_intake_receipts.schema.json",
   "title": "HostRosterIntakeReceiptDocument",
-  "description": "Private exact reviewed payload and outcome used for lost-response replay.",
+  "description": "Private exact reviewed payload and outcome used for lost-response replay. Kept as its own collection (L8 decision, 18 Nov 2026): applied-roster review the Host reopens; holds the reviewed payload with guest contact data.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostRosterIntakeReceipts",

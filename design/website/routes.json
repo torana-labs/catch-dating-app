@@ -2313,7 +2313,7 @@
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "Where Get notified goes until the guest app ships; Get the app once the stores are live.",
+      "notes": "Where Get notified goes until the guest app ships: the homepage's app launch notice (appLaunchNotice custom section, joinWaitlist notice appLaunch). Indexed (owner, 19 Nov 2026); linked from the guest header action and Explore footer link. Becomes Get the app once the stores are live.",
       "review": {
         "priority": "p1",
         "status": "planned",
@@ -2569,7 +2569,7 @@
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "Host stories. Waits on three design partners (decision 20).",
+      "notes": "Host stories. Built and shelved (content/playbook/pages/resources/index.ts shelvedResourcesPlaybookPages): not served, noindex, out of both sitemaps, linked from nowhere, and its stories band does not render until content/stories/hostStories.ts has real stories (decision 20). docs/marketing_website_architecture.md says how to switch it on.",
       "review": {
         "priority": "p1",
         "status": "planned",
@@ -2633,7 +2633,7 @@
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "The no-show calculator with WhatsApp capture. A one-off board.",
+      "notes": "The no-show calculator (noShowCalculator custom section, features/marketing/NoShowCalculator.tsx): the host's own numbers only, no rate or benchmark of its own. Indexed (owner, 19 Nov 2026); linked from the host footer's Resources column.",
       "review": {
         "priority": "p1",
         "status": "planned",
@@ -2697,7 +2697,7 @@
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "Host playbooks by format and city.",
+      "notes": "The host playbooks hub: the intro and a tile per guide. Indexed (owner, 19 Nov 2026); linked from the host footer's Resources column.",
       "review": {
         "priority": "p2",
         "status": "planned",
@@ -2761,7 +2761,7 @@
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "One host story per content file.",
+      "notes": "One host story per content file. No story page exists until a real story, with the organiser's written consent, real figures and photos with rights, is published (content/stories/README.md); the template is a Storybook fixture.",
       "review": {
         "priority": "p1",
         "status": "planned",
@@ -2825,7 +2825,7 @@
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "One playbook guide per content file.",
+      "notes": "One playbook guide per content file (article section): run-club, supper-club, quiz-night and racket-sports. Indexed (owner, 19 Nov 2026); linked from /playbooks/.",
       "review": {
         "priority": "p2",
         "status": "planned",

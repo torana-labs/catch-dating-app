@@ -148,6 +148,10 @@ export const ownerViewCopy = {
     failed: "The IDs did not save. Check them and try again.",
     blocked: "Tracking IDs need a verified claim first.",
     loading: "Loading tracking settings",
+    statusLive: "Live on your page",
+    statusNotLive: "Not live",
+    whyPolicyReview: `Your IDs are saved. Nothing loads on your page until ${brand.name} finishes its review of organiser Pixel and GA4.`,
+    whyNothingSaved: "Add an ID and save it. It goes live after the review.",
   },
   host: {
     title: `Events in ${brand.stores.hostAppName}`,

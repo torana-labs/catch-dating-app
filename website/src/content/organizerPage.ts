@@ -1,12 +1,50 @@
 import {brand} from "./brand.ts";
 
 /**
+ * The words every unclaimed listing carries, wherever it shows: the
+ * organiser page's hero tag and the two actions beside it, the short label
+ * and report link on organiser cards, and the claim block. Counsel reviews
+ * this wording (owner decision 3, 19 Nov 2026), so it lives only here: a
+ * change is a one-line edit. An organiser who has claimed their page shows
+ * none of it. No dating wording, and no claim about the organiser beyond
+ * where the page came from.
+ */
+export const unclaimedListingCopy = {
+  /** The organiser page's hero tag. */
+  tag: `Unclaimed · Not affiliated with ${brand.name}. Built from public pages.`,
+  /** The same label, short enough for an organiser card. */
+  cardLabel: "Unclaimed · Not affiliated",
+  claimAction: "Claim this page",
+  /** The hero's report action, and its accessible name. */
+  reportAction: "Report or remove",
+  reportActionLabel: "Report or remove this listing",
+  /** A card's report link, and its accessible name, which says whose listing. */
+  cardReport: "Report",
+  cardReportLabel: (name: string) => `Report or remove the listing for ${name}`,
+  claim: {
+    title: "Run this club?",
+    body: "Claim this page to edit it, add events and take bookings, or ask us to remove it.",
+    action: "Claim this page",
+    remove: "Ask us to remove it",
+    pending: "A claim for this page is being reviewed.",
+  },
+  /** The line at the foot of an unclaimed page; it opens the listing request form. */
+  footerLink: "Something wrong? Tell us",
+  /**
+   * An unclaimed page takes no new reviews: the read model disables writing
+   * them until the organiser claims it (functions/src/publicPages/publicOrganizer.ts,
+   * reviewPolicy after_event_end).
+   */
+  reviewPolicy: `This page doesn’t take new reviews until the organiser claims it. Reviews marked Unverified weren’t booked on ${brand.name}.`,
+} as const;
+
+/**
  * Copy for the organiser page (/organizers/<slug>/), a link-in-bio page. It
  * follows the owner-approved WebOrgV2 board and the playbook's event page;
  * where they speak about one sample club (its runs), the copy stays general.
  */
 export const organizerPageCopy = {
-  generatedTag: "Built from public pages · not claimed yet",
+  generatedTag: unclaimedListingCopy.tag,
   verifiedLabel: "Verified organiser",
   stats: {
     followers: (count: number) => (count === 1 ? "follower" : "followers"),
@@ -102,7 +140,7 @@ export const organizerPageCopy = {
   reviewPolicy: {
     /** The explanation line under the verified and Unverified review labels (playbook event page). */
     claimed: `Booked on ${brand.name} means the reviewer booked through ${brand.name}. Unverified reviews are shown, and labelled.`,
-    generated: `Anyone can review this page. Reviews stay unverified until guests book through ${brand.name}.`,
+    generated: unclaimedListingCopy.reviewPolicy,
   },
   verifiedReview: `Booked on ${brand.name}`,
   unverifiedReview: "Unverified",
@@ -125,29 +163,11 @@ export const organizerPageCopy = {
   },
   aboutTitle: "About",
   hostTitle: "Who runs it",
-  claim: {
-    label: "Is this your club?",
-    title: "This page is already working for you.",
-    people: (count: number) => `${count.toLocaleString("en-IN")} ${count === 1 ? "person" : "people"}`,
-    followers: "asked to hear about your next event",
-    reviewers: "left reviews",
-    reviewer: "left a review",
-    and: ", and ",
-    built: (names: readonly string[]) =>
-      `We built this page from your public ${names.length ? `${names.join(" and ")} pages` : "pages"}. Claim it free and make it yours.`,
-    points: [
-      {title: "Your Instagram link.", body: "One page for your bio, with your events, links and reviews."},
-      {title: "Every event in one place.", body: `Luma, ${brand.name} or anywhere else, updated for you.`},
-      {title: "Your links.", body: "WhatsApp group, shop, partners, pinned or timed."},
-      {title: "Who clicks.", body: "Visits, link clicks and bookings, with Meta Pixel and Google Analytics."},
-    ],
-    action: "Claim this page",
-    pending: "A claim for this page is being reviewed.",
-  },
+  claim: unclaimedListingCopy.claim,
   footer: {
     claimed: `Made with ${brand.name}`,
     claimedLink: "Make a page like this",
     generated: (names: readonly string[]) => `Built by ${brand.name} from public ${names.length ? `${names.join(" and ")} pages` : "pages"}.`,
-    generatedLink: "Something wrong? Tell us",
+    generatedLink: unclaimedListingCopy.footerLink,
   },
 } as const;

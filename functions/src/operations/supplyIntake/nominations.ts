@@ -10,6 +10,8 @@ import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
 import {requireAdminRole} from "../../admin/adminAuth";
 import {setAdminAuditLogInTransaction} from "../../admin/adminAudit";
+import {categoriesForFormats} from "../../admin/listingProgram/formats";
+import {assertListingProgramOpen} from "../../admin/listingProgram/settings";
 import {
   createSupplyIntakeRequest,
   intakeMarket,
@@ -42,29 +44,37 @@ export interface AdminNominateOrganizerResponse {
 /**
  * A Catch sales associate (or admin) nominates an organizer. The intake
  * worker builds the listing; this records who nominated whom and nothing
- * else, so a retried submission returns the same request.
+ * else, so a retried submission returns the same request. A nomination is a
+ * programmatic listing: it names at least one format (never nightlife or
+ * singles), which travels as Supply Intake categories, and is refused while
+ * programmatic listings are paused.
  */
 export async function adminNominateOrganizerHandler(request: CallableRequest<unknown>,
   deps: NominationDeps = defaultDeps): Promise<AdminNominateOrganizerResponse> {
   const context = requireAdminRole(request, nominatorRoles);
   const data = validateCallableWithAjv<AdminNominateOrganizerCallablePayload>(request,
     validateAdminNominateOrganizerCallablePayload, normalizePayload);
+  if (!data.formats?.length) {
+    throw new HttpsError("invalid-argument", "Choose at least one format the organizer runs.");
+  }
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, context.uid, "adminNominateOrganizer", {
     maxRequests: 30, windowMs: 60 * 1000,
   });
   const now = deps.now();
+  const categories = [...new Set([...categoriesForFormats(data.formats), ...data.categories])].sort().slice(0, 8);
   const intake = {
     schemaVersion: 1 as const,
     requestId: supplyIntakeRequestId("nom", [context.uid, data.requestId]),
     kind: "nomination" as const,
     market: intakeMarket(data.market),
-    seed: {name: data.name, urls: data.urls, notes: data.notes, categories: data.categories},
+    seed: {name: data.name, urls: data.urls, notes: data.notes, categories},
     submittedBy: {role: "associate" as const, uid: context.uid, partnerId: null},
     submittedAt: now.toISOString(),
     origin: {kind: "admin_nomination" as const, id: data.requestId},
   };
   const result = await db.runTransaction(async (tx) => {
+    await assertListingProgramOpen(db, "Nothing was queued.", tx);
     const created = await createSupplyIntakeRequest(tx, db, intake, now);
     if (created.created) {
       setAdminAuditLogInTransaction(tx, db, context, {
@@ -73,7 +83,7 @@ export async function adminNominateOrganizerHandler(request: CallableRequest<unk
         request,
         before: {},
         after: {requestId: created.requestId, kind: intake.kind, market: intake.market,
-          urls: intake.seed.urls.length},
+          urls: intake.seed.urls.length, formats: data.formats},
         note: null,
         serverTimestamp: deps.serverTimestamp,
       });
@@ -99,6 +109,7 @@ function normalizePayload(value: unknown): unknown {
     market: typeof data.market === "string" ? data.market.trim().toLowerCase() : data.market,
     urls: Array.isArray(data.urls) ? [...new Set(data.urls.map((url) => typeof url === "string" ? url.trim() : url))] : data.urls,
     categories: Array.isArray(data.categories) ? [...new Set(data.categories)].sort() : data.categories,
+    ...(Array.isArray(data.formats) ? {formats: [...new Set(data.formats)].sort()} : {}),
   };
 }
 

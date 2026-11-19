@@ -13,7 +13,7 @@ export type Template = Extract<Setting["preference"],
   {kind: "configured"}>["template"];
 export const ASSISTANCE_POLICY_VERSION = "event-assistance/v1";
 export const SETTINGS = "eventAssistanceSettings";
-export const SETTING_RECEIPTS = "eventAssistanceSettingReceipts";
+export const SETTING_RECEIPT_COMMAND = "eventAssistanceSetting";
 export type SettingScope = Pick<Setting,
   "context" | "groupId" | "workflowKind">;
 

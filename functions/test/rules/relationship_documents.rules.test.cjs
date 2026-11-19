@@ -459,7 +459,6 @@ describe("firestore.rules", () => {
 
       for (const collectionName of [
         "eventRuntimeDataRequests",
-        "eventRuntimeDataRequestReceipts",
       ]) {
         await seed([collectionName, "runtime-data-1"], {
           eventId: "event-1",
@@ -916,7 +915,6 @@ describe("firestore.rules", () => {
         ["eventInviteTouches", "touch-1"],
         ["eventShareIntents", "intent-1"],
         ["eventInviteAttributions", "attribution-1"],
-        ["eventAttendeeAttendanceReceipts", "receipt-1"],
         ["eventVenueSessions", "session-1"],
         ["eventVenueSessionRedemptions", "redemption-1"],
         ["organizerProviderConnections", "connection-1"],
@@ -930,7 +928,6 @@ describe("firestore.rules", () => {
         ["eventChatProfileShares", "share-1"],
         ["eventChatRooms", "event-1"],
         ["eventChatMemberships", "member-1"],
-        ["participantProfileClaimReceipts", "receipt-1"],
         ["catchCommunicationPermissionReceipts", "permission-1"],
         ["organizerContactOrigins", "origin-1"],
         ["organizerSavedAudiences", "audience-1"],

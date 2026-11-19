@@ -332,8 +332,8 @@ function allowedPlanPath(path: string): boolean {
     "salesFitQueueEntries", "salesHostSettlementAttestations",
     "salesHostSettlementEvidenceUses", "salesHostSettlementIdentities",
     "salesImportJobs", "salesOutreachJobs", "salesActionReceipts",
-    "salesIntelligenceReceipts", "salesFitQueueReceipts",
-    "salesDemoInvitations", "salesDemoSessions", "salesDemoReceipts",
+    "salesIntelligenceReceipts",
+    "salesDemoInvitations", "salesDemoSessions",
     "adminAuditLogs", "adminActionExecutions"]);
   return parts.length === 2 && direct.has(parts[0]) && Boolean(parts[1]) ||
     parts.length === 4 && Boolean(parts[1]) && Boolean(parts[3]) &&

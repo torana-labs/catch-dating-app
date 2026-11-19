@@ -15,7 +15,7 @@ export type {CatchAdminIntakeSourceListProps} from "./components/CatchAdminIntak
 export {CatchAdminSearchCandidateHeader} from "./components/CatchAdminSearchCandidateHeader";
 export type {CatchAdminSearchCandidateHeaderProps} from "./components/CatchAdminSearchCandidateHeader";
 export {CatchAppCaptureImage} from "./components/CatchAppCaptureImage";
-export type {CatchAppCaptureImageProps} from "./components/CatchAppCaptureImage";
+export type {CatchAppCaptureImageDevice, CatchAppCaptureImageProps} from "./components/CatchAppCaptureImage";
 export {CatchAccountButton} from "./components/CatchAccountButton";
 export type {CatchAccountButtonProps} from "./components/CatchAccountButton";
 export {CatchAvatar, catchAvatarInitialsOf} from "./components/CatchAvatar";

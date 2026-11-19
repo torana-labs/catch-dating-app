@@ -15,10 +15,15 @@ const done = async () => true;
 
 export const IntakeSettingsStory: Story = {
   name: "Intake settings",
-  parameters: {catchComponent: {id: "route_settings_intake", states: ["policies", "limits", "nominators", "launch-cities"]}},
+  parameters: {catchComponent: {id: "route_settings_intake", states: ["listing-program", "policies", "limits", "nominators", "launch-cities"]}},
   render: () => (
     <CatchPaneLayout pattern="reading" main={
       <IntakeSettingsWorkspace
+        program={{isLoading: false, loadFailed: false, isFlipping: false, isCounting: false, setPaused: done, countWithoutFormat: async () => undefined,
+          program: {revision: 1, paused: false, reason: "Owner reviewed the pilot week; running.", updatedAtMillis: Date.UTC(2026, 10, 19),
+            updatedByUid: "sample-owner", defaultCohortId: "pilot-indore-1", formatReport: null},
+          report: {generatedAtMillis: Date.UTC(2026, 10, 19), live: 42, withFormat: 30, withoutFormat: 12, truncated: false, cities: [
+            {citySlug: "indore", live: 12, withFormat: 9, withoutFormat: 3}, {citySlug: "mumbai", live: 30, withFormat: 21, withoutFormat: 9}]}}}
         nominators={{isLoading: false, loadFailed: false, isSaving: false, myUid: "sample-owner", save: done, nominators: [
           {nominatorId: "whatsapp-a", channel: "whatsapp", phoneLast4: "0000", instagramHandle: null, role: "associate", uid: "riya",
             displayName: "Riya Sharma", defaultMarket: "mumbai", active: true, updatedAt: "2026-10-30T08:00:00.000Z"},
