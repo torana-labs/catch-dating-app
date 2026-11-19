@@ -133,6 +133,11 @@ void main() {
       findsOneWidget,
     );
 
+    // The error line grows the sheet, so bring the button back into view.
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('host-follower-update-submit')),
+    );
+    await pumpFeatureUi(tester);
     await tester.tap(find.byKey(const ValueKey('host-follower-update-submit')));
     await pumpFeatureUi(tester);
 
