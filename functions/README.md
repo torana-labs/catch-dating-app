@@ -536,6 +536,7 @@ enter previews.
 | `importOrganizerFromLink` | `src/commands/importOrganizerFromLink.ts` | Command `organizer.import-from-link`: fills a try-it workspace from one public link, or routes to an existing listing's claim. |
 | `importEventFromLink` | `src/commands/importEventFromLink.ts` | Command `event.import-from-link`: creates a private draft event in a try-it workspace from one public event page. |
 | `createPromotionKit` | `src/commands/createPromotionKit.ts` | Command `promotion.create-kit`: one tracked invite link per channel or promoter for an event the caller manages. |
+| `importFormFromLink` | `src/commands/importFormFromLink.ts` | Command `form.import-from-link`: creates a private draft form in a try-it workspace from one public Google Form. |
 | `issueProgramWebLink` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `listEventHostPhotos` | `src/events/eventHostPhotos.ts` | Host photos as signed URLs for checked-in guests and the host team. |
 | `listProgramIdTracker` | `src/programs/guestIds.ts` | ID tracker: staying guests with ID status and signed images. |
