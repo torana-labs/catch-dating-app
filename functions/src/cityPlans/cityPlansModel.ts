@@ -11,6 +11,7 @@ import {
 import type {HostListing} from "../publicPages/publicOrganizer";
 import {
   allowedOn,
+  defaultDiscoveryRules,
   type DiscoveryRules,
   type DiscoverySurfaceRule,
 } from "../discovery/discoveryPolicy";
@@ -73,8 +74,11 @@ export interface CityPlanSources {
    * public page until the city launches, so they carry no path.
    */
   joiningOrganizers: readonly HostListing[];
-  /** Settings → Discovery, read once per rebuild. */
-  discovery: DiscoveryRules;
+  /**
+   * Settings → Discovery, read once per rebuild. Absent, the owner's defaults
+   * apply: organisers not on Catch yet appear nowhere guests browse.
+   */
+  discovery?: DiscoveryRules;
 }
 
 export const cityPlanLimits = {
@@ -123,7 +127,8 @@ export function formatsForText(text: string): CityFormat[] {
 const day = 24 * 60 * 60 * 1000;
 
 export function buildCityPlans(sources: CityPlanSources): CityPlans {
-  const {market, now, discovery} = sources;
+  const {market, now} = sources;
+  const discovery = sources.discovery ?? defaultDiscoveryRules();
   const {surfaces} = discovery;
   const windowEnd = now + cityPlanLimits.windowDays * day;
   const monthWindowEnd = now + cityPlanLimits.monthWindowDays * day;
