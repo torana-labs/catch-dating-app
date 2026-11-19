@@ -72,9 +72,11 @@ export interface AppliedSnapshot {
 }
 
 /**
- * The only writer of hostMemberships. Resolves the purchase from the
- * provider subscription's Catch notes, applies the pure transition and moves
- * member counters in the same transaction.
+ * The only writer of hostMemberships apart from the savings totals, which
+ * onHostMembershipBenefitUseWritten keeps and every transition carries.
+ * Resolves the purchase from the provider subscription's Catch notes,
+ * applies the pure transition and moves member counters in the same
+ * transaction.
  */
 export async function applySubscriptionSnapshot(params: {
   db: Db;

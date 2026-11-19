@@ -14,10 +14,16 @@ import {
 import {useState} from "react";
 import {launchMarkets} from "../../../../shared/config/launchMarkets";
 import type {SupplyIntakePolicy} from "../api/supplyIntakePolicyRepository";
+import type {ListingProgramController} from "../controllers/useListingProgramController";
 import type {SupplyIntakePolicyController} from "../controllers/useSupplyIntakePolicyController";
 import {nominatorSender, type SupplyNominatorController} from "../controllers/useSupplyNominatorController";
 
 export type IntakePoliciesModel = Pick<SupplyIntakePolicyController, "policies" | "decide" | "isDeciding"> & {
+  isLoading: boolean;
+  loadFailed: boolean;
+};
+export type IntakeListingProgramModel = Pick<ListingProgramController, "program" | "setPaused" | "isFlipping" | "report" |
+  "countWithoutFormat" | "isCounting"> & {
   isLoading: boolean;
   loadFailed: boolean;
 };
@@ -103,6 +109,55 @@ function PolicyDecision({policy, model, onClose}: {
   );
 }
 
+/** Pausing needs a reason, which the refusal repeats to whoever nominates or approves next. */
+function PauseDialog({model, onClose}: {model: IntakeListingProgramModel; onClose: () => void}) {
+  const pausing = model.program?.paused !== true;
+  const [reason, setReason] = useState("");
+  const ready = reason.trim().length >= 10 && !model.isFlipping;
+  const flip = async () => {
+    if (await model.setPaused(pausing, reason.trim())) onClose();
+  };
+  return (
+    <CatchDialog
+      open
+      onClose={onClose}
+      title={pausing ? "Pause programmatic listings" : "Resume programmatic listings"}
+      message={pausing ?
+        "Nominations are refused, and so is approving any listing Catch sourced (a nomination or discovery). Pages already live stay up. Organizers' own submissions are unaffected." :
+        "Nominations and their approvals work again. Only the owner can resume."}
+      confirm={{label: pausing ? "Pause" : "Resume", onPressed: ready ? () => void flip() : null}}
+      cancel={{label: "Cancel", onPressed: onClose}}
+    >
+      <CatchField recipe="input" title="Reason" maxLines={3} maxLength={500} value={reason} onChanged={setReason}
+        helperText="Shown with every refusal while paused. At least ten characters." />
+    </CatchDialog>
+  );
+}
+
+function ListingProgramSection({model, onFlip}: {model: IntakeListingProgramModel; onFlip: () => void}) {
+  const program = model.program;
+  const report = model.report;
+  const note = model.loadFailed ? "The switch could not be loaded. Try again." : model.isLoading ? "Loading…" : undefined;
+  return (
+    <CatchSection title="Programmatic listings" container="tile" note={note}>
+      {program ? <CatchIndexRow title={program.paused ? "Paused" : "Running"} titleVariant="bodyM"
+        subtitle={program.paused ? `Nominations and approvals of listings Catch sourced are refused.${program.reason ? ` Reason: ${program.reason}` : ""}` :
+          `Nominations and approvals of listings Catch sourced go through. Approvals suggest the ${program.defaultCohortId} cohort.`}
+        footer={<CatchBadge recipe="status" tone={program.paused ? "danger" : "success"} label={program.paused ? "Paused" : "Running"} />}
+        trailing={<CatchButton label={program.paused ? "Resume" : "Pause"} variant="secondary" size="sm" onPressed={onFlip} />} /> : null}
+      <CatchIndexRow title="Live organizers without a format" titleVariant="bodyM"
+        subtitle={report ? `${report.withoutFormat} of ${report.live} live organizers list no format the city pages count.` +
+          (report.truncated ? " Only the first ones were read." : "") :
+          "They count toward no city-by-format page. Counts only; no names."}
+        trailing={<CatchButton label={model.isCounting ? "Counting" : report ? "Count again" : "Count"} variant="secondary" size="sm"
+          onPressed={model.isCounting ? null : () => void model.countWithoutFormat()} />} />
+      {report?.cities.map((city) => <CatchIndexRow key={city.citySlug} title={city.citySlug} titleVariant="bodyM"
+        subtitle={`${city.live} live · ${city.withFormat} with a format`}
+        trailing={`${city.withoutFormat} without`} />)}
+    </CatchSection>
+  );
+}
+
 /** The add-someone sheet. Re-entering a number or username changes or switches off that nominator. */
 function NominatorSheet({model, onClose}: {model: IntakeNominatorsModel; onClose: () => void}) {
   const [channel, setChannel] = useState<Channel>("whatsapp");
@@ -156,21 +211,24 @@ function NominatorSheet({model, onClose}: {model: IntakeNominatorsModel; onClose
 }
 
 /**
- * Settings → Intake: what Intake may do on its own, its limits, who can
- * nominate by message, and the launch cities. Anyone else who messages Catch
- * reaches Support, not Intake.
+ * Settings → Intake: the programmatic listings pause switch, what Intake may
+ * do on its own, its limits, who can nominate by message, and the launch
+ * cities. Anyone else who messages Catch reaches Support, not Intake.
  */
-export function IntakeSettingsWorkspace({policies, nominators}: {
+export function IntakeSettingsWorkspace({program, policies, nominators}: {
+  program: IntakeListingProgramModel;
   policies: IntakePoliciesModel;
   nominators: IntakeNominatorsModel;
 }) {
   const [deciding, setDeciding] = useState<SupplyIntakePolicy | null>(null);
   const [adding, setAdding] = useState(false);
+  const [flipping, setFlipping] = useState(false);
   const limits = policies.policies.flatMap((policy) => policy.limits);
   return (
     <>
       <CatchWorkspaceHeader title="Intake" kicker="Settings" />
       <CatchGap size="section">
+        <ListingProgramSection model={program} onFlip={() => setFlipping(true)} />
         <CatchSection title="What Intake does on its own" container="tile"
           note={policies.loadFailed ? "These could not be loaded. Try again." : policies.isLoading ? "Loading…" :
             "Off until you decide"}>
@@ -208,6 +266,7 @@ export function IntakeSettingsWorkspace({policies, nominators}: {
       </CatchGap>
       {deciding ? <PolicyDecision policy={deciding} model={policies} onClose={() => setDeciding(null)} /> : null}
       {adding ? <NominatorSheet model={nominators} onClose={() => setAdding(false)} /> : null}
+      {flipping && program.program ? <PauseDialog model={program} onClose={() => setFlipping(false)} /> : null}
     </>
   );
 }

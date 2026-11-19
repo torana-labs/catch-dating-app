@@ -1258,7 +1258,7 @@
       "confirmation": "action-and-target",
       "targetField": "requestId",
       "requestSchema": "contracts/callables/admin_nominate_organizer_payload.schema.json",
-      "summary": "Nominate an organizer for Supply Intake; the listing is built from its links and waits for staff review before anything is published.",
+      "summary": "Nominate an organizer for Supply Intake with at least one format (never nightlife); the listing is built from its links and waits for staff review before anything is published. Refused while programmatic listings are paused.",
       "example": {
         "requestId": "example-nomination-001",
         "name": "Example Run Club",
@@ -1269,6 +1269,9 @@
         "notes": null,
         "categories": [
           "running"
+        ],
+        "formats": [
+          "runClubs"
         ]
       }
     },

@@ -9,7 +9,6 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_del
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_entry_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_host_report_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -88,78 +87,6 @@ void main() {
     expect(tester.getRect(button).top, greaterThan(body.bottom));
     expect(tester.takeException(), isNull);
   });
-
-  testWidgets(
-    'public reviews uses the shared module and empty copy has no icon gutter',
-    (tester) async {
-      await mount(
-        tester,
-        const Padding(
-          padding: EdgeInsets.all(20),
-          child: HostEventReviewsPanel(eventId: 'event'),
-        ),
-      );
-      final empty = find.byType(CatchEmptyState);
-      expect(empty, findsOneWidget);
-      expect(
-        find.descendant(
-          of: find.byType(HostEventReviewsPanel),
-          matching: find.byType(CatchLegacySurface),
-        ),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(of: empty, matching: find.byType(Icon)),
-        findsNothing,
-      );
-      expect(tester.takeException(), isNull);
-    },
-  );
-
-  testWidgets(
-    'review failure stays in the module and retry recovers to empty',
-    (tester) async {
-      var loads = 0;
-      await mount(
-        tester,
-        const HostEventReviewsPanel(eventId: 'event'),
-        ready: find.widgetWithText(CatchButton, 'Try again'),
-        reviews: () {
-          loads++;
-          return loads == 1
-              ? Stream.error(Exception('review unavailable'))
-              : Stream.value([]);
-        },
-      );
-      expect(find.byType(CatchLegacySurface), findsOneWidget);
-      expect(find.byType(CatchEmptyState), findsNothing);
-      final retry = find.widgetWithText(CatchButton, 'Try again');
-      expect(retry, findsOneWidget);
-      await tester.tap(retry);
-      await pumpFeatureUi(tester);
-      expect(loads, 2);
-      expect(find.byType(CatchEmptyState), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    },
-  );
-
-  testWidgets(
-    'pending reviews keep the module and do not show successful-empty copy',
-    (tester) async {
-      final controller = StreamController<List<Review>>();
-      await mount(
-        tester,
-        const HostEventReviewsPanel(eventId: 'event'),
-        reviews: () => controller.stream,
-      );
-      expect(find.byType(CatchLegacySurface), findsOneWidget);
-      expect(find.byType(CatchLoadingIndicator), findsOneWidget);
-      expect(find.byType(CatchEmptyState), findsNothing);
-      await tester.pumpWidget(const SizedBox.shrink());
-      unawaited(controller.close());
-      expect(tester.takeException(), isNull);
-    },
-  );
 
   testWidgets(
     'report owns separation after message review in every empty branch',

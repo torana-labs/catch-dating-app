@@ -126,7 +126,7 @@ export async function recordTryItEvent(db: FirebaseFirestore.Firestore,
 }
 
 /** The newest recorded try-it event that is still a private, active draft. */
-async function currentTryItDraft(db: FirebaseFirestore.Firestore,
+export async function currentTryItDraft(db: FirebaseFirestore.Firestore,
   lookup: Exclude<WorkspaceLookup, {kind: "new"}>,
   organizerId: string): Promise<string | null> {
   if (lookup.kind !== "existing") return null;

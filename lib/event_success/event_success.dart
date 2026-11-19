@@ -54,7 +54,7 @@ export 'presentation/event_success_controller.dart'; // public-api: command seam
 export 'presentation/event_success_conversation_cue_copy.dart'; // public-api: localized presentation copy reused across feature boundaries
 export 'presentation/event_success_defaults_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/event_success_host_keys.dart'; // public-api: shared presentation contract used outside this feature
-export 'presentation/event_success_host_screen.dart'; // public-api: route entry point exposed to app routing
+export 'presentation/event_success_host_screen_state.dart'; // public-api: Host workspace tab, action and layout state shared with rehearsal
 export 'presentation/event_success_host_workspace_page_body.dart'; // public-api: Host presentation contract used outside this feature
 export 'presentation/event_success_live_reveal_card_state.dart'; // public-api: reveal command state
 export 'presentation/event_success_questionnaire_config_editor.dart'; // public-api: shared presentation component used outside this feature
@@ -64,7 +64,6 @@ export 'presentation/host_components/event_success_activity_field_lanes.dart'; /
 export 'presentation/host_components/event_success_compatibility_section.dart'; // public-api: shared presentation contract used outside this feature
 export 'presentation/host_components/event_success_host_help_section.dart'; // public-api: shared presentation contract used outside this feature
 export 'presentation/host_components/event_success_host_resource_error_state.dart'; // public-api: shared presentation contract used outside this feature
-export 'presentation/host_components/event_success_host_section_loading_page_body.dart'; // public-api: Host presentation contract used outside this feature
 export 'presentation/host_components/event_success_host_tab_bar.dart'; // public-api: shared presentation contract used outside this feature
 export 'presentation/host_components/event_success_host_tab_page_body.dart'; // public-api: shared presentation contract used outside this feature
 export 'presentation/host_components/event_success_live_workspace_tab_bar.dart'; // public-api: shared presentation contract used outside this feature

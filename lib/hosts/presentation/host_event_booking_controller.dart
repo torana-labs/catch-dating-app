@@ -21,7 +21,6 @@ class HostEventBookingController extends _$HostEventBookingController {
   static final createWaitlistOfferMutation = Mutation<void>();
   static final approveJoinRequestMutation = Mutation<void>();
   static final declineJoinRequestMutation = Mutation<void>();
-  static final markAttendanceMutation = Mutation<void>();
   static final hostCancelEventMutation = Mutation<void>();
   static final deleteEventMutation = Mutation<void>();
   static final updateHostedEventMutation = Mutation<void>();
@@ -30,20 +29,6 @@ class HostEventBookingController extends _$HostEventBookingController {
   Future<void>? _updateHostedEventInFlight;
   final _registrationRequests =
       <(String, String, int, EventPublicRegistrationMode), String>{};
-
-  static Object waitlistOfferSelectionMutationKey(
-    String eventId,
-    List<String> userIds,
-  ) {
-    return userIds.length == 1
-        ? HostEventBookingController.waitlistOfferMutationKey(
-            eventId: eventId,
-            userId: userIds.single,
-          )
-        : HostEventBookingController.bulkWaitlistOfferMutationKey(
-            eventId: eventId,
-          );
-  }
 
   static HostEventParticipantMutationKey waitlistOfferMutationKey({
     required String eventId,
@@ -60,11 +45,6 @@ class HostEventBookingController extends _$HostEventBookingController {
   }) => (eventId: eventId, userId: userId);
 
   static HostEventParticipantMutationKey declineJoinRequestMutationKey({
-    required String eventId,
-    required String userId,
-  }) => (eventId: eventId, userId: userId);
-
-  static HostEventParticipantMutationKey markAttendanceMutationKey({
     required String eventId,
     required String userId,
   }) => (eventId: eventId, userId: userId);

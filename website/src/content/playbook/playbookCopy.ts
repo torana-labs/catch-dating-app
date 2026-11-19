@@ -44,6 +44,9 @@ export const playbookCopy = {
       capacity: "Say how many people fit.",
       nights: "Say which nights you’d like to fill.",
       preferredTime: "Say when suits you.",
+      hostName: "Enter the host’s name.",
+      hostLink: "Add their Instagram or website.",
+      relationship: "Say how you know them.",
     },
     /** In the form's place once it is sent. */
     sent: {
@@ -51,6 +54,7 @@ export const playbookCopy = {
       venue: "Thanks. We’ll message you on WhatsApp about your space.",
       demo: "Thanks. We’ll message you on WhatsApp when your demo is ready.",
       walkthrough: "Thanks. We’ll confirm your time on WhatsApp.",
+      referral: "Thanks. We’ll get in touch with them and keep you posted on WhatsApp.",
     },
   },
 } as const;

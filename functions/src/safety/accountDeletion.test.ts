@@ -178,8 +178,6 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       "eventChatAccessReceipts/action-other": {uid: "runner-2"},
       "participantOrganizerCards/response-1": {uid: "runner-1"},
       "participantOrganizerCards/response-other": {uid: "runner-2"},
-      "participantProfileClaimReceipts/receipt-1": {uid: "runner-1"},
-      "participantProfileClaimReceipts/receipt-other": {uid: "runner-2"},
       "participantFormProfileProposals/response-1": {
         uid: "runner-1", organizerId: "club-1",
       },
@@ -496,8 +494,8 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     "eventAssignmentFeatureConsents/consent-1",
     "eventChatReactions/reaction-1",
     "eventChatPresence/presence-1", "eventChatMemberships/member-1",
-    "eventChatAccessReceipts/action-1", "participantOrganizerCards/response-1",
-    "participantProfileClaimReceipts/receipt-1"]) {
+    "eventChatAccessReceipts/action-1",
+    "participantOrganizerCards/response-1"]) {
     assert.ok(harness.deletedPublicDocs.includes(path));
   }
   for (const path of ["eventChatProfileShares/share-other",
@@ -505,8 +503,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     "eventChatReactions/reaction-other",
     "eventChatPresence/presence-other", "eventChatMemberships/member-other",
     "eventChatAccessReceipts/action-other",
-    "participantOrganizerCards/response-other",
-    "participantProfileClaimReceipts/receipt-other"]) {
+    "participantOrganizerCards/response-other"]) {
     assert.equal(harness.deletedPublicDocs.includes(path), false);
   }
   assert.ok(harness.deletedPublicDocs.includes(

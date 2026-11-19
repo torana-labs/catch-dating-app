@@ -131,7 +131,7 @@ const defaultDeps: OrganizerFormsDeps = {
   publicFormId: () => randomBytes(24).toString("base64url"),
 };
 
-interface FormTemplateQuestion {
+export interface FormTemplateQuestion {
   key: string;
   label: string;
   helpText: string | null;
@@ -142,7 +142,7 @@ interface FormTemplateQuestion {
   options?: Array<{label: string; value: string}>;
 }
 
-interface FormTemplate {
+export interface FormTemplate {
   id: string;
   version: number;
   title: string;
@@ -186,6 +186,67 @@ export function organizerFormTemplateReview(templateId: string): {
     materializerVersion: 1, title: template.title};
 }
 
+/**
+ * Form content read from another provider (functions/src/formImport), in the
+ * template shape so the template materializer builds it: the same ids,
+ * defaults and validation as a template draft. Logic names sections by their
+ * local id and questions by key.
+ */
+export interface ImportedFormContent {
+  title: string;
+  description: string | null;
+  sections: FormTemplate["sections"];
+  logic: Array<{
+    action: "showSection" | "finish";
+    questionKey: string;
+    values: string[];
+    targetSectionId: string | null;
+  }>;
+}
+
+const IMPORTED_FORM_TEMPLATE_ID = "blank";
+
+/**
+ * An imported form as a native definition: the blank template's purpose,
+ * identity policy, consent and completion, with the imported sections, and
+ * each logic rule matching any of its values on one choice question.
+ */
+export function materializeImportedForm(params: {
+  content: ImportedFormContent;
+  formId: string;
+  defaultTargetKind: FormDefinition["defaultTargetKind"];
+  defaultTargetId: string | null;
+}): FormDefinition {
+  const blank = formTemplates.find((item) =>
+    item.id === IMPORTED_FORM_TEMPLATE_ID);
+  if (!blank) {
+    throw new HttpsError("internal", "The blank form template is missing.");
+  }
+  const {content, formId} = params;
+  const definition = materializeTemplate({
+    template: {...blank, description: content.description,
+      sections: content.sections},
+    formId,
+    title: content.title,
+    defaultTargetKind: params.defaultTargetKind,
+    defaultTargetId: params.defaultTargetId,
+  });
+  definition.logicRules = content.logic.map((rule, index) => ({
+    ruleId: scopedNestedId("rule", formId, `imported_${index}`),
+    conditionMode: "any" as const,
+    conditions: [{
+      questionId: scopedNestedId("question", formId, rule.questionKey),
+      operator: "equals" as const,
+      expectedValues: rule.values,
+    }],
+    action: rule.action,
+    targetQuestionId: null,
+    targetSectionId: rule.targetSectionId === null ? null :
+      scopedNestedId("section", formId, rule.targetSectionId),
+  }));
+  return definition;
+}
+
 /** Shared atomic draft owner; callers complete all other reads before this. */
 export async function createOrganizerFormInTransaction(params: {
   db: FirebaseFirestore.Firestore; tx: FirebaseFirestore.Transaction;
@@ -193,11 +254,15 @@ export async function createOrganizerFormInTransaction(params: {
   title: string | null; defaultTargetKind: FormDefinition["defaultTargetKind"];
   defaultTargetId: string | null; publicFormId: string;
   timestamp: () => FirebaseFirestore.Timestamp;
+  /** Builds the draft from imported content on the blank template instead. */
+  imported?: ImportedFormContent;
 }): Promise<{form: OrganizerFormDocument; draft: OrganizerFormDraftDocument}> {
   const {db, tx, actorUid, organizerId, formId, title, defaultTargetKind,
     defaultTargetId, publicFormId, timestamp} = params;
   assertTarget(defaultTargetKind, defaultTargetId);
-  const template = formTemplates.find((item) => item.id === params.templateId);
+  const templateId = params.imported ?
+    IMPORTED_FORM_TEMPLATE_ID : params.templateId;
+  const template = formTemplates.find((item) => item.id === templateId);
   if (!template) {
     throw new HttpsError("invalid-argument", "Form template not found.");
   }
@@ -228,13 +293,16 @@ export async function createOrganizerFormInTransaction(params: {
     targetId: defaultTargetId,
     nowMillis: timestamp().toMillis()});
   const now = timestamp();
-  const definition = materializeTemplate({
-    template,
-    formId,
-    title: title ?? template.title,
-    defaultTargetKind,
-    defaultTargetId,
-  });
+  const definition = params.imported ?
+    materializeImportedForm({content: params.imported, formId,
+      defaultTargetKind, defaultTargetId}) :
+    materializeTemplate({
+      template,
+      formId,
+      title: title ?? template.title,
+      defaultTargetKind,
+      defaultTargetId,
+    });
   const form: OrganizerFormDocument = {
     organizerId,
     createdByUid: actorUid,

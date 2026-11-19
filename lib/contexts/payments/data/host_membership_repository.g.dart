@@ -136,11 +136,11 @@ final class WatchMyHostMembershipsFamily extends $Family
   String toString() => r'watchMyHostMembershipsProvider';
 }
 
-@ProviderFor(watchMyHostMembershipBenefitUses)
-final watchMyHostMembershipBenefitUsesProvider =
-    WatchMyHostMembershipBenefitUsesFamily._();
+@ProviderFor(watchUpcomingHostMembershipBenefitUses)
+final watchUpcomingHostMembershipBenefitUsesProvider =
+    WatchUpcomingHostMembershipBenefitUsesFamily._();
 
-final class WatchMyHostMembershipBenefitUsesProvider
+final class WatchUpcomingHostMembershipBenefitUsesProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<HostMembershipBenefitUse>>,
@@ -150,25 +150,32 @@ final class WatchMyHostMembershipBenefitUsesProvider
     with
         $FutureModifier<List<HostMembershipBenefitUse>>,
         $StreamProvider<List<HostMembershipBenefitUse>> {
-  WatchMyHostMembershipBenefitUsesProvider._({
-    required WatchMyHostMembershipBenefitUsesFamily super.from,
-    required String super.argument,
+  WatchUpcomingHostMembershipBenefitUsesProvider._({
+    required WatchUpcomingHostMembershipBenefitUsesFamily super.from,
+    required ({
+      String uid,
+      String organizerId,
+      int startingAfterMillis,
+      int limit,
+    })
+    super.argument,
   }) : super(
          retry: null,
-         name: r'watchMyHostMembershipBenefitUsesProvider',
+         name: r'watchUpcomingHostMembershipBenefitUsesProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$watchMyHostMembershipBenefitUsesHash();
+  String debugGetCreateSourceHash() =>
+      _$watchUpcomingHostMembershipBenefitUsesHash();
 
   @override
   String toString() {
-    return r'watchMyHostMembershipBenefitUsesProvider'
+    return r'watchUpcomingHostMembershipBenefitUsesProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -179,13 +186,26 @@ final class WatchMyHostMembershipBenefitUsesProvider
 
   @override
   Stream<List<HostMembershipBenefitUse>> create(Ref ref) {
-    final argument = this.argument as String;
-    return watchMyHostMembershipBenefitUses(ref, argument);
+    final argument =
+        this.argument
+            as ({
+              String uid,
+              String organizerId,
+              int startingAfterMillis,
+              int limit,
+            });
+    return watchUpcomingHostMembershipBenefitUses(
+      ref,
+      uid: argument.uid,
+      organizerId: argument.organizerId,
+      startingAfterMillis: argument.startingAfterMillis,
+      limit: argument.limit,
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is WatchMyHostMembershipBenefitUsesProvider &&
+    return other is WatchUpcomingHostMembershipBenefitUsesProvider &&
         other.argument == argument;
   }
 
@@ -195,29 +215,41 @@ final class WatchMyHostMembershipBenefitUsesProvider
   }
 }
 
-String _$watchMyHostMembershipBenefitUsesHash() =>
-    r'120a350ea5d9eb729bb419e581421e00e3c3b0dd';
+String _$watchUpcomingHostMembershipBenefitUsesHash() =>
+    r'88e5e048b3167d01f1a589f0f671b9002c9a4684';
 
-final class WatchMyHostMembershipBenefitUsesFamily extends $Family
+final class WatchUpcomingHostMembershipBenefitUsesFamily extends $Family
     with
         $FunctionalFamilyOverride<
           Stream<List<HostMembershipBenefitUse>>,
-          String
+          ({String uid, String organizerId, int startingAfterMillis, int limit})
         > {
-  WatchMyHostMembershipBenefitUsesFamily._()
+  WatchUpcomingHostMembershipBenefitUsesFamily._()
     : super(
         retry: null,
-        name: r'watchMyHostMembershipBenefitUsesProvider',
+        name: r'watchUpcomingHostMembershipBenefitUsesProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  WatchMyHostMembershipBenefitUsesProvider call(String uid) =>
-      WatchMyHostMembershipBenefitUsesProvider._(argument: uid, from: this);
+  WatchUpcomingHostMembershipBenefitUsesProvider call({
+    required String uid,
+    required String organizerId,
+    required int startingAfterMillis,
+    required int limit,
+  }) => WatchUpcomingHostMembershipBenefitUsesProvider._(
+    argument: (
+      uid: uid,
+      organizerId: organizerId,
+      startingAfterMillis: startingAfterMillis,
+      limit: limit,
+    ),
+    from: this,
+  );
 
   @override
-  String toString() => r'watchMyHostMembershipBenefitUsesProvider';
+  String toString() => r'watchUpcomingHostMembershipBenefitUsesProvider';
 }
 
 @ProviderFor(watchPublishedHostMembershipPlans)

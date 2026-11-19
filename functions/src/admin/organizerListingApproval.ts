@@ -23,7 +23,9 @@ import {requireAdminRole, type AdminContext} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
 import {buildOrganizerAdminSearchProjection} from "./organizerAdminSearch";
 import {reserveOrganizerCanonicalRoute} from "./organizerPublishingGuards";
-import {assertOrganizerVisibilityDecisionAllowed} from "./supplyVisibilityPolicy";
+import {assertOrganizerVisibilityDecisionAllowed, assertProgrammaticListingChecklist} from "./supplyVisibilityPolicy";
+import {formatsForListingCategories, labelsForFormats, type ProgrammaticListingFormat} from "./listingProgram/formats";
+import {assertListingProgramOpen} from "./listingProgram/settings";
 import {newSalesAccount} from "./sales/account";
 import type {SalesActivity, SalesOpportunity, SalesTask} from "./sales/types";
 import {growthFactsCollection, listingChannel, newGrowthFacts} from "../growth/organizerGrowthFacts";
@@ -32,7 +34,8 @@ import {checkListingSuppression, listingSuppressionHmacKey, suppressionModule} f
 
 // Ops approve listings and events; claims stay the owner's (one of Admin's
 // three jobs: owner, sales associate, ops and support). Approving also opens
-// the listing's Sales records, owned by the Sales owner it names.
+// the listing's Sales records, owned by the Sales owner it names, unless the
+// approval tags the organizer with a programmatic listing cohort.
 export const listingApprovalRoles = ["admin", "adminOwner", "support"] as const;
 const curationCollection = "organizerIntakeCurationDecisions";
 const reviewDecisionCollection = "organizerIntakeReviewDecisions";
@@ -98,9 +101,27 @@ export interface ListingApprover {
   /**
    * False when no person approves (the instant draft worker): the draft then
    * opens no Sales account, opportunity or tasks owned by a pseudo-user.
-   * Defaults to true.
+   * Defaults to true, or to false when the approval names a cohort (owner
+   * decision 9, 19 Nov 2026: Sales work opens only once an organizer in the
+   * cohort claims or replies).
    */
   salesRecords?: boolean;
+  /**
+   * True when a person approves through Admin. A listing Catch sourced then
+   * needs the reviewer's formats and the programmatic checklist items;
+   * auto-publishing takes the formats its categories name.
+   */
+  reviewedByStaff?: boolean;
+}
+
+/**
+ * A listing Catch sourced itself (an Admin or message nomination, or
+ * discovery) that approval would publish: the programmatic listings the
+ * pause switch, the formats and the cohort apply to. An organizer's own
+ * submission and a website instant draft are not.
+ */
+export function isProgrammaticListing(kind: string, draftForClaim: boolean): boolean {
+  return !draftForClaim && (kind === "nomination" || kind === "discovery");
 }
 
 /**
@@ -138,7 +159,8 @@ export async function adminApproveOrganizerListingHandler(
     {maxRequests: 10, windowMs: 60 * 1000}
   );
   return approveListing(deps, {adminContext, request, auditAction: "adminApproveOrganizerListing",
-    checklist: data.checklist, activityLead: "Listing approved"}, data);
+    checklist: data.checklist, activityLead: "Listing approved", reviewedByStaff: true,
+    ...(data.salesRecords === undefined ? {} : {salesRecords: data.salesRecords})}, data);
 }
 
 export const adminApproveOrganizerListing = onCall(appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey]),
@@ -159,13 +181,19 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
   const db = deps.firestore();
   const workItemRef = db.collection("operationWorkItems").doc(data.listingWorkItemId);
   const allocatedOrganizerRef = db.collection("organizers").doc();
+  // The programme fields join the hash only when set, so an approval made
+  // before they existed still replays.
+  const programme = data.formats !== undefined || data.cohortId !== undefined || data.salesRecords !== undefined ?
+    [data.formats ?? null, data.cohortId ?? null, data.salesRecords ?? null] : [];
   const materialHash = crypto.createHash("sha256").update(JSON.stringify([data.listingWorkItemId,
-    data.contentHash, data.name, data.publicSlug, data.marketId, data.organizerType])).digest("hex");
+    data.contentHash, data.name, data.publicSlug, data.marketId, data.organizerType, ...programme])).digest("hex");
   let approvalId = "";
   let organizerId = "";
   let salesOwnerUid = "";
   let created = false;
   let publishStatus: "published" | "draft" = "published";
+  let formats: ProgrammaticListingFormat[] = [];
+  let salesRecords = true;
 
   await db.runTransaction(async (tx) => {
     const workItemSnap = await tx.get(workItemRef);
@@ -200,6 +228,20 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
     if (!stored || stored.status !== "completed" || stored.approval !== null) {
       throw new HttpsError("failed-precondition", "The intake request for this listing is not ready for approval.");
     }
+    const programmatic = isProgrammaticListing(listing.kind, draftForClaim);
+    if (programmatic) {
+      await assertListingProgramOpen(db, "Nothing was published.", tx);
+      if (approver.reviewedByStaff) {
+        if (!data.formats?.length) {
+          throw new HttpsError("invalid-argument", "Choose at least one format for this listing.");
+        }
+        assertProgrammaticListingChecklist(approver.checklist);
+      }
+    } else if (data.cohortId !== undefined) {
+      throw new HttpsError("invalid-argument", "A cohort is only for a listing Catch sourced (a nomination or discovery).");
+    }
+    formats = data.formats ?? (programmatic ? formatsForListingCategories(listing.categories) : []);
+    salesRecords = approver.salesRecords ?? data.cohortId === undefined;
     // Backstop for the do-not-list registry: the built listing can name a
     // handle or link the nomination did not, and a case may postdate intake.
     await assertListingNotSuppressed(tx, db, {data, listing, request: stored.request});
@@ -216,7 +258,7 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
     const timestamp = deps.serverTimestamp();
     const now = deps.now().toISOString();
     const organizer = buildListingOrganizer({data, listing, market, adminUid: adminContext.uid, timestamp,
-      checkedAt: admin.firestore.Timestamp.fromDate(new Date(now)), publishStatus});
+      checkedAt: admin.firestore.Timestamp.fromDate(new Date(now)), publishStatus, formats});
     assertOrganizerPublicContent(organizer, "Approving this listing");
     organizer.adminSearch = buildOrganizerAdminSearchProjection(organizerId, organizer, timestamp,
       "adminApproveOrganizerListing") as never;
@@ -267,7 +309,7 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
         linkedAt: admin.firestore.Timestamp.fromDate(new Date(now)), linkedBy: adminContext.uid,
         linkRequestId: approvalId, updatedAt: admin.firestore.Timestamp.fromDate(new Date(now))});
     }
-    if (approver.salesRecords !== false) {
+    if (salesRecords) {
       writeSalesRecords(tx, db, {approvalId, organizerId, organizer, ownerUid: salesOwnerUid,
         actorUid: adminContext.uid, now, listing, origin: salesOrigin(origin?.kind), name: data.name,
         activityLead: approver.activityLead, draftForClaim});
@@ -276,7 +318,8 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
       action: approver.auditAction, targetPath: organizerRef.path, request, before: {},
       after: {organizerId, approvalId, listingId: listing.listingId, requestId: listing.requestId,
         publicSlug: data.publicSlug, publishStatus, indexStatus: "noindex",
-        appVisibility: "hidden", claimState: "unclaimed", salesOwnerUid},
+        appVisibility: "hidden", claimState: "unclaimed", salesOwnerUid, formats,
+        cohortId: data.cohortId ?? null, salesRecords},
       note: data.note, serverTimestamp: deps.serverTimestamp,
     });
     created = true;
@@ -360,13 +403,22 @@ function frontDoorLabel(listing: ReviewedListing): string {
   return listing.submittedBy.role === "partner" ? "a partner nomination" : "an associate nomination";
 }
 
-function buildListingOrganizer({data, listing, market, adminUid, timestamp, checkedAt, publishStatus}: {
+/**
+ * The organizer an approval creates. Chosen formats are written as their
+ * page labels to publicProfile.formats, with the first as the public
+ * category, so the city-by-format pages count the organizer; without them
+ * the listing's categories stand in, as before.
+ */
+function buildListingOrganizer({data, listing, market, adminUid, timestamp, checkedAt, publishStatus,
+  formats: chosen}: {
   data: ListingApprovalInput; listing: ReviewedListing;
   market: NonNullable<ReturnType<typeof marketForIdOrAlias>>; adminUid: string;
   timestamp: FirebaseFirestore.FieldValue; checkedAt: FirebaseFirestore.Timestamp;
-  publishStatus: "published" | "draft";
+  publishStatus: "published" | "draft"; formats: readonly ProgrammaticListingFormat[];
 }): OrganizerDocument {
-  const formats = listing.categories.slice(0, 12);
+  const tags = listing.categories.slice(0, 12);
+  const labels = labelsForFormats(chosen);
+  const formats = labels.length ? labels : tags;
   const sources = listing.links.slice(0, 8);
   return {
     name: data.name, description: listing.description ?? "", location: market.marketId,
@@ -375,8 +427,9 @@ function buildListingOrganizer({data, listing, market, adminUid, timestamp, chec
     createdAt: timestamp as never,
     // Listing images stay off the public page until their media rights are settled.
     imageUrl: null, profileImageUrl: null, logoPhoto: null,
-    tags: formats, organizerPhotos: [], followerCount: 0, organizerType: data.organizerType,
-    organizerTypeUpdatedAt: timestamp as never, organizerTypeUpdatedByUid: adminUid, publicCategoryLabel: null,
+    tags, organizerPhotos: [], followerCount: 0, organizerType: data.organizerType,
+    organizerTypeUpdatedAt: timestamp as never, organizerTypeUpdatedByUid: adminUid,
+    publicCategoryLabel: labels[0] ?? null,
     rating: 0, reviewCount: 0, nextEventAt: null, nextEventLabel: null, instagramHandle: null,
     phoneNumber: null, email: null, status: "active", archived: false, archivedAt: null, archiveReason: null,
     cityName: market.cityLabel, regionName: market.regionName, countryCode: market.countryIsoCode,
@@ -395,6 +448,7 @@ function buildListingOrganizer({data, listing, market, adminUid, timestamp, chec
     publicSources: sources.map((link) => ({type: link.platform, label: `${link.platform} page`,
       detail: `Public ${link.platform} page for ${data.name}.`, href: link.url, confidence: "medium",
       lastCheckedAt: checkedAt as never})),
+    ...(data.cohortId ? {listingProgram: {cohortId: data.cohortId, approvedAt: checkedAt as never}} : {}),
   };
 }
 
@@ -451,7 +505,9 @@ function normalizePayload(value: unknown): unknown {
   const trimmed = (entry: unknown) => typeof entry === "string" ? entry.trim() : entry;
   return {...data, listingWorkItemId: trimmed(data.listingWorkItemId), name: trimmed(data.name),
     publicSlug: typeof data.publicSlug === "string" ? data.publicSlug.trim().toLowerCase() : data.publicSlug,
-    marketId: trimmed(data.marketId), organizerType: trimmed(data.organizerType), note: trimmed(data.note)};
+    marketId: trimmed(data.marketId), organizerType: trimmed(data.organizerType), note: trimmed(data.note),
+    ...(typeof data.cohortId === "string" ? {cohortId: data.cohortId.trim().toLowerCase()} : {}),
+    ...(Array.isArray(data.formats) ? {formats: [...new Set(data.formats)].sort()} : {})};
 }
 
 function recordValue(value: unknown): Record<string, unknown> | null {

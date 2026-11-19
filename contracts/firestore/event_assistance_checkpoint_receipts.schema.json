@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_assistance_checkpoint_receipts.schema.json",
   "title": "EventAssistanceCheckpointReceiptDocument",
-  "description": "Kept as its own collection (L8 decision, 18 Nov 2026): part of the dormant event-assistance Operations platform, whose receipts must outlive the event and may be hashed into other receipts or serve as provider evidence.",
+  "description": "Kept as its own collection (L8 decision, 18 Nov 2026; reason corrected 19 Nov): checkpoint report, assignment and closeout history: the host checkpoint view and the Operations worker read it, and Operations action receipts hash it.",
   "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/Receipt",
   "x-firestore-collection": "eventAssistanceCheckpointReceipts",
   "x-firestore-path": "eventAssistanceCheckpointReceipts/{receiptId}",

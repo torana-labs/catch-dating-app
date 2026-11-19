@@ -202,6 +202,7 @@ export async function configureEventOfferPreferencesHandler(
   const result = await configurePreferences({actorUid, command, deps: {
     db,
     serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+    nowMillis: () => Date.now(),
   }});
   if (!validateConfigureEventOfferPreferencesCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid event preference result.");
@@ -224,7 +225,8 @@ export async function previewEventOfferPreferencesHandler(
   });
   const result = await configurePreferences({actorUid, command,
     previewOnly: true, deps: {db,
-      serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp()}});
+      serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+      nowMillis: () => Date.now()}});
   if (!validatePreviewEventOfferPreferencesCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid event preference preview.");
   }

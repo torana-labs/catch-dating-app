@@ -19,6 +19,7 @@
     "subjectId",
     "createdAtMillis",
     "expiresAtMillis",
+    "expiresAt",
     "duty",
     "state",
     "assigneeUid",
@@ -69,6 +70,17 @@
         "null"
       ],
       "description": "A staff attention alert ends 24 hours after its send; a travel alert lasts while its journey is disrupted."
+    },
+    "expiresAt": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The same end as expiresAtMillis, as the timestamp the collection's TTL policy deletes on; null for travel alerts, which the trigger removes when the journey recovers."
     },
     "duty": {
       "type": [

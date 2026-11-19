@@ -4,8 +4,6 @@ import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {validateEventAssistanceGroupProgressDocument} from
   "../../shared/generated/validators/eventAssistanceGroupProgressDocument";
-import {validateEventAssistanceProgressReceiptDocument} from
-  "../../shared/generated/validators/eventAssistanceProgressReceiptDocument";
 import {validateConfirmEventAssistanceDepartureCallablePayload} from
   "../../shared/generated/validators/confirmEventAssistanceDepartureInput";
 import {validateChangeEventAssistanceRouteCallablePayload} from
@@ -35,8 +33,16 @@ import {prepareCheckpointWorkEnqueue} from "./checkpointWorkEnqueue";
 import {prepareDepartureDecision, prepareRouteDecision,
   departureConflict as conflict, routeDecisionConflict} from
   "./movementDecisions";
+import {assistanceReceiptRef, isMillis, isRevision, replayAssistanceReceipt,
+  writeAssistanceReceipt} from "./assistanceReceipts";
 export {GROUP_PROGRESS} from "./groupProgressReader";
-export const PROGRESS_RECEIPTS = "eventAssistanceProgressReceipts";
+export const DEPARTURE_RECEIPT_COMMAND = "eventAssistanceDeparture";
+export const ROUTE_RECEIPT_COMMAND = "eventAssistanceRoute";
+
+/** What a replay re-checks against the live group progress. */
+type ProgressReceipt = {revision: number; createdAt: number};
+const validReceipt = (r: Record<string, unknown>) => isRevision(r.revision) &&
+  isMillis(r.createdAt);
 
 /** Physical progress is independent of messaging policy and execution. */
 export class EventGroupProgressStore {
@@ -68,13 +74,13 @@ export class EventGroupProgressStore {
     if (context.mode !== "live") throw invalidSource();
     assertCommandContext(command, context);
     const hash = operationContentHash([actorUid, input]);
-    const receiptId = "progress-action:" + operationContentHash([
-      context, command.payload.groupId, command.operationId]);
+    const receiptRef = assistanceReceiptRef(this.db,
+      DEPARTURE_RECEIPT_COMMAND, operationContentHash([
+        context, command.payload.groupId, command.operationId]));
     return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, context,
         command.payload.groupId, "confirmDeparture");
-      const receiptRef = this.db.collection(PROGRESS_RECEIPTS).doc(receiptId);
-      const receipt = (await tx.get(receiptRef)).data();
+      const stored = (await tx.get(receiptRef)).data();
       // Receipt reads can outlast the event. Re-sample after every source read.
       const now = this.clock();
       if (!Number.isSafeInteger(now) || now < state.now) throw invalidSource();
@@ -83,12 +89,12 @@ export class EventGroupProgressStore {
         now < state.source.endAt;
       if (now >= state.access.validUntil) throw denied();
       assertCommandRole(command, [state.access.role]);
-      if (receipt !== undefined) {
-        if (!validateEventAssistanceProgressReceiptDocument(receipt) ||
-            receipt.receiptId !== receiptId ||
-            receipt.progressId !== state.progress?.progressId ||
-            receipt.requestHash !== hash ||
-            receipt.revision > state.progress.revision ||
+      const receipt = replayAssistanceReceipt<ProgressReceipt>(stored, {
+        command: DEPARTURE_RECEIPT_COMMAND, requestHash: hash,
+        nowMillis: state.now,
+      }, validReceipt, conflict);
+      if (receipt !== null) {
+        if (!state.progress || receipt.revision > state.progress.revision ||
             receipt.createdAt > state.now) throw conflict();
         return response("replayed", state, receipt.revision);
       }
@@ -133,11 +139,9 @@ export class EventGroupProgressStore {
       if (!validateEventAssistanceGroupProgressDocument(progress)) {
         throw invalidSource();
       }
-      const savedReceipt = {receiptId, progressId: progress.progressId,
-        requestHash: hash, revision: progress.revision, createdAt: state.now};
-      if (!validateEventAssistanceProgressReceiptDocument(savedReceipt)) {
-        throw invalidSource();
-      }
+      const savedReceipt: ProgressReceipt = {revision: progress.revision,
+        createdAt: state.now};
+      if (!validReceipt(savedReceipt)) throw invalidSource();
       const manifest = roster ? {schemaVersion: 1, rosterId,
         context, groupId: progress.groupId, progressId: progress.progressId,
         progressRevision: progress.revision, sourceHash: progress.sourceHash,
@@ -166,7 +170,9 @@ export class EventGroupProgressStore {
         progress.revision);
       tx.set(this.db.collection(GROUP_PROGRESS).doc(progress.progressId),
         progress);
-      tx.create(receiptRef, savedReceipt);
+      writeAssistanceReceipt(tx, receiptRef, {
+        command: DEPARTURE_RECEIPT_COMMAND, requestHash: hash,
+        nowMillis: state.now, result: savedReceipt});
       work?.commit();
       if (manifest) {
         tx.create(this.db.collection(DEPARTURE_ROSTERS).doc(rosterId!),
@@ -187,13 +193,13 @@ export class EventGroupProgressStore {
     if (context.mode !== "live") throw invalidSource();
     assertCommandContext(command, context);
     const hash = operationContentHash([actorUid, input]);
-    const receiptId = "progress-action:" + operationContentHash([
-      context, command.payload.groupId, "changeRoute", command.operationId]);
+    const receiptRef = assistanceReceiptRef(this.db, ROUTE_RECEIPT_COMMAND,
+      operationContentHash([context, command.payload.groupId, "changeRoute",
+        command.operationId]));
     return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, context,
         command.payload.groupId, "confirmDeparture");
-      const receiptRef = this.db.collection(PROGRESS_RECEIPTS).doc(receiptId);
-      const receipt = (await tx.get(receiptRef)).data();
+      const stored = (await tx.get(receiptRef)).data();
       const now = this.clock();
       if (!Number.isSafeInteger(now) || now < state.now) throw invalidSource();
       state.now = now;
@@ -202,15 +208,12 @@ export class EventGroupProgressStore {
       if (now >= state.access.validUntil) throw denied();
       if (state.access.role !== "eventLead") throw denied();
       assertCommandRole(command, [state.access.role]);
-      if (receipt !== undefined) {
-        if (!validateEventAssistanceProgressReceiptDocument(receipt) ||
-            receipt.receiptId !== receiptId ||
-            receipt.progressId !== state.progress?.progressId ||
-            receipt.requestHash !== hash ||
-            receipt.revision > state.progress.revision ||
-            receipt.createdAt > state.now ||
-            receipt.commandKind !== "changeRoute" ||
-            receipt.decisionId !== command.payload.decisionId) {
+      const receipt = replayAssistanceReceipt<ProgressReceipt>(stored, {
+        command: ROUTE_RECEIPT_COMMAND, requestHash: hash, nowMillis: state.now,
+      }, validReceipt, routeDecisionConflict);
+      if (receipt !== null) {
+        if (!state.progress || receipt.revision > state.progress.revision ||
+            receipt.createdAt > state.now) {
           throw routeDecisionConflict();
         }
         return response("replayed", state, receipt.revision);
@@ -231,12 +234,10 @@ export class EventGroupProgressStore {
         createdAt: state.progress?.createdAt ?? state.now,
         updatedAt: state.now,
       };
-      const savedReceipt = {receiptId, progressId: progress.progressId,
-        requestHash: hash, revision: progress.revision, createdAt: state.now,
-        commandKind: "changeRoute" as const,
-        decisionId: command.payload.decisionId};
+      const savedReceipt: ProgressReceipt = {revision: progress.revision,
+        createdAt: state.now};
       if (!validateEventAssistanceGroupProgressDocument(progress) ||
-          !validateEventAssistanceProgressReceiptDocument(savedReceipt)) {
+          !validReceipt(savedReceipt)) {
         throw invalidSource();
       }
       const committedAt = this.clock();
@@ -251,7 +252,8 @@ export class EventGroupProgressStore {
         progress.revision);
       tx.set(this.db.collection(GROUP_PROGRESS).doc(progress.progressId),
         progress);
-      tx.create(receiptRef, savedReceipt);
+      writeAssistanceReceipt(tx, receiptRef, {command: ROUTE_RECEIPT_COMMAND,
+        requestHash: hash, nowMillis: state.now, result: savedReceipt});
       return result;
     });
   }

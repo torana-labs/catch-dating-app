@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_membership_benefit_uses.schema.json",
   "title": "HostMembershipBenefitUseDocument",
-  "description": "One booking made at a member price, keyed {eventId}_{uid}. Source of the member's savings total and of the upcoming member-priced booking cap. Readable by the member only.",
+  "description": "One booking made at a member price, keyed {eventId}_{uid}. The onHostMembershipBenefitUseWritten trigger keeps the member's savings total on the membership (savedInPaise, memberPricedBookings); the upcoming member-priced booking cap reads booked uses directly. Readable by the member only.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostMembershipBenefitUses",

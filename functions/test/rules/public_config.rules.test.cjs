@@ -46,5 +46,14 @@ describe("firestore.rules", () => {
       await assertFails(updateDoc(doc(authedDb("runner-1"), "config", "brand"), {name: "Spoof"}));
       await assertFails(setDoc(doc(testEnv.unauthenticatedContext().firestore(), "config", "brand"), {name: "Spoof"}));
     });
+
+    it("denies clients the discovery indexing override", async () => {
+      await seed(["config", "discoveryIndexing"], {forceNoindex: true, reason: "Pause trigger"});
+
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(), "config", "discoveryIndexing")));
+      await assertFails(getDoc(doc(authedDb("runner-1"), "config", "discoveryIndexing")));
+      await assertFails(setDoc(doc(authedDb("runner-1"), "config", "discoveryIndexing"), {forceNoindex: false}));
+      await assertFails(updateDoc(doc(authedDb("runner-1"), "config", "discoveryIndexing"), {forceNoindex: false}));
+    });
   });
 });

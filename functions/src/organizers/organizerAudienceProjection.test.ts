@@ -10,7 +10,8 @@ import {organizerContactTraits, organizerContactEventEdge,
   "./organizerAudienceModel";
 import {AudienceTestStore} from "./organizerAudienceTestStore";
 import {applyOrganizerAudienceSummaryDelta, onEventAttendeeAudienceProjected,
-  projectEventAttendeeToOrganizerAudience, rebuildOrganizerContact} from
+  onlySavingsChanged, projectEventAttendeeToOrganizerAudience,
+  rebuildOrganizerContact} from
   "./organizerAudienceProjection";
 
 const at = Timestamp.fromMillis;
@@ -273,4 +274,15 @@ test("a redelivered trait change moves the summary once", async () => {
     key.startsWith("commandReceipts/")).sort(), [
     "commandReceipts/applyOrganizerAudienceSummaryDelta_trigger-event-1",
     "commandReceipts/applyOrganizerAudienceSummaryDelta_trigger-event-2"]);
+});
+
+test("a membership write that only moves savings totals skips the CRM", () => {
+  const before = {uid: "u1", organizerId: "org-1", status: "active",
+    currentPeriodEnd: at(500), savedInPaise: 0, memberPricedBookings: 0};
+  assert.equal(onlySavingsChanged(before,
+    {...before, savedInPaise: 5000, memberPricedBookings: 1}), true);
+  assert.equal(onlySavingsChanged(before,
+    {...before, status: "cancelled", savedInPaise: 5000}), false);
+  assert.equal(onlySavingsChanged(undefined, before), false);
+  assert.equal(onlySavingsChanged(before, undefined), false);
 });

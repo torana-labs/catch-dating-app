@@ -380,9 +380,6 @@ List<Object> appShellTestOverrides({
     watchMyHostMembershipsProvider.overrideWith(
       (ref, _) => Stream.value(const []),
     ),
-    watchMyHostMembershipBenefitUsesProvider.overrideWith(
-      (ref, _) => Stream.value(const []),
-    ),
     watchOrganizersByLocationProvider(
       testShellCity.name,
     ).overrideWith((ref) => Stream.value(organizers)),

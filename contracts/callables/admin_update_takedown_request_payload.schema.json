@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_update_takedown_request_payload.schema.json",
   "title": "AdminUpdateTakedownRequestCallablePayload",
-  "description": "One fixed step on a listing request: acknowledge it, ask for more with a fixed template, action it with a fixed outcome (with the takedown case id when the organiser takedown tool ran), decline it with a fixed reason, record its one appeal, decide that appeal, or close it. Audited.",
+  "description": "One fixed step on a listing request: acknowledge it, ask for more with a fixed template, action it with a fixed outcome (with the takedown case id when the organiser takedown tool ran), decline it with a fixed reason, record its one appeal, decide that appeal, close it, or suspend the organiser page it names (the interim step: publishStatus suppressed and noindex, idempotent, recorded in the history; the takedown tool still runs before the outcome is recorded). Audited.",
   "type": "object",
   "additionalProperties": false,
   "x-owner": "Catch operators (Admin)",
@@ -23,7 +23,8 @@
         "decline",
         "recordAppeal",
         "decideAppeal",
-        "close"
+        "close",
+        "suspendOrganizer"
       ]
     },
     "infoTemplate": {

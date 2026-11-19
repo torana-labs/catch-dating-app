@@ -90,6 +90,34 @@ function functionsOrganizerSummary() {
   return organizerSummaryModule;
 }
 
+let membershipSavingsModule = null;
+function functionsMembershipSavings() {
+  try {
+    membershipSavingsModule ??= createFunctionsRequire()("./lib/hostMemberships/savingsSummary.js");
+  } catch (error) {
+    throw new Error(
+      "The host-membership-savings migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return membershipSavingsModule;
+}
+
+/** Every benefit use naming one membership, read a page at a time. */
+async function membershipBenefitUses(db, membershipId) {
+  const uses = [];
+  let last = null;
+  for (;;) {
+    let query = db.collection("hostMembershipBenefitUses")
+      .where("membershipId", "==", membershipId).orderBy("__name__").limit(500);
+    if (last) query = query.startAfter(last);
+    const snap = await query.get();
+    for (const doc of snap.docs) uses.push(doc.data());
+    if (snap.docs.length < 500) return uses;
+    last = snap.docs[snap.docs.length - 1];
+  }
+}
+
 /** One clock per run, so a row reached from two sources is identical. */
 const chatDirectoryNowMillis = Date.now();
 
@@ -599,6 +627,36 @@ export const MIGRATIONS = [
           const {organizerSummaryFrom} = functionsOrganizerSummary();
           const organizer = await db.collection("publicOrganizers").doc(data.organizerId).get();
           return {organizerSummary: organizerSummaryFrom(organizer.exists ? organizer.data() : undefined)};
+        },
+      },
+    ],
+  },
+  {
+    name: "host-membership-savings",
+    description:
+      "My memberships reads each membership's savings from " +
+      "hostMemberships/{id}.savedInPaise and memberPricedBookings, which the " +
+      "onHostMembershipBenefitUseWritten trigger keeps current. Every " +
+      "membership whose stored totals are missing or differ from its " +
+      "hostMembershipBenefitUses that are not released gets the totals the " +
+      "trigger would hold, counted with the trigger's own function; a " +
+      "membership with no counted uses and no stored totals is left alone. " +
+      "Only those two fields are written, with a last-update-time " +
+      "precondition, so a membership the trigger moved meanwhile is left for " +
+      "the next run. Uses are never changed and a rerun writes nothing. " +
+      "Build Functions first.",
+    steps: [
+      {
+        kind: "fill",
+        collection: "hostMemberships",
+        refresh: ["savedInPaise", "memberPricedBookings"],
+        fill: async (data, id, db) => {
+          if (!validId(id)) return null;
+          const {membershipSavingsTotals} = functionsMembershipSavings();
+          const totals = membershipSavingsTotals(await membershipBenefitUses(db, id));
+          const stored = data.savedInPaise !== undefined || data.memberPricedBookings !== undefined;
+          if (!stored && totals.savedInPaise === 0 && totals.memberPricedBookings === 0) return null;
+          return totals;
         },
       },
     ],

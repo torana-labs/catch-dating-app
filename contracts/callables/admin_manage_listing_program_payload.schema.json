@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_listing_program_payload.schema.json",
+  "title": "AdminManageListingProgramCallablePayload",
+  "description": "Staff read the programmatic listings pause switch, flip it, or count live organizers that list no format. read and format_report send only action. set_pause sends paused, a reason and the revision it reviewed (0 when none is stored yet). Ops may pause; only the owner roles may resume.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner, ops)",
+  "required": ["action"],
+  "properties": {
+    "action": {"type": "string", "enum": ["read", "set_pause", "format_report"]},
+    "paused": {"type": "boolean"},
+    "reason": {"type": "string", "minLength": 10, "maxLength": 500},
+    "expectedRevision": {"type": "integer", "minimum": 0}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"action": {"const": "set_pause"}}},
+      "then": {"required": ["paused", "reason", "expectedRevision"]},
+      "else": {"not": {"anyOf": [{"required": ["paused"]}, {"required": ["reason"]}, {"required": ["expectedRevision"]}]}}
+    }
+  ],
+  "x-callable-aliases": ["adminManageListingProgram"]
+}

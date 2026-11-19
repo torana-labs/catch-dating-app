@@ -266,7 +266,6 @@ empty, the rules gate with no list.
 | `lib/hosts/today/personalization` | 2 | 2 | P3.1 Today |
 | `lib/event_success/presentation` (departure controller, attendance disposition editor) | 3 | 3 | P3.4 Live |
 | `lib/event_rehearsal/presentation` (start screen source refresh) | 1 | 1 | P5 events workspace |
-| `lib/hosts/presentation/widgets/host_event_participants_section.dart` | 1 | 1 | P5 events workspace |
 | `lib/hosts/presentation/customers` | 22 | 23 | P5 people |
 | `lib/hosts/presentation/inbox` | 10 | 10 | P5 people |
 | `lib/hosts/presentation/forms` | 12 | 14 | P5 forms |

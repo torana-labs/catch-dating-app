@@ -291,6 +291,19 @@ async function main() {
   assertEventSuccessMomentPresentationCatalog(
     eventSuccessMomentPresentationCatalog
   );
+  const eventSuccessPlaybookShapeCatalog = readContractJson(
+    "catalogs/event_success_playbook_shapes.json"
+  );
+  assertEventSuccessPlaybookShapeCatalog(eventSuccessPlaybookShapeCatalog);
+  addTextOutput(
+    "functions/src/shared/generated/eventSuccessPlaybookShapes.ts",
+    renderTsEventSuccessPlaybookShapes(eventSuccessPlaybookShapeCatalog)
+  );
+  addTextOutput(
+    "packages/platform/lib/schema_contracts/generated/" +
+      "event_success_playbook_shapes.g.dart",
+    renderDartEventSuccessPlaybookShapes(eventSuccessPlaybookShapeCatalog)
+  );
   const profilePhotoPolicy = readContractJson(
     "catalogs/profile_photo_policy.json"
   );
@@ -1603,6 +1616,270 @@ const List<OrganizerProviderCatalogContract> organizerProviderCatalog =
     <OrganizerProviderCatalogContract>[
 ${rows}
 ];
+`;
+}
+
+const EVENT_SUCCESS_UNIT_KINDS = ["wholeGroup", "pods", "pairs", "teams",
+  "tables"];
+const EVENT_SUCCESS_TOPOLOGIES = ["set", "sequence", "adjacency"];
+const EVENT_SUCCESS_RESOURCE_LABELS = ["court", "table", "lane", "board"];
+const NIGHT_PLAN_FORMATS = ["run", "dinner", "quiz", "courts", "crawl"];
+const NIGHT_PLAN_GROUP_KINDS = ["paceGroups", "structureDefault", "courts",
+  "wholeGroup"];
+const NIGHT_PLAN_MIXING_KINDS = ["runOfShowStage", "rotation",
+  "teamRevealAtRoundBreak"];
+
+function assertEventSuccessPlaybookShapeCatalog(catalog) {
+  const fail = (message) => {
+    throw new Error(`Event Success playbook shapes: ${message}`);
+  };
+  if (catalog?.schemaVersion !== 1 ||
+      catalog?.kind !== "eventSuccessPlaybookShapes") {
+    fail("catalog identity is invalid.");
+  }
+  const positive = (value) => Number.isInteger(value) && value > 0;
+  const playbooks = new Map();
+  for (const playbook of catalog.playbooks ?? []) {
+    if (!/^[a-z][a-z_]*$/u.test(playbook.playbookId ?? "") ||
+        playbooks.has(playbook.playbookId)) {
+      fail(`playbook id ${playbook.playbookId} is missing or repeated.`);
+    }
+    if (!positive(playbook.capacity?.min) ||
+        !positive(playbook.capacity?.max) ||
+        playbook.capacity.min > playbook.capacity.max) {
+      fail(`${playbook.playbookId} capacity must be 0 < min <= max.`);
+    }
+    if (!Array.isArray(playbook.runOfShow) || playbook.runOfShow.length === 0 ||
+        playbook.runOfShow.some((step) => !positive(step.durationMinutes) ||
+          !/^[a-z][A-Za-z]*$/u.test(step.stage ?? "") ||
+          !(step.moduleIds === null || Array.isArray(step.moduleIds)))) {
+      fail(`${playbook.playbookId} run of show steps need a stage, ` +
+        "positive minutes and moduleIds (a list or null).");
+    }
+    playbooks.set(playbook.playbookId, playbook);
+  }
+  const models = catalog.structureDefaults?.models ?? [];
+  const seenModels = models.map((model) => model.interactionModel);
+  if (seenModels.length !== EVENT_SUCCESS_INTERACTION_MODELS.length ||
+      EVENT_SUCCESS_INTERACTION_MODELS.some((model) =>
+        !seenModels.includes(model))) {
+    fail("structure defaults must cover every interaction model once.");
+  }
+  for (const model of models) {
+    const name = model.interactionModel;
+    if (!playbooks.has(model.defaultPlaybookId) ||
+        (model.mutualInterestOnlyPlaybookId !== null &&
+          !playbooks.has(model.mutualInterestOnlyPlaybookId))) {
+      fail(`${name} names a playbook the catalog lacks.`);
+    }
+    if (!EVENT_SUCCESS_UNIT_KINDS.includes(model.unitKind) ||
+        !(model.unitSize === "attendees" || positive(model.unitSize)) ||
+        !(model.unitCount === null || positive(model.unitCount)) ||
+        !(model.rotationIntervalMinutes === null ||
+          (Number.isInteger(model.rotationIntervalMinutes) &&
+            model.rotationIntervalMinutes >= 5)) ||
+        !EVENT_SUCCESS_TOPOLOGIES.includes(model.topology)) {
+      fail(`${name} has an invalid unit, count, cadence or topology.`);
+    }
+    const resource = model.resource;
+    if (resource !== null && (
+      !EVENT_SUCCESS_RESOURCE_LABELS.includes(resource?.labelId) ||
+        !(resource.seatsPerUnit === null || positive(resource.seatsPerUnit)) ||
+        !(resource.concurrentUnits === null ||
+          (resource.concurrentUnits === "attendeesPerSeat" &&
+            positive(resource.seatsPerUnit))))) {
+      fail(`${name} has an invalid resource.`);
+    }
+  }
+  const formats = catalog.nightPlanFormats?.formats ?? [];
+  if (formats.length !== NIGHT_PLAN_FORMATS.length ||
+      NIGHT_PLAN_FORMATS.some((format) =>
+        formats.filter((item) => item.format === format).length !== 1)) {
+    fail("night plan formats must cover run, dinner, quiz, courts and crawl " +
+      "once each.");
+  }
+  for (const format of formats) {
+    const playbook = playbooks.get(format.playbookId);
+    if (!playbook) fail(`${format.format} names an unknown playbook.`);
+    const groups = format.groups ?? {};
+    if (!NIGHT_PLAN_GROUP_KINDS.includes(groups.kind) ||
+        (groups.kind === "paceGroups" && (!positive(groups.guestsPerGroup) ||
+          !positive(groups.minGroups) || !positive(groups.maxGroups) ||
+          groups.minGroups > groups.maxGroups ||
+          !Array.isArray(groups.labels) || groups.labels.length === 0)) ||
+        (groups.kind === "courts" && !positive(groups.seatsPerCourt))) {
+      fail(`${format.format} has invalid groups.`);
+    }
+    if (!(format.defaultStops === null || positive(format.defaultStops))) {
+      fail(`${format.format} defaultStops must be a positive integer or null.`);
+    }
+    const moment = format.mixingMoment ?? {};
+    if (!NIGHT_PLAN_MIXING_KINDS.includes(moment.kind) ||
+        !playbook.runOfShow.some((step) => step.stage === moment.stage)) {
+      fail(`${format.format} mixing moment must name a stage of its ` +
+        "playbook's run of show.");
+    }
+  }
+}
+
+function renderTsEventSuccessPlaybookShapes(catalog) {
+  const json = (value) => JSON.stringify(value, null, 2);
+  const byModel = Object.fromEntries(catalog.structureDefaults.models.map(
+    (model) => [model.interactionModel, model]));
+  return `${tsGeneratedHeader()}// Source: contracts/catalogs/event_success_playbook_shapes.json.
+
+export interface EventSuccessRunOfShowStepShape {
+  readonly stage: string;
+  readonly durationMinutes: number;
+  /** Null when the step uses its module default. */
+  readonly moduleIds: readonly string[] | null;
+}
+
+export interface EventSuccessPlaybookShape {
+  readonly playbookId: string;
+  readonly activityKind: string;
+  readonly capacity: {readonly min: number; readonly max: number};
+  readonly runOfShow: readonly EventSuccessRunOfShowStepShape[];
+}
+
+export interface EventSuccessStructureDefault {
+  readonly interactionModel: string;
+  readonly defaultPlaybookId: string;
+  /** Replaces defaultPlaybookId under a mutualInterestOnly compatibility policy. */
+  readonly mutualInterestOnlyPlaybookId: string | null;
+  readonly unitKind: ${EVENT_SUCCESS_UNIT_KINDS.map((value) =>
+    JSON.stringify(value)).join(" | ")};
+  /** "attendees" means one unit holding everyone. */
+  readonly unitSize: number | "attendees";
+  readonly unitCount: number | null;
+  readonly rotationIntervalMinutes: number | null;
+  readonly topology: ${EVENT_SUCCESS_TOPOLOGIES.map((value) =>
+    JSON.stringify(value)).join(" | ")};
+  readonly resource: {
+    readonly labelId: ${EVENT_SUCCESS_RESOURCE_LABELS.map((value) =>
+    JSON.stringify(value)).join(" | ")};
+    readonly seatsPerUnit: number | null;
+    /** "attendeesPerSeat" means ceil(attendees / seatsPerUnit). */
+    readonly concurrentUnits: "attendeesPerSeat" | null;
+  } | null;
+}
+
+export type NightPlanFormatId = ${NIGHT_PLAN_FORMATS.map((value) =>
+    JSON.stringify(value)).join(" | ")};
+
+export interface NightPlanFormat {
+  readonly format: NightPlanFormatId;
+  readonly playbookId: string;
+  readonly groups:
+    | {readonly kind: "paceGroups"; readonly guestsPerGroup: number;
+        readonly minGroups: number; readonly maxGroups: number;
+        readonly labels: readonly string[]}
+    | {readonly kind: "courts"; readonly seatsPerCourt: number}
+    | {readonly kind: "structureDefault"}
+    | {readonly kind: "wholeGroup"};
+  readonly defaultStops: number | null;
+  readonly mixingMoment: {
+    readonly kind: ${NIGHT_PLAN_MIXING_KINDS.map((value) =>
+    JSON.stringify(value)).join(" | ")};
+    readonly stage: string;
+  };
+}
+
+export const eventSuccessPlaybookShapes: readonly EventSuccessPlaybookShape[] =
+  ${json(catalog.playbooks).replace(/\n/gu, "\n  ")};
+
+export const eventSuccessStructureDefaults:
+  Readonly<Record<string, EventSuccessStructureDefault>> =
+  ${json(byModel).replace(/\n/gu, "\n  ")};
+
+export const nightPlanFormats: readonly NightPlanFormat[] =
+  ${json(catalog.nightPlanFormats.formats).replace(/\n/gu, "\n  ")};
+
+export function eventSuccessPlaybookShape(
+  playbookId: string
+): EventSuccessPlaybookShape | null {
+  return eventSuccessPlaybookShapes.find((shape) =>
+    shape.playbookId === playbookId) ?? null;
+}
+`;
+}
+
+function renderDartEventSuccessPlaybookShapes(catalog) {
+  const entries = catalog.structureDefaults.models.map((model) => {
+    const resource = model.resource === null ? "null" :
+      "EventSuccessResourceDefaultContract(\n" +
+      `      labelId: ${dartString(model.resource.labelId)},\n` +
+      `      seatsPerUnit: ${dartLiteral(model.resource.seatsPerUnit)},\n` +
+      "      concurrentUnitsFromAttendees: " +
+      `${model.resource.concurrentUnits === "attendeesPerSeat"},\n` +
+      "    )";
+    return `  ${dartString(model.interactionModel)}: ` +
+      "EventSuccessStructureDefaultContract(\n" +
+      `    interactionModel: ${dartString(model.interactionModel)},\n` +
+      `    defaultPlaybookId: ${dartString(model.defaultPlaybookId)},\n` +
+      "    mutualInterestOnlyPlaybookId: " +
+      `${dartLiteral(model.mutualInterestOnlyPlaybookId)},\n` +
+      `    unitKind: ${dartString(model.unitKind)},\n` +
+      "    unitSize: " +
+      `${model.unitSize === "attendees" ? "null" : model.unitSize},\n` +
+      `    unitSizeIsAttendees: ${model.unitSize === "attendees"},\n` +
+      `    unitCount: ${dartLiteral(model.unitCount)},\n` +
+      "    rotationIntervalMinutes: " +
+      `${dartLiteral(model.rotationIntervalMinutes)},\n` +
+      `    topology: ${dartString(model.topology)},\n` +
+      `    resource: ${resource},\n` +
+      "  ),";
+  }).join("\n");
+  return `${dartGeneratedHeader()}// Source: contracts/catalogs/event_success_playbook_shapes.json.
+
+/// A resource an interaction model's units occupy, such as courts or tables.
+class EventSuccessResourceDefaultContract {
+  const EventSuccessResourceDefaultContract({
+    required this.labelId,
+    required this.seatsPerUnit,
+    required this.concurrentUnitsFromAttendees,
+  });
+
+  final String labelId;
+  final int? seatsPerUnit;
+
+  /// True when the concurrent unit count is ceil(attendees / seatsPerUnit).
+  final bool concurrentUnitsFromAttendees;
+}
+
+/// One interaction model's default group structure and default playbook.
+class EventSuccessStructureDefaultContract {
+  const EventSuccessStructureDefaultContract({
+    required this.interactionModel,
+    required this.defaultPlaybookId,
+    required this.mutualInterestOnlyPlaybookId,
+    required this.unitKind,
+    required this.unitSize,
+    required this.unitSizeIsAttendees,
+    required this.unitCount,
+    required this.rotationIntervalMinutes,
+    required this.topology,
+    required this.resource,
+  });
+
+  final String interactionModel;
+  final String defaultPlaybookId;
+  final String? mutualInterestOnlyPlaybookId;
+  final String unitKind;
+
+  /// Null when [unitSizeIsAttendees]: one unit holding everyone.
+  final int? unitSize;
+  final bool unitSizeIsAttendees;
+  final int? unitCount;
+  final int? rotationIntervalMinutes;
+  final String topology;
+  final EventSuccessResourceDefaultContract? resource;
+}
+
+const eventSuccessStructureDefaultsByInteractionModel =
+    <String, EventSuccessStructureDefaultContract>{
+${entries}
+};
 `;
 }
 

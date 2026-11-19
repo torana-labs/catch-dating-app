@@ -23,7 +23,7 @@
       "confirmation": "action-and-target",
       "targetField": "listingWorkItemId",
       "requestSchema": "contracts/callables/admin_approve_organizer_listing_payload.schema.json",
-      "summary": "Approve one Supply Intake listing: publish its organizer page unclaimed and noindex, hidden in the app, record the review, and open its Sales account, opportunity, tasks and activity.",
+      "summary": "Approve one Supply Intake listing: publish its organizer page unclaimed and noindex, hidden in the app, record the review, and open its Sales account, opportunity, tasks and activity. A listing Catch sourced also names its formats and the programmatic checklist items, may name a cohort (which opens no Sales records unless asked), and is refused while programmatic listings are paused.",
       "example": {
         "requestId": "example-approval-001",
         "listingWorkItemId": "example-listing-work-item",
@@ -41,9 +41,42 @@
           "crawlDisabledReviewed": true,
           "claimTargetReviewed": true,
           "takedownPathReviewed": true,
-          "impersonationReviewed": true
+          "impersonationReviewed": true,
+          "cityEvidenceReviewed": true,
+          "formatsReviewed": true,
+          "datingFramingReviewed": true,
+          "personalDataReviewed": true
         },
+        "formats": [
+          "runClubs"
+        ],
+        "cohortId": "pilot-indore-1",
         "note": "Fixture approval; do not apply to production."
+      }
+    },
+    {
+      "actionId": "organizer-intake.manage-listing-program",
+      "callable": "adminManageListingProgram",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/settings/intake",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action",
+      "requestSchema": "contracts/callables/admin_manage_listing_program_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_manage_listing_program_response.schema.json",
+      "summary": "Read the programmatic listings pause switch, pause or resume it with a reason against the reviewed revision (ops may pause; only the owner resumes), or count live organizers that list no format. While paused, nominations and approvals of listings Catch sourced are refused.",
+      "example": {
+        "action": "set_pause",
+        "paused": true,
+        "reason": "Fixture pause; do not apply to production.",
+        "expectedRevision": 0
       }
     },
     {

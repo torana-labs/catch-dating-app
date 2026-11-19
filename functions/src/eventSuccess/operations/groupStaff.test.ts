@@ -14,13 +14,17 @@ import {eventOperatorExpiryMillis, eventStaffGrantId,
   requireEventOperatorPermission} from "../../shared/eventOperatorAuthority";
 import {grantEventStaffHandler, revokeEventStaffHandler} from
   "../../events/eventStaff";
-import {EventGroupStaffStore, STAFF_RECEIPTS} from "./groupStaffStore";
+import {EventGroupStaffStore, STAFF_RECEIPT_COMMAND} from "./groupStaffStore";
 import {getEventAssistanceGroupStaffHandler,
   setEventAssistanceGroupStaffHandler} from "./groupStaffHandlers";
 import {GroupDuty, requireGroupPermission} from "./groupStaffAuthority";
 import {ProgressFirestore, seedJoiningProgress, progressFixtureManager} from
   "./groupProgressTestFixtures";
-import {EventGroupProgressStore, PROGRESS_RECEIPTS} from "./groupProgressStore";
+import {EventGroupProgressStore, DEPARTURE_RECEIPT_COMMAND} from
+  "./groupProgressStore";
+import {COMMAND_RECEIPTS, commandReceiptId} from
+  "../../shared/commandReceipts";
+import {operationContentHash} from "../../operations/durableActions";
 
 const manager = progressFixtureManager;
 const start = 1_000_000;
@@ -286,7 +290,8 @@ test("stale, changed and interrupted duty commands cannot repeat effects",
     await assert.rejects(h.store.set(manager, {...h.target, uid: "different"},
       input), {code: "aborted"});
     h.fake.beforeRead = (path) => {
-      if (path.startsWith(PROGRESS_RECEIPTS + "/")) {
+      if (path.startsWith(
+        `${COMMAND_RECEIPTS}/${DEPARTURE_RECEIPT_COMMAND}_`)) {
         h.clock.now = start + 20_000;
       }
     };
@@ -378,10 +383,12 @@ test("Firestore reconciles group duties with legacy grants and the staff cap", {
       expectedRevision: staff.revision}} as CallableRequest, deps);
     await assert.rejects(h.progress.get(h.target.uid, h.scope),
       {code: "permission-denied"});
-    const receipts = await db.collection(STAFF_RECEIPTS)
-      .where("staffGrantId", "==",
-        eventStaffGrantId(h.scope.context.eventId, h.target.uid)).get();
-    assert.equal(receipts.size, 1);
+    // The eight concurrent assigns share one receipt under the request's id.
+    const receipt = (await db.collection(COMMAND_RECEIPTS).doc(
+      commandReceiptId(STAFF_RECEIPT_COMMAND, operationContentHash([
+        h.scope, h.target.uid, input.requestId]))).get()).data();
+    assert.equal(receipt?.command, STAFF_RECEIPT_COMMAND);
+    assert.equal(receipt?.result?.revision, results[0].operationRevision);
   } finally {
     await deleteApp(app);
   }

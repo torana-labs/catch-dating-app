@@ -26,26 +26,7 @@ export function readDesignRegistry(relativePath) {
     readAdminComponentRegistry() : readJson(fromRepo(relativePath));
 }
 
-/**
- * One catalog document from its index and its files under actions/. Actions and workflows come
- * back sorted, and a workflow lists the actions that name it.
- */
-export function assembleAdminActionCatalog(index, fragments) {
-  const byId = (a, b) => (a.actionId < b.actionId ? -1 : a.actionId > b.actionId ? 1 : 0);
-  const actions = fragments.flatMap((fragment) => fragment.actions).sort(byId);
-  const workflows = fragments.flatMap((fragment) => fragment.workflow ? [fragment.workflow] : [])
-    .map((workflow) => ({
-      ...workflow,
-      actions: actions.filter((action) => action.workflowIds.includes(workflow.workflowId))
-        .map((action) => action.actionId),
-    }));
-  return {...index, actions, workflows};
-}
-
-/** contracts/admin/admin_action_catalog.json plus every contracts/admin/actions/*.json. */
-export function readAdminActionCatalog(catalogPath = fromRepo("contracts/admin/admin_action_catalog.json")) {
-  const index = readJson(catalogPath);
-  // A catalog that is already one document (a test fixture) is used as it is.
-  if (index.actions) return index;
-  return assembleAdminActionCatalog(index, jsonFiles(path.join(path.dirname(catalogPath), "actions")).map(readJson));
-}
+// The admin action catalog reader is shared with operations/ (catch-admin)
+// through packages/command-client, so there is one copy of it.
+export {assembleAdminActionCatalog, readAdminActionCatalog} from
+  "../../packages/command-client/src/admin-catalog.mjs";

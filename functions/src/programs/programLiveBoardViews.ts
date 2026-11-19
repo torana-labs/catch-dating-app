@@ -3,6 +3,7 @@
   kind:ASCENDING
 ) */
 import * as admin from "firebase-admin";
+import {Timestamp} from "firebase-admin/firestore";
 import {isDeepStrictEqual} from "node:util";
 import * as logger from "firebase-functions/logger";
 import type {
@@ -56,7 +57,8 @@ export function alertResolution(data: FirebaseFirestore.DocumentData |
 
 /**
  * The alert a staff attention send raises, merged with its resolution.
- * Expired sends raise none, exactly as the callable's window drops them.
+ * Expired sends raise none, exactly as the callable's window drops them;
+ * `expiresAt` lets the TTL policy delete the view once the window ends.
  * @param {string} programId The programme.
  * @param {string} organizerId The organizer.
  * @param {StaffAttentionSend} send The send.
@@ -72,7 +74,8 @@ export function staffAttentionAlertView(programId: string,
   return {programId, organizerId, alertId: staffAttentionAlertId(send),
     source: "staffAttention", severity: send.severity, title: send.title,
     subjectId: send.momentId, createdAtMillis: send.createdAtMillis,
-    expiresAtMillis, duty: send.duty, ...resolution, version: 1};
+    expiresAtMillis, expiresAt: Timestamp.fromMillis(expiresAtMillis),
+    duty: send.duty, ...resolution, version: 1};
 }
 
 /**
@@ -105,7 +108,8 @@ export function travelAlertView(programId: string, alertId: string,
     severity: derived.severity, title: derived.title,
     subjectId: derived.subjectId ?? legId,
     createdAtMillis: derived.createdAtMillis,
-    expiresAtMillis: null, duty: null, ...resolution, version: 1};
+    expiresAtMillis: null, expiresAt: null, duty: null, ...resolution,
+    version: 1};
 }
 
 /** The journey counts the board shows to full reach. */
