@@ -1,18 +1,12 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-10",
+  "updatedAt": "2026-11-19",
   "genericSearches": [
     {
       "queryTemplateId": "run_club_city_v1",
       "categoryId": "social_run_club",
       "source": "web_search",
       "citySlugs": ["delhi-ncr", "mumbai", "bengaluru", "hyderabad", "indore", "chennai"]
-    },
-    {
-      "queryTemplateId": "singles_events_city_v1",
-      "categoryId": "singles_event_operator",
-      "source": "web_search",
-      "citySlugs": ["delhi-ncr", "mumbai", "bengaluru", "pune", "hyderabad", "indore"]
     },
     {
       "queryTemplateId": "racket_social_city_v1",

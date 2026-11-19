@@ -1410,6 +1410,30 @@ keep the user analytics warehouse (`catch_user_analytics`) and report on it.
 - **Writes:** only the output file in the checkout. Review its diff like any
   generated change.
 
+### Listing program cohort report
+
+`node tool/analytics/listing_program_report.mjs --env prod`
+(`analytics:listing-program-report`, surface `remote-read`).
+
+- **What it does:** counts, per `organizers.listingProgram.cohortId` and for
+  all cohorts together, the organisers live, suspended and removed; claim
+  requests by status; takedown requests by type for the cohort's organisers;
+  requested and staff corrections; removals (remove-and-don't-list requests,
+  one per organiser) in the last 7 and 30 days; and the indexed format pages
+  in the cohort's cities. It also prints re-listing attempts blocked by active
+  `listingSuppressions` cases and indexed format pages per city.
+- **Pause thresholds (owner decision 8, 19 Nov 2026):** any legal notice (an
+  order, trademark or copyright request), any impersonation claim, 2 or more
+  removals in 7 days while the pilot rule is on, or more than 3% removals over
+  30 days. A trigger prints `PAUSE RECOMMENDED` with the cohort and reason;
+  the report pauses nothing. `--no-pilot` drops the 7-day rule after the pilot.
+- **Reads:** Firestore with Application Default Credentials
+  (`gcloud auth application-default login`) and the Functions dependencies
+  (`npm --prefix functions ci`), through field masks, so no name or contact
+  detail is fetched. It prints counts, cohort labels and city slugs only and
+  never writes. `--json` prints the same report as JSON. `--env` or `--project`
+  is required.
+
 ## PR validation and the merge queue
 
 Every ready PR into `main` runs `CI` in parallel. A newer push or a

@@ -6,6 +6,7 @@ import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import {validateCityPlansDocument} from
   "../shared/generated/validators/cityPlansDocument";
 import {cityPlansCollection, rebuildCityPlans} from "./rebuild";
+import {discoveryIndexingConfig} from "./indexingOverride";
 import type {CityMarket} from "./cityPlansModel";
 import {contractFile, contractFixture} from "../shared/contractFixtures";
 
@@ -103,6 +104,49 @@ async () => {
     await h.close();
   }
 });
+
+test("the owner's override keeps a format page that meets the bar noindex",
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
+    const h = await fixture();
+    // The override is one global document; this file's tests run in turn.
+    const config = h.db.collection(discoveryIndexingConfig.collection)
+      .doc(discoveryIndexingConfig.document);
+    try {
+      const market: CityMarket = {slug: h.slug, label: "Bar City",
+        launchStatus: "launched"};
+      for (const id of ["a", "b", "c"]) {
+        const organizerId = `org-${id}-${h.run}`;
+        await h.put(`organizerPublicPage/${organizerId}`, {...page,
+          organizerId, path: `/organizers/${organizerId}/`,
+          identity: {...(page.identity as Row), citySlug: h.slug},
+          upcomingEvents: [plan(`p${id}-${h.run}`, hour)]});
+      }
+      const runClubs = async (at: number) => {
+        assert.equal(await rebuildCityPlans(h.db, market, () => at),
+          "written");
+        const stored = await h.db.collection(cityPlansCollection)
+          .doc(h.slug).get();
+        assert.equal(validateCityPlansDocument(json(stored.data())), true,
+          JSON.stringify(validateCityPlansDocument.errors));
+        return stored.get("formatPages.runClubs") as Row;
+      };
+      await config.delete();
+      assert.deepEqual(await runClubs(now), {slug: "run-clubs",
+        organizerCount: 3, upcomingEventCount: 3, freeEventCount: 3,
+        indexing: "index, follow"});
+
+      await config.set({forceNoindex: true, reason: "Pause trigger"});
+      const forced = await runClubs(now + 1000);
+      assert.deepEqual([forced.organizerCount, forced.indexing],
+        [3, "noindex, follow"]);
+
+      await config.set({forceNoindex: false});
+      assert.equal((await runClubs(now + 2000)).indexing, "index, follow");
+    } finally {
+      await config.delete();
+      await h.close();
+    }
+  });
 
 test("a planned city lists published organisers without page links",
   {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {

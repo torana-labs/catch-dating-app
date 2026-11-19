@@ -78,6 +78,17 @@ describe("takedown request workspace", () => {
     expect(repository.steps[1]).toMatchObject({declineReason: "couldNotVerify"});
   });
 
+  it("suspends the named organiser's page in one click, only where the server allows it", async () => {
+    const {notices} = draw(sampleTakedownDetail);
+    fireEvent.click(await screen.findByRole("button", {name: "Suspend the organiser page"}));
+    await waitFor(() => expect(repository.steps).toEqual([{requestId: sampleTakedownDetail.request.requestId, action: "suspendOrganizer"}]));
+    await waitFor(() => expect(notices[0]).toMatch(/Page suspended/u));
+    cleanup();
+    draw(withRequest({}, {canSuspendOrganizer: false}));
+    await screen.findByText("Ask for more");
+    expect(screen.queryByRole("button", {name: "Suspend the organiser page"})).toBeNull();
+  });
+
   it("hides decisions from support and leaves the appeal to a second reviewer", async () => {
     draw(withRequest({}, {canDecide: false}));
     await screen.findByText("Ask for more");

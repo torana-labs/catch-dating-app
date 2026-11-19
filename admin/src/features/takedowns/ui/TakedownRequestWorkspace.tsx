@@ -82,6 +82,9 @@ function Steps({controller, request}: {controller: TakedownRequestController; re
           <CatchButton label="Record that we asked" onPressed={controller.requestInfo} variant="secondary" />
         </>
       ) : null}
+      {isOpen && controller.suspendOrganizer ? (
+        <CatchButton label="Suspend the organiser page" onPressed={controller.suspendOrganizer} variant="secondary" />
+      ) : null}
       {isOpen && detail.canDecide ? (
         <>
           <CatchField<TakedownOutcome> hintText="Choose the outcome" itemLabelBuilder={(outcome) => takedownOutcomeLabels[outcome]}

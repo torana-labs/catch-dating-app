@@ -12,6 +12,11 @@ import {
   type CityOrganizerPage,
   type CityPlans,
 } from "./cityPlansModel";
+import {
+  applyFormatPageIndexingOverride,
+  readFormatPageIndexingOverride,
+  type FormatPageIndexingOverride,
+} from "./indexingOverride";
 
 type Firestore = FirebaseFirestore.Firestore;
 
@@ -91,14 +96,18 @@ export type CityCommit = "written" | "superseded" | "invalid";
  * Writes one city in a transaction: a rebuild that read its sources before
  * the stored document's build changes nothing, so a slow rebuild cannot
  * overwrite newer plans. Every committed rebuild writes, which moves builtAt
- * forward even when nothing else changed.
+ * forward even when nothing else changed. The owner's format page override
+ * (`config/discoveryIndexing`) is read with the sources unless the caller
+ * already read it for several cities.
  */
 export async function rebuildCityPlans(
-  db: Firestore, market: CityMarket, now: () => number = Date.now
+  db: Firestore, market: CityMarket, now: () => number = Date.now,
+  override?: FormatPageIndexingOverride
 ): Promise<CityCommit> {
   const readStart = now();
-  const plans = buildCityPlans(
-    await readCityPlanSources(db, market, readStart));
+  const indexing = override ?? await readFormatPageIndexingOverride(db);
+  const plans = applyFormatPageIndexingOverride(buildCityPlans(
+    await readCityPlanSources(db, market, readStart)), indexing);
   const builtAt = Timestamp.fromMillis(readStart);
   if (!contractValidCityPlans(plans, builtAt)) return "invalid";
   const ref = db.collection(cityPlansCollection).doc(market.slug);
@@ -124,10 +133,13 @@ export async function rebuildCities(
 ): Promise<CityRebuildSummary> {
   const wanted = slugs ? new Set(slugs) : null;
   const summary: CityRebuildSummary = {results: {}, failed: []};
+  // One read of the owner's override serves every city in this rebuild.
+  const override = await readFormatPageIndexingOverride(db);
   for (const market of cityMarkets) {
     if (wanted && !wanted.has(market.slug)) continue;
     try {
-      summary.results[market.slug] = await rebuildCityPlans(db, market, now);
+      summary.results[market.slug] =
+        await rebuildCityPlans(db, market, now, override);
     } catch (error) {
       summary.failed.push(market.slug);
       logger.error("City plans rebuild failed.",

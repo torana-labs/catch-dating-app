@@ -15,8 +15,8 @@ import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
 import {requireAdminRole, type AdminContext} from "../admin/adminAuth";
 import {iso} from "../admin/inbox/model";
 import {
-  APPEAL_DECIDE_WITHIN_MS, APPEAL_WINDOW_MS, CASE_OUTCOMES, REQUEST_POLICIES, TAKEDOWN_REQUESTS_COLLECTION,
-  type RequestStatus, type RequestType,
+  APPEAL_DECIDE_WITHIN_MS, APPEAL_WINDOW_MS, CASE_OUTCOMES, REQUEST_POLICIES, SUSPEND_REQUEST_TYPES,
+  SUSPENDED_PUBLISH_STATUSES, TAKEDOWN_REQUESTS_COLLECTION, type RequestStatus, type RequestType,
 } from "./model";
 
 /**
@@ -24,8 +24,11 @@ import {
  * more with a fixed template and record an appeal; admins and the owner
  * action (with a fixed outcome, and the takedown tool's case id where the
  * outcome removes or suspends a page) or decline (with a fixed reason). One
- * appeal per request, decided by someone other than the decider. Each step
- * is a history entry and an audit log; the Inbox item follows the document.
+ * appeal per request, decided by someone other than the decider. Admins and
+ * the owner may also suspend the organiser page an undecided removal,
+ * rights, privacy, impersonation or order request names, in the same
+ * transaction as its history entry. Each step is a history entry and an
+ * audit log; the Inbox item follows the document.
  * Nothing here sends a message: staff reply by email and record it.
  */
 
@@ -84,6 +87,18 @@ function canDecideAppeal(context: AdminContext, data: Stored): boolean {
   return data.status === "appealed" && isDecider(context) && data.deciderUid !== context.uid;
 }
 
+const undecided: readonly RequestStatus[] = ["received", "acknowledged", "verifying"];
+
+/** The organiser id a request names, if it names one. */
+function namedOrganizerId(data: Stored): string | null {
+  return data.target.kind === "organizer" && data.target.id ? data.target.id : null;
+}
+
+function canSuspendOrganizer(context: AdminContext, data: Stored): boolean {
+  return isDecider(context) && undecided.includes(data.status) &&
+    SUSPEND_REQUEST_TYPES.includes(data.requestType as RequestType) && namedOrganizerId(data) !== null;
+}
+
 /** One request with what the caller may do. */
 export async function adminGetTakedownRequestHandler(request: CallableRequest<unknown>,
   deps: TakedownAdminDeps = defaultDeps): Promise<AdminGetTakedownRequestCallableResponse> {
@@ -102,10 +117,9 @@ export async function adminGetTakedownRequestHandler(request: CallableRequest<un
     caseOutcomes: policy.outcomes.filter((outcome) => CASE_OUTCOMES.includes(outcome)),
     canDecide: isDecider(context),
     canDecideAppeal: canDecideAppeal(context, stored),
+    canSuspendOrganizer: canSuspendOrganizer(context, stored),
   };
 }
-
-const undecided: readonly RequestStatus[] = ["received", "acknowledged", "verifying"];
 
 /**
  * The next document for one step, or an HttpsError naming why it cannot be
@@ -186,14 +200,69 @@ export function nextTakedownState(before: Stored, step: AdminUpdateTakedownReque
   case "close":
     if (before.status !== "actioned" && before.status !== "declined") refuse("Only a decided request can be closed.");
     return {changes: {status: "closed", closedAt: stamp}, status: "closed", detail: null};
+  case "suspendOrganizer": {
+    // The interim step: the page comes down now, the decision follows once
+    // the takedown tool has run. Suspending acknowledges a new request.
+    needDecider();
+    if (!undecided.includes(before.status)) refuse("Suspend a page only before the request is decided.");
+    if (!SUSPEND_REQUEST_TYPES.includes(before.requestType as RequestType)) {
+      refuse("This kind of request does not take a page down.");
+    }
+    if (!namedOrganizerId(before)) refuse("This request names no organiser page to suspend.");
+    const status: RequestStatus = before.status === "received" ? "acknowledged" : before.status;
+    return {changes: {...acknowledged, status}, status, detail: null};
+  }
   }
   throw new HttpsError("invalid-argument", "Unknown step.");
 }
 
 const historyActions: Record<Action, Stored["history"][number]["action"]> = {
   acknowledge: "acknowledged", requestInfo: "infoRequested", action: "actioned", decline: "declined",
-  recordAppeal: "appealRecorded", decideAppeal: "appealDecided", close: "closed",
+  recordAppeal: "appealRecorded", decideAppeal: "appealDecided", close: "closed", suspendOrganizer: "organizerSuspended",
 };
+
+interface OrganizerSuspension {
+  ref: FirebaseFirestore.DocumentReference;
+  organizerId: string;
+  /** The page's publish state before this step. */
+  publishStatus: string;
+  /** False when the page is already off the site. */
+  write: boolean;
+  /** The page is already off and this request already recorded it: the step changes nothing. */
+  done: boolean;
+  detail: string;
+}
+
+/**
+ * Reads the organiser a suspend step names, inside the step's transaction.
+ * A missing organiser or one with no public page refuses the whole step.
+ */
+async function readOrganizerSuspension(tx: FirebaseFirestore.Transaction, db: FirebaseFirestore.Firestore,
+  before: Stored): Promise<OrganizerSuspension> {
+  const organizerId = namedOrganizerId(before)!;
+  const ref = db.collection("organizers").doc(organizerId);
+  const snap = await tx.get(ref);
+  if (!snap.exists) {
+    throw new HttpsError("not-found", "The organiser this request names was not found. Check the page it names; " +
+      "a page the takedown tool already removed needs only its outcome recorded.");
+  }
+  const publicPage = snap.get("publicPage") as {publishStatus?: unknown} | null | undefined;
+  if (!publicPage || typeof publicPage !== "object") {
+    throw new HttpsError("failed-precondition", "This organiser has no public page to suspend.");
+  }
+  const publishStatus = typeof publicPage.publishStatus === "string" ? publicPage.publishStatus : "unknown";
+  const off = SUSPENDED_PUBLISH_STATUSES.includes(publishStatus);
+  const recorded = before.history.some((entry) => entry.action === "organizerSuspended");
+  return {ref, organizerId, publishStatus, write: !off, done: off && recorded,
+    detail: off ? `page already ${publishStatus}` : `page suspended (was ${publishStatus})`};
+}
+
+/** What a suspension writes: off the site, out of search and every format page count. */
+export const organizerSuspensionPatch = {
+  "publicPage.publishStatus": "suppressed",
+  "publicPage.indexStatus": "noindex",
+  "publicPage.robots": "noindex, follow",
+} as const;
 
 /** Takes one step on one request. */
 export async function adminUpdateTakedownRequestHandler(request: CallableRequest<unknown>,
@@ -210,17 +279,33 @@ export async function adminUpdateTakedownRequestHandler(request: CallableRequest
     if (!snap.exists) throw new HttpsError("not-found", "This request was not found.");
     const before = snap.data() as Stored;
     const {changes, status, detail} = nextTakedownState(before, step, context, now);
+    const suspension = step.action === "suspendOrganizer" ? await readOrganizerSuspension(tx, db, before) : null;
+    // Repeating a suspension that already holds changes nothing and audits nothing.
+    if (suspension?.done) return before;
     const stamp = admin.firestore.Timestamp.fromDate(now) as unknown as Stored["createdAt"];
     const entry = {at: stamp, action: historyActions[step.action], byUid: context.uid, status,
-      detail: [detail, step.note?.trim()].filter(Boolean).join(" · ").slice(0, 500) || null};
+      detail: [suspension?.detail ?? detail, step.note?.trim()].filter(Boolean).join(" · ").slice(0, 500) || null};
     const next: Stored = {...before, ...changes, history: [...before.history, entry].slice(-maxHistory), updatedAt: stamp};
     tx.set(ref, next);
+    if (suspension?.write) {
+      tx.update(suspension.ref, organizerSuspensionPatch);
+      setAdminAuditLogInTransaction(tx, db, context, {
+        action: "adminUpdateTakedownRequest",
+        targetPath: suspension.ref.path,
+        request,
+        before: {publishStatus: suspension.publishStatus},
+        after: {publishStatus: "suppressed", indexStatus: "noindex", takedownRequestId: before.requestId},
+        note: step.note,
+        serverTimestamp: deps.serverTimestamp,
+      });
+    }
     setAdminAuditLogInTransaction(tx, db, context, {
       action: "adminUpdateTakedownRequest",
       targetPath: ref.path,
       request,
       before: {status: before.status, outcome: before.outcome, declineReason: before.declineReason, caseId: before.caseId},
-      after: {status: next.status, outcome: next.outcome, declineReason: next.declineReason, caseId: next.caseId},
+      after: {status: next.status, outcome: next.outcome, declineReason: next.declineReason, caseId: next.caseId,
+        ...(suspension ? {suspendedOrganizerId: suspension.organizerId, organizerWritten: suspension.write} : {})},
       note: step.note,
       serverTimestamp: deps.serverTimestamp,
     });

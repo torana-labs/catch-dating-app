@@ -82,6 +82,19 @@ export const REQUEST_POLICIES: Record<RequestType, RequestPolicy> = {
     outcomes: ["orderComplied"], goodFaith: false},
 };
 
+/**
+ * The types whose interim step may suspend the organiser page they name
+ * (adminUpdateTakedownRequest's suspendOrganizer). A claim or a fact
+ * correction never takes a page down.
+ */
+export const SUSPEND_REQUEST_TYPES: readonly RequestType[] = [
+  "removeAndDoNotList", "trademark", "copyright", "privacy", "impersonation",
+  "legalOrder"];
+
+/** Publish states in which an organiser page is already off the site. */
+export const SUSPENDED_PUBLISH_STATUSES: readonly string[] =
+  ["suppressed", "removed"];
+
 /** The outcomes that need the takedown tool's case id. */
 export const CASE_OUTCOMES: readonly RequestOutcome[] =
   ["removedAndSuppressed", "removed", "pageSuspended", "orderComplied"];
