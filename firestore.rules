@@ -3966,9 +3966,6 @@ service cloud.firestore {
     match /launchWaitlist/{privateDocument=**} {
       allow read, write: if false;
     }
-    match /marketingConversionEvents/{privateDocument=**} {
-      allow read, write: if false;
-    }
     match /marketingOpsDashboards/{privateDocument=**} {
       allow read, write: if false;
     }
