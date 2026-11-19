@@ -40,9 +40,9 @@
       "responseSchema": "contracts/callable_responses/import_guest_list_response.schema.json",
       "effect": "draft",
       "caller": "organizer_manager",
-      "surfaces": ["catch_host", "cli"],
+      "surfaces": ["catch_host", "cli", "website"],
       "linkAllowance": null,
-      "summary": "Read one guest-list file (CSV, XLSX or vCard) for an event with the converter for its format, show what would be added or updated, and save exactly the reviewed preview to the event's private guest list. The caller manages the event's organizer and has a phone verified by code."
+      "summary": "Read one guest-list file (CSV, XLSX or vCard) for an event with the converter for its format, show what would be added or updated, and save exactly the reviewed preview to the event's private guest list. The caller manages the event's organizer and has a phone verified by code. With no event named, the guests go on the caller's try-it workspace's private draft event, made if needed."
     },
     {
       "commandId": "event.import-from-link",

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/import_guest_list_payload.schema.json",
   "title": "ImportGuestListCallablePayload",
-  "description": "Command guests.import-list (contracts/commands/catalog.json). A phone-verified organizer manager sends one guest-list file (CSV, XLSX or vCard) for an event. The server reads it with the converter for its format, and the host's review session (hostRosterIntakeSessions) holds the rows. Preview shows what would be added or updated; apply saves exactly the reviewed preview. Files are read only to import them, and are never used to train models.",
+  "description": "Command guests.import-list (contracts/commands/catalog.json). A phone-verified organizer manager sends one guest-list file (CSV, XLSX or vCard) for an event, or for their try-it workspace when input.eventId is left out. The server reads it with the converter for its format, and the host's review session (hostRosterIntakeSessions) holds the rows. Preview shows what would be added or updated; apply saves exactly the reviewed preview. Files are read only to import them, and are never used to train models.",
   "type": "object",
   "additionalProperties": false,
   "required": ["mode", "idempotencyKey", "surface", "input"],
@@ -14,9 +14,10 @@
     "input": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["eventId", "file"],
+      "required": ["file"],
       "properties": {
-        "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId",
+          "description": "The event the guests are for; the caller manages its organizer. Leave it out to use the caller's try-it workspace: its newest private draft event, or a private placeholder draft event called \"Guest list\" made for it (result.eventId). Send the same choice for preview and apply."},
         "file": {
           "type": "object",
           "additionalProperties": false,

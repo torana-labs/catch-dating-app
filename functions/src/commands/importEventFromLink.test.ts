@@ -139,6 +139,7 @@ test("apply creates one private draft event in the workspace and replays it", as
   assert.deepEqual([event.publicationState, event.publicRegistrationEnabled, event.status], ["private", false, "active"]);
   assert.deepEqual([event.eventLocalDate, event.eventLocalStartTime, event.eventTimezone], ["2026-11-23", "07:00", "Asia/Kolkata"]);
   assert.deepEqual(applied.effects, [{kind: "draft_event", ref: `events/${eventId}`, label: "Private draft: Sunday sea-face run"}]);
+  assert.deepEqual(db.read(`tryItWorkspaces/${UID}`)?.tryItEventIds, [eventId], "recorded as a try-it draft");
 
   const replay = await importEventFromLinkHandler(call(envelope("apply", {eventKey: "item-run"}, {confirm})), deps);
   assert.equal(replay.status, "replayed");
