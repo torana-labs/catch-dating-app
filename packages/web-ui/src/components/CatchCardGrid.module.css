@@ -1,7 +1,12 @@
 /*
  * A band of cards (the playbook kit's card grid): equal columns 16px apart,
- * three or four on a wide page and one below 840px, each cell stretched to
- * its row's height. City cards are ground tiles at radius xl, 20px inside and
+ * each cell stretched to its row's height. `columns` is the most a row
+ * holds; below that the grid fits as many columns as its own width allows,
+ * each card at least its kind's minimum (--catch-card-grid-min), so it
+ * narrows one column at a time instead of jumping to one. Empty columns stay
+ * (auto-fill), so a short row keeps its cards card-sized. The minimums are
+ * the narrowest each kind of card reads well at, a design choice that does
+ * not depend on any copy. City cards are ground tiles at radius xl, 20px inside and
  * 8px between their parts; a live city is white under the ground card's
  * outline. Person cards are paper with a square portrait.
  */
@@ -13,6 +18,12 @@
   justify-content: center;
 }
 
+/* The grid's own width, which the entry tiles step by. */
+.frame {
+  container: catch-card-grid / inline-size;
+  min-width: 0;
+}
+
 .links,
 .grid {
   margin: 0;
@@ -21,17 +32,49 @@
 }
 
 .grid {
+  --catch-card-grid-columns: 3;
+  --catch-card-grid-half: 3;
+  --catch-card-grid-min: 15rem;
+  --catch-card-grid-gap: var(--catch-space-s4);
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--catch-space-s4);
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(
+      min(100%, max(var(--catch-card-grid-min), (100% - (var(--catch-card-grid-columns) - 1) * var(--catch-card-grid-gap)) / var(--catch-card-grid-columns))),
+      1fr
+    )
+  );
+  gap: var(--catch-card-grid-gap);
 }
 
-.grid[data-columns="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.grid[data-columns="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-.grid[data-columns="6"] { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.grid[data-columns="4"] { --catch-card-grid-columns: 4; }
+.grid[data-columns="5"] { --catch-card-grid-columns: 5; }
+.grid[data-columns="6"] { --catch-card-grid-columns: 6; }
+/* Half a row, for entry tiles that no longer fit in one. */
+.grid[data-columns="4"] { --catch-card-grid-half: 2; }
+/* An organiser card sets a logo beside its name; a format card is a square mat. */
+.grid[data-kind="org"] { --catch-card-grid-min: 16rem; }
+.grid[data-kind="format"] { --catch-card-grid-min: 9.5rem; }
 /* The canvas's rail of three plans sits 20px apart (.r3); entry tiles 12px (.entries). */
-.grid[data-layout="rail"][data-columns="3"] { gap: var(--catch-space-s5); }
-.grid[data-kind="entry"] { gap: var(--catch-space-s3); }
+.grid[data-layout="rail"][data-columns="3"] { --catch-card-grid-gap: var(--catch-space-s5); }
+
+/*
+ * Entry tiles keep their rows even: all of them in one row when each can be
+ * at least 10rem wide, otherwise half of them, otherwise two. The widths
+ * below are those minimums: 6 x 10rem + 5 x 12px, and 3 x 10rem + 2 x 12px.
+ */
+.grid[data-kind="entry"] {
+  --catch-card-grid-gap: var(--catch-space-s3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@container catch-card-grid (width >= 504px) {
+  .grid[data-kind="entry"] { grid-template-columns: repeat(var(--catch-card-grid-half), minmax(0, 1fr)); }
+}
+
+@container catch-card-grid (width >= 1020px) {
+  .grid[data-kind="entry"] { grid-template-columns: repeat(var(--catch-card-grid-columns), minmax(0, 1fr)); }
+}
 /* Entry tiles and rails start 40px under the header (.entries, .rail), the band's gap and 12px more. */
 .grid[data-kind="entry"],
 .grid[data-layout="rail"] { margin-top: calc(var(--catch-space-s10) - var(--catch-space-s7)); }
@@ -239,13 +282,6 @@
 }
 
 @container catch-page (width < 840px) {
-  .grid,
-  .grid[data-columns="4"],
-  .grid[data-columns="5"],
-  .grid[data-columns="6"] { grid-template-columns: minmax(0, 1fr); }
-
-  .grid[data-kind="entry"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
   /* A rail scrolls sideways: each card about four fifths of the band, 12px apart, running to the band's edge. */
   .grid[data-layout="rail"],
   .grid[data-layout="rail"][data-columns] {
@@ -282,10 +318,7 @@
     gap: var(--catch-space-s4);
   }
 
-  .grid[data-kind="entry"] {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--catch-space-micro10);
-  }
+  .grid[data-kind="entry"] { --catch-card-grid-gap: var(--catch-space-micro10); }
 
   .entry {
     min-height: var(--catch-website-tile-compact-min-height);
