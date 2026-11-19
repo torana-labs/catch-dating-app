@@ -16,9 +16,10 @@ function playbookToolFormNode({form, pageId, sectionId, placement}: PlaybookLead
 
 /**
  * The lead forms that have a backend, by request kind: send me the setup
- * guide, list your space, get a demo link and ask for a walkthrough post to
- * the website lead intake (/api/join-waitlist); a tool form runs its page's
- * try-it command. Kinds left out keep to the page's WhatsApp actions.
+ * guide, list your space, get a demo link, ask for a walkthrough and refer a
+ * host post to the website lead intake (/api/join-waitlist); a tool form
+ * runs its page's try-it command. Kinds left out keep to the page's
+ * WhatsApp actions.
  */
 export const playbookLeadForms: PlaybookLeadFormSlots = {
   guide: playbookLeadFormNode,
@@ -26,4 +27,5 @@ export const playbookLeadForms: PlaybookLeadFormSlots = {
   demo: playbookLeadFormNode,
   walkthrough: playbookLeadFormNode,
   tool: playbookToolFormNode,
+  referral: playbookLeadFormNode,
 };

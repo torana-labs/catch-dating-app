@@ -1,0 +1,186 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "refer",
+  "route": "refer",
+  "meta": {
+    "title": "Refer a host | {{brand.name}}",
+    "description": "Run nights on {{brand.name}}? Refer another host. They get 60 days free from their first event instead of 30, and your next month of {{brand.name}} fees is free once they pay their first bill.",
+    "socialDescription": "Refer a host: 60 days free for them, a month free for you.",
+    "noindex": false
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Refer a host"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "yellow",
+      "kicker": "Refer a host",
+      "title": "Know a host who should be on {{brand.name}}? You both get time free.",
+      "lead": "Refer another host. They get 60 days free from their first event instead of 30. Once they pay their first {{brand.name}} bill, your next month of {{brand.name}} fees is free.",
+      "actions": [
+        {"label": "Refer a host", "to": {"anchor": "nominate"}, "emphasis": "primary"},
+        {
+          "label": "Ask us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I have a question about referring a host."},
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Your referrals",
+          "subtitle": "Sample referrals",
+          "rows": [
+            {"title": "A supper club", "detail": "Paid their first bill", "tag": "Your next month is free"},
+            {"title": "A pickleball social", "detail": "Claimed their page", "tag": "60 days free"},
+            {"title": "A pub crawl", "detail": "Referred this week", "tag": "Waiting to claim"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "how-it-works",
+      "ground": "white",
+      "kicker": "How it works",
+      "title": "Three steps, and the first one takes a minute.",
+      "columns": 3,
+      "items": [
+        {
+          "figure": "1",
+          "title": "Sign in and tell us about them",
+          "body": "Signed in as the owner of your host page, send us their name, their Instagram or website, and how you know them."
+        },
+        {
+          "figure": "2",
+          "title": "They start with 60 days free",
+          "body": "We get in touch and help them set up. Their free trial runs 60 days from their first event, instead of 30."
+        },
+        {
+          "figure": "3",
+          "title": "They pay, your month is free",
+          "body": "Once they pay their first {{brand.name}} bill, your next month of {{brand.name}} fees is free. Each host you refer who pays earns you another."
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "nominate",
+      "ground": "paper",
+      "kicker": "Refer a host",
+      "title": "Who should we talk to?",
+      "lead": "Tell us the host’s name, their Instagram or website, and how you know them. We’ll reach out, say you sent us, and help them get set up. We never sign anyone up without their say-so. For your free month, sign in first: open Host billing at /host/billing/ in this browser, sign in with the phone number you use in {{brand.stores.hostAppName}}, then come back and send this form.",
+      "leadForm": {
+        "id": "referral_host",
+        "requestKind": "referral",
+        "label": "Your WhatsApp number",
+        "submitLabel": "Send referral",
+        "fields": [
+          {"name": "name", "label": "Your name"},
+          {"name": "hostName", "label": "Host or club name"},
+          {"name": "hostLink", "label": "Their Instagram or website", "placeholder": "Their handle or link"},
+          {"name": "relationship", "label": "How you know them", "placeholder": "I go to their Sunday runs"}
+        ],
+        "note": "Send it signed in as the owner of your host page, or it can’t be credited to you. We’ll message you on WhatsApp."
+      },
+      "actions": [
+        {
+          "label": "Ask us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I have a question about referring a host."},
+          "emphasis": "secondary"
+        }
+      ]
+    },
+    {
+      "type": "checklist",
+      "id": "fine-print",
+      "ground": "white",
+      "kicker": "The fine print, up front",
+      "title": "How the reward works.",
+      "items": [
+        {
+          "title": "For hosts referring hosts",
+          "body": "You need to own a host page on {{brand.name}}, and be signed in as its owner when you send the referral."
+        },
+        {
+          "title": "First referral counts",
+          "body": "If two hosts refer the same host, the first referral we record is the one that counts."
+        },
+        {
+          "title": "Before their first event",
+          "body": "The referral has to reach us before their first event. Once their free trial has started, it can’t be added."
+        },
+        {
+          "title": "Not your own page",
+          "body": "Referring a page you run yourself, or one run from your phone number, doesn’t count."
+        },
+        {
+          "title": "A free month, not cash",
+          "body": "Your reward is a month of {{brand.name}} fees: your next bill after they pay is free. There’s no cash payout."
+        },
+        {
+          "title": "It waits for a month you sell",
+          "body": "If you have nothing to pay in the month after they pay, your free month waits for the next month you do."
+        },
+        {
+          "title": "They add up",
+          "body": "Each host you refer who pays their first bill earns you another free month."
+        },
+        {
+          "title": "Founding hosts keep 90",
+          "body": "A founding host keeps their 90 free days. A referral never shortens a free trial."
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "paper",
+      "kicker": "Questions",
+      "title": "About referrals.",
+      "items": [
+        {
+          "question": "How do I sign in?",
+          "answer": "Open Host billing at /host/billing/ in the browser you’ll use for this page, and sign in with the phone number you use in {{brand.stores.hostAppName}}. Then come back here and send the form. A referral sent signed out still reaches us, but it can’t be credited to you."
+        },
+        {
+          "question": "Do I need to be a {{brand.name}} host?",
+          "answer": "For the free month, yes: it’s for hosts who own a page on {{brand.name}}. Anyone can still tell us about a host they love."
+        },
+        {
+          "question": "What does the host I refer get?",
+          "answer": "60 days free from their first event, instead of the usual 30. If they’re a founding host, they keep their 90."
+        },
+        {
+          "question": "When is my month free?",
+          "answer": "Once they pay their first {{brand.name}} bill, your next bill is free, whatever you sold that month. Waiting for their first payment keeps the reward for real hosts."
+        },
+        {
+          "question": "What if they’d already started on {{brand.name}}?",
+          "answer": "A referral has to reach us before their first event. If they’ve already run one, or another host referred them first, there’s no reward."
+        },
+        {
+          "question": "Will you tell the host I referred them?",
+          "answer": "Yes, we’ll say you sent us. If you’d rather we didn’t, tell us when we message you on WhatsApp."
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "yellow",
+      "kicker": "Not hosting on {{brand.name}} yet?",
+      "title": "Start your own free trial.",
+      "lead": "Free for 30 days from your first event, or 90 for founding hosts.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}, "emphasis": "secondary"}
+      ],
+      "media": {"kind": "capture", "slot": "host-today"}
+    }
+  ]
+}

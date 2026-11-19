@@ -24,6 +24,8 @@ const venue: PlaybookLeadForm = {...guide, id: "venue_list_space", requestKind: 
 const demo: PlaybookLeadForm = {...guide, id: "demo_request", requestKind: "demo", format: undefined, fields: fields("name", "whatYouHost")};
 const walkthrough: PlaybookLeadForm = {...guide, id: "walkthrough_request", requestKind: "walkthrough", format: undefined,
   fields: fields("name", "orgName", "whatYouHost", "preferredTime")};
+const referral: PlaybookLeadForm = {...guide, id: "referral_host", requestKind: "referral", format: undefined,
+  fields: fields("name", "hostName", "hostLink", "relationship")};
 
 /** The guide names the lead contract lists for lead.guide.format, read from its description. */
 function contractGuideFormats(): string[] {
@@ -80,6 +82,9 @@ describe("playbookSendableLeadKind", () => {
     expect(playbookSendableLeadKind(venue)).toBe("venue");
     expect(playbookSendableLeadKind(demo)).toBe("demo");
     expect(playbookSendableLeadKind(walkthrough)).toBe("walkthrough");
+    expect(playbookSendableLeadKind(referral)).toBe("referral");
+    // A referral without the host's link or how they know them is not one the intake takes.
+    expect(playbookSendableLeadKind({...referral, fields: fields("name", "hostName")})).toBeNull();
     expect(playbookSendableLeadKind({...walkthrough, fields: fields("name", "preferredTime")})).toBe("walkthrough");
   });
 
@@ -158,5 +163,15 @@ describe("playbookLeadRequest", () => {
     const short = playbookLeadRequest({...walkthrough, fields: fields("name", "preferredTime")}, "walkthrough", {name: "Asha", preferredTime: "Wed 11:00",
       phone: "98765 43210"}, "/host/walkthrough/");
     expect(short.answers).toEqual({preferredTime: "Wed 11:00"});
+  });
+
+  it("files a referral with the person's name and the host's name, link and how they know them", () => {
+    const {lead, body} = send(referral, {name: " Asha  Rao ", hostName: " Kestrel  Supper Club ", hostLink: "kestrel.example",
+      relationship: "I go to their dinners", phone: "98765 43210"});
+    expect(lead).toMatchObject({kind: "referral", fullName: "Asha Rao", entry: "referral_host",
+      answers: {hostName: "Kestrel Supper Club", hostLink: "kestrel.example", relationship: "I go to their dinners"}});
+    expect(body).toMatchObject({requestKind: "referral", fullName: "Asha Rao", lead: {consent: {purpose: "leadFollowUp"},
+      referral: {hostName: "Kestrel Supper Club", hostLink: "kestrel.example", relationship: "I go to their dinners"}}});
+    expect(isJoinWaitlistHttpRequest(body)).toBe(true);
   });
 });

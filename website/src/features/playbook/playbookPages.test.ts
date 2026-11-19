@@ -166,7 +166,7 @@ describe("playbook page indexes", () => {
       "/playbooks/", "/playbooks/quiz-night/", "/playbooks/racket-sports/", "/playbooks/run-club/", "/playbooks/supper-club/",
       "/pricing/", "/product/bookings-and-memberships/",
       "/product/forms/", "/product/guest-records/", "/product/messages-and-growth/", "/product/reports-and-payouts/",
-      "/product/running-the-event/", "/product/the-room/", "/product/your-page/", "/programmes/", "/safety/",
+      "/product/running-the-event/", "/product/the-room/", "/product/your-page/", "/programmes/", "/refer/", "/safety/",
       "/tools/no-show-calculator/",
     ]);
   });
@@ -259,6 +259,27 @@ describe("playbook page indexes", () => {
     }
   });
 
+  it("renders /refer/ with the host referral reward from pricing.ts and its referral form (owner, 19 Nov 2026)", async () => {
+    const ref = resolvePlaybookPage("/refer/")!;
+    const raw = loaded.find(({ref: candidate}) => candidate.match.contentKey === "refer")!.raw;
+    const page = (await loadPlaybookPage(ref))!;
+    expect(pendingPlaybookBindings(page)).toEqual([]);
+    expect(JSON.stringify(page)).not.toMatch(/\{\{/u);
+    expect(page.meta.noindex).toBe(false);
+    const text = JSON.stringify(raw);
+    // Every trial length the page names is one pricing.ts states, and it names the referral, standard and founding trials.
+    const trialDays = new Set<number>([hostPricingFacts.trialDays, hostPricingFacts.foundingTrialDays, hostPricingFacts.referralTrialDays]);
+    for (const [, days] of text.matchAll(/\b(\d+) (?:free )?days\b/gu)) expect(trialDays.has(Number(days)), `${days} days`).toBe(true);
+    expect(text).toContain(`${hostPricingFacts.referralTrialDays} days free from their first event instead of ${hostPricingFacts.trialDays}`);
+    expect(text).toContain(`keep their ${hostPricingFacts.foundingTrialDays}`);
+    // The old cash credit is gone: a month of fees, after the referred host's first paid bill.
+    expect(text).not.toMatch(/\d+%|lapses|paid out\b/iu);
+    expect(text).toMatch(/first \{\{brand\.name\}\} bill, your next month of \{\{brand\.name\}\} fees is free/u);
+    const form = raw.sections.flatMap((section) => section.type === "cta" && section.leadForm ? [section.leadForm] : [])[0];
+    expect(form).toMatchObject({requestKind: "referral", id: "referral_host"});
+    expect(form.fields?.map((field) => field.name)).toEqual(["name", "hostName", "hostLink", "relationship"]);
+  });
+
   it("indexes The room and Running the event (owner approved, 19 Nov 2026)", async () => {
     for (const path of ["/product/the-room/", "/product/running-the-event/"]) {
       const page = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
@@ -303,8 +324,8 @@ describe("playbook page indexes", () => {
 
 describe("playbook route resolution", () => {
   it("404s a registered route whose content is not written, and an unknown family page", () => {
-    expect(matchPlaybookRoute("/refer/")?.contentKey).toBe("refer");
-    expect(resolvePlaybookPage("/refer/")).toBeNull();
+    expect(matchPlaybookRoute("/compare/")?.contentKey).toBe("compare");
+    expect(resolvePlaybookPage("/compare/")).toBeNull();
     expect(resolvePlaybookPage("/stories/nobody/")).toBeNull();
     expect(resolvePlaybookPage("/mumbai/run-clubs/")).toBeNull();
     expect(resolvePlaybookPage("/new-to-mumbai/")).toBeNull();
