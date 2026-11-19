@@ -118,6 +118,15 @@ export class CallableTransport {
   }
 }
 
+// The HTTPS address of a deployed callable or HTTP function.
+export function callableUrl({projectId, region, name}) {
+  return `${functionsOrigin({projectId, region})}/${name}`;
+}
+
+function functionsOrigin({projectId, region}) {
+  return `https://${region}-${projectId}.cloudfunctions.net`;
+}
+
 export function callableBaseUrl({
   baseUrl,
   project,
@@ -147,7 +156,7 @@ export function callableBaseUrl({
       {exitCode: 2}
     );
   }
-  return `https://${region}-${project}.cloudfunctions.net`;
+  return functionsOrigin({projectId: project, region});
 }
 
 // A transport failure after the request may have reached the server: the
