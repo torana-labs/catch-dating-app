@@ -39,17 +39,28 @@ describe("DiscoverySettingsWorkspace", () => {
   it("draws two switches per rule and states the fixed rules", () => {
     render(<DiscoverySettingsWorkspace currentUserUid="owner-1"
       settings={controller()} />);
-    expect(screen.getByRole("checkbox",
-      {name: "Homepage organisers band: on catch"}) as HTMLInputElement)
-      .toHaveProperty("checked", true);
-    expect(screen.getByRole("checkbox",
-      {name: "Homepage organisers band: not on catch yet"}) as HTMLInputElement)
-      .toHaveProperty("checked", false);
+    expect(screen.getByRole("switch",
+      {name: "Homepage organisers band: on catch"}).getAttribute("aria-checked"))
+      .toBe("true");
+    expect(screen.getByRole("switch",
+      {name: "Homepage organisers band: not on catch yet"})
+      .getAttribute("aria-checked")).toBe("false");
     // Four rules, two audiences, and the claim button.
-    expect(screen.getAllByRole("checkbox")).toHaveLength(9);
+    expect(screen.getAllByRole("switch")).toHaveLength(9);
     expect(screen.getByText(/organiser search always include/u))
       .toBeTruthy();
     expect(screen.getByText(/Last changed .* by you\./u)).toBeTruthy();
+  });
+
+  it("flips a rule with its switch", () => {
+    const settings = controller();
+    render(<DiscoverySettingsWorkspace currentUserUid="owner-1"
+      settings={settings} />);
+    const claim = screen.getByRole("switch",
+      {name: "“Claim your page” button on the guest homepage"});
+    fireEvent.click(claim);
+    expect(claim.getAttribute("aria-checked")).toBe("true");
+    expect(screen.getByText("Unsaved changes")).toBeTruthy();
   });
 
   it("resets the form to the defaults and saves only on Save", async () => {
@@ -78,8 +89,8 @@ describe("DiscoverySettingsWorkspace", () => {
     render(<DiscoverySettingsWorkspace currentUserUid="ops-1"
       settings={controller({canEdit: false})} />);
     expect(screen.queryByRole("button", {name: "Save"})).toBeNull();
-    for (const box of screen.getAllByRole("checkbox")) {
-      expect(box).toHaveProperty("disabled", true);
+    for (const control of screen.getAllByRole("switch")) {
+      expect(control).toHaveProperty("disabled", true);
     }
     expect(screen.getByText("Only the owner can change discovery settings."))
       .toBeTruthy();

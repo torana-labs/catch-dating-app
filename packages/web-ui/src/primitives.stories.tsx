@@ -1,6 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
-  CheckboxControl,
   ToggleButtonControl,
   ToggleGroupControl,
   UiLabel,
@@ -24,16 +23,6 @@ export const Label: Story = {
       <UiLabel>Span label</UiLabel>
       <UiLabel as="div">Div label</UiLabel>
       <UiLabel className="surface-label">Surface class label</UiLabel>
-    </div>
-  ),
-};
-
-export const Checkbox = {
-  render: () => (
-    <div style={{display: "grid", gap: 12}}>
-      <label><CheckboxControl /> Unchecked</label>
-      <label><CheckboxControl defaultChecked /> Checked</label>
-      <label><CheckboxControl disabled /> Disabled</label>
     </div>
   ),
 };

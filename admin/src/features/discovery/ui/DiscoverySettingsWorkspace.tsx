@@ -1,10 +1,10 @@
 import {
   CatchButton,
-  CatchCheckboxInput,
   CatchField,
   CatchGap,
   CatchLegacyText,
   CatchTable,
+  CatchToggleInput,
   CatchWorkspaceHeader,
   useCatchViewport,
   type CatchTableColumn,
@@ -142,10 +142,9 @@ export function DiscoverySettingsWorkspace({
   const columns: CatchTableColumn<SurfaceRow>[] = [
     {key: "rule", label: "Where", kind: "title"},
     ...AUDIENCES.map(({key, label}): CatchTableColumn<SurfaceRow> => ({
-      key, label, width: "160px",
+      key, label,
       render: (row) => (
-        <CatchCheckboxInput
-          label={row[key] ? "Shown" : "Hidden"}
+        <CatchToggleInput
           onChanged={setSurface(row.key, key)}
           semanticLabel={`${row.title}: ${label.toLowerCase()}`}
           value={row[key]}
@@ -199,11 +198,11 @@ export function DiscoverySettingsWorkspace({
               </CatchLegacyText>
               <Supporting>{row.subtitle}</Supporting>
               {AUDIENCES.map(({key, label}) => (
-                <CatchCheckboxInput
+                <CatchField
                   key={key}
-                  label={label}
                   onChanged={setSurface(row.key, key)}
-                  semanticLabel={`${row.title}: ${label.toLowerCase()}`}
+                  recipe="toggle"
+                  title={label}
                   value={row[key]}
                 />
               ))}
@@ -243,9 +242,10 @@ export function DiscoverySettingsWorkspace({
             title="Show the organisers band once a city has at least"
             value={current.homeOrganizersMinimum}
           />
-          <CatchCheckboxInput
-            label={"“Claim your page” button on the guest homepage"}
+          <CatchField
             onChanged={edit && ((value) => edit({homeClaimAction: value}))}
+            recipe="toggle"
+            title={"“Claim your page” button on the guest homepage"}
             value={current.homeClaimAction}
           />
         </Section>
