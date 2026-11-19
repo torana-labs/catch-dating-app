@@ -584,14 +584,14 @@ a recorded receipt.
 
 | Item | State | Where |
 | --- | --- | --- |
-| Separation | Option A chosen (owner, 19 Nov 2026); Catch side isolated, organiser set next | `adTags.ts` destination sets and `trackSingle`; `adTagsIsolation.test.ts` |
-| Consent gate | Blocked with separation | One v5 receipt (`catch_marketing_consent_v5`), via `adTags.sync` |
-| Eligible routes | Route class built (#2102, ad-click keys #2139); lifecycle wiring with the organiser set | `organizerAdPage` beside `publicAdPage`; server projection checks publication |
-| Event map | Builders and payload tests proposed (#2102) | `website/src/analytics/organizerTagEvents.ts` |
-| Publication policy | Built, disabled | `organizerTrackingPublicationPolicy.ts` |
-| Owner settings | Saved IDs shown; live state and reason pending | Catch Host tracking section; website owner view settings |
+| Separation | Built: one transport, two isolated sets; iframe retired | `adTags.ts` (#2138, #2193); `adTagsIsolation.test.ts`, `adTagsOrganizer.test.ts` |
+| Consent gate | Built in the transport; banner line pending (#2194) | One v5 marketing receipt (`catch_marketing_consent_v5`), via `adTags.sync` |
+| Eligible routes | Built | `organizerAdPage` (#2102, ad-click keys #2139) plus the set's own scope in `adTags.ts` (#2193) |
+| Event map | Built | `organizerTagEvents.ts` (#2102), sent only by the organiser set (#2193) |
+| Publication policy | Built, disabled | `organizerTrackingPublicationPolicy.ts` (#2097); profile classification (#2192) |
+| Owner settings | Built | Website owner view live state (#2105); Catch Host policy-blocked line |
 | Test receipts | Plan below; not run | [Staging test plan](#organiser-tag-staging-test-plan) |
-| Owner policy sign-off | Owner only | #2063 |
+| Owner policy sign-off | Signed off 19 Nov 2026 | #2063 |
 
 ### Rules the adapter must keep
 
@@ -608,14 +608,16 @@ a recorded receipt.
     `fbq("trackSingle", catchPixel, …)`, never the broadcasting `track`.
     `adTagsIsolation.test.ts` pins that Catch's Google and Meta commands are
     identical with and without another pixel and Google layer on the page.
-    The organiser set will use `trackSingle` with its own pixel and its own
-    Google layer and `cookie_prefix`, so Catch's `gtag("set", …)` never
-    reaches it.
-  - `_fbp` stays shared on the Catch domain whichever option is chosen. The
-    owner sign-off decides whether that is acceptable.
-  - The existing sandboxed iframe runtime (`website/public/organizer-tracking-runtime.*`,
-    `trackingProviders.ts`) is a second loader that predates this rule. It stays
-    inert behind the disabled policy until the owner chooses.
+    The organiser set (`adTags.setOrganizer`) uses `trackSingle` with its own
+    pixel and its own Google layer (`catchOrganizerTagLayer`) with the
+    `catch_org` cookie prefix, so Catch's `gtag("set", …)` never reaches it.
+    `observeOrganizerProviders` feeds it only a set the public projection
+    published.
+  - `_fbp` is shared on the Catch domain between Catch's and an organiser's
+    pixel; the owner accepted this in the policy sign-off (19 Nov 2026).
+  - The sandboxed iframe runtime that predated Option A
+    (`organizer-tracking-runtime.*`, `trackingProviders.ts`) was removed;
+    the first-party transport is the only loader.
 - **Consent.** The only basis is a current version-5 *marketing* choice. An
   analytics-only choice loads nothing for organiser destinations. Legacy,
   downgraded and unknown receipts fail closed. Withdrawal revokes and stops
