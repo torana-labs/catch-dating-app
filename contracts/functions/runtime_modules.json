@@ -821,7 +821,8 @@
     "EnsureTryItWorkspaceCallablePayload",
     "ImportOrganizerFromLinkCallablePayload",
     "ImportGuestListCallablePayload",
-    "ImportEventFromLinkCallablePayload"
+    "ImportEventFromLinkCallablePayload",
+    "CreatePromotionKitCallablePayload"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",
@@ -1056,6 +1057,7 @@
     "EnsureTryItWorkspaceCallableResponse",
     "ImportOrganizerFromLinkCallableResponse",
     "ImportGuestListCallableResponse",
-    "ImportEventFromLinkCallableResponse"
+    "ImportEventFromLinkCallableResponse",
+    "CreatePromotionKitCallableResponse"
   ]
 }
