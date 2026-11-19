@@ -89,14 +89,14 @@ void main() {
       );
     });
 
-    test('live keeps the old console for a saved room layout', () {
+    test('live without a moving-night board stays on the live console', () {
       expect(
         resolve(
           HostEventManageSection.live,
           phase: HostEventWorkspacePhase.runtime,
           fits: false,
         ),
-        HostEventRouteDestination.movementConsole,
+        HostEventRouteDestination.liveConsole,
       );
     });
 

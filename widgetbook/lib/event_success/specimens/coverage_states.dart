@@ -1,8 +1,7 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
@@ -23,8 +22,6 @@ class HostCoverageStates extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        EventSuccessHostSectionLoadingPageBody(),
-        gapH16,
         for (final tab in EventSuccessHostTab.values) ...[
           EventSuccessHostWorkspacePageBody(
             event: event,

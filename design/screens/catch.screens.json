@@ -426,19 +426,6 @@
         },
         {
           "routes": [
-            "hostAppEventManageScreen",
-            "hostAppAttendanceSheet",
-            "hostAppEventSuccessScreen"
-          ],
-          "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-          "symbol": "_HostEventManageScreenState",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "mixed",
-          "topEdge": "route-chrome"
-        },
-        {
-          "routes": [
             "hostWorkEventScreen"
           ],
           "file": "lib/hosts/presentation/host_event_operator_screen.dart",
@@ -446,19 +433,6 @@
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
-        },
-        {
-          "routes": [
-            "hostAppEventManageScreen",
-            "hostAppAttendanceSheet",
-            "hostAppEventSuccessScreen"
-          ],
-          "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
-          "symbol": "HostEventRosterSection",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "full-bleed",
           "topEdge": "route-chrome"
         },
         {
@@ -13104,21 +13078,19 @@
         "role": "compact",
         "expression": "CatchLegacyTopBar",
         "owner": "CatchLegacyTopBar",
-        "reason": "The source owns canonical compact route chrome."
+        "reason": "The route shell shows compact back chrome only while it reads the event or refuses access; every loaded section renders a rebuilt screen with its own chrome."
       },
       "statePolicy": {
         "requiredStates": [
           "data",
-          "empty",
           "error",
           "loading",
-          "mutation",
           "offline",
           "permission"
         ],
-        "owner": "registered screen state controller and Catch state surfaces"
+        "owner": "HostEventManageRouteScreen and Catch state surfaces"
       },
-      "name": "Host Event Manage",
+      "name": "Host event route",
       "owner": "hosts",
       "priority": "P1",
       "status": "in_progress",
@@ -13149,1293 +13121,146 @@
         "symbol": "HostEventManageRouteScreen"
       },
       "stateController": {
-        "primary": "uidProvider + fetchOrganizerProvider + watchEventProvider + ARCH-SCREEN-001C HostEventManageRouteScreen + HostEventManageScreenState + HostEventManageScreen + HostEventParticipantsSection + EventSuccessHostSection",
+        "primary": "HostEventManageRouteScreen + hostEventRouteDestination",
         "files": [
           {
             "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
             "symbol": "HostEventManageRouteScreen"
           },
           {
-            "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-            "symbol": "HostEventManageScreen"
+            "file": "lib/hosts/presentation/host_event_route_destination.dart",
+            "symbol": "hostEventRouteDestination"
           },
           {
             "file": "lib/hosts/presentation/host_event_manage_screen_state.dart",
-            "symbol": "HostEventManageScreenState"
-          },
-          {
-            "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
-            "symbol": "HostEventRosterSection"
-          },
-          {
-            "file": "lib/hosts/presentation/host_invite_link_state.dart",
-            "symbol": "HostInviteLinkRowDisplayState"
-          },
-          {
-            "file": "lib/hosts/presentation/host_roster_display_state.dart",
-            "symbol": "HostParticipantsMutationDisplayState"
-          },
-          {
-            "file": "lib/hosts/presentation/host_roster_display_state.dart",
-            "symbol": "HostParticipantLifecycleActions"
-          },
-          {
-            "file": "lib/hosts/presentation/host_event_manage_screen_state.dart",
-            "symbol": "HostReportSummaryDisplayState"
-          },
-          {
-            "file": "lib/hosts/presentation/host_roster_display_state.dart",
-            "symbol": "HostParticipantProfilesLookupState"
+            "symbol": "hostEventWorkspacePhaseFor"
           },
           {
             "file": "lib/contexts/organizers/data/organizers_repository.dart",
-            "symbol": "fetchOrganizer"
+            "symbol": "watchOrganizer"
           },
           {
             "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "watchEvent"
-          },
-          {
-            "file": "lib/contexts/bookings/data/event_participation_repository.dart",
-            "symbol": "watchEventParticipationRoster"
-          },
-          {
-            "file": "lib/events/shared/attendance_sheet_view_model.dart",
-            "symbol": "AttendanceSheetViewModel"
-          },
-          {
-            "file": "lib/hosts/presentation/widgets/host_event_participants_section.dart",
-            "symbol": "HostEventParticipantsSection"
-          },
-          {
-            "file": "lib/event_success/presentation/event_success_host_screen.dart",
-            "symbol": "EventSuccessHostSection"
-          },
-          {
-            "file": "lib/contexts/events/data/event_repository.dart",
-            "symbol": "watchEventPrivateAccess"
-          },
-          {
-            "file": "lib/contexts/events/data/event_repository.dart",
-            "symbol": "watchEventInviteLinks"
-          },
-          {
-            "file": "lib/events/presentation/event_booking_controller.dart",
-            "symbol": "EventBookingController"
           }
         ],
-        "mutationOwners": [
-          {
-            "file": "lib/events/presentation/event_booking_controller.dart",
-            "symbol": "EventBookingController"
-          },
-          {
-            "file": "lib/contexts/events/data/event_repository.dart",
-            "symbol": "EventRepository"
-          },
-          {
-            "file": "lib/event_success/presentation/event_success_controller.dart",
-            "symbol": "EventSuccessController"
-          }
-        ],
-        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests routes to HostEventRosterSection while other aliases cannot override lifecycle relevance. The shared CatchLegacyTopBar keeps event title and lifecycle subtitle as the subject, with one durable Guest roster action. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterSection is ordinary route content in the shared Host workspace, preserving its event ancestor, exposes the roster in every phase, and can hand off to the current event-scoped Inbox route. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
+        "notes": "Setup and guests open the rebuilt workspace and guest lists without reading the event. Live and report read the uid, organizer and event, gate access, then open the rebuilt live console, run or crawl board, or report. The old event screen and its live console are retired."
       },
       "designRefs": [
         {
-          "id": "repo.host-manage-tests",
+          "id": "repo.host-event-route-destination-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/hosts/host_create_event_screen_test.dart",
-          "notes": "Host manage tests cover lifecycle sections, public-profile roster rows, live editable roster, invite/private link copy, cancel/delete confirmation, and delete suppression once event activity exists."
-        },
-        {
-          "id": "repo.host-report-export-tests",
-          "kind": "repo",
-          "status": "available",
-          "path": "test/hosts/host_report_export_test.dart",
-          "notes": "Report export tests cover revenue and ops CSV fields, participation statuses, invite attribution, and arrival order data used by the report workspace."
-        },
-        {
-          "id": "repo.event-success-host-tests",
-          "kind": "repo",
-          "status": "available",
-          "path": "test/event_success/event_success_live_screens_test.dart",
-          "notes": "Event Success host tests cover setup, live, and report tabs, host report availability, live signal quality, and Event Success host states embedded by Host Manage."
-        },
-        {
-          "id": "claude.host-event-manage",
-          "kind": "claude",
-          "status": "needs_export",
-          "notes": "Host Event Manage setup/private-access, full/waitlist apron, attendance roster, live console, and post-event report references are exported, masked, manifest-registered, and compared against deterministic captures. Private-access edge variants still need canonical export before this design reference is complete.",
-          "path": "design/source_packs/host-v2/templates/hosts-manage/Manage.dc.html"
-        },
-        {
-          "id": "repo.host-event-manage-reference",
-          "kind": "repo",
-          "status": "available",
-          "path": "design/reference_screens/manifest.json",
-          "notes": "Host Event Manage setup workspace/private-access, full/waitlist apron, attendance roster, live console, and post-event report PNG references plus masks are registered for advisory pixel comparison."
-        },
-        {
-          "id": "repo.host-event-manage-full-waitlist-reference",
-          "kind": "repo",
-          "status": "available",
-          "path": "design/reference_screens/manifest.json",
-          "notes": "Host Event Manage full/waitlist apron reference is exported from the current Claude Host Manage template with the archived full-state apron patch and wired to host_manage_full_waitlist_apron."
-        },
-        {
-          "id": "repo.host-event-manage-attendance-reference",
-          "kind": "repo",
-          "status": "available",
-          "path": "design/reference_screens/manifest.json",
-          "notes": "Host Event Manage attendance roster Claude reference is exported from the guests-mode template state, masked, and wired to host_manage_attendance_roster."
-        },
-        {
-          "id": "generated.host-event-manage-setup-reference",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/reference_screens/screen.host.event.manage/setup_private_access.png",
-          "notes": "Host Event Manage setup/private-access workspace 390x812 Claude reference exported, masked, manifest-registered, and compared against host_manage_setup_private_access after the compact-actions pass: within advisory threshold; mismatch 13.35%, meanDelta 13.30, maxDelta 240."
-        },
-        {
-          "id": "generated.host-event-manage-full-waitlist-reference",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/reference_screens/screen.host.event.manage/full_waitlist_apron.png",
-          "notes": "Host Event Manage full-capacity/waitlist apron 390x812 Claude reference exported, masked, manifest-registered, and compared against host_manage_full_waitlist_apron after the compact-actions pass: within advisory threshold; mismatch 14.49%, meanDelta 15.54, maxDelta 240."
-        },
-        {
-          "id": "generated.host-event-manage-attendance-reference",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/reference_screens/screen.host.event.manage/attendance_setup_roster.png",
-          "notes": "Host Event Manage attendance roster 390x812 Claude reference exported, masked, manifest-registered, and compared against host_manage_attendance_roster after the Guests-section pass: within advisory threshold; mismatch 12.68%, meanDelta 15.43, maxDelta 240."
-        },
-        {
-          "id": "generated.host-event-manage-live-reference",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/reference_screens/screen.host.event.manage/live_workspace.png",
-          "notes": "Host Event Manage live workspace 390x812 Claude reference exported, masked, manifest-registered, and compared against host_live_console after the compact-actions fixture pass: within advisory threshold; mismatch 10.05%, meanDelta 4.69, maxDelta 240."
-        },
-        {
-          "id": "generated.host-event-manage-live-direction-3-study",
-          "kind": "generated",
-          "status": "available",
-          "path": "docs/design_parity/host_standalone/control_room_quiet_command_console.png",
-          "notes": "Selected 2026-08-11 as the Direction 3 hierarchy study. Production adapts its dark current-beat stage and paper action plane while preserving canonical Host Manage chrome, removing grouping assumptions and duplicate readiness/progress furniture, and pinning the real primary action."
-        },
-        {
-          "id": "capture.host-event-manage-live-direction-3-flutter",
-          "kind": "generated",
-          "status": "available",
-          "path": "docs/design_parity/host_standalone/control_room_direction_3_flutter.png",
-          "notes": "Deterministic production Flutter capture for the selected Direction 3 baseline at the catalog phone viewport."
-        },
-        {
-          "id": "capture.host-event-manage-live-direction-3-flutter-text-scale-2",
-          "kind": "generated",
-          "status": "available",
-          "path": "docs/design_parity/host_standalone/control_room_direction_3_flutter_text_scale_2.png",
-          "notes": "Deterministic production Flutter capture for the selected Direction 3 baseline at text scale 2.0."
-        },
-        {
-          "id": "generated.host-event-manage-report-reference",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/reference_screens/screen.host.event.manage/report_workspace.png",
-          "notes": "Host Event Manage report workspace 390x812 Claude reference exported, masked, manifest-registered, and compared against host_post_event_report after the compact-actions fixture pass: within advisory threshold; mismatch 12.61%, meanDelta 15.52, maxDelta 240."
-        },
-        {
-          "id": "generated.host-event-manage-reference-manifest",
-          "kind": "generated",
-          "status": "available",
-          "path": "design/reference_screens/manifest.json",
-          "notes": "Reference-screen manifest wires 5 Host Event Manage reference PNGs to deterministic capture ids for advisory pixel comparison."
+          "path": "test/hosts/host_event_route_destination_test.dart",
+          "notes": "Every section and lifecycle phase resolves to a rebuilt screen."
         }
       ],
       "captures": [
         {
           "id": "host_live_console",
           "status": "captured",
-          "notes": "Deterministic Direction 3 capture renders canonical Host Manage chrome plus a dark, roster-agnostic current-beat stage, acknowledged persistence, next beat, external operational-attendee count, flat Guests and Help & fallback rows, Previous, and one pinned primary action. The fixture has 24 imported eventAttendees, 18 checked in, zero Consumer participations, and no profile dependency."
+          "notes": "Marketing capture of the rebuilt live console for the synthetic India host night."
         },
         {
-          "id": "host_live_console_wide",
+          "id": "host_live_room_workspace",
           "status": "captured",
-          "notes": "Deterministic 1024x1366 capture proves the same live state reflows into a dominant command stage with one adjacent 360 px supporting-operations lane while the Guest roster remains an overlay."
+          "notes": "A night with a saved room layout opens the rebuilt live console, whose Room shows the seat map."
         },
         {
           "id": "host_post_event_report",
           "status": "captured",
-          "notes": "Deterministic post-event capture renders Host Manage report mode with participation table and Event Success scorecard."
-        },
-        {
-          "id": "host_manage_setup_private_access",
-          "status": "captured",
-          "notes": "Deterministic Host Event Manage setup capture renders private access, named invite links, roster, and waitlist fixture data."
-        },
-        {
-          "id": "host_manage_full_waitlist_apron",
-          "status": "captured",
-          "notes": "Deterministic Host Event Manage full-capacity capture renders the compact full/waitlist apron before setup content."
-        },
-        {
-          "id": "host_manage_attendance_roster",
-          "status": "captured",
-          "notes": "Deterministic Host Event Manage setup-section capture renders the current Flutter attendance roster state for comparison against the Claude Guests tab reference."
-        },
-        {
-          "id": "host_manage_private_access_missing_code",
-          "status": "captured",
-          "notes": "Deterministic Host Event Manage setup capture renders invite-only private access when no host-readable invite code is available."
-        },
-        {
-          "id": "host_manage_invite_links_disabled",
-          "status": "captured",
-          "notes": "Deterministic Host Event Manage setup capture renders a disabled named invite-link row with badge, copy-only action, and historical metrics."
-        },
-        {
-          "id": "host_manage_invite_links_long_label_source",
-          "status": "captured",
-          "notes": "Deterministic Host Event Manage setup capture renders a long named invite-link label and source through the real row layout."
+          "notes": "Marketing capture of the rebuilt event report after the synthetic India host night."
         }
       ],
       "states": [
         {
-          "id": "uid_loading",
+          "id": "route_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "HostEventManageRouteScreen includes uidProvider in the route loading gate before rendering HostEventManageScreen.",
-          "nextAction": "Add deterministic route loading capture for uid, club, and event provider waves.",
+          "source": "Live and report wait for the uid, organizer and event unless an initial event extra is present.",
+          "nextAction": "None.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ],
           "captureIds": [
             "host_manage_route_loading"
-          ],
-          "notes": "HostEventManageRouteScreen route loading is now captured with uid/club/event provider waves resolving through HostRouteLoadingBody(showTabRail: false), matching the lifecycle workspace without flashing the retired section rail."
-        },
-        {
-          "id": "club_fetch_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "fetchOrganizerProvider loading renders HostRouteLoadingBody(showTabRail: false) on the host background.",
-          "nextAction": "Add host-shell loading capture and decide whether route loading should use a named host loading section.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_route_loading"
-          ],
-          "notes": "fetchOrganizerProvider loading now has the deterministic host_manage_route_loading capture with host-shaped skeleton chrome."
-        },
-        {
-          "id": "event_stream_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "watchEventProvider loading renders the same loading state unless an initial event extra is available.",
-          "nextAction": "Add capture for initial-event fallback versus cold event stream loading.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_route_loading"
-          ],
-          "notes": "Cold watchEventProvider loading now shares host_manage_route_loading when no initial event extra is available; initial-event fallback remains implemented/test follow-up."
+          ]
         },
         {
           "id": "route_error",
           "kind": "error",
           "status": "captured",
-          "source": "uid, club, or event provider errors render CatchLocalizedErrorScaffold with AppErrorContext.event and retry invalidation for club/event providers.",
-          "nextAction": "Add branded error and offline captures for each provider wave and verify retry invalidates the failing provider.",
+          "source": "A failed organizer or event read renders CatchLocalizedErrorState with retry.",
+          "nextAction": "None.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ],
           "captureIds": [
             "host_manage_route_error"
-          ],
-          "notes": "Generic route provider failures now have the deterministic host_manage_route_error capture through CatchLocalizedErrorScaffold."
-        },
-        {
-          "id": "event_or_club_not_found",
-          "kind": "empty",
-          "status": "captured",
-          "source": "Null club or event renders Event not found copy in CatchErrorScaffold before loaded host management UI mounts.",
-          "nextAction": "Add missing/deleted club and event captures with host-specific copy.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_not_found"
-          ],
-          "notes": "Null event/club route data now has the deterministic host_manage_not_found capture with host-specific not-found copy."
-        },
-        {
-          "id": "unauthorized_host",
-          "kind": "permission",
-          "status": "captured",
-          "source": "Signed-out or non-host viewers see Action unavailable copy and a blocked icon when club.isHostedBy(uid) fails.",
-          "nextAction": "Add deterministic signed-out and non-host captures and decide whether host shell should expose a login CTA.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_unauthorized"
-          ],
-          "notes": "Non-host route access now has the deterministic host_manage_unauthorized capture using the blocked action-unavailable scaffold."
-        },
-        {
-          "id": "initial_event_extra",
-          "kind": "populated",
-          "status": "captured",
-          "source": "Route-provided Event extras keep HostEventManageRouteScreen from blocking loaded UI on event stream loading.",
-          "nextAction": "Captured by host_manage_initial_event_extra; remaining fallback work is any source-route-specific assertions from Host Home if needed.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_initial_event_extra"
-          ],
-          "notes": "Initial event fallback now has deterministic Widgetbook and route capture coverage while watchEventProvider remains loading.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
           ]
         },
         {
-          "id": "lifecycle_workspace",
-          "kind": "populated",
-          "status": "captured",
-          "source": "HostEventManageScreen renders one Preparation, Live Operations, or Recap workspace from event lifecycle. Legacy initialSection values remain route aliases; Guests opens the roster drawer.",
-          "tests": [
-            "test/hosts/host_create_event_screen_test.dart"
-          ],
-          "nextAction": "Refresh deterministic captures for preparation, live operations, recap, closed roster edge, and open roster overlay.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_setup_private_access",
-            "host_manage_attendance_roster",
-            "host_live_console",
-            "host_live_console_wide",
-            "host_post_event_report"
-          ],
-          "notes": "Lifecycle-owned workspaces replace the top-level section picker. Legacy aliases remain covered for deep-link compatibility.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "setup_workspace",
-          "kind": "populated",
-          "status": "captured",
-          "source": "Preparation composes canonical capacity/revenue/policy field rows, stable event details, a Guest sources section for website registration and imported lists, optional private access, a lazy Team and access staff disclosure, Event Success setup, and terminal host actions without a mode picker.",
-          "tests": [
-            "test/hosts/host_create_event_screen_test.dart"
-          ],
-          "nextAction": "Host Event Manage setup workspace now has a manifest-registered setup/private-access reference and deterministic capture within advisory threshold. Continue private-access edge, no-saved-guide, text-scale, reduced-motion, and theme reference variants.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_setup_private_access"
-          ]
-        },
-        {
-          "id": "full_event_waitlist_apron",
-          "kind": "populated",
-          "status": "captured",
-          "source": "Full events render a compact capacity notice followed by the same canonical field-row summary used by all preparation states.",
-          "nextAction": "Captured by host_manage_full_waitlist_apron with a manifest-registered full/waitlist apron reference; remaining work is mutation pending/error, Event Success substates, deeper offline variants, and private-access/invite reference variants.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_full_waitlist_apron"
-          ],
-          "notes": "Full or cohort-waitlisted events now have the deterministic host_manage_full_waitlist_apron capture and manifest-registered Claude reference showing the compact full-capacity/waitlist apron below the Host Manage top bar. Advisory comparison against design/reference_screens/screen.host.event.manage/full_waitlist_apron.png is within threshold after the compact-actions pass: mismatch 14.49%, meanDelta 15.54, maxDelta 240.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "attendance_setup_roster",
-          "kind": "populated",
-          "status": "captured",
-          "source": "HostEventRosterSection opens beside the lifecycle workspace and renders setup-mode filters and public-profile-backed participant rows without resetting the underlying event workspace.",
-          "tests": [
-            "test/hosts/host_create_event_screen_test.dart"
-          ],
-          "nextAction": "The roster drawer and its handle/panel anatomy have deterministic Widgetbook coverage. Continue roster-content edge states for booked, waitlist, manual requests, slots, profile rows, and long participant names without restoring a full-page Guests mode.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_attendance_roster"
-          ]
-        },
-        {
-          "id": "attendance_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "attendanceSheetViewModelProvider loading renders HostRosterSkeleton inside HostEventParticipantsSection.",
-          "nextAction": "Add section preview/capture for roster loading while Host Manage chrome remains visible.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_attendance_loading"
-          ],
-          "notes": "Attendance view-model loading now has the deterministic host_manage_attendance_loading capture with Host Manage chrome and roster skeleton visible.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "attendance_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "Attendance view-model errors render CatchLocalizedErrorState (inline/compact mode) with retry invalidating event, participation, and attendance providers.",
-          "nextAction": "Add branded attendance error and offline captures for setup/live/report modes.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_attendance_error"
-          ],
-          "notes": "Attendance view-model failure now has the deterministic host_manage_attendance_error capture while Host Manage chrome stays mounted."
-        },
-        {
-          "id": "attendance_empty",
-          "kind": "empty",
-          "status": "captured",
-          "source": "Null AttendanceSheetViewModel renders Event not found empty copy inside the participants panel.",
-          "nextAction": "Add missing-event and zero-participant panel previews for each lifecycle mode.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_attendance_empty"
-          ],
-          "notes": "Null AttendanceSheetViewModel now has the deterministic host_manage_attendance_empty capture inside the participants panel.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "attendee_profiles_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "HostEventParticipantsSection shows HostRosterSkeleton while batched attendee profile lookup loads.",
-          "nextAction": "Add roster preview where participation data is loaded but public profiles are still loading.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_attendee_profiles_loading"
-          ],
-          "notes": "Batched attendee-profile lookup loading now has the deterministic host_manage_attendee_profiles_loading capture while participation data is already loaded.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "attendee_profiles_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "Profile lookup errors render CatchLocalizedErrorState (inline/compact mode) and retry attendeeProfilesProvider.",
-          "nextAction": "Add capture/preview for profile fetch failure and offline-looking profile errors.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_attendee_profiles_error"
-          ],
-          "notes": "Batched attendee-profile lookup failure now has the deterministic host_manage_attendee_profiles_error capture with a branded inline retry surface.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "filtered_roster_empty",
-          "kind": "empty",
-          "status": "captured",
-          "source": "Lifecycle filter/search state can render filtered-empty roster copy without losing the Host Manage section chrome.",
-          "nextAction": "Captured by host_manage_filtered_roster_empty through the initial participant search seam; add waitlist empty, report status empty, and manual-request empty filters as deeper section variants.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_filtered_roster_empty"
-          ],
-          "notes": "Filtered roster empty now has deterministic Widgetbook and route capture coverage without manual text entry.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "attendance_mutation_pending",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Attendance, approval, decline, and waitlist-offer mutations are watched by HostEventParticipantsSection and drive pending row affordances.",
-          "nextAction": "Captured by host_manage_attendance_mutation_pending; remaining Host Manage coverage is Event Success live/report substates, deeper offline variants, and reference-specific variants.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "notes": "Attendance waitlist-offer mutation pending now has deterministic Widgetbook and capture coverage in the Host Manage Live workspace, with the waitlist movement action held in loading state.",
-          "captureIds": [
-            "host_manage_attendance_mutation_pending"
-          ],
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "attendance_mutation_error",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "The participants panel surfaces the first attendance/action mutation failure through CatchBanner.error.",
-          "nextAction": "Captured by host_manage_attendance_mutation_error; remaining Host Manage coverage is Event Success live/report substates, deeper offline variants, and reference-specific variants.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "notes": "Attendance mutation error now has deterministic Widgetbook and capture coverage. The Live console mirrors embedded roster mutation failures at console level so hosts see failures without scrolling into the roster.",
-          "captureIds": [
-            "host_manage_attendance_mutation_error"
-          ],
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_workspace",
-          "kind": "populated",
-          "status": "captured",
-          "captureIds": [
-            "host_live_console",
-            "host_live_console_wide"
-          ],
-          "source": "Live Operations renders EventSuccessHostSection with initialTab live inside the canonical route. Direction 3 fills the bounded route body with the Quiet Command Console, keeps the roster behind the persistent edge drawer, derives counts from eventAttendees, and keeps the primary action pinned while Previous remains an explicit prior-step action rather than claiming revisioned undo. At a capable local width, the same typed live state reflows into a dominant command stage and one supporting-operations lane.",
-          "tests": [
-            "test/hosts/host_create_event_screen_test.dart"
-          ],
-          "nextAction": "Direction 3 compact and wide online references are implemented and captured. Promotion remains gated by authoritative offline queue/replay, revisioned undo, single-writer fencing, venue readability, and target-Host comprehension evidence.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_unavailable",
-          "kind": "empty",
-          "status": "captured",
-          "source": "EventSuccessHostSection synthesizes unavailable-guide states when no saved Event Success plan exists instead of fetching live-only streams.",
-          "nextAction": "Captured by host_manage_live_unavailable; remaining work is reveal/QR/cue/host-override Event Success substates and reference-specific variants.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_live_unavailable"
-          ],
-          "notes": "Live Event Success unavailable/no-saved-guide state now has the deterministic host_manage_live_unavailable capture in the Live workspace.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_plan_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "EventSuccessHostSectionState maps the saved-plan provider wave to a content-shaped Host Manage live skeleton before live-only streams are watched.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_live_plan_loading; continue deeper host override, reveal, QR, cue, wingman, assignment, and compact step-count variants only if the design contract needs them.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_live_plan_loading"
-          ],
-          "notes": "Live Event Success plan loading now has deterministic Host Manage route capture and Widgetbook coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_plan_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "EventSuccessHostSectionState maps saved-plan failures to CatchErrorState (inline/compact mode) with Event Success plan retry intent.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_live_plan_error; continue only if generic plan-error copy diverges from offline-mapped plan failure copy.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_live_plan_error"
-          ],
-          "notes": "Live Event Success plan error now has deterministic Host Manage route capture and Widgetbook coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_plan_offline",
+          "id": "route_offline",
           "kind": "offline",
           "status": "captured",
-          "source": "EventSuccessHostSectionState maps offline saved-plan failures through CatchErrorState (inline/compact mode) with Event Success plan retry intent.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_live_plan_offline; continue only if live Event Success offline copy or retry policy diverges from the shared mapped offline error.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_live_plan_offline"
-          ],
-          "notes": "Live Event Success plan offline failure now has deterministic Host Manage route capture and Widgetbook coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_ready",
-          "kind": "populated",
-          "status": "captured",
-          "source": "Saved live plans load Event Success state through EventSuccessHostSection. Compact Host Manage renders the selected Direction 3 Control Room and consumes an EventSuccessOperationalRosterSummary derived from eventAttendees; non-compact preview states retain assignment, cue, reveal, and override cards below the Control Room.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_live_console for the compact Host Manage baseline plus dedicated wingman, micro-pod, guided-rotation, check-in QR, conversation cue, revealed-round, and host-edited override captures. Continue only private/invite reference variants, compact step-count semantics, or future Event Success callback/editor-sheet variants.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_live_console",
-            "host_live_console_wide",
-            "host_manage_live_wingman_requests",
-            "host_manage_live_micro_pods_assigned",
-            "host_manage_live_guided_rotations_assigned",
-            "host_manage_live_check_in_qr",
-            "host_manage_live_conversation_cues",
-            "host_manage_live_reveal_round_revealed",
-            "host_manage_live_host_override_edited"
-          ],
-          "notes": "Saved live Event Success plan state has deterministic route capture coverage through the Direction 3 Host Manage Control Room plus rich-control captures for optional profile-dependent modules. The compact baseline is intentionally roster-agnostic and external-attendee capable; grouping, offline conflict/lock, pause, and true undo remain gated instead of being implied by the UI.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_wingman_requests",
-          "kind": "populated",
-          "status": "captured",
-          "source": "EventSuccessHostSection maps host-visible wingman request documents and peer profiles into the Host Manage live Event Success panel.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_live_wingman_requests; continue only if wingman request mutation side effects become visually distinct from fixture state.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_live_wingman_requests"
-          ],
-          "notes": "Host-visible wingman requests now have deterministic Host Manage route capture and Widgetbook coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_micro_pods_assigned",
-          "kind": "populated",
-          "status": "captured",
-          "source": "EventSuccessHostSection maps micro-pod assignments, peer profiles, and opt-out preferences into the Host Manage live Event Success panel.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_live_micro_pods_assigned; continue only if host-edited override or empty-assignment states diverge visually.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_live_micro_pods_assigned"
-          ],
-          "notes": "Assigned micro-pods now have deterministic Host Manage route capture and Widgetbook coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_guided_rotations_assigned",
-          "kind": "populated",
-          "status": "captured",
-          "source": "EventSuccessHostSection maps guided-rotation assignments, rotation slots, peer profiles, and opt-out preferences into the Host Manage live Event Success panel.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_live_guided_rotations_assigned; continue only if reveal/QR/cue or host-edited rotation overrides diverge visually.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_live_guided_rotations_assigned"
-          ],
-          "notes": "Assigned guided rotations now have deterministic Host Manage route capture and Widgetbook coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_check_in_qr",
-          "kind": "populated",
-          "status": "captured",
-          "source": "EventSuccessHostSection renders the non-compact host live check-in QR card when the active live step includes QR check-in and an embedded roster is present.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_live_check_in_qr; continue only if check-in QR mutation/error copy diverges from the shared attendance states.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_live_check_in_qr"
-          ],
-          "notes": "Host Manage live Event Success check-in QR now has deterministic direct section capture coverage with the QR card visible in the current-step controls.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_conversation_cues",
-          "kind": "populated",
-          "status": "captured",
-          "source": "EventSuccessHostSection renders conversation cue controls when the active live step includes social missions or contextual openers.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_live_conversation_cues; continue only if cue generation or post-event opener variants become visually distinct.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_live_conversation_cues"
-          ],
-          "notes": "Host Manage live Event Success conversation cues now have deterministic direct section capture coverage with live prompt content visible.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_reveal_round_revealed",
-          "kind": "populated",
-          "status": "captured",
-          "source": "EventSuccessHostSection renders synchronized partner reveal controls from persisted reveal status and micro-pod or rotation assignments.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_live_reveal_round_revealed; continue only if countdown, reset, or per-round unrevealed variants become contractually distinct.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_live_reveal_round_revealed"
-          ],
-          "notes": "Host Manage live Event Success revealed-round state now has deterministic tall direct section capture coverage with the revealed partner card visible.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "live_event_success_host_override_edited",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "EventSuccessHostSection renders host-edited assignment source metadata when micro-pod assignments are sourced from host_override_v1.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_live_host_override_edited; continue only if the override editor sheet itself becomes part of the deterministic capture contract.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_live_host_override_edited"
-          ],
-          "notes": "Host Manage live Event Success host-edited micro-pod override now has deterministic tall direct section capture coverage with the Host edited badge visible.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "report_workspace",
-          "kind": "populated",
-          "status": "captured",
-          "captureIds": [
-            "host_post_event_report"
-          ],
-          "source": "Recap begins as soon as the event ends or is cancelled, leads with reviews and EventSuccessHostSection report state, exposes the read-only report roster through the edge drawer, and retains configuration/actions under Review event setup.",
-          "tests": [
-            "test/hosts/host_create_event_screen_test.dart"
-          ],
-          "nextAction": "The deterministic Recap capture covers reviews, report content, and the roster edge affordance. Continue hidden analytics, signal quality, sparse feedback, long recommendation copy, deeper offline, and reference-specific variants if the contract needs them; retain the previous report image as historical evidence.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "report_export",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Report mode exports revenue and ops CSV data through HostEventManageController and shared external sharing.",
-          "tests": [
-            "test/hosts/host_report_export_test.dart",
-            "test/hosts/host_event_manage_controller_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_report_export_pending and host_manage_report_export_error; backend settled-payment replacement remains follow-up work.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_report_export_pending",
-            "host_manage_report_export_error"
-          ],
-          "notes": "Report CSV export pending/error states now have deterministic Widgetbook and tall route capture coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "report_scorecard",
-          "kind": "populated",
-          "status": "captured",
-          "source": "EventSuccessHostSection report mode renders post-event scorecard/report states when host analytics are available.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_post_event_report; continue hidden analytics, signal quality, sparse feedback, and long recommendation copy variants only if product/design requires them.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_post_event_report"
-          ],
-          "notes": "Post-event report scorecard state now has deterministic route capture coverage through the Host Manage report workspace.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "report_scorecard_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "EventSuccessHostSectionState maps scorecard loading to the report-shaped skeleton while the saved Event Success plan remains available.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_report_scorecard_loading; continue hidden analytics, sparse feedback, long recommendation copy, and compact report variants only if the design contract needs them.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_report_scorecard_loading"
-          ],
-          "notes": "Report scorecard loading now has deterministic Host Manage route capture and Widgetbook coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "report_scorecard_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "EventSuccessHostSectionState maps scorecard failures to CatchErrorState (inline/compact mode) with scorecard retry intent.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_report_scorecard_error; continue only if generic scorecard-error copy diverges from offline-mapped scorecard failure copy.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_report_scorecard_error"
-          ],
-          "notes": "Report scorecard error now has deterministic Host Manage route capture and Widgetbook coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "report_scorecard_offline",
-          "kind": "offline",
-          "status": "captured",
-          "source": "EventSuccessHostSectionState maps offline scorecard failures through CatchErrorState (inline/compact mode) with scorecard retry intent while the saved Event Success plan remains available.",
-          "tests": [
-            "test/event_success/event_success_live_screens_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_report_scorecard_offline; continue only if report Event Success offline copy or retry policy diverges from the shared mapped offline error.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_report_scorecard_offline"
-          ],
-          "notes": "Report scorecard offline failure now has deterministic Host Manage route capture and Widgetbook coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "private_access_loading",
-          "kind": "loading",
-          "status": "captured",
-          "source": "_HostPrivateAccessCard renders Loading invite access while watchEventPrivateAccessProvider resolves.",
-          "nextAction": "Add private-access loading capture/preview in setup mode.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_private_access_loading"
-          ],
-          "notes": "Private-access provider loading now has the deterministic host_manage_private_access_loading tall capture with the invite section visible.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "private_access_error",
-          "kind": "error",
-          "status": "captured",
-          "source": "_HostPrivateAccessCard errors render CatchLocalizedErrorState (inline/compact mode) with retry invalidating watchEventPrivateAccessProvider.",
-          "nextAction": "Add private-access error and offline captures with invite-only event policy fixtures.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_private_access_error"
-          ],
-          "notes": "Private-access provider failure now has the deterministic host_manage_private_access_error capture in setup mode."
-        },
-        {
-          "id": "private_access_offline",
-          "kind": "offline",
-          "status": "captured",
-          "source": "_HostPrivateAccessCard maps offline private-access load failures through CatchLocalizedErrorState (inline/compact mode) with retry.",
-          "nextAction": "Captured by host_manage_private_access_offline; continue only if private-access offline copy diverges from the shared mapped offline error.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_private_access_offline"
-          ],
-          "notes": "Private-access offline failure now has the deterministic host_manage_private_access_offline capture in setup mode.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "private_access_missing_code",
-          "kind": "empty",
-          "status": "captured",
-          "source": "HostPrivateAccessDisplayState renders missing-code copy when an invite-only event has a private-access document but no host-readable invite code.",
-          "tests": [
-            "test/hosts/host_event_manage_screen_state_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_private_access_missing_code; continue only invite-link row edge variants, reference-specific variants, or private-access masks once canonical exports exist.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_private_access_missing_code"
-          ],
-          "notes": "Invite-only Host Manage private access missing-code state now has deterministic tall route capture coverage showing disabled share-private-link action and the no host-readable access-code copy.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "invite_private_link",
-          "kind": "populated",
-          "status": "captured",
-          "source": "Invite-only events render code, private event link, and HostEventManageController-powered Share private link action.",
-          "tests": [
-            "test/hosts/host_create_event_screen_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_setup_private_access, host_manage_private_link_share_pending, and host_manage_private_link_share_error; remaining action-adapter work is success feedback if it becomes visually distinct.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_setup_private_access",
-            "host_manage_private_link_share_pending",
-            "host_manage_private_link_share_error"
-          ],
-          "notes": "Invite-only populated private access and private-link share pending/error states now have deterministic Widgetbook and tall route capture coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "invite_links_loading",
-          "kind": "loading",
-          "status": "captured",
-          "captureIds": [
-            "host_manage_invite_links_loading"
-          ],
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "notes": "Named invite-link provider loading now has the deterministic host_manage_invite_links_loading tall capture inside the private-access card.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "source": "watchEventInviteLinksProvider resolves named invite-link rows inside the private-access card.",
-          "nextAction": "Captured by host_manage_invite_links_loading on a tall review device; remaining work is section-level offline variants and invite-link mutation pending/error states."
-        },
-        {
-          "id": "invite_links_error",
-          "kind": "error",
-          "status": "captured",
-          "captureIds": [
-            "host_manage_invite_links_error"
-          ],
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "notes": "Named invite-link provider failure now has the deterministic host_manage_invite_links_error tall capture with branded inline retry.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "source": "watchEventInviteLinksProvider errors render a branded inline retry surface inside the private-access card.",
-          "nextAction": "Captured by host_manage_invite_links_error on a tall review device; remaining work is deeper Event Success offline variants and reference-specific variants."
-        },
-        {
-          "id": "invite_links_offline",
-          "kind": "offline",
-          "status": "captured",
-          "captureIds": [
-            "host_manage_invite_links_offline"
-          ],
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "notes": "Named invite-link offline failure now has the deterministic host_manage_invite_links_offline tall capture with branded inline retry.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "source": "watchEventInviteLinksProvider maps offline failures through the shared branded inline error surface inside the private-access card.",
-          "nextAction": "Captured by host_manage_invite_links_offline on a tall review device; continue only if invite-link offline copy diverges from the shared mapped offline error."
-        },
-        {
-          "id": "invite_links_empty",
-          "kind": "empty",
-          "status": "captured",
-          "source": "Named invite links render guidance copy when watchEventInviteLinksProvider returns an empty list.",
-          "nextAction": "Captured by host_manage_invite_links_empty; named invite links now also cover disabled rows and long label/source layout. Continue only if active-row success feedback, globally action-disabled rows, or canonical masks become visually distinct.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_invite_links_empty"
-          ],
-          "notes": "Named invite-link empty state now has the deterministic host_manage_invite_links_empty tall capture with channel guidance visible.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "invite_links_disabled",
-          "kind": "populated",
-          "status": "captured",
-          "source": "HostInviteLinkRowDisplayState renders disabled named invite links with disabled badge visibility, disabled action removal, and preserved historical metrics.",
-          "nextAction": "Captured by host_manage_invite_links_disabled on a tall review device; continue only if disabled-link action semantics or canonical masks change.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_invite_links_disabled"
-          ],
-          "notes": "Named invite-link disabled-row state now has deterministic tall route capture coverage showing the Disabled badge, copy-only action row, and wrapped historical metrics.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "invite_links_long_label_source",
-          "kind": "populated",
-          "status": "captured",
-          "source": "HostInviteLinkRowDisplayState renders long named invite-link labels and source names through the real row layout with title wrapping and source truncation.",
-          "nextAction": "Captured by host_manage_invite_links_long_label_source on a tall review device; continue only if canonical reference masks expose a different dynamic text layout.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_invite_links_long_label_source"
-          ],
-          "notes": "Named invite-link long-label/source state now has deterministic tall route capture coverage showing wrapped label copy, truncated source copy, metrics, and both row actions.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "invite_link_create_disable",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Private invite-link create/copy/disable/share actions run through HostEventManageController, with clipboard/share side effects behind reusable controller seams; the new-link form composes the shared Catch form dialog surface and copy/disable feedback uses the shared Catch snackbar helper.",
-          "nextAction": "Captured by host_manage_invite_link_mutation_pending and host_manage_invite_link_mutation_error; remaining private-link action work is dialog/snackbar ownership and section-level offline variants.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_invite_link_mutation_pending",
-            "host_manage_invite_link_mutation_error"
-          ],
-          "notes": "Invite-link mutation pending/error states now have deterministic Widgetbook and tall Host Manage capture coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "edit_event_action",
-          "kind": "populated",
-          "status": "captured",
-          "source": "HostEventManageScreen owns the edit route callback and passes it into the compact _HostEventActionsSection while no destructive mutation is pending.",
-          "nextAction": "Captured by host_manage_edit_event_action; coordinate typed edit callbacks with screen.host.event.edit once that P2 contract exists or when HostEventManageScreenState centralizes action display state.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_edit_event_action"
-          ],
-          "notes": "Host actions edit event CTA now has deterministic Widgetbook and tall route capture coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "cancel_event_pending_error",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Cancel published event runs EventBookingController.hostCancelEventMutation after a screen-owned confirmation dialog, routes writes through HostEventManageController, shows shared Catch snackbar success feedback, and passes pending/error state into Host actions.",
-          "tests": [
-            "test/hosts/host_create_event_screen_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_cancel_event_pending and host_manage_cancel_event_error; remaining action-adapter work is only broader HostEventManageScreenState display-policy centralization.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_cancel_event_pending",
-            "host_manage_cancel_event_error"
-          ],
-          "notes": "Cancel published event pending/error states now have deterministic Widgetbook and tall route capture coverage.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "delete_unused_event",
-          "kind": "mutation",
-          "status": "captured",
-          "source": "Delete unused event runs EventBookingController.deleteEventMutation only when known activity is absent after a screen-owned confirmation dialog; writes route through HostEventManageController, success feedback uses the shared Catch snackbar helper, and the screen invokes the deleted callback.",
-          "tests": [
-            "test/hosts/host_create_event_screen_test.dart"
-          ],
-          "nextAction": "Captured by host_manage_delete_event_pending and host_manage_delete_event_error; preserve activity-based delete suppression and move display-policy centralization into HostEventManageScreenState when that adapter is introduced.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_delete_event_pending",
-            "host_manage_delete_event_error"
-          ],
-          "notes": "Delete unused event pending/error states now have deterministic Widgetbook and tall route capture coverage using an unused-event fixture.",
-          "widgetbook": [
-            "HostEventManageRouteScreen/Route and section states"
-          ]
-        },
-        {
-          "id": "cancelled_event",
-          "kind": "permission",
-          "status": "captured",
-          "source": "Cancelled events suppress edit/cancel/delete actions and show a Cancelled badge with cancelled-state copy.",
-          "nextAction": "Add deterministic cancelled-event Host Manage capture and verify report/live sections remain appropriately readable.",
-          "previewIds": [
-            "HostEventManageRouteScreen/Route and section states"
-          ],
-          "captureIds": [
-            "host_manage_cancelled_event"
-          ],
-          "notes": "Cancelled Host Manage events now have the deterministic host_manage_cancelled_event capture showing cancelled-state host actions."
-        },
-        {
-          "id": "offline",
-          "kind": "offline",
-          "status": "captured",
-          "source": "Route, attendance, private access, invite links, and Event Success failures currently rely on generic mapped error surfaces.",
-          "nextAction": "Define offline-specific host manage copy and add route/section captures for offline-looking failures.",
+          "source": "An offline organizer or event read renders the offline error state with retry.",
+          "nextAction": "None.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ],
           "captureIds": [
             "host_manage_route_offline"
-          ],
-          "notes": "Route-level offline failure now has the deterministic host_manage_route_offline capture; deeper attendance/private-access/invite/Event Success offline section variants remain follow-up work."
+          ]
         },
         {
-          "id": "text_scale_2",
-          "kind": "accessibility",
+          "id": "not_found",
+          "kind": "empty",
           "status": "captured",
-          "source": "host_manage_text_scale_2 captures the text-aware Host Manage back/title header, preparation field rows, host actions, and roster edge affordance at TextScaler 2.0.",
-          "nextAction": "Continue text-scale coverage for an open roster drawer, long invite links, and Event Success live/recap content without restoring the retired section picker.",
+          "source": "A missing organizer or event renders the not-found error state with back.",
+          "nextAction": "None.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ],
           "captureIds": [
-            "host_manage_text_scale_2"
-          ],
-          "notes": "Host Manage text-scale 2.0 now has a deterministic capture with a visible back action and unclipped title row; lifecycle content and the roster edge affordance remain reachable."
+            "host_manage_not_found"
+          ]
         },
         {
-          "id": "reduced_motion",
-          "kind": "accessibility",
+          "id": "unauthorized",
+          "kind": "permission",
           "status": "captured",
-          "source": "host_manage_reduced_motion captures the Host Manage live workspace fixture with MediaQuery.disableAnimations enabled.",
-          "nextAction": "Review section switching, Event Success live/reveal effects, QR/reveal motion, dialogs, and future report animations under reduced motion.",
+          "source": "A signed-in user outside the host team renders the access error state with back.",
+          "nextAction": "None.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ],
           "captureIds": [
-            "host_manage_reduced_motion"
-          ],
-          "notes": "Host Manage reduced-motion now has the deterministic host_manage_reduced_motion capture for the live workspace fixture."
+            "host_manage_unauthorized"
+          ]
         },
         {
-          "id": "light_dark",
-          "kind": "theme",
+          "id": "rebuilt_screen",
+          "kind": "populated",
           "status": "captured",
-          "source": "host_manage_light_dark emits paired light/dark artifacts for the Host Manage report workspace fixture.",
-          "nextAction": "Add paired theme captures after host manage fixtures are stable.",
+          "source": "A loaded live or report section opens the rebuilt live console, run or crawl board, or report.",
+          "nextAction": "None.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
           ],
           "captureIds": [
-            "host_manage_light_dark"
-          ],
-          "notes": "Host Manage paired light/dark output now has the deterministic host_manage_light_dark capture for the report workspace fixture."
+            "host_live_console",
+            "host_live_room_workspace",
+            "host_post_event_report"
+          ]
         }
       ],
       "composition": {
-        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchLegacyTopBar shows event title, lifecycle subtitle, and one durable Guest roster action. HostEventRosterSection renders an operational roster as the next route-owned pane; its Message guests action hands off to the existing event-scoped Host Inbox. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
-        "targetLayout": "Keep HostEventManageRouteScreen as the ARCH-SCREEN-001C route shell for aliases, loading/access/error, deep-link inputs, and event-scoped navigation effects. Continue moving roster/private-access/invite-link/Event Success/report display waves and typed callbacks into provider-free adapters without reintroducing a persistent section picker, inventing event-scoped Forms, or duplicating the lifecycle resolver.",
+        "currentLayout": "HostEventManageRouteScreen resolves each event link through hostEventRouteDestination to a rebuilt screen; it renders only its own loading, error, not-found and access states.",
+        "targetLayout": "Keep the route shell as the single resolver for event links and their legacy aliases.",
         "sections": [
           {
             "id": "section.host.event_manage_route_adapter",
-            "name": "Host event manage route shell",
+            "name": "Host event route shell",
             "status": "implemented_local",
             "layer": "screen-adapter",
             "claudeComponents": [
@@ -14451,505 +13276,30 @@
               "catch.surface"
             ],
             "states": [
-              "uid_loading",
-              "club_loading",
-              "event_loading",
+              "route_loading",
               "route_error",
+              "route_offline",
               "not_found",
               "unauthorized",
-              "loaded"
+              "rebuilt_screen"
             ],
-            "migration": "Keep uid, club, event, initial extra, retry, access gating, alias section selection, and missing-resource decisions in HostEventManageRouteScreen. When loaded-workspace adapters land, expose deterministic route-state fixtures for Widgetbook/captures without moving access gates into HostEventManageScreen.",
-            "previewIds": [
-              "HostEventManageRouteScreen/Route and section states"
-            ]
-          },
-          {
-            "id": "section.host.event_manage_chrome",
-            "name": "Host manage lifecycle chrome",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostManageChrome"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "HostEventManageScreen"
-            },
-            "currentOwner": "HostEventManageScreen",
-            "targetOwner": "HostEventManageScreenState lifecycle chrome",
-            "dependencies": [
-              "catch.top_bar"
-            ],
-            "states": [
-              "preparation",
-              "runtime",
-              "recap",
-              "cancelled",
-              "long_event_title",
-              "alias_initial_section",
-              "text_scale"
-            ],
-            "migration": "HostEventManageScreenState owns lifecycle phase, event title, and old-Guests drawer intent. Keep aliases stable while preventing them from overriding lifecycle relevance.",
-            "previewIds": [
-              "HostEventManageRouteScreen/Route and section states"
-            ]
-          },
-          {
-            "id": "section.host.event_manage_full_apron",
-            "name": "Host manage full-event apron",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostEventCapacityApron"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "HostEventManageScreen"
-            },
-            "currentOwner": "HostEventManageScreen",
-            "targetOwner": "canonical CatchSection field-row status summary",
-            "dependencies": [
-              "catch.field"
-            ],
-            "states": [
-              "not_full",
-              "full_waitlist_open",
-              "long_copy",
-              "theme"
-            ],
-            "migration": "Capacity, waitlist, revenue, and policy now share one field-row primitive; refresh full-event and text-scale captures without restoring the four-card grid.",
-            "previewIds": [
-              "HostEventManageRouteScreen/Route and section states"
-            ]
-          },
-          {
-            "id": "section.host.event_manage_participants",
-            "name": "Host manage guest roster drawer",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostParticipantsPanel",
-              "HostRosterBoard",
-              "HostReportTable"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
-              "symbol": "HostEventRosterSection"
-            },
-            "currentOwner": "HostEventRosterSection + HostOperationalRosterSection + HostEventParticipantsSection",
-            "targetOwner": "stable overlay drawer fed by provider-free roster adapters",
-            "dependencies": [
-              "catch.badge",
-              "catch.button",
-              "catch.field",
-              "catch.surface",
-              "catch.field"
-            ],
-            "states": [
-              "setup",
-              "live",
-              "report",
-              "closed_edge",
-              "open_overlay",
-              "loading",
-              "error",
-              "event_not_found",
-              "zero_participants",
-              "filtered_empty",
-              "profile_loading",
-              "profile_error",
-              "mutation_error"
-            ],
-            "migration": "HostEventRosterSection contains roster content while the Host workspace owns pane presentation and retains the event ancestor. HostGuestIntakeField keeps spreadsheet import, manual preparation entry, secure forwarding, and provider setup in Preparation. The roster keeps lifecycle filters, search, rows, claims, check-in mutations, profile lookup, report exports, and only the Live Operations Add walk-in escape hatch. Add compact/wide, swipe, long-name, and text-scale capture coverage without moving provider ownership into the drawer.",
-            "previewIds": [
-              "HostEventManageRouteScreen/Route and section states"
-            ]
-          },
-          {
-            "id": "section.host.event_manage_summary",
-            "name": "Host event summary card",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostEventSummaryCard"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_event_manage_section.dart",
-              "symbol": "HostEventSummarySection"
-            },
-            "currentOwner": "HostEventSummarySection",
-            "targetOwner": "provider-free host event summary section",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "free",
-              "paid",
-              "long_club",
-              "long_location",
-              "activity_variants"
-            ],
-            "migration": "Move club/event summary rows and price formatting into HostEventManageScreenState so the card is fixture-driven.",
-            "previewIds": [
-              "HostEventManageRouteScreen/Route and section states"
-            ]
-          },
-          {
-            "id": "section.host.event_manage_private_access",
-            "name": "Host private access card",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostPrivateAccessCard"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_event_private_access_section.dart",
-              "symbol": "HostPrivateAccessSection"
-            },
-            "currentOwner": "HostPrivateAccessSection",
-            "targetOwner": "private-access adapter plus provider-free section",
-            "dependencies": [
-              "catch.badge",
-              "catch.button",
-              "catch.surface"
-            ],
-            "states": [
-              "not_invite_only",
-              "loading",
-              "error",
-              "missing_code",
-              "has_code",
-              "share_failed"
-            ],
-            "migration": "HostPrivateLinkActionState owns share-private-link invite code/link derivation, loading/error/count detail copy, and share-enabled policy. HostPrivateAccessDisplayState owns private-access card missing-code/listed-copy policy and code/link row visibility. HostInviteLinksListDisplayState and HostInviteLinkRowDisplayState own named invite-link list and row display policy. Continue by moving share-sheet and named invite-link callbacks into typed adapters/controllers.",
-            "previewIds": [
-              "HostEventManageRouteScreen/Route and section states"
-            ]
-          },
-          {
-            "id": "section.host.event_manage_invite_links",
-            "name": "Host named invite links",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostInviteLinksList"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_event_private_access_section.dart",
-              "symbol": "HostInviteLinksSection"
-            },
-            "currentOwner": "HostInviteLinksSection",
-            "targetOwner": "private-access adapter plus provider-free invite-link section",
-            "dependencies": [
-              "catch.button",
-              "catch.icon_button",
-              "catch.surface",
-              "catch.field"
-            ],
-            "states": [
-              "loading",
-              "error",
-              "empty",
-              "active_links",
-              "disabled_links",
-              "create_dialog",
-              "disable_dialog",
-              "copy_feedback"
-            ],
-            "migration": "HostInviteLinksListDisplayState now owns named invite-link mutation mode, create-loading flag, disabled-action policy, and empty copy. HostInviteLinkRowDisplayState owns row URL derivation, stat copy, disabled badge visibility, disable-action visibility, and actions-disabled policy. Create/copy/disable/share writes and clipboard/share seams route through HostEventManageController, the form uses the shared Catch form dialog surface, and copy/disable feedback uses the shared Catch snackbar helper. Remaining migration is typed callback/action adapters if the loaded workspace needs a single action contract.",
-            "previewIds": [
-              "HostEventManageRouteScreen/Route and section states"
-            ]
-          },
-          {
-            "id": "section.host.event_manage_event_success_setup",
-            "name": "Host Event Success setup section",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "EventSuccessHostSetup"
-            ],
-            "flutter": {
-              "file": "lib/event_success/presentation/event_success_host_screen.dart",
-              "symbol": "EventSuccessHostSection"
-            },
-            "currentOwner": "EventSuccessHostSection",
-            "targetOwner": "Event Success host state adapter plus provider-free setup section",
-            "dependencies": [
-              "catch.button",
-              "catch.option_card",
-              "catch.chip.field",
-              "catch.surface",
-              "catch.field"
-            ],
-            "states": [
-              "plan_loading",
-              "plan_error",
-              "default_plan",
-              "saved_plan",
-              "save_pending",
-              "save_error",
-              "disabled_modules"
-            ],
-            "migration": "Keep EventSuccessController as mutation owner but expose setup display state and save/error fixtures through Widgetbook.",
-            "previewIds": [
-              "HostEventManageRouteScreen/Route and section states"
-            ]
-          },
-          {
-            "id": "section.host.event_manage_live_workspace",
-            "name": "Host live console workspace",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostLiveConsole",
-              "EventSuccessLiveNow",
-              "HostCheckInRoster"
-            ],
-            "flutter": {
-              "file": "lib/event_success/presentation/event_success_host_screen.dart",
-              "symbol": "EventSuccessHostSection"
-            },
-            "currentOwner": "HostEventManageScreen + EventSuccessHostSection",
-            "targetOwner": "provider-free live console section fed by HostEventManageScreenState and Event Success host adapter",
-            "dependencies": [
-              "catch.badge",
-              "catch.button",
-              "catch.icon_button",
-              "catch.surface"
-            ],
-            "states": [
-              "captured_live_console",
-              "no_saved_guide",
-              "live_plan",
-              "assignments",
-              "reveal",
-              "wingman_requests",
-              "embedded_roster",
-              "provider_error"
-            ],
-            "migration": "Move live Event Success display waves and embedded roster state into adapters so live console variants are previewable without route/provider setup.",
-            "previewIds": [
-              "HostEventManageRouteScreen/Route and section states"
-            ]
-          },
-          {
-            "id": "section.host.event_manage_report_workspace",
-            "name": "Host post-event report workspace",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostPostEventReport",
-              "HostReportExportTable"
-            ],
-            "flutter": {
-              "file": "lib/event_success/presentation/event_success_host_screen.dart",
-              "symbol": "EventSuccessHostSection"
-            },
-            "currentOwner": "HostEventManageScreen + HostEventParticipantsSection + EventSuccessHostSection",
-            "targetOwner": "provider-free report workspace fed by roster/report/Event Success adapters",
-            "dependencies": [
-              "catch.badge",
-              "catch.button",
-              "catch.surface"
-            ],
-            "states": [
-              "captured_post_event_report",
-              "scorecard",
-              "analytics_hidden",
-              "sparse_data",
-              "export_ready",
-              "export_error"
-            ],
-            "migration": "Split report display data and export state from provider-backed widgets, then add Widgetbook/capture variants for sparse, error, and export states.",
-            "previewIds": [
-              "HostEventManageRouteScreen/Route and section states"
-            ]
-          },
-          {
-            "id": "section.host.event_manage_actions",
-            "name": "Host manage action rows",
-            "status": "implemented_local",
-            "layer": "section",
-            "claudeComponents": [
-              "HostEventActionsCard"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "HostEventActionsSection"
-            },
-            "currentOwner": "HostEventManageScreen + _HostEventActionsSection",
-            "targetOwner": "HostEventManageScreenState action adapter plus provider-free action section",
-            "dependencies": [
-              "catch.badge",
-              "catch.button",
-              "catch.surface"
-            ],
-            "states": [
-              "active_event",
-              "cancelled_event",
-              "cancel_pending",
-              "cancel_error",
-              "delete_available",
-              "delete_suppressed",
-              "delete_pending",
-              "delete_error"
-            ],
-            "migration": "HostEventActionDisplayState owns destructive action display policy. HostEventManageActionEffect owns edit/cancel/delete destinations, edit route parameters, and event payload; HostPrivateLinkActionState feeds the provider-free private-link row; HostEventManageScreen executes Navigator/dialog/controller/private-link share side effects. Continue only if future attendance/report/Event Success callbacks need their own typed action adapters.",
-            "previewIds": [
-              "HostEventManageRouteScreen/Route and section states"
-            ]
-          },
-          {
-            "id": "section.host.event_manage_access_loading_error",
-            "name": "Host manage access loading and error states",
-            "status": "planned",
-            "layer": "section",
-            "claudeComponents": [
-              "HostManageAccessState"
-            ],
-            "flutter": {
-              "file": "lib/hosts/presentation/host_event_manage_route_screen.dart",
-              "symbol": "HostEventManageRouteScreen"
-            },
-            "currentOwner": "HostEventManageRouteScreen",
-            "targetOwner": "provider-free route access/loading/error section variants",
-            "dependencies": [
-              "catch.surface"
-            ],
-            "states": [
-              "loading",
-              "route_error",
-              "not_found",
-              "unauthorized",
-              "offline"
-            ],
-            "migration": "Name the route-state shells and add previews/captures for all access, missing-resource, offline, and retry states.",
+            "migration": "Complete: the old event screen and its live console are retired; every loaded section is a rebuilt screen.",
             "previewIds": [
               "HostEventManageRouteScreen/Route and section states"
             ]
           }
         ]
       },
-      "openGaps": [
-        {
-          "id": "DS-HOST-EVENT-MANAGE-001",
-          "status": "open",
-          "nextAction": "Create remaining deterministic Host Event Manage captures only for reference-specific variants, compact step-count semantics if product keeps them, and modal Event Success override editor sheets if that surface becomes contractual. Private-access missing-code, invite-link disabled-row, invite-link long-label/source, Event Success plan/scorecard offline, wingman request, micro-pod assignment, guided-rotation assignment, check-in QR, conversation cue, revealed-round, and host-edited override variants are captured."
-        },
-        {
-          "id": "DS-HOST-EVENT-MANAGE-002",
-          "status": "closed",
-          "nextAction": "Closed for the current Host Manage workspace contract. HostEventManageScreenState owns selected section, section labels, title copy, collapsed-header semantics, and section-change transitions; HostEventManageActionEffect owns edit/cancel/delete action destinations, edit route parameters, and event payload; HostEventActionDisplayState, HostPrivateLinkActionState, HostPrivateAccessDisplayState, HostInviteLinksListDisplayState, HostInviteLinkRowDisplayState, HostRosterDisplayState, HostSetupRosterRowDisplayState, HostLiveRosterRowDisplayState, HostReportRosterRowDisplayState, HostParticipantsMutationDisplayState, HostParticipantLifecycleActions, HostReportSummaryDisplayState, and HostParticipantProfilesLookupState own their existing display policies. EventSuccessHostSectionState now owns Event Success plan/roster/assignment/preference/wingman/scorecard provider-wave status and retry intents before Host Manage composes the provider-free Event Success panel. Route loading/access/error stays in HostEventManageRouteScreen under ARCH-SCREEN-001C."
-        },
-        {
-          "id": "DS-HOST-EVENT-MANAGE-003",
-          "status": "closed",
-          "nextAction": "Add Widgetbook use cases for Host Manage chrome, setup participants, event summary, private access, invite links, Event Success setup, live console, report workspace, action card, access/loading/error, accessibility, and theme variants."
-        },
-        {
-          "id": "DS-HOST-EVENT-MANAGE-004",
-          "status": "open",
-          "nextAction": "Private invite-link create/copy/disable/share effects and cancel/delete writes now route through controller seams with mutation capture coverage. HostEventManageActionEffect owns edit/cancel/delete action destinations and edit route parameters; HostEventActionsSection receives HostPrivateLinkActionState and a typed share callback; HostParticipantsMutationDisplayState owns participant/report mutation display policy; HostParticipationLifecycleBoard receives HostParticipantLifecycleActions instead of reading Riverpod mutations/routes directly; HostEventManageScreen and HostEventParticipantsList execute Navigator/dialog/controller/private-link/participant/report side effects. Remaining side-effect work is Event Success callbacks if that surface keeps growing."
-        },
-        {
-          "id": "DS-HOST-EVENT-MANAGE-005",
-          "status": "blocked",
-          "nextAction": "Blocked/reference-only until canonical edge-state exports exist: setup/private-access, attendance roster, live console, post-event report, private-access missing-code, invite-link disabled-row, and invite-link long-label/source states have deterministic captures. Remaining work is masks for additional dynamic host data once canonical exports exist."
-        },
-        {
-          "id": "DS-HOST-EVENT-MANAGE-006",
-          "status": "open",
-          "nextAction": "Close the feature-contract evidence exceptions with focused tests for the registered route provider waves, roster edge states, private-access and invite-link variants, action-row states, offline/accessibility/theme states, and other Host Manage states that currently rely on deterministic capture and Widgetbook proof only."
-        }
-      ],
+      "openGaps": [],
       "captureIds": [
         "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        "host_manage_route_loading",
-        {
-          "id": "host_manage_full_waitlist_apron",
-          "notes": "Host Manage full-capacity waitlist apron capture."
-        },
-        {
-          "id": "host_manage_live_unavailable",
-          "notes": "Host Manage live unavailable/no saved guide capture."
-        },
-        {
-          "id": "host_manage_live_plan_loading",
-          "notes": "Host Manage live Event Success plan loading capture."
-        },
-        {
-          "id": "host_manage_live_plan_error",
-          "notes": "Host Manage live Event Success plan error capture."
-        },
-        {
-          "id": "host_manage_live_plan_offline",
-          "notes": "Host Manage live Event Success plan offline capture."
-        },
-        {
-          "id": "host_manage_live_wingman_requests",
-          "notes": "Host Manage live Event Success wingman request capture."
-        },
-        {
-          "id": "host_manage_live_micro_pods_assigned",
-          "notes": "Host Manage live Event Success assigned micro-pods capture."
-        },
-        {
-          "id": "host_manage_live_guided_rotations_assigned",
-          "notes": "Host Manage live Event Success assigned guided rotations capture."
-        },
-        {
-          "id": "host_manage_report_scorecard_loading",
-          "notes": "Host Manage report Event Success scorecard loading capture."
-        },
-        {
-          "id": "host_manage_report_scorecard_error",
-          "notes": "Host Manage report Event Success scorecard error capture."
-        },
-        {
-          "id": "host_manage_report_scorecard_offline",
-          "notes": "Host Manage report Event Success scorecard offline capture."
-        },
-        "host_manage_full_waitlist_apron",
-        "host_manage_live_unavailable",
-        "host_manage_live_plan_loading",
-        "host_manage_live_plan_error",
-        "host_manage_live_plan_offline",
-        "host_manage_live_wingman_requests",
-        "host_manage_live_micro_pods_assigned",
-        "host_manage_live_guided_rotations_assigned",
-        "host_manage_report_scorecard_loading",
-        "host_manage_report_scorecard_error",
-        "host_manage_report_scorecard_offline",
-        "host_manage_live_check_in_qr",
-        "host_manage_live_conversation_cues",
-        "host_manage_live_reveal_round_revealed",
-        "host_manage_live_host_override_edited",
-        "host_manage_private_access_missing_code",
-        "host_manage_invite_links_disabled",
-        "host_manage_invite_links_long_label_source"
+        "host_manage_route_error",
+        "host_manage_route_offline",
+        "host_manage_not_found",
+        "host_manage_unauthorized",
+        "host_live_console",
+        "host_live_room_workspace",
+        "host_post_event_report"
       ]
     },
     {

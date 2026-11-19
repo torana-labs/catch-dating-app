@@ -3,7 +3,6 @@ import 'package:catch_dating_app/contexts/formats/domain/event_success_coach.dar
 import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_funnel_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_host_report_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_quality_section.dart';
@@ -172,16 +171,3 @@ Widget eventSuccessStrictHostFunnelSummary(BuildContext context) =>
       catalogId: 'Event Success Host workspace',
       children: [EventSuccessFunnelSection(brief: _brief)],
     );
-
-@widgetbook.UseCase(
-  name: 'Loading',
-  type: EventSuccessHostSectionLoadingPageBody,
-  path: '[P1 product surfaces]/Event Success/Host workspace components',
-)
-Widget eventSuccessStrictEventSuccessHostSectionLoadingPageBody(
-  BuildContext context,
-) => WidgetbookCatalogFrame(
-  title: 'EventSuccessHostSectionLoadingPageBody',
-  catalogId: 'Event Success Host workspace',
-  children: [const EventSuccessHostSectionLoadingPageBody()],
-);

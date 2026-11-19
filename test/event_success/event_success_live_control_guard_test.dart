@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_rotation_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';

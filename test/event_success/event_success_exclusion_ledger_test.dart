@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_participation_ro
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_exclusion_ledger.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
