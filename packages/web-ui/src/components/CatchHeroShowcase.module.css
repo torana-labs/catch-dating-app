@@ -1,33 +1,47 @@
 /*
- * Website v2 hero showcase (CAT-260): the device sits towards the panel's top
- * end; three stickers take fixed slots on its start side. Below 840px the
- * device centres and the stickers leave.
+ * Website v2 hero showcase (CAT-260). The panel steps by its own width (the
+ * frame is its container), not the page's, so a showcase in half of a split
+ * row decides for itself. Narrow, the device centres and the stickers leave.
+ * Wide, the device sits towards the top end and up to three stickers take
+ * slots on its start side, each kept clear of the device and wrapping its
+ * text rather than running under it.
+ *
+ * Wide needs room for the device (300px), the panel's end padding (48px), the
+ * furthest sticker slot (44px), a 16px gap and a sticker at least 200px wide:
+ * 608px.
  */
+.frame {
+  container: catch-hero-showcase / inline-size;
+  /* Full width even when a collapsed CatchStack centres the showcase (proposal L7). */
+  width: 100%;
+}
+
 .panel {
   composes: ground from "./grounds.module.css";
   position: relative;
   display: flex;
   align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: center;
   box-sizing: border-box;
-  /* Full width even when a collapsed CatchStack centres the showcase (proposal L7). */
   width: 100%;
-  min-height: 620px;
+  min-height: 460px;
   overflow: hidden;
-  padding: var(--catch-space-s16) var(--catch-space-s12) 0;
+  padding: var(--catch-space-s16) 0 0;
   border-radius: calc(var(--catch-radius-lg) * 1.6);
 }
 
 .device {
-  width: 300px;
+  width: 230px;
   max-width: 70%;
 }
 
 .sticker {
   composes: ground from "./grounds.module.css";
   position: absolute;
-  display: flex;
+  display: none;
   flex-direction: column;
+  box-sizing: border-box;
+  max-width: calc(100% - 300px - var(--catch-space-s12) - var(--catch-space-s11) - var(--catch-space-s4));
   padding: var(--catch-space-micro10) var(--catch-space-micro14);
   border-radius: var(--catch-radius-md);
   box-shadow: var(--catch-elevation-raised);
@@ -51,18 +65,14 @@
   transform: rotate(-2deg);
 }
 
-@container catch-page (width < 840px) {
+@container catch-hero-showcase (width >= 608px) {
   .panel {
-    justify-content: center;
-    min-height: 460px;
-    padding-inline: 0;
+    justify-content: flex-end;
+    min-height: 620px;
+    padding-inline: var(--catch-space-s12);
   }
 
-  .device {
-    width: 230px;
-  }
+  .device { width: 300px; }
 
-  .sticker {
-    display: none;
-  }
+  .sticker { display: flex; }
 }

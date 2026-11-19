@@ -25,25 +25,28 @@ export interface CatchHeroShowcaseProps {
 /**
  * The homepage hero art: a rounded panel on a ground with the app in a device
  * frame and plan stickers around it. The stickers repeat what the app shows,
- * so they are hidden from assistive technology and leave narrow pages.
+ * so they are hidden from assistive technology, and they leave when the
+ * panel itself is too narrow to set them beside the device.
  */
 export function CatchHeroShowcase({device, ground, stickers = []}: CatchHeroShowcaseProps) {
   return (
-    <div className={styles.panel} data-catch-theme={ground === "ink" ? "dark" : "light"} data-ground={ground}>
-      <div className={styles.device}>{device}</div>
-      {stickers.slice(0, 3).map((sticker, index) => (
-        <span
-          aria-hidden="true"
-          className={styles.sticker}
-          data-catch-theme={sticker.ground === "ink" ? "dark" : "light"}
-          data-ground={sticker.ground}
-          data-slot={index}
-          key={`${sticker.label}-${sticker.title}`}
-        >
-          <CatchLegacyText as="span" color={sticker.labelAccent} variant="statusLabel">{sticker.label}</CatchLegacyText>
-          <CatchLegacyText as="span" variant="titleS">{sticker.title}</CatchLegacyText>
-        </span>
-      ))}
+    <div className={styles.frame}>
+      <div className={styles.panel} data-catch-theme={ground === "ink" ? "dark" : "light"} data-ground={ground}>
+        <div className={styles.device}>{device}</div>
+        {stickers.slice(0, 3).map((sticker, index) => (
+          <span
+            aria-hidden="true"
+            className={styles.sticker}
+            data-catch-theme={sticker.ground === "ink" ? "dark" : "light"}
+            data-ground={sticker.ground}
+            data-slot={index}
+            key={`${sticker.label}-${sticker.title}`}
+          >
+            <CatchLegacyText as="span" color={sticker.labelAccent} variant="statusLabel">{sticker.label}</CatchLegacyText>
+            <CatchLegacyText as="span" variant="titleS">{sticker.title}</CatchLegacyText>
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
