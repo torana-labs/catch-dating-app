@@ -166,7 +166,7 @@ function isRealManifestRun(check) {
 export const toolStatuses = Object.freeze(["active", "internal", "support", "completed", "retired"]);
 export const closedToolStatuses = Object.freeze(["completed", "retired"]);
 const runFields = ["checks", "impactPaths", "alsoCheckIds", "checkSafety", "ciRequirements", "baseline", "rules",
-  "alsoEnforces", "platforms"];
+  "alsoEnforces", "platforms", "surface", "guard", "guardWorkflow", "guardReason"];
 
 /** Errors for status, the closed-status record and the runbook field. */
 export function validateToolLifecycle(tools, {exists, read = null}) {
@@ -294,4 +294,93 @@ export function checkPathArguments(checks) {
     }
   }
   return files;
+}
+
+// What running a tool can touch. local-* surfaces never leave the machine:
+// local-read reads the checkout, local-writes-repo changes tracked files and
+// local-writes-scratch writes only ignored or temporary files. remote-*
+// surfaces reach a live system: remote-read only reads it, remote-write changes
+// it, remote-destructive can delete from it and remote-deploy ships code or
+// configuration to it. tool:runner is local-read because every tool it
+// dispatches carries its own surface.
+export const toolSurfaces = Object.freeze(["local-read", "local-writes-repo", "local-writes-scratch",
+  "remote-read", "remote-write", "remote-destructive", "remote-deploy"]);
+// The surfaces that change a live system, and so must say what stops an
+// accidental run: an --apply flag (apply-flag), --apply plus --allow-prod for
+// production (apply-and-prod-flag), a dispatched workflow named in
+// guardWorkflow (dispatch-workflow), or nothing (none), with guardReason
+// saying why and how it is meant to run.
+export const guardedSurfaces = Object.freeze(["remote-write", "remote-destructive", "remote-deploy"]);
+export const toolGuards = Object.freeze(["apply-flag", "apply-and-prod-flag", "dispatch-workflow", "none"]);
+const workflowPath = /^\.github\/workflows\/[^/]+\.ya?ml$/u;
+
+/** Errors for surface, guard, guardWorkflow and guardReason, and the runbook every active remote tool needs. */
+export function validateToolSurfaces(tools, {exists}) {
+  const errors = [];
+  for (const tool of tools) {
+    const id = tool.id ?? "<missing>";
+    if (tool.safety !== undefined) errors.push(`${id}: safety was replaced by surface (one of ${toolSurfaces.join(", ")}).`);
+    if (closedToolStatuses.includes(tool.status)) continue;
+    if (!toolSurfaces.includes(tool.surface)) {
+      errors.push(`${id}: surface must be one of ${toolSurfaces.join(", ")}, found ${JSON.stringify(tool.surface)}.`);
+      continue;
+    }
+    const guarded = guardedSurfaces.includes(tool.surface);
+    if (!guarded) {
+      for (const field of ["guard", "guardWorkflow", "guardReason"]) {
+        if (tool[field] !== undefined) errors.push(`${id}: ${field} is only for ${guardedSurfaces.join(", ")} tools.`);
+      }
+    } else if (!toolGuards.includes(tool.guard)) {
+      errors.push(`${id}: a ${tool.surface} tool needs guard, one of ${toolGuards.join(", ")}.`);
+    } else {
+      if (tool.guard === "dispatch-workflow") {
+        if (typeof tool.guardWorkflow !== "string" || !workflowPath.test(tool.guardWorkflow)) {
+          errors.push(`${id}: guard dispatch-workflow needs guardWorkflow, a .github/workflows/*.yml path.`);
+        } else if (!exists(tool.guardWorkflow)) {
+          errors.push(`${id}: guardWorkflow ${tool.guardWorkflow} does not exist.`);
+        }
+      } else if (tool.guardWorkflow !== undefined) {
+        errors.push(`${id}: guardWorkflow is only for guard dispatch-workflow.`);
+      }
+      if (tool.guard === "none" && tool.guardReason === undefined) {
+        errors.push(`${id}: guard none needs guardReason, saying why nothing gates it and how it is meant to run.`);
+      }
+      if (tool.guardReason !== undefined && (typeof tool.guardReason !== "string" || tool.guardReason.trim().length < 20)) {
+        errors.push(`${id}: guardReason must be a sentence of at least 20 characters.`);
+      }
+    }
+    if (tool.status === "active" && tool.surface.startsWith("remote-") && tool.runbook === undefined) {
+      errors.push(`${id}: an active ${tool.surface} tool must name its runbook (a document or workflow path, optionally with a #anchor).`);
+    }
+  }
+  return errors;
+}
+
+/**
+ * Errors for tool/remote_ops_manifest.json's tool-id entrypoints: each must be
+ * an open tool, a remote-* tool it lists must be active, and an operation
+ * whose own safety is remote must list at least one active remote-* tool when
+ * it lists tools at all.
+ */
+export function validateRemoteOpsEntrypoints(tools, remoteOps) {
+  const errors = [];
+  const byId = new Map(tools.map((tool) => [tool.id, tool]));
+  for (const operation of remoteOps?.operations ?? []) {
+    const refs = (operation.entrypoints ?? []).filter((entry) => entry?.kind === "tool-id").map((entry) => entry.ref);
+    let remoteActive = 0;
+    for (const ref of refs) {
+      const tool = byId.get(ref);
+      if (!tool || closedToolStatuses.includes(tool.status)) {
+        errors.push(`remote_ops_manifest ${operation.id}: entrypoint ${ref} is not an open tool in tools_manifest.json.`);
+        continue;
+      }
+      if (typeof tool.surface !== "string" || !tool.surface.startsWith("remote-")) continue;
+      if (tool.status === "active") remoteActive += 1;
+      else errors.push(`remote_ops_manifest ${operation.id}: entrypoint ${ref} reaches a live system (${tool.surface}) but is ${tool.status}, not active.`);
+    }
+    if (refs.length > 0 && remoteActive === 0 && String(operation.safety ?? "").startsWith("remote")) {
+      errors.push(`remote_ops_manifest ${operation.id}: a ${operation.safety} operation lists no active remote-* tool.`);
+    }
+  }
+  return errors;
 }

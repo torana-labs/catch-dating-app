@@ -39,7 +39,7 @@
       "category": "operations",
       "path": "tool/admin/generate_admin_action_catalog.mjs",
       "command": "node tool/admin/generate_admin_action_catalog.mjs",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-scratch",
       "status": "active",
       "role": "generator",
       "alsoEnforces": [
@@ -58,7 +58,7 @@
       "category": "lint",
       "path": "tool/admin/callable_inventory.mjs",
       "command": "node --test tool/admin/callable_inventory.test.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "internal",
       "description": "Shares bounded callable discovery between the Admin validator generator and action catalog parity check.",
       "impactPaths": [
@@ -74,7 +74,7 @@
       "category": "test",
       "path": "admin/scripts/checkAdminCi.mjs",
       "command": "npm run check:admin",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Runs CI's Admin lane locally, reading its steps from the React surface workflow. Its checks here cover only the step reader; the steps themselves run in the Admin lane.",
       "impactPaths": [
@@ -92,7 +92,7 @@
       "category": "lint",
       "path": "tool/admin/check_import_boundaries.mjs",
       "command": "node tool/admin/check_import_boundaries.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks React admin app, feature, shared, and generated import boundaries.",
       "impactPaths": [
@@ -110,7 +110,8 @@
       "category": "marketing",
       "path": "tool/ads/apply_google_campaigns.mjs",
       "command": "node tool/ads/apply_google_campaigns.mjs",
-      "safety": "remote-write",
+      "surface": "remote-write",
+      "guard": "apply-flag",
       "checkSafety": "local-readonly",
       "status": "active",
       "description": "Plans, and with --apply creates, the Google Ads campaigns in tool/ads/google_campaigns.json for customer 1016806229. Every campaign is created PAUSED for the owner to enable; existing campaigns are left unchanged. The plan asks Google to validate the create request without making anything.",
@@ -129,14 +130,15 @@
           "node"
         ]
       },
-      "runbook": "docs/ads_conversion_spec.md"
+      "runbook": "tool/README.md#google-ads-campaigns"
     },
     {
       "id": "ads:meta-campaigns",
       "category": "marketing",
       "path": "tool/ads/apply_meta_campaigns.mjs",
       "command": "node tool/ads/apply_meta_campaigns.mjs",
-      "safety": "remote-write",
+      "surface": "remote-write",
+      "guard": "apply-flag",
       "checkSafety": "local-readonly",
       "status": "active",
       "description": "Plans, and with --apply creates, the Meta lead forms and lead campaigns in tool/ads/meta_campaigns.json for ad account 3245368689001899. Every campaign, ad set and ad is created PAUSED for the owner to enable; existing forms and campaigns are left unchanged, and a failed run deletes what it made. The plan asks Meta to validate the campaign without making anything.",
@@ -162,7 +164,7 @@
       "category": "agent",
       "path": "tool/agent/context_pack.mjs",
       "command": "node tool/agent/context_pack.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -193,7 +195,7 @@
       "category": "agent",
       "path": "tool/harness.mjs",
       "command": "node tool/harness.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -242,7 +244,7 @@
       "category": "agent",
       "path": "tool/harness/compare_selectors.mjs",
       "command": "node tool/harness/compare_selectors.mjs --base origin/main --head HEAD",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "role": "gate",
       "ciRequirements": {
@@ -262,7 +264,7 @@
       "category": "agent",
       "path": "tool/harness/verify_local.mjs",
       "command": "node tool/harness/verify_local.mjs",
-      "safety": "local",
+      "surface": "local-writes-scratch",
       "status": "active",
       "impactPaths": [
         "tool/harness/lib/workflow_steps.mjs",
@@ -282,7 +284,7 @@
       "category": "analytics",
       "path": "tool/analytics/check_host_analytics_bigquery.mjs",
       "command": "node tool/analytics/check_host_analytics_bigquery.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates host analytics Firebase exports, BigQuery SQL, and callable wiring.",
       "checks": [
@@ -312,7 +314,7 @@
       "category": "analytics",
       "path": "tool/analytics/check_user_analytics_bigquery.mjs",
       "command": "node tool/analytics/check_user_analytics_bigquery.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates user analytics BigQuery SQL, callable wiring, and app copy references.",
       "checks": [
@@ -337,7 +339,9 @@
       "category": "analytics",
       "path": "tool/analytics/deploy_host_analytics_bigquery.sh",
       "command": "bash tool/analytics/deploy_host_analytics_bigquery.sh",
-      "safety": "remote-bigquery",
+      "surface": "remote-deploy",
+      "guard": "none",
+      "guardReason": "Runs the DDL and refresh against BigQuery by default; --dry-run is the opt-in preview. Run it only as the BigQuery runbook says.",
       "status": "active",
       "description": "Applies host analytics BigQuery DDL and mart refresh SQL.",
       "checks": [
@@ -348,26 +352,30 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "docs/release_operations.md#bigquery--two-separate-exports-do-not-conflate-them"
     },
     {
       "id": "analytics:deploy-user-bigquery",
       "category": "analytics",
       "path": "tool/analytics/deploy_user_analytics_bigquery.sh",
       "command": "bash tool/analytics/deploy_user_analytics_bigquery.sh",
-      "safety": "remote-bigquery",
+      "surface": "remote-deploy",
+      "guard": "none",
+      "guardReason": "Runs the DDL and refresh against BigQuery by default; --dry-run is the opt-in preview. Run it only as the runbook says.",
       "status": "active",
       "description": "Applies user analytics BigQuery DDL and mart refresh SQL.",
       "checks": [
         "bash -n tool/analytics/deploy_user_analytics_bigquery.sh"
-      ]
+      ],
+      "runbook": "tool/README.md#user-analytics-bigquery"
     },
     {
       "id": "analytics:host-bigquery-contract",
       "category": "analytics",
       "path": "tool/analytics/host_analytics_contract.mjs",
       "command": "node --test tool/analytics/host_analytics_contract.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "internal",
       "description": "Checked by analytics:check-host-bigquery. Checks canonical host export expectations and source/live schedule consistency while retaining historical dimensions.",
       "role": "gate",
@@ -381,7 +389,7 @@
       "category": "analytics",
       "path": "tool/analytics/host_analytics_live_status.mjs",
       "command": "node tool/analytics/host_analytics_live_status.mjs",
-      "safety": "remote-readonly",
+      "surface": "remote-read",
       "status": "active",
       "description": "Checks live Firebase and BigQuery host analytics deployment status.",
       "checks": [
@@ -399,26 +407,28 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "docs/release_operations.md#firebase-backend-delivery-order"
     },
     {
       "id": "analytics:user-bigquery-live-status",
       "category": "analytics",
       "path": "tool/analytics/user_analytics_live_status.mjs",
       "command": "node tool/analytics/user_analytics_live_status.mjs",
-      "safety": "remote-readonly",
+      "surface": "remote-read",
       "status": "active",
       "description": "Checks live Firebase and BigQuery user analytics deployment status.",
       "checks": [
         "node --check tool/analytics/user_analytics_live_status.mjs"
-      ]
+      ],
+      "runbook": "tool/README.md#user-analytics-bigquery"
     },
     {
       "id": "architecture:context-move",
       "category": "generator",
       "path": "tool/architecture/move_to_contexts.mjs",
       "command": "node tool/architecture/move_to_contexts.mjs --plan",
-      "safety": "local",
+      "surface": "local-writes-repo",
       "status": "internal",
       "description": "Library: contracts:organizer-nomenclature reaches rewriteDartDirectives and rewritePathMentions through the rename libraries. The context move is finished: --check reports no legacy file waiting, lib/domain and lib/data are gone, and context_map.json has no moveTo entry. The catch_arch_* lints and audit:context-map enforce placement. Its CLI still prints the plan and --verify proves an old move commit. Moves legacy domain/ and data/ files into lib/contexts/<context>/ as tool/architecture/context_map.json places them, rewrites every Dart directive and whole-path mention, writes each context's public API file, and proves a move commit is mechanical (--verify). --imports-only updates another branch after the move lands.",
       "checks": [
@@ -432,7 +442,7 @@
       "category": "generator",
       "path": "tool/architecture/rename_to_organizer.mjs",
       "command": "node tool/architecture/rename_to_organizer.mjs --plan",
-      "safety": "local",
+      "surface": "local-writes-repo",
       "status": "internal",
       "description": "Library: contracts:organizer-nomenclature imports clubNameFindings and fails on anything this rename would still change. The Club-to-Organizer rename of Flutter code is finished. Renames Club to Organizer in Flutter code: Dart file and folder names, identifiers, code references in comments, localization keys, and the registries and tools that name them. Names the generated schema contracts declare, string literals and the club subtype stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
       "checks": [
@@ -466,7 +476,7 @@
         "apps/consumer/lib/**"
       ],
       "command": "dart run tool/architecture/check_ui_composition_contracts.dart --check",
-      "safety": "local-build-test",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Uses analyzer resolution to require branch-universal typed layout ownership for every statically reachable terminal of each rendered GoRoute and full-screen PageRoute presentation, fails unsupported PageRoute aliases, factories, tear-offs, builders, and subclasses closed, and reserves Flutter Scaffold construction, aliases, and subclasses for the canonical screen scaffold. Only direct MaterialPageRoute construction is supported by the generated imperative route inventory.",
       "checks": [
@@ -495,7 +505,7 @@
       "category": "generator",
       "path": "tool/architecture/rename_wire_to_organizer.mjs",
       "command": "node tool/architecture/rename_wire_to_organizer.mjs --plan",
-      "safety": "local",
+      "surface": "local-writes-repo",
       "status": "internal",
       "description": "Library: contracts:organizer-nomenclature imports wireNameFindings and fails on anything this rename would still change. The Club-to-Organizer rename on the wire is finished. Renames the club names the contracts declare (fields, enum values, collections, titles) across contracts, TypeScript, rules, indexes, fixtures and Dart strings, and TypeScript identifiers and file names. A club field beside its organizer twin collapses into the twin. The club subtype, BigQuery columns, copy and URLs stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
       "checks": [
@@ -509,7 +519,7 @@
       "category": "audit",
       "path": "tool/architecture/check_app_architecture_exhibits.mjs",
       "command": "node tool/architecture/check_app_architecture_exhibits.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "role": "gate",
       "rules": [
@@ -544,7 +554,7 @@
       "category": "audit",
       "path": "tool/audit/backend_error_candidates.dart",
       "command": "dart tool/audit/backend_error_candidates.dart",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Scans backend error handling migration candidates.",
       "impactPaths": [
@@ -583,7 +593,7 @@
       "category": "audit",
       "path": "tool/architecture/check_context_map.mjs",
       "command": "node tool/architecture/check_context_map.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks what one file cannot show: tool/architecture/context_map.json is well formed and the architecture spec's context table matches it. Placement and import order are catch_arch_* lints that read the same map.",
       "checks": [
@@ -613,7 +623,7 @@
       "category": "audit",
       "path": "tool/architecture/check_flutter_source_size.mjs",
       "command": "node tool/architecture/check_flutter_source_size.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -655,7 +665,7 @@
       "category": "audit",
       "path": "tool/audit/check_fn_rate_limits.mjs",
       "command": "node tool/audit/check_fn_rate_limits.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks every literal checkRateLimit action under functions/src has a matching RATE_LIMITS entry.",
       "checks": [
@@ -686,7 +696,7 @@
       "category": "audit",
       "path": "tool/audit/check_fn_readme_inventory.mjs",
       "command": "node tool/audit/check_fn_readme_inventory.mjs",
-      "safety": "local",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Diffs current functions/README.md inventory rows and functions/src/index.ts exports in both directions while ratcheting existing omissions.",
       "checks": [
@@ -723,7 +733,7 @@
       "category": "audit",
       "path": "tool/audit/frontend_error_candidates.dart",
       "command": "dart tool/audit/frontend_error_candidates.dart",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Scans frontend, provider, plugin, and local error-handling migration candidates.",
       "checks": [
@@ -753,7 +763,7 @@
       "category": "audit",
       "path": "tool/architecture/check_host_crm_boundaries.mjs",
       "command": "node tool/architecture/check_host_crm_boundaries.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Enforces corrected Host CRM ownership, application routing, provenance, consent, communication-plan, saved-audience, manual-handoff, and count-copy boundaries.",
       "checks": [
@@ -806,7 +816,7 @@
       "category": "audit",
       "path": "tool/architecture/check_mutation_error_surfaces.mjs",
       "command": "node tool/architecture/check_mutation_error_surfaces.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks production Dart build methods that read Mutation isPending state also expose mutation error feedback.",
       "checks": [
@@ -842,7 +852,7 @@
       "category": "audit",
       "path": "tool/architecture/provider_graph.dart",
       "command": "dart run tool/architecture/provider_graph.dart --check",
-      "safety": "local-readonly",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Checks the live static Riverpod provider, consumer, override, family, alias, and Mutation graph while requiring a current // provider-graph: review next to each questionable relationship; deterministic JSON is emitted only on demand.",
       "impactPaths": [
@@ -961,7 +971,7 @@
       "category": "audit",
       "path": "tool/architecture/check_route_string_literals.mjs",
       "command": "node tool/architecture/check_route_string_literals.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks production Dart navigation calls outside lib/routing avoid raw route path string literals.",
       "checks": [
@@ -999,7 +1009,7 @@
       "category": "audit",
       "path": "tool/audit/check_unused_code.mjs",
       "command": "node tool/audit/check_unused_code.mjs --check --workspace . --workspace admin --workspace website --workspace packages/web-ui --workspace packages/web-config",
-      "safety": "local-readonly",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Shrink-only Knip ratchet over unused files, exports, types and dependencies, and imports of undeclared packages. The Admin and Marketing lanes check their app plus packages/web-ui and packages/web-config on every change. This entry checks every JavaScript workspace except Functions when the Knip config, baseline or ratchet changes, and in full Tools runs (root package changes, nightly). Root tool/ and operations/ files are Knip entry points, so they can only add undeclared or broken imports and duplicate exports; full runs catch those. Functions joins once its lane runs the check.",
       "checks": [
@@ -1027,7 +1037,7 @@
       "category": "audit",
       "path": "tool/widget_cleanup_scan.sh",
       "command": "bash tool/widget_cleanup_scan.sh",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Fails on any live widget/design-system cleanup candidate.",
       "checks": [
@@ -1042,7 +1052,7 @@
       "category": "branding",
       "path": "tool/branding/generate_catch_icon.swift",
       "command": "swift tool/branding/generate_catch_icon.swift",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "platforms": [
         "darwin"
@@ -1058,7 +1068,7 @@
       "category": "branding",
       "path": "tool/branding/generate_native_brand_assets.dart",
       "command": "dart run tool/branding/generate_native_brand_assets.dart",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Generates flavor-specific native launcher and splash brand assets from the design context token cache, including Consumer responsive iOS launch geometry and Host-specific Archivo icon and centered splash assets.",
       "checks": [
@@ -1072,7 +1082,7 @@
       "category": "ci",
       "path": "tool/ci/brand_config_publish_workflow.test.mjs",
       "command": "node --test tool/ci/brand_config_publish_workflow.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1097,7 +1107,7 @@
       "category": "ci",
       "path": "tool/ci/city_interest_backfill_workflow.test.mjs",
       "command": "node --test tool/ci/city_interest_backfill_workflow.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1121,7 +1131,7 @@
       "category": "ci",
       "path": "tool/ci/data_validation_workflow.test.mjs",
       "command": "node --test tool/ci/data_validation_workflow.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1145,7 +1155,7 @@
       "category": "ci",
       "path": "tool/ci/deck_era_purge_workflow.test.mjs",
       "command": "node --test tool/ci/deck_era_purge_workflow.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1169,7 +1179,7 @@
       "category": "ci",
       "path": "tool/ci/delivery_core.mjs",
       "command": "node tool/ci/delivery_core.mjs",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "index",
@@ -1195,7 +1205,7 @@
       "category": "ci",
       "path": "tool/ci/flutter_package_scope.mjs",
       "command": "node tool/ci/flutter_package_scope.mjs",
-      "safety": "read-only",
+      "surface": "local-read",
       "status": "active",
       "impactPaths": [
         ".github/workflows/flutter-ci.yml",
@@ -1214,7 +1224,7 @@
       "category": "ci",
       "path": "tool/ci/check_flutter_workspace_analysis.mjs",
       "command": "node tool/ci/check_flutter_workspace_analysis.mjs",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1243,7 +1253,9 @@
       "category": "ci",
       "path": "tool/ci/functions_drift_report.mjs",
       "command": "node tool/ci/functions_drift_report.mjs",
-      "safety": "remote-write",
+      "surface": "remote-write",
+      "guard": "none",
+      "guardReason": "Posts the weekly drift comment with gh; meant to run only from functions-drift.yml with its workflow token.",
       "status": "active",
       "impactPaths": [
         ".github/workflows/functions-drift.yml",
@@ -1255,14 +1267,15 @@
         "node --check tool/ci/functions_drift_report.mjs",
         "node --test tool/ci/functions_drift_report.test.mjs"
       ],
-      "role": "finder"
+      "role": "finder",
+      "runbook": "docs/release_operations.md#deploy-backend"
     },
     {
       "id": "ci:generate-contracts-cache",
       "category": "ci",
       "path": "tool/ci/generate_contracts_cache.test.mjs",
       "command": "node --test tool/ci/generate_contracts_cache.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1308,7 +1321,7 @@
       "category": "ci",
       "path": "tool/ci/generated_inventories.mjs",
       "command": "node tool/ci/generated_inventories.mjs",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "role": "generator",
       "description": "Materializes the two exact-source route/catalog inventories while preserving authored guidance and coverage decisions. Offline real-Git checks use Node and Git; no Flutter or network. CI writes an ignored source/run-bound two-output receipt; later checks verify current inventory bytes before reusing exact drift commands.",
@@ -1344,7 +1357,7 @@
       "category": "ci",
       "path": "tool/ci/ios_build_inputs.mjs",
       "command": "node --test tool/ci/ios_build_inputs.test.mjs",
-      "safety": "read-only",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1373,7 +1386,7 @@
       "category": "ci",
       "path": "tool/ci/wait_main_marketing_validation.mjs",
       "command": "node tool/ci/wait_main_marketing_validation.mjs",
-      "safety": "remote-read",
+      "surface": "remote-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1395,14 +1408,15 @@
         "node --check tool/ci/wait_main_marketing_validation.mjs",
         "node --test tool/ci/wait_main_marketing_validation.test.mjs"
       ],
-      "role": "gate"
+      "role": "gate",
+      "runbook": "docs/release_operations.md#selected-check-contracts"
     },
     {
       "id": "ci:main-push-base",
       "category": "ci",
       "path": "tool/ci/main_push_base.mjs",
       "command": "node tool/ci/main_push_base.mjs",
-      "safety": "remote-read",
+      "surface": "remote-read",
       "status": "active",
       "impactPaths": [
         ".github/workflows/ci.yml",
@@ -1414,14 +1428,17 @@
         "node --check tool/ci/main_push_base.mjs",
         "node --test tool/ci/main_push_base.test.mjs"
       ],
-      "role": "gate"
+      "role": "gate",
+      "runbook": "docs/release_operations.md#required-pr-checks"
     },
     {
       "id": "ci:main-red-alert",
       "category": "ci",
       "path": "tool/ci/main_red_alert.mjs",
       "command": "node tool/ci/main_red_alert.mjs",
-      "safety": "remote-write",
+      "surface": "remote-write",
+      "guard": "none",
+      "guardReason": "Opens, comments on and closes the main-CI alert issue with gh; meant to run only from main-red-alert.yml.",
       "status": "active",
       "impactPaths": [
         ".github/workflows/main-red-alert.yml",
@@ -1434,14 +1451,15 @@
         "node --check tool/ci/main_red_alert.mjs",
         "node --test tool/ci/main_red_alert.test.mjs"
       ],
-      "role": "gate"
+      "role": "gate",
+      "runbook": "docs/release_operations.md#main-ci-alert"
     },
     {
       "id": "ci:organizer-takedown-workflow",
       "category": "ci",
       "path": "tool/ci/organizer_takedown_workflow.test.mjs",
       "command": "node --test tool/ci/organizer_takedown_workflow.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1465,7 +1483,7 @@
       "category": "ci",
       "path": "tool/ci/pr_text_guard.mjs",
       "command": "node --test tool/ci/pr_text_guard.test.mjs",
-      "safety": "local-test",
+      "surface": "remote-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1484,14 +1502,16 @@
         "node --check tool/ci/pr_text_guard.mjs",
         "node --test tool/ci/pr_text_guard.test.mjs"
       ],
-      "role": "gate"
+      "role": "gate",
+      "runbook": ".github/workflows/pr-text-guard.yml",
+      "checkSafety": "local-readonly"
     },
     {
       "id": "ci:required-ci-floor",
       "category": "ci",
       "path": "tool/ci/required_ci_floor.mjs",
       "command": "node --test tool/ci/required_ci_floor.test.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "impactPaths": [
         ".github/workflows/ci.yml",
@@ -1510,7 +1530,9 @@
       "category": "ci",
       "path": "tool/ci/selection_miss_report.mjs",
       "command": "node tool/ci/selection_miss_report.mjs",
-      "safety": "remote-write",
+      "surface": "remote-write",
+      "guard": "none",
+      "guardReason": "Opens or comments on the test-selection-miss issue with gh; meant to run only from main-red-alert.yml.",
       "status": "active",
       "impactPaths": [
         ".github/workflows/functions-ci.yml",
@@ -1526,14 +1548,15 @@
         "node --check tool/ci/selection_miss_report.mjs",
         "node --test tool/ci/selection_miss_report.test.mjs"
       ],
-      "role": "finder"
+      "role": "finder",
+      "runbook": "docs/release_operations.md#test-selection-miss-report"
     },
     {
       "id": "ci:superseded-push-run",
       "category": "ci",
       "path": "tool/ci/superseded_push_run.mjs",
       "command": "node tool/ci/superseded_push_run.mjs",
-      "safety": "remote-read",
+      "surface": "remote-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1553,14 +1576,15 @@
         "node --check tool/ci/superseded_push_run.mjs",
         "node --test tool/ci/superseded_push_run.test.mjs"
       ],
-      "role": "gate"
+      "role": "gate",
+      "runbook": ".github/workflows/marketing-website.yml"
     },
     {
       "id": "ci:web-hosting-delivery-package",
       "category": "ci",
       "path": "tool/ci/package_web_hosting.mjs",
       "command": "node --test tool/ci/package_web_hosting.test.mjs",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1588,7 +1612,7 @@
       "category": "ci",
       "path": "tool/ci/web_hosting_workflow.test.mjs",
       "command": "node --test tool/ci/web_hosting_workflow.test.mjs website/scripts/marketingDeployWorkflow.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1625,7 +1649,7 @@
       "category": "ci",
       "path": "tool/ci/web_hosting_freshness.mjs",
       "command": "node --test tool/ci/web_hosting_workflow.test.mjs",
-      "safety": "local-test",
+      "surface": "remote-read",
       "status": "internal",
       "description": "Checked by ci:web-hosting-delivery-workflow. Evaluates sanitized expected and observed source/run evidence at the final website-promotion freshness gate and refuses any mismatch after at most one no-cache reread.",
       "checks": [
@@ -1639,7 +1663,9 @@
       "category": "ci",
       "path": "tool/ci/ci_metrics.mjs",
       "command": "node tool/ci/ci_metrics.mjs --dry-run",
-      "safety": "remote-write",
+      "surface": "remote-write",
+      "guard": "none",
+      "guardReason": "Posts the weekly metrics comment with gh unless --dry-run; meant to run only from ci-metrics.yml.",
       "status": "active",
       "impactPaths": [
         ".github/workflows/ci-metrics.yml",
@@ -1651,14 +1677,16 @@
         "node --check tool/ci/ci_metrics.mjs",
         "node --test tool/ci/ci_metrics.test.mjs"
       ],
-      "role": "gate"
+      "role": "gate",
+      "runbook": "docs/release_operations.md#weekly-ci-metrics"
     },
     {
       "id": "cloudflare:edge-policy",
       "category": "cloudflare",
       "path": "tool/cloudflare/apply_edge_policy.mjs",
       "command": "node tool/cloudflare/apply_edge_policy.mjs",
-      "safety": "remote-write",
+      "surface": "remote-write",
+      "guard": "apply-flag",
       "checkSafety": "local-readonly",
       "status": "active",
       "description": "Plans, and with --apply makes, the catchdates.com Cloudflare zone match tool/cloudflare/edge_policy.json: proxied DNS, strict TLS, Bot Fight Mode, AI-crawler blocking, one firewall rule and one rate-limit rule. Rules it did not create are kept.",
@@ -1684,7 +1712,7 @@
       "category": "contracts",
       "path": "tool/check_data_contract.sh",
       "command": "./tool/check_data_contract.sh",
-      "safety": "local-build-test",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Runs the full data/schema/rules contract gate.",
       "checks": [
@@ -1697,7 +1725,7 @@
       "category": "contracts",
       "path": "tool/contracts/check_firestore_contract.mjs",
       "command": "node tool/contracts/check_firestore_contract.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks Firestore contract metadata against rules, schemas, and Functions exports.",
       "ciRequirements": {
@@ -1725,7 +1753,7 @@
       "category": "contracts",
       "path": "tool/contracts/check_firestore_query_indexes.mjs",
       "command": "node tool/contracts/check_firestore_query_indexes.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks repository-owned composite Firestore query contracts against firestore.indexes.json, rejects uncontracted composite query builders, and blocks duplicate composite definitions and non-deployable single-field plus __name__ pseudo-composites.",
       "impactPaths": [
@@ -1765,7 +1793,7 @@
       "category": "contracts",
       "path": "tool/contracts/check_firestore_read_limits.mjs",
       "command": "node tool/contracts/check_firestore_read_limits.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Rejects numeric repository read limits and unbounded Firestore collection reads outside the canonical ReadLimitPolicy and reviewed-exception contracts.",
       "checks": [
@@ -1792,7 +1820,7 @@
       "category": "contracts",
       "path": "tool/contracts/generate_flutter_form_contract_inventory.mjs",
       "command": "node tool/contracts/generate_flutter_form_contract_inventory.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Scans every editable canonical Flutter form control and descriptor instance directly from both installable apps, rejecting missing generated contracts, serializers, endpoint bindings, or explicit exemptions; an explicit non-check run writes only an ignored build report.",
       "checks": [
@@ -1810,7 +1838,7 @@
       "category": "contracts",
       "path": "test/core/forms/contract_alignment_test.dart",
       "command": "flutter test --concurrency=1 test/core/forms/contract_alignment_test.dart",
-      "safety": "local-build-test",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Checks that consumer and host form descriptors bind to generated schema field constraints, including a seeded contradictory-limit probe.",
       "checks": [
@@ -1856,7 +1884,7 @@
       "category": "contracts",
       "path": "tool/contracts/generate_business_rules.mjs",
       "command": "node tool/contracts/generate_business_rules.mjs",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Generates shared Flutter and Functions business constants.",
       "checks": [
@@ -1870,7 +1898,7 @@
       "category": "contracts",
       "path": "tool/contracts/generate_domain_classes.mjs",
       "command": "node tool/contracts/generate_domain_classes.mjs",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Generates schema-derived Dart domain classes from curated contract projection specs.",
       "checks": [
@@ -1884,7 +1912,7 @@
       "category": "contracts",
       "path": "tool/contracts/generate_schema_contracts.mjs",
       "command": "node tool/contracts/generate_schema_contracts.mjs",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Generates isolated Functions schemas, validators and catalogs plus test/tool inventories, paths and cross-runtime contracts.",
       "checks": [
@@ -1908,7 +1936,7 @@
       "category": "contracts",
       "path": "tool/contracts/generate_market_catalog.mjs",
       "command": "node tool/contracts/generate_market_catalog.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-writes-repo",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1944,7 +1972,7 @@
       "category": "contracts",
       "path": "tool/contracts/generate_market_catalog.mjs",
       "command": "node tool/contracts/generate_market_catalog.mjs --check --without-schema",
-      "safety": "local-readonly",
+      "surface": "local-writes-repo",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -1963,7 +1991,7 @@
       "category": "contracts",
       "path": "tool/contracts/check_migration_contracts.mjs",
       "command": "node tool/contracts/check_migration_contracts.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates staged migration contract phase metadata and live-apply evidence.",
       "checks": [
@@ -1989,7 +2017,7 @@
       "category": "contracts",
       "path": "tool/check_organizer_nomenclature.mjs",
       "command": "node tool/check_organizer_nomenclature.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype. Flutter Dart file names, identifiers and localization keys must say organizer: what tool/architecture/rename_to_organizer.mjs would still rename fails, apart from the club subtype and names the generated schema contracts declare. Contract names, TypeScript identifiers and file names must say organizer too: what tool/architecture/rename_wire_to_organizer.mjs would still rename fails, apart from the club subtype and BigQuery columns.",
       "impactPaths": [
@@ -2051,7 +2079,7 @@
       "category": "contracts",
       "path": "tool/contracts/check_schema_path_literals.mjs",
       "command": "node tool/contracts/check_schema_path_literals.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Blocks retired raw schema path literals in production code.",
       "checks": [
@@ -2063,7 +2091,7 @@
       "category": "contracts",
       "path": "tool/contracts/check_firestore_rules_semantics.mjs",
       "command": "node tool/contracts/check_firestore_rules_semantics.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks Firestore rule semantics against schema-owned paths.",
       "checks": [
@@ -2075,7 +2103,7 @@
       "category": "contracts",
       "path": "tool/contracts/check_schema_fixtures.mjs",
       "command": "node tool/contracts/check_schema_fixtures.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates every contract fixture against its explicitly mapped generated JSON Schema.",
       "checks": [
@@ -2113,7 +2141,7 @@
       "category": "contracts",
       "path": "tool/contracts/check_storage_contract.mjs",
       "command": "node tool/contracts/check_storage_contract.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks Storage contract metadata against storage rules and tests.",
       "checks": [
@@ -2138,7 +2166,7 @@
       "category": "contracts",
       "path": "tool/contracts/check_schema_type_boundaries.mjs",
       "command": "node tool/contracts/check_schema_type_boundaries.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks schema/type boundaries, direct generated runtime imports, and explicit erased Admin type imports.",
       "checks": [
@@ -2152,7 +2180,7 @@
       "category": "contracts",
       "path": "tool/contracts/validate_schema_contracts.mjs",
       "command": "node tool/contracts/validate_schema_contracts.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates JSON schema source consistency.",
       "checks": [
@@ -2164,7 +2192,7 @@
       "category": "generator",
       "path": "tool/copy/sync_event_success_questionnaires.mjs",
       "command": "node tool/copy/sync_event_success_questionnaires.mjs",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Validates marketing-owned Event Success questionnaire copy and keeps the typed Dart domain catalog generated from locale JSON.",
       "checks": [
@@ -2187,7 +2215,7 @@
         "tool/lib/flutter_source_roots.mjs"
       ],
       "command": "node tool/copy/check_l10n_key_usage.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -2211,7 +2239,7 @@
       "category": "lint",
       "path": "tool/copy/check_mobile_copy_catalog.mjs",
       "command": "node tool/copy/check_mobile_copy_catalog.mjs",
-      "safety": "local",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Validates typed Flutter ARB copy metadata, rejects generated visibleCopy-style identifier keys unless explicitly allowlisted, and can export a marketing review CSV.",
       "checks": [
@@ -2246,7 +2274,7 @@
       "category": "test",
       "path": "tool/copy/check_mobile_copy_catalog_test.mjs",
       "command": "node tool/copy/check_mobile_copy_catalog_test.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "internal",
       "description": "Runs seeded metadata validation probes for the Flutter ARB copy catalog.",
       "checks": [
@@ -2259,7 +2287,7 @@
       "category": "lint",
       "path": "tool/copy/check_mobile_copy_ownership.dart",
       "command": "dart run tool/copy/check_mobile_copy_ownership.dart",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Blocks unmanaged Flutter product copy in widget arguments, copy-shaped defaults and initializers, presentation-state members, validator/share/status helpers, and Event Success display enums; the checked baseline must remain empty.",
       "checks": [
@@ -2278,7 +2306,6 @@
       "id": "copy:mobile-simple-migration",
       "category": "generator",
       "path": "tool/copy/migrate_simple_mobile_copy.dart",
-      "safety": "local",
       "status": "retired",
       "description": "Migrates eligible user-visible literals from clean Flutter files into the typed ARB catalog while preserving copy whitespace.",
       "role": "generator",
@@ -2291,7 +2318,7 @@
       "category": "generator",
       "path": "tool/copy/sync_native_copy.mjs",
       "command": "node tool/copy/sync_native_copy.mjs",
-      "safety": "local",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Keeps iOS permission copy generated from the marketing-reviewable native English catalog.",
       "checks": [
@@ -2308,7 +2335,7 @@
       "category": "generator",
       "path": "tool/copy/sync_notification_copy.mjs",
       "command": "node tool/copy/sync_notification_copy.mjs",
-      "safety": "local",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Keeps Functions notification templates generated from the marketing-reviewable English catalog.",
       "checks": [
@@ -2325,7 +2352,7 @@
       "category": "generator",
       "path": "tool/copy/sync_structured_domain_copy.dart",
       "command": "dart run tool/copy/sync_structured_domain_copy.dart",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Validates marketing-owned structured domain copy and regenerates typed Event Success and event-policy catalogs from Dart structure templates.",
       "checks": [
@@ -2339,99 +2366,114 @@
       "category": "data",
       "path": "tool/data/backfill_algolia_explore_search.mjs",
       "command": "node tool/data/backfill_algolia_explore_search.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Backfills Algolia Explore search records from club and event projections.",
       "checks": [
         "node --check tool/data/backfill_algolia_explore_search.mjs"
-      ]
+      ],
+      "runbook": "docs/release_operations.md#public-provider-ids-and-server-side-search-secrets"
     },
     {
       "id": "data:backfill-city-interest",
       "category": "data",
       "path": "tool/data/backfill_city_interest.mjs",
       "command": "node tool/data/backfill_city_interest.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Maps existing launch-notice cities to market catalog ids where one city matches, counts each person once per city in cityInterest, and reports the rest.",
       "checks": [
         "node --check tool/data/backfill_city_interest.mjs",
         "node --test tool/data/backfill_city_interest.test.mjs"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "docs/release_operations.md#city-interest-backfill"
     },
     {
       "id": "data:backfill-event-admin-search",
       "category": "data",
       "path": "tool/data/backfill_event_admin_search.mjs",
       "command": "node tool/data/backfill_event_admin_search.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Backfills event adminSearch projections for the admin Events canonical directory.",
       "checks": [
         "node --check tool/data/backfill_event_admin_search.mjs",
         "node --test tool/data/backfill_event_admin_search.test.mjs"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "docs/release_operations.md#explore-event-discovery-rollout"
     },
     {
       "id": "data:backfill-event-discovery",
       "category": "data",
       "path": "tool/data/backfill_event_discovery_fields.mjs",
       "command": "node tool/data/backfill_event_discovery_fields.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Backfills event discovery projection fields for Explore's direct event index.",
       "checks": [
         "node --check tool/data/backfill_event_discovery_fields.mjs",
         "node --test tool/data/backfill_event_discovery_fields.test.mjs"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "docs/release_operations.md#explore-event-discovery-rollout"
     },
     {
       "id": "data:backfill-organizer-admin-search",
       "category": "data",
       "path": "tool/data/backfill_organizer_admin_search.mjs",
       "command": "node tool/data/backfill_organizer_admin_search.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Backfills organizer adminSearch projections for the admin Organizers canonical directory.",
       "checks": [
         "node --check tool/data/backfill_organizer_admin_search.mjs",
         "node --test tool/data/backfill_organizer_admin_search.test.mjs"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "docs/release_operations.md#explore-event-discovery-rollout"
     },
     {
       "id": "data:delete-reviews",
       "category": "data",
       "path": "tool/data/delete_firestore_reviews.mjs",
       "command": "node tool/data/delete_firestore_reviews.mjs",
-      "safety": "remote-destructive-apply-guarded",
+      "surface": "remote-destructive",
+      "guard": "apply-flag",
       "status": "active",
       "description": "Deletes reviews only with explicit confirmation.",
       "checks": [
         "node --check tool/data/delete_firestore_reviews.mjs"
-      ]
+      ],
+      "runbook": "firebase/README.md#common-commands"
     },
     {
       "id": "data:hygiene-media-paths",
       "category": "data",
       "path": "tool/data/hygiene_media_paths.mjs",
       "command": "node tool/data/hygiene_media_paths.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-destructive",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Audits and repairs hosted media paths against Firestore and Storage contracts.",
       "checks": [
         "node --check tool/data/hygiene_media_paths.mjs"
-      ]
+      ],
+      "runbook": "tool/README.md#storage-media-path-hygiene"
     },
     {
       "id": "data:migrate-firestore-consolidation",
       "category": "data",
       "path": "tool/data/migrate_firestore_consolidation.mjs",
       "command": "node tool/data/migrate_firestore_consolidation.mjs --migration <name|all>",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Copies documents from retired collections into their November 2026 consolidation replacements; never deletes or overwrites.",
       "checks": [
@@ -2444,14 +2486,16 @@
         "tool/data/lib/copy_forward.mjs",
         "functions/src/events/eventPolicy.ts"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "docs/data_contracts.md#organizer-communication-preferences-and-crm"
     },
     {
       "id": "data:migrate-form-domains",
       "category": "data",
       "path": "tool/data/migrate_form_domains_to_custom_domains.mjs",
       "command": "node tool/data/migrate_form_domains_to_custom_domains.mjs --env <dev|staging|prod> [--apply [--retire-legacy]]",
-      "safety": "remote-destructive-apply-guarded",
+      "surface": "remote-destructive",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "One-time fold of the retired organizerFormDomains registry into customDomains (#1110): a read-only count and conversion plan by default, idempotent copies on --apply that never overwrite a differing record, and deletion of exactly copied legacy documents with --retire-legacy.",
       "checks": [
@@ -2462,14 +2506,16 @@
         "tool/data/migrate_form_domains_to_custom_domains.test.mjs",
         "functions/src/customDomains/legacyFormDomainMigration.ts",
         "contracts/migrations/organizer_form_domains_to_custom_domains.json"
-      ]
+      ],
+      "runbook": "docs/release_operations.md#folding-the-retired-organizerformdomains-registry"
     },
     {
       "id": "data:organizer-takedown",
       "category": "data",
       "path": "tool/data/organizer_takedown.mjs",
       "command": "node tool/data/organizer_takedown.mjs --env <dev|prod> --case-id TD-nnnn --mode <plan|preserve|apply|suppress|verify|bigquery>",
-      "safety": "remote-destructive-apply-guarded",
+      "surface": "remote-destructive",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Preserve-then-delete takedown of one organiser case read from the restricted preservation bucket: counts-only plan, SHA-256 preservation export, deletion across every store with audit-log redaction, do-not-list suppression entry, verification and BigQuery cleanup.",
       "checks": [
@@ -2490,14 +2536,15 @@
         "operations/src/workflows/supply-intake/organizer-matching/normalize.mjs",
         "contracts/firestore/listing_suppressions.schema.json"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "docs/release_operations.md#organiser-takedown"
     },
     {
       "id": "data:profile-projection-parity",
       "category": "data",
       "path": "tool/data/profile_projection_parity.test.mjs",
       "command": "node --test tool/data/profile_projection_parity.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks seed and Functions public profile projection parity.",
       "checks": [
@@ -2514,7 +2561,8 @@
       "category": "data",
       "path": "tool/data/purge_deck_era_records.mjs",
       "command": "node tool/data/purge_deck_era_records.mjs --env <dev|staging|prod>",
-      "safety": "remote-destructive-apply-guarded",
+      "surface": "remote-destructive",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "One-off purge of the retired swipe deck's likes, passes, comments and the chats and signal facts derived from them; dry run by default.",
       "checks": [
@@ -2527,14 +2575,16 @@
         "tool/data/fixtures/deck_era_purge/world.mjs",
         "functions/src/matching/deckEraDecision.ts"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "docs/release_operations.md#retired-swipe-deck-purge-one-off"
     },
     {
       "id": "data:repair-club-hosts",
       "category": "data",
       "path": "tool/data/recompute_organizer_host_profiles.mjs",
       "command": "node tool/data/recompute_organizer_host_profiles.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-flag",
       "status": "active",
       "description": "Repairs denormalized club host identity projections.",
       "checks": [
@@ -2551,14 +2601,16 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "tool/README.md#firestore-projection-repairs"
     },
     {
       "id": "data:repair-event-aggregates",
       "category": "data",
       "path": "tool/data/recompute_event_aggregate_counts.mjs",
       "command": "node tool/data/recompute_event_aggregate_counts.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-flag",
       "status": "active",
       "description": "Repairs event aggregate counts from participation edges.",
       "checks": [
@@ -2569,14 +2621,16 @@
         "tool/data/recompute_event_aggregate_counts.test.mjs",
         "tool/data/lib/recompute_cli_test_support.mjs"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "tool/README.md#firestore-projection-repairs"
     },
     {
       "id": "data:repair-organizer-follower-counts",
       "category": "data",
       "path": "tool/data/recompute_organizer_follower_counts.mjs",
       "command": "node tool/data/recompute_organizer_follower_counts.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-flag",
       "status": "active",
       "description": "Repairs organizer followerCount projections from active organizerFollows.",
       "checks": [
@@ -2587,14 +2641,16 @@
         "tool/data/recompute_organizer_follower_counts.test.mjs",
         "tool/data/lib/recompute_cli_test_support.mjs"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "tool/README.md#firestore-projection-repairs"
     },
     {
       "id": "data:repair-public-profiles",
       "category": "data",
       "path": "tool/data/recompute_public_profiles.mjs",
       "command": "node tool/data/recompute_public_profiles.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-destructive",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Repairs public profile projections from user profiles.",
       "checks": [
@@ -2612,14 +2668,16 @@
           "node",
           "root-npm"
         ]
-      }
+      },
+      "runbook": "docs/backend_operation_catalog.md#user-identity-projection-inventory"
     },
     {
       "id": "data:repair-review-authors",
       "category": "data",
       "path": "tool/data/recompute_review_author_profiles.mjs",
       "command": "node tool/data/recompute_review_author_profiles.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-flag",
       "status": "active",
       "description": "Repairs denormalized review author names.",
       "checks": [
@@ -2636,14 +2694,15 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "docs/backend_operation_catalog.md#user-identity-projection-inventory"
     },
     {
       "id": "data:validate",
       "category": "data",
       "path": "tool/data/validate_firestore_data.mjs",
       "command": "node tool/data/validate_firestore_data.mjs",
-      "safety": "remote-read",
+      "surface": "remote-read",
       "status": "active",
       "description": "Validates live or emulator Firestore data invariants; checks use offline fixtures only.",
       "ciRequirements": {
@@ -2662,14 +2721,16 @@
       "checks": [
         "node --check tool/data/validate_firestore_data.mjs",
         "node --test tool/data/validate_firestore_data.test.mjs"
-      ]
+      ],
+      "runbook": "firebase/README.md#common-commands"
     },
     {
       "id": "demo:cross-paths-core",
       "category": "demo",
       "path": "tool/demo/cross_paths_demo_core.mjs",
       "command": "node --test tool/demo/cross_paths_demo_core.test.mjs",
-      "safety": "local-test",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "internal",
       "description": "Plans and verifies consent-complete Cross Paths synthetic fixtures, including the exact production Mumbai QA fixture and its Firebase test-phone login.",
       "impactPaths": [
@@ -2687,7 +2748,8 @@
       "category": "demo",
       "path": "tool/demo/demo_ops.mjs",
       "command": "node tool/demo/demo_ops.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-destructive",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Operational wrapper for demo seeding, Cross Paths fixtures, matching, Suvbot, and demo readiness.",
       "impactPaths": [
@@ -2709,14 +2771,16 @@
         "node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --check"
       ],
       "role": "generator",
-      "checkSafety": "local-readonly"
+      "checkSafety": "local-readonly",
+      "runbook": "docs/demo_data_seeding.md#internal-demo-ops-cli"
     },
     {
       "id": "demo:ops-core",
       "category": "demo",
       "path": "tool/demo/demo_ops_core.mjs",
       "command": "node --test tool/demo/demo_ops_core.test.mjs",
-      "safety": "local-test",
+      "surface": "remote-destructive",
+      "guard": "apply-and-prod-flag",
       "status": "internal",
       "description": "Shared planning and Firestore helpers for demo operations.",
       "impactPaths": [
@@ -2732,7 +2796,7 @@
       "category": "demo",
       "path": "tool/demo/demo_persona_catalog.mjs",
       "command": "node tool/demo/demo_persona_catalog.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates and summarizes sales-demo persona catalogs.",
       "checks": [
@@ -2756,7 +2820,7 @@
       "category": "demo",
       "path": "tool/demo/demo_persona_image_generation.mjs",
       "command": "node tool/demo/demo_persona_image_generation.mjs",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Builds reviewable persona image-generation batches from the demo persona catalog.",
       "checks": [
@@ -2779,7 +2843,6 @@
       "id": "demo:rsvp-fixture-builder",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/build_fixture.cjs",
-      "safety": "local-writes-build-artifacts",
       "status": "retired",
       "description": "Internal synthetic RSVP fixture builder dispatched and checked by the active demo:rsvp-preview owner.",
       "retiredOn": "2026-11-18",
@@ -2790,7 +2853,6 @@
       "id": "demo:rsvp-host-ui",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/main.dart",
-      "safety": "local-writes-build-artifacts",
       "status": "retired",
       "description": "Renders production Host widgets with localhost synthetic repository adapters.",
       "retiredOn": "2026-11-18",
@@ -2801,7 +2863,6 @@
       "id": "demo:rsvp-import-api",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/import_server.cjs",
-      "safety": "local-writes-build-artifacts",
       "status": "retired",
       "description": "Runs normal roster import and CRM projection against an isolated synthetic store; never initializes Firebase Admin.",
       "retiredOn": "2026-11-18",
@@ -2812,7 +2873,6 @@
       "id": "demo:rsvp-import-ui",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/import_main.dart",
-      "safety": "local-writes-build-artifacts",
       "status": "retired",
       "description": "Renders the production spreadsheet parser and mapping sheet for a local synthetic XLSX fixture.",
       "retiredOn": "2026-11-18",
@@ -2823,7 +2883,6 @@
       "id": "demo:rsvp-preview",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/form_definition.mjs",
-      "safety": "local-writes-build-artifacts",
       "status": "retired",
       "description": "Builds an isolated synthetic RSVP form and review fixture; does not initialize Firebase or send messages.",
       "role": "generator",
@@ -2835,7 +2894,6 @@
       "id": "demo:rsvp-public-ui",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/vite.config.mjs",
-      "safety": "local",
       "status": "retired",
       "description": "Serves the production public form renderer with synthetic in-memory submission adapters.",
       "retiredOn": "2026-11-18",
@@ -2847,7 +2905,7 @@
       "category": "demo",
       "path": "tool/demo/demo_schedule_policy.mjs",
       "command": "node --check tool/demo/demo_schedule_policy.mjs",
-      "safety": "local",
+      "surface": "remote-read",
       "status": "internal",
       "description": "Shared demo schedule-lock and event timing policy helpers.",
       "checks": [
@@ -2859,7 +2917,8 @@
       "category": "demo",
       "path": "tool/demo/seed_demo_data.mjs",
       "command": "node tool/demo/seed_demo_data.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-destructive",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Builds and optionally writes demo seed worlds.",
       "impactPaths": [
@@ -2874,14 +2933,15 @@
         "node --check tool/demo/seed_demo_data.mjs",
         "npm --prefix functions run build && node --test tool/demo/seed_demo_data_append.test.mjs tool/demo/seed_demo_data_schema.test.mjs"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "docs/demo_data_seeding.md#apply-to-dev-or-staging"
     },
     {
       "id": "demo:seed-scenario-catalog",
       "category": "demo",
       "path": "tool/demo/demo_seed_scenario_catalog.mjs",
       "command": "node --test tool/demo/demo_seed_scenario_catalog.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "internal",
       "description": "Loads and validates reusable demo seed scenario metadata.",
       "impactPaths": [
@@ -2899,7 +2959,7 @@
       "category": "design",
       "path": "tool/design/component_concepts.mjs",
       "command": "node --test tool/design/component_concepts.test.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "internal",
       "description": "Provides deterministic component-concept identity, collision-key, topology, and metric helpers.",
       "checks": [
@@ -2913,7 +2973,7 @@
       "category": "design",
       "path": "tool/design/check_component_contracts.mjs",
       "command": "node tool/design/check_component_contracts.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates the Catch component contract registry used by Figma, Claude Design, and Code Connect handoffs.",
       "checks": [
@@ -2944,7 +3004,7 @@
       "category": "design",
       "path": "tool/design/check_component_enforcement_coverage.mjs",
       "command": "node tool/design/check_component_enforcement_coverage.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Requires every component to have static enforcement, executable contract verification, or an exceptional unexpired waiver, and every plugin/checker code to have a catalog owner.",
       "checks": [
@@ -2993,7 +3053,7 @@
         "design/components/catch.components.json"
       ],
       "command": "node tool/design/check_component_lexicon.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Binds declared cross-stack component symbols and enforces every public shared Widget constructor against the binding boolean, slot, callback, builder and enum-axis grammar using the syntax-only Dart collector.",
       "checks": [
@@ -3036,7 +3096,7 @@
         "packages/catch_ui/lib/**"
       ],
       "command": "node tool/design/component_matrix.mjs",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "role": "generator",
       "description": "Generates the redesign programme's component matrix from the registry and the two frameworks' public barrels: what exists today and what is left to align, port or absorb.",
@@ -3057,7 +3117,7 @@
       "category": "design",
       "path": "tool/design/check_comprehensive_todo_summary.mjs",
       "command": "node tool/design/check_comprehensive_todo_summary.mjs --check",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates authored design decisions and P1 screen coverage; derives current gap and migration summaries without duplicated Markdown counts.",
       "checks": [
@@ -3082,7 +3142,7 @@
       "category": "design",
       "path": "tool/design/consolidation_gates.mjs",
       "command": "node tool/design/consolidation_gates.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Reports every UI consolidation done-gate in design/components/consolidation_gates.json (tokens, component library, screens) against its zero target; never fails on the measured values.",
       "checks": [
@@ -3114,7 +3174,7 @@
       "category": "design",
       "path": "tool/design/generate_field_inventory.mjs",
       "command": "node tool/design/generate_field_inventory.mjs --check",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Validates the live CatchField facade and section contracts deterministically; an explicit non-check run writes an ignored build report rather than tracked governance evidence.",
       "checks": [
@@ -3133,7 +3193,7 @@
       "category": "design",
       "path": "tool/design/check_host_event_field_contracts.mjs",
       "command": "node tool/design/check_host_event_field_contracts.mjs --check",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Enforces collapsed event create/edit disclosures and activity-palette accents on ActivityKind, EventInteractionModel, and PaceLevel Host choice fields.",
       "checks": [
@@ -3178,7 +3238,7 @@
         "lib/hosts/organizer/README.md"
       ],
       "command": "node tool/design/build_host_feature_responsibilities.mjs --check",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -3200,7 +3260,7 @@
       "category": "design",
       "path": "tool/design/check_host_section_composition.mjs",
       "command": "node --test test/tool/host_section_composition_test.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "internal",
       "role": "finder",
       "description": "Source guard imported by design:component-contracts; rejects generic operational card and local empty-state anatomy on migrated Host surfaces.",
@@ -3228,7 +3288,7 @@
         ]
       },
       "command": "node tool/design/check_host_shell_coverage.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks the four ordered Host shell destinations against runtime routes, production sources, and canonical UI capture ownership.",
       "checks": [
@@ -3243,7 +3303,7 @@
       "category": "design",
       "path": "tool/design/generate_icon_catalog.mjs",
       "command": "node tool/design/generate_icon_catalog.mjs --check",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Validates the shared icon-role catalog against the vendored Flutter font, locked React family version and activity kinds, and verifies the generated Flutter CatchIcons and @catch/web-ui role maps.",
       "checks": [
@@ -3298,7 +3358,7 @@
       "category": "design",
       "path": "tool/design/check_icon_family_usage.mjs",
       "command": "node tool/design/check_icon_family_usage.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Ratchets Flutter and React icon-family bypasses and legacy CatchIcons aliases downward; rejects growth and unrecorded reductions.",
       "checks": [
@@ -3340,7 +3400,7 @@
       "category": "design",
       "path": "tool/design/vendor_icon_font.mjs",
       "command": "node tool/design/vendor_icon_font.mjs --dry-run",
-      "safety": "local-write-explicit",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Vendors the icon family's Flutter font and codepoints from its static npm package at the version package-lock.json resolves for the React package, pins the version and font hash in the icon-role catalog, and regenerates both icon layers; run it on a lucide-react bump so design:icon-catalog passes.",
       "checks": [
@@ -3377,7 +3437,7 @@
         "design/components/system/**"
       ],
       "command": "node tool/design/import_ds_props.mjs",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "role": "generator",
       "description": "Imports the design source's component types into each registry record's system block and copies its guidelines, whose Flutter section comes from the record's dart field. CI has no design source, so --check there compares props, slots and Flutter sections against the committed copies.",
@@ -3398,7 +3458,6 @@
       "id": "design:legacy-dock-rename",
       "category": "design",
       "path": "tool/design/codemods/legacy_dock.mjs",
-      "safety": "local-readonly",
       "status": "retired",
       "description": "Moves the pre-redesign catch_ui dock's callers (its utility, primary, pageAction and primaryContent recipes) from CatchDock to CatchLegacyDock, and the moved file's path, under the same trees as the top bar rename, now that CatchDock takes the system's placements. One-shot: --check, --dry-run and the rename run by hand on branches cut before the first caller of the system dock; CI runs only its tests.",
       "role": "generator",
@@ -3410,7 +3469,6 @@
       "id": "design:legacy-library-rename",
       "category": "design",
       "path": "tool/design/rename_legacy_library_symbols.mjs",
-      "safety": "local-readonly",
       "status": "retired",
       "description": "Redesign P2.1 (Flutter): renames the pre-redesign catch_ui callers of CatchSurface, CatchText and CatchTextVariant to CatchLegacySurface, CatchLegacyText and CatchLegacyTextVariant, and the moved files' paths, under lib, apps, packages/*/lib and test, test, integration_test, widgetbook/lib and tool/ui_capture. One-shot: --check and the rename run by hand on branches cut before the first caller of the system components; CI runs only its tests.",
       "role": "generator",
@@ -3422,7 +3480,6 @@
       "id": "design:legacy-top-bar-rename",
       "category": "design",
       "path": "tool/design/codemods/legacy_top_bar.mjs",
-      "safety": "local-readonly",
       "status": "retired",
       "description": "Moves the pre-redesign catch_ui top bar's callers (its route, screen, primaryRail, brand and identity recipes) from CatchTopBar to CatchLegacyTopBar, and the moved file's path, under lib, apps, packages/*/lib and test, test, integration_test, widgetbook/lib and tool/ui_capture, now that CatchTopBar takes the system's six variants. One-shot: --check, --dry-run and the rename run by hand on branches cut before the first caller of the system top bar; CI runs only its tests.",
       "role": "generator",
@@ -3434,7 +3491,6 @@
       "id": "design:legacy-web-library-rename",
       "category": "design",
       "path": "tool/design/rename_legacy_web_library_symbols.mjs",
-      "safety": "local-readonly",
       "status": "retired",
       "description": "Redesign P2.1 (web): renames the pre-redesign web-ui callers of CatchSurface, CatchText and CatchIcon (and their props and variant types) to the CatchLegacy* names, and the barrel's CatchGround to CatchBandGround, under admin/src, website/src and packages/web-ui/src. One-shot: --check and the rename run by hand on branches cut before the first caller of the system components; CI runs only its tests.",
       "role": "generator",
@@ -3447,7 +3503,7 @@
       "category": "design",
       "path": "tool/design/check_library_shims.mjs",
       "command": "node tool/design/check_library_shims.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Ratchets @Deprecated catch_ui shims left for legacy callers, and rejects any deprecated catch_ui symbol or ignored Catch code under apps/*/lib and lib/pages.",
       "checks": [
@@ -3478,7 +3534,7 @@
       "category": "design",
       "path": "tool/design/build_lint_enforcement_tables.mjs",
       "command": "node tool/design/build_lint_enforcement_tables.mjs --check",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Generates analyzer steering tables, contract expectations, and seeded steering probes from the component registry.",
       "checks": [
@@ -3503,7 +3559,6 @@
       "id": "design:loading-composition",
       "category": "design",
       "path": "tool/design/check_loading_composition.mjs",
-      "safety": "local",
       "status": "retired",
       "description": "Rejects removed generic row and collection skeleton recipes in app source and screen-local root title typography overrides.",
       "role": "gate",
@@ -3536,7 +3591,7 @@
         ]
       },
       "command": "node tool/design/check_new_widget_inventory.mjs --check --no-write",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Fails closed against a reachable base and transitively discovers widget subclasses across production roots. New or moved public widgets require Widgetbook coverage; shared widgets also require a canonical Catch* name and exact registry source identity. The generated markdown inventory is not an input. Private widgets and Widget-returning helpers remain blocked; generated exclusions are file-specific or suffix-specific.",
       "checks": [
@@ -3581,7 +3636,7 @@
       "category": "design",
       "path": "tool/design/export_onboarding_references.mjs",
       "command": "node tool/design/export_onboarding_references.mjs --check",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Regenerates onboarding step reference PNGs from the local Claude handoff and validates generated output dimensions without launching Chrome.",
       "checks": [
@@ -3595,7 +3650,7 @@
       "category": "design",
       "path": "tool/design/check_option_group_usage.mjs",
       "command": "node tool/design/check_option_group_usage.mjs --summary",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Reports production direct CatchChoiceButton usage so underline tabs route through CatchChoiceInput.segmented or CatchPageTabBar rather than forking divider, indicator, ink, and trailing alignment behavior.",
       "checks": [
@@ -3614,7 +3669,7 @@
       "category": "design",
       "path": "tool/design/check_design_parity.mjs",
       "command": "node tool/design/check_design_parity.mjs --check",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Runs explicit source design invariants; identical registered scanner commands execute once in the shared tool runner. Snapshot handoff checks and advisory reports are separate explicit CLI options.",
       "checks": [
@@ -3662,7 +3717,7 @@
         "test/core/widgets/catch_tab_bar_test.dart"
       ],
       "command": "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart packages/catch_ui/test/foundations_test.dart",
-      "safety": "local-build-test",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Measures platform targets, disjoint edge taps, keyboard and disabled semantics, text reflow, scaled ancestors and pinned floating-navigation typography using production widgets.",
       "ciRequirements": {
@@ -3697,7 +3752,7 @@
         "test/core/platform_typography_test.dart"
       ],
       "command": "node tool/design/check_platform_token_coverage.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Independently resolves pinned iOS/Android source constants, requires explicit semantic/runtime decisions, rejects incomplete native imports and competing raw functional typography.",
       "checks": [
@@ -3733,7 +3788,7 @@
         ]
       },
       "command": "node tool/design/check_public_surface_behavior.mjs --strict",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Enforces the cross-surface viewer, listing-authority, route-ownership, capability, and action behavior matrix.",
       "checks": [
@@ -3791,7 +3846,7 @@
         "package-lock.json"
       ],
       "command": "node tool/design/publish_design_system.mjs --build",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "role": "generator",
       "description": "Builds the design-system artifact folder (build/design-system, ignored) from @catch/web-ui: the bundle the canvas mounts with React 18, web-ui's static Storybook, each card's guideline and Contract-story preview, fonts, the tokens pipeline's artifact tokens and a manifest of every file's and input's hash. --check rebuilds into a temporary folder and fails on a broken build, a missing guideline or system-name alias, a preview whose story is missing, a hash mismatch, or a stale build/design-system; --compare lists differences from another artifact folder. docs/design_system_publishing.md owns the loop.",
@@ -3823,7 +3878,7 @@
         ]
       },
       "command": "node tool/design/check_rail_contracts.mjs --summary",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Reports rail callers that manually zero divider/header/list chrome instead of using embedded defaults or fullBleed opt-in.",
       "checks": [
@@ -3843,7 +3898,7 @@
       "category": "design",
       "path": "tool/design/export_reference_screen.mjs",
       "command": "node tool/design/export_reference_screen.mjs",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Exports a single Claude Design data-screen-label panel to a reference PNG with explicit --write approval, optional fixed clip, and optional localStorage state.",
       "checks": [
@@ -3857,7 +3912,7 @@
       "category": "design",
       "path": "tool/design/check_reference_screens.mjs",
       "command": "node tool/design/check_reference_screens.mjs --check",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates exported design reference PNG metadata and supports advisory pixel comparison against UI capture artifacts.",
       "checks": [
@@ -3878,7 +3933,7 @@
       "category": "design",
       "path": "tool/design/check_root_screen_composition_contracts.mjs",
       "command": "node tool/design/check_root_screen_composition_contracts.mjs --check",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Registers every consumer and host StatefulShellBranch, verifies adaptive shell adoption, rejects superseded root APIs, and rejects raw empty/error sliver composition. Analyzer-backed UI composition contracts separately own route layout roles and terminal geometry.",
       "checks": [
@@ -3917,7 +3972,7 @@
       "category": "design",
       "path": "tool/design/check_screen_contract_hygiene.mjs",
       "command": "node tool/design/check_screen_contract_hygiene.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Reports advisory raw Material controls and hand-rolled visual values in contracted screen implementation files.",
       "checks": [
@@ -3947,7 +4002,7 @@
         ]
       },
       "command": "node tool/design/check_screen_contracts.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates screen composition contracts against routes, captures, components, source paths, and Dart symbols.",
       "checks": [
@@ -3973,7 +4028,7 @@
         ]
       },
       "command": "node tool/design/check_screen_coverage.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates the exhaustive route-to-screen design parity coverage ledger.",
       "checks": [
@@ -3997,7 +4052,7 @@
         ]
       },
       "command": "node tool/design/check_screen_gutters.mjs --summary",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Reports advisory EdgeInsets inventory and likely hand-rolled screen gutter candidates across presentation and contracted screen implementation files.",
       "checks": [
@@ -4026,7 +4081,7 @@
       "category": "design",
       "path": "tool/design/check_screen_top_bar_contracts.mjs",
       "command": "node tool/design/check_screen_top_bar_contracts.mjs --check",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Gates every Flutter Scaffold app bar, required pushed-route back affordance, raw navigation-bar implementation, shell-covering editor presentation, feature-owned header, and canonical top-bar action family against an exact reviewed screen-chrome role.",
       "checks": [
@@ -4064,7 +4119,7 @@
       "category": "design",
       "path": "tool/design/check_section_dividers.mjs",
       "command": "node tool/design/check_section_dividers.mjs --summary",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Reports raw Divider inventory, high-confidence CatchSection row-divider misuse, custom CatchField leading content without declared text-lane geometry, feature row groups that assign sibling divider flags, and thin feature-local CatchSection wrappers so row and section hairlines route through canonical roles.",
       "checks": [
@@ -4093,7 +4148,7 @@
       "category": "design",
       "path": "tool/design/check_section_headers.mjs",
       "command": "node tool/design/check_section_headers.mjs --summary",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Reports duplicate CatchSection titles, standalone header-plus-section shells, parallel label-plus-child kicker shells, and feature-local titled section/card shells so section header ownership routes through CatchSection or an explicit content primitive.",
       "checks": [
@@ -4131,7 +4186,7 @@
         ]
       },
       "command": "node tool/design/check_terminal_padding.mjs --check",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Rejects hand-rolled device-bottom padding in product code so scroll owners use the shell-aware terminal-clearance primitives.",
       "checks": [
@@ -4152,7 +4207,7 @@
         "tool/design_tokens/**"
       ],
       "command": "node tool/design_tokens.mjs",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Generates shared web CSS, synced web fonts, and Flutter Dart constants from canonical design-token JSON with Style Dictionary.",
       "checks": [
@@ -4179,7 +4234,7 @@
         ]
       },
       "command": "node tool/design/playbook/check_playbook.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates the website playbook source pack: page specs against their schema, every kit component, page section and generated board renders with no unresolved template hole, and source-pack.json hashes are current.",
       "checks": [
@@ -4194,7 +4249,7 @@
       "category": "design",
       "path": "tool/design/playbook/build_boards.mjs",
       "command": "node tool/design/playbook/build_boards.mjs",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Regenerates the website playbook canvas boards and their 390px phone wrappers from the source pack into build/design/playbook-boards, ready to publish to the design canvas.",
       "checks": [
@@ -4223,7 +4278,7 @@
         ]
       },
       "command": "node tool/design/playbook/import_kit_tokens.mjs",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Imports the website playbook kit's values (the design canvas is the source of truth) into design/tokens/catch.tokens.json and rewrites the mapping table in the source pack README. --check fails when a kit hex has no mapping, a mapping is stale, a token or role alias differs from the kit, or the table is stale, so canvas drift fails CI.",
       "checks": [
@@ -4251,7 +4306,7 @@
         "design/components/widget_naming_baseline.json"
       ],
       "command": "node tool/design/generate_widget_catalog.mjs --write",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "role": "generator",
       "description": "Generates and checks the widget catalog inventory from production declarations and reviewed shared-component identities. Source, registry and catalog changes select its drift check; temporary fixtures prove membership retention, documentation attachment and hand-edit rejection.",
@@ -4287,7 +4342,7 @@
         "tool/design/check_widget_classification.mjs"
       ],
       "command": "node tool/design/check_widget_classification.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates source-derived Widget ownership and identity across production roots. Shared Widgets must match reviewed ladder levels, role nouns, use-case comparisons, primary files and canonical names; new registry IDs cannot bypass collisions. No tracked inventory snapshot is trusted.",
       "checks": [
@@ -4314,7 +4369,7 @@
       "category": "design",
       "path": "tool/design/generate_widget_classification.mjs",
       "command": "node tool/design/generate_widget_classification.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "internal",
       "role": "generator",
       "description": "Checked by design:widget-classification-check. Builds the exhaustive widget role, ownership, catalog, and consolidation classification from current Dart source, component contracts, and Widgetbook; explicit generation writes only an ignored build report.",
@@ -4334,7 +4389,7 @@
         "tool/widget_dedupe/pubspec.yaml"
       ],
       "command": "dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json test:test tool/widget_dedupe/test/fingerprint_extractor_test.dart",
-      "safety": "local",
+      "surface": "local-read",
       "status": "internal",
       "ciRequirements": {
         "repositoryView": "full",
@@ -4361,7 +4416,7 @@
         "tool/widget_dedupe/pubspec.yaml"
       ],
       "command": "dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json tool/widget_dedupe/bin/extract_fingerprints.dart --help",
-      "safety": "local",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -4383,7 +4438,7 @@
       "category": "design",
       "path": "tool/design/check_widget_dedupe_probes.mjs",
       "command": "node tool/design/check_widget_dedupe_probes.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "role": "gate",
       "description": "Runs seeded structural, concept-primary, member-parent, composition-identity, and deterministic collision probes for widget consolidation.",
@@ -4397,7 +4452,7 @@
       "category": "design",
       "path": "tool/design/check_widget_pattern_families.mjs",
       "command": "node tool/design/check_widget_pattern_families.mjs --check",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "role": "gate",
       "description": "Validates stable visual-pattern family decisions, explicit member dispositions, constructor-qualified convergence targets, and required Widgetbook or source evidence.",
@@ -4442,7 +4497,7 @@
         "widgetbook/lib/**"
       ],
       "command": "node tool/design/build_widget_similarity.mjs --check",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -4467,7 +4522,7 @@
         "widgetbook/lib/**"
       ],
       "command": "node tool/design/generate_widget_variant_inventory.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -4494,7 +4549,7 @@
         "widgetbook/lib/**"
       ],
       "command": "node tool/design/widgetbook_compare_server.mjs",
-      "safety": "local-server",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -4514,7 +4569,7 @@
       "category": "design",
       "path": "tool/design/check_widgetbook_contract_refs.mjs",
       "command": "node tool/design/check_widgetbook_contract_refs.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates component contracts, primitive contract-state previews, and screen preview ids against generated Widgetbook directories.",
       "checks": [
@@ -4539,7 +4594,7 @@
       "category": "design",
       "path": "tool/design/check_widgetbook_coverage.mjs",
       "command": "node tool/design/check_widgetbook_coverage.mjs",
-      "safety": "local",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Enforces role-derived Widgetbook evidence for concepts, members, contracted compositions, feature-owned compositions, and screen-owned widgets.",
       "checks": [
@@ -4567,7 +4622,7 @@
         "docs/widget_catalog.md"
       ],
       "command": "node tool/docs/check_doc_metadata.mjs --base origin/main",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "index",
@@ -4603,7 +4658,7 @@
       "category": "env",
       "path": "tool/env/check_web_hosting_env.mjs",
       "command": "node tool/env/check_web_hosting_env.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Requires explicit Vite Firebase/App Check env before web Hosting deploys and enforces honest prelaunch or validated live store-link state for marketing deploys.",
       "checks": [
@@ -4629,7 +4684,7 @@
       "category": "env",
       "path": "tool/ci/check_toolchain_consistency.sh",
       "command": "bash tool/ci/check_toolchain_consistency.sh",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates checked-in CI toolchain pins, package-level runtime declarations, and Apple-native workflow runner compatibility.",
       "checks": [
@@ -4644,20 +4699,23 @@
       "category": "env",
       "path": "tool/firebase_with_env.sh",
       "command": "./tool/firebase_with_env.sh",
-      "safety": "remote-firebase",
+      "surface": "remote-deploy",
+      "guard": "none",
+      "guardReason": "Passes any firebase CLI arguments, deploy included, to the selected alias; the operator chooses the command.",
       "status": "active",
       "description": "Runs Firebase CLI against a configured environment alias.",
       "checks": [
         "bash -n tool/firebase_with_env.sh"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "docs/release_operations.md#local-firebase-safety"
     },
     {
       "id": "env:flutter",
       "category": "env",
       "path": "tool/flutter_with_env.sh",
       "command": "./tool/flutter_with_env.sh",
-      "safety": "local-build-run",
+      "surface": "local-writes-scratch",
       "status": "internal",
       "description": "Runs Flutter with active Firebase environment and dart defines, with a bounded CI-only retry for the exact CocoaPods GitHub self-signed-certificate failure.",
       "checks": [
@@ -4671,7 +4729,7 @@
       "category": "env",
       "path": "tool/run_host_dev_simulator.sh",
       "command": "./tool/run_host_dev_simulator.sh",
-      "safety": "local-build-run",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Runs the Catch host dev app on an iOS simulator with local App Check debug settings.",
       "checks": [
@@ -4684,8 +4742,7 @@
       "category": "env",
       "path": "tool/ci/install_pinned_node.sh",
       "command": "bash tool/ci/install_pinned_node.sh",
-      "safety": "remote-read-local-writes-artifacts",
-      "checkSafety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -4711,7 +4768,7 @@
       "category": "env",
       "path": "tool/use_firebase_environment.sh",
       "command": "./tool/use_firebase_environment.sh",
-      "safety": "local-writes-config",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Copies checked-in Firebase files for the selected environment.",
       "checks": [
@@ -4724,7 +4781,7 @@
       "category": "env",
       "path": "tool/validate_firebase_environment.sh",
       "command": "./tool/validate_firebase_environment.sh",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks active Firebase files and dart defines match an environment.",
       "checks": [
@@ -4736,7 +4793,6 @@
       "id": "firebase:affected-function-targets",
       "category": "firebase",
       "path": "tool/firebase/affected_function_targets.mjs",
-      "safety": "local-test",
       "status": "retired",
       "description": "Selects the authorized Functions affected by exact committed module dependencies and the npm packages they load, with full snapshot and conservative fallback behavior.",
       "role": "gate",
@@ -4749,7 +4805,7 @@
       "category": "firebase",
       "path": "tool/firebase/check_deploy_parity.mjs",
       "command": "node tool/firebase/check_deploy_parity.mjs",
-      "safety": "remote-readonly",
+      "surface": "remote-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -4768,14 +4824,15 @@
         "node --check tool/firebase/check_deploy_parity.mjs",
         "node --test tool/firebase/check_deploy_parity.test.mjs"
       ],
-      "role": "gate"
+      "role": "gate",
+      "runbook": "docs/release_operations.md#firebase-functions-deployment-parity"
     },
     {
       "id": "firebase:check-deploy-ref",
       "category": "firebase",
       "path": "tool/firebase/check_deploy_ref.mjs",
       "command": "node tool/firebase/check_deploy_ref.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "internal",
       "description": "Checked by firebase:deploy-targets. Refuses a Firebase deploy whose working ref is provably behind its remote, so a stale checkout cannot publish an older configuration than the remote records.",
       "checks": [
@@ -4789,7 +4846,7 @@
       "category": "firebase",
       "path": "tool/firebase/check_client_callable_dependencies.mjs",
       "command": "node tool/firebase/check_client_callable_dependencies.mjs --role host --environment prod",
-      "safety": "local-with-optional-remote-readonly",
+      "surface": "remote-read",
       "status": "active",
       "description": "Checks target-specific client callable flags and exports, then optionally proves live callable/IAM reachability before release.",
       "checks": [
@@ -4800,39 +4857,44 @@
       "role": "gate",
       "alsoEnforces": [
         "APP-TARGET-IDENTITY-001"
-      ]
+      ],
+      "runbook": "tool/README.md#firebase-deploy-and-client-callable-gates"
     },
     {
       "id": "firebase:create-config-brand",
       "category": "firebase",
       "path": "tool/firebase/create_config_brand.mjs",
       "command": "node tool/firebase/create_config_brand.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Publishes packages/brand/brand.json to config/brand with dry-run and prod guards; --verify compares the live document read-only.",
       "checks": [
         "node --check tool/firebase/create_config_brand.mjs",
         "node --test tool/firebase/create_config_brand.test.mjs"
-      ]
+      ],
+      "runbook": "tool/README.md#brand-config-publish"
     },
     {
       "id": "firebase:create-config-cities",
       "category": "firebase",
       "path": "tool/firebase/create_config_cities.mjs",
       "command": "node tool/firebase/create_config_cities.mjs",
-      "safety": "remote-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Writes config/cities with dry-run and prod guards.",
       "checks": [
         "node --check tool/firebase/create_config_cities.mjs"
-      ]
+      ],
+      "runbook": "docs/data_contracts.md#market-catalog"
     },
     {
       "id": "firebase:deploy-target-plan",
       "category": "firebase",
       "path": "tool/firebase/plan_firebase_deploy_targets.mjs",
       "command": "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -4857,7 +4919,9 @@
       "category": "firebase",
       "path": "tool/deploy_firebase_targets.sh",
       "command": "./tool/deploy_firebase_targets.sh",
-      "safety": "remote-deploy",
+      "surface": "remote-deploy",
+      "guard": "none",
+      "guardReason": "Deploys each phase with firebase deploy --only; meant to run only from _backend-deploy.yml behind its environment approval.",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -4885,14 +4949,15 @@
         "functions/scripts/set-callable-invokers-public.cjs",
         "functions/test/callable-invokers.test.cjs",
         "tool/deploy_firebase_targets.sh"
-      ]
+      ],
+      "runbook": "docs/release_operations.md#firebase-backend-delivery-order"
     },
     {
       "id": "firebase:environment-parity",
       "category": "firebase",
       "path": "tool/firebase/report_environment_parity.mjs",
       "command": "node tool/firebase/report_environment_parity.mjs",
-      "safety": "remote-readonly",
+      "surface": "remote-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -4922,14 +4987,15 @@
         "node --test tool/firebase/report_environment_parity.test.mjs",
         "node tool/firebase/report_environment_parity.mjs --policy-only"
       ],
-      "role": "gate"
+      "role": "gate",
+      "runbook": "tool/README.md#whats-live-where"
     },
     {
       "id": "firebase:environment-readiness",
       "category": "firebase",
       "path": "tool/firebase/check_environment_readiness.mjs",
       "command": "node tool/firebase/check_environment_readiness.mjs --manifest-only",
-      "safety": "local-with-optional-remote-readonly",
+      "surface": "remote-read",
       "status": "active",
       "description": "Checks exact candidate/deployed secret references, source-declared and observed runtime identities, and names-only configuration provenance without secret payload access.",
       "checks": [
@@ -4957,14 +5023,16 @@
         "tool/firebase/function_binding_intent.test.mjs",
         "tool/firebase/prepare_functions_params_for_deploy.mjs",
         ".github/workflows/_backend-deploy.yml"
-      ]
+      ],
+      "runbook": "docs/release_operations.md#firebase-environment-readiness"
     },
     {
       "id": "firebase:form-domain-hosting",
       "category": "firebase",
       "path": "tool/firebase/form_domain_hosting.mjs",
       "command": "node --test tool/firebase/form_domain_hosting.test.mjs",
-      "safety": "local-readonly",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Reads exact Firebase Hosting custom-domain readiness and provisions only a missing resource with a current binding guard.",
       "checks": [
@@ -4979,14 +5047,17 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "docs/release_operations.md#custom-form-domain-onboarding",
+      "checkSafety": "local-readonly"
     },
     {
       "id": "firebase:form-domain-operator",
       "category": "firebase",
       "path": "tool/firebase/form_domain_operator.mjs",
       "command": "node tool/firebase/form_domain_operator.mjs",
-      "safety": "remote-write",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "checkSafety": "local-readonly",
       "status": "active",
       "description": "Plans and explicitly applies client form-domain onboarding and rollback with exact project, reservation and manager authority.",
@@ -5009,14 +5080,16 @@
       "alsoCheckIds": [
         "firebase:form-domain-hosting",
         "firebase:form-domain-origins"
-      ]
+      ],
+      "runbook": "docs/release_operations.md#custom-form-domain-onboarding"
     },
     {
       "id": "firebase:form-domain-origins",
       "category": "firebase",
       "path": "tool/firebase/form_domain_origins.mjs",
       "command": "node --test tool/firebase/form_domain_origins.test.mjs",
-      "safety": "local-readonly",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Reconciles exact custom form origins across Auth, App Check Enterprise keys and upload CORS while preserving unrelated grants.",
       "checks": [
@@ -5031,14 +5104,17 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "docs/release_operations.md#custom-form-domain-onboarding",
+      "checkSafety": "local-readonly"
     },
     {
       "id": "firebase:form-upload-identity",
       "category": "firebase",
       "path": "tool/firebase/form_upload_identity.mjs",
       "command": "node tool/firebase/form_upload_identity.mjs",
-      "safety": "remote-write",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "checkSafety": "local-readonly",
       "status": "active",
       "description": "Checks or explicitly provisions the dedicated form upload runtime identity; default is read-only and production apply is separately gated.",
@@ -5054,14 +5130,15 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "docs/release_operations.md#dedicated-form-upload-identity"
     },
     {
       "id": "firebase:function-binding-intent",
       "category": "firebase",
       "path": "tool/firebase/function_binding_intent.mjs",
       "command": "node --test tool/firebase/function_binding_intent.test.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "role": "gate",
       "description": "Parses authored Functions binding intent without executing source; rejects unsupported and mutable configuration.",
@@ -5087,7 +5164,6 @@
       "id": "firebase:function-release-fingerprints",
       "category": "firebase",
       "path": "tool/firebase/function_release_fingerprints.mjs",
-      "safety": "local-test",
       "status": "retired",
       "description": "Tests per-export runtime dependency fingerprints with conservative unknown-impact rejection; promotion integration requires independent source and immutable package evidence.",
       "role": "gate",
@@ -5100,7 +5176,7 @@
       "category": "firebase",
       "path": "tool/firebase/list_firebase_function_targets.mjs",
       "command": "node tool/firebase/list_firebase_function_targets.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "internal",
       "description": "Checked by firebase:deploy-target-plan. Expands Firebase function deploy target names from Functions exports.",
       "checks": [
@@ -5112,7 +5188,7 @@
       "category": "firebase",
       "path": "tool/firebase/functions_build_hash.mjs",
       "command": "node tool/firebase/functions_build_hash.mjs",
-      "safety": "read-only",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5136,7 +5212,7 @@
       "category": "firebase",
       "path": "tool/firebase/prepare_functions_params_for_deploy.mjs",
       "command": "node --test tool/firebase/prepare_functions_params_for_deploy.test.mjs",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5165,21 +5241,23 @@
       "category": "firebase",
       "path": "tool/firebase_functions.mjs",
       "command": "node tool/firebase_functions.mjs deploy dev --print",
-      "safety": "remote-write-explicit",
+      "surface": "remote-deploy",
+      "guard": "none",
+      "guardReason": "Builds and runs firebase deploy --only functions for the named environment; --print shows the command without running it.",
       "status": "active",
       "role": "operator",
       "description": "Requires an explicit Firebase environment for Functions deploy and log commands.",
       "checks": [
         "node --test tool/firebase_functions.test.mjs"
       ],
-      "runbook": "docs/release_operations.md#deploy-backend"
+      "runbook": "tool/README.md#functions-deploy-wrapper"
     },
     {
       "id": "firebase:functions-source-closure",
       "category": "firebase",
       "path": "tool/firebase/check_functions_source_closure.mjs",
       "command": "node tool/firebase/check_functions_source_closure.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "index",
@@ -5206,7 +5284,7 @@
       "category": "firebase",
       "path": "tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
       "command": "node --test tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5233,7 +5311,7 @@
       "category": "firebase",
       "path": "tool/firebase/wait_firestore_indexes_ready.mjs",
       "command": "node tool/firebase/wait_firestore_indexes_ready.mjs --self-test",
-      "safety": "remote-readonly",
+      "surface": "remote-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5259,19 +5337,21 @@
       "category": "firebase",
       "path": "tool/firebase/validate_google_maps_config.mjs",
       "command": "node tool/firebase/validate_google_maps_config.mjs",
-      "safety": "local-secret-validation",
+      "surface": "remote-read",
       "status": "active",
       "description": "Validates native/web Google Maps config and optional Places secret wiring.",
       "checks": [
         "node --check tool/firebase/validate_google_maps_config.mjs"
-      ]
+      ],
+      "runbook": "docs/location_stack_plan.md#google-cloud-setup-required",
+      "checkSafety": "local-readonly"
     },
     {
       "id": "firebase:params-coverage",
       "category": "firebase",
       "path": "tool/firebase/check_functions_params_coverage.mjs",
       "command": "node tool/firebase/check_functions_params_coverage.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5299,7 +5379,7 @@
       "category": "firebase",
       "path": "tool/firebase/plan_function_deploy.mjs",
       "command": "node tool/firebase/plan_function_deploy.mjs",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5326,7 +5406,7 @@
       "category": "firebase",
       "path": "tool/firebase/check_platform_availability.mjs",
       "command": "node tool/firebase/check_platform_availability.mjs --project catchdates-dev --callable adminListEventDirectory",
-      "safety": "local-with-optional-remote-readonly",
+      "surface": "remote-read",
       "status": "active",
       "description": "Says whether the Firebase/GCP platform behind an environment is serving (an unauthenticated callable probe and a metadata-only gcloud listing) so deploy and release runs defer with a warning, and record nothing, while a closed billing account stops Cloud Run instead of failing on the commit.",
       "checks": [
@@ -5345,14 +5425,16 @@
         ".github/workflows/_backend-deploy.yml",
         ".github/workflows/_web-hosting-build.yml",
         ".github/workflows/website-next-preview.yml"
-      ]
+      ],
+      "runbook": "docs/release_operations.md#platform-unavailable-deploys-and-releases-defer"
     },
     {
       "id": "firebase:probe-chat-storage-rules",
       "category": "firebase",
       "path": "tool/firebase/probe_chat_storage_rules.mjs",
       "command": "node tool/firebase/probe_chat_storage_rules.mjs --help",
-      "safety": "remote-write-ephemeral-apply-guarded",
+      "surface": "remote-destructive",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Runs an authenticated chat-image upload/delete canary through deployed Storage rules and removes its bounded fixture.",
       "checks": [
@@ -5362,14 +5444,15 @@
       "role": "gate",
       "alsoEnforces": [
         "STORAGE-IAM-001"
-      ]
+      ],
+      "runbook": "docs/release_operations.md#storage-rules-cross-service-readiness"
     },
     {
       "id": "firebase:project-resolver",
       "category": "firebase",
       "path": "tool/lib/firebase_project.mjs",
       "command": "node --test tool/lib/firebase_project.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "active",
       "description": "Shared Firebase project alias resolver and production-target guard.",
       "checks": [
@@ -5382,19 +5465,24 @@
       "category": "firebase",
       "path": "tool/firebase/register_app_check_debug_token.mjs",
       "command": "node tool/firebase/register_app_check_debug_token.mjs",
-      "safety": "remote-write-dev-token",
+      "surface": "remote-write",
+      "guard": "none",
+      "guardReason": "Registers the debug token with App Check by default; --dry-run is the opt-in preview.",
       "status": "active",
       "description": "Registers a known local Firebase App Check debug token for an explicit app id.",
       "checks": [
         "node --check tool/firebase/register_app_check_debug_token.mjs"
-      ]
+      ],
+      "runbook": "tool/README.md#app-check-debug-tokens"
     },
     {
       "id": "firebase:retry-transient",
       "category": "firebase",
       "path": "tool/firebase/retry_transient.mjs",
       "command": "node tool/firebase/retry_transient.mjs",
-      "safety": "remote-deploy",
+      "surface": "remote-deploy",
+      "guard": "none",
+      "guardReason": "Retries the deploy command it is given; the guard is the caller's (_backend-deploy.yml).",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5411,14 +5499,15 @@
         "node --check tool/firebase/retry_transient.mjs",
         "node --test tool/firebase/retry_transient.test.mjs"
       ],
-      "role": "gate"
+      "role": "gate",
+      "runbook": "docs/release_operations.md#deploy-backend"
     },
     {
       "id": "firebase:rules-deployment-drift",
       "category": "firebase",
       "path": "tool/firebase/check_rules_deployment_drift.mjs",
       "command": "node tool/firebase/check_rules_deployment_drift.mjs --env dev",
-      "safety": "local-with-optional-remote-readonly",
+      "surface": "remote-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5453,14 +5542,15 @@
           ],
           "instruction": "Compare the active Firestore and Storage Rules releases with the exact committed sources after every Deploy backend run. Missing credentials may skip local or untrusted CI checks; present but insufficient credentials, missing releases, and normalized-content drift fail closed."
         }
-      ]
+      ],
+      "runbook": "docs/release_operations.md#firebase-rules-deployment-drift"
     },
     {
       "id": "firebase:select-functions-build",
       "category": "firebase",
       "path": "tool/firebase/select_functions_build.mjs",
       "command": "node tool/firebase/select_functions_build.mjs",
-      "safety": "read-only",
+      "surface": "remote-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5478,14 +5568,16 @@
         "node --check tool/firebase/select_functions_build.mjs",
         "node --test tool/firebase/select_functions_build.test.mjs"
       ],
-      "role": "gate"
+      "role": "gate",
+      "runbook": "docs/release_operations.md#deploy-backend"
     },
     {
       "id": "firebase:storage-rules-firestore-iam",
       "category": "firebase",
       "path": "tool/firebase/storage_rules_firestore_iam.mjs",
       "command": "node tool/firebase/storage_rules_firestore_iam.mjs --all",
-      "safety": "remote-readonly-with-explicit-apply",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Checks and idempotently provisions the Firebase Storage service-agent role required for Storage rules to read Firestore.",
       "checks": [
@@ -5506,14 +5598,16 @@
           ],
           "instruction": "Storage rules that call firestore.get or firestore.exists require roles/firebaserules.firestoreServiceAgent on every environment's Firebase Storage service agent. Storage deploys must fail their IAM preflight when it is absent, and authenticated upload/delete behavior must remain live-probeable without weakening participant rules."
         }
-      ]
+      ],
+      "runbook": "docs/release_operations.md#storage-rules-cross-service-readiness"
     },
     {
       "id": "firebase:synthetic-backend-probe",
       "category": "firebase",
       "path": "tool/firebase/synthetic_backend_probe.mjs",
       "command": "node tool/firebase/synthetic_backend_probe.mjs --help",
-      "safety": "remote-read-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "description": "Signs in as a synthetic Host that manages a synthetic organizer and runs the Host app's rules-checked Firestore reads and read callables against one deployed environment. Dry-run by default; production runs Firestore reads only unless --allow-prod-callables.",
       "checks": [
@@ -5528,7 +5622,7 @@
       "category": "ci",
       "path": "tool/impact/emulator_test_selection.mjs",
       "command": "node tool/impact/emulator_test_selection.mjs --base origin/main",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Chooses the strict Firestore/Storage emulator tests a pull request can reach, from the dependency-cruiser graph of functions/ plus the data files tests name; shared inputs and rules changes keep the full list, and only pull requests narrow.",
       "impactPaths": [
@@ -5553,7 +5647,7 @@
       "category": "ci",
       "path": "tool/impact/selection_replay.mjs",
       "command": "node tool/impact/selection_replay.mjs --baseline <old functions_test_selection.mjs> --commits 100",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Replays the Functions test selection over recent main commits through two copies of the selector and lists every test the newer one drops, with the reads that show it cannot read the change, plus median and p90 selected counts for the unit and emulator lists.",
       "impactPaths": [
@@ -5572,7 +5666,7 @@
       "category": "ci",
       "path": "tool/impact/functions_unit_test_selection.mjs",
       "command": "node tool/impact/functions_unit_test_selection.mjs --base origin/main",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Chooses the Functions node --test files a pull request can reach for CATCH_UNIT_TEST_SELECTION, with the same dependency-cruiser graph and data-path rules as the emulator selection; shared inputs keep every test, and only pull requests narrow.",
       "impactPaths": [
@@ -5596,7 +5690,7 @@
       "category": "generator",
       "path": "tool/scaffold.mjs",
       "command": "node tool/scaffold.mjs --help",
-      "safety": "local",
+      "surface": "local-writes-repo",
       "status": "active",
       "role": "generator",
       "description": "Creates the files a new context package, screen, catch_ui component or web-ui component starts from, in the shape docs/app_architecture.md (App Roots) fixes. Prints what it cannot edit: workspace and dependency lines, the route and capture ids, the registry record and the web barrel lines. Refuses to overwrite.",
@@ -5636,7 +5730,7 @@
       "category": "audit",
       "path": "tool/git/audit_merge_drops.mjs",
       "command": "node tool/git/audit_merge_drops.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Classifies exact four-tree merge outcomes and requires reasoned receipts for every discarded side in strict mode.",
       "checks": [
@@ -5650,7 +5744,9 @@
       "category": "git",
       "path": "tool/git/branch_hygiene.mjs",
       "command": "node tool/git/branch_hygiene.mjs --help",
-      "safety": "local-readonly",
+      "surface": "remote-destructive",
+      "guard": "apply-flag",
+      "guardReason": "Deletes remote branches only with --prune; the default run audits and reports.",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5683,14 +5779,16 @@
           ],
           "instruction": "Delete single-use branches after semantic integration is proven. Audit remote refs daily, never auto-delete open-PR or unique-looking work, and fail visibly when a branch remains outside main without an open PR beyond the review window."
         }
-      ]
+      ],
+      "runbook": "docs/release_operations.md#daily-orphan-branch-detection",
+      "checkSafety": "local-readonly"
     },
     {
       "id": "git:pre-commit-generated-artifacts",
       "category": "git",
       "path": "tool/git/pre_commit_generated_artifacts.mjs",
       "command": "node --test tool/git/pre_commit_generated_artifacts.test.mjs",
-      "safety": "local-writes-staged-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5732,7 +5830,7 @@
       "category": "git",
       "path": "tool/git/sweep_merged_worktrees.mjs",
       "command": "node tool/git/sweep_merged_worktrees.mjs --help",
-      "safety": "local-write-git-worktree-explicit",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5757,7 +5855,7 @@
       "category": "git",
       "path": "tool/git/bootstrap_worktree.sh",
       "command": "bash tool/git/bootstrap_worktree.sh",
-      "safety": "local-writes-dependencies",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5786,7 +5884,7 @@
       "category": "git",
       "path": "tool/git/worktree_guard.mjs",
       "command": "node tool/git/worktree_guard.mjs help",
-      "safety": "local-write-git-worktree-explicit",
+      "surface": "local-writes-scratch",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -5830,7 +5928,7 @@
       "category": "lint",
       "path": "tool/check_catch_ui_lint_drift.sh",
       "command": "bash tool/check_catch_ui_lint_drift.sh",
-      "safety": "local",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Projects focused Catch UI analyzer reports (--summary, --count, --json, --code). The zero-diagnostic rule itself is enforced by ci:flutter-workspace-analysis, whose dart analyze --fatal-infos fails on any catch_* diagnostic; Flutter CI also runs --check on that analysis output.",
       "checks": [
@@ -5876,7 +5974,7 @@
       "category": "lint",
       "path": "tool/check_catch_ui_lints.sh",
       "command": "bash tool/check_catch_ui_lints.sh",
-      "safety": "local",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Verifies all Catch UI violation and clean-allowance fixtures with one analyzer invocation and independent per-file assertions.",
       "impactPaths": [
@@ -6038,7 +6136,7 @@
       "category": "lint",
       "path": "tool/lib/lint_probe_batch.mjs",
       "command": "node --test tool/lib/lint_probe_batch.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "internal",
       "description": "Checked by lint:catch-ui-plugin-smoke. Checks per-file lint fixture assertions and analyzer output attribution, refusing plugin crashes, malformed output, missing fixtures, and diagnostics from the wrong file.",
       "checks": [
@@ -6052,7 +6150,7 @@
       "category": "lint",
       "path": "tool/check_riverpod_lint.sh",
       "command": "bash tool/check_riverpod_lint.sh",
-      "safety": "local",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Verifies Riverpod's analysis_server_plugin diagnostics are active in dart analyze.",
       "checks": [
@@ -6065,7 +6163,7 @@
       "category": "marketing",
       "path": "tool/store/generate_app_listing_screenshot_prototypes.swift",
       "command": "swift tool/store/generate_app_listing_screenshot_prototypes.swift",
-      "safety": "local-writes-store-assets",
+      "surface": "local-writes-repo",
       "status": "active",
       "platforms": [
         "darwin"
@@ -6082,7 +6180,7 @@
       "category": "marketing",
       "path": "tool/marketing/sync_website_media.mjs",
       "command": "node tool/marketing/sync_website_media.mjs",
-      "safety": "local-writes-website-assets",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Syncs app-derived marketing capture slots into website assets. Tools checks the authored manifest; the capture producer and the release import check image bytes and provenance.",
       "checks": [
@@ -6104,7 +6202,7 @@
       "category": "marketing",
       "path": "tool/marketing/export_app_screenshots.mjs",
       "command": "node tool/marketing/export_app_screenshots.mjs",
-      "safety": "local-writes-artifacts",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Renders active app marketing captures and wraps them in the configured device frame. Tools checks recipes and the design context; the capture producer and the release import check image bytes and provenance.",
       "checks": [
@@ -6141,7 +6239,7 @@
         "tool/marketing/lib/capture_provenance.mjs"
       ],
       "command": "node tool/marketing/compare_capture_drift.mjs",
-      "safety": "local-writes-artifacts",
+      "surface": "local-writes-repo",
       "status": "active",
       "role": "gate",
       "description": "Weekly compare-only render: finds the app capture PNGs main would reuse, renders them afresh on macOS and fails, naming the captures, when any image bytes differ. Never republishes.",
@@ -6161,7 +6259,7 @@
       "category": "marketing",
       "path": "tool/store/generate_catch_host_app_store_screenshots.swift",
       "command": "swift tool/store/generate_catch_host_app_store_screenshots.swift",
-      "safety": "local-writes-store-assets",
+      "surface": "local-writes-repo",
       "status": "active",
       "platforms": [
         "darwin"
@@ -6177,7 +6275,7 @@
       "category": "marketing",
       "path": "tool/marketing/frame_device_capture.dart",
       "command": "dart run tool/marketing/frame_device_capture.dart",
-      "safety": "local-writes-artifacts",
+      "surface": "local-writes-scratch",
       "status": "internal",
       "description": "Wraps a raw app capture in the configured marketing device frame.",
       "checks": [
@@ -6190,7 +6288,7 @@
       "category": "marketing",
       "path": "tool/marketing/frame_device_capture_test.dart",
       "command": "dart run tool/marketing/frame_device_capture_test.dart",
-      "safety": "local-writes-artifacts",
+      "surface": "local-read",
       "status": "internal",
       "description": "Verifies native product-capture framing without resampling and rejects undersampled inputs.",
       "checks": [
@@ -6203,7 +6301,7 @@
       "category": "marketing",
       "path": "website/scripts/generateOrganizerListings.mjs",
       "command": "npm --workspace catch-marketing run generate:organizer-listings",
-      "safety": "local-writes-generated",
+      "surface": "remote-read",
       "status": "active",
       "description": "Projects approved organizer intake and seed organizer records into production hostListings.json, with a separate explicit demo-inclusive Storybook projection.",
       "checks": [
@@ -6221,7 +6319,9 @@
           "node",
           "root-npm"
         ]
-      }
+      },
+      "runbook": "tool/README.md#organiser-listings-projection",
+      "checkSafety": "local-readonly"
     },
     {
       "id": "marketing:hosted-capture-export",
@@ -6244,7 +6344,7 @@
         "tool/ui_capture/lib/capture_catalog_sources.mjs"
       ],
       "command": "node tool/marketing/export_hosted_captures.mjs",
-      "safety": "local-writes-artifacts",
+      "surface": "local-writes-repo",
       "status": "active",
       "role": "generator",
       "description": "Validates manual or same-repository capture-label requests; plans on Linux which captures are stale and seeds the rest from any same-repository producer bundle whose input fingerprint matches; the nightly renders everything only when the native font or macOS runner image changed; renders only stale captures with the canonical macOS exporter, or packages a Linux reuse bundle when none are, from exact source/controller checkouts, with distinct workflow and trigger provenance and without changing goldens or publishing.",
@@ -6264,7 +6364,7 @@
       "category": "marketing",
       "path": "tool/marketing/import_hosted_captures.mjs",
       "command": "node tool/marketing/import_hosted_captures.mjs",
-      "safety": "remote-read-local-writes-artifacts",
+      "surface": "remote-read",
       "checkSafety": "local-readonly",
       "status": "active",
       "role": "generator",
@@ -6304,14 +6404,15 @@
         "node --check tool/marketing/import_hosted_captures.mjs",
         "node --test tool/marketing/import_hosted_captures.test.mjs",
         "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs"
-      ]
+      ],
+      "runbook": "docs/marketing_app_media_pipeline.md#ci-behavior"
     },
     {
       "id": "marketing:verify-hosting-404",
       "category": "marketing",
       "path": "website/scripts/verifyHosting404.mjs",
       "command": "node website/scripts/verifyHosting404.mjs",
-      "safety": "remote-read",
+      "surface": "remote-read",
       "status": "internal",
       "description": "Asserts that a unique unknown URL on a supplied marketing Hosting origin returns HTTP 404 without following redirects.",
       "checks": [
@@ -6324,7 +6425,7 @@
       "category": "marketing",
       "path": "website/scripts/checkStorybookA11yDebt.mjs",
       "command": "node website/scripts/checkStorybookA11yDebt.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Ratchets Storybook accessibility todo annotations against the exact reasoned WEB-A11Y-001 registry.",
       "checks": [
@@ -6340,7 +6441,7 @@
       "category": "marketing",
       "path": "website/scripts/analyticsContract.test.mjs",
       "command": "node --experimental-strip-types --test website/scripts/analyticsContract.test.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates website copy-version event tagging and unset, essential-only, and accepted consent presentation states.",
       "checks": [
@@ -6354,7 +6455,7 @@
       "category": "marketing",
       "path": "website/package.json",
       "command": "npm --prefix website run build",
-      "safety": "local-build",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Builds the Vite React marketing website and route-specific static metadata.",
       "checks": [
@@ -6371,7 +6472,7 @@
       "category": "marketing",
       "path": "tool/marketing/check_website_components.mjs",
       "command": "node tool/marketing/check_website_components.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates marketing website component ownership contracts against React source files, exported feature components, route ids, CSS ownership, and bidirectional Storybook catchComponent coverage.",
       "checks": [
@@ -6389,7 +6490,7 @@
       "category": "marketing",
       "path": "tool/marketing/website_meta_contract.mjs",
       "command": "node --test tool/marketing/website_meta_contract.test.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "internal",
       "description": "Validates the shared static website metadata content used by client and postbuild readers.",
       "checks": [
@@ -6404,7 +6505,7 @@
       "category": "marketing",
       "path": "website/scripts/ownerGatedContent.test.mjs",
       "command": "node --experimental-strip-types --test website/scripts/ownerGatedContent.test.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Proves privacy, terms, help, and contact content contracts remain null, unregistered, and unlinked until owner-supplied content exists.",
       "checks": [
@@ -6418,7 +6519,7 @@
       "category": "marketing",
       "path": "tool/marketing/check_website_routes.mjs",
       "command": "node tool/marketing/check_website_routes.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates marketing website route contracts against React routes, validated metadata content, postbuild, generated organizer-listing sources, active-market eligibility, and Firebase Hosting 404 behavior.",
       "checks": [
@@ -6452,7 +6553,7 @@
       "category": "marketing",
       "path": "website/.storybook/main.ts",
       "command": "npm --workspace catch-marketing run build:storybook",
-      "safety": "local-build",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Builds the Storybook workbench for route-linked marketing website component and page-state review.",
       "checks": [
@@ -6466,7 +6567,7 @@
       "category": "marketing",
       "path": "website/vitest.config.ts",
       "command": "npm --workspace catch-marketing run test:storybook:a11y",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Runs all marketing Storybook stories in Playwright Chromium with project-default axe failures blocking CI and exact legacy todos ratcheted separately.",
       "checks": [
@@ -6482,7 +6583,7 @@
       "category": "meta",
       "path": "packages/brand/check_brand_literals.mjs",
       "command": "node packages/brand/check_brand_literals.mjs",
-      "safety": "local-readonly",
+      "surface": "local-writes-repo",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -6514,7 +6615,7 @@
       "category": "meta",
       "path": "tool/ci/check_tool_category_coverage.mjs",
       "command": "node tool/ci/check_tool_category_coverage.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Requires every active tool-manifest category to be scheduled by Tools CI and rejects unknown workflow categories.",
       "checks": [
@@ -6529,7 +6630,7 @@
       "category": "meta",
       "path": "tool/nx/lane_coverage.mjs",
       "command": "node --test tool/nx/lane_coverage.test.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Every tracked file is an input of some lane task, a selector, or listed in noLaneReads with why no lane reads it, so Nx-only lane selection never selects nothing for a change that matters; knownTopLevel equals the tracked top-level entries. The input resolver is checked against nx affected.",
       "checks": [
@@ -6554,7 +6655,7 @@
       "category": "meta",
       "path": "tool/nx/lane_key.mjs",
       "command": "node --test tool/nx/lane_key.test.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Lane input keys for result reuse (design B): a hash of every file a CI lane reads (Nx task input patterns, caller-graph files, selectors) in one commit's tree, computed from git ls-tree so a consumer can recompute a producer's key. The test checks each lane's key covers every file Nx hashes for its tasks. lane_key_replay.mjs estimates per-lane reuse over history; nothing in CI uses keys yet.",
       "checks": [
@@ -6580,7 +6681,7 @@
       "category": "meta",
       "path": "tool/nx/lane_key_replay.mjs",
       "command": "node tool/nx/lane_key_replay.mjs --pairs <file>",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Offline replay of lane keys (design B): for pull request and queue run commit pairs, the share of each lane's queue runs whose key equals the pull request run's (--pairs), or for a commit list, how often a lane's key equals its parent's (--commits). Read-only; reports hit rates that decide which lane reuses results first.",
       "checks": [
@@ -6602,7 +6703,7 @@
       "category": "meta",
       "path": "tool/nx/manifest_diff.mjs",
       "command": "node --test tool/nx/manifest_diff.test.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Selects lanes for a tools_manifest.json edit by semantic diff: Tools and policy plus every lane whose jobs run a changed or removed entry, and every lane for any change it does not recognise. Pull requests and the merge queue use it; main reports it.",
       "checks": [
@@ -6629,7 +6730,7 @@
       "category": "meta",
       "path": "tool/nx/markdown_inputs.test.mjs",
       "command": "node --test tool/nx/markdown_inputs.test.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Markdown a check reads selects the lanes that run it: every tools-manifest Markdown impactPath is a lane-tools input, and every script CI runs that names a Markdown path is a listed reader (whose documents select its lanes through nx affected) or a listed mention.",
       "checks": [
@@ -6653,7 +6754,7 @@
       "category": "meta",
       "path": "tool/nx/catch_projects.mjs",
       "command": "node --test tool/nx/catch_projects.test.mjs tool/nx/lane_inputs.test.mjs tool/nx/task_lanes.test.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Nx plugin that turns every pubspec.yaml and independently locked npm package into an Nx project, adds path and declared cross-language edges, and gives source projects a generator check target.",
       "checks": [
@@ -6679,7 +6780,7 @@
       "category": "meta",
       "path": "tool/nx/select_lanes.mjs",
       "command": "node --test tool/nx/select_lanes.test.mjs",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Nx alone chooses which CI lanes run for pull requests and queue groups (nxSelectsAlone; emptying it restores the union with the planner). Every lane runs when the history or Nx fails, a task maps to no lane, or a path is under an unknown top-level entry. Main, nightly and full runs keep the planner's selection. A lane only Nx selects gets complete inputs (build targets for both apps).",
       "checks": [
@@ -6702,7 +6803,7 @@
       "category": "meta",
       "path": "tool/nx/shadow_plan.mjs",
       "command": "node --test tool/nx/shadow_plan.test.mjs",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Shadow mode for the Nx cut-over: runs the current planner and nx affected for one change, maps Nx tasks onto CI lanes and reports where they disagree. Run by the non-gating nx-shadow workflow; deleted with the planner.",
       "checks": [
@@ -6726,7 +6827,7 @@
       "category": "meta",
       "path": "tool/nx/workflow_callers.mjs",
       "command": "node --test tool/nx/workflow_callers.test.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Derives from ci.yml which lanes execute or read each CI configuration file, so a workflow, composite action or tool/ci edit selects exactly those lanes and a selector file selects every lane; the test proves the closure against both the planner and Nx.",
       "checks": [
@@ -6755,7 +6856,7 @@
       "category": "meta",
       "path": "tool/repository_hygiene.mjs",
       "command": "node tool/repository_hygiene.mjs --json",
-      "safety": "local-write-explicit",
+      "surface": "local-writes-scratch",
       "status": "active",
       "role": "operator",
       "description": "Reports regenerable repository state and deletes only manifest-allowlisted paths after explicit apply and scope flags.",
@@ -6771,7 +6872,7 @@
       "category": "meta",
       "path": "tool/check_repository_root_hygiene.mjs",
       "command": "node tool/check_repository_root_hygiene.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -6808,7 +6909,7 @@
       "category": "meta",
       "path": "tool/check_third_party_names.mjs",
       "command": "node tool/check_third_party_names.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -6834,7 +6935,7 @@
       "category": "meta",
       "path": "tool/lib/tool_manifest_rules.mjs",
       "command": "node tool/run.mjs check --manifest-only",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -6858,7 +6959,7 @@
       "category": "operations",
       "path": "operations/scripts/check-admin-action-catalog.mjs",
       "command": "node operations/scripts/check-admin-action-catalog.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "role": "ratchet",
       "alsoEnforces": [
@@ -6887,7 +6988,8 @@
       "category": "operations",
       "path": "operations/src/admin-cli/main.mjs",
       "command": "node operations/src/admin-cli/main.mjs",
-      "safety": "remote-read-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-flag",
       "status": "active",
       "role": "operator",
       "alsoEnforces": [
@@ -6917,7 +7019,7 @@
       "category": "operations",
       "path": "operations/scripts/check-boundaries.mjs",
       "command": "node operations/scripts/check-boundaries.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "role": "ratchet",
       "rules": [
@@ -6962,7 +7064,8 @@
       "category": "operations",
       "path": "operations/src/catch-cli/main.mjs",
       "command": "node operations/src/catch-cli/main.mjs",
-      "safety": "remote-read-write-apply-guarded",
+      "surface": "remote-write",
+      "guard": "apply-flag",
       "status": "active",
       "role": "operator",
       "alsoEnforces": [
@@ -7003,7 +7106,7 @@
       "category": "operations",
       "path": "operations/src/cli/main.mjs",
       "command": "node operations/src/cli/main.mjs",
-      "safety": "local-write-explicit",
+      "surface": "local-writes-scratch",
       "status": "active",
       "role": "operator",
       "description": "Runs durable business workflows with shadow-safe defaults and stable JSON output.",
@@ -7028,7 +7131,8 @@
       "category": "operations",
       "path": "functions/scripts/operations/import-shadow-projection.cjs",
       "command": "npm --prefix functions run operations:import-projection --",
-      "safety": "remote-write-explicit",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
       "status": "active",
       "role": "operator",
       "alsoEnforces": [
@@ -7051,7 +7155,7 @@
       "category": "operations",
       "path": "functions/scripts/operations/review-event-messaging.cjs",
       "command": "npm --prefix functions run operations:review-event-messaging --",
-      "safety": "remote-readonly",
+      "surface": "remote-read",
       "status": "active",
       "role": "operator",
       "alsoEnforces": [
@@ -7074,7 +7178,7 @@
       "category": "operations",
       "path": "operations/scripts/check-workflow-manifest.mjs",
       "command": "node operations/scripts/check-workflow-manifest.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "role": "ratchet",
       "alsoEnforces": [
@@ -7103,7 +7207,7 @@
       "category": "organizer-intake",
       "path": "tool/web/check_admin_review_bridge.mjs",
       "command": "node tool/web/check_admin_review_bridge.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates Organizer Intake reads completed Supply Intake runs from Firestore, every review channel writes through an audited callable-backed Firestore collection, and retired Admin operational JSON snapshots are not reintroduced.",
       "ciRequirements": {
@@ -7124,7 +7228,7 @@
       "category": "platform",
       "path": "tool/platform/check_app_package_graph.mjs",
       "command": "node tool/platform/check_app_package_graph.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Verifies app-role native SDK declarations, one workspace lock, the Flutter-only catch_tokens boundary, and the provider/backend/app-free catch_ui dependency boundary with Skeletonizer pinned to 2.1.3.",
       "checks": [
@@ -7143,7 +7247,7 @@
       "category": "platform",
       "path": "tool/platform/check_app_targets.mjs",
       "command": "node tool/platform/check_app_targets.mjs --check",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -7197,7 +7301,7 @@
       "category": "platform",
       "path": "tool/platform/configure_apple_flavors.rb",
       "command": "ruby tool/platform/configure_apple_flavors.rb",
-      "safety": "local-writes-xcodeproj",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Configures Apple flavor schemes and Firebase copy phases.",
       "checks": [
@@ -7210,7 +7314,7 @@
       "category": "platform",
       "path": "tool/flutter_with_env.test.sh",
       "command": "bash tool/flutter_with_env.test.sh",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "internal",
       "description": "Checked by platform:app-targets. Regression-checks canonical Flutter app-target arguments and narrowly bounded CI-only retries for verified CocoaPods Git TLS and Gradle-wrapper download failures.",
       "checks": [
@@ -7225,7 +7329,7 @@
       "category": "platform",
       "path": "tool/write_ios_maps_key_xcconfig.sh",
       "command": "./tool/write_ios_maps_key_xcconfig.sh",
-      "safety": "local-writes-config",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Writes the iOS Google Maps xcconfig for a selected environment.",
       "checks": [
@@ -7238,7 +7342,7 @@
       "category": "platform",
       "path": "tool/platform/sync_ios_pod_policy.mjs",
       "command": "node tool/platform/sync_ios_pod_policy.mjs --write",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -7268,7 +7372,7 @@
       "category": "platform",
       "path": "tool/platform/check_mobile_package.mjs",
       "command": "node tool/platform/check_mobile_package.mjs",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Produces mobile package size/payload receipts, validates signed-artifact-calibrated budget headroom, and rejects forbidden-asset, forbidden-plugin, or cross-role identity regressions.",
       "checks": [
@@ -7285,7 +7389,7 @@
       "category": "platform",
       "path": "tool/platform/resolve_app_target.mjs",
       "command": "node tool/platform/resolve_app_target.mjs --role consumer --environment dev",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Resolves one explicit Consumer or Host target from the canonical six-target manifest for shell scripts and CI.",
       "checks": [
@@ -7303,7 +7407,9 @@
         "apps/consumer/ios/Runner.xcodeproj/project.pbxproj"
       ],
       "command": "python3 tool/platform/upload_crashlytics_symbols.py --help",
-      "safety": "remote-write",
+      "surface": "remote-write",
+      "guard": "none",
+      "guardReason": "Uploads symbols to Crashlytics from the Consumer Xcode build phase; no flag gates it.",
       "checkSafety": "local-readonly",
       "status": "active",
       "description": "Runs required Consumer Crashlytics validation and dSYM uploads with fail-closed stage deadlines and owned-process cancellation; checks use only fake uploaders.",
@@ -7316,14 +7422,15 @@
       "checks": [
         "python3 tool/platform/test_upload_crashlytics_symbols.py"
       ],
-      "role": "generator"
+      "role": "generator",
+      "runbook": "docs/release_operations.md#when-collection-is-on"
     },
     {
       "id": "platform:upload-crashlytics-symbols-test",
       "category": "platform",
       "path": "tool/platform/test_upload_crashlytics_symbols.py",
       "command": "python3 tool/platform/test_upload_crashlytics_symbols.py",
-      "safety": "local",
+      "surface": "local-read",
       "status": "support",
       "description": "Portable stdlib tests for symbol upload bounds, required dSYM coverage, SDK failures and cancellation; never invokes the real SDK or remote services.",
       "checks": [
@@ -7335,7 +7442,7 @@
       "category": "platform",
       "path": "tool/platform/verify_android_release_bundle.mjs",
       "command": "node tool/platform/verify_android_release_bundle.mjs --help",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Uses pinned bundletool plus signer-certificate inspection to verify a signed Android App Bundle's role, target, Firebase, Maps, debug, package, version, and upload-certificate identity, then emits a release receipt.",
       "checks": [
@@ -7352,7 +7459,7 @@
       "category": "platform",
       "path": "tool/platform/verify_ios_release_identity.mjs",
       "command": "node tool/platform/verify_ios_release_identity.mjs --help",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Verifies an archived or exported iOS app against its manifest target, compiled Flutter composition marker, embedded Firebase identity and URL scheme, version/build, signing identity, and role-specific entitlements.",
       "checks": [
@@ -7369,7 +7476,7 @@
       "category": "remote-ops",
       "path": "tool/check_remote_ops_manifest.mjs",
       "command": "node tool/check_remote_ops_manifest.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates the consolidated remote operations inventory.",
       "checks": [
@@ -7392,7 +7499,7 @@
       "category": "test",
       "path": "tool/test_app_shell_integration.sh",
       "command": "bash tool/test_app_shell_integration.sh",
-      "safety": "local-build-test",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Runs all deterministic headless app-shell suites or a bounded native smoke/all scope on an explicitly selected Flutter device.",
       "checks": [
@@ -7406,7 +7513,7 @@
       "category": "test",
       "path": "tool/test/flutter_coverage_report.mjs",
       "command": "node tool/test/flutter_coverage_report.mjs",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Turns Flutter LCOV into a visibility-only handwritten-code and feature-level report without imposing an aggregate percentage threshold.",
       "checks": [
@@ -7420,7 +7527,7 @@
       "category": "test",
       "path": "tool/test/check_flutter_test_size.mjs",
       "command": "node tool/test/check_flutter_test_size.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Keeps Flutter test specs within 1,200 lines unless the spec states a reason in a size-exemption comment near its top; no spec may pass 2,500 lines. No baseline file.",
       "checks": [
@@ -7459,7 +7566,7 @@
       "category": "meta",
       "path": "tool/impact/import_owners.mjs",
       "command": "node tool/impact/import_owners.mjs",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Derives which active tools reach each repository file through static imports, using the pinned dependency-cruiser in tool/impact, so affected-tool selection owns code inputs without hand-written globs.",
       "impactPaths": [
@@ -7479,7 +7586,7 @@
       "category": "meta",
       "path": "tool/run.mjs",
       "command": "node tool/run.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates the tool manifest, lists and dispatches registered commands, and fail-closed selects checks from explicit or affected paths without creating a second execution-authority layer.",
       "impactPaths": [
@@ -7511,7 +7618,7 @@
         ]
       },
       "command": "node tool/ui_capture/check_capture_coverage.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks every routed screen is captured, aliased, planned, or explicitly excluded for UI captures.",
       "checks": [
@@ -7525,7 +7632,7 @@
       "category": "ui-capture",
       "path": "tool/lib/dart_call_blocks.mjs",
       "command": "node --test tool/lib/dart_call_blocks.test.mjs",
-      "safety": "local-test",
+      "surface": "local-read",
       "status": "active",
       "description": "Finds balanced Dart call blocks for the capture, route and Widgetbook checks, skipping line and block comments and plain, raw and triple-quoted strings so delimiters inside them never unbalance a block.",
       "ciRequirements": {
@@ -7560,7 +7667,7 @@
         ]
       },
       "command": "node tool/ui_capture/check_route_inventory.mjs --check",
-      "safety": "local-writes-generated",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Generates and checks the named route inventory against route_contract.dart identities and go_router.dart runtime wiring, including semantic nested paths, normalized builder/pageBuilder presentation targets, locally declared block- and arrow-bodied route helpers, direct MaterialPageRoute sites, and a redirect-only exception for retired raw legacy paths. Imported or prebuilt route collections, constructor typedefs, and unsupported full-screen PageRoute forms fail closed through the resolved composition gate.",
       "checks": [
@@ -7575,7 +7682,7 @@
       "category": "test",
       "path": "tool/ui_capture/check_route_inventory_test.mjs",
       "command": "node --test tool/ui_capture/check_route_inventory_test.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "internal",
       "description": "Pins redirect-only route exceptions plus deterministic normalized presentation expressions and presentation targets.",
       "checks": [
@@ -7588,7 +7695,7 @@
       "category": "ui-capture",
       "path": "tool/ui_capture/run_captures.mjs",
       "command": "node tool/ui_capture/run_captures.mjs",
-      "safety": "local-writes-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Runs the Flutter UI capture harness and writes review PNG artifacts.",
       "checks": [
@@ -7600,7 +7707,7 @@
       "category": "test",
       "path": "admin/scripts/checkBundleBudget.mjs",
       "command": "npm --workspace catch-admin run build",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Builds the admin production surface, then ratchets the generated Vite-manifest JavaScript entry and largest async chunk.",
       "checks": [
@@ -7630,7 +7737,7 @@
       "category": "lint",
       "path": "admin/scripts/generateCallableValidators.mjs",
       "command": "node admin/scripts/generateCallableValidators.mjs --self-test",
-      "safety": "local-readonly",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Proves the admin callable validator generator covers every adminApi callable and keeps every schema rule through compaction. Its output is built on demand by the Admin npm lifecycle and never tracked.",
       "checks": [
@@ -7662,7 +7769,7 @@
       "category": "lint",
       "path": "tool/web/check_admin_components.mjs",
       "command": "node tool/web/check_admin_components.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Validates design/admin/components/ against admin route/workspace exports, shared admin UI primitives, feedback providers, and ready Storybook catchComponent coverage.",
       "ciRequirements": {
@@ -7686,7 +7793,7 @@
       "category": "lint",
       "path": "tool/web/check_admin_feature_exports.mjs",
       "command": "node tool/web/check_admin_feature_exports.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks admin feature UI only exports route/workspace entry components; reusable panels/cards/lists must live in shared admin primitives or stay private.",
       "ciRequirements": {
@@ -7710,7 +7817,7 @@
       "category": "lint",
       "path": "tool/web/check_admin_feature_ui_size.mjs",
       "command": "node tool/web/check_admin_feature_ui_size.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Keeps admin feature route/workspace entries and private panel modules below reviewed line ceilings after the large-screen decomposition pass.",
       "checks": [
@@ -7738,7 +7845,7 @@
       "category": "lint",
       "path": "tool/web/check_admin_live_data_sources.mjs",
       "command": "node tool/web/check_admin_live_data_sources.mjs --check",
-      "safety": "local-readonly",
+      "surface": "remote-read",
       "status": "active",
       "description": "Requires every Admin navigation and Intake workspace to declare callable-backed live reads, rejects retained operational JSON snapshots and generated operational imports, and can verify every declared callable against a deployed Firebase environment.",
       "checks": [
@@ -7749,7 +7856,9 @@
       "role": "gate",
       "alsoEnforces": [
         "OPERATIONS-PLATFORM-001"
-      ]
+      ],
+      "runbook": "docs/web_surface_architecture.md#admin-live-data-source-contract",
+      "checkSafety": "local-readonly"
     },
     {
       "id": "web:admin-pending-operations",
@@ -7785,7 +7894,7 @@
         "admin/src/features/users/controllers/useUserAnalyticsController.ts"
       ],
       "command": "node tool/web/check_admin_pending_operations.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Enforces one exclusive Admin operation lease across the controllers it names, the shared workspace/navigation boundary, and immutable-snapshot regression proof.",
       "checks": [
@@ -7807,7 +7916,7 @@
       "category": "lint",
       "path": "admin/.storybook/main.ts",
       "command": "npm --workspace catch-admin run build:storybook",
-      "safety": "local-build",
+      "surface": "local-writes-scratch",
       "status": "active",
       "description": "Builds the Storybook workbench for registry-linked admin shared primitives and future admin route/workspace review states.",
       "checks": [
@@ -7837,7 +7946,7 @@
       "category": "test",
       "path": "admin/scripts/checkStorybookBundleBudget.mjs",
       "command": "node admin/scripts/checkStorybookBundleBudget.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "internal",
       "description": "Checked by web:admin-storybook. Ratchets Catch-authored admin Storybook route and feature chunks while excluding framework and accessibility-vendor runtime chunks.",
       "checks": [
@@ -7852,7 +7961,7 @@
       "category": "lint",
       "path": "tool/web/check_react_architecture_boundaries.mjs",
       "command": "node tool/web/check_react_architecture_boundaries.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks React website/admin feature boundaries for route-owned state and cross-feature ownership drift.",
       "ciRequirements": {
@@ -7872,7 +7981,7 @@
       "category": "lint",
       "path": "tool/web/check_react_component_governance.mjs",
       "command": "node tool/web/check_react_component_governance.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks React website/admin feature code routes governed component families through shared primitives, and verifies adopted admin form families declare valid shared field-row interaction modes directly from current source and authored component contracts.",
       "ciRequirements": {
@@ -7921,7 +8030,7 @@
       "category": "test",
       "path": "tool/web/check_react_controller_test_targets.mjs",
       "command": "node tool/web/check_react_controller_test_targets.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Requires a unit test that imports each React feature controller/mutation hook, found from the source, without gating on aggregate coverage percentages.",
       "checks": [
@@ -7960,7 +8069,7 @@
       "category": "audit",
       "path": "tool/web/react_dependency_graph.mjs",
       "command": "node tool/web/react_dependency_graph.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks the live website/admin/web-ui TypeScript dependency topology, unresolved local imports, direct cross-surface boundaries, and runtime cycles; deterministic JSON evidence is emitted on demand.",
       "ciRequirements": {
@@ -8017,7 +8126,7 @@
       "category": "lint",
       "path": "tool/web/check_react_query_state.mjs",
       "command": "node tool/web/check_react_query_state.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "role": "gate",
       "rules": [
@@ -8053,7 +8162,7 @@
       "category": "lint",
       "path": "tool/web/check_react_ui.mjs",
       "command": "node tool/web/check_react_ui.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-read",
       "status": "active",
       "description": "Enforces the shared ESLint UI preset and exact shrink-only app suppressions; replaces the raw-control and class-name scanners.",
       "ciRequirements": {
@@ -8105,7 +8214,7 @@
       "category": "lint",
       "path": "tool/web/check_shared_web_ui_adoption.mjs",
       "command": "node tool/web/check_shared_web_ui_adoption.mjs --check",
-      "safety": "local-readonly",
+      "surface": "local-writes-repo",
       "status": "active",
       "description": "Validates the cross-React primitive adoption tracker, classifies every exact-name website/admin primitive overlap, and rejects untracked @catch/web-ui exports.",
       "checks": [
@@ -8138,7 +8247,7 @@
       "category": "design",
       "path": "tool/web/check_storybook_visuals.mjs",
       "command": "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report",
-      "safety": "local-writes-build-artifacts",
+      "surface": "local-writes-repo",
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
@@ -8181,7 +8290,7 @@
       "category": "lint",
       "path": "tool/web/verify_admin_hosting.mjs",
       "command": "node tool/web/verify_admin_hosting.mjs",
-      "safety": "remote-read",
+      "surface": "remote-read",
       "status": "active",
       "description": "Asserts that a supplied Admin Hosting origin serves no-cache HTML, immutable chunks and a real 404 for a missing chunk, so tabs left open across a deploy can recover.",
       "checks": [
@@ -8192,14 +8301,15 @@
         "tool/web/verify_admin_hosting.test.mjs",
         "firebase.json"
       ],
-      "role": "finder"
+      "role": "finder",
+      "runbook": ".github/workflows/_web-hosting-promote.yml"
     },
     {
       "id": "web:website-copy-ownership",
       "category": "lint",
       "path": "tool/web/check_website_copy_ownership.mjs",
       "command": "node tool/web/check_website_copy_ownership.mjs --check",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Fails on user-visible marketing website strings outside website/src/content and the reasoned allowlist.",
       "ciRequirements": {
@@ -8237,7 +8347,7 @@
       "category": "lint",
       "path": "tool/web/check_website_import_boundaries.mjs",
       "command": "node tool/web/check_website_import_boundaries.mjs",
-      "safety": "local",
+      "surface": "local-read",
       "status": "active",
       "description": "Checks React marketing website app, content, feature, shared, generated, and service import boundaries.",
       "ciRequirements": {
