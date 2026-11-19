@@ -1,0 +1,13 @@
+{
+  "name": "@catch/command-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared core for Catch's catalog-driven command clients: callable transport, receipts, flags, JSON envelope, errors and canonical JSON. Node built-ins only.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "exports": {
+    ".": "./src/index.mjs"
+  }
+}

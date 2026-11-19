@@ -1,0 +1,166 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "playbook_guide/quiz-night",
+  "route": "playbook_guide",
+  "meta": {
+    "title": "How to run a quiz or game night | {{brand.name}} host playbooks",
+    "description": "How to run a quiz or game night: the venue, rounds and teams, the night itself, following up, and a checklist.",
+    "noindex": false,
+    "socialDescription": "How to run a quiz or game night, step by step."
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        },
+        {
+          "label": "Host playbooks",
+          "to": {
+            "route": "playbooks"
+          }
+        }
+      ],
+      "current": "Quiz and game nights"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "article",
+      "id": "guide",
+      "ground": "white",
+      "pageTitle": true,
+      "kicker": "Host playbook",
+      "title": "How to run a quiz or game night",
+      "lead": "Who it’s for: quizmasters, cafés and bars with a slow weeknight, board-game groups, and anyone who enjoys writing questions.",
+      "meta": "2 minute read",
+      "sections": [
+        {
+          "heading": "Before the first night",
+          "paragraphs": [
+            "Venue. You need tables that seat a team, a space where everyone can hear you, and a host who doesn’t mind a bit of noise. Check that the venue has a mic or speaker you can use, and agree on who pays for what: food minimums, entry or a share.",
+            "Format. Six rounds of about ten questions is a comfortable evening. Mix the topics, put in a picture or music round, and leave a short break halfway. Write more questions than you need. Test them on a friend to check they aren’t too easy or impossible.",
+            "Team size. Teams of four to six work well. Decide in advance what happens to people who come alone. The usual answer is to put them into teams so nobody plays solo.",
+            "Free or paid. Entry can be free (the venue earns from food and drink) or a small ticket with a prize.",
+            "Sign-up page. Put the date, the start time (and when doors open), the team size, the entry price and the prize on it. Let people book in pairs or small groups. {{brand.name}} takes up to four places in one booking, with a name for each guest, and can ask for a team name on a form."
+          ]
+        },
+        {
+          "heading": "On the night",
+          "paragraphs": [
+            "What to get right on the day."
+          ],
+          "list": [
+            "Arrival. Open the doors 30 minutes before the first question so teams can settle in and order. Guests check in at the door and {{brand.name}} shows them their team and table on their phone.",
+            "Getting people talking. Fair teams make the night. {{brand.name}} builds teams from who’s coming: friends who booked together stay together, and people on their own are spread across teams. If you like, it can mix the teams between rounds so people meet someone new.",
+            "Running the quiz. Enter each round’s scores and keep the standings hidden until the end, so the last round still matters. On {{brand.name}}, you can start a countdown and reveal the final standings on every guest’s phone at once.",
+            "Safety basics. Keep walkways clear, know where the exits are, and keep an eye on how much people are drinking. Make sure everyone can hear and see, including anyone at the back."
+          ]
+        },
+        {
+          "heading": "Afterwards",
+          "paragraphs": [
+            "Post the winners and a couple of the trickiest questions the next day. Announce the next date while people are still talking about this one. Ask for feedback, especially on how hard the questions were. {{brand.name}}’s report shows who came, who was new and what guests said, and you can invite everyone who came to the next one."
+          ]
+        },
+        {
+          "heading": "Checklist",
+          "paragraphs": [
+            "Tick these off before your first one."
+          ],
+          "list": [
+            "Venue with tables, sound and an agreed deal",
+            "Questions written, tested, with spares",
+            "Team size and a plan for people who come alone",
+            "Sign-up page with time, team size, price and prize",
+            "Scoresheet ready, standings hidden until the end",
+            "Clear walkways, a mic that works",
+            "Winners and next date posted the next day"
+          ]
+        }
+      ],
+      "aside": {
+        "ground": "paper",
+        "title": "What {{brand.name}} costs",
+        "body": "{{brand.name}} is free for 30 days from your first event, then a small share of paid tickets, capped each month. Free events stay free.",
+        "action": {
+          "label": "See pricing",
+          "to": {
+            "route": "pricing"
+          }
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "keep-reading",
+      "ground": "paper",
+      "kicker": "Keep reading",
+      "title": "Where to go next.",
+      "columns": 3,
+      "items": [
+        {
+          "title": "Quiz and game nights on {{brand.name}}",
+          "body": "What {{brand.name}} does for this kind of event, from booking to the day itself.",
+          "link": {
+            "label": "See the page",
+            "to": {
+              "route": "host_quiz_nights"
+            }
+          }
+        },
+        {
+          "title": "Plan your first event",
+          "body": "A step-by-step plan for your first event on {{brand.name}}.",
+          "link": {
+            "label": "Plan it",
+            "to": {
+              "route": "host_first_event"
+            }
+          }
+        },
+        {
+          "title": "All the host playbooks",
+          "body": "The other guides: run clubs, supper clubs, quiz nights and racket sports.",
+          "link": {
+            "label": "See the playbooks",
+            "to": {
+              "route": "playbooks"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Your next event",
+      "title": "Run it on {{brand.name}}.",
+      "lead": "Start the free trial, or book a walkthrough and we’ll set it up with you.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Book a walkthrough",
+          "to": {
+            "route": "host_walkthrough"
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    }
+  ]
+}

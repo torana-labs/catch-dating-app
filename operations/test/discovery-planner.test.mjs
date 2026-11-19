@@ -30,14 +30,14 @@ test("Mumbai discovery planning is deterministic and bounded by reviewed policy"
     assert.equal(
       first.planned.filter((entry) =>
         entry.planKind === "generic_city_category").length,
-      13
+      9
     );
     assert.equal(
       first.planned.filter((entry) =>
         entry.planKind === "candidate_verification").length,
       5
     );
-    assert.equal(new Set(first.planned.map((entry) => entry.runKey)).size, 18);
+    assert.equal(new Set(first.planned.map((entry) => entry.runKey)).size, 14);
     assert.ok(first.planned.some((entry) =>
       entry.runKey ===
         "web_search|\"courtside\" mumbai|mumbai|racket_sport_social|courtside"

@@ -16,7 +16,7 @@
           "appealed"
         ]
       },
-      "notes": "A listing request inside the Intake inbox's selected takedown item, injected by the app shell: the request on CatchMetaRow, its deadlines on a CatchSection of CatchIndexRows, and only the fixed steps open at its status (acknowledge, ask for more with a fixed template, action with an allowed outcome and the takedown case id, decline with a fixed reason, record and decide the one appeal, close) as CatchField selects and CatchButtons. Covered by TakedownRequestWorkspace.test.tsx; it reads live data through adminGetTakedownRequest."
+      "notes": "A listing request inside the Intake inbox's selected takedown item, injected by the app shell: the request on CatchMetaRow, its deadlines on a CatchSection of CatchIndexRows, and only the fixed steps open at its status (acknowledge, ask for more with a fixed template, action with an allowed outcome and the takedown case id, decline with a fixed reason, record and decide the one appeal, close, and for admins and the owner a one-click suspend of the organiser page an undecided removal request names) as CatchField selects and CatchButtons. Covered by TakedownRequestWorkspace.test.tsx; it reads live data through adminGetTakedownRequest."
     }
   ]
 }

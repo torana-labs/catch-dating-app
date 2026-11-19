@@ -6,9 +6,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_sta
 /// Every event link (the Events tab, Today and its needs-you rows, the
 /// tablet and desktop split view, the workspace's own tabs, insights and the
 /// legacy `/attendance` and `/success` URLs) resolves here, so the rebuilt
-/// screens are what a host sees. The old event screen remains only as the
-/// [movementConsole]: the live view of a night with a saved room layout,
-/// whose seat moves only the old room map makes.
+/// screens are what a host sees.
 enum HostEventRouteDestination {
   /// The rebuilt event workspace: Overview and its rows.
   workspace,
@@ -25,10 +23,6 @@ enum HostEventRouteDestination {
   /// The rebuilt crawl board: a pub crawl or any night with located stops.
   crawlBoard,
 
-  /// The old event screen's console and room map, for a night with a saved
-  /// room layout.
-  movementConsole,
-
   /// The rebuilt event report.
   report,
 }
@@ -37,6 +31,10 @@ enum HostEventRouteDestination {
 /// runs on the rebuilt one-room console ([liveConsoleFits], from
 /// `hostLiveConsoleFits`) and, when it does not, which rebuilt console a
 /// night that moves runs on ([movingNight], from `hostMovingNightView`).
+///
+/// Every night the one-room console does not fit moves, so [movingNight] is
+/// set whenever [liveConsoleFits] is false; the one-room console stays the
+/// answer if it ever is not.
 HostEventRouteDestination hostEventRouteDestination({
   required HostEventManageSection section,
   required HostEventWorkspacePhase phase,
@@ -55,7 +53,7 @@ HostEventRouteDestination hostEventRouteDestination({
           : switch (movingNight) {
               HostMovingNightView.run => HostEventRouteDestination.runConsole,
               HostMovingNightView.crawl => HostEventRouteDestination.crawlBoard,
-              null => HostEventRouteDestination.movementConsole,
+              null => HostEventRouteDestination.liveConsole,
             },
   };
 }

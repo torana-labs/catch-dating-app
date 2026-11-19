@@ -13,9 +13,6 @@ import {validateSetEventAssistanceRuntimeConfigCallablePayload} from
   "../../shared/generated/validators/setEventAssistanceRuntimeConfigInput";
 import {validateEventAssistanceRuntimeConfigCallableResponse} from
   "../../shared/generated/validators/eventAssistanceRuntimeConfigOutput";
-import {validateEventAssistanceRuntimeConfigReceiptDocument} from
-  // eslint-disable-next-line max-len -- Canonical individual validator path.
-  "../../shared/generated/validators/eventAssistanceRuntimeConfigReceiptDocument";
 import type {EventAssistanceRuntimeConfigCallableResponse as Response} from
   "../../shared/generated/eventAssistanceRuntimeConfigCallableResponse";
 import {invalidSource} from "./groupProgressSource";
@@ -23,9 +20,17 @@ import {readRuntimeSenderChoice, readRuntimeSenderSetup} from
   "./runtimeSenderSetup";
 import {prepareRosterWorkEnqueue, runtimeRosterInput} from
   "./rosterWorkEnqueue";
-import {RuntimeContext, RUNTIME_CONFIGS, RUNTIME_CONFIG_RECEIPTS,
+import {RuntimeContext, RUNTIME_CONFIGS, RUNTIME_CONFIG_RECEIPT_COMMAND,
   parseRuntimeConfig, runtimeConfigId, runtimeConfigSource,
   runtimeConfigStatus, validRuntimeConfiguration} from "./runtimeConfigRecords";
+import {assistanceReceiptRef, isDigest, isMillis, isRevision,
+  replayAssistanceReceipt, writeAssistanceReceipt} from "./assistanceReceipts";
+
+/** What a replay re-checks against the live runtime configuration. */
+type RuntimeConfigReceipt = {revision: number; createdAt: number;
+  sourceGeneration: string};
+const validReceipt = (r: Record<string, unknown>) => isRevision(r.revision) &&
+  isMillis(r.createdAt) && isDigest(r.sourceGeneration);
 
 /** Saves permission and its roster job; never infers participation or sends. */
 export class EventAssistanceRuntimeConfigStore {
@@ -52,22 +57,21 @@ export class EventAssistanceRuntimeConfigStore {
       throw new HttpsError("invalid-argument", "Invalid automation setup.");
     }
     const requestHash = operationContentHash([actorUid, input]);
-    const receiptId = "runtime-action:" + operationContentHash([
-      input.context, input.requestId]);
+    const receiptRef = assistanceReceiptRef(this.db,
+      RUNTIME_CONFIG_RECEIPT_COMMAND, operationContentHash([
+        input.context, input.requestId]));
     return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, input.context);
-      const receiptRef = this.db.collection(RUNTIME_CONFIG_RECEIPTS)
-        .doc(receiptId);
-      const receipt = (await tx.get(receiptRef)).data();
+      const stored = (await tx.get(receiptRef)).data();
       const now = this.clock();
       if (!Number.isSafeInteger(now) || now < state.now) throw invalidSource();
       state.now = now;
-      if (receipt !== undefined) {
-        if (!validateEventAssistanceRuntimeConfigReceiptDocument(receipt) ||
-            receipt.receiptId !== receiptId ||
-            receipt.runtimeId !== state.record?.runtimeId ||
+      const receipt = replayAssistanceReceipt<RuntimeConfigReceipt>(stored, {
+        command: RUNTIME_CONFIG_RECEIPT_COMMAND, requestHash, nowMillis: now,
+      }, validReceipt, conflict);
+      if (receipt !== null) {
+        if (!state.record ||
             receipt.sourceGeneration !== state.source.generation ||
-            receipt.requestHash !== requestHash ||
             receipt.revision > state.record.revision ||
             receipt.createdAt > now) throw conflict();
         return response("replayed", state, receipt.revision);
@@ -113,12 +117,10 @@ export class EventAssistanceRuntimeConfigStore {
         sourceGeneration: state.source.generation, updatedBy: actorUid,
         createdAt: state.record?.createdAt ?? now, updatedAt: now},
       input.context, now);
-      const savedReceipt = {receiptId, runtimeId: record.runtimeId, requestHash,
+      const savedReceipt: RuntimeConfigReceipt = {
         sourceGeneration: state.source.generation, revision: record.revision,
         createdAt: now};
-      if (!validateEventAssistanceRuntimeConfigReceiptDocument(savedReceipt)) {
-        throw invalidSource();
-      }
+      if (!validReceipt(savedReceipt)) throw invalidSource();
       const result = response("applied", {...state, record}, record.revision);
       const roster = input.command.kind === "configure" ?
         await prepareRosterWorkEnqueue(this.db, tx, runtimeRosterInput(record),
@@ -128,7 +130,9 @@ export class EventAssistanceRuntimeConfigStore {
           committedAt >= record.configuration!.expiresAt)) throw conflict();
       if (committedAt !== now) await requireSenders(committedAt);
       tx.set(this.db.collection(RUNTIME_CONFIGS).doc(record.runtimeId), record);
-      tx.create(receiptRef, savedReceipt);
+      writeAssistanceReceipt(tx, receiptRef, {
+        command: RUNTIME_CONFIG_RECEIPT_COMMAND, requestHash, nowMillis: now,
+        result: savedReceipt});
       roster?.commit();
       return result;
     });

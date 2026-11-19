@@ -8,6 +8,10 @@ import {
   targetForEnvironment,
 } from "./storage_rules_firestore_iam.mjs";
 import fs from "node:fs";
+import {
+  exchangeAppCheckDebugToken as sharedExchangeAppCheckDebugToken,
+  exchangeCustomToken as sharedExchangeCustomToken,
+} from "../../packages/command-client/src/tokens.mjs";
 
 export const canaryObjectName = "storage_canary_1.png";
 const canaryPng = Buffer.from(
@@ -252,45 +256,16 @@ async function assertActiveParticipant({app, matchId, uid}) {
   }
 }
 
-export async function exchangeCustomToken({fetchImpl, apiKey, customToken}) {
-  const response = await fetchImpl(
-    "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken" +
-      `?key=${encodeURIComponent(apiKey)}`,
-    {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({token: customToken, returnSecureToken: true}),
-    }
-  );
-  const body = await readJson(response);
-  if (!response.ok || !body.idToken) {
-    throw new CanaryStageError("auth", responseMessage(response, body));
-  }
-  return body.idToken;
+// The exchanges live in packages/command-client; these keep this probe's
+// CanaryStageError (stage "auth" or "app-check") for every caller.
+const canaryFailure = (stage, message) => new CanaryStageError(stage, message);
+
+export function exchangeCustomToken(options) {
+  return sharedExchangeCustomToken({...options, fail: canaryFailure});
 }
 
-export async function exchangeAppCheckDebugToken({
-  fetchImpl,
-  apiKey,
-  appId,
-  projectNumber,
-  debugToken,
-}) {
-  const response = await fetchImpl(
-    "https://firebaseappcheck.googleapis.com/v1/projects/" +
-      `${projectNumber}/apps/${encodeURIComponent(appId)}:exchangeDebugToken` +
-      `?key=${encodeURIComponent(apiKey)}`,
-    {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({debugToken}),
-    }
-  );
-  const body = await readJson(response);
-  if (!response.ok || !body.token) {
-    throw new CanaryStageError("app-check", responseMessage(response, body));
-  }
-  return body.token;
+export function exchangeAppCheckDebugToken(options) {
+  return sharedExchangeAppCheckDebugToken({...options, fail: canaryFailure});
 }
 
 export function readWebConfig(env) {

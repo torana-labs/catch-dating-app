@@ -75,6 +75,97 @@ test("acknowledge, ask for more with a fixed template, then action with the take
   await refused(f.step({action: "decline", declineReason: "duplicate"}), "failed-precondition");
 });
 
+const organizerPath = "organizers/lantern-lane-social";
+
+function seedOrganizer(f: Awaited<ReturnType<typeof filed>>, publishStatus = "published") {
+  f.h.db.put(organizerPath, {name: "Lantern Lane Social", publicPage: {slug: "lantern-lane-social", citySlug: "indore",
+    canonicalPath: "/organizers/indore/lantern-lane-social/", publishStatus, indexStatus: "noindex", robots: "noindex, follow"}});
+}
+
+const audits = (f: Awaited<ReturnType<typeof filed>>) =>
+  f.h.db.paths("adminAuditLogs/").map((path) => f.h.db.get(path) as {action: string; targetPath: string;
+    before?: Record<string, unknown>; after?: Record<string, unknown>; note?: string});
+
+test("suspending the named organiser takes its page down with the request's history and audit, once", async () => {
+  const f = await filed("impersonation");
+  seedOrganizer(f);
+  const read = await adminGetTakedownRequestHandler(f.call({requestId: f.requestId}), f.deps);
+  assert.equal(read.canSuspendOrganizer, true);
+  assertContract("AdminGetTakedownRequestCallableResponse", read);
+  // Support works the request but cannot take a page down.
+  const support = await adminGetTakedownRequestHandler(f.call({requestId: f.requestId}, staff("support")), f.deps);
+  assert.equal(support.canSuspendOrganizer, false);
+  await refused(f.step({action: "suspendOrganizer"}, staff("support")), "permission-denied");
+  assert.equal((f.h.db.get(organizerPath) as {publicPage: {publishStatus: string}}).publicPage.publishStatus, "published");
+
+  const suspended = await f.step({action: "suspendOrganizer", note: "Interim step"});
+  assertContract("AdminUpdateTakedownRequestCallableResponse", suspended);
+  const page = (f.h.db.get(organizerPath) as {publicPage: Record<string, unknown>}).publicPage;
+  assert.deepEqual([page.publishStatus, page.indexStatus, page.robots, page.slug],
+    ["suppressed", "noindex", "noindex, follow", "lantern-lane-social"]);
+  // A new request is acknowledged by the suspension and stays undecided.
+  assert.deepEqual([suspended.request.status, suspended.request.outcome, suspended.request.acknowledgedAt],
+    ["acknowledged", null, "2026-11-18T08:00:00.000Z"]);
+  assert.deepEqual(suspended.request.history.map((entry) => entry.action), ["received", "organizerSuspended"]);
+  assert.equal(suspended.request.history.at(-1)?.detail, "page suspended (was published) · Interim step");
+  assertContract("TakedownRequestDocument", clone(f.h.db.get(`takedownRequests/${f.requestId}`)));
+  const logs = audits(f);
+  assert.deepEqual(logs.map((log) => log.targetPath).sort(), [organizerPath, `takedownRequests/${f.requestId}`]);
+  const organizerLog = logs.find((log) => log.targetPath === organizerPath)!;
+  assert.deepEqual([organizerLog.action, organizerLog.before, organizerLog.after?.publishStatus, organizerLog.after?.takedownRequestId],
+    ["adminUpdateTakedownRequest", {publishStatus: "published"}, "suppressed", f.requestId]);
+  const requestLog = logs.find((log) => log.targetPath !== organizerPath)!;
+  assert.deepEqual([requestLog.after?.suspendedOrganizerId, requestLog.after?.organizerWritten], ["lantern-lane-social", true]);
+
+  // Pressing it again changes nothing: no history entry, no write, no audit.
+  const again = await f.step({action: "suspendOrganizer"});
+  assert.deepEqual(again.request.history.map((entry) => entry.action), ["received", "organizerSuspended"]);
+  assert.equal(audits(f).length, 2);
+  // The decision still follows, with the takedown tool's case id.
+  const actioned = await f.step({action: "action", outcome: "pageSuspended", caseId: "TD-0007"});
+  assert.equal(actioned.request.status, "actioned");
+  await refused(f.step({action: "suspendOrganizer"}), "failed-precondition");
+  assert.equal((await adminGetTakedownRequestHandler(f.call({requestId: f.requestId}), f.deps)).canSuspendOrganizer, false);
+});
+
+test("a page someone already suppressed is recorded without a second organiser write", async () => {
+  const f = await filed();
+  seedOrganizer(f, "suppressed");
+  await f.step({action: "acknowledge"});
+  const recorded = await f.step({action: "suspendOrganizer"});
+  assert.deepEqual([recorded.request.status, recorded.request.history.at(-1)?.detail], ["acknowledged", "page already suppressed"]);
+  const logs = audits(f);
+  assert.equal(logs.length, 2, "acknowledge and the recorded suspension; no organiser audit");
+  assert.ok(logs.every((log) => log.targetPath !== organizerPath));
+  assert.equal(logs.at(-1)?.after?.organizerWritten, false);
+});
+
+test("a missing organiser, or one with no public page, refuses the suspension and changes nothing", async () => {
+  const f = await filed();
+  const before = clone(f.h.db.get(`takedownRequests/${f.requestId}`));
+  await refused(f.step({action: "suspendOrganizer"}), "not-found");
+  assert.deepEqual(clone(f.h.db.get(`takedownRequests/${f.requestId}`)), before);
+  assert.equal(f.h.db.get(organizerPath), undefined);
+  assert.equal(audits(f).length, 0);
+  f.h.db.put(organizerPath, {name: "Lantern Lane Social"});
+  await refused(f.step({action: "suspendOrganizer"}), "failed-precondition");
+  assert.deepEqual(f.h.db.get(organizerPath), {name: "Lantern Lane Social"});
+  assert.equal(audits(f).length, 0);
+});
+
+test("only page-removal requests that name an organiser can suspend one", async () => {
+  for (const type of ["claim", "correctFact"] as const) {
+    const f = await filed(type);
+    seedOrganizer(f);
+    assert.equal((await adminGetTakedownRequestHandler(f.call({requestId: f.requestId}), f.deps)).canSuspendOrganizer, false);
+    await refused(f.step({action: "suspendOrganizer"}), "failed-precondition");
+    assert.equal((f.h.db.get(organizerPath) as {publicPage: {publishStatus: string}}).publicPage.publishStatus, "published");
+  }
+  const url = await filed("copyright");
+  assert.equal((await adminGetTakedownRequestHandler(url.call({requestId: url.requestId}), url.deps)).canSuspendOrganizer, false);
+  await refused(url.step({action: "suspendOrganizer"}), "failed-precondition");
+});
+
 test("one appeal within 30 days, decided by someone other than the decider; upheld closes", async () => {
   const f = await filed("trademark");
   await f.step({action: "decline", declineReason: "insufficientBasis"});

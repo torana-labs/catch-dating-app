@@ -43,12 +43,16 @@ export const playbookGuideFormats: Readonly<Record<string, WebsiteLeadGuideForma
  * The fields a form of each kind may show. Every field a form shows must be
  * filled. A walkthrough is a request for a time, which staff confirm on
  * WhatsApp; its organisation and what they run are optional to the intake.
+ * A referral needs the person's name and the host's name, link and how they
+ * know them; the intake credits it to the signed-in referrer it reads from
+ * the request, never from the form.
  */
 const kindFields = {
   guide: {needs: [], may: ["name"]},
   venue: {needs: ["orgName", "capacity", "nights"], may: ["name", "area"]},
   demo: {needs: ["name", "whatYouHost"], may: []},
   walkthrough: {needs: ["name", "preferredTime"], may: ["orgName", "whatYouHost"]},
+  referral: {needs: ["name", "hostName", "hostLink", "relationship"], may: []},
 } as const satisfies Record<string, {needs: readonly PlaybookLeadFieldName[]; may: readonly PlaybookLeadFieldName[]}>;
 
 type PlaybookLeadFieldName = NonNullable<PlaybookLeadForm["fields"]>[number]["name"];
@@ -78,7 +82,7 @@ export function playbookGuideFormat(slug: string | undefined): WebsiteLeadGuideF
  * form does not render, and the page's WhatsApp actions stand alone.
  */
 export function playbookSendableLeadKind(form: PlaybookLeadForm): PlaybookSendableLeadKind | null {
-  // A link or text input is a try-it tool's: no backend reads one until its command ships.
+  // A link or text input is a try-it tool form: the tool slot draws it (playbookLeadForms.ts), never the lead intake.
   if ((form.input ?? "tel") !== "tel") return null;
   if (!isSendableKind(form.requestKind)) return null;
   const kind = form.requestKind;
@@ -110,7 +114,8 @@ export function playbookLeadProblems(form: PlaybookLeadForm, answers: PlaybookLe
  * playbook consent version, the page path, the form's id as its entry, and
  * the kind's answers (a guide's format as the intake names it; a venue's
  * name as spaceName; a walkthrough's organisation and what they run as
- * organisation and whatYouRun). A shown name goes as the person's full name.
+ * organisation and whatYouRun; a referral's host name, link and how they
+ * know them). A shown name goes as the person's full name.
  */
 export function playbookLeadRequest(form: PlaybookLeadForm, kind: PlaybookSendableLeadKind, answers: PlaybookLeadAnswers, sourcePage: string): WebsiteLeadForm {
   const shared = {
@@ -139,6 +144,12 @@ export function playbookLeadRequest(form: PlaybookLeadForm, kind: PlaybookSendab
     return {
       kind, ...shared, fullName,
       answers: {preferredTime: typed(answers.preferredTime), ...(organisation ? {organisation} : {}), ...(whatYouRun ? {whatYouRun} : {})},
+    };
+  }
+  if (kind === "referral") {
+    return {
+      kind, ...shared, fullName,
+      answers: {hostName: typed(answers.hostName), hostLink: typed(answers.hostLink), relationship: typed(answers.relationship)},
     };
   }
   return {kind, ...shared, fullName, answers: {whatYouHost: typed(answers.whatYouHost)}};

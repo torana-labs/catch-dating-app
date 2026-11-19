@@ -2,7 +2,7 @@ import {CatchBand, CatchBandHeader, CatchButton, CatchFeatureTile, CatchGrid, Ca
 import {discoveryPagesCopy as copy} from "@content/discovery/discoveryPages";
 import {interpolateContent as fill} from "@content/interpolate";
 import {useId} from "react";
-import type {OrganizerCardView} from "../home/homeModel";
+import type {DiscoveryOrganizerCardView} from "./discoveryCards";
 
 /** The mint card after the organisers (the kit's claim card): a way in for an organiser who is not listed yet. */
 export interface DiscoveryOrganisersClaim {
@@ -15,7 +15,7 @@ export interface DiscoveryOrganisersProps {
   kicker: string;
   title: string;
   lead?: string;
-  cards: readonly OrganizerCardView[];
+  cards: readonly DiscoveryOrganizerCardView[];
   claim?: DiscoveryOrganisersClaim;
   /** A secondary button under the cards, such as "See all organisers". */
   action?: {label: string; href: string};
@@ -27,7 +27,10 @@ export interface DiscoveryOrganisersProps {
  * card (monogram, name, what they run, their next plan and Follow), then,
  * where the page has one, the mint card for an organiser who is not listed.
  * Follow opens the organiser's page, where following happens (phone sign-in
- * and the WhatsApp tick); an organiser without a page has no button. It
+ * and the WhatsApp tick); an organiser without a page has no button. An
+ * organiser who has not claimed their listing, with a page or joining
+ * without one, carries the unclaimed label in words at the card's foot and
+ * a link to report or remove it; a claimed one carries neither. It
  * arranges library parts (D18).
  */
 export function DiscoveryOrganisers({kicker, title, lead, cards, claim, action}: DiscoveryOrganisersProps) {
@@ -39,10 +42,19 @@ export function DiscoveryOrganisers({kicker, title, lead, cards, claim, action}:
         <CatchGrid as="ul" columns={4}>
           {cards.map((card) => (
             <CatchOrganizerCard
-              action={card.href ? (
-                <CatchButton fullWidth href={card.href} label={copy.follow} semanticsLabel={fill(copy.followLabel, {name: card.name})} size="sm"
-                  variant="secondary" />
+              action={card.href || card.listing ? (
+                <CatchStack gap={4}>
+                  {card.href ? (
+                    <CatchButton fullWidth href={card.href} label={copy.follow} semanticsLabel={fill(copy.followLabel, {name: card.name})} size="sm"
+                      variant="secondary" />
+                  ) : null}
+                  {card.listing ? (
+                    <CatchButton fullWidth href={card.listing.report.href} label={card.listing.report.label}
+                      semanticsLabel={card.listing.report.semanticsLabel} size="sm" variant="quiet" />
+                  ) : null}
+                </CatchStack>
               ) : undefined}
+              footnote={card.listing?.label}
               ground="white"
               href={card.href}
               initials={card.initials}

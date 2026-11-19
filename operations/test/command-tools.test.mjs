@@ -118,7 +118,8 @@ test("only the person can confirm, and apply carries the reviewed hash", async (
   const apply = client.calls.at(-1).payload;
   assert.equal(apply.mode, "apply");
   assert.deepEqual(apply.confirm, {commandId: "workspace.ensure", previewHash});
-  assert.notEqual(apply.idempotencyKey, client.calls[0].payload.idempotencyKey);
+  // One key per action: link-import commands find their page read by it.
+  assert.equal(apply.idempotencyKey, client.calls[0].payload.idempotencyKey);
   await assert.rejects(session.confirmPending(preview.pendingId, {source: "person"}),
     {code: "COMMAND_TOOL_PENDING_UNKNOWN"});
 });
@@ -155,7 +156,7 @@ test("a running preview cannot be confirmed and refreshes with the same key", as
   assert.equal(client.calls[1].payload.idempotencyKey, client.calls[0].payload.idempotencyKey);
 });
 
-test("a retried confirmation after an unknown outcome reuses the apply key", async () => {
+test("a retried confirmation after an unknown outcome reuses the preview key", async () => {
   const catalog = await loadCommandCatalog();
   const client = fakeClient((payload, call) => {
     if (call === 2) throw new Error("connection lost");
@@ -167,6 +168,7 @@ test("a retried confirmation after an unknown outcome reuses the apply key", asy
   const retried = await session.confirmPending(preview.pendingId, {source: "person"});
   assert.equal(retried.status, "replayed");
   assert.equal(client.calls[2].payload.idempotencyKey, client.calls[1].payload.idempotencyKey);
+  assert.equal(client.calls[1].payload.idempotencyKey, client.calls[0].payload.idempotencyKey);
 });
 
 test("previews expire and invalid input never reaches the callable", async () => {

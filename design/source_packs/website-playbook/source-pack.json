@@ -1,7 +1,7 @@
 {
   "$schema": "catch.design-source-pack/v1",
   "id": "website-playbook",
-  "importedAt": "2026-11-18",
+  "importedAt": "2026-11-19",
   "upstream": {
     "label": "Catch directions design canvas, Website · conversion playbook page",
     "kind": "design-canvas",
@@ -76,7 +76,7 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "1bbebb10987f22292b48d52ce6c08fa9640eaac4ddc8544bf4da6cf75108b08a"
+      "sha256": "71185675acc65a4f8d2942889154c3054922e45e5e566199eee5d979b9338e6f"
     },
     {
       "path": "kit/KitArticle.dc.html",
@@ -156,7 +156,7 @@
     },
     {
       "path": "kit/playbook-panels.css",
-      "sha256": "d29c1cc8b28bf31f4a5d392e272e93eed63a467ab821c3b12421924982fe4e50"
+      "sha256": "1ed6c912f15a21938474a1275bd418edae93ca35996865e42e9d9e8608c437d1"
     },
     {
       "path": "oneoff/PlaybookCompare.dc.html",

@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/import_form_from_link_payload.schema.json",
+  "title": "ImportFormFromLinkCallablePayload",
+  "description": "Command form.import-from-link (contracts/commands/catalog.json). A phone-verified caller with a try-it workspace sends one public Google Form. Preview reads the form and answers the private draft form apply would create in the workspace, with every part the host must rebuild listed as a flag. Apply reads the form again, refuses if it changed since the confirmed preview, and creates the draft. Reuse the preview's idempotency key on apply.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode", "idempotencyKey", "surface", "input"],
+  "properties": {
+    "mode": {"$ref": "../shared/command_envelope.schema.json#/definitions/mode"},
+    "idempotencyKey": {"$ref": "../shared/command_envelope.schema.json#/definitions/idempotencyKey"},
+    "surface": {"$ref": "../shared/command_envelope.schema.json#/definitions/surface"},
+    "confirm": {"$ref": "../shared/command_envelope.schema.json#/definitions/confirm"},
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["link"],
+      "properties": {
+        "link": {"type": "string", "minLength": 8, "maxLength": 2000, "pattern": "^https?://",
+          "description": "One public Google Form (docs.google.com/forms/… or a forms.gle short link)."}
+      }
+    }
+  }
+}

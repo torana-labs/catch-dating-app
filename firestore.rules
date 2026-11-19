@@ -920,35 +920,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /eventAssistanceMembershipReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceStaffReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceParticipationReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceAccountabilityReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
     match /eventAssistanceSettings/{settingId} {
       allow read, write: if false;
     }
 
     match /eventAssistanceRuntimeConfigs/{runtimeId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceRuntimeConfigReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceSettingReceipts/{receiptId} {
       allow read, write: if false;
     }
 
@@ -961,10 +937,6 @@ service cloud.firestore {
     }
 
     match /eventAssistanceDepartureRosters/{rosterId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceProgressReceipts/{receiptId} {
       allow read, write: if false;
     }
 
@@ -984,10 +956,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /eventAssistanceCaseReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
     match /eventAssistanceDeliveryRepairs/{receiptId} {
       allow read, write: if false;
     }
@@ -1001,10 +969,6 @@ service cloud.firestore {
     }
 
     match /eventAssistanceRcsSenders/{senderId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceRcsCallbackReceipts/{callbackId} {
       allow read, write: if false;
     }
 
@@ -1166,7 +1130,21 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // The programmatic listings pause switch (Settings → Intake): read by
+    // listing approval and adminNominateOrganizer, written only by
+    // adminManageListingProgram.
+    match /listingProgramSettings/{settingsId} {
+      allow read, write: if false;
+    }
+
     match /nominatorCredits/{creditId} {
+      allow read, write: if false;
+    }
+
+    // Host-to-host referrals and their free-month rewards: written only by
+    // Functions (the ownership trigger, the daily bill run and the bill paid
+    // paths). Admin reads them through the bills they make free.
+    match /organizerReferrals/{referredOrganizerId} {
       allow read, write: if false;
     }
 

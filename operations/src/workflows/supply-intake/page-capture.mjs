@@ -92,13 +92,13 @@ export class GuardedPageFetchPort {
     this.budgets.month.consume(request, {reason});
   }
 
-  async capture({runKey, url}) {
+  async capture({runKey, url, namedScripts = []}) {
     invariant(typeof runKey === "string" && runKey.length > 0 && runKey.length <= 500,
       "INVALID_ACQUISITION_REQUEST", "Page capture requires a runKey.");
     this.runKey = runKey;
     const before = this.fetcher.requests;
     const page = await this.fetcher.fetchPage(url);
-    const snapshot = page.outcome === "fetched" ? snapshotFromHtml(page) : null;
+    const snapshot = page.outcome === "fetched" ? snapshotFromHtml({...page, namedScripts}) : null;
     return {
       snapshot,
       receipt: captureReceipt({runKey, adapterId: this.adapterId, policy: this.policy,
@@ -118,7 +118,7 @@ export class StaticPageSource {
     this.pages = new Map(Object.entries(pages).map(([url, page]) => [new URL(url).href, page]));
   }
 
-  async capture({runKey, url}) {
+  async capture({runKey, url, namedScripts = []}) {
     const key = new URL(url).href;
     const saved = this.pages.get(key);
     const fetchedAt = this.clock().toISOString();
@@ -127,7 +127,7 @@ export class StaticPageSource {
         contentType: "text/html", html: typeof saved === "string" ? saved : saved.html, fetchedAt, redirects: []} :
       {outcome: "not_captured", url: key, finalUrl: null, status: null, contentType: null, html: null,
         fetchedAt: null, redirects: []};
-    const snapshot = page.outcome === "fetched" ? snapshotFromHtml(page) : null;
+    const snapshot = page.outcome === "fetched" ? snapshotFromHtml({...page, namedScripts}) : null;
     return {snapshot, receipt: captureReceipt({runKey, adapterId: this.adapterId, policy: this.policy,
       decisionId: null, page, snapshot, networkRequests: 0, budgets: null})};
   }

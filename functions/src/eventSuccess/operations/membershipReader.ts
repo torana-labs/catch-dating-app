@@ -32,7 +32,7 @@ export interface Scope {
   attendeeId: string;
 }
 export const MEMBERSHIPS = "eventAssistanceMemberships";
-export const MEMBERSHIP_RECEIPTS = "eventAssistanceMembershipReceipts";
+export const MEMBERSHIP_RECEIPT_COMMAND = "eventAssistanceMembership";
 export function membershipIdentity(scope: Scope) {
   guestIdentity(scope.context, scope.attendeeId);
   return "membership:" + operationContentHash({context: scope.context,

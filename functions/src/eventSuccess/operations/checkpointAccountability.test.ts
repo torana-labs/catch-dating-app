@@ -4,8 +4,10 @@ import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
-import {EventAccountabilityStore, ACCOUNTABILITY_RECEIPTS} from
+import {EventAccountabilityStore, ACCOUNTABILITY_RECEIPT_COMMAND} from
   "./accountabilityStore";
+import {COMMAND_RECEIPTS} from "../../shared/commandReceipts";
+import {operationContentHash} from "../../operations/durableActions";
 import {EventCheckpointStore} from "./checkpointStore";
 import {departureRosterHarness} from "./departureRosterTestFixtures";
 import {progressFixtureManager as manager} from "./groupProgressTestFixtures";
@@ -14,6 +16,10 @@ import type {EventAssistanceAccountabilityCallableResponse as Response} from
   "../../shared/generated/eventAssistanceAccountabilityCallableResponse";
 import type {Decision} from "./membershipTransitions";
 import {DEPARTURE_ROSTERS} from "./departureRosterSource";
+
+const RECEIPT_PREFIX = `${COMMAND_RECEIPTS}/${ACCOUNTABILITY_RECEIPT_COMMAND}_`;
+const receiptResult = (receipt: Record<string, unknown>) =>
+  receipt.result as {checkpointHash: string};
 
 async function setup(real?: Firestore, grouped = false, ids?: string[]) {
   const h = await departureRosterHarness(real);
@@ -87,16 +93,18 @@ test("a bar crawl records a departure disposition without enabling a sweep",
         ?.[1])).map(([path]) => path);
     assert.equal(changed.length, 2);
     assert.ok(changed.includes(h.attendeePath));
-    assert.ok(changed.some((p) => p.startsWith(ACCOUNTABILITY_RECEIPTS + "/")));
+    assert.ok(changed.some((p) => p.startsWith(RECEIPT_PREFIX)));
     assert.deepEqual(await h.read("events/" + h.scope.context.eventId),
       before.find(([p]) => p === "events/" + h.scope.context.eventId)![1]);
     const saved = h.fake.entries();
     assert.equal((await h.account.resolve(manager, input)).outcome, "replayed");
     assert.deepEqual(h.fake.entries(), saved);
-    const receipt = saved.find(([p]) => p.startsWith(
-      ACCOUNTABILITY_RECEIPTS + "/"))![1];
-    assert.equal((receipt.checkpoint as {rosterId: string}).rosterId,
-      h.departure.view.progress?.departureRosterId);
+    const receipt = saved.find(([p]) => p.startsWith(RECEIPT_PREFIX))![1];
+    // The receipt binds the departure checkpoint the visit was resolved for.
+    assert.ok(h.departure.view.progress?.departureRosterId);
+    assert.match(receiptResult(receipt).checkpointHash, /^[a-f0-9]{64}$/);
+    assert.notEqual(receiptResult(receipt).checkpointHash,
+      operationContentHash(null));
     assert.equal((await h.read(h.attendeePath))!.attendanceRevision, 7);
   });
 
@@ -207,9 +215,10 @@ test("scope, receipt evidence, original source and authority fence retries",
     const input = command(await h.view("sweep"));
     await h.account.resolve("sweep", input);
     const receipt = h.fake.entries().find(([p]) =>
-      p.startsWith(ACCOUNTABILITY_RECEIPTS + "/"))!;
+      p.startsWith(RECEIPT_PREFIX))!;
     const original = receipt[1];
-    await h.put(receipt[0], {...original, checkpoint: undefined});
+    await h.put(receipt[0], {...original, result: {
+      ...receiptResult(original), checkpointHash: operationContentHash(null)}});
     await assert.rejects(h.account.resolve("sweep", input), {code: "aborted"});
     await h.put(receipt[0], original);
     const wrong = {...input, checkpoint: {...input.checkpoint!,

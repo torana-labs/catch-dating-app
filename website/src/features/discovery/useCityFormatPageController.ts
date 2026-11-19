@@ -9,7 +9,7 @@ import type {HomeCatalog} from "../home/homeTypes";
 import {shortWhen} from "../home/homeModel";
 import {cityPagePath} from "../home/sections/cityChrome";
 import {cityAlertInterests} from "./cityAlertsModel";
-import {discoveryOrganizerCard, discoveryPlanCard} from "./discoveryCards";
+import {discoveryOrganizerCard, discoveryPlanCard, unclaimedOrganizerListing} from "./discoveryCards";
 import {
   cityDiscoveryLinks,
   cityFormatModel,
@@ -105,9 +105,11 @@ export function useCityFormatPageController(catalog: HomeCatalog, format: Discov
     thin: {
       lead: fill(copy.thin.lead, {formatLower: tokens.formatLower, city: city.label}),
       ticks: [
-        ...(model.organizers.length ? model.organizers.slice(0, 3).map((organizer) => organizer.nextPlan ?
+        // An organiser who has not claimed their listing carries the unclaimed label here as on the cards.
+        ...(model.organizers.length ? model.organizers.slice(0, 3).map((organizer) => [organizer.nextPlan ?
           fill(copy.thin.organiserNext, {name: organizer.name, when: shortWhen(organizer.nextPlan.startTime, city.timezone)}) :
-          fill(copy.thin.organiserNoPlan, {name: organizer.name})) : [fill(copy.thin.noneYet, {organisers: words.organiserMany})]),
+          fill(copy.thin.organiserNoPlan, {name: organizer.name}), unclaimedOrganizerListing(organizer)?.label].filter(Boolean).join(" · ")) :
+          [fill(copy.thin.noneYet, {organisers: words.organiserMany})]),
         fill(copy.thin.later, {organisers: words.organiserMany}),
       ],
       actions: [

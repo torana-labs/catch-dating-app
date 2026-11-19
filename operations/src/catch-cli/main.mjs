@@ -7,7 +7,7 @@ import {
   isMainModule,
   parseCommandLine,
   positiveInteger as sharedPositiveInteger,
-} from "../command-client/argv.mjs";
+} from "../../../packages/command-client/src/argv.mjs";
 import {
   inputJsonSchema,
   loadCommandCatalog,
@@ -15,15 +15,15 @@ import {
   requireCommand,
   schemaIssues,
 } from "../command-client/command-catalog.mjs";
-import {confirmationPolicy} from "../command-client/confirmation-policy.mjs";
-import {runCli, successEnvelope} from "../command-client/envelope.mjs";
-import {executeWithReceipts} from "../command-client/execution.mjs";
-import {LocalReceiptStore} from "../command-client/receipt-store.mjs";
+import {confirmationPolicy} from "../../../packages/command-client/src/confirmation-policy.mjs";
+import {runCli, successEnvelope} from "../../../packages/command-client/src/envelope.mjs";
+import {executeWithReceipts} from "../../../packages/command-client/src/execution.mjs";
+import {LocalReceiptStore} from "../../../packages/command-client/src/receipt-store.mjs";
 import {
   CallableTransport,
   callableBaseUrl,
   isIndeterminateTransportError,
-} from "../command-client/transport.mjs";
+} from "../../../packages/command-client/src/transport.mjs";
 import {hashValue} from "../platform/canonical-json.mjs";
 import {OperationsError} from "../platform/errors.mjs";
 
@@ -214,7 +214,10 @@ function describeResult({command, payload, response, apply}) {
     warnings,
   };
   if (!apply && status === "previewed") {
+    // Apply reuses the preview's idempotency key: commands that read a page
+    // find that read by it, and the preview hash covers it.
     result.applyWith = [
+      "--idempotency-key", payload.idempotencyKey,
       "--apply",
       ...(policy.confirmCommandId ? ["--confirm", command.commandId] : []),
       ...(response.previewHash ? ["--preview-hash", response.previewHash] : []),

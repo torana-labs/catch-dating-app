@@ -2,7 +2,6 @@ import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dar
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_compatibility_response.dart';
-import 'package:catch_dating_app/contexts/formats/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
@@ -19,8 +18,6 @@ part 'event_success_controller.g.dart';
 
 @riverpod
 class EventSuccessController extends _$EventSuccessController {
-  static final ensurePlanMutation = Mutation<EventSuccessPlan>();
-  static final saveSetupMutation = Mutation<void>();
   static final updateStepMutation = Mutation<void>();
   static final startRevealCountdownMutation = Mutation<void>();
   static final revealRoundMutation = Mutation<void>();
@@ -83,11 +80,6 @@ class EventSuccessController extends _$EventSuccessController {
         );
   }
 
-  Future<EventSuccessPlan> ensurePlan(Event event) async {
-    requireSignedInUid(ref, action: 'set up the live event guide');
-    return ref.read(eventSuccessRepositoryProvider).ensurePlanForEvent(event);
-  }
-
   Future<EventSuccessLayout> upsertLayout({
     required String organizerId,
     required EventSuccessLayout layout,
@@ -124,27 +116,6 @@ class EventSuccessController extends _$EventSuccessController {
           destinationUnitId: destinationUnitId,
           scope: scope,
         );
-  }
-
-  Future<void> saveSetup({
-    required EventSuccessPlan plan,
-    required EventSuccessHostDraft draft,
-    required String? layoutId,
-    String? attendeePrompt,
-  }) async {
-    requireSignedInUid(ref, action: 'save the live event guide');
-    final normalizedPrompt = attendeePrompt?.trim();
-    final nextPlan = plan
-        .copyWithDraft(draft, updatedAt: DateTime.now())
-        .copyWith(
-          layoutId: layoutId,
-          attendeePrompt: normalizedPrompt == null || normalizedPrompt.isEmpty
-              ? null
-              : normalizedPrompt,
-        );
-    await ref
-        .read(eventSuccessRepositoryProvider)
-        .savePlan(nextPlan, expectedUpdatedAt: plan.updatedAt);
   }
 
   Future<void> updateActiveStep({

@@ -22,3 +22,10 @@ Object writeFailure(Object error) {
     cause: error,
   );
 }
+
+/// Whether [error] is a write whose outcome is unknown. Surfaces offer no
+/// retry for it: repeating a write that may already have landed can apply it
+/// twice, so the screen's listener confirms it and the person repeats it from
+/// the original control only if it did not go through.
+bool isUnconfirmedWrite(Object error) =>
+    error is AppException && error.code == writeOutcomeUnknownCode;

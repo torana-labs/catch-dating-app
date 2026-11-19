@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_funnel_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_host_report_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_quality_section.dart';
@@ -39,11 +38,6 @@ void main() {
         1,
       ),
       (eventSuccessStrictHostFunnelSummary, EventSuccessFunnelSection, 1),
-      (
-        eventSuccessStrictEventSuccessHostSectionLoadingPageBody,
-        EventSuccessHostSectionLoadingPageBody,
-        1,
-      ),
     ]) {
       testWidgets('$type mounts at text scale $scale', (tester) async {
         tester.view.devicePixelRatio = 1;

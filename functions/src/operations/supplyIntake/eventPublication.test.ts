@@ -153,7 +153,8 @@ async function harness({editEvent, approve = true}: {editEvent?: EventEdit; appr
         marketId: "in-mh-mumbai", organizerType: "community", note: "Checked the Luma calendar.",
         checklist: {identityReviewed: true, surfaceInventoryReviewed: true, ownerSafeCopyReviewed: true,
           marketScopeReviewed: true, mediaRightsReviewed: true, crawlDisabledReviewed: true,
-          claimTargetReviewed: true, takedownPathReviewed: true, impersonationReviewed: true}},
+          claimTargetReviewed: true, takedownPathReviewed: true, impersonationReviewed: true,
+          cityEvidenceReviewed: true, formatsReviewed: true, datingFramingReviewed: true, personalDataReviewed: true}, formats: ["quizNights"]},
     } as unknown as CallableRequest<unknown>, {...deps, reserveCanonicalRoute: async () => undefined} as never);
     organizerId = approval.organizerId;
   }

@@ -5,19 +5,26 @@ import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {mumbaiLiveCatalog} from "../../stories/fixtures/homeCatalogs";
 import type {HomeCatalog} from "../home/homeTypes";
 import {CityFormatPage} from "./CityFormatPage";
-import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog} from "./discoveryCatalogFixtures";
+import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog, puneDiscoveryCatalog} from "./discoveryCatalogFixtures";
 import type {DiscoveryFormatKey} from "./discoveryTypes";
 
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent: vi.fn()}));
 afterEach(cleanup);
 
 const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in"].map((id) => [id, {
-  id, webPath: `/captures/${id}.png`, width: 980, height: 1924, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: [],
+  id, device: "generic-phone", webPath: `/captures/${id}.png`, width: 804, height: 1748, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: [],
 }]));
 
 const show = (catalog: HomeCatalog, format: DiscoveryFormatKey, url = "/mumbai/run-clubs/") =>
   render(<MemoryRouter initialEntries={[url]}><CityFormatPage catalog={catalog} format={format} /></MemoryRouter>);
 const band = (name: string | RegExp) => screen.getByRole("region", {name});
+
+/** The catalog with these organisers' claim states changed, as the read model would carry them. */
+const withClaimStates = (catalog: HomeCatalog, states: Record<string, HomeCatalog["plans"]["organizers"][number]["claimState"]>): HomeCatalog => ({
+  ...catalog,
+  plans: {...catalog.plans, organizers: catalog.plans.organizers.map((organizer) =>
+    organizer.organizerId in states ? {...organizer, claimState: states[organizer.organizerId]} : organizer)},
+});
 
 // Each test renders the whole page, which a loaded CI runner can take seconds over.
 describe("City format page", {timeout: 20_000}, () => {
@@ -44,6 +51,41 @@ describe("City format page", {timeout: 20_000}, () => {
     expect(within(band("Get new plans on WhatsApp.")).getByRole("button", {name: "Notify me"})).toBeTruthy();
   });
 
+  it("labels each unclaimed organiser's card in words with a report link carrying its id, and a claimed one with neither", () => {
+    show(withClaimStates(mumbaiDiscoveryCatalog, {"night-shift-socials": "unclaimed"}), "runClubs");
+    const organisers = band("Who runs them");
+    const cards = within(organisers).getAllByRole("article");
+    const card = (name: string) => cards.find((item) => within(item).queryByRole("heading", {name}))!;
+    const unclaimed = within(card("Night Shift Socials"));
+    expect(unclaimed.getByText("Unclaimed · Not affiliated")).toBeTruthy();
+    const report = unclaimed.getByRole("link", {name: "Report or remove the listing for Night Shift Socials"});
+    expect(report.textContent).toBe("Report");
+    expect(report.getAttribute("href")).toBe("/listings/request/?organizer=night-shift-socials");
+    expect(unclaimed.getByRole("link", {name: "Follow Night Shift Socials"})).toBeTruthy();
+    const claimed = within(card("Driftwood Bay Runners"));
+    expect(claimed.queryByText(/Unclaimed|Not affiliated/u)).toBeNull();
+    expect(claimed.queryByRole("link", {name: /Report/u})).toBeNull();
+    // Only the unclaimed organiser carries a label or a report link.
+    expect(within(organisers).getAllByText("Unclaimed · Not affiliated")).toHaveLength(1);
+    expect(within(organisers).getAllByRole("link", {name: /^Report or remove/u})).toHaveLength(1);
+  });
+
+  it("labels a joining organiser with no page yet, and one whose claim is under review, the same way", () => {
+    show(withClaimStates(puneDiscoveryCatalog, {"jacaranda-park-runners": "unclaimed"}), "runClubs", "/pune/run-clubs/");
+    const organisers = band("Who runs them");
+    const joining = within(within(organisers).getAllByRole("article")
+      .find((item) => within(item).queryByRole("heading", {name: "Jacaranda Park Runners"}))!);
+    expect(joining.getByText("Unclaimed · Not affiliated")).toBeTruthy();
+    // No page to follow yet, but the listing can still be reported.
+    expect(joining.queryByRole("link", {name: /Follow/u})).toBeNull();
+    expect(joining.getByRole("link", {name: "Report or remove the listing for Jacaranda Park Runners"}).getAttribute("href"))
+      .toBe("/listings/request/?organizer=jacaranda-park-runners");
+    cleanup();
+    show(withClaimStates(mumbaiDiscoveryCatalog, {"driftwood-bay-runners": "claimPending"}), "runClubs");
+    expect(within(band("Who runs them")).getByRole("link", {name: "Report or remove the listing for Driftwood Bay Runners"}).getAttribute("href"))
+      .toBe("/listings/request/?organizer=driftwood-bay-runners");
+  });
+
   it("shows the board's phones: a guest checked in by the first-time guide, and the app's Explore by the WhatsApp form", () => {
     render(<MemoryRouter initialEntries={["/mumbai/run-clubs/"]}><CityFormatPage captures={captures} catalog={mumbaiDiscoveryCatalog} format="runClubs" /></MemoryRouter>);
     expect(within(band("Joining a run club in Mumbai.")).getByRole("img", {name: "Screen guest-checked-in"})).toBeTruthy();
@@ -56,6 +98,10 @@ describe("City format page", {timeout: 20_000}, () => {
     expect(screen.getByText("Dink and Drink · next: Sat 5:00 PM")).toBeTruthy();
     expect(screen.getByRole("link", {name: "See Dink and Drink"}).getAttribute("href")).toBe("/organizers/dink-and-drink/");
     expect(screen.queryByRole("region", {name: "Upcoming sessions"})).toBeNull();
+    cleanup();
+    // An unclaimed organiser named on the thin page carries the same label.
+    show(withClaimStates(mumbaiDiscoveryCatalog, {"dink-and-drink": "unclaimed"}), "pickleball", "/mumbai/pickleball/");
+    expect(screen.getByText("Dink and Drink · next: Sat 5:00 PM · Unclaimed · Not affiliated")).toBeTruthy();
   });
 
   it("says plans are unavailable rather than show counts it does not have", () => {

@@ -15,6 +15,9 @@ const {pathToFileURL} = require('node:url');
 const root = path.resolve(__dirname, '../..');
 const out = path.join(root, 'functions', 'lib');
 const trees = [
+  // The platform's errors and canonical JSON re-export the shared command
+  // client core, so it ships beside them at the same relative path.
+  'packages/command-client/src',
   'operations/src/platform',
   'operations/src/workflows/outreach-drafting',
   'operations/src/workflows/supply-intake',

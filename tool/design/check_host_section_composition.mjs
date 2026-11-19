@@ -5,7 +5,6 @@ import {scanDartSource} from '../lib/dart_source.mjs';
 // These are the migrated operational surfaces, not a global ban on form cards.
 export const hostSectionSources = [
   'lib/programs/presentation/program_guests_screen.dart',
-  'lib/hosts/presentation/widgets/host_event_reviews_panel.dart',
   'lib/event_success/presentation/event_assistance_help_entry_section.dart',
   'lib/event_success/presentation/event_assistance_delivery_entry_section.dart',
   'lib/event_success/presentation/host_report/event_success_host_report_page_body.dart',

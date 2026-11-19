@@ -69,6 +69,8 @@ export function useTakedownRequestController({requestId, onError, onNotice, onCh
     recordAppeal: () => run({action: "recordAppeal"}),
     decideAppeal: (appealDecision: "upheld" | "overturned") => run({action: "decideAppeal", appealDecision}),
     close: () => run({action: "close"}),
+    /** One click takes the named organiser's page down; null when this caller or request cannot. */
+    suspendOrganizer: detail.data?.canSuspendOrganizer ? () => run({action: "suspendOrganizer"}) : null,
   };
 }
 

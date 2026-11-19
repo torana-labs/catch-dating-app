@@ -27,4 +27,10 @@ describe("CatchGrid", () => {
     expectTypeOf<CatchGridProps["compactColumns"]>().toEqualTypeOf<1 | 2 | undefined>();
     expectTypeOf<"className" | "style">().extract<keyof CatchGridProps>().toEqualTypeOf<never>();
   });
+  it("never shows more columns than it has items, so a short set shares the row", () => {
+    const {rerender} = render(<CatchGrid aria-label="Stats" as="ul" columns={4}><p>One</p><p>Two</p><p>Three</p></CatchGrid>);
+    expect(screen.getByRole("list", {name: "Stats"}).dataset.columns).toBe("3");
+    rerender(<CatchGrid aria-label="Stats" as="ul" columns={2}><p>One</p><p>Two</p><p>Three</p></CatchGrid>);
+    expect(screen.getByRole("list", {name: "Stats"}).dataset.columns).toBe("2");
+  });
 });

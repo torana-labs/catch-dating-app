@@ -13,10 +13,10 @@ import {
   isMainModule,
   parseCommandLine,
   positiveInteger as sharedPositiveInteger,
-} from "../command-client/argv.mjs";
-import {runCli, successEnvelope} from "../command-client/envelope.mjs";
-import {executeWithReceipts} from "../command-client/execution.mjs";
-import {isIndeterminateTransportError} from "../command-client/transport.mjs";
+} from "../../../packages/command-client/src/argv.mjs";
+import {runCli, successEnvelope} from "../../../packages/command-client/src/envelope.mjs";
+import {executeWithReceipts} from "../../../packages/command-client/src/execution.mjs";
+import {isIndeterminateTransportError} from "../../../packages/command-client/src/transport.mjs";
 import {hashValue} from "../platform/canonical-json.mjs";
 import {OperationsError} from "../platform/errors.mjs";
 

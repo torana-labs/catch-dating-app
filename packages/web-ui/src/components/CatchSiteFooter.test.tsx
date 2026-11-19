@@ -1,8 +1,12 @@
-import {cleanup, render, screen, within} from "@testing-library/react";
-import {afterEach, describe, expect, it} from "vitest";
+import {act, cleanup, fireEvent, render, screen, within} from "@testing-library/react";
+import {afterEach, describe, expect, it, vi} from "vitest";
 import {CatchSiteFooter} from "./CatchSiteFooter";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 
 describe("CatchSiteFooter", () => {
   it("is a content info landmark with titled link groups, notes and the wordmark", () => {
@@ -112,5 +116,76 @@ describe("CatchSiteFooter", () => {
     const footer = screen.getByRole("contentinfo");
     expect(within(footer).queryByRole("navigation")).toBeNull();
     expect(within(footer).getByRole("link", {name: "Brand"})).toBeTruthy();
+  });
+
+  it("ends a group with an action drawn as one of its links", () => {
+    const onPressed = vi.fn();
+    render(
+      <CatchSiteFooter
+        {...base}
+        groups={[{title: "Help and legal", links: [{href: "/refunds/", label: "Refunds"}], action: {label: "Privacy choices", onPressed}}]}
+      />,
+    );
+    const nav = screen.getByRole("navigation", {name: "Footer"});
+    const items = within(nav).getAllByRole("listitem");
+    const link = within(items[0]).getByRole("link", {name: "Refunds"});
+    const action = within(items[1]).getByRole("button", {name: "Privacy choices"});
+    expect(action.getAttribute("type")).toBe("button");
+    expect(action.className).toBe(link.className);
+    fireEvent.click(action);
+    expect(onPressed).toHaveBeenCalledOnce();
+  });
+
+  /**
+   * Sizes columns in a page with ResizeObserver: each character of a title or
+   * link at its one-line width measures 7px,
+   * so the longest item ("A much longer sample link", 25 characters) is 175px
+   * and its column 176px (one spare pixel against rounding), and the nav is
+   * `width` wide.
+   */
+  function renderMeasured(width: number) {
+    let resize = () => {};
+    vi.stubGlobal("ResizeObserver", class {
+      constructor(callback: () => void) { resize = callback; }
+      observe() {}
+      disconnect() {}
+    });
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => { callback(0); return 0; });
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      const measuring = this.closest("nav")?.hasAttribute("data-measuring") ?? false;
+      return {width: measuring ? (this.textContent ?? "").length * 7 : 0} as DOMRect;
+    });
+    const widthSpy = vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(width);
+    const measured = groups.slice(0, 3).map((group, index) =>
+      index === 1 ? {...group, links: [...group.links, {href: "/long/", label: "A much longer sample link"}]} : group);
+    render(<CatchSiteFooter {...base} columns={3} groups={measured} />);
+    return {
+      nav: screen.getByRole("navigation", {name: "Footer"}),
+      resizeTo(next: number) {
+        widthSpy.mockReturnValue(next);
+        act(() => resize());
+      },
+    };
+  }
+
+  it("sizes the columns from the longest link and sits the groups in one row when they all fit", () => {
+    // Three 176px columns and two gaps (zero in jsdom) fit in 600px.
+    const {nav} = renderMeasured(600);
+    expect(nav.style.getPropertyValue("--catch-site-footer-column-min")).toBe("176px");
+    expect(nav.dataset.layout).toBe("row");
+  });
+
+  it("flows the groups down fewer columns when they no longer fit side by side, and back", () => {
+    const {nav, resizeTo} = renderMeasured(400);
+    expect(nav.dataset.layout).toBe("flow");
+    resizeTo(900);
+    expect(nav.dataset.layout).toBe("row");
+  });
+
+  it("flows the groups at the canvas column width before anything is measured", () => {
+    render(<CatchSiteFooter {...base} groups={groups.slice(0, 4)} />);
+    const nav = screen.getByRole("navigation", {name: "Footer"});
+    expect(nav.dataset.layout).toBeUndefined();
+    expect(nav.style.getPropertyValue("--catch-site-footer-column-min")).toBe("");
   });
 });

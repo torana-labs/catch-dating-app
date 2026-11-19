@@ -1,0 +1,165 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "playbook_guide/supper-club",
+  "route": "playbook_guide",
+  "meta": {
+    "title": "How to host a supper club | {{brand.name}} host playbooks",
+    "description": "How to host a supper club: the venue, the format, pricing per seat, the guest mix, the night itself, following up, and a checklist.",
+    "noindex": false,
+    "socialDescription": "How to host a supper club, step by step."
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        },
+        {
+          "label": "Host playbooks",
+          "to": {
+            "route": "playbooks"
+          }
+        }
+      ],
+      "current": "Supper clubs"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "article",
+      "id": "guide",
+      "ground": "white",
+      "pageTitle": true,
+      "kicker": "Host playbook",
+      "title": "How to host a supper club",
+      "lead": "Who it’s for: home cooks, chefs trying out a menu, small restaurants and cafés with a quiet night, and anyone who likes feeding a table of people who haven’t met yet.",
+      "meta": "3 minute read",
+      "sections": [
+        {
+          "heading": "Before the first dinner",
+          "paragraphs": [
+            "Venue. Your home, a friend’s terrace, or a café or restaurant on its night off. Check how many people you can seat comfortably and that the kitchen can handle it. Check too whether you need any permission, for example for serving alcohol, under your local rules.",
+            "Format. Decide on one long table or several small ones, and a set menu or courses served family-style. Set a start time and an end time. A long table with a fixed menu is the easiest to run and the easiest for strangers to talk across.",
+            "Pricing. Work out food, drink, venue, help and your own time, then price per seat. Take payment when people book rather than at the door, so your costs are covered before you start buying food. On {{brand.name}}, guests pay by UPI or card when they book, and the money goes into your own payment account. Set a cancellation policy before you open bookings.",
+            "Capacity and guest mix. Small is fine. Decide whether anyone can book or whether people apply. On {{brand.name}} you can open booking to everyone, ask people to apply with your own questions and approve them with a tap, share a private invite link, or keep a balance of guests and an age range you choose.",
+            "Sign-up page. Put the menu (or a hint of it), the address area, the time, the price and what’s included on it. Ask about dietary needs at booking, not on the night. {{brand.name}} can ask this on a form and keep the answers on each guest’s record."
+          ]
+        },
+        {
+          "heading": "On the night",
+          "paragraphs": [
+            "What to get right on the day."
+          ],
+          "list": [
+            "Arrival. Have a drink or a small bite ready at the door so the first ten minutes aren’t awkward. Guests can check in by scanning a code at the door.",
+            "Getting people talking. Plan the seating. Keep friends who came together side by side and mix everyone else. {{brand.name}} suggests tables from your guest list and lets you adjust them with a tap, and it can re-seat the room between courses so people meet a few more faces. Conversation cards are there if you want them.",
+            "Safety basics. Label allergens clearly and keep food at safe temperatures. Know the way out and keep a first-aid kit handy. Make sure everyone has a way home."
+          ]
+        },
+        {
+          "heading": "Afterwards",
+          "paragraphs": [
+            "Send a thank-you the next morning, perhaps with a photo of the table or the menu. Ask what guests enjoyed and what they’d change. {{brand.name}} sends a feedback request after the event. Guests can also say privately who they talked to, and you see only the totals. Tell your regulars about the next date first. If they keep coming, a membership with a member price or early access is a simple thank-you, and {{brand.name}} supports both."
+          ]
+        },
+        {
+          "heading": "Checklist",
+          "paragraphs": [
+            "Tick these off before your first one."
+          ],
+          "list": [
+            "Venue seats your number comfortably, and any permissions are checked",
+            "Menu and per-seat price worked out",
+            "Paid at booking, cancellation policy set",
+            "Dietary needs collected before the night",
+            "Seating plan, with friends together and everyone else mixed",
+            "Allergens labelled, first-aid kit to hand",
+            "Thank-you and feedback request the next morning"
+          ]
+        }
+      ],
+      "aside": {
+        "ground": "paper",
+        "title": "What {{brand.name}} costs",
+        "body": "{{brand.name}} is free for 30 days from your first event, then a small share of paid tickets, capped each month. Free events stay free.",
+        "action": {
+          "label": "See pricing",
+          "to": {
+            "route": "pricing"
+          }
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "keep-reading",
+      "ground": "paper",
+      "kicker": "Keep reading",
+      "title": "Where to go next.",
+      "columns": 3,
+      "items": [
+        {
+          "title": "Supper clubs on {{brand.name}}",
+          "body": "What {{brand.name}} does for this kind of event, from booking to the day itself.",
+          "link": {
+            "label": "See the page",
+            "to": {
+              "route": "host_supper_clubs"
+            }
+          }
+        },
+        {
+          "title": "Plan your first event",
+          "body": "A step-by-step plan for your first event on {{brand.name}}.",
+          "link": {
+            "label": "Plan it",
+            "to": {
+              "route": "host_first_event"
+            }
+          }
+        },
+        {
+          "title": "All the host playbooks",
+          "body": "The other guides: run clubs, supper clubs, quiz nights and racket sports.",
+          "link": {
+            "label": "See the playbooks",
+            "to": {
+              "route": "playbooks"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Your next event",
+      "title": "Run it on {{brand.name}}.",
+      "lead": "Start the free trial, or book a walkthrough and we’ll set it up with you.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Book a walkthrough",
+          "to": {
+            "route": "host_walkthrough"
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    }
+  ]
+}

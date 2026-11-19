@@ -814,6 +814,7 @@ function StandingsSection({title, round, standings, yours}: {
             selected={mine}
             title={mine ? copy.yourRow(entry.unitLabel) : entry.unitLabel}
             value={standings.unitOutcome === "score" ? copy.scoreValue(entry.value) : copy.placeOrdinal(entry.value)}
+            wrap
           />
         );
       })}
@@ -863,6 +864,7 @@ function ArrivalGuidance({event}: {event: RuntimeEvent}) {
               key={group.id}
               title={group.label}
               value={group.targetPaceSecondsPerKm ? copy.paceTarget(group.targetPaceSecondsPerKm) : undefined}
+              wrap
             />
           ))}
         </CatchSection>

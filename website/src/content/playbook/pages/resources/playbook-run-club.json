@@ -1,0 +1,165 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "playbook_guide/run-club",
+  "route": "playbook_guide",
+  "meta": {
+    "title": "How to start a run club | {{brand.name}} host playbooks",
+    "description": "How to start a run club: the route, the time, pace groups with a lead and a sweep, the morning itself, following up, and a checklist.",
+    "noindex": false,
+    "socialDescription": "How to start a run club, step by step."
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        },
+        {
+          "label": "Host playbooks",
+          "to": {
+            "route": "playbooks"
+          }
+        }
+      ],
+      "current": "Run clubs"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "article",
+      "id": "guide",
+      "ground": "white",
+      "pageTitle": true,
+      "kicker": "Host playbook",
+      "title": "How to start a run club",
+      "lead": "Who it’s for: anyone who runs and wants company for it. It could be a neighbourhood group, a running coach, a café that wants a weekend crowd, or a few friends who keep getting asked “can I join?”",
+      "meta": "3 minute read",
+      "sections": [
+        {
+          "heading": "Before the first run",
+          "paragraphs": [
+            "Route. Start and finish at the same place, so nobody has to find their way back. A loop of 3 to 5 km is a friendly start: well lit, few road crossings, easy to describe in one line (“the gate by the lake, the side with the tea stall”). Walk or run it once at the same time of day before you announce it.",
+            "Time. In most Indian cities an early weekend start beats the heat and the traffic. Picking a time you can keep every week matters more than finding the perfect slot.",
+            "Format. A social run should have room for every pace. Plan two or three pace groups, each with a lead at the front and someone at the back (a “sweep”) so nobody runs alone at the back.",
+            "Free or paid. Most social runs are free. Charge when you’re adding something, like a coach, a track session, timing or coffee at the finish.",
+            "Sign-up page. Put one link in your bio with the meeting point, start time, distance, the pace groups and what to bring. On {{brand.name}}, runners can give their pace when they book, sign a waiver if you need one, and get a confirmation that tells them where to be."
+          ]
+        },
+        {
+          "heading": "On the morning",
+          "paragraphs": [
+            "What to get right on the day."
+          ],
+          "list": [
+            "Arrival. Be at the meeting point 15 minutes early, somewhere easy to spot. With {{brand.name}}, runners check in by scanning a code at the meeting point, and you can add walk-ins in a few seconds.",
+            "Getting people talking. Many newcomers turn up on their own. Before the start, put people into their pace groups and give each group one easy question to answer together. {{brand.name}} builds pace pods from the paces runners gave and gives each pod a first-hello question. While the run is on, it sends runners nothing.",
+            "Safety basics. Do a short warm-up and say the route out loud. Name the lead and the sweep. Carry water, a basic first-aid kit and a charged phone. At the finish, count everyone back in. On {{brand.name}}, you or your sweep mark each runner back, and anyone not marked stays on your list until you close the run."
+          ]
+        },
+        {
+          "heading": "Afterwards",
+          "paragraphs": [
+            "Thank people the same day and say when the next run is. Ask one or two questions about the pace, the route and the time. Pay particular attention to first-timers, because the week after their first run is when they decide whether to come back. {{brand.name}} sends a feedback request after the run, and your report shows who came for the first time and who came back. Every runner also gets their own invite link, so you can see who brings friends."
+          ]
+        },
+        {
+          "heading": "Checklist",
+          "paragraphs": [
+            "Tick these off before your first one."
+          ],
+          "list": [
+            "Route walked at the right time of day",
+            "Same meeting point and time, every week",
+            "Pace groups, each with a lead and a sweep",
+            "Sign-up page with route, time, pace groups and what to bring",
+            "Water, first-aid kit, charged phone",
+            "A count at the finish",
+            "Thank-you and next date sent the same day"
+          ]
+        }
+      ],
+      "aside": {
+        "ground": "paper",
+        "title": "What {{brand.name}} costs",
+        "body": "{{brand.name}} is free for 30 days from your first event, then a small share of paid tickets, capped each month. Free events stay free.",
+        "action": {
+          "label": "See pricing",
+          "to": {
+            "route": "pricing"
+          }
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "keep-reading",
+      "ground": "paper",
+      "kicker": "Keep reading",
+      "title": "Where to go next.",
+      "columns": 3,
+      "items": [
+        {
+          "title": "Run and walk clubs on {{brand.name}}",
+          "body": "What {{brand.name}} does for this kind of event, from booking to the day itself.",
+          "link": {
+            "label": "See the page",
+            "to": {
+              "route": "host_run_clubs"
+            }
+          }
+        },
+        {
+          "title": "Plan your first event",
+          "body": "A step-by-step plan for your first event on {{brand.name}}.",
+          "link": {
+            "label": "Plan it",
+            "to": {
+              "route": "host_first_event"
+            }
+          }
+        },
+        {
+          "title": "All the host playbooks",
+          "body": "The other guides: run clubs, supper clubs, quiz nights and racket sports.",
+          "link": {
+            "label": "See the playbooks",
+            "to": {
+              "route": "playbooks"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Your next event",
+      "title": "Run it on {{brand.name}}.",
+      "lead": "Start the free trial, or book a walkthrough and we’ll set it up with you.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Book a walkthrough",
+          "to": {
+            "route": "host_walkthrough"
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    }
+  ]
+}

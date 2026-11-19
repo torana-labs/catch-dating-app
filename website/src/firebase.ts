@@ -8,6 +8,14 @@ import type {GetEventTicketCodeCallableResponse} from "../../functions/src/share
 import type {ManageEventApprovalNotificationsCallablePayload} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallablePayload";
 import type {ManageEventApprovalNotificationsCallableResponse} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallableResponse";
 export {beginClaimPhoneLink, signInOrLinkClaimGoogle} from "./firebaseClaimAccountLinking";
+import type {EnsureTryItWorkspaceCallablePayload} from "../../functions/src/shared/generated/ensureTryItWorkspaceCallablePayload";
+import type {EnsureTryItWorkspaceCallableResponse} from "../../functions/src/shared/generated/ensureTryItWorkspaceCallableResponse";
+import type {ImportOrganizerFromLinkCallablePayload} from "../../functions/src/shared/generated/importOrganizerFromLinkCallablePayload";
+import type {ImportOrganizerFromLinkCallableResponse} from "../../functions/src/shared/generated/importOrganizerFromLinkCallableResponse";
+import type {ImportEventFromLinkCallablePayload} from "../../functions/src/shared/generated/importEventFromLinkCallablePayload";
+import type {ImportEventFromLinkCallableResponse} from "../../functions/src/shared/generated/importEventFromLinkCallableResponse";
+import type {CreatePromotionKitCallablePayload} from "../../functions/src/shared/generated/createPromotionKitCallablePayload";
+import type {CreatePromotionKitCallableResponse} from "../../functions/src/shared/generated/createPromotionKitCallableResponse";
 import type {ReadPublicOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload";
 import type {PublicOrganizerTrackingSettingsCallableResponse} from "../../functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse";
 import type {ManagePublicEventCheckoutCallablePayload} from "../../functions/src/shared/generated/managePublicEventCheckoutCallablePayload";
@@ -1077,6 +1085,47 @@ export async function beginPublicEventPhoneVerification(
     verifier.clear();
     throw error;
   }
+}
+
+/**
+ * The try-it commands (contracts/commands/catalog.json) by callable: each
+ * one's payload and response, generated from its schemas. The website's
+ * command client (shared/api/tryItCommands.ts) is the only caller.
+ */
+export interface TryItCommandCallables {
+  ensureTryItWorkspace: {payload: EnsureTryItWorkspaceCallablePayload; response: EnsureTryItWorkspaceCallableResponse};
+  importOrganizerFromLink: {payload: ImportOrganizerFromLinkCallablePayload; response: ImportOrganizerFromLinkCallableResponse};
+  importEventFromLink: {payload: ImportEventFromLinkCallablePayload; response: ImportEventFromLinkCallableResponse};
+  createPromotionKit: {payload: CreatePromotionKitCallablePayload; response: CreatePromotionKitCallableResponse};
+}
+
+/** Who a try-it command would run as: the signed-in account and its phone, when Firebase verified one by code. */
+export interface TryItCaller {
+  readonly uid: string;
+  readonly phoneNumber: string | null;
+}
+
+/**
+ * The signed-in website account a try-it tool would act as, once the saved
+ * sign-in is restored; null when no one is signed in or this build has no
+ * Firebase. The one sign-in sheet (features/account) links or signs in the
+ * phone, so a caller with a phoneNumber passes requirePhoneVerifiedCaller.
+ */
+export async function readTryItCaller(): Promise<TryItCaller | null> {
+  if (!claimFirebaseConfigured) return null;
+  const runtime = await getFirebaseRuntime();
+  if (!runtime) return null;
+  await runtime.auth.authStateReady();
+  const user = runtime.auth.currentUser;
+  return user && !user.isAnonymous ? {uid: user.uid, phoneNumber: user.phoneNumber ?? null} : null;
+}
+
+/** One try-it command call as the signed-in account, with the site's App Check token, like every website callable. */
+export async function invokeTryItCommand<Name extends keyof TryItCommandCallables>(
+  callable: Name, payload: TryItCommandCallables[Name]["payload"]
+): Promise<TryItCommandCallables[Name]["response"]> {
+  return invokeWebsiteCallable<TryItCommandCallables[Name]["payload"], TryItCommandCallables[Name]["response"]>(
+    callable, payload, claimFirebaseConfigured, "Try-it tools");
 }
 
 export async function registerPublicEvent(

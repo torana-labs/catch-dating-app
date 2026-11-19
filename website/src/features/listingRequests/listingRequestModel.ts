@@ -118,10 +118,8 @@ export function prefillFromSearch(search: string): {target: ListingTarget; type:
   return {target: {kind: "url", url: params.get("url")?.slice(0, 512) ?? ""}, type};
 }
 
-/** The request form link for a listing. */
-export function listingRequestHref(target: {kind: "organizer" | "event"; id: string}): string {
-  return `/listings/request/?${target.kind}=${encodeURIComponent(target.id)}`;
-}
+/** The request form link for a listing; the content module owns it so every page's report link shares it. */
+export {listingRequestHref} from "@content/listingRequest";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 const urlPattern = /^https?:\/\/[^\s]+\.[^\s]+$/u;

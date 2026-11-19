@@ -220,6 +220,8 @@
       "AdminListSupportSavedRepliesCallableResponse",
       "AdminManageAdMatchingOptOutCallablePayload",
       "AdminManageAdMatchingOptOutCallableResponse",
+      "AdminManageListingProgramCallablePayload",
+      "AdminManageListingProgramCallableResponse",
       "AdminManageMoneySettingsCallablePayload",
       "AdminManageMoneySettingsCallableResponse",
       "AdminManageNominatorCreditsCallablePayload",

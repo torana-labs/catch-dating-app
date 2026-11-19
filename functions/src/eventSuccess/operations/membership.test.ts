@@ -15,8 +15,10 @@ import {EventGroupProgressStore} from "./groupProgressStore";
 import {readEventAssistanceMessageGate} from "./guestMessageGate";
 import type {EventAssistanceMessageIntent as Intent} from
   "../../shared/generated/eventAssistanceMessageIntent";
-import {membershipIdentity, MEMBERSHIPS, MEMBERSHIP_RECEIPTS} from
-  "./membershipReader";
+import {MEMBERSHIPS, MEMBERSHIP_RECEIPT_COMMAND} from "./membershipReader";
+import {COMMAND_RECEIPTS, commandReceiptId} from
+  "../../shared/commandReceipts";
+import {operationContentHash} from "../../operations/durableActions";
 import {Decision} from "./membershipTransitions";
 import {EventGroupStaffStore} from "./groupStaffStore";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
@@ -26,6 +28,9 @@ import {eventStaffGrantId} from "../../shared/eventOperatorAuthority";
 import {transferEventAssistanceGroupHandler} from "./membershipHandlers";
 import {ProgressFirestore, seedJoiningProgress, progressFixtureManager} from
   "./groupProgressTestFixtures";
+
+const MEMBERSHIP_RECEIPT_PREFIX =
+  `${COMMAND_RECEIPTS}/${MEMBERSHIP_RECEIPT_COMMAND}_`;
 
 const manager = progressFixtureManager;
 const start = 1_000_000;
@@ -216,7 +221,7 @@ test("placement and acknowledged transfers preserve one group and the roster",
     const changed = h.fake.entries().filter(([path]) => !before.some(([p, v]) =>
       p === path && JSON.stringify(v) === JSON.stringify(h.fake.read(path))));
     assert.ok(changed.every(([path]) => path.startsWith(MEMBERSHIPS + "/") ||
-      path.startsWith(MEMBERSHIP_RECEIPTS + "/")));
+      path.startsWith(MEMBERSHIP_RECEIPT_PREFIX)));
   });
 
 test("roles, scope and named receiver constrain every transition", async () => {
@@ -392,7 +397,7 @@ test("event and operator expiry during transaction reads withhold transfer",
     await propose(h);
     const pending = await view(h, fast);
     h.fake.beforeRead = (path) => {
-      if (path.startsWith(MEMBERSHIP_RECEIPTS + "/")) {
+      if (path.startsWith(MEMBERSHIP_RECEIPT_PREFIX)) {
         h.clock.now = start + 6000;
       }
     };
@@ -512,17 +517,19 @@ test("Firestore handovers contend once and reject replaced roster rows", {
     assert.equal(accepted.filter((r) => r.outcome === "applied").length, 1);
     assert.equal(accepted.filter((r) => r.outcome === "replayed").length, 7);
     assert.equal((await view(h)).accepted?.groupId, "fast");
-    const receiptCount = await db.collection(MEMBERSHIP_RECEIPTS)
-      .where("membershipId", "==", membershipIdentity(h.scope)).get();
-    assert.equal(receiptCount.size, 3);
+    // Eight concurrent accepts share one receipt under the accept's id.
+    const acceptReceipt = db.collection(COMMAND_RECEIPTS).doc(
+      commandReceiptId(MEMBERSHIP_RECEIPT_COMMAND, operationContentHash([
+        h.scope, input.command.operationId])));
+    const savedReceipt = (await acceptReceipt.get()).data();
+    assert.equal(savedReceipt?.command, MEMBERSHIP_RECEIPT_COMMAND);
     await db.doc(h.attendeePath).delete();
     await db.doc(h.attendeePath).set(h.attendee);
     const replaced = await view(h);
     assert.equal(replaced.ready, false);
     assert.equal(replaced.freshness, "sourceChanged");
     await assert.rejects(h.store.transfer(manager, input));
-    assert.equal((await db.collection(MEMBERSHIP_RECEIPTS)
-      .where("membershipId", "==", membershipIdentity(h.scope)).get()).size, 3);
+    assert.deepEqual((await acceptReceipt.get()).data(), savedReceipt);
   } finally {
     await deleteApp(app);
   }

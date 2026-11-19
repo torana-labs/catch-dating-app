@@ -24,7 +24,7 @@ describe("canonical public chrome", () => {
     expect(primary.getAllByRole("link").map((link) => link.textContent)).toEqual(globalLabels);
     expect(primary.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(destinations);
     expect(banner.getByRole("link", {name: publicSiteCopy.wordmark}).getAttribute("href")).toBe("/");
-    expect(banner.getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("/#app");
+    expect(banner.getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("/app/");
     expect(banner.queryByRole("link", {name: "Claim your page"})).toBeNull();
   });
 
@@ -278,7 +278,7 @@ describe("canonical public chrome", () => {
     expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent))
       .toEqual(["Explore", "Things to do in Mumbai", "Cities", "Hosts", "Help and legal"]);
     expect(nav.getAllByRole("link").slice(0, 6).map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
-      ["What’s on", "/mumbai/"], ["New to Mumbai", "/new-to-mumbai/"], ["Safety", "/safety/"], [guestAppActionLabel, "/#app"],
+      ["What’s on", "/mumbai/"], ["New to Mumbai", "/new-to-mumbai/"], ["Safety", "/safety/"], [guestAppActionLabel, "/app/"],
       ["Run clubs", "/mumbai/run-clubs/"], ["Quiz nights", "/mumbai/quiz-nights/"],
     ]);
   });
@@ -303,7 +303,8 @@ describe("canonical public chrome", () => {
       ["Mixers and pub crawls", "/host/nightlife/"], ["Teams", "/host/teams/"], ["Colleges and alumni", "/host/colleges/"],
       ["Start free trial", "/host/start/"], ["Pricing", "/pricing/"], ["Your first event", "/host/first-event/"], ["Switch to Catch", "/host/switch/"],
       ["Try a demo night", "/host/demo/"], ["Programmes", "/programmes/"],
-      ["Forms", "/product/forms/"], ["Book a walkthrough", "/host/walkthrough/"], ["Help", "/help/"],
+      ["Forms", "/product/forms/"], ["Host playbooks", "/playbooks/"], ["No-show calculator", "/tools/no-show-calculator/"],
+      ["Book a walkthrough", "/host/walkthrough/"], ["Refer a host", "/refer/"], ["Help", "/help/"],
       ["What’s on", "/explore/"], ["About", "/about/"], ["Safety", "/safety/"], ["Contact", "/contact/"], ["Report or remove a listing", "/listings/request/"],
       ["Terms", "/terms/"], ["Privacy", "/privacy/"], ["Refunds", "/refunds/"],
     ]);
