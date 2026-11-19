@@ -6,7 +6,7 @@ import {recordEventInviteLinkOpen} from "../../firebase";
 import {eventInviteSessionId, eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain, type SiteBreadcrumbs} from "../../shared/site";
 import {observeOrganizerPageView, trackOrganizerAnalytics} from "../organizers/analytics";
-import {observeOrganizerProviders, trackOrganizerProviderOutboundClick} from "../organizers/observeOrganizerProviders";
+import {observeOrganizerProviders} from "../organizers/observeOrganizerProviders";
 import type {HostListing} from "../organizers/types";
 import {EventBooking} from "./EventBooking";
 import {eventBreadcrumbs} from "./eventBreadcrumbs";
@@ -68,7 +68,6 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
 
   function trackBookingClick() {
     trackOrganizerAnalytics(listing, "outboundClick", "external_event_booking", eventId);
-    trackOrganizerProviderOutboundClick(listing.id, eventId);
   }
 
   return (

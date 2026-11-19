@@ -1,5 +1,8 @@
 import {brand} from "@catch/brand";
-import {approvedCampaignLabels, currentConsentVersion, publicAdPage, type MeasurementConsent} from "./catchMeasurement.ts";
+import {approvedCampaignLabels, currentConsentVersion, organizerAdPage, publicAdPage,
+  type MeasurementConsent, type OrganizerTagPage} from "./catchMeasurement.ts";
+import {newOrganizerTagEventId, organizerBeginCheckout, organizerPageView, organizerPurchase, organizerViewContent,
+  type OrganizerTagCommand} from "./organizerTagEvents.ts";
 
 /**
  * Catch's first-party Google tag and Meta Pixel (docs/ads_conversion_spec.md,
@@ -88,6 +91,7 @@ interface Fbq {
 }
 interface TagGlobals {
   catchTagLayer?: unknown[];
+  catchOrganizerTagLayer?: unknown[];
   fbq?: Fbq;
   _fbq?: Fbq;
 }
@@ -134,6 +138,12 @@ function gtag(..._args: unknown[]) {
   layer.push(arguments);
 }
 
+/** The organiser set's own gtag.js layer: never `catchTagLayer`, so Catch's `set` calls never reach it. */
+function organizerGtag(..._args: unknown[]) {
+  const layer = globals().catchOrganizerTagLayer ?? (globals().catchOrganizerTagLayer = []);
+  layer.push(arguments);
+}
+
 function fbq(...args: unknown[]) {
   globals().fbq?.(...args);
 }
@@ -162,6 +172,28 @@ function appendScript(source: string) {
   script.src = source;
   document.head.appendChild(script);
 }
+
+/**
+ * An organiser's own destinations (#2063, Option A): its Meta Pixel and GA4
+ * measurement ID from the public tracking projection, scoped to its profile
+ * page or one of its events. A separate set from Catch's: Meta events use
+ * `trackSingle` with the organiser's pixel only, GA4 has its own layer and
+ * cookie prefix, and the set receives only the closed organiser event map.
+ */
+export interface OrganizerAdDestinations {
+  organizerId: string;
+  /** The event whose page the set is for, or null for the organiser's profile page. */
+  eventId: string | null;
+  metaPixelId: string | null;
+  googleMeasurementId: string | null;
+}
+const organizerTagLayerName = "catchOrganizerTagLayer";
+const organizerCookiePrefix = "catch_org";
+const organizerGoogleCookie = /^catch_org_ga(?:_[A-Z0-9]+)?$/u;
+const organizerPixelPattern = /^[0-9]{5,20}$/u;
+const organizerMeasurementPattern = /^G-[A-Z0-9]{4,20}$/u;
+const organizerScopePattern = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/u;
+const organizerConsent = {ad_storage: "denied", analytics_storage: "granted", ad_user_data: "denied", ad_personalization: "denied"};
 
 const adCookie = /^(?:_fbp|_fbc|_gcl_[a-z]+)$/u;
 const anyTagCookie = /^(?:_fbp|_fbc|_ga(?:_[A-Z0-9]+)?|_gcl_[a-z]+)$/u;
@@ -236,6 +268,13 @@ export function createAdTags(options: AdTagOptions = {}) {
   let googleLoaded = false;
   let adsConfigured = false;
   let metaLoaded = false;
+  /** fbevents.js is one script per page, whichever set loaded it first. */
+  let metaScriptAppended = false;
+  const appendMetaScript = () => {
+    if (metaScriptAppended) return;
+    appendScript(metaPixelSource);
+    metaScriptAppended = true;
+  };
   /** What the tags are granted right now. */
   let level: "none" | "analytics" | "marketing" = "none";
   const sent = new Set<string>();
@@ -280,7 +319,7 @@ export function createAdTags(options: AdTagOptions = {}) {
       fbq("set", "autoConfig", false, destinations.metaPixel);
       fbq("consent", "grant");
       fbq("init", destinations.metaPixel);
-      appendScript(metaPixelSource);
+      appendMetaScript();
       metaLoaded = true;
     } else {
       fbq("consent", "grant");
@@ -312,6 +351,11 @@ export function createAdTags(options: AdTagOptions = {}) {
    * the new choice allows. Private pages leave loaded tags idle.
    */
   function sync(next: MeasurementConsent | null) {
+    syncCatch(next);
+    syncOrganizer();
+  }
+
+  function syncCatch(next: MeasurementConsent | null) {
     consent = next;
     if (typeof window === "undefined") return;
     const wanted = choiceLevel(next);
@@ -349,8 +393,150 @@ export function createAdTags(options: AdTagOptions = {}) {
     return true;
   }
 
+  // The organiser set (#2063, Option A). Additive: nothing below changes a
+  // command Catch's own set sends.
+  let organizer: Readonly<OrganizerAdDestinations> | null = null;
+  let organizerGranted = false;
+  const organizerGoogleLoaded = new Set<string>();
+  const organizerPixelsInitialised = new Set<string>();
+  const organizerCheckouts = new Set<string>();
+  const organizerSent = new Set<string>();
+
+  /** The eligible organiser page for the current set, or null: same host rule, route class and scope. */
+  function organizerPage(): OrganizerTagPage | null {
+    if (!organizer || typeof window === "undefined" || typeof document === "undefined") return null;
+    const {hostname, pathname, search, hash} = window.location;
+    if (!hostAllowed(hostname)) return null;
+    const page = organizerAdPage(pathname, search, hash);
+    if (!page) return null;
+    if (organizer.eventId) return page.kind === "event" && page.path === `/events/${organizer.eventId}/` ? page : null;
+    return page.kind === "organizer" ? page : null;
+  }
+
+  /** Only a current version-5 marketing choice, never analytics alone. */
+  const organizerConsentNow = () => choiceLevel(consent) === "marketing";
+
+  function loadOrganizer(set: Readonly<OrganizerAdDestinations>) {
+    const measurement = set.googleMeasurementId;
+    if (organizerGranted && (!measurement || organizerGoogleLoaded.has(measurement)) &&
+        (!set.metaPixelId || organizerPixelsInitialised.has(set.metaPixelId))) return;
+    if (measurement && !organizerGoogleLoaded.has(measurement)) {
+      if (organizerGoogleLoaded.size === 0) {
+        organizerGtag("consent", "default", deniedConsent);
+        organizerGtag("js", new Date());
+      }
+      organizerGtag("consent", "update", organizerConsent);
+      organizerGtag("config", measurement, {send_page_view: false, allow_google_signals: false,
+        allow_ad_personalization_signals: false, cookie_prefix: organizerCookiePrefix, ...googleCookieOptions});
+      appendScript(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurement)}&l=${organizerTagLayerName}`);
+      organizerGoogleLoaded.add(measurement);
+    } else if (organizerGoogleLoaded.size) {
+      organizerGtag("consent", "update", organizerConsent);
+    }
+    const pixel = set.metaPixelId;
+    if (pixel) {
+      const stub = installPixelStub();
+      stub.disablePushState = true;
+      fbq("consent", "grant");
+      if (!organizerPixelsInitialised.has(pixel)) {
+        fbq("set", "autoConfig", false, pixel);
+        fbq("init", pixel);
+        organizerPixelsInitialised.add(pixel);
+      }
+      appendMetaScript();
+    }
+    organizerGranted = true;
+  }
+
+  /** Withdrawn or downgraded choice: the organiser layer denied, its pixel revoked, its cookies removed. */
+  function revokeOrganizer() {
+    if (organizerGranted) {
+      if (organizerGoogleLoaded.size) organizerGtag("consent", "update", deniedConsent);
+      if (organizerPixelsInitialised.size) fbq("consent", "revoke");
+    }
+    organizerGranted = false;
+    organizerCheckouts.clear();
+    organizerSent.clear();
+    clearTagCookies(organizerGoogleCookie);
+  }
+
+  function syncOrganizer() {
+    if (typeof window === "undefined") return;
+    if (!organizerConsentNow()) {
+      revokeOrganizer();
+      return;
+    }
+    if (organizer && organizerPage()) loadOrganizer(organizer);
+  }
+
+  /** The page to send from when the organiser set may send now. */
+  const organizerSending = () => organizer && organizerGranted && organizerConsentNow() ? organizerPage() : null;
+
+  function sendOrganizer(command: OrganizerTagCommand | null): boolean {
+    if (!command || !organizer) return false;
+    if (organizer.googleMeasurementId) {
+      organizerGtag("event", command.google.name, {...command.google.params, send_to: organizer.googleMeasurementId});
+    }
+    if (organizer.metaPixelId) {
+      fbq("trackSingle", organizer.metaPixelId, command.meta.name, command.meta.params, {eventID: command.meta.eventID});
+    }
+    return true;
+  }
+
   return {
     sync,
+
+    /**
+     * Sets or clears the organiser destination set. The caller passes only a
+     * set the public tracking projection published (`enabled: true`); under
+     * publication policy v1 there is none. Invalid IDs clear the set.
+     */
+    setOrganizer(next: OrganizerAdDestinations | null) {
+      const valid = next && organizerScopePattern.test(next.organizerId) &&
+        (next.eventId === null || organizerScopePattern.test(next.eventId)) &&
+        (next.metaPixelId === null || organizerPixelPattern.test(next.metaPixelId)) &&
+        (next.googleMeasurementId === null || organizerMeasurementPattern.test(next.googleMeasurementId)) &&
+        (next.metaPixelId !== null || next.googleMeasurementId !== null);
+      if (!valid) {
+        organizer = null;
+        organizerCheckouts.clear();
+        return;
+      }
+      organizer = Object.freeze({organizerId: next.organizerId, eventId: next.eventId, metaPixelId: next.metaPixelId,
+        googleMeasurementId: next.googleMeasurementId});
+      syncOrganizer();
+    },
+
+    /** Organiser `page_view` / `PageView` on its eligible page. */
+    organizerPageView(): boolean {
+      return sendOrganizer(organizerPageView(organizerSending(), newOrganizerTagEventId()));
+    },
+
+    /** Organiser `view_item` / `ViewContent` on its event's page. */
+    organizerViewItem(facts: AdEventPageFacts): boolean {
+      return sendOrganizer(organizerViewContent(organizerSending(), facts, newOrganizerTagEventId()));
+    },
+
+    /** Organiser `begin_checkout` / `InitiateCheckout` for a live checkout the server admitted. */
+    organizerBeginCheckout(booking: AdBooking): boolean {
+      const page = organizerSending();
+      if (!page || !validBooking(booking) || organizerSent.has(`begin:${booking.paymentId}`)) return false;
+      if (!sendOrganizer(organizerBeginCheckout(page, booking, newOrganizerTagEventId()))) return false;
+      organizerSent.add(`begin:${booking.paymentId}`);
+      organizerCheckouts.add(booking.paymentId);
+      return true;
+    },
+
+    /** Organiser `purchase` / `Purchase` once that checkout is confirmed, once per booking. */
+    organizerPurchase(booking: AdBooking): boolean {
+      const page = organizerSending();
+      if (!page || !validBooking(booking) || !organizerCheckouts.has(booking.paymentId) ||
+          organizerSent.has(`purchase:${booking.paymentId}`)) return false;
+      if (!sendOrganizer(organizerPurchase(page, booking, newOrganizerTagEventId()))) return false;
+      organizerSent.add(`purchase:${booking.paymentId}`);
+      organizerCheckouts.delete(booking.paymentId);
+      return true;
+    },
 
     /**
      * `page_view` (Google Analytics) and, under marketing, `PageView` (Meta)
