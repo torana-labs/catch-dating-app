@@ -2,7 +2,12 @@ part of 'catch_field.dart';
 
 extension _CatchFieldRendering on _CatchFieldState {
   Widget _renderField(BuildContext context) {
-    final textEntry = !_isEdit
+    // An outlined text entry draws the row's leading and trailing slots inside
+    // its box. The row branch assigns them before it first reads [textEntry],
+    // which this lazy local then builds.
+    Widget? boxLeading;
+    Widget? boxTrailing;
+    late final textEntry = !_isEdit
         ? null
         : CatchFieldInput(
             configuration: widget,
@@ -27,6 +32,8 @@ extension _CatchFieldRendering on _CatchFieldState {
             headerTrailingReserve: _contentTrailingReserve,
             expanded: _isOpen,
             inlineAddAtRest: _inlineTextAddAtRest,
+            boxLeading: boxLeading,
+            boxTrailing: boxTrailing,
           );
     final Widget field;
     switch (widget._config) {
@@ -300,6 +307,11 @@ extension _CatchFieldRendering on _CatchFieldState {
           } else {
             leadingSlot = null;
           }
+          final outlined = widget._outlinedTextEntry;
+          if (outlined) {
+            boxLeading = leadingSlot;
+            boxTrailing = rawTrailingSlot;
+          }
           final Widget rowBody;
           final inlineMetadata = widget.inlineMetadata?.trim();
           if (widget._rowLayout case final layout?) {
@@ -461,8 +473,8 @@ extension _CatchFieldRendering on _CatchFieldState {
                   )
                 : _rowConstraints,
             padding: _rowHeaderPadding,
-            leading: leadingSlot,
-            trailing: positionsTrailing ? null : trailingSlot,
+            leading: outlined ? null : leadingSlot,
+            trailing: positionsTrailing || outlined ? null : trailingSlot,
             crossAxisAlignment: centerVertically
                 ? CrossAxisAlignment.center
                 : CrossAxisAlignment.start,
@@ -656,16 +668,20 @@ extension _CatchFieldRendering on _CatchFieldState {
                   ),
               ],
             );
-            final stack = CatchFieldSurface(
-              pressedOverlayKey: CatchField.pressOverlayKey,
-              states: {
-                if (_active) WidgetState.selected,
-                if (_rowFocused) WidgetState.focused,
-                if (_pressed) WidgetState.pressed,
-                if (_hovered) WidgetState.hovered,
-              },
-              child: content,
-            );
+            // The outlined box is its own focus and press feedback, so the row
+            // paints no band behind it.
+            final stack = outlined
+                ? content
+                : CatchFieldSurface(
+                    pressedOverlayKey: CatchField.pressOverlayKey,
+                    states: {
+                      if (_active) WidgetState.selected,
+                      if (_rowFocused) WidgetState.focused,
+                      if (_pressed) WidgetState.pressed,
+                      if (_hovered) WidgetState.hovered,
+                    },
+                    child: content,
+                  );
             configuredRow = Semantics(
               container: true,
               excludeSemantics: isToggle,

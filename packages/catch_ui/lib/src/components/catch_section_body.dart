@@ -39,7 +39,7 @@ class CatchSectionBody extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           for (var i = 0; i < children.length; i++)
-            if (i == 0 || !showInternalDividers)
+            if (i == 0 || !showInternalDividers || !_dividerBetween(i - 1, i))
               children[i]
             else
               Stack(
@@ -57,12 +57,13 @@ class CatchSectionBody extends StatelessWidget {
       );
     }
     final contained = mode == CatchSectionBodyMode.containedFields;
-    final directFields = children
-        .whereType<CatchFieldDividerGeometry>()
+    final fieldRows = children.whereType<CatchFieldDividerGeometry>().toList();
+    final directFields = fieldRows
+        .where((field) => !field.suppressesFieldDividers)
         .toList();
     // Unknown adapters preserve the original text-lane fallback. Only a full
     // list of direct field contracts permits exact automatic inset inference.
-    final canInferEveryRow = directFields.length == children.length;
+    final canInferEveryRow = fieldRows.length == children.length;
     final leadingInset = directFields.fold<double>(
       0,
       (inset, field) => math.max(inset, field.fieldDividerLeadingInset),
@@ -76,7 +77,9 @@ class CatchSectionBody extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < children.length; i++)
-          if (!showInternalDividers || i == children.length - 1)
+          if (!showInternalDividers ||
+              i == children.length - 1 ||
+              !_dividerBetween(i, i + 1))
             children[i]
           else
             Stack(
@@ -94,4 +97,15 @@ class CatchSectionBody extends StatelessWidget {
       ],
     );
   }
+
+  // A row that draws its own boundary needs no separator on either side.
+  bool _dividerBetween(int above, int below) =>
+      !_suppressesDividers(children[above]) &&
+      !_suppressesDividers(children[below]);
+
+  static bool _suppressesDividers(Widget child) => switch (child) {
+    CatchFieldDividerGeometry(:final suppressesFieldDividers) =>
+      suppressesFieldDividers,
+    _ => false,
+  };
 }
