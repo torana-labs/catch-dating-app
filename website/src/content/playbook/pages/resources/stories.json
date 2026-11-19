@@ -1,0 +1,131 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "stories",
+  "route": "stories",
+  "meta": {
+    "title": "Host stories | {{brand.name}}",
+    "description": "How hosts fill the room, and fill it again: run clubs, supper clubs, quiz nights, courts and studios, in their own words.",
+    "socialDescription": "How hosts fill the room, in their own words.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        }
+      ],
+      "current": "Host stories"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "cards",
+      "id": "stories",
+      "ground": "white",
+      "pageTitle": true,
+      "kicker": "Host stories",
+      "title": "How hosts fill the room, and fill it again.",
+      "lead": "Run clubs, supper clubs, quiz nights, courts and studios, in their own words, with real numbers marked by where they come from.",
+      "source": {
+        "kind": "stories"
+      },
+      "columns": 3,
+      "empty": {
+        "title": "The first stories are on their way.",
+        "body": "We’re writing them with hosts now. Host a night like these? Put yourself forward."
+      },
+      "actions": [
+        {
+          "label": "Put me forward",
+          "to": {
+            "anchor": "put-forward"
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    },
+    {
+      "type": "tiles",
+      "id": "how-we-write-them",
+      "ground": "yellow",
+      "kicker": "How we write them",
+      "title": "Your story, told the way you’d tell it.",
+      "columns": 3,
+      "items": [
+        {
+          "title": "You approve it",
+          "body": "We write it with you, and nothing goes up until you’ve said yes in writing."
+        },
+        {
+          "title": "Real numbers only",
+          "body": "Figures come from your {{brand.name}} records or from you, and we mark which is which."
+        },
+        {
+          "title": "Photos with permission",
+          "body": "Only photos you’re happy for us to use, from people who agreed to be in them."
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "put-forward",
+      "ground": "paper",
+      "kicker": "Tell us about your nights",
+      "title": "Put your community forward.",
+      "lead": "Tell us your community’s name and what you host. We’ll message you on WhatsApp.",
+      "leadForm": {
+        "id": "story_founding",
+        "requestKind": "story",
+        "label": "Your WhatsApp number",
+        "submitLabel": "Put me forward",
+        "note": "We’ll message you on WhatsApp."
+      },
+      "actions": [
+        {
+          "label": "Put me forward on WhatsApp",
+          "to": {
+            "kind": "whatsapp",
+            "message": "Hi {{brand.name}}, I’d like to tell the story of my community. It’s called:"
+          },
+          "emphasis": "primary"
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Your story starts with one event",
+      "title": "Run your next night on {{brand.name}}.",
+      "lead": "Start the free trial, or book a walkthrough and we’ll set it up with you.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Book a walkthrough",
+          "to": {
+            "route": "host_walkthrough"
+          },
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
+    }
+  ]
+}

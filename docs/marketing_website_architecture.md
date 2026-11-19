@@ -157,10 +157,14 @@ hides it. A city's pages point it at their own Explore with
 canvas guest bar's "New to Mumbai") when it renders (`cityDiscoveryLinks`
 in `features/discovery/discoveryModel.ts`). For hosts on guest pages stays a
 plain link to `/host/`, the canvas's quiet link. Links name only routes in
-`design/website/routes.json`; the agreed future paths (`/refer/`,
-`/stories/`, `/compare/`, `/playbooks/`, `/tools/no-show-calculator/`,
-`/tools/event-page-from-link/`) join Resources and the host footer when the
-pages ship.
+`design/website/routes.json`. `/playbooks/` and
+`/tools/no-show-calculator/` are in the host footer's Resources column; the
+bar's Resources stays Help alone until the canvas's Resources menu is built.
+The other agreed future paths (`/refer/`, `/stories/`, `/compare/`,
+`/tools/event-page-from-link/`) join the host footer when the pages ship.
+Every "Get the app" link off the homepage (`guestAppHref`, the guest header's
+action, the guest footer's Explore link, the city and event chrome) goes to
+`/app/`; the homepage's own header and dock keep their in-page `#app` band.
 An optional offer strip (`CatchBanner`, persistent, no dismiss) sits above the
 bar when a page passes `offer`; no page does yet, because the founding-host
 offer waits for its live counter. An optional breadcrumb row
@@ -183,7 +187,7 @@ Host, on every host page: the canvas's five (`KitFooter` host columns, as
 the product pages v2 drew them), Product (the product pages), Hosts by
 format (ten organiser type pages), Get started (the start page, pricing,
 first event, switch, the demo night, programmes), Resources (Forms, the
-walkthrough, Help) and the brand's column (What's on, About, Safety,
+host playbooks, the no-show calculator, the walkthrough, Help) and the brand's column (What's on, About, Safety,
 Contact, the report link and the legal links), from
 `siteFooterCopy.host.columns`. Help and legal, and the brand's column, list a
 quiet "Report or remove a listing" link to the `/listings/request/` form
@@ -279,6 +283,38 @@ that uses a section or option no kit component draws yet
   server with the page's metadata and FAQPage and BreadcrumbList JSON-LD
   (`app/next/PlaybookPublicPage.tsx`); the Vite shell resolves the same pages
   before its router; postbuild writes their static heads.
+- **Tools, guides and the guest app page.** `/tools/no-show-calculator/` is
+  the `noShowCalculator` custom section (`features/marketing/NoShowCalculator.tsx`):
+  the host's own places, events a month, ticket price (or a free event's
+  cost per head) and no-show rate, with a what-if rate they slide. It states
+  no rate, benchmark or result of its own; its fee line is
+  `content/pricing.ts`'s. `/playbooks/` and the `playbook_guide` pages
+  (`run-club`, `supper-club`, `quiz-night`, `racket-sports`) are `article`
+  pages with one pricing line linking `/pricing/` and no typed fee figures.
+  `/app/` is the `appLaunchNotice` custom section: the homepage's launch
+  notice (`features/marketing/useAppNoticeController.ts`, joinWaitlist with
+  `notice: appLaunch`, consent `app-launch-whatsapp-v1`) with a city picker.
+  All are indexed (owner, 19 Nov 2026). A page may be on a family route
+  (`familyRouteIds` in the validation context); actions still name a family
+  page by its content key.
+- **Shelved pages.** A page that is written but must not be served yet sits
+  in its section's shelf (`shelvedResourcesPlaybookPages` in
+  `content/playbook/pages/resources/index.ts`) instead of its index. No
+  route resolves it, so it 404s in the Vite shell and in Next, gets no static
+  head and stays out of both sitemaps; `playbookPages.test.ts` still
+  validates it and holds it unlinked. `/stories/` is shelved, and its
+  `cards` band with the `stories` source also draws nothing until
+  `content/stories/hostStories.ts` lists a published story (a stories band
+  with no story is a pending binding). To switch Stories on: add real
+  stories to `hostStories.ts` with the organiser's written consent, real
+  figures with their source and photos with rights
+  (`content/stories/README.md`), add a `story_detail/<slug>` page per story
+  to the resources index, move the `stories` entry from the shelf into
+  `resourcesPlaybookPages`, link `/stories/` from the host footer's
+  Resources column, and set `meta.noindex` false only with the owner's
+  approval (decision 20: three real stories). Fictional stories and a
+  sample story page live in `website/src/stories/fixtures/hostStories.ts`
+  for Storybook and tests only.
 - **Links and forms.** `usePlaybookPageController.ts` turns destinations into
   links and tags every action for analytics. Links to `/host/start/` and
   `/pricing/` land on the host landing's bands through `playbookRouteAliases`

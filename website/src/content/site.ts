@@ -7,10 +7,13 @@ import type {StoreCtaCopy} from "./types";
 /**
  * True once the guest app is on either store (packages/brand/brand.json).
  * Until then every "Get the app" button reads "Get notified" and leads to
- * the homepage's app band, so no primary button ends at "Coming soon".
+ * the guest app page (/app/), whose form asks for one WhatsApp message on
+ * launch, so no primary button ends at "Coming soon".
  */
 export const guestAppLive = Boolean(brand.stores.consumer.ios || brand.stores.consumer.android);
 export const guestAppActionLabel = guestAppLive ? "Get the app" : "Get notified";
+/** The guest app page (/app/, a playbook page): every "Get the app" link off the homepage goes here. */
+export const guestAppHref = "/app/";
 
 /** A WhatsApp chat on the support number in brand.json, with the message already typed. */
 export function whatsappChatHref(message: string) {
@@ -127,7 +130,7 @@ export const publicSiteCopy = {
   forHosts: forHostsLink,
   nav: [whatsOnLink, forHostsLink],
   /** The general pages' one primary action, the homepage's own. */
-  getApp: {label: guestAppActionLabel, href: "/#app"},
+  getApp: {label: guestAppActionLabel, href: guestAppHref},
   footerOperator: publishedLegalContent.ui.footerBody,
   /** The footer control that reopens the consent banner. */
   privacyChoices: marketingConsentPreferencesCopy.preferences,
@@ -137,9 +140,10 @@ export const publicSiteCopy = {
  * The header variants (the playbook kit's KitHeader). Every variant starts
  * with the wordmark; What's on leads guest and host pages unless the page
  * hides it. Link only pages that exist in design/website/routes.json:
- * Resources holds the host playbooks, the no-show calculator and Help, and
- * gains host stories, compare and the event page from a link once those
- * pages ship.
+ * Resources is Help alone, a plain link; the canvas's Resources menu (host
+ * stories, host playbooks, compare, the no-show calculator and the event
+ * page from a link) is a separate change to the bar. The playbooks and the
+ * calculator are in the host footer's Resources column meanwhile.
  */
 export const siteHeaderCopy = {
   /** The breadcrumb row's accessible name. */
@@ -152,7 +156,7 @@ export const siteHeaderCopy = {
     nav: [safetyLink, forHostsLink] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
     /** The city's new-to-the-city page (/new-to-<city>/), after What's on. */
     newToCity: "New to {city}",
-    action: {href: "/#app", label: guestAppActionLabel},
+    action: {href: guestAppHref, label: guestAppActionLabel},
   },
   /**
    * Host pages: What's on, the For hosts menu (the canvas's columns:
@@ -192,7 +196,7 @@ export const siteHeaderCopy = {
         ]},
       ]),
       hostPricingLink,
-      {label: "Resources", links: [hostPlaybooksLink, noShowCalculatorLink, helpLink]},
+      {label: "Resources", links: [helpLink]},
     ] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
     action: hostStartLink,
     /** The bar shows the short label beside the WhatsApp mark; the full one names the link. */
@@ -219,7 +223,7 @@ export const siteFooterCopy = {
   },
   explore: [
     whatsOnLink,
-    {href: "/#app", label: guestAppActionLabel},
+    {href: guestAppHref, label: guestAppActionLabel},
   ],
   /** Explore's Safety link, after What's on and the page's New to the city. */
   safety: safetyLink,
@@ -304,7 +308,7 @@ export const siteFooterCopy = {
  */
 export const publicPageChromeCopy = {
   getApp: guestAppActionLabel,
-  getAppHref: "/#app",
+  getAppHref: guestAppHref,
   wordmark: brand.name,
   footerLabel: "Site links",
   footerLinks: [

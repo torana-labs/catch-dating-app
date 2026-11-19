@@ -1,6 +1,7 @@
 import type {ComponentType} from "react";
 import type {PlaybookSectionOf} from "../../../content/playbook/playbookContract";
 import type {CaptureSlots} from "../../../shared/media/captureSlot";
+import {AppLaunchNotice} from "../../marketing/AppLaunchNotice";
 import {NoShowCalculator} from "../../marketing/NoShowCalculator";
 import {PricingFeeCalculator} from "../../marketing/PricingFeeCalculator";
 import {PricingCapBand, PricingExamplesBand, PricingFeeBand, PricingIncludedBand, PricingOrganisationsBand} from "../../marketing/PricingBands";
@@ -69,6 +70,12 @@ function NoShowCalculatorSection({section, labels}: PlaybookCustomSectionProps) 
   return <NoShowCalculator ground={section.ground} id={section.id} kicker={section.kicker} labels={labels} lead={section.lead} pageTitle={section.pageTitle} title={section.title} />;
 }
 
+/** /app/'s launch notice (appLaunchNotice): the homepage's app notice form, with a city picker; its city label from its labels. */
+function AppLaunchNoticeSection({section, labels}: PlaybookCustomSectionProps) {
+  if (section.type !== "custom") return null;
+  return <AppLaunchNotice ground={section.ground} id={section.id} kicker={section.kicker} labels={labels} lead={section.lead} title={section.title} />;
+}
+
 /**
  * The closed registry of custom section components, by the key a page names
  * (`"component": "noShowCalculator"`, or a pricing section's
@@ -82,4 +89,5 @@ export const playbookCustomSections: {readonly [K in ReadyPlaybookCustomComponen
   pricingIncluded: PricingIncludedSection,
   pricingOrganisations: PricingOrganisationsSection,
   noShowCalculator: NoShowCalculatorSection,
+  appLaunchNotice: AppLaunchNoticeSection,
 };
