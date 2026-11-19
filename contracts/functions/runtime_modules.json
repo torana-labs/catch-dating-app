@@ -815,7 +815,8 @@
     "ImportGuestListCallablePayload",
     "ImportEventFromLinkCallablePayload",
     "CreatePromotionKitCallablePayload",
-    "ImportFormFromLinkCallablePayload"
+    "ImportFormFromLinkCallablePayload",
+    "PlanNightCallablePayload"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",
@@ -1052,6 +1053,7 @@
     "ImportGuestListCallableResponse",
     "ImportEventFromLinkCallableResponse",
     "CreatePromotionKitCallableResponse",
-    "ImportFormFromLinkCallableResponse"
+    "ImportFormFromLinkCallableResponse",
+    "PlanNightCallableResponse"
   ]
 }

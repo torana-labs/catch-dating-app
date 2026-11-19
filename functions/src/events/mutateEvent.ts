@@ -1087,6 +1087,30 @@ function buildCreateEventSuccessPlanDoc(params: {
 }): Record<string, unknown> | null {
   const defaults = params.data.eventSuccessDefaults;
   if (!defaults?.enabled) return null;
+  return buildEventSuccessPlanDoc({defaults, eventId: params.eventId,
+    event: params.event, organizerId: params.data.organizerId,
+    serverTimestamp: params.serverTimestamp});
+}
+
+/** Event-success defaults as createEvent takes them. */
+export type EventSuccessPlanDefaults = EventSuccessDefaultsPayload;
+
+/**
+ * Builds a new event-success plan doc for a scheduled event from defaults:
+ * createEvent's initial plan, and night.plan's plan on a try-it draft.
+ * @param {object} params Defaults, the event and its id.
+ * @return {object} Firestore plan doc.
+ */
+export function buildEventSuccessPlanDoc(params: {
+  defaults: EventSuccessPlanDefaults;
+  eventId: string;
+  event: EventDocument;
+  organizerId?: string;
+  /** Overrides the event's capacity as the plan's target head count. */
+  targetAttendeeCount?: number;
+  serverTimestamp?: () => FirebaseFirestore.FieldValue;
+}): Record<string, unknown> {
+  const defaults = params.defaults;
 
   const timestamp = params.serverTimestamp?.() ??
     admin.firestore.FieldValue.serverTimestamp();
@@ -1097,7 +1121,7 @@ function buildCreateEventSuccessPlanDoc(params: {
     primitives.assignmentAlgorithm
   );
   const targetAttendeeCount = clampInteger(
-    params.event.capacityLimit,
+    params.targetAttendeeCount ?? params.event.capacityLimit,
     1,
     1000,
     20
@@ -1120,7 +1144,7 @@ function buildCreateEventSuccessPlanDoc(params: {
 
   return {
     eventId: params.eventId,
-    organizerId: params.event.organizerId ?? params.data.organizerId,
+    organizerId: params.event.organizerId ?? params.organizerId,
     layoutId: defaults.layoutId ?? null,
     affinityConstraints: [],
     spatialOverrides: [],
