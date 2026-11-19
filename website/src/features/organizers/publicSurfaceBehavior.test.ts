@@ -12,8 +12,6 @@ import {
 import {eventPageFromListing} from "../events/eventPageFromListing";
 import {buildEventPageView} from "../events/eventPageModel";
 import {EventBookingCard, EventPageMain} from "../events/sections/EventPageSections";
-import {defaultHomeDiscovery, onCatch} from "../home/homeDiscovery";
-import type {HomeOrganizer} from "../home/homeTypes";
 import {hostListings} from "./data";
 import {
   listingClaimPresentationFor,
@@ -68,10 +66,10 @@ describe("public surface behavior contract", () => {
       verifyAuthorityBadge(configuration, policy.trustState);
       switch (surfaceId) {
       case "web.homeOrganizerDiscovery":
-        // Settings → Discovery's defaults: the homepage shows only organizers on Catch.
+        // Settings → Discovery's defaults (features/home/homeDiscovery.ts): the
+        // homepage shows only organizers on Catch, that is claimed or verified.
         verifyDiscovery(configuration, policy.isPubliclyReadable &&
-          (onCatch(listing.authority.claimState as HomeOrganizer["claimState"]) ?
-            defaultHomeDiscovery.homeOrganizers.onCatch : defaultHomeDiscovery.homeOrganizers.notOnCatch));
+          ["claimed", "verified"].includes(String(listing.authority.claimState)));
         break;
       case "web.organizerSearch":
         verifyDiscovery(configuration, policy.isPubliclyReadable);

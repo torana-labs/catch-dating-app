@@ -120,9 +120,11 @@ test("the owner's override keeps a format page that meets the bar noindex",
         launchStatus: "launched"};
       for (const id of ["a", "b", "c"]) {
         const organizerId = `org-${id}-${h.run}`;
+        // Claimed, so Settings → Discovery's defaults count them in the totals.
         await h.put(`organizerPublicPage/${organizerId}`, {...page,
           organizerId, path: `/organizers/${organizerId}/`,
           identity: {...(page.identity as Row), citySlug: h.slug},
+          claim: {...(page.claim as Row), state: "claimed"},
           upcomingEvents: [plan(`p${id}-${h.run}`, hour)]});
       }
       const runClubs = async (at: number) => {
