@@ -35,10 +35,17 @@ import {formConversionReceiptId} from
 import {EventOffer, OfferActionReceipt, OfferDomainError, eventOfferId} from
   "./eventOfferDomain";
 import {
-  OfferApplication, OfferAuditEntry, OfferBatchReceipt, OfferContact,
+  OfferApplication, OfferAuditEntry, OfferBatchReceipt,
+  OfferBatchReceiptLookup, OfferBatchReceiptRecord, OfferContact,
   OfferEvent, OfferOrigin, OfferRepository, OfferSourceState,
   OfferTransaction,
 } from "./eventOfferService";
+import {
+  buildCommandReceipt,
+  classifyCommandReceiptData,
+  COMMAND_RECEIPTS,
+  commandReceiptId,
+} from "../shared/commandReceipts";
 
 /**
  * Server-only storage adapter, intentionally not registered as a callable.
@@ -48,10 +55,37 @@ import {
  */
 const collections = {
   offers: "organizerEventOffers",
-  actions: "organizerEventOfferActionReceipts",
-  batches: "organizerEventOfferBatchReceipts",
   audit: "organizerEventOfferAudits",
 } as const;
+
+/**
+ * Replay receipts live in commandReceipts. Every offer action, including the
+ * draft and offer steps a batch commit derives, shares the mutateEventOffer
+ * command; a whole batch has its own commitEventOffers receipt. The ids are
+ * already SHA-256 digests of offer or organizer plus request ID.
+ */
+export const OFFER_ACTION_RECEIPT_COMMAND = "mutateEventOffer";
+export const OFFER_BATCH_RECEIPT_COMMAND = "commitEventOffers";
+
+export function offerActionReceiptId(offerId: string,
+  requestId: string): string {
+  return commandReceiptId(OFFER_ACTION_RECEIPT_COMMAND,
+    key(offerId, requestId));
+}
+
+export function offerBatchReceiptId(organizerId: string,
+  requestId: string): string {
+  return commandReceiptId(OFFER_BATCH_RECEIPT_COMMAND,
+    key(organizerId, requestId));
+}
+
+/** The stored result of one batch commit, bounded by the 25-row batch. */
+export function offerBatchReceiptResult(
+  results: OfferBatchReceipt["results"]
+): Record<string, unknown> {
+  return {results: results.map(({offerId, revision, generation}) =>
+    ({offerId, revision, generation}))};
+}
 
 function key(...parts: string[]): string {
   return createHash("sha256").update(parts.join("\u001f"))
@@ -184,10 +218,8 @@ export function parseStoredEventOffer(value: unknown, id: string): EventOffer {
 }
 
 function storedActionReceipt(value: unknown, offerId: string,
-  requestId: string): OfferActionReceipt {
-  if (!object(value) || value.offerId !== offerId ||
-      value.requestId !== requestId ||
-      typeof value.requestHash !== "string" ||
+  requestId: string, requestHash: string): OfferActionReceipt {
+  if (!object(value) ||
       !Number.isSafeInteger(value.resultingGeneration) ||
       Number(value.resultingGeneration) < 1 ||
       !Number.isSafeInteger(value.resultingRevision) ||
@@ -195,16 +227,13 @@ function storedActionReceipt(value: unknown, offerId: string,
     throw new OfferDomainError("conflict",
       "Stored action receipt is malformed.");
   }
-  return value as unknown as OfferActionReceipt;
+  return {offerId, requestId, requestHash,
+    resultingGeneration: Number(value.resultingGeneration),
+    resultingRevision: Number(value.resultingRevision)};
 }
 
-function storedBatchReceipt(value: unknown, organizerId: string,
-  requestId: string): OfferBatchReceipt {
-  if (!object(value) || value.organizerId !== organizerId ||
-      value.requestId !== requestId ||
-      typeof value.eventId !== "string" ||
-      typeof value.requestHash !== "string" ||
-      !Array.isArray(value.results) ||
+function storedBatchResults(value: unknown): OfferBatchReceipt["results"] {
+  if (!object(value) || !Array.isArray(value.results) ||
       !value.results.every((row) => object(row) &&
         typeof row.offerId === "string" &&
         Number.isSafeInteger(row.revision) &&
@@ -214,7 +243,8 @@ function storedBatchReceipt(value: unknown, organizerId: string,
     throw new OfferDomainError("conflict",
       "Stored batch receipt is malformed.");
   }
-  return value as unknown as OfferBatchReceipt;
+  return value.results.map((row) => ({offerId: String(row.offerId),
+    revision: Number(row.revision), generation: Number(row.generation)}));
 }
 
 export class FirestoreEventOfferRepository implements OfferRepository {
@@ -227,7 +257,7 @@ export class FirestoreEventOfferRepository implements OfferRepository {
       const formResponses = new Map<string, OrganizerFormResponseDocument>();
       const pendingOffers = new Map<string, EventOffer>();
       const actionReceipts: OfferActionReceipt[] = [];
-      const batchReceipts: OfferBatchReceipt[] = [];
+      const batchReceipts: OfferBatchReceiptRecord[] = [];
       const audits: OfferAuditEntry[] = [];
       const read = async (collection: string, id: string) =>
         (await firestoreTx.get(this.db.collection(collection).doc(id)))
@@ -509,15 +539,29 @@ export class FirestoreEventOfferRepository implements OfferRepository {
           return data ? parseStoredEventOffer(data, offerId) : null;
         },
         actionReceipt: async (offerId, requestId) => {
-          const data = await read(collections.actions,
-            key(offerId, requestId));
-          return data ? storedActionReceipt(data, offerId, requestId) : null;
+          const data = await read(COMMAND_RECEIPTS,
+            offerActionReceiptId(offerId, requestId));
+          // The domain compares the action hash and fences the stored
+          // revision against the live offer; this read only drops a receipt
+          // past expiresAt, so it classifies against the stored hash.
+          const storedHash = object(data) &&
+            typeof data.requestHash === "string" ? data.requestHash : "";
+          const lookup = classifyCommandReceiptData(data, {
+            command: OFFER_ACTION_RECEIPT_COMMAND, requestHash: storedHash,
+            nowMillis: this.serverClock()});
+          if (lookup.kind === "none") return null;
+          return storedActionReceipt(lookup.kind === "replay" ?
+            lookup.result : undefined, offerId, requestId, storedHash);
         },
-        batchReceipt: async (organizerId, requestId) => {
-          const data = await read(collections.batches,
-            key(organizerId, requestId));
-          return data ? storedBatchReceipt(data, organizerId,
-            requestId) : null;
+        batchReceipt: async (organizerId, requestId,
+          requestHash): Promise<OfferBatchReceiptLookup> => {
+          const data = await read(COMMAND_RECEIPTS,
+            offerBatchReceiptId(organizerId, requestId));
+          const lookup = classifyCommandReceiptData(data, {
+            command: OFFER_BATCH_RECEIPT_COMMAND, requestHash,
+            nowMillis: this.serverClock()});
+          if (lookup.kind !== "replay") return lookup;
+          return {kind: "replay", results: storedBatchResults(lookup.result)};
         },
         listOffers: async (organizerId, eventId, afterOfferId, limit) => {
           let query = this.db.collection(collections.offers)
@@ -580,13 +624,24 @@ export class FirestoreEventOfferRepository implements OfferRepository {
         firestoreTx.set(this.db.collection(collections.offers)
           .doc(offer.offerId), offer);
       }
+      const nowMillis = this.serverClock();
       for (const receipt of actionReceipts) {
-        firestoreTx.create(this.db.collection(collections.actions)
-          .doc(key(receipt.offerId, receipt.requestId)), receipt);
+        firestoreTx.set(this.db.collection(COMMAND_RECEIPTS).doc(
+          offerActionReceiptId(receipt.offerId, receipt.requestId)),
+        buildCommandReceipt({
+          command: OFFER_ACTION_RECEIPT_COMMAND, retention: "request",
+          requestHash: receipt.requestHash,
+          result: {resultingGeneration: receipt.resultingGeneration,
+            resultingRevision: receipt.resultingRevision},
+          nowMillis}));
       }
       for (const receipt of batchReceipts) {
-        firestoreTx.create(this.db.collection(collections.batches)
-          .doc(key(receipt.organizerId, receipt.requestId)), receipt);
+        firestoreTx.set(this.db.collection(COMMAND_RECEIPTS).doc(
+          offerBatchReceiptId(receipt.organizerId, receipt.requestId)),
+        buildCommandReceipt({
+          command: OFFER_BATCH_RECEIPT_COMMAND, retention: "request",
+          requestHash: receipt.requestHash,
+          result: offerBatchReceiptResult(receipt.results), nowMillis}));
       }
       for (const entry of audits) {
         firestoreTx.create(this.db.collection(collections.audit)

@@ -14,6 +14,7 @@ import {
   OfferAction, OfferActionReceipt, OfferDomainError, OfferTransition,
 } from "./eventOfferDomain";
 import {BRAND} from "../shared/generated/brand";
+import {commandRequestHash} from "../shared/commandReceipts";
 
 /**
  * Application service, not a callable. The server-only Firestore adapter uses
@@ -97,6 +98,25 @@ export interface OfferBatchReceipt {
   results: Array<{offerId: string; revision: number; generation: number}>;
 }
 
+/**
+ * The stored replay record of one batch commit. Only `results` is kept; the
+ * rest of the response is rebuilt from the request. `requestHash` is the
+ * replay fingerprint (acting manager included), not the response's
+ * `requestHash`, which stays the request's batch digest.
+ */
+export interface OfferBatchReceiptRecord {
+  organizerId: string;
+  requestId: string;
+  requestHash: string;
+  results: OfferBatchReceipt["results"];
+}
+
+/** What a commit found for its organizer and request ID. */
+export type OfferBatchReceiptLookup =
+  | {kind: "none"}
+  | {kind: "replay"; results: OfferBatchReceipt["results"]}
+  | {kind: "conflict"};
+
 export interface OfferTransaction {
   /** Server clock evaluated inside each transaction attempt. */
   nowMillis(): number;
@@ -120,8 +140,8 @@ export interface OfferTransaction {
   offer(offerId: string): Promise<EventOffer | null>;
   actionReceipt(offerId: string, requestId: string):
     Promise<OfferActionReceipt | null>;
-  batchReceipt(organizerId: string, requestId: string):
-    Promise<OfferBatchReceipt | null>;
+  batchReceipt(organizerId: string, requestId: string, requestHash: string):
+    Promise<OfferBatchReceiptLookup>;
   listOffers(organizerId: string, eventId: string,
     afterOfferId: string | null, limit: number):
     Promise<EventOffer[]>;
@@ -129,7 +149,7 @@ export interface OfferTransaction {
     canonicalContactId: string): Promise<boolean>;
   putOffer(offer: EventOffer): void;
   createActionReceipt(receipt: OfferActionReceipt): void;
-  createBatchReceipt(receipt: OfferBatchReceipt): void;
+  createBatchReceipt(receipt: OfferBatchReceiptRecord): void;
   appendAudit(entry: OfferAuditEntry): void;
 }
 
@@ -701,18 +721,22 @@ export async function commitEventOffers(params: {
     fail("invalid", "Invalid batch request or preview digest.");
   }
   const requestHash = digest([batchShape(input), input.planDigest]);
+  // The replay fingerprint adds the acting manager: another manager reusing
+  // the request ID conflicts instead of replaying someone else's commit.
+  const receiptHash = commandRequestHash(actor.uid, batchShape(input),
+    input.planDigest);
   return repository.transaction(async (tx) => {
     if (!await tx.managerAuthorized(input.organizerId, actor.uid)) {
       fail("denied", "Current organizer manager authority is required.");
     }
     const prior = await tx.batchReceipt(input.organizerId,
-      input.requestId);
-    if (prior) {
-      if (prior.eventId !== input.eventId ||
-          prior.requestHash !== requestHash) {
-        fail("conflict", "Batch request ID was reused for different work.");
-      }
-      return prior;
+      input.requestId, receiptHash);
+    if (prior.kind === "conflict") {
+      fail("conflict", "Batch request ID was reused for different work.");
+    }
+    if (prior.kind === "replay") {
+      return {organizerId: input.organizerId, eventId: input.eventId,
+        requestId: input.requestId, requestHash, results: prior.results};
     }
     const preview = await previewInTransaction(tx, actor, input);
     if (preview.planDigest !== input.planDigest) {
@@ -761,7 +785,8 @@ export async function commitEventOffers(params: {
       audit(tx, actor, effect.action, effect.before,
         effect.result, effect.atMillis);
     }
-    tx.createBatchReceipt(receipt);
+    tx.createBatchReceipt({organizerId: input.organizerId,
+      requestId: input.requestId, requestHash: receiptHash, results});
     return receipt;
   });
 }

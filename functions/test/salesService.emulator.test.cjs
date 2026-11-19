@@ -272,7 +272,7 @@ test("private demo uses real atomic start limits and only synthetic records", as
   const collections = {salesDemoBlueprints: "sales_demo_blueprints",
     salesDemoCapabilities: "sales_demo_capabilities",
     salesDemoInvitations: "sales_demo_invitations",
-    salesDemoSessions: "sales_demo_sessions", salesDemoReceipts: "sales_demo_receipts"};
+    salesDemoSessions: "sales_demo_sessions"};
   for (const [collection, schema] of Object.entries(collections)) {
     const validate = ajv.compile(JSON.parse(fs.readFileSync(path.resolve(__dirname,
       `../../contracts/firestore/${schema}.schema.json`), "utf8")));
@@ -282,11 +282,18 @@ test("private demo uses real atomic start limits and only synthetic records", as
       assert.equal(JSON.stringify(record.data()).includes(issued.grantToken), false);
     }
   }
+  const demoReceipts = (await db.collection("commandReceipts")
+    .where("command", "==", "salesDemo").get()).docs;
+  assert.ok(demoReceipts.length > 0);
+  for (const record of demoReceipts) {
+    assert.equal(JSON.stringify(record.data()).includes(issued.grantToken), false);
+  }
   assert.deepEqual((await db.collection("organizers").get()).docs
     .map((doc) => [doc.id, doc.data()]), publicBefore);
   const added = (await db.listCollections()).map((ref) => ref.id)
     .filter((name) => !beforeCollections.includes(name));
-  assert.ok(added.every((name) => name in collections || name === "adminAuditLogs"));
+  assert.ok(added.every((name) => name in collections ||
+    name === "adminAuditLogs" || name === "commandReceipts"));
 });
 
 

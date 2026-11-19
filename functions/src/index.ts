@@ -272,6 +272,8 @@ export {reconcileHostMembershipCharges} from "./hostMemberships/charges";
 export {processHostMembershipBillingPause} from
   "./hostMemberships/billingPause";
 export {refreshHostMembershipSegments} from "./hostMemberships/crmRefresh";
+export {onHostMembershipBenefitUseWritten} from
+  "./hostMemberships/savingsSummary";
 export {
   createOrganizerForm,
   deleteOrganizerFormDraft,

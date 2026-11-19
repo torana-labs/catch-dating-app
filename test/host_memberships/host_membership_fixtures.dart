@@ -12,6 +12,8 @@ Map<String, Object?> membershipMap({
   Map<String, Object?>? pause,
   bool cancelAtPeriodEnd = false,
   int? memberSinceMillis,
+  int? savedInPaise,
+  int? memberPricedBookings,
 }) => {
   'schemaVersion': 1,
   'organizerId': 'organizer-1',
@@ -50,13 +52,24 @@ Map<String, Object?> membershipMap({
   'revision': 3,
   'createdAtMillis': 1,
   'updatedAtMillis': 1,
+  'savedInPaise': ?savedInPaise,
+  'memberPricedBookings': ?memberPricedBookings,
 };
 
 HostMembership testMembership({
   String status = 'active',
   Map<String, Object?>? pause,
   String id = testMembershipId,
-}) => HostMembership.fromMap(id, membershipMap(status: status, pause: pause));
+  int? savedInPaise,
+}) => HostMembership.fromMap(
+  id,
+  membershipMap(
+    status: status,
+    pause: pause,
+    savedInPaise: savedInPaise,
+    memberPricedBookings: savedInPaise == null ? null : 1,
+  ),
+);
 
 Map<String, Object?> planMap({
   String status = 'published',
@@ -104,6 +117,7 @@ HostMembershipBenefitUse testBenefitUse({
   int savings = 50000,
   bool released = false,
   String membershipId = testMembershipId,
+  int eventStartMillis = 1,
 }) => HostMembershipBenefitUse.fromMap(id, {
   'schemaVersion': 1,
   'membershipId': membershipId,
@@ -114,7 +128,7 @@ HostMembershipBenefitUse testBenefitUse({
   'listPriceInPaise': savings,
   'paidPriceInPaise': 0,
   'savingsInPaise': savings,
-  'eventStartMillis': 1,
+  'eventStartMillis': eventStartMillis,
   'state': released ? 'released' : 'booked',
   'createdAtMillis': 1,
 });

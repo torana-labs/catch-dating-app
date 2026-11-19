@@ -302,7 +302,7 @@ test("verified intended contact gets one bounded synthetic session",
     assert.deepEqual(forbidden, []);
     const allowed = ["salesDemoBlueprints/", "salesDemoCapabilities/",
       "salesDemoInvitations/", "salesDemoSessions/",
-      "salesDemoReceipts/", "adminAuditLogs/"];
+      "commandReceipts/salesDemo_", "adminAuditLogs/"];
     assert.ok([...db.docs.keys()].every((path) =>
       allowed.some((prefix) => path.startsWith(prefix))));
   });
@@ -342,6 +342,15 @@ test("completed sessions renew only within the invitation cap",
       ?.sessionCount, 2);
   });
 
+/** Start receipts are the demo replay receipts whose result is a session id. */
+function startReceipts(db: {docs: Map<string, Record<string, unknown>>}):
+  number {
+  return [...db.docs].filter(([path, doc]) =>
+    path.startsWith("commandReceipts/salesDemo_") &&
+    JSON.stringify(Object.keys(doc.result as object)) === "[\"sessionId\"]")
+    .length;
+}
+
 test("distinct start receipts are capped, throttled and exact retry stays free",
   async () => {
     const {db, deps, setTime} = fixture();
@@ -370,8 +379,7 @@ test("distinct start receipts are capped, throttled and exact retry stays free",
       `salesDemoInvitations/${issued.invitationId}`);
     assert.equal(invitation?.startReceiptCount, 12);
     assert.equal(invitation?.sessionCount, 1);
-    assert.equal([...db.docs.values()].filter((doc) =>
-      doc.action === "salesDemo.session.start").length, 12);
+    assert.equal(startReceipts(db), 12);
     const replayWrites = db.writes;
     assert.equal((await start(1)).sessionId, first.sessionId);
     assert.equal(db.writes, replayWrites);
@@ -393,8 +401,7 @@ test("concurrent distinct starts cannot exceed the minute ceiling",
     assert.equal(db.docs.get(
       `salesDemoInvitations/${issued.invitationId}`)?.startReceiptCount,
     successes);
-    assert.equal([...db.docs.values()].filter((doc) =>
-      doc.action === "salesDemo.session.start").length, successes);
+    assert.equal(startReceipts(db), successes);
   });
 
 test("needs-info branch prepares a reply without admitting a guest",
@@ -728,7 +735,6 @@ test("persisted demo records satisfy their strict private contracts",
       ["salesDemoBlueprints", "sales_demo_blueprints"],
       ["salesDemoInvitations", "sales_demo_invitations"],
       ["salesDemoSessions", "sales_demo_sessions"],
-      ["salesDemoReceipts", "sales_demo_receipts"],
     ]);
     for (const [collection, filename] of schemas) {
       const schema = JSON.parse(readFileSync(
@@ -741,6 +747,18 @@ test("persisted demo records satisfy their strict private contracts",
       for (const [path, doc] of docs) {
         assert.ok(validate(doc), `${path}: ${JSON.stringify(validate.errors)}`);
       }
+    }
+    // Replay receipts are shared commandReceipts entries with no actor ids.
+    const receipts = [...db.docs].filter(([path]) =>
+      path.startsWith("commandReceipts/salesDemo_"));
+    assert.ok(receipts.length > 0);
+    for (const [path, doc] of receipts) {
+      assert.equal(doc.command, "salesDemo", path);
+      assert.match(String(doc.requestHash), /^[a-f0-9]{64}$/u, path);
+      assert.deepEqual(Object.keys(doc).sort(),
+        ["command", "createdAt", "expiresAt", "requestHash", "result"], path);
+      assert.equal(JSON.stringify(doc.result).includes(intended.uid), false,
+        path);
     }
   });
 

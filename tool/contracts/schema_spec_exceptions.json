@@ -97,7 +97,6 @@
     "firestore/sales_demo_blueprints.schema.json": "SalesDemoBlueprintsDocument",
     "firestore/sales_demo_capabilities.schema.json": "SalesDemoCapabilitiesDocument",
     "firestore/sales_demo_invitations.schema.json": "SalesDemoInvitationsDocument",
-    "firestore/sales_demo_receipts.schema.json": "SalesDemoReceiptsDocument",
     "firestore/sales_demo_sessions.schema.json": "SalesDemoSessionsDocument",
     "firestore/sales_evidence_proposals.schema.json": "SalesEvidenceProposalsDocument",
     "firestore/sales_inbound_intents.schema.json": "SalesInboundIntentsDocument",

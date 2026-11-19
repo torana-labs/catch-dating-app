@@ -138,12 +138,33 @@
         "onEventAssistanceRcsCallbackCreated",
         "setEventAssistanceRuntimeConfig",
         "setEventAssistanceSetting",
-        "setEventAssistanceGroupStaff"
+        "setEventAssistanceGroupStaff",
+        "setEventAttendeeAttendance",
+        "configureEventOfferPreferences",
+        "configureEventRegistration",
+        "onEventRuntimeParticipantWritten",
+        "mutateEventOffer",
+        "commitEventOffers",
+        "updateOrganizerEventSetupDefaults",
+        "claimParticipantFormProfile",
+        "adminSaveSalesDemoBlueprint",
+        "adminReviewSalesDemoBlueprint",
+        "adminWithdrawSalesDemoBlueprint",
+        "adminIssueSalesDemoInvitation",
+        "adminRevokeSalesDemoInvitation",
+        "adminShareSalesDemoPartnerReview",
+        "startSalesDemo",
+        "advanceSalesDemo",
+        "adminRefreshSalesFitQueue",
+        "adminRefreshSalesFitQueueBatch",
+        "onHostMembershipBenefitUseWritten"
       ],
       "migrationNotes": [
         "One replay-receipt collection since L8 of the Firestore consolidation: commandReceipts/{command}_{id} with command, requestHash, result, createdAt and expiresAt, and expiresAt (seven days for triggers, thirty for requests and webhooks; the TTL policy is approved by the owner, 18 Nov 2026).",
-        "functionEventReceipts, eventLiveCommandReceipts, eventChatAccessReceipts, organizerAudienceProjectionReceipts and organizerEntitlementReceipts stopped being written and keep their documents under the legal hold, with no client access; replay windows are short, so none were copied forward.",
+        "functionEventReceipts, eventLiveCommandReceipts, eventChatAccessReceipts, organizerAudienceProjectionReceipts, organizerEntitlementReceipts, eventAttendeeAttendanceReceipts, eventOfferConfigurationReceipts, eventRegistrationReceipts, eventRuntimeDataRequestReceipts, organizerEventOfferActionReceipts and organizerEventOfferBatchReceipts stopped being written and keep their documents, with no client access; replay windows are short, so none were copied forward.",
         "The event-assistance commands' replay receipts moved too (19 Nov 2026), reversing the 18 Nov keep: eventAssistanceAccountabilityReceipts, eventAssistanceCaseReceipts, eventAssistanceMembershipReceipts, eventAssistanceParticipationReceipts, eventAssistanceProgressReceipts (now two commands, departure and route), eventAssistanceRcsCallbackReceipts (trigger retention), eventAssistanceRuntimeConfigReceipts, eventAssistanceSettingReceipts and eventAssistanceStaffReceipts are read only by their own command's retry. Each result keeps the revision and live-state fences the replay re-checks; old documents stay and none were copied forward.",
+        "Offer actions, including the draft and offer steps a batch commit derives, share the mutateEventOffer command; a batch stores only its per-offer results and rebuilds the rest of its response, and its replay hash includes the acting manager, so a second manager reusing a batch request ID conflicts.",
+        "organizerEventSetupDefaultReceipts, participantProfileClaimReceipts, salesDemoReceipts and salesFitQueueReceipts stopped being written (commands updateOrganizerEventSetupDefaults, claimParticipantFormProfile, salesDemo and adminRefreshSalesFitQueue); every replay is revision- or source-fenced, so none were copied forward.",
         "Consent, money, safety and audit receipts stay in their own collections."
       ]
     },
@@ -1050,23 +1071,6 @@
       ],
       "migrationNotes": [
         "New optional collection; no backfill. Rows are current while expiresAt is in the future and requires a Firestore TTL policy on expiresAt (confirm live before relying on deletion)."
-      ]
-    },
-    {
-      "id": "eventAttendeeAttendanceReceipts",
-      "path": "eventAttendeeAttendanceReceipts/{receiptId}",
-      "rulesMatch": "/eventAttendeeAttendanceReceipts/{receiptId}",
-      "typescriptInterface": "EventAttendeeAttendanceReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
-      "owner": "setEventAttendeeAttendance callable",
-      "read": "server only; replay result is returned by the callable",
-      "write": "server only",
-      "exportedFunctions": [
-        "setEventAttendeeAttendance"
-      ],
-      "migrationNotes": [
-        "Thirty-day TTL receipts make absolute Host attendance retries idempotent without retaining a second roster."
       ]
     },
     {
@@ -2325,23 +2329,6 @@
       ],
       "migrationNotes": [
         "One current source-fenced request per event attendee; guest bootstrap exposes only the bounded request fields and lifecycle."
-      ]
-    },
-    {
-      "id": "eventRuntimeDataRequestReceipts",
-      "path": "eventRuntimeDataRequestReceipts/{receiptId}",
-      "rulesMatch": "/eventRuntimeDataRequestReceipts/{receiptId}",
-      "typescriptInterface": "EventRuntimeDataRequestReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
-      "owner": "server-only Event Runtime required-data coordinator",
-      "read": "server only",
-      "write": "server only and immutable",
-      "exportedFunctions": [
-        "onEventRuntimeParticipantWritten"
-      ],
-      "migrationNotes": [
-        "Operation id plus exact command hash prevents duplicate or changed retries."
       ]
     },
     {
@@ -4771,24 +4758,6 @@
       ]
     },
     {
-      "id": "participantProfileClaimReceipts",
-      "path": "participantProfileClaimReceipts/{receiptId}",
-      "rulesMatch": "/participantProfileClaimReceipts/{receiptId}",
-      "typescriptInterface": "ParticipantProfileClaimReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
-      "owner": "participant profile claiming",
-      "read": "server only; authenticated participant projection",
-      "write": "server only; explicit participant review",
-      "exportedFunctions": [
-        "claimParticipantFormProfile",
-        "requestAccountDeletion"
-      ],
-      "migrationNotes": [
-        "Never populated from CRM notes, tags or organizer review data. Profile claiming does not grant event admission or public sharing."
-      ]
-    },
-    {
       "id": "participantFormProfileViews",
       "path": "participantFormProfileViews/{responseId}",
       "rulesMatch": "/participantFormProfileViews/{responseId}",
@@ -4908,7 +4877,7 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps organizer event setup defaults and receipts server-only"
+        "keeps organizer event setup defaults server-only"
       ],
       "owner": "organizer event setup manager operations",
       "read": "server only; managers read its projection in hostEventSetupDefaultViews",
@@ -4916,23 +4885,6 @@
       "exportedFunctions": [
         "updateOrganizerEventSetupDefaults",
         "onHostEventSetupDefaultViewDefaultsChanged"
-      ]
-    },
-    {
-      "id": "organizerEventSetupDefaultReceipts",
-      "path": "organizerEventSetupDefaultReceipts/{receiptId}",
-      "rulesMatch": "/organizerEventSetupDefaultReceipts/{receiptId}",
-      "typescriptInterface": "OrganizerEventSetupDefaultReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps organizer event setup defaults and receipts server-only"
-      ],
-      "owner": "organizer event setup manager operations",
-      "read": "server only; current manager callable projection",
-      "write": "server only",
-      "exportedFunctions": [
-        "updateOrganizerEventSetupDefaults"
       ]
     },
     {
@@ -4997,48 +4949,6 @@
       ]
     },
     {
-      "id": "organizerEventOfferActionReceipts",
-      "path": "organizerEventOfferActionReceipts/{documentId}",
-      "rulesMatch": "/organizerEventOfferActionReceipts/{documentId}",
-      "typescriptInterface": "OrganizerEventOfferActionReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps event offer receipts and audits server-only"
-      ],
-      "owner": "event offer manager operations",
-      "read": "server only; current manager callable projection",
-      "write": "server only",
-      "exportedFunctions": [
-        "previewEventOffers",
-        "commitEventOffers",
-        "mutateEventOffer",
-        "getEventOffer",
-        "listEventOffers"
-      ]
-    },
-    {
-      "id": "organizerEventOfferBatchReceipts",
-      "path": "organizerEventOfferBatchReceipts/{documentId}",
-      "rulesMatch": "/organizerEventOfferBatchReceipts/{documentId}",
-      "typescriptInterface": "OrganizerEventOfferBatchReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps event offer receipts and audits server-only"
-      ],
-      "owner": "event offer manager operations",
-      "read": "server only; current manager callable projection",
-      "write": "server only",
-      "exportedFunctions": [
-        "previewEventOffers",
-        "commitEventOffers",
-        "mutateEventOffer",
-        "getEventOffer",
-        "listEventOffers"
-      ]
-    },
-    {
       "id": "organizerEventOfferAudits",
       "path": "organizerEventOfferAudits/{documentId}",
       "rulesMatch": "/organizerEventOfferAudits/{documentId}",
@@ -5057,23 +4967,6 @@
         "mutateEventOffer",
         "getEventOffer",
         "listEventOffers"
-      ]
-    },
-    {
-      "id": "eventOfferConfigurationReceipts",
-      "path": "eventOfferConfigurationReceipts/{receiptId}",
-      "rulesMatch": "/eventOfferConfigurationReceipts/{receiptId}",
-      "typescriptInterface": "EventOfferConfigurationReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps organizer event setup defaults and receipts server-only"
-      ],
-      "owner": "event offer manager operations",
-      "read": "server only; current manager callable receipt replay",
-      "write": "server only",
-      "exportedFunctions": [
-        "configureEventOfferPreferences"
       ]
     },
     {
@@ -5541,11 +5434,13 @@
         "manageMyHostMembership",
         "processHostMembershipBillingPause",
         "onHostMembershipAudienceProjected",
+        "onHostMembershipBenefitUseWritten",
         "requestAccountDeletion"
       ],
       "migrationNotes": [
         "Keyed hm_<sha256([organizerId, uid])> so a rejoining member keeps tenure and member-since.",
         "Distinct from organizerCommunityMemberships (unpaid host approval grants).",
+        "savedInPaise and memberPricedBookings are kept by onHostMembershipBenefitUseWritten and carried through every state-machine transition; absent reads as 0.",
         "Subject account deletion cancels live subscriptions immediately, applies the expiry, then erases membership, checkout and benefit-use roots; charge ledgers are retained as payment records."
       ]
     },
@@ -5784,10 +5679,12 @@
         "signUpForFreeEvent",
         "managePublicEventCheckout",
         "cancelEventSignUp",
+        "onHostMembershipBenefitUseWritten",
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "Keyed {eventId}_{uid}; source of member savings and the upcoming member-priced booking cap."
+        "Keyed {eventId}_{uid}; onHostMembershipBenefitUseWritten keeps the member's savings totals on hostMemberships, and the upcoming member-priced booking cap reads booked uses bounded by the cap.",
+        "The host-membership-savings migration fills savedInPaise and memberPricedBookings on memberships that predate the trigger."
       ]
     },
     {

@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
-import 'package:catch_dating_app/contexts/payments/domain/host_membership_benefit_use.dart';
 
 /// One membership with the savings its member-priced bookings produced.
 class MyMembershipRow {
@@ -16,19 +15,13 @@ class MyMembershipsState {
     required this.totalSavedInPaise,
   });
 
-  factory MyMembershipsState.from({
-    required List<HostMembership> memberships,
-    required List<HostMembershipBenefitUse> benefitUses,
-  }) {
+  factory MyMembershipsState.from({required List<HostMembership> memberships}) {
     final rows =
         memberships
             .map(
               (membership) => MyMembershipRow(
                 membership: membership,
-                savedInPaise: hostMembershipSavingsInPaise(
-                  benefitUses,
-                  membershipId: membership.id,
-                ),
+                savedInPaise: membership.savedInPaise,
               ),
             )
             .toList()
@@ -42,7 +35,10 @@ class MyMembershipsState {
           });
     return MyMembershipsState(
       rows: List.unmodifiable(rows),
-      totalSavedInPaise: hostMembershipSavingsInPaise(benefitUses),
+      totalSavedInPaise: memberships.fold(
+        0,
+        (total, membership) => total + membership.savedInPaise,
+      ),
     );
   }
 
