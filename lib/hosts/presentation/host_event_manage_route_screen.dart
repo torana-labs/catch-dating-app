@@ -56,12 +56,18 @@ class HostEventManageRouteScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // The rebuilt workspace and guest lists read and check access themselves.
     if (hostEventRouteOpensWithoutEvent(initialSection)) {
-      return _HostEventRouteWithoutEvent(
-        organizerId: organizerId,
-        eventId: eventId,
-        guests: initialSection == HostEventManageSection.guests,
-        now: referenceNow,
-      );
+      return initialSection == HostEventManageSection.guests
+          ? HostEventGuestsScreen(
+              request: HostEventRequest(
+                organizerId: organizerId,
+                eventId: eventId,
+              ),
+            )
+          : HostEventWorkspaceScreen(
+              organizerId: organizerId,
+              eventId: eventId,
+              now: referenceNow,
+            );
     }
     final uidAsync = ref.watch(uidProvider);
     final organizerAsync = ref.watch(watchOrganizerProvider(organizerId));
@@ -211,44 +217,21 @@ class HostEventManageRouteScreen extends ConsumerWidget {
             now: referenceNow,
           ),
           // Setup and guests return above.
-          HostEventRouteDestination.workspace ||
-          HostEventRouteDestination.guests => _HostEventRouteWithoutEvent(
+          HostEventRouteDestination.workspace => HostEventWorkspaceScreen(
             organizerId: organizerId,
             eventId: eventId,
-            guests: destination == HostEventRouteDestination.guests,
             now: referenceNow,
+          ),
+          HostEventRouteDestination.guests => HostEventGuestsScreen(
+            request: HostEventRequest(
+              organizerId: organizerId,
+              eventId: eventId,
+            ),
           ),
         };
       },
     );
   }
-}
-
-/// The rebuilt workspace or guest lists, which read the event and check
-/// access themselves.
-class _HostEventRouteWithoutEvent extends StatelessWidget {
-  const _HostEventRouteWithoutEvent({
-    required this.organizerId,
-    required this.eventId,
-    required this.guests,
-    required this.now,
-  });
-
-  final String organizerId;
-  final String eventId;
-  final bool guests;
-  final DateTime? now;
-
-  @override
-  Widget build(BuildContext context) => guests
-      ? HostEventGuestsScreen(
-          request: HostEventRequest(organizerId: organizerId, eventId: eventId),
-        )
-      : HostEventWorkspaceScreen(
-          organizerId: organizerId,
-          eventId: eventId,
-          now: now,
-        );
 }
 
 AsyncValue<_HostEventManageRouteData> _hostEventManageRouteData({
