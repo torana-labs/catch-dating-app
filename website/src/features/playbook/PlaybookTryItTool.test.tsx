@@ -4,9 +4,9 @@ import type {ReactNode} from "react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {tryItCopy} from "@content/tryIt";
 import {organizerFixtures, scriptedTryItClient} from "../../stories/fixtures/tryItCommands";
-import {loadPlaybookPage, resolvePlaybookPage} from "../playbook/playbookPages";
-import {PlaybookPage} from "../playbook/PlaybookPage";
-import {provideTryItDeps} from "./useTryItToolController";
+import {loadPlaybookPage, resolvePlaybookPage} from "./playbookPages";
+import {PlaybookPage} from "./PlaybookPage";
+import {provideTryItDeps} from "../tryIt/useTryItToolController";
 
 vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
 
