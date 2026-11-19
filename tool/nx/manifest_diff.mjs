@@ -12,9 +12,13 @@ export const manifestFile = "tool/tools_manifest.json";
 
 // Entry fields the diff understands. A change to any of them marks the entry
 // changed; a field outside this list selects every lane until it is added here.
-export const knownEntryFields = new Set(["id", "category", "path", "command", "safety", "status", "description",
-  "checks", "impactPaths", "ciRequirements", "role", "rules", "alsoEnforces", "alsoCheckIds", "checkSafety", "baseline",
-  "platforms", "runbook", "retiredOn", "reason", "lastCommit"]);
+// `safety` is the name `surface` replaced; it stays known so a diff against a
+// base from before the rename still selects by entry (meta:tool-manifest
+// rejects it in a head manifest).
+export const knownEntryFields = new Set(["id", "category", "path", "command", "surface", "guard", "guardWorkflow",
+  "guardReason", "safety", "status", "description", "checks", "impactPaths", "ciRequirements", "role", "rules",
+  "alsoEnforces", "alsoCheckIds", "checkSafety", "baseline", "platforms", "runbook", "retiredOn", "reason",
+  "lastCommit"]);
 const bookkeepingKeys = new Set(["version", "updated"]);
 
 /** JSON with object keys sorted at every level, so key order and whitespace never count as a change. */
