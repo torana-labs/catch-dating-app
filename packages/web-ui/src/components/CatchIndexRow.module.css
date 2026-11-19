@@ -79,10 +79,18 @@
   margin-top: calc(var(--catch-space-micro6) - var(--catch-space-micro2));
 }
 
+/*
+ * The value side takes what it needs up to most of the row and wraps beyond
+ * that, so a long value (a venue, a date and time) never pushes the title
+ * out of the row or the row past its edge. Short values (prices, scores)
+ * keep their natural width.
+ */
 .trailing {
   display: flex;
-  flex: none;
+  flex: 0 1 auto;
   align-items: center;
+  min-width: 0;
+  max-width: 60%;
   margin-inline-start: var(--catch-space-s3);
 }
 
@@ -186,7 +194,8 @@
   font-size: 15px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+  text-align: end;
+  overflow-wrap: anywhere;
 }
 
 .row[data-density] .trailing { gap: var(--catch-space-s2); color: var(--catch-theme-ink2); }

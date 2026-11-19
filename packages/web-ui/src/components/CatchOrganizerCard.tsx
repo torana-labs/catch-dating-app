@@ -68,8 +68,8 @@ function SystemOrganizerCard({name, initials, logoUrl, color = "games", meta, fo
     <>
       <span className={styles.logo} data-format={color}>{logoUrl ? <img alt="" src={logoUrl} /> : initials}</span>
       <span className={styles.text}>
-        <CatchText maxLines={1} variant="title-row">{name}</CatchText>
-        {meta ? <CatchText maxLines={1} tone="secondary" variant="body-small">{meta}</CatchText> : null}
+        <CatchText maxLines={2} variant="title-row">{name}</CatchText>
+        {meta ? <CatchText maxLines={2} tone="secondary" variant="body-small">{meta}</CatchText> : null}
       </span>
     </>
   );
