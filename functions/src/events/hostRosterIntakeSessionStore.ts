@@ -107,6 +107,29 @@ export class HostRosterIntakeSessionStore {
     });
   }
 
+  /**
+   * The caller's newest draft still in review for one event, such as a
+   * forwarded roster waiting for the host, or null.
+   */
+  async latestInReview(params: {hostUid: string; organizerId: string;
+    eventId: string}, authorize: AuthorizeHostRosterSession):
+    Promise<HostRosterIntakeDraft | null> {
+    return this.db.runTransaction(async (tx) => {
+      await authorize({tx, hostUid: params.hostUid,
+        organizerId: params.organizerId, eventId: params.eventId});
+      // Equality filters only, so no composite index is needed; a host has
+      // few open drafts per event.
+      const open = await tx.get(this.db.collection(collection)
+        .where("draft.hostUid", "==", params.hostUid)
+        .where("draft.eventId", "==", params.eventId)
+        .where("draft.state", "==", "review").limit(20));
+      const newest = open.docs.map((doc) => doc.data() as StoredSession)
+        .filter((stored) => stored.draft.organizerId === params.organizerId)
+        .sort((a, b) => b.updatedAtMillis - a.updatedAtMillis)[0];
+      return newest?.draft ?? null;
+    });
+  }
+
   async getAppliedReview(params: {sessionId: string; hostUid: string},
     authorize: AuthorizeHostRosterSession):
     Promise<HostRosterAppliedReview | null> {

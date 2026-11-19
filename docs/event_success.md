@@ -4204,9 +4204,14 @@ an inbound vendor is live:
   verifies an exact-body HMAC from `ROSTER_INGESTION_WEBHOOK_SECRET`, requires
   provider-confirmed sender identity, and matches that identity to the Host's
   Firebase Auth email or phone;
-- the endpoint accepts one CSV up to 4 MiB, maps at most 250 attendees through
-  the backend adapter engine, and reuses `importEventAttendeesForHost`; the
-  provider message id becomes the retry-safe import key; and
+- the endpoint accepts one CSV up to 4 MiB and maps at most 250 attendees
+  through the guest import converters (`functions/src/guestImport`). Since
+  19 Nov 2026 (owner decision on #2061, question 3) it writes no guest: the
+  rows become a draft in the host's saved review session
+  (`hostRosterIntakeSessions`), keyed by the file, and Catch Host's guest
+  intake offers to resume it (`manageHostRosterIntake` action `latest`).
+  Approving it applies through `importEventAttendeesForHost` as any reviewed
+  import does; and
 - raw attachment bytes are processed in memory and not retained. XLSX
   forwarding, files above 250 rows, temporary Storage, progress UI and
   conflict-aware undo still belong to the asynchronous job tranche.

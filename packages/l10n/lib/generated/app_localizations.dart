@@ -18171,7 +18171,7 @@ abstract class AppLocalizations {
   /// Security and usage guidance for roster forwarding.
   ///
   /// In en, this message translates to:
-  /// **'Forward one CSV from the email address or phone number on your Catch Host account. The private address and code expire after 30 days.'**
+  /// **'Forward one CSV from the email address or phone number on your Catch Host account. It waits here for you to review before any guest is added. The private address and code expire after 30 days.'**
   String get hostsOperationalRosterForwardSubtitle;
 
   /// Email roster forwarding row title.

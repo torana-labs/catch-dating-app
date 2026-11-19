@@ -235,11 +235,26 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
     final organizerId = widget.organizerId;
     final accountId = ref.read(uidProvider).asData?.value;
     if (accountId == null) return;
-    final sessionId = await _rosterIntakeJournal.load(
+    // A draft saved on this device first; otherwise one waiting on the
+    // server, such as a guest list forwarded by email or WhatsApp.
+    var sessionId = await _rosterIntakeJournal.load(
       userId: accountId,
       organizerId: organizerId,
       eventId: eventId,
     );
+    if (sessionId == null) {
+      try {
+        sessionId = await ref
+            .read(hostOperationalRosterControllerProvider)
+            .latestRosterIntakeInReview(
+              eventId: eventId,
+              organizerId: organizerId,
+            );
+      } on Object {
+        // Resume stays hidden; importing a file still works.
+        sessionId = null;
+      }
+    }
     if (!mounted ||
         widget.eventId != eventId ||
         widget.organizerId != organizerId ||

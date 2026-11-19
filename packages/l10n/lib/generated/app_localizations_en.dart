@@ -11710,7 +11710,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsOperationalRosterForwardSubtitle =>
-      'Forward one CSV from the email address or phone number on your Catch Host account. The private address and code expire after 30 days.';
+      'Forward one CSV from the email address or phone number on your Catch Host account. It waits here for you to review before any guest is added. The private address and code expire after 30 days.';
 
   @override
   String get hostsOperationalRosterForwardEmail => 'Forward by email';
