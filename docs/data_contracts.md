@@ -6008,7 +6008,8 @@ The free trial is computed, never stored (`functions/src/money/hostTrial.ts`).
 It starts at the organizer's first event, the start of the first non-cancelled
 event with a booking in `organizerGrowthFacts`, or at the first paid booking
 when no event is recorded, and lasts the effective terms' `trial.days` (90
-for a founding host, through its override). Bills
+for a founding host and at least 60 for a host another host referred, both
+through its override). Bills
 and status use the same computation. The owner reads it through
 `getOrganizerBillingStatus` (status only, no prices) and staff see it on one
 organizer's bills in `adminManageOrganizerBills`. Nothing gates features when
@@ -6018,8 +6019,9 @@ the trial ends; the next billing period is billed.
 paid: the organizer's first nominator earns the credit rate on what was paid
 before GST, when their role earns credit, the organizer claimed within the
 lapse window and the bill falls within the credit months from the organizer's
-first paid bill. Entries move `owed` → `approved` → `paid` through
-`adminManageNominatorCredits`.
+first paid bill. A host who referred the organizer through a host referral
+earns no credit for it: the free month replaces it. Entries move `owed` →
+`approved` → `paid` through `adminManageNominatorCredits`.
 
 `platformCosts/{YYYY-MM}_{category}` holds one month's cost per category
 (`whatsapp`, `ai`, `cloud`, `sms`, `ads_meta`, `ads_google`, `other`). The owner
@@ -6036,6 +6038,71 @@ the issue reopens when the record moves to another status. Server-only, through
 `organizerTeamMemberships` owns active owner and manager seats. Legacy
 `organizerHostClaims` remains only long enough to support released club callables;
 it is not organizer claim authority.
+
+### Host-to-host referrals
+
+The owner chose the host referral reward on 19 Nov 2026: a host referred by
+another host gets a 60-day free trial instead of the standard 30 (a founding
+host keeps 90; no referral shortens a longer trial), and the referring host
+gets one billing cycle of Catch fees free once the referred host has paid its
+first bill. Waiting for that payment keeps fake referrals from earning
+anything. No cash is paid, so the referring host's nominator credit for that
+organizer is not earned either. `organizerReferrals/{referredOrganizerId}` is
+server-only (`functions/src/money/organizerReferrals.ts`).
+
+Attribution reuses the website referral lead and adds no client trust. The
+lead intake records `lead.referralCredit` naming the signed-in referrer
+(Website Leads). Staff then link the lead to the organizer it becomes: by
+approving the listing it seeds (`adminApproveOrganizerListing`) or by linking
+it to an existing organizer in Sales after identity review.
+Either way the lead gets `status: linked` and `organizerId`, which is the only
+link a referral reads. A referral attaches when the referred organizer has an
+owner: from `onFoundingHostOrganizerWritten` when it gains one, and from
+`generateOrganizerCycleBillsDaily`, which first retries organizers claimed or
+linked to a referral lead in the last three days. The rules:
+
+- Only an organizer can refer. The referrer is the lead's signed-in account,
+  not deleted, and it must own a live organizer (not archived or synthetic)
+  other than the referred one. The oldest such organizer is the referrer
+  organizer whose bill the reward makes free.
+- One referrer per referred organizer: the earliest linked lead that passes
+  every rule. The document is keyed by the referred organizer and created
+  once.
+- No self-referral: the referrer account must not own or manage the referred
+  organizer, the referred owner must not manage the referrer organizer, and
+  the referred owner's verified phone must not be the referrer's verified
+  phone or the number typed on the form.
+- Only before the trial starts: the referred organizer's first event or
+  first paid booking (`organizerGrowthFacts`) must still be in the future,
+  and the lead recorded before it.
+
+The attaching transaction raises the referred organizer's commercial terms
+override to `trial.days = max(current, 60)`, through the same revision path a
+founding place uses (a new revision and its immutable revision record, by
+`system:hostReferral`), so billing status, bills and the cycle anchor
+(`organizerBillingCycles.trialEndsAtMillis`) read it like any override.
+`commercialTerms` on the referral records the revision, or null when the
+trial was already at least 60 days.
+
+The reward is `pending` until the referred organizer's first bill is paid.
+The transaction that marks a bill paid (staff, `invoice.paid`,
+`payment_link.paid`, or the tools-only purchase's prepaid bill) moves it to
+`earned`, the way it writes the nominator credit; only a pending reward moves,
+so it is earned exactly once per referred organizer. The referrer's next cycle
+bill that has something to bill after refund credit is then made `free` in
+the transaction that bills it: commission, GST and total zero,
+`referralReward {referredOrganizerId, waivedMinor}` recording what it would
+have billed before refund credit, and a history note Admin shows on the bill.
+The reward moves to `applied` with that bill's id in the same transaction. A
+cycle with nothing to bill, or one refund credit already makes free, leaves
+the reward waiting; a prepaid tools-only bill never takes one. The free bill
+uses no refund credit, which carries forward. Rewards stack, one per referred
+host, applied oldest earned first, one per bill. There is no cap; the owner
+may set one. When a free bill is recomputed before anything is sent, it stays
+free while there is something to waive and otherwise gives the reward back
+(`earned`) for a later cycle. Staff see the free month on the bill in Admin
+Money and the 60-day trial on the referred organizer's trial status and terms
+revisions; there is no separate referral list yet.
 
 ## Event Policy Applicability
 

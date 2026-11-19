@@ -1170,6 +1170,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Host-to-host referrals and their free-month rewards: written only by
+    // Functions (the ownership trigger, the daily bill run and the bill paid
+    // paths). Admin reads them through the bills they make free.
+    match /organizerReferrals/{referredOrganizerId} {
+      allow read, write: if false;
+    }
+
     match /platformCosts/{costId} {
       allow read, write: if false;
     }

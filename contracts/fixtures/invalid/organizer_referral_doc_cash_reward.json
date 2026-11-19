@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "referredOrganizerId": "org-referred",
+  "referredOrganizerName": "Kestrel Supper Club",
+  "referrerOrganizerId": "org-referrer",
+  "referrerUid": "referrer-1",
+  "sourceIntentId": "intent-1",
+  "recordedAtMillis": 1763300000000,
+  "attachedAtMillis": 1763400000000,
+  "source": "ownershipTrigger",
+  "trialDays": 60,
+  "commercialTerms": null,
+  "reward": {
+    "status": "paidOut",
+    "earnedAtMillis": 1770000000000,
+    "earnedByBillId": "org-referred_c2027-01-09",
+    "appliedAtMillis": null,
+    "appliedBillId": null,
+    "cashMinor": 50000
+  },
+  "updatedAtMillis": 1771000000000
+}

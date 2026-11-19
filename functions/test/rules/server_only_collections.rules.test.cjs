@@ -54,6 +54,7 @@ const SERVER_ONLY = [
   "organizerIntakeFieldCorrections",
   "organizerIntakeReviewDecisions",
   "organizerPolicyGapReviewDecisions",
+  "organizerReferrals",
   "programRoomBlocks",
   "programStays",
   "tryItWorkspaces",

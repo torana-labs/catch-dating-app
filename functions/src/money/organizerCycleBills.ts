@@ -35,6 +35,15 @@ import {billablePaymentsByOrganizer} from "./billSources";
 import {dayMillis, trialAnchorsFromFacts, trialWindow} from "./hostTrial";
 import {readMoneySettings} from "./moneySettings";
 import {prepareNominatorCredit} from "./nominatorCredits";
+import {
+  nextEarnedReward,
+  organizerReferralsCollection,
+  prepareReferralReward,
+  referralRewardNote,
+  referralsByReferrerQuery,
+  referralWithReward,
+  type OrganizerReferral,
+} from "./organizerReferrals";
 import {billingPlanForCycle, planOfBill, type BillingPlan} from
   "./billingPlan";
 
@@ -262,6 +271,13 @@ export function cycleBill(input: {
   autoSendAtMillis?: number | null;
   /** Refund credit owed from earlier bills, oldest first. */
   credit?: RefundCreditSource[];
+  /**
+   * A host referral reward to make this bill free with, if it has
+   * something to bill. The caller computes such a bill without refund
+   * credit, so the credit carries forward untouched.
+   */
+  referralReward?: Pick<OrganizerReferral, "referredOrganizerId" |
+    "referredOrganizerName"> | null;
 }): Bill | null {
   const {work, cycle, current, nowMillis} = input;
   const figures = computeBill({
@@ -280,6 +296,16 @@ export function cycleBill(input: {
   if (!current && figures.totalMinor === 0 && !figures.refundCredit?.
     appliedMinor && figures.commission.trialWaivedMinor === 0) return null;
   const id = cycleBillId(work.organizerId, cycle.startMillis);
+  // A host referral reward waives everything the cycle would bill.
+  const reward = input.referralReward && figures.totalMinor > 0 ? {
+    referredOrganizerId: input.referralReward.referredOrganizerId,
+    waivedMinor: figures.totalMinor} : null;
+  if (reward) {
+    figures.commission = {...figures.commission, amountMinor: 0};
+    figures.gst = {...figures.gst, amountMinor: 0};
+    figures.totalMinor = 0;
+    figures.refundCredit = null;
+  }
   const status = figures.totalMinor > 0 ? "toSend" as const : "free" as const;
   // A recomputed bill keeps how it is sent; one that was free, and now has
   // something to bill, waits for staff.
@@ -302,11 +328,15 @@ export function cycleBill(input: {
     countFromMillis: cycle.countFromMillis,
     revision: base.revision + 1,
     status, autoSendAtMillis, sendHold: current?.sendHold ?? null,
+    ...(reward ? {referralReward: reward} :
+      current?.referralReward ? {referralReward: null} : {}),
     terms: {platformRevision: work.platformRevision,
       organizerRevision: work.organizerRevision, ownTerms: work.ownTerms},
     history: [...base.history, {atMillis: nowMillis,
       action: current ? "regenerated" as const : "generated" as const,
-      byUid: input.actorUid, note: null}].slice(-historyLimit),
+      byUid: input.actorUid, note: reward && input.referralReward ?
+        referralRewardNote(input.referralReward) : null}]
+      .slice(-historyLimit),
     generatedAtMillis: nowMillis, updatedAtMillis: nowMillis});
 }
 
@@ -354,9 +384,10 @@ export async function generateCycleBills(deps: CycleBillDeps,
       const planRef = db.collection(organizerBillingPlansCollectionName)
         .doc(item.organizerId);
       const wrote = await db.runTransaction(async (tx) => {
-        const [pointerSnap, billSnap, planSnap, billsSnap] = await Promise.all([
-          tx.get(pointerRef), tx.get(billRef), tx.get(planRef),
-          tx.get(organizerBillsQuery(db, item.organizerId))]);
+        const [pointerSnap, billSnap, planSnap, billsSnap, referralsSnap] =
+          await Promise.all([tx.get(pointerRef), tx.get(billRef),
+            tx.get(planRef), tx.get(organizerBillsQuery(db, item.organizerId)),
+            tx.get(referralsByReferrerQuery(db, item.organizerId))]);
         const pointer = pointerSnap.data() as Pointer | undefined ??
           item.pointer;
         // Another run already billed this cycle.
@@ -370,17 +401,28 @@ export async function generateCycleBills(deps: CycleBillDeps,
         const usesPrepaid = prepaid !== null &&
           storedPlan?.prepaidBillId === null;
         const payments = byOrganizer.get(item.organizerId) ?? [];
-        let bill = cycleBill({work: item, cycle, payments, plan,
+        const billInput = {work: item, cycle, payments, plan,
           organizerName, gstRegistered: settings.gstRegistered,
           gstRateBasisPoints: settings.gstRateBasisPoints, current: undefined,
           nowMillis: now, actorUid,
-          autoSendAtMillis: autoSendAtFor(item.reviewedCycles, now),
+          autoSendAtMillis: autoSendAtFor(item.reviewedCycles, now)};
+        let bill = cycleBill({...billInput,
           // A prepaid bill is already paid; credit waits for the next one.
           credit: usesPrepaid ? undefined : refundCreditSources({
             billId: billRef.id, periodStartMillis: cycle.startMillis,
             bills: billsSnap.docs.map((doc) => doc.data() as Bill), payments,
             terms: item.terms, nowMillis: now})});
+        // A host referral reward makes the next bill with something to
+        // bill free (never a prepaid one), oldest reward first. The bill is
+        // made without refund credit, so the credit waits for the next.
+        const reward = bill?.status === "toSend" && !usesPrepaid ?
+          nextEarnedReward(referralsSnap.docs.map((doc) =>
+            doc.data() as OrganizerReferral)) : null;
+        if (reward) {
+          bill = cycleBill({...billInput, referralReward: reward});
+        }
         let credit: () => unknown = () => null;
+        let earned: () => unknown = () => null;
         if (bill && prepaid && usesPrepaid && storedPlan) {
           // The purchase paid for this cycle at the fee it was bought at;
           // GST switched on since is not charged on top.
@@ -391,6 +433,7 @@ export async function generateCycleBills(deps: CycleBillDeps,
                 note: "Prepaid by the tools-only purchase"}]
               .slice(-historyLimit)});
           credit = await prepareNominatorCredit(db, tx, bill, now);
+          earned = await prepareReferralReward(db, tx, bill, now);
           tx.set(planRef, {...storedPlan, prepaidBillId: bill.billId,
             revision: storedPlan.revision + 1, updatedAtMillis: now,
             history: [...storedPlan.history, {atMillis: now,
@@ -398,7 +441,13 @@ export async function generateCycleBills(deps: CycleBillDeps,
               .slice(-historyLimit)});
         }
         if (bill) tx.set(billRef, bill);
+        if (reward && bill?.referralReward) {
+          tx.set(db.collection(organizerReferralsCollection)
+            .doc(reward.referredOrganizerId),
+          referralWithReward(reward, bill.billId, now));
+        }
         credit();
+        earned();
         tx.set(pointerRef, checkedPointer({...pointer,
           nextCycleNumber: cycle.cycleNumber + 1,
           nextCycleStartMillis: cycle.endMillis,
@@ -464,6 +513,13 @@ export async function regenerateToSendCycleBills(deps: CycleBillDeps,
       const current = currentSnap.data() as Bill | undefined;
       if (!current || !["toSend", "free"].includes(current.status) ||
           current.revision !== stale.revision) return false;
+      // A free month from a host referral stays free while there is
+      // something to waive, and is given back when there is not.
+      const rewardRef = current.referralReward ?
+        db.collection(organizerReferralsCollection)
+          .doc(current.referralReward.referredOrganizerId) : null;
+      const referral = rewardRef ? (await tx.get(rewardRef)).data() as
+        OrganizerReferral | undefined : undefined;
       const payments = byOrganizer.get(stale.organizerId) ?? [];
       const bill = cycleBill({work: {organizerId: stale.organizerId, terms,
         platformRevision: stored.platform!.revision,
@@ -474,12 +530,20 @@ export async function regenerateToSendCycleBills(deps: CycleBillDeps,
       organizerName: current.organizerName,
       gstRegistered: settings.gstRegistered,
       gstRateBasisPoints: settings.gstRateBasisPoints, current, nowMillis: now,
-      actorUid, credit: refundCreditSources({billId: current.billId,
-        periodStartMillis: current.periodStartMillis,
-        bills: billsSnap.docs.map((doc) => doc.data() as Bill), payments,
-        terms, nowMillis: now})});
+      actorUid,
+      ...(current.referralReward ? {referralReward: referral ?? {
+        referredOrganizerId: current.referralReward.referredOrganizerId,
+        referredOrganizerName: ""}} :
+        {credit: refundCreditSources({billId: current.billId,
+          periodStartMillis: current.periodStartMillis,
+          bills: billsSnap.docs.map((doc) => doc.data() as Bill), payments,
+          terms, nowMillis: now})})});
       if (!bill) return false;
       tx.set(ref, bill);
+      if (rewardRef && referral && !bill.referralReward &&
+          referral.reward.appliedBillId === bill.billId) {
+        tx.set(rewardRef, referralWithReward(referral, null, now));
+      }
       return true;
     });
     if (wrote) written++;

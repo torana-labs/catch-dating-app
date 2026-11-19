@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_referrals.schema.json",
+  "title": "OrganizerReferralDocument",
+  "description": "One host-to-host referral, at organizerReferrals/{referredOrganizerId} (owner decision, 19 Nov 2026). Created once, when a referred organizer has an owner and its trial has not started, from the earliest website referral lead linked to it (salesInboundIntents leadKind referral, status linked, lead.referralCredit naming a signed-in referrer) whose referrer owns an organizer and is not the referred host itself (same owner or manager account, or the same phone number). Keyed by the referred organizer, so a referred organizer has at most one referrer and every write is idempotent. The same transaction raises the referred organizer's commercial terms override trial.days to at least trialDays (never lowering a longer trial). When the referred organizer's first bill is paid, in the transaction that marks it paid, the reward moves from pending to earned; the referrer's next cycle bill that has something to bill is then made free and the reward moves to applied. No cash is paid. Direct client access is denied.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerReferrals",
+  "x-firestore-path": "organizerReferrals/{referredOrganizerId}",
+  "x-document-id-field": "referredOrganizerId",
+  "x-owner": "Functions host referrals (functions/src/money/organizerReferrals.ts)",
+  "required": ["schemaVersion", "referredOrganizerId", "referredOrganizerName", "referrerOrganizerId", "referrerUid",
+    "sourceIntentId", "recordedAtMillis", "attachedAtMillis", "source", "trialDays", "commercialTerms", "reward",
+    "updatedAtMillis"],
+  "definitions": {
+    "millis": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "nullableMillis": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991}
+  },
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "trigger-owned"},
+    "referredOrganizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "trigger-owned"},
+    "referredOrganizerName": {"type": "string", "maxLength": 160, "description": "The referred organizer's name when the referral attached, for the referrer's free bill note.", "x-catch-ownership": "trigger-owned"},
+    "referrerOrganizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "description": "The organizer whose bill the reward makes free: the referrer's oldest live organizer when the referral attached.", "x-catch-ownership": "trigger-owned"},
+    "referrerUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "description": "The signed-in account the referral lead recorded (lead.referralCredit.referrerUid); it owned referrerOrganizerId when the referral attached.", "x-catch-ownership": "trigger-owned"},
+    "sourceIntentId": {"type": "string", "minLength": 1, "maxLength": 128, "description": "The salesInboundIntents referral lead the referral came from.", "x-catch-ownership": "trigger-owned"},
+    "recordedAtMillis": {"$ref": "#/definitions/millis", "description": "When the referral lead was recorded; before the referred organizer's trial started.", "x-catch-ownership": "trigger-owned"},
+    "attachedAtMillis": {"$ref": "#/definitions/millis", "x-catch-ownership": "trigger-owned"},
+    "source": {"enum": ["ownershipTrigger", "dailyReconcile"], "description": "ownershipTrigger: the organizer gained an owner (claim approved or created by its owner). dailyReconcile: the daily bill run found a recent claim or a recently linked referral lead.", "x-catch-ownership": "trigger-owned"},
+    "trialDays": {"type": "integer", "minimum": 1, "maximum": 366, "description": "The free days a referred host gets at least (60).", "x-catch-ownership": "trigger-owned"},
+    "commercialTerms": {
+      "description": "The commercial terms revision that raised the referred organizer's trial, or null when its effective trial was already at least trialDays (a founding host keeps 90) and nothing was written.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["termsId", "revision", "previousTrialDays"],
+          "properties": {
+            "termsId": {"type": "string", "pattern": "^org_[a-f0-9]{64}$"},
+            "revision": {"type": "integer", "minimum": 1},
+            "previousTrialDays": {"type": ["integer", "null"], "minimum": 0, "maximum": 366, "description": "The override's trial.days before the referral; null when the override did not set one."}
+          }
+        },
+        {"type": "null"}
+      ],
+      "x-catch-ownership": "trigger-owned"
+    },
+    "reward": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The referrer's free month. pending until the referred organizer's first bill is paid; earned in the transaction that marks that bill paid; applied when the referrer's next cycle bill with something to bill is made free. Rewards stack, one per referred organizer, applied oldest earned first, one per bill.",
+      "required": ["status", "earnedAtMillis", "earnedByBillId", "appliedAtMillis", "appliedBillId"],
+      "properties": {
+        "status": {"enum": ["pending", "earned", "applied"]},
+        "earnedAtMillis": {"$ref": "#/definitions/nullableMillis"},
+        "earnedByBillId": {"type": ["string", "null"], "maxLength": 200, "description": "The referred organizer's first paid bill."},
+        "appliedAtMillis": {"$ref": "#/definitions/nullableMillis"},
+        "appliedBillId": {"type": ["string", "null"], "maxLength": 200, "description": "The referrer's free bill (its referralReward names this referral)."}
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "updatedAtMillis": {"$ref": "#/definitions/millis", "x-catch-ownership": "trigger-owned"}
+  }
+}
