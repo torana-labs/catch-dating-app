@@ -150,13 +150,13 @@ describe("playbook page indexes", () => {
     expect(page.meta.noindex).toBe(true);
   });
 
-  it("indexes only the pages the owner approved for search (18 Nov 2026); /pricing/, The room and Running the event are not ready yet", async () => {
+  it("indexes only the pages the owner approved for search (18 and 19 Nov 2026); /pricing/ is not ready yet", async () => {
     expect((await approvedPlaybookPaths()).sort()).toEqual([
       "/host/brands/", "/host/colleges/", "/host/communities/", "/host/creators/", "/host/demo/", "/host/facilities/",
       "/host/nightlife/", "/host/outdoors/", "/host/quiz-nights/", "/host/racket-sports/", "/host/studios/",
       "/host/supper-clubs/", "/host/teams/", "/host/venues/", "/host/workshops/", "/how-it-works/",
       "/product/bookings-and-memberships/", "/product/forms/", "/product/guest-records/", "/product/messages-and-growth/",
-      "/product/reports-and-payouts/", "/product/your-page/", "/safety/",
+      "/product/reports-and-payouts/", "/product/running-the-event/", "/product/the-room/", "/product/your-page/", "/safety/",
     ]);
   });
 
@@ -215,11 +215,11 @@ describe("playbook page indexes", () => {
     }
   });
 
-  it("keeps the two new product pages out of search until the owner approves them", async () => {
+  it("indexes The room and Running the event (owner approved, 19 Nov 2026)", async () => {
     for (const path of ["/product/the-room/", "/product/running-the-event/"]) {
       const page = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
       expect(page, path).not.toBeNull();
-      expect(page.meta.noindex, path).toBe(true);
+      expect(page.meta.noindex, path).toBe(false);
     }
   });
 
