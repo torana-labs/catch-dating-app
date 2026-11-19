@@ -1220,7 +1220,16 @@ every `enabled` field and the public projection read it, and IDs are never
 returned publicly. Its exclusion lists keep canonical social, singles/mixer and
 unknown event classifications out. Only a reviewed new version citing the
 owner's policy sign-off, together with the public response contract, can widen
-it. Saving an ID
+it. The same public read answers `profileTagsEligible` for an organiser page read
+(`eventId` null): whether Catch's own tags may run on that profile (owner
+decision, 19 Nov 2026, #2063). `organizerProfileClassification.ts` reads the
+organiser's native and external events by owner (at most 200 each; more fails
+closed) and classifies the profile: eligible only with at least one published,
+active native event, every such event canonically classified, none in the
+policy version's excluded classes and, while the policy's
+`externalListingsCountAsUnknown` holds, no public external listing. The answer
+is a boolean, never the class, because public pages do not reveal dating
+classification. Event reads always answer false. Saving an ID
 does not constitute connecting a provider or permission to transmit advertising
 activity. These exports do not establish deployment or production enablement.
 
