@@ -35,6 +35,7 @@ HostEventPlanState hostEventPlanController(Ref ref, HostEventRequest request) {
       eventTitle: event.title,
     );
   }
+  final draft = plan.hostDraft.normalizeForFormat(event.eventFormat);
   final runOfShow = EventSuccessRuntime(
     plan: plan,
     event: event,
@@ -64,6 +65,12 @@ HostEventPlanState hostEventPlanController(Ref ref, HostEventRequest request) {
         plan.status == EventSuccessPlanStatus.setup && plan.frozenAt == null,
     stepsEditable: plan.status != EventSuccessPlanStatus.complete,
     liveControlRevision: plan.liveControlRevision,
+    readinessIssues: List.unmodifiable(draft.readinessIssues),
+    capacityMin: draft.playbook.capacity.min,
+    capacityMax: draft.playbook.capacity.max,
+    targetAttendees: plan.targetAttendeeCount,
+    layoutId: plan.layoutId,
+    organizerId: event.organizerId,
   );
 }
 

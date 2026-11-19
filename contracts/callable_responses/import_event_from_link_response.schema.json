@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/import_event_from_link_response.schema.json",
+  "title": "ImportEventFromLinkCallableResponse",
+  "description": "Response of event.import-from-link. running: the link is being read; preview again with the same idempotency key after result.pollAfterMs. needs_input: the caller must act first (result.reasons: no_workspace, or choose_event with result.events to choose from). previewed: result.proposal is the private draft event apply would create. refused: nothing can be drafted (result.reasons). applied or replayed: result.eventId names the private draft event in the workspace. Nothing here publishes, takes bookings or messages anyone.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["commandId", "status", "previewHash", "summary", "effects", "result", "next", "receiptId"],
+  "properties": {
+    "commandId": {"const": "event.import-from-link"},
+    "status": {"type": "string", "enum": ["previewed", "applied", "replayed", "running", "needs_input", "refused"]},
+    "previewHash": {"$ref": "../shared/command_envelope.schema.json#/definitions/previewHash"},
+    "summary": {"$ref": "../shared/command_envelope.schema.json#/definitions/summary"},
+    "effects": {"type": "array", "maxItems": 12, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/effect"}},
+    "next": {"type": "array", "maxItems": 8, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/next"}},
+    "receiptId": {"type": ["string", "null"], "pattern": "^[a-z][A-Za-z0-9]{0,63}_[a-f0-9]{64}$"},
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organizerId", "runId", "link", "events", "proposal", "eventId", "reasons", "pollAfterMs"],
+      "properties": {
+        "organizerId": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9]{20}$"},
+        "runId": {"type": ["string", "null"], "pattern": "^tryit-[a-f0-9]{40}$"},
+        "link": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provider", "support", "reason"],
+          "properties": {
+            "provider": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]{0,59}$"},
+            "support": {"type": "string", "enum": ["instant", "best_effort", "staff_follow_up"]},
+            "reason": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]{0,79}$"}
+          }
+        },
+        "events": {
+          "description": "The upcoming events the page lists, earliest first.",
+          "type": "array", "maxItems": 10, "items": {
+            "type": "object", "additionalProperties": false, "required": ["eventKey", "title", "startAt", "venue"],
+            "properties": {
+              "eventKey": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$"},
+              "title": {"type": ["string", "null"], "maxLength": 300},
+              "startAt": {"type": "string", "maxLength": 40},
+              "venue": {"type": ["string", "null"], "maxLength": 300}}}
+        },
+        "proposal": {
+          "anyOf": [{"type": "null"}, {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["eventKey", "name", "localDate", "localStartTime", "timezone", "cityId", "marketId", "venue", "sourceUrl"],
+            "properties": {
+              "eventKey": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$"},
+              "name": {"type": "string", "minLength": 1, "maxLength": 120},
+              "localDate": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+              "localStartTime": {"type": "string", "pattern": "^\\d{2}:\\d{2}$"},
+              "timezone": {"type": "string", "minLength": 1, "maxLength": 64},
+              "cityId": {"type": "string", "minLength": 1, "maxLength": 120},
+              "marketId": {"type": "string", "minLength": 1, "maxLength": 120},
+              "venue": {"type": ["string", "null"], "maxLength": 300, "description": "Shown for reference; the draft keeps no venue until the host sets one in Details."},
+              "sourceUrl": {"type": "string", "maxLength": 2000}
+            }
+          }]
+        },
+        "eventId": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"},
+        "reasons": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,79}$"}},
+        "pollAfterMs": {"type": ["integer", "null"], "minimum": 500, "maximum": 60000}
+      }
+    }
+  }
+}

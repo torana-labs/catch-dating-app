@@ -82,7 +82,7 @@ void main() {
       await tester.pump();
       await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
       final input = tester.getSemantics(find.byType(TextField));
-      expect(input.label, 'Add arrival date, optional');
+      expect(input.label, 'Arrival date, optional');
       expect(input.flagsCollection.isTextField, isTrue);
       expect(input.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
       tester.binding.renderViews.single.owner!.semanticsOwner!.performAction(
@@ -380,7 +380,7 @@ void main() {
   }
 
   testWidgets(
-    'empty optional input exposes one Add semantic and restores its field label on focus',
+    'empty optional input announces its label and optional state once',
     (tester) async {
       final semantics = tester.ensureSemantics();
       final controller = TextEditingController();
@@ -405,17 +405,21 @@ void main() {
 
       expect(
         tester.getSemantics(find.byType(TextField)).label,
-        'Add job title, optional',
+        'Job title, optional',
       );
-      expect(find.bySemanticsLabel('Add job title, optional'), findsOneWidget);
+      expect(find.bySemanticsLabel('Job title, optional'), findsOneWidget);
+      expect(find.bySemanticsLabel('Add job title, optional'), findsNothing);
 
       await tester.tap(find.byType(TextField));
       await tester.pump();
       await tester.pump(CatchMotion.fast);
 
       expect(focusNode.hasFocus, isTrue);
-      expect(tester.getSemantics(find.byType(TextField)).label, 'Job title');
-      expect(find.bySemanticsLabel('Add job title, optional'), findsNothing);
+      expect(
+        tester.getSemantics(find.byType(TextField)).label,
+        'Job title, optional',
+      );
+      expect(find.bySemanticsLabel('Job title, optional'), findsOneWidget);
       semantics.dispose();
     },
   );

@@ -180,6 +180,16 @@ function assertCanUpdateOrganizer(
         "Add an organizer name, description, city, and area before publishing."
       );
     }
+    // A page filled from a third party's public page stays unpublished
+    // until its owner proves an identity that page named (owner decision,
+    // 18 Nov 2026; importVerification in identityVerification/purposes.ts).
+    if (organizer.importProvenance?.verification === "unverified") {
+      throw new HttpsError(
+        "failed-precondition",
+        "Verify the Instagram or Luma page you imported before publishing.",
+        {reason: "import_verification_required"}
+      );
+    }
   }
   if (isOrganizerOwner(organizer, actorUid)) return organizer;
   if (

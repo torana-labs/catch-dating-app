@@ -812,7 +812,7 @@ void main() {
   });
 
   testWidgets(
-    'CatchField hides an input-only leading unit until empty Add receives focus',
+    'CatchField shows an input-only leading unit inside the empty box',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
@@ -829,8 +829,14 @@ void main() {
       );
 
       final inputElement = tester.element(find.byType(TextField));
-      expect(find.text('Add instagram'), findsOneWidget);
-      expect(find.text('@'), findsNothing);
+      final box = find.byKey(const ValueKey('catch-field-input-box'));
+      expect(find.text('Add instagram'), findsNothing);
+      expect(find.text('Instagram'), findsOneWidget);
+      expect(
+        find.descendant(of: box, matching: find.text('@')),
+        findsOneWidget,
+      );
+      expect(find.text('handle'), findsOneWidget);
 
       await tester.tap(find.byType(TextField));
       await tester.pump();

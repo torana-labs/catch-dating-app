@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_promotion_kit_response.schema.json",
+  "title": "CreatePromotionKitCallableResponse",
+  "description": "Response of promotion.create-kit. previewed: result.links lists what apply would create, without addresses. refused: the kit cannot be made as asked (result.reasons). applied or replayed: result.links carries each link's address to share or print as a QR code. Nothing is sent to anyone.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["commandId", "status", "previewHash", "summary", "effects", "result", "next", "receiptId"],
+  "properties": {
+    "commandId": {"const": "promotion.create-kit"},
+    "status": {"type": "string", "enum": ["previewed", "applied", "replayed", "refused"]},
+    "previewHash": {"$ref": "../shared/command_envelope.schema.json#/definitions/previewHash"},
+    "summary": {"$ref": "../shared/command_envelope.schema.json#/definitions/summary"},
+    "effects": {"type": "array", "maxItems": 12, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/effect"}},
+    "next": {"type": "array", "maxItems": 8, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/next"}},
+    "receiptId": {"type": ["string", "null"], "pattern": "^[a-z][A-Za-z0-9]{0,63}_[a-f0-9]{64}$"},
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventId", "organizerId", "campaignId", "links", "reasons"],
+      "properties": {
+        "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "organizerId": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
+        "campaignId": {"type": "string", "pattern": "^kit_[a-f0-9]{24}$", "description": "Groups this kit's links in attribution reports."},
+        "links": {
+          "type": "array", "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "source", "kind", "inviteLinkId", "url"],
+            "properties": {
+              "label": {"type": "string", "minLength": 1, "maxLength": 80},
+              "source": {"type": ["string", "null"], "maxLength": 80},
+              "kind": {"type": "string", "enum": ["channel", "promoter"]},
+              "inviteLinkId": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
+              "url": {"type": ["string", "null"], "maxLength": 400, "description": "The address to share. Null on a preview."}
+            }
+          }
+        },
+        "reasons": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,79}$"}}
+      }
+    }
+  }
+}

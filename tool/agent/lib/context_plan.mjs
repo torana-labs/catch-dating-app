@@ -180,7 +180,7 @@ export function resolveCheckPlan({manifest, requestedChecks}) {
       entrypoint: tool.path,
       repositoryView: tool.ciRequirements?.repositoryView ?? "full",
       setup: [...(tool.ciRequirements?.setup ?? [])],
-      safety: tool.safety ?? null,
+      surface: tool.surface ?? null,
       run: `node tool/run.mjs check ${id}`,
     });
   }

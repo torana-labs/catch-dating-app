@@ -2,6 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_content_section.dart';
 import 'package:catch_ui/src/components/catch_field.dart';
 import 'package:catch_ui/src/components/catch_field_activity_notification.dart';
+import 'package:catch_ui/src/components/catch_field_divider_geometry.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
@@ -114,6 +115,13 @@ class _CatchRowSectionState extends State<CatchRowSection> {
     );
   }
 
+  // A row that draws its own boundary needs no separator on either side.
+  static bool _suppressesDividers(Widget? entry) => switch (entry) {
+    CatchFieldDividerGeometry(:final suppressesFieldDividers) =>
+      suppressesFieldDividers,
+    _ => false,
+  };
+
   bool _isActive(int index) {
     if (index >= widget.itemCount) return false;
     final children = widget.children;
@@ -168,7 +176,9 @@ class _CatchRowSectionState extends State<CatchRowSection> {
                   ? CatchSkeleton.content(child: entry)
                   : entry,
             ),
-            if (index < widget.itemCount - 1)
+            if (index < widget.itemCount - 1 &&
+                !_suppressesDividers(entry) &&
+                !_suppressesDividers(widget.children?[index + 1]))
               PositionedDirectional(
                 start:
                     gutter +

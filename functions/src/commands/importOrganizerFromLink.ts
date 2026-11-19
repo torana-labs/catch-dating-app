@@ -1,16 +1,11 @@
 /* eslint-disable max-len */
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {logger} from "firebase-functions";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {listingSuppressionHmacKey} from "../listingSuppressions/registry";
-import {clientAddress} from "../instantDrafts/request";
-import {limiterKey} from "../instantDrafts/model";
 import {InvalidDraftLink, parseDraftLink, type DraftLinkClassification} from "../instantDrafts/links";
-import {createSupplyIntakeRequest, intakeMarket, supplyIntakeRequestId,
-  type SupplyIntakeTryItImport} from "../operations/supplyIntake/requests";
 import {supplyIntakeCollections} from "../operations/supplyIntake/worker";
 import type {ImportOrganizerFromLinkCallablePayload} from
   "../shared/generated/importOrganizerFromLinkCallablePayload";
@@ -30,6 +25,7 @@ import {
 } from "./envelope";
 import {classifyOrganizerLink, instagramHandle} from "./organizerLinks";
 import {readTryItWorkspace, stageTryItWorkspace, type WorkspaceLookup} from "./workspace";
+import {assertSameTryItRead, readTryItEvents, readTryItLink, tryItReadRequestId} from "./linkRead";
 
 // Command organizer.import-from-link (contracts/commands/catalog.json; #2060).
 // A phone-verified visitor with a try-it workspace sends one public link. The
@@ -47,7 +43,9 @@ import {readTryItWorkspace, stageTryItWorkspace, type WorkspaceLookup} from "./w
 export const COMMAND_ID = "organizer.import-from-link";
 const POLL_MS = 2_000;
 const HOUR_MS = 60 * 60 * 1000;
-const DAY_MS = 24 * HOUR_MS;
+// The read budgets keep the limiter names they had before the reader moved.
+const READ_LIMITS = {phone: "importOrganizerFromLinkRead", address: "importOrganizerFromLinkAddress",
+  daily: "importOrganizerFromLinkDaily"};
 const PREVIEW_EVENTS = 10;
 const MAX_SOURCES = 8;
 const MAX_TAGS = 12;
@@ -98,7 +96,7 @@ export async function importOrganizerFromLinkHandler(request: CallableRequest<un
   const commandKey = commandReceiptKey(caller.uid, data.idempotencyKey);
   const ctx: Context = {uid: caller.uid, input: {link: url.href, useImportedName: data.input.useImportedName === true},
     link: classifyOrganizerLink(url), host: url.hostname.replace(/^www\./u, ""), commandKey,
-    requestId: supplyIntakeRequestId("tryit", [commandKey])};
+    requestId: tryItReadRequestId([commandKey])};
   const db = deps.firestore();
   // Previews poll every two seconds while a page is read.
   await deps.checkRateLimit(db, caller.uid, "importOrganizerFromLink", {maxRequests: 900, windowMs: HOUR_MS});
@@ -110,20 +108,14 @@ export async function importOrganizerFromLinkHandler(request: CallableRequest<un
   const organizerId = workspaceOrganizerId(lookup);
   if (ctx.link.support === "staff_follow_up") return respond(ctx, "refused", {organizerId, reasons: [ctx.link.reason ?? "link_not_supported"]});
 
-  const ref = db.collection(supplyIntakeCollections.requests).doc(ctx.requestId);
-  let snap = await ref.get();
-  if (!snap.exists) {
-    await deps.checkRateLimit(db, limiterKey("phone", caller.phone), "importOrganizerFromLinkRead", {maxRequests: 10, windowMs: HOUR_MS});
-    await deps.checkRateLimit(db, limiterKey("ip", clientAddress(request)), "importOrganizerFromLinkAddress", {maxRequests: 30, windowMs: HOUR_MS});
-    await deps.checkRateLimit(db, "try-it-imports", "importOrganizerFromLinkDaily", {maxRequests: 100, windowMs: DAY_MS});
-    const created = await startRead(db, deps, ctx, lookup, data.surface);
-    if (created === "suppressed") return respond(ctx, "refused", {organizerId, reasons: ["listing_suppressed"]});
-    snap = await ref.get();
-  }
-  const stored = snap.data() ?? {};
-  assertSameImport(stored, ctx);
-  if (stored.status === "queued" || stored.status === "running") return respond(ctx, "running", {organizerId});
-  if (stored.status !== "completed") return respond(ctx, "refused", {organizerId, reasons: ["link_unreadable"]});
+  const organizer = lookup.organizer;
+  const read = await readTryItLink(db, deps, request, {uid: caller.uid, phone: caller.phone,
+    commandKey: ctx.commandKey, requestId: ctx.requestId, link: {url: ctx.input.link, classification: ctx.link},
+    organizerId, organizerMarketId: typeof organizer.locationMarketId === "string" ? organizer.locationMarketId : null,
+    surface: data.surface, limits: READ_LIMITS});
+  if (read.state === "running") return respond(ctx, "running", {organizerId});
+  if (read.state === "refused") return respond(ctx, "refused", {organizerId, reasons: [read.reason]});
+  const stored = read.stored;
 
   const [listing, organizerSnap] = await Promise.all([readListing(db, stored), db.collection("organizers").doc(organizerId).get()]);
   if (!listing) return respond(ctx, "refused", {organizerId, reasons: ["link_unreadable"]});
@@ -137,28 +129,6 @@ export async function importOrganizerFromLinkHandler(request: CallableRequest<un
 
 export const importOrganizerFromLink = onCall(appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey],
   {maxInstances: 10}), (request) => importOrganizerFromLinkHandler(request));
-
-/** Writes the Supply Intake request that reads the link; the worker starts at once. */
-async function startRead(db: FirebaseFirestore.Firestore, deps: ImportOrganizerFromLinkDeps, ctx: Context,
-  lookup: WorkspaceLookup, surface: string): Promise<"created" | "suppressed"> {
-  const organizerId = workspaceOrganizerId(lookup);
-  const organizer = lookup.kind === "new" ? {} : lookup.organizer;
-  const now = deps.now();
-  const tryItImport: SupplyIntakeTryItImport = {schemaVersion: 1, uid: ctx.uid, organizerId, commandKey: ctx.commandKey,
-    link: {url: ctx.input.link, provider: ctx.link.provider, support: ctx.link.support, reason: ctx.link.reason}, appliedAt: null};
-  const result = await db.runTransaction((tx) => createSupplyIntakeRequest(tx, db, {
-    schemaVersion: 1, requestId: ctx.requestId, kind: "self_submission",
-    market: intakeMarket(typeof organizer.locationMarketId === "string" ? organizer.locationMarketId : null),
-    seed: {name: null, urls: [ctx.input.link], notes: null, categories: []},
-    submittedBy: {role: "organizer", uid: null, partnerId: null},
-    submittedAt: now.toISOString(),
-    origin: {kind: "try_it_import", id: ctx.commandKey},
-  }, now, {tryItImport}));
-  // The link and the account stay out of logs.
-  logger.info("Try-it import requested.", {requestId: ctx.requestId, provider: ctx.link.provider,
-    support: ctx.link.support, surface, created: result.created});
-  return result.suppressed ? "suppressed" : "created";
-}
 
 /** Apply: recompute the preview in a transaction, refuse a changed one, write the reviewed fields. */
 async function apply(db: FirebaseFirestore.Firestore, deps: ImportOrganizerFromLinkDeps, ctx: Context,
@@ -179,7 +149,7 @@ async function apply(db: FirebaseFirestore.Firestore, deps: ImportOrganizerFromL
     if (!stored || stored.status !== "completed") {
       throw new HttpsError("failed-precondition", "Preview this link until it is read, then apply.", {reason: "not_ready"});
     }
-    assertSameImport(stored, ctx);
+    assertSameTryItRead(stored, ctx.uid, ctx.input.link);
     if (record(stored.tryItImport)?.organizerId !== organizerId) {
       throw new HttpsError("failed-precondition", "This link was read for a different profile. Start again.", {reason: "workspace_changed"});
     }
@@ -251,16 +221,8 @@ async function proposalFor(db: FirebaseFirestore.Firestore, stored: Data, listin
   ctx: Context, tx?: FirebaseFirestore.Transaction): Promise<Proposal> {
   const result = record(stored.result);
   const eventIds = strings(result?.eventWorkItemIds).slice(0, PREVIEW_EVENTS);
-  const snaps = await Promise.all(eventIds.map((id) => {
-    const ref = db.collection("operationWorkItems").doc(id);
-    return tx ? tx.get(ref) : ref.get();
-  }));
-  const events = snaps.flatMap((snap) => {
-    const event = record(record(record(record(snap.data())?.normalizedPayload)?.intake)?.event);
-    return event && typeof event.startAt === "string" && typeof event.sourceUrl === "string" ? [{
-      title: text(event.title, 300), startAt: event.startAt.slice(0, 40), endAt: text(event.endAt, 40),
-      venue: text(event.venue, 300), sourceUrl: event.sourceUrl.slice(0, 2000)}] : [];
-  }).sort((left, right) => left.startAt.localeCompare(right.startAt));
+  const events = (await readTryItEvents(db, stored, PREVIEW_EVENTS, tx)).map((event) => ({
+    title: event.title, startAt: event.startAt, endAt: event.endAt, venue: event.venue, sourceUrl: event.sourceUrl}));
   const currentName = typeof organizer.name === "string" ? organizer.name : null;
   const handle = listing.links.map((link) => instagramHandle(link.url)).find((value) => value !== null) ?? null;
   return {
@@ -337,14 +299,6 @@ function previewHashFor(ctx: Context, listing: Listing, organizer: Data, match: 
     organizer: {name: organizer.name ?? null, description: organizer.description ?? null,
       instagramHandle: organizer.instagramHandle ?? null, tags: organizer.tags ?? null},
     match: match ? match.verdict : null});
-}
-
-/** A retried key must name the same caller and link it started with. */
-function assertSameImport(stored: Data, ctx: Context): void {
-  const state = record(stored.tryItImport);
-  if (!state || state.uid !== ctx.uid || record(state.link)?.url !== ctx.input.link) {
-    throw new HttpsError("already-exists", "This request changed. Start again with a new request.", {reason: "idempotency_key_reused"});
-  }
 }
 
 function workspaceOrganizerId(lookup: WorkspaceLookup): string {

@@ -579,9 +579,9 @@ void main() {
       ),
     );
 
-    expect(find.text('Event title'), findsNothing);
-    expect(find.text('Add event title'), findsOneWidget);
-    expect(find.text('Short and memorable'), findsNothing);
+    expect(find.text('Event title'), findsOneWidget);
+    expect(find.text('Add event title'), findsNothing);
+    expect(find.text('Short and memorable'), findsOneWidget);
     expect(find.text('Shows on event cards'), findsOneWidget);
 
     await tester.tap(find.byType(TextField));

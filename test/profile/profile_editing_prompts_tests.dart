@@ -657,8 +657,19 @@ void _registerProfileEditingPromptsTests() {
       promptSurfaceDecoration().border,
       Border.all(color: CatchTokens.editorialLight.line2),
     );
-    expect(highlightedPromptFields(), 1);
-    expectPromptEdgesShareGeometry();
+    // The always-editable answer is an outlined box: focus darkens its own
+    // border instead of painting a row band across the card.
+    expect(highlightedPromptFields(), 0);
+    final answerBox = tester.widget<AnimatedContainer>(
+      find.descendant(
+        of: answer,
+        matching: find.byKey(const ValueKey('catch-field-input-box')),
+      ),
+    );
+    expect(
+      ((answerBox.decoration! as BoxDecoration).border! as Border).top.color,
+      CatchTokens.editorialLight.ink,
+    );
     expect(find.byKey(const ValueKey('catch-field-cancel')), findsNothing);
     expect(find.byKey(const ValueKey('catch-field-done')), findsNothing);
     expect(_promptAnswerEditableText(0), findsOneWidget);

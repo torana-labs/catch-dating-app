@@ -38,6 +38,7 @@ class PeoplePersonRow extends StatelessWidget {
       ),
       badge: peoplePersonBadge(l10n, contact.segments),
       density: CatchIndexRowSize.compact,
+      chevron: onTap != null,
       selected: selected,
       onTap: onTap,
     );

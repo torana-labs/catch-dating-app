@@ -20,6 +20,7 @@ part 'catch_field_adapters.dart';
 part 'catch_field_control.dart';
 part 'catch_field_edit.dart';
 part 'catch_field_input.dart';
+part 'catch_field_input_configuration.dart';
 part 'catch_field_layout.dart';
 part 'catch_field_properties.dart';
 part 'catch_field_row_modes.dart';

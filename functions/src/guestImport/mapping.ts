@@ -130,3 +130,71 @@ export function rosterStatus(value: string | null): GuestStatus {
   }
   return "registered";
 }
+
+/** Columns the review stage reads beyond the canonical row. */
+export interface GuestExtraMapping {
+  city: number | null;
+  revenueAmount: number | null;
+  revenueCurrency: number | null;
+}
+
+const cityAliases: ReadonlySet<string> = new Set([
+  "city", "guestcity", "attendeecity", "residencecity",
+]);
+const revenueAmountAliases: ReadonlySet<string> = new Set([
+  "amount", "amountpaid", "paidamount", "ordertotal", "ticketprice",
+  "ticketamount", "revenue", "grossrevenue",
+]);
+const revenueCurrencyAliases: ReadonlySet<string> = new Set([
+  "currency", "currencycode", "paymentcurrency",
+]);
+
+/** The same aliases Catch Host's file reader uses for these columns. */
+export function suggestExtraMapping(headers: string[]): GuestExtraMapping {
+  return {
+    city: findHeader(headers, cityAliases),
+    revenueAmount: findHeader(headers, revenueAmountAliases),
+    revenueCurrency: findHeader(headers, revenueCurrencyAliases),
+  };
+}
+
+/**
+ * Reads "₹1,499.50" or "1499" as minor units (149950, 149900); null when
+ * the cell is not an amount.
+ * @return {number|null} Minor units.
+ */
+export function parseRevenueAmountMinor(value: string): number | null {
+  const normalized = value.trim().replace(/,/gu, "");
+  const match = /^(?:[^0-9-]*)?([0-9]+)(?:\.([0-9]{1,2}))?$/u.exec(normalized);
+  if (!match) return null;
+  const whole = Number(match[1]);
+  const fraction = Number((match[2] ?? "").padEnd(2, "0"));
+  const minor = whole * 100 + fraction;
+  return Number.isSafeInteger(minor) ? minor : null;
+}
+
+/**
+ * The review stage's reading of a status cell, as Catch Host's reader has
+ * it: cancelled, refunded or declined guests are left out; a word it does
+ * not know needs a look.
+ * @return {GuestStatus|"excluded"|"unknown"} The status or disposition.
+ */
+export function reviewStatus(value: string | null):
+  GuestStatus | "excluded" | "unknown" {
+  const normalized = normalizeHeader(value ?? "");
+  if (["waitlist", "waitlisted", "waiting"].includes(normalized)) {
+    return "waitlisted";
+  }
+  if (["invited", "invite", "pending"].includes(normalized)) {
+    return "invited";
+  }
+  if (["cancelled", "canceled", "refunded", "declined", "rejected",
+    "notgoing", "noshow", "void", "voided"].includes(normalized)) {
+    return "excluded";
+  }
+  if (["", "registered", "confirmed", "approved", "accepted", "attending",
+    "going", "booked", "checkedin"].includes(normalized)) {
+    return "registered";
+  }
+  return "unknown";
+}

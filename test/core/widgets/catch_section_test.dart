@@ -1097,11 +1097,11 @@ void main() {
             width: 360,
             child: CatchSectionSurface.fieldRows(
               padding: EdgeInsets.zero,
-              child: CatchField.input(
+              child: CatchField.read(
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Answer',
-                initialValue: 'The child owns this focus ring.',
-                states: const <WidgetState>{WidgetState.focused},
+                body: 'The child owns this active band.',
+                states: const <WidgetState>{WidgetState.selected},
               ),
             ),
           ),
