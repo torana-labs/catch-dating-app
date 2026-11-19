@@ -20,6 +20,7 @@ Clients today:
 | `src/argv.mjs` | Declared-flag parsing (unknown flags fail), exclusive pairs, `isMainModule` |
 | `src/envelope.mjs` | The `{schemaVersion, program, command, ok, data|error}` JSON envelope and process exit code |
 | `src/confirmation-policy.mjs` | What apply needs per command effect class; every client reads this one table |
+| `src/admin-catalog.mjs` | Reads the admin action catalog (the index plus `contracts/admin/actions/*.json`) as one document; `tool/lib/admin_registries.mjs` re-exports it and `catch-admin` compiles it with Ajv |
 | `src/errors.mjs` | `OperationsError`; `operations/src/platform/errors.mjs` re-exports it, so there is one error class |
 | `src/canonical-json.mjs` | Canonical JSON and SHA-256 hashing; `operations/src/platform/canonical-json.mjs` re-exports it |
 
