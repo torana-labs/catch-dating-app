@@ -668,9 +668,9 @@ for organizer managers. `resolved` and `declined` record the authenticated
 manager and timestamp and settle the request. `transferred` assigns a current
 organizer manager and keeps it open. A named recipient is not itself an
 access grant; the canonical organizer is re-read in the mutation transaction.
-Every command requires the reviewed source hash and case revision. Immutable
-`eventAssistanceCaseReceipts` make exact retries return their original operation
-revision with the latest case view; reused operation IDs with changed content
+Every command requires the reviewed source hash and case revision. Its
+`eventAssistanceCase` command receipt (in `commandReceipts`) makes exact retries
+return their original operation revision with the latest case view; reused operation IDs with changed content
 fail. Concurrent resolutions cannot overwrite one another.
 
 The Dart client represents current open, current settled, source-changed and
@@ -1275,9 +1275,9 @@ so replaying an old configure cannot undo a later pause. Event replacement,
 schedule or format changes require fresh review. Plan completion, cancellation
 or expiry withholds execution without manufacturing guest attendance.
 
-The private `eventAssistanceRuntimeConfigs` and
-`eventAssistanceRuntimeConfigReceipts` collections allow no client reads/writes;
-callables expose the manager projection. A configured response means permission
+The private `eventAssistanceRuntimeConfigs` collection allows no client
+reads/writes, and each save's replay receipt is an `eventAssistanceRuntimeConfig`
+entry in `commandReceipts`; callables expose the manager projection. A configured response means permission
 was saved, not that guests were enrolled or messages sent. The configuration
 transaction saves a durable roster scan; the background
 handlers remain dormant and Host controls remain integration work.
@@ -1429,7 +1429,8 @@ while the existing plan-change notice path can continue to own actual setup
 edits.
 
 `eventAssistanceGroupProgress` holds the current result per event/group;
-`eventAssistanceProgressReceipts` keeps immutable command deduplication evidence.
+`eventAssistanceDeparture` and `eventAssistanceRoute` entries in
+`commandReceipts` deduplicate the commands.
 An exact older retry returns its original operation revision and the latest
 view without repeating movement. Reusing its ID with changed content fails.
 Source changes preserve the old fact but withhold current joining guidance
@@ -1878,8 +1879,8 @@ A new assignment to previously revoked staff does not restore old duties.
 Each duty binds the event creation generation and saved group configuration.
 A changed or removed group withholds authority until reviewed, while routine
 attendance, schedule and progress updates preserve it. Stale duties remain
-visible to managers for removal. Immutable `eventAssistanceStaffReceipts` fence
-retries and concurrent changes. Group staff projections expose only the selected
+visible to managers for removal. `eventAssistanceStaff` command receipts (in
+`commandReceipts`) fence retries and concurrent changes. Group staff projections expose only the selected
 duty and basic staff identity, not full phone numbers or the event guest roster.
 
 The duty permission map now authorizes progress, departure, membership and
@@ -1928,8 +1929,8 @@ for expiry; legacy check-in access alone grants no accountability duty.
 
 The reviewed source hash binds the event/roster generations, format, current
 check-in, accepted group where scoped, assistance episode or explicit absence,
-and accountability revision/result. Exact retries reuse an immutable
-`eventAssistanceAccountabilityReceipts` entry; changed requests, replaced
+and accountability revision/result. Exact retries reuse an
+`eventAssistanceAccountability` command receipt; changed requests, replaced
 registrations, new visits and stale reviews cannot write. Replies and reported
 intentions do not invalidate a physical sweep review or become physical proof.
 The record never changes attendance, participation, placement, consent or
@@ -2143,13 +2144,13 @@ its saved group configuration. A changed target requires a fresh handover withou
 invalidating the still-current source membership. Breaks/departures withhold new
 placement and acceptance; returning in a new episode requires placement review.
 
-`eventAssistanceMemberships` holds current state, and server-only
-`eventAssistanceMembershipReceipts` stores the authenticated command and original
-operation revision atomically. Exact authorized retries return that revision and
+`eventAssistanceMemberships` holds current state, and an
+`eventAssistanceMembership` command receipt (in `commandReceipts`) stores the
+request hash and original operation revision atomically. Exact authorized retries return that revision and
 latest state. A former operator loses access once the guest transfers away; a
 rejected/cancelled/expired receiving request grants no continuing guest access.
 Reads expose one guest's operating state and group choices, without contact fields
-or a full roster. Record/receipt retention remains required before activation.
+or a full roster. Membership record retention remains required before activation.
 
 The native membership repository now uses the generated live callable requests.
 Its immutable models separate uninitialized, current and source-changed records;
@@ -4004,7 +4005,7 @@ occurrence, not an in-place flag flip against shared inventory.
 | `eventParticipations/{eventId_uid}` | Catch booking, payment, waitlist and Consumer-network lifecycle. It is optional for Event Success. |
 | `eventRuntimeParticipants/{eventId_uid}` | Participant-private access, roster claim, disclosures, minimal runtime profile and readiness. |
 | `eventRuntimeDataRequests/{requestId}` | Server-only current missing-data request, fenced to one participant profile and event source. |
-| `eventRuntimeDataRequestReceipts/{receiptId}` | Immutable exact-command receipt; never a guest or Host read surface. |
+| `commandReceipts/{command}_{id}` | Shared replay store; `requestRequiredData` entries make an exact command retry idempotent. Never a guest or Host read surface. |
 
 The deterministic runtime-participant id is `${eventId}_${uid}`. Its required
 shape is:
@@ -4114,7 +4115,7 @@ window, capability, hidden safety state and deterministic ids.
 
 The internal `EventRuntimeRequiredDataStore` owns the source-fenced typed
 request boundary. It reviews current plan-derived fields and atomically writes
-one request plus an immutable receipt. It is intentionally not a Host callable:
+one request plus its `commandReceipts` entry. It is not a Host callable:
 `requestRequiredData` has `systemWithinPolicy` authority. A participant-write
 trigger creates the command only for current missing required fields, bootstrap
 returns its bounded guest projection, and accepted profile submission records
