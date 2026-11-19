@@ -5,4 +5,8 @@
 /// gutter, separator role, and placement.
 abstract interface class CatchFieldDividerGeometry {
   double get fieldDividerLeadingInset;
+
+  /// True when the row draws its own boundary, such as an outlined text box.
+  /// Sections then leave out the separators on either side of it.
+  bool get suppressesFieldDividers;
 }

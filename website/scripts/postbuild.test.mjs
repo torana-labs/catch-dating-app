@@ -179,17 +179,12 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   assert.doesNotMatch(sitemap, /new-to-/u);
   assert.doesNotMatch(sitemap, /example\.test\/mumbai\/[a-z-]+\/<\/loc>/u);
   // The product pages v2 (owner, 18 Nov 2026): seven keep the #1983 pages'
-  // indexing; The room and Running the event wait for approval. The paths
-  // they replaced are redirects, with no static output.
+  // indexing; The room and Running the event were approved on 19 Nov 2026.
+  // The paths they replaced are redirects, with no static output.
   for (const route of ["how-it-works", "product/your-page", "product/bookings-and-memberships", "product/messages-and-growth",
-    "product/guest-records", "product/reports-and-payouts", "product/forms"]) {
+    "product/the-room", "product/running-the-event", "product/guest-records", "product/reports-and-payouts", "product/forms"]) {
     assert.match(sitemap, new RegExp(`<loc>https://example\\.test/${route}/</loc>`, "u"), route);
     assert.doesNotMatch(fs.readFileSync(path.join(distRoot, ...route.split("/"), "index.html"), "utf8"), /name="robots"/u, route);
-  }
-  for (const route of ["product/the-room", "product/running-the-event"]) {
-    assert.doesNotMatch(sitemap, new RegExp(`/${route}/</loc>`, "u"), route);
-    assert.match(fs.readFileSync(path.join(distRoot, ...route.split("/"), "index.html"), "utf8"),
-      /<meta name="robots" content="noindex, follow" \/>/u, route);
   }
   for (const retired of ["night", "door", "bookings", "messages", "guests", "reports"]) {
     assert.equal(fs.existsSync(path.join(distRoot, "product", retired)), false, retired);

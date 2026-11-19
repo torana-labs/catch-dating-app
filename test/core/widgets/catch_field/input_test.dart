@@ -292,7 +292,7 @@ void main() {
   });
 
   testWidgets(
-    'CatchField standardizes empty input and choice Add rows at rest',
+    'CatchField shows empty inputs as labelled boxes while choices keep Add rows',
     (tester) async {
       final inputKey = GlobalKey();
       final multilineInputKey = GlobalKey();
@@ -338,49 +338,35 @@ void main() {
         ),
       );
 
-      expect(find.text('Add job title · Optional'), findsOneWidget);
-      expect(find.text('Add review · Optional'), findsOneWidget);
+      expect(find.text('Add job title · Optional'), findsNothing);
+      expect(find.text('Add review · Optional'), findsNothing);
+      expect(find.text('Job title'), findsOneWidget);
+      expect(find.text('Review'), findsOneWidget);
+      expect(find.text(' · Optional'), findsNWidgets(2));
       expect(find.text('Add workout · Optional'), findsOneWidget);
-      expect(find.text('Job title'), findsNothing);
-      expect(find.text('Review'), findsNothing);
       expect(find.text('Workout'), findsNothing);
-      expect(
-        tester.getSize(find.byKey(inputKey)).height,
-        closeTo(tester.getSize(find.byKey(choiceKey)).height, 0.1),
-      );
-      expect(
-        tester.getSize(find.byKey(multilineInputKey)).height,
-        closeTo(tester.getSize(find.byKey(choiceKey)).height, 0.1),
-      );
-      expect(
-        tester.getCenter(find.byIcon(CatchIcons.work)).dy,
-        closeTo(tester.getCenter(find.text('Add job title · Optional')).dy, 1),
-      );
 
-      final addText = tester.widget<Text>(
-        find.text('Add job title · Optional'),
+      final jobBox = find.descendant(
+        of: find.byKey(inputKey),
+        matching: find.byKey(const ValueKey('catch-field-input-box')),
       );
-      final spans = (addText.textSpan! as TextSpan).children!;
-      expect(spans.first.style?.color, CatchTokens.editorialLight.primary);
-      expect(spans.first.style?.fontSize, CatchFieldTokens.valueFontSize);
-      expect(spans.first.style?.fontWeight, FontWeight.w600);
-      expect(spans.last.style?.color, CatchTokens.editorialLight.ink3);
-      expect(spans.last.style?.fontWeight, FontWeight.w500);
+      expect(jobBox, findsOneWidget);
+      final jobBoxRect = tester.getRect(jobBox);
+      expect(
+        jobBoxRect.contains(tester.getCenter(find.byIcon(CatchIcons.work))),
+        isTrue,
+      );
+      expect(
+        tester.getBottomLeft(find.text('Job title')).dy,
+        lessThanOrEqualTo(jobBoxRect.top),
+      );
 
       final multilineTextField = find.descendant(
         of: find.byKey(multilineInputKey),
         matching: find.byType(TextField),
       );
-      expect(tester.widget<TextField>(multilineTextField).minLines, isNull);
-      expect(tester.widget<TextField>(multilineTextField).maxLines, 1);
-
-      await tester.tap(multilineTextField);
-      await tester.pump();
-
       expect(tester.widget<TextField>(multilineTextField).minLines, 2);
       expect(tester.widget<TextField>(multilineTextField).maxLines, 4);
-      expect(find.text('Review'), findsOneWidget);
-      expect(find.text('Add review · Optional'), findsNothing);
     },
   );
 
@@ -490,26 +476,18 @@ void main() {
       ),
     );
 
-    expect(find.text('Bio'), findsNothing);
-    expect(find.text('Add bio · Optional'), findsOneWidget);
-    expect(find.text(' · Optional'), findsNothing);
+    expect(find.text('Bio'), findsOneWidget);
+    expect(find.text(' · Optional'), findsOneWidget);
+    expect(find.text('Add bio · Optional'), findsNothing);
     expect(find.text('Optional'), findsNothing);
+    expect(find.text('Share a little about yourself'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
         (widget) =>
-            widget is Semantics &&
-            widget.properties.label == 'Add bio, optional',
+            widget is Semantics && widget.properties.label == 'Bio, optional',
       ),
-      findsOneWidget,
+      findsWidgets,
     );
-
-    await tester.tap(find.byType(TextField));
-    await tester.pump();
-    await tester.pump(CatchMotion.base);
-
-    expect(find.text('Bio'), findsOneWidget);
-    expect(find.text(' · Optional'), findsOneWidget);
-    expect(find.text('Share a little about yourself'), findsOneWidget);
   });
 
   testWidgets(
@@ -532,9 +510,9 @@ void main() {
         ),
       );
 
-      expect(find.text('Public name'), findsNothing);
-      expect(find.text('Add public name'), findsOneWidget);
-      expect(find.text('e.g. Aanya'), findsNothing);
+      expect(find.text('Public name'), findsOneWidget);
+      expect(find.text('Add public name'), findsNothing);
+      expect(find.text('e.g. Aanya'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
       final inputElement = tester.element(find.byType(TextField));
 
@@ -566,8 +544,8 @@ void main() {
       expect(controller.text, isEmpty);
       expect(find.byType(TextField), findsOneWidget);
       expect(tester.element(find.byType(TextField)), same(inputElement));
-      expect(find.text('Public name'), findsNothing);
-      expect(find.text('Add public name'), findsOneWidget);
+      expect(find.text('Public name'), findsOneWidget);
+      expect(find.text('Add public name'), findsNothing);
     },
   );
 
@@ -587,7 +565,11 @@ void main() {
       ),
     );
 
-    expect(find.text('Add instagram'), findsOneWidget);
+    expect(find.text('Add instagram'), findsNothing);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).decoration?.hintText,
+      isNull,
+    );
     await tester.tap(find.byType(TextField));
     await tester.pump();
     await tester.pump(CatchMotion.base);
@@ -619,11 +601,15 @@ void main() {
     var field = tester.widget<TextField>(find.byType(TextField));
     expect(editable.style.fontSize, CatchFieldTokens.valueFontSize);
     expect(editable.style.fontWeight, FontWeight.w500);
-    expect(editable.style.height, CatchFieldTokens.multilineValueLineHeight);
+    const boxLineHeight = CatchFieldTokens.boxMultilineLineExtent;
+    expect(
+      editable.style.height,
+      boxLineHeight / CatchFieldTokens.valueFontSize,
+    );
     expect(field.decoration?.hintStyle?.fontWeight, FontWeight.w500);
     expect(
       field.decoration?.hintStyle?.height,
-      CatchFieldTokens.multilineValueLineHeight,
+      boxLineHeight / CatchFieldTokens.valueFontSize,
     );
 
     await tester.pumpWidget(
@@ -650,9 +636,7 @@ void main() {
     );
   });
 
-  testWidgets('CatchField collapsed text entry reports focus changes', (
-    tester,
-  ) async {
+  testWidgets('CatchField text entry reports focus changes', (tester) async {
     final changes = <bool>[];
 
     await tester.pumpWidget(
@@ -682,7 +666,7 @@ void main() {
   });
 
   testWidgets(
-    'CatchField expands collapsed text entry when validation fails before focus',
+    'CatchField shows a validation error under the empty box before focus',
     (tester) async {
       final formKey = GlobalKey<FormState>();
 
@@ -703,8 +687,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Public name'), findsNothing);
-      expect(find.text('Add public name'), findsOneWidget);
+      expect(find.text('Public name'), findsOneWidget);
+      expect(find.text('Add public name'), findsNothing);
       expect(find.byType(TextField), findsOneWidget);
       final inputElement = tester.element(find.byType(TextField));
 
@@ -720,87 +704,83 @@ void main() {
     },
   );
 
-  testWidgets(
-    'CatchField expands initial text and collapses after external clear',
-    (tester) async {
-      final controller = TextEditingController(text: 'Aanya');
-      addTearDown(controller.dispose);
+  testWidgets('CatchField keeps the label and box after an external clear', (
+    tester,
+  ) async {
+    final controller = TextEditingController(text: 'Aanya');
+    addTearDown(controller.dispose);
 
-      await tester.pumpWidget(
-        _wrap(
-          SizedBox(
-            width: 320,
-            child: CatchField.input(
-              copy: catchFieldCopy(AppLocalizationsEn()),
-              title: 'Public name',
-              controller: controller,
-              inputHint: 'e.g. Aanya',
-            ),
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 320,
+          child: CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
+            title: 'Public name',
+            controller: controller,
+            inputHint: 'e.g. Aanya',
           ),
         ),
-      );
+      ),
+    );
 
-      expect(find.byType(TextField), findsOneWidget);
+    expect(find.byType(TextField), findsOneWidget);
 
-      controller.clear();
-      FocusManager.instance.primaryFocus?.unfocus();
-      await tester.pump();
-      await tester.pump(CatchMotion.base);
+    controller.clear();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pump();
+    await tester.pump(CatchMotion.base);
 
-      expect(find.byType(TextField), findsOneWidget);
-      expect(find.text('Public name'), findsNothing);
-      expect(find.text('Add public name'), findsOneWidget);
-    },
-  );
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('Public name'), findsOneWidget);
+    expect(find.text('Add public name'), findsNothing);
+    expect(find.byKey(const ValueKey('catch-field-input-box')), findsOneWidget);
+  });
 
-  testWidgets(
-    'CatchField populated clear target does not change collapsed row height',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          SizedBox(
-            width: 320,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CatchField.input(
-                  copy: catchFieldCopy(AppLocalizationsEn()),
-                  key: const ValueKey('plain-populated-field'),
-                  title: 'Public name',
-                  initialValue: 'Run',
-                ),
-                CatchField.input(
-                  copy: catchFieldCopy(AppLocalizationsEn()),
-                  key: const ValueKey('clearable-populated-field'),
-                  title: 'Display name',
-                  initialValue: 'Run',
-                  showClearButton: true,
-                ),
-              ],
-            ),
+  testWidgets('CatchField populated clear target does not change row height', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 320,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CatchField.input(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                key: const ValueKey('plain-populated-field'),
+                title: 'Public name',
+                initialValue: 'Run',
+              ),
+              CatchField.input(
+                copy: catchFieldCopy(AppLocalizationsEn()),
+                key: const ValueKey('clearable-populated-field'),
+                title: 'Display name',
+                initialValue: 'Run',
+                showClearButton: true,
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
 
-      final plainHeight = tester
-          .getSize(find.byKey(const ValueKey('plain-populated-field')))
-          .height;
-      final clearableHeight = tester
-          .getSize(find.byKey(const ValueKey('clearable-populated-field')))
-          .height;
-      expect(clearableHeight, closeTo(plainHeight, 0.1));
-      expectMinimumAccessibleTarget(
-        tester,
-        find.byTooltip('Clear Display name'),
-      );
-      final clearRect = tester.getRect(find.byTooltip('Clear Display name'));
-      final rowRect = tester.getRect(
-        find.byKey(const ValueKey('clearable-populated-field')),
-      );
-      expect(clearRect.top, greaterThanOrEqualTo(rowRect.top));
-      expect(clearRect.bottom, lessThanOrEqualTo(rowRect.bottom));
-    },
-  );
+    final plainHeight = tester
+        .getSize(find.byKey(const ValueKey('plain-populated-field')))
+        .height;
+    final clearableHeight = tester
+        .getSize(find.byKey(const ValueKey('clearable-populated-field')))
+        .height;
+    expect(clearableHeight, closeTo(plainHeight, 0.1));
+    expectMinimumAccessibleTarget(tester, find.byTooltip('Clear Display name'));
+    final clearRect = tester.getRect(find.byTooltip('Clear Display name'));
+    final rowRect = tester.getRect(
+      find.byKey(const ValueKey('clearable-populated-field')),
+    );
+    expect(clearRect.top, greaterThanOrEqualTo(rowRect.top));
+    expect(clearRect.bottom, lessThanOrEqualTo(rowRect.bottom));
+  });
 
   testWidgets('CatchField compact input centers hint and icon vertically', (
     tester,

@@ -12,7 +12,7 @@
 
 .header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--catch-space-s3); }
 .titles { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.kicker { color: var(--catch-theme-ink2); font-size: 13px; font-weight: 600; }
+.kicker { margin: 0; color: var(--catch-theme-ink2); font-size: 13px; font-weight: 600; }
 
 .title {
   margin: 0;

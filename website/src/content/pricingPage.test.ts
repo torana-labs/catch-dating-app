@@ -24,7 +24,7 @@ describe("the /pricing/ page content", () => {
   it("meets the playbook content contract, as the pricing route's page", () => {
     expect(validatePlaybookPage(pricingPage)).toEqual([]);
     expect([page.id, page.route, page.header.variant, page.footer.variant]).toEqual(["pricing", "pricing", "host", "host"]);
-    expect(page.meta.noindex).toBe(true);
+    expect(page.meta.noindex).toBe(false); // approved for search by the owner, 19 Nov 2026
   });
 
   it("opens on the fee band with the calculator, then the cap and what is included, from the custom registry", () => {

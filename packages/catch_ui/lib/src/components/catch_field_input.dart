@@ -3,57 +3,6 @@ part of 'catch_field.dart';
 /// Placement of a field's native input inside its existing row or underline.
 enum CatchFieldInputMode { standalone, row, explicitSave }
 
-/// Read-only data consumed by the field input renderer.
-///
-/// Contains no widget lifecycle or build contract. CatchField implements it
-/// directly, retaining controller ownership without copying a configuration
-/// object on each rebuild; independent consumers can supply plain data.
-abstract interface class CatchFieldInputConfiguration {
-  Widget? get actions;
-  Iterable<String>? get autofillHints;
-  bool get autofocus;
-  String? get badgeLabel;
-  CatchBadgeTone? get badgeTone;
-  CatchContractFieldConstraints? get contract;
-  CatchFieldCopy get copy;
-  String? get error;
-  String? get errorText;
-  String? get helperText;
-  CatchFieldSupportRowTone get helperTone;
-  List<TextInputFormatter>? get inputFormatters;
-  CatchTextInputVariant get inputVariant;
-  CatchFieldLabelTextMode get labelMode;
-  TextInputType? get keyboardType;
-  Widget? get leading;
-  String? get leadingUnit;
-  int? get maxLength;
-
-  /// When the length counter shows; [CatchFieldSupportRowMode.always] keeps
-  /// it painted at rest.
-  CatchFieldSupportRowMode get counter;
-  int? get maxLines;
-  int? get minLines;
-  List<FontFeature>? get fontFeatures;
-  ValueChanged<String>? get onChanged;
-  VoidCallback? get onTap;
-  FormFieldValidator<String>? get onValidate;
-  String? get prefixText;
-  CatchTextInputMode get inputMode;
-  VoidCallback? get onEditingComplete;
-  bool get showClearButton;
-  CatchFieldSize get size;
-  Set<WidgetState> get states;
-  String? get suffixText;
-  TextAlign get textAlign;
-  TextCapitalization get textCapitalization;
-  TextInputAction? get textInputAction;
-  String? get title;
-  int get titleMaxLines;
-  CatchFieldTone get tone;
-  Widget? get trailing;
-  CatchFieldVariant get variant;
-}
-
 /// Native input, validation, and text-entry chrome owned by a CatchField.
 ///
 /// The owner supplies immutable configuration and keeps controller, focus,
@@ -77,6 +26,8 @@ class CatchFieldInput extends StatelessWidget {
     required this.headerTrailingReserve,
     this.expanded = false,
     this.inlineAddAtRest = false,
+    this.leading,
+    this.trailing,
   });
 
   final CatchFieldInputConfiguration configuration;
@@ -94,6 +45,10 @@ class CatchFieldInput extends StatelessWidget {
   final double headerTrailingReserve;
   final bool expanded;
   final bool inlineAddAtRest;
+
+  /// Field-owned leading and trailing slots drawn inside an outlined box.
+  final Widget? leading;
+  final Widget? trailing;
 
   bool get _explicitSave => mode == CatchFieldInputMode.explicitSave;
   bool get _hasRowActions => !_explicitSave && configuration.actions != null;
@@ -193,9 +148,13 @@ class CatchFieldInput extends StatelessWidget {
             : inlineAddAtRest && addText != null
             ? addSemanticLabel!
             : _title;
+        // An outlined box keeps its visible label out of the semantics tree,
+        // so the native input names the field and its optional state once.
+        final announcesOptional = _outlined
+            ? configuration.labelMode.isOptional
+            : configuration.labelMode == CatchFieldLabelTextMode.hiddenOptional;
         final effectiveSemanticLabel =
-            configuration.labelMode == CatchFieldLabelTextMode.hiddenOptional &&
-                semanticLabel != null
+            announcesOptional && semanticLabel != null
             ? configuration.copy.label.optionalSemantics(semanticLabel)
             : semanticLabel;
 
@@ -207,10 +166,16 @@ class CatchFieldInput extends StatelessWidget {
             !inlineAddHint &&
             !_obscured &&
             (configuration.maxLines != 1 || (configuration.minLines ?? 1) > 1);
-        final multilineValueStyle = CatchTextStyles.fieldRowValue(
-          context,
-          color: _enabled ? t.ink : t.ink3,
-        ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
+        final multilineValueStyle =
+            CatchTextStyles.fieldRowValue(
+              context,
+              color: _enabled ? t.ink : t.ink3,
+            ).copyWith(
+              height: _outlined
+                  ? CatchFieldTokens.boxMultilineLineExtent /
+                        CatchFieldTokens.valueFontSize
+                  : CatchFieldTokens.multilineValueLineHeight,
+            );
         final inputStyle = valueEmphasis
             ? multiline
                   ? multilineValueStyle
@@ -413,6 +378,166 @@ class CatchFieldInput extends StatelessWidget {
                 child: sizedInputShell,
               );
 
+        final counterText =
+            configuration.maxLength != null &&
+                (_focused ||
+                    configuration.counter == CatchFieldSupportRowMode.always ||
+                    configuration.states.contains(WidgetState.focused) ||
+                    hasError)
+            ? '${controller.text.characters.length} / ${configuration.maxLength}'
+            : null;
+
+        if (_outlined) {
+          final label = configuration.labelMode.showsLabel
+              ? _title?.trim()
+              : null;
+          final labelStyle = CatchTextStyles.supporting(
+            context,
+            color: hasError ? t.danger : t.ink,
+          ).copyWith(fontWeight: FontWeight.w600);
+          final labelText = label == null || label.isEmpty
+              ? null
+              : CatchFieldLabelText.inline(
+                  copy: configuration.copy.label,
+                  label: label,
+                  style: labelStyle,
+                  maxLines: configuration.titleMaxLines,
+                  mode: configuration.labelMode.isOptional
+                      ? CatchFieldLabelTextMode.optional
+                      : CatchFieldLabelTextMode.visible,
+                );
+          final badgeLabel = configuration.badgeLabel?.trim();
+          final ground = CatchRootScope.groundOf(context);
+          // The box takes the nested fill inside a tile and otherwise the
+          // ground it sits on: white by day, ink at night.
+          final boxFill = switch (ground) {
+            CatchGround.tile ||
+            CatchGround.nested ||
+            CatchGround.nightTile => t.nested,
+            _ => t.ground,
+          };
+          final boxBorderColor = hasError
+              ? t.danger
+              : !_enabled
+              ? t.line
+              : effectiveFocused
+              ? t.ink
+              : t.fieldLine;
+          final support = supportText?.trim();
+          final hasSupport =
+              (support != null && support.isNotEmpty) || counterText != null;
+          final body = Column(
+            key: const ValueKey<String>('catch-field-outlined-entry'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (labelText != null) ...[
+                Padding(
+                  key: const ValueKey<String>('catch-field-label-content'),
+                  padding: const EdgeInsets.only(
+                    bottom: CatchFieldTokens.boxLabelGap,
+                  ),
+                  child: ExcludeSemantics(
+                    child: badgeLabel == null || badgeLabel.isEmpty
+                        ? labelText
+                        : Row(
+                            children: [
+                              Flexible(child: labelText),
+                              const SizedBox(width: CatchSpacing.s2),
+                              CatchBadge(
+                                label: badgeLabel,
+                                tone:
+                                    configuration.badgeTone ??
+                                    CatchBadgeTone.neutral,
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+              ],
+              AnimatedContainer(
+                key: const ValueKey<String>('catch-field-input-box'),
+                duration: catchFieldMotionDuration(
+                  context,
+                  CatchFieldTokens.fast,
+                ),
+                curve: CatchFieldTokens.curve,
+                constraints: const BoxConstraints(
+                  minHeight: CatchFieldTokens.boxMinHeight,
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: CatchFieldTokens.boxHorizontalPadding,
+                  vertical: multiline
+                      ? CatchFieldTokens.boxMultilineVerticalPadding
+                      : 0,
+                ),
+                decoration: BoxDecoration(
+                  color: boxFill,
+                  borderRadius: BorderRadius.circular(
+                    CatchFieldTokens.boxRadius,
+                  ),
+                  border: Border.all(
+                    color: boxBorderColor,
+                    width: CatchFieldTokens.boxBorderWidth,
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: multiline
+                      ? CrossAxisAlignment.start
+                      : CrossAxisAlignment.center,
+                  children: [
+                    if (leading case final slot?) ...[
+                      slot,
+                      const SizedBox(width: CatchFieldTokens.boxSlotGap),
+                    ],
+                    if (configuration.leadingUnit case final unit?) ...[
+                      Text(
+                        unit,
+                        style: CatchTextStyles.fieldRowValue(
+                          context,
+                          color: t.ink2,
+                        ),
+                      ),
+                      const SizedBox(width: CatchSpacing.s1),
+                    ],
+                    Expanded(
+                      key: const ValueKey<String>('catch-field-text-input'),
+                      child: input,
+                    ),
+                    if (trailing case final slot?) ...[
+                      const SizedBox(width: CatchFieldTokens.boxSlotGap),
+                      slot,
+                    ],
+                  ],
+                ),
+              ),
+              if (hasSupport) ...[
+                const SizedBox(height: CatchFieldTokens.supportingTopGap),
+                CatchFieldSupportRow(
+                  text: support,
+                  counter: counterText,
+                  color: hasError
+                      ? t.danger
+                      : CatchFieldSupportRow.resolveColor(
+                          context,
+                          configuration.helperTone,
+                        ),
+                  showErrorIcon: hasError,
+                ),
+              ],
+            ],
+          );
+          if (MediaQuery.maybeOf(context)?.disableAnimations == true) {
+            return body;
+          }
+          return AnimatedSize(
+            duration: catchFieldMotionDuration(context, CatchMotion.base),
+            curve: CatchMotion.standardCurve,
+            alignment: Alignment.topCenter,
+            child: body,
+          );
+        }
+
         if (rowBody) {
           final body = CatchFieldContentRow.value(
             labelCopy: configuration.copy.label,
@@ -429,15 +554,7 @@ class CatchFieldInput extends StatelessWidget {
                 ? _title
                 : null,
             supportText: supportText,
-            counterText:
-                configuration.maxLength != null &&
-                    (_focused ||
-                        configuration.counter ==
-                            CatchFieldSupportRowMode.always ||
-                        configuration.states.contains(WidgetState.focused) ||
-                        hasError)
-                ? '${controller.text.characters.length} / ${configuration.maxLength}'
-                : null,
+            counterText: counterText,
             status: hasError
                 ? CatchFieldContentRowStatus.error
                 : _active
@@ -484,7 +601,7 @@ class CatchFieldInput extends StatelessWidget {
           );
         }
 
-        final counterText =
+        final standaloneCounterText =
             effectiveVariant == CatchFieldVariant.underline &&
                 configuration.maxLength != null &&
                 (_focused ||
@@ -492,7 +609,7 @@ class CatchFieldInput extends StatelessWidget {
                     configuration.states.contains(WidgetState.focused))
             ? '${controller.text.characters.length} / ${configuration.maxLength}'
             : null;
-        final hasMeta = supportText != null || counterText != null;
+        final hasMeta = supportText != null || standaloneCounterText != null;
 
         if (!effectiveShowLabel && !hasMeta) {
           return input;
@@ -524,7 +641,7 @@ class CatchFieldInput extends StatelessWidget {
               const SizedBox(height: CatchFieldTokens.supportingTopGap),
               CatchFieldSupportRow(
                 text: supportText,
-                counter: counterText,
+                counter: standaloneCounterText,
                 color: hasError
                     ? t.danger
                     : CatchFieldSupportRow.resolveColor(
@@ -546,7 +663,16 @@ class CatchFieldInput extends StatelessWidget {
   String? get _title => configuration.title;
   bool get _hasInputValue => controller.text.isNotEmpty;
   bool get _textEntryCanCollapse =>
-      configuration.labelMode.showsLabel && (_title?.isNotEmpty ?? false);
+      !_outlined &&
+      configuration.labelMode.showsLabel &&
+      (_title?.isNotEmpty ?? false);
+
+  /// Always-editable row entry draws the canvas form box; explicit-save rows,
+  /// bare and underline inputs and the floating search entry keep theirs.
+  bool get _outlined =>
+      mode == CatchFieldInputMode.row &&
+      configuration.variant == CatchFieldVariant.row &&
+      !_compactTextEntry;
   bool _textEntryExpandedWith({required bool hasError}) =>
       !_textEntryCanCollapse ||
       _hasInputValue ||

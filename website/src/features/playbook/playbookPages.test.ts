@@ -132,31 +132,32 @@ describe("playbook page indexes", () => {
     expect(pendingPlaybookBindings(withTool)).toEqual(["custom:noShowCalculator"]);
   });
 
-  it("renders /pricing/ from its content: the fee band, the cap and what is included bound, noindex until approved", async () => {
+  it("renders /pricing/ from its content: the fee band, the cap and what is included bound, indexed (owner, 19 Nov 2026)", async () => {
     const ref = resolvePlaybookPage("/pricing/")!;
     expect(ref.match.contentKey).toBe("pricing");
     const page = (await loadPlaybookPage(ref))!;
     expect(page.sections.flatMap((section) => section.type === "custom" ? [section.component] : [])).toEqual(["pricingCalculator", "pricingExamples", "pricingCap", "pricingIncluded", "pricingOrganisations"]);
     expect(pendingPlaybookBindings(page)).toEqual([]);
-    expect(page.meta.noindex).toBe(true);
+    expect(page.meta.noindex).toBe(false);
   });
 
-  it("renders the run-clubs sample: no pending bindings, brand resolved, noindex until approved", async () => {
+  it("renders the run-clubs sample: no pending bindings, brand resolved, indexed (owner, 19 Nov 2026)", async () => {
     const ref = resolvePlaybookPage("/host/run-clubs")!;
     expect(ref.match.contentKey).toBe("host_run_clubs");
     const page = (await loadPlaybookPage(ref))!;
     expect(pendingPlaybookBindings(page)).toEqual([]);
     expect(JSON.stringify(page)).not.toMatch(/\{\{/u);
-    expect(page.meta.noindex).toBe(true);
+    expect(page.meta.noindex).toBe(false);
   });
 
-  it("indexes only the pages the owner approved for search (18 Nov 2026); /pricing/, The room and Running the event are not ready yet", async () => {
+  it("indexes only the pages the owner approved for search (18 and 19 Nov 2026); the walkthrough request form stays out", async () => {
     expect((await approvedPlaybookPaths()).sort()).toEqual([
-      "/host/brands/", "/host/colleges/", "/host/communities/", "/host/creators/", "/host/demo/", "/host/facilities/",
-      "/host/nightlife/", "/host/outdoors/", "/host/quiz-nights/", "/host/racket-sports/", "/host/studios/",
-      "/host/supper-clubs/", "/host/teams/", "/host/venues/", "/host/workshops/", "/how-it-works/",
-      "/product/bookings-and-memberships/", "/product/forms/", "/product/guest-records/", "/product/messages-and-growth/",
-      "/product/reports-and-payouts/", "/product/your-page/", "/safety/",
+      "/about/", "/host/brands/", "/host/colleges/", "/host/communities/", "/host/creators/", "/host/demo/",
+      "/host/facilities/", "/host/first-event/", "/host/nightlife/", "/host/outdoors/", "/host/quiz-nights/",
+      "/host/racket-sports/", "/host/run-clubs/", "/host/start/", "/host/studios/", "/host/supper-clubs/", "/host/switch/",
+      "/host/teams/", "/host/venues/", "/host/workshops/", "/how-it-works/", "/pricing/", "/product/bookings-and-memberships/",
+      "/product/forms/", "/product/guest-records/", "/product/messages-and-growth/", "/product/reports-and-payouts/",
+      "/product/running-the-event/", "/product/the-room/", "/product/your-page/", "/programmes/", "/safety/",
     ]);
   });
 
@@ -215,19 +216,19 @@ describe("playbook page indexes", () => {
     }
   });
 
-  it("keeps the two new product pages out of search until the owner approves them", async () => {
+  it("indexes The room and Running the event (owner approved, 19 Nov 2026)", async () => {
     for (const path of ["/product/the-room/", "/product/running-the-event/"]) {
       const page = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
       expect(page, path).not.toBeNull();
-      expect(page.meta.noindex, path).toBe(true);
+      expect(page.meta.noindex, path).toBe(false);
     }
   });
 
-  it.each(["/about/", "/host/start/", "/host/first-event/", "/host/switch/", "/programmes/"])("renders %s: every section bound, brand resolved, noindex until approved", async (path) => {
+  it.each(["/about/", "/host/start/", "/host/first-event/", "/host/switch/", "/programmes/"])("renders %s: every section bound, brand resolved, indexed (owner, 19 Nov 2026)", async (path) => {
     const page = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
     expect(page, path).not.toBeNull();
     expect(JSON.stringify(page)).not.toMatch(/\{\{/u);
-    expect(page.meta.noindex).toBe(true);
+    expect(page.meta.noindex).toBe(false);
   });
 
   it("publishes no price on the host ways in, About and /programmes/ beyond the fee cap pricing.ts works out", () => {

@@ -6,7 +6,7 @@
     "title": "Your first event | {{brand.stores.hostAppName}}",
     "description": "Seven steps from downloading {{brand.stores.hostAppName}} to the morning after your first event, with a person on WhatsApp if you get stuck.",
     "socialDescription": "Your first event, step by step.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

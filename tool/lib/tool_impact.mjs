@@ -283,9 +283,9 @@ export function validateToolCheckSafety(tool) {
   if (!hasExecutableChecks(tool)) {
     errors.push("checkSafety requires non-empty executable checks.");
   }
-  if (isLocalOnlySafety(tool?.safety)) {
+  if (isLocalSurface(tool?.surface)) {
     errors.push(
-      "checkSafety must be omitted when safety already declares local-only behavior.",
+      "checkSafety must be omitted when surface already declares local-only behavior.",
     );
   }
   return errors;
@@ -295,7 +295,7 @@ export function toolChecksAreLocalReadonly(tool) {
   if (Object.hasOwn(tool ?? {}, "checkSafety")) {
     return supportedCheckSafety.has(tool.checkSafety);
   }
-  return isLocalOnlySafety(tool?.safety);
+  return isLocalSurface(tool?.surface);
 }
 
 export function collectLocalReadonlyCheckIds(toolsManifest) {
@@ -312,10 +312,10 @@ export function collectLocalReadonlyCheckIds(toolsManifest) {
     .map((tool) => tool.id));
 }
 
-function isLocalOnlySafety(safety) {
-  return typeof safety === "string" &&
-    safety.startsWith("local") &&
-    !safety.includes("remote");
+// A local-* surface (tool_manifest_rules.mjs toolSurfaces) never reaches a
+// live system, so its checks are local and read-only by construction.
+function isLocalSurface(surface) {
+  return typeof surface === "string" && surface.startsWith("local-");
 }
 
 export function projectToolCiRequirements(tools) {

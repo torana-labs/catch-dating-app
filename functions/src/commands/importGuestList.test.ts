@@ -8,6 +8,11 @@ import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
 import type {HostRosterIntakeManageDeps} from "../events/hostRosterIntakeApply";
 import {HostRosterIntakeSessionStore} from "../events/hostRosterIntakeSessionStore";
 import {headerShapeHash} from "../guestImport/headerShapes";
+import {
+  GUEST_MAPPING_MODEL_POLICY,
+  guestMappingProposalProvider,
+  type GuestMappingModelRunner,
+} from "../guestImport/mappingFallback";
 import {importGuestListHandler, type ImportGuestListDeps} from "./importGuestList";
 
 // Every name, number and address below is fictional.
@@ -30,7 +35,8 @@ const LUMA_CSV = "Name,Approval Status,Registration Date,Ticket Type,Guest Key,P
   "Asha Sample,approved,2026-11-01,General,g-1,98765 43210\n" +
   "Ravi Sample,waitlist,2026-11-01,General,g-2,98765 43211\n";
 
-function harness(options: {authorize?: () => Promise<void>} = {}) {
+function harness(options: {authorize?: () => Promise<void>;
+  mappingProvider?: ImportGuestListDeps["mappingProvider"]} = {}) {
   const db = new FakeFirestore();
   db.write(`events/${EVENT}`, {organizerId: ORGANIZER});
   const imports: unknown[] = [];
@@ -58,6 +64,7 @@ function harness(options: {authorize?: () => Promise<void>} = {}) {
     increment: ((by: number) => ({__increment: by})) as never,
     checkRateLimit: (async () => undefined) as never,
     intake: () => intake,
+    mappingProvider: options.mappingProvider ?? (() => guestMappingProposalProvider()),
   };
   return {db, deps, imports};
 }
@@ -222,4 +229,45 @@ test("city, revenue and statuses read as Catch Host's import sheet reads them", 
   assert.equal(zoya.value.revenueAmountMinor, 50000);
   assert.equal(zoya.value.revenueSource, "hostEstimate");
   assert.equal(zoya.fields.revenueAmountMinor.origin, "hostCorrection");
+});
+
+test("the model fallback is off: unknown columns go to the host", async () => {
+  assert.equal(GUEST_MAPPING_MODEL_POLICY.provider.enabled, false);
+  assert.equal(guestMappingProposalProvider(), null);
+  assert.throws(() => guestMappingProposalProvider({policy: {...GUEST_MAPPING_MODEL_POLICY,
+    provider: {...GUEST_MAPPING_MODEL_POLICY.provider, enabled: true}}}), /guest_mapping_policy_not_ready/u);
+});
+
+test("when switched on, the model sees headers and shapes only, and its columns are stored as modelProposal", async () => {
+  const requests: unknown[] = [];
+  const runner: GuestMappingModelRunner = {run: async (request) => {
+    requests.push(request.input);
+    return {output: {mapping: {displayName: 0, phone: 1}, confidence: 0.8}};
+  }};
+  const policy = {...GUEST_MAPPING_MODEL_POLICY,
+    provider: {...GUEST_MAPPING_MODEL_POLICY.provider, enabled: true, modelId: "fixture-model", decisionId: "fixture-decision"},
+    budgets: {...GUEST_MAPPING_MODEL_POLICY.budgets, maxModelCallsPerMonth: 10, maxModelCallsPerProfilePerMonth: 2,
+      maxInputTokensPerCall: 500, maxOutputTokensPerCall: 200, maxCostMicrosPerMonth: 1000}};
+  const {db, deps} = harness({mappingProvider: () => guestMappingProposalProvider({policy, runner})});
+  const csv = "Attendee,Contact,Seat\nAsha Sample,9876543210,A1\n";
+  const preview = await importGuestListHandler(call(envelope("preview", csv)), deps);
+  valid(validate.response, preview, "model mapping");
+  assert.equal(preview.status, "previewed");
+  assert.equal(preview.result.mappedBy, "model");
+  assert.equal(preview.result.counts.add, 1);
+  assert.deepEqual(requests, [{headers: ["Attendee", "Contact", "Seat"], columnShapes: ["text", "phone-like", "text"]}]);
+  assert.equal(JSON.stringify(requests).includes("Asha"), false);
+  const stored = db.read(`hostRosterIntakeSessions/${preview.result.sessionId}`) as {draft: {rows: Array<{fields: Record<string, {origin: string; confidence: number | null}>}>}};
+  assert.deepEqual(stored.draft.rows[0].fields.displayName, {column: 0, header: "Attendee", origin: "modelProposal", confidence: 0.8});
+  assert.ok(preview.summary.lines.some((line) => line.startsWith("We guessed which column")));
+});
+
+test("an unusable model proposal falls back to the host mapping", async () => {
+  const runner: GuestMappingModelRunner = {run: async () => ({output: {mapping: {phone: 1}, confidence: 0.4}})};
+  const policy = {...GUEST_MAPPING_MODEL_POLICY,
+    provider: {...GUEST_MAPPING_MODEL_POLICY.provider, enabled: true, modelId: "fixture-model", decisionId: "fixture-decision"},
+    budgets: {...GUEST_MAPPING_MODEL_POLICY.budgets, maxModelCallsPerMonth: 10, maxModelCallsPerProfilePerMonth: 2}};
+  const {deps} = harness({mappingProvider: () => guestMappingProposalProvider({policy, runner})});
+  const response = await importGuestListHandler(call(envelope("preview", "Attendee,Contact\nAsha Sample,9876543210\n")), deps);
+  assert.equal(response.status, "needs_input");
 });

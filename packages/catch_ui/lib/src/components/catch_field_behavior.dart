@@ -522,6 +522,7 @@ extension _CatchFieldBehavior on _CatchFieldState {
           widget.trailing != null ||
           widget._hasRowActions);
   bool get _usesPositionedClearTrailing =>
+      !widget._outlinedTextEntry &&
       _usesRowTextEntryTrailing &&
       widget.showClearButton &&
       widget.showLabel &&
@@ -573,8 +574,13 @@ extension _CatchFieldBehavior on _CatchFieldState {
           widget.onTap != null &&
           widget.tone != CatchFieldTone.danger);
 
+  // An outlined box always shows its label and empty box; only explicit-save
+  // rows still rest as an inline Add line.
   bool get _textEntryCanCollapse =>
-      _isEdit && widget.showLabel && (_title?.isNotEmpty ?? false);
+      _isEdit &&
+      !widget._outlinedTextEntry &&
+      widget.showLabel &&
+      (_title?.isNotEmpty ?? false);
   bool get _textEntryExpanded =>
       !_textEntryCanCollapse ||
       _hasInputValue ||
