@@ -33,6 +33,18 @@
       "summary": "Read one public page (Instagram, Luma, Linktree or a website) and fill the caller's try-it workspace from it, or route them to claim the organizer Catch already lists."
     },
     {
+      "commandId": "guests.import-list",
+      "version": 1,
+      "callable": "importGuestList",
+      "payloadSchema": "contracts/callables/import_guest_list_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/import_guest_list_response.schema.json",
+      "effect": "draft",
+      "caller": "organizer_manager",
+      "surfaces": ["catch_host", "cli"],
+      "linkAllowance": null,
+      "summary": "Read one guest-list file (CSV, XLSX or vCard) for an event with the converter for its format, show what would be added or updated, and save exactly the reviewed preview to the event's private guest list. The caller manages the event's organizer and has a phone verified by code."
+    },
+    {
       "commandId": "event.import-from-link",
       "version": 1,
       "callable": "importEventFromLink",

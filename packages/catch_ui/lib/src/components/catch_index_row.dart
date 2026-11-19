@@ -16,8 +16,9 @@ enum CatchIndexRowSize { compact, regular, roomy }
 /// The colour of a row's marker dot, status, meta or leading icon tile.
 enum CatchIndexRowTone { neutral, success, warning, danger, info }
 
-/// How a system row's title reads: [unread] in bold, [done] (a step already
-/// run) in the secondary ink at regular weight.
+/// How a system row's title reads: [unread] in bold, with a coral dot at
+/// the end; [done] (a step already run) in the secondary ink at regular
+/// weight.
 enum CatchIndexRowEmphasis { regular, unread, done }
 
 /// A small badge right after a row's title: "New", "Regular".
@@ -404,14 +405,37 @@ class CatchIndexRow extends StatelessWidget {
           )
         : timeText ?? main;
     final value = this.value;
+    final valueText = value == null
+        ? null
+        : CatchText(
+            value,
+            tone: CatchTextTone.secondary,
+            numeric: true,
+            maxLines: 1,
+          );
+    // An unread row carries the drawings' coral dot under its value.
+    final unreadDot = emphasis == CatchIndexRowEmphasis.unread
+        ? SizedBox.square(
+            key: const ValueKey<String>('catch-index-row-unread-dot'),
+            dimension: CatchSpacing.micro10,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: t.formatRun,
+                shape: BoxShape.circle,
+              ),
+            ),
+          )
+        : null;
     final ends = <Widget>[
-      if (value != null)
-        CatchText(
-          value,
-          tone: CatchTextTone.secondary,
-          numeric: true,
-          maxLines: 1,
-        ),
+      if (valueText != null && unreadDot != null)
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          spacing: CatchSpacing.micro6,
+          children: [valueText, unreadDot],
+        )
+      else
+        ?(valueText ?? unreadDot),
       ?trailing,
       if (chevron && action == null)
         Icon(CatchIcons.disclosure, size: CatchIconSize.xs, color: t.ink2),

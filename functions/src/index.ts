@@ -1026,6 +1026,7 @@ export {ensureTryItWorkspace} from "./commands/ensureTryItWorkspace";
 export {importOrganizerFromLink} from "./commands/importOrganizerFromLink";
 export {importEventFromLink} from "./commands/importEventFromLink";
 export {expireTryItWorkspaces} from "./commands/workspaceExpiry";
+export {importGuestList} from "./commands/importGuestList";
 
 export {
   getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,

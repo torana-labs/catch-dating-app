@@ -47,7 +47,7 @@ class HostProgrammeMessagesScreen extends ConsumerWidget {
             CatchIconAction(
               key: const ValueKey<String>('host-programme-open-inbox'),
               tooltip: l10n.hostProgrammeInboxOpen,
-              variant: CatchIconActionVariant.plain,
+              size: GeneratedCatchSizeTokens.controlMd,
               child: CatchIcon(CatchIcons.conversations),
               onPressed: () => openHostProgrammePage(
                 context,
