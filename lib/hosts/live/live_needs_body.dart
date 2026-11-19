@@ -117,7 +117,7 @@ class HostLiveNeedsBody extends StatelessWidget {
           for (final (label, items) in groups)
             if (items.isNotEmpty)
               CatchSection(
-                title: label,
+                kicker: label,
                 children: [
                   for (final need in items)
                     HostLiveNeedRow(
