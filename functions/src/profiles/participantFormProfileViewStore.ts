@@ -18,10 +18,10 @@ export const participantIntakeProfileViewsCollection =
 export const formProfileClaimTermsVersion = "form-profile-claim-v1";
 
 /**
- * The guest's review row for one submitted form, exactly as
- * getParticipantFormProfile computes the proposal and organizer-card parts,
- * or null when the proposal is unavailable to its owner (no proposal, a
- * withdrawn or changed response, a deleted account, an inconsistent card).
+ * The guest's review row for one submitted form: the proposal the claim
+ * rereads and the organizer-card choice it checks, or null when the proposal
+ * is unavailable to its owner (no proposal, a withdrawn or changed response,
+ * a deleted account, an inconsistent card).
  * Reads in the transaction; never writes.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {FirebaseFirestore.Transaction} tx The read transaction.
@@ -62,8 +62,8 @@ export async function participantFormProfileView(
 }
 
 /**
- * The guest's intake revision and saved LinkedIn URL, as
- * getParticipantFormProfile returns them, or null without an intake profile
+ * The guest's intake revision and saved LinkedIn URL, which the claim
+ * checks and keeps, or null without an intake profile
  * (which the review reads as revision 0 and no URL) or after deletion.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {FirebaseFirestore.Transaction} tx The read transaction.

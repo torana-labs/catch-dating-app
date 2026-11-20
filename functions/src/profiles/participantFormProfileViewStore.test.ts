@@ -4,9 +4,9 @@ import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {createFormPaymentFixture} from
   "../payments/formPayments/formPaymentTestStore";
-import {claimParticipantFormProfileHandler as claim,
-  getParticipantFormProfileHandler as review} from "./claimFormProfile";
-import {listParticipantFormProfilesHandler as list} from "./listFormProfiles";
+import {readParticipantFormProfileProposal} from
+  "../organizers/organizerFormProfileProposals";
+import {claimParticipantFormProfileHandler as claim} from "./claimFormProfile";
 import {reconcileParticipantFormProfileView,
   reconcileParticipantIntakeProfileView, responseWriteChangesReview} from
   "./participantFormProfileViewStore";
@@ -54,49 +54,36 @@ async function fixture() {
     await reconcileParticipantFormProfileView(h.db, responseId);
     await reconcileParticipantIntakeProfileView(h.db, "person");
   };
-  /** The parts of the callables' answers the views must reproduce. */
-  const expected = async () => {
-    const reviewed = await review(call({responseId}), deps);
-    const page = await list(call({cursor: null, limit: 20}), deps);
-    return {reviewed, item: page.items.find((row) =>
-      row.responseId === responseId)};
-  };
+  /** The proposal the claim rereads, which the row must reproduce. */
+  const proposal = () => h.db.runTransaction((tx) =>
+    readParticipantFormProfileProposal({db: h.db, tx, uid: "person",
+      responseId}));
   return {...h, responseId, call, deps, view, intakeView, reconcile,
-    expected};
+    proposal};
 }
 
 type Fixture = Awaited<ReturnType<typeof fixture>>;
 
-async function assertMatchesCallables(h: Fixture) {
+async function assertMatchesSources(h: Fixture,
+  card: {selected: string[]; revision: number}) {
   await h.reconcile();
-  const {reviewed, item} = await h.expected();
+  const proposal = await h.proposal();
   const row = h.view();
   assert.equal(validView(row), true);
-  assert.deepEqual(row, {uid: "person", organizerId: reviewed.organizerId,
-    formId: reviewed.formId, formTitle: reviewed.formTitle,
-    submittedAtMillis: reviewed.submittedAtMillis,
-    claimedAtMillis: reviewed.claimedAtMillis, fields: reviewed.fields,
-    selectedCardQuestionIds: reviewed.selectedCardQuestionIds,
-    cardRevision: reviewed.cardRevision, termsVersion: reviewed.termsVersion,
-    version: 1});
-  assert.deepEqual({organizerId: item?.organizerId,
-    formTitle: item?.formTitle, submittedAtMillis: item?.submittedAtMillis,
-    claimedAtMillis: item?.claimedAtMillis,
-    cardFieldCount: item?.cardFieldCount}, {
-    organizerId: row!.organizerId, formTitle: row!.formTitle,
-    submittedAtMillis: row!.submittedAtMillis,
-    claimedAtMillis: row!.claimedAtMillis,
-    cardFieldCount: (row!.selectedCardQuestionIds as string[]).length});
+  assert.deepEqual(row, {uid: "person", organizerId: proposal.organizerId,
+    formId: proposal.formId, formTitle: proposal.formTitle,
+    submittedAtMillis: proposal.submittedAtMillis,
+    claimedAtMillis: proposal.claimedAtMillis, fields: proposal.fields,
+    selectedCardQuestionIds: card.selected, cardRevision: card.revision,
+    termsVersion: "form-profile-claim-v1", version: 1});
   const intake = h.intakeView();
-  assert.equal(intake?.intakeRevision ?? 0, reviewed.intakeRevision);
-  assert.equal(intake?.linkedinUrl ?? null, reviewed.currentLinkedinUrl);
   if (intake) assert.equal(validIntakeView(intake), true);
 }
 
-test("each row holds exactly what the review and list callables return",
+test("each row holds the proposal the claim rereads and the card choice",
   async () => {
     const h = await fixture();
-    await assertMatchesCallables(h);
+    await assertMatchesSources(h, {selected: [], revision: 0});
     const row = h.view()!;
     assert.equal(row.claimedAtMillis, null);
     assert.deepEqual(row.selectedCardQuestionIds, []);
@@ -116,7 +103,7 @@ test("a claim moves the row's claim date, card choice and intake revision",
         booleanValue: null, dateValue: null, optionValues: [], assetIds: []},
       sourceApplicationId: null, reviewedByParticipantAt: now,
       updatedAt: now}], revision: 3, createdAt: now, updatedAt: now});
-    await assertMatchesCallables(h);
+    await assertMatchesSources(h, {selected: [], revision: 0});
     assert.deepEqual(h.intakeView(), {uid: "person", intakeRevision: 3,
       linkedinUrl: "https://www.linkedin.com/in/sara", version: 1});
     await claim(h.call({responseId: h.responseId, expectedProfileRevision: 0,
@@ -125,7 +112,8 @@ test("a claim moves the row's claim date, card choice and intake revision",
       profile: {displayName: "Sara Demo", dateOfBirth: "1994-06-15",
         gender: "woman"},
       selectedQuestionIds: ["name", "cocktail"]}), h.deps);
-    await assertMatchesCallables(h);
+    await assertMatchesSources(h, {selected: ["cocktail"], revision: 1});
+    assert.equal(h.intakeView()?.intakeRevision, 3);
     assert.equal(h.view()!.claimedAtMillis, now.toMillis());
     assert.deepEqual(h.view()!.selectedCardQuestionIds, ["cocktail"]);
     assert.equal(h.view()!.cardRevision, 1);
@@ -144,8 +132,6 @@ test("withdrawal and account deletion remove the rows", async () => {
     withdrawnAt: now});
   await h.reconcile();
   assert.equal(h.view(), undefined);
-  await assert.rejects(review(h.call({responseId: h.responseId}), h.deps),
-    /unavailable/u);
   h.store.records.set(responsePath, response);
   await h.reconcile();
   assert.ok(h.view());
