@@ -78,8 +78,11 @@ export const organizerTrackingPublicationPolicy:
       // decision relayed 19 Nov 2026, #2063); the singles and crawl classes
       // stay, as do the excluded interaction models below.
       ["singlesMixer", "barCrawl"]),
+    // seatedTable was removed so a Catch-hosted dinner qualifies (owner
+    // decision relayed 19 Nov 2026, #2063); mixers, rotations and route stops
+    // stay excluded.
     excludedInteractionModels: Object.freeze(
-      ["pairedRotations", "seatedTable", "freeFormMixer", "routeStops"]),
+      ["pairedRotations", "freeFormMixer", "routeStops"]),
     externalListingsCountAsUnknown: false,
     externalListingAllowance: Object.freeze({
       // Supply intake labels every run "socialRun" and every dinner "dinner".
