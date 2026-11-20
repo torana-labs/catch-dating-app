@@ -1042,6 +1042,25 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // The try-it AI fallback's policy override, spend, result cache and
+    // audit (#2062): written by trusted import callables or staff through
+    // the Admin SDK only.
+    match /aiFallbackPolicies/{policyId} {
+      allow read, write: if false;
+    }
+
+    match /aiFallbackUsage/{usageKey} {
+      allow read, write: if false;
+    }
+
+    match /aiFallbackResults/{cacheKey} {
+      allow read, write: if false;
+    }
+
+    match /aiFallbackAudit/{auditId} {
+      allow read, write: if false;
+    }
+
     // Support conversations, their messages and saved replies hold contact
     // details; only the role-gated Admin support callables read or write.
     match /supportConversations/{privateDocument=**} {

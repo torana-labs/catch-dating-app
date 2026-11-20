@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/ai_fallback_results.schema.json",
+  "title": "AiFallbackResultDocument",
+  "description": "The try-it AI fallback's result cache (#2062), keyed by the hash of task, prompt version, model, input and output schema, so a preview and its apply share one paid call. recordJson is the GuardedModelRunner's validated record: the model's output for public page text or column headers and shapes, plus token metadata; never a guest's details. expiresAt drives a 30-day TTL policy.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "aiFallbackResults",
+  "x-firestore-path": "aiFallbackResults/{cacheKey}",
+  "x-document-id-field": "cacheKey",
+  "x-owner": "trusted try-it import callables",
+  "required": ["schemaVersion", "cacheKey", "task", "recordJson", "createdAt", "expiresAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "cacheKey": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "task": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,99}$"},
+    "recordJson": {"type": "string", "maxLength": 300000},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"}
+  }
+}

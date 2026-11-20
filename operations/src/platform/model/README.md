@@ -20,7 +20,7 @@ execution, provider selection or automatic cross-provider fallback.
 | --- | --- | --- |
 | DeepSeek | `deepseek-flash`, `deepseek-v4-pro` | Chat Completions `response_format: json_object`; trusted prompt includes schema; local AJV validates output. Thinking is explicitly disabled. |
 | OpenAI | `gpt-4.1-mini-2025-04-14` | Responses `text.format: json_schema` with `strict: true`; all object fields required. `store: false` and truncation disabled. |
-| Anthropic | `claude-haiku-4-5-20251001` | Messages `output_config.format: json_schema`; no beta header. Thinking explicitly disabled. |
+| Anthropic | `claude-haiku-4-5-20251001`, `claude-opus-5-5` | Messages `output_config.format: json_schema`. Thinking explicitly disabled. `authScheme: "api_key"` (default) sends `x-api-key` with no beta header; `authScheme: "oauth_bearer"` sends a Workload Identity Federation access token as `Authorization: Bearer` with the `oauth-2025-04-20` beta, for callers with no stored key (the try-it AI fallback, #2062). `claude-opus-5-5` is priced in `price-book.mjs`. |
 | Local (Ollama, LM Studio) | `qwen2.5:7b-instruct`, `qwen2.5:14b-instruct`, `llama3.1:8b`, `gemma3:12b` | OpenAI-compatible Chat Completions `response_format: json_object` on a loopback endpoint; schema in the trusted prompt; local AJV validates output. No credential is sent. Output cap 4,096 tokens. |
 
 `local-provider.mjs` runs a model on the same machine, so extraction has no

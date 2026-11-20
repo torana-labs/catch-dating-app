@@ -278,13 +278,23 @@ export interface AssistantRuntime {
 
 let sharedTokenSource: {key: string; source: AnthropicTokenSource} | null = null;
 
-/** The module-scope token source for this federation config. */
-function tokenSourceFor(config: FederationConfig): AnthropicTokenSource {
+/**
+ * The module-scope token source for this federation config. Other server
+ * features that call Anthropic (the try-it import fallback) share it, so one
+ * runtime identity and one cached access token serve every caller.
+ */
+export function tokenSourceFor(config: FederationConfig): AnthropicTokenSource {
   const key = `${config.federationRuleId}:${config.organizationId}`;
   if (sharedTokenSource?.key !== key) {
     sharedTokenSource = {key, source: createAnthropicTokenSource(config)};
   }
   return sharedTokenSource.source;
+}
+
+/** This project's federation params, or null while either is blank. */
+export function anthropicFederationConfig(): FederationConfig | null {
+  return parseFederationConfig(programAssistantFederationRuleId.value(),
+    anthropicOrganizationId.value());
 }
 
 /**
@@ -293,8 +303,7 @@ function tokenSourceFor(config: FederationConfig): AnthropicTokenSource {
  * provider error with nothing billed.
  */
 export function defaultAssistantRuntime(): AssistantRuntime {
-  const config = parseFederationConfig(programAssistantFederationRuleId.value(),
-    anthropicOrganizationId.value());
+  const config = anthropicFederationConfig();
   return {
     enabled: programAssistantEnabled.value() === true && config !== null,
     provider: async () => {

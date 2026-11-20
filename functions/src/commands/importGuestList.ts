@@ -25,7 +25,8 @@ import {
   type HostRosterIntakePreview,
   type HostRosterMappingProposalProvider,
 } from "../events/hostRosterIntakeCore";
-import {guestMappingProposalProvider} from "../guestImport/mappingFallback";
+import {aiFallbackGuestMappingRunner, guestMappingProposalProvider} from
+  "../guestImport/mappingFallback";
 import type {
   CanonicalGuestRead,
   GuestColumnMapping,
@@ -94,7 +95,8 @@ export interface ImportGuestListDeps {
   checkRateLimit: typeof defaultCheckRateLimit;
   intake: () => HostRosterIntakeManageDeps;
   /** The model fallback for unknown columns; null while it is off. */
-  mappingProvider: () => HostRosterMappingProposalProvider | null;
+  mappingProvider: (context: {uid: string}) =>
+    HostRosterMappingProposalProvider | null;
 }
 
 const defaultDeps: ImportGuestListDeps = {
@@ -106,7 +108,8 @@ const defaultDeps: ImportGuestListDeps = {
     admin.firestore.Timestamp.fromMillis(millis),
   checkRateLimit: defaultCheckRateLimit,
   intake: () => defaultHostRosterIntakeApplyDeps(),
-  mappingProvider: () => guestMappingProposalProvider(),
+  mappingProvider: ({uid}) => guestMappingProposalProvider({
+    runner: aiFallbackGuestMappingRunner({uid, commandId: COMMAND_ID})}),
 };
 
 const fileErrors: Record<string, string> = {
@@ -192,7 +195,7 @@ export async function importGuestListHandler(
       await countShape(db, deps, headers);
     }
     const proposed = input.mapping ? null :
-      await modelMapping(deps, headers, shapes, reservedColumns);
+      await modelMapping(deps, caller.uid, headers, shapes, reservedColumns);
     if (!proposed) {
       return needsInput(caller.uid, requestInput, file, headers, shapes,
         input.mapping);
@@ -253,6 +256,7 @@ export async function importGuestListHandler(
       "previewed", previewHash, receiptId: null, file, read, shapes,
     review, preview, eventId, imported: null, suggestions,
     extraMapping, mappedBy: mappedBy(input.mapping, modelProposal),
+    reviewFields: input.mapping ? [] : modelProposal?.fields ?? [],
     target});
   }
 
@@ -279,6 +283,7 @@ export async function importGuestListHandler(
     read, shapes, review, preview, eventId, imported,
     receiptImportId: review.receipt?.importId ?? null, suggestions,
     extraMapping, mappedBy: mappedBy(input.mapping, modelProposal),
+    reviewFields: input.mapping ? [] : modelProposal?.fields ?? [],
     target});
   return db.runTransaction(async (tx) => {
     const now = deps.now();
@@ -314,12 +319,13 @@ export const importGuestList = onCall(appCheckCallableOptions,
  * while it is off, or when its proposal is unusable: the host maps instead.
  * @return {Promise<object|null>} The proposed mapping and confidence.
  */
-async function modelMapping(deps: ImportGuestListDeps, headers: string[],
+async function modelMapping(deps: ImportGuestListDeps, uid: string,
+  headers: string[],
   shapes: ColumnShape[], reservedColumns: number[]):
   Promise<{mapping: Partial<GuestColumnMapping>; confidence: number} | null> {
   let provider: HostRosterMappingProposalProvider | null;
   try {
-    provider = deps.mappingProvider();
+    provider = deps.mappingProvider({uid});
   } catch (error) {
     logger.warn("Guest mapping fallback is not ready.",
       {error: error instanceof Error ? error.message : String(error)});
@@ -386,7 +392,8 @@ function needsInput(uid: string, requestInput: unknown, file: GuestFileRead,
       converter: {id: "generic-v1", support: "generic", confidence: 0},
       headers: headers.map((header) => header.slice(0, 120)),
       columnShapes: shapes, mapping, mappedBy: hostMapping ? "host" :
-        "converter", needsMapping: true, sessionId: null,
+        "converter", aiRead: false, reviewFields: [],
+      needsMapping: true, sessionId: null,
       revision: null, reviewHash: null, eligibleForApply: false,
       counts: {add: 0, update: 0, unchanged: 0, excluded: 0, needsReview: 0,
         identityConflict: 0, skipped: 0},
@@ -410,6 +417,8 @@ function describe(params: {
   suggestions: GuestSuggestion[];
   extraMapping: GuestExtraMapping;
   mappedBy: "converter" | "host" | "model";
+  /** Mapping fields the model chose, for the host to check. */
+  reviewFields: GuestField[];
   target: GuestListTarget;
 }): Response {
   const {status, preview, read, review, imported} = params;
@@ -484,7 +493,10 @@ function describe(params: {
         confidence: read.adapter.confidence},
       headers: read.headers.map((header) => header.slice(0, 120)),
       columnShapes: params.shapes.slice(0, read.headers.length),
-      mapping, mappedBy: params.mappedBy, needsMapping: false,
+      mapping, mappedBy: params.mappedBy,
+      aiRead: params.mappedBy === "model",
+      reviewFields: params.mappedBy === "model" ? [...params.reviewFields] : [],
+      needsMapping: false,
       sessionId: preview.sessionId,
       revision: preview.revision, reviewHash: preview.reviewHash,
       eligibleForApply: preview.eligibleForApply, counts,

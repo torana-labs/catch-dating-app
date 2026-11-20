@@ -4222,6 +4222,74 @@
       ]
     },
     {
+      "id": "aiFallbackPolicies",
+      "path": "aiFallbackPolicies/{policyId}",
+      "rulesMatch": "/aiFallbackPolicies/{policyId}",
+      "typescriptInterface": "AiFallbackPolicyDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps durable operations records server-owned"
+      ],
+      "owner": "staff, through the Admin SDK",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "importGuestList"
+      ]
+    },
+    {
+      "id": "aiFallbackUsage",
+      "path": "aiFallbackUsage/{usageKey}",
+      "rulesMatch": "/aiFallbackUsage/{usageKey}",
+      "typescriptInterface": "AiFallbackUsageDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps durable operations records server-owned"
+      ],
+      "owner": "trusted try-it import callables",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "importGuestList"
+      ]
+    },
+    {
+      "id": "aiFallbackResults",
+      "path": "aiFallbackResults/{cacheKey}",
+      "rulesMatch": "/aiFallbackResults/{cacheKey}",
+      "typescriptInterface": "AiFallbackResultDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps durable operations records server-owned"
+      ],
+      "owner": "trusted try-it import callables",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "importGuestList"
+      ]
+    },
+    {
+      "id": "aiFallbackAudit",
+      "path": "aiFallbackAudit/{auditId}",
+      "rulesMatch": "/aiFallbackAudit/{auditId}",
+      "typescriptInterface": "AiFallbackAuditDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps durable operations records server-owned"
+      ],
+      "owner": "trusted try-it import callables",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "importGuestList"
+      ]
+    },
+    {
       "id": "supplyIntakeUsage",
       "path": "supplyIntakeUsage/{monthKey}",
       "rulesMatch": "/supplyIntakeUsage/{monthKey}",

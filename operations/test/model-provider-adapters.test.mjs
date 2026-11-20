@@ -4,7 +4,7 @@ import {BudgetLedger} from "../src/platform/budget.mjs";
 import {GuardedModelRunner} from "../src/platform/model/guarded-model-runner.mjs";
 import {createDeepSeekProvider, DEEPSEEK_MODELS} from "../src/platform/model/deepseek-provider.mjs";
 import {createOpenAIProvider, OPENAI_MODELS} from "../src/platform/model/openai-provider.mjs";
-import {createAnthropicProvider, ANTHROPIC_MODELS} from "../src/platform/model/anthropic-provider.mjs";
+import {createAnthropicProvider, ANTHROPIC_MODELS, ANTHROPIC_OAUTH_BETA} from "../src/platform/model/anthropic-provider.mjs";
 import {compileClosedSchema, requireModelCapability} from "../src/platform/model/provider-contract.mjs";
 import {authorizePreparationStage, freezeSalesPreparationPolicy} from
   "../src/workflows/outreach-drafting/preparation-policy.mjs";
@@ -572,6 +572,19 @@ test("OpenAI: raw refusals, incomplete/failed states, tool output and invalid us
     assert.equal(attempts, 1); assert.equal(f.records.size, 0);
     assert.equal(f.monthlyBudget.snapshot().consumed.modelCostMicros, 1000);
   }
+});
+
+test("Anthropic: oauth_bearer sends a federation token instead of x-api-key; unknown auth fails closed", async () => {
+  const f = nativeFixture("anthropic", {authScheme: "oauth_bearer"});
+  await f.provider.run(nativeRequest("anthropic"));
+  const {options} = f.calls[0];
+  assert.equal(options.headers.Authorization, "Bearer synthetic-credential");
+  assert.equal(options.headers["anthropic-beta"], ANTHROPIC_OAUTH_BETA);
+  assert.equal(options.headers["anthropic-version"], "2023-06-01");
+  assert.equal(options.headers["x-api-key"], undefined);
+  assert.throws(() => nativeFixture("anthropic", {authScheme: "cookie"}), {code: "MODEL_PROVIDER_CONFIG_INVALID"});
+  assert.throws(() => nativeFixture("anthropic", {authScheme: "toString"}), {code: "MODEL_PROVIDER_CONFIG_INVALID"});
+  assert.deepEqual(ANTHROPIC_MODELS.anthropic["claude-opus-5-5"].capabilities, ["json_schema"]);
 });
 
 test("Anthropic: billed refusals, max_tokens, tool/thinking blocks and missing cache usage fail closed", async () => {
