@@ -674,6 +674,17 @@
         },
         {
           "routes": [
+            "hostPeopleDuplicatesScreen"
+          ],
+          "file": "lib/hosts/people/duplicates/duplicates_screen.dart",
+          "symbol": "_HostPeopleDuplicatesScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        },
+        {
+          "routes": [
             "hostCustomerDetailScreen"
           ],
           "file": "lib/hosts/people/person_screen.dart",
@@ -13420,6 +13431,11 @@
           "role": "host"
         },
         {
+          "id": "hostPeopleDuplicatesScreen",
+          "path": "/host/audience/duplicates",
+          "role": "host"
+        },
+        {
           "id": "hostCustomerDetailScreen",
           "path": "/host/audience/people/:contactId",
           "role": "host"
@@ -13430,7 +13446,7 @@
         "symbol": "HostPeopleScreen"
       },
       "stateController": {
-        "primary": "hostCustomersDirectoryControllerProvider + hostAllSavedAudiencesProvider + hostContactSummaryRowProvider + hostContactDetailFactsProvider + hostContactNotesProvider + hostOrganizerSelectionProvider",
+        "primary": "hostCustomersDirectoryControllerProvider + hostAllSavedAudiencesProvider + hostContactSummaryRowProvider + hostContactDetailFactsProvider + hostContactNotesProvider + hostDuplicateReviewPagesProvider + hostOrganizerSelectionProvider",
         "files": [
           {
             "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
@@ -13447,12 +13463,20 @@
           {
             "file": "lib/hosts/presentation/host_organizer_selection_controller.dart",
             "symbol": "HostOrganizerSelection"
+          },
+          {
+            "file": "lib/hosts/people/duplicates/duplicates_controller.dart",
+            "symbol": "HostDuplicateReviewPages"
           }
         ],
         "mutationOwners": [
           {
             "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
             "symbol": "HostCustomersController"
+          },
+          {
+            "file": "lib/hosts/people/duplicates/duplicates_controller.dart",
+            "symbol": "HostDuplicateCommands"
           },
           {
             "file": "lib/hosts/presentation/host_audience_controller.dart",

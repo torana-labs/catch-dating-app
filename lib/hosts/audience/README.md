@@ -161,6 +161,7 @@ Owned routes:
 - `hostFormAutomationsScreen` — `/host/audience/forms/:formId/automations`
 - `hostAudienceAutomationsScreen` — `/host/audience/automations`
 - `hostApplicationDetailScreen` — `/host/audience/applications/:applicationId`
+- `hostPeopleDuplicatesScreen` — `/host/audience/duplicates`
 - `hostCustomerDetailScreen` — `/host/audience/people/:contactId`
 
 Typed handoffs:
@@ -178,6 +179,8 @@ Typed handoffs:
 | `HostCustomersDirectoryController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Actions: load_more. |
 | `HostCustomersController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Actions: export_customers, create_customer, manage_customer, start_conversation. |
 | `HostPersonScreen` | `lib/hosts/people/person_screen.dart` | Actions: open_customer_event, undo_customer_merge, retry_customer_detail, open_personal_whatsapp_handoff. |
+| `HostPeopleDuplicatesScreen` | `lib/hosts/people/duplicates/duplicates_screen.dart` | Actions: review_duplicate_customers, merge_customers, mark_different_people, reopen_duplicate, undo_customer_merge. |
+| `HostDuplicateCommands` | `lib/hosts/people/duplicates/duplicates_controller.dart` | Actions: merge_customers, mark_different_people, reopen_duplicate, undo_customer_merge. |
 | `HostAudienceView` | `lib/hosts/presentation/host_audience_view.dart` | Closed peer-mode vocabulary for People, Audiences, Forms, and Responses. |
 | `HostFormsScreen` | `lib/hosts/forms/forms_screen.dart` | The Forms tab inside People; one form, its questions, responses, one answer and offers live beside it under lib/hosts/forms. |
 | `HostFormsDirectoryController` | `lib/hosts/presentation/forms/host_forms_directory_controller.dart` | Organizer form inventory state. |
@@ -201,6 +204,7 @@ Typed handoffs:
 - `contracts/callable_responses/list_organizer_contact_merge_candidates_response.schema.json`
 - `contracts/callable_responses/list_organizer_contacts_response.schema.json`
 - `contracts/callable_responses/list_organizer_saved_audiences_response.schema.json`
+- `contracts/callable_responses/mutate_organizer_contact_merge_response.schema.json`
 - `contracts/callable_responses/mutate_organizer_contact_response.schema.json`
 - `contracts/callable_responses/organizer_contact_note_response.schema.json`
 - `contracts/callable_responses/organizer_messaging_setup_response.schema.json`
@@ -215,12 +219,15 @@ Typed handoffs:
 - `contracts/callables/list_organizer_contact_merge_candidates_payload.schema.json`
 - `contracts/callables/list_organizer_contacts_payload.schema.json`
 - `contracts/callables/list_organizer_saved_audiences_payload.schema.json`
+- `contracts/callables/merge_organizer_contacts_payload.schema.json`
 - `contracts/callables/mutate_organizer_contact_note_payload.schema.json`
 - `contracts/callables/mutate_organizer_contact_payload.schema.json`
 - `contracts/callables/preview_organizer_saved_audience_payload.schema.json`
 - `contracts/callables/review_organizer_contact_merge_candidate_payload.schema.json`
 - `contracts/callables/start_organizer_contact_conversation_payload.schema.json`
+- `contracts/callables/unmerge_organizer_contacts_payload.schema.json`
 - `contracts/callables/upsert_organizer_saved_audience_payload.schema.json`
+- `contracts/firestore/host_contact_detail_views.schema.json`
 - `contracts/firestore/organizer_applications.schema.json`
 - `contracts/firestore/organizer_contact_channel_states.schema.json`
 - `contracts/firestore/organizer_contact_event_edges.schema.json`
@@ -243,6 +250,9 @@ Typed handoffs:
 ## Focused tests
 
 - `test/hosts/host_customers_screen_state_test.dart`
+- `test/hosts/people/duplicates/duplicates_controller_test.dart`
+- `test/hosts/people/duplicates/duplicates_body_test.dart`
+- `test/hosts/people/duplicates/duplicates_flow_test.dart`
 - `test/hosts/forms/forms_body_test.dart`
 - `test/hosts/forms/host_form_builder_screen_test.dart`
 - `test/hosts/host_operations_screen_test.dart`
