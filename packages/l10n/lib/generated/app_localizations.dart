@@ -14274,24 +14274,6 @@ abstract class AppLocalizations {
     required int minutes,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Setup'**
-  String get eventSuccessEventSuccessHostSharedLabelSetup;
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Live'**
-  String get eventSuccessEventSuccessHostSharedLabelLive;
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Report'**
-  String get eventSuccessEventSuccessHostSharedLabelReport;
-
   /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:

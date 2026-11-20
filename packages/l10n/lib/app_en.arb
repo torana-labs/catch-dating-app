@@ -16246,27 +16246,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
-  "eventSuccessEventSuccessHostSharedLabelSetup": "Setup",
-  "@eventSuccessEventSuccessHostSharedLabelSetup": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
-  "eventSuccessEventSuccessHostSharedLabelLive": "Live",
-  "@eventSuccessEventSuccessHostSharedLabelLive": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
-  "eventSuccessEventSuccessHostSharedLabelReport": "Report",
-  "@eventSuccessEventSuccessHostSharedLabelReport": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
   "eventsEventDetailScreenStateVisiblecopyOrganizerReviewSummary": "{rating} FROM {reviewCount} ORGANIZER REVIEWS",
   "@eventsEventDetailScreenStateVisiblecopyOrganizerReviewSummary": {
     "description": "Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).",

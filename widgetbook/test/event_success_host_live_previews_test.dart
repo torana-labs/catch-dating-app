@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_compatibility_section.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_tab_bar.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,6 @@ import '../../test/test_pump_helpers.dart';
 void main() {
   for (final scale in [1.0, 2.0]) {
     for (final (builder, type, count) in <(WidgetBuilder, Type, int)>[
-      (eventSuccessStrictEventSuccessTabPicker, EventSuccessHostTabBar, 1),
       (
         eventSuccessStrictCompatibilitySignalHostCard,
         EventSuccessCompatibilitySection,

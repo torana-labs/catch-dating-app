@@ -7397,17 +7397,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                   ),
                 ],
               ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessHostTabBar',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Ready',
-                    builder:
-                        _widgetbook_workspace_event_success_host_live_components_use_cases
-                            .eventSuccessStrictEventSuccessTabPicker,
-                  ),
-                ],
-              ),
             ],
           ),
           _widgetbook.WidgetbookFolder(

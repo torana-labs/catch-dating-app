@@ -9123,15 +9123,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get eventSuccessEventSuccessHostSharedLabelSetup => 'Setup';
-
-  @override
-  String get eventSuccessEventSuccessHostSharedLabelLive => 'Live';
-
-  @override
-  String get eventSuccessEventSuccessHostSharedLabelReport => 'Report';
-
-  @override
   String eventsEventDetailScreenStateVisiblecopyOrganizerReviewSummary({
     required Object rating,
     required Object reviewCount,

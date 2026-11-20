@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_compatibility_section.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_tab_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -25,23 +23,6 @@ Widget previewSpatialAttendeeRow(BuildContext context) =>
           pending: false,
           canDrag: false,
           onSelect: (_) async {},
-        ),
-      ],
-    );
-
-@widgetbook.UseCase(
-  name: 'Ready',
-  type: EventSuccessHostTabBar,
-  path: '[P1 product surfaces]/Event Success/Host live components',
-)
-Widget eventSuccessStrictEventSuccessTabPicker(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessHostTabBar',
-      catalogId: 'Event Success Host live',
-      children: [
-        EventSuccessHostTabBar(
-          selectedTab: EventSuccessHostTab.live,
-          onChanged: (_) {},
         ),
       ],
     );
