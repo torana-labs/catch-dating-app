@@ -34,7 +34,7 @@ export const guestImportTryItCopy = {
   chosen: "{name} · {size}",
   accepts: "A CSV or Excel (.xlsx) file, up to 5 MB. The first 250 guests are read.",
   /** Where the file goes, under the form on every step before the save. */
-  where: `Nothing leaves your browser until you confirm your phone number. Then ${brand.name}’s servers read the file only to import it, never use it to train AI, and don’t keep it. The guests in it wait in a private review on your account until you save them.`,
+  where: `Nothing leaves your browser until you confirm your phone number. Then ${brand.name}’s servers read the file only to import it, never use it to train AI, and don’t keep it. The guests in it wait in a private review on your account until you save them, and are removed after 30 days if you don't continue.`,
   fileRequired: "Choose a CSV or Excel file first.",
   fileType: "Choose a CSV or Excel (.xlsx) file.",
   fileEmpty: "This file is empty.",
