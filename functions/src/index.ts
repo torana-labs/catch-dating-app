@@ -473,10 +473,8 @@ export {
   syncPublicProfile,
 } from "./profiles/syncPublicProfile";
 export {getParticipantFormPhoto} from "./profiles/formProfilePhotoPreview";
-export {listParticipantFormProfiles} from "./profiles/listFormProfiles";
 export {listParticipantActivity} from "./profiles/participantActivity";
-export {getParticipantFormProfile, claimParticipantFormProfile}
-  from "./profiles/claimFormProfile";
+export {claimParticipantFormProfile} from "./profiles/claimFormProfile";
 export {onParticipantFormProfileViewProposalChanged,
   onParticipantFormProfileViewResponseChanged,
   onParticipantFormProfileViewCardChanged,
@@ -715,8 +713,7 @@ export {recordEventAssistanceCheckpoint} from
 export {getEventRcsWithdrawal, withdrawEventRcs} from
   "./eventSuccess/operations/rcsWithdrawalHandlers";
 
-export {listParticipantMessagingPreferences,
-  withdrawParticipantMessagingPermission}
+export {withdrawParticipantMessagingPermission}
   from "./messaging/participantMessagingPreferences";
 export {onGuestMessagingPermissionCatchPreferenceChanged,
   onGuestMessagingPermissionOrganizerPreferenceChanged,

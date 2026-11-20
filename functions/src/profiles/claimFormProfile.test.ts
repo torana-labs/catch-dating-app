@@ -4,22 +4,13 @@ import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {createFormPaymentFixture} from
   "../payments/formPayments/formPaymentTestStore";
-import {claimParticipantFormProfileHandler as claim,
-  getParticipantFormProfileHandler as review, reviewedUserProfile} from
+import {claimParticipantFormProfileHandler as claim, reviewedUserProfile} from
   "./claimFormProfile";
-import {listParticipantFormProfilesHandler as list} from "./listFormProfiles";
+import {participantFormProfileView} from "./participantFormProfileViewStore";
 import {updateUserProfileHandler} from "./updateUserProfile";
 import type {ClaimParticipantFormProfileCallablePayload as Payload} from
   "../shared/generated/claimParticipantFormProfileCallablePayload";
 import type {ProfilePhoto} from "../shared/generated/firestoreAdminTypes";
-import type {GetParticipantFormProfileCallableResponse} from
-  "../shared/generated/getParticipantFormProfileCallableResponse";
-import {contractValidator} from "../shared/contractTestValidators";
-
-const validateGetParticipantFormProfileCallableResponse =
-  contractValidator<GetParticipantFormProfileCallableResponse>(
-    "GetParticipantFormProfileCallableResponse"
-  );
 
 const now = Timestamp.fromDate(new Date("2026-09-23T12:00:00Z"));
 const profile: Payload["profile"] = {displayName: "Sara Demo",
@@ -85,7 +76,10 @@ async function fixture(withPhoto = false, withEventAudience = false) {
       data: {...data, ...patch}} as unknown as CallableRequest<unknown>);
   const deps = {db: () => h.db, now: () => now,
     rateLimit: async () => undefined, copyPhoto: async () => photo};
-  return {...h, responseId, request, deps, data};
+  /** The guest's review row, as participantFormProfileViews holds it. */
+  const reviewRow = () => h.db.runTransaction((tx) =>
+    participantFormProfileView(h.db, tx, responseId));
+  return {...h, responseId, request, deps, data, reviewRow};
 }
 
 test("claim creates a non-dating identity and only selected private pointers",
@@ -106,25 +100,23 @@ test("claim creates a non-dating identity and only selected private pointers",
     assert.equal([...h.store.records.keys()].some((key) =>
       /^(publicProfiles|eventRooms|participantOrganizerDataGrants)\//u
         .test(key)), false);
-    const resultReview = await review({...h.request(), data: {
-      responseId: h.responseId}}, h.deps);
-    assert.equal(resultReview.profileRevision, 1);
-    assert.equal(resultReview.intakeRevision, 0);
-    assert.deepEqual(resultReview.fields.map((field) => field.questionId),
+    const row = await h.reviewRow();
+    assert.equal(row?.claimedAtMillis, now.toMillis());
+    assert.deepEqual(row?.selectedCardQuestionIds, ["cocktail"]);
+    assert.deepEqual(row?.fields.map((field) => field.questionId),
       ["name", "cocktail"]);
-    assert.equal(resultReview.fields.find((field) =>
+    assert.equal(row?.fields.find((field) =>
       field.questionId === "cocktail")?.eventProfileEligible, false);
   });
 
 test("explicit audience only marks the owner-reviewed answer as event-eligible",
   async () => {
     const h = await fixture(false, true);
-    const result = await review({...h.request(), data: {
-      responseId: h.responseId}}, h.deps);
-    assert.deepEqual(result.fields.map((field) =>
+    const row = await h.reviewRow();
+    assert.deepEqual(row?.fields.map((field) =>
       [field.questionId, field.eventProfileEligible]),
     [["name", false], ["cocktail", true]]);
-    assert.equal(result.fields.some((field) => field.value === "Private"),
+    assert.equal(row?.fields.some((field) => field.value === "Private"),
       false);
   });
 
@@ -168,7 +160,7 @@ test("existing preferences and unedited core fields survive claiming",
     assert.deepEqual(user.interestedInGenders, ["man"]);
   });
 
-test("unverified, foreign and deleted identities cannot claim or review",
+test("unverified, foreign and deleted identities cannot claim",
   async () => {
     const h = await fixture();
     for (const request of [h.request({}, "foreign"),
@@ -178,8 +170,6 @@ test("unverified, foreign and deleted identities cannot claim or review",
     }
     h.store.records.set("deletedUsers/person", {status: "processing"});
     await assert.rejects(claim(h.request(), h.deps), /unavailable/u);
-    await assert.rejects(review({...h.request(), data: {
-      responseId: h.responseId}}, h.deps), /unavailable/u);
     assert.equal(h.store.records.has("users/person"), false);
   });
 
@@ -302,55 +292,3 @@ test("deselecting card fields clears pointers without changing the source",
       `organizerFormResponses/${h.responseId}`), true);
   });
 
-
-test("owned review includes editable values and selected card, never CRM",
-  async () => {
-    const h = await fixture();
-    await claim(h.request(), h.deps);
-    h.store.records.set("organizers/org", {name: "RSVP"});
-    const result = await review({...h.request(), data: {
-      responseId: h.responseId}}, h.deps);
-    assert.equal(validateGetParticipantFormProfileCallableResponse(result),
-      true);
-    assert.equal(result.organizerName, "RSVP");
-    assert.equal(result.claimedAtMillis, now.toMillis());
-    assert.equal(result.currentProfile?.dateOfBirth, "1994-06-15");
-    assert.equal(result.currentProfile?.displayName, "Sara Demo");
-    assert.deepEqual(result.selectedCardQuestionIds, ["cocktail"]);
-    assert.equal(result.cardRevision, 1);
-    assert.equal(result.organizerId, "org");
-    assert.equal(JSON.stringify(result).includes("Private"), false);
-    assert.equal("phoneNumber" in result.currentProfile!, false);
-    assert.equal("prefsShowOnMap" in result.currentProfile!, false);
-  });
-
-test("directory pagination skips withdrawn sources without exposing others",
-  async () => {
-    const h = await fixture();
-    await claim(h.request(), h.deps);
-    const proposal = h.store.records.get(
-      `participantFormProfileProposals/${h.responseId}`)!;
-    const response = h.store.records.get(
-      `organizerFormResponses/${h.responseId}`)!;
-    h.store.records.delete(`participantFormProfileProposals/${h.responseId}`);
-    for (const id of ["a", "b", "c"]) {
-      h.store.records.set(`participantFormProfileProposals/${id}`,
-        {...proposal, responseId: id});
-      h.store.records.set(`organizerFormResponses/${id}`,
-        {...response, status: id === "a" ? "withdrawn" : "submitted",
-          withdrawnAt: id === "a" ? now : null});
-    }
-    h.store.records.set("participantFormProfileProposals/foreign",
-      {...proposal, uid: "someone-else", responseId: "foreign"});
-    const request = (cursor: string | null) => ({...h.request(), data: {
-      cursor, limit: 1}});
-    const first = await list(request(null), h.deps);
-    assert.deepEqual(first, {items: [], nextCursor: "a"});
-    const second = await list(request(first.nextCursor), h.deps);
-    assert.deepEqual(second.items.map((row) => row.responseId), ["b"]);
-    const third = await list(request(second.nextCursor), h.deps);
-    assert.deepEqual(third.items.map((row) => row.responseId), ["c"]);
-    assert.equal(third.nextCursor, null);
-    h.store.records.set("deletedUsers/person", {status: "processing"});
-    await assert.rejects(list(request(null), h.deps), /unavailable/u);
-  });

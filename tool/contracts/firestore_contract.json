@@ -1170,7 +1170,7 @@
         "onGuestMessagingPermissionOrganizerReceiptChanged"
       ],
       "migrationNotes": [
-        "preference equals what listParticipantMessagingPreferences returns for that sender. The guest-messaging-permissions copy-forward migration creates rows for preferences recorded before the triggers."
+        "preference is the sender's summary the retired listParticipantMessagingPreferences callable returned (Nov 2026), and the withdrawal response returns the same summary. The guest-messaging-permissions copy-forward migration creates rows for preferences recorded before the triggers."
       ]
     },
     {
@@ -4733,9 +4733,7 @@
         "submitOrganizerFormResponse",
         "getOrganizerFormPayment",
         "requestAccountDeletion",
-        "getParticipantFormProfile",
         "getParticipantFormPhoto",
-        "listParticipantFormProfiles",
         "claimParticipantFormProfile",
         "onParticipantFormProfileViewProposalChanged"
       ],
@@ -4755,7 +4753,6 @@
       "read": "server only; authenticated participant projection",
       "write": "server only; explicit participant review",
       "exportedFunctions": [
-        "listParticipantFormProfiles",
         "claimParticipantFormProfile",
         "requestAccountDeletion",
         "onParticipantFormProfileViewCardChanged"
@@ -4784,7 +4781,7 @@
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "Each row equals what getParticipantFormProfile returns for the proposal and card parts and what listParticipantFormProfiles lists, without organizer names. The participant-form-profile-views copy-forward migration creates rows for proposals recorded before the triggers."
+        "Each row holds the proposal and card parts the retired getParticipantFormProfile and listParticipantFormProfiles callables returned (Nov 2026), without organizer names. The participant-form-profile-views copy-forward migration creates rows for proposals recorded before the triggers."
       ]
     },
     {

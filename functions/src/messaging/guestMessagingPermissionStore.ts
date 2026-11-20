@@ -19,8 +19,8 @@ export type PermissionRow =
   | {scope: "organizer"; preferenceId: string};
 
 /**
- * The guest's permission row for one sender, exactly as
- * listParticipantMessagingPreferences summarizes it, or null when the
+ * The guest's permission row for one sender, as summarize computes it for
+ * the settings page and the withdrawal response, or null when the
  * guest has no preference document for that sender. Reads the preference
  * and the receipts it names in the transaction; never writes.
  * @param {FirebaseFirestore.Firestore} db Firestore.

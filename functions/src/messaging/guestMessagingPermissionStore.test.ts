@@ -1,15 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
-import type {CallableRequest} from "firebase-functions/v2/https";
 import {FormPaymentTestStore} from
   "../payments/formPayments/formPaymentTestStore";
 import {AudienceTestStore} from "../organizers/organizerAudienceTestStore";
 import {unknownOrganizerCommunicationChannel,
   organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
-import {listParticipantMessagingPreferencesHandler as list} from
-  "./participantMessagingPreferences";
 import {catchPermissionViewId, receiptPermissionRow,
   reconcileGuestMessagingPermission} from "./guestMessagingPermissionStore";
 import {contractValidator} from "../shared/contractTestValidators";
@@ -54,7 +51,7 @@ const view = (h: ReturnType<typeof fixture>, id: string) =>
   h.store.records.get(`guestMessagingPermissions/${id}`) as
     Record<string, unknown> | undefined;
 
-test("each row holds exactly the callable's summary", async () => {
+test("each row holds the sender's verified permission summary", async () => {
   const h = fixture();
   grant(h, "catch");
   grant(h, "organizer");
@@ -62,19 +59,16 @@ test("each row holds exactly the callable's summary", async () => {
     uid: "person"});
   await reconcileGuestMessagingPermission(h.db, {scope: "organizer",
     preferenceId: orgPref});
-  const page = await list(({auth: {uid: "person", token: {}},
-    data: {cursor: null, limit: 20}}) as unknown as CallableRequest<unknown>,
-  {db: () => h.db, now: () => now, rateLimit: async () => undefined});
   const catchRow = view(h, catchPermissionViewId("person"));
   const orgRow = view(h, orgPref);
   assert.equal(validView(catchRow), true);
   assert.equal(validView(orgRow), true);
   assert.deepEqual(catchRow, {uid: "person", scope: "catch",
-    organizerId: null, preference: page.catchPreference, version: 1});
+    organizerId: null, preference: {status: "optedIn",
+      receiptId: "catch-grant", purposes: {}}, version: 1});
   assert.deepEqual(orgRow, {uid: "person", scope: "organizer",
-    organizerId: "org", preference: page.organizers[0].preference,
-    version: 1});
-  assert.equal(page.catchPreference.status, "optedIn");
+    organizerId: "org", preference: {status: "optedIn",
+      receiptId: "organizer-grant", purposes: {}}, version: 1});
 });
 
 test("a receipt that stops proving the grant changes the row", async () => {
