@@ -1,11 +1,13 @@
 import {CatchButton, CatchRoot} from "@catch/web-ui";
+import {useMemo} from "react";
 import type {PlaybookPageDocument} from "../../content/playbook/playbookContract";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {PublicPageFooter, PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
-import {playbookLeadForms} from "./playbookLeadForms";
+import {playbookFormsPreviewToolSlot, playbookLeadForms} from "./playbookLeadForms";
 import {playbookSectionNode} from "./PlaybookSections";
 import {useFoundingHostOffer} from "../marketing/useFoundingHostOffer";
 import {usePlaybookPageController, type PlaybookLeadFormSlots, type PlaybookPageController} from "./usePlaybookPageController";
+import {usePlaybookTryItReveal} from "./usePlaybookTryItReveal";
 
 /**
  * The site header in the page's variant (guest, host or the one-job
@@ -39,13 +41,18 @@ function PlaybookHeader({header, controller}: {header: PlaybookPageDocument["hea
  * components (./PlaybookSections), then the site footer in the page's
  * variant, or with the page's own columns, and the page's numbered notes. `page` is validated and has its
  * brand tokens resolved (loadPlaybookPage); `captures` are the marketing
- * capture slots its media names.
+ * capture slots its media names. On the Forms page's owner preview
+ * (./usePlaybookTryItReveal.ts) it draws the page with its try band and the
+ * form tool, after hydration.
  */
-export function PlaybookPage({page, captures, leadForms = playbookLeadForms}: {
+export function PlaybookPage({page: written, captures, leadForms: slots = playbookLeadForms}: {
   page: PlaybookPageDocument;
   captures: CaptureSlots;
   leadForms?: PlaybookLeadFormSlots;
 }) {
+  const preview = usePlaybookTryItReveal(written);
+  const page = preview ?? written;
+  const leadForms = useMemo(() => preview ? {...slots, tool: playbookFormsPreviewToolSlot} : slots, [preview, slots]);
   const controller = usePlaybookPageController(page, leadForms);
   const context = {page, controller, captures};
   const footnotes = page.footer.footnotes?.map((footnote, index) => `${index + 1}. ${footnote.text}`);
