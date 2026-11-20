@@ -3687,15 +3687,15 @@ rather than embedded in event-type logic.
 |---|---|
 | Domain/runtime/playbooks | `lib/contexts/live/domain/` (runtime), `lib/contexts/formats/domain/` (playbooks, structures, questionnaires, defaults) |
 | Repository/providers | `lib/contexts/live/data/event_success_repository.dart` |
-| Host provider and workspace boundaries | The rehearsal screen (`lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart`) owns provider reads and mutation callbacks for practice; `event_success_host_workspace_page_body.dart` owns tab selection, fixture callbacks and live-action debounce over explicit state. Live nights run on the rebuilt console under `lib/hosts/live/`. |
-| Host setup and report components | `lib/event_success/presentation/host_setup/` owns setup editing, readiness and attendee target controls; `host_report/` owns the report, data-quality metrics, funnel and empty state. Host presentation has no handwritten part files. |
-| Host live control and shared components | `lib/event_success/presentation/host_live/` owns the live workspace, control room, step actions, accountability, presence, room summary and alerts; `host_components/` owns the tab chrome, plan/activity summaries, compatibility, help and resource errors. `event_success_host_keys.dart` and `event_success_control_room_state.dart` expose their shared plain contracts. |
+| Host live consoles and practice | Live nights run on the rebuilt console under `lib/hosts/live/` (one room, run, crawl). Rehearsal practice (`lib/hosts/events/rehearsal_practice_*.dart`) renders the same console bodies from the rehearsal projection; every practice command is a rehearsal command, and Practice tools reuse the rehearsal's own sections. |
+| Host setup components | `lib/event_success/presentation/host_setup/` owns the readiness and attendee target fields the plan screen uses. The event report lives under `lib/hosts/`. Host presentation has no handwritten part files. |
+| Host shared components | `lib/event_success/presentation/host_live/` keeps the outcome-unit state the scores screen reads; `host_components/` keeps the compatibility section the mix board uses. |
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |
 | Companion loading UI | `lib/event_success/presentation/companion/event_success_companion_loading_page_body.dart` (page, stage, and primary-action skeletons) |
 | Companion moment presentation | `lib/event_success/presentation/event_success_moment_presentation_state.dart` (localized copy, icons, and choreography projection) |
 | Shared Host/attendee room map | `lib/event_success/presentation/event_success_room_map.dart` |
-| Assignment generation and overrides | `lib/event_success/presentation/assignments/` (pod/rotation sections, override sheets, typed draft models) |
-| Live reveal UI | `lib/event_success/presentation/reveal/` (host/attendee surfaces, countdown, assignments, standings, and shared clock state) |
+| Assignment overrides | `lib/event_success/presentation/assignments/` (override sheets and typed draft models) |
+| Live reveal UI | `lib/event_success/presentation/reveal/` (attendee surfaces, countdown, assignments, standings, and shared clock state) |
 | Backend generators/wingman callables | `functions/src/eventSuccess/` |
 | No-download guest runtime | `website/src/features/eventRuntime/` |
 | Feedback scorecards/safety mirror | `functions/src/marketplace/eventSuccessScorecards.ts` |
