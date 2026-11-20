@@ -45,7 +45,7 @@
         {
           "label": "See your last event as a report",
           "to": {
-            "anchor": "numbers"
+            "anchor": "try"
           },
           "emphasis": "secondary"
         },
@@ -249,42 +249,23 @@
       "type": "split",
       "id": "try",
       "ground": "paper",
-      "status": "tryIt",
-      "statusNote": "Command: sales.import-past, to upload a sales export and produce a report with a fee comparison. The numbers-only part is live in the numbers band below. Show this, in place of that band, when the command ships.",
+      "status": "built",
       "kicker": "Try it with your last event",
       "title": "See your last event as a {{brand.name}} report.",
-      "lead": "Upload the sales export from your ticketing tool, or just enter what you sold, the price and how many came. {{brand.name}} builds the report you’d have had after the event, and shows what {{brand.name}} would have charged next to what you paid.",
+      "lead": "Upload the sales or guest export from your ticketing tool, or a spreadsheet. {{brand.name}} reads it into a report of that night: tickets and sales by ticket type, who came when the export records check-ins, and {{brand.name}}’s fee next to what you paid. No export to hand? Enter three numbers just below.",
       "ticks": [
-        "Works with exports from Luma, District, Eventbrite or a spreadsheet",
-        "First-timers and repeat guests, if the export has names",
+        "Works with a sales export from your ticketing tool, or a spreadsheet",
+        "First-timers and repeat guests, once you’ve brought in an earlier night",
         "{{brand.name}}’s fee next to your current tool’s",
-        "Your history comes with you when you claim it"
+        "Save the night and its guest list to your private profile when you’re happy with it"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "label": "Try it",
-          "title": "Build a report",
-          "fields": [
-            {
-              "label": "Tickets sold",
-              "placeholder": "52"
-            },
-            {
-              "label": "Ticket price (₹)",
-              "placeholder": "400"
-            },
-            {
-              "label": "How many came",
-              "placeholder": "46"
-            }
-          ],
-          "actions": [
-            "Build my report",
-            "Upload an export"
-          ],
-          "note": "Numbers alone need no sign-in. Exports with names need your phone number first."
-        }
+      "leadForm": {
+        "id": "try_report",
+        "requestKind": "tool",
+        "input": "file",
+        "label": "Your sales or guest export",
+        "submitLabel": "Build my report",
+        "note": "You’ll confirm your phone number first. Your file goes only to {{brand.name}}, to build this report, and nothing is kept until you save it."
       }
     },
     {
@@ -292,8 +273,8 @@
       "id": "numbers",
       "ground": "paper",
       "component": "lastEventReport",
-      "kicker": "Try it with your last event",
-      "title": "See your last event as a {{brand.name}} report.",
+      "kicker": "No export to hand?",
+      "title": "Or enter three numbers.",
       "lead": "Enter what you sold, the price and how many came. See the report, and what {{brand.name}} would have charged next to what your current tool charges.",
       "labels": [
         {
@@ -486,46 +467,15 @@
       "ground": "sky",
       "status": "built",
       "kicker": "Free for 30 days · founding hosts get 90",
-      "title": "Run it, then see what worked.",
-      "lead": "Your first report is ready in {{brand.stores.hostAppName}} after your first event.",
-      "actions": [
-        {
-          "label": "Start free trial",
-          "to": {
-            "route": "host_start"
-          },
-          "emphasis": "primary"
-        },
-        {
-          "label": "How {{brand.name}} works",
-          "to": {
-            "route": "how_it_works"
-          },
-          "emphasis": "secondary"
-        }
-      ],
-      "media": {
-        "kind": "capture",
-        "slot": "host-today"
-      }
-    },
-    {
-      "type": "cta",
-      "id": "start-try",
-      "ground": "sky",
-      "status": "tryIt",
-      "statusNote": "The closing band of the past-sales tool. Show it, in place of the band above, when the command ships.",
-      "kicker": "Free for 30 days · founding hosts get 90",
       "title": "See what your last event was really telling you.",
-      "lead": "Enter three numbers or upload an export. Your report is ready in a minute.",
+      "lead": "Upload an export or enter three numbers, and see the report right here.",
       "actions": [
         {
           "label": "Build my report",
           "to": {
             "anchor": "try"
           },
-          "emphasis": "primary",
-          "status": "tryIt"
+          "emphasis": "primary"
         },
         {
           "label": "Start free trial",
