@@ -409,6 +409,23 @@ describe("try-it flow: form import (Forms)", () => {
     expect(imports[0].idempotencyKey).toBe(imports[1].idempotencyKey);
   });
 
+  // Fields and reasons a later version of the command may send (aiRead,
+  // reviewFields, ai_cap_reached and the like) are not in the contract yet:
+  // the preview ignores the fields, and a refusal shows the server's words.
+  it("tolerates fields and refusal reasons the contract does not name yet", async () => {
+    const later = {...formFixtures.previewed, result: {...formFixtures.previewed.result, aiRead: true, reviewFields: ["q3_which_distance"]}};
+    const capped = {...formFixtures.refused, summary: {headline: "We can't import this form.", lines: ["We couldn't read this automatically right now."]},
+      result: {...formFixtures.refused.result, reasons: ["ai_cap_reached"]}};
+    const client = scriptedTryItClient({"form.import-from-link": {preview: [later as typeof formFixtures.previewed, capped]}});
+    const {flow, stage} = flowWith("form", client);
+    flow.setLink(fixtureFormTyped);
+    await flow.submit();
+    expect(stage()).toMatchObject({name: "review", step: "form", form: {title: formFixtures.previewed.result.form.title}});
+    flow.startOver();
+    await flow.submit();
+    expect(stage()).toMatchObject({name: "problem", reason: "refused", summary: capped.summary});
+  });
+
   it("shows a refused form in the command's own words", async () => {
     const client = scriptedTryItClient({"form.import-from-link": {preview: [formFixtures.refused]}});
     const {flow, stage} = flowWith("form", client);

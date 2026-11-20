@@ -119,6 +119,8 @@ describe("try-it command client", () => {
     for (const reason of ["form_not_public", "form_empty", "not_a_form_link", "form_provider_not_supported"]) {
       expect(await fail({code: "functions/failed-precondition", details: {reason}}), reason).toMatchObject({problem: "link_unreadable", reason});
     }
+    // A reason this client does not know yet (such as a later ai_daily_limit) is a plain failure, never a throw.
+    expect(await fail({code: "functions/failed-precondition", details: {reason: "ai_daily_limit"}})).toEqual({ok: false, problem: "failed", reason: "ai_daily_limit"});
     expect(await fail(callableError("functions/invalid-argument", "Send a public https link."))).toMatchObject({problem: "invalid"});
     expect(await fail({code: "functions/permission-denied"})).toMatchObject({problem: "not_allowed"});
     expect(await fail(callableError("functions/internal", "internal"))).toMatchObject({problem: "offline"});
