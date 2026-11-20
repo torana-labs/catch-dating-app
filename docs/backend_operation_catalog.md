@@ -84,8 +84,14 @@ Functions exports in step. The commands so far are `workspace.ensure`
 `event.import-from-link` (`importEventFromLink`), `promotion.create-kit`
 (`createPromotionKit`), `form.import-from-link` (`importFormFromLink`),
 `night.plan` (`planNight`) and `sales.import-past` (`importPastSales`), all below. The try-it link commands that read organizer and event pages share one
-reader, `functions/src/commands/linkRead.ts`; `form.import-from-link` reads a
-form page directly through the guarded page fetcher on the same allowance. `guests.import-list` is the one guest importer: converters for each file
+reader, `functions/src/commands/linkRead.ts`, which reads through a Supply
+Intake request. Links read outside a Supply Intake request (`form.import-from-link`
+and the Luma claim check) use `functions/src/commands/pageRead.ts`: the try-it
+read budgets (`spendTryItReadBudget`, which `linkRead.ts` also spends, each
+command under its own limiter names), the do-not-list check that fails closed
+(`registryLinkSuppression`, `linksSuppressed`) and the guarded page fetcher
+under a monthly allowance (`withPageSource`). No command opens
+`pageSourceFor` or checks the registry on its own. `guests.import-list` is the one guest importer: converters for each file
 format live in `functions/src/guestImport`, and every surface reviews and
 applies through the host roster intake session.
 
@@ -101,7 +107,16 @@ counts-only `aiFallbackAudit` row. It calls Anthropic through the programme
 assistant's federation token source; no key is stored. A refusal
 (`ai_cap_reached`, `ai_daily_limit`, `ai_unreadable`) leaves the command on its
 non-AI answer. `guests.import-list` and `sales.import-past` send only headers
-and column shapes (`functions/src/guestImport/mappingFallback.ts`).
+and column shapes (`functions/src/guestImport/mappingFallback.ts`);
+`form.import-from-link` sends the page text of a form its parser cannot read
+(`functions/src/formImport/aiForm.ts`); `organizer.import-from-link` and
+`event.import-from-link` send the text of the page snapshot Supply Intake
+already stored for the request, never a second fetch
+(`functions/src/commands/aiPage.ts`).
+
+[Command Layer Map](command_layer_map.md) shows which surface calls which
+command, the shared modules each command stands on, and the paths that still
+repeat a command's job.
 
 The `catch` CLI (`operations/src/catch-cli/main.mjs`) is the CLI client: it
 previews by default and its effect-class confirmation rules live in
