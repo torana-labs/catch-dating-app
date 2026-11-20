@@ -118,7 +118,7 @@ void main() {
     ) async {
       await mount(tester, console);
       expect(find.byType(HostLiveBody), findsOneWidget);
-      expect(find.textContaining('Practice ·'), findsOneWidget);
+      expect(find.text('Rehearsal'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 

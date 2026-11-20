@@ -444,7 +444,7 @@ Widget catchBannerStatusContractStates(BuildContext context) {
     color: t.danger,
     actions: [
       CatchBannerAction(
-        label: context.l10n.hostEventsRehearsalPracticeTag(time: '5:00 PM'),
+        label: context.l10n.hostEventsRehearsalScreenTitle,
         onPressed: widgetbookNoop,
       ),
       CatchBannerAction(

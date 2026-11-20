@@ -36232,12 +36232,6 @@ abstract class AppLocalizations {
   /// **'End rehearsal'**
   String get hostEventsRehearsalEnd;
 
-  /// Practice console top bar badge with the rehearsal's virtual time.
-  ///
-  /// In en, this message translates to:
-  /// **'Practice · {time}'**
-  String hostEventsRehearsalPracticeTag({required String time});
-
   /// Practice tools screen title: the rehearsal's clock, made-up guests, queues and recap.
   ///
   /// In en, this message translates to:

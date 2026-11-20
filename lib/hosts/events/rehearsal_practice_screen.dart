@@ -184,9 +184,9 @@ class _HostRehearsalPracticeScreenState
                 label: l10n.hostLiveBack,
                 onPressed: () => unawaited(_leaveRehearsal(session)),
               ),
-              live: l10n.hostEventsRehearsalPracticeTag(
-                time: AppTimeFormatters.time(now),
-              ),
+              // Rehearsal names the practice; the tag is its virtual clock.
+              kicker: l10n.hostEventsRehearsalScreenTitle,
+              live: AppTimeFormatters.time(now),
             ),
             bodyScrolls:
                 state.console != HostRehearsalPracticeConsole.live ||

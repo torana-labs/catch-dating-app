@@ -86,9 +86,9 @@ class _HostRehearsalPracticeScoresScreenState
           variant: CatchTopBarVariant.live,
           title: practice.event?.title ?? l10n.hostEventsRehearsalScreenTitle,
           back: CatchTopBarBack(label: l10n.hostLiveBack),
-          live: l10n.hostEventsRehearsalPracticeTag(
-            time: AppTimeFormatters.time(now),
-          ),
+          // Rehearsal names the practice; the tag is its virtual clock.
+          kicker: l10n.hostEventsRehearsalScreenTitle,
+          live: AppTimeFormatters.time(now),
         ),
         body: HostLiveScoresBody(
           state: state,

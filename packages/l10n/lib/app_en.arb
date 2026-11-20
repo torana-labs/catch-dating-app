@@ -27312,8 +27312,6 @@
   "@hostEventsRehearsalOpenDoor": {"description": "Rehearsal button: open the practice screens.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
   "hostEventsRehearsalEnd": "End rehearsal",
   "@hostEventsRehearsalEnd": {"description": "Rehearsal button: end it.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
-  "hostEventsRehearsalPracticeTag": "Practice · {time}",
-  "@hostEventsRehearsalPracticeTag": {"description": "Practice console top bar badge with the rehearsal's virtual time.", "placeholders": {"time": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
   "hostEventsRehearsalPracticeTools": "Practice tools",
   "@hostEventsRehearsalPracticeTools": {"description": "Practice tools screen title: the rehearsal's clock, made-up guests, queues and recap.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
   "hostEventsRehearsalNothingSent": "Practice sends nothing. On the night, this messages your guests.",

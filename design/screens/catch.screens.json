@@ -1040,12 +1040,12 @@
           "routes": [
             "hostEventRehearsalScreen"
           ],
-          "file": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
-          "symbol": "_HostEventRehearsalScreenState",
+          "file": "lib/hosts/events/rehearsal_screen.dart",
+          "symbol": "HostRehearsalScreen",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "mixed",
-          "topEdge": "route-chrome"
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
         },
         {
           "routes": [
@@ -2134,18 +2134,44 @@
       ],
       "reason": "The live console pushes the scores as a system pushed screen."
     },
-    "HostEventRehearsalScreen": {
+    "HostRehearsalPracticeScreen": {
       "owners": [
         {
-          "file": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
-          "symbol": "_HostEventRehearsalScreenState",
+          "file": "lib/hosts/events/rehearsal_practice_screen.dart",
+          "symbol": "_HostRehearsalPracticeScreenState",
           "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "mixed",
-          "topEdge": "route-chrome"
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
         }
       ],
-      "reason": "The rehearsal start screen pushes the routed rehearsal surface."
+      "reason": "The rehearsal's practice door pushes the rebuilt console on the rehearsal's made-up guests."
+    },
+    "HostRehearsalPracticeScoresScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/events/rehearsal_practice_scores_screen.dart",
+          "symbol": "_HostRehearsalPracticeScoresScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The practice console pushes the practice scores as a system pushed screen."
+    },
+    "HostRehearsalPracticeToolsScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/events/rehearsal_practice_tools_screen.dart",
+          "symbol": "HostRehearsalPracticeToolsScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The practice console pushes practice tools as a system pushed screen."
     },
     "HostOrganizerEventDefaultsScreen": {
       "owners": [
