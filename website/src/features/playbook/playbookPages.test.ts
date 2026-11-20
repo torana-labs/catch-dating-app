@@ -212,6 +212,18 @@ describe("playbook page indexes", () => {
     for (const key of liveTryItPages) expect(playbookTryItTool(key), `${key} has a website-ready tool`).not.toBeNull();
   });
 
+  it("shows Reports' numbers-only report while its export upload stays hidden (owner, #2062 C7 option c)", () => {
+    const {raw} = loaded.find(({ref}) => ref.match.contentKey === "product_reports")!;
+    const live = livePlaybookPage(raw);
+    const numbers = live.sections.find((section) => section.id === "numbers");
+    expect(numbers?.type === "custom" ? numbers.component : undefined).toBe("lastEventReport");
+    // The upload needs sales.import-past and the phone step: its band, closing band and buttons stay hidden.
+    expect(live.sections.map((section) => section.id)).not.toContain("try");
+    expect(live.sections.map((section) => section.id)).not.toContain("start-try");
+    expect(JSON.stringify(numbers)).not.toMatch(/upload|export/iu);
+    expect(JSON.stringify(live)).not.toMatch(/"anchor":"try"/u);
+  });
+
   it("maps every website-ready command to a product page tool, and the tools to the commands they run", () => {
     const tools = Object.values(playbookTryItTools);
     for (const command of websiteReadyTryItCommands) {

@@ -2,6 +2,7 @@ import type {ComponentType} from "react";
 import type {PlaybookSectionOf} from "../../../content/playbook/playbookContract";
 import type {CaptureSlots} from "../../../shared/media/captureSlot";
 import {AppLaunchNotice} from "../../marketing/AppLaunchNotice";
+import {LastEventReport} from "../../marketing/LastEventReport";
 import {NoShowCalculator} from "../../marketing/NoShowCalculator";
 import {PricingFeeCalculator} from "../../marketing/PricingFeeCalculator";
 import {PricingCapBand, PricingExamplesBand, PricingFeeBand, PricingIncludedBand, PricingOrganisationsBand} from "../../marketing/PricingBands";
@@ -77,6 +78,16 @@ function AppLaunchNoticeSection({section, labels}: PlaybookCustomSectionProps) {
 }
 
 /**
+ * /product/reports-and-payouts/'s numbers-only report (lastEventReport): the
+ * host's last event and current tool's fee in, its sales, show-up rate and
+ * the two fees out, all worked out in the page, with its words from its labels.
+ */
+function LastEventReportSection({section, labels}: PlaybookCustomSectionProps) {
+  if (section.type !== "custom") return null;
+  return <LastEventReport ground={section.ground} id={section.id} kicker={section.kicker} labels={labels} lead={section.lead} pageTitle={section.pageTitle} title={section.title} />;
+}
+
+/**
  * The closed registry of custom section components, by the key a page names
  * (`"component": "noShowCalculator"`, or a pricing section's
  * `"calculator": "pricingCalculator"`). Each is added with its own PR, beside
@@ -90,4 +101,5 @@ export const playbookCustomSections: {readonly [K in ReadyPlaybookCustomComponen
   pricingOrganisations: PricingOrganisationsSection,
   noShowCalculator: NoShowCalculatorSection,
   appLaunchNotice: AppLaunchNoticeSection,
+  lastEventReport: LastEventReportSection,
 };
