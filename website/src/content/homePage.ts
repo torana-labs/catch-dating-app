@@ -103,12 +103,16 @@ export const homePageCopy = {
       hostLink: "Add their Instagram handle or website.",
       relationship: "Say how you know them.",
     },
-    consent: "Tapping Introduce them means we’ll message you on WhatsApp about this introduction.",
+    consent: `${brand.name} will reply on WhatsApp.`,
     /** Names this wording on every stored consent; change it whenever the wording changes. */
-    consentVersion: "host-referral-whatsapp-v1",
+    consentVersion: "host-referral-whatsapp-v2",
+    /** The optional box, unticked: new plans in the city, stored as its own consent. */
+    newPlans: "Also send me new plans in {city} on WhatsApp",
+    /** Names the box's wording on its stored consent; change it whenever that wording changes. */
+    newPlansConsentVersion: "host-referral-new-plans-v1",
     /** Which form on the page, as the lead records it. */
     entry: "home-refer",
-    privacy: "Privacy policy",
+    privacy: "Privacy",
     sent: "Thanks for introducing {host}. We’ll message you on WhatsApp about it.",
   },
   /** A thin week's notify bar under the plans: new plans in the city on WhatsApp (a city alerts lead). */
@@ -118,12 +122,12 @@ export const homePageCopy = {
     phone: "Your WhatsApp number",
     action: "Notify me",
     retry: "Try again",
-    consent: "Tapping Notify me means we’ll message you about new plans in {city}, and nothing else.",
+    consent: `From ${brand.name}. Stop any time.`,
     /** Names this wording on every stored consent; change it whenever the wording changes. */
-    consentVersion: "city-new-plans-whatsapp-v1",
+    consentVersion: "city-new-plans-whatsapp-v2",
     /** Which form on the page, as the lead records it. */
     entry: "home-thin-week",
-    privacy: "Privacy policy",
+    privacy: "Privacy",
     sent: "Done. We’ll message you on WhatsApp when new {city} plans go up.",
   },
   /** A city that has not opened leads with hosts. */
@@ -269,10 +273,10 @@ export const homePageCopy = {
       phoneHint: "98765 43210",
       newPlans: "Also send me new plans in {city} on WhatsApp, about once a week",
       action: "Notify me",
-      consent: "Tapping Notify me means we’ll send one WhatsApp message when the app launches. We only send new plans if you tick the box above.",
+      consent: `One WhatsApp message from ${brand.name} when the app launches.`,
       /** Names this wording on every stored consent; change it whenever the wording changes. */
-      consentVersion: "app-launch-whatsapp-v1",
-      privacy: "Privacy policy",
+      consentVersion: "app-launch-whatsapp-v2",
+      privacy: "Privacy",
       invalidPhone: "Enter your 10-digit mobile number.",
       failed: "That didn’t go through. Please try again in a moment.",
       joined: `Done. We’ll message you on WhatsApp the day the ${appName} app launches.`,

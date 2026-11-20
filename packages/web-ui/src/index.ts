@@ -268,6 +268,8 @@ export type {
 } from "./components/CatchEmptyState";
 export {CatchErrorState} from "./components/CatchErrorState";
 export type {CatchErrorStateMode, CatchErrorStateProps} from "./components/CatchErrorState";
+export {CatchConsentNote} from "./components/CatchConsentNote";
+export type {CatchConsentNoteProps} from "./components/CatchConsentNote";
 export {CatchFactTile} from "./components/CatchFactTile";
 export type {CatchFactTileEmphasis, CatchFactTileNoteTone, CatchFactTileProps} from "./components/CatchFactTile";
 export {CatchFeatureTile} from "./components/CatchFeatureTile";

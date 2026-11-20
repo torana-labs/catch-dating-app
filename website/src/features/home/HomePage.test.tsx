@@ -146,8 +146,9 @@ describe("homepage", {timeout: 20_000}, () => {
       expect(form.getByRole("textbox", {name: new RegExp(name.replace("?", "\\?"), "u")})).toBeTruthy();
     }
     expect(form.getByRole("button", {name: "Introduce them"}).getAttribute("type")).toBe("submit");
-    expect(form.getByText("Tapping Introduce them means we’ll message you on WhatsApp about this introduction.")).toBeTruthy();
-    expect(form.getByRole("link", {name: "Privacy policy"}).getAttribute("href")).toBe("/privacy/");
+    expect(form.getByText("Catch will reply on WhatsApp.")).toBeTruthy();
+    expect((form.getByRole("checkbox", {name: "Also send me new plans in Mumbai on WhatsApp"}) as HTMLInputElement).checked).toBe(false);
+    expect(form.getByRole("link", {name: "Privacy"}).getAttribute("href")).toBe("/privacy/");
     // The introduction goes through the form now, and the board's ticket offer waits for its terms.
     expect(refer.queryByRole("link", {name: "Introduce them"})).toBeNull();
     expect(refer.queryByText(/on us|free ticket/iu)).toBeNull();
@@ -176,7 +177,7 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(refer.queryByRole("form")).toBeNull();
     expect(leadPost.mock.calls[1][1]?.headers).toMatchObject({"X-Firebase-AppCheck": "app-check-token"});
     expect(leadBody(1)).toMatchObject({requestKind: "referral", fullName: "Asha Rao", city: "Mumbai", cityId: "in-mh-mumbai",
-      lead: {requestId: leadBody(0).lead.requestId, phone: "+919876543210", consent: {purpose: "leadFollowUp", version: "host-referral-whatsapp-v1"},
+      lead: {requestId: leadBody(0).lead.requestId, phone: "+919876543210", consent: {purpose: "leadFollowUp", version: "host-referral-whatsapp-v2"},
         entry: "home-refer", referral: {hostName: "Lantern Lane Social", hostLink: "@lanternlanesocial", relationship: "I go to their supper club"}}});
   });
 
@@ -251,7 +252,7 @@ describe("homepage", {timeout: 20_000}, () => {
     render(<HomePage captures={captures} catalog={mumbaiThinCatalog} loadCatalog={keepCatalog} />);
     const plans = within(screen.getByRole("region", {name: "Coming up in Mumbai"}));
     const bar = within(plans.getByRole("form", {name: "Want to hear first?"}));
-    expect(bar.getByText("Tapping Notify me means we’ll message you about new plans in Mumbai, and nothing else.")).toBeTruthy();
+    expect(bar.getByText("From Catch. Stop any time.")).toBeTruthy();
     fireEvent.change(bar.getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98765"}});
     fireEvent.click(bar.getByRole("button", {name: "Notify me"}));
     expect(await bar.findByText("Check your WhatsApp number. Include the country code if it isn’t a local number.")).toBeTruthy();
@@ -261,7 +262,7 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(await plans.findByText("Done. We’ll message you on WhatsApp when new Mumbai plans go up.")).toBeTruthy();
     await waitFor(() => expect(plans.queryByRole("form", {name: "Want to hear first?"})).toBeNull());
     expect(leadBody(0)).toMatchObject({requestKind: "city_alerts", city: "Mumbai", cityId: "in-mh-mumbai",
-      lead: {phone: "+919876543210", consent: {purpose: "cityNewPlans", version: "city-new-plans-whatsapp-v1"}, entry: "home-thin-week", cityAlerts: {interests: []}}});
+      lead: {phone: "+919876543210", consent: {purpose: "cityNewPlans", version: "city-new-plans-whatsapp-v2"}, entry: "home-thin-week", cityAlerts: {interests: []}}});
   });
 
   it("keeps the notify bar to a thin week", () => {
