@@ -21,15 +21,26 @@ function fixture() {
         interactionModel: "pacePods"}},
   };
   const reads: string[] = [];
+  const docs_ = docs;
   const ref = (path: string) => ({path, get: async () => {
     reads.push(path);
     return snap(path);
   }});
   const snap = (path: string) => ({exists: !!docs[path], data: (
   ) => docs[path]});
+  const query = (collection: string, field: string, value: unknown) => ({
+    limit: (count: number) => ({get: async () => {
+      reads.push(`${collection}?${field}=${String(value)}`);
+      const docs = Object.entries(docs_).filter(([path, data]) =>
+        path.startsWith(`${collection}/`) && data[field] === value)
+        .slice(0, count).map(([, data]) => ({data: () => data}));
+      return {docs, size: docs.length};
+    }}),
+  });
   const db = {collection: (collection: string) => ({doc: (id: string) =>
-    ref(`${collection}/${id}`)}), runTransaction: async (callback: (
-      tx: unknown) =>
+    ref(`${collection}/${id}`), where: (field: string, _op: string,
+    value: unknown) => query(collection, field, value)}),
+  runTransaction: async (callback: (tx: unknown) =>
     Promise<unknown>) => callback({get: async (r: {path: string}) => snap(
     r.path),
   set: (r: {path: string}, value: Record<string,
@@ -176,7 +187,8 @@ test("public external event stays excluded without canonical policy", async (
     request(payload, ""), deps);
   assert.deepEqual(result, {...payload, enabled: false, metaPixelId: null,
     googleMeasurementId: null,
-    policyReason: "eventClassificationUnavailable"});
+    policyReason: "eventClassificationUnavailable",
+    profileTagsEligible: false});
   assert.equal(reads.includes("organizerTrackingSettings/org-1"), false);
   delete docs["externalEvents/external-1"].eventFormat;
   assert.equal((await readPublicOrganizerTrackingSettingsHandler(
@@ -254,3 +266,42 @@ test("native classification takes precedence over external identity", async (
   assert.equal(result.googleMeasurementId, null);
   assert.equal(reads.includes("externalEvents/event-1"), false);
 });
+
+
+test("public organiser read says whether Catch's tags may run on the profile",
+  async () => {
+    const {deps, docs} = fixture();
+    const payload = {organizerId: "org-1", eventId: null};
+    const read = async () => (await readPublicOrganizerTrackingSettingsHandler(
+      request(payload, ""), deps)).profileTagsEligible;
+    assert.equal(await read(), true);
+    docs["events/event-2"] = {organizerId: "org-1",
+      publicationState: "published", status: "active",
+      eventFormat: {version: 1, activityKind: "singlesMixer",
+        interactionModel: "freeFormMixer"}};
+    assert.equal(await read(), false);
+    docs["events/event-2"].status = "cancelled";
+    assert.equal(await read(), true);
+    docs["externalEvents/external-1"] = {canonicalHostId: "org-1",
+      publicationStatus: "public", status: "active",
+      startTime: {toMillis: () => Date.now() + 86400000},
+      title: "Open session", description: "All welcome.",
+      activity: {version: 1, activityKind: "openActivity",
+        interactionModel: "openFormat", source: "heuristic"}};
+    assert.equal(await read(), false);
+    (docs["externalEvents/external-1"].activity as Record<string, unknown>)
+      .activityKind = "yoga";
+    assert.equal(await read(), true);
+  });
+
+test("event reads never claim profile eligibility; no class is revealed",
+  async () => {
+    const {deps} = fixture();
+    const result = await readPublicOrganizerTrackingSettingsHandler(request(
+      {organizerId: "org-1", eventId: "event-1"}, ""), deps);
+    assert.equal(result.profileTagsEligible, false);
+    assert.deepEqual(Object.keys(result).sort(), ["enabled", "eventId",
+      "googleMeasurementId", "metaPixelId", "organizerId", "policyReason",
+      "profileTagsEligible"]);
+    assert.equal(result.enabled, false);
+  });

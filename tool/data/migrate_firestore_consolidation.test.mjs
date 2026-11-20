@@ -344,6 +344,46 @@ test("event-organizer-summary fills missing and stale summaries and nothing else
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("host-membership-savings recomputes stored totals from benefit uses", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-membership-savings");
+  const membershipId = (n) => `hm_${String(n).repeat(64)}`;
+  const use = (membership, eventId, savingsInPaise, state = "booked") => ({
+    schemaVersion: 1, membershipId: membership, organizerId: "organizer-1", uid: "member-1",
+    eventId, planId: "hmp_AbCdEfGhIjKlMnOpQrSt", listPriceInPaise: 50000,
+    paidPriceInPaise: 50000 - savingsInPaise, savingsInPaise,
+    eventStartMillis: 1_800_000_000_000, state, createdAtMillis: 1_700_000_000_000,
+  });
+  const db = fakeDb({
+    [`hostMemberships/${membershipId(1)}`]: {status: "active"},
+    [`hostMemberships/${membershipId(2)}`]: {status: "active", savedInPaise: 1, memberPricedBookings: 9},
+    [`hostMemberships/${membershipId(3)}`]: {status: "active", savedInPaise: 15000, memberPricedBookings: 1},
+    [`hostMemberships/${membershipId(4)}`]: {status: "active"},
+    "hostMembershipBenefitUses/e1_member-1": use(membershipId(1), "e1", 20000),
+    "hostMembershipBenefitUses/e2_member-1": use(membershipId(1), "e2", 10000),
+    "hostMembershipBenefitUses/e3_member-1": use(membershipId(1), "e3", 7000, "released"),
+    "hostMembershipBenefitUses/e4_member-1": use(membershipId(2), "e4", 5000, "released"),
+    "hostMembershipBenefitUses/e5_member-1": use(membershipId(3), "e5", 15000),
+  });
+  const before = JSON.stringify(db.data);
+
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 4, toCreate: 2, alreadyCopied: 0, conflicts: 0, skipped: 0});
+  assert.equal(JSON.stringify(db.data), before);
+
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data[`hostMemberships/${membershipId(1)}`],
+    {status: "active", savedInPaise: 30000, memberPricedBookings: 2});
+  assert.deepEqual(db.data[`hostMemberships/${membershipId(2)}`],
+    {status: "active", savedInPaise: 0, memberPricedBookings: 0});
+  // Current totals and a membership with nothing to count are untouched.
+  assert.deepEqual(db.data[`hostMemberships/${membershipId(3)}`],
+    {status: "active", savedInPaise: 15000, memberPricedBookings: 1});
+  assert.deepEqual(db.data[`hostMemberships/${membershipId(4)}`], {status: "active"});
+  assert.equal(db.data["hostMembershipBenefitUses/e3_member-1"].state, "released");
+
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("host-form-version-filters creates each missing view once", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "host-form-version-filters");
   const definition = {sections: [{sectionId: "one", questions: [
@@ -411,6 +451,76 @@ test("host-event-request-views creates each coming event's view once", async () 
   assert.equal(store.docs["eventParticipations/e1_u1"].status, "waitlisted");
   const again = await planMigration(db, migration);
   assert.deepEqual(again.totals, {scanned: 3, toCreate: 0, alreadyCopied: 1, conflicts: 0, skipped: 2});
+});
+
+test("host-contact-detail-views creates each shown contact's view once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-contact-detail-views");
+  const requireFunctions = createRequire(new URL("../../functions/package.json", import.meta.url));
+  const {AudienceTestStore} = requireFunctions("./lib/organizers/organizerAudienceTestStore.js");
+  const {Timestamp} = requireFunctions("firebase-admin/firestore");
+  const contact = (extra = {}) => ({organizerId: "o1", linkedUid: null,
+    identityState: "unlinked", deletedAt: null, hiddenAt: null, ...extra});
+  const traits = {organizerId: "o1", expectedEventCount: 1, attendedEventCount: 1,
+    cancelledEventCount: 0, noShowCount: 0, importedEventCount: 0, attendanceRate: 1,
+    segmentIds: ["past_attendee"], whatsappStatus: "unknown", smsStatus: "unknown",
+    sourceCoverage: "exact"};
+  const store = new AudienceTestStore({
+    "organizerContacts/c1": contact(),
+    "organizerContacts/c2": contact({hiddenAt: Timestamp.fromMillis(5)}),
+    "organizerContacts/c3": contact(),
+    "organizerContactTraits/c1": traits,
+    "organizerContactTraits/c2": traits,
+    "organizerContactEventEdges/e1_c1": {organizerId: "o1", contactId: "c1",
+      eventId: "e1", attendeeId: "a1", source: "catch", status: "checkedIn",
+      expected: true, registered: true, cancelled: false, checkedIn: true,
+      eventStartAt: Timestamp.fromMillis(100), eventEndAt: null, registeredAt: null,
+      cancelledAt: null, checkedInAt: null},
+    "events/e1": {organizerId: "o1", name: "Supper"},
+  });
+  const db = store.asFirestore();
+  db.doc = (docPath) => store.collection(docPath.split("/")[0]).doc(docPath.split("/")[1]);
+  const plan = await planMigration(db, migration);
+  // c2 is hidden and c3 has no trait row.
+  assert.deepEqual(plan.totals, {scanned: 3, toCreate: 1, alreadyCopied: 0, conflicts: 0, skipped: 2});
+  await applyMigrationPlan(db, plan);
+  const view = store.docs["hostContactDetailViews/c1"];
+  assert.equal(view.organizerId, "o1");
+  assert.equal(view.traits.attendedEventCount, 1);
+  assert.deepEqual(view.events.map((row) => [row.eventId, row.displayName]), [["e1", "Supper"]]);
+  // Sources are untouched and a second run is a no-op.
+  assert.equal(store.docs["organizerContacts/c1"].identityState, "unlinked");
+  const again = await planMigration(db, migration);
+  assert.deepEqual(again.totals, {scanned: 3, toCreate: 0, alreadyCopied: 1, conflicts: 0, skipped: 2});
+});
+
+test("host-application-detail-views creates each application's view once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-application-detail-views");
+  const requireFunctions = createRequire(new URL("../../functions/package.json", import.meta.url));
+  const {AudienceTestStore} = requireFunctions("./lib/organizers/organizerAudienceTestStore.js");
+  const {Timestamp} = requireFunctions("firebase-admin/firestore");
+  const now = Timestamp.fromMillis(1800000000000);
+  const store = new AudienceTestStore({
+    "organizerApplications/a1": {organizerId: "o1", formId: "f1", formVersionId: "v1",
+      targetKind: "event", targetId: "e1", linkedUid: null, contactId: null,
+      applicantDisplayName: "Ada", reviewStatus: "submitted", latestResponseId: "r1",
+      source: {kind: "csvImport", providerId: null, externalFormId: null,
+        externalResponseId: null, importReceiptId: "i1"},
+      assignedReviewerUid: null, reviewNote: null, revision: 1, submittedAt: now,
+      updatedAt: now, reviewedAt: null},
+    "organizerApplications/orphan": {formId: "f1"},
+  });
+  const db = store.asFirestore();
+  db.doc = (docPath) => store.collection(docPath.split("/")[0]).doc(docPath.split("/")[1]);
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 2, toCreate: 1, alreadyCopied: 0, conflicts: 0, skipped: 1});
+  await applyMigrationPlan(db, plan);
+  const view = store.docs["hostApplicationDetailViews/a1"];
+  // The imported snapshot is missing, so the view masks the applicant.
+  assert.equal(view.detail.applicantDisplayName, "Withdrawn applicant");
+  assert.deepEqual(view.detail.answers, []);
+  assert.equal(view.detail.revision, 1);
+  const again = await planMigration(db, migration);
+  assert.deepEqual(again.totals, {scanned: 2, toCreate: 0, alreadyCopied: 1, conflicts: 0, skipped: 1});
 });
 
 test("guest-messaging-permissions creates each missing row once", async () => {
@@ -577,6 +687,77 @@ test("program-staff-views creates each staff row once, without the full phone nu
   const again = await planMigration(db, migration);
   assert.equal(again.totals.toCreate, 0);
   assert.equal(again.totals.conflicts, 0);
+});
+
+test("screen-read view migrations create each board, work-list row and moment row once, without contacts", async () => {
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const db = fakeDb({
+    "organizers/o1": {name: "Sharma Weddings", phone: "+919800000000"},
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active",
+      title: "Sharma-Rao Wedding", timezone: "Asia/Kolkata"},
+    "programHotels/h1": {programId: "p1", organizerId: "o1", name: "Haveli",
+      contactPhoneE164: "+919811111111"},
+    "programHotels/h9": {programId: "p9", organizerId: "o1", name: "Elsewhere"},
+    "programRoomBlocks/b1": {programId: "p1", organizerId: "o1", hotelId: "h1", label: "General",
+      roomType: null, totalRooms: 2, assignedCount: 0, heldForGroupIds: [],
+      startsAt: at(1_800_600_000_000), endsAt: at(1_800_900_000_000), notes: "rate 777"},
+    "programStays/s1": {programId: "p1", organizerId: "o1", guestId: "g1", hotelId: "h1",
+      roomBlockId: "b1", roomLabel: "301", startsAt: null, endsAt: null, status: "confirmed",
+      roomReadyAt: null, hotelArrivedAt: null, notes: "call mum", revision: 3},
+    "programTravelLegs/l2": {programId: "p1", organizerId: "o1", guestId: "g2", kind: "inbound",
+      destinationHotelId: "h1", readiness: "expected"},
+    "programGuests/g1": {programId: "p1", organizerId: "o1", displayName: "Rohan",
+      phoneE164: "+919822222222", groupIds: []},
+    "programGuests/g2": {programId: "p1", organizerId: "o1", displayName: "Meera", groupIds: []},
+    "programStaffGrants/p1__desk-1": {organizerId: "o1", programId: "p1", uid: "desk-1",
+      displayName: "Arjun", phoneLastFour: "0001", status: "active", createdBy: "owner-1",
+      duties: [{duty: "hotelDesk", pickupPointIds: [], hotelIds: ["h1"], expiresAtMillis: later}],
+      expiresAt: at(later), revokedBy: null, revokedAt: null, revision: 2},
+    "events/e1": {organizerId: "o1", name: "Winter Mixer"},
+    "eventStaffGrants/e1__door-1": {organizerId: "o1", eventId: "e1", uid: "door-1",
+      role: "checkInOperator", status: "active", expiresAt: at(later)},
+    "organizerTeamMemberships/o1_manager-1": {organizerId: "o1", uid: "manager-1",
+      role: "owner", status: "active"},
+    "organizerTeamMemberships/o1_left-1": {organizerId: "o1", uid: "left-1",
+      role: "manager", status: "removed"},
+    "organizerMoments/m1": {momentId: "m1", scope: {kind: "program", programId: "p1"},
+      scopeKind: "program", scopeId: "p1", name: "Get ready",
+      initiation: {kind: "scheduled", atMillis: 5_000}, sense: "audience",
+      audience: {kind: "households", rsvpPendingOnly: false},
+      action: {kind: "push", notificationType: "programUpdate", preferenceKey: "programUpdates"},
+      status: "armed", approval: {approvedByUid: "owner-1", approvedAtMillis: 1},
+      origin: "organizer", revision: 1},
+    "organizerMoments/auto1": {momentId: "auto1", scopeKind: "organizer", scopeId: "o1"},
+    "organizerMomentRuns/r1": {momentId: "m1", status: "dispatched", sent: 4},
+    "organizerMomentRuns/r2": {momentId: "m1", status: "planned", dueAtMillis: 9_000},
+  });
+  for (const name of ["program-hotel-room-views", "host-assignment-views", "organizer-moment-views"]) {
+    const migration = MIGRATIONS.find((entry) => entry.name === name);
+    const plan = await planMigration(db, migration);
+    await applyMigrationPlan(db, plan);
+    const again = await planMigration(db, migration);
+    assert.equal(again.totals.toCreate, 0, name);
+    assert.equal(again.totals.conflicts, 0, name);
+  }
+  const board = db.data["programHotelRoomViews/p1__h1"];
+  assert.equal(board.stays[0].revision, 3);
+  assert.equal(board.stays[0].guestDisplayName, "Rohan");
+  assert.deepEqual(board.unplacedGuests.map((guest) => guest.guestId), ["g2"]);
+  assert.equal(db.data["programHotelRoomViews/p9__h9"], undefined);
+  assert.equal(db.data["hostAssignmentViews/desk-1__program_p1"].title, "Sharma-Rao Wedding");
+  assert.equal(db.data["hostAssignmentViews/door-1__event_e1"].duties[0].duty, "functionCheckIn");
+  assert.equal(db.data["hostAssignmentViews/manager-1__team_o1"].organizerName, "Sharma Weddings");
+  assert.equal(db.data["hostAssignmentViews/left-1__team_o1"], undefined);
+  assert.equal(db.data["organizerMomentViews/m1"].plan.sentCount, 4);
+  assert.equal(db.data["organizerMomentViews/m1"].plan.nextRunAtMillis, 9_000);
+  assert.equal(db.data["organizerMomentViews/auto1"], undefined);
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
+    ([key]) => /^(programHotelRoomViews|hostAssignmentViews|organizerMomentViews)\//.test(key))));
+  for (const secret of ["9800000000", "9811111111", "9822222222", "777", "mum", "0001"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  assert.equal(db.data["programStays/s1"].notes, "call mum");
 });
 
 test("program-whatsapp-thread-views creates each thread's view once, without phone data", async () => {
@@ -794,6 +975,55 @@ test("program-access-views-refresh repairs a stale view once and then writes not
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("program-access-views-organizer-managers adds manager views and the flag once", async () => {
+  const create = MIGRATIONS.find((entry) => entry.name === "program-access-views");
+  const managers = MIGRATIONS.find((entry) =>
+    entry.name === "program-access-views-organizer-managers");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const db = fakeDb({
+    "organizers/o1": {hostUserId: "owner-1", ownerUserId: "owner-1",
+      hostUserIds: ["owner-1", "host-2", "desk-1"], hostProfiles: []},
+    "organizers/o2": {hostUserId: "other-1", hostUserIds: ["other-1"], hostProfiles: []},
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active"},
+    "organizerPrograms/p2": {organizerId: "o1", createdBy: "host-2", status: "active"},
+    "organizerPrograms/p3": {organizerId: "o2", createdBy: "other-1", status: "active"},
+    "programStaffGrants/p1__desk-1": {organizerId: "o1", programId: "p1", uid: "desk-1",
+      displayName: "Arjun", phoneLastFour: "0001", status: "active", createdBy: "owner-1",
+      duties: [{duty: "hotelDesk", pickupPointIds: [], hotelIds: ["h1"], expiresAtMillis: later}],
+      expiresAt: at(later), revokedBy: null, revokedAt: null, revision: 2},
+  });
+  // Views the triggers wrote before the flag existed.
+  await applyMigrationPlan(db, await planMigration(db, create));
+  for (const id of ["p1__owner-1", "p1__desk-1", "p2__host-2", "p3__other-1"]) {
+    delete db.data[`programAccessViews/${id}`].organizerManager;
+  }
+  const plan = await planMigration(db, managers);
+  // p1: host-2 (desk-1 already has a staff view); p2: owner-1 and desk-1.
+  assert.equal(plan.steps[0].toCreate.length, 3);
+  // Every existing view gains the flag.
+  assert.equal(plan.steps[1].toFill.length, 4);
+  await applyMigrationPlan(db, plan);
+  const setupOnly = db.data["programAccessViews/p1__host-2"];
+  assert.equal(setupOnly.organizerManager, true);
+  assert.equal(setupOnly.status, "inactive");
+  assert.deepEqual(setupOnly.duties, {});
+  assert.equal(db.data["programAccessViews/p2__owner-1"].organizerManager, true);
+  const desk = db.data["programAccessViews/p1__desk-1"];
+  assert.equal(desk.organizerManager, true);
+  assert.equal(desk.status, "active");
+  assert.deepEqual(desk.hotelScoped, {"hotelDesk__h1": later});
+  assert.equal(db.data["programAccessViews/p1__owner-1"].role, "manager");
+  assert.equal(db.data["programAccessViews/p1__owner-1"].organizerManager, true);
+  // Another organizer's managers get nothing on this organizer's programmes.
+  assert.equal(db.data["programAccessViews/p1__other-1"], undefined);
+  assert.equal(db.data["programAccessViews/p3__other-1"].organizerManager, true);
+  assert.equal(db.data["organizers/o1"].hostUserIds.length, 3);
+  const again = await planMigration(db, managers);
+  assert.equal(again.totals.toCreate, 0, "a rerun writes nothing");
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-door-views creates headers, roster rows and journal views once, without contacts", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-door-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
@@ -949,6 +1179,126 @@ test("host-send-summaries creates one row per Send once, including posts", async
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("host-organizer-bill-views creates the owner's view of each sent bill once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-organizer-bill-views");
+  const bill = (billId, status) => ({schemaVersion: 1, billId, organizerId: "o1",
+    organizerName: "Lantern Lane", month: "2026-10", periodStartMillis: 1,
+    periodEndMillis: 2, revision: 1, status,
+    sales: {paymentCount: 1, eventCount: 1, grossMinor: 100, refundedMinor: 0,
+      baseMinor: 100, providerFeeMinor: 2, providerTaxMinor: 0, unsnapshottedCount: 0},
+    commission: {rateBasisPoints: 500, uncappedMinor: 5, capMinor: null, capped: false,
+      trialWaivedMinor: 0, amountMinor: 5},
+    gst: {registered: false, rateBasisPoints: 0, amountMinor: 0}, totalMinor: 5,
+    invoiceNumber: null, dueAtMillis: null,
+    paymentLink: {linkId: "plink_1", url: "https://pay.example.test/1"},
+    reminders: [{atMillis: 3, byUid: "staff"}], paidAtMillis: null, paidMinor: null,
+    history: []});
+  const db = fakeDb({
+    "organizerBills/o1_2026-10": bill("o1_2026-10", "sent"),
+    "organizerBills/o1_2026-11": bill("o1_2026-11", "toSend"),
+  });
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 2, toCreate: 1, alreadyCopied: 0, conflicts: 0,
+    skipped: 1});
+  await applyMigrationPlan(db, plan);
+  const view = db.data["hostOrganizerBillViews/o1_2026-10"];
+  assert.equal(view.organizerId, "o1");
+  assert.equal(view.bill.paymentUrl, "https://pay.example.test/1");
+  assert.ok(!JSON.stringify(view).includes("staff"));
+  assert.equal(db.data["hostOrganizerBillViews/o1_2026-11"], undefined);
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
+test("host-organizer-journey-views creates each reader's own journey once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-organizer-journey-views");
+  const at = (millis) => ({toMillis: () => millis});
+  const db = fakeDb({
+    "organizers/o1": {name: "Moonmoth", createdAt: at(100), ownerUserId: "owner",
+      hostUserIds: ["owner"]},
+    "organizers/o2": {name: "Unclaimed", createdAt: at(100)},
+    "organizers/o3": {name: "Nobody", createdAt: at(100)},
+    "organizerClaimRequests/c1": {organizerId: "o2", requesterUid: "claimant",
+      requesterName: "Hidden name", status: "pending", createdAt: at(200)},
+    "supplyIntakeRequests/i1": {request: {kind: "organizer_nomination",
+      submittedAt: at(50), submittedBy: {uid: "nominator"},
+      seed: {urls: ["https://example.test/moonmoth"]}},
+    approval: {organizerId: "o1", approvedAt: at(60), approvedByUid: "staff"}},
+  });
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 3, toCreate: 2, alreadyCopied: 0, conflicts: 0,
+    skipped: 1});
+  await applyMigrationPlan(db, plan);
+  const owner = db.data["hostOrganizerJourneyViews/o1_owner"];
+  assert.equal(owner.uid, "owner");
+  assert.deepEqual(owner.journey.steps.map((step) => step.kind), ["nominated", "listed"]);
+  const claimant = db.data["hostOrganizerJourneyViews/o2_claimant"];
+  assert.equal(claimant.waitingClaim, true);
+  assert.ok(!JSON.stringify(db.data["hostOrganizerJourneyViews/o2_claimant"])
+    .includes("Hidden name"));
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
+test("host-form-automation-views creates rule and run views once, without secrets or leases", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-form-automation-views");
+  const at = (millis) => ({toMillis: () => millis});
+  const db = fakeDb({
+    "organizerFormAutomationRules/r1": {organizerId: "o1", formId: "f1",
+      name: "Welcome note", enabled: true, revision: 2, trigger: "responseSubmitted",
+      triggerEventId: null, delayMinutes: 0, condition: null, updatedAt: at(4),
+      actions: [{actionId: "a1", kind: "signedWebhook", tagId: null, eventId: null,
+        webhookUrl: "https://hooks.example.com/x", webhookSecret: "whsec-private",
+        channel: null}]},
+    "organizerFormAutomationRules/orphan": {name: "No owner"},
+    "organizerFormAutomationRuns/run1": {organizerId: "o1", formId: "f1",
+      ruleId: "r1", ruleRevision: 2, responseId: "resp1", eventKind: "submitted",
+      status: "running", attemptCount: 1, actionResults: [], errorCode: null,
+      errorMessage: null, createdAt: at(2), updatedAt: at(3), completedAt: null,
+      dueAt: null, leaseOwner: "worker-9", leaseExpiresAt: at(9)},
+  });
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 3, toCreate: 2, alreadyCopied: 0, conflicts: 0, skipped: 1});
+  await applyMigrationPlan(db, plan);
+  const rule = db.data["hostFormAutomationRuleViews/r1"];
+  assert.equal(rule.row.actions[0].webhookSecretConfigured, true);
+  assert.equal(JSON.stringify(rule).includes("whsec"), false);
+  const run = db.data["hostFormAutomationRunViews/run1"];
+  assert.equal(run.ruleName, "Welcome note");
+  assert.equal(run.createdAtMillis, 2);
+  assert.equal(JSON.stringify(run).includes("worker-9"), false);
+  // Sources are untouched and a second run is a no-op.
+  assert.equal(db.data["organizerFormAutomationRules/r1"].actions[0].webhookSecret, "whsec-private");
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
+test("host-form-payment-views creates each form fee's view once, without the guest", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-form-payment-views");
+  const at = (millis) => ({toMillis: () => millis});
+  const id = `fp_${"c".repeat(32)}`;
+  const db = fakeDb({
+    [`guestPayments/${id}`]: {purpose: "form", organizerId: "o1", formId: "f1",
+      respondentUid: "guest-1", identity: {name: "Asha Rao", email: "asha@example.com"},
+      accountId: "acc_private", mode: "test", amountPaise: 20_000, currency: "INR",
+      refundedAmountPaise: 0, status: "checkoutReady", receipt: "rcpt_9",
+      providerOrderId: "order_9", providerPaymentId: null, providerRefundId: null,
+      responseId: null, createdAt: at(5), updatedAt: at(6), capturedAt: null,
+      submittedAt: null},
+    "guestPayments/pay_booking": {purpose: "booking", userId: "guest-1"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 2, toCreate: 1, alreadyCopied: 0, conflicts: 0, skipped: 1});
+  await applyMigrationPlan(db, plan);
+  const view = db.data[`hostFormPaymentViews/${id}`];
+  assert.deepEqual({organizerId: view.organizerId, formId: view.formId,
+    status: view.status, createdAtMillis: view.createdAtMillis, version: view.version},
+  {organizerId: "o1", formId: "f1", status: "checkoutReady", createdAtMillis: 5, version: 1});
+  assert.equal(view.row.receipt, "rcpt_9");
+  for (const secret of ["Asha", "asha@", "acc_private", "guest-1"]) {
+    assert.equal(JSON.stringify(view).includes(secret), false, secret);
+  }
+  assert.equal(db.data["hostFormPaymentViews/pay_booking"], undefined);
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("unknown migration names are rejected", () => {
   assert.throws(() => migrationsByName(["nope"]), /Unknown migration "nope"/);
   assert.equal(migrationsByName(["all"]).length, MIGRATIONS.length);
@@ -1038,7 +1388,8 @@ function fakeDb(seed) {
           .sort()
           .map((key) => ({id: key.split("/")[1], ref: docRef(key), data: () => clone(data[key])}))
           .filter((doc) => after === undefined || doc.id > after)
-          .filter((doc) => filters.every(([field, value]) => doc.data()[field] === value))
+          .filter((doc) => filters.every(([field, value]) => field.split(".")
+            .reduce((item, key) => item?.[key], doc.data()) === value))
           .slice(0, limit ?? Infinity);
         return {docs, empty: docs.length === 0};
       },

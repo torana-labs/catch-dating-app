@@ -77,15 +77,15 @@ merge to `main` that changes `brand.json`, its schema, `index.mjs`, the writer
 or the contract publishes to dev, then to prod once dev succeeds, each as the
 environment's deploy identity (Workload Identity, no keys) and behind the same
 GitHub environment protection as the backend deploy. Dispatch it to publish
-on demand (dev then prod, or one environment, staging included). Each run
+on demand (dev then prod, or one environment). Each run
 shows the document, writes it, then reads it back and fails on any difference.
 A run whose `brand.json` is older than `main`'s writes nothing. It never runs
 for a pull request, and a change to the workflow files alone does not publish.
 
 The workflow runs `tool/firebase/create_config_brand.mjs`, which you can also
 run by hand with Application Default Credentials: dry-run by default,
-`--apply` writes, `--allow-prod` is required for prod, `--all` targets dev,
-staging and prod, `--verify` compares the live document read-only. The
+`--apply` writes, `--allow-prod` is required for prod, `--all` targets dev
+and prod, `--verify` compares the live document read-only. The
 document is the record itself, `contracts/firestore/config_brand.schema.json`
 is `brand.schema.json` in draft-07 form, and the writer's tests fail when
 either drifts.

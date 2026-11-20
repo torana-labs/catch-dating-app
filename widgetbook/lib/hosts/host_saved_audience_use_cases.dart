@@ -80,5 +80,5 @@ class _PreviewAutomations extends HostFormAutomationsController {
     String organizerId,
     String? formId,
   ) async =>
-      const HostFormAutomationsState(rules: [], runs: [], nextCursor: null);
+      const HostFormAutomationsState(rules: [], runs: [], hasMore: false);
 }

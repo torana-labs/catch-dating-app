@@ -8,19 +8,22 @@ status: active
 
 ## Local Firebase Safety
 
+Catch has two Firebase environments: `dev` (`catchdates-dev`) and `prod`
+(`catch-dating-app-64e51`). The staging environment was retired on 2026-11-20.
+
 The checked `.firebaserc` default points to `catchdates-dev` as a local safety
-net. Remote commands must still select `dev`, `staging`, or `prod` explicitly:
+net. Remote commands must still select `dev` or `prod` explicitly:
 
 ```sh
 ./tool/firebase_with_env.sh dev projects:list
-npm --prefix functions run deploy -- staging
+npm --prefix functions run deploy -- dev
 npm --prefix functions run logs -- prod --limit 50
 ```
 
 Do not use bare `firebase deploy` or `firebase functions:log`. The Functions
 package scripts route through the checked wrapper and reject a missing or
 unknown environment. Hosting targets are intentionally mapped only for the
-production project. A development or staging `hosting:<target>` deployment
+production project. A development `hosting:<target>` deployment
 therefore fails until that target is explicitly created and mapped; do not
 work around that failure by falling back to production.
 
@@ -39,7 +42,7 @@ workflows use `macos-26`.
 
 `tool/firebase/artifact_registry_cleanup_policy.json` owns the seven-day
 Artifact Registry policy for `gcf-artifacts` in `asia-south1` and `us-central1`
-for dev, staging, and production. Apply the same checked policy explicitly to
+for dev and production. Apply the same checked policy explicitly to
 each repository and read it back:
 
 ```sh
@@ -107,7 +110,7 @@ eligible export, so it retains full parity; an exact selective plan does not
 require unrelated exports:
 
 ```sh
-node tool/firebase/check_deploy_parity.mjs --env staging
+node tool/firebase/check_deploy_parity.mjs --env dev
 node tool/firebase/check_deploy_parity.mjs --env prod --json
 node tool/firebase/check_deploy_parity.mjs --env prod \
   --targets functions:firstCallable,functions:secondCallable
@@ -138,12 +141,12 @@ Function deployment plans:
 - `expireEventWaitlistOffers`
 - `sendEventReminders`
 
-They were undeployed from dev, staging, and production on 2026-09-02 after live
+They were undeployed from dev and production on 2026-09-02 after live
 queries found no pending campaigns, delivery operations, rehearsal sessions,
 payment reconciliation, waitlist offers, invitations, pair holds, or future
 active events. Re-enabling one is a deliberate source-policy change: prove the
 corresponding live workload, define its environment scope and monthly budget,
-run its focused Functions tests, deploy dev then staging then production, and
+run its focused Functions tests, deploy dev then production, and
 verify both the Function and Scheduler job after each environment. Do not use a
 bare Firebase CLI deployment to bypass this gate.
 
@@ -155,7 +158,7 @@ explicit environment or project:
 
 ```sh
 node tool/run.mjs check firebase:rules-deployment-drift
-node tool/firebase/check_rules_deployment_drift.mjs --env staging
+node tool/firebase/check_rules_deployment_drift.mjs --env dev
 node tool/firebase/check_rules_deployment_drift.mjs --env prod
 ```
 
@@ -725,7 +728,7 @@ The current workflows are:
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
-| `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod automatically after dev succeeds, staging only when run by hand. See Deploy Backend. |
+| `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod automatically after dev succeeds. See Deploy Backend. |
 | `.github/workflows/_backend-deploy.yml` | Reusable per-environment job: credential-free plan from the newest `deploy:backend-functions` (else `deploy:backend`) deployment, readiness check, index `READY` wait, `deploy_firebase_targets.sh`, a `deploy:backend-functions` deployment once Functions pass parity, rules drift check, then a `deploy:backend` deployment records the commit. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
@@ -733,7 +736,7 @@ The current workflows are:
 | `.github/workflows/marketing-website.yml` | Validates marketing source and Storybook accessibility, calls the exact build/promote adapters on matching `main` pushes, then requires production 404 and launch-route postconditions. |
 | `.github/workflows/admin-website.yml` | Reuses the merge queue's Admin validation of the exact commit, or validates Admin source itself when the queue did not run it, then calls the exact build/promote adapters, which check live callable dependencies, for the production `admin` target. |
 | `.github/workflows/host-website.yml` | Validates the Host target, then reuses the merge queue's Flutter validation of the exact commit, or runs standalone roster tests and Host-owned Flutter analysis itself when the queue did not run it, then builds and promotes the independent production `host` target. |
-| `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
+| `.github/workflows/release-readiness.yml` | Manual prod release gate. |
 | `.github/workflows/mobile-beta.yml` | Nightly (when app sources changed) and on-demand fastlane test builds: builds, verifies and uploads each app to TestFlight internal testers or the Play internal track in one job, with build provenance. See Mobile releases. |
 | `.github/workflows/mobile-production.yml` | Reviewer-gated fastlane promotion of a build testers already have: App Store review submission or a Play staged rollout, with no rebuild. See Mobile releases. |
 | `.github/workflows/store-listing.yml` | Manual fastlane download of the App Store and Play store listings into a reviewable artifact, or reviewer-gated upload of the committed listing in `fastlane/metadata/<role>/`. See Store listings. |
@@ -883,7 +886,7 @@ node tool/git/branch_hygiene.mjs --base origin/main --local --json
 
 Firebase deploy and data-validation workflows use GitHub OIDC rather than
 long-lived service-account JSON secrets. Use GitHub Environments named `dev`,
-`staging`, `prod-hosting`, `prod-mobile`, `backend-review`, `prod-backend`, and `prod`. `prod-hosting` is
+`prod-hosting`, `prod-mobile`, `prod-mobile-release`, and `prod`. `prod-hosting` is
 approval-free and limited to the automatic web Hosting workflows and the
 main-only `Next Website Preview` and `Next Website Promotion` workflows. The preview builds a commit
 of main (its `source_sha` input, or main's head) that is not older than live and
@@ -903,15 +906,14 @@ for the operator steps. `prod-mobile` is approval-free and `main`-only; it conta
 only mobile signing, Maps, App Store Connect, and Play-publisher credentials, and
 `Mobile Beta` checks the ref again before building. `prod-mobile-release` holds
 the same store credentials for `Mobile Production` and requires a reviewer's
-approval; see [Mobile releases](#mobile-releases). `prod-backend` served only the
-retired Delivery workflow and is now unused; `Deploy backend` deploys prod
-through `prod`. The `prod-backend` OIDC provider binds the immutable repository and owner IDs, ref,
-environment, caller workflow, reusable workflow, and automatic event type; both
-workflow paths are compared with the token's own repository name, never a
-hardcoded one. It reuses the existing deployment identity; it does not add
-project permissions. That identity's federation grant is restricted to the
-`attribute.repository_environment` values `1170579691:prod`,
-`1170579691:prod-hosting`, and `1170579691:prod-backend`. The older production
+approval; see [Mobile releases](#mobile-releases). `Deploy backend` deploys
+prod through `prod`. Nothing uses the retired `prod-backend` and
+`backend-review` environments, the `prod-backend` OIDC provider or its
+`1170579691:prod-backend` federation grant; the owner removes them by hand.
+The deployment
+identity's federation grant is restricted to the
+`attribute.repository_environment` values `1170579691:prod` and
+`1170579691:prod-hosting`. The older production
 provider accepts only main jobs in `prod`, `prod-hosting`, or `prod-mobile` from
 repository `1170579691`. Every provider and grant uses immutable IDs, so renaming
 or transferring the repository or its owner cannot break deployment sign-in
@@ -929,9 +931,7 @@ its own reviewer on `prod-mobile-release`.
 
 Functions pull requests complete Required CI after the selected automated
 validation; CI no longer creates or requires the credential-free
-`backend-review` job. That environment no longer has required reviewers; its
-identity, `refs/pull/*/merge` branch policy and prohibition on administrator
-bypass remain.
+`backend-review` job, and nothing uses that environment.
 
 Dev and prod run independently, one deploy per environment at a time.
 
@@ -946,7 +946,6 @@ Each Firebase deployment environment must define these variables:
 The corresponding Google Cloud service accounts are:
 
 - `github-actions-deploy@catchdates-dev.iam.gserviceaccount.com`
-- `github-actions-deploy@catchdates-staging.iam.gserviceaccount.com`
 - `github-actions-deploy@catch-dating-app-64e51.iam.gserviceaccount.com`
 
 Do not add `FIREBASE_SERVICE_ACCOUNT_*` JSON secrets unless the OIDC setup is
@@ -956,7 +955,7 @@ intentionally retired.
 
 `createOrganizerFormAssetIntent` runs as `catch-form-upload@` using Firebase's
 project-relative service-account shorthand. Provision this account separately
-in dev, staging, and prod before deploying the function. `getOrganizerFormResponseDetail` runs as the separate `catch-form-review@`
+in dev and prod before deploying the function. `getOrganizerFormResponseDetail` runs as the separate `catch-form-review@`
 identity to sign private photo viewing links. Other functions retain their
 existing identities. Never fix form signing by granting the shared Compute
 runtime identity permission to sign as itself.
@@ -989,7 +988,7 @@ No keys or secrets are created, and no Editor/Owner/Token Creator grant is added
 The same prerequisite checks IAM Credentials API enablement and browser POST
 CORS. Provisioning preserves unrelated CORS rules and adds only POST for
 `https://catchdates.com` and `https://www.catchdates.com` in production, or the
-selected project's `web.app` and `firebaseapp.com` origins in dev/staging.
+selected project's `web.app` and `firebaseapp.com` origins in dev.
 No wildcard or localhost origin is added. CORS permits the browser to read the
 upload response; it does not replace the signed policy or make objects public.
 
@@ -1145,7 +1144,7 @@ successful browser submission for a particular client.
 Before onboarding, deploy the reviewed Functions and marketing website through
 the normal release process. The selected environment must have exactly one
 `.firebaserc` marketing Hosting target and matching Firebase web configuration.
-There is no fallback to the production site when dev/staging are unmapped.
+There is no fallback to the production site when dev is unmapped.
 Set the non-secret GitHub environment variable `FORM_DOMAIN_CNAME_TARGET` to
 that site's `<site-id>.web.app` in every environment that promotes its backend
 (`prod` for production). The promotion provenance and deploy
@@ -1241,7 +1240,6 @@ prints the legacy count and each document's planned `customDomains` record:
 bash tool/git/bootstrap_worktree.sh --target functions
 npm --prefix functions run build
 node tool/data/migrate_form_domains_to_custom_domains.mjs --env dev
-node tool/data/migrate_form_domains_to_custom_domains.mjs --env staging
 node tool/data/migrate_form_domains_to_custom_domains.mjs --env prod
 ```
 
@@ -1257,7 +1255,7 @@ overwritten. Record the per-environment counts in the release PR.
 
 `ALGOLIA_APPLICATION_ID` and `RAZORPAY_PUBLIC_KEY_ID` identify the provider
 account; they are plain Firebase `defineString` parameters. Store them as
-GitHub environment variables for `dev`, `staging` and `prod`. `Deploy backend` writes
+GitHub environment variables for `dev` and `prod`. `Deploy backend` writes
 validated values into the disposable Functions `.env.<project-id>` before
 Firebase discovers its parameters. Missing or invalid IDs fail deployment.
 
@@ -1297,7 +1295,6 @@ so data, analytics, write keys, and emergency rotations stay isolated:
 | Firebase project | Algolia app |
 |---|---|
 | `catchdates-dev` | `Catch Dev` |
-| `catchdates-staging` | `Catch Staging` |
 | `catch-dating-app-64e51` | `Catch Prod` |
 
 Use a search-only key for runtime search and a write-capable key for index
@@ -1344,7 +1341,7 @@ node tool/data/backfill_algolia_explore_search.mjs \
   --allow-prod
 ```
 
-For dev or staging, change `--env` and omit `--allow-prod`.
+For dev, change `--env` and omit `--allow-prod`.
 
 Algolia index settings must allow the function filters:
 
@@ -1360,7 +1357,7 @@ specific Firebase Secret Manager value:
 - `CROSS_PATHS_SUGGESTION_SIGNING_KEY`
 
 Use at least 32 random bytes, encoded as a secret string, and use different
-material in dev, staging, and prod. Rotating it intentionally invalidates every
+material in dev and prod. Rotating it intentionally invalidates every
 outstanding ten-minute suggestion token. Never place the value in Remote
 Config, a client build, repository files, or CI logs. Verify secret metadata
 without printing the value before deploying the callable. The source-intended
@@ -1424,7 +1421,7 @@ Manager value:
 
 - `EVENT_VENUE_SESSION_SIGNING_KEY`
 
-Use at least 32 random bytes and different material in dev, staging, and prod.
+Use at least 32 random bytes and different material in dev and prod.
 Rotation intentionally invalidates every outstanding live QR. Never expose the
 value to Remote Config, clients, repository files, or CI logs. The Functions
 runtime service account needs `roles/secretmanager.secretAccessor` on this
@@ -1444,10 +1441,8 @@ on a generic fallback secret, because that can silently mix project keys across
 flavors:
 
 - `GOOGLE_MAPS_ANDROID_API_KEY_DEV`
-- `GOOGLE_MAPS_ANDROID_API_KEY_STAGING`
 - `GOOGLE_MAPS_ANDROID_API_KEY_PROD`
 - `GOOGLE_MAPS_IOS_API_KEY_DEV`
-- `GOOGLE_MAPS_IOS_API_KEY_STAGING`
 - `GOOGLE_MAPS_IOS_API_KEY_PROD`
 
 `Mobile Beta` needs these `prod-mobile` environment secrets for iOS (`Mobile
@@ -1705,13 +1700,11 @@ When it runs:
   deploy after that must be a manual `full` run, dev then prod.
 - **A merge deploys nothing by itself.** It ships in the next daily run, or
   sooner by a manual run.
-- **Staging:** deploys only when someone runs the workflow for it. Nothing uses it
-  day to day, and it is missing secrets (#1423).
 - **One deploy per environment at a time.** Newer runs wait, and GitHub keeps
   only the newest waiting run. Skipping intermediate commits loses nothing,
   because the CLI compares against what is live.
-- **Manual runs:** use Actions → Deploy backend → Run workflow for `prod`, `dev`
-  or `staging`. A manual run deploys only the environment it names, from the
+- **Manual runs:** use Actions → Deploy backend → Run workflow for `prod` or
+  `dev`. A manual run deploys only the environment it names, from the
   commit it starts on; run dev first, then prod. Tick `full` to redeploy every
   Function even when unchanged, for example after a manual deploy you are
   unsure about or when the record has no codebase hashes. It names every
@@ -1741,7 +1734,7 @@ When the CLI refuses:
   environment, then deletes exactly the listed names that are live there, before
   it deploys Functions, and no one deletes by hand. A listed name this commit
   still deploys stops the run before any deletion. Names can stay in the list:
-  one already gone is skipped, and staging only deploys when someone runs it.
+  one already gone is skipped.
 - **A Function that newly retries on failure.** Firebase deploys it only with
   `--force`, and refuses a broad deploy before changing anything, listing
   those Functions. The run then deploys exactly them with `--force` and
@@ -1780,7 +1773,6 @@ on demand from Actions → Functions drift → Run workflow.
 2026-10-24 after its first successful prod run (`deployed/prod` at `bd52e13cd`):
 - the artifact-cursor `Delivery` pipeline;
 - `Backend Rebaseline`;
-- `Backend Staging Refresh`;
 - the one-off backend release workflows: selective release, Host acquisition,
   Host deletion and its indexes, Host store rules, wedding phone import, website
   review index, and the CAT151 receipt release.
@@ -1849,7 +1841,7 @@ and app releases keep their own owners and workflows.
 
 ### WhatsApp provider activation
 
-The disabled discovery profile is not a staging or production readiness
+The disabled discovery profile is not a production readiness
 receipt. Organizer WhatsApp may be enabled in an environment only after an
 operator verifies the following against the live target rather than a checked-in
 description:
@@ -1907,7 +1899,7 @@ provider activation and generates no Catch delivery receipt.
 Organisers prove a claim by sending a code from the listing's Instagram
 account to @catch_dates. `instagramClaimWebhook` uses the Instagram API with
 Instagram Login (`graph.instagram.com`) and deploys everywhere. Only prod
-names Catch's account, so only prod answers Meta. Dev and staging return 503.
+names Catch's account, so only prod answers Meta. Dev returns 503.
 A Meta app has one callback URL, so @catch_dates's messages go to prod.
 
 Fixed values:
@@ -1917,13 +1909,13 @@ Fixed values:
 - Instagram account: @catch_dates, id `17841476918450741`. This is the
   `entry.id` in webhooks. The "Catch-IG" id `1404389366089349` is the
   Instagram app id, not the account id.
-- GitHub variables in `prod` and `prod-backend`:
+- GitHub variables in `prod`:
   `CATCH_INSTAGRAM_ACCOUNT_ID=17841476918450741` and
-  `CATCH_INSTAGRAM_HANDLE=catch_dates`. Leave them unset in dev and staging.
+  `CATCH_INSTAGRAM_HANDLE=catch_dates`. Leave them unset in dev.
   `CATCH_INSTAGRAM_GRAPH_VERSION` is optional; the default is `v26.0`.
 
-Secrets in prod Secret Manager (`catch-dating-app-64e51`). Dev and staging
-keep their existing versions so readiness passes; those values are unused.
+Secrets in prod Secret Manager (`catch-dating-app-64e51`). Dev keeps its
+existing versions so readiness passes; those values are unused.
 
 - `CATCH_INSTAGRAM_ACCESS_TOKEN`: in the Meta app, Instagram, API setup with
   Instagram login, Generate access tokens, Generate token on the @catch_dates
@@ -1945,7 +1937,7 @@ After a prod deploy that includes the webhook:
    story replies, Message controls, Connected tools, Allow access to messages.
 5. From an Instagram account with a role on the Meta app, send a message to
    @catch_dates. The webhook acknowledges it and logs nothing on success.
-6. Set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` in `prod` and `prod-backend`,
+6. Set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` in `prod`,
    then run Deploy backend for `prod` with `functions` set to
    `instagramClaimWebhook,getOrganizerClaimVerificationOptions,startOrganizerClaimVerification,confirmOrganizerClaimVerification`.
 
@@ -1998,7 +1990,7 @@ Codes:
 - `secretWriteFailed`: the runtime service account cannot add secret
   versions. Grant Secret Version Adder (below).
 
-Dev and staging set no account id, so the function does nothing there.
+Dev sets no account id, so the function does nothing there.
 
 Permissions. The function runs as the default Functions runtime account. It
 needs `secretmanager.versions.add` on `CATCH_INSTAGRAM_ACCESS_TOKEN`. In prod
@@ -2551,7 +2543,7 @@ means report only: the checks and the decision run, the run fails, and the
 issue names the release it would have restored, but live keeps the failed
 release. To turn rollback on, set the repository variable
 `WEBSITE_AUTO_ROLLBACK` to `on` (Settings → Secrets and variables → Actions →
-Variables). Any other value reports only. There is no dev or staging train:
+Variables). Any other value reports only. There is no dev train:
 the train releases only production, so the switch guards production directly.
 This adds no environment protection, reviewer or ruleset.
 
@@ -2631,7 +2623,7 @@ run by itself is not artifact identity.
 Multi-stage delivery uses an ephemeral checkpoint bound to the provenance
 manifest digest, source SHA, source run and attempt, artifact digest, and an
 immutable target scope, which includes the environment, so a dev checkpoint
-cannot authorize staging or production. Checkpoints form an
+cannot authorize production. Checkpoints form an
 ordered prefix of the manifest's stages. A stage is complete only after its
 documented remote postcondition passes. On retry, the consumer verifies the
 same artifact and checkpoint binding, identifies the first incomplete stage,
@@ -2682,8 +2674,8 @@ Verified setup state:
 - Firebase App Check provider configs and enforcement are verified for the
   consumer Android, iOS/macOS, and web registrations plus the 2026-06-10 host
   Android, iOS, and web registrations. Host Android uses Play Integrity, host
-  iOS uses App Attest, and host web uses reCAPTCHA Enterprise across dev,
-  staging, and prod.
+  iOS uses App Attest, and host web uses reCAPTCHA Enterprise across dev
+  and prod.
 - Apple Developer App ID `Catch Host` / `com.catchdates.host` is registered
   under team `2HQBK4UMUT` with App Attest, Associated Domains, HealthKit, and
   Push Notifications enabled. App Store Connect app `Catch Host` exists as app
@@ -2765,8 +2757,8 @@ at release time. A client can start offline, fetch can fail, and store rollout
 timing can lag. Keep legacy-compatible reads/writes until the explicit parity
 and force-update cutover step is complete.
 
-The `swipes` to `profileDecisions` migration is already complete: dev, staging,
-and prod cleanup finished on 2026-05-26, and the one-time migration tools were
+The `swipes` to `profileDecisions` migration is already complete: dev and prod
+cleanup finished on 2026-05-26, and the one-time migration tools were
 retired on 2026-06-02.
 
 The checked-in baseline template is `firebase/remote_config.template.json`.
@@ -2837,13 +2829,13 @@ Before rules or Functions depend on them, each Firebase/GCP environment needs:
 ### Payment Provider Setup TODO
 
 Do not treat international paid events as launch-ready until these items are
-complete for each target environment (`dev`, `staging`, and `prod`):
+complete for each target environment (`dev` and `prod`):
 
 - [ ] Create environment-owned Stripe platform credentials. Keep test and live
   mode keys separate, and do not reuse another environment's secret key.
 - [ ] Set the Stripe Functions secrets in each Firebase project:
   `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
-  As of 2026-05-28, `dev`, `staging`, and `prod` have non-real placeholder
+  As of 2026-05-28, `dev` and `prod` have non-real placeholder
   values for both secrets so unrelated Functions deploys are not blocked by
   missing Stripe bindings. Replace those Secret Manager values with
   environment-owned Stripe credentials before enabling Stripe onboarding,
@@ -2864,7 +2856,7 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   `STRIPE_CHECKOUT_SUCCESS_URL`, and `STRIPE_CHECKOUT_CANCEL_URL`. The checked-in
   code defaults point at `catchdates.com` and exist only so noninteractive
   Functions deploys keep working before Stripe launch. Review and override them
-  before staging/prod payment rollout.
+  before prod payment rollout.
 - [ ] Create environment-owned Razorpay credentials before live INR payments.
   Current non-prod/prod state has reused test-mode Razorpay secrets; replace
   them with the intended `RAZORPAY_PUBLIC_KEY_ID` parameter and
@@ -2891,7 +2883,7 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   from Firestore, a failed retry continues the same linked account/product, and
   refresh moves pending/clarification/activated states into the matching Host UI.
 - [ ] Replace the temporary `RAZORPAY_WEBHOOK_SECRET` values before enabling
-  real Razorpay webhooks. As of 2026-06-26, `dev`, `staging`, and `prod` each
+  real Razorpay webhooks. As of 2026-06-26, `dev` and `prod` each
   have an enabled placeholder Secret Manager version so unrelated Functions
   deploys are not blocked while Razorpay account approval is pending.
 - [ ] Merge the backend change and let `Deploy backend` deploy it, approving
@@ -2915,7 +2907,7 @@ bought inside the Host app. The code is in the self-serve billing PRs
 (trial status, rolling cycles, tools-only, bill delivery, revoked Razorpay
 access, store-safe Host app, web billing portal). None of these steps can be
 done by code or an agent: each changes deployed configuration, a secret or a
-provider account. Do them per environment, `staging` before `prod`, and record
+provider account. Do them per environment, `dev` before `prod`, and record
 the evidence in the release ticket.
 
 ### 1. Razorpay partner application (OAuth: hosts collect ticket money)
@@ -3067,7 +3059,7 @@ to block older app builds after the compatible build is available.
 
 Wedding phone import remains held in production by
 `canImportWeddingPhoneContacts`: both the work-page entry and direct route
-access use this gate. Dev and staging retain the native review flow for
+access use this gate. Dev retains the native review flow for
 validation. Remove the production hold only in a reviewed follow-on after:
 
 1. `Deploy backend` proves the merged membership, guest-source authority and
@@ -3097,7 +3089,7 @@ Host event broadcasts completed their backend-first rollout in August 2026:
 1. Merge and deploy `sendEventBroadcast`, its receipt schema, TTL field policy,
    indexes/rules, and callable IAM while
    the Host client affordance was still hidden.
-2. Exercise dev, staging, and then production callable reachability. Confirm a
+2. Exercise dev and then production callable reachability. Confirm a
    missing-auth request reaches the Firebase callable adapter and returns a
    callable JSON rejection rather than 404, redirect, HTML/GFE, IAM denial, or
    5xx.
@@ -3114,7 +3106,7 @@ its durable retry scheduler is new and must be proved explicitly:
    `createOrganizerPost`, `listOrganizerCampaigns`, and
    `dispatchPendingOrganizerFollowerUpdates` before releasing the matching Host
    client.
-2. In dev, then staging, then production, confirm the callable is reachable and
+2. In dev, then production, confirm the callable is reachable and
    the scheduler is `ACTIVE`; create one request-id-bound update against a test
    organizer with more than one follower page and prove the operation reaches a
    terminal state without duplicate Activity or push attempts.
@@ -3164,7 +3156,6 @@ Typical commands:
 
 ```bash
 ./tool/deploy_firebase_targets.sh dev firestore:indexes,functions,firestore:rules,storage
-./tool/deploy_firebase_targets.sh staging firestore:indexes,functions,firestore:rules,storage
 ./tool/deploy_firebase_targets.sh prod firestore:indexes,functions,firestore:rules,storage
 ```
 
@@ -3174,7 +3165,6 @@ not publish to prod while the retired Host release gates are on hold; see
 
 ```bash
 ./tool/firebase_with_env.sh dev deploy --only remoteconfig
-./tool/firebase_with_env.sh staging deploy --only remoteconfig
 ./tool/firebase_with_env.sh prod deploy --only remoteconfig
 ```
 
@@ -3247,7 +3237,7 @@ command only for IAM recovery or auditing a previously deployed environment:
 
 ```bash
 npm --prefix functions run sync:callable-invokers -- \
-  catchdates-dev catchdates-staging catch-dating-app-64e51
+  catchdates-dev catch-dating-app-64e51
 ```
 
 ### Explore Event Discovery Rollout
@@ -3257,14 +3247,12 @@ write:
 
 ```bash
 node tool/data/backfill_event_discovery_fields.mjs --env dev --summary-only
-node tool/data/backfill_event_discovery_fields.mjs --env staging --summary-only
 node tool/data/backfill_event_discovery_fields.mjs --env prod --summary-only
 firebase firestore:indexes --project catchdates-dev --pretty
-firebase firestore:indexes --project catchdates-staging --pretty
 firebase firestore:indexes --project catch-dating-app-64e51 --pretty
 ```
 
-Read-only index listings on 2026-05-26 showed dev, staging, and prod still had
+Read-only index listings on 2026-05-26 showed dev and prod still had
 only the legacy `events` indexes (`status/startTime` and `organizerId/startTime`).
 Deploy `firestore:indexes` and wait for every discovery index to become
 `READY` before enabling an app build that relies on the direct event query.
@@ -3279,7 +3267,7 @@ reviewed. The direct helper below is for bounded operator recovery only:
 node tool/data/backfill_event_discovery_fields.mjs --env dev --apply
 ```
 
-Repeat for staging, then prod. Production backfill requires `--allow-prod`.
+Repeat for prod. Production backfill requires `--allow-prod`.
 After each environment, smoke test Explore with city, time, activity, distance,
 map pin, saved-event, signed-up-event, hosted-event, and club-metadata cases.
 In a release-like build with observability enabled, verify
@@ -3292,16 +3280,14 @@ after Functions have been built from the matching code:
 ```bash
 npm --prefix functions run build
 node tool/data/backfill_organizer_admin_search.mjs --env dev --summary-only
-node tool/data/backfill_organizer_admin_search.mjs --env staging --summary-only
 node tool/data/backfill_organizer_admin_search.mjs --env prod --summary-only
 node tool/data/backfill_organizer_admin_search.mjs --env dev --apply
 node tool/data/backfill_event_admin_search.mjs --env dev --summary-only
-node tool/data/backfill_event_admin_search.mjs --env staging --summary-only
 node tool/data/backfill_event_admin_search.mjs --env prod --summary-only
 node tool/data/backfill_event_admin_search.mjs --env dev --apply
 ```
 
-Repeat for staging, then prod. Production apply requires `--allow-prod`.
+Repeat for prod. Production apply requires `--allow-prod`.
 
 Organizer supply capabilities are a callable-owned product-policy projection.
 Its one-off legacy repair ran in production on 2026-07-27 and is retired;
@@ -3547,13 +3533,13 @@ never to an artifact.
 
 #### Before the first production run (one-time)
 
-1. **Create the HMAC key** in dev, staging and prod **before deploying the
+1. **Create the HMAC key** in dev and prod **before deploying the
    Functions that bind it** (the deploy parity check refuses a deploy whose
    bound secret does not exist). Generate the value on the owner's machine and
    never print it:
 
    ```bash
-   for project in catchdates-dev catchdates-staging catch-dating-app-64e51; do
+   for project in catchdates-dev catch-dating-app-64e51; do
      openssl rand -base64 48 | tr -d '\n' |
        gcloud secrets create LISTING_SUPPRESSION_HMAC_KEY --project="$project" \
          --replication-policy=automatic --data-file=-
@@ -3750,6 +3736,83 @@ instruction), an owner sets `active` to false on `listingSuppressions/<caseId>`.
 Self-created organisers that matched a case are listed in its `reviewFlags`;
 review them (they start private and unpublished).
 
+### Listing cohort withdraw
+
+When a whole programmatic listing cohort has to come down at once (a pilot
+is stopped, or a problem is found with how a batch was sourced), the owner
+withdraws it in one approved run. The tool is
+`tool/data/listing_cohort_withdraw.mjs`; it runs through the dispatch-only
+`Listing cohort withdraw` workflow
+(`.github/workflows/listing-cohort-withdraw.yml`). It selects organisers whose
+`listingProgram.cohortId` is the cohort (see
+[data contracts](data_contracts.md#programmatic-listings)), optionally only
+those whose page is in one city, and withdraws each one whose page is
+`published` and that no owner has claimed. It writes the same fields as the
+single-organiser suspend from a takedown request
+(`publicPage.publishStatus: suppressed`, `indexStatus: noindex`,
+`robots: noindex, follow`) and one `adminAuditLogs` row per organiser
+(`action: listingCohortWithdraw`, actor `workflow:listing-cohort-withdraw`,
+`after.cohortId`, `after.reason: cohortWithdrawal`, the manifest hash and the
+run id). The organiser triggers then rebuild the public page, city plans,
+`publicOrganizers` and search. A withdrawal deletes nothing; to stop new
+listings as well, also pause the programme (`adminManageListingProgram`).
+
+It skips, and counts: pages already `suppressed` or `removed`, pages not
+`published` (`draft`, `qa` or none), and claimed organisers (an owner or host
+user id, ownership `claimed` or `transferred`, or claim `claimed` or
+`verified`). A page with a claim still pending is withdrawn with the rest and
+counted on its own line.
+
+**Nothing about an organiser goes into GitHub.** The inputs are the
+environment, the mode, the cohort id (such as `pilot-indore-1`), an optional
+city slug, and for apply the manifest SHA-256. The tool prints counts only.
+Organiser ids can carry a name, so the manifest of ids is never printed or
+uploaded as an artifact; apply instead re-reads the cohort and proves it is
+the approved selection by recomputing the hash.
+
+Before the first prod run, check that the `prod-takedown` environment requires
+the owner as reviewer (see
+[Organiser takedown](#before-the-first-production-run-one-time), step 4).
+Only a prod apply waits there; prod plan and verify only read.
+
+Dispatch from `main`, one mode at a time, reading each summary before the
+next. Use the same `city` value (or none) for all three. Dev first when the
+cohort exists there.
+
+```bash
+gh workflow run listing-cohort-withdraw.yml --ref main -f environment=prod -f mode=plan -f cohort_id=pilot-indore-1
+gh workflow run listing-cohort-withdraw.yml --ref main -f environment=prod -f mode=apply -f cohort_id=pilot-indore-1 \
+  -f manifest_sha256=<the SHA-256 the plan run printed>
+gh workflow run listing-cohort-withdraw.yml --ref main -f environment=prod -f mode=verify -f cohort_id=pilot-indore-1
+```
+
+1. **plan** (the default, a dry run) prints: matched in the cohort, would
+   withdraw (and how many of those have a claim pending), already withdrawn by
+   this cohort withdrawal, skipped already suppressed or removed, skipped
+   claimed, skipped not published, matched and would withdraw by city, and
+   `Manifest: N organiser(s), SHA-256 <hash>`. The manifest is the cohort id,
+   the city filter and the sorted ids it would withdraw plus those an earlier
+   apply of this cohort already withdrew. Read the counts; if they are what
+   you expect, copy the hash.
+2. **apply** waits in `prod-takedown` until the owner approves the run. It
+   then re-reads the cohort and refuses, writing nothing, unless the manifest
+   hash equals `manifest_sha256`. If anything changed since the plan (a page
+   was claimed, published or taken down), run plan again and approve the new
+   hash; a refused apply never prints a hash to copy. It writes in
+   transactions of 100 organisers, re-reading each one and skipping (and
+   counting) any that is no longer in the cohort, no longer published or now
+   claimed. It ends with a re-check that should show `would withdraw 0`.
+   Re-running the same apply changes nothing: withdrawn pages stay in the
+   manifest through their audit rows, so the hash still matches, and there is
+   nothing left to write. An interrupted apply finishes the rest on a re-run.
+3. **verify** passes when nothing in the cohort (and city) is left to
+   withdraw.
+
+A withdrawn page comes back one organiser at a time through the audited Admin
+index review (`adminSetOrganizerIndexStatus`); there is no bulk undo. For a
+local run against the emulator, `--manifest-out <file>` on plan writes the
+manifest with its ids to a local file; never use it in CI.
+
 ## Smoke Tests
 
 After a backend deploy, smoke test:
@@ -3933,14 +3996,14 @@ emulator-backed or gated behind an explicit device/live-service test target.
 
 | Area | Local code-side coverage now present | Pending test/evidence | Required environment |
 | --- | --- | --- | --- |
-| App Check | Backend errors map App Check failures; app bootstrap activates App Check in `main.dart`. | Prove enforced App Check accepts the app's token and rejects missing/invalid tokens for Auth, Firestore, Storage, and callable Functions. | Firebase dev/staging project with App Check enforcement enabled plus registered debug token or release attestation. |
+| App Check | Backend errors map App Check failures; app bootstrap activates App Check in `main.dart`. | Prove enforced App Check accepts the app's token and rejects missing/invalid tokens for Auth, Firestore, Storage, and callable Functions. | Firebase dev project with App Check enforcement enabled plus registered debug token or release attestation. |
 | Real phone auth | App-shell integration covers phone entry, OTP continuation, and repository calls with a fake auth repository. | Complete a real OTP send and sign-in against Firebase Auth. | Physical iOS/Android device or Firebase Auth emulator; use a Firebase test phone number for repeatability. |
 | Push permission and token registration | App-shell integration verifies authenticated shell invokes FCM initialization; routing tests cover FCM chat route handling; backend notification producers are covered separately. | Grant/deny notification permission, save a real FCM token to `users/{uid}/pushInstallations/{installationId}`, receive a push, and tap it into the intended route. | iOS/Android device or simulator with push support and Firebase Messaging configured for the target app id. |
-| Image picker and Storage upload | App-shell integration covers picking a club cover through the full routed UI and passing uploaded URL into create-club submission with a fake upload repository. | Pick media through the native picker and upload to Firebase Storage under enforced Storage/App Check rules. | iOS/Android simulator/device with photo-library permission and Firebase Storage in dev/staging. |
+| Image picker and Storage upload | App-shell integration covers picking a club cover through the full routed UI and passing uploaded URL into create-club submission with a fake upload repository. | Pick media through the native picker and upload to Firebase Storage under enforced Storage/App Check rules. | iOS/Android simulator/device with photo-library permission and Firebase Storage in dev. |
 | Real map rendering | Create-event integration opens the map picker and selects a map coordinate through the `GoogleMap` widget callback. TestFlight iOS Maps behavior is verified through App Store Connect/Xcode Cloud TestFlight proof as of 2026-05-21. | Repeat real map tile/marker proof when Maps key injection, bundle IDs, or store distribution settings change; verify Android separately before Play release. | iOS/Android simulator/device with configured Google Maps/Places keys and network access. |
 | Razorpay checkout UI | App-shell integration covers paid booking handoff and confirmation with a fake payment repository; payment repository tests cover typed Razorpay success/error callbacks and callable verification contract. | Open the native Razorpay checkout sheet, complete/cancel a test payment, and verify post-payment booking state. | iOS/Android device or simulator supported by `razorpay_flutter`, with Razorpay test keys and callable Functions. |
-| Analytics DebugView | App-shell integration verifies route screen views reach `AppAnalytics`; unit tests cover event sanitization and collection gating. Dev/staging/prod Firebase projects are linked to GA4 properties under Analytics account `365970973`. Prod GA4 BigQuery export is linked to `catch-dating-app-64e51` in `asia-south1` with expected dataset `analytics_526484083`. | See expected auth/routing/booking/review events in Firebase Analytics DebugView for a real build, then record first BigQuery `events_YYYYMMDD` table proof once the daily export lands. | Debug or release-like app build connected to Firebase Analytics DebugView for the target app id. |
-| Crashlytics visibility | App-shell integration verifies the authenticated uid is attached to the crash reporter on cold launch; unit tests cover fatal/error reporting paths. | Trigger a non-production test crash/non-fatal error and confirm it appears with expected custom keys and symbolication. | Release-like iOS/Android build with Crashlytics collection enabled for dev/staging and dSYM/mapping upload configured. |
+| Analytics DebugView | App-shell integration verifies route screen views reach `AppAnalytics`; unit tests cover event sanitization and collection gating. Dev and prod Firebase projects are linked to GA4 properties under Analytics account `365970973`. Prod GA4 BigQuery export is linked to `catch-dating-app-64e51` in `asia-south1` with expected dataset `analytics_526484083`. | See expected auth/routing/booking/review events in Firebase Analytics DebugView for a real build, then record first BigQuery `events_YYYYMMDD` table proof once the daily export lands. | Debug or release-like app build connected to Firebase Analytics DebugView for the target app id. |
+| Crashlytics visibility | App-shell integration verifies the authenticated uid is attached to the crash reporter on cold launch; unit tests cover fatal/error reporting paths. | Trigger a non-production test crash/non-fatal error and confirm it appears with expected custom keys and symbolication. | Release-like iOS/Android build with Crashlytics collection enabled for dev and dSYM/mapping upload configured. |
 
 Do not make these live-service tests block every PR until they have stable
 fixtures, reset/cleanup steps, and documented credentials. Prefer a separate
@@ -3952,12 +4015,12 @@ build with collection explicitly enabled:
 ```bash
 ENABLE_OBSERVABILITY_COLLECTION=true \
 EMIT_OBSERVABILITY_SMOKE_EVENT=true \
-./tool/flutter_with_env.sh staging run --profile -d <device-id>
+./tool/flutter_with_env.sh dev run --profile -d <device-id>
 ```
 
 The smoke define emits one nonfatal Crashlytics event with reason
 `Observability smoke event` and one Analytics event named
-`observability_smoke`. Use it only for dev/staging evidence or a deliberate
+`observability_smoke`. Use it only for dev evidence or a deliberate
 prod release smoke. After the dashboard rows appear, run the manual
 `Observability Evidence` workflow and record the app build, Crashlytics proof,
 Analytics proof, and GA4 BigQuery export status.
@@ -4182,9 +4245,9 @@ user-only credential entry, exact controls, and activation blockers.
 
 ## Host App Icons
 
-Host builds use generated `AppIcon-host-dev`, `AppIcon-host-staging`, and
-`AppIcon-host-prod` catalogs on iOS/macOS, plus Android `hostDev`,
-`hostStaging`, and `hostProd` launcher resources. The two-line icon and
+Host builds use generated `AppIcon-host-dev` and `AppIcon-host-prod`
+catalogs on iOS/macOS, plus Android `hostDev` and `hostProd` launcher
+resources. The two-line icon and
 centered light/dark splash read `Catch Host` in the same explicit Archivo
 `wght: 600` / `wdth: 78` voice as Consumer; there is no system font fallback and
 no plural `Hosts` product mark. Regenerate the Swift masters and then run
@@ -4226,7 +4289,7 @@ another Codex audit checklist.
 | Accessibility | Run a large-text, VoiceOver/TalkBack, contrast, hit-target, and semantics pass across auth, onboarding, dashboard, clubs, events, catches, chat, and profile/settings. |
 | Store metadata | Finalize listing name, screenshots, privacy forms, export-compliance answers, support URL, privacy policy, terms URL, and review notes. |
 | Play internal testing | Produce Android internal-testing install/launch/maps evidence before Play release. |
-| Observability | Capture Crashlytics visibility/symbolication and Analytics DebugView proof with a release-like dev/staging build. |
+| Observability | Capture Crashlytics visibility/symbolication and Analytics DebugView proof with a release-like dev build. |
 | Feature toggles and A/B testing | Defer until there is a concrete rollout problem; do not introduce a toggle framework as release ceremony. |
 | Shorebird/code push | Defer for first release. Reconsider only after app-store release operations are stable and rollback policy is explicit. |
 

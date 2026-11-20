@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_room_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
@@ -61,12 +62,6 @@ class _Repository extends Fake implements ProgramWorkRepository {
   (String?, String?, ProgramStayStatus?) lastAssignment = (null, null, null);
 
   @override
-  Future<ProgramHotelRooms> getHotelRooms({
-    required String programId,
-    required String hotelId,
-  }) async => ProgramHotelRooms.fromCallableData(data);
-
-  @override
   Future<ProgramMutationResult> upsertStay({
     required String programId,
     required String guestId,
@@ -102,6 +97,10 @@ Future<void> _pumpSubject(WidgetTester tester, _Repository repository) async {
           emptyProgramSnapshots(),
         ),
         programWorkRepositoryProvider.overrideWithValue(repository),
+        programHotelRoomsProvider('program', 'hotel').overrideWith(
+          (ref) =>
+              Stream.value(ProgramHotelRooms.fromCallableData(repository.data)),
+        ),
       ],
       child: MaterialApp(
         theme: AppTheme.light,

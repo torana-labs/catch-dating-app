@@ -81,9 +81,21 @@ function mappedStatus(params: {
   }
 }
 
+function carriedSavings(previous: HostMembershipDocument | null):
+  Pick<HostMembershipDocument, "savedInPaise" | "memberPricedBookings"> {
+  return {
+    ...(previous?.savedInPaise === undefined ? {} :
+      {savedInPaise: previous.savedInPaise}),
+    ...(previous?.memberPricedBookings === undefined ? {} :
+      {memberPricedBookings: previous.memberPricedBookings}),
+  };
+}
+
 function materialFields(doc: HostMembershipDocument): string {
-  const {revision, updatedAtMillis, providerEventAtMillis, ...rest} = doc;
+  const {revision, updatedAtMillis, providerEventAtMillis, savedInPaise,
+    memberPricedBookings, ...rest} = doc;
   void revision; void updatedAtMillis; void providerEventAtMillis;
+  void savedInPaise; void memberPricedBookings;
   return JSON.stringify(rest);
 }
 
@@ -192,6 +204,9 @@ export function nextMembershipState(params: {
     revision: (previous?.revision ?? 0) + 1,
     createdAtMillis: previous?.createdAtMillis ?? nowMillis,
     updatedAtMillis: nowMillis,
+    // The benefit-use trigger owns the savings totals; a transition (a
+    // rejoin included, which keeps the same id) carries them unchanged.
+    ...carriedSavings(previous),
   };
   if (previous && materialFields(previous) === materialFields(next)) {
     return {next: {...previous,

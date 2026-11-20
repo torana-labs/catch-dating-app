@@ -54,13 +54,14 @@ export const playbookFooterVariants = ["guest", "host", "minimal"] as const;
 
 /**
  * The site components a `custom` section may name: the no-show calculator,
- * the guest app's launch notice (/app/), and the try-it tools. The /pricing/ bands whose
+ * the guest app's launch notice (/app/), the try-it tools and the numbers-only
+ * report on Reports and payouts. The /pricing/ bands whose
  * figures the shared fee model works out, or whose canvas layout no kit
  * section draws, are custom: the fee band with its calculator, the worked
  * examples, the cap, what the plan includes and the organisations band.
  */
 export const playbookCustomComponents = [
-  "noShowCalculator", "eventPageFromLink", "walkthroughSlots", "appLaunchNotice",
+  "noShowCalculator", "eventPageFromLink", "walkthroughSlots", "appLaunchNotice", "lastEventReport",
   "pricingCalculator", "pricingExamples", "pricingCap", "pricingIncluded", "pricingOrganisations",
 ] as const;
 
@@ -188,11 +189,12 @@ const media = mediaSpec as OneOfSpec<readonly [
 ]>;
 
 /**
- * The input a closing form asks for: a phone number (the default), or a link
- * or a line of text for a tool that reads one. A form renders only when its
- * slot can send what it asks for, so a link form waits for its command.
+ * The input a closing form asks for: a phone number (the default), a link
+ * or a line of text for a tool that reads one, or a file for a tool that
+ * uploads one. A form renders only when its slot can send what it asks for,
+ * so a link or file form waits for its command.
  */
-export const playbookLeadInputs = ["tel", "url", "text"] as const;
+export const playbookLeadInputs = ["tel", "url", "text", "file"] as const;
 
 /** What a lead form asks for: its request kind and extra fields, as the website enquiry intake takes them. */
 export const playbookLeadRequestKinds = ["guide", "walkthrough", "demo", "venue", "story", "referral", "org_contact", "city_alerts", "tool"] as const;
@@ -214,7 +216,7 @@ const leadForm = obj({
   submitLabel: copy(),
 }, {
   format: str(formatPattern),
-  /** The kit's form input type: tel (the default), url or text. */
+  /** The kit's form input type: tel (the default), url, text or file. */
   input: oneOfValues(playbookLeadInputs),
   fields: list(obj({name: oneOfValues(playbookLeadFieldNames), label: copy()}, {placeholder: copy()}), 1, 6),
   /** A line under the field, such as "We’ll message you on WhatsApp." */
@@ -652,7 +654,7 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
     }
     const form = "leadForm" in section ? section.leadForm : undefined;
     if (form && ((form.input ?? "tel") === "tel") === (form.requestKind === "tool")) {
-      errors.push(`${label}.leadForm: a tool form asks for a link or text (input url or text), and only a tool form does`);
+      errors.push(`${label}.leadForm: a tool form asks for a link, text or a file (input url, text or file), and only a tool form does`);
     }
     if (section.type === "split" && section.media && section.leadForm) {
       errors.push(`${label} holds media or a lead form in its second column, not both`);

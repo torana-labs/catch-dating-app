@@ -9,7 +9,7 @@ test("arguments need an explicit target and keep deletion behind --apply", () =>
   const dryRun = parseMigrationArgs(["--env", "prod"]);
   assert.equal(dryRun.apply, false);
   assert.equal(dryRun.retireLegacy, false);
-  const retire = parseMigrationArgs(["--env", "staging", "--apply", "--retire-legacy"]);
+  const retire = parseMigrationArgs(["--env", "dev", "--apply", "--retire-legacy"]);
   assert.equal(retire.apply, true);
   assert.equal(retire.retireLegacy, true);
 });

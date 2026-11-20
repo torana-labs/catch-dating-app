@@ -106,39 +106,6 @@ class HostContactMergeCandidate {
   final bool canReopen;
 }
 
-class HostContactMergeCandidatePage {
-  const HostContactMergeCandidatePage({
-    required this.organizerId,
-    required this.candidates,
-    required this.dismissedCandidates,
-    required this.nextCursor,
-    required this.truncated,
-  });
-
-  factory HostContactMergeCandidatePage.fromCallableData(Object? data) {
-    final map = crmRequiredMap(data, 'contact merge candidates');
-    return HostContactMergeCandidatePage(
-      organizerId: crmRequiredString(map, 'organizerId'),
-      candidates: crmMapList(
-        map['candidates'],
-        'contact merge candidates',
-      ).map(HostContactMergeCandidate.fromMap).toList(growable: false),
-      dismissedCandidates: crmMapList(
-        map['dismissedCandidates'],
-        'dismissed contact merge candidates',
-      ).map(HostContactMergeCandidate.fromMap).toList(growable: false),
-      nextCursor: crmNullableString(map['nextCursor']),
-      truncated: crmRequiredBool(map, 'truncated'),
-    );
-  }
-
-  final String organizerId;
-  final List<HostContactMergeCandidate> candidates;
-  final List<HostContactMergeCandidate> dismissedCandidates;
-  final String? nextCursor;
-  final bool truncated;
-}
-
 class HostActiveContactMerge {
   const HostActiveContactMerge({
     required this.mergeReceiptId,

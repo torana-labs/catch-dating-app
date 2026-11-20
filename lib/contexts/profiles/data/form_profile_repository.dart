@@ -80,7 +80,7 @@ class FormProfileRepository {
         },
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'listParticipantFormProfiles',
+          action: 'load your form profiles',
           resource: views,
         ),
       );
@@ -119,7 +119,7 @@ class FormProfileRepository {
       ),
       context: const BackendErrorContext(
         service: BackendService.firestore,
-        action: 'getParticipantFormProfile',
+        action: 'load this form profile',
         resource: views,
       ),
     );

@@ -222,6 +222,17 @@ class HostShellBackend {
       'resolveEventTicketCode' => _resolveTicket(request),
       'createOrganizer' => _createOrganizer(request),
       'listMyOrganizerJourneys' => {'journeys': const <Object?>[]},
+      // The shell asks for the plan on wide screens: a social host, no
+      // weddings plan, so the Host tabs stay.
+      'getOrganizerEntitlement' => {
+        'schemaVersion': 1,
+        'organizerId': organizerId,
+        'catalogVersion': 1,
+        'revision': 0,
+        'grants': const <Object?>[],
+        'meters': const {'flightDaysUsed': 0, 'waConversationsUsed': 0},
+        'skuCatalog': const <String, Object?>{},
+      },
       // The Organiser tab and Payments read the Catch bills: none yet.
       'listOrganizerBills' => {'bills': const <Object?>[]},
       // Payments reads the free trial: no event yet, so it has not started.

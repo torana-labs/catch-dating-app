@@ -105,19 +105,17 @@ void main() {
         eventsOrganizerId,
         _eventsRequest.day,
       ).overrideWith((ref) => drafts),
-      hostEventsProgrammesProvider(eventsOrganizerId).overrideWith(
-        (ref) async => [
-          const OrganizerProgramListRow(
-            programId: 'wedding',
-            title: 'Wedding',
-            kind: 'wedding',
-            status: 'active',
-            timezone: 'Asia/Kolkata',
-            revision: 1,
-            functionCount: 5,
-          ),
-        ],
-      ),
+      hostEventsProgrammesProvider(eventsOrganizerId).overrideWithValue([
+        const OrganizerProgramListRow(
+          programId: 'wedding',
+          title: 'Wedding',
+          kind: 'wedding',
+          status: 'active',
+          timezone: 'Asia/Kolkata',
+          revision: 1,
+          functionCount: 5,
+        ),
+      ]),
     ];
 
     test('reads loading until the coming events listener reports', () {
@@ -200,6 +198,91 @@ void main() {
         container.read(hostEventsControllerProvider(_eventsRequest)).status,
         HostEventsStatus.error,
       );
+    });
+  });
+
+  group('hostEventsProgrammes', () {
+    Map<Object?, Object?> view(String id, {String status = 'active'}) => {
+      'programId': id,
+      'organizerId': eventsOrganizerId,
+      'kind': 'wedding',
+      'title': 'Programme $id',
+      'timezone': 'Asia/Kolkata',
+      'status': status,
+      'startsAtMillis': 1796083200000,
+      'endsAtMillis': 1796256000000,
+      'revision': 3,
+      'functionCount': 4,
+    };
+    OrganizerProgramInventoryPage page(List<OrganizerProgramListRow> rows) =>
+        OrganizerProgramInventoryPage(programs: rows);
+    const counted = OrganizerProgramListRow(
+      programId: 'wedding',
+      title: 'Programme wedding',
+      kind: 'wedding',
+      status: 'active',
+      timezone: 'Asia/Kolkata',
+      revision: 3,
+      guestCount: 120,
+      flyingInCount: 30,
+      repliedShare: 0.5,
+    );
+
+    test('paints the views first and fills in the counts after', () async {
+      final counts = Completer<OrganizerProgramInventoryPage>();
+      final container = _container([
+        hostEventsProgrammeViewsProvider(eventsOrganizerId).overrideWith(
+          (ref) =>
+              Stream.value([view('wedding'), view('old', status: 'archived')]),
+        ),
+        hostEventsProgrammeCountsProvider(
+          eventsOrganizerId,
+        ).overrideWith((ref) => counts.future),
+      ]);
+      final provider = hostEventsProgrammesProvider(eventsOrganizerId);
+      container.listen(provider, (_, _) {});
+      expect(container.read(provider), isEmpty);
+      await flushTestEventQueue();
+      final painted = container.read(provider).single;
+      expect(painted.programId, 'wedding');
+      expect(painted.functionCount, 4);
+      expect(painted.guestCount, isNull);
+      counts.complete(page([counted]));
+      await flushTestEventQueue();
+      final filled = container.read(provider).single;
+      expect(filled.guestCount, 120);
+      expect(filled.flyingInCount, 30);
+      expect(filled.repliedShare, 0.5);
+    });
+
+    test('a failed views read falls back to the callable rows', () async {
+      final container = _container([
+        hostEventsProgrammeViewsProvider(
+          eventsOrganizerId,
+        ).overrideWith((ref) => Stream.error(StateError('denied'))),
+        hostEventsProgrammeCountsProvider(
+          eventsOrganizerId,
+        ).overrideWith((ref) async => page([counted])),
+      ]);
+      final provider = hostEventsProgrammesProvider(eventsOrganizerId);
+      container.listen(provider, (_, _) {});
+      await flushTestEventQueue();
+      expect(container.read(provider).single.guestCount, 120);
+    });
+
+    test('both reads failing leave the section out', () async {
+      final container = _container([
+        hostEventsProgrammeViewsProvider(
+          eventsOrganizerId,
+        ).overrideWith((ref) => Stream.error(StateError('denied'))),
+        hostEventsProgrammeCountsProvider(
+          eventsOrganizerId,
+        ).overrideWith((ref) async => throw StateError('offline')),
+      ]);
+      final provider = hostEventsProgrammesProvider(eventsOrganizerId);
+      container.listen(provider, (_, _) {});
+      await flushTestEventQueue();
+      expect(container.read(provider), isEmpty);
     });
   });
 

@@ -30,8 +30,8 @@ export function parseDomainOperatorArgs(argv) {
       result[values.get(flag)] = value;
     } else throw new Error(`Unknown argument: ${flag}`);
   }
-  if (!["dev", "staging", "prod"].includes(result.environment) || !actions.has(result.action) || !result.hostname) {
-    throw new Error("Use an explicit --env dev|staging|prod, --hostname and supported --action.");
+  if (!["dev", "prod"].includes(result.environment) || !actions.has(result.action) || !result.hostname) {
+    throw new Error("Use an explicit --env dev|prod, --hostname and supported --action.");
   }
   if (result.action === "status" && result.apply) throw new Error("Status cannot apply changes.");
   if (result.generation !== undefined) {

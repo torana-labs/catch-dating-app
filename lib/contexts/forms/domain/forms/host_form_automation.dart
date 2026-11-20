@@ -157,30 +157,35 @@ class HostFormAutomationRun {
     required this.errorMessage,
     required this.createdAt,
     required this.completedAt,
+    this.ruleName,
   });
 
-  factory HostFormAutomationRun.fromMap(Map<Object?, Object?> map) =>
-      HostFormAutomationRun(
-        runId: formOperationRequiredString(map, 'runId'),
-        ruleId: formOperationRequiredString(map, 'ruleId'),
-        ruleRevision: formOperationRequiredInt(map, 'ruleRevision'),
-        responseId: formOperationNullableString(map['responseId']),
-        sourceId: formOperationNullableString(map['sourceId']),
-        dueAt: formOperationNullableDateTime(map['dueAtMillis']),
-        eventKind: formOperationRequiredString(map, 'eventKind'),
-        status: formOperationEnumByName(
-          HostFormAutomationRunStatus.values,
-          formOperationRequiredString(map, 'status'),
-        ),
-        attemptCount: formOperationRequiredInt(map, 'attemptCount'),
-        actionResults: formOperationMapList(
-          map['actionResults'],
-          'automation action results',
-        ),
-        errorMessage: formOperationNullableString(map['errorMessage']),
-        createdAt: formOperationDateTime(map, 'createdAtMillis'),
-        completedAt: formOperationNullableDateTime(map['completedAtMillis']),
-      );
+  /// One run row; [ruleName] is the rule's name the run view joins in.
+  factory HostFormAutomationRun.fromMap(
+    Map<Object?, Object?> map, {
+    String? ruleName,
+  }) => HostFormAutomationRun(
+    runId: formOperationRequiredString(map, 'runId'),
+    ruleId: formOperationRequiredString(map, 'ruleId'),
+    ruleRevision: formOperationRequiredInt(map, 'ruleRevision'),
+    responseId: formOperationNullableString(map['responseId']),
+    sourceId: formOperationNullableString(map['sourceId']),
+    dueAt: formOperationNullableDateTime(map['dueAtMillis']),
+    eventKind: formOperationRequiredString(map, 'eventKind'),
+    status: formOperationEnumByName(
+      HostFormAutomationRunStatus.values,
+      formOperationRequiredString(map, 'status'),
+    ),
+    attemptCount: formOperationRequiredInt(map, 'attemptCount'),
+    actionResults: formOperationMapList(
+      map['actionResults'],
+      'automation action results',
+    ),
+    errorMessage: formOperationNullableString(map['errorMessage']),
+    createdAt: formOperationDateTime(map, 'createdAtMillis'),
+    completedAt: formOperationNullableDateTime(map['completedAtMillis']),
+    ruleName: ruleName,
+  );
 
   final String runId;
   final String ruleId;
@@ -195,32 +200,24 @@ class HostFormAutomationRun {
   final String? errorMessage;
   final DateTime createdAt;
   final DateTime? completedAt;
+
+  /// The rule's name when the run was last projected, or null when its rule
+  /// is gone.
+  final String? ruleName;
 }
 
+/// An organizer's automation rules and the newest page of their runs.
 @immutable
 class HostFormAutomationPage {
   const HostFormAutomationPage({
     required this.rules,
     required this.runs,
-    required this.nextCursor,
+    required this.hasMore,
   });
-
-  factory HostFormAutomationPage.fromCallableData(Object? data) {
-    final map = formOperationRequiredMap(data, 'form automations');
-    return HostFormAutomationPage(
-      rules: formOperationMapList(
-        map['rules'],
-        'automation rules',
-      ).map(HostFormAutomationRule.fromMap).toList(growable: false),
-      runs: formOperationMapList(
-        map['runs'],
-        'automation runs',
-      ).map(HostFormAutomationRun.fromMap).toList(growable: false),
-      nextCursor: formOperationNullableString(map['nextCursor']),
-    );
-  }
 
   final List<HostFormAutomationRule> rules;
   final List<HostFormAutomationRun> runs;
-  final String? nextCursor;
+
+  /// Whether older runs follow the ones in [runs].
+  final bool hasMore;
 }

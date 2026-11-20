@@ -20,8 +20,8 @@ const BASE62 =
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 export type WorkspaceState = "active" | "kept" | "expired";
-export type WorkspaceKeptReason = "published" | "has_events" | "team_member" |
-  "owner_kept" | "not_owner" | "existing_organizer";
+export type WorkspaceKeptReason = "published" | "has_events" | "has_forms" |
+  "team_member" | "owner_kept" | "not_owner" | "existing_organizer";
 
 /** tryItWorkspaces/{uid}, as its Firestore contract stores it. */
 export interface StoredTryItWorkspace {

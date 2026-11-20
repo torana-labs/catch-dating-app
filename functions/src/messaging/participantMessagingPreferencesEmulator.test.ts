@@ -6,12 +6,11 @@ import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
-import {listParticipantMessagingPreferencesHandler as list,
-  withdrawParticipantMessagingPermissionHandler as withdraw} from
+import {withdrawParticipantMessagingPermissionHandler as withdraw} from
   "./participantMessagingPreferences";
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
-test("Firestore serializes sender withdrawals and queries only owned rows",
+test("Firestore serializes sender withdrawals",
   {skip: !emulator}, async () => {
     assert.match(emulator!, /^(127\.0\.0\.1|localhost):[0-9]+$/u);
     const suffix = Date.now().toString();
@@ -39,12 +38,14 @@ test("Firestore serializes sender withdrawals and queries only owned rows",
       const rejected = race.find((r) => r.status === "rejected");
       assert.ok(rejected?.status === "rejected");
       assert.equal(rejected.reason.code, "aborted");
-      const page = await list(request({cursor: null, limit: 1}), deps);
-      assert.equal(page.catchPreference.status, "optedOut");
-      assert.equal(page.organizers.length, 1);
-      assert.equal(page.organizers[0].organizerId, organizerId);
-      assert.equal(page.organizers[0].preference.status, "optedOut");
-      assert.equal(page.nextCursor, null);
+      const catchPreference = await db
+        .doc(`catchCommunicationPreferences/${uid}`).get();
+      assert.equal(catchPreference.get("whatsapp.status"), "optedOut");
+      const organizerPreference = await db.doc(
+        "organizerCommunicationPreferences/" +
+        organizerCommunicationPreferenceId(organizerId, uid)).get();
+      assert.equal(organizerPreference.get("organizerId"), organizerId);
+      assert.equal(organizerPreference.get("whatsapp.status"), "optedOut");
     } finally {
       const batch = db.batch();
       for (const collection of ["catchCommunicationPermissionReceipts",

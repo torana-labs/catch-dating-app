@@ -68,8 +68,9 @@ void main() {
               story.organizerId,
               story.applicationId,
             ).overrideWith(
-              (_) async =>
-                  story.application(imported: !revoked, revoked: revoked),
+              (_) => Stream.value(
+                story.application(imported: !revoked, revoked: revoked),
+              ),
             ),
             hostFormResponseDetailProvider(
               organizerId: story.organizerId,
@@ -84,6 +85,15 @@ void main() {
           retry: (_, _) => null,
         );
         addTearDown(container.dispose);
+        // The screen listens to the review; a listener read needs one.
+        container.listen(
+          hostResponseReviewDetailProvider((
+            organizerId: story.organizerId,
+            responseId: null,
+            applicationId: story.applicationId,
+          )),
+          (_, _) {},
+        );
         await container.read(
           hostResponseReviewDetailProvider((
             organizerId: story.organizerId,

@@ -252,6 +252,7 @@ class _HostFormAutomationsScreenState
                                 .where((rule) => rule.ruleId == run.ruleId)
                                 .firstOrNull
                                 ?.name ??
+                            run.ruleName ??
                             context.l10n.hostFormAutomationsTitle,
                         contractExemption:
                             'Read-only disclosure of a server-owned automation run outcome; no scalar value is persisted.',

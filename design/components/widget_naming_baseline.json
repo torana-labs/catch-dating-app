@@ -53,14 +53,6 @@
       "issues": [
         "noncanonical-feature-widget-file"
       ]
-    },
-    {
-      "file": "lib/hosts/presentation/widgets/host_event_reviews_panel.dart",
-      "name": "HostEventReviewsPanel",
-      "issues": [
-        "noncanonical-feature-widget-file",
-        "noncanonical-feature-widget-name"
-      ]
     }
   ]
 }

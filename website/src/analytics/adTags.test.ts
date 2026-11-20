@@ -4,7 +4,7 @@ import {createAdTags, type AdBooking} from "./adTags";
 
 type Globals = {catchTagLayer?: ArrayLike<unknown>[]; fbq?: {queue: ArrayLike<unknown>[]; disablePushState?: boolean}; _fbq?: unknown};
 const globals = () => window as unknown as Globals;
-const consent = (choice: "accepted" | "analytics" | "essential", version = 5, updatedAt = "2026-11-18T10:00:00.000Z") => ({
+const consent = (choice: "accepted" | "analytics" | "essential", version = 6, updatedAt = "2026-11-18T10:00:00.000Z") => ({
   version, choice, analytics: choice !== "essential", marketing: choice === "accepted", updatedAt,
 });
 /** gtag commands as arrays (gtag.js reads them as Arguments objects). */
@@ -12,7 +12,10 @@ const google = () => (globals().catchTagLayer ?? []).map((entry) => Array.from(e
 const meta = () => (globals().fbq?.queue ?? []).map((entry) => Array.from(entry));
 const scripts = () => Array.from(document.querySelectorAll("script")).map((script) => script.src);
 const googleEvents = (name: string) => google().filter(([command, event]) => command === "event" && event === name);
-const metaEvents = (name: string) => meta().filter(([command, event]) => command === "track" && event === name);
+const catchPixel = "1844810253539672";
+/** Catch's Meta events: always `trackSingle` to Catch's own pixel. */
+const metaEvents = (name: string) => meta().filter(([command, pixel, event]) => command === "trackSingle" && pixel === catchPixel &&
+  event === name);
 let ids = 0;
 const tags = () => createAdTags({hostAllowed: () => true, newId: () => `catch_1800000000000_generated${++ids}`});
 const booking: AdBooking = {eventId: "synthetic-run", paymentId: `pp_${"a".repeat(32)}`, amountPaise: 45000, places: 3, mode: "live"};
@@ -27,7 +30,7 @@ beforeEach(() => {
 });
 
 describe("first-party Google tag and Meta Pixel", () => {
-  it.each([null, consent("essential"), consent("analytics", 4), consent("accepted", 4)])(
+  it.each([null, consent("essential"), consent("analytics", 5), consent("accepted", 5)])(
     "loads no tag without a current analytics or marketing choice (%o)", (choice) => {
       const controller = tags();
       controller.sync(choice);
@@ -74,7 +77,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(google()).toContainEqual(["set", {page_location: `${brand.web.origin}/host/?utm_source=google&gclid=SyntheticGoogle123`,
       page_title: brand.name}]);
     expect(googleEvents("page_view")).toEqual([["event", "page_view", {send_to: "G-HZFG0DL2DK", event_id: "catch_1800000000000_generated1"}]]);
-    expect(metaEvents("PageView")).toEqual([["track", "PageView", {}, {eventID: "catch_1800000000000_generated1"}]]);
+    expect(metaEvents("PageView")).toEqual([["trackSingle", catchPixel, "PageView", {}, {eventID: "catch_1800000000000_generated1"}]]);
   });
 
   it("loads Google Analytics alone for an analytics-only choice: no Ads tag, no Pixel, no contact data", () => {
@@ -103,7 +106,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     const controller = tags();
     controller.sync(consent("analytics"));
     controller.pageView();
-    controller.sync(consent("accepted", 5, "2026-11-18T11:00:00.000Z"));
+    controller.sync(consent("accepted", 6, "2026-11-18T11:00:00.000Z"));
     expect(scripts()).toEqual([
       "https://www.googletagmanager.com/gtag/js?id=G-HZFG0DL2DK&l=catchTagLayer",
       "https://connect.facebook.net/en_US/fbevents.js",
@@ -121,7 +124,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     document.cookie = "_fbp=fb.1.1800000000000.1234567890; path=/";
     document.cookie = "_ga=GA1.1.123.456; path=/";
     document.cookie = "keep=1; path=/";
-    controller.sync(consent("analytics", 5, "2026-11-18T11:00:00.000Z"));
+    controller.sync(consent("analytics", 6, "2026-11-18T11:00:00.000Z"));
     expect(google().at(-1)).toEqual(["consent", "update",
       {ad_storage: "denied", analytics_storage: "granted", ad_user_data: "denied", ad_personalization: "denied"}]);
     expect(meta().at(-1)).toEqual(["consent", "revoke"]);
@@ -131,7 +134,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(controller.pageView()).toBe(true);
     expect(controller.viewItem({eventId: "synthetic-run", activityKind: "socialRun", city: "Pune", amountPaise: 45000})).toBe(true);
     expect(meta().length).toBe(metaBefore);
-    controller.sync(consent("essential", 5, "2026-11-18T11:30:00.000Z"));
+    controller.sync(consent("essential", 6, "2026-11-18T11:30:00.000Z"));
     expect(google().at(-1)).toEqual(["consent", "update",
       {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"}]);
     expect(document.cookie).not.toMatch(/_fbp|_ga/u);
@@ -142,7 +145,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(controller.beginCheckout(booking)).toBe(false);
     expect([google().length, meta().length]).toEqual(before);
     // A new marketing choice grants again without loading the scripts twice.
-    controller.sync(consent("accepted", 5, "2026-11-18T12:00:00.000Z"));
+    controller.sync(consent("accepted", 6, "2026-11-18T12:00:00.000Z"));
     expect(scripts()).toHaveLength(2);
     expect(google().at(-1)?.[2]).toMatchObject({ad_storage: "granted"});
     expect(meta().at(-1)).toEqual(["consent", "grant"]);
@@ -169,7 +172,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(controller.viewItem({eventId: "synthetic-run", activityKind: "socialRun", city: "Pune", amountPaise: 45000})).toBe(true);
     expect(googleEvents("view_item")).toEqual([["event", "view_item", {send_to: "G-HZFG0DL2DK", event_id: "catch_1800000000000_generated" + ids,
       content_category: "guest", city: "Pune", value: 450, currency: "INR", items: [{item_id: "synthetic-run", item_category: "socialRun"}]}]]);
-    expect(metaEvents("ViewContent")[0]?.[2]).toEqual({content_ids: ["synthetic-run"], content_type: "product",
+    expect(metaEvents("ViewContent")[0]?.[3]).toEqual({content_ids: ["synthetic-run"], content_type: "product",
       content_category: "guest", activity_kind: "socialRun", city: "Pune", value: 450, currency: "INR"});
   });
 
@@ -183,13 +186,13 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(controller.beginCheckout(booking)).toBe(false);
     expect(googleEvents("begin_checkout")[0]?.[2]).toMatchObject({event_id: `checkout_${booking.paymentId}`, value: 450, currency: "INR",
       items: [{item_id: "synthetic-run", quantity: 3}]});
-    expect(metaEvents("InitiateCheckout")[0]?.[3]).toEqual({eventID: `checkout_${booking.paymentId}`});
+    expect(metaEvents("InitiateCheckout")[0]?.[4]).toEqual({eventID: `checkout_${booking.paymentId}`});
     expect(controller.purchase(booking)).toBe(true);
     expect(controller.purchase(booking)).toBe(false);
     expect(googleEvents("purchase")).toEqual([["event", "purchase", {send_to: "G-HZFG0DL2DK", event_id: booking.paymentId,
       transaction_id: booking.paymentId, content_category: "guest", value: 450, currency: "INR",
       items: [{item_id: "synthetic-run", quantity: 3}]}]]);
-    expect(metaEvents("Purchase")).toEqual([["track", "Purchase", {content_ids: ["synthetic-run"], content_type: "product",
+    expect(metaEvents("Purchase")).toEqual([["trackSingle", catchPixel, "Purchase", {content_ids: ["synthetic-run"], content_type: "product",
       content_category: "guest", num_items: 3, value: 450, currency: "INR"}, {eventID: booking.paymentId}]]);
     expect(sessionStorage.getItem("catch_ad_checkouts_v1")).toBeNull();
     assertNoForbiddenFields();
@@ -210,10 +213,10 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(googleEvents("generate_lead")[0]?.[2]).toEqual({send_to: "G-HZFG0DL2DK", event_id: leadId,
       content_category: "host", audience: "organizer", lead_kind: "guide"});
     expect(meta()).toContainEqual(["init", "1844810253539672", {ph: "919812345678", em: "host@example.test"}]);
-    expect(metaEvents("Lead")).toEqual([["track", "Lead", {content_category: "host", lead_kind: "guide"}, {eventID: leadId}]]);
+    expect(metaEvents("Lead")).toEqual([["trackSingle", catchPixel, "Lead", {content_category: "host", lead_kind: "guide"}, {eventID: leadId}]]);
     // No receipt: a generated id still deduplicates.
     expect(controller.hostLead({kind: "demo", leadId: null, phone: null})).toBe(true);
-    expect(metaEvents("Lead")[1]?.[3]).toEqual({eventID: expect.stringMatching(/^catch_1800000000000_generated\d+$/u)});
+    expect(metaEvents("Lead")[1]?.[4]).toEqual({eventID: expect.stringMatching(/^catch_1800000000000_generated\d+$/u)});
     assertNoForbiddenFields();
   });
 });

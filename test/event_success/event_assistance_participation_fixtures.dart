@@ -1,52 +1,8 @@
-import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-EventAssistanceGuestScope participationScope({
-  String attendeeId = 'attendee-1',
-}) => EventAssistanceGuestScope(
-  organizerId: 'organizer-1',
-  eventId: 'event-1',
-  attendeeId: attendeeId,
-);
-
-Map<String, Object?> participationResponse({
-  String outcome = 'read',
-  int? operationRevision,
-  int revision = 2,
-  String? episodeId = 'episode:one',
-  String freshness = 'current',
-  Object? participation = const {'state': 'active', 'resumeAtUnit': null},
-  bool canChange = true,
-  bool checkedIn = false,
-}) => {
-  'outcome': outcome,
-  'operationRevision': operationRevision,
-  'view': {
-    'context': participationScope().context,
-    'attendeeId': 'attendee-1',
-    'serverTime': 1788790000000,
-    'sourceHash': 'a' * 64,
-    'freshness': freshness,
-    'revision': revision,
-    'episodeId': episodeId,
-    'participation': participation,
-    'canChange': canChange,
-    'checkedIn': checkedIn,
-    'resumeUnits': [
-      {'unitId': 'itinerary:second', 'label': 'Second stop'},
-    ],
-  },
-};
-
-EventAssistanceParticipationView participationView({bool canChange = true}) =>
-    EventAssistanceParticipationResult.fromCallableData(
-      participationResponse(canChange: canChange),
-      expectedScope: participationScope(),
-    ).view;
-
 class ParticipationTestFunctions extends Fake implements FirebaseFunctions {
-  Object? response = participationResponse();
+  Object? response;
   Object? error;
   final calls = <({String name, Object? input})>[];
 

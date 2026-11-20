@@ -300,7 +300,7 @@ Usage:
   node tool/analytics/user_analytics_live_status.mjs [options]
 
 Options:
-  --env <dev|staging|prod>            Firebase project alias. Default: prod.
+  --env <dev|prod>            Firebase project alias. Default: prod.
   --project-id <id>                   Explicit Firebase/GCP project id.
   --location <location>               BigQuery location. Default: asia-south1.
   --schedule-display-name <name>      Scheduled query display name.

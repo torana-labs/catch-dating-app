@@ -48,6 +48,8 @@ class HostMembership {
     required this.memberSince,
     required this.accumulatedTenure,
     required this.tenureStretchStartedAt,
+    this.savedInPaise = 0,
+    this.memberPricedBookings = 0,
   });
 
   factory HostMembership.fromMap(String id, Map<Object?, Object?> map) {
@@ -82,6 +84,10 @@ class HostMembership {
         tenure,
         'stretchStartedAtMillis',
       ),
+      // Server-kept totals, absent until the first member-priced booking.
+      savedInPaise: membershipNullableInt(map, 'savedInPaise') ?? 0,
+      memberPricedBookings:
+          membershipNullableInt(map, 'memberPricedBookings') ?? 0,
     );
   }
 
@@ -100,6 +106,12 @@ class HostMembership {
   final DateTime? memberSince;
   final Duration accumulatedTenure;
   final DateTime? tenureStretchStartedAt;
+
+  /// What member-priced bookings that were not released saved the member.
+  final int savedInPaise;
+
+  /// How many bookings used a member price and were not released.
+  final int memberPricedBookings;
 
   /// Members keep their badge while paused; only expiry ends membership.
   bool get isCurrent => status != HostMembershipStatus.expired;

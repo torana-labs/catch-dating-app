@@ -24,17 +24,21 @@ class OrganizerMomentsState {
   );
 }
 
-/// Loads and mutates the moments for one event or program scope.
-/// Lifecycle validation stays with the backend; the controller only
-/// applies the returned definitions to the list.
+/// Lists, live, and mutates the moments for one event or program scope.
+/// Lifecycle validation stays with the backend; the controller applies the
+/// returned definitions to the list at once, and the listener brings the
+/// trigger-kept rows (with their send counts) after.
 @riverpod
 class OrganizerMomentsController extends _$OrganizerMomentsController {
   @override
-  Future<OrganizerMomentsState> build(OrganizerMomentScope scope) async =>
-      OrganizerMomentsState(
-        moments: await ref
-            .read(organizerMomentsRepositoryProvider)
-            .listMoments(scope),
+  Stream<OrganizerMomentsState> build(OrganizerMomentScope scope) => ref
+      .watch(organizerMomentsRepositoryProvider)
+      .watchMoments(scope)
+      .map(
+        (moments) => OrganizerMomentsState(
+          moments: moments,
+          mutatingMomentIds: state.value?.mutatingMomentIds ?? const {},
+        ),
       );
 
   Future<void> _mutate(
@@ -94,13 +98,13 @@ class OrganizerMomentsController extends _$OrganizerMomentsController {
   );
 
   /// Fires a manual run. The backend resolves the requestKey idempotently;
-  /// the list refresh picks up any send bookkeeping on the next build.
+  /// the listener picks up the send bookkeeping when the row is rewritten.
   Future<String> run(String momentId, {required String requestKey}) => ref
       .read(organizerMomentsRepositoryProvider)
       .runMoment(scope, momentId, requestKey: requestKey);
 
-  /// Upserts a moment definition, then refreshes so the list reflects the
-  /// post-revision draft state the backend owns.
+  /// Upserts a moment definition and shows the post-revision draft state
+  /// the backend returned until the listener delivers its row.
   Future<OrganizerMoment> save({
     String? momentId,
     required String name,
@@ -120,7 +124,18 @@ class OrganizerMomentsController extends _$OrganizerMomentsController {
           audience: audience,
           action: action,
         );
-    ref.invalidateSelf();
+    final latest = state.asData?.value;
+    if (latest != null) {
+      state = AsyncData(
+        latest.copyWith(
+          moments: [
+            for (final moment in latest.moments)
+              if (moment.momentId != saved.momentId) moment,
+            saved,
+          ]..sort((a, b) => a.momentId.compareTo(b.momentId)),
+        ),
+      );
+    }
     return saved;
   }
 }

@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_assignment_views.schema.json",
+  "title": "HostAssignmentViewDocument",
+  "description": "Server-maintained staff work-list row of one account: one programme staff grant, one event staff grant or one organiser team membership, with what listMyHostAssignments returned for it (the programme or event title, the organiser's name, the duties with their scopes) and the facts its clock-dependent filtering used (status, the owner approval instant, the grant's expiry and each duty's own expiry), so the phone drops what has expired itself. Duties already expired when the row is written are left out. Written by triggers on programStaffGrants, eventStaffGrants, organizerTeamMemberships, organizerPrograms, events and organizers. Readable only by the account it names, while not deleted, listed by a query naming uid. Ids, titles, the organiser's name and duty names only: never a phone number or other contact field, and never identity, permission or mutation authority (every destination re-checks its own access).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostAssignmentViews",
+  "x-firestore-path": "hostAssignmentViews/{uid}__{kind}_{scopeId}",
+  "x-document-id-field": "viewId",
+  "x-owner": "Host work read model projector (hostAssignmentViewTriggers)",
+  "required": [
+    "uid",
+    "kind",
+    "scopeId",
+    "organizerId",
+    "title",
+    "organizerName",
+    "status",
+    "activeFromMillis",
+    "grantExpiresAtMillis",
+    "duties",
+    "version"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "program",
+        "event",
+        "team"
+      ],
+      "description": "A programme staff grant, an event staff grant, or an active organiser team membership (which lands the account in the manager shell)."
+    },
+    "scopeId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The programme, event or organiser id."
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 300,
+      "description": "The programme title, the event name (its id when unnamed) or, for a team membership, the organiser's name."
+    },
+    "organizerName": {
+      "type": "string",
+      "maxLength": 300,
+      "description": "The organiser's name, or its id when it has none."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "description": "inactive: the grant is revoked or not active, its programme is archived or gone, its event is gone, the owner's approval is missing, or none of its duties can be live again. The phone lists active rows only."
+    },
+    "activeFromMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The owner approval instant of a programme grant; its duties are not live before it. Zero otherwise."
+    },
+    "grantExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "The grant's own expiry; null for a team membership."
+    },
+    "duties": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "duty",
+          "expiresAtMillis"
+        ],
+        "properties": {
+          "duty": {
+            "$ref": "../shared/host_work.schema.json#/definitions/hostWorkDuty"
+          },
+          "pickupPointIds": {
+            "$ref": "../shared/host_work.schema.json#/definitions/hostWorkGrantedDuty/properties/pickupPointIds"
+          },
+          "hotelIds": {
+            "$ref": "../shared/host_work.schema.json#/definitions/hostWorkGrantedDuty/properties/hotelIds"
+          },
+          "functionIds": {
+            "$ref": "../shared/host_work.schema.json#/definitions/hostWorkGrantedDuty/properties/functionIds"
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Exclusive expiry of this duty; an event grant's duty ends with the grant."
+          }
+        }
+      }
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

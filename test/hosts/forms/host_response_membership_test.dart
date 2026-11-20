@@ -23,7 +23,7 @@ void main() {
           hostApplicationDetailProvider(
             'org-1',
             'app-1',
-          ).overrideWith((_) async => detail),
+          ).overrideWith((_) => Stream.value(detail)),
         ],
         child: MaterialApp(
           theme: AppTheme.light,

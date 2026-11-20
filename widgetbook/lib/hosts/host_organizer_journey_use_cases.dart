@@ -86,7 +86,7 @@ Widget hostOrganizerJourneySheetPreview(BuildContext context) => ProviderScope(
   overrides: [
     organizerJourneysProvider(
       'lantern',
-    ).overrideWith((ref) async => [_claimed]),
+    ).overrideWith((ref) => Stream.value([_claimed])),
   ],
   child: const HostOrganizerJourneySheet(organizerId: 'lantern'),
 );
@@ -98,7 +98,9 @@ Widget hostOrganizerJourneySheetPreview(BuildContext context) => ProviderScope(
 )
 Widget hostWaitingClaimsSectionPreview(BuildContext context) => ProviderScope(
   overrides: [
-    organizerJourneysProvider(null).overrideWith((ref) async => [_waiting]),
+    organizerJourneysProvider(
+      null,
+    ).overrideWith((ref) => Stream.value([_waiting])),
   ],
   child: const HostWaitingClaimsSection(),
 );

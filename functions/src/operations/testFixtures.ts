@@ -199,7 +199,7 @@ export function operationPublicationPlan(
     publicationPlanId: "publication:1",
     runId: "run:mumbai:2026-07-14",
     revision: 0,
-    environment: "staging",
+    environment: "development",
     mode: "dry_run",
     status: "preflight_passed",
     contentHash: hashes.output,

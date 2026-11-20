@@ -128,7 +128,7 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
   try {
     loadTypeScript();
     if (!publicString(sourceSha, /^[0-9a-f]{40}$/u) ||
-        !["dev", "staging", "prod"].includes(environment) ||
+        !["dev", "prod"].includes(environment) ||
         !publicString(projectId, /^[a-z][a-z0-9-]{4,61}[a-z0-9]$/u) ||
         !publicString(projectNumber, /^[1-9][0-9]{0,29}$/u) ||
         !Array.isArray(consumers) || !consumers.length ||

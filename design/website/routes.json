@@ -2665,7 +2665,7 @@
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "Paste a link, get a draft page to claim.",
+      "notes": "The event tool on its own page: a split band whose tool form runs event.import-from-link (features/tryIt, the tool Bookings and memberships uses) and makes a private draft event (name, date, start time, city) the host finishes in the Host app. Indexed; linked from the host footer's Resources column.",
       "review": {
         "priority": "p2",
         "status": "planned",

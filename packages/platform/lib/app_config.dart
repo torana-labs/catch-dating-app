@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 
 enum AppEnvironment {
   dev('dev', 'DEV', 'Catch (Dev)'),
-  staging('staging', 'STAGING', 'Catch (Staging)'),
   prod('prod', '', 'Catch');
 
   const AppEnvironment(this.value, this.bannerLabel, this.appTitle);
@@ -17,12 +16,11 @@ enum AppEnvironment {
   static AppEnvironment fromValue(String value) {
     return switch (value.trim().toLowerCase()) {
       'dev' => AppEnvironment.dev,
-      'staging' => AppEnvironment.staging,
       'prod' || 'production' => AppEnvironment.prod,
       _ => throw ArgumentError.value(
         value,
         'APP_ENV',
-        'Unsupported app environment. Use dev, staging, or prod.',
+        'Unsupported app environment. Use dev or prod.',
       ),
     };
   }
@@ -96,7 +94,6 @@ class AppConfig {
     final baseTitle = appRole.isHost ? hostTitle : consumerTitle;
     return switch (environment) {
       AppEnvironment.dev => '$baseTitle (Dev)',
-      AppEnvironment.staging => '$baseTitle (Staging)',
       AppEnvironment.prod => baseTitle,
     };
   }

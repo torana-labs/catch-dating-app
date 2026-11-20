@@ -79,7 +79,10 @@ List<Override> plannerCaptureOverrides() => [
   ).overrideWithValue(plannerTripsReport),
   programPlannedMessagesProvider(
     plannerProgramId,
-  ).overrideWith((ref) async => plannerMessages),
+  ).overrideWith((ref) => Stream.value(plannerMessages)),
+  programMessageSenderProvider(
+    plannerProgramId,
+  ).overrideWith((ref) async => 'wa-meher'),
   programArrivalsStreamProvider(
     plannerProgramId,
     null,

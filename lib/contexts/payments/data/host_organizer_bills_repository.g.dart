@@ -56,21 +56,29 @@ final class HostOrganizerBillsRepositoryProvider
 }
 
 String _$hostOrganizerBillsRepositoryHash() =>
-    r'63d1f688aeab4969420b9b98d6ee6d2f87b1fcc2';
+    r'699a8555d5ee1b519a21eee21064621fc7b19477';
+
+/// The owner's bills listener. It is a Firestore listener: it declares no
+/// cache lifetime, and bill changes arrive on their own.
 
 @ProviderFor(hostOrganizerBills)
 final hostOrganizerBillsProvider = HostOrganizerBillsFamily._();
+
+/// The owner's bills listener. It is a Firestore listener: it declares no
+/// cache lifetime, and bill changes arrive on their own.
 
 final class HostOrganizerBillsProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<HostOrganizerBill>>,
           List<HostOrganizerBill>,
-          FutureOr<List<HostOrganizerBill>>
+          Stream<List<HostOrganizerBill>>
         >
     with
         $FutureModifier<List<HostOrganizerBill>>,
-        $FutureProvider<List<HostOrganizerBill>> {
+        $StreamProvider<List<HostOrganizerBill>> {
+  /// The owner's bills listener. It is a Firestore listener: it declares no
+  /// cache lifetime, and bill changes arrive on their own.
   HostOrganizerBillsProvider._({
     required HostOrganizerBillsFamily super.from,
     required String super.argument,
@@ -94,12 +102,12 @@ final class HostOrganizerBillsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<HostOrganizerBill>> $createElement(
+  $StreamProviderElement<List<HostOrganizerBill>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<HostOrganizerBill>> create(Ref ref) {
+  Stream<List<HostOrganizerBill>> create(Ref ref) {
     final argument = this.argument as String;
     return hostOrganizerBills(ref, argument);
   }
@@ -116,10 +124,13 @@ final class HostOrganizerBillsProvider
 }
 
 String _$hostOrganizerBillsHash() =>
-    r'3d84ebb995af504c96a20e560a44ccc42bd8ae8b';
+    r'3b26eacb670b3ac5108eb8581a125979a6274ec8';
+
+/// The owner's bills listener. It is a Firestore listener: it declares no
+/// cache lifetime, and bill changes arrive on their own.
 
 final class HostOrganizerBillsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<HostOrganizerBill>>, String> {
+    with $FunctionalFamilyOverride<Stream<List<HostOrganizerBill>>, String> {
   HostOrganizerBillsFamily._()
     : super(
         retry: null,
@@ -128,6 +139,9 @@ final class HostOrganizerBillsFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The owner's bills listener. It is a Firestore listener: it declares no
+  /// cache lifetime, and bill changes arrive on their own.
 
   HostOrganizerBillsProvider call(String organizerId) =>
       HostOrganizerBillsProvider._(argument: organizerId, from: this);

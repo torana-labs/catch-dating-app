@@ -5,6 +5,8 @@ import {beginPublicEventPhoneVerification, registerPublicEvent,
   watchPublicFormAuthState, type User, type PublicEventPhoneVerification} from "../../firebase";
 import type {FormStatus as FormStatusModel} from "../../shared/forms/types";
 import {eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 export function useFreeEventRegistrationController(eventId: string, inviteTokenOverride?: string | null, initialDisplayName = "") {
   const reactId = useId();
@@ -61,12 +63,12 @@ export function useFreeEventRegistrationController(eventId: string, inviteTokenO
     event.preventDefault();
     if (busy.current || stage === "success") return;
     const name = displayName.trim();
-    const phone = phoneNumber.replace(/[\s()-]/gu, "");
+    const phone = catchPhoneE164(phoneNumber, activePhoneCountry) ?? "";
     if (name.length < 1) {
       setStatus({message: copy.missingName, tone: "is-error"});
       return;
     }
-    if (!/^\+[1-9][0-9]{7,14}$/u.test(phone)) {
+    if (!phone) {
       setStatus({message: copy.invalidPhone, tone: "is-error"});
       return;
     }

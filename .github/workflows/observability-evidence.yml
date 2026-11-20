@@ -6,11 +6,10 @@ on:
       environment:
         description: Environment where the evidence was captured.
         required: true
-        default: staging
+        default: dev
         type: choice
         options:
           - dev
-          - staging
           - prod
       crashlytics_evidence:
         description: Crashlytics issue/nonfatal URL with environment, version, build, and user/custom-key proof.

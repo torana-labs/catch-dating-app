@@ -43,12 +43,11 @@
           "emphasis": "primary"
         },
         {
-          "label": "See who your regulars are",
+          "label": "Try it with an old guest list",
           "to": {
             "anchor": "try"
           },
-          "emphasis": "secondary",
-          "status": "tryIt"
+          "emphasis": "secondary"
         }
       ],
       "media": {
@@ -293,33 +292,22 @@
       "type": "split",
       "id": "try",
       "ground": "paper",
-      "status": "tryIt",
-      "statusNote": "Command: import a guest list (records mode), with AI clean-up; the same importer as Running the event. Show this when the command ships.",
+      "status": "built",
       "kicker": "Try it with your old list",
-      "title": "See who your regulars are.",
-      "lead": "Upload any guest list you’ve kept: a Google Sheet, a Luma download, a file you’ve added to by hand for years. {{brand.name}}’s AI cleans it, merges duplicates and shows you your regulars, the people you haven’t seen in a while, and who brings their friends.",
+      "title": "Bring in an old guest list, and check it before it’s saved.",
+      "lead": "Upload a guest list you’ve kept as a CSV or Excel file. {{brand.name}} reads the columns, writes phone numbers in one format and shows who would be added, who needs a look and who may already be in your contacts. If the column names don’t say which is which, you choose.",
       "ticks": [
-        "Any CSV or Excel file, however messy",
-        "Duplicates merged, with the reason shown",
-        "Regulars, lapsed regulars and first-timers, if your file has dates",
-        "Sign in with your phone first, and review everything before it’s saved"
+        "CSV or Excel (.xlsx), up to 5 MB and 250 guests",
+        "Rows that need a look, each with the reason, to fix or leave out",
+        "Possible repeats and suggested tags shown, never applied for you",
+        "Confirm your phone number first. Guests go on a private draft event and aren’t messaged"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "label": "Try it",
-          "title": "Upload a guest list",
-          "fields": [
-            {
-              "label": "Guest list (CSV or Excel)",
-              "placeholder": "Choose a file"
-            }
-          ],
-          "actions": [
-            "See my regulars"
-          ],
-          "note": "You’ll sign in with your phone number before uploading. Your file is never used to train AI."
-        }
+      "leadForm": {
+        "id": "try_guests",
+        "requestKind": "tool",
+        "input": "file",
+        "label": "Guest list (CSV or Excel)",
+        "submitLabel": "Read my list"
       }
     },
     {
@@ -382,45 +370,14 @@
       "status": "built",
       "kicker": "Free for 30 days · founding hosts get 90",
       "title": "Bring your list. Meet your regulars.",
-      "lead": "Import your guest lists and see your groups on day one.",
-      "actions": [
-        {
-          "label": "Start free trial",
-          "to": {
-            "route": "host_start"
-          },
-          "emphasis": "primary"
-        },
-        {
-          "label": "How {{brand.name}} works",
-          "to": {
-            "route": "how_it_works"
-          },
-          "emphasis": "secondary"
-        }
-      ],
-      "media": {
-        "kind": "capture",
-        "slot": "host-today"
-      }
-    },
-    {
-      "type": "cta",
-      "id": "start-try",
-      "ground": "pink",
-      "status": "tryIt",
-      "statusNote": "The closing band of the records-mode importer. Show it, in place of the band above, when the command ships.",
-      "kicker": "Free for 30 days · founding hosts get 90",
-      "title": "Bring your list. Meet your regulars.",
-      "lead": "Upload your old guest lists and see your groups in minutes.",
+      "lead": "Upload an old guest list and see who’s on it before anything is saved.",
       "actions": [
         {
           "label": "Upload a guest list",
           "to": {
             "anchor": "try"
           },
-          "emphasis": "primary",
-          "status": "tryIt"
+          "emphasis": "primary"
         },
         {
           "label": "Start free trial",

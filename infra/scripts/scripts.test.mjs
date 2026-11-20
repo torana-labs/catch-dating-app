@@ -313,7 +313,7 @@ test("bootstrap trusts the apply identity only after prod-platform is verified",
   assert.match(calls, /buckets update gs:\/\/catch-dating-app-64e51-terraform-state --versioning/u);
   assert.match(calls, /storage.objectViewer/u);
   assert.match(calls, /storage.objectUser/u);
-  for (const project of ["catch-dating-app-64e51", "catchdates-staging", "catchdates-dev"]) {
+  for (const project of ["catch-dating-app-64e51", "catchdates-dev"]) {
     assert.match(calls, new RegExp(`roles create catchPlatformApplier --project=${project}`, "u"));
   }
   assert.match(calls, /providers create-oidc github-platform .*assertion.environment == 'prod-platform' && assertion.ref == 'refs\/heads\/main'/u);
@@ -580,7 +580,6 @@ test("bootstrap scopes platform secret access to FORM_RAZORPAY_ secrets and neve
       assert.match(calls, new RegExp(`add-iam-policy-binding ${project} .*--condition=expression=resource\\.name\\.startsWith\\('projects/${number}/secrets/FORM_RAZORPAY_'\\).* --member=serviceAccount:github-actions-platform-${account}@\\S+ --role=projects/${project}/roles/${role}`, "u"));
     }
   }
-  assert.doesNotMatch(calls, /roles create catchFormCredentialVault --project=catchdates-staging/u);
   // Only the runtime's vault role holds version permissions.
   for (const line of calls.split("\n").filter((entry) => /secretmanager\.versions\./u.test(entry))) {
     assert.match(line, /roles (create|update) catchFormCredentialVault /u);

@@ -81,7 +81,7 @@ export function parseTakedownArgs(argv) {
   });
   if (args.help) return args;
   if (!args.env && !args.project && !args.emulatorHost) {
-    throw new TakedownError("Name the target with --env <dev|staging|prod>, --project <id> or --emulator. " +
+    throw new TakedownError("Name the target with --env <dev|prod>, --project <id> or --emulator. " +
       "This tool never falls back to an ambient project.");
   }
   if (!MODES.includes(args.mode)) throw new TakedownError(`--mode must be one of ${MODES.join(", ")}.`);

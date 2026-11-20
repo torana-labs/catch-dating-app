@@ -33,6 +33,13 @@ describe("CatchText", () => {
     }
   });
 
+  it("tells a display-giant text figure its length, so its size holds it to its container", () => {
+    render(<CatchText numeric variant="display-giant">5%</CatchText>);
+    expect(screen.getByText("5%").style.getPropertyValue("--catch-text-giant-chars")).toBe("2");
+    render(<CatchText variant="display-hero">Sample</CatchText>);
+    expect(screen.getByText("Sample").style.getPropertyValue("--catch-text-giant-chars")).toBe("");
+  });
+
   const responsive: Array<[CatchTextVariant, CatchSizeClass, string, string]> = [
     ["page-title", "compact", "display-title", "H1"],
     ["page-title", "medium", "display-lg", "H1"],

@@ -273,16 +273,22 @@ class _HostResponseOfferScreenState
                     isResponseReviewed: (detail) async {
                       final id = detail.applicationId;
                       if (id == null) return true;
-                      final application = await ref.refresh(
-                        hostApplicationDetailProvider(
-                          widget.organizerId,
-                          id,
-                        ).future,
+                      // The review is a listener on the application's
+                      // read model: hold it open for this read.
+                      final review = hostApplicationDetailProvider(
+                        widget.organizerId,
+                        id,
                       );
-                      return application.reviewStatus ==
-                              HostApplicationReviewStatus.approved &&
-                          application.dataAccessState !=
-                              'revokedParticipantGrant';
+                      final open = ref.listenManual(review, (_, _) {});
+                      try {
+                        final application = await ref.read(review.future);
+                        return application.reviewStatus ==
+                                HostApplicationReviewStatus.approved &&
+                            application.dataAccessState !=
+                                'revokedParticipantGrant';
+                      } finally {
+                        open.close();
+                      }
                     },
                     openResponseForConversion: (id) async {
                       await context.pushNamed<void>(

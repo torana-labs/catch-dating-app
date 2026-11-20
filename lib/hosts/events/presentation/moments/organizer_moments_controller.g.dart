@@ -8,25 +8,28 @@ part of 'organizer_moments_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Loads and mutates the moments for one event or program scope.
-/// Lifecycle validation stays with the backend; the controller only
-/// applies the returned definitions to the list.
+/// Lists, live, and mutates the moments for one event or program scope.
+/// Lifecycle validation stays with the backend; the controller applies the
+/// returned definitions to the list at once, and the listener brings the
+/// trigger-kept rows (with their send counts) after.
 
 @ProviderFor(OrganizerMomentsController)
 final organizerMomentsControllerProvider = OrganizerMomentsControllerFamily._();
 
-/// Loads and mutates the moments for one event or program scope.
-/// Lifecycle validation stays with the backend; the controller only
-/// applies the returned definitions to the list.
+/// Lists, live, and mutates the moments for one event or program scope.
+/// Lifecycle validation stays with the backend; the controller applies the
+/// returned definitions to the list at once, and the listener brings the
+/// trigger-kept rows (with their send counts) after.
 final class OrganizerMomentsControllerProvider
     extends
-        $AsyncNotifierProvider<
+        $StreamNotifierProvider<
           OrganizerMomentsController,
           OrganizerMomentsState
         > {
-  /// Loads and mutates the moments for one event or program scope.
-  /// Lifecycle validation stays with the backend; the controller only
-  /// applies the returned definitions to the list.
+  /// Lists, live, and mutates the moments for one event or program scope.
+  /// Lifecycle validation stays with the backend; the controller applies the
+  /// returned definitions to the list at once, and the listener brings the
+  /// trigger-kept rows (with their send counts) after.
   OrganizerMomentsControllerProvider._({
     required OrganizerMomentsControllerFamily super.from,
     required OrganizerMomentScope super.argument,
@@ -65,11 +68,12 @@ final class OrganizerMomentsControllerProvider
 }
 
 String _$organizerMomentsControllerHash() =>
-    r'e158df7762c5eb374a5af8bd2ccdd6fd1e95fca3';
+    r'b7ab6d2aa87ed3940fe3c86ce2894658d27da1c6';
 
-/// Loads and mutates the moments for one event or program scope.
-/// Lifecycle validation stays with the backend; the controller only
-/// applies the returned definitions to the list.
+/// Lists, live, and mutates the moments for one event or program scope.
+/// Lifecycle validation stays with the backend; the controller applies the
+/// returned definitions to the list at once, and the listener brings the
+/// trigger-kept rows (with their send counts) after.
 
 final class OrganizerMomentsControllerFamily extends $Family
     with
@@ -77,7 +81,7 @@ final class OrganizerMomentsControllerFamily extends $Family
           OrganizerMomentsController,
           AsyncValue<OrganizerMomentsState>,
           OrganizerMomentsState,
-          FutureOr<OrganizerMomentsState>,
+          Stream<OrganizerMomentsState>,
           OrganizerMomentScope
         > {
   OrganizerMomentsControllerFamily._()
@@ -89,9 +93,10 @@ final class OrganizerMomentsControllerFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Loads and mutates the moments for one event or program scope.
-  /// Lifecycle validation stays with the backend; the controller only
-  /// applies the returned definitions to the list.
+  /// Lists, live, and mutates the moments for one event or program scope.
+  /// Lifecycle validation stays with the backend; the controller applies the
+  /// returned definitions to the list at once, and the listener brings the
+  /// trigger-kept rows (with their send counts) after.
 
   OrganizerMomentsControllerProvider call(OrganizerMomentScope scope) =>
       OrganizerMomentsControllerProvider._(argument: scope, from: this);
@@ -100,16 +105,17 @@ final class OrganizerMomentsControllerFamily extends $Family
   String toString() => r'organizerMomentsControllerProvider';
 }
 
-/// Loads and mutates the moments for one event or program scope.
-/// Lifecycle validation stays with the backend; the controller only
-/// applies the returned definitions to the list.
+/// Lists, live, and mutates the moments for one event or program scope.
+/// Lifecycle validation stays with the backend; the controller applies the
+/// returned definitions to the list at once, and the listener brings the
+/// trigger-kept rows (with their send counts) after.
 
 abstract class _$OrganizerMomentsController
-    extends $AsyncNotifier<OrganizerMomentsState> {
+    extends $StreamNotifier<OrganizerMomentsState> {
   late final _$args = ref.$arg as OrganizerMomentScope;
   OrganizerMomentScope get scope => _$args;
 
-  FutureOr<OrganizerMomentsState> build(OrganizerMomentScope scope);
+  Stream<OrganizerMomentsState> build(OrganizerMomentScope scope);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {

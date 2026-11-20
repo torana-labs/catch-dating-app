@@ -100,7 +100,7 @@ Options:
   --backup-file <path>      Required with --apply: saves the planned writes first.
   --allow-prod              Required with --apply when the target is prod.
   --json                    Print plan summaries as JSON.
-  --env <dev|staging|prod>  Resolve the project id from .firebaserc.
+  --env <dev|prod>  Resolve the project id from .firebaserc.
   --project <id>            Firebase project id.
   --emulator                Use the Firestore emulator at 127.0.0.1:8080.
   --emulator-host <host>    Use a custom Firestore emulator host.

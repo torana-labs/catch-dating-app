@@ -5,8 +5,8 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_t
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_list.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../../support/widgetbook_harness.dart';
@@ -76,11 +76,10 @@ final _tasks = [
   ),
 ];
 
-HostManualSendTaskPage _page({String? nextCursor}) => HostManualSendTaskPage(
-  organizerId: HostOperationsFixtures.primaryOrganizer.id,
-  tasks: _tasks,
-  nextCursor: nextCursor,
-);
+LivePages<HostManualSendTask> _pages({
+  bool hasMore = false,
+  bool loadingMore = false,
+}) => LivePages(items: _tasks, hasMore: hasMore, loadingMore: loadingMore);
 
 @widgetbook.UseCase(
   name: 'Campaign lifecycle',
@@ -154,9 +153,9 @@ Widget hostManualSendListStates(BuildContext context) {
       'tasks waiting',
       WidgetbookFixtureScope(
         overrides: [
-          hostManualSendTasksProvider(
+          hostManualSendTaskPagesProvider(
             organizerId,
-          ).overrideWithValue(AsyncData(_page())),
+          ).overrideWithBuild((ref, notifier) => Stream.value(_pages())),
         ],
         child: HostManualSendList(organizerId: organizerId),
       ),
@@ -174,26 +173,20 @@ Widget hostManualSendListBodyStates(BuildContext context) =>
       (
         'tasks waiting',
         HostManualSendListBody(
-          page: _page(),
-          additionalTasks: const [],
-          additionalNextCursor: null,
-          loadingMore: false,
+          pages: _pages(),
           replanning: false,
           onOpenTask: (_) {},
-          onLoadMore: (_) {},
+          onLoadMore: () {},
           onReplan: (_) {},
         ),
       ),
       (
         'more to load',
         HostManualSendListBody(
-          page: _page(nextCursor: 'design-cursor'),
-          additionalTasks: const [],
-          additionalNextCursor: null,
-          loadingMore: true,
+          pages: _pages(hasMore: true, loadingMore: true),
           replanning: false,
           onOpenTask: (_) {},
-          onLoadMore: (_) {},
+          onLoadMore: () {},
           onReplan: (_) {},
         ),
       ),

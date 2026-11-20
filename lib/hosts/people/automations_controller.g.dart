@@ -8,14 +8,14 @@ part of 'automations_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The organizer's automation rules and their latest runs, from the
-/// existing automations read across every form.
+/// The organizer's automation rules and their newest page of runs across
+/// every form, from the automation listeners.
 
 @ProviderFor(hostPeopleAutomations)
 final hostPeopleAutomationsProvider = HostPeopleAutomationsFamily._();
 
-/// The organizer's automation rules and their latest runs, from the
-/// existing automations read across every form.
+/// The organizer's automation rules and their newest page of runs across
+/// every form, from the automation listeners.
 
 final class HostPeopleAutomationsProvider
     extends
@@ -27,8 +27,8 @@ final class HostPeopleAutomationsProvider
     with
         $FutureModifier<HostFormAutomationPage>,
         $FutureProvider<HostFormAutomationPage> {
-  /// The organizer's automation rules and their latest runs, from the
-  /// existing automations read across every form.
+  /// The organizer's automation rules and their newest page of runs across
+  /// every form, from the automation listeners.
   HostPeopleAutomationsProvider._({
     required HostPeopleAutomationsFamily super.from,
     required String super.argument,
@@ -74,10 +74,10 @@ final class HostPeopleAutomationsProvider
 }
 
 String _$hostPeopleAutomationsHash() =>
-    r'4814825ee089e1fba444cec29651c9d6fd78f5a3';
+    r'a1791eb1e57237e5e737829ac283c7b7ae5d6a78';
 
-/// The organizer's automation rules and their latest runs, from the
-/// existing automations read across every form.
+/// The organizer's automation rules and their newest page of runs across
+/// every form, from the automation listeners.
 
 final class HostPeopleAutomationsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<HostFormAutomationPage>, String> {
@@ -90,14 +90,150 @@ final class HostPeopleAutomationsFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The organizer's automation rules and their latest runs, from the
-  /// existing automations read across every form.
+  /// The organizer's automation rules and their newest page of runs across
+  /// every form, from the automation listeners.
 
   HostPeopleAutomationsProvider call(String organizerId) =>
       HostPeopleAutomationsProvider._(argument: organizerId, from: this);
 
   @override
   String toString() => r'hostPeopleAutomationsProvider';
+}
+
+/// Rules this screen just switched, shown until the rule listener reaches
+/// their revision, so a switch does not flick back while the view catches
+/// up with the command.
+
+@ProviderFor(HostSavedAutomationRules)
+final hostSavedAutomationRulesProvider = HostSavedAutomationRulesFamily._();
+
+/// Rules this screen just switched, shown until the rule listener reaches
+/// their revision, so a switch does not flick back while the view catches
+/// up with the command.
+final class HostSavedAutomationRulesProvider
+    extends
+        $NotifierProvider<
+          HostSavedAutomationRules,
+          Map<String, HostFormAutomationRule>
+        > {
+  /// Rules this screen just switched, shown until the rule listener reaches
+  /// their revision, so a switch does not flick back while the view catches
+  /// up with the command.
+  HostSavedAutomationRulesProvider._({
+    required HostSavedAutomationRulesFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostSavedAutomationRulesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostSavedAutomationRulesHash();
+
+  @override
+  String toString() {
+    return r'hostSavedAutomationRulesProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  HostSavedAutomationRules create() => HostSavedAutomationRules();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<String, HostFormAutomationRule> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<String, HostFormAutomationRule>>(
+        value,
+      ),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostSavedAutomationRulesProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostSavedAutomationRulesHash() =>
+    r'86276e39aa19ad16899f8998b2f7de286897d96c';
+
+/// Rules this screen just switched, shown until the rule listener reaches
+/// their revision, so a switch does not flick back while the view catches
+/// up with the command.
+
+final class HostSavedAutomationRulesFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          HostSavedAutomationRules,
+          Map<String, HostFormAutomationRule>,
+          Map<String, HostFormAutomationRule>,
+          Map<String, HostFormAutomationRule>,
+          String
+        > {
+  HostSavedAutomationRulesFamily._()
+    : super(
+        retry: null,
+        name: r'hostSavedAutomationRulesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Rules this screen just switched, shown until the rule listener reaches
+  /// their revision, so a switch does not flick back while the view catches
+  /// up with the command.
+
+  HostSavedAutomationRulesProvider call(String organizerId) =>
+      HostSavedAutomationRulesProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostSavedAutomationRulesProvider';
+}
+
+/// Rules this screen just switched, shown until the rule listener reaches
+/// their revision, so a switch does not flick back while the view catches
+/// up with the command.
+
+abstract class _$HostSavedAutomationRules
+    extends $Notifier<Map<String, HostFormAutomationRule>> {
+  late final _$args = ref.$arg as String;
+  String get organizerId => _$args;
+
+  Map<String, HostFormAutomationRule> build(String organizerId);
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              Map<String, HostFormAutomationRule>,
+              Map<String, HostFormAutomationRule>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                Map<String, HostFormAutomationRule>,
+                Map<String, HostFormAutomationRule>
+              >,
+              Map<String, HostFormAutomationRule>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
+  }
 }
 
 /// Automatic messages, composed from the WhatsApp setup read and the
@@ -173,7 +309,7 @@ final class HostAutomationsControllerProvider
 }
 
 String _$hostAutomationsControllerHash() =>
-    r'345dd0780530dc744dcd687d0bf272e1f1a2ab29';
+    r'11cc20b3c71f00c1a12216bd0614feeb660830e3';
 
 /// Automatic messages, composed from the WhatsApp setup read and the
 /// automation rules; [month] is the first day of the month runs count in.
@@ -256,4 +392,4 @@ final class HostAutomationsCommandsProvider
 }
 
 String _$hostAutomationsCommandsHash() =>
-    r'f8b42f480ae44271157391c302912e528d6a1d87';
+    r'db71baba677350ff453e54d59ddcc55e394654cd';

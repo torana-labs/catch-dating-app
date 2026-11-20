@@ -292,7 +292,7 @@ function printHelp() {
     node tool/data/backfill_algolia_explore_search.mjs --env prod --json
 
 Options:
-  --env <dev|staging|prod>    Firebase project alias from .firebaserc.
+  --env <dev|prod>    Firebase project alias from .firebaserc.
   --project <project-id>      Firebase project id override.
   --app-id <app-id>           Algolia application id override.
   --organizers-index <name>   Algolia organizers index name. Default: organizers.

@@ -11,7 +11,6 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definitio
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_export.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
-import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment_record.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
@@ -92,24 +91,6 @@ class HostFormsRepository {
     ).toJson(),
     action: 'manage form payment connection',
     parse: HostFormPaymentSetup.fromCallableData,
-  );
-
-  Future<HostFormPaymentPage> listPayments({
-    required String organizerId,
-    required String formId,
-    HostFormPaymentFilter filter = HostFormPaymentFilter.all,
-    String? cursor,
-  }) => _call(
-    name: 'listOrganizerFormPayments',
-    payload: ListOrganizerFormPaymentsCallableRequest(
-      organizerId: organizerId,
-      formId: formId,
-      statuses: filter.statuses.map((value) => value.name).toList(),
-      cursor: cursor,
-      limit: ReadLimitPolicy.historyPage,
-    ).toJson(),
-    action: 'load form payments',
-    parse: HostFormPaymentPage.fromCallableData,
   );
 
   /// The forms of [request], [pageSize] at a time, every row kept live.
@@ -516,25 +497,6 @@ class HostFormsRepository {
     action: 'update organizer form automation',
     parse: (data) =>
         HostFormAutomationRule.fromMap(_requiredMap(data, 'form automation')),
-  );
-
-  Future<HostFormAutomationPage> listAutomations({
-    required String organizerId,
-    required String? formId,
-    String? ruleId,
-    String? cursor,
-    int limit = ReadLimitPolicy.historyPage,
-  }) => _call(
-    name: 'listOrganizerFormAutomationRuns',
-    payload: ListOrganizerFormAutomationRunsCallableRequest(
-      organizerId: organizerId,
-      formId: formId,
-      ruleId: ruleId,
-      cursor: cursor,
-      limit: limit.clamp(1, ReadLimitPolicy.historyPage).toInt(),
-    ).toJson(),
-    action: 'load organizer form automations',
-    parse: HostFormAutomationPage.fromCallableData,
   );
 
   Future<T> _call<T>({

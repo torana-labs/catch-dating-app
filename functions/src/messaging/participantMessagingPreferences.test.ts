@@ -10,19 +10,13 @@ import {unknownOrganizerCommunicationChannel,
   "../shared/organizerCommunicationPreferences";
 import {normalizeFormMessagingDecision} from
   "../organizers/organizerFormMessagingConsent";
-import {listParticipantMessagingPreferencesHandler as list,
-  withdrawParticipantMessagingPermissionHandler as withdraw} from
+import {withdrawParticipantMessagingPermissionHandler as withdraw} from
   "./participantMessagingPreferences";
-import type {ListParticipantMessagingPreferencesCallableResponse} from
-  "../shared/generated/listParticipantMessagingPreferencesCallableResponse";
+import {guestMessagingPermission} from "./guestMessagingPermissionStore";
 import type {WithdrawParticipantMessagingPermissionCallableResponse} from
   "../shared/generated/withdrawParticipantMessagingPermissionCallableResponse";
 import {contractValidator} from "../shared/contractTestValidators";
 
-const validPage =
-  contractValidator<ListParticipantMessagingPreferencesCallableResponse>(
-    "ListParticipantMessagingPreferencesCallableResponse"
-  );
 const validResult =
   contractValidator<WithdrawParticipantMessagingPermissionCallableResponse>(
     "WithdrawParticipantMessagingPermissionCallableResponse"
@@ -44,6 +38,15 @@ function fixture() {
   const db = store as unknown as FirebaseFirestore.Firestore;
   const deps = {db: () => db, now: () => now, rateLimit: async () => undefined};
   return {store, db, deps};
+}
+/** One sender's settings row, as guestMessagingPermissions holds it. */
+async function permission(db: FirebaseFirestore.Firestore,
+  scope: "catch" | "organizer", uid = "person", organizerId = "org") {
+  const row = await db.runTransaction((tx) => guestMessagingPermission(db, tx,
+    scope === "catch" ? {scope, uid} : {scope,
+      preferenceId: organizerCommunicationPreferenceId(organizerId, uid)}));
+  assert.ok(row);
+  return row.preference;
 }
 function grant(h: ReturnType<typeof fixture>, scope: "catch" | "organizer",
   uid = "person", organizerId = "org", receiptId = `${scope}-grant`) {
@@ -70,29 +73,6 @@ function grant(h: ReturnType<typeof fixture>, scope: "catch" | "organizer",
       {...receipt, organizerId});
   }
 }
-
-test("directory is bounded, account-scoped, and verifies grant evidence",
-  async () => {
-    const h = fixture();
-    grant(h, "catch"); grant(h, "organizer");
-    grant(h, "organizer", "foreign", "other", "foreign-grant");
-    grant(h, "organizer", "person", "two", "two-grant");
-    h.store.records.delete(
-      "organizerCommunicationPermissionReceipts/two-grant");
-    const first = await list(request({cursor: null, limit: 1}), h.deps);
-    assert.equal(validPage(first), true);
-    assert.equal(first.catchPreference.status, "optedIn");
-    assert.equal(first.organizers.length, 1);
-    assert.ok(first.nextCursor);
-    const second = await list(request({cursor: first.nextCursor, limit: 1}),
-      h.deps);
-    const rows = [...first.organizers, ...second.organizers];
-    assert.deepEqual(rows.map((r) => r.organizerId).sort(), ["org", "two"]);
-    assert.equal(rows.find((r) => r.organizerId === "two")?.preference.status,
-      "unknown");
-    assert.equal(second.nextCursor, null);
-    assert.equal(JSON.stringify(first).includes("foreign"), false);
-  });
 
 test("Catch and each organizer withdraw independently, preserving SMS",
   async () => {
@@ -151,11 +131,9 @@ test("purpose grants are visible and sender withdrawal revokes every purpose",
           decision: "optedIn", evidenceStatus: "complete",
           consentCopyHash: "a".repeat(64), revokedAt: null});
     }
-    const listed = await list(request({cursor: null, limit: 10}), h.deps);
-    assert.equal(listed.organizers[0].preference.purposes?.eventOperations
-      ?.status, "optedIn");
-    assert.equal(listed.organizers[0].preference.purposes?.marketing
-      ?.status, "optedIn");
+    const listed = await permission(h.db, "organizer");
+    assert.equal(listed.purposes?.eventOperations?.status, "optedIn");
+    assert.equal(listed.purposes?.marketing?.status, "optedIn");
     const scoped = await withdraw(request({...input("organizer",
       "purpose-eventOperations", "scope-operations"),
     purpose: "eventOperations"}), h.deps);
@@ -163,19 +141,15 @@ test("purpose grants are visible and sender withdrawal revokes every purpose",
     assert.equal(scoped.preference.purposes?.eventOperations?.status,
       "optedOut");
     assert.equal(scoped.preference.purposes?.marketing?.status, "optedIn");
-    const partial = await list(request({cursor: null, limit: 10}), h.deps);
-    assert.equal(partial.organizers[0].preference.purposes?.eventOperations
-      ?.status, "optedOut");
-    assert.equal(partial.organizers[0].preference.purposes?.marketing
-      ?.status, "optedIn");
+    const partial = await permission(h.db, "organizer");
+    assert.equal(partial.purposes?.eventOperations?.status, "optedOut");
+    assert.equal(partial.purposes?.marketing?.status, "optedIn");
     const result = await withdraw(request(input("organizer",
       "purpose-marketing")), h.deps);
     assert.equal(result.preference.status, "optedOut");
-    const after = await list(request({cursor: null, limit: 10}), h.deps);
-    assert.equal(after.organizers[0].preference.purposes?.eventOperations
-      ?.status, "optedOut");
-    assert.equal(after.organizers[0].preference.purposes?.marketing
-      ?.status, "optedOut");
+    const after = await permission(h.db, "organizer");
+    assert.equal(after.purposes?.eventOperations?.status, "optedOut");
+    assert.equal(after.purposes?.marketing?.status, "optedOut");
     const stored = h.store.records.get(orgPath)!;
     h.store.records.set(orgPath, {...stored, whatsappPurposes: {
       ...(stored.whatsappPurposes as Record<string, unknown>),
@@ -260,8 +234,6 @@ test("auth, sender scope, deletion and foreign receipts cannot write",
     h.store.records.set("deletedUsers/person", {status: "processing"});
     await assert.rejects(withdraw(request(input("catch", "catch-grant")),
       h.deps), {code: "not-found"});
-    await assert.rejects(list(request({cursor: null, limit: 10}), h.deps),
-      {code: "not-found"});
   });
 
 test("failed commits preserve permission and allow retry", async () => {
@@ -269,8 +241,7 @@ test("failed commits preserve permission and allow retry", async () => {
   h.store.failNextCommit = true;
   await assert.rejects(withdraw(request(input("catch", "catch-grant")),
     h.deps));
-  assert.equal((await list(request({cursor: null, limit: 10}),
-    h.deps)).catchPreference.status, "optedIn");
+  assert.equal((await permission(h.db, "catch")).status, "optedIn");
   assert.equal((await withdraw(request(input("catch", "catch-grant")),
     h.deps)).preference.status, "optedOut");
 });
@@ -295,15 +266,12 @@ test("actual withdrawals fence both grants from an earlier pending checkout",
     const b = await withdraw(request(input("organizer")), deps);
     h.capture(paymentId);
     assert.equal(await h.finalize(paymentId), "submitted");
-    const page = await list(request({cursor: null, limit: 10}), deps);
-    assert.equal(page.catchPreference.status, a.preference.status);
-    assert.equal(page.catchPreference.receiptId, a.preference.receiptId);
-    assert.equal(page.catchPreference.purposes?.marketing?.status,
-      "optedOut");
-    assert.equal(page.organizers[0].preference.status,
-      b.preference.status);
-    assert.equal(page.organizers[0].preference.receiptId,
-      b.preference.receiptId);
-    assert.equal(page.organizers[0].preference.purposes
-      ?.eventOperations?.status, "optedOut");
+    const catchRow = await permission(h.db, "catch");
+    assert.equal(catchRow.status, a.preference.status);
+    assert.equal(catchRow.receiptId, a.preference.receiptId);
+    assert.equal(catchRow.purposes?.marketing?.status, "optedOut");
+    const organizerRow = await permission(h.db, "organizer");
+    assert.equal(organizerRow.status, b.preference.status);
+    assert.equal(organizerRow.receiptId, b.preference.receiptId);
+    assert.equal(organizerRow.purposes?.eventOperations?.status, "optedOut");
   });

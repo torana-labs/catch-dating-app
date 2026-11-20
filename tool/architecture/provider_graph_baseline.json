@@ -41,24 +41,6 @@
     },
     {
       "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/event_success/presentation/event_assistance_departure_controller.dart",
-      "symbol": "eventAssistanceDepartureControllerProvider",
-      "detail": "invalidate:eventAssistanceHostGuestsForAccountProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/event_success/presentation/event_attendance_disposition_editor.dart",
-      "symbol": "eventAttendanceDispositionEditorProvider",
-      "detail": "invalidate:eventAttendanceDispositionForAccountProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/event_success/presentation/event_attendance_disposition_editor.dart",
-      "symbol": "eventAttendanceDispositionEditorProvider",
-      "detail": "invalidate:eventAttendanceReportForAccountProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
       "path": "lib/explore/presentation/explore_screen.dart",
       "symbol": "_ExploreScreenState._refreshExploreData",
       "detail": "retry-composition:exploreFeedViewModelProvider"
@@ -101,18 +83,6 @@
     },
     {
       "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/forms/host_form_automations_screen.dart",
-      "symbol": "_HostFormAutomationsScreenState.build",
-      "detail": "invalidate:hostFormAutomationsControllerProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
-      "symbol": "_HostResponseOfferScreenState.build",
-      "detail": "refresh:hostApplicationDetailProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
       "symbol": "_HostResponseOfferScreenState.build",
       "detail": "refresh:hostFormResponseDetailProvider"
@@ -143,28 +113,9 @@
     },
     {
       "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/host_tracking_settings_section.dart",
-      "symbol": "HostTrackingSettingsSection.build",
-      "detail": "invalidate:hostTrackingSettingsProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
       "symbol": "_HostInboxScreenState._retry",
       "detail": "retry-composition:chatsListViewModelProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_event_participants_section.dart",
-      "symbol": "_HostEventParticipantsSectionState.build",
-      "detail": "retry-composition:attendanceSheetViewModelProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/programs/presentation/program_hotel_rooms_screen.dart",
-      "symbol": "ProgramHotelRoomsScreen.build",
-      "detail": "invalidate:programHotelRoomsProvider",
-      "count": 2
     },
     {
       "rule": "CACHE-INVALIDATE-001",

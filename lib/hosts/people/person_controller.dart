@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/people/person_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
@@ -8,29 +9,58 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'person_controller.g.dart';
 
-/// One person, from the existing contact record read with its history:
-/// facts, revenue, nights, tags and notes.
+/// One person from three listeners: the directory row (name, tags,
+/// revision), the contact detail read model (attendance, revenue, nights)
+/// and the team's newest note. A write reaches the page through them.
 @riverpod
 HostPersonState hostPersonController(
   Ref ref,
   String organizerId,
   String contactId,
 ) {
-  final record = catchAsyncStateFromAsyncValue(
-    ref.watch(hostAudienceContactHistoryProvider(organizerId, contactId)),
+  final summary = catchAsyncStateFromAsyncValue(
+    ref.watch(hostContactSummaryRowProvider(organizerId, contactId)),
   );
-  final detail = record.value;
-  if (detail != null) {
-    return HostPersonState(status: HostPersonStatus.ready, detail: detail);
+  final facts = catchAsyncStateFromAsyncValue(
+    ref.watch(hostContactDetailFactsProvider(organizerId, contactId)),
+  );
+  final notes = catchAsyncStateFromAsyncValue(
+    ref.watch(hostContactNotesProvider(organizerId, contactId)),
+  );
+  final row = summary.value;
+  final view = facts.value;
+  final latest = notes.value;
+  if (row == null || view == null || latest == null) {
+    for (final part in [summary, facts, notes]) {
+      if (part.hasError) {
+        return HostPersonState(
+          status: HostPersonStatus.error,
+          error: part.error,
+        );
+      }
+    }
+    return const HostPersonState.loading();
   }
-  return record.hasError
-      ? HostPersonState(status: HostPersonStatus.error, error: record.error)
-      : const HostPersonState.loading();
+  return HostPersonState(
+    status: HostPersonStatus.ready,
+    detail: HostAudienceContactDetail.fromReadModels(
+      organizerId: organizerId,
+      contact: row.contact,
+      linkedAccount: row.linkedAccount,
+      facts: view,
+      notes: latest.notes,
+      notesTruncated: latest.truncated,
+    ),
+  );
 }
 
-/// Reads a person again after a failure or a change the team made.
-void refreshHostPerson(WidgetRef ref, String organizerId, String contactId) =>
-    ref.invalidate(hostAudienceContactHistoryProvider(organizerId, contactId));
+/// Restarts a person's listeners after a failure (the error retry).
+void refreshHostPerson(WidgetRef ref, String organizerId, String contactId) {
+  ref
+    ..invalidate(hostContactSummaryRowProvider(organizerId, contactId))
+    ..invalidate(hostContactDetailFactsProvider(organizerId, contactId))
+    ..invalidate(hostContactNotesProvider(organizerId, contactId));
+}
 
 /// The existing contact commands the People pages use: add a note, set the
 /// tags, and open a conversation with the person.

@@ -27,6 +27,8 @@ export async function readApplicantCommunityMembership(params: {
     "targetKind" | "targetId" | "linkedUid" | "source"
   >;
   nowMillis?: number;
+  /** Reads inside this transaction instead of a read-only one of its own. */
+  tx?: FirebaseFirestore.Transaction;
 }): Promise<ApplicantCommunityMembership | null> {
   const {db, organizerId, application} = params;
   const uid = application.linkedUid;
@@ -40,16 +42,17 @@ export async function readApplicantCommunityMembership(params: {
   }
   try {
     // The edge and its decision are read together, as deciding reads them.
-    const current = await db.runTransaction(
-      (tx) => readCommunityMembership({
+    const read = (tx: FirebaseFirestore.Transaction) =>
+      readCommunityMembership({
         db,
         tx,
         organizerId,
         uid,
         nowMillis: params.nowMillis,
-      }),
-      {readOnly: true}
-    );
+      });
+    const current = params.tx ?
+      await read(params.tx) :
+      await db.runTransaction(read, {readOnly: true});
     return {
       uid,
       state: current?.state ?? "none",

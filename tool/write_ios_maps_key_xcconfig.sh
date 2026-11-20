@@ -9,10 +9,10 @@ repo_root="$(cd "$script_dir/.." && pwd)"
 
 target_env="${1:-prod}"
 case "$target_env" in
-  dev|staging|prod) ;;
+  dev|prod) ;;
   *)
     echo "Unsupported iOS Maps key environment: $target_env"
-    echo "Use dev, staging, or prod."
+    echo "Use dev or prod."
     exit 64
     ;;
 esac
@@ -52,7 +52,7 @@ fi
 temporary=false
 if [[ $# -gt 2 ]]; then
   if [[ "${3:-}" != --temporary || "${4:-}" != -- || $# -lt 5 ]]; then
-    echo "Usage: $0 <dev|staging|prod> [output [--temporary -- command args...]]" >&2
+    echo "Usage: $0 <dev|prod> [output [--temporary -- command args...]]" >&2
     exit 64
   fi
   temporary=true

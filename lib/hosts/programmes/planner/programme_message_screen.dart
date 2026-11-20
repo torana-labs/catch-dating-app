@@ -132,7 +132,7 @@ class _HostProgrammeMessageScreenState
                   : draft.name,
             ),
           );
-      ref.invalidate(programPlannedMessagesProvider(widget.programId));
+      // The planned messages are a listener and show the saved one.
       if (mounted) context.pop();
     } on Object {
       if (mounted) {
@@ -160,7 +160,10 @@ class _HostProgrammeMessageScreenState
     final ready =
         programme.status == HostProgrammeStatus.ready && loaded != null;
     final draft = ready ? _draft ??= _initial(programme, loaded) : null;
-    final sender = loaded?.senderConnectionId;
+    final senderRead = catchAsyncStateFromAsyncValue(
+      ref.watch(programMessageSenderProvider(widget.programId)),
+    );
+    final sender = senderRead.value;
     final canSave =
         draft != null && draft.isComplete && sender != null && !_saving;
     return CatchRoot(
@@ -206,6 +209,9 @@ class _HostProgrammeMessageScreenState
                   ref.invalidate(
                     programPlannedMessagesProvider(widget.programId),
                   );
+                  ref.invalidate(
+                    programMessageSenderProvider(widget.programId),
+                  );
                 },
               )
             : HostProgrammeMessageBody(
@@ -221,7 +227,8 @@ class _HostProgrammeMessageScreenState
                     ),
                 ],
                 hostName: programme.program?.title ?? '',
-                hasSender: sender != null,
+                // Say there is no sender only once the read has answered.
+                hasSender: sender != null || senderRead.isLoading,
                 error: _error,
                 onChanged: (next) => setState(() => _draft = next),
                 onPickDate: () => unawaited(_pickDate(draft)),

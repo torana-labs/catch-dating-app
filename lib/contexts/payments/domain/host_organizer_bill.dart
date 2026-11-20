@@ -20,8 +20,9 @@ enum HostOrganizerBillPeriodKind {
       value == 'cycle' ? cycle : calendarMonth;
 }
 
-/// One billing period's bill from Catch to an organizer, read through
-/// `listOrganizerBills`. All amounts are in minor units.
+/// One billing period's bill from Catch to an organizer, read from its
+/// owner's `hostOrganizerBillViews` row (the `listOrganizerBills` shape). All
+/// amounts are in minor units.
 class HostOrganizerBill {
   const HostOrganizerBill({
     required this.billId,

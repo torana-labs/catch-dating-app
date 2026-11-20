@@ -347,7 +347,7 @@ async function main() {
   if (!appRole || !environment) {
     throw new Error(
       "Usage: check_client_callable_dependencies.mjs " +
-        "--role <consumer|host> --environment <dev|staging|prod> " +
+        "--role <consumer|host> --environment <dev|prod> " +
         "[--verify-live] [--project <id>]\n" +
         "       check_client_callable_dependencies.mjs --from-source " +
         "[--surface app,website,admin] [--json]",

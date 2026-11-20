@@ -28,7 +28,7 @@ void main() {
     );
 
     expect(find.text('Club basics'), findsOneWidget);
-    expect(find.text('STEP 1 OF 4'), findsOneWidget);
+    expect(find.text('Step 1 of 4'), findsOneWidget);
     expect(
       tester.widget<CatchStepHeader>(find.byType(CatchStepHeader)).step,
       1,

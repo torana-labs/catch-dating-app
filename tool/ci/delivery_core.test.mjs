@@ -24,7 +24,7 @@ import {
 const CLI = fileURLToPath(new URL("./delivery_core.mjs", import.meta.url));
 const SHA_A = "a".repeat(40);
 const SHA_B = "b".repeat(40);
-const SCOPE_A = "firebase:staging";
+const SCOPE_A = "firebase:development";
 const SCOPE_B = "firebase:production";
 
 async function fixture(t, contents = "release artifact\n") {

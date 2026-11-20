@@ -694,14 +694,41 @@ export async function getOrganizerApplicationDetailHandler(
   if (application.organizerId !== data.organizerId) {
     throw new HttpsError("not-found", "Application not found.");
   }
-  const visible = await organizerApplicationAccess({
+  return organizerApplicationDetail({
     db, applicationId: data.applicationId, application,
   });
+}
+
+/**
+ * One application as its managers see it: the exact submitted answers of a
+ * generic-form response or the immutable imported snapshot, the outreach
+ * actions validated from them, the current People link and the applicant's
+ * community membership. A withdrawn or unreadable response returns no
+ * answers, no outreach and no membership. The callable and the
+ * hostApplicationDetailViews read model share this projection; with a
+ * transaction every source is read in it.
+ * @param {object} params The application and where to read its sources.
+ * @return {Promise<object>} The detail getOrganizerApplicationDetail returns.
+ */
+export async function organizerApplicationDetail(params: {
+  db: FirebaseFirestore.Firestore;
+  applicationId: string;
+  application: OrganizerApplicationDocument;
+  transaction?: FirebaseFirestore.Transaction;
+}): Promise<GetOrganizerApplicationDetailCallableResponse> {
+  const {db, applicationId, application, transaction} = params;
+  const read = transaction ?
+    (collection: string, id: string) =>
+      transaction.get(db.collection(collection).doc(id)) :
+    undefined;
+  const visible = await organizerApplicationAccess({
+    db, applicationId, application, transaction,
+  });
   return {
-    organizerId: data.organizerId,
-    applicationId: data.applicationId,
+    organizerId: application.organizerId,
+    applicationId,
     contactId: await organizerApplicationContactId({
-      db, applicationId: data.applicationId, application}),
+      db, applicationId, application, read}),
     sourceResponseId: visible.sourceResponseId,
     formId: application.formId,
     formVersionId: application.formVersionId,
@@ -723,7 +750,8 @@ export async function getOrganizerApplicationDetailHandler(
       visible.accessState === "revokedParticipantGrant" ?
         null :
         await readApplicantCommunityMembership({
-          db, organizerId: data.organizerId, application,
+          db, organizerId: application.organizerId, application,
+          tx: transaction,
         }),
   };
 }

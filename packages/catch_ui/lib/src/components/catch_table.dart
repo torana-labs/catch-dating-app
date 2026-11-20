@@ -1,7 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_table_cell.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:catch_ui/src/primitives/catch_text.dart';
 import 'package:catch_ui/src/primitives/catch_text_variant.dart';
@@ -54,7 +53,9 @@ class CatchTableColumn {
           : CatchTablePlacement.start);
 }
 
-/// Bordered data table with an uppercase header row and divided rows.
+/// Data table: a sentence-case header in the small grey label voice over
+/// hairline-divided rows, with no frame of its own; cells run flush to the
+/// table's edges, as the system Table draws it on the web.
 ///
 /// Columns are published through [CatchTableScope], so each [CatchTableRow]
 /// lays its cells out against the same widths. [emptyBuilder] replaces the
@@ -83,33 +84,41 @@ class CatchTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final headerStyle = CatchTextStyles.monoLabel(
-      context,
-      color: t.ink3,
-    ).copyWith(fontSize: 8.5);
+    final headerStyle = CatchTextStyles.kicker(context, color: t.ink2);
 
     final table = CatchTableScope(
       columns: columns,
-      child: CatchLegacySurface(
-        radius: CatchRadius.md,
-        backgroundColor: t.surface,
-        borderRole: CatchBorderRole.boundary,
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: CatchInsets.tableHeaderContent,
-              child: Row(
-                children: [
-                  for (final (index, column) in columns.indexed) ...[
-                    if (index > 0) const SizedBox(width: CatchSpacing.s2),
-                    if (column.width case final width?)
-                      SizedBox(
-                        width: width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: CatchSpacing.micro10),
+            child: Row(
+              children: [
+                for (final (index, column) in columns.indexed) ...[
+                  if (index > 0) const SizedBox(width: CatchSpacing.s2),
+                  if (column.width case final width?)
+                    SizedBox(
+                      width: width,
+                      child: Text(
+                        column.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign:
+                            column.resolvedPlacement == CatchTablePlacement.end
+                            ? TextAlign.right
+                            : null,
+                        style: headerStyle,
+                      ),
+                    )
+                  else
+                    Expanded(
+                      flex: column.flex,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: column.labelInset),
                         child: Text(
-                          column.label.toUpperCase(),
+                          column.label,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign:
@@ -119,43 +128,25 @@ class CatchTable extends StatelessWidget {
                               : null,
                           style: headerStyle,
                         ),
-                      )
-                    else
-                      Expanded(
-                        flex: column.flex,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: column.labelInset),
-                          child: Text(
-                            column.label.toUpperCase(),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign:
-                                column.resolvedPlacement ==
-                                    CatchTablePlacement.end
-                                ? TextAlign.right
-                                : null,
-                            style: headerStyle,
-                          ),
-                        ),
                       ),
-                  ],
+                    ),
                 ],
-              ),
+              ],
             ),
-            if (emptyBuilder case final buildEmpty?)
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: t.line)),
-                ),
-                child: Padding(
-                  padding: CatchInsets.tableEmptyContent,
-                  child: buildEmpty(context),
-                ),
-              )
-            else
-              ...children,
-          ],
-        ),
+          ),
+          if (emptyBuilder case final buildEmpty?)
+            DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: t.line)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s4),
+                child: buildEmpty(context),
+              ),
+            )
+          else
+            ...children,
+        ],
       ),
     );
     final label = this.label;
@@ -240,7 +231,7 @@ class CatchTableRow extends StatelessWidget {
         border: Border(top: BorderSide(color: t.line)),
       ),
       child: Padding(
-        padding: CatchInsets.tableRowContent,
+        padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro10),
         child: Row(
           children: [
             for (final (index, cell) in children.indexed) ...[

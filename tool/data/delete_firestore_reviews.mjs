@@ -115,7 +115,7 @@ Usage:
   node tool/data/delete_firestore_reviews.mjs --env dev --emulator
 
 Options:
-  --env <dev|staging|prod>       Resolve project id from .firebaserc.
+  --env <dev|prod>       Resolve project id from .firebaserc.
   --project <firebase-project>   Explicit Firebase/GCP project id.
   --emulator                     Use FIRESTORE_EMULATOR_HOST=127.0.0.1:8080.
   --emulator-host <host:port>    Use a custom Firestore emulator host.

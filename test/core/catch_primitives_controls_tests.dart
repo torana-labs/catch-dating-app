@@ -711,7 +711,7 @@ void _registerCatchPrimitivesControlsTests() {
     expect(find.text('CREATE EVENT'), findsNothing);
     expect(find.text('Basics'), findsOneWidget);
     expect(find.text(contextLabel), findsOneWidget);
-    expect(find.text('STEP 2 OF 5'), findsOneWidget);
+    expect(find.text('Step 2 of 5'), findsOneWidget);
     expect(find.byIcon(CatchIcons.arrowBackIosNewRounded), findsOneWidget);
     expect(
       tester
@@ -761,7 +761,7 @@ void _registerCatchPrimitivesControlsTests() {
     );
 
     final barRect = tester.getRect(find.byType(CatchLegacyTopBar));
-    final counterRect = tester.getRect(find.text('STEP 2 OF 5'));
+    final counterRect = tester.getRect(find.text('Step 2 of 5'));
     expect(counterRect.center.dy, closeTo(barRect.center.dy, 0.001));
     expect(progressRect.top, closeTo(barRect.bottom, 0.001));
     expect(tester.takeException(), isNull);
@@ -788,9 +788,9 @@ void _registerCatchPrimitivesControlsTests() {
     );
 
     expect(find.text('Schedule'), findsOneWidget);
-    expect(find.text('STEP 1 OF 3'), findsOneWidget);
+    expect(find.text('Step 1 of 3'), findsOneWidget);
     final titleRect = tester.getRect(find.text('Schedule'));
-    final counterRect = tester.getRect(find.text('STEP 1 OF 3'));
+    final counterRect = tester.getRect(find.text('Step 1 of 3'));
     final topBarSize = tester.getSize(
       find.descendant(
         of: find.byType(CatchStepHeader),
@@ -886,7 +886,7 @@ void _registerCatchPrimitivesControlsTests() {
       );
 
       expect(find.text('2/5'), findsOneWidget);
-      expect(find.text('STEP 2 OF 5'), findsNothing);
+      expect(find.text('Step 2 of 5'), findsNothing);
       expect(
         find.bySemanticsLabel('Step 2 of 5. Open section overview.'),
         findsOneWidget,

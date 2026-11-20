@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_form_payment_views.schema.json",
+  "title": "HostFormPaymentViewDocument",
+  "description": "Server-maintained manager read view of one form fee payment for the Host form payments section, with exactly the ledger row listOrganizerFormPayments returns: status, mode, amounts, times, receipt and provider reference ids. The view id is the guestPayments id. Written by a trigger on guestPayments documents whose purpose is form. Never answers, the respondent's identity or contact, the payment connection or account, hashes or provider secrets, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostFormPaymentViews",
+  "x-firestore-path": "hostFormPaymentViews/{paymentId}",
+  "x-document-id-field": "paymentId",
+  "x-owner": "Host read model projector (hostReadModels form payment view triggers)",
+  "required": [
+    "organizerId",
+    "paymentId",
+    "formId",
+    "status",
+    "createdAtMillis",
+    "row",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "paymentId": {
+      "type": "string",
+      "pattern": "^fp_[a-f0-9]{32}$",
+      "x-catch-ownership": "server-only"
+    },
+    "formId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["creatingOrder", "orderUnknown", "checkoutReady", "verifying", "captured", "submitted", "failed", "expired", "refundPending", "refunded", "reviewRequired"],
+      "x-catch-ownership": "server-only"
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "$ref": "../shared/organizer_form_payment_common.schema.json#/definitions/ledgerRow",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

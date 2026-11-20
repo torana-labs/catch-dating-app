@@ -2006,6 +2006,7 @@
                   "eventPageFromLink",
                   "walkthroughSlots",
                   "appLaunchNotice",
+                  "lastEventReport",
                   "pricingCalculator",
                   "pricingExamples",
                   "pricingCap",
@@ -2517,7 +2518,8 @@
           "enum": [
             "tel",
             "url",
-            "text"
+            "text",
+            "file"
           ]
         },
         "fields": {

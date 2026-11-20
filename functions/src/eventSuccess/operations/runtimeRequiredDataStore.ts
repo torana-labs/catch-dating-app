@@ -6,10 +6,15 @@ import type {EventAssistanceCommand} from
   "../../shared/generated/eventAssistanceCommand";
 import type {EventAttendeeDocument, EventDocument,
   EventRuntimeDataRequestDocument as RequestDocument,
-  EventRuntimeDataRequestReceiptDocument as ReceiptDocument,
   EventRuntimeParticipantDocument as ParticipantDocument,
   EventSuccessPlanDocument} from
   "../../shared/generated/firestoreAdminTypes";
+import {
+  classifyCommandReceipt,
+  commandReceiptRef,
+  commandRequestHash,
+  writeCommandReceipt,
+} from "../../shared/commandReceipts";
 import {validateEventAssistanceCommand} from
   "../../shared/generated/validators/eventAssistanceCommand";
 import {validateEventAttendeeDocument} from
@@ -18,8 +23,6 @@ import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
 import {validateEventRuntimeDataRequestDocument} from
   "../../shared/generated/validators/eventRuntimeDataRequestDocument";
-import {validateEventRuntimeDataRequestReceiptDocument} from
-  "../../shared/generated/validators/eventRuntimeDataRequestReceiptDocument";
 import {validateEventRuntimeParticipantDocument} from
   "../../shared/generated/validators/eventRuntimeParticipantDocument";
 import {validateEventSuccessPlanDocument} from
@@ -30,8 +33,8 @@ import {assertCommandContext, assertCommandRole} from "./commands";
 import {runAssistanceTransaction as transact} from "./transactionCallback";
 
 export const RUNTIME_DATA_REQUESTS = "eventRuntimeDataRequests";
-export const RUNTIME_DATA_REQUEST_RECEIPTS =
-  "eventRuntimeDataRequestReceipts";
+/** commandReceipts command for one required-data request operation. */
+export const REQUEST_REQUIRED_DATA_COMMAND = "requestRequiredData";
 
 type Command = Extract<EventAssistanceCommand,
   {kind: "requestRequiredData"}>;
@@ -106,33 +109,32 @@ export class EventRuntimeRequiredDataStore {
     assertCommandRole(command, ["systemWithinPolicy"]);
     const receiptId = requiredDataReceiptId(context,
       command.payload.attendeeId, command.operationId);
-    const requestHash = operationContentHash(command);
     return transact(this.db, async (tx) => {
       const state = await this.read(tx, context,
         command.payload.attendeeId);
-      const receiptRef = this.db.collection(RUNTIME_DATA_REQUEST_RECEIPTS)
-        .doc(receiptId);
+      const receiptRef = commandReceiptRef(this.db,
+        REQUEST_REQUIRED_DATA_COMMAND, receiptId);
       const receiptSnap = await tx.get(receiptRef);
       const afterRead = this.clock();
       if (!Number.isSafeInteger(afterRead) || afterRead < state.now) {
         throw invalidSource();
       }
       state.now = afterRead;
-      if (receiptSnap.exists) {
-        const receipt = receiptSnap.data();
-        if (!validateEventRuntimeDataRequestReceiptDocument(receipt) ||
-            receipt.receiptId !== receiptId ||
-            receipt.requestId !== state.requestId ||
-            receipt.eventId !== context.eventId ||
-            receipt.organizerId !== context.organizerId ||
-            receipt.attendeeId !== command.payload.attendeeId ||
-            receipt.uid !== state.participant.uid ||
-            receipt.operationId !== command.operationId ||
-            receipt.requestHash !== requestHash ||
-            receipt.requestRevision > (state.request?.revision ?? 0) ||
-            millis(receipt.createdAt) > state.now) throw conflict();
-        return {outcome: "replayed",
-          operationRevision: receipt.requestRevision,
+      // The participant uid stands in for the actor: a relinked attendee
+      // conflicts instead of replaying another person's request.
+      const requestHash = requiredDataRequestHash(command,
+        state.participant.uid);
+      const lookup = classifyCommandReceipt<{operationRevision?: number}>(
+        receiptSnap, {command: REQUEST_REQUIRED_DATA_COMMAND, requestHash,
+          nowMillis: state.now});
+      if (lookup.kind !== "none") {
+        const revision = lookup.kind === "replay" ?
+          lookup.result?.operationRevision : undefined;
+        if (typeof revision !== "number" || !Number.isSafeInteger(revision) ||
+            revision < 1 ||
+            revision > (state.request?.revision ?? 0) ||
+            millis(receiptSnap.data()?.createdAt) > state.now) throw conflict();
+        return {outcome: "replayed", operationRevision: revision,
           view: project(state)};
       }
 
@@ -175,30 +177,16 @@ export class EventRuntimeRequiredDataStore {
         completedAt: null,
         updatedAt: now,
       };
-      const receipt: ReceiptDocument = {
-        schemaVersion: 1,
-        receiptId,
-        requestId: state.requestId,
-        eventId: context.eventId,
-        organizerId: context.organizerId,
-        attendeeId: payload.attendeeId,
-        uid: state.participant.uid,
-        operationId: command.operationId,
-        requestHash,
-        requestRevision: nextRevision,
-        profileRevision: state.profileRevision,
-        sourceHash: state.sourceHash,
-        fieldIds: fields,
-        expiresAt: Timestamp.fromMillis(payload.expiresAt),
-        createdAt: now,
-      };
-      if (!validateEventRuntimeDataRequestDocument(request) ||
-          !validateEventRuntimeDataRequestReceiptDocument(receipt)) {
+      if (!validateEventRuntimeDataRequestDocument(request)) {
         throw invalidSource();
       }
       tx.set(this.db.collection(RUNTIME_DATA_REQUESTS)
         .doc(state.requestId), request);
-      tx.create(receiptRef, receipt);
+      writeCommandReceipt(tx, receiptRef, {
+        command: REQUEST_REQUIRED_DATA_COMMAND, retention: "request",
+        requestHash, result: {operationRevision: nextRevision},
+        nowMillis: state.now,
+      });
       state.request = request;
       return {outcome: "applied", operationRevision: nextRevision,
         view: project(state)};
@@ -349,11 +337,21 @@ export function requiredDataRequestId(context: LiveContext,
   return "runtime-data:" + operationContentHash([context, attendeeId]);
 }
 
+/** Already a SHA-256 digest, so it is the commandReceipts id as is. */
 function requiredDataReceiptId(context: LiveContext, attendeeId: string,
   operationId: string): string {
-  return "runtime-data-action:" + operationContentHash([
-    context, attendeeId, operationId,
-  ]);
+  return operationContentHash([context, attendeeId, operationId]);
+}
+
+/**
+ * What a required-data operation asked for. expectedRequestRevision is a fence
+ * on applying, not part of the operation: the trigger re-derives the same
+ * operation id on a repeat participant write after the request revision moved
+ * on, and that write must replay rather than conflict.
+ */
+function requiredDataRequestHash(command: Command, uid: string): string {
+  return commandRequestHash(uid, {...command, payload: {...command.payload,
+    expectedRequestRevision: undefined}});
 }
 
 function project(state: RequiredDataState): RuntimeRequiredDataView {

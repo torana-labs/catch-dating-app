@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_crm_callable.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_roster_insight_reads.dart';
+import 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_detail_reads.dart';
 import 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_summary_reads.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/crm_response_fields.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
@@ -10,8 +11,6 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memory.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
-import 'package:catch_platform/errors/app_exception.dart';
-import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
@@ -20,6 +19,8 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+export 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_detail_reads.dart'
+    show HostContactNotes, HostContactSummaryRow;
 export 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_summary_reads.dart'
     show HostContactDirectory;
 
@@ -39,12 +40,23 @@ class HostContactsRepository {
     this._functions, {
     required this.summaries,
     this.rosterInsights,
-  });
+    HostContactDetailReads? detail,
+  }) : _detailReads = detail;
 
   /// The directory read model, name searches included. Only queries it
-  /// cannot serve (intersecting filter groups) and contact detail use
-  /// callables.
+  /// cannot serve (intersecting filter groups) use a callable.
   final HostContactSummaryReads summaries;
+
+  /// One person's page listeners: directory row, detail facts and notes.
+  final HostContactDetailReads? _detailReads;
+
+  HostContactDetailReads get _detail {
+    final reads = _detailReads;
+    if (reads == null) {
+      throw StateError('A person needs the contact detail listeners.');
+    }
+    return reads;
+  }
 
   /// The door's roster label listeners; reads need them.
   final HostRosterInsightReads? rosterInsights;
@@ -123,53 +135,23 @@ class HostContactsRepository {
     return (count: page.matchCount, coverage: page.matchCountCoverage);
   }
 
-  Future<HostAudienceContactDetail> getContactDetail(
+  /// One person's directory row, while it is listened to.
+  Stream<HostContactSummaryRow> watchContactSummary(
     String organizerId,
     String contactId,
-  ) => callHostCrm(
-    _functions,
-    name: 'getOrganizerContactDetail',
-    payload: GetOrganizerContactDetailCallableRequest(
-      organizerId: organizerId,
-      contactId: contactId,
-    ).toJson(),
-    action: 'load organizer contact detail',
-    parse: HostAudienceContactDetail.fromCallableData,
-  );
+  ) => _detail.watchSummary(organizerId, contactId);
 
-  Future<HostAudienceContactDetail> getContactOverview(
+  /// One person's traits, revenue and newest event rows, while listened to.
+  Stream<HostContactDetailFacts> watchContactFacts(
     String organizerId,
     String contactId,
-  ) => withBackendErrorContext(
-    () async {
-      try {
-        final result = await _functions
-            .httpsCallable('getOrganizerContactDetail')
-            .call<Object?>(
-              GetOrganizerContactDetailCallableRequest(
-                organizerId: organizerId,
-                contactId: contactId,
-                includeHistory: false,
-              ).toJson(),
-            );
-        return HostAudienceContactDetail.fromCallableData(result.data);
-      } on FirebaseFunctionsException catch (error) {
-        // A rolling deployment may still serve the previous request schema.
-        // Only its exact unknown-property diagnostic authorizes a full read.
-        if (error.code != 'invalid-argument' ||
-            error.message !=
-                'includeHistory: must NOT have additional properties') {
-          rethrow;
-        }
-        return getContactDetail(organizerId, contactId);
-      }
-    },
-    context: const BackendErrorContext(
-      service: BackendService.functions,
-      action: 'load organizer contact overview',
-      resource: 'getOrganizerContactDetail',
-    ),
-  );
+  ) => _detail.watchFacts(organizerId, contactId);
+
+  /// The team's newest note on one person, while it is listened to.
+  Stream<HostContactNotes> watchContactNotes(
+    String organizerId,
+    String contactId,
+  ) => _detail.watchNotes(organizerId, contactId);
 
   Future<HostCreatedCustomer> createContact({
     required String organizerId,
@@ -321,22 +303,6 @@ class HostContactsRepository {
     parse: HostAudienceExport.fromCallableData,
   );
 
-  Future<HostContactMergeCandidatePage> listMergeCandidates(
-    String organizerId, {
-    String? cursor,
-    int limit = ReadLimitPolicy.historyPage,
-  }) => callHostCrm(
-    _functions,
-    name: 'listOrganizerContactMergeCandidates',
-    payload: ListOrganizerContactMergeCandidatesCallableRequest(
-      organizerId: organizerId,
-      limit: limit > 50 ? 50 : limit,
-      cursor: cursor,
-    ).toJson(),
-    action: 'load organizer contact merge candidates',
-    parse: HostContactMergeCandidatePage.fromCallableData,
-  );
-
   Future<void> reviewMergeCandidate({
     required String organizerId,
     required HostContactMergeCandidate candidate,
@@ -419,6 +385,7 @@ HostContactsRepository hostContactsRepository(Ref ref) {
     rosterInsights: HostRosterInsightReads(
       ref.watch(firebaseFirestoreProvider),
     ),
+    detail: HostContactDetailReads(ref.watch(firebaseFirestoreProvider)),
   );
 }
 
@@ -453,20 +420,35 @@ Future<HostAudiencePage> hostAudience(
     .watch(hostContactsRepositoryProvider)
     .listContacts(organizerId, query: query);
 
+/// One person's directory row: name, endpoints, tags and revision. It is a
+/// Firestore listener: writes never invalidate it, the server's projector
+/// delivers them.
 @riverpod
-Future<HostAudienceContactDetail> hostAudienceContactDetail(
+Stream<HostContactSummaryRow> hostContactSummaryRow(
   Ref ref,
   String organizerId,
   String contactId,
 ) => ref
     .watch(hostContactsRepositoryProvider)
-    .getContactOverview(organizerId, contactId);
+    .watchContactSummary(organizerId, contactId);
 
+/// One person's traits, revenue and newest event rows, as a listener on
+/// the contact detail read model.
 @riverpod
-Future<HostAudienceContactDetail> hostAudienceContactHistory(
+Stream<HostContactDetailFacts> hostContactDetailFacts(
   Ref ref,
   String organizerId,
   String contactId,
 ) => ref
     .watch(hostContactsRepositoryProvider)
-    .getContactDetail(organizerId, contactId);
+    .watchContactFacts(organizerId, contactId);
+
+/// The team's newest note on one person, as a listener.
+@riverpod
+Stream<HostContactNotes> hostContactNotes(
+  Ref ref,
+  String organizerId,
+  String contactId,
+) => ref
+    .watch(hostContactsRepositoryProvider)
+    .watchContactNotes(organizerId, contactId);

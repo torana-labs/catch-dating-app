@@ -15,7 +15,7 @@ const _expectedLegalDefines = {
 };
 
 void main() {
-  for (final environment in ['dev', 'staging', 'prod', 'local']) {
+  for (final environment in ['dev', 'prod', 'local']) {
     test('$environment dart defines configure the public legal links', () {
       final defines =
           jsonDecode(

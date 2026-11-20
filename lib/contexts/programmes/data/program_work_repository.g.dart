@@ -615,15 +615,17 @@ final class ProgramIdTrackerFamily extends $Family
 }
 
 /// One album (or every photo), live from `programPhotos` (#1339). The
-/// album names come from the work shell's functions; the signed URLs from
-/// the server, in calls of at most 60 photos.
+/// album names come from the programme's function labels, which the
+/// communications duty reads whatever its work list reaches (#2175); the
+/// signed URLs from the server, in calls of at most 60 photos.
 
 @ProviderFor(programPhotosView)
 final programPhotosViewProvider = ProgramPhotosViewFamily._();
 
 /// One album (or every photo), live from `programPhotos` (#1339). The
-/// album names come from the work shell's functions; the signed URLs from
-/// the server, in calls of at most 60 photos.
+/// album names come from the programme's function labels, which the
+/// communications duty reads whatever its work list reaches (#2175); the
+/// signed URLs from the server, in calls of at most 60 photos.
 
 final class ProgramPhotosViewProvider
     extends
@@ -636,8 +638,9 @@ final class ProgramPhotosViewProvider
         $FutureModifier<ProgramReadView<ProgramPhotos>>,
         $FutureProvider<ProgramReadView<ProgramPhotos>> {
   /// One album (or every photo), live from `programPhotos` (#1339). The
-  /// album names come from the work shell's functions; the signed URLs from
-  /// the server, in calls of at most 60 photos.
+  /// album names come from the programme's function labels, which the
+  /// communications duty reads whatever its work list reaches (#2175); the
+  /// signed URLs from the server, in calls of at most 60 photos.
   ProgramPhotosViewProvider._({
     required ProgramPhotosViewFamily super.from,
     required (String, String?) super.argument,
@@ -682,11 +685,12 @@ final class ProgramPhotosViewProvider
   }
 }
 
-String _$programPhotosViewHash() => r'4ee65e5a876336c20230a9adf582b60c6f3669d8';
+String _$programPhotosViewHash() => r'3201b0a2800e33e25d7bfafee3b2dbbf917b4bfb';
 
 /// One album (or every photo), live from `programPhotos` (#1339). The
-/// album names come from the work shell's functions; the signed URLs from
-/// the server, in calls of at most 60 photos.
+/// album names come from the programme's function labels, which the
+/// communications duty reads whatever its work list reaches (#2175); the
+/// signed URLs from the server, in calls of at most 60 photos.
 
 final class ProgramPhotosViewFamily extends $Family
     with
@@ -704,8 +708,9 @@ final class ProgramPhotosViewFamily extends $Family
       );
 
   /// One album (or every photo), live from `programPhotos` (#1339). The
-  /// album names come from the work shell's functions; the signed URLs from
-  /// the server, in calls of at most 60 photos.
+  /// album names come from the programme's function labels, which the
+  /// communications duty reads whatever its work list reaches (#2175); the
+  /// signed URLs from the server, in calls of at most 60 photos.
 
   ProgramPhotosViewProvider call(String programId, String? functionId) =>
       ProgramPhotosViewProvider._(
@@ -1814,114 +1819,4 @@ final class ProgramStakeholderCountsFamily extends $Family
 
   @override
   String toString() => r'programStakeholderCountsProvider';
-}
-
-/// Hotel desk providers: the room board for one property (the inbound board
-/// is `programHotelInboundStreamProvider`). Split into a part file so the
-/// work repository stays under the handwritten-source size budget; providers
-/// remain top-level so tests fake them through `overrideWith`, not repository
-/// subclassing.
-
-@ProviderFor(programHotelRooms)
-final programHotelRoomsProvider = ProgramHotelRoomsFamily._();
-
-/// Hotel desk providers: the room board for one property (the inbound board
-/// is `programHotelInboundStreamProvider`). Split into a part file so the
-/// work repository stays under the handwritten-source size budget; providers
-/// remain top-level so tests fake them through `overrideWith`, not repository
-/// subclassing.
-
-final class ProgramHotelRoomsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ProgramHotelRooms>,
-          ProgramHotelRooms,
-          FutureOr<ProgramHotelRooms>
-        >
-    with
-        $FutureModifier<ProgramHotelRooms>,
-        $FutureProvider<ProgramHotelRooms> {
-  /// Hotel desk providers: the room board for one property (the inbound board
-  /// is `programHotelInboundStreamProvider`). Split into a part file so the
-  /// work repository stays under the handwritten-source size budget; providers
-  /// remain top-level so tests fake them through `overrideWith`, not repository
-  /// subclassing.
-  ProgramHotelRoomsProvider._({
-    required ProgramHotelRoomsFamily super.from,
-    required (String, String) super.argument,
-  }) : super(
-         retry: null,
-         name: r'programHotelRoomsProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programHotelRoomsHash();
-
-  @override
-  String toString() {
-    return r'programHotelRoomsProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<ProgramHotelRooms> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ProgramHotelRooms> create(Ref ref) {
-    final argument = this.argument as (String, String);
-    return programHotelRooms(ref, argument.$1, argument.$2);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramHotelRoomsProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programHotelRoomsHash() => r'2e5b788b876388427eddc07237310c98aaf2f278';
-
-/// Hotel desk providers: the room board for one property (the inbound board
-/// is `programHotelInboundStreamProvider`). Split into a part file so the
-/// work repository stays under the handwritten-source size budget; providers
-/// remain top-level so tests fake them through `overrideWith`, not repository
-/// subclassing.
-
-final class ProgramHotelRoomsFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<ProgramHotelRooms>,
-          (String, String)
-        > {
-  ProgramHotelRoomsFamily._()
-    : super(
-        retry: null,
-        name: r'programHotelRoomsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// Hotel desk providers: the room board for one property (the inbound board
-  /// is `programHotelInboundStreamProvider`). Split into a part file so the
-  /// work repository stays under the handwritten-source size budget; providers
-  /// remain top-level so tests fake them through `overrideWith`, not repository
-  /// subclassing.
-
-  ProgramHotelRoomsProvider call(String programId, String hotelId) =>
-      ProgramHotelRoomsProvider._(argument: (programId, hotelId), from: this);
-
-  @override
-  String toString() => r'programHotelRoomsProvider';
 }

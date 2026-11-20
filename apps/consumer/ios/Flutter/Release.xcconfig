@@ -1,6 +1,6 @@
 // Non-canonical config. This plain `Release` configuration defaults to PROD
 // Firebase + Maps credentials. Builds should use a flavored scheme
-// (Release-dev / Release-staging / Release-prod) via ./tool/flutter_with_env.sh
+// (Release-dev / Release-prod) via ./tool/flutter_with_env.sh
 // — a plain `Release` build silently ships production keys.
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"

@@ -7,8 +7,8 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."
 const [action, environment, ...extra] = process.argv.slice(2).filter((arg) => arg !== "--print");
 const printOnly = process.argv.includes("--print");
 
-if (!new Set(["deploy", "logs"]).has(action) || !new Set(["dev", "staging", "prod"]).has(environment)) {
-  console.error("Usage: node tool/firebase_functions.mjs <deploy|logs> <dev|staging|prod> [firebase args...] [--print]");
+if (!new Set(["deploy", "logs"]).has(action) || !new Set(["dev", "prod"]).has(environment)) {
+  console.error("Usage: node tool/firebase_functions.mjs <deploy|logs> <dev|prod> [firebase args...] [--print]");
   process.exit(64);
 }
 

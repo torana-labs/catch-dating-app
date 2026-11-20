@@ -2,7 +2,6 @@
   "version": 1,
   "environments": [
     "dev",
-    "staging",
     "prod"
   ],
   "selectors": {
@@ -28,7 +27,6 @@
       "name": "ALGOLIA_SEARCH_API_KEY",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -53,7 +51,6 @@
       "name": "ALGOLIA_WRITE_API_KEY",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -78,7 +75,6 @@
       "name": "GOOGLE_MAPS_PLACES_API_KEY",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -104,7 +100,6 @@
       "name": "RAZORPAY_KEY_SECRET",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -131,7 +126,6 @@
       "name": "RAZORPAY_WEBHOOK_SECRET",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -157,7 +151,6 @@
       "name": "STRIPE_SECRET_KEY",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -182,7 +175,6 @@
       "name": "STRIPE_WEBHOOK_SECRET",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -208,7 +200,6 @@
       "name": "ROSTER_INGESTION_WEBHOOK_SECRET",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -233,7 +224,6 @@
       "name": "EVENT_VENUE_SESSION_SIGNING_KEY",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -261,7 +251,6 @@
       "name": "CROSS_PATHS_SUGGESTION_SIGNING_KEY",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -287,7 +276,6 @@
       "name": "META_WHATSAPP_APP_SECRET",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -314,7 +302,6 @@
       "name": "META_WHATSAPP_WEBHOOK_VERIFY_TOKEN",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -339,7 +326,6 @@
       "name": "ORGANIZER_WHATSAPP_ACCESS_TOKENS",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -376,7 +362,6 @@
       "name": "ORGANIZER_CONTACT_IDENTITY_KEY",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -401,7 +386,6 @@
       "name": "LISTING_SUPPRESSION_HMAC_KEY",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -427,7 +411,6 @@
       "field": "expiresAt",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "requiredWhen": {
@@ -456,7 +439,6 @@
       "field": "expiresAt",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "requiredWhen": {
@@ -479,7 +461,6 @@
       "kind": "form-upload-identity",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "requiredWhen": {
@@ -502,7 +483,6 @@
       "kind": "form-upload-identity",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "requiredWhen": {
@@ -526,7 +506,6 @@
       "name": "PROGRAM_HOUSEHOLD_RSVP_SECRET",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -551,7 +530,6 @@
       "name": "SALES_DEMO_GRANT_KEY",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -576,7 +554,6 @@
       "name": "CATCH_WHATSAPP_APP_SECRET",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -601,7 +578,6 @@
       "name": "CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -627,7 +603,6 @@
       "field": "expiresAt",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "requiredWhen": {
@@ -650,7 +625,6 @@
       "name": "CATCH_INSTAGRAM_APP_SECRET",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -675,7 +649,6 @@
       "name": "CATCH_INSTAGRAM_ACCESS_TOKEN",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -701,7 +674,6 @@
       "name": "CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "acceptedStates": [
@@ -726,7 +698,6 @@
       "name": "CATCH_HOST_OPERATOR_ALERTS_RESEND_KEY",
       "environments": [
         "dev",
-        "staging",
         "prod"
       ],
       "requiredWhen": {

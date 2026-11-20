@@ -22,7 +22,6 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_reposi
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
@@ -44,7 +43,6 @@ import 'package:catch_dating_app/contexts/events/data/event_callable_responses.d
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_host_photos_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/event_runtime_claim_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/organizer_event_venue_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
@@ -74,7 +72,6 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.d
 import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_preference.dart';
-import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
@@ -125,9 +122,7 @@ import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_help_section.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
@@ -165,6 +160,7 @@ import 'package:catch_dating_app/hosts/insights/host_event_photos_controller.dar
 import 'package:catch_dating_app/hosts/insights/host_event_photos_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
+import 'package:catch_dating_app/hosts/live/live_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
@@ -180,7 +176,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_st
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart'
@@ -3610,48 +3606,6 @@ final class _CaptureHttpsCallableResult<T> extends Fake
   final T data;
 }
 
-List<EventSuccessAssignment> _hostManageMicroPodAssignments({
-  required Event event,
-  required DateTime now,
-  String source = 'capture_fixture',
-}) {
-  return [
-    _hostManageAssignment(
-      event: event,
-      uid: HostOperationsFixtures.guestUid,
-      label: 'Pod A',
-      title: 'Pace Pod A',
-      peerUids: const [
-        HostOperationsFixtures.secondGuestUid,
-        HostOperationsFixtures.waitlistUid,
-      ],
-      now: now,
-      source: source,
-    ),
-    _hostManageAssignment(
-      event: event,
-      uid: HostOperationsFixtures.secondGuestUid,
-      label: 'Pod A',
-      title: 'Pace Pod A',
-      peerUids: const [
-        HostOperationsFixtures.guestUid,
-        HostOperationsFixtures.waitlistUid,
-      ],
-      now: now,
-      source: source,
-    ),
-    _hostManageAssignment(
-      event: event,
-      uid: HostOperationsFixtures.waitlistUid,
-      label: 'Pod B',
-      title: 'Pace Pod B',
-      peerUids: const [HostOperationsFixtures.guestUid],
-      now: now,
-      source: source,
-    ),
-  ];
-}
-
 EventSuccessAssignment _hostManageAssignment({
   required Event event,
   required String uid,
@@ -3683,156 +3637,6 @@ EventSuccessAssignment _hostManageAssignment({
   );
 }
 
-List<EventSuccessAssignment> _hostManageRotationAssignments({
-  required Event event,
-  required DateTime now,
-}) {
-  final round0 = event.startTime.add(const Duration(minutes: 15));
-  final round1 = round0.add(const Duration(minutes: 15));
-  return [
-    _hostManageRotationAssignment(
-      event: event,
-      uid: HostOperationsFixtures.guestUid,
-      peerUids: const [
-        HostOperationsFixtures.secondGuestUid,
-        HostOperationsFixtures.waitlistUid,
-      ],
-      slots: [
-        _hostManageRotationSlot(
-          index: 0,
-          startsAt: round0,
-          peerUid: HostOperationsFixtures.secondGuestUid,
-          compatibility: 'mutual_interest',
-        ),
-        _hostManageRotationSlot(
-          index: 1,
-          startsAt: round1,
-          peerUid: HostOperationsFixtures.waitlistUid,
-          compatibility: 'questionnaire_match',
-        ),
-      ],
-      now: now,
-    ),
-    _hostManageRotationAssignment(
-      event: event,
-      uid: HostOperationsFixtures.secondGuestUid,
-      peerUids: const [HostOperationsFixtures.guestUid],
-      slots: [
-        _hostManageRotationSlot(
-          index: 0,
-          startsAt: round0,
-          peerUid: HostOperationsFixtures.guestUid,
-          compatibility: 'mutual_interest',
-        ),
-      ],
-      now: now,
-    ),
-  ];
-}
-
-EventSuccessAssignment _hostManageRotationAssignment({
-  required Event event,
-  required String uid,
-  required List<String> peerUids,
-  required List<EventSuccessRotationSlot> slots,
-  required DateTime now,
-}) {
-  return EventSuccessAssignment(
-    id: eventSuccessAssignmentId(
-      eventId: event.id,
-      moduleId: EventSuccessModuleCatalog.guidedRotations.id,
-      uid: uid,
-    ),
-    eventId: event.id,
-    organizerId: event.organizerId,
-    uid: uid,
-    moduleId: EventSuccessModuleCatalog.guidedRotations.id,
-    label: 'Rotation schedule',
-    displayTitle: 'Guided rotation schedule',
-    displaySubtitle: 'Host-edited preview schedule.',
-    peerUids: peerUids,
-    rotationSlots: slots,
-    source: 'host_override_v1',
-    createdAt: now.subtract(const Duration(minutes: 12)),
-    updatedAt: now,
-  );
-}
-
-EventSuccessRotationSlot _hostManageRotationSlot({
-  required int index,
-  required DateTime startsAt,
-  required String peerUid,
-  required String compatibility,
-}) {
-  return EventSuccessRotationSlot(
-    roundIndex: index,
-    label: 'Round ${index + 1}',
-    startsAt: startsAt,
-    endsAt: startsAt.add(const Duration(minutes: 15)),
-    peerUid: peerUid,
-    compatibility: compatibility,
-  );
-}
-
-List<EventSuccessPreference> _hostManagePreferences({
-  required Event event,
-  required DateTime now,
-}) {
-  return [
-    EventSuccessPreference(
-      id: eventSuccessPreferenceId(
-        eventId: event.id,
-        uid: HostOperationsFixtures.waitlistUid,
-      ),
-      eventId: event.id,
-      organizerId: event.organizerId,
-      uid: HostOperationsFixtures.waitlistUid,
-      microPodsOptedOut: false,
-      guidedRotationsOptedOut: false,
-      createdAt: now.subtract(const Duration(minutes: 20)),
-      updatedAt: now.subtract(const Duration(minutes: 3)),
-    ),
-  ];
-}
-
-List<EventSuccessWingmanRequest> _hostManageWingmanRequests({
-  required Event event,
-  required DateTime now,
-}) {
-  return [
-    EventSuccessWingmanRequest(
-      id: eventSuccessWingmanRequestId(
-        eventId: event.id,
-        uid: HostOperationsFixtures.guestUid,
-      ),
-      eventId: event.id,
-      organizerId: event.organizerId,
-      requesterUid: HostOperationsFixtures.guestUid,
-      targetUid: HostOperationsFixtures.secondGuestUid,
-      status: EventSuccessWingmanRequestStatus.active,
-      hostVisibleConsent: true,
-      note: 'Pair me if it feels natural.',
-      createdAt: now.subtract(const Duration(minutes: 8)),
-      updatedAt: now.subtract(const Duration(minutes: 2)),
-    ),
-    EventSuccessWingmanRequest(
-      id: eventSuccessWingmanRequestId(
-        eventId: event.id,
-        uid: HostOperationsFixtures.waitlistUid,
-      ),
-      eventId: event.id,
-      organizerId: event.organizerId,
-      requesterUid: HostOperationsFixtures.waitlistUid,
-      targetUid: HostOperationsFixtures.guestUid,
-      status: EventSuccessWingmanRequestStatus.active,
-      hostVisibleConsent: true,
-      note: 'I would like a quick intro near the host table.',
-      createdAt: now.subtract(const Duration(minutes: 5)),
-      updatedAt: now.subtract(const Duration(minutes: 1)),
-    ),
-  ];
-}
-
 List<String> _hostManageAssignmentParticipantUids(
   List<EventSuccessAssignment> assignments,
 ) {
@@ -3857,24 +3661,13 @@ List<String> _hostManageWingmanProfileUids(
   return uids;
 }
 
-List<PublicProfile> _hostManageProfilesFor(List<String> uids) {
-  const names = <String, String>{
-    HostOperationsFixtures.guestUid: 'Aarav Mehta',
-    HostOperationsFixtures.secondGuestUid: 'Rhea Kapoor',
-    HostOperationsFixtures.waitlistUid: 'Kabir Jain',
-  };
-  return [
-    for (final uid in uids.toSet())
-      buildPublicProfile(uid: uid, name: names[uid] ?? 'Guest'),
-  ];
-}
-
+/// The event route on its live section, which reads the event itself: the
+/// route-owned loading, error, not-found and access states.
 Widget _hostManageRouteCapture({
   Organizer? organizer,
   Event? event,
   bool includeInitialEvent = true,
-  HostEventManageSection initialSection = HostEventManageSection.setup,
-  String initialParticipantSearchQuery = '',
+  HostEventManageSection initialSection = HostEventManageSection.live,
 }) {
   final effectiveOrganizer =
       organizer ?? HostOperationsFixtures.primaryOrganizer;
@@ -3894,64 +3687,9 @@ Widget _hostManageRouteCapture({
       eventId: effectiveEvent.id,
       initialEvent: includeInitialEvent ? effectiveEvent : null,
       initialSection: initialSection,
-      initialParticipantSearchQuery: initialParticipantSearchQuery,
       referenceNow: referenceNow,
     ),
   );
-}
-
-Widget _hostManageLiveSectionCapture({Event? event}) {
-  final effectiveEvent = event ?? HostOperationsFixtures.privateEvent;
-  return AppRoleCapture(
-    role: AppRole.host,
-    child: SingleChildScrollView(
-      key: const ValueKey<String>('host_manage_live_section_capture_scroll'),
-      padding: CatchInsets.contentRelaxed,
-      child: EventSuccessHostSection(
-        event: effectiveEvent,
-        initialTab: EventSuccessHostTab.live,
-        showTabs: false,
-      ),
-    ),
-  );
-}
-
-Future<void> _scrollHostManageLiveSectionTo(
-  WidgetTester tester,
-  Finder target,
-) async {
-  await tester.scrollUntilVisible(
-    target,
-    320,
-    scrollable: find
-        .descendant(
-          of: find.byKey(
-            const ValueKey<String>('host_manage_live_section_capture_scroll'),
-          ),
-          matching: find.byType(Scrollable),
-        )
-        .first,
-  );
-  await pumpFeatureUi(tester);
-}
-
-Future<void> _openHostManageCheckInQr(WidgetTester tester) async {
-  final scrollable = find
-      .descendant(
-        of: find.byKey(const Key('host_event_manage_scroll_view')),
-        matching: find.byType(Scrollable),
-      )
-      .first;
-  final disclosure = find.text('Check-in QR');
-  await tester.scrollUntilVisible(disclosure, 320, scrollable: scrollable);
-  await tester.tap(disclosure);
-  await pumpFeatureUi(tester);
-  await tester.scrollUntilVisible(
-    find.text('Share attendee link'),
-    320,
-    scrollable: scrollable,
-  );
-  await pumpFeatureUi(tester);
 }
 
 Future<void> _verifyScheduleLockedCapture(WidgetTester tester) async {
@@ -3960,178 +3698,6 @@ Future<void> _verifyScheduleLockedCapture(WidgetTester tester) async {
     find.byType(HostedEventScheduleSection, skipOffstage: false),
     findsOneWidget,
   );
-}
-
-Event _hostManageLiveRevealEvent(Event event) {
-  return event.copyWith(
-    eventFormat: EventFormatSnapshot.custom(
-      label: 'trivia night',
-      interactionModel: EventInteractionModel.teamRotations,
-    ),
-    distanceKm: 0,
-    capacityLimit: 30,
-    bookedCount: 24,
-    checkedInCount: 18,
-  );
-}
-
-EventSuccessPlan _hostManageLivePlanForModule({
-  required Event event,
-  required DateTime now,
-  required String moduleId,
-  String? playbookId,
-}) {
-  final defaultPlan = EventSuccessPlan.defaultForEvent(event, now: now);
-  final basePlan = defaultPlan.copyWith(
-    playbookId: playbookId ?? defaultPlan.playbookId,
-    selectedModuleIds: <String>{
-      ...defaultPlan.selectedModuleIds,
-      moduleId,
-    }.toList(growable: false),
-    status: EventSuccessPlanStatus.live,
-    frozenAt: now,
-  );
-  final runtime = EventSuccessRuntime(plan: basePlan, event: event, now: now);
-  final steps = runtime.runOfShowSteps;
-  final activeIndex = steps.indexWhere(
-    (step) => step.moduleIds.contains(moduleId),
-  );
-  return basePlan.copyWith(activeStepIndex: activeIndex < 0 ? 0 : activeIndex);
-}
-
-List<Object> _hostManageLiveWindowProviderOverrides() => [
-  uidProvider.overrideWith((ref) => Stream.value(captureViewerUid)),
-  appConnectivityProvider.overrideWith(
-    (ref) => Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
-  ),
-  watchUserProfileProvider.overrideWith((ref) => Stream.value(captureViewer)),
-  watchEventProvider(
-    _hostLiveWindowEvent.id,
-  ).overrideWith((ref) => Stream.value(_hostLiveWindowEvent)),
-  eventParticipationRepositoryProvider.overrideWithValue(
-    _hostParticipationRepository,
-  ),
-  publicProfileRepositoryProvider.overrideWithValue(
-    _hostPublicProfileRepository,
-  ),
-  watchEventSuccessPlanProvider(
-    _hostLiveWindowEvent.id,
-  ).overrideWith((ref) => Stream.value(_hostLiveWindowPlan)),
-  watchEventSuccessScorecardProvider(
-    _hostLiveWindowEvent.id,
-  ).overrideWith((ref) => Stream.value(null)),
-  ..._hostEventSuccessProviderOverrides,
-];
-
-enum _HostManageAttendanceMutationCaptureMode { pending, error }
-
-class _HostManageAttendanceMutationCapture extends ConsumerStatefulWidget {
-  const _HostManageAttendanceMutationCapture({
-    required this.mode,
-    required this.child,
-  });
-
-  final _HostManageAttendanceMutationCaptureMode mode;
-  final Widget child;
-
-  @override
-  ConsumerState<_HostManageAttendanceMutationCapture> createState() =>
-      _HostManageAttendanceMutationCaptureState();
-}
-
-class _HostManageAttendanceMutationCaptureState
-    extends ConsumerState<_HostManageAttendanceMutationCapture> {
-  bool _started = false;
-
-  @override
-  void initState() {
-    super.initState();
-    unawaited(
-      Future<void>(() {
-        if (mounted) _start();
-      }),
-    );
-  }
-
-  void _start() {
-    if (_started) return;
-    _started = true;
-    _resetMutations();
-    switch (widget.mode) {
-      case _HostManageAttendanceMutationCaptureMode.pending:
-        _runPending(_bulkWaitlistOfferMutation);
-        break;
-      case _HostManageAttendanceMutationCaptureMode.error:
-        _runError(
-          _guestAttendanceMutation,
-          StateError('Capture Host Manage attendance mutation failed'),
-        );
-        break;
-    }
-  }
-
-  void _resetMutations() {
-    _guestAttendanceMutation.reset(ref);
-    _guestApproveMutation.reset(ref);
-    _guestDeclineMutation.reset(ref);
-    _waitlistOfferMutation.reset(ref);
-    _bulkWaitlistOfferMutation.reset(ref);
-  }
-
-  Mutation<void> get _guestAttendanceMutation =>
-      HostEventBookingController.markAttendanceMutation(
-        HostEventBookingController.markAttendanceMutationKey(
-          eventId: HostOperationsFixtures.fullEvent.id,
-          userId: HostOperationsFixtures.guestUid,
-        ),
-      );
-
-  Mutation<void> get _guestApproveMutation =>
-      HostEventBookingController.approveJoinRequestMutation(
-        HostEventBookingController.approveJoinRequestMutationKey(
-          eventId: HostOperationsFixtures.fullEvent.id,
-          userId: HostOperationsFixtures.waitlistUid,
-        ),
-      );
-
-  Mutation<void> get _guestDeclineMutation =>
-      HostEventBookingController.declineJoinRequestMutation(
-        HostEventBookingController.declineJoinRequestMutationKey(
-          eventId: HostOperationsFixtures.fullEvent.id,
-          userId: HostOperationsFixtures.waitlistUid,
-        ),
-      );
-
-  Mutation<void> get _waitlistOfferMutation =>
-      HostEventBookingController.createWaitlistOfferMutation(
-        HostEventBookingController.waitlistOfferMutationKey(
-          eventId: HostOperationsFixtures.fullEvent.id,
-          userId: HostOperationsFixtures.waitlistUid,
-        ),
-      );
-
-  Mutation<void> get _bulkWaitlistOfferMutation =>
-      HostEventBookingController.createWaitlistOfferMutation(
-        HostEventBookingController.bulkWaitlistOfferMutationKey(
-          eventId: HostOperationsFixtures.fullEvent.id,
-        ),
-      );
-
-  void _runPending<T>(Mutation<T> mutation) {
-    final completer = Completer<T>();
-    unawaited(mutation.run(ref, (_) => completer.future));
-  }
-
-  void _runError<T>(Mutation<T> mutation, Object error) {
-    unawaited(
-      mutation
-          .run(ref, (_) async => throw error)
-          .then<void>((_) {}, onError: (_) {}),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
 }
 
 enum _HostManageInviteLinkMutationCaptureMode { pending, error }
@@ -4701,16 +4267,11 @@ List<Object> _hostInboxProviderOverrides({
       (ref, notifier) =>
           Stream.value(const LivePages(items: [], hasMore: false)),
     ),
-    hostManualSendTasksProvider(
+    hostManualSendTaskPagesProvider(
       HostInboxSurfaceFixtures.organizer.id,
-    ).overrideWithValue(
-      AsyncData(
-        HostManualSendTaskPage(
-          organizerId: HostInboxSurfaceFixtures.organizer.id,
-          tasks: const [],
-          nextCursor: null,
-        ),
-      ),
+    ).overrideWithBuild(
+      (ref, notifier) =>
+          Stream.value(const LivePages(items: [], hasMore: false)),
     ),
     hostWhatsappThreadPagesProvider(
       HostInboxSurfaceFixtures.organizer.id,
@@ -5631,243 +5192,7 @@ final _hostEvent = captureFixtures.hostDemoEvent(
   role: 'hostLiveConsole',
   organizer: _dashboardHostOrganizer,
 );
-final _hostLiveWindowNow = DateTime.now();
-final _hostLiveWindowEvent = _hostEvent.copyWith(
-  startTime: _hostLiveWindowNow.subtract(const Duration(minutes: 45)),
-  endTime: _hostLiveWindowNow.add(const Duration(minutes: 45)),
-);
 
-final _hostGuestProfiles = captureFixtures.rosterProfiles(
-  count: (_hostEvent.bookedCount ?? 0) + (_hostEvent.waitlistedCount ?? 0),
-);
-final _hostParticipations = captureFixtures.participationsForProfiles(
-  event: _hostEvent,
-  profiles: _hostGuestProfiles,
-  attendedCount:
-      _hostEvent.checkedInCount ?? salesDemoHostScenario.defaultCheckedInCount,
-  waitlistedCount:
-      _hostEvent.waitlistedCount ??
-      salesDemoHostScenario.defaultWaitlistedCount,
-  createdAt: DateTime(2026, 5, 28, 10),
-);
-final _hostParticipationRepository = FakeEventParticipationRepository()
-  ..eventParticipations[_hostEvent.id] = _hostParticipations;
-final _hostPublicProfileRepository = FakePublicProfileRepository()
-  ..profiles = _hostGuestProfiles;
-final _hostOperationalAttendees = [
-  for (final indexed in _hostParticipations.indexed)
-    if (indexed.$2.status != EventParticipationStatus.cancelled &&
-        indexed.$2.status != EventParticipationStatus.deleted)
-      EventAttendee(
-        id: 'host-attendee-${indexed.$1}',
-        eventId: _hostEvent.id,
-        organizerId: _hostEvent.organizerId,
-        displayName: _hostGuestProfiles[indexed.$1].name,
-        searchName: _hostGuestProfiles[indexed.$1].name.toLowerCase(),
-        source: EventAttendeeSource.catchBooking,
-        status: switch (indexed.$2.status) {
-          EventParticipationStatus.waitlisted => EventAttendeeStatus.waitlisted,
-          EventParticipationStatus.attended => EventAttendeeStatus.checkedIn,
-          _ => EventAttendeeStatus.registered,
-        },
-        linkedUid: indexed.$2.uid,
-        createdAt: indexed.$2.createdAt,
-        updatedAt: indexed.$2.updatedAt,
-        checkedInAt: indexed.$2.attendedAt,
-      ),
-];
-final _hostAttendeeIds = [
-  for (final participation in _hostParticipations)
-    if (participation.status != EventParticipationStatus.waitlisted)
-      participation.uid,
-];
-final _hostWaitlistedIds = [
-  for (final participation in _hostParticipations)
-    if (participation.status == EventParticipationStatus.waitlisted)
-      participation.uid,
-];
-final _hostProfileIds = [
-  for (final participation in _hostParticipations) participation.uid,
-];
-final _hostProfileRows = <String, (String, String?)>{
-  for (final profile in _hostGuestProfiles)
-    profile.uid: (profile.name, profile.primaryPhotoThumbnailUrl),
-};
-final _hostAttendanceViewModel = AttendanceSheetViewModel(
-  event: _hostEvent,
-  attendeeIds: _hostAttendeeIds,
-  attendedIds: {
-    for (final participation in _hostParticipations)
-      if (participation.status == EventParticipationStatus.attended)
-        participation.uid,
-  },
-  waitlistedIds: _hostWaitlistedIds,
-  profileIds: _hostProfileIds,
-  participationsByUid: {
-    for (final participation in _hostParticipations)
-      participation.uid: participation,
-  },
-);
-final _hostLivePlan =
-    EventSuccessPlan.defaultForEvent(_hostEvent, now: _captureNow).copyWith(
-      activeStepIndex: 1,
-      status: EventSuccessPlanStatus.live,
-      frozenAt: _captureNow,
-    );
-final _hostManageCheckInEvent = _hostEvent.copyWith(
-  eventOrigin: const EventOrigin(
-    mode: EventOriginMode.externalCompanion,
-    bookingAuthority: EventBookingAuthority.external,
-    rosterAuthority: EventRosterAuthority.hostImport,
-    provider: ExternalBookingProvider.luma,
-    externalEventId: 'capture-host-check-in-event',
-    adapterVersion: 'luma-v1',
-  ),
-  runtimeAccess: const EventRuntimeAccess(
-    enabled: true,
-    publicRuntimeId: 'runtime_capturehostcheckin',
-    walkInPolicy: EventRuntimeWalkInPolicy.hostApproval,
-    termsVersion: 'event-runtime-v1',
-  ),
-);
-final _hostManageOverrideEvent = HostOperationsFixtures.privateEvent.copyWith(
-  startTime: DateTime(2026, 6, 9, 20),
-  endTime: DateTime(2026, 6, 9, 22),
-  bookedCount: 17,
-  checkedInCount: 7,
-  waitlistedCount: 3,
-);
-final _hostManageCheckInPlan = _hostManageLivePlanForModule(
-  event: _hostManageCheckInEvent,
-  now: _captureNow,
-  moduleId: EventSuccessModuleCatalog.checkIn.id,
-);
-final _hostManageWingmanPlan = _hostManageLivePlanForModule(
-  event: _hostEvent,
-  now: _captureNow,
-  moduleId: EventSuccessModuleCatalog.wingmanRequests.id,
-  playbookId: 'social_run_light',
-);
-final _hostManageMicroPodsPlan = _hostManageLivePlanForModule(
-  event: _hostEvent,
-  now: _captureNow,
-  moduleId: EventSuccessModuleCatalog.microPods.id,
-  playbookId: 'social_run_light',
-);
-final _hostManageRotationsPlan = _hostManageLivePlanForModule(
-  event: _hostEvent,
-  now: _captureNow,
-  moduleId: EventSuccessModuleCatalog.guidedRotations.id,
-  playbookId: 'pickleball_rotations',
-);
-final _hostManageCuePlan = _hostManageLivePlanForModule(
-  event: _hostEvent,
-  now: _captureNow,
-  moduleId: EventSuccessModuleCatalog.socialMissions.id,
-);
-final _hostManageOverridePlan = _hostManageLivePlanForModule(
-  event: _hostManageOverrideEvent,
-  now: _captureNow,
-  moduleId: EventSuccessModuleCatalog.microPods.id,
-);
-final _hostManageRevealEvent = _hostManageLiveRevealEvent(
-  _hostManageOverrideEvent,
-);
-final _hostManageRevealPlan =
-    _hostManageLivePlanForModule(
-      event: _hostManageRevealEvent,
-      now: _captureNow,
-      moduleId: EventSuccessModuleCatalog.liveReveal.id,
-    ).copyWith(
-      revealStatus: EventSuccessRevealStatus.revealed,
-      activeRevealRoundIndex: 0,
-      revealStartedAt: _captureNow.subtract(const Duration(minutes: 2)),
-    );
-final _hostManageRevealAssignments = _hostManageMicroPodAssignments(
-  event: _hostManageRevealEvent,
-  now: _captureNow,
-);
-final _hostManageOverrideAssignments = _hostManageMicroPodAssignments(
-  event: _hostManageOverrideEvent,
-  now: _captureNow,
-  source: 'host_override_v1',
-);
-final _hostManageDisabledInviteLinks = <EventInviteLink>[
-  HostOperationsFixtures.inviteLinks.first.copyWith(
-    id: 'capture-host-link-disabled-edge',
-    label: 'Alumni WhatsApp paused',
-    source: 'whatsapp alumni',
-    openCount: 88,
-    requestCount: 14,
-    confirmedCount: 6,
-    checkedInCount: 3,
-    catcherCount: 2,
-    chatStartedCount: 2,
-    disabledAt: _captureNow.subtract(const Duration(hours: 3)),
-    updatedAt: _captureNow.subtract(const Duration(hours: 3)),
-  ),
-];
-final _hostManageLongLabelInviteLinks = <EventInviteLink>[
-  HostOperationsFixtures.inviteLinks.first.copyWith(
-    id: 'capture-host-link-long-label-source',
-    label: 'Partner newsletter referral with venue concierge follow-up',
-    source: 'partner newsletter / co-working founders circle / June RSVP push',
-    openCount: 214,
-    requestCount: 43,
-    confirmedCount: 18,
-    checkedInCount: 9,
-    catcherCount: 5,
-    chatStartedCount: 7,
-    disabledAt: null,
-    updatedAt: _captureNow.subtract(const Duration(minutes: 25)),
-  ),
-];
-final _hostLiveReferenceOrganizer = _dashboardHostOrganizer.copyWith(
-  name: 'Harbour Line Social',
-);
-final _hostManageReferenceOrganizer = _hostLiveReferenceOrganizer.copyWith(
-  ownerUserId: captureViewerUid,
-  hostUserId: captureViewerUid,
-  hostUserIds: const [captureViewerUid],
-  hostProfiles: const [
-    OrganizerHostProfile(
-      uid: captureViewerUid,
-      displayName: 'Mira Shah',
-      role: OrganizerHostRole.owner,
-    ),
-  ],
-);
-final _hostManageReferenceEvent = _hostEvent.copyWith(
-  id: 'host-manage-reference-trivia',
-  organizerId: _hostManageReferenceOrganizer.id,
-  startTime: DateTime(2026, 6, 9, 20),
-  endTime: DateTime(2026, 6, 9, 22),
-  meetingPoint: 'The Salt Air Bar',
-  meetingLocation: const EventMeetingLocation(
-    name: 'The Salt Air Bar',
-    address: 'Bandra West, Mumbai',
-    latitude: 19.0607,
-    longitude: 72.8362,
-  ),
-  startingPointLat: 19.0607,
-  startingPointLng: 72.8362,
-  locationDetails: 'The Salt Air Bar',
-  eventFormat: EventFormatSnapshot.custom(
-    label: 'trivia night',
-    interactionModel: EventInteractionModel.teamRotations,
-  ),
-  distanceKm: 0,
-  bookedCount: 24,
-  checkedInCount: 0,
-  waitlistedCount: 6,
-  capacityLimit: 30,
-  priceInPaise: 0,
-  eventPolicy: EventPolicyBundle.inviteOnlyEvent(
-    capacityLimit: 30,
-    basePriceInPaise: 0,
-    inviteCodeHint: 'BANDRA',
-  ),
-);
 final _hostHomeLongNameOwnerOrganizer = HostOperationsFixtures.primaryOrganizer
     .copyWith(
       id: 'host-home-long-owner-club',
@@ -5888,22 +5213,6 @@ final _hostHomeLongNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
   meetingLocation: HostOperationsFixtures.upcomingEvent.meetingLocation!
       .copyWith(name: 'Bandra West Promenade amphitheatre'),
 );
-final _hostManageFullReferenceEvent = _hostManageReferenceEvent.copyWith(
-  id: 'host-manage-reference-trivia-full',
-  waitlistedCohortCounts: const {EventCohortIds.womenInterestedInMen: 6},
-);
-final _hostManageReferenceProfiles = captureFixtures.rosterProfiles(count: 30);
-final _hostManageReferenceParticipations = captureFixtures
-    .participationsForProfiles(
-      event: _hostManageReferenceEvent,
-      profiles: _hostManageReferenceProfiles,
-      waitlistedCount: 6,
-      createdAt: DateTime(2026, 6, 8, 16),
-    );
-final _hostManageFullReferenceParticipations = [
-  for (final participation in _hostManageReferenceParticipations)
-    participation.copyWith(eventId: _hostManageFullReferenceEvent.id),
-];
 final _hostOrganizerDetailReferenceOrganizer = HostOperationsFixtures
     .primaryOrganizer
     .copyWith(
@@ -6064,196 +5373,6 @@ UploadedPhoto _hostMediaReviewPhoto(String id, int position, String assetPath) {
     updatedAt: DateTime(2025, 11, 3),
   );
 }
-
-final _hostLiveReferenceEvent = _hostEvent.copyWith(
-  startTime: DateTime(2026, 6, 9, 20),
-  endTime: DateTime(2026, 6, 9, 22),
-  meetingPoint: 'The Salt Air Bar',
-  meetingLocation: const EventMeetingLocation(
-    name: 'The Salt Air Bar',
-    address: 'Bandra West, Mumbai',
-    latitude: 19.0607,
-    longitude: 72.8362,
-  ),
-  startingPointLat: 19.0607,
-  startingPointLng: 72.8362,
-  locationDetails: 'The Salt Air Bar',
-  eventFormat: const EventFormatSnapshot(
-    activityKind: ActivityKind.pubQuiz,
-    interactionModel: EventInteractionModel.hostLedProgram,
-    customActivityLabel: 'trivia night',
-    defaultPlaybookId: 'host_led_social',
-  ),
-  distanceKm: 0,
-  bookedCount: 24,
-  checkedInCount: 18,
-  waitlistedCount: 0,
-  capacityLimit: 30,
-);
-final _hostLiveReferenceProfiles = captureFixtures.rosterProfiles(count: 24);
-final _hostLiveReferenceOperationalAttendees = List<EventAttendee>.generate(
-  24,
-  (index) => EventAttendee(
-    id: 'host-live-attendee-$index',
-    eventId: _hostLiveReferenceEvent.id,
-    organizerId: _hostLiveReferenceEvent.organizerId,
-    displayName: 'Guest ${index + 1}',
-    searchName: 'guest ${index + 1}',
-    source: EventAttendeeSource.hostImport,
-    status: index < 18
-        ? EventAttendeeStatus.checkedIn
-        : EventAttendeeStatus.registered,
-    createdAt: DateTime(2026, 6, 9, 18),
-    updatedAt: DateTime(2026, 6, 9, 19),
-    checkedInAt: index < 18 ? DateTime(2026, 6, 9, 19) : null,
-  ),
-);
-final _hostLiveReferenceParticipationRepository =
-    FakeEventParticipationRepository()
-      ..eventParticipations[_hostLiveReferenceEvent.id] = const [];
-final _hostLiveReferencePublicProfileRepository = FakePublicProfileRepository()
-  ..profiles = _hostLiveReferenceProfiles;
-final _hostLiveReferencePlan =
-    EventSuccessPlan.defaultForEvent(
-      _hostLiveReferenceEvent,
-      now: _captureNow,
-    ).copyWith(
-      activeStepIndex: 1,
-      status: EventSuccessPlanStatus.live,
-      frozenAt: _captureNow,
-    );
-final _hostLiveRoomReferenceEvent = _hostLiveReferenceEvent.copyWith(
-  eventFormat: EventFormatSnapshot.custom(
-    label: 'Singles table mixer',
-    interactionModel: EventInteractionModel.pairedRotations,
-  ),
-);
-final _hostLiveRoomReferenceLayout = EventSuccessLayout(
-  layoutId: 'host-live-room-six-rounds',
-  label: 'Six round tables',
-  units: [
-    for (var index = 0; index < 6; index += 1)
-      EventSuccessLayoutUnit(
-        id: 'round-${index + 1}',
-        label: 'Table ${index + 1}',
-        shape: EventSuccessLayoutShape.round,
-        capacity: 4,
-        gridX: index % 2,
-        gridY: index ~/ 2,
-        order: index + 1,
-      ),
-  ],
-);
-final _hostLiveRoomReferencePlan =
-    EventSuccessPlan.defaultForEvent(
-      _hostLiveRoomReferenceEvent,
-      now: _captureNow,
-    ).copyWith(
-      activeStepIndex: 1,
-      status: EventSuccessPlanStatus.live,
-      frozenAt: _captureNow,
-      layoutId: _hostLiveRoomReferenceLayout.layoutId,
-    );
-const _hostLiveRoomAssignmentUnitIds = <String>[
-  'round-1',
-  'round-1',
-  'round-1',
-  'round-1',
-  'round-2',
-  'round-2',
-  'round-2',
-  'round-2',
-  'round-3',
-  'round-3',
-  'round-3',
-  'round-3',
-  'round-4',
-  'round-4',
-  'round-4',
-  'round-5',
-  'round-5',
-  'round-5',
-  'round-6',
-  'round-6',
-];
-const _hostLiveRoomUnconfirmedIndexes = <int>{0, 8, 15};
-final _hostLiveRoomAssignments = <EventSuccessAssignment>[
-  for (final indexed in _hostLiveReferenceProfiles.take(20).indexed)
-    EventSuccessAssignment(
-      id: '${_hostLiveRoomReferenceEvent.id}_micro_pods_${indexed.$2.uid}',
-      eventId: _hostLiveRoomReferenceEvent.id,
-      organizerId: _hostLiveRoomReferenceEvent.organizerId,
-      uid: indexed.$2.uid,
-      moduleId: EventSuccessModuleCatalog.microPods.id,
-      label:
-          'Table ${(_hostLiveRoomAssignmentUnitIds[indexed.$1].split('-').last)}',
-      displayTitle: indexed.$2.name,
-      displaySubtitle: indexed.$1 == 0 ? 'Late arrival' : null,
-      peerUids: indexed.$1 == 0
-          ? const []
-          : [
-              _hostLiveReferenceProfiles[indexed.$1 == 19 ? 1 : indexed.$1 + 1]
-                  .uid,
-            ],
-      unitKind: 'pods',
-      unitIndex: indexed.$1,
-      unitLabel:
-          'Table ${_hostLiveRoomAssignmentUnitIds[indexed.$1].split('-').last}',
-      layoutUnitId: _hostLiveRoomAssignmentUnitIds[indexed.$1],
-      confirmedLayoutUnitId:
-          _hostLiveRoomUnconfirmedIndexes.contains(indexed.$1)
-          ? null
-          : _hostLiveRoomAssignmentUnitIds[indexed.$1],
-      source: 'capture_room_runtime_v1',
-      createdAt: _hostLiveRoomReferenceEvent.startTime,
-      updatedAt: _hostLiveRoomReferenceEvent.startTime,
-    ),
-];
-final _hostLiveRoomRoster = EventParticipationRoster(
-  bookedIds: [for (final profile in _hostLiveReferenceProfiles) profile.uid],
-  checkedInIds: [
-    for (final profile in _hostLiveReferenceProfiles.take(20)) profile.uid,
-  ],
-  waitlistedIds: const [],
-  checkedInAtByUid: {
-    for (final profile in _hostLiveReferenceProfiles.take(20))
-      profile.uid: _hostLiveRoomReferenceEvent.startTime,
-  },
-);
-final _hostLiveWindowPlan =
-    EventSuccessPlan.defaultForEvent(
-      _hostLiveWindowEvent,
-      now: _hostLiveWindowNow,
-    ).copyWith(
-      activeStepIndex: 1,
-      status: EventSuccessPlanStatus.live,
-      frozenAt: _hostLiveWindowNow,
-    );
-final _hostReportPlan = _hostLivePlan.copyWith(
-  status: EventSuccessPlanStatus.complete,
-  activeStepIndex: 3,
-  completedAt: _captureNow.add(const Duration(hours: 2)),
-);
-final _hostEventSuccessProviderOverrides = [
-  watchEventSuccessAssignmentsProvider(
-    _hostEvent.id,
-  ).overrideWith((ref) => Stream.value(const <EventSuccessAssignment>[])),
-  watchEventSuccessRotationAssignmentsProvider(
-    _hostEvent.id,
-  ).overrideWith((ref) => Stream.value(const <EventSuccessAssignment>[])),
-  watchEventSuccessPreferencesProvider(
-    _hostEvent.id,
-  ).overrideWith((ref) => Stream.value(const <EventSuccessPreference>[])),
-  watchEventSuccessWingmanRequestsProvider(
-    _hostEvent.id,
-  ).overrideWith((ref) => Stream.value(const <EventSuccessWingmanRequest>[])),
-  attendanceSheetViewModelProvider(
-    _hostEvent.id,
-  ).overrideWithValue(AsyncData(_hostAttendanceViewModel)),
-  attendeeProfilesProvider(
-    _hostProfileIds,
-  ).overrideWith((ref) async => _hostProfileRows),
-];
 
 final _matchesListProfiles = [
   matchChatOtherProfile,
@@ -11766,15 +10885,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _hostManageRouteCapture(includeInitialEvent: false),
   ),
   ScreenCaptureEntry(
-    id: 'host_manage_initial_event_extra',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      eventValue: const AsyncLoading<Event?>(),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
     id: 'host_manage_route_error',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
@@ -11817,708 +10927,13 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _hostManageRouteCapture(),
   ),
   ScreenCaptureEntry(
-    id: 'host_manage_attendance_loading',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      attendanceValue: const AsyncLoading<AttendanceSheetViewModel?>(),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_attendance_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      attendanceValue: AsyncError<AttendanceSheetViewModel?>(
-        StateError('Capture Host Manage attendance failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_attendance_empty',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      attendanceValue: const AsyncData<AttendanceSheetViewModel?>(null),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_attendee_profiles_loading',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      attendeeProfilesValue:
-          const AsyncLoading<Map<String, (String, String?)>>(),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_attendee_profiles_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      attendeeProfilesValue: AsyncError<Map<String, (String, String?)>>(
-        StateError('Capture Host Manage profile lookup failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_filtered_roster_empty',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) => _hostManageRouteCapture(
-      initialParticipantSearchQuery: 'no matching guest',
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_private_access_loading',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      privateAccessValue: const AsyncLoading<EventPrivateAccess?>(),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_private_access_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      privateAccessValue: AsyncError<EventPrivateAccess?>(
-        StateError('Capture Host Manage private access failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_private_access_offline',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      privateAccessValue: AsyncError<EventPrivateAccess?>(
-        obviousOfflineException(),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_private_access_missing_code',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      privateAccessValue: AsyncData<EventPrivateAccess?>(
-        HostOperationsFixtures.privateAccess.copyWith(inviteCode: ''),
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_invite_links_loading',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      inviteLinksValue: const AsyncLoading<List<EventInviteLink>>(),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_invite_links_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      inviteLinksValue: AsyncError<List<EventInviteLink>>(
-        StateError('Capture Host Manage invite links failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_invite_links_offline',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      inviteLinksValue: AsyncError<List<EventInviteLink>>(
-        obviousOfflineException(),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_invite_links_empty',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      inviteLinksValue: const AsyncData<List<EventInviteLink>>(
-        <EventInviteLink>[],
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_invite_links_disabled',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      inviteLinksValue: AsyncData<List<EventInviteLink>>(
-        _hostManageDisabledInviteLinks,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_invite_links_long_label_source',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      inviteLinksValue: AsyncData<List<EventInviteLink>>(
-        _hostManageLongLabelInviteLinks,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_invite_link_mutation_pending',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) => _HostManageInviteLinkMutationCapture(
-      mode: _HostManageInviteLinkMutationCaptureMode.pending,
-      child: _hostManageRouteCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_invite_link_mutation_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) => _HostManageInviteLinkMutationCapture(
-      mode: _HostManageInviteLinkMutationCaptureMode.error,
-      child: _hostManageRouteCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_private_link_share_pending',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) => _HostManagePrivateLinkShareMutationCapture(
-      mode: _HostManagePrivateLinkShareMutationCaptureMode.pending,
-      child: _hostManageRouteCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_private_link_share_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) => _HostManagePrivateLinkShareMutationCapture(
-      mode: _HostManagePrivateLinkShareMutationCaptureMode.error,
-      child: _hostManageRouteCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_edit_event_action',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_cancel_event_pending',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) => _HostManageActionMutationCapture(
-      mode: _HostManageActionMutationCaptureMode.cancelPending,
-      child: _hostManageRouteCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_cancel_event_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) => _HostManageActionMutationCapture(
-      mode: _HostManageActionMutationCaptureMode.cancelError,
-      child: _hostManageRouteCapture(),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_delete_event_pending',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      event: HostOperationsFixtures.unusedEvent,
-      participations: const <EventParticipation>[],
-    ),
-    builder: (context) => _HostManageActionMutationCapture(
-      mode: _HostManageActionMutationCaptureMode.deletePending,
-      child: _hostManageRouteCapture(event: HostOperationsFixtures.unusedEvent),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_delete_event_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      event: HostOperationsFixtures.unusedEvent,
-      participations: const <EventParticipation>[],
-    ),
-    builder: (context) => _HostManageActionMutationCapture(
-      mode: _HostManageActionMutationCaptureMode.deleteError,
-      child: _hostManageRouteCapture(event: HostOperationsFixtures.unusedEvent),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_cancelled_event',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      event: HostOperationsFixtures.cancelledEvent,
-    ),
-    builder: (context) =>
-        _hostManageRouteCapture(event: HostOperationsFixtures.cancelledEvent),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_text_scale_2',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    textScale: 2,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) => _hostManageRouteCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_reduced_motion',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    disableAnimations: true,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) =>
-        _hostManageRouteCapture(initialSection: HostEventManageSection.live),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_light_dark',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) =>
-        _hostManageRouteCapture(initialSection: HostEventManageSection.report),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_report_export_pending',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) => _HostManageReportExportMutationCapture(
-      mode: _HostManageReportExportMutationCaptureMode.pending,
-      child: _hostManageRouteCapture(
-        initialSection: HostEventManageSection.report,
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_report_export_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(),
-    builder: (context) => _HostManageReportExportMutationCapture(
-      mode: _HostManageReportExportMutationCaptureMode.error,
-      child: _hostManageRouteCapture(
-        initialSection: HostEventManageSection.report,
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_setup_private_access',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      uid: captureViewerUid,
-      organizer: _hostManageReferenceOrganizer,
-      event: _hostManageReferenceEvent,
-      participations: _hostManageReferenceParticipations,
-    ),
-    builder: (context) => _hostManageRouteCapture(
-      organizer: _hostManageReferenceOrganizer,
-      event: _hostManageReferenceEvent,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_full_waitlist_apron',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      uid: captureViewerUid,
-      organizer: _hostManageReferenceOrganizer,
-      event: _hostManageFullReferenceEvent,
-      participations: _hostManageFullReferenceParticipations,
-    ),
-    builder: (context) => _hostManageRouteCapture(
-      organizer: _hostManageReferenceOrganizer,
-      event: _hostManageFullReferenceEvent,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_attendance_mutation_pending',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageLiveWindowProviderOverrides(),
-    builder: (context) => _HostManageAttendanceMutationCapture(
-      mode: _HostManageAttendanceMutationCaptureMode.pending,
-      child: HostEventManageScreen(
-        organizer: _dashboardHostOrganizer,
-        event: _hostLiveWindowEvent,
-        onBackToSuccess: () {},
-        initialSection: HostEventManageSection.live,
-        referenceNow: _hostLiveWindowNow,
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_attendance_mutation_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageLiveWindowProviderOverrides(),
-    builder: (context) => _HostManageAttendanceMutationCapture(
-      mode: _HostManageAttendanceMutationCaptureMode.error,
-      child: HostEventManageScreen(
-        organizer: _dashboardHostOrganizer,
-        event: _hostLiveWindowEvent,
-        onBackToSuccess: () {},
-        initialSection: HostEventManageSection.live,
-        referenceNow: _hostLiveWindowNow,
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_attendance_roster',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: [
-      uidProvider.overrideWithValue(const AsyncData<String?>(captureViewerUid)),
-      appConnectivityProvider.overrideWith(
-        (ref) =>
-            Stream.value(const <ConnectivityResult>[ConnectivityResult.wifi]),
-      ),
-      hostAttendanceOutboxStoreProvider.overrideWithValue(
-        CaptureHostAttendanceOutboxStore(),
-      ),
-      firebaseFirestoreProvider.overrideWithValue(FakeFirebaseFirestore()),
-      firebaseFunctionsProvider.overrideWithValue(
-        _CaptureFirebaseFunctions(const <String, Object?>{}),
-      ),
-      watchUserProfileProvider.overrideWith(
-        (ref) => Stream.value(captureViewer),
-      ),
-      watchEventProvider(
-        _hostEvent.id,
-      ).overrideWith((ref) => Stream.value(_hostEvent)),
-      eventParticipationRepositoryProvider.overrideWithValue(
-        _hostParticipationRepository,
-      ),
-      watchEventAttendeesProvider(
-        _hostEvent.id,
-      ).overrideWith((ref) => Stream.value(_hostOperationalAttendees)),
-      watchPendingEventRuntimeClaimsProvider(
-        _hostEvent.id,
-      ).overrideWith((ref) => Stream.value(const [])),
-      hostEventRosterInsightsProvider(_hostEvent.id).overrideWith(
-        (ref) => Stream.value(
-          HostEventRosterInsights(
-            eventId: _hostEvent.id,
-            organizerId: captureViewerUid,
-            cutoffAt: _hostEvent.startTime,
-            sourceCoverage: HostRosterInsightCoverage.exact,
-            spendCoverage: HostRosterSpendCoverage.catchPaymentsOnly,
-            rows: const <HostEventRosterInsight>[],
-            computedAt: _captureNow,
-          ),
-        ),
-      ),
-      publicProfileRepositoryProvider.overrideWithValue(
-        _hostPublicProfileRepository,
-      ),
-      watchEventSuccessPlanProvider(
-        _hostEvent.id,
-      ).overrideWith((ref) => Stream.value(_hostLivePlan)),
-      watchEventSuccessScorecardProvider(
-        _hostEvent.id,
-      ).overrideWith((ref) => Stream.value(null)),
-      ..._hostEventSuccessProviderOverrides,
-    ],
-    builder: (context) => HostEventManageScreen(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      onBackToSuccess: () {},
-      initialSection: HostEventManageSection.guests,
-      referenceNow: _hostEvent.startTime.subtract(const Duration(hours: 1)),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_live_unavailable',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      planValue: const AsyncData<EventSuccessPlan?>(null),
-    ),
-    builder: (context) =>
-        _hostManageRouteCapture(initialSection: HostEventManageSection.live),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_live_plan_loading',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      participations: _hostParticipations,
-      planValue: const AsyncLoading<EventSuccessPlan?>(),
-    ),
-    builder: (context) => _hostManageRouteCapture(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      initialSection: HostEventManageSection.live,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_live_plan_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      participations: _hostParticipations,
-      planValue: AsyncError<EventSuccessPlan?>(
-        StateError('Event Success setup failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      initialSection: HostEventManageSection.live,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_live_plan_offline',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      participations: _hostParticipations,
-      planValue: AsyncError<EventSuccessPlan?>(
-        obviousOfflineException(),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      initialSection: HostEventManageSection.live,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_live_wingman_requests',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostManageWingmanPlan),
-      wingmanRequests: _hostManageWingmanRequests(
-        event: _hostEvent,
-        now: _captureNow,
-      ),
-      wingmanProfiles: _hostManageProfilesFor(
-        _hostManageWingmanProfileUids(
-          _hostManageWingmanRequests(event: _hostEvent, now: _captureNow),
-        ),
-      ),
-    ),
-    builder: (context) => _hostManageLiveSectionCapture(event: _hostEvent),
-    drive: (tester) => _scrollHostManageLiveSectionTo(
-      tester,
-      find.byType(EventSuccessHostHelpSection, skipOffstage: false),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_live_check_in_qr',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostManageCheckInEvent,
-      participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostManageCheckInPlan),
-    ),
-    builder: (context) => _hostManageRouteCapture(
-      organizer: _dashboardHostOrganizer,
-      event: _hostManageCheckInEvent,
-      initialSection: HostEventManageSection.guests,
-    ),
-    drive: _openHostManageCheckInQr,
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_live_conversation_cues',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostManageCuePlan),
-    ),
-    builder: (context) => _hostManageLiveSectionCapture(event: _hostEvent),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_live_micro_pods_assigned',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostManageMicroPodsPlan),
-      assignments: _hostManageMicroPodAssignments(
-        event: _hostEvent,
-        now: _captureNow,
-      ),
-      assignmentPeerProfiles: _hostManageProfilesFor(
-        _hostManageAssignmentParticipantUids(
-          _hostManageMicroPodAssignments(event: _hostEvent, now: _captureNow),
-        ),
-      ),
-      preferences: _hostManagePreferences(event: _hostEvent, now: _captureNow),
-    ),
-    builder: (context) => _hostManageLiveSectionCapture(event: _hostEvent),
-    drive: (tester) => _scrollHostManageLiveSectionTo(
-      tester,
-      find.text('Small starter groups'),
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_live_reveal_round_revealed',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostManageRevealEvent,
-      participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostManageRevealPlan),
-      assignments: _hostManageRevealAssignments,
-      assignmentPeerProfiles: _hostManageProfilesFor(
-        _hostManageAssignmentParticipantUids(_hostManageRevealAssignments),
-      ),
-      preferences: _hostManagePreferences(
-        event: _hostManageRevealEvent,
-        now: _captureNow,
-      ),
-    ),
-    builder: (context) =>
-        _hostManageLiveSectionCapture(event: _hostManageRevealEvent),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_live_host_override_edited',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.reviewTall,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      event: _hostManageOverrideEvent,
-      planValue: AsyncData<EventSuccessPlan?>(_hostManageOverridePlan),
-      assignments: _hostManageOverrideAssignments,
-      assignmentPeerProfiles: _hostManageProfilesFor(
-        _hostManageAssignmentParticipantUids(_hostManageOverrideAssignments),
-      ),
-      preferences: _hostManagePreferences(
-        event: _hostManageOverrideEvent,
-        now: _captureNow,
-      ),
-    ),
-    builder: (context) =>
-        _hostManageLiveSectionCapture(event: _hostManageOverrideEvent),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_live_guided_rotations_assigned',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostManageRotationsPlan),
-      rotationAssignments: _hostManageRotationAssignments(
-        event: _hostEvent,
-        now: _captureNow,
-      ),
-      rotationPeerProfiles: _hostManageProfilesFor(
-        _hostManageAssignmentParticipantUids(
-          _hostManageRotationAssignments(event: _hostEvent, now: _captureNow),
-        ),
-      ),
-      preferences: _hostManagePreferences(event: _hostEvent, now: _captureNow),
-    ),
-    builder: (context) => _hostManageLiveSectionCapture(event: _hostEvent),
-    drive: (tester) => _scrollHostManageLiveSectionTo(
-      tester,
-      find.text('Timed partner rotations'),
-    ),
-  ),
-  hostLiveConsoleCapture,
-  ScreenCaptureEntry(
-    id: 'host_live_console_wide',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.auditTablet,
-    providerOverrides: [
-      uidProvider.overrideWith((ref) => Stream.value(captureViewerUid)),
-      watchUserProfileProvider.overrideWith(
-        (ref) => Stream.value(captureViewer),
-      ),
-      watchEventProvider(
-        _hostLiveReferenceEvent.id,
-      ).overrideWith((ref) => Stream.value(_hostLiveReferenceEvent)),
-      eventParticipationRepositoryProvider.overrideWithValue(
-        _hostLiveReferenceParticipationRepository,
-      ),
-      watchEventAttendeesProvider(_hostLiveReferenceEvent.id).overrideWith(
-        (ref) => Stream.value(_hostLiveReferenceOperationalAttendees),
-      ),
-      publicProfileRepositoryProvider.overrideWithValue(
-        _hostLiveReferencePublicProfileRepository,
-      ),
-      watchEventSuccessPlanProvider(
-        _hostLiveReferenceEvent.id,
-      ).overrideWith((ref) => Stream.value(_hostLiveReferencePlan)),
-      watchEventSuccessScorecardProvider(
-        _hostLiveReferenceEvent.id,
-      ).overrideWith((ref) => Stream.value(null)),
-      ..._hostEventSuccessProviderOverrides,
-    ],
-    builder: (context) => HostEventManageScreen(
-      organizer: _hostLiveReferenceOrganizer,
-      event: _hostLiveReferenceEvent,
-      onBackToSuccess: () {},
-      initialSection: HostEventManageSection.live,
-      referenceNow: _hostLiveReferenceEvent.startTime.add(
-        const Duration(minutes: 30),
-      ),
-    ),
-  ),
-  ScreenCaptureEntry(
     id: 'host_live_room_workspace',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
+    // Room is pushed over the console, so the capture includes overlays
+    // and holds animations still.
+    disableAnimations: true,
+    includeOverlays: true,
     providerOverrides: [
       uidProvider.overrideWith((ref) => Stream.value(captureViewerUid)),
       watchUserProfileProvider.overrideWith(
@@ -12570,124 +10985,22 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         _hostProfileIds,
       ).overrideWith((ref) async => _hostProfileRows),
     ],
-    builder: (context) => HostEventManageScreen(
+    builder: (context) => HostLiveScreen(
       organizer: _hostLiveReferenceOrganizer,
       event: _hostLiveRoomReferenceEvent,
-      onBackToSuccess: () {},
-      initialSection: HostEventManageSection.live,
-      initialSpatialSelectionUid: _hostLiveReferenceProfiles.first.uid,
-      onPreviewSpatial: (_) async => const [
-        EventSuccessSpatialDestination(
-          unitId: 'round-1',
-          valid: false,
-          reason: EventSuccessSpatialDestinationReason.declaredConstraint,
-          recommendedScope: null,
-        ),
-        EventSuccessSpatialDestination(
-          unitId: 'round-2',
-          valid: false,
-          reason: EventSuccessSpatialDestinationReason.capacity,
-          recommendedScope: null,
-        ),
-        EventSuccessSpatialDestination(
-          unitId: 'round-3',
-          valid: false,
-          reason: EventSuccessSpatialDestinationReason.capacity,
-          recommendedScope: null,
-        ),
-        EventSuccessSpatialDestination(
-          unitId: 'round-4',
-          valid: true,
-          reason: null,
-          recommendedScope: EventSuccessSpatialScope.thisRound,
-        ),
-        EventSuccessSpatialDestination(
-          unitId: 'round-5',
-          valid: true,
-          reason: null,
-          recommendedScope: EventSuccessSpatialScope.pinned,
-        ),
-        EventSuccessSpatialDestination(
-          unitId: 'round-6',
-          valid: true,
-          reason: null,
-          recommendedScope: EventSuccessSpatialScope.thisRound,
-        ),
-      ],
-      onReassignSpatial: (_, _, _) async {},
-      onConfirmSpatial: (_) async {},
-      onReleaseSpatial: (_) async {},
-      referenceNow: _hostLiveRoomReferenceEvent.startTime.add(
+      onBack: () {},
+      onOpenGuests: () {},
+      now: _hostLiveRoomReferenceEvent.startTime.add(
         const Duration(minutes: 55),
       ),
     ),
     drive: (tester) async {
       await tester.tap(find.text('Room'));
       await pumpFeatureUi(tester);
-      await tester.tap(
-        find.byKey(const ValueKey<String>('event_success.room.unit.round-4')),
-      );
-      await pumpFeatureUi(tester);
     },
   ),
+  hostLiveConsoleCapture,
   hostPostEventReportCapture,
-  ScreenCaptureEntry(
-    id: 'host_manage_report_scorecard_loading',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostReportPlan),
-      scorecardValue: const AsyncLoading<EventSuccessScorecard?>(),
-    ),
-    builder: (context) => _hostManageRouteCapture(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      initialSection: HostEventManageSection.report,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_report_scorecard_error',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostReportPlan),
-      scorecardValue: AsyncError<EventSuccessScorecard?>(
-        StateError('Scorecard failed'),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      initialSection: HostEventManageSection.report,
-    ),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_manage_report_scorecard_offline',
-    routeIds: const <String>['hostAppEventManageScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: _hostManageRouteProviderOverrides(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      participations: _hostParticipations,
-      planValue: AsyncData<EventSuccessPlan?>(_hostReportPlan),
-      scorecardValue: AsyncError<EventSuccessScorecard?>(
-        obviousOfflineException(),
-        StackTrace.empty,
-      ),
-    ),
-    builder: (context) => _hostManageRouteCapture(
-      organizer: _dashboardHostOrganizer,
-      event: _hostEvent,
-      initialSection: HostEventManageSection.report,
-    ),
-  ),
 
   ScreenCaptureEntry(
     id: 'notifications_activity',
@@ -15433,3 +13746,219 @@ AsyncValue<List<GuestEventCard>> _captureCardsAsync(
   AsyncError(:final error, :final stackTrace) => AsyncError(error, stackTrace),
   _ => const AsyncLoading(),
 };
+
+// The seated night behind `host_live_room_workspace`: a saved room layout,
+// its assignments and roster, opened on the rebuilt live console.
+final _hostAttendanceViewModel = AttendanceSheetViewModel(
+  event: _hostEvent,
+  attendeeIds: _hostAttendeeIds,
+  attendedIds: {
+    for (final participation in _hostParticipations)
+      if (participation.status == EventParticipationStatus.attended)
+        participation.uid,
+  },
+  waitlistedIds: _hostWaitlistedIds,
+  profileIds: _hostProfileIds,
+  participationsByUid: {
+    for (final participation in _hostParticipations)
+      participation.uid: participation,
+  },
+);
+
+final _hostLiveReferenceOperationalAttendees = List<EventAttendee>.generate(
+  24,
+  (index) => EventAttendee(
+    id: 'host-live-attendee-$index',
+    eventId: _hostLiveReferenceEvent.id,
+    organizerId: _hostLiveReferenceEvent.organizerId,
+    displayName: 'Guest ${index + 1}',
+    searchName: 'guest ${index + 1}',
+    source: EventAttendeeSource.hostImport,
+    status: index < 18
+        ? EventAttendeeStatus.checkedIn
+        : EventAttendeeStatus.registered,
+    createdAt: DateTime(2026, 6, 9, 18),
+    updatedAt: DateTime(2026, 6, 9, 19),
+    checkedInAt: index < 18 ? DateTime(2026, 6, 9, 19) : null,
+  ),
+);
+
+final _hostLiveReferenceOrganizer = _dashboardHostOrganizer.copyWith(
+  name: 'Harbour Line Social',
+);
+
+final _hostLiveReferenceParticipationRepository =
+    FakeEventParticipationRepository()
+      ..eventParticipations[_hostLiveReferenceEvent.id] = const [];
+
+final _hostLiveReferencePublicProfileRepository = FakePublicProfileRepository()
+  ..profiles = _hostLiveReferenceProfiles;
+
+final _hostLiveRoomAssignments = <EventSuccessAssignment>[
+  for (final indexed in _hostLiveReferenceProfiles.take(20).indexed)
+    EventSuccessAssignment(
+      id: '${_hostLiveRoomReferenceEvent.id}_micro_pods_${indexed.$2.uid}',
+      eventId: _hostLiveRoomReferenceEvent.id,
+      organizerId: _hostLiveRoomReferenceEvent.organizerId,
+      uid: indexed.$2.uid,
+      moduleId: EventSuccessModuleCatalog.microPods.id,
+      label:
+          'Table ${(_hostLiveRoomAssignmentUnitIds[indexed.$1].split('-').last)}',
+      displayTitle: indexed.$2.name,
+      displaySubtitle: indexed.$1 == 0 ? 'Late arrival' : null,
+      peerUids: indexed.$1 == 0
+          ? const []
+          : [
+              _hostLiveReferenceProfiles[indexed.$1 == 19 ? 1 : indexed.$1 + 1]
+                  .uid,
+            ],
+      unitKind: 'pods',
+      unitIndex: indexed.$1,
+      unitLabel:
+          'Table ${_hostLiveRoomAssignmentUnitIds[indexed.$1].split('-').last}',
+      layoutUnitId: _hostLiveRoomAssignmentUnitIds[indexed.$1],
+      confirmedLayoutUnitId:
+          _hostLiveRoomUnconfirmedIndexes.contains(indexed.$1)
+          ? null
+          : _hostLiveRoomAssignmentUnitIds[indexed.$1],
+      source: 'capture_room_runtime_v1',
+      createdAt: _hostLiveRoomReferenceEvent.startTime,
+      updatedAt: _hostLiveRoomReferenceEvent.startTime,
+    ),
+];
+
+final _hostLiveRoomReferenceEvent = _hostLiveReferenceEvent.copyWith(
+  eventFormat: EventFormatSnapshot.custom(
+    label: 'Singles table mixer',
+    interactionModel: EventInteractionModel.pairedRotations,
+  ),
+);
+
+final _hostLiveRoomReferenceLayout = EventSuccessLayout(
+  layoutId: 'host-live-room-six-rounds',
+  label: 'Six round tables',
+  units: [
+    for (var index = 0; index < 6; index += 1)
+      EventSuccessLayoutUnit(
+        id: 'round-${index + 1}',
+        label: 'Table ${index + 1}',
+        shape: EventSuccessLayoutShape.round,
+        capacity: 4,
+        gridX: index % 2,
+        gridY: index ~/ 2,
+        order: index + 1,
+      ),
+  ],
+);
+
+final _hostLiveRoomReferencePlan =
+    EventSuccessPlan.defaultForEvent(
+      _hostLiveRoomReferenceEvent,
+      now: _captureNow,
+    ).copyWith(
+      activeStepIndex: 1,
+      status: EventSuccessPlanStatus.live,
+      frozenAt: _captureNow,
+      layoutId: _hostLiveRoomReferenceLayout.layoutId,
+    );
+
+final _hostLiveRoomRoster = EventParticipationRoster(
+  bookedIds: [for (final profile in _hostLiveReferenceProfiles) profile.uid],
+  checkedInIds: [
+    for (final profile in _hostLiveReferenceProfiles.take(20)) profile.uid,
+  ],
+  waitlistedIds: const [],
+  checkedInAtByUid: {
+    for (final profile in _hostLiveReferenceProfiles.take(20))
+      profile.uid: _hostLiveRoomReferenceEvent.startTime,
+  },
+);
+
+final _hostProfileIds = [
+  for (final participation in _hostParticipations) participation.uid,
+];
+
+final _hostProfileRows = <String, (String, String?)>{
+  for (final profile in _hostGuestProfiles)
+    profile.uid: (profile.name, profile.primaryPhotoThumbnailUrl),
+};
+
+final _hostAttendeeIds = [
+  for (final participation in _hostParticipations)
+    if (participation.status != EventParticipationStatus.waitlisted)
+      participation.uid,
+];
+
+final _hostGuestProfiles = captureFixtures.rosterProfiles(
+  count: (_hostEvent.bookedCount ?? 0) + (_hostEvent.waitlistedCount ?? 0),
+);
+
+final _hostLiveReferenceEvent = _hostEvent.copyWith(
+  startTime: DateTime(2026, 6, 9, 20),
+  endTime: DateTime(2026, 6, 9, 22),
+  meetingPoint: 'The Salt Air Bar',
+  meetingLocation: const EventMeetingLocation(
+    name: 'The Salt Air Bar',
+    address: 'Bandra West, Mumbai',
+    latitude: 19.0607,
+    longitude: 72.8362,
+  ),
+  startingPointLat: 19.0607,
+  startingPointLng: 72.8362,
+  locationDetails: 'The Salt Air Bar',
+  eventFormat: const EventFormatSnapshot(
+    activityKind: ActivityKind.pubQuiz,
+    interactionModel: EventInteractionModel.hostLedProgram,
+    customActivityLabel: 'trivia night',
+    defaultPlaybookId: 'host_led_social',
+  ),
+  distanceKm: 0,
+  bookedCount: 24,
+  checkedInCount: 18,
+  waitlistedCount: 0,
+  capacityLimit: 30,
+);
+
+final _hostLiveReferenceProfiles = captureFixtures.rosterProfiles(count: 24);
+
+const _hostLiveRoomAssignmentUnitIds = <String>[
+  'round-1',
+  'round-1',
+  'round-1',
+  'round-1',
+  'round-2',
+  'round-2',
+  'round-2',
+  'round-2',
+  'round-3',
+  'round-3',
+  'round-3',
+  'round-3',
+  'round-4',
+  'round-4',
+  'round-4',
+  'round-5',
+  'round-5',
+  'round-5',
+  'round-6',
+  'round-6',
+];
+
+const _hostLiveRoomUnconfirmedIndexes = <int>{0, 8, 15};
+
+final _hostParticipations = captureFixtures.participationsForProfiles(
+  event: _hostEvent,
+  profiles: _hostGuestProfiles,
+  attendedCount:
+      _hostEvent.checkedInCount ?? salesDemoHostScenario.defaultCheckedInCount,
+  waitlistedCount:
+      _hostEvent.waitlistedCount ??
+      salesDemoHostScenario.defaultWaitlistedCount,
+  createdAt: DateTime(2026, 5, 28, 10),
+);
+
+final _hostWaitlistedIds = [
+  for (final participation in _hostParticipations)
+    if (participation.status == EventParticipationStatus.waitlisted)
+      participation.uid,
+];

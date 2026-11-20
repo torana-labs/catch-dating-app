@@ -519,11 +519,6 @@ class HostCustomersController {
     body: body,
   );
 
-  Future<HostContactMergeCandidatePage> listMergeCandidates({
-    required String organizerId,
-    String? cursor,
-  }) => _repository.listMergeCandidates(organizerId, cursor: cursor);
-
   Future<void> markDifferentPeople({
     required String organizerId,
     required HostContactMergeCandidate candidate,

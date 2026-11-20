@@ -193,7 +193,7 @@ Widget hostOrganizerBillSheetPreview(BuildContext context) =>
 Widget hostOrganizerBillsSectionPreview(BuildContext context) => ProviderScope(
   overrides: [
     hostOrganizerBillsProvider('lantern').overrideWith(
-      (ref) async => [_previewBill(HostOrganizerBillStatus.sent, 10)],
+      (ref) => Stream.value([_previewBill(HostOrganizerBillStatus.sent, 10)]),
     ),
   ],
   child: const WidgetbookContentFrame(

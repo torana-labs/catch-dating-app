@@ -58,7 +58,7 @@ final class OrganizerProgramViewsRepositoryProvider
 }
 
 String _$organizerProgramViewsRepositoryHash() =>
-    r'46ceed7fc04f2510234d2480a59d6172c12d2efd';
+    r'f883fb3df1cbfe252cb7b863d6c11ec7576069a9';
 
 /// One programme's setup view, live.
 
@@ -124,7 +124,7 @@ final class OrganizerProgramViewStreamProvider
 }
 
 String _$organizerProgramViewStreamHash() =>
-    r'f84a282b0e4362e23cf5850ab465cecab3408a59';
+    r'3d848ad4535489d81b9e6c70a2349fbe68bdd426';
 
 /// One programme's setup view, live.
 
@@ -213,7 +213,7 @@ final class OrganizerProgramSummariesStreamProvider
 }
 
 String _$organizerProgramSummariesStreamHash() =>
-    r'44ebbed8959bc4d113672114e9487d0d2e73806a';
+    r'3ca8e41736a0b32c5844983cec8110c089a25681';
 
 /// The organiser's programmes as lifecycle summaries, live.
 

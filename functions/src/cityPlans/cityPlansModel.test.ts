@@ -16,8 +16,13 @@ import {
   isFree,
   type CityMarket,
   type CityOrganizerPage,
+  type CityPlanSources,
   type CityPlans,
 } from "./cityPlansModel";
+import {
+  defaultDiscoveryRules,
+  type DiscoveryRules,
+} from "../discovery/discoveryPolicy";
 import {discoveryFormats} from "./discoveryFormats";
 import {cityMarket, cityMarkets} from "./rebuild";
 import {contractFixture} from "../shared/contractFixtures";
@@ -79,12 +84,19 @@ const livePages = () => [
     {identity: {citySlug: "indore", city: "Indore"}}),
 ];
 
+/** Builds a city under the default Settings → Discovery unless given one. */
+function build(sources: Omit<CityPlanSources, "discovery"> &
+  {discovery?: DiscoveryRules}): CityPlans {
+  return buildCityPlans({...sources,
+    discovery: sources.discovery ?? defaultDiscoveryRules()});
+}
+
 function stored(value: object) {
   return {...value, builtAt: Timestamp.fromMillis(now)};
 }
 
 test("a launched city lists its plans in the 14-day window", () => {
-  const city = buildCityPlans({market: mumbai, now,
+  const city = build({market: mumbai, now,
     organizerPages: livePages(), joiningOrganizers: []});
   assert.equal(city.status, "live");
   assert.deepEqual(city.plans.map((plan) => plan.eventId),
@@ -102,7 +114,7 @@ test("a launched city lists its plans in the 14-day window", () => {
 });
 
 test("organisers with a plan come first, then by followers", () => {
-  const city = buildCityPlans({market: mumbai, now,
+  const city = build({market: mumbai, now,
     organizerPages: livePages(), joiningOrganizers: []});
   assert.deepEqual(city.organizers.map((org) => org.organizerId),
     ["carter", "quiz", "night", "quiet"]);
@@ -119,7 +131,7 @@ test("organisers with a plan come first, then by followers", () => {
 test("ended plans and other cities' plans are left out", () => {
   const pages = [page("carter", [event("ended", -2 * hour),
     event("run-1", day)])];
-  const city = buildCityPlans({market: mumbai, now, organizerPages: pages,
+  const city = build({market: mumbai, now, organizerPages: pages,
     joiningOrganizers: []});
   assert.deepEqual(city.plans.map((plan) => plan.eventId), ["run-1"]);
 });
@@ -131,7 +143,7 @@ const formatPagesOf = (city: CityPlans) => Object.fromEntries(
       city.formatPages[format].freeEventCount]]));
 
 test("format pages count organisers, plans and free plans in 30 days", () => {
-  const city = buildCityPlans({market: mumbai, now,
+  const city = build({market: mumbai, now,
     organizerPages: livePages(), joiningOrganizers: []});
   const counts = formatPagesOf(city);
   // carter: two runs; quiz: a quiz in 14 days and one at 15 days; night: a
@@ -161,7 +173,7 @@ test("women-led plans and organisers carry their label; absence is false",
       event("led-3", 3 * day),
       {...event("led-late", 20 * day), womenLed: true}]), womenLed: true};
     const unlabelled = page("old", [event("old-1", day)]);
-    const city = buildCityPlans({market: mumbai, now, joiningOrganizers: [],
+    const city = build({market: mumbai, now, joiningOrganizers: [],
       organizerPages: [led, unlabelled]});
     assert.deepEqual(city.plans.map((plan) => [plan.eventId, plan.womenLed]),
       [["led-1", true], ["old-1", false], ["led-2", false],
@@ -179,7 +191,7 @@ test("format page counts are not capped by the listed plans and organisers",
     const pages = Array.from({length: 30}, (_, index) => page(`org-${index}`,
       Array.from({length: 6}, (_, slot) => event(`run-${index}-${slot}`,
         (slot + 1) * day + index * 60_000))));
-    const city = buildCityPlans({market: mumbai, now, organizerPages: pages,
+    const city = build({market: mumbai, now, organizerPages: pages,
       joiningOrganizers: []});
     assert.equal(city.organizers.length, cityPlanLimits.organizers);
     assert.equal(city.plans.length, cityPlanLimits.plans);
@@ -193,7 +205,7 @@ test("format page counts are not capped by the listed plans and organisers",
 test("the 30-day signal takes plans starting before day 30 that have not " +
   "ended", () => {
   const signal = (events: Row[]) => {
-    const city = buildCityPlans({market: mumbai, now, joiningOrganizers: [],
+    const city = build({market: mumbai, now, joiningOrganizers: [],
       organizerPages: [page("carter", events)]});
     return [city.upcomingEvents30d, city.hasUpcomingMonth, city.planCount];
   };
@@ -210,7 +222,7 @@ test("the 30-day signal takes plans starting before day 30 that have not " +
 });
 
 test("a full organiser page marks the month's counts as a floor", () => {
-  const full = (spacing: number) => buildCityPlans({market: mumbai, now,
+  const full = (spacing: number) => build({market: mumbai, now,
     joiningOrganizers: [], organizerPages: [page("daily",
       Array.from({length: pageLimits.upcomingEvents}, (_, index) =>
         event(`run-${index}`, (index + 1) * spacing)))]});
@@ -242,7 +254,7 @@ test("free plans are those a guest pays nothing for", () => {
   for (const label of ["₹200", "External ticketing", "Free for members",
     "0-500 INR", "₹10"]) assert.equal(free(external(label)), false, label);
 
-  const city = buildCityPlans({market: mumbai, now, joiningOrganizers: [],
+  const city = build({market: mumbai, now, joiningOrganizers: [],
     organizerPages: [page("carter", [
       priced({amountPaise: 0, priceLabel: "Free"}),
       event("paid", 2 * day, "socialRun", {amountPaise: 29900,
@@ -261,7 +273,7 @@ test("open activities count toward the formats their organiser lists", () => {
     {identity: {category: "Community", formats: ["beginner-friendly"]}});
   const courts = page("courts", [event("padel-1", day, "padel")],
     {identity: {category: "Sports club", formats: []}});
-  const city = buildCityPlans({market: mumbai, now, joiningOrganizers: [],
+  const city = build({market: mumbai, now, joiningOrganizers: [],
     organizerPages: [books, pottery, unnamed, courts]});
   const counts = formatPagesOf(city);
   assert.deepEqual(counts.books, [1, 2, 2]);
@@ -282,7 +294,7 @@ test("a format page is indexed at 3 organisers or 5 plans", () => {
       page(`org-${index}`, index === 0 ? Array.from({length: plans},
         (_, slot) => event(`run-${slot}`, (slot + 1) * day)) : [],
       {identity: {category: "Run club", formats: []}}));
-    return buildCityPlans({market: mumbai, now, organizerPages: pages,
+    return build({market: mumbai, now, organizerPages: pages,
       joiningOrganizers: []}).formatPages.runClubs.indexing;
   };
   assert.equal(indexing(0, 0), "noindex, follow");
@@ -294,21 +306,21 @@ test("a format page is indexed at 3 organisers or 5 plans", () => {
 });
 
 test("rebuilding the same sources gives the same city", () => {
-  const build = (pages: CityOrganizerPage[]) => buildCityPlans({market: mumbai,
+  const rebuild = (pages: CityOrganizerPage[]) => build({market: mumbai,
     now, organizerPages: pages, joiningOrganizers: []});
-  const first = build(livePages());
-  assert.deepEqual(build(livePages()), first);
-  assert.deepEqual(build(livePages().reverse()), first);
+  const first = rebuild(livePages());
+  assert.deepEqual(rebuild(livePages()), first);
+  assert.deepEqual(rebuild(livePages().reverse()), first);
 });
 
 test("a launched city with few plans stays live with its honest count", () => {
   const pages = [page("carter",
     [event("run-1", day), event("run-2", 2 * day)])];
-  const city = buildCityPlans({market: mumbai, now, organizerPages: pages,
+  const city = build({market: mumbai, now, organizerPages: pages,
     joiningOrganizers: []});
   assert.equal(city.status, "live");
   assert.equal(city.planCount, 2);
-  const empty = buildCityPlans({market: mumbai, now, organizerPages: [],
+  const empty = build({market: mumbai, now, organizerPages: [],
     joiningOrganizers: []});
   assert.equal(empty.status, "live");
   assert.equal(empty.planCount, 0);
@@ -320,9 +332,9 @@ test("a city that has not launched lists who is joining, with no pages", () => {
     category: "Run club", formats: ["Saturday social runs"],
     logo: {mode: "monogram", text: "JP", status: "not_verified"},
     metrics: {followerCount: 3},
-    authority: {claimState: "unclaimed"},
+    authority: {claimState: "claimed"},
   } as unknown as HostListing;
-  const city = buildCityPlans({market: pune, now,
+  const city = build({market: pune, now,
     organizerPages: livePages(), joiningOrganizers: [listing,
       {...listing, id: "other-city", citySlug: "mumbai"} as HostListing]});
   assert.equal(city.status, "launchingSoon");
@@ -332,7 +344,7 @@ test("a city that has not launched lists who is joining, with no pages", () => {
   assert.deepEqual(city.organizers, [{organizerId: "kp-runners",
     name: "Jacaranda Park Runners", path: null, category: "Run club",
     logo: {mode: "monogram", text: "JP", status: "not_verified"},
-    formats: ["run"], followerCount: 3, claimState: "unclaimed",
+    formats: ["run"], followerCount: 3, claimState: "claimed",
     upcomingPlanCount: 0, nextPlan: null, discoveryFormats: ["runClubs"],
     womenLed: false}]);
   // Joining organisers count toward their format; one is below the bar,
@@ -352,15 +364,16 @@ test("a city that has not launched indexes a format page at 3 joining " +
     id: `runners-${id}`, name: `Runners ${id}`, citySlug: "pune",
     category, formats: [], logo: {mode: "monogram", text: "R",
       status: "not_verified"}, metrics: {followerCount: 0},
-    authority: {claimState: "unclaimed"},
+    authority: {claimState: "verified"},
   }) as unknown as HostListing;
-  const build = (joining: HostListing[]) => buildCityPlans({market: pune,
+  const joiningCity = (joining: HostListing[]) => build({market: pune,
     now, organizerPages: livePages(), joiningOrganizers: joining});
-  const two = build(["a", "b"].map((id) => listing(id, "Run club")));
+  const two = joiningCity(["a", "b"].map((id) => listing(id, "Run club")));
   assert.equal(two.formatPages.runClubs.organizerCount, 2);
   assert.equal(two.formatPages.runClubs.indexing, "noindex, follow");
   // Organisers listed in another city, or in another format, do not count.
-  const three = build([...["a", "b", "c"].map((id) => listing(id, "Run club")),
+  const three = joiningCity([
+    ...["a", "b", "c"].map((id) => listing(id, "Run club")),
     {...listing("d", "Run club"), citySlug: "mumbai"} as HostListing,
     listing("e", "Supper club")]);
   assert.equal(three.formatPages.runClubs.organizerCount, 3);
@@ -376,6 +389,135 @@ test("a city that has not launched indexes a format page at 3 joining " +
   assert.ok(validateCityPlansDocument(stored(three)),
     JSON.stringify(validateCityPlansDocument.errors));
 });
+
+/** Default rules with some surfaces changed. */
+function discoveryWith(
+  surfaces: Partial<DiscoveryRules["surfaces"]>,
+  rest: Partial<Omit<DiscoveryRules, "surfaces">> = {}
+): DiscoveryRules {
+  const rules = defaultDiscoveryRules();
+  return {...rules, ...rest, surfaces: {...rules.surfaces, ...surfaces}};
+}
+
+const notOnCatchToo = {onCatch: true, notOnCatch: true};
+
+// Organisers on Catch (claimed, verified) and not on Catch yet (unclaimed,
+// claimPending), one run each in the week.
+const mixedPages = () => [
+  page("carter", [event("run-carter", day)], {claimState: "claimed"}),
+  page("trusted", [event("run-trusted", 2 * day)],
+    {claimState: "verified"}),
+  page("fresh", [event("run-fresh", 3 * day)], {claimState: "unclaimed",
+    followerCount: 500}),
+  page("pending", [event("run-pending", 4 * day)],
+    {claimState: "claimPending"}),
+];
+const ids = (items: readonly {organizerId: string}[]) =>
+  items.map((item) => item.organizerId);
+const mixedCity = (discovery?: DiscoveryRules) => build({market: mumbai,
+  now, organizerPages: mixedPages(), joiningOrganizers: [], discovery});
+
+test("by default organisers not on Catch, their plans and their counts are " +
+  "left out", () => {
+  const city = mixedCity();
+  assert.deepEqual(city.plans.map((plan) => plan.eventId),
+    ["run-carter", "run-trusted"]);
+  assert.equal(city.planCount, 2);
+  assert.equal(city.formatCounts.run, 2);
+  // claimPending is not on Catch yet, like unclaimed.
+  assert.deepEqual(ids(city.organizers), ["carter", "trusted"]);
+  assert.deepEqual(formatPagesOf(city).runClubs, [2, 2, 2]);
+  assert.equal(city.upcomingEvents30d, 2);
+  assert.deepEqual(city.discovery, {
+    homeOrganizers: {onCatch: true, notOnCatch: false},
+    cityOrganizers: {onCatch: true, notOnCatch: false},
+    homeOrganizersMinimum: 1,
+    homeClaimAction: false,
+  });
+  assert.ok(validateCityPlansDocument(stored(city)),
+    JSON.stringify(validateCityPlansDocument.errors));
+});
+
+test("each surface brings organisers not on Catch back on its own", () => {
+  const plans = mixedCity(discoveryWith({plans: notOnCatchToo}));
+  assert.deepEqual(plans.plans.map((plan) => plan.eventId),
+    ["run-carter", "run-trusted", "run-fresh", "run-pending"]);
+  assert.equal(plans.planCount, 4);
+  assert.deepEqual(ids(plans.organizers), ["carter", "trusted"]);
+  assert.deepEqual(formatPagesOf(plans).runClubs, [2, 2, 2]);
+
+  for (const surface of ["homeOrganizers", "cityOrganizers"] as const) {
+    const city = mixedCity(discoveryWith({[surface]: notOnCatchToo}));
+    assert.deepEqual(ids(city.organizers),
+      ["carter", "trusted", "fresh", "pending"], surface);
+    // Their plans stay hidden, so they show none, but keep their formats.
+    const fresh = city.organizers.find((org) => org.organizerId === "fresh");
+    assert.equal(fresh?.upcomingPlanCount, 0, surface);
+    assert.equal(fresh?.nextPlan, null, surface);
+    assert.deepEqual(fresh?.claimState, "unclaimed", surface);
+    assert.deepEqual(fresh?.discoveryFormats, ["runClubs"], surface);
+    assert.equal(city.planCount, 2, surface);
+    assert.deepEqual(formatPagesOf(city).runClubs, [2, 2, 2], surface);
+    assert.deepEqual(city.discovery[surface], notOnCatchToo, surface);
+    assert.ok(validateCityPlansDocument(stored(city)),
+      JSON.stringify(validateCityPlansDocument.errors));
+  }
+
+  const totals = mixedCity(discoveryWith({totals: notOnCatchToo}));
+  assert.deepEqual(formatPagesOf(totals).runClubs, [4, 4, 4]);
+  assert.equal(totals.upcomingEvents30d, 4);
+  assert.equal(totals.planCount, 2);
+  assert.deepEqual(ids(totals.organizers), ["carter", "trusted"]);
+});
+
+test("a rule can hide organisers on Catch as well", () => {
+  const off = {onCatch: false, notOnCatch: false};
+  const city = mixedCity(discoveryWith({homeOrganizers: off,
+    cityOrganizers: off, plans: off, totals: off}));
+  assert.deepEqual(city.plans, []);
+  assert.deepEqual(city.organizers, []);
+  assert.equal(city.upcomingEvents30d, 0);
+  assert.equal(city.hasUpcomingMonth, false);
+  assert.deepEqual(formatPagesOf(city).runClubs, [0, 0, 0]);
+  assert.equal(city.formatPages.runClubs.indexing, "noindex, follow");
+});
+
+test("the homepage minimum and claim button land on the city document",
+  () => {
+    const city = mixedCity(discoveryWith({}, {homeOrganizersMinimum: 6,
+      homeClaimAction: true}));
+    assert.equal(city.discovery.homeOrganizersMinimum, 6);
+    assert.equal(city.discovery.homeClaimAction, true);
+    assert.ok(validateCityPlansDocument(stored(city)),
+      JSON.stringify(validateCityPlansDocument.errors));
+    const missing = JSON.parse(JSON.stringify(stored(city))) as Row;
+    delete missing.discovery;
+    assert.equal(validateCityPlansDocument(missing), false);
+  });
+
+test("a city that has not launched applies the same rules to who is joining",
+  () => {
+    const listing = (id: string, claimState: string) => ({
+      id, name: `Runners ${id}`, citySlug: "pune", category: "Run club",
+      formats: [], logo: {mode: "monogram", text: "R",
+        status: "not_verified"}, metrics: {followerCount: 0},
+      authority: {claimState},
+    }) as unknown as HostListing;
+    const joining = [listing("on", "claimed"), listing("new", "unclaimed"),
+      listing("asked", "claimPending")];
+    const city = (discovery?: DiscoveryRules) => build({market: pune, now,
+      organizerPages: [], joiningOrganizers: joining, discovery});
+    const byDefault = city();
+    assert.deepEqual(ids(byDefault.organizers), ["on"]);
+    assert.equal(byDefault.formatPages.runClubs.organizerCount, 1);
+    const listed = city(discoveryWith({cityOrganizers: notOnCatchToo}));
+    assert.deepEqual(ids(listed.organizers), ["asked", "new", "on"]);
+    assert.equal(listed.formatPages.runClubs.organizerCount, 1);
+    const counted = city(discoveryWith({totals: notOnCatchToo}));
+    assert.deepEqual(ids(counted.organizers), ["on"]);
+    assert.equal(counted.formatPages.runClubs.organizerCount, 3);
+    assert.equal(counted.formatPages.runClubs.indexing, "index, follow");
+  });
 
 test("activities and free-text formats map to homepage formats", () => {
   assert.equal(formatForActivity("socialRun"), "run");
@@ -404,7 +546,7 @@ test("formats group activities as the website library draws them", () => {
 });
 
 test("dating framing never reaches a city document", () => {
-  const city = buildCityPlans({market: mumbai, now, organizerPages: livePages(),
+  const city = build({market: mumbai, now, organizerPages: livePages(),
     joiningOrganizers: []});
   const mixer = {...city, plans: [{...city.plans[0],
     activityKind: "singlesMixer"}]};

@@ -50,7 +50,7 @@ export function parseArgs(argv, env = process.env) {
     else if (arg === "--help" || arg === "-h") args.help = true;
     else throw new Error(`Unknown argument: ${arg}`);
   }
-  if (!["dev", "staging", "prod"].includes(args.env)) {
+  if (!["dev", "prod"].includes(args.env)) {
     throw new Error(`Unsupported Firebase environment: ${args.env}`);
   }
   if (args.apply && args.env === "prod" && !args.allowProd) {
@@ -309,7 +309,7 @@ function printHelp() {
 
 Usage:
   node tool/firebase/probe_chat_storage_rules.mjs \\
-    --env <dev|staging|prod> --uid <uid> --match-id <match> [options]
+    --env <dev|prod> --uid <uid> --match-id <match> [options]
 
 Options:
   --apply                       Upload and immediately delete the fixture.

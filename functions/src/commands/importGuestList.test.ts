@@ -352,6 +352,17 @@ test("with no event, guests go on the workspace's imported draft while it stays 
   assert.equal(published.result.eventId, "older-1", "a published event is no longer a try-it draft");
 });
 
+test("with no event, a past night saved on the workspace is skipped for the next draft", async () => {
+  const {db, deps} = await withWorkspace();
+  const past = {_seconds: Math.floor(Date.parse("2026-11-10T13:30:00.000Z") / 1000), _nanoseconds: 0};
+  const next = {_seconds: Math.floor(Date.parse("2026-12-02T13:30:00.000Z") / 1000), _nanoseconds: 0};
+  db.write("events/upcoming-1", {organizerId: WORKSPACE_ORGANIZER, publicationState: "private", status: "active", startTime: next});
+  db.write("events/past-1", {organizerId: WORKSPACE_ORGANIZER, publicationState: "private", status: "active", startTime: past});
+  db.write(`tryItWorkspaces/${UID}`, {...db.read(`tryItWorkspaces/${UID}`), tryItEventIds: ["upcoming-1", "past-1"]});
+  const preview = await importGuestListHandler(call(websiteEnvelope("preview", LUMA_CSV)), deps);
+  assert.equal(preview.result.eventId, "upcoming-1", "a night that already happened is a record, not the draft");
+});
+
 test("a named event is used as it is, and the workspace is not touched", async () => {
   const {db, deps} = await withWorkspace();
   const before = db.read(`tryItWorkspaces/${UID}`);

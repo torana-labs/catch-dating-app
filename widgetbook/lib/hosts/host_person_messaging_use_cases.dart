@@ -1,9 +1,7 @@
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/audience/data/crm/host_communication_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_communication_plan.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
@@ -175,34 +173,6 @@ class _MessageFixtureState extends State<_MessageFixture> {
         ),
         hostCustomersControllerProvider.overrideWithValue(
           _PreviewCustomerActions(),
-        ),
-        hostCommunicationPlanProvider('org', 'contact').overrideWithValue(
-          AsyncData(
-            HostCommunicationPlan(
-              organizerId: 'org',
-              intent: HostCommunicationIntent.individualConversation,
-              capabilityVersion: 1,
-              resolvedAt: now,
-              recipients: [
-                HostCommunicationRecipientPlan(
-                  contactId: 'contact',
-                  displayName: 'Riya Mehta',
-                  outcome: HostCommunicationOutcome.inCatch,
-                  recommendedRouteId: HostCommunicationRouteId.catchChat,
-                  routes: const [
-                    HostCommunicationRouteOption(
-                      blocker: null,
-                      routeId: HostCommunicationRouteId.catchChat,
-                      executionMode:
-                          HostCommunicationExecutionMode.managedDelivery,
-                      availability:
-                          HostCommunicationRouteAvailability.available,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
         ),
       ],
       child: SizedBox(

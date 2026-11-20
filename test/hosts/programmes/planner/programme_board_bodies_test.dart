@@ -53,7 +53,6 @@ void main() {
     expect(message.anchorKind, ProgramMessageAnchorKind.function);
     expect(message.anchorId, 'mehendi');
     expect(message.state, ProgramMessageState.planned);
-    expect(legacy.senderConnectionId, isNull);
   });
 
   test('a draft becomes the upsert initiation, audience and anchor', () {

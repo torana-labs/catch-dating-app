@@ -37,9 +37,11 @@ class CatchSectionAction {
 /// screen, such as "Arriving" on live Needs.
 ///
 /// A [timeline] joins the rows' leading markers with a 2 px line, run of show
-/// style; put it on a section with no [dividers]. [columns] flows the rows
-/// down into 2 or 3 columns 24 px apart (a scoreboard), which separate the
-/// rows instead of lines, and folds back to one column on compact windows.
+/// style; put it on a section with no [dividers]. Each [CatchIndexRow] draws
+/// its own stretch of the line, so rows may be wrapped in feature widgets.
+/// [columns] flows the rows down into 2 or 3 columns 24 px apart (a
+/// scoreboard), which separate the rows instead of lines, and folds back to
+/// one column on compact windows.
 class CatchListSection extends StatelessWidget {
   const CatchListSection({
     super.key,
@@ -71,17 +73,6 @@ class CatchListSection extends StatelessWidget {
   final bool timeline;
   final int? columns;
 
-  /// Where a timeline line sits from the start: under a 12 px marker, or
-  /// under a marker that follows a [CatchIndexRow.time].
-  static const double _timelineInset =
-      CatchSpacing.micro6 - CatchStroke.hairline;
-  static const double _timelineInsetAfterTime =
-      CatchIndexRow.timeWidth + CatchSpacing.s3 + _timelineInset;
-
-  /// From the row's top padding to just under its marker.
-  static const double _timelineTop =
-      CatchSpacing.micro18 + CatchStroke.hairline;
-
   @override
   Widget build(BuildContext context) {
     final title = this.title;
@@ -93,7 +84,7 @@ class CatchListSection extends StatelessWidget {
     final line = dividers == CatchSectionPlacement.none || columns != null
         ? null
         : const CatchDivider.section();
-    final rows = timeline ? _joined(context) : children;
+    final rows = timeline ? _joined() : children;
     final perColumn = split ? (rows.length / columns).ceil() : rows.length;
     // The kicker over the title, with the action or note on the title's
     // baseline. At large text the action takes its own line under the title,
@@ -243,39 +234,13 @@ class CatchListSection extends StatelessWidget {
     );
   }
 
-  /// Each row but the last with the line that joins its marker to the next.
-  List<Widget> _joined(BuildContext context) {
-    final color = CatchTokens.of(context).line;
-    return [
-      for (var index = 0; index < children.length; index++)
-        if (index == children.length - 1)
-          children[index]
-        else
-          Stack(
-            clipBehavior: Clip.none,
-            children: [children[index], _connector(children[index], color)],
-          ),
-    ];
-  }
-
-  Widget _connector(Widget row, Color color) {
-    final indexRow = row is CatchIndexRow ? row : null;
-    final pad = switch (indexRow?.density) {
-      CatchIndexRowSize.compact => CatchSpacing.micro10,
-      CatchIndexRowSize.roomy => CatchSpacing.micro14,
-      _ => CatchSpacing.s3,
-    };
-    return PositionedDirectional(
-      start: indexRow?.time != null ? _timelineInsetAfterTime : _timelineInset,
-      top: pad + _timelineTop,
-      bottom: -(pad + CatchSpacing.micro3),
-      width: CatchStroke.focusRing,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(CatchStroke.hairline),
-        ),
+  /// Each row marked as a timeline step; all but the last draw the line
+  /// down to the next marker.
+  List<Widget> _joined() => [
+    for (var index = 0; index < children.length; index++)
+      CatchTimelineStepScope(
+        joinsNext: index < children.length - 1,
+        child: children[index],
       ),
-    );
-  }
+  ];
 }

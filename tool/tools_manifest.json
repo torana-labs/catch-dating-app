@@ -127,7 +127,8 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
         ]
       },
       "runbook": "tool/README.md#google-ads-campaigns"
@@ -154,7 +155,8 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
         ]
       },
       "runbook": "docs/ads_conversion_spec.md"
@@ -1409,6 +1411,30 @@
       "role": "gate"
     },
     {
+      "id": "ci:listing-cohort-withdraw-workflow",
+      "category": "ci",
+      "path": "tool/ci/listing_cohort_withdraw_workflow.test.mjs",
+      "command": "node --test tool/ci/listing_cohort_withdraw_workflow.test.mjs",
+      "surface": "local-read",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/listing-cohort-withdraw.yml",
+        "tool/ci/listing_cohort_withdraw_workflow.test.mjs"
+      ],
+      "description": "Keeps the listing cohort withdraw workflow dispatch-only from main, keyless and least-privileged, with only environment, mode, a cohort id, a city slug and a manifest SHA-256 as checked inputs, a prod apply gated by the credential-free prod-takedown environment, no artifacts, a counts-only summary, and --allow-prod only for a prod apply.",
+      "checks": [
+        "node --check tool/ci/listing_cohort_withdraw_workflow.test.mjs",
+        "node --test tool/ci/listing_cohort_withdraw_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:main-marketing-validation",
       "category": "ci",
       "path": "tool/ci/wait_main_marketing_validation.mjs",
@@ -2496,6 +2522,21 @@
       "runbook": "docs/backend_operation_catalog.md#organizer-owner-view-1109"
     },
     {
+      "id": "data:backfill-profile-thumbnails",
+      "category": "data",
+      "path": "functions/scripts/backfill-profile-thumbnails.cjs",
+      "command": "FIREBASE_STORAGE_BUCKET=<bucket> npm --prefix functions run backfill:profile-thumbnails -- [--apply]",
+      "surface": "remote-write",
+      "guard": "apply-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "Repairs missing 160px profile photo thumbnails: scans users, generates a JPEG thumbnail for each profilePhotos entry that lacks one and writes it to Storage and back into the grouped profilePhotos. Dry run unless --apply; needs FIREBASE_STORAGE_BUCKET.",
+      "checks": [
+        "node --check functions/scripts/backfill-profile-thumbnails.cjs"
+      ],
+      "runbook": "docs/backend_operation_catalog.md#cloud-functions-inventory"
+    },
+    {
       "id": "data:backfill-program-whatsapp-endpoint-index",
       "category": "data",
       "path": "functions/scripts/backfill-program-whatsapp-endpoint-index.cjs",
@@ -2571,6 +2612,48 @@
         "node --check tool/data/hygiene_media_paths.mjs"
       ],
       "runbook": "tool/README.md#storage-media-path-hygiene"
+    },
+    {
+      "id": "data:listing-cohort-withdraw",
+      "category": "data",
+      "path": "tool/data/listing_cohort_withdraw.mjs",
+      "command": "node tool/data/listing_cohort_withdraw.mjs --env <dev|prod> --cohort-id <cohort> [--city <slug>] --mode <plan|apply|verify> [--manifest-sha256 <hash>]",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "description": "Withdraws one programmatic listing cohort: counts-only plan of the public, unclaimed organisers whose listingProgram.cohortId matches, with a manifest SHA-256; apply only with the matching hash, suppressing each page (noindex) in re-checked transactions with one admin audit row per organiser; idempotent re-run and verify.",
+      "checks": [
+        "node --check tool/data/listing_cohort_withdraw.mjs",
+        "node --test tool/data/listing_cohort_withdraw.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/listing_cohort_withdraw.test.mjs",
+        "tool/data/lib/listing_cohort_withdraw/withdraw.mjs",
+        "tool/data/fixtures/listing_cohort_withdraw/fakes.mjs",
+        "tool/data/fixtures/listing_cohort_withdraw/world.mjs",
+        "contracts/shared/listing_program_common.schema.json",
+        "contracts/shared/profile_common.schema.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "role": "operator",
+      "runbook": "docs/release_operations.md#listing-cohort-withdraw"
+    },
+    {
+      "id": "data:migrate-crawls-to-route-stops",
+      "category": "data",
+      "path": "functions/scripts/migrate-crawls-to-route-stops.cjs",
+      "status": "retired",
+      "role": "operator",
+      "description": "One-off migration that moved future bar crawl events still saved with the freeFormMixer interaction model onto routeStops, leaving past events, started events and the demo crawl unchanged; its planning logic was functions/src/eventSuccess/crawlRouteStopsMigration.ts.",
+      "retiredOn": "2026-11-19",
+      "reason": "Nothing left to migrate. On 19 Nov 2026 the owner ran its dry run against catchdates-dev and catch-dating-app-64e51: both returned no events to migrate and none skipped, and a count by eventFormat.activityKind found no barCrawl events in either project. routeStops is a first-class interaction model in contracts/shared/event_common.schema.json and the event runtime. The planning module and its test went with it, since this script was their only caller.",
+      "lastCommit": "b5a30bc69730fa0cb5d8c15d0ee82bd9563063a8"
     },
     {
       "id": "data:migrate-firestore-consolidation",
@@ -3098,7 +3181,6 @@
         "tool/design/check_host_section_composition.mjs",
         "test/tool/host_section_composition_test.mjs",
         "lib/programs/presentation/program_guests_screen.dart",
-        "lib/hosts/presentation/widgets/host_event_reviews_panel.dart",
         "lib/event_success/presentation/event_assistance_help_entry_section.dart",
         "lib/event_success/presentation/event_assistance_delivery_entry_section.dart",
         "lib/event_success/presentation/host_report/event_success_host_report_page_body.dart"

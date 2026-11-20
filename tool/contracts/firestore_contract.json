@@ -138,12 +138,33 @@
         "onEventAssistanceRcsCallbackCreated",
         "setEventAssistanceRuntimeConfig",
         "setEventAssistanceSetting",
-        "setEventAssistanceGroupStaff"
+        "setEventAssistanceGroupStaff",
+        "setEventAttendeeAttendance",
+        "configureEventOfferPreferences",
+        "configureEventRegistration",
+        "onEventRuntimeParticipantWritten",
+        "mutateEventOffer",
+        "commitEventOffers",
+        "updateOrganizerEventSetupDefaults",
+        "claimParticipantFormProfile",
+        "adminSaveSalesDemoBlueprint",
+        "adminReviewSalesDemoBlueprint",
+        "adminWithdrawSalesDemoBlueprint",
+        "adminIssueSalesDemoInvitation",
+        "adminRevokeSalesDemoInvitation",
+        "adminShareSalesDemoPartnerReview",
+        "startSalesDemo",
+        "advanceSalesDemo",
+        "adminRefreshSalesFitQueue",
+        "adminRefreshSalesFitQueueBatch",
+        "onHostMembershipBenefitUseWritten"
       ],
       "migrationNotes": [
         "One replay-receipt collection since L8 of the Firestore consolidation: commandReceipts/{command}_{id} with command, requestHash, result, createdAt and expiresAt, and expiresAt (seven days for triggers, thirty for requests and webhooks; the TTL policy is approved by the owner, 18 Nov 2026).",
-        "functionEventReceipts, eventLiveCommandReceipts, eventChatAccessReceipts, organizerAudienceProjectionReceipts and organizerEntitlementReceipts stopped being written and keep their documents under the legal hold, with no client access; replay windows are short, so none were copied forward.",
+        "functionEventReceipts, eventLiveCommandReceipts, eventChatAccessReceipts, organizerAudienceProjectionReceipts, organizerEntitlementReceipts, eventAttendeeAttendanceReceipts, eventOfferConfigurationReceipts, eventRegistrationReceipts, eventRuntimeDataRequestReceipts, organizerEventOfferActionReceipts and organizerEventOfferBatchReceipts stopped being written and keep their documents, with no client access; replay windows are short, so none were copied forward.",
         "The event-assistance commands' replay receipts moved too (19 Nov 2026), reversing the 18 Nov keep: eventAssistanceAccountabilityReceipts, eventAssistanceCaseReceipts, eventAssistanceMembershipReceipts, eventAssistanceParticipationReceipts, eventAssistanceProgressReceipts (now two commands, departure and route), eventAssistanceRcsCallbackReceipts (trigger retention), eventAssistanceRuntimeConfigReceipts, eventAssistanceSettingReceipts and eventAssistanceStaffReceipts are read only by their own command's retry. Each result keeps the revision and live-state fences the replay re-checks; old documents stay and none were copied forward.",
+        "Offer actions, including the draft and offer steps a batch commit derives, share the mutateEventOffer command; a batch stores only its per-offer results and rebuilds the rest of its response, and its replay hash includes the acting manager, so a second manager reusing a batch request ID conflicts.",
+        "organizerEventSetupDefaultReceipts, participantProfileClaimReceipts, salesDemoReceipts and salesFitQueueReceipts stopped being written (commands updateOrganizerEventSetupDefaults, claimParticipantFormProfile, salesDemo and adminRefreshSalesFitQueue); every replay is revision- or source-fenced, so none were copied forward.",
         "Consent, money, safety and audit receipts stay in their own collections."
       ]
     },
@@ -1053,23 +1074,6 @@
       ]
     },
     {
-      "id": "eventAttendeeAttendanceReceipts",
-      "path": "eventAttendeeAttendanceReceipts/{receiptId}",
-      "rulesMatch": "/eventAttendeeAttendanceReceipts/{receiptId}",
-      "typescriptInterface": "EventAttendeeAttendanceReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
-      "owner": "setEventAttendeeAttendance callable",
-      "read": "server only; replay result is returned by the callable",
-      "write": "server only",
-      "exportedFunctions": [
-        "setEventAttendeeAttendance"
-      ],
-      "migrationNotes": [
-        "Thirty-day TTL receipts make absolute Host attendance retries idempotent without retaining a second roster."
-      ]
-    },
-    {
       "id": "hostRosterIntakeSessions",
       "path": "hostRosterIntakeSessions/{sessionId}",
       "rulesMatch": "/hostRosterIntakeSessions/{sessionId}",
@@ -1166,7 +1170,7 @@
         "onGuestMessagingPermissionOrganizerReceiptChanged"
       ],
       "migrationNotes": [
-        "preference equals what listParticipantMessagingPreferences returns for that sender. The guest-messaging-permissions copy-forward migration creates rows for preferences recorded before the triggers."
+        "preference is the sender's summary the retired listParticipantMessagingPreferences callable returned (Nov 2026), and the withdrawal response returns the same summary. The guest-messaging-permissions copy-forward migration creates rows for preferences recorded before the triggers."
       ]
     },
     {
@@ -1248,12 +1252,12 @@
       "rulesMatch": "/organizerManualSendTasks/{taskId}",
       "typescriptInterface": "OrganizerManualSendTaskDocument",
       "dartModel": "lib/contexts/audience/domain/crm/host_manual_send_task.dart",
-      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/host_form_operation_reads.rules.test.cjs",
       "rulesTestNames": [
-        "keeps invite secrets, touches, share intents, and attribution server-only"
+        "lets current managers list the by-hand queue and never write it"
       ],
       "owner": "manager-only organizer manual-send task callables",
-      "read": "server only; managers receive bounded callable projections",
+      "read": "current organizer managers get and list (organizerId equality) while their account is not deleted; the Sends by-hand queue listens to active tasks",
       "write": "server only with deterministic idempotency and optimistic revisions",
       "exportedFunctions": [
         "prepareOrganizerManualSendTask",
@@ -1966,7 +1970,7 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "manager-only organizer contact note callables",
-      "read": "server only; bounded manager access is embedded in contact detail",
+      "read": "current organizer managers get and list one contact's notes (organizerId equality) while their account is not deleted; the Host person page reads the newest",
       "write": "server only",
       "exportedFunctions": [
         "createOrganizerContactNote",
@@ -1976,6 +1980,9 @@
       "migrationNotes": [
         "Notes are organizer-scoped operational memory, author-stamped, and excluded from exportOrganizerContacts without an opt-in path.",
         "Existing contacts require no backfill because notes are separate append-only records with optimistic edits."
+      ],
+      "rulesTestNames": [
+        "lets managers read their contact notes and keeps outreach and manual-tag vocabularies callable-only"
       ]
     },
     {
@@ -2325,23 +2332,6 @@
       ],
       "migrationNotes": [
         "One current source-fenced request per event attendee; guest bootstrap exposes only the bounded request fields and lifecycle."
-      ]
-    },
-    {
-      "id": "eventRuntimeDataRequestReceipts",
-      "path": "eventRuntimeDataRequestReceipts/{receiptId}",
-      "rulesMatch": "/eventRuntimeDataRequestReceipts/{receiptId}",
-      "typescriptInterface": "EventRuntimeDataRequestReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
-      "owner": "server-only Event Runtime required-data coordinator",
-      "read": "server only",
-      "write": "server only and immutable",
-      "exportedFunctions": [
-        "onEventRuntimeParticipantWritten"
-      ],
-      "migrationNotes": [
-        "Operation id plus exact command hash prevents duplicate or changed retries."
       ]
     },
     {
@@ -3226,17 +3216,20 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/program_access.rules.test.cjs",
       "rulesTestNames": [
-        "lets an account read only its own access view"
+        "lets an account read only its own access view",
+        "lists an account's own views by a query naming its uid, and no others"
       ],
       "owner": "Programme read model projector: programAccessViewTriggers",
-      "read": "an account gets only its own view by the derived id programId__uid while it is not deleted; never listed. Other programme read models authorize through it with one get()",
-      "write": "server only; written from the staff grant (and the owner-approval proof it carries) and from the programme's creator",
+      "read": "an account gets only its own view by the derived id programId__uid, and lists only its own views by a query naming its uid, while it is not deleted. Other programme read models authorize through it with one get()",
+      "write": "server only; written from the staff grant (and the owner-approval proof it carries), from the programme's creator and from the organizer's managers",
       "exportedFunctions": [
         "onProgramAccessViewGrantChanged",
-        "onProgramAccessViewProgramChanged"
+        "onProgramAccessViewProgramChanged",
+        "onProgramAccessViewOrganizerChanged"
       ],
       "migrationNotes": [
         "Mirrors requireProgramAccess without the clock: expiries, the grant expiry and the owner's authorization deadline are folded into per-duty instants that rules compare with request.time. The program-access-views copy-forward migration creates views for owners and grants that predate the triggers.",
+        "organizerManager mirrors requireProgramSetupAccess's organizer-manager branch for the phone's offline gate on the programme list and detail; it grants no duty, so an organizer manager's setup-only view is inactive. The program-access-views-organizer-managers migration creates views for organizer managers and adds the flag to existing views.",
         "The view holds ids, duty names and instants only, never the grant's name or phone digits, so account deletion and archive anonymization have no personal data to scrub in it; it keeps the uid the grant keeps."
       ]
     },
@@ -3269,10 +3262,11 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/program_work_shell.rules.test.cjs",
       "rulesTestNames": [
-        "reads a named resource only when the account's work list reaches it"
+        "reads a named resource only when the account's work list reaches it",
+        "lets the communications duty read every function label, nothing else"
       ],
       "owner": "Programme read model projector: programWorkViewTriggers",
-      "read": "an account gets a named resource when its programAccessViews work list reaches it, and lists a kind (query on programId and kind) when the list reaches every one; never while deleted",
+      "read": "an account gets a named resource when its programAccessViews work list reaches it, and lists a kind (query on programId and kind) when the list reaches every one; the communications duty also gets and lists every function label, for photo album names; never while deleted",
       "write": "server only; written from programPickupPoints, programHotels and programFunctions",
       "exportedFunctions": [
         "onProgramPickupPointViewChanged",
@@ -4739,9 +4733,7 @@
         "submitOrganizerFormResponse",
         "getOrganizerFormPayment",
         "requestAccountDeletion",
-        "getParticipantFormProfile",
         "getParticipantFormPhoto",
-        "listParticipantFormProfiles",
         "claimParticipantFormProfile",
         "onParticipantFormProfileViewProposalChanged"
       ],
@@ -4761,28 +4753,9 @@
       "read": "server only; authenticated participant projection",
       "write": "server only; explicit participant review",
       "exportedFunctions": [
-        "listParticipantFormProfiles",
         "claimParticipantFormProfile",
         "requestAccountDeletion",
         "onParticipantFormProfileViewCardChanged"
-      ],
-      "migrationNotes": [
-        "Never populated from CRM notes, tags or organizer review data. Profile claiming does not grant event admission or public sharing."
-      ]
-    },
-    {
-      "id": "participantProfileClaimReceipts",
-      "path": "participantProfileClaimReceipts/{receiptId}",
-      "rulesMatch": "/participantProfileClaimReceipts/{receiptId}",
-      "typescriptInterface": "ParticipantProfileClaimReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
-      "owner": "participant profile claiming",
-      "read": "server only; authenticated participant projection",
-      "write": "server only; explicit participant review",
-      "exportedFunctions": [
-        "claimParticipantFormProfile",
-        "requestAccountDeletion"
       ],
       "migrationNotes": [
         "Never populated from CRM notes, tags or organizer review data. Profile claiming does not grant event admission or public sharing."
@@ -4808,7 +4781,7 @@
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "Each row equals what getParticipantFormProfile returns for the proposal and card parts and what listParticipantFormProfiles lists, without organizer names. The participant-form-profile-views copy-forward migration creates rows for proposals recorded before the triggers."
+        "Each row holds the proposal and card parts the retired getParticipantFormProfile and listParticipantFormProfiles callables returned (Nov 2026), without organizer names. The participant-form-profile-views copy-forward migration creates rows for proposals recorded before the triggers."
       ]
     },
     {
@@ -4908,7 +4881,7 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps organizer event setup defaults and receipts server-only"
+        "keeps organizer event setup defaults server-only"
       ],
       "owner": "organizer event setup manager operations",
       "read": "server only; managers read its projection in hostEventSetupDefaultViews",
@@ -4916,23 +4889,6 @@
       "exportedFunctions": [
         "updateOrganizerEventSetupDefaults",
         "onHostEventSetupDefaultViewDefaultsChanged"
-      ]
-    },
-    {
-      "id": "organizerEventSetupDefaultReceipts",
-      "path": "organizerEventSetupDefaultReceipts/{receiptId}",
-      "rulesMatch": "/organizerEventSetupDefaultReceipts/{receiptId}",
-      "typescriptInterface": "OrganizerEventSetupDefaultReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps organizer event setup defaults and receipts server-only"
-      ],
-      "owner": "organizer event setup manager operations",
-      "read": "server only; current manager callable projection",
-      "write": "server only",
-      "exportedFunctions": [
-        "updateOrganizerEventSetupDefaults"
       ]
     },
     {
@@ -4997,48 +4953,6 @@
       ]
     },
     {
-      "id": "organizerEventOfferActionReceipts",
-      "path": "organizerEventOfferActionReceipts/{documentId}",
-      "rulesMatch": "/organizerEventOfferActionReceipts/{documentId}",
-      "typescriptInterface": "OrganizerEventOfferActionReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps event offer receipts and audits server-only"
-      ],
-      "owner": "event offer manager operations",
-      "read": "server only; current manager callable projection",
-      "write": "server only",
-      "exportedFunctions": [
-        "previewEventOffers",
-        "commitEventOffers",
-        "mutateEventOffer",
-        "getEventOffer",
-        "listEventOffers"
-      ]
-    },
-    {
-      "id": "organizerEventOfferBatchReceipts",
-      "path": "organizerEventOfferBatchReceipts/{documentId}",
-      "rulesMatch": "/organizerEventOfferBatchReceipts/{documentId}",
-      "typescriptInterface": "OrganizerEventOfferBatchReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps event offer receipts and audits server-only"
-      ],
-      "owner": "event offer manager operations",
-      "read": "server only; current manager callable projection",
-      "write": "server only",
-      "exportedFunctions": [
-        "previewEventOffers",
-        "commitEventOffers",
-        "mutateEventOffer",
-        "getEventOffer",
-        "listEventOffers"
-      ]
-    },
-    {
       "id": "organizerEventOfferAudits",
       "path": "organizerEventOfferAudits/{documentId}",
       "rulesMatch": "/organizerEventOfferAudits/{documentId}",
@@ -5057,23 +4971,6 @@
         "mutateEventOffer",
         "getEventOffer",
         "listEventOffers"
-      ]
-    },
-    {
-      "id": "eventOfferConfigurationReceipts",
-      "path": "eventOfferConfigurationReceipts/{receiptId}",
-      "rulesMatch": "/eventOfferConfigurationReceipts/{receiptId}",
-      "typescriptInterface": "EventOfferConfigurationReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps organizer event setup defaults and receipts server-only"
-      ],
-      "owner": "event offer manager operations",
-      "read": "server only; current manager callable receipt replay",
-      "write": "server only",
-      "exportedFunctions": [
-        "configureEventOfferPreferences"
       ]
     },
     {
@@ -5154,17 +5051,20 @@
       "rulesMatch": "/organizerTrackingSettings/{organizerId}",
       "typescriptInterface": "OrganizerTrackingSettingsDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/host_organizer_views.rules.test.cjs",
       "rulesTestNames": [
-        "keeps organizer tracking settings server-only"
+        "lets current managers get tracking settings and nothing else"
       ],
       "owner": "organizer analytics tracking settings callables",
-      "read": "server only; current manager callable projection",
-      "write": "server only",
+      "read": "current organizer managers get it directly while their account is not deleted (a document never saved reads as missing); older Host builds and the website read the getOrganizerTrackingSettings callable projection",
+      "write": "server only; setOrganizerTrackingSettings",
       "exportedFunctions": [
         "getOrganizerTrackingSettings",
         "setOrganizerTrackingSettings",
         "readPublicOrganizerTrackingSettings"
+      ],
+      "migrationNotes": [
+        "Pixel and GA4 ids are configuration, not credentials. The Host app derives canEdit from the organizer it already listens to, as trackingConfigurationEligible does on the server."
       ]
     },
     {
@@ -5541,11 +5441,13 @@
         "manageMyHostMembership",
         "processHostMembershipBillingPause",
         "onHostMembershipAudienceProjected",
+        "onHostMembershipBenefitUseWritten",
         "requestAccountDeletion"
       ],
       "migrationNotes": [
         "Keyed hm_<sha256([organizerId, uid])> so a rejoining member keeps tenure and member-since.",
         "Distinct from organizerCommunityMemberships (unpaid host approval grants).",
+        "savedInPaise and memberPricedBookings are kept by onHostMembershipBenefitUseWritten and carried through every state-machine transition; absent reads as 0.",
         "Subject account deletion cancels live subscriptions immediately, applies the expiry, then erases membership, checkout and benefit-use roots; charge ledgers are retained as payment records."
       ]
     },
@@ -5784,10 +5686,12 @@
         "signUpForFreeEvent",
         "managePublicEventCheckout",
         "cancelEventSignUp",
+        "onHostMembershipBenefitUseWritten",
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "Keyed {eventId}_{uid}; source of member savings and the upcoming member-priced booking cap."
+        "Keyed {eventId}_{uid}; onHostMembershipBenefitUseWritten keeps the member's savings totals on hostMemberships, and the upcoming member-priced booking cap reads booked uses bounded by the cap.",
+        "The host-membership-savings migration fills savedInPaise and memberPricedBookings on memberships that predate the trigger."
       ]
     },
     {
@@ -6020,14 +5924,248 @@
       ],
       "owner": "Website city plans read model (CAT-260)",
       "read": "server only; the website server reads one document per city with the Admin SDK",
-      "write": "server only; rebuilt from organizer page read models (and published organizers in cities that have not launched) by functions/src/cityPlans",
+      "write": "server only; rebuilt from organizer page read models (and published organizers in cities that have not launched) by functions/src/cityPlans, under the owner's Settings → Discovery rules",
       "exportedFunctions": [
         "onCityPlansOrganizerPageWritten",
+        "onDiscoverySettingsWritten",
         "rebuildCityPlansHourly"
       ],
       "migrationNotes": [
         "The hourly rebuild creates every launched and planned city's document; no backfill script is needed.",
-        "A city that has not launched lists published organizers without page links, because their pages stay withheld until it launches."
+        "A city that has not launched lists published organizers without page links, because their pages stay withheld until it launches.",
+        "The discovery object is required; the hourly rebuild adds it to every city, and a discoverySettings write rebuilds every city at once."
+      ]
+    },
+    {
+      "id": "hostOrganizerBillViews",
+      "path": "hostOrganizerBillViews/{billId}",
+      "rulesMatch": "/hostOrganizerBillViews/{billId}",
+      "typescriptInterface": "HostOrganizerBillViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_organizer_views.rules.test.cjs",
+      "rulesTestNames": [
+        "lets only the organizer's owner list its bill views"
+      ],
+      "owner": "Host read model projector: hostReadModels organizer bill view trigger",
+      "read": "the organizer's current owner (ownerUserId, else the primary host) gets and lists (organizerId equality) while their account is not deleted",
+      "write": "server only; written from each organizerBills document once it is sent, deleted with it",
+      "exportedFunctions": [
+        "onHostOrganizerBillViewBillChanged"
+      ],
+      "migrationNotes": [
+        "bill equals what listOrganizerBills returns for the bill: no staff ids, reminders, history or link id, and the payment link only while unpaid. The host-organizer-bill-views copy-forward migration creates views for bills sent before the trigger.",
+        "listOrganizerBills stays deployed for released Host builds and the website owner pages."
+      ]
+    },
+    {
+      "id": "hostOrganizerJourneyViews",
+      "path": "hostOrganizerJourneyViews/{viewId}",
+      "rulesMatch": "/hostOrganizerJourneyViews/{viewId}",
+      "typescriptInterface": "HostOrganizerJourneyViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_organizer_views.rules.test.cjs",
+      "rulesTestNames": [
+        "lets each reader get only their own journey view",
+        "lets a claimant list only their own waiting journeys"
+      ],
+      "owner": "Host read model projector: hostReadModels organizer journey view triggers",
+      "read": "only the view's own uid: gets it while a current manager of the organizer or while their claim is still being checked, and lists it with uid and waitingClaim equality; never while their account is deleted",
+      "write": "server only; written per organizer from organizers, organizerClaimRequests, supplyIntakeRequests, events and organizerGrowthFacts, and deleted when its reader is no longer a manager or claimant",
+      "exportedFunctions": [
+        "onHostOrganizerJourneyViewOrganizerChanged",
+        "onHostOrganizerJourneyViewClaimChanged",
+        "onHostOrganizerJourneyViewIntakeChanged",
+        "onHostOrganizerJourneyViewEventChanged",
+        "onHostOrganizerJourneyViewGrowthChanged"
+      ],
+      "migrationNotes": [
+        "journey equals what listMyOrganizerJourneys returns to that reader. The host-organizer-journey-views copy-forward migration creates views for every organizer with a manager or a pending claim.",
+        "listMyOrganizerJourneys stays deployed for released Host builds."
+      ]
+    },
+    {
+      "id": "hostContactDetailViews",
+      "path": "hostContactDetailViews/{contactId}",
+      "rulesMatch": "/hostContactDetailViews/{contactId}",
+      "typescriptInterface": "HostContactDetailViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets current managers get contact and application detail views by id"
+      ],
+      "owner": "Host read model projector: hostReadModels contact detail view triggers",
+      "read": "current organizer managers get by id while their account is not deleted; a view not written yet reads as missing",
+      "write": "server only; written from the contact, its trait row, its event edges, the linked verified account's Catch payments and event titles, deleted when the contact is deleted, hidden or merged",
+      "exportedFunctions": [
+        "onHostContactDetailViewContactWritten",
+        "onHostContactDetailViewTraitsWritten",
+        "onHostContactDetailViewEdgeWritten",
+        "onHostContactDetailViewPaymentWritten",
+        "onHostContactDetailViewEventWritten"
+      ],
+      "migrationNotes": [
+        "traits, revenue, events and eventsTruncated equal what getOrganizerContactDetail returns. The host-contact-detail-views copy-forward migration creates views for contacts shown before the triggers.",
+        "The view holds no linked account id, identity evidence, endpoint or payment id; the Host person page reads the name, tags and revision from hostContactSummaries and the newest note from organizerContactNotes."
+      ]
+    },
+    {
+      "id": "hostApplicationDetailViews",
+      "path": "hostApplicationDetailViews/{applicationId}",
+      "rulesMatch": "/hostApplicationDetailViews/{applicationId}",
+      "typescriptInterface": "HostApplicationDetailViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets current managers get contact and application detail views by id"
+      ],
+      "owner": "Host read model projector: hostReadModels application detail view triggers",
+      "read": "current organizer managers get by id while their account is not deleted; a view not written yet reads as missing",
+      "write": "server only; written from the application, its generic-form or imported response, its contact origin and the applicant's community membership, deleted with the application",
+      "exportedFunctions": [
+        "onHostApplicationDetailViewApplicationWritten",
+        "onHostApplicationDetailViewFormResponseWritten",
+        "onHostApplicationDetailViewImportedResponseWritten",
+        "onHostApplicationDetailViewOriginWritten",
+        "onHostApplicationDetailViewMembershipWritten"
+      ],
+      "migrationNotes": [
+        "detail equals what getOrganizerApplicationDetail returns; the callable and the view share one projection. The host-application-detail-views copy-forward migration creates views for applications recorded before the triggers.",
+        "Review and membership decisions stay callables that reread every source in their transactions and check the revisions the phone saw."
+      ]
+    },
+    {
+      "id": "hostFormAutomationRuleViews",
+      "path": "hostFormAutomationRuleViews/{ruleId}",
+      "rulesMatch": "/hostFormAutomationRuleViews/{ruleId}",
+      "typescriptInterface": "HostFormAutomationRuleViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_form_operation_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets current managers list automation rule and run views and nothing else"
+      ],
+      "owner": "Host read model projector: hostReadModels form automation view triggers",
+      "read": "current organizer managers get and list (organizerId equality, optionally formId) while their account is not deleted",
+      "write": "server only; rewritten from each organizerFormAutomationRules document and deleted with it",
+      "exportedFunctions": [
+        "onHostFormAutomationRuleChanged"
+      ],
+      "migrationNotes": [
+        "row equals the rule row listOrganizerFormAutomationRuns returns: the webhook secret is only webhookSecretConfigured. The host-form-automation-views copy-forward migration creates views for rules saved before the trigger.",
+        "Saves and the on/off switch stay on createOrganizerFormAutomation and setOrganizerFormAutomationState: the rule revision is their write fence."
+      ]
+    },
+    {
+      "id": "hostFormAutomationRunViews",
+      "path": "hostFormAutomationRunViews/{runId}",
+      "rulesMatch": "/hostFormAutomationRunViews/{runId}",
+      "typescriptInterface": "HostFormAutomationRunViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_form_operation_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets current managers list automation rule and run views and nothing else"
+      ],
+      "owner": "Host read model projector: hostReadModels form automation view triggers",
+      "read": "current organizer managers get and list (organizerId equality, optionally formId) while their account is not deleted",
+      "write": "server only; rewritten from each organizerFormAutomationRuns document with its rule's name, on rule renames, and deleted with the run",
+      "exportedFunctions": [
+        "onHostFormAutomationRunChanged",
+        "onHostFormAutomationRuleChanged"
+      ],
+      "migrationNotes": [
+        "row equals the run row listOrganizerFormAutomationRuns returns; leases, error codes and source occurrence times never appear. The host-form-automation-views copy-forward migration creates views for runs recorded before the trigger."
+      ]
+    },
+    {
+      "id": "hostFormPaymentViews",
+      "path": "hostFormPaymentViews/{paymentId}",
+      "rulesMatch": "/hostFormPaymentViews/{paymentId}",
+      "typescriptInterface": "HostFormPaymentViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_form_operation_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets current managers list form payment views and nothing else"
+      ],
+      "owner": "Host read model projector: hostReadModels form payment view triggers",
+      "read": "current organizer managers get and list (organizerId and formId equality, optionally status) while their account is not deleted",
+      "write": "server only; rewritten from each guestPayments document whose purpose is form, and deleted with it",
+      "exportedFunctions": [
+        "onHostFormPaymentViewPaymentChanged"
+      ],
+      "migrationNotes": [
+        "row equals the ledger row listOrganizerFormPayments returns; answers, respondent identity and contact, the connection, the account and hashes never appear. The host-form-payment-views copy-forward migration creates views for form fees recorded before the trigger.",
+        "Payment lookups and refunds stay on their reviewed callables."
+      ]
+    },
+    {
+      "id": "hostAssignmentViews",
+      "path": "hostAssignmentViews/{uid}__{kind}_{scopeId}",
+      "rulesMatch": "/hostAssignmentViews/{viewId}",
+      "typescriptInterface": "HostAssignmentViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_screen_read_views.rules.test.cjs",
+      "rulesTestNames": [
+        "lets an account read only its own rows, by a query naming it"
+      ],
+      "owner": "Host work read model projector: hostAssignmentViewTriggers",
+      "read": "get and list (query naming uid) by the account the row names only, while not deleted",
+      "write": "server only; written from programStaffGrants, eventStaffGrants, organizerTeamMemberships, organizerPrograms, events and organizers",
+      "exportedFunctions": [
+        "onHostAssignmentProgramGrantChanged",
+        "onHostAssignmentProgramChanged",
+        "onHostAssignmentEventGrantChanged",
+        "onHostAssignmentEventChanged",
+        "onHostAssignmentMembershipChanged",
+        "onHostAssignmentOrganizerChanged"
+      ],
+      "migrationNotes": [
+        "What listMyHostAssignments returned for each grant or membership (title, organiser name, duties with scopes), with the facts its clock filtering used (status, approval instant, grant and duty expiries) so the phone drops expired rows itself. The host-assignment-views copy-forward migration creates rows for grants and memberships that predate the triggers and leaves rows the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programHotelRoomViews",
+      "path": "programHotelRoomViews/{programId}__{hotelId}",
+      "rulesMatch": "/programHotelRoomViews/{viewId}",
+      "typescriptInterface": "ProgramHotelRoomViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_screen_read_views.rules.test.cjs",
+      "rulesTestNames": [
+        "gives the hotel desk covering the hotel its board, and no other duty"
+      ],
+      "owner": "Programme read model projector: programHotelRoomViewTriggers",
+      "read": "get by id where a hotel desk duty covers the hotel (coordinators hold it), and the programme owner, while not deleted; never listed",
+      "write": "server only; written from programStays, programRoomBlocks, programHotels, programTravelLegs, programGuests and the programme's time zone",
+      "exportedFunctions": [
+        "onProgramHotelRoomStayChanged",
+        "onProgramHotelRoomBlockChanged",
+        "onProgramHotelRoomHotelChanged",
+        "onProgramHotelRoomLegChanged",
+        "onProgramHotelRoomGuestChanged",
+        "onProgramHotelRoomProgramChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the board getProgramHotelRooms returned, without the caller's access expiry and the read time; the stay revisions are the upsertProgramStay fence. Guest and block ids and display names only, never a contact field or note. The program-hotel-room-views copy-forward migration creates boards for hotels that predate the triggers and leaves boards the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "organizerMomentViews",
+      "path": "organizerMomentViews/{momentId}",
+      "rulesMatch": "/organizerMomentViews/{momentId}",
+      "typescriptInterface": "OrganizerMomentViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_screen_read_views.rules.test.cjs",
+      "rulesTestNames": [
+        "gives programme rows to the owner and the communications duty",
+        "gives event rows to the event organiser's managers only"
+      ],
+      "owner": "Moments read model projector: organizerMomentViewTriggers",
+      "read": "get and list: programme rows (query naming scopeKind and programId) by the programme owner and the communications duty; event rows (query naming scopeKind and eventId) by the event organiser's current managers; while not deleted",
+      "write": "server only; written from organizerMoments and organizerMomentRuns",
+      "exportedFunctions": [
+        "onOrganizerMomentViewChanged",
+        "onOrganizerMomentRunViewChanged"
+      ],
+      "migrationNotes": [
+        "The moment exactly as listOrganizerMoments returned it and its plan summary (anchor, sent count, next planned run while armed); the board state that compares moments is the phone's. The organiser's WhatsApp sender stays on listOrganizerMoments. Organiser-scope automation moments get no row. The organizer-moment-views copy-forward migration creates rows for moments that predate the triggers and leaves rows the triggers wrote alone."
       ]
     }
   ]

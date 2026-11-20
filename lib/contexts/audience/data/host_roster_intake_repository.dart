@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:catch_dating_app/contexts/audience/domain/guest_list_import_preview.dart';
 import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
 import 'package:catch_dating_app/contexts/bookings/bookings.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -38,6 +42,83 @@ class HostRosterIntakeRepository {
           if (entry.value != null) entry.key.name: entry.value,
       },
       rows: plan.intakeRows,
+    ),
+  );
+
+  /// The newest draft still in review for this event, such as a guest list
+  /// forwarded by email or WhatsApp, or null when none is waiting.
+  Future<String?> latestInReviewSessionId({
+    required String eventId,
+    required String organizerId,
+  }) => withBackendErrorContext(
+    () async {
+      try {
+        final result = await _functions
+            .httpsCallable('manageHostRosterIntake')
+            .call<Object?>(
+              ManageHostRosterIntakeCallableRequest(
+                action: 'latest',
+                organizerId: organizerId,
+                eventId: eventId,
+              ).toJson(),
+            );
+        return HostRosterIntakeReview.fromCallableData(result.data).sessionId;
+      } on FirebaseFunctionsException catch (error) {
+        if (error.code == 'not-found') return null;
+        rethrow;
+      }
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'find a guest list waiting for review',
+      resource: 'hostRosterIntakeSessions',
+    ),
+  );
+
+  /// Sends the file to guests.import-list, which reads it on the server
+  /// and holds its rows in a review session. [mapping] and
+  /// [fallbackRevenue] are the host's choices; null keeps the server's.
+  Future<GuestListImportPreview> previewGuestList({
+    required String eventId,
+    required String fileName,
+    required Uint8List bytes,
+    required String idempotencyKey,
+    Map<HostRosterField, int?>? mapping,
+    GuestListFallbackRevenue? fallbackRevenue,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('importGuestList')
+          .call<Object?>(
+            ImportGuestListCallableRequest(
+              mode: 'preview',
+              idempotencyKey: idempotencyKey,
+              surface: 'catch_host',
+              input: {
+                'eventId': eventId,
+                'file': {
+                  'fileName': fileName,
+                  'contentBase64': base64Encode(bytes),
+                },
+                if (mapping != null)
+                  'mapping': {
+                    for (final entry in mapping.entries)
+                      entry.key.name: entry.value,
+                  },
+                if (fallbackRevenue != null)
+                  'fallbackRevenue': {
+                    'amountMinor': fallbackRevenue.amountMinor,
+                    'currency': fallbackRevenue.currency,
+                  },
+              },
+            ).toJson(),
+          );
+      return GuestListImportPreview.fromCallableData(result.data);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'read a guest list',
+      resource: 'hostRosterIntakeSessions',
     ),
   );
 

@@ -2,7 +2,7 @@ import {acquisitionRoute, approvedCampaignLabels, createCatchMeasurementControll
   type CatchAcquisitionEvent, type AcquisitionForm, type MeasurementConsent} from "./analytics/catchMeasurement.ts";
 import {browserAttribution, catchAttributionKey, catchMeasurementMode, currentConsentVersion, publicAdPage,
   type CatchMeasurementMode} from "./analytics/catchMeasurement.ts";
-import {adTags, type AdBooking, type AdEventPageFacts, type AdHostLead} from "./analytics/adTags.ts";
+import {adTags, type AdBooking, type AdEventPageFacts, type AdHostLead, type OrganizerAdDestinations} from "./analytics/adTags.ts";
 import {isPrivateEventUpdatePath} from "./analytics/privateRoutes.ts";
 import type {JoinWaitlistHTTPRequest} from "./shared/contracts/generated/joinWaitlistHttpRequest";
 import {brand} from "@catch/brand";
@@ -13,7 +13,7 @@ type FormVariant = "member" | "host";
 export const marketingContentVersion = "website_copy_v2" as const;
 
 export interface MarketingConsent extends MeasurementConsent {
-  version: 1 | 2 | 3 | 4 | 5;
+  version: 1 | 2 | 3 | 4 | 5 | 6;
   measurementMode?: CatchMeasurementMode;
   choice: ConsentChoice;
   analytics: boolean;
@@ -66,10 +66,12 @@ export function openMarketingConsentPreferences() {
   }
 }
 const legacyConsentStorageKey = "catch_marketing_consent_v1";
-// Receipts from before the first-party tags (versions 2 to 4). They keep
-// analytics but never marketing, and the banner asks again.
-const previousConsentStorageKeys = ["catch_marketing_consent_v4", "catch_marketing_consent_v3", "catch_marketing_consent_v2"];
-const consentStorageKey = "catch_marketing_consent_v5";
+// Earlier receipts: versions 2 to 4 predate the first-party tags, and version 5
+// predates the banner naming organisers' own tags (#2063). They are read for
+// display only, never grant marketing, load nothing, and the banner asks again.
+const previousConsentStorageKeys = ["catch_marketing_consent_v5", "catch_marketing_consent_v4", "catch_marketing_consent_v3",
+  "catch_marketing_consent_v2"];
+const consentStorageKey = "catch_marketing_consent_v6";
 // The host-only acquisition contract has no transport; the first-party tags
 // are `adTags`, called directly below.
 const measurement = createCatchMeasurementController();
@@ -127,7 +129,7 @@ export function getMarketingConsent(): MarketingConsent | null {
   const previous = previousConsentStorageKeys.map((key) => readJson<MarketingConsent>(key)).find(Boolean);
   if (previous) {
     clearAttribution();
-    if (![2, 3, 4].includes(previous.version) || !validConsent(previous)) return null;
+    if (![2, 3, 4, 5].includes(previous.version) || !validConsent(previous)) return null;
     return {...previous, version: 2, choice: previous.analytics ? "analytics" : "essential", marketing: false};
   }
   const legacy = readJson<Omit<MarketingConsent, "version">>(legacyConsentStorageKey);
@@ -227,22 +229,74 @@ export function trackHostLeadAccepted(lead: AdHostLead, submissionConsent: Marke
   return adTags.hostLead(lead);
 }
 
-/** A public event page was shown (`adTags.viewItem`). */
+/**
+ * A public event page was shown (`adTags.viewItem`). The organiser set, when
+ * one is published for this event, gets its own `view_item` / `ViewContent`;
+ * the return value is Catch's alone.
+ */
 export function trackEventPageViewed(facts: AdEventPageFacts) {
   refreshMeasurementContext();
-  return adTags.viewItem(facts);
+  const sent = adTags.viewItem(facts);
+  adTags.organizerViewItem(facts);
+  return sent;
 }
 
-/** A live paid checkout opened (`adTags.beginCheckout`). */
+/** A live paid checkout opened (`adTags.beginCheckout`, and the organiser set's twin). */
 export function trackCheckoutOpened(booking: AdBooking) {
   refreshMeasurementContext();
-  return adTags.beginCheckout(booking);
+  const sent = adTags.beginCheckout(booking);
+  adTags.organizerBeginCheckout(booking);
+  return sent;
 }
 
-/** A booking this browser checked out was confirmed (`adTags.purchase`). */
+/** A booking this browser checked out was confirmed (`adTags.purchase`, and the organiser set's twin). */
 export function trackBookingConfirmed(booking: AdBooking) {
   refreshMeasurementContext();
-  return adTags.purchase(booking);
+  const sent = adTags.purchase(booking);
+  adTags.organizerPurchase(booking);
+  return sent;
+}
+
+/**
+ * Sets or clears the organiser destination set for the current page (#2063).
+ * Only `observeOrganizerProviders` calls it, with a set the public tracking
+ * projection published; under publication policy v1 there is none.
+ */
+export function setOrganizerAdDestinations(set: OrganizerAdDestinations | null) {
+  refreshMeasurementContext();
+  adTags.setOrganizer(set);
+}
+
+/**
+ * Admits the current organiser profile to Catch's own tags (owner condition
+ * and classification decision, 19 Nov 2026, #2063), or clears it, and starts
+ * the profile's Catch page view once admitted. Only
+ * `observeOrganizerProviders` calls it, with the server's eligibility.
+ */
+export function admitCatchOrganizerProfile(path: string | null) {
+  const changed = adTags.admitOrganizerProfile(path);
+  refreshMeasurementContext();
+  // One Catch page view per admission; a repeated admission sends nothing.
+  return changed && path !== null ? adTags.pageView() : false;
+}
+
+/**
+ * Keeps every advertising tag silent while a private surface is open on a
+ * public path (the owner view on an organiser profile). Returns the release.
+ */
+export function holdAdTagsForPrivateSurface(): () => void {
+  const release = adTags.holdForPrivateSurface();
+  refreshMeasurementContext();
+  return () => {
+    release();
+    refreshMeasurementContext();
+  };
+}
+
+/** The organiser set's `page_view` / `PageView` for the current eligible page. */
+export function trackOrganizerPageViewed() {
+  refreshMeasurementContext();
+  return adTags.organizerPageView();
 }
 
 export function trackCatchAcquisitionEvent(event: CatchAcquisitionEvent) {

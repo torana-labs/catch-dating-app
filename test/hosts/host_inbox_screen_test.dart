@@ -24,6 +24,7 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
@@ -691,8 +692,27 @@ Widget _app({
       organizerProgramListProvider(
         organizer.id,
       ).overrideWithValue(const AsyncData([])),
-      if (programRepository != null)
+      if (programRepository != null) ...[
         programSetupRepositoryProvider.overrideWithValue(programRepository),
+        // The audience reads the programme's own view; it arrives when the
+        // pending detail does, so late completions stay contained.
+        organizerProgramViewStreamProvider('older-program').overrideWith(
+          (ref) => Stream.fromFuture(
+            programRepository
+                .getProgram('older-program')
+                .then(
+                  (detail) => <Object?, Object?>{
+                    'programId': detail.program.programId,
+                    'organizerId': detail.program.organizerId,
+                    'title': detail.program.title,
+                    'kind': detail.program.kind.name,
+                    'status': detail.program.status.name,
+                    'revision': detail.program.revision,
+                  },
+                ),
+          ),
+        ),
+      ],
       watchEventsForOrganizerProvider(
         organizer.id,
       ).overrideWith((ref) => Stream.value(events ?? [?event])),
@@ -712,14 +732,9 @@ Widget _app({
         (ref, notifier) =>
             Stream.value(LivePages(items: sends, hasMore: false)),
       ),
-      hostManualSendTasksProvider(organizer.id).overrideWithValue(
-        AsyncData(
-          HostManualSendTaskPage(
-            organizerId: organizer.id,
-            tasks: manualSendTasks,
-            nextCursor: null,
-          ),
-        ),
+      hostManualSendTaskPagesProvider(organizer.id).overrideWithBuild(
+        (ref, notifier) =>
+            Stream.value(LivePages(items: manualSendTasks, hasMore: false)),
       ),
       watchOrganizerPostRemainingWeeklyQuotaProvider(
         organizer.id,

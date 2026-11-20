@@ -125,7 +125,7 @@ jobs:
             play_note="Reading the Play app-signing certificates failed, so this is the live Firebase inventory only, with nothing appended. Check that the Play fingerprints are already registered before relying on it."
           fi
           infra/scripts/firebase_android_inventory.sh --play build/infra/play.jsonl \
-            prod=catch-dating-app-64e51 staging=catchdates-staging dev=catchdates-dev |
+            prod=catch-dating-app-64e51 dev=catchdates-dev |
             terraform fmt - > build/infra/terraform.tfvars
           # Also print to the log: the API serves job logs but not step
           # summaries, and the file holds only app IDs, names and

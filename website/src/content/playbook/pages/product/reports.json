@@ -47,8 +47,7 @@
           "to": {
             "anchor": "try"
           },
-          "emphasis": "secondary",
-          "status": "tryIt"
+          "emphasis": "secondary"
         },
         {
           "label": "See pricing",
@@ -250,43 +249,187 @@
       "type": "split",
       "id": "try",
       "ground": "paper",
-      "status": "tryIt",
-      "statusNote": "Command: import past sales and produce a report with a fee comparison. Show this when the command ships.",
+      "status": "built",
       "kicker": "Try it with your last event",
       "title": "See your last event as a {{brand.name}} report.",
-      "lead": "Upload the sales export from your ticketing tool, or just enter what you sold, the price and how many came. {{brand.name}} builds the report you’d have had after the event, and shows what {{brand.name}} would have charged next to what you paid.",
+      "lead": "Upload the sales or guest export from your ticketing tool, or a spreadsheet. {{brand.name}} reads it into a report of that night: tickets and sales by ticket type, who came when the export records check-ins, and {{brand.name}}’s fee next to what you paid. No export to hand? Enter three numbers just below.",
       "ticks": [
-        "Works with exports from Luma, District, Eventbrite or a spreadsheet",
-        "First-timers and repeat guests, if the export has names",
+        "Works with a sales export from your ticketing tool, or a spreadsheet",
+        "First-timers and repeat guests, once you’ve brought in an earlier night",
         "{{brand.name}}’s fee next to your current tool’s",
-        "Your history comes with you when you claim it"
+        "Save the night and its guest list to your private profile when you’re happy with it"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "label": "Try it",
-          "title": "Build a report",
-          "fields": [
-            {
-              "label": "Tickets sold",
-              "placeholder": "52"
-            },
-            {
-              "label": "Ticket price (₹)",
-              "placeholder": "400"
-            },
-            {
-              "label": "How many came",
-              "placeholder": "46"
-            }
-          ],
-          "actions": [
-            "Build my report",
-            "Upload an export"
-          ],
-          "note": "Numbers alone need no sign-in. Exports with names need your phone number first."
-        }
+      "leadForm": {
+        "id": "try_report",
+        "requestKind": "tool",
+        "input": "file",
+        "label": "Your sales or guest export",
+        "submitLabel": "Build my report",
+        "note": "You’ll confirm your phone number first. Your file goes only to {{brand.name}}, to build this report, and nothing is kept until you save it."
       }
+    },
+    {
+      "type": "custom",
+      "id": "numbers",
+      "ground": "paper",
+      "component": "lastEventReport",
+      "kicker": "No export to hand?",
+      "title": "Or enter three numbers.",
+      "lead": "Enter what you sold, the price and how many came. See the report, and what {{brand.name}} would have charged next to what your current tool charges.",
+      "labels": [
+        {
+          "key": "inputsTitle",
+          "text": "Your last event"
+        },
+        {
+          "key": "sold",
+          "text": "Tickets sold"
+        },
+        {
+          "key": "soldHint",
+          "text": "52"
+        },
+        {
+          "key": "price",
+          "text": "Ticket price"
+        },
+        {
+          "key": "priceHint",
+          "text": "400"
+        },
+        {
+          "key": "priceHelp",
+          "text": "Put 0 for a free event."
+        },
+        {
+          "key": "came",
+          "text": "How many came"
+        },
+        {
+          "key": "cameHint",
+          "text": "46"
+        },
+        {
+          "key": "feeTitle",
+          "text": "What your current tool charges"
+        },
+        {
+          "key": "feePercent",
+          "text": "Its fee on ticket sales"
+        },
+        {
+          "key": "feePercentHelp",
+          "text": "As a share of what you sold. Leave it empty if there isn’t one."
+        },
+        {
+          "key": "feePerTicket",
+          "text": "Its fee on each ticket"
+        },
+        {
+          "key": "feePerTicketHelp",
+          "text": "A flat amount on each ticket sold. Leave it empty if there isn’t one."
+        },
+        {
+          "key": "privacyNote",
+          "text": "No sign-in. Nothing you type is sent or saved."
+        },
+        {
+          "key": "errorNotNumber",
+          "text": "Enter a number."
+        },
+        {
+          "key": "errorNotWhole",
+          "text": "Enter a whole number."
+        },
+        {
+          "key": "errorTooLarge",
+          "text": "Enter {max} or less."
+        },
+        {
+          "key": "errorCameMoreThanSold",
+          "text": "Can’t be more than tickets sold."
+        },
+        {
+          "key": "resultsTitle",
+          "text": "Your report"
+        },
+        {
+          "key": "emptyResults",
+          "text": "Enter tickets sold, the price and how many came to see your report."
+        },
+        {
+          "key": "fixResults",
+          "text": "Check the marked fields to see your report."
+        },
+        {
+          "key": "summary",
+          "text": "{came} of {sold} came. On {sales} of ticket sales, {{brand.name}}’s fee would have been {fee}."
+        },
+        {
+          "key": "sales",
+          "text": "Ticket sales"
+        },
+        {
+          "key": "salesNote",
+          "text": "{sold} tickets at {price}"
+        },
+        {
+          "key": "showUp",
+          "text": "Came"
+        },
+        {
+          "key": "showUpNote",
+          "text": "{came} of {sold} with tickets"
+        },
+        {
+          "key": "showUpNone",
+          "text": "No tickets sold"
+        },
+        {
+          "key": "feesTitle",
+          "text": "Fees on this event"
+        },
+        {
+          "key": "freeNote",
+          "text": "Free events stay free."
+        },
+        {
+          "key": "currentFee",
+          "text": "Your current tool"
+        },
+        {
+          "key": "currentFeeNote",
+          "text": "from the fee you entered"
+        },
+        {
+          "key": "currentFeeMissing",
+          "text": "Enter its fee to compare"
+        },
+        {
+          "key": "difference",
+          "text": "The difference"
+        },
+        {
+          "key": "differenceLess",
+          "text": "less with {{brand.name}}"
+        },
+        {
+          "key": "differenceMore",
+          "text": "more with {{brand.name}}"
+        },
+        {
+          "key": "differenceSame",
+          "text": "the same with both"
+        },
+        {
+          "key": "differenceMissing",
+          "text": "Enter your current tool’s fee"
+        },
+        {
+          "key": "singleEventNote",
+          "text": "Worked out for this event on its own. The {cap} cap is on everything you sell in a month."
+        }
+      ]
     },
     {
       "type": "faq",
@@ -324,46 +467,15 @@
       "ground": "sky",
       "status": "built",
       "kicker": "Free for 30 days · founding hosts get 90",
-      "title": "Run it, then see what worked.",
-      "lead": "Your first report is ready in {{brand.stores.hostAppName}} after your first event.",
-      "actions": [
-        {
-          "label": "Start free trial",
-          "to": {
-            "route": "host_start"
-          },
-          "emphasis": "primary"
-        },
-        {
-          "label": "How {{brand.name}} works",
-          "to": {
-            "route": "how_it_works"
-          },
-          "emphasis": "secondary"
-        }
-      ],
-      "media": {
-        "kind": "capture",
-        "slot": "host-today"
-      }
-    },
-    {
-      "type": "cta",
-      "id": "start-try",
-      "ground": "sky",
-      "status": "tryIt",
-      "statusNote": "The closing band of the past-sales tool. Show it, in place of the band above, when the command ships.",
-      "kicker": "Free for 30 days · founding hosts get 90",
       "title": "See what your last event was really telling you.",
-      "lead": "Enter three numbers or upload an export. Your report is ready in a minute.",
+      "lead": "Upload an export or enter three numbers, and see the report right here.",
       "actions": [
         {
           "label": "Build my report",
           "to": {
             "anchor": "try"
           },
-          "emphasis": "primary",
-          "status": "tryIt"
+          "emphasis": "primary"
         },
         {
           "label": "Start free trial",

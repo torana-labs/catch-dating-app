@@ -1,114 +1,17 @@
-import 'package:catch_dating_app/contexts/forms/domain/host_application_import.dart';
+import 'package:catch_dating_app/contexts/forms/data/host_application_detail_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_community_membership.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
 export 'package:catch_dating_app/contexts/forms/domain/host_community_membership.dart';
 
 part 'host_application_repository.g.dart';
-
-enum HostApplicationSort {
-  newest,
-  oldest,
-  name;
-
-  String get wireValue => switch (this) {
-    HostApplicationSort.newest => 'newest',
-    HostApplicationSort.oldest => 'oldest',
-    HostApplicationSort.name => 'name',
-  };
-}
-
-@immutable
-class HostApplicationListRequest {
-  const HostApplicationListRequest({
-    required this.organizerId,
-    this.contactId,
-    this.formId,
-    this.targetId,
-    this.reviewStatus,
-    this.query,
-    this.sort = HostApplicationSort.newest,
-    this.cursor,
-  });
-
-  final String organizerId;
-  final String? contactId;
-  final String? formId;
-  final String? targetId;
-  final HostApplicationReviewStatus? reviewStatus;
-  final String? query;
-  final HostApplicationSort sort;
-  final String? cursor;
-
-  HostApplicationListRequest copyWith({String? cursor}) =>
-      HostApplicationListRequest(
-        organizerId: organizerId,
-        contactId: contactId,
-        formId: formId,
-        targetId: targetId,
-        reviewStatus: reviewStatus,
-        query: query,
-        sort: sort,
-        cursor: cursor,
-      );
-
-  @override
-  bool operator ==(Object other) =>
-      other is HostApplicationListRequest &&
-      other.organizerId == organizerId &&
-      other.contactId == contactId &&
-      other.formId == formId &&
-      other.targetId == targetId &&
-      other.reviewStatus == reviewStatus &&
-      other.query == query &&
-      other.sort == sort &&
-      other.cursor == cursor;
-
-  @override
-  int get hashCode => Object.hash(
-    organizerId,
-    contactId,
-    formId,
-    targetId,
-    reviewStatus,
-    query,
-    sort,
-    cursor,
-  );
-}
-
-class HostApplicationPage {
-  const HostApplicationPage({
-    required this.organizerId,
-    required this.applications,
-    required this.nextCursor,
-  });
-
-  factory HostApplicationPage.fromCallableData(Object? data) {
-    final map = _requiredMap(data, 'organizer applications');
-    return HostApplicationPage(
-      organizerId: _requiredString(map, 'organizerId'),
-      applications: _mapList(
-        map['applications'],
-        'applications',
-      ).map(HostApplicationSummary.fromMap).toList(growable: false),
-      nextCursor: _nullableString(map['nextCursor']),
-    );
-  }
-
-  final String organizerId;
-  final List<HostApplicationSummary> applications;
-  final String? nextCursor;
-}
 
 class HostApplicationAnswerValue {
   const HostApplicationAnswerValue({
@@ -316,188 +219,32 @@ class HostApplicationReviewResult {
   final String? contactId;
 }
 
-class HostPublishedApplicationForm {
-  const HostPublishedApplicationForm({
-    required this.organizerId,
-    required this.formId,
-    required this.formVersionId,
-    required this.version,
-    required this.revision,
-  });
-
-  factory HostPublishedApplicationForm.fromCallableData(Object? data) {
-    final map = _requiredMap(data, 'published application form');
-    return HostPublishedApplicationForm(
-      organizerId: _requiredString(map, 'organizerId'),
-      formId: _requiredString(map, 'formId'),
-      formVersionId: _requiredString(map, 'formVersionId'),
-      version: _requiredInt(map, 'version'),
-      revision: _requiredInt(map, 'revision'),
-    );
-  }
-
-  final String organizerId;
-  final String formId;
-  final String formVersionId;
-  final int version;
-  final int revision;
-}
-
-class HostApplicationImportPreview {
-  const HostApplicationImportPreview({
-    required this.rowCount,
-    required this.validRowCount,
-    required this.invalidRowCount,
-  });
-
-  factory HostApplicationImportPreview.fromCallableData(Object? data) {
-    final map = _requiredMap(data, 'application import preview');
-    return HostApplicationImportPreview(
-      rowCount: _requiredInt(map, 'rowCount'),
-      validRowCount: _requiredInt(map, 'validRowCount'),
-      invalidRowCount: _requiredInt(map, 'invalidRowCount'),
-    );
-  }
-
-  final int rowCount;
-  final int validRowCount;
-  final int invalidRowCount;
-}
-
-class HostApplicationImportResult {
-  const HostApplicationImportResult({
-    required this.receiptId,
-    required this.status,
-    required this.rowCount,
-    required this.createdCount,
-    required this.skippedCount,
-    required this.replayed,
-  });
-
-  factory HostApplicationImportResult.fromCallableData(Object? data) {
-    final map = _requiredMap(data, 'application import result');
-    return HostApplicationImportResult(
-      receiptId: _requiredString(map, 'receiptId'),
-      status: _requiredString(map, 'status'),
-      rowCount: _requiredInt(map, 'rowCount'),
-      createdCount: _requiredInt(map, 'createdCount'),
-      skippedCount: _requiredInt(map, 'skippedCount'),
-      replayed: _requiredBool(map, 'replayed'),
-    );
-  }
-
-  final String receiptId;
-  final String status;
-  final int rowCount;
-  final int createdCount;
-  final int skippedCount;
-  final bool replayed;
-}
-
 class HostApplicationRepository {
-  const HostApplicationRepository(this._functions);
+  const HostApplicationRepository(
+    this._functions, {
+    HostApplicationDetailReads? detail,
+  }) : _detailReads = detail;
 
   final FirebaseFunctions _functions;
 
-  Future<HostPublishedApplicationForm> publishImportedForm({
-    required String organizerId,
-    required HostApplicationImportDraft draft,
-    required String consentCopy,
-    required String consentVersion,
-    required String retentionCopy,
-  }) => _call(
-    name: 'publishOrganizerApplicationForm',
-    payload: PublishOrganizerApplicationFormCallableRequest(
-      organizerId: organizerId,
-      formId: draft.importKey,
-      expectedRevision: null,
-      title: draft.title,
-      description: null,
-      defaultTargetKind: 'organizer',
-      questions: draft.questionJson,
-      consentCopy: consentCopy,
-      consentVersion: consentVersion,
-      retentionCopy: retentionCopy,
-    ).toJson(),
-    action: 'publish imported organizer application form',
-    parse: HostPublishedApplicationForm.fromCallableData,
-  );
+  /// The application review listener; reads of one application need it.
+  final HostApplicationDetailReads? _detailReads;
 
-  Future<HostApplicationImportPreview> previewImport({
-    required String organizerId,
-    required String formVersionId,
-    required HostApplicationImportDraft draft,
-  }) => _call(
-    name: 'previewOrganizerApplicationImport',
-    payload: PreviewOrganizerApplicationImportCallableRequest(
-      organizerId: organizerId,
-      formVersionId: formVersionId,
-      headers: draft.headers,
-      mappings: draft.mappingJson,
-      rows: draft.rowJson,
-    ).toJson(),
-    action: 'preview organizer application import',
-    parse: HostApplicationImportPreview.fromCallableData,
-  );
-
-  Future<HostApplicationImportResult> importApplications({
-    required String organizerId,
-    required HostPublishedApplicationForm form,
-    required HostApplicationImportDraft draft,
-  }) => _call(
-    name: 'importOrganizerApplications',
-    payload: ImportOrganizerApplicationsCallableRequest(
-      organizerId: organizerId,
-      formId: form.formId,
-      formVersionId: form.formVersionId,
-      targetKind: 'organizer',
-      targetId: null,
-      mappingId: null,
-      importKey: draft.importKey,
-      fileName: draft.fileName,
-      format: draft.format,
-      headers: draft.headers,
-      mappings: draft.mappingJson,
-      rows: draft.rowJson,
-    ).toJson(),
-    action: 'import organizer applications',
-    parse: HostApplicationImportResult.fromCallableData,
-  );
-
-  Future<HostApplicationPage> listApplications(
-    HostApplicationListRequest request, {
-    int limit = ReadLimitPolicy.historyPage,
-  }) => _call(
-    name: 'listOrganizerApplications',
-    payload: ListOrganizerApplicationsCallableRequest(
-      organizerId: request.organizerId,
-      contactId: request.contactId,
-      formId: request.formId,
-      targetId: request.targetId,
-      reviewStatus: request.reviewStatus?.name,
-      query: request.query?.trim().isEmpty ?? true
-          ? null
-          : request.query?.trim(),
-      sort: request.sort.wireValue,
-      limit: limit,
-      cursor: request.cursor,
-    ).toJson(),
-    action: 'load organizer applications',
-    parse: HostApplicationPage.fromCallableData,
-  );
-
-  Future<HostApplicationDetail> getApplicationDetail(
+  /// One application as its managers review it, kept live by the server's
+  /// read model: a review, a withdrawal or a merge reaches it without a
+  /// reread.
+  Stream<HostApplicationDetail> watchApplicationDetail(
     String organizerId,
     String applicationId,
-  ) => _call(
-    name: 'getOrganizerApplicationDetail',
-    payload: GetOrganizerApplicationDetailCallableRequest(
-      organizerId: organizerId,
-      applicationId: applicationId,
-    ).toJson(),
-    action: 'load organizer application detail',
-    parse: HostApplicationDetail.fromCallableData,
-  );
+  ) {
+    final reads = _detailReads;
+    if (reads == null) {
+      throw StateError('An application needs the review listener.');
+    }
+    return reads
+        .watch(organizerId, applicationId)
+        .map(HostApplicationDetail.fromCallableData);
+  }
 
   Future<HostApplicationReviewResult> reviewApplication({
     required String organizerId,
@@ -571,22 +318,22 @@ class HostApplicationRepository {
 // keepalive: this stateless repository is shared across Host application routes.
 @Riverpod(keepAlive: true)
 HostApplicationRepository hostApplicationRepository(Ref ref) =>
-    HostApplicationRepository(ref.watch(firebaseFunctionsProvider));
+    HostApplicationRepository(
+      ref.watch(firebaseFunctionsProvider),
+      detail: HostApplicationDetailReads(ref.watch(firebaseFirestoreProvider)),
+    );
 
 @riverpod
-Future<HostApplicationPage> hostApplications(
-  Ref ref,
-  HostApplicationListRequest request,
-) => ref.watch(hostApplicationRepositoryProvider).listApplications(request);
-
+/// One application's review, as a Firestore listener on its read model:
+/// writes never invalidate it, the server's triggers deliver them.
 @riverpod
-Future<HostApplicationDetail> hostApplicationDetail(
+Stream<HostApplicationDetail> hostApplicationDetail(
   Ref ref,
   String organizerId,
   String applicationId,
 ) => ref
     .watch(hostApplicationRepositoryProvider)
-    .getApplicationDetail(organizerId, applicationId);
+    .watchApplicationDetail(organizerId, applicationId);
 
 Map<Object?, Object?> _requiredMap(Object? value, String label) {
   if (value is Map<Object?, Object?>) return value;
@@ -633,12 +380,6 @@ bool? _nullableBool(Object? value) {
   if (value == null) return null;
   if (value is bool) return value;
   throw const FormatException('Expected a nullable boolean.');
-}
-
-bool _requiredBool(Map<Object?, Object?> map, String key) {
-  final value = map[key];
-  if (value is bool) return value;
-  throw FormatException('Response was missing $key.');
 }
 
 DateTime? _dateTimeFromMillis(Object? value) {

@@ -147,20 +147,37 @@ function violationFor(sourceLayer, targetLayer) {
   return null;
 }
 
+/**
+ * A web-ui import that reaches past the package's public entry points. A
+ * subpath the package declares in its exports (such as @catch/web-ui/phone)
+ * is an entry point, as the website's boundary check also allows.
+ */
+function webUiDeepImport(specifier, exportsMap) {
+  if (!specifier.startsWith("@catch/web-ui/")) return false;
+  return !Object.hasOwn(exportsMap, `./${specifier.slice("@catch/web-ui/".length)}`);
+}
+
+function webUiPackageExports(repoRoot) {
+  const manifest = path.join(repoRoot, "packages/web-ui/package.json");
+  if (!fs.existsSync(manifest)) return {};
+  return JSON.parse(fs.readFileSync(manifest, "utf8")).exports ?? {};
+}
+
 export function scanAdminImportBoundaries(repoRoot = defaultRepoRoot) {
   const adminSrcRoot = path.join(repoRoot, "admin/src");
   const violations = [];
+  const webUiExports = webUiPackageExports(repoRoot);
   for (const file of walkSourceFiles(adminSrcRoot)) {
     const sourceRelativePath = relativeToAdminSource(adminSrcRoot, file);
     const sourceLayer = layerFor(sourceRelativePath);
     const source = fs.readFileSync(file, "utf8");
 
     for (const specifier of importSpecifiers(source)) {
-      if (specifier.startsWith("@catch/web-ui/")) {
+      if (webUiDeepImport(specifier, webUiExports)) {
         violations.push({
           source: sourceRelativePath,
           specifier,
-          reason: "shared web UI must be imported from @catch/web-ui without deep imports",
+          reason: "shared web UI must be imported from @catch/web-ui or a subpath it exports, without deep imports",
         });
         continue;
       }

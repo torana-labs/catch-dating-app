@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_crm_callable.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/crm_response_fields.dart';
@@ -29,23 +27,6 @@ class HostSavedAudienceRepository {
   static const groupMarker = 'groupSummaryVersion';
 
   final FirebaseFunctions _functions;
-
-  Future<List<HostStaticAudienceMember>> resolveAudienceMembers(
-    String organizerId,
-    List<String> contactIds,
-  ) => callHostCrm(
-    _functions,
-    name: 'resolveOrganizerAudienceMembers',
-    payload: ResolveOrganizerAudienceMembersCallableRequest(
-      organizerId: organizerId,
-      contactIds: contactIds,
-    ).toJson(),
-    action: 'load selected audience people',
-    parse: (data) => crmMapList(
-      crmRequiredMap(data, 'selected audience people')['members'],
-      'selected audience people',
-    ).map(HostStaticAudienceMember.fromMap).toList(growable: false),
-  );
 
   Future<HostSavedAudienceFilterOptions> savedAudienceFilterOptions(
     String organizerId,
@@ -210,18 +191,6 @@ HostSavedAudienceRepository hostSavedAudienceRepository(Ref ref) {
     ),
   );
 }
-
-@riverpod
-Future<List<HostStaticAudienceMember>> hostStaticAudienceMembers(
-  Ref ref,
-  String organizerId,
-  String selectionKey,
-) => ref
-    .watch(hostSavedAudienceRepositoryProvider)
-    .resolveAudienceMembers(
-      organizerId,
-      crmStringList(jsonDecode(selectionKey)),
-    );
 
 @riverpod
 Future<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptions(

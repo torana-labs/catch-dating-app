@@ -10,8 +10,8 @@ import {reserveFormPayment, finalizeCapturedFormPayment,
 
 import {claimParticipantFormProfileHandler} from
   "../../profiles/claimFormProfile";
-import {listParticipantFormProfilesHandler} from
-  "../../profiles/listFormProfiles";
+import {reconcileParticipantFormProfileView} from
+  "../../profiles/participantFormProfileViewStore";
 import {listOrganizerFormPaymentsHandler} from "./formPaymentLedger";
 import {reconcileOrganizerFormPaymentsHandler} from "./formPaymentTriggers";
 import type {formPaymentRuntime} from "./formPaymentRuntime";
@@ -33,8 +33,9 @@ test("Firestore serializes payment reservations, finalization and late capture",
       "organizerFormResponseDrafts", "organizerPaymentConnections",
       "guestPayments", "organizerFormPaymentWebhooks",
       "organizerFormResponses",
-      "participantFormProfileProposals", "participantOrganizerCards",
-      "participantProfileClaimReceipts", "users", "participantIntakeProfiles",
+      "participantFormProfileProposals", "participantFormProfileViews",
+      "participantOrganizerCards",
+      "commandReceipts", "users", "participantIntakeProfiles",
       "organizerCommunicationPreferences",
       "organizerCommunicationPermissionReceipts",
       "catchCommunicationPreferences", "catchCommunicationPermissionReceipts"];
@@ -176,20 +177,19 @@ test("Firestore serializes payment reservations, finalization and late capture",
         [false, true]);
       assert.equal((await db.doc("users/person").get())
         .get("profileRevision"), 1);
-      assert.equal((await db.collection("participantProfileClaimReceipts")
-        .get()).size, 1);
+      assert.equal((await db.collection("commandReceipts")
+        .where("command", "==", "claimParticipantFormProfile").get()).size, 1);
       await assert.rejects(claimParticipantFormProfileHandler({
         ...claimRequest, data: {...claimRequest.data,
           requestId: "claim-emulator-00000002"},
       }, claimDeps), /profile changed/u);
 
-      const profileDirectory = await listParticipantFormProfilesHandler({
-        ...fixture.request, data: {cursor: null, limit: 1},
-      }, {db: () => db, rateLimit: async () => undefined});
-      assert.equal(profileDirectory.items[0].responseId, proposals.docs[0].id);
-      assert.equal(profileDirectory.items[0].claimedAtMillis,
+      await reconcileParticipantFormProfileView(db, proposals.docs[0].id);
+      const profileView = await db
+        .doc(`participantFormProfileViews/${proposals.docs[0].id}`).get();
+      assert.equal(profileView.get("uid"), "person");
+      assert.equal(profileView.get("claimedAtMillis"),
         claimDeps.now().toMillis());
-      assert.equal(profileDirectory.nextCursor, null);
 
       // A separate frozen checkout expires. Later captured funds must not
       // create another response, even if two recovery workers race.

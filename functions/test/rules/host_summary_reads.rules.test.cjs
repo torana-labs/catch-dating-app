@@ -188,6 +188,43 @@ describe("firestore.rules", () => {
         {complete: false}));
       await assertFails(deleteDoc(doc(db, "hostEventRequestViews", "trivia")));
     });
+    it("lets current managers get contact and application detail views by id", async () => {
+      await seed(["organizers", "org"], summaryOrganizer({hostUserIds: ["manager"]}));
+      await seed(["organizers", "other"], summaryOrganizer({hostUserId: "other-host"}));
+      const views = [
+        ["hostContactDetailViews", (organizerId, id) => ({organizerId,
+          contactId: id, traits: {}, revenue: {coverage: "exact", amounts: []},
+          events: [], eventsTruncated: false, version: 1})],
+        ["hostApplicationDetailViews", (organizerId, id) => ({organizerId,
+          applicationId: id, detail: {organizerId, applicationId: id,
+            answers: []}, version: 1})],
+      ];
+      for (const [collectionId, view] of views) {
+        await seed([collectionId, "own"], view("org", "own"));
+        await seed([collectionId, "foreign"], view("other", "foreign"));
+        for (const uid of ["host-1", "manager"]) {
+          await assertSucceeds(getDoc(doc(authedDb(uid), collectionId, "own")));
+          // A view the server has not written yet reads as missing.
+          const missing = await assertSucceeds(getDoc(doc(authedDb(uid),
+            collectionId, "not-yet")));
+          assert.equal(missing.exists(), false);
+        }
+        const db = authedDb("host-1");
+        await assertFails(getDoc(doc(db, collectionId, "foreign")));
+        await assertFails(getDocs(query(collection(db, collectionId),
+          where("organizerId", "==", "org"))));
+        await assertFails(getDoc(doc(authedDb("operator-1"), collectionId,
+          "own")));
+        await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+          collectionId, "own")));
+        await assertFails(setDoc(doc(db, collectionId, "new"), view("org", "new")));
+        await assertFails(updateDoc(doc(db, collectionId, "own"), {version: 2}));
+        await assertFails(deleteDoc(doc(db, collectionId, "own")));
+        await seed(["organizers", "org"], summaryOrganizer({hostUserId: "new-host"}));
+        await assertFails(getDoc(doc(authedDb("manager"), collectionId, "own")));
+        await seed(["organizers", "org"], summaryOrganizer({hostUserIds: ["manager"]}));
+      }
+    });
     it("lets current managers read WhatsApp thread views and one thread's messages", async () => {
       await seed(["organizers", "org"], summaryOrganizer({hostUserIds: ["manager"]}));
       await seed(["organizers", "other"], summaryOrganizer({hostUserId: "other-host"}));

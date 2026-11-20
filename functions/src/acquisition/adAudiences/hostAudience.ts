@@ -283,7 +283,7 @@ const noneExcluded = (): Excluded => ({notOwned: 0, deleted: 0, staff: 0,
  * The off-mode run: when an earlier live run left an audience in Meta, delete
  * it, so a list that is no longer kept current (and would miss later
  * opt-outs) does not linger. Reads only the run receipt and sends nothing
- * when there is no audience, as in dev and staging.
+ * when there is no audience, as in dev.
  * @param {HostAudienceDeps} deps Dependencies.
  * @return {Promise<AdAudienceRunDocument|null>} The receipt, or null.
  */

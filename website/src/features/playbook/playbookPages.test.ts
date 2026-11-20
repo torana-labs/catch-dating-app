@@ -168,7 +168,7 @@ describe("playbook page indexes", () => {
       "/pricing/", "/product/bookings-and-memberships/",
       "/product/forms/", "/product/guest-records/", "/product/messages-and-growth/", "/product/reports-and-payouts/",
       "/product/running-the-event/", "/product/the-room/", "/product/your-page/", "/programmes/", "/refer/", "/safety/",
-      "/tools/no-show-calculator/",
+      "/tools/event-page-from-link/", "/tools/no-show-calculator/",
     ]);
   });
 
@@ -177,7 +177,7 @@ describe("playbook page indexes", () => {
   // The pages whose try-it band, buttons and closing tool form are live now.
   // A page joins when its command is in production and its sections flip to
   // built; its command must be website-ready (features/tryIt/tryItModel.ts).
-  const liveTryItPages = ["product_your_page"];
+  const liveTryItPages = ["product_your_page", "product_bookings", "product_messages", "product_guests", "product_reports", "product_room"];
 
   it("hides every try-it band and button unless its command's website tool is ready, on every product page", () => {
     expect(productV2.map(({ref}) => ref.match.contentKey).sort()).toEqual([
@@ -205,11 +205,44 @@ describe("playbook page indexes", () => {
       }
       // A ready page's try band holds its tool form, which the tool slot draws.
       expect(tryBand && "leadForm" in tryBand ? tryBand.leadForm?.requestKind : undefined, `${key} #try holds its tool form`).toBe("tool");
-      for (const {section, form} of toolForms) expect(form.input, `${key} ${section.id} reads a link`).toBe("url");
+      // The guest list and Reports' export tools upload a file; the others read a link.
+      // The plan-a-night tool asks for a format and a head count (text).
+      const input = playbookTryItTool(key) === "guests" || playbookTryItTool(key) === "report" ? "file" : playbookTryItTool(key) === "night" ? "text" : "url";
+      for (const {section, form} of toolForms) expect(form.input, `${key} ${section.id} reads a ${input}`).toBe(input);
       const liveTry = live.sections.some((section) => section.id === "try");
       expect(liveTry, `${key} #try is live only once listed in liveTryItPages`).toBe(liveTryItPages.includes(key));
     }
     for (const key of liveTryItPages) expect(playbookTryItTool(key), `${key} has a website-ready tool`).not.toBeNull();
+  });
+
+  // event.import-from-link returns a private draft (name, date, start time,
+  // city) and promotion.create-kit tracked /invite/ links with a QR each
+  // (contracts/callable_responses/): their bands promise nothing more.
+  it("words the event and kit tools' bands only as what their commands return", () => {
+    for (const key of ["product_bookings", "product_messages", "tools_event_page_from_link"]) {
+      const {raw} = loaded.find(({ref}) => ref.match.contentKey === key)!;
+      const bands = livePlaybookPage(raw).sections.filter((section) => section.id === "try" || section.id === "start");
+      expect(bands.map((section) => section.id), key).toEqual(["try", "start"]);
+      const text = JSON.stringify(bands);
+      expect(text, key).not.toMatch(/checkout|member|access|balance|reminder|price|photo|suggest|bookable|day-of|Luma|Eventbrite|District|Google Form/iu);
+    }
+  });
+
+  it("shows Reports' export upload in the try band, with the numbers-only report beside it (owner, #2062 C7)", () => {
+    const {raw} = loaded.find(({ref}) => ref.match.contentKey === "product_reports")!;
+    const live = livePlaybookPage(raw);
+    const ids = live.sections.map((section) => section.id);
+    // sales.import-past is live: the upload band comes first, the numbers band stays right after it, and one closing band links back.
+    expect(ids.slice(ids.indexOf("try"), ids.indexOf("try") + 2)).toEqual(["try", "numbers"]);
+    expect(ids.filter((id) => id === "start")).toHaveLength(1);
+    expect(ids).not.toContain("start-try");
+    const tryBand = live.sections.find((section) => section.id === "try");
+    expect(tryBand && "leadForm" in tryBand ? tryBand.leadForm : undefined).toMatchObject({requestKind: "tool", input: "file"});
+    const numbers = live.sections.find((section) => section.id === "numbers");
+    expect(numbers?.type === "custom" ? numbers.component : undefined).toBe("lastEventReport");
+    // The hero and the closing band open the upload.
+    expect(JSON.stringify(live.sections.find((section) => section.id === "top"))).toMatch(/"anchor":"try"/u);
+    expect(JSON.stringify(live.sections.find((section) => section.id === "start"))).toMatch(/"anchor":"try"/u);
   });
 
   it("maps every website-ready command to a product page tool, and the tools to the commands they run", () => {
@@ -218,7 +251,7 @@ describe("playbook page indexes", () => {
       expect(tools.some((tool) => tryItToolCommands[tool] === command), `${command} has a page`).toBe(true);
     }
     for (const key of Object.keys(playbookTryItTools)) expect(resolvePlaybookPage(playbookPathForContentKey(key) ?? "/none/"), key).not.toBeNull();
-    expect(playbookTryItTool("product_guests")).toBeNull();
+    expect(playbookTryItTool("product_guests")).toBe("guests");
   });
 
   it("refuses a live link to a hidden try band", () => {
@@ -383,7 +416,7 @@ describe("shelved pages", () => {
 });
 
 describe("tool, guide and guest app pages", () => {
-  it.each(["/tools/no-show-calculator/", "/playbooks/", "/playbooks/run-club/", "/playbooks/supper-club/", "/playbooks/quiz-night/", "/playbooks/racket-sports/", "/app/"])(
+  it.each(["/tools/no-show-calculator/", "/tools/event-page-from-link/", "/playbooks/", "/playbooks/run-club/", "/playbooks/supper-club/", "/playbooks/quiz-night/", "/playbooks/racket-sports/", "/app/"])(
     "renders %s: every section bound, brand resolved, indexed (owner, 19 Nov 2026)", async (path) => {
       const page = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
       expect(page, path).not.toBeNull();
@@ -413,6 +446,16 @@ describe("tool, guide and guest app pages", () => {
     expect(calculator.sections.at(-1)!.type).toBe("cta");
     const closing = calculator.sections.at(-1)! as Extract<PlaybookPageDocument["sections"][number], {type: "cta"}>;
     expect(closing.actions?.map((item) => "route" in item.to ? item.to.route : null)).toEqual(["host_start", "host_walkthrough"]);
+  });
+
+  it("opens the event tool from /tools/event-page-from-link/'s try band, like Bookings' (event.import-from-link)", () => {
+    const tryForm = (key: string) => {
+      const band = livePlaybookPage(loaded.find(({ref}) => ref.match.contentKey === key)!.raw).sections.find((section) => section.id === "try");
+      return band?.type === "split" ? band.leadForm : undefined;
+    };
+    expect(playbookTryItTool("tools_event_page_from_link")).toBe("event");
+    expect(tryForm("tools_event_page_from_link")?.requestKind).toBe("tool");
+    expect(tryForm("tools_event_page_from_link")).toEqual(tryForm("product_bookings"));
   });
 
   it("asks for the guest app launch notice only while the app is on no store, with no dating wording or release date", () => {

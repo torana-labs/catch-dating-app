@@ -67,7 +67,7 @@ describe("useCityAlertsController", () => {
   it("keeps one submission for the form's life, so a retry is the same lead", async () => {
     const post = vi.fn().mockResolvedValueOnce(new Response("{}", {status: 503})).mockResolvedValue(new Response(JSON.stringify(receipt), {status: 200}));
     const makeSubmission = vi.fn(() => createWebsiteLeadSubmission({messages: {invalid_phone: "a", invalid: "b", refresh: "c", changed: "d", busy: "e", failed: "f"},
-      dialCode: "+91", appCheckToken: async () => null, post}));
+      phoneCountry: "IN", appCheckToken: async () => null, post}));
     const {result, rerender} = renderHook(() => useCityAlertsController(place, [], makeSubmission));
     act(() => result.current.setPhone("9800000000"));
     await act(() => result.current.handleSubmit(submitEvent()));

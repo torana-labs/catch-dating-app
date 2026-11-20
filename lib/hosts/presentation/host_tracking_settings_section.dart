@@ -14,7 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Settings remain in the organiser Insights workspace; server owns eligibility.
+/// Settings remain in the organiser Insights workspace. The settings document
+/// is read through a listener; saves stay on the revision-fenced callable.
 class HostTrackingSettingsSection extends ConsumerWidget {
   const HostTrackingSettingsSection({super.key, required this.organizerId});
   final String organizerId;
@@ -105,14 +106,7 @@ class HostTrackingSettingsSection extends ConsumerWidget {
                         enabled: enabled,
                       ),
                 );
-                if (!ref.context.mounted ||
-                    !identical(
-                      ref.read(authenticatedSessionProvider).asData?.value,
-                      scope.session,
-                    )) {
-                  return;
-                }
-                ref.invalidate(hostTrackingSettingsProvider(organizerId));
+                // The settings listener delivers the saved revision itself.
               } catch (_) {
                 // Mutation retains the error and unsaved draft for explicit recovery.
               }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_new_response_count.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
@@ -128,6 +129,19 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
               : HostFormsState(
                   status: HostFormsStatus.content,
                   forms: value.forms,
+                  newResponseCounts: {
+                    for (final form in value.forms)
+                      if (catchAsyncStateFromAsyncValue(
+                            ref.watch(
+                              hostFormNewResponseCountProvider(
+                                organizerId: organizer.id,
+                                formId: form.formId,
+                              ),
+                            ),
+                          ).value
+                          case final int count)
+                        form.formId: count,
+                  },
                   canLoadMore: value.canLoadMore,
                   loadingMore: value.loadingMore,
                   loadMoreError: value.loadMoreError,

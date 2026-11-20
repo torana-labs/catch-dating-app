@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_application_detail_views.schema.json",
+  "title": "HostApplicationDetailViewDocument",
+  "description": "Server-maintained manager read view of one organizer application for the Host response and offer pages: exactly the detail getOrganizerApplicationDetail returns, in detail. The answers are the submitted generic-form response or the immutable imported snapshot; a withdrawn, erased or mismatched response leaves no answers, outreach or membership and names a withdrawn applicant; outreach actions are derived from the answers on the server. Written by triggers on organizerApplications, organizerFormResponses, organizerApplicationResponses, organizerContactOrigins (the People link after a merge) and organizerCommunityMemberships; deleted with the application. Never identity, review or membership authority: the review and membership commands reread every source in their transactions and check the revisions the phone saw.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostApplicationDetailViews",
+  "x-firestore-path": "hostApplicationDetailViews/{applicationId}",
+  "x-document-id-field": "applicationId",
+  "x-owner": "Host read model projector (hostReadModels application detail view triggers)",
+  "required": [
+    "organizerId",
+    "applicationId",
+    "detail",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "applicationId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "detail": {
+      "$ref": "../callable_responses/get_organizer_application_detail_response.schema.json",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

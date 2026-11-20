@@ -6,7 +6,7 @@ import {eventBreadcrumbJsonLd, eventBreadcrumbs} from "./eventBreadcrumbs";
 const city = (label: string, status: MarketCity["status"], aliases: string[] = []): MarketCity => {
   const slug = label.toLowerCase();
   return {id: `in-xx-${slug}`, slug, marketSlug: slug, label, aliases, legacySlugs: [],
-    timezone: "Asia/Kolkata", status, countryIsoCode: "IN", latitude: 0, longitude: 0};
+    timezone: "Asia/Kolkata", status, hostCreatable: status === "live", countryIsoCode: "IN", latitude: 0, longitude: 0};
 };
 const cities = [city("Mumbai", "live"), city("Bengaluru", "live", ["Bangalore"]), city("Pune", "waitlist")];
 const whatsOn = {href: publicSiteCopy.whatsOn.href, label: publicSiteCopy.whatsOn.label};

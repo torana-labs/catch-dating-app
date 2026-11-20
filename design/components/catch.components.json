@@ -15268,20 +15268,20 @@
         ]
       },
       "react": {
-        "symbol": "CheckboxControl",
-        "file": "packages/web-ui/src/primitives.tsx",
-        "api": "headless-control",
+        "symbol": "CatchToggleInput",
+        "file": "packages/web-ui/src/components/CatchToggleInput.tsx",
+        "api": "styled",
         "storybook": {
           "status": "ready",
-          "story": "packages/web-ui/src/primitives.stories.tsx",
-          "exportName": "Checkbox",
+          "story": "packages/web-ui/src/components/CatchToggleInput.stories.tsx",
+          "exportName": "Contract",
           "states": [
-            "unchecked",
-            "checked",
+            "off",
+            "on",
             "disabled"
           ]
         },
-        "notes": "Native checkbox for the one-boolean input responsibility, adopted through the website and admin CheckboxField adapters. Flutter renders the same responsibility as a switch; checkbox or switch rendering on web is decided when Phase 7e builds the styled component."
+        "notes": "The settings switch on web, a role=switch button with the Flutter geometry and the toggle and field recipes; Admin settings use it. Acknowledgements and checklists use CatchCheckboxInput."
       },
       "design": {
         "figma": {
@@ -20271,6 +20271,33 @@
                 "catch.button"
               ],
               "reason": "Binds a booking attendee to the system row with the two close-out marks. CatchIndexRow owns the anatomy and the action slot; this member supplies only the attendee's name, the close-out note and the marked state."
+            }
+          },
+          {
+            "id": "catch.index_row.timeline_step",
+            "symbol": "CatchTimelineStepScope",
+            "file": "packages/catch_ui/lib/src/components/catch_index_row.dart",
+            "summary": "Marks a row as one step of a timeline, so the row centres its marker on its title and draws the line on to the next step.",
+            "states": [
+              "joins-next",
+              "last-step",
+              "outside-timeline"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.index_row",
+              "parentConceptId": "catch.index_row",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.index_row"
+            },
+            "level": "L3",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "TimelineStep",
+              "comparedWith": [
+                "catch.index_row"
+              ],
+              "reason": "Publishes a timeline section's step position to the row inside, however a feature wraps it; CatchIndexRow owns the marker and draws the line."
             }
           }
         ]

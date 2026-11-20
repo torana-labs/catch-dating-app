@@ -77,7 +77,7 @@ class _HostFormPaymentsSectionListState
                   showDivider: false,
                   variant: CatchChoiceInputVariant.summary,
                   contractExemption:
-                      'Read-only payment status filters map to listOrganizerFormPayments statuses; not editable form data.',
+                      'Read-only payment status filters map to hostFormPaymentViews statuses; not editable form data.',
                 ),
                 CatchButton.command(
                   label: l10n.hostFormPaymentsRefresh,
@@ -132,7 +132,7 @@ class _HostFormPaymentsSectionListState
                     );
                   },
                 ),
-                if (state.nextCursor != null)
+                if (state.hasMore)
                   CatchPageBody.sliver(
                     child: SliverToBoxAdapter(
                       child: CatchButton(

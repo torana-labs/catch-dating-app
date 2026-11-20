@@ -4,13 +4,10 @@ import {
   type JoinWaitlistHTTPRequest,
 } from "../../shared/api/joinWaitlistContract";
 import type {WeddingsApplication, WeddingsSubmit} from "./weddingsModel";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 const failed = "We couldn't send your application. Please try again.";
-
-/** The planner's WhatsApp number as E.164: the page fixes the +91 prefix. */
-export function weddingsPhone(phone: string) {
-  return `+91${phone.replace(/\D+/gu, "")}`;
-}
 
 /**
  * The weddings pilot application as a phone-only Host application with its
@@ -23,7 +20,8 @@ export function weddingsApplicationRequest(
   const lastTime = application.lastTime.trim();
   return {
     fullName: application.name.trim(),
-    phone: weddingsPhone(application.phone),
+    // Step 1 refuses anything that is not a valid mobile number.
+    phone: catchPhoneE164(application.phone, activePhoneCountry) ?? application.phone.trim(),
     city: destination,
     role: "host",
     website: "",

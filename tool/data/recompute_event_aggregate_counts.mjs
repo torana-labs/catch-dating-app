@@ -163,7 +163,7 @@ waitlistedCount counts waitlisted, and genderCounts counts signedUp + attended.
 Options:
   --apply                 Write repairs. Default is dry-run.
   --json                  Print summary as JSON.
-  --env <dev|staging|prod> Resolve project id from .firebaserc.
+  --env <dev|prod> Resolve project id from .firebaserc.
   --project <id>          Firebase project id.
   --emulator              Use Firestore emulator at 127.0.0.1:8080.
   --emulator-host <host>  Use a custom Firestore emulator host.

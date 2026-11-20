@@ -59,7 +59,7 @@ export function parseArgs(argv) {
   if (parsed.help) return parsed;
   if (Boolean(parsed.environment) === Boolean(parsed.project)) {
     throw new RulesDeploymentDriftUsageError(
-      "Choose exactly one of --env <dev|staging|prod> or --project <project-id>.",
+      "Choose exactly one of --env <dev|prod> or --project <project-id>.",
     );
   }
   if (parsed.project && !projectIdPattern.test(parsed.project)) {
@@ -400,7 +400,7 @@ function parsePositiveInteger(value, flag) {
 
 function helpText() {
   return `Usage: node tool/firebase/check_rules_deployment_drift.mjs \\
-  (--env <dev|staging|prod> | --project <project-id>) [options]
+  (--env <dev|prod> | --project <project-id>) [options]
 
 Options:
   --repo-root <path>     Compare rules from another verified checkout/package.

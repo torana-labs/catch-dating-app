@@ -14,11 +14,16 @@
   border-radius: var(--catch-radius-md);
 }
 
+/*
+ * Each stretch grows by its share of the bar, but never below its label's
+ * longest word: a small share keeps its label readable (wrapping at spaces)
+ * and the other stretch gives way, rather than the label being cut off.
+ */
 .part {
   display: flex;
   align-items: center;
   flex-basis: 0;
-  min-width: 0;
+  min-width: min-content;
   padding: 0 var(--catch-space-micro14);
   background: var(--catch-palette-coral);
   color: var(--catch-palette-ink);

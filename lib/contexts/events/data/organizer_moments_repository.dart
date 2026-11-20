@@ -3,13 +3,18 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'organizer_moments_repository.g.dart';
 
+/// Moments for one event or programme. The list is a listener (#1339) on
+/// `organizerMomentViews` (one row per moment, kept by a trigger) instead of
+/// `listOrganizerMoments`; authoring, arming, pausing and running stay
+/// callables, and the list shows their result when the row is rewritten.
 abstract interface class OrganizerMomentsRepository {
-  Future<List<OrganizerMoment>> listMoments(OrganizerMomentScope scope);
+  Stream<List<OrganizerMoment>> watchMoments(OrganizerMomentScope scope);
 
   Future<OrganizerMoment> upsertMoment({
     required OrganizerMomentScope scope,
@@ -44,28 +49,32 @@ abstract interface class OrganizerMomentsRepository {
 }
 
 class FirebaseOrganizerMomentsRepository implements OrganizerMomentsRepository {
-  const FirebaseOrganizerMomentsRepository(this._functions);
+  const FirebaseOrganizerMomentsRepository(this._functions, this._firestore);
+
+  /// A scope's moments; the callable read every one, unbounded.
+  static const maxMoments = 200;
 
   final FirebaseFunctions _functions;
+  final FirebaseFirestore _firestore;
+
+  static const _viewsContext = BackendErrorContext(
+    service: BackendService.firestore,
+    action: 'load organizer moments',
+    resource: 'organizerMomentViews',
+  );
 
   @override
-  Future<List<OrganizerMoment>> listMoments(OrganizerMomentScope scope) =>
-      _call(
-        name: 'listOrganizerMoments',
-        payload: ListOrganizerMomentsCallableRequest(
-          scope: scope.toJson(),
-        ).toJson(),
-        action: 'load organizer moments',
-        parse: (data) {
-          final map = _requiredMap(data);
-          final raw = map['moments'];
-          if (raw is! List<Object?>) {
-            throw const FormatException('Invalid organizer moments payload.');
-          }
-          return raw
-              .map(OrganizerMoment.fromCallableData)
-              .toList(growable: false);
-        },
+  Stream<List<OrganizerMoment>> watchMoments(OrganizerMomentScope scope) =>
+      withBackendErrorStream(
+        () => organizerMomentViewsQuery(_firestore, scope)
+            .limit(maxMoments)
+            .snapshots()
+            .map(
+              (snapshot) => organizerMomentsFromViews([
+                for (final doc in snapshot.docs) doc.data(),
+              ]),
+            ),
+        context: _viewsContext,
       );
 
   @override
@@ -180,10 +189,35 @@ class FirebaseOrganizerMomentsRepository implements OrganizerMomentsRepository {
   );
 }
 
-// keepalive: one stateless callable facade is shared by every Moments route.
+// keepalive: one stateless facade over account-free SDK singletons is shared
+// by every Moments route.
 @Riverpod(keepAlive: true)
 OrganizerMomentsRepository organizerMomentsRepository(Ref ref) =>
-    FirebaseOrganizerMomentsRepository(ref.watch(firebaseFunctionsProvider));
+    FirebaseOrganizerMomentsRepository(
+      ref.watch(firebaseFunctionsProvider),
+      ref.watch(firebaseFirestoreProvider),
+    );
+
+/// The rows of one scope's moments, as the rules admit them: a query naming
+/// the scope kind and its programme or event.
+Query<Map<String, dynamic>> organizerMomentViewsQuery(
+  FirebaseFirestore firestore,
+  OrganizerMomentScope scope,
+) => firestore
+    .collection('organizerMomentViews')
+    .where('scopeKind', isEqualTo: scope.kind.name)
+    .where(switch (scope.kind) {
+      OrganizerMomentScopeKind.event => 'eventId',
+      OrganizerMomentScopeKind.program => 'programId',
+    }, isEqualTo: scope.scopeId);
+
+/// The moments of `organizerMomentViews` rows, ordered by id as the callable
+/// listed them.
+List<OrganizerMoment> organizerMomentsFromViews(
+  List<Map<String, dynamic>> rows,
+) =>
+    [for (final row in rows) OrganizerMoment.fromCallableData(row['moment'])]
+      ..sort((a, b) => a.momentId.compareTo(b.momentId));
 
 Map<Object?, Object?> _requiredMap(Object? value) {
   if (value is Map<Object?, Object?>) return value;

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ $# -lt 1 || $# -gt 3 ]]; then
-  echo "Usage: ./tool/validate_firebase_environment.sh <dev|staging|prod> [consumer|host] [app-project-root]"
+  echo "Usage: ./tool/validate_firebase_environment.sh <dev|prod> [consumer|host] [app-project-root]"
   exit 1
 fi
 
@@ -11,7 +11,7 @@ app_role="${2:-consumer}"
 project_root="${3:-}"
 
 case "$environment" in
-  dev|staging|prod) ;;
+  dev|prod) ;;
   *)
     echo "Unsupported environment: $environment"
     exit 1

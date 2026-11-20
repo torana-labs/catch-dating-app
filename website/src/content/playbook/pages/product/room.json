@@ -47,8 +47,7 @@
           "to": {
             "anchor": "try"
           },
-          "emphasis": "secondary",
-          "status": "tryIt"
+          "emphasis": "secondary"
         }
       ],
       "media": {
@@ -621,38 +620,23 @@
       "type": "split",
       "id": "try",
       "ground": "paper",
-      "status": "tryIt",
-      "statusNote": "Commands: plan a night (groups, missions, the mixing moment), then start a practice session on the draft. Show this when they ship.",
+      "status": "built",
       "kicker": "Try it with your night",
       "title": "Plan your first hello, then try it on your phone.",
-      "lead": "Pick your format and how many people are coming, or paste your event link. {{brand.name}} plans the groups, writes three missions for your night and shows you when people mix. Then scan the code with a friend and do a first hello yourselves.",
+      "lead": "Pick your format and how many people are coming. {{brand.name}} plans the groups and the run of the night, picks three missions for your format and shows you when people mix. Then open the practice session with a friend and do a first hello yourselves.",
       "ticks": [
         "Groups planned for your format and headcount",
-        "Missions written for your event, ready to edit",
-        "A live practice session for you and a friend, on your phones",
-        "Becomes your real plan when you claim it"
+        "Three missions for your format, ready to edit",
+        "A practice session to try with a friend, on your phones",
+        "Save it to your draft event, private until you publish it"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "label": "Try it",
-          "title": "Plan your night",
-          "fields": [
-            {
-              "label": "Format",
-              "placeholder": "Run, dinner, quiz, courts or crawl"
-            },
-            {
-              "label": "Guests",
-              "placeholder": "32"
-            }
-          ],
-          "actions": [
-            "Plan my night",
-            "Try it with a friend"
-          ],
-          "note": "The practice session is the same one hosts use for a dress rehearsal."
-        }
+      "leadForm": {
+        "id": "try_night",
+        "requestKind": "tool",
+        "input": "text",
+        "label": "Your format",
+        "submitLabel": "Plan my night",
+        "note": "Private to you. Takes about a minute."
       }
     },
     {
@@ -702,36 +686,6 @@
       "ground": "magenta",
       "status": "built",
       "kicker": "Free for 30 days",
-      "title": "Run your next night on {{brand.name}}.",
-      "lead": "Every live tool is in the trial. Free events stay free after it.",
-      "actions": [
-        {
-          "label": "Start free trial",
-          "to": {
-            "route": "host_start"
-          },
-          "emphasis": "primary"
-        },
-        {
-          "label": "How {{brand.name}} works",
-          "to": {
-            "route": "how_it_works"
-          },
-          "emphasis": "secondary"
-        }
-      ],
-      "media": {
-        "kind": "capture",
-        "slot": "host-today"
-      }
-    },
-    {
-      "type": "cta",
-      "id": "start-try",
-      "ground": "magenta",
-      "status": "tryIt",
-      "statusNote": "The closing band of the plan-a-night tool. Show it, in place of the band above, when the commands ship.",
-      "kicker": "Free for 30 days",
       "title": "Feel a first hello before your guests do.",
       "lead": "Plan your night in a minute, then try it on your phone with a friend.",
       "actions": [
@@ -740,8 +694,7 @@
           "to": {
             "anchor": "try"
           },
-          "emphasis": "primary",
-          "status": "tryIt"
+          "emphasis": "primary"
         },
         {
           "label": "Start free trial",

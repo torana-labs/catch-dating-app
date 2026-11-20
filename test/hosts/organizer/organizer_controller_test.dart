@@ -14,9 +14,9 @@ void main() {
       overrides: [
         authenticatedSessionProvider.overrideWithValue(const AsyncLoading()),
         watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
-        hostOrganizerBillsProvider.overrideWith((ref, organizerId) async {
+        hostOrganizerBillsProvider.overrideWith((ref, organizerId) {
           billReads.add(organizerId);
-          return [organizerBill()];
+          return Stream.value([organizerBill()]);
         }),
       ],
     );

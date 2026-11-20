@@ -73,7 +73,7 @@ void main() {
         await pumpOnboardingUi(tester);
 
         expect(find.text('How do you identify?'), findsOneWidget);
-        expect(find.text('STEP 1 OF 1'), findsOneWidget);
+        expect(find.text('Step 1 of 1'), findsOneWidget);
         await tester.tap(find.byTooltip('Back'));
         await pumpOnboardingUi(tester);
 
@@ -82,7 +82,7 @@ void main() {
           OnboardingStep.nameDob,
         );
         expect(find.text("What's your name?"), findsOneWidget);
-        expect(find.text('STEP 1 OF 1'), findsOneWidget);
+        expect(find.text('Step 1 of 1'), findsOneWidget);
       },
     );
   });

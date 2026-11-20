@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Where restricted staff start: every programme and event this account
-/// works at, from `listMyHostAssignments`.
+/// works at, from its `hostAssignmentViews` rows.
 ///
 /// One live assignment is the workspace, not a menu item: once the read
 /// settles it replaces this route with that workspace. The list grants

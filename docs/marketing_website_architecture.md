@@ -158,10 +158,10 @@ canvas guest bar's "New to Mumbai") when it renders (`cityDiscoveryLinks`
 in `features/discovery/discoveryModel.ts`). For hosts on guest pages stays a
 plain link to `/host/`, the canvas's quiet link. Links name only routes in
 `design/website/routes.json`. `/playbooks/` and
-`/tools/no-show-calculator/` are in the host footer's Resources column; the
-bar's Resources stays Help alone until the canvas's Resources menu is built.
-The other agreed future paths (`/refer/`, `/stories/`, `/compare/`,
-`/tools/event-page-from-link/`) join the host footer when the pages ship.
+`/tools/no-show-calculator/` and `/tools/event-page-from-link/` are in the
+host footer's Resources column; the bar's Resources stays Help alone until the
+canvas's Resources menu is built. The other agreed future paths
+(`/stories/`, `/compare/`) join the host footer when the pages ship.
 Every "Get the app" link off the homepage (`guestAppHref`, the guest header's
 action, the guest footer's Explore link, the city and event chrome) goes to
 `/app/`; the homepage's own header and dock keep their in-page `#app` band.
@@ -250,8 +250,9 @@ that uses a section or option no kit component draws yet
   heads, and a live link to a hidden section fails validation. The product
   pages v2 (18 Nov 2026) keep their Partly and New features and every
   try-it band, button and closing tool form (`requestKind: "tool"` with
-  `input` url or text, which no slot sends) hidden this way until each
-  ships; flipping one is a content PR that sets it `built`.
+  `input` url, text or file, which no slot sends until its command is
+  website-ready) hidden this way until each ships; flipping one is a
+  content PR that sets it `built`.
 - **Indexing.** `meta.noindex` is the page's one approval flag. Every page
   starts `true`, so it is `noindex, follow` and out of both sitemaps; the
   owner's approval is the PR that sets it `false`. Ad landing pages stay
@@ -288,7 +289,20 @@ that uses a section or option no kit component draws yet
   the host's own places, events a month, ticket price (or a free event's
   cost per head) and no-show rate, with a what-if rate they slide. It states
   no rate, benchmark or result of its own; its fee line is
-  `content/pricing.ts`'s. `/playbooks/` and the `playbook_guide` pages
+  `content/pricing.ts`'s. Reports and payouts' numbers band is the
+  `lastEventReport` custom section (`features/marketing/LastEventReport.tsx`),
+  the numbers-only path of its try-it tool (owner, #2062 C7 option c): the
+  host's tickets sold, ticket price and how many came, and the fee they say
+  their current tool charges (a percentage and/or an amount per ticket),
+  worked out in the page into ticket sales, show-up rate, the fee from
+  `hostFeeQuote` and the difference, with no sign-in, request or storage. Its
+  `try` band above it holds the export upload, a `file` tool form whose slot
+  draws `features/pastSalesTryIt`: after the try-it phone step the visitor's
+  export goes to `sales.import-past`, which previews the night's report and
+  fee comparison (asking for the columns when it cannot tell them apart, and
+  saying why when attendance, returning guests or the fee cannot be worked
+  out), then saves it to their private profile with the same key and the
+  preview's hash. The file goes only to that command. `/playbooks/` and the `playbook_guide` pages
   (`run-club`, `supper-club`, `quiz-night`, `racket-sports`) are `article`
   pages with one pricing line linking `/pricing/` and no typed fee figures.
   `/app/` is the `appLaunchNotice` custom section: the homepage's launch
@@ -315,6 +329,28 @@ that uses a section or option no kit component draws yet
   approval (decision 20: three real stories). Fictional stories and a
   sample story page live in `website/src/stories/fixtures/hostStories.ts`
   for Storybook and tests only.
+- **Try-it tools.** A `tool` lead form (`requestKind: "tool"`, `input: "url"`)
+  draws its page's try-it tool (`features/tryIt`): `playbookTryItTools` in
+  `tryItModel.ts` names the tool for each page content key, and the tool
+  draws only while its command is in `websiteReadyTryItCommands`. Every tool
+  runs the command layer's order: the link; a phone-verified Firebase user
+  with App Check (surface `website`), asked for a brand name and a city only
+  when they have no private profile yet; `workspace.ensure`; then the tool's
+  command, previewed and applied with the same idempotency key and the
+  preview's hash. The city picker offers the catalog cities where an
+  organiser can be created (`surfaces.hostCreatable`, carried into the
+  website's generated market catalog), which `workspace.ensure` checks
+  again. Live now: Your page (`organizer.import-from-link`, a private
+  organiser draft to claim), Bookings and memberships and
+  `/tools/event-page-from-link/` (`event.import-from-link`, a private draft
+  event with its name, date, start time and city) and Messages and growth
+  (`promotion.create-kit`, a tracked `/invite/` link and QR code per place or
+  person; it imports the event first, or uses the draft this tab made). Each
+  result waits in the Host app for the same phone number, and nothing is
+  published or sent. A page's try band, hero button and closing tool form go
+  live together: its sections flip to `built`, its old closing band gives
+  way to the tool's (renamed `start`), and `playbookPages.test.ts` lists it
+  in `liveTryItPages`. The other product pages' try bands stay `tryIt`.
 - **Links and forms.** `usePlaybookPageController.ts` turns destinations into
   links and tags every action for analytics. Links to `/host/start/` and
   `/pricing/` land on the host landing's bands through `playbookRouteAliases`

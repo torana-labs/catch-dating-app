@@ -70,7 +70,6 @@ test("inventory drains attribution dependents before their parents", async () =>
       blueprintId: "blueprint-a"}),
     privateRow("salesDemoSessions/session-a", {
       invitationId: "invitation-a"}),
-    privateRow("salesDemoReceipts/receipt-a", {targetId: "session-a"}),
     ...Array.from({length: 25}, (_, index) => privateRow(
       `organizerSalesAccounts/org-a/customValues/value-${index}`,
       {organizerId: "org-a"})),
@@ -83,7 +82,6 @@ test("inventory drains attribution dependents before their parents", async () =>
   const before = (child: string, parent: string) =>
     assert.ok(paths.indexOf(child) < paths.indexOf(parent),
       `${child} must precede ${parent}`);
-  before("salesDemoReceipts/receipt-a", "salesDemoSessions/session-a");
   before("salesDemoSessions/session-a", "salesDemoInvitations/invitation-a");
   before("salesDemoInvitations/invitation-a", "salesDemoBlueprints/blueprint-a");
   for (let index = 0; index < 25; index++) {

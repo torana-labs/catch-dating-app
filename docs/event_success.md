@@ -668,9 +668,9 @@ for organizer managers. `resolved` and `declined` record the authenticated
 manager and timestamp and settle the request. `transferred` assigns a current
 organizer manager and keeps it open. A named recipient is not itself an
 access grant; the canonical organizer is re-read in the mutation transaction.
-Every command requires the reviewed source hash and case revision. Immutable
-`eventAssistanceCaseReceipts` make exact retries return their original operation
-revision with the latest case view; reused operation IDs with changed content
+Every command requires the reviewed source hash and case revision. Its
+`eventAssistanceCase` command receipt (in `commandReceipts`) makes exact retries
+return their original operation revision with the latest case view; reused operation IDs with changed content
 fail. Concurrent resolutions cannot overwrite one another.
 
 The Dart client represents current open, current settled, source-changed and
@@ -1275,9 +1275,9 @@ so replaying an old configure cannot undo a later pause. Event replacement,
 schedule or format changes require fresh review. Plan completion, cancellation
 or expiry withholds execution without manufacturing guest attendance.
 
-The private `eventAssistanceRuntimeConfigs` and
-`eventAssistanceRuntimeConfigReceipts` collections allow no client reads/writes;
-callables expose the manager projection. A configured response means permission
+The private `eventAssistanceRuntimeConfigs` collection allows no client
+reads/writes, and each save's replay receipt is an `eventAssistanceRuntimeConfig`
+entry in `commandReceipts`; callables expose the manager projection. A configured response means permission
 was saved, not that guests were enrolled or messages sent. The configuration
 transaction saves a durable roster scan; the background
 handlers remain dormant and Host controls remain integration work.
@@ -1429,7 +1429,8 @@ while the existing plan-change notice path can continue to own actual setup
 edits.
 
 `eventAssistanceGroupProgress` holds the current result per event/group;
-`eventAssistanceProgressReceipts` keeps immutable command deduplication evidence.
+`eventAssistanceDeparture` and `eventAssistanceRoute` entries in
+`commandReceipts` deduplicate the commands.
 An exact older retry returns its original operation revision and the latest
 view without repeating movement. Reusing its ID with changed content fails.
 Source changes preserve the old fact but withhold current joining guidance
@@ -1878,8 +1879,8 @@ A new assignment to previously revoked staff does not restore old duties.
 Each duty binds the event creation generation and saved group configuration.
 A changed or removed group withholds authority until reviewed, while routine
 attendance, schedule and progress updates preserve it. Stale duties remain
-visible to managers for removal. Immutable `eventAssistanceStaffReceipts` fence
-retries and concurrent changes. Group staff projections expose only the selected
+visible to managers for removal. `eventAssistanceStaff` command receipts (in
+`commandReceipts`) fence retries and concurrent changes. Group staff projections expose only the selected
 duty and basic staff identity, not full phone numbers or the event guest roster.
 
 The duty permission map now authorizes progress, departure, membership and
@@ -1928,8 +1929,8 @@ for expiry; legacy check-in access alone grants no accountability duty.
 
 The reviewed source hash binds the event/roster generations, format, current
 check-in, accepted group where scoped, assistance episode or explicit absence,
-and accountability revision/result. Exact retries reuse an immutable
-`eventAssistanceAccountabilityReceipts` entry; changed requests, replaced
+and accountability revision/result. Exact retries reuse an
+`eventAssistanceAccountability` command receipt; changed requests, replaced
 registrations, new visits and stale reviews cannot write. Replies and reported
 intentions do not invalidate a physical sweep review or become physical proof.
 The record never changes attendance, participation, placement, consent or
@@ -2143,13 +2144,13 @@ its saved group configuration. A changed target requires a fresh handover withou
 invalidating the still-current source membership. Breaks/departures withhold new
 placement and acceptance; returning in a new episode requires placement review.
 
-`eventAssistanceMemberships` holds current state, and server-only
-`eventAssistanceMembershipReceipts` stores the authenticated command and original
-operation revision atomically. Exact authorized retries return that revision and
+`eventAssistanceMemberships` holds current state, and an
+`eventAssistanceMembership` command receipt (in `commandReceipts`) stores the
+request hash and original operation revision atomically. Exact authorized retries return that revision and
 latest state. A former operator loses access once the guest transfers away; a
 rejected/cancelled/expired receiving request grants no continuing guest access.
 Reads expose one guest's operating state and group choices, without contact fields
-or a full roster. Record/receipt retention remains required before activation.
+or a full roster. Membership record retention remains required before activation.
 
 The native membership repository now uses the generated live callable requests.
 Its immutable models separate uninitialized, current and source-changed records;
@@ -3504,7 +3505,7 @@ with synthetic attendees, and reviews the recap after the real event.
 Rehearsal is a required next product slice: a read-only or isolated synthetic
 roster, explicit `REHEARSAL` chrome, no production attendance/messages/outcome
 writes, and a resettable clock. Until that isolation exists, onboarding may use
-staging fixtures but the product must not label a production event as safely
+dev fixtures but the product must not label a production event as safely
 rehearsable.
 
 Pilot success is activation and repeated operational use, not account creation:
@@ -3686,7 +3687,7 @@ rather than embedded in event-type logic.
 |---|---|
 | Domain/runtime/playbooks | `lib/contexts/live/domain/` (runtime), `lib/contexts/formats/domain/` (playbooks, structures, questionnaires, defaults) |
 | Repository/providers | `lib/contexts/live/data/event_success_repository.dart` |
-| Host provider and workspace boundaries | `lib/event_success/presentation/event_success_host_screen.dart` owns provider reads and mutation callbacks; `event_success_host_workspace_page_body.dart` owns tab selection, fixture callbacks and live-action debounce over explicit state. |
+| Host provider and workspace boundaries | The rehearsal screen (`lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart`) owns provider reads and mutation callbacks for practice; `event_success_host_workspace_page_body.dart` owns tab selection, fixture callbacks and live-action debounce over explicit state. Live nights run on the rebuilt console under `lib/hosts/live/`. |
 | Host setup and report components | `lib/event_success/presentation/host_setup/` owns setup editing, readiness and attendee target controls; `host_report/` owns the report, data-quality metrics, funnel and empty state. Host presentation has no handwritten part files. |
 | Host live control and shared components | `lib/event_success/presentation/host_live/` owns the live workspace, control room, step actions, accountability, presence, room summary and alerts; `host_components/` owns the tab chrome, plan/activity summaries, compatibility, help and resource errors. `event_success_host_keys.dart` and `event_success_control_room_state.dart` expose their shared plain contracts. |
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |
@@ -3704,7 +3705,7 @@ rather than embedded in event-type logic.
 
 | Collection | Owner and visibility |
 |---|---|
-| `eventSuccessPlans/{eventId}` | Host-owned setup plus backend-owned live state. `liveControlRevision`, draft revision, and published rotation/reveal indexes are callable-owned. Setup fields freeze once participant activity/start/live status begins; active participants can read through event-success rules. |
+| `eventSuccessPlans/{eventId}` | Host-owned setup plus backend-owned live state. Catch Host saves setup fields through `saveEventSuccessPlanSetup`, which shares one write with `night.plan` (`functions/src/eventSuccess/planSetup.ts`). `liveControlRevision`, draft revision, and published rotation/reveal indexes are callable-owned. Setup fields freeze once participant activity/start/live status begins; active participants can read through event-success rules. |
 | `eventSuccessFeedback/{eventId_uid}` | Attendee-owned decomposed post-event feedback. Raw notes and safety details are private to attendee/backend. |
 | `eventSuccessConversationGraphs/{eventId_uid}` | Server-written post-event conversation edges. Only the subject attendee may get the deterministic document; Hosts, other attendees, lists, and every direct client write are denied. |
 | `eventSafetyReports/{feedbackId}` | Backend-owned Catch-private safety mirror for concerning feedback. |
@@ -4004,7 +4005,7 @@ occurrence, not an in-place flag flip against shared inventory.
 | `eventParticipations/{eventId_uid}` | Catch booking, payment, waitlist and Consumer-network lifecycle. It is optional for Event Success. |
 | `eventRuntimeParticipants/{eventId_uid}` | Participant-private access, roster claim, disclosures, minimal runtime profile and readiness. |
 | `eventRuntimeDataRequests/{requestId}` | Server-only current missing-data request, fenced to one participant profile and event source. |
-| `eventRuntimeDataRequestReceipts/{receiptId}` | Immutable exact-command receipt; never a guest or Host read surface. |
+| `commandReceipts/{command}_{id}` | Shared replay store; `requestRequiredData` entries make an exact command retry idempotent. Never a guest or Host read surface. |
 
 The deterministic runtime-participant id is `${eventId}_${uid}`. Its required
 shape is:
@@ -4114,7 +4115,7 @@ window, capability, hidden safety state and deterministic ids.
 
 The internal `EventRuntimeRequiredDataStore` owns the source-fenced typed
 request boundary. It reviews current plan-derived fields and atomically writes
-one request plus an immutable receipt. It is intentionally not a Host callable:
+one request plus its `commandReceipts` entry. It is not a Host callable:
 `requestRequiredData` has `systemWithinPolicy` authority. A participant-write
 trigger creates the command only for current missing required fields, bootstrap
 returns its bounded guest projection, and accepted profile submission records
@@ -4204,9 +4205,14 @@ an inbound vendor is live:
   verifies an exact-body HMAC from `ROSTER_INGESTION_WEBHOOK_SECRET`, requires
   provider-confirmed sender identity, and matches that identity to the Host's
   Firebase Auth email or phone;
-- the endpoint accepts one CSV up to 4 MiB, maps at most 250 attendees through
-  the backend adapter engine, and reuses `importEventAttendeesForHost`; the
-  provider message id becomes the retry-safe import key; and
+- the endpoint accepts one CSV up to 4 MiB and maps at most 250 attendees
+  through the guest import converters (`functions/src/guestImport`). Since
+  19 Nov 2026 (owner decision on #2061, question 3) it writes no guest: the
+  rows become a draft in the host's saved review session
+  (`hostRosterIntakeSessions`), keyed by the file, and Catch Host's guest
+  intake offers to resume it (`manageHostRosterIntake` action `latest`).
+  Approving it applies through `importEventAttendeesForHost` as any reviewed
+  import does; and
 - raw attachment bytes are processed in memory and not retained. XLSX
   forwarding, files above 250 rows, temporary Storage, progress UI and
   conflict-aware undo still belong to the asynchronous job tranche.
@@ -4289,7 +4295,7 @@ Current theatrical implementation state:
 The former dev-only Event Success lab, preview, and manual-QA routes were
 removed after the functionality became available through Host event setup and
 Manage plus the attendee companion. Review production widgets directly through
-their focused tests, Widgetbook coverage, and real dev/staging event flows.
+their focused tests, Widgetbook coverage, and real dev event flows.
 
 Check:
 
@@ -4316,7 +4322,7 @@ Check:
 - host-help candidate filtering by attendance and interested-in/cohort
   eligibility.
 
-Use a real dev/staging event for write-path proof:
+Use a real dev event for write-path proof:
 
 1. Save event-success setup as host.
 2. Book/check in at least two attendee accounts.
@@ -4340,12 +4346,12 @@ Current implemented foundation:
 - counters: `participantMetricCounters/{uid}`;
 - event scorecards: `eventSuccessScorecards/{eventId}`;
 - client access to raw/admin metrics denied by rules;
-- dev/staging Firestore-to-BigQuery extension manifests and datasets exist for
+- dev Firestore-to-BigQuery extension manifests and datasets exist for
   marketplace metrics exports.
 
 Remaining gates:
 
-- Enable Firebase Analytics BigQuery export in dev/staging when
+- Enable Firebase Analytics BigQuery export in dev when
   Analytics-scoped console/API access is available.
 - Add client-side profile impression batching only after the product question is
   concrete.
@@ -4475,6 +4481,12 @@ formats (#2062 C4). Copy text stays in `copy/structured_domain_copy_en.json`.
 const literals. `EventSuccessStructureConfig.defaultForInteractionModel` reads
 the generated `event_success_playbook_shapes.g.dart`, and Functions'
 `defaultEventSuccessPlaybookIdFor` reads `eventSuccessPlaybookShapes.ts`.
+In `night.plan`, run pace groups scale with head count, one per ten guests
+with no cap of their own. Each is named by its pace band, fastest first:
+"~m:ss/km" once its target pace is known (as `RoutePaceGroup.targetPaceSecondsPerKm`),
+otherwise "Pace group N". The only hard limits are the plan contract's bounds,
+1–1000 attendees and a `unitCount` of 1–200. Tables, teams or courts past 200
+stop there, flagged `countLimited`, with larger units or a longer bench.
 Web retains the metadata for parity and ships no per-attendee audio.
 
 - **Portable marquee assets.** Three checked-in Lottie vector documents under

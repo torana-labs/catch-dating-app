@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_organizer_journey_views.schema.json",
+  "title": "HostOrganizerJourneyViewDocument",
+  "description": "Server-maintained read view of how one organizer's page got here, as one person sees it, for the Host 'Your page so far' sheet and the waiting-claim notice on Today: exactly the journey listMyOrganizerJourneys returns to that person. The view id is {organizerId}_{uid}. One view per current manager of the organizer and per person whose own claim on it is still being checked. Written by triggers on organizers, organizerClaimRequests, supplyIntakeRequests, events and organizerGrowthFacts. Staff names, who nominated the page, decision reasons and someone else's claim never reach a view. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostOrganizerJourneyViews",
+  "x-firestore-path": "hostOrganizerJourneyViews/{viewId}",
+  "x-owner": "Host read model projector (hostReadModels organizer journey view triggers) from organizers, organizerClaimRequests, supplyIntakeRequests, events and organizerGrowthFacts",
+  "required": [
+    "organizerId",
+    "uid",
+    "waitingClaim",
+    "journey",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The one person this view is for.",
+      "x-catch-ownership": "server-only"
+    },
+    "waitingClaim": {
+      "type": "boolean",
+      "description": "This person's own claim is still being checked; equals journey.waitingClaim.",
+      "x-catch-ownership": "server-only"
+    },
+    "journey": {
+      "$ref": "../callable_responses/list_my_organizer_journeys_response.schema.json#/properties/journeys/items",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

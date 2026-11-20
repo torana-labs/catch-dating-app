@@ -1,5 +1,3 @@
-import 'package:catch_dating_app/hosts/presentation/host_roster_display_state.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_participants_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/participant_table.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -32,7 +30,7 @@ void main() {
     );
 
     expect(find.byType(CatchField), findsOneWidget);
-    expect(find.text('GUEST'), findsNothing);
+    expect(find.text('Guest'), findsNothing);
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('Arrived'), findsOneWidget);
   });
@@ -61,52 +59,10 @@ void main() {
     );
 
     expect(find.byType(CatchField), findsNothing);
-    expect(find.text('GUEST'), findsOneWidget);
-    expect(find.text('STATUS'), findsOneWidget);
-    expect(find.text('ACTION'), findsOneWidget);
+    expect(find.text('Guest'), findsOneWidget);
+    expect(find.text('Status'), findsOneWidget);
+    expect(find.text('Action'), findsOneWidget);
   });
-
-  testWidgets(
-    'host roster controls use canonical search and metric primitives',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          Column(
-            children: [
-              HostRosterFilterHeader(
-                title: 'Participation',
-                subtitle: 'Review attendance.',
-                filters: const [
-                  HostRosterFilterSpec(
-                    filter: HostRosterFilter.all,
-                    label: 'All',
-                    value: 2,
-                    tone: CatchBadgeTone.neutral,
-                  ),
-                  HostRosterFilterSpec(
-                    filter: HostRosterFilter.attended,
-                    label: 'Attended',
-                    value: 1,
-                    tone: CatchBadgeTone.success,
-                  ),
-                ],
-                selectedFilter: HostRosterFilter.all,
-                onFilterChanged: (_) {},
-              ),
-              HostRosterSearchField(
-                value: '',
-                label: 'Search roster',
-                onChanged: (_) {},
-              ),
-            ],
-          ),
-        ),
-      );
-
-      expect(find.byType(CatchMetricSection), findsOneWidget);
-      expect(find.byType(CatchSearchField), findsOneWidget);
-    },
-  );
 }
 
 Widget _wrap(Widget child) {

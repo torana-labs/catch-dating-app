@@ -1,6 +1,4 @@
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleton.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/participant_table.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -9,24 +7,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../../support/page_preview.dart';
 import 'preview.dart';
-
-@widgetbook.UseCase(
-  name: 'Inline icon loading',
-  type: HostInlineIconSkeleton,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-Widget hostLoadingStatesCatalog(BuildContext context) {
-  return const WidgetbookPageCatalogFrame(
-    title: 'Host loading states',
-    contractId: 'component.host.loading_skeletons',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'unresolved icon',
-        child: HostInlineIconSkeleton(),
-      ),
-    ],
-  );
-}
 
 @widgetbook.UseCase(
   name: 'Roster primitive states',
@@ -155,11 +135,6 @@ Widget hostEmptyStateStates(BuildContext context) {
   );
 }
 
-@widgetbook.UseCase(
-  name: 'Covered by host event manage route states',
-  type: HostEventManageScreen,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
 // Exact host coverage entries. These point narrow promoted classes at the
 // catalog route/component state that renders the owning workflow.
 @widgetbook.UseCase(
@@ -177,11 +152,3 @@ Widget hostStrictCatchRosterActionCellCatalogStates(BuildContext context) =>
 )
 Widget hostStrictCatchRosterDecideTargetCatalogStates(BuildContext context) =>
     hostRosterPrimitiveCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostInlineIconSkeleton,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostInlineSkeletonIconCatalogStates(BuildContext context) =>
-    hostLoadingStatesCatalog(context);

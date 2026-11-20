@@ -155,7 +155,7 @@ describe("private demo landing", () => {
       <Route path="/demo/:invitationId" element={<SalesDemoPage api={api} auth={auth} />} />
     </Routes></BrowserRouter></QueryClientProvider>);
     fireEvent.change(await screen.findByLabelText("Or verify phone (international format)"),
-      {target: {value: "+15555550123"}});
+      {target: {value: "+919876543210"}});
     fireEvent.click(screen.getByRole("button", {name: "Send verification code"}));
     fireEvent.change(await screen.findByLabelText("Verification code"),
       {target: {value: "123456"}});

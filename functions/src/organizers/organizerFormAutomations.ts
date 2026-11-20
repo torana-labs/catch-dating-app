@@ -1514,7 +1514,14 @@ function replaceActionResult(
   else results.push(result);
 }
 
-function ruleProjection(
+/**
+ * The manager row of one rule: its definition with the webhook secret
+ * reduced to whether one is set. Shared with hostFormAutomationRuleViews.
+ * @param {string} ruleId The rule id.
+ * @param {OrganizerFormAutomationRuleDocument} rule The rule.
+ * @return {RuleProjection} The row.
+ */
+export function ruleProjection(
   ruleId: string,
   rule: OrganizerFormAutomationRuleDocument,
 ): RuleProjection {
@@ -1544,7 +1551,13 @@ function ruleProjection(
   };
 }
 
-function runProjection(
+/**
+ * The manager row of one run. Shared with hostFormAutomationRunViews.
+ * @param {string} runId The run id.
+ * @param {OrganizerFormAutomationRunDocument} run The run.
+ * @return {object} The row.
+ */
+export function runProjection(
   runId: string,
   run: OrganizerFormAutomationRunDocument,
 ): ListOrganizerFormAutomationRunsCallableResponse["runs"][number] {

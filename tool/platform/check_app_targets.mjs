@@ -9,7 +9,7 @@ import {
 } from "./resolve_app_target.mjs";
 
 const expectedRoles = ["consumer", "host"];
-const expectedEnvironments = ["dev", "staging", "prod"];
+const expectedEnvironments = ["dev", "prod"];
 export function packageVersionFromPubLock(source, packageName) {
   const lines = source.split(/\r?\n/u);
   const packageHeader = `  ${packageName}:`;
@@ -117,7 +117,10 @@ export function validateManifestShape(manifest) {
   }
 
   const targets = manifest?.targets ?? [];
-  if (targets.length !== 6) findings.push(`expected 6 targets, found ${targets.length}`);
+  const expectedTargetCount = expectedRoles.length * expectedEnvironments.length;
+  if (targets.length !== expectedTargetCount) {
+    findings.push(`expected ${expectedTargetCount} targets, found ${targets.length}`);
+  }
   const ids = new Set();
   const pairs = new Set();
   const iosBundleIds = new Set();

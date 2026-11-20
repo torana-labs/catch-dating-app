@@ -36,6 +36,26 @@ export interface OrganizerTrackingPublicationPolicy {
   readonly excludedActivityKinds: readonly string[];
   /** Canonical interaction models that never carry organiser tags. */
   readonly excludedInteractionModels: readonly string[];
+  /**
+   * Organiser profile classification for Catch's own tags (owner decision,
+   * 19 Nov 2026, #2063): whether an organiser with any public external
+   * listing counts as unknown, and so is excluded. External listings carry no
+   * reviewed canonical classification. Kept as its own switch because the
+   * owner may allow a narrow deterministic case for scraped organisers.
+   */
+  readonly externalListingsCountAsUnknown: boolean;
+  /**
+   * The narrow, deterministic allowance for scraped organisers (owner
+   * decision relayed 19 Nov 2026, #2063), used while
+   * `externalListingsCountAsUnknown` is false. Every captured upcoming
+   * external listing must carry one of these supply-intake activity labels
+   * (`activity.activityKind`, written by supply intake's `activityKind`), and
+   * none may mention a blocked word; anything else stays unknown.
+   */
+  readonly externalListingAllowance: {
+    readonly activityKinds: readonly string[];
+    readonly blockedWords: readonly string[];
+  };
 }
 
 export const organizerTrackingPublicationPolicy:
@@ -54,9 +74,26 @@ export const organizerTrackingPublicationPolicy:
       "ownerSettings", "testReceipts", "docs", "ownerPolicySignOff",
     ]),
     excludedActivityKinds: Object.freeze(
-      ["socialRun", "singlesMixer", "barCrawl", "dinner"]),
+      // socialRun and dinner were removed for native organisers (owner
+      // decision relayed 19 Nov 2026, #2063); the singles and crawl classes
+      // stay, as do the excluded interaction models below.
+      ["singlesMixer", "barCrawl"]),
+    // seatedTable was removed so a Catch-hosted dinner qualifies (owner
+    // decision relayed 19 Nov 2026, #2063); mixers, rotations and route stops
+    // stay excluded.
     excludedInteractionModels: Object.freeze(
-      ["pairedRotations", "seatedTable", "freeFormMixer", "routeStops"]),
+      ["pairedRotations", "freeFormMixer", "routeStops"]),
+    externalListingsCountAsUnknown: false,
+    externalListingAllowance: Object.freeze({
+      // Supply intake labels every run "socialRun" and every dinner "dinner".
+      // The owner allowed both for scraped listings (relayed 19 Nov 2026,
+      // #2063), still subject to the blocked words. barCrawl and openActivity
+      // stay unknown.
+      activityKinds: Object.freeze(["pubQuiz", "yoga", "padel", "pickleball",
+        "tennis", "cycling", "socialRun", "dinner"]),
+      blockedWords: Object.freeze(["single", "singles", "dating", "date night",
+        "speed date", "speed dating", "mixer", "matchmaking", "matchmaker"]),
+    }),
   });
 
 export type OrganizerTrackingEventPolicyReason =

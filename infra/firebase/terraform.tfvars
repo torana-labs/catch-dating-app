@@ -39,32 +39,6 @@ android_apps = {
       "bd7970e3b9de596c1e294f172dae4b14bc2c6b88219c2564138026c69f1bf645",
     ]
   }
-  "staging-consumer" = {
-    project      = "catchdates-staging"
-    app_id       = "1:822303414140:android:e843ef30968cea960c76f9"
-    package_name = "com.catchdates.app.staging"
-    display_name = "Catch Staging Android"
-    sha1_hashes = [
-      "f37152371535e02e4af8c6a7d9e1dabbb7aa5637",
-    ]
-    sha256_hashes = [
-      "f0e1d3e12c443c00ecac3345964673d5b3a1f46f1d59abadcd19cf1426f23002",
-      "3088f763a60fd9f7ca99204d6a68ef93a30263a697e563ef883b29dbbc7ae23e",
-    ]
-  }
-  "staging-host" = {
-    project      = "catchdates-staging"
-    app_id       = "1:822303414140:android:87fbdade02a935810c76f9"
-    package_name = "com.catchdates.host.staging"
-    display_name = "Catch Host Staging Android"
-    sha1_hashes = [
-      "f37152371535e02e4af8c6a7d9e1dabbb7aa5637",
-    ]
-    sha256_hashes = [
-      "3088f763a60fd9f7ca99204d6a68ef93a30263a697e563ef883b29dbbc7ae23e",
-      "f0e1d3e12c443c00ecac3345964673d5b3a1f46f1d59abadcd19cf1426f23002",
-    ]
-  }
   "dev-consumer" = {
     project      = "catchdates-dev"
     app_id       = "1:619661127800:android:d90f9bb4d89afbd7077d8d"

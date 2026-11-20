@@ -7,33 +7,53 @@ export const tryItToolCommands = {
   organizer: "organizer.import-from-link",
   event: "event.import-from-link",
   kit: "promotion.create-kit",
+  guests: "guests.import-list",
+  report: "sales.import-past",
+  night: "night.plan",
 } as const satisfies Record<string, TryItCommandId>;
 export type TryItToolKind = keyof typeof tryItToolCommands;
+/**
+ * The tools that start from a link, which this folder's TryItTool draws; the
+ * guest list tool is features/guestImportTryIt, Reports' export upload is
+ * features/pastSalesTryIt and the plan-a-night tool is NightPlanTryIt.tsx.
+ */
+export type TryItLinkToolKind = Exclude<TryItToolKind, "guests" | "report" | "night">;
 
 /**
  * The commands whose website tool is built and tested here. A product
  * page's try-it band, its "Try it" buttons and its closing tool form may be
  * visible only when its command is listed (playbookPages.test.ts); whether
  * one is visible is still the page's own `status`, flipped once its command
- * is in production. guests.import-list, plan a night, past sales and form
- * import have no website tool yet, so their bands stay hidden.
+ * is in production. guests.import-list's tool is the guest list upload
+ * (features/guestImportTryIt); sales.import-past's is Reports' export upload
+ * (features/pastSalesTryIt); night.plan's is the plan-a-night tool
+ * (NightPlanTryIt.tsx). Form import has no website tool yet, so its band
+ * stays hidden. Reports' numbers-only path needs no
+ * command: it is the lastEventReport custom section, worked out in the
+ * page, beside the export upload.
  */
 export const websiteReadyTryItCommands = [
   "organizer.import-from-link",
   "event.import-from-link",
   "promotion.create-kit",
+  "guests.import-list",
+  "sales.import-past",
+  "night.plan",
 ] as const satisfies readonly TryItCommandId[];
 
 /**
  * The tool each playbook page's tool forms open, by page content key. A
  * `tool` lead form on a page not listed here draws nothing. The event tool
- * also serves the standalone /tools/event-page-from-link/ page once it is
- * written (`tools_event_page_from_link: "event"`).
+ * also serves the standalone /tools/event-page-from-link/ page.
  */
 export const playbookTryItTools: Readonly<Record<string, TryItToolKind>> = {
   product_your_page: "organizer",
   product_bookings: "event",
   product_messages: "kit",
+  tools_event_page_from_link: "event",
+  product_guests: "guests",
+  product_reports: "report",
+  product_room: "night",
 };
 
 /** The tool a page's tool forms open, or null when the page has none or its command is not website-ready. */
@@ -74,9 +94,13 @@ export function tryItLink(typed: string, tool: TryItToolKind): string | null {
   return href.length >= 8 && href.length <= 2000 ? href : null;
 }
 
-/** The cities a try-it profile can start in: the live market cities, where organisers can be created. */
+/**
+ * The cities a try-it profile can start in: those where an organiser can be
+ * created (the catalog's surfaces.hostCreatable), which workspace.ensure
+ * checks again.
+ */
 export function tryItCities(): readonly MarketCity[] {
-  return websiteCities.filter((city) => city.status === "live");
+  return websiteCities.filter((city) => city.hostCreatable);
 }
 
 export type TryItKitLink = TryItInput<"promotion.create-kit">["links"][number];

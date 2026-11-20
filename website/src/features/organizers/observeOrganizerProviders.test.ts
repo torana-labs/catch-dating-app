@@ -1,96 +1,141 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {waitFor} from "@testing-library/react";
+
+const transport = vi.hoisted(() => ({set: vi.fn(), pageView: vi.fn(), admit: vi.fn()}));
+vi.mock("../../analytics", async (importActual) => ({
+  ...(await importActual<typeof import("../../analytics")>()),
+  setOrganizerAdDestinations: transport.set,
+  trackOrganizerPageViewed: transport.pageView,
+  admitCatchOrganizerProfile: transport.admit,
+}));
 import {setMarketingConsent} from "../../analytics";
 import {hostListings} from "./data";
-import {observeOrganizerProviders, trackOrganizerProviderOutboundClick} from "./observeOrganizerProviders";
-import type {OrganizerTrackingSettings, ProviderSessionConfiguration} from "./trackingProviders";
+import {observeOrganizerProviders, type OrganizerTrackingSettings} from "./observeOrganizerProviders";
 
 const listing = {...hostListings[0], publicApi: {...hostListings[0].publicApi, state: "enabled" as const}};
 let sequence = 0;
-beforeEach(() => { localStorage.clear(); sessionStorage.clear(); sequence++; });
-function setup() {
+beforeEach(() => {
+  localStorage.clear(); sessionStorage.clear(); sequence++;
+  transport.set.mockClear(); transport.pageView.mockClear(); transport.admit.mockClear();
+});
+function setup(path?: string) {
   const eventId = `event-${sequence}`;
-  window.history.replaceState(null, "", `/events/${eventId}/?secret=never-send#private`);
+  window.history.replaceState(null, "", path ?? `/events/${eventId}/`);
   const settings: OrganizerTrackingSettings = {organizerId: listing.id, eventId, enabled: true,
     googleMeasurementId: "G-TEST123456", metaPixelId: "1234567890"};
   const readSettings = vi.fn().mockResolvedValue(settings);
-  const sessions: {configuration: ProviderSessionConfiguration; send: ReturnType<typeof vi.fn>; destroy: ReturnType<typeof vi.fn>}[] = [];
-  const transport = (configuration: ProviderSessionConfiguration) => {
-    const session = {configuration, send: vi.fn(), destroy: vi.fn()}; sessions.push(session); return session;
-  };
-  return {eventId, settings, readSettings, transport, sessions};
+  return {eventId, settings, readSettings};
 }
+const lastSet = () => transport.set.mock.calls.at(-1)?.[0];
 
-describe("public organizer provider lifecycle integration", () => {
-  it("fetches no configuration before consent and then reads the scoped callable and safe public path", async () => {
+describe("organiser tags through the first-party transport", () => {
+  it("reads nothing before a marketing choice, then sets the published destination set and sends a page view", async () => {
     const state = setup();
     const stop = observeOrganizerProviders(listing, state.eventId, state);
+    setMarketingConsent("essential");
+    setMarketingConsent("analytics");
     expect(state.readSettings).not.toHaveBeenCalled();
-    setMarketingConsent("essential"); expect(state.readSettings).not.toHaveBeenCalled();
     setMarketingConsent("accepted");
-    await waitFor(() => expect(state.sessions).toHaveLength(2));
+    await waitFor(() => expect(transport.pageView).toHaveBeenCalledOnce());
     expect(state.readSettings).toHaveBeenCalledWith({organizerId: listing.id, eventId: state.eventId});
-    expect(state.sessions[0].configuration.publicPath).toBe(`/events/${state.eventId}/`);
-    expect(state.sessions[0].send).toHaveBeenCalledWith("page_view");
-    trackOrganizerProviderOutboundClick(listing.id, state.eventId);
-    expect(state.sessions[0].send).toHaveBeenCalledWith("outbound_booking_click");
-    stop(); expect(state.sessions.every((session) => session.destroy.mock.calls.length === 1)).toBe(true);
-  });
-  it("revokes immediately and ignores the in-flight granted configuration", async () => {
-    const state = setup(); let resolve: (settings: OrganizerTrackingSettings) => void = () => {};
-    state.readSettings.mockImplementation(() => new Promise<OrganizerTrackingSettings>((done) => {resolve = done;}));
-    setMarketingConsent("accepted"); const stop = observeOrganizerProviders(listing, state.eventId, state);
-    setMarketingConsent("essential"); resolve(state.settings);
-    await Promise.resolve(); await Promise.resolve(); expect(state.sessions).toEqual([]);
+    expect(lastSet()).toEqual({organizerId: listing.id, eventId: state.eventId, metaPixelId: "1234567890",
+      googleMeasurementId: "G-TEST123456"});
     stop();
+    expect(lastSet()).toBeNull();
   });
-  it("destroys mounted vendors when consent is revoked and prevents outbound events", async () => {
-    const state = setup(); setMarketingConsent("accepted");
-    const stop = observeOrganizerProviders(listing, state.eventId, state);
-    await waitFor(() => expect(state.sessions).toHaveLength(2));
-    setMarketingConsent("essential"); trackOrganizerProviderOutboundClick(listing.id, state.eventId);
-    expect(state.sessions.every((session) => session.destroy.mock.calls.length === 1)).toBe(true);
-    expect(state.sessions[0].send).toHaveBeenCalledTimes(1);
-    stop();
-  });
-  it("ignores late responses after route navigation and only collects approved matching events", async () => {
-    const state = setup(); let resolve: (settings: OrganizerTrackingSettings) => void = () => {};
-    state.readSettings.mockImplementation(() => new Promise<OrganizerTrackingSettings>((done) => {resolve = done;}));
-    setMarketingConsent("accepted"); const stop = observeOrganizerProviders(listing, state.eventId, state);
-    window.history.replaceState(null, "", "/events/next-event/"); resolve(state.settings);
-    await Promise.resolve(); expect(state.sessions).toEqual([]); stop();
-    state.readSettings.mockResolvedValue(state.settings);
-    window.history.replaceState(null, "", `/events/${state.eventId}/`);
-    const stopAgain = observeOrganizerProviders(listing, state.eventId, state);
-    await waitFor(() => expect(state.sessions).toHaveLength(2));
-    trackOrganizerProviderOutboundClick("other-organizer", state.eventId);
-    trackOrganizerProviderOutboundClick(listing.id, "sensitive-unapproved-event");
-    expect(state.sessions[0].send).toHaveBeenCalledTimes(1); stopAgain();
-  });
-  it("does not load tags on denied/unknown ownership, sensitive policy or private pages", async () => {
-    const state = setup(); setMarketingConsent("accepted");
+
+  it("uses nothing the projection did not publish", async () => {
+    const state = setup();
+    setMarketingConsent("accepted");
+    for (const settings of [{...state.settings, enabled: false}, {...state.settings, organizerId: "other-organizer"},
+      {...state.settings, eventId: "other-event"}]) {
+      state.readSettings.mockResolvedValue(settings);
+      const stop = observeOrganizerProviders(listing, state.eventId, state);
+      await Promise.resolve(); await Promise.resolve();
+      expect(transport.set.mock.calls.every(([set]) => set === null)).toBe(true);
+      stop();
+    }
     state.readSettings.mockRejectedValue(new Error("permission-denied"));
     const stop = observeOrganizerProviders(listing, state.eventId, state);
-    await Promise.resolve(); expect(state.sessions).toEqual([]); stop();
-    state.readSettings.mockResolvedValue({...state.settings, enabled: false, metaPixelId: null, googleMeasurementId: null});
-    const stopSensitive = observeOrganizerProviders(listing, state.eventId, state);
-    await Promise.resolve(); expect(state.sessions).toEqual([]); stopSensitive();
-    state.readSettings.mockClear(); window.history.replaceState(null, "", "/booking/private-token/");
-    const stopPrivate = observeOrganizerProviders(listing, state.eventId, state);
-    expect(state.readSettings).not.toHaveBeenCalled(); stopPrivate();
+    await Promise.resolve(); await Promise.resolve();
+    expect(transport.pageView).not.toHaveBeenCalled();
+    stop();
   });
-  it("deduplicates page views across remounts, while event cards on a listing cannot imply event approval", async () => {
-    const state = setup(); setMarketingConsent("accepted");
+
+  it("clears the set when the choice is withdrawn and ignores an in-flight response", async () => {
+    const state = setup();
+    let resolve: (settings: OrganizerTrackingSettings) => void = () => {};
+    state.readSettings.mockImplementation(() => new Promise<OrganizerTrackingSettings>((done) => {resolve = done;}));
+    setMarketingConsent("accepted");
     const stop = observeOrganizerProviders(listing, state.eventId, state);
-    await waitFor(() => expect(state.sessions).toHaveLength(2)); stop();
-    const stopAgain = observeOrganizerProviders(listing, state.eventId, state);
-    await waitFor(() => expect(state.sessions).toHaveLength(4));
-    expect(state.sessions[2].send).not.toHaveBeenCalled(); stopAgain();
-    window.history.replaceState(null, "", listing.path);
-    state.readSettings.mockResolvedValue({...state.settings, eventId: null});
-    const stopListing = observeOrganizerProviders(listing, null, state);
-    await waitFor(() => expect(state.sessions).toHaveLength(6));
-    trackOrganizerProviderOutboundClick(listing.id, state.eventId);
-    expect(state.sessions[4].send).toHaveBeenCalledTimes(1); stopListing();
+    setMarketingConsent("essential");
+    resolve(state.settings);
+    await Promise.resolve(); await Promise.resolve();
+    expect(lastSet()).toBeNull();
+    expect(transport.pageView).not.toHaveBeenCalled();
+    stop();
+  });
+
+  it("ignores a late response after navigation, and reads nothing on an ineligible page", async () => {
+    const state = setup();
+    let resolve: (settings: OrganizerTrackingSettings) => void = () => {};
+    state.readSettings.mockImplementation(() => new Promise<OrganizerTrackingSettings>((done) => {resolve = done;}));
+    setMarketingConsent("accepted");
+    const stop = observeOrganizerProviders(listing, state.eventId, state);
+    window.history.replaceState(null, "", "/events/next-event/");
+    resolve(state.settings);
+    await Promise.resolve(); await Promise.resolve();
+    expect(transport.pageView).not.toHaveBeenCalled();
+    stop();
+    for (const path of ["/booking/private-token/", "/claim/private/", `/events/${state.eventId}/?secret=never`]) {
+      state.readSettings.mockClear();
+      window.history.replaceState(null, "", path);
+      const stopPrivate = observeOrganizerProviders(listing, state.eventId, state);
+      expect(state.readSettings).not.toHaveBeenCalled();
+      stopPrivate();
+    }
+  });
+
+  it("admits a server-eligible profile to Catch's tags under analytics alone, and clears it on leaving", async () => {
+    const state = setup(listing.path);
+    state.readSettings.mockResolvedValue({...state.settings, eventId: null, enabled: false, metaPixelId: null,
+      googleMeasurementId: null, profileTagsEligible: true});
+    setMarketingConsent("analytics");
+    const stop = observeOrganizerProviders(listing, null, state);
+    await waitFor(() => expect(transport.admit).toHaveBeenCalledWith(listing.path));
+    expect(state.readSettings).toHaveBeenCalledWith({organizerId: listing.id, eventId: null});
+    expect(transport.set.mock.calls.every(([set]) => set === null)).toBe(true);
+    stop();
+    expect(transport.admit).toHaveBeenLastCalledWith(null);
+  });
+
+  it("keeps the profile closed when the server says no, the read fails or consent is essential", async () => {
+    const state = setup(listing.path);
+    setMarketingConsent("accepted");
+    state.readSettings.mockResolvedValue({...state.settings, eventId: null, enabled: false, profileTagsEligible: false});
+    let stop = observeOrganizerProviders(listing, null, state);
+    await waitFor(() => expect(transport.admit).toHaveBeenCalled());
+    expect(transport.admit.mock.calls.every(([path]) => path === null)).toBe(true);
+    stop();
+    state.readSettings.mockRejectedValue(new Error("unavailable"));
+    stop = observeOrganizerProviders(listing, null, state);
+    await Promise.resolve(); await Promise.resolve();
+    expect(transport.admit.mock.calls.every(([path]) => path === null)).toBe(true);
+    stop();
+    setMarketingConsent("essential");
+    state.readSettings.mockClear();
+    stop = observeOrganizerProviders(listing, null, state);
+    expect(state.readSettings).not.toHaveBeenCalled();
+    stop();
+  });
+
+  it("never admits a profile from an event page read", async () => {
+    const state = setup();
+    state.readSettings.mockResolvedValue({...state.settings, profileTagsEligible: true});
+    setMarketingConsent("accepted");
+    const stop = observeOrganizerProviders(listing, state.eventId, state);
+    await waitFor(() => expect(transport.pageView).toHaveBeenCalled());
+    expect(transport.admit).not.toHaveBeenCalled();
+    stop();
   });
 });

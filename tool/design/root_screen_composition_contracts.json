@@ -69,7 +69,19 @@
           "minimumOccurrences": 1
         },
         {
-          "text": "navigation: CatchTabBar<HostShellDestination>(",
+          "text": "navigation: navigation,",
+          "minimumOccurrences": 1
+        },
+        {
+          "text": "CatchTabBar<HostShellDestination>(",
+          "minimumOccurrences": 1
+        },
+        {
+          "text": "CatchTabBar<HostPlannerDestination>(",
+          "minimumOccurrences": 1
+        },
+        {
+          "text": "items: hostPlannerDestinations(",
           "minimumOccurrences": 1
         },
         {

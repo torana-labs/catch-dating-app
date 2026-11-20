@@ -103,7 +103,7 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
         ? CatchLocalizedErrorState(
             value.error!,
             context: AppErrorContext.formResponses,
-            onRetry: _reload,
+            onRetry: _retry,
           )
         : HostResponseBody(
             state: state,
@@ -265,6 +265,27 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
     );
   }
 
+  /// Restarts every read after a failure, the application listener too.
+  void _retry() {
+    final applicationId =
+        widget.applicationId ??
+        ref
+            .read(hostResponseReviewDetailProvider(_key))
+            .asData
+            ?.value
+            .application
+            ?.applicationId;
+    if (applicationId != null) {
+      ref.invalidate(
+        hostApplicationDetailProvider(widget.organizerId, applicationId),
+      );
+    }
+    _reload();
+  }
+
+  /// Rereads the response after a write. The application is a listener on
+  /// its read model, so a review or membership decision reaches it without
+  /// a reread.
   void _reload() {
     final detail = ref
         .read(hostResponseReviewDetailProvider(_key))
@@ -272,19 +293,12 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
         ?.value;
     final responseId =
         widget.responseId ?? detail?.response?.response.responseId;
-    final applicationId =
-        widget.applicationId ?? detail?.application?.applicationId;
     if (responseId != null) {
       ref.invalidate(
         hostFormResponseDetailProvider(
           organizerId: widget.organizerId,
           responseId: responseId,
         ),
-      );
-    }
-    if (applicationId != null) {
-      ref.invalidate(
-        hostApplicationDetailProvider(widget.organizerId, applicationId),
       );
     }
     ref.invalidate(hostResponseReviewDetailProvider(_key));

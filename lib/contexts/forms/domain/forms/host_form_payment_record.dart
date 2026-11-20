@@ -121,22 +121,3 @@ class HostFormPaymentRecord {
   final String? providerPaymentId;
   final String? providerRefundId;
 }
-
-@immutable
-class HostFormPaymentPage {
-  const HostFormPaymentPage({required this.items, required this.nextCursor});
-  factory HostFormPaymentPage.fromCallableData(Object? data) {
-    final map = formDefinitionRequiredMap(data, 'form payments');
-    return HostFormPaymentPage(
-      items: List.unmodifiable(
-        formDefinitionMapList(
-          map['items'],
-          'payments',
-        ).map(HostFormPaymentRecord.fromMap),
-      ),
-      nextCursor: formDefinitionNullableString(map['nextCursor']),
-    );
-  }
-  final List<HostFormPaymentRecord> items;
-  final String? nextCursor;
-}

@@ -962,6 +962,17 @@ test("form conversion authority selects emulator validation in every CI mode", (
   }
 });
 
+test("the website's host fee figures also run the Functions parity test", () => {
+  for (const mode of graph.modes) {
+    const result = plan("website/src/content/pricing.ts", mode);
+    assert.equal(result.complete, true, mode);
+    for (const target of ["marketing", "functions"]) {
+      assert.ok(result.operations.ciTargets.includes(target), `${mode} ${target}`);
+    }
+  }
+  assert.equal(plan("website/src/content/brand.ts").operations.ciTargets.includes("functions"), false);
+});
+
 test("backend integration conservatively covers runtime and mixed lanes", () => {
   assert.deepEqual(plan("functions/src/events/cancelEventSignUp.ts")
     .operations.ciTargets, ["contracts", "firestore_rules", "functions"]);
@@ -1494,6 +1505,7 @@ test("deploy and maintenance workflows ci.yml never calls select their own tests
     ".github/workflows/city-interest-backfill.yml": ["ci:city-interest-backfill-workflow"],
     ".github/workflows/deck-era-purge.yml": ["ci:deck-era-purge-workflow"],
     ".github/workflows/organizer-takedown.yml": ["ci:organizer-takedown-workflow"],
+    ".github/workflows/listing-cohort-withdraw.yml": ["ci:listing-cohort-withdraw-workflow"],
     ".github/workflows/branch-prune.yml": ["git:branch-hygiene"],
     ".github/workflows/nx-shadow.yml": ["meta:nx-shadow-plan"],
     ".github/actions/find-queue-validation/action.yml": ["ci:web-hosting-delivery-workflow"],

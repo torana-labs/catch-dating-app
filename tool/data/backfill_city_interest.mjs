@@ -209,7 +209,7 @@ Options:
   --allow-prod             Required with --apply against prod.
   --json                   Print the report as JSON.
   --markdown               Print the report as Markdown (for a CI job summary).
-  --env <dev|staging|prod> Resolve project id from .firebaserc.
+  --env <dev|prod> Resolve project id from .firebaserc.
   --project <id>           Firebase project id.
   --emulator-host <host>   Use the Firestore emulator.
 `);

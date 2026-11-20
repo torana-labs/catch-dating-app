@@ -27,18 +27,19 @@
 
 /*
  * display-giant (proposal L4), website only: the hero face, larger, for one
- * figure that carries a band. It steps down on a phone-width band.
+ * figure that carries a band. It scales with its container instead of
+ * stepping at a page breakpoint: 220px on the canvas's 568px desktop copy
+ * column (220 / 568, rounded up to 38.8cqi so the column reaches it), never under the phone band's 150px. A long
+ * figure is held to its container: each character of the display face with
+ * this tracking is about 0.62em wide, so the figure is never wider than the
+ * column (CatchText sets --catch-text-giant-chars for a text figure).
  */
 .text[data-variant="display-giant"] {
   font-family: var(--catch-typography-role-display-hero-family), var(--catch-font-stack-display);
-  font-size: 220px;
+  font-size: min(clamp(150px, 38.8cqi, 220px), calc(100cqi / (var(--catch-text-giant-chars, 2) * 0.64)));
   font-weight: var(--catch-typography-role-display-hero-weight);
   line-height: 0.82;
   letter-spacing: -0.05em;
-}
-
-@container catch-page (width < 840px) {
-  .text[data-variant="display-giant"] { font-size: 150px; }
 }
 
 .text[data-variant="display-xl"] {

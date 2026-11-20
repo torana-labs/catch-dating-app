@@ -9,6 +9,7 @@ import 'package:catch_dating_app/contexts/connections/data/match_repository.dart
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
+import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_catch_pages_controller.dart';
@@ -128,6 +129,24 @@ void main() {
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('host')),
         programSetupRepositoryProvider.overrideWithValue(programs),
+        // The audience reads the exact programme's view; it arrives with the
+        // pending detail, so late or denied programmes stay contained.
+        organizerProgramViewStreamProvider.overrideWith(
+          (ref, programId) => Stream.fromFuture(
+            programs
+                .getProgram(programId)
+                .then(
+                  (detail) => <Object?, Object?>{
+                    'programId': detail.program.programId,
+                    'organizerId': detail.program.organizerId,
+                    'title': detail.program.title,
+                    'kind': detail.program.kind.name,
+                    'status': detail.program.status.name,
+                    'revision': detail.program.revision,
+                  },
+                ),
+          ),
+        ),
         // Missing and truncated menus cannot prove or revoke exact-program authority.
         organizerProgramListProvider(
           'org',
@@ -309,6 +328,9 @@ void main() {
       final harness = await mount(tester, programs, route);
       await pumpFeatureUi(tester);
       programs.details['a'] = Completer();
+      // A revoked read reaches the listener as an error on the programme's
+      // view, which the audience then surfaces.
+      harness.container.invalidate(organizerProgramViewStreamProvider('a'));
       harness.container.invalidate(
         hostInboxProgramAudiencePagesProvider('org', 'a'),
       );

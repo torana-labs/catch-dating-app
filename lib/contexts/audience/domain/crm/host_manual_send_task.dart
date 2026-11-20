@@ -84,30 +84,6 @@ class HostManualSendTask {
   final DateTime expiresAt;
 }
 
-class HostManualSendTaskPage {
-  const HostManualSendTaskPage({
-    required this.organizerId,
-    required this.tasks,
-    required this.nextCursor,
-  });
-
-  factory HostManualSendTaskPage.fromCallableData(Object? data) {
-    final map = crmRequiredMap(data, 'manual send task page');
-    return HostManualSendTaskPage(
-      organizerId: crmRequiredString(map, 'organizerId'),
-      tasks: crmMapList(
-        map['tasks'],
-        'manual send tasks',
-      ).map(HostManualSendTask.fromMap).toList(growable: false),
-      nextCursor: crmNullableString(map['nextCursor']),
-    );
-  }
-
-  final String organizerId;
-  final List<HostManualSendTask> tasks;
-  final String? nextCursor;
-}
-
 class HostManualSendTaskReplanResult {
   const HostManualSendTaskReplanResult({
     required this.taskId,

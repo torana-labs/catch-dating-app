@@ -4,9 +4,8 @@ export function isCatchWebsiteHost(hostname: string): boolean {
   const firebaseSite = hostname.match(
     /^([a-z0-9-]+)\.(?:web\.app|firebaseapp\.com)$/u)?.[1];
   const knownSite = firebaseSite === "catchdates-dev" ||
-    firebaseSite === "catchdates-staging" ||
     firebaseSite === "catch-dating-app-64e51" ||
-    /^(?:catchdates-dev|catchdates-staging|catch-dating-app-64e51)--[a-z0-9-]+$/u
+    /^(?:catchdates-dev|catch-dating-app-64e51)--[a-z0-9-]+$/u
       .test(firebaseSite ?? "");
   return hostname === brand.web.domain || hostname === new URL(brand.web.wwwOrigin).hostname ||
     hostname === "localhost" || hostname === "127.0.0.1" ||

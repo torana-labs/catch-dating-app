@@ -16,7 +16,8 @@ describe("CatchHeroShowcase", () => {
       />,
     );
     expect(screen.getByRole("img", {name: "The Catch app"})).toBeTruthy();
-    const panel = container.firstElementChild as HTMLElement;
+    // The panel sits in its frame, the container it steps by.
+    const panel = container.firstElementChild!.firstElementChild as HTMLElement;
     expect(panel.dataset).toMatchObject({ground: "pink", catchTheme: "light"});
     const stickers = panel.querySelectorAll("[data-slot]");
     expect([...stickers].map((item) => item.getAttribute("aria-hidden"))).toEqual(["true", "true", "true"]);

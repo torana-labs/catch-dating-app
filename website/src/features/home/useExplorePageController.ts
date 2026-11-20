@@ -5,6 +5,7 @@ import {cityAlertsCopy} from "@content/discovery/cityAlerts";
 import {exploreAlertInterests} from "../discovery/cityAlertsModel";
 import {discoveryOrganizerCard, discoveryPlanCard} from "../discovery/discoveryCards";
 import {cityDiscoveryLinks, showWhatsOnFor} from "../discovery/discoveryModel";
+import {cityOrganizers} from "./homeDiscovery";
 import {weekPlans} from "./homeModel";
 import type {HomeCatalog} from "./homeTypes";
 import {cityPagePath} from "./sections/cityChrome";
@@ -48,8 +49,9 @@ export function useExplorePageController(catalog: HomeCatalog, location: {pathna
   const filters = exploreFiltersFromSearch(location.search);
   const matchedPlans = useMemo(() => filterPlans(plans.plans, filters, readAt, city.timezone),
     [plans.plans, filters.query, filters.format, filters.when, readAt, city.timezone]);
-  const matchedOrganizers = useMemo(() => filterOrganizers(plans.organizers, filters),
-    [plans.organizers, filters.query, filters.format]);
+  // Only the organisers Settings → Discovery lets the city pages show.
+  const matchedOrganizers = useMemo(() => filterOrganizers(cityOrganizers(plans), filters),
+    [plans, filters.query, filters.format]);
   const thisWeek = useMemo(() => weekPlans(plans.plans, readAt), [plans.plans, readAt]);
   const update = (change: Partial<ExploreFilters>) =>
     navigate(`${location.pathname}${exploreSearchFor({...filters, ...change}, location.search)}`, {replace: true});

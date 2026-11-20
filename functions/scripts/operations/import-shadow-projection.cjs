@@ -72,8 +72,8 @@ function validateApplyTarget({
   aliases,
   productionTarget,
 }) {
-  if (!["dev", "staging", "prod"].includes(environment)) {
-    throw argumentError("--environment must be dev, staging, or prod");
+  if (!["dev", "prod"].includes(environment)) {
+    throw argumentError("--environment must be dev or prod");
   }
   const configuredProject = aliases?.[environment];
   if (!configuredProject) {

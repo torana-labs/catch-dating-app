@@ -5,6 +5,7 @@ import {
   type OwnerPageCommand,
   type OwnerPageResult,
   type OwnerReview,
+  ownerTrackingSettings,
   type OwnerTrackingSettings,
   type OwnerViewData,
 } from "./ownerViewTypes";
@@ -40,11 +41,6 @@ async function invoke<Response>(name: string, payload: unknown): Promise<Respons
   return (await callable(payload)).data;
 }
 
-function tracking(raw: OwnerTrackingSettings): OwnerTrackingSettings {
-  return {organizerId: raw.organizerId, revision: raw.revision, metaPixelId: raw.metaPixelId ?? null,
-    googleMeasurementId: raw.googleMeasurementId ?? null, canEdit: raw.canEdit === true};
-}
-
 export const ownerViewBackends: OwnerViewBackends = {
   watchUser: (callback) => watchWebsiteAccountAuthState((user) => callback(user?.uid ?? null)),
   getView: async (organizerId) => {
@@ -64,6 +60,6 @@ export const ownerViewBackends: OwnerViewBackends = {
   replyToReview: async (reviewId, message) => {
     await invoke("setReviewResponse", {reviewId, message});
   },
-  getTracking: async (organizerId) => tracking(await invoke("getOrganizerTrackingSettings", {organizerId})),
-  saveTracking: async (input) => tracking(await invoke("setOrganizerTrackingSettings", {...input, enabled: false})),
+  getTracking: async (organizerId) => ownerTrackingSettings(await invoke("getOrganizerTrackingSettings", {organizerId})),
+  saveTracking: async (input) => ownerTrackingSettings(await invoke("setOrganizerTrackingSettings", {...input, enabled: false})),
 };

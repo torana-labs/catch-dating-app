@@ -280,15 +280,17 @@ Future<void> _pumpHostScreen(
       overrides: [
         firebaseFirestoreProvider.overrideWithValue(FakeFirebaseFirestore()),
         hostTrackingSettingsProvider.overrideWith(
-          (ref, organizerId) async => HostTrackingSettings(
-            organizerId: organizerId,
-            revision: 0,
-            metaPixelId: null,
-            googleMeasurementId: null,
-            enabled: false,
-            publicationAllowed: false,
-            canEdit: true,
-            editBlockedReason: 'none',
+          (ref, organizerId) => Stream.value(
+            HostTrackingSettings(
+              organizerId: organizerId,
+              revision: 0,
+              metaPixelId: null,
+              googleMeasurementId: null,
+              enabled: false,
+              publicationAllowed: false,
+              canEdit: true,
+              editBlockedReason: 'none',
+            ),
           ),
         ),
         ...overrides,

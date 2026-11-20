@@ -11,10 +11,11 @@ export interface MeasurementConsent {
   updatedAt: string;
 }
 
-/** The stored consent receipt version. Version 5 is the first under which a
- * marketing choice loads the first-party Google tag and Meta Pixel
- * (`adTags.ts`); every earlier choice asks again. */
-export const currentConsentVersion = 5 as const;
+/** The stored consent receipt version. Version 6 is the first under which the
+ * banner names organisers' own Meta and Google tags (owner decision relayed
+ * 19 Nov 2026, #2063): every earlier choice, version 5 included, asks again
+ * and loads nothing until it is answered. */
+export const currentConsentVersion = 6 as const;
 
 /** The live transport a stored consent choice was made under. The first-party
  * Google tag and Meta Pixel (`adTags.ts`) are "first_party_tags"; a choice
@@ -38,8 +39,10 @@ export function acquisitionRoute(path: string): AcquisitionRoute | null {
   return Object.hasOwn(routes, normalized) ? normalized as AcquisitionRoute : null;
 }
 
-// Pages whose path carries a private token, an organiser's own page or an
-// organiser's form. They never load, capture for or send to an advertising tag.
+// Pages whose path carries a private token, an organiser's page or an
+// organiser's form. They never load, capture for or send to an advertising
+// tag through `publicAdPage`. Organiser profiles reach Catch's own tags only
+// through `catchOrganizerProfilePage` plus a server classification (#2063).
 const tokenAndFormPrefixes = ["/join/", "/rehearse/", "/invite/", "/rsvp/", "/f/", "/claim/"];
 const nonPublicPrefixes = ["/organizers", ...tokenAndFormPrefixes];
 const eventPagePattern = /^\/events\/[A-Za-z0-9_:-]{1,180}\/$/u;
@@ -83,20 +86,54 @@ const organizerFlowSegments: ReadonlySet<string> = new Set(["claim", "f", "form"
  * projection still decides whether that organiser and event are published,
  * active and non-dating. Private routes (`privateRoutes.ts`), claim, forms,
  * offers, OTP, booking receipts, account, demo and token links fail closed,
- * as does any address with a query or a non-anchor hash.
+ * as does a non-anchor hash. A query may carry only the ad-click keys
+ * `fbclid`, `gclid` and `utm_*` (owner decision, 19 Nov 2026, #2063), so
+ * visits from the organiser's own ads are measured; any other key, or a
+ * repeated key, fails closed.
  */
+/** The only query keys an organiser-tag page may carry: the ad platforms' click keys. */
+const organizerQueryKey = /^(?:fbclid|gclid|utm_(?:source|medium|campaign|content|term|id))$/u;
+
+function organizerQueryAllowed(search: string) {
+  if (search === "" || search === "?") return true;
+  const keys = [...new URLSearchParams(search).keys()];
+  return keys.length > 0 && new Set(keys).size === keys.length && keys.every((key) => organizerQueryKey.test(key));
+}
+
+/** A normalised organiser profile path, or null for the directory, a flow segment or anything else. */
+function organizerProfilePath(normalized: string): string | null {
+  if (!organizerPagePattern.test(normalized)) return null;
+  const segments = normalized.split("/").filter(Boolean).slice(1);
+  return segments.some((segment) => organizerFlowSegments.has(segment)) ? null : normalized;
+}
+
+/**
+ * The route side of Catch's own tags on organiser profiles (owner decisions,
+ * 19 Nov 2026, #2063): the same profile paths and flow exclusions as
+ * `organizerAdPage`, or null. A route match alone never turns Catch's tags
+ * on: the owner also ruled that dating-classified organisers (canonical
+ * social, singles and mixer) and organisers with no classification are
+ * skipped, failing closed. The website cannot classify an organiser (public
+ * listings rewrite `singlesMixer`, CAT-247), so the tags need the server's
+ * classification for the profile before this path may send. Until that is
+ * wired, `publicAdPage` keeps every organiser page closed.
+ */
+export function catchOrganizerProfilePage(path: string): string | null {
+  if (typeof path !== "string" || isPrivateEventUpdatePath(path)) return null;
+  const normalized = `${path.replace(/\/+$/u, "")}/`;
+  return isPrivateEventUpdatePath(normalized) ? null : organizerProfilePath(normalized);
+}
+
 export function organizerAdPage(path: string, search = "", hash = ""): OrganizerTagPage | null {
   if (typeof path !== "string" || typeof search !== "string" || typeof hash !== "string") return null;
-  if (search !== "" && search !== "?") return null;
+  if (!organizerQueryAllowed(search)) return null;
   if (!/^(?:#[A-Za-z0-9_-]*)?$/u.test(hash)) return null;
   if (isPrivateEventUpdatePath(path)) return null;
   const normalized = `${path.replace(/\/+$/u, "")}/`;
   if (isPrivateEventUpdatePath(normalized) || tokenAndFormPrefixes.some((prefix) => normalized.startsWith(prefix))) return null;
   if (eventPagePattern.test(normalized)) return {kind: "event", path: normalized};
-  if (!organizerPagePattern.test(normalized)) return null;
-  const segments = normalized.split("/").filter(Boolean).slice(1);
-  if (segments.some((segment) => organizerFlowSegments.has(segment))) return null;
-  return {kind: "organizer", path: normalized};
+  const profile = organizerProfilePath(normalized);
+  return profile ? {kind: "organizer", path: profile} : null;
 }
 
 // Closed campaign vocabulary; expand only with a reviewed campaign, never query text.

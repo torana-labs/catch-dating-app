@@ -47,8 +47,8 @@ const FINANCE = new Set<string>([
 ]);
 const GLOBAL_SALES_COLLECTIONS = [
   "salesImportJobs", "salesOutreachJobs", "salesActionReceipts",
-  "salesIntelligenceReceipts", "salesFitQueueReceipts",
-  "salesDemoInvitations", "salesDemoSessions", "salesDemoReceipts",
+  "salesIntelligenceReceipts",
+  "salesDemoInvitations", "salesDemoSessions",
   "assistantDelegations", "assistantManagementReceipts",
   "adminAuditLogs", "adminActionExecutions",
 ] as const;
@@ -248,14 +248,6 @@ export async function inventorySalesOrganizer(port: InventoryPort,
         }
         continue;
       }
-      if (collection === "salesDemoReceipts") {
-        const target = String(data.targetId);
-        const linkedOwner = blueprintOwners.get(target) ??
-          invitationOwners.get(target) ?? sessionOwners.get(target);
-        if (!linkedOwner) block("unattributed_demo_receipt", row.path);
-        else if (linkedOwner === organizerId) add(row);
-        continue;
-      }
       if (collection === "adminAuditLogs" ||
           collection === "adminActionExecutions") {
         const salesAction = String(data.action ?? data.actionId ?? "")
@@ -318,7 +310,6 @@ export async function inventorySalesOrganizer(port: InventoryPort,
   // Keep each attribution parent until all of its children have been drained.
   const deletionOrder = (item: InventoryItem): number => {
     const collection = collectionOf(item.path);
-    if (collection === "salesDemoReceipts") return 0;
     if (collection === "salesDemoSessions") return 1;
     if (collection === "salesDemoInvitations") return 2;
     if (collection === "salesDemoBlueprints") return 3;

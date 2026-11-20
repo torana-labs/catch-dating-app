@@ -1,4 +1,24 @@
+import 'package:catch_dating_app/contexts/programmes/domain/program_access_view.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+
+/// The organiser's programme rows the account's own access [views] list at
+/// [now] ([ProgramAccessView.listsSetup]): the programmes it created and,
+/// while it manages the organiser, every one. Offline a row stops showing
+/// when the cached view stops listing it; a row with no view never shows.
+List<Map<Object?, Object?>> organizerProgramRowsListed(
+  List<Map<Object?, Object?>> rows,
+  List<ProgramAccessView> views,
+  DateTime now,
+) {
+  final listed = {
+    for (final view in views)
+      if (view.listsSetup(now)) view.programId,
+  };
+  return [
+    for (final row in rows)
+      if (listed.contains(row['programId'])) row,
+  ];
+}
 
 /// What `getOrganizerProgram` returned, from the programme's
 /// `organizerProgramViews` document and the server's rollup [counts]: the

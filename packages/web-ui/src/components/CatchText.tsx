@@ -1,6 +1,6 @@
 "use client";
 
-import type {HTMLAttributes} from "react";
+import type {CSSProperties, HTMLAttributes} from "react";
 import {catchTextRoleFor, type CatchTextTone, type CatchTextVariant} from "./catchCoreVocabulary";
 import {useCatch} from "./catchRootContext";
 import styles from "./CatchText.module.css";
@@ -40,6 +40,19 @@ function defaultElement(variant: CatchTextVariant | CatchWebTextVariant): CatchT
 }
 
 /**
+ * The element's inline style: a line clamp, and for a display-giant text
+ * figure its length, so the figure's size holds it to its container.
+ */
+function textStyle(style: CSSProperties | undefined, clamp: number | undefined, giantChars: number | undefined): CSSProperties | undefined {
+  if (clamp === undefined && giantChars === undefined) return style;
+  return {
+    ...style,
+    ...(clamp === undefined ? {} : {WebkitLineClamp: clamp}),
+    ...(giantChars === undefined ? {} : {"--catch-text-giant-chars": giantChars} as CSSProperties),
+  };
+}
+
+/**
  * catch.text: every piece of text, in a role. The role carries size, line
  * height, weight, tracking and family; the responsive roles resolve through
  * the size class. Colour comes from what the text sits on unless a tone is
@@ -70,7 +83,7 @@ export function CatchText({
       data-numeric={numeric ? "" : undefined}
       data-tone={tone}
       data-variant={role}
-      style={clamp === undefined ? style : {...style, WebkitLineClamp: clamp}}
+      style={textStyle(style, clamp, role === "display-giant" && typeof children === "string" ? children.length : undefined)}
     >
       {children}
     </Element>

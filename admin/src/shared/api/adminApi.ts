@@ -45,6 +45,12 @@ import type {AdminGetSafetySettingsCallableResponse} from
   "../../generated/contracts/adminGetSafetySettingsCallableResponse";
 import type {AdminUpdateSafetySettingsCallablePayload} from
   "../../generated/contracts/adminUpdateSafetySettingsCallablePayload";
+import type {AdminGetDiscoverySettingsCallablePayload} from
+  "../../generated/contracts/adminGetDiscoverySettingsCallablePayload";
+import type {AdminGetDiscoverySettingsCallableResponse} from
+  "../../generated/contracts/adminGetDiscoverySettingsCallableResponse";
+import type {AdminUpdateDiscoverySettingsCallablePayload} from
+  "../../generated/contracts/adminUpdateDiscoverySettingsCallablePayload";
 import type {AdminSearchPeopleCallablePayload} from
   "../../generated/contracts/adminSearchPeopleCallablePayload";
 import type {AdminSearchPeopleCallableResponse} from
@@ -2462,6 +2468,36 @@ export async function updateSafetySettings(
     AdminUpdateSafetySettingsCallablePayload,
     AdminGetSafetySettingsCallableResponse
   >(functions, "adminUpdateSafetySettings");
+  return (await callable(payload)).data;
+}
+
+// Settings → Discovery: where organisers on Catch and not on Catch yet appear.
+
+export async function getDiscoverySettings():
+  Promise<AdminGetDiscoverySettingsCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleDiscovery")).sampleGetDiscoverySettings();
+  }
+  const callable = httpsCallable<
+    AdminGetDiscoverySettingsCallablePayload,
+    AdminGetDiscoverySettingsCallableResponse
+  >(functions, "adminGetDiscoverySettings");
+  return (await callable({})).data;
+}
+
+export async function updateDiscoverySettings(
+  payload: AdminUpdateDiscoverySettingsCallablePayload
+): Promise<AdminGetDiscoverySettingsCallableResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    return (await import("./sampleDiscovery"))
+      .sampleUpdateDiscoverySettings(payload);
+  }
+  const callable = httpsCallable<
+    AdminUpdateDiscoverySettingsCallablePayload,
+    AdminGetDiscoverySettingsCallableResponse
+  >(functions, "adminUpdateDiscoverySettings");
   return (await callable(payload)).data;
 }
 

@@ -115,10 +115,10 @@ update and consent change; it is not injected into the host-only controller.
 
 - **What loads when.** Tags load once, only on a public page (see
   [Payload and attribution](#payload-and-attribution)) of the production site
-  (`brand.web.domain` and its `www` host), under a current version-5 choice.
+  (`brand.web.domain` and its `www` host), under a current version-6 choice.
   The analytics choice loads `gtag.js` (on its own data layer `catchTagLayer`)
   with GA4 only. The marketing choice adds the Ads tag to it and loads
-  `fbevents.js`. Essential loads nothing, and nothing loads on dev, staging or
+  `fbevents.js`. Essential loads nothing, and nothing loads on dev or
   preview hosts. There is no GTM.
 - **Consent.** Before any script runs, Consent Mode defaults deny all four
   purposes. The analytics choice grants `analytics_storage` only; the
@@ -264,7 +264,7 @@ The queue lives in `functions/src/acquisition/adConversions/`: the
 `onAdConversionGrowthFactsWritten` trigger enqueues host conversions into
 `adConversionDeliveries`, and the `sendAdConversions` worker sends them every
 five minutes. `AD_CONVERSIONS_MODE` controls both: `off` (the default, and the
-setting in dev and staging) enqueues and sends nothing; `validate` sends Meta
+setting in dev) enqueues and sends nothing; `validate` sends Meta
 test events, only when `AD_CONVERSIONS_META_TEST_EVENT_CODE` is set, and
 Google validate-only requests, and leaves records pending; `live` records real
 conversions. The Meta token is read at send time from the pinned version in
@@ -345,6 +345,11 @@ creates it when missing.
   through `/{audience_id}/usersreplace` in one session of 10,000-row batches,
   so removals and opt-outs leave Meta within a day. When no one qualifies, the
   job deletes the audience, since a replace needs at least one row.
+- **Use.** The host lead campaign excludes the audience, so existing hosts
+  stop seeing host ads: `tool/ads/meta_campaigns.json` names it under
+  `targeting.excludeAudiences`, and `apply_meta_campaigns.mjs` adds it to the ad
+  set's `excluded_custom_audiences` once the audience exists, keeping any
+  exclusion added in Ads Manager.
 - **Never uploaded.** Gender, age, orientation, matching, dating or
   attendance-pairing data; date of birth is read only to exclude under-18s.
 - **Receipt.** `adAudienceRuns/meta_active_hosts` keeps the latest run's
@@ -352,7 +357,7 @@ creates it when missing.
   members, rows received and invalid, exclusions by reason). It never holds an
   identifier or digest.
 - **Gate.** `AD_AUDIENCES_MODE` is `off` (the default, and the setting in every
-  environment until the owner turns it on) or `live`. Off, the job only
+  environment but prod, which the owner set to `live` on 2026-11-19) or `live`. Off, the job only
   deletes an audience an earlier live run left (the receipt names it), so a
   list that would miss later opt-outs never lingers; otherwise it reads the
   receipt and sends nothing. Live needs `AD_CONVERSIONS_META_TOKEN_VERSION`,
@@ -371,13 +376,15 @@ its own replace semantics, behind its own gate.
 
 ## Consent and lifecycle
 
-The persistent `catch_marketing_consent_v5` receipt records version 5, choice,
+The persistent `catch_marketing_consent_v6` receipt records version 6, choice,
 analytics/marketing booleans, update time and the measurement mode
 (`first_party_tags`). A mode change requires a fresh choice. The banner offers
 essential only, analytics, and explicit analytics plus marketing, with a
-persistent Privacy choices control for withdrawal. Only a version-5 marketing
-choice loads the tags. Version 5 shipped with the first-party transport, so
-every earlier choice, made while advertising was disabled, asks again.
+persistent Privacy choices control for withdrawal. Only a version-6 marketing
+choice loads the tags. Version 5 shipped with the first-party transport;
+version 6 (owner decision relayed 19 Nov 2026, #2063) shipped when the banner
+began naming organisers' own Meta and Google tags, so every earlier choice,
+version 5 included, loads nothing and asks again.
 Legacy version-1 to version-4 choices, including `accepted`, can retain local
 analytics permission but never authorize the tags or marketing; the banner
 requires a fresh choice, and their stored campaign and click context is cleared.
@@ -471,7 +478,7 @@ everything on loss of analytics) or expiry removes it. Only the closed,
 reviewed source/medium/campaign/content vocabularies in `approvedCampaignLabels`
 persist in the existing HTTP attribution payload; unknown labels and search
 terms are discarded. `catchMeasurement.ts` owns the browser-only identifier
-context under a current version-5 choice. Click identifiers are excluded for
+context under a current version-6 choice. Click identifiers are excluded for
 analytics-only choices and never enter the diagnostic bus or existing lead HTTP
 payload. Storage failures drop the context.
 New campaigns require a reviewed vocabulary change. There is no URL-passthrough
@@ -537,7 +544,7 @@ final-tree generators.
 The owner approved the destinations (GA4 property 559735544, Ads customer
 1016806229, Meta dataset 1844810253539672), the first-party transport, the
 consent and opt-out model, the eligible routes and the event map above on
-2026-11-17. Each destination is switched on only after a synthetic staging run
+2026-11-17. Each destination is switched on only after a synthetic dev run
 shows provider receipt (Meta Test Events, Google conversion diagnostics),
 consent changes, URL/title/referrer isolation, SPA shutdown, dedupe and the exact
 network payloads. GTM stays out; nothing may consume the existing bus
@@ -579,14 +586,14 @@ a recorded receipt.
 
 | Item | State | Where |
 | --- | --- | --- |
-| Separation | Blocked: transport choice open on #2063 | `adTags.ts` cannot host an isolated set as it stands (see below) |
-| Consent gate | Blocked with separation | One v5 receipt (`catch_marketing_consent_v5`), via `adTags.sync` |
-| Eligible routes | Route class proposed (#2102); lifecycle wiring waits on separation | `organizerAdPage` beside `publicAdPage`; server projection checks publication |
-| Event map | Builders and payload tests proposed (#2102) | `website/src/analytics/organizerTagEvents.ts` |
-| Publication policy | Built, disabled | `organizerTrackingPublicationPolicy.ts` |
-| Owner settings | Saved IDs shown; live state and reason pending | Catch Host tracking section; website owner view settings |
-| Test receipts | Plan below; not run | [Staging test plan](#organiser-tag-staging-test-plan) |
-| Owner policy sign-off | Owner only | #2063 |
+| Separation | Built: one transport, two isolated sets; iframe retired | `adTags.ts` (#2138, #2193); `adTagsIsolation.test.ts`, `adTagsOrganizer.test.ts` |
+| Consent gate | Built; the banner names organiser tags (#2194) | One v6 marketing receipt (`catch_marketing_consent_v6`), via `adTags.sync` |
+| Eligible routes | Built | `organizerAdPage` (#2102, ad-click keys #2139) plus the set's own scope in `adTags.ts` (#2193) |
+| Event map | Built | `organizerTagEvents.ts` (#2102), sent only by the organiser set (#2193) |
+| Publication policy | Built, disabled | `organizerTrackingPublicationPolicy.ts` (#2097); profile classification (#2192) |
+| Owner settings | Built | Website owner view live state (#2105); Catch Host policy-blocked line |
+| Test receipts | Plan below; not run | [Dev test plan](#organiser-tag-dev-test-plan) |
+| Owner policy sign-off | Signed off 19 Nov 2026 | #2063 |
 
 ### Rules the adapter must keep
 
@@ -596,16 +603,24 @@ a recorded receipt.
   diagnostic `dataLayer`, `catchTagLayer`, campaign labels, click identifiers or
   acquisition context. Catch events never reach an organiser destination, and
   organiser events never reach Catch's destinations.
-  - Today Catch's Meta calls use `fbq("track", …)`, which reaches every
-    initialised pixel, and Catch's `gtag("set", …)` applies to every tag on its
-    layer. The proposal on #2063 moves Catch to `trackSingle` and gives the
-    organiser GA4 its own layer and `cookie_prefix`.
-  - `_fbp` stays shared on the Catch domain whichever option is chosen. The
-    owner sign-off decides whether that is acceptable.
-  - The existing sandboxed iframe runtime (`website/public/organizer-tracking-runtime.*`,
-    `trackingProviders.ts`) is a second loader that predates this rule. It stays
-    inert behind the disabled policy until the owner chooses.
-- **Consent.** The only basis is a current version-5 *marketing* choice. An
+  - The owner chose Option A on #2063 (19 Nov 2026): one transport, two
+    isolated destination sets, the iframe retired, and organiser tags must
+    never reduce Catch's own tracking. `createAdTags` takes a frozen Catch
+    destination set and sends every Catch Meta event with
+    `fbq("trackSingle", catchPixel, …)`, never the broadcasting `track`.
+    `adTagsIsolation.test.ts` pins that Catch's Google and Meta commands are
+    identical with and without another pixel and Google layer on the page.
+    The organiser set (`adTags.setOrganizer`) uses `trackSingle` with its own
+    pixel and its own Google layer (`catchOrganizerTagLayer`) with the
+    `catch_org` cookie prefix, so Catch's `gtag("set", …)` never reaches it.
+    `observeOrganizerProviders` feeds it only a set the public projection
+    published.
+  - `_fbp` is shared on the Catch domain between Catch's and an organiser's
+    pixel; the owner accepted this in the policy sign-off (19 Nov 2026).
+  - The sandboxed iframe runtime that predated Option A
+    (`organizer-tracking-runtime.*`, `trackingProviders.ts`) was removed;
+    the first-party transport is the only loader.
+- **Consent.** The only basis is a current version-6 *marketing* choice. An
   analytics-only choice loads nothing for organiser destinations. Legacy,
   downgraded and unknown receipts fail closed. Withdrawal revokes and stops
   organiser tags in the same page view, as it does for Catch's. Before
@@ -616,9 +631,27 @@ a recorded receipt.
   server's public projection.
   - Never claim, `/f/` forms, offers, OTP, booking receipts, account, demo or
     token links. Never while the owner view is open on the organiser page.
-  - Any query string or non-anchor hash fails closed, because the Pixel reports
-    the page address itself.
+  - A query may carry only the ad-click keys `fbclid`, `gclid` and
+    `utm_source`/`medium`/`campaign`/`content`/`term`/`id` (owner decision,
+    19 Nov 2026), so visits from the organiser's own ads are measured. Any
+    other key, a repeated key or a non-anchor hash fails closed, because the
+    Pixel reports the page address itself. Organiser events still report the
+    path only.
   - Single-page navigation to any other page stops sending.
+- **Catch's own tags on organiser profiles.** Organiser tags must never
+  reduce Catch's own tracking (owner condition, 19 Nov 2026), so Catch's tags
+  cover organiser profiles too, through `catchOrganizerProfilePage` (the same
+  profile routes and flow exclusions as `organizerAdPage`). They skip
+  dating-classified and unclassified organisers, failing closed: the server's
+  `profileTagsEligible` (#2192) answers whether a profile qualifies, and the
+  excluded classes come from the publication policy version.
+  `observeOrganizerProviders` reads it under any current analytics choice and
+  admits that one profile to Catch's tags (`adTags.admitOrganizerProfile`);
+  without a yes, `publicAdPage` keeps every organiser page closed. Campaign
+  labels and click identifiers are still captured only on `publicAdPage`.
+  - **Owner view.** While the owner view is shown on a profile, every tag,
+    Catch's and the organiser set's, stays silent
+    (`adTags.holdForPrivateSurface`).
 - **Event map.** The table shows the event pairs. Every page field is the fixed
   Catch origin plus path, with a fixed title and an empty referrer. Catch
   payment, request and organiser ids, guest data, answers, dating words, campaign
@@ -639,14 +672,14 @@ a recorded receipt.
   exclusion lists). External listings have no canonical classification and stay
   excluded.
 
-### Organiser tag staging test plan
+### Organiser tag dev test plan
 
-This is a plan, not a receipt. Nothing here has run. Run it only on staging,
-after the transport choice and with a staging-only policy version. **Never run
+This is a plan, not a receipt. Nothing here has run. Run it only on dev,
+after the transport choice and with a dev-only policy version. **Never run
 it against production, a live organiser or real IDs.**
 
 1. **Synthetic organiser.**
-   - Seed a first-party staging organiser `synthetic-organiser-2063` with a
+   - Seed a first-party dev organiser `synthetic-organiser-2063` with a
      published, indexable page.
    - Give it two published, active events: `synthetic-run-2063` (`running` /
      `pacePods`) and `synthetic-mixer-2063` (`singlesMixer`).
@@ -654,14 +687,14 @@ it against production, a live organiser or real IDs.**
      test property's `G-` ID. Record them only in the run notes, never in
      the repository.
 2. **Meta Test Events.** Open the dataset's Test Events tab with its test code
-   on the staging build. Expect:
+   on the dev build. Expect:
    - `PageView` on the organiser page.
    - `PageView` and `ViewContent` on `synthetic-run-2063`.
-   - `InitiateCheckout` and `Purchase` for a staging live-mode booking.
+   - `InitiateCheckout` and `Purchase` for a dev live-mode booking.
    - Every payload matches the event map snapshot exactly.
    - No Catch event reaches the organiser dataset, and the organiser dataset
      receives nothing on `synthetic-mixer-2063`.
-3. **GA4 DebugView.** Use `debug_mode` on the staging build only. Expect the
+3. **GA4 DebugView.** Use `debug_mode` on the dev build only. Expect the
    matching GA4 events, with:
    - `page_location` set to the Catch origin plus path,
    - `page_referrer` empty,
@@ -679,7 +712,8 @@ it against production, a live organiser or real IDs.**
    - Navigate in-app from the organiser page to `/claim/`, an `/f/` form,
      `/offer/`, `/account/`, `/demo/…`, a `/booking/` receipt, a token link and
      the open owner view. Each must send nothing.
-   - The same page with `?fbclid=…` or `?utm_source=…` must send nothing.
+   - The same page with `?fbclid=…`, `?gclid=…` or `?utm_source=…` sends;
+     with any other key (for example `?ref=…` or `?gbraid=…`) it sends nothing.
 6. **Dedupe and separation.** On the same page view, Catch's own events reach
    only Catch's destinations with their own ids. Organiser events use `org_…`
    ids. A reload does not repeat `Purchase`.

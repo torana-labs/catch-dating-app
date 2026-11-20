@@ -205,7 +205,7 @@ export interface OperationPublicationPlan {
   publicationPlanId: string;
   runId: string;
   revision: number;
-  environment: "development" | "staging" | "production";
+  environment: "development" | "production";
   mode: "shadow" | "dry_run" | "apply";
   status:
     | "drafted"

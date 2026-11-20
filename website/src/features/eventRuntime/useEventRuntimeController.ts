@@ -35,7 +35,6 @@ import {
   eventRuntimeError,
   eventRuntimePreEventFieldId,
   eventRuntimeStageForParticipant,
-  normalizeRuntimePhone,
   resolveEventRuntimeQuestionnaire,
   type EventRuntimeBootstrap,
   type EventRuntimeGender,
@@ -44,6 +43,8 @@ import {
 } from "./eventRuntimeModel";
 import {eventInviteSessionId, eventInviteTokenFromLocation} from
   "../../shared/eventInviteAttribution";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 export type EventRuntimeStage =
   | "loading"
@@ -420,8 +421,8 @@ export function useEventRuntimeController(
   async function handlePhoneSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (pending) return;
-    const phone = normalizeRuntimePhone(phoneNumber);
-    if (!/^\+[1-9][0-9]{7,14}$/u.test(phone)) {
+    const phone = catchPhoneE164(phoneNumber, activePhoneCountry);
+    if (!phone) {
       setStatus({message: eventRuntimeCopy.invalidPhone, tone: "is-error"});
       return;
     }

@@ -16,7 +16,7 @@ void main() {
     String eventId = 'synthetic-event',
     String seed = 'cat151-seed',
   }) => ledger.bindScope(
-    projectId: 'catch-staging',
+    projectId: 'catch-dev',
     uid: uid,
     eventId: eventId,
     seedPrefix: seed,
@@ -24,9 +24,7 @@ void main() {
 
   test('binds one durable scope per Firebase project', () async {
     final state = await bind();
-    final reloaded = await Cat151AttemptLedger(
-      store: store,
-    ).load('catch-staging');
+    final reloaded = await Cat151AttemptLedger(store: store).load('catch-dev');
 
     expect(reloaded?.toJson(), state.toJson());
     expect(state.attempts, isEmpty);
@@ -36,7 +34,7 @@ void main() {
     final reserved = await ledger.reserveNext(await bind());
     final afterProcessDeath = await Cat151AttemptLedger(
       store: store,
-    ).load('catch-staging');
+    ).load('catch-dev');
 
     expect(reserved.attempts.single.status, Cat151AttemptStatus.reserved);
     expect(
@@ -144,11 +142,11 @@ void main() {
   });
 
   test('malformed persistence fails closed without replacement', () async {
-    store.values['cat151_razorpay_acceptance_v1_Y2F0Y2gtc3RhZ2luZw=='] =
+    store.values['cat151_razorpay_acceptance_v1_Y2F0Y2gtZGV2'] =
         '{"version":99}';
 
     await expectLater(
-      ledger.load('catch-staging'),
+      ledger.load('catch-dev'),
       throwsA(isA<Cat151AttemptLedgerException>()),
     );
     expect(store.values.values.single, '{"version":99}');

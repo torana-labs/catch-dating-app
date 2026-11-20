@@ -192,3 +192,33 @@ describe("CatchField select recipe", () => {
       .toEqual(["Choose contact", "whatsapp"]);
   });
 });
+
+describe("CatchField toggle recipe", () => {
+  it("names the switch with its title, describes it with its body, and flips from the title", () => {
+    const onChanged = vi.fn();
+    render(<CatchField body="Before each plan" onChanged={onChanged} recipe="toggle"
+      title="Show reminders" value={false} />);
+    const control = screen.getByRole("switch", {name: "Show reminders"});
+    expect(control.getAttribute("aria-checked")).toBe("false");
+    const body = screen.getByText("Before each plan");
+    expect(control.getAttribute("aria-describedby")).toBe(body.id);
+    fireEvent.click(screen.getByText("Show reminders"));
+    expect(onChanged).toHaveBeenLastCalledWith(true);
+  });
+
+  it("disables the switch when onChanged is null or the field is not editable", () => {
+    const {rerender} = render(<CatchField onChanged={null} recipe="toggle" title="Locked" value />);
+    expect((screen.getByRole("switch") as HTMLButtonElement).disabled).toBe(true);
+    rerender(<CatchField inputMode="readOnly" onChanged={() => {}} recipe="toggle" title="Locked" value />);
+    expect((screen.getByRole("switch") as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("describes the switch with an error after its body", () => {
+    render(<CatchField body="Before each plan" errorText="Couldn't save" onChanged={() => {}}
+      recipe="toggle" title="Show reminders" value />);
+    const control = screen.getByRole("switch");
+    const ids = control.getAttribute("aria-describedby")!.split(" ");
+    expect(ids).toHaveLength(2);
+    expect(document.getElementById(ids[1])!.textContent).toBe("Couldn't save");
+  });
+});

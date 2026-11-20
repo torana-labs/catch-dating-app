@@ -1,0 +1,210 @@
+name: Listing cohort withdraw
+
+# Runs tool/data/listing_cohort_withdraw.mjs against one Firebase environment
+# with that environment's deploy identity: take every public, unclaimed
+# organiser page in one listing cohort (organizers.listingProgram.cohortId)
+# off the site in one owner-approved run. This repository's Actions inputs,
+# logs and summaries are public, so the inputs are the environment, the mode,
+# the cohort id, an optional city slug and, for apply, the manifest SHA-256
+# the approved plan printed. The tool prints counts only; organiser ids can
+# carry a name, so no manifest or id list is written to an artifact. Modes, in
+# order: plan (dry run), apply with the plan's hash, then verify. Dispatch
+# only, from main only. Operator guide: docs/release_operations.md,
+# "Listing cohort withdraw".
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Firebase environment.
+        required: true
+        type: choice
+        options: [dev, prod]
+        default: dev
+      mode:
+        description: plan is a dry run that prints the manifest SHA-256; apply needs that hash; verify checks nothing is left.
+        required: true
+        type: choice
+        options: [plan, apply, verify]
+        default: plan
+      cohort_id:
+        description: The listing cohort id, such as pilot-indore-1. Never an organiser name, handle or slug.
+        required: true
+        type: string
+      city:
+        description: Optional. Only organisers whose page is in this city slug, such as indore. Use the same value for plan, apply and verify.
+        required: false
+        type: string
+        default: ""
+      manifest_sha256:
+        description: apply only. The manifest SHA-256 the approved plan run printed.
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  # A prod apply waits here for the owner. `prod-takedown` holds no
+  # credentials and requires a reviewer; the withdraw job below signs in
+  # through `prod`, which stays approval-free so website releases and backend
+  # deploys are not held. Prod plan and verify only read, and dev runs, pass
+  # through the approval-free `dev`.
+  approve:
+    name: Approve the ${{ inputs.mode }} run in ${{ inputs.environment }}
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions: {}
+    timeout-minutes: 5
+    environment: ${{ inputs.environment == 'prod' && inputs.mode == 'apply' && 'prod-takedown' || 'dev' }}
+    steps:
+      - name: Record the approval
+        shell: bash
+        run: echo "Approved for ${TARGET_ENV} (${MODE})."
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+          MODE: ${{ inputs.mode }}
+
+  withdraw:
+    name: Listing cohort withdraw in ${{ inputs.environment }} (${{ inputs.mode }})
+    needs: approve
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    timeout-minutes: 30
+    environment: ${{ inputs.environment }}
+    # One cohort withdraw run per environment at a time; a second waits.
+    concurrency:
+      group: listing-cohort-withdraw-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Run only from main
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "::error::The listing cohort withdraw runs only from main, not $GITHUB_REF."
+            exit 1
+          fi
+
+      # The free-text inputs must be a cohort id, a city slug and a hash, so no
+      # organiser name, handle or slug can reach a public log through them.
+      # A refused value is never echoed.
+      - name: Check the inputs
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+          MODE: ${{ inputs.mode }}
+          COHORT_ID: ${{ inputs.cohort_id }}
+          CITY: ${{ inputs.city }}
+          MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
+        run: |
+          set -euo pipefail
+          case "$TARGET_ENV" in
+            dev|prod) ;;
+            *)
+              echo "::error::Unknown environment."
+              exit 1
+              ;;
+          esac
+          case "$MODE" in
+            plan|apply|verify) ;;
+            *)
+              echo "::error::Unknown mode."
+              exit 1
+              ;;
+          esac
+          if [[ ! "$COHORT_ID" =~ ^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$ ]]; then
+            echo "::error::cohort_id must be a listing cohort id: lowercase letters, digits and hyphens, such as pilot-indore-1."
+            exit 1
+          fi
+          if [[ -n "$CITY" && ! "$CITY" =~ ^[a-z0-9-]{1,80}$ ]]; then
+            echo "::error::city must be empty or a city slug such as indore."
+            exit 1
+          fi
+          if [[ "$MODE" == "apply" ]]; then
+            if [[ ! "$MANIFEST_SHA256" =~ ^[0-9a-f]{64}$ ]]; then
+              echo "::error::apply needs manifest_sha256: the 64-character SHA-256 the approved plan run printed."
+              exit 1
+            fi
+          elif [[ -n "$MANIFEST_SHA256" ]]; then
+            echo "::error::manifest_sha256 is for apply only."
+            exit 1
+          fi
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      # The tool reads and writes Firestore through the Functions copy of
+      # firebase-admin.
+      - name: Install the Functions dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash tool/git/bootstrap_worktree.sh --target functions
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Run the cohort withdraw
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+          MODE: ${{ inputs.mode }}
+          COHORT_ID: ${{ inputs.cohort_id }}
+          CITY: ${{ inputs.city }}
+          MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$COHORT_ID" =~ ^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$ ]]; then
+            echo "::error::cohort_id must be a listing cohort id."
+            exit 1
+          fi
+          if [[ -n "$CITY" && ! "$CITY" =~ ^[a-z0-9-]{1,80}$ ]]; then
+            echo "::error::city must be empty or a city slug."
+            exit 1
+          fi
+          args=(--env "$TARGET_ENV" --cohort-id "$COHORT_ID" --mode "$MODE")
+          if [[ -n "$CITY" ]]; then args+=(--city "$CITY"); fi
+          case "$MODE" in
+            plan|verify) ;;
+            apply)
+              if [[ ! "$MANIFEST_SHA256" =~ ^[0-9a-f]{64}$ ]]; then
+                echo "::error::apply needs manifest_sha256."
+                exit 1
+              fi
+              args+=(--manifest-sha256 "$MANIFEST_SHA256" --request-id "actions-run-${GITHUB_RUN_ID}")
+              if [[ "$TARGET_ENV" == "prod" ]]; then args+=(--allow-prod); fi
+              ;;
+            *)
+              echo "::error::Unknown mode."
+              exit 1
+              ;;
+          esac
+          status=0
+          node tool/data/listing_cohort_withdraw.mjs "${args[@]}" > withdraw-report.txt 2>&1 || status=$?
+          cat withdraw-report.txt
+          {
+            echo "## Listing cohort withdraw $COHORT_ID: $TARGET_ENV ($MODE)"
+            echo
+            echo '```text'
+            cat withdraw-report.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"

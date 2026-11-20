@@ -12,8 +12,10 @@ import {organizerContactOriginId} from
 import {organizerContactChannelStateId, hashEndpoint} from
   "../organizers/organizerCampaignModel";
 import {whatsappStopId} from "../shared/organizerWhatsappStops";
-import {FirestoreEventOfferRepository} from
-  "./eventOfferFirestoreRepository";
+import {FirestoreEventOfferRepository, offerBatchReceiptId,
+  offerBatchReceiptResult} from "./eventOfferFirestoreRepository";
+import {eventOfferId} from "./eventOfferDomain";
+import {buildCommandReceipt} from "../shared/commandReceipts";
 import {commitEventOffers, prepareEventOfferHandoff,
   previewEventOffers} from "./eventOfferService";
 
@@ -88,7 +90,10 @@ test("actual adapter maps reviewed registration and buffers all writes",
       `organizerEventOffers/${receipt.results[0].offerId}`];
     assert.equal(stored.status, "offered");
     assert.equal(Object.keys(store.docs).filter((path) =>
-      path.startsWith("organizerEventOfferActionReceipts/")).length, 2);
+      path.startsWith("commandReceipts/mutateEventOffer_")).length, 2);
+    const batchReceipt = store.docs[`commandReceipts/${offerBatchReceiptId(
+      organizerId, "registration-batch-one")}`];
+    assert.deepEqual(Object.keys(batchReceipt.result as object), ["results"]);
     assert.equal(Object.keys(store.docs).filter((path) =>
       path.startsWith("organizerEventOfferAudits/")).length, 2);
     const replay = await commitEventOffers({repository, actor,
@@ -96,6 +101,21 @@ test("actual adapter maps reviewed registration and buffers all writes",
         planDigest: preview.planDigest}});
     assert.deepEqual(replay, receipt);
   });
+
+test("a full 25-row batch result fits the command receipt bound", () => {
+  // Offer ids are fixed-length digests; revisions at the safe-integer limit
+  // are the largest a stored row can hold.
+  const results = Array.from({length: 25}, (_, index) => ({
+    offerId: eventOfferId({organizerId: "o".repeat(180),
+      eventId: "e".repeat(180), contactId: `contact-${index}`}),
+    revision: Number.MAX_SAFE_INTEGER,
+    generation: Number.MAX_SAFE_INTEGER}));
+  const result = offerBatchReceiptResult(results);
+  assert.ok(Buffer.byteLength(JSON.stringify(result)) < 4096);
+  assert.doesNotThrow(() => buildCommandReceipt({
+    command: "commitEventOffers", retention: "request",
+    requestHash: "a".repeat(64), result, nowMillis: now}));
+});
 
 test("a setup change invalidates an already reviewed offer plan",
   async () => {

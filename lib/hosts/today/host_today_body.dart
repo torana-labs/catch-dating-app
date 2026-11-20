@@ -137,7 +137,14 @@ class HostTodayBody extends StatelessWidget {
         if (state.statsPending)
           const CatchSkeleton.content(child: _HostTodayStatRow.placeholder())
         else if (state.lastThirtyDays.isNotEmpty)
-          _HostTodayStatRow(stats: state.lastThirtyDays),
+          _HostTodayStatRow(
+            stats: hostTodayVisibleStats(
+              state.lastThirtyDays,
+              wide:
+                  CatchRootScope.sizeClassOf(context) ==
+                  CatchWindowSize.expanded,
+            ),
+          ),
       ],
     );
 
@@ -173,7 +180,27 @@ class HostTodayBody extends StatelessWidget {
   }
 }
 
-/// The stats side by side in equal widths.
+/// The Last 30 days figures for the width. The sidebar layout has room for
+/// all four, two to a row; a phone keeps two, bookings and who came back
+/// first, falling back to the others when a figure is missing.
+@visibleForTesting
+List<HostTodayStat> hostTodayVisibleStats(
+  List<HostTodayStat> stats, {
+  required bool wide,
+}) {
+  if (wide) return stats;
+  const order = [
+    HostTodayStatKind.bookings,
+    HostTodayStatKind.cameBack,
+    HostTodayStatKind.ticketSales,
+    HostTodayStatKind.followers,
+  ];
+  return [
+    for (final kind in order) ...stats.where((stat) => stat.kind == kind),
+  ].take(2).toList();
+}
+
+/// The stats two to a row, in equal widths; four stats make two rows.
 class _HostTodayStatRow extends StatelessWidget {
   const _HostTodayStatRow({required this.stats});
 
@@ -190,18 +217,28 @@ class _HostTodayStatRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return CatchStack(
-      direction: CatchStackDirection.row,
-      equal: true,
       children: [
-        for (final stat in stats)
-          HostAnalyticsMetricTile(
-            label: switch (stat.kind) {
-              HostTodayStatKind.bookings => l10n.hostTodayStatBookings,
-              HostTodayStatKind.ticketSales => l10n.hostTodayStatTicketSales,
-            },
-            value: stat.value,
-            previousValue: stat.previousValue,
-            currencyCode: stat.currencyCode,
+        for (var start = 0; start < stats.length; start += 2)
+          CatchStack(
+            direction: CatchStackDirection.row,
+            equal: true,
+            children: [
+              for (final stat in stats.skip(start).take(2))
+                HostAnalyticsMetricTile(
+                  label: switch (stat.kind) {
+                    HostTodayStatKind.bookings => l10n.hostTodayStatBookings,
+                    HostTodayStatKind.ticketSales =>
+                      l10n.hostTodayStatTicketSales,
+                    HostTodayStatKind.cameBack => l10n.hostInsightsCameBack,
+                    HostTodayStatKind.followers =>
+                      l10n.hostOrganizerStatFollowers,
+                  },
+                  value: stat.value,
+                  previousValue: stat.previousValue,
+                  currencyCode: stat.currencyCode,
+                  figure: stat.figure,
+                ),
+            ],
           ),
       ],
     );
