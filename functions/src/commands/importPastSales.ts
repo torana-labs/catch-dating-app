@@ -27,6 +27,14 @@ import {columnShapes} from "../guestImport/columnShapes";
 import {readGuestFile, type GuestFileRead} from "../guestImport/file";
 import {guestIntakeInput} from "../guestImport/intakeRows";
 import {suggestExtraMapping, type GuestExtraMapping} from "../guestImport/mapping";
+import {
+  aiFallbackGuestMappingRunner,
+  guestMappingProposalProvider,
+  mappingFields,
+  modelColumnMapping,
+  type MappingField,
+} from "../guestImport/mappingFallback";
+import type {HostRosterMappingProposalProvider} from "../events/hostRosterIntakeCore";
 import {readGuestTable} from "../guestImport/registry";
 import {normalizeHeader, uniqueHeaders} from "../guestImport/table";
 import {marketForIdOrAlias} from "../locations/marketConfig";
@@ -77,6 +85,11 @@ export interface ImportPastSalesDeps {
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
   checkRateLimit: typeof defaultCheckRateLimit;
   intake: () => HostRosterIntakeManageDeps;
+  /**
+   * The AI fallback for an export no converter read (#2062): headers and
+   * column shapes only. Null while it is off; the host maps the columns.
+   */
+  mappingProvider: (context: {uid: string}) => HostRosterMappingProposalProvider | null;
 }
 
 const defaultDeps: ImportPastSalesDeps = {
@@ -86,6 +99,8 @@ const defaultDeps: ImportPastSalesDeps = {
   timestampFromMillis: (millis) => admin.firestore.Timestamp.fromMillis(millis),
   checkRateLimit: defaultCheckRateLimit,
   intake: () => defaultHostRosterIntakeApplyDeps(),
+  mappingProvider: ({uid}) => guestMappingProposalProvider({variant: "past_sales",
+    runner: aiFallbackGuestMappingRunner({uid, commandId: COMMAND_ID})}),
 };
 
 const FILE_ERRORS: Record<string, string> = {
@@ -112,6 +127,8 @@ interface Reading {
   headers: string[];
   shapes: string[];
   read: CanonicalGuestRead | null;
+  /** The fields the AI fallback chose, for the host to check; empty otherwise. */
+  aiFields: MappingField[];
   intake: ReturnType<typeof guestIntakeInput> | null;
   report: PastSalesReport | null;
   needsReview: Response["result"]["rowsNeedingReview"];
@@ -136,7 +153,7 @@ export async function importPastSalesHandler(request: CallableRequest<unknown>,
     }
     return empty(caller.uid, data.input, "needs_input", ["no_workspace"]);
   }
-  const reading = await readNight(db, deps, lookup, data.input);
+  const reading = await readNight(db, deps, caller.uid, lookup, data.input);
   const hash = commandPreviewHash(COMMAND_ID, caller.uid, reading.requestInput,
     {report: reading.report, needsReview: reading.needsReview.map((row) => row.rowId), needsMapping: !reading.read});
   if (!reading.read || !reading.report) {
@@ -152,7 +169,7 @@ export async function importPastSalesHandler(request: CallableRequest<unknown>,
 export const importPastSales = onCall(appCheckCallableOptions, (request) => importPastSalesHandler(request));
 
 /** Reads the file and builds the report; writes nothing. */
-async function readNight(db: FirebaseFirestore.Firestore, deps: ImportPastSalesDeps,
+async function readNight(db: FirebaseFirestore.Firestore, deps: ImportPastSalesDeps, uid: string,
   lookup: Exclude<WorkspaceLookup, {kind: "new"}>, input: Input): Promise<Reading> {
   const organizerId = lookup.kind === "existing" ? lookup.pointer.organizerId : lookup.organizerId;
   const market = marketForIdOrAlias(marketIdOf(lookup.organizer));
@@ -197,19 +214,38 @@ async function readNight(db: FirebaseFirestore.Firestore, deps: ImportPastSalesD
   if (Object.values(extraMapping).some((column) => column !== null && column >= headers.length)) {
     throw refusal("roster_invalid_mapping");
   }
-  const tableOptions = {converterId: file.converterId ?? undefined,
+  const reserved = () => Object.values(extraMapping).filter((column): column is number => column !== null);
+  let tableOptions: Parameters<typeof readGuestTable>[1] = {converterId: file.converterId ?? undefined,
     mapping: input.mapping ? canonicalMapping as Partial<GuestColumnMapping> : undefined,
-    reviewStatuses: true,
-    reservedColumns: Object.values(extraMapping).filter((column): column is number => column !== null)};
+    reviewStatuses: true, reservedColumns: reserved()};
+  const needsMapping: Reading = {...base, read: null, aiFields: [], intake: null, report: null, needsReview: []};
   let read: CanonicalGuestRead;
+  const aiFields: MappingField[] = [];
   try {
     read = readGuestTable(file.matrix, tableOptions);
   } catch (error) {
     const code = errorCode(error);
-    if (code === "roster_missing_name_column") {
-      return {...base, read: null, intake: null, report: null, needsReview: []};
+    if (code !== "roster_missing_name_column") throw refusal(code);
+    // A host who chose the columns is never second-guessed by the model.
+    const proposed = input.mapping ? null : await modelMapping(deps, uid, headers, shapes, reserved());
+    if (!proposed) return needsMapping;
+    const guestMapping: Partial<GuestColumnMapping> = {};
+    for (const [field, column] of Object.entries(proposed) as Array<[MappingField, number]>) {
+      if (field === "city" || field === "revenueAmount" || field === "revenueCurrency") {
+        // The model fills only the money and city columns nothing else chose.
+        if (extraMapping[field] !== null) continue;
+        extraMapping[field] = column;
+      } else {
+        guestMapping[field] = column;
+      }
+      aiFields.push(field);
     }
-    throw refusal(code);
+    tableOptions = {...tableOptions, mapping: guestMapping, reservedColumns: reserved()};
+    try {
+      read = readGuestTable(file.matrix, tableOptions);
+    } catch {
+      return needsMapping;
+    }
   }
   if (read.rows.length === 0) throw refusal("roster_missing_guest_names");
   const fallback = input.fallbackTicketPrice ?? null;
@@ -228,7 +264,34 @@ async function readNight(db: FirebaseFirestore.Firestore, deps: ImportPastSalesD
     noShowRowIds: noShow?.rowIds ?? new Set(), eventName, localDate,
     terms: await platformTerms(db, organizerId), currentFees: input.currentFees ?? null,
     earlier: await earlierGuests(db, lookup)});
-  return {...base, read, intake, report, needsReview};
+  return {...base, read, aiFields, intake, report, needsReview};
+}
+
+/**
+ * The AI fallback's columns for an export no converter read, or null while
+ * it is off, refused (cap, daily limit) or unusable: the host maps instead.
+ * @return {Promise<object|null>} The field-to-column proposal.
+ */
+async function modelMapping(deps: ImportPastSalesDeps, uid: string, headers: string[], shapes: string[],
+  reservedColumns: number[]): Promise<Partial<Record<MappingField, number>> | null> {
+  let provider: HostRosterMappingProposalProvider | null;
+  try {
+    provider = deps.mappingProvider({uid});
+  } catch (error) {
+    logger.warn("Past sales mapping fallback is not ready.",
+      {error: error instanceof Error ? error.message : String(error)});
+    return null;
+  }
+  if (!provider) return null;
+  try {
+    const proposal = await modelColumnMapping({provider, headers, shapes, reservedColumns,
+      fields: mappingFields("past_sales")});
+    return proposal?.mapping ?? null;
+  } catch (error) {
+    logger.warn("Past sales mapping proposal was not usable.",
+      {error: error instanceof Error ? error.message : String(error)});
+    return null;
+  }
 }
 
 /**
@@ -371,7 +434,8 @@ function respond(reading: Reading, status: Response["status"], hash: string, opt
       needsMapping,
       headers: needsMapping ? reading.headers.map((header) => header.slice(0, 120)) : [],
       columnShapes: needsMapping ? reading.shapes.slice(0, reading.headers.length) : [],
-      report, rowsNeedingReview: reading.needsReview, import: options.imported ?? null, reasons},
+      report, rowsNeedingReview: reading.needsReview, import: options.imported ?? null, reasons,
+      aiRead: reading.aiFields.length > 0, reviewFields: [...reading.aiFields]},
   };
 }
 
@@ -384,7 +448,7 @@ function empty(uid: string, input: Input, status: Response["status"], reasons: s
     next: reasons.includes("no_workspace") ? [{commandId: "workspace.ensure", label: "Set up your organizer profile"}] : [],
     receiptId: null,
     result: {organizerId: null, eventId: null, converter: null, needsMapping: false, headers: [], columnShapes: [],
-      report: null, rowsNeedingReview: [], import: null, reasons},
+      report: null, rowsNeedingReview: [], import: null, reasons, aiRead: false, reviewFields: []},
   };
 }
 

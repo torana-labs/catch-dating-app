@@ -32,6 +32,8 @@
           }]
         },
         "needsMapping": {"type": "boolean"},
+        "aiRead": {"type": "boolean", "description": "True when the AI fallback chose the columns for an export no converter read; the website marks them for review. Optional: absent means false. Off until go-live (#2062)."},
+        "reviewFields": {"type": "array", "maxItems": 10, "uniqueItems": true, "items": {"type": "string", "enum": ["displayName", "phone", "email", "externalReference", "arrivalGroup", "ticketType", "status", "revenueAmount", "revenueCurrency", "city"]}, "description": "The fields the AI fallback chose, for the host to check; empty unless aiRead."},
         "headers": {"type": "array", "maxItems": 41, "items": {"type": "string", "maxLength": 120}},
         "columnShapes": {"type": "array", "maxItems": 41, "items": {"type": "string", "maxLength": 40}},
         "report": {

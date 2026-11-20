@@ -18,7 +18,7 @@
     "spentMicros": {"type": "integer", "minimum": 0},
     "paidReads": {"type": "integer", "minimum": 0},
     "reads": {"type": "integer", "minimum": 0, "maximum": 1000},
-    "updatedAt": {"type": "string", "format": "date-time"},
-    "expiresAt": {"type": "string", "format": "date-time"}
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-firestore-ttl": true}
   }
 }

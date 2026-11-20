@@ -21,12 +21,14 @@ import {
   type ManageHostRosterIntakeResponse,
 } from "../events/hostRosterIntakeApply";
 import {
-  proposeHostRosterMapping,
   type HostRosterIntakePreview,
   type HostRosterMappingProposalProvider,
 } from "../events/hostRosterIntakeCore";
-import {aiFallbackGuestMappingRunner, guestMappingProposalProvider} from
-  "../guestImport/mappingFallback";
+import {
+  aiFallbackGuestMappingRunner,
+  guestMappingProposalProvider,
+  modelColumnMapping,
+} from "../guestImport/mappingFallback";
 import type {
   CanonicalGuestRead,
   GuestColumnMapping,
@@ -331,22 +333,12 @@ async function modelMapping(deps: ImportGuestListDeps, uid: string,
       {error: error instanceof Error ? error.message : String(error)});
     return null;
   }
-  if (!provider || headers.length > 40) return null;
+  if (!provider) return null;
   try {
-    const proposal = await proposeHostRosterMapping({
-      headers: headers.map((header) => header.slice(0, 120)),
-      sampleRows: [shapes.slice(0, headers.length)],
-      deterministicMapping: {}, provider,
-    });
-    const mapping: Partial<GuestColumnMapping> = {};
-    for (const field of guestFields) {
-      const column = proposal.mapping[field];
-      if (column !== undefined && !reservedColumns.includes(column)) {
-        mapping[field] = column;
-      }
-    }
-    return mapping.displayName === undefined ? null :
-      {mapping, confidence: proposal.confidence};
+    const proposal = await modelColumnMapping({provider, headers, shapes,
+      reservedColumns, fields: guestFields});
+    return proposal ? {mapping: proposal.mapping as Partial<GuestColumnMapping>,
+      confidence: proposal.confidence} : null;
   } catch (error) {
     logger.warn("Guest mapping proposal was not usable.",
       {error: error instanceof Error ? error.message : String(error)});
