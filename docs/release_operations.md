@@ -4048,9 +4048,16 @@ both from `main` only:
   approves it (since 2026-11-18; before that it waited to be released by
   hand). Running it again for a version already submitted switches that
   version to release on approval, or releases it at once if Apple has approved
-  it and it waits for a developer release. On Android it promotes that internal-track version code to production as a
-  staged rollout. It rebuilds nothing. It uses the `prod-mobile-release`
-  environment, which requires a reviewer's approval. App Store Connect refuses
+  it and it waits for a developer release. On Android it promotes that version
+  code to production as a staged rollout, from whichever testing track holds it
+  (a nightly beta can replace the internal-track release while a run waits for
+  approval; the lane then stops and names the code the internal track holds
+  now, so start a new run with it). It rebuilds nothing. It uses the
+  `prod-mobile-release` environment, which requires a reviewer's approval.
+  Choose `platform: both` with `ios_build` and `android_version_code` to
+  release both stores in one run: one approval covers every job waiting in
+  it. A first job checks those inputs before the approval is requested.
+  App Store Connect refuses
   a submission whose version carries no "What's New", so each iOS release
   first updates `fastlane/metadata/<role>/ios/en-US/release_notes.txt` for that
   marketing version (the lane stops if it is missing). The submission also

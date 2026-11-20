@@ -528,7 +528,7 @@
         "node tool/run.mjs check platform:app-targets platform:verify-ios-release-identity platform:verify-android-release-identity platform:mobile-package-policy",
         "Mobile Beta builds, verifies and uploads each build in one job from main under prod-mobile; it uploads only to TestFlight internal testing and the Play internal track.",
         "Every beta build passes the live callable-dependency check, the iOS or Android identity verifier and the package policy before any upload.",
-        "Mobile Production runs only by manual dispatch from main in the reviewer-gated prod-mobile-release environment, and promotes an existing TestFlight build or internal-track version code without rebuilding."
+        "Mobile Production runs only by manual dispatch from main in the reviewer-gated prod-mobile-release environment, and promotes an existing TestFlight build or testing-track version code without rebuilding; platform both releases iOS and Android under one approval."
       ],
       "notes": [
         "Build numbers come from the stores: the latest TestFlight build plus one, and the highest version code on any Play track plus one.",
