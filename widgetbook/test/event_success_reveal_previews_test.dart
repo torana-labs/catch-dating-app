@@ -4,16 +4,8 @@ import 'package:catch_dating_app/event_success/presentation/reveal/event_success
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_stepper.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_surface.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_text.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_group_rotation_row_list.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_viewport.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_outcome_section.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_pod_assignment_section.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_action_row.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_header.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_progress_indicator.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_round_row_list.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_round_stepper.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_waiting_notice.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_rotation_row_list.dart';
@@ -44,27 +36,13 @@ void main() {
         EventSuccessCountdownNoticeRowList,
         1,
       ),
-      (eventSuccessStrictCountdownNumber, EventSuccessCountdownText, 1),
       (eventSuccessStrictCountdownStageDial, EventSuccessCountdownIndicator, 1),
       (
         eventSuccessStrictEventSuccessLiveRevealAttendeeCard,
         EventSuccessAttendeeRevealSurface,
         1,
       ),
-      (
-        eventSuccessStrictEventSuccessLiveRevealHostCard,
-        EventSuccessHostRevealSurface,
-        1,
-      ),
-      (eventSuccessStrictHostRevealActions, EventSuccessRevealActionRow, 1),
       (eventSuccessStrictRevealGroupSlotRow, EventSuccessGroupRotationRow, 1),
-      (eventSuccessStrictRevealHostCopy, EventSuccessRevealHeader, 1),
-      (
-        eventSuccessStrictRevealProgressBar,
-        EventSuccessRevealProgressIndicator,
-        1,
-      ),
-      (eventSuccessStrictRevealRoundList, EventSuccessRevealRoundRowList, 1),
       (eventSuccessStrictRevealRoundRail, EventSuccessRevealRoundStepper, 1),
       (eventSuccessStrictRevealSlotRow, EventSuccessRotationRow, 1),
       (
@@ -79,10 +57,7 @@ void main() {
       ),
       (eventSuccessStrictVisibleRotationSlots, EventSuccessRotationRowList, 1),
       (eventSuccessStrictWaitingRevealCue, EventSuccessRevealWaitingNotice, 1),
-      (eventSuccessStrictRevealRoundRow, EventSuccessRevealRoundRow, 3),
       (eventSuccessStandingsSectionStates, EventSuccessStandingsSection, 1),
-      (eventSuccessOutcomeSectionStates, EventSuccessOutcomeSection, 1),
-      (eventSuccessHostRevealViewportStates, EventSuccessHostRevealViewport, 1),
     ]) {
       testWidgets('$type mounts at text scale $scale', (tester) async {
         tester.view.devicePixelRatio = 1;

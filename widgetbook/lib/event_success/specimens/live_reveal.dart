@@ -5,15 +5,9 @@ import 'package:catch_dating_app/event_success/presentation/reveal/event_success
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_stepper.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_surface.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_text.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_group_rotation_row_list.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_pod_assignment_section.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_action_row.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_header.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_progress_indicator.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_round_row_list.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_round_stepper.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_waiting_notice.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_rotation_row_list.dart';
@@ -122,21 +116,6 @@ Widget eventSuccessStrictCountdownCueStack(BuildContext context) =>
     );
 
 @widgetbook.UseCase(
-  name: 'EventSuccessCountdownText',
-  type: EventSuccessCountdownText,
-  path:
-      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
-)
-Widget eventSuccessStrictCountdownNumber(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessCountdownText',
-      catalogId: 'Event Success reveal',
-      children: [
-        const EventSuccessCountdownText(value: '9', caption: 'SECONDS'),
-      ],
-    );
-
-@widgetbook.UseCase(
   name: 'EventSuccessCountdownIndicator',
   type: EventSuccessCountdownIndicator,
   path:
@@ -182,62 +161,6 @@ Widget eventSuccessStrictEventSuccessLiveRevealAttendeeCard(
 );
 
 @widgetbook.UseCase(
-  name: 'EventSuccessHostRevealSurface',
-  type: EventSuccessHostRevealSurface,
-  path:
-      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
-)
-Widget eventSuccessStrictEventSuccessLiveRevealHostCard(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessHostRevealSurface',
-      catalogId: 'Event Success reveal',
-      children: [
-        EventSuccessHostRevealSurface(
-          event: EventSuccessCompanionFixtures.racketEvent,
-          plan: EventSuccessCompanionFixtures.revealCountingDownPlan,
-          podAssignments: const [],
-          rotationAssignments: [
-            EventSuccessCompanionFixtures.rotationAssignment,
-          ],
-          preferences: const [],
-          participantProfiles: EventSuccessCompanionFixtures.peers,
-          now: EventSuccessCompanionFixtures.racketStart.subtract(
-            const Duration(seconds: 1),
-          ),
-          onStartCountdown: (_, _) async {},
-          onRevealRound: (_) async {},
-          onResetReveal: () async {},
-        ),
-      ],
-    );
-
-@widgetbook.UseCase(
-  name: 'EventSuccessRevealActionRow',
-  type: EventSuccessRevealActionRow,
-  path:
-      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
-)
-Widget eventSuccessStrictHostRevealActions(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessRevealActionRow',
-      catalogId: 'Event Success reveal',
-      children: [
-        EventSuccessRevealActionRow(
-          roundCount: 3,
-          nextRound: 1,
-          activeRound: 0,
-          countdownSeconds: 10,
-          isCountingDown: false,
-          allRevealed: false,
-          isLoading: false,
-          onStartCountdown: (_, _) async {},
-          onRevealRound: (_) async {},
-          onResetReveal: () async {},
-        ),
-      ],
-    );
-
-@widgetbook.UseCase(
   name: 'EventSuccessGroupRotationRow',
   type: EventSuccessGroupRotationRow,
   path:
@@ -253,60 +176,6 @@ Widget eventSuccessStrictRevealGroupSlotRow(BuildContext context) =>
               .tableAssignment
               .groupRotationSlots
               .first,
-          profilesByUid: {
-            for (final p in EventSuccessCompanionFixtures.peers) p.uid: p,
-          },
-        ),
-      ],
-    );
-
-@widgetbook.UseCase(
-  name: 'EventSuccessRevealHeader',
-  type: EventSuccessRevealHeader,
-  path:
-      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
-)
-Widget eventSuccessStrictRevealHostCopy(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessRevealHeader',
-      catalogId: 'Event Success reveal',
-      children: [
-        const EventSuccessRevealHeader(
-          headline: 'Create the next room-wide beat',
-          body: 'Partner details unlock together.',
-        ),
-      ],
-    );
-
-@widgetbook.UseCase(
-  name: 'EventSuccessRevealProgressIndicator',
-  type: EventSuccessRevealProgressIndicator,
-  path:
-      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
-)
-Widget eventSuccessStrictRevealProgressBar(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessRevealProgressIndicator',
-      catalogId: 'Event Success reveal',
-      children: [const EventSuccessRevealProgressIndicator(progress: 0.4)],
-    );
-
-@widgetbook.UseCase(
-  name: 'EventSuccessRevealRoundRowList',
-  type: EventSuccessRevealRoundRowList,
-  path:
-      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
-)
-Widget eventSuccessStrictRevealRoundList(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessRevealRoundRowList',
-      catalogId: 'Event Success reveal',
-      children: [
-        EventSuccessRevealRoundRowList(
-          config: 'Pairs · 15 min rounds · 10s reveal',
-          roundCount: 3,
-          revealedThrough: 1,
-          assignments: [EventSuccessCompanionFixtures.rotationAssignment],
           profilesByUid: {
             for (final p in EventSuccessCompanionFixtures.peers) p.uid: p,
           },
@@ -429,29 +298,6 @@ Widget eventSuccessStrictWaitingRevealCue(BuildContext context) =>
       children: [
         const EventSuccessRevealWaitingNotice(
           kind: EventSuccessRevealAssignmentKind.rotations,
-        ),
-      ],
-    );
-
-@widgetbook.UseCase(
-  name: 'EventSuccessRevealRoundRow',
-  type: EventSuccessRevealRoundRow,
-  path:
-      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
-)
-Widget eventSuccessStrictRevealRoundRow(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessRevealRoundRow',
-      catalogId: 'Event Success reveal',
-      children: [
-        EventSuccessRevealRoundRowList(
-          config: 'Pairs · 15 min rounds · 10s reveal',
-          roundCount: 3,
-          revealedThrough: 1,
-          assignments: [EventSuccessCompanionFixtures.rotationAssignment],
-          profilesByUid: {
-            for (final p in EventSuccessCompanionFixtures.peers) p.uid: p,
-          },
         ),
       ],
     );

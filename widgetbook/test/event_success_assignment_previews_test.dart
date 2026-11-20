@@ -1,9 +1,5 @@
-import 'package:catch_dating_app/event_success/presentation/assignments/event_success_assignment_reason_notice.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_group_override_round_section.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_group_override_sheet.dart';
-import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_pod_section.dart';
-import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_rotation_section.dart';
-import 'package:catch_dating_app/event_success/presentation/assignments/event_success_pod_summary_row.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_round_section.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -18,8 +14,6 @@ import '../../test/test_pump_helpers.dart';
 void main() {
   for (final scale in [1.0, 2.0]) {
     for (final (builder, type, count) in <(WidgetBuilder, Type, int)>[
-      (eventSuccessStrictMicroPodsHostCard, EventSuccessHostPodSection, 1),
-      (eventSuccessStrictRotationsHostCard, EventSuccessHostRotationSection, 1),
       (eventSuccessStrictGroupOverrideSheet, EventSuccessGroupOverrideSheet, 1),
       (
         eventSuccessStrictRotationOverrideSheet,
@@ -49,12 +43,6 @@ void main() {
       (
         eventSuccessStrictRotationOverridePairEditor,
         EventSuccessRotationPairFieldLanes,
-        1,
-      ),
-      (eventSuccessStrictPodGroupSummary, EventSuccessPodSummaryRow, 1),
-      (
-        eventSuccessStrictAssignmentReasonSummary,
-        EventSuccessAssignmentReasonNotice,
         1,
       ),
     ]) {

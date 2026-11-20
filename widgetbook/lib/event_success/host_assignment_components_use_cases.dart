@@ -1,66 +1,14 @@
 import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
-import 'package:catch_dating_app/event_success/presentation/assignments/event_success_assignment_reason_notice.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_group_override_draft.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_group_override_round_section.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_group_override_sheet.dart';
-import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_pod_section.dart';
-import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_rotation_section.dart';
-import 'package:catch_dating_app/event_success/presentation/assignments/event_success_pod_summary_row.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_draft.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_round_section.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_sheet.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../support/widgetbook_harness.dart';
-
-@widgetbook.UseCase(
-  name: 'Ready',
-  type: EventSuccessHostPodSection,
-  path: '[P1 product surfaces]/Event Success/Assignment components',
-)
-Widget eventSuccessStrictMicroPodsHostCard(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessHostPodSection',
-      catalogId: 'Event Success assignments',
-      children: [
-        EventSuccessHostPodSection(
-          event: EventSuccessCompanionFixtures.socialEvent,
-          assignments: [EventSuccessCompanionFixtures.microPodAssignment],
-          participantProfiles: EventSuccessCompanionFixtures.peers,
-          preferences: const [],
-          actionState: const EventSuccessAssignmentGenerationActionState(),
-          onGenerate: () async {},
-          onOverride: (_) async {},
-        ),
-      ],
-    );
-
-@widgetbook.UseCase(
-  name: 'Ready',
-  type: EventSuccessHostRotationSection,
-  path: '[P1 product surfaces]/Event Success/Assignment components',
-)
-Widget eventSuccessStrictRotationsHostCard(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessHostRotationSection',
-      catalogId: 'Event Success assignments',
-      children: [
-        EventSuccessHostRotationSection(
-          event: EventSuccessCompanionFixtures.racketEvent,
-          rotationIntervalMinutes: 15,
-          assignments: [EventSuccessCompanionFixtures.rotationAssignment],
-          participantProfiles: EventSuccessCompanionFixtures.peers,
-          preferences: const [],
-          actionState: const EventSuccessAssignmentGenerationActionState(),
-          nextRoundIndex: 0,
-          onGenerate: () async {},
-          onOverride: (_) async {},
-          onPublish: (_) async {},
-        ),
-      ],
-    );
 
 @widgetbook.UseCase(
   name: 'Ready',
@@ -270,38 +218,6 @@ Widget eventSuccessStrictRotationOverridePairEditor(BuildContext context) =>
                     .name,
           onChanged: () {},
           onRemove: () {},
-        ),
-      ],
-    );
-
-@widgetbook.UseCase(
-  name: 'Ready',
-  type: EventSuccessPodSummaryRow,
-  path: '[P1 product surfaces]/Event Success/Assignment components',
-)
-Widget eventSuccessStrictPodGroupSummary(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessPodSummaryRow',
-      catalogId: 'Event Success assignments',
-      children: [
-        EventSuccessPodSummaryRow(
-          assignments: [EventSuccessCompanionFixtures.microPodAssignment],
-        ),
-      ],
-    );
-
-@widgetbook.UseCase(
-  name: 'Ready',
-  type: EventSuccessAssignmentReasonNotice,
-  path: '[P1 product surfaces]/Event Success/Assignment components',
-)
-Widget eventSuccessStrictAssignmentReasonSummary(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessAssignmentReasonNotice',
-      catalogId: 'Event Success assignments',
-      children: [
-        EventSuccessAssignmentReasonNotice(
-          assignments: [EventSuccessCompanionFixtures.rotationAssignment],
         ),
       ],
     );
