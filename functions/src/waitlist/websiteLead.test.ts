@@ -287,6 +287,43 @@ test("city alerts record the standalone purpose, interests and city",
       never, new Date()), null);
   });
 
+test("a ticked new-plans box is stored as its own consent beside the lead's",
+  async () => {
+    const {store, deps} = harness();
+    const newPlansConsent = {purpose: "cityNewPlans",
+      version: "host-referral-new-plans-v1"};
+    const result = await handleWebsiteLead(request(appCheck),
+      withLead(validLeads.referral, {newPlansConsent}), deps);
+    assert.equal(result.status, 200);
+    const row = storedIntent(store, "referral")!;
+    assert.equal(validateIntent(serialized(row)), true);
+    const stored = row.lead as Record<string, Record<string, unknown>>;
+    assert.equal(stored.consent.purpose, "leadFollowUp");
+    assert.deepEqual({...stored.newPlansConsent, decidedAt: null},
+      {...newPlansConsent, decidedAt: null});
+    assert.ok(stored.newPlansConsent.decidedAt);
+    // Left unticked, nothing is recorded for it.
+    const plain = harness();
+    await handleWebsiteLead(request(appCheck), validLeads.referral, plain.deps);
+    assert.equal("newPlansConsent" in
+      (storedIntent(plain.store, "referral")!.lead as object), false);
+  });
+
+test("city alerts and other purposes cannot carry the new-plans box",
+  async () => {
+    for (const body of [
+      withLead(validLeads.city_alerts, {newPlansConsent: {
+        purpose: "cityNewPlans", version: "host-referral-new-plans-v1"}}),
+      withLead(validLeads.referral, {newPlansConsent: {
+        purpose: "leadFollowUp", version: "host-referral-new-plans-v1"}}),
+    ]) {
+      const {store, deps} = harness();
+      const result = await handleWebsiteLead(request(appCheck), body, deps);
+      assert.equal(result.status, 400);
+      assert.equal(store.records.size, 0);
+    }
+  });
+
 test("blank optional answers are dropped and the number is compacted",
   async () => {
     const {store, deps} = harness();

@@ -1,4 +1,4 @@
-import {CatchButton, CatchField, CatchGroundCard, CatchStack, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchConsentNote, CatchField, CatchGroundCard, CatchStack, CatchText} from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {interpolateContent as fill} from "@content/interpolate";
 import {playbookCopy} from "../../content/playbook/playbookCopy";
@@ -10,14 +10,9 @@ import type {PlaybookLeadFormProps} from "./usePlaybookPageController";
 import {phoneFieldCopy} from "@content/phoneField";
 import {activePhoneCountry} from "@content/markets";
 
-/** The consent line under the button, naming the button, with the privacy policy beside it. */
+/** The consent line under the button, naming the button, with the privacy policy linked at its end. */
 function ConsentLine({action}: {action: string}) {
-  return (
-    <CatchStack direction="row" gap={8} railWidth="fit">
-      <CatchText tone="secondary" variant="body-meta">{fill(playbookCopy.leadForm.consent, {action})}</CatchText>
-      <CatchButton href="/privacy/" label={playbookCopy.leadForm.privacy} size="sm" variant="quiet" />
-    </CatchStack>
-  );
+  return <CatchConsentNote href="/privacy/" linkLabel={playbookCopy.leadForm.privacy} text={fill(playbookCopy.leadForm.consent, {action})} />;
 }
 
 /**

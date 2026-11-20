@@ -66,12 +66,23 @@ describe("useHostReferralController", () => {
     expect(post.mock.calls[0][1]?.headers).toMatchObject({"X-Firebase-AppCheck": "app-check-token"});
     expect(body(0)).toEqual({
       requestKind: "referral", fullName: "Asha Rao", city: "Mumbai", cityId: "in-mh-mumbai", countryIsoCode: "IN", citySource: "network_guess", website: "",
-      lead: {requestId: "request000000000001", phone: "+919876543210", consent: {purpose: "leadFollowUp", version: "host-referral-whatsapp-v1"},
+      lead: {requestId: "request000000000001", phone: "+919876543210", consent: {purpose: "leadFollowUp", version: "host-referral-whatsapp-v2"},
         sourcePage: "/", entry: "home-refer",
         referral: {hostName: "Lantern Lane Social", hostLink: "@lanternlanesocial", relationship: "I go to their supper club"}},
     });
     expect(result.current).toMatchObject({sent: true, sendProblem: null,
       sentMessage: "Thanks for introducing Lantern Lane Social. We’ll message you on WhatsApp about it."});
+  });
+
+  it("sends the ticked new-plans box as its own city new-plans consent, and nothing for it when unticked", async () => {
+    const {submission, body} = siteSubmission(accepted());
+    const {result} = renderHook(() => useHostReferralController({label: "Mumbai", slug: "mumbai"}, submission));
+    expect(result.current.newPlans).toBe(false);
+    fill(result.current, complete);
+    act(() => result.current.setNewPlans(true));
+    await act(() => result.current.handleSubmit(submitEvent()));
+    expect(body(0).lead).toMatchObject({consent: {purpose: "leadFollowUp", version: "host-referral-whatsapp-v2"},
+      newPlansConsent: {purpose: "cityNewPlans", version: "host-referral-new-plans-v1"}});
   });
 
   it("sends a signed-in visitor's ID token so the intake credits the referrer", async () => {

@@ -29,14 +29,16 @@ function referralProblems(answers: Answers): Partial<Record<HostReferralField, s
 /**
  * Owns the "Know a host" form: the person's name and WhatsApp number, and the
  * host's name, their Instagram or website and how the person knows them, sent
- * as a referral lead (staff follow up on WhatsApp). Every field is checked
- * before anything is sent; the page's city goes with it.
+ * as a referral lead (staff follow up on WhatsApp). An unticked box asks for
+ * new plans in the city too, stored as its own consent. Every field is
+ * checked before anything is sent; the page's city goes with it.
  */
 export function useHostReferralController(city: HomeLeadCity, submission?: WebsiteLeadSubmission) {
   const lead = useWebsiteLeadController({kind: "referral", formId: copy.refer.entry}, submission);
   const [answers, setAnswers] = useState<Answers>(empty);
   const [problems, setProblems] = useState<Partial<Record<HostReferralField, string>>>({});
   const [sentHost, setSentHost] = useState("");
+  const [newPlans, setNewPlans] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -49,6 +51,7 @@ export function useHostReferralController(city: HomeLeadCity, submission?: Websi
       fullName: answers.fullName,
       phone: answers.phone,
       consentVersion: copy.refer.consentVersion,
+      ...(newPlans ? {newPlansConsentVersion: copy.refer.newPlansConsentVersion} : {}),
       sourcePage: window.location.pathname,
       entry: copy.refer.entry,
       answers: {hostName: typed(answers.hostName), hostLink: typed(answers.hostLink), relationship: typed(answers.relationship)},
@@ -70,6 +73,9 @@ export function useHostReferralController(city: HomeLeadCity, submission?: Websi
     },
     /** The words under each field the form cannot send yet, or the number the lead client refused. */
     problem: (field: HostReferralField): string | null => problems[field] ?? (field === "phone" ? lead.phoneProblem : null),
+    /** The unticked "also send me new plans" box, sent as its own consent. */
+    newPlans,
+    setNewPlans,
     submitting: lead.submitting,
     sent: lead.sent,
     sentMessage: fill(copy.refer.sent, {host: sentHost}),

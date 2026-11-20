@@ -7178,6 +7178,36 @@
         ]
       },
       "notes": "/app/'s Get notified band (the playbook page's appLaunchNotice custom section, PlaybookStart board's app state): a WhatsApp number and a city picker for one WhatsApp message the day the guest app is on the stores, and new plans in that city only if ticked. It sends the homepage app band's request through the same controller (features/marketing/useAppNoticeController: joinWaitlist with whatsapp.launchNotice and notice appLaunch) with the homepage's consent line and version (app-launch-whatsapp-v1)."
+    },
+    {
+      "id": "shared_consent_note",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "city_format",
+        "playbook_guide"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchConsentNote.tsx",
+      "exportName": "CatchConsentNote",
+      "css": [
+        "packages/web-ui/src/components/CatchConsentNote.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchConsentNote.stories.tsx",
+        "exportName": "States",
+        "states": [
+          "white",
+          "paper",
+          "long-line"
+        ]
+      },
+      "notes": "Website T4 under D18 (issue #2144). The consent line under a WhatsApp form: one short secondary sentence with the policy link inline at its end, replacing the quiet Privacy policy button beside the text. Search aliases: ConsentLine, LegalNote, PrivacyNote, FinePrint, Disclaimer.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "A sentence and an inline link set in the body-meta text role; it composes CatchText and draws its link as part of the sentence, so it is not a text role of its own."
     }
   ]
 }

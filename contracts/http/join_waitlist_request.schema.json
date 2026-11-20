@@ -578,6 +578,9 @@
         "consent": {
           "$ref": "#/definitions/leadConsent"
         },
+        "newPlansConsent": {
+          "$ref": "#/definitions/leadNewPlansConsent"
+        },
         "sourcePage": {
           "type": "string",
           "pattern": "^/[^\\s?#]*$",
@@ -628,6 +631,27 @@
           "type": "string",
           "enum": [
             "leadFollowUp",
+            "cityNewPlans"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,40}$"
+        }
+      }
+    },
+    "leadNewPlansConsent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "version"
+      ],
+      "description": "An optional second consent a lead form may ask for with an unticked box: new plans in the lead's city on WhatsApp, recorded apart from the form's own consent. Sent only when the box is ticked; city_alerts never sends it, since its own consent is already cityNewPlans. version names the box's wording.",
+      "properties": {
+        "purpose": {
+          "type": "string",
+          "enum": [
             "cityNewPlans"
           ]
         },

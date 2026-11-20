@@ -4,6 +4,7 @@ import {
   CatchBandHeader,
   CatchButton,
   CatchCheckboxInput,
+  CatchConsentNote,
   CatchField,
   CatchGroundCard,
   CatchStack,
@@ -67,10 +68,7 @@ export function AppLaunchNotice({id, ground, kicker, title, lead, labels}: AppLa
                   <CatchStack align="start">
                     <CatchButton label={notify.action} onPressed={() => undefined} size="lg" status={notice.sending ? "loading" : "idle"} type="submit" />
                   </CatchStack>
-                  <CatchStack direction="row" gap={8} railWidth="fit">
-                    <CatchText tone="secondary" variant="body-meta">{notify.consent}</CatchText>
-                    <CatchButton href="/privacy/" label={notify.privacy} size="sm" variant="quiet" />
-                  </CatchStack>
+                  <CatchConsentNote href="/privacy/" linkLabel={notify.privacy} text={notify.consent} />
                 </CatchStack>
               </Form>
             )}

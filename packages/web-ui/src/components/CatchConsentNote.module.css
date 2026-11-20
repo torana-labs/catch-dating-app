@@ -1,0 +1,17 @@
+/* The consent line's policy link: the line's own colour, underlined. */
+.link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: var(--catch-stroke-hairline);
+  text-underline-offset: 0.2em;
+}
+
+.link:hover {
+  color: var(--catch-theme-ink);
+}
+
+.link:focus-visible {
+  border-radius: var(--catch-radius-xs);
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-primary);
+  outline-offset: var(--catch-space-micro2);
+}
