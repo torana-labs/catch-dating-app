@@ -4,7 +4,7 @@
   "source": {
     "path": "packages/platform/lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "246ae2195423415af2103b3d28d000e021a72eac9e62e4298a4d70a9102337ee",
+    "routeContractSha256": "81c40e9975a706734b5dc1a7164341713c71d905c38e076d7e6db07957caf377",
     "goRouteCount": 129,
     "shellBranchCount": 8,
     "enumRouteCount": 114,
@@ -1711,7 +1711,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.hostCreateEventScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state){final extra=state.extra;return HostCreateEventRouteScreen(organizerId:state.pathParameters['organizerId']!,initialOrganizer:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialOrganizer,final Organizer organizer=>organizer,_=>null},initialPrefill:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialPrefill,_=>null},initialDraft:extra is HostCreateEventRouteArguments?extra.initialDraft:null,initialSavedEventId:extra is HostCreateEventRouteArguments?extra.initialSavedEventId:null,externalBookingMode:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.externalBookingMode,_=>false},initialRosterImportPlan:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialRosterImportPlan,_=>null},promptForDrafts:extra is HostCreateEventRouteArguments?extra.promptForDrafts:true,returnToResponsesOnSave:extra is HostCreateEventRouteArguments?extra.returnToResponsesOnSave:false);}",
+      "presentationExpression": "(context,state){final extra=state.extra;return HostCreateEventRouteScreen(organizerId:state.pathParameters['organizerId']!,initialOrganizer:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialOrganizer,final Organizer organizer=>organizer,_=>null},initialPrefill:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.initialPrefill,_=>null},initialDraft:extra is HostCreateEventRouteArguments?extra.initialDraft:null,initialSavedEventId:extra is HostCreateEventRouteArguments?extra.initialSavedEventId:null,externalBookingMode:switch(extra){final HostCreateEventRouteArguments arguments=>arguments.externalBookingMode,_=>false},promptForDrafts:extra is HostCreateEventRouteArguments?extra.promptForDrafts:true,returnToResponsesOnSave:extra is HostCreateEventRouteArguments?extra.returnToResponsesOnSave:false);}",
       "presentationTarget": "HostCreateEventRouteScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
