@@ -1,3 +1,4 @@
+import {invariant} from "../errors.mjs";
 import {providerError, validateStructuredOutputSchema} from "./provider-contract.mjs";
 import {createProviderRuntime} from "./provider-runtime.mjs";
 
@@ -7,16 +8,32 @@ import {createProviderRuntime} from "./provider-runtime.mjs";
 // https://platform.claude.com/docs/en/build-with-claude/structured-outputs
 export const ANTHROPIC_MODELS = Object.freeze({anthropic: Object.freeze({
   "claude-haiku-4-5-20251001": Object.freeze({capabilities: Object.freeze(["json_schema"]), maxOutputTokens: 8192}),
+  // Priced in price-book.mjs; the try-it import fallback's model (#2062).
+  "claude-opus-5-5": Object.freeze({capabilities: Object.freeze(["json_schema"]), maxOutputTokens: 8192}),
 })});
 
-/** Native Messages API with current output_config.format; no beta or SDK.
- * @param {Partial<ModelProviderConfig>} [options]
+/** Sent with a Workload Identity Federation bearer token, as the official SDKs do. */
+export const ANTHROPIC_OAUTH_BETA = "oauth-2025-04-20";
+
+// "api_key" sends the resolved secret as x-api-key. "oauth_bearer" sends a
+// short-lived federation access token (no stored key), which the caller's
+// resolveSecret port mints; the Messages request is otherwise identical.
+const AUTH_HEADERS = Object.freeze({
+  api_key: (secret) => ({"x-api-key": secret, "anthropic-version": "2023-06-01"}),
+  oauth_bearer: (secret) => ({"Authorization": `Bearer ${secret}`, "anthropic-version": "2023-06-01",
+    "anthropic-beta": ANTHROPIC_OAUTH_BETA}),
+});
+
+/** Native Messages API with current output_config.format; no SDK.
+ * @param {Partial<ModelProviderConfig> & {authScheme?: "api_key"|"oauth_bearer"}} [options]
  * @returns {ModelProvider}
  */
-export function createAnthropicProvider(options = {}) {
+export function createAnthropicProvider({authScheme = "api_key", ...options} = {}) {
+  const headers = Object.hasOwn(AUTH_HEADERS, authScheme) ? AUTH_HEADERS[authScheme] : null;
+  invariant(headers, "MODEL_PROVIDER_CONFIG_INVALID", "Anthropic auth must be api_key or oauth_bearer.");
   return createProviderRuntime({providerId: "anthropic", catalog: ANTHROPIC_MODELS,
     capability: "json_schema", endpoint: "https://api.anthropic.com/v1/messages",
-    headers: (secret) => ({"x-api-key": secret, "anthropic-version": "2023-06-01"}),
+    headers,
     validateSchema: (schema) => validateStructuredOutputSchema(schema, "anthropic"),
     buildBody: (request, prompt) => ({model: request.modelId, stream: false,
       thinking: {type: "disabled"}, max_tokens: request.maxOutputTokens,

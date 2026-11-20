@@ -187,6 +187,10 @@ describe("firestore.rules", () => {
         "eventMessagingBudgetApplicationReceipts",
         "supplyIntakeRequests",
         "supplyIntakeUsage",
+        "aiFallbackPolicies",
+        "aiFallbackUsage",
+        "aiFallbackResults",
+        "aiFallbackAudit",
       ];
       for (const collectionName of collections) {
         await seed([collectionName, "record-1"], {schemaVersion: 1});

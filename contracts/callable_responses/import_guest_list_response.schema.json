@@ -17,7 +17,7 @@
     "result": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["eventId", "fileFormat", "converter", "headers", "columnShapes", "mapping", "mappedBy", "needsMapping", "sessionId", "revision", "reviewHash", "eligibleForApply", "counts", "rows", "skipped", "suggestions", "truncatedCount", "import"],
+      "required": ["eventId", "fileFormat", "converter", "headers", "columnShapes", "mapping", "mappedBy", "aiRead", "reviewFields", "needsMapping", "sessionId", "revision", "reviewHash", "eligibleForApply", "counts", "rows", "skipped", "suggestions", "truncatedCount", "import"],
       "properties": {
         "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "fileFormat": {"type": "string", "enum": ["csv", "xlsx", "vcf"]},
@@ -54,6 +54,8 @@
         },
         "mappedBy": {"type": "string", "enum": ["converter", "host", "model"],
           "description": "Who chose the columns: the converter for the file's format, the host's mapping, or the model fallback (off until go-live). Model-chosen fields are stored with origin modelProposal for review."},
+        "aiRead": {"type": "boolean", "description": "True when the AI fallback chose the columns (mappedBy model); the website marks the mapping for review. Off until go-live (#2062)."},
+        "reviewFields": {"type": "array", "maxItems": 10, "uniqueItems": true, "items": {"type": "string", "enum": ["displayName", "phone", "email", "externalReference", "arrivalGroup", "ticketType", "status"]}, "description": "Mapping fields the AI fallback chose, for the host to check; empty unless aiRead."},
         "needsMapping": {"type": "boolean"},
         "sessionId": {"type": ["string", "null"], "pattern": "^hri_[a-f0-9]{48}$"},
         "revision": {"type": ["integer", "null"], "minimum": 1},

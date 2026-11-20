@@ -5506,6 +5506,38 @@ count against `supplyIntakeUsage/instant-draft-pages-{monthKey}`, a separate
 draft. A claimed owner publishing the page is another way listing events
 publish (`onInstantDraftOrganizerPublished`).
 
+### Try-It AI Fallback
+
+The try-it import commands (#2062) share one model fallback for links and
+files their own parsers cannot read, in `functions/src/commands/aiFallback`.
+It is off: `AI_FALLBACK_POLICY` in `policy.ts` must name the owner's
+decision and the published privacy-policy line (`privacyNoticeRef`) before
+it can be enabled, and an enabled policy missing either throws
+`ai_fallback_policy_not_ready`. The owner set a US$50 monthly cap, five paid
+reads per visitor per UTC day and `claude-opus-5-5` (20 Nov 2026). Calls
+use the programme assistant's Workload Identity Federation token, never a
+stored key. Models see public page text, or column headers and value
+shapes for files, never a guest's details.
+
+- `aiFallbackPolicies/current` is the no-deploy override: `disabled`,
+  `monthlyCapMicros` (at most US$1,000) and `perUidDailyReads` (at most
+  100). It can switch the fallback off, never on.
+- `aiFallbackUsage/{YYYY-MM}` (`kind: month`) holds worst-case
+  reservations in flight and settled spend in micro-dollars;
+  `aiFallbackUsage/reads-{YYYY-MM-DD}-{hash}` (`kind: reader_day`) counts one
+  visitor's paid reads, keyed by a hash of the uid. A transaction checks both
+  and reserves the price book's step ceiling before a call; the read then
+  settles to its priced tokens, and a call that may have been billed keeps
+  its whole reservation.
+- `aiFallbackResults/{cacheKey}` caches the validated read for 30 days, so a
+  preview and its apply share one paid call.
+- `aiFallbackAudit/{auditId}` records each paid, failed or refused read: the
+  command, task, outcome, tokens and cost only.
+
+All four are server-only. `expiresAt` on reader days and cached reads is for
+Firestore TTL policies. `guests.import-list` answers `aiRead` and
+`reviewFields` (the columns the model chose) so the host checks them.
+
 ### Organizer Application Intake
 
 Organizer applications are a provider-neutral intake domain. A Google Form,

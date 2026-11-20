@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/ai_fallback_usage.schema.json",
+  "title": "AiFallbackUsageDocument",
+  "description": "Durable spend for the try-it AI fallback (#2062). kind month at {YYYY-MM}: worst-case reservations in flight and settled spend in micro-dollars, enforced against the monthly cap in a transaction before any paid call. kind reader_day at reads-{YYYY-MM-DD}-{hash}: one visitor's paid reads that UTC day, keyed by a hash of the uid, never the uid; expiresAt drives a TTL policy.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "aiFallbackUsage",
+  "x-firestore-path": "aiFallbackUsage/{usageKey}",
+  "x-document-id-field": "key",
+  "x-owner": "trusted try-it import callables",
+  "required": ["schemaVersion", "kind", "key", "updatedAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "kind": {"type": "string", "enum": ["month", "reader_day"]},
+    "key": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}$|^reads-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{32}$"},
+    "reservedMicros": {"type": "integer", "minimum": 0},
+    "spentMicros": {"type": "integer", "minimum": 0},
+    "paidReads": {"type": "integer", "minimum": 0},
+    "reads": {"type": "integer", "minimum": 0, "maximum": 1000},
+    "updatedAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"}
+  }
+}

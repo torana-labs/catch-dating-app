@@ -246,22 +246,28 @@ test("the model fallback is off: unknown columns go to the host", async () => {
 
 test("when switched on, the model sees headers and shapes only, and its columns are stored as modelProposal", async () => {
   const requests: unknown[] = [];
+  const costs: number[] = [];
   const runner: GuestMappingModelRunner = {run: async (request) => {
     requests.push(request.input);
+    costs.push(request.maxCostMicros);
     return {output: {mapping: {displayName: 0, phone: 1}, confidence: 0.8}};
   }};
   const policy = {...GUEST_MAPPING_MODEL_POLICY,
     provider: {...GUEST_MAPPING_MODEL_POLICY.provider, enabled: true, modelId: "fixture-model", decisionId: "fixture-decision"},
     budgets: {...GUEST_MAPPING_MODEL_POLICY.budgets, maxModelCallsPerMonth: 10, maxModelCallsPerProfilePerMonth: 2,
-      maxInputTokensPerCall: 500, maxOutputTokensPerCall: 200, maxCostMicrosPerMonth: 1000}};
+      maxInputTokensPerCall: 500, maxOutputTokensPerCall: 200, maxCostMicrosPerCall: 900, maxCostMicrosPerMonth: 100000}};
   const {db, deps} = harness({mappingProvider: () => guestMappingProposalProvider({policy, runner})});
   const csv = "Attendee,Contact,Seat\nAsha Sample,9876543210,A1\n";
   const preview = await importGuestListHandler(call(envelope("preview", csv)), deps);
   valid(validate.response, preview, "model mapping");
   assert.equal(preview.status, "previewed");
   assert.equal(preview.result.mappedBy, "model");
+  assert.equal(preview.result.aiRead, true);
+  assert.deepEqual(preview.result.reviewFields, ["displayName", "phone"]);
   assert.equal(preview.result.counts.add, 1);
   assert.deepEqual(requests, [{headers: ["Attendee", "Contact", "Seat"], columnShapes: ["text", "phone-like", "text"]}]);
+  // One call's ceiling, never the month's budget (#2062).
+  assert.deepEqual(costs, [900]);
   assert.equal(JSON.stringify(requests).includes("Asha"), false);
   const stored = db.read(`hostRosterIntakeSessions/${preview.result.sessionId}`) as {draft: {rows: Array<{fields: Record<string, {origin: string; confidence: number | null}>}>}};
   assert.deepEqual(stored.draft.rows[0].fields.displayName, {column: 0, header: "Attendee", origin: "modelProposal", confidence: 0.8});
@@ -272,7 +278,8 @@ test("an unusable model proposal falls back to the host mapping", async () => {
   const runner: GuestMappingModelRunner = {run: async () => ({output: {mapping: {phone: 1}, confidence: 0.4}})};
   const policy = {...GUEST_MAPPING_MODEL_POLICY,
     provider: {...GUEST_MAPPING_MODEL_POLICY.provider, enabled: true, modelId: "fixture-model", decisionId: "fixture-decision"},
-    budgets: {...GUEST_MAPPING_MODEL_POLICY.budgets, maxModelCallsPerMonth: 10, maxModelCallsPerProfilePerMonth: 2}};
+    budgets: {...GUEST_MAPPING_MODEL_POLICY.budgets, maxModelCallsPerMonth: 10, maxModelCallsPerProfilePerMonth: 2,
+      maxOutputTokensPerCall: 200, maxCostMicrosPerCall: 900}};
   const {deps} = harness({mappingProvider: () => guestMappingProposalProvider({policy, runner})});
   const response = await importGuestListHandler(call(envelope("preview", "Attendee,Contact\nAsha Sample,9876543210\n")), deps);
   assert.equal(response.status, "needs_input");
