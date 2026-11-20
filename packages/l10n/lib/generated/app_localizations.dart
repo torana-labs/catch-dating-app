@@ -37768,6 +37768,24 @@ abstract class AppLocalizations {
   /// **'End rehearsal'**
   String get hostEventsRehearsalEnd;
 
+  /// Practice console top bar badge with the rehearsal's virtual time.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice · {time}'**
+  String hostEventsRehearsalPracticeTag({required String time});
+
+  /// Practice tools screen title: the rehearsal's clock, made-up guests, queues and recap.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice tools'**
+  String get hostEventsRehearsalPracticeTools;
+
+  /// Notice when a practice console button would message real guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice sends nothing. On the night, this messages your guests.'**
+  String get hostEventsRehearsalNothingSent;
+
   /// Back label on the event screens.
   ///
   /// In en, this message translates to:

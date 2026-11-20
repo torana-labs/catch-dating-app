@@ -48,17 +48,21 @@ HostFormatsRunState hostFormatsRunController(Ref ref, Event event) {
       ref.watch(watchEventAttendeesProvider(event.id)).value ??
       const <EventAttendee>[];
   final runners = attendees.where((a) => a.isCheckedIn).toList();
-  final memberships = <String, AsyncValue<EventAssistanceMembershipSession>>{
+  final memberships = <String, AssistanceMembershipFacts?>{
     for (final runner in runners)
-      runner.id: ref.watch(
-        eventAssistanceMembershipProvider(
-          EventAssistanceGuestScope(
-            organizerId: event.organizerId,
-            eventId: event.id,
-            attendeeId: runner.id,
-          ),
-        ),
-      ),
+      runner.id: ref
+          .watch(
+            eventAssistanceMembershipProvider(
+              EventAssistanceGuestScope(
+                organizerId: event.organizerId,
+                eventId: event.id,
+                attendeeId: runner.id,
+              ),
+            ),
+          )
+          .value
+          ?.view
+          .facts,
   };
   return hostFormatsRunState(
     event: event,
@@ -70,14 +74,14 @@ HostFormatsRunState hostFormatsRunController(Ref ref, Event event) {
 }
 
 /// The run console from the plan, the sweep, the runners checked in and
-/// their memberships.
+/// their membership facts, by attendee id; a runner with no facts yet is
+/// still being checked.
 HostFormatsRunState hostFormatsRunState({
   required Event event,
   required EventSuccessPlan plan,
   required HostFormatsSweepState sweep,
   required List<EventAttendee> runners,
-  required Map<String, AsyncValue<EventAssistanceMembershipSession>>
-  memberships,
+  required Map<String, AssistanceMembershipFacts?> memberships,
 }) {
   final steps = EventSuccessRuntime(
     plan: plan,
@@ -101,12 +105,11 @@ HostFormatsRunState hostFormatsRunState({
   final unplaced = <String>[];
   var checking = false;
   for (final runner in runners) {
-    final session = memberships[runner.id]?.value;
-    if (session == null) {
+    final facts = memberships[runner.id];
+    if (facts == null) {
       checking = true;
       continue;
     }
-    final facts = session.view.facts;
     for (final group in facts.groups) {
       labels.putIfAbsent(group.groupId, () => group.label);
     }

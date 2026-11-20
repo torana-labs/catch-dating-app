@@ -23386,6 +23386,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventsRehearsalEnd => 'End rehearsal';
 
   @override
+  String hostEventsRehearsalPracticeTag({required String time}) {
+    return 'Practice · $time';
+  }
+
+  @override
+  String get hostEventsRehearsalPracticeTools => 'Practice tools';
+
+  @override
+  String get hostEventsRehearsalNothingSent =>
+      'Practice sends nothing. On the night, this messages your guests.';
+
+  @override
   String get hostEventsBack => 'Back';
 
   @override

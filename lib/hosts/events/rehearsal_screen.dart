@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_body.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_controller.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_practice_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
@@ -18,8 +18,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// and End rehearsal.
 ///
 /// It watches [hostRehearsalControllerProvider]. Open the practice door
-/// opens the rehearsal's own practice screens, which keep its state
-/// machine; End rehearsal is the existing complete command.
+/// opens [HostRehearsalPracticeScreen]: the rebuilt live console, run
+/// console or crawl board on the rehearsal's made-up guests, whose every
+/// button is a rehearsal command. End rehearsal is the existing complete
+/// command.
 class HostRehearsalScreen extends ConsumerWidget {
   const HostRehearsalScreen({
     super.key,
@@ -63,7 +65,7 @@ class HostRehearsalScreen extends ConsumerWidget {
             onOpenDoor: () => unawaited(
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (_) => HostEventRehearsalScreen(
+                  builder: (_) => HostRehearsalPracticeScreen(
                     organizerId: organizerId,
                     sessionId: sessionId,
                   ),
