@@ -77,7 +77,7 @@ function StartStep({controller, form}: {controller: GuestImportController; form:
         <CatchStack align="center" direction="row" gap={12} wrap>
           <CatchFilePickerButton accept={guestImportAccept} label={state.file ? copy.chooseAnother : copy.choose}
             leading={<CatchIcon name={state.file ? "check" : "upload"} />} onChanged={state.busy ? null : controller.chooseFile}
-            semanticsLabel={`${state.file ? copy.chooseAnother : copy.choose}: ${form.label}`} />
+            semanticsLabel={fill(copy.chooseFor, {action: state.file ? copy.chooseAnother : copy.choose, label: form.label})} />
           {state.file ? (
             <CatchText as="p" variant="body">{fill(copy.chosen, {name: state.file.name, size: guestFileSize(state.file.size)})}</CatchText>
           ) : null}
@@ -212,9 +212,9 @@ function LookAt({controller, result}: {controller: GuestImportController; result
       <CatchText as="h3" variant="title-bar">{look.title}</CatchText>
       <CatchText as="p" tone="secondary" variant="body-small">{look.lead}</CatchText>
       {[...rows, ...outRows].slice(0, 250).map((row) => (
-        <CatchField body={`${fill(look.row, {row: row.sourceRowNumber})} · ${row.kind === "excluded" ? copy.review.kinds.excluded : issueText(row)}`}
+        <CatchField body={fill(look.line, {row: fill(look.row, {row: row.sourceRowNumber}), issue: row.kind === "excluded" ? copy.review.kinds.excluded : issueText(row)})}
           key={row.rowId} onChanged={state.busy ? null : () => flow.toggleExcluded(row.rowId)} recipe="toggle"
-          title={`${look.leaveOut}: ${row.displayName || look.unnamed}`} value={state.excluded.has(row.rowId)} />
+          title={fill(look.leaveOut, {name: row.displayName || look.unnamed})} value={state.excluded.has(row.rowId)} />
       ))}
       {changed ? (
         <CatchStack align="start">

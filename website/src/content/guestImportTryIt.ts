@@ -28,6 +28,8 @@ export const guestImportTryItCopy = {
   title: "Upload a guest list",
   choose: "Choose a file",
   chooseAnother: "Choose another file",
+  /** The file button's full name: {action} is the button's words, {label} the form's. */
+  chooseFor: "{action}: {label}",
   /** {name} and {size} of the chosen file. */
   chosen: "{name} · {size}",
   accepts: "A CSV or Excel (.xlsx) file, up to 5 MB. The first 250 guests are read.",
@@ -80,7 +82,10 @@ export const guestImportTryItCopy = {
       /** {row} is the row's number in the file. */
       row: "Row {row}",
       unnamed: "No name",
-      leaveOut: "Leave out of this import",
+      /** A row's line: {row} is "Row 4", {issue} why it needs a look. */
+      line: "{row} · {issue}",
+      /** The switch's label: {name} is the guest's name as the file gives it. */
+      leaveOut: "Leave {name} out of this import",
       again: "Preview without them",
       issues: {
         "invalid-phone": "The phone number doesn’t look right.",

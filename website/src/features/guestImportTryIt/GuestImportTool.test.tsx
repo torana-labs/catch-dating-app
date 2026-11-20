@@ -3,6 +3,7 @@ import {cleanup, fireEvent, render as renderInto, screen, waitFor, within} from 
 import {StrictMode} from "react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {guestImportTryItCopy as copy} from "@content/guestImportTryIt";
+import {interpolateContent as fill} from "@content/interpolate";
 import {tryItCopy} from "@content/tryIt";
 import type {PlaybookLeadForm} from "../../content/playbook/playbookContract";
 import {guestImportFixtures as fixtures, guestSampleCsv, scriptedGuestClient} from "../../stories/fixtures/guestImportTryIt";
@@ -98,8 +99,8 @@ describe("guest list try-it tool", () => {
     expect(await screen.findByText(copy.review.look.title)).toBeTruthy();
     expect(screen.getByText(/The phone number doesn’t look right\./u)).toBeTruthy();
     expect(screen.getByRole("button", {name: copy.review.confirm}).hasAttribute("disabled")).toBe(true);
-    fireEvent.click(screen.getByRole("switch", {name: new RegExp(`${copy.review.look.leaveOut}: Ira Desai`, "u")}));
-    fireEvent.click(screen.getByRole("switch", {name: new RegExp(`${copy.review.look.leaveOut}: Rohan Pillai`, "u")}));
+    fireEvent.click(screen.getByRole("switch", {name: fill(copy.review.look.leaveOut, {name: "Ira Desai"})}));
+    fireEvent.click(screen.getByRole("switch", {name: fill(copy.review.look.leaveOut, {name: "Rohan Pillai"})}));
     fireEvent.click(screen.getByRole("button", {name: copy.review.look.again}));
     await waitFor(() => expect(screen.getByRole("button", {name: copy.review.confirm}).hasAttribute("disabled")).toBe(false));
     fireEvent.click(screen.getByRole("button", {name: copy.review.confirm}));
