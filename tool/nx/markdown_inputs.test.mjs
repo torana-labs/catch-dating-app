@@ -65,6 +65,7 @@ export const markdownMentions = {
   "tool/harness/lib/flutter_test_selection.dart": "selection logic that classifies Markdown paths",
   "tool/lib/functions_test_reads.mjs": "an example path in its documentation",
   "tool/lib/functions_test_selection.mjs": "selection logic that classifies Markdown paths",
+  "tool/marketing/audit_website_imagery.mjs": "names the summary.md report it writes; a local finder CI does not run",
   "tool/marketing/import_hosted_captures.mjs": "checks the widget catalog its own import rewrote",
   "tool/nx/catch_projects.mjs": "Nx input patterns",
   "tool/nx/shadow_plan.mjs": "selection logic that classifies Markdown paths",
