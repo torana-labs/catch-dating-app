@@ -3,7 +3,6 @@
 Functions are deployed to `asia-south1` in all Firebase environments:
 
 - `dev` -> `catchdates-dev`
-- `staging` -> `catchdates-staging`
 - `prod` -> `catch-dating-app-64e51`
 
 Global concurrency ceiling is 50 (`maxInstances` in `src/index.ts`).
@@ -723,7 +722,7 @@ the shared App Check options.
 
 The isolated `demo-catch` emulator suite omits App Check only when the
 Functions emulator flag and all three dependent loopback emulator addresses
-match. Deployed dev, staging, and production callables still enforce App Check.
+match. Deployed dev and production callables still enforce App Check.
 
 `tool/deploy_firebase_targets.sh` synchronizes callable invokers immediately
 after each successful Functions phase. The sync command discovers live Cloud
@@ -827,17 +826,13 @@ emulator read every export, so they load everything as before.
 
 Razorpay secret definitions live in `src/payments/razorpay.ts`.
 
-Current state: `dev`, `staging`, and `prod` use the same Razorpay test-mode
-secrets because live Razorpay credentials have not been introduced yet.
-
-Before real payments launch:
-
-1. Create environment-owned Razorpay test/live credentials.
-2. Set the plain `RAZORPAY_PUBLIC_KEY_ID` parameter and the server-only
-   `RAZORPAY_KEY_SECRET` secret in each Firebase project, following
-   `docs/release_operations.md`.
-3. Deploy Functions for each environment.
-4. Smoke test order creation, payment verification, cancellation, and refunds.
+Current state (since 2026-11-20): `prod` uses Catch's live Razorpay key and
+`dev` uses Catch's test-mode key, both from Catch's own Razorpay account. Each
+project holds its own plain `RAZORPAY_PUBLIC_KEY_ID` parameter and server-only
+`RAZORPAY_KEY_SECRET` secret, and `razorpayWebhook` verifies deliveries with
+that project's `RAZORPAY_WEBHOOK_SECRET`. Rotating a key means storing the new
+secret version, updating the parameter, and redeploying the Functions that
+mount the secret (`docs/release_operations.md`).
 
 ## External API dependencies
 
@@ -925,12 +920,10 @@ npm --prefix functions run lint
 npm --prefix functions test
 firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
 ./tool/firebase_with_env.sh dev deploy --only functions
-./tool/firebase_with_env.sh staging deploy --only functions
 ./tool/firebase_with_env.sh prod deploy --only functions
 ./tool/firebase_with_env.sh dev deploy --only firestore:rules
-./tool/firebase_with_env.sh staging deploy --only firestore:rules
 ./tool/firebase_with_env.sh prod deploy --only firestore:rules
-npm run sync:callable-invokers -- catchdates-dev catchdates-staging catch-dating-app-64e51
+npm run sync:callable-invokers -- catchdates-dev catch-dating-app-64e51
 ```
 
 | `updateOrganizerEventSetupDefaults` | Revision-fenced manager save of private suggestions; no provider activation. |
