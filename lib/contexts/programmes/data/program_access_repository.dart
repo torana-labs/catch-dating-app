@@ -55,6 +55,46 @@ class ProgramAccessRepository {
     );
   }
 
+  /// The account's own views of [organizerId]'s programmes, live, at most
+  /// [limit] of them. Offline the last views this device read are served.
+  Stream<List<ProgramAccessView>> watchOrganizerViews(
+    String organizerId,
+    String uid, {
+    required int limit,
+  }) => withBackendErrorStream(
+    () => _firestore
+        .collection(collection)
+        .where('uid', isEqualTo: uid)
+        .where('organizerId', isEqualTo: organizerId)
+        .limit(limit)
+        .snapshots()
+        .map(
+          (snapshot) => [
+            for (final doc in snapshot.docs)
+              ProgramAccessView.fromMap(doc.data()),
+          ],
+        ),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'load program access',
+      resource: collection,
+    ),
+  );
+
+  /// [data] while the account may open the programme's setup view: the
+  /// creator, an organizer manager or a live programme administration duty
+  /// ([ProgramAccessView.holdsSetup]), against the app clock.
+  Stream<T> gatedSetup<T>(
+    String programId,
+    String uid, {
+    required Stream<T> Function(ProgramAccessState state) data,
+  }) => gateByProgramAccess(
+    access: watchState(programId, uid),
+    data: data,
+    needs: const {},
+    admits: (state) => state.view?.holdsSetup(state.evaluatedAt) ?? false,
+  );
+
   /// [data] while the account's authority holds every key in [needs].
   Stream<T> gated<T>(
     String programId,

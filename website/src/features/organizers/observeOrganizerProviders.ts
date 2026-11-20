@@ -1,6 +1,6 @@
-import {currentConsentVersion, organizerAdPage} from "../../analytics/catchMeasurement";
-import {getMarketingConsent, marketingConsentChangedEvent, setOrganizerAdDestinations, trackOrganizerPageViewed}
-  from "../../analytics";
+import {catchOrganizerProfilePage, currentConsentVersion, organizerAdPage} from "../../analytics/catchMeasurement";
+import {admitCatchOrganizerProfile, getMarketingConsent, marketingConsentChangedEvent, setOrganizerAdDestinations,
+  trackOrganizerPageViewed} from "../../analytics";
 import {organizerPolicyForListing} from "./organizerPolicy";
 import {isPublicApiEnabled} from "./selectors";
 import {readOrganizerProviderSettings} from "./trackingProvidersRepository";
@@ -13,26 +13,36 @@ export interface OrganizerTrackingSettings {
   enabled: boolean;
   metaPixelId: string | null;
   googleMeasurementId: string | null;
+  /** Whether Catch's own tags may cover this organiser profile (organiser page reads only). */
+  profileTagsEligible?: boolean;
 }
 
 interface ProviderObserverDependencies {
   readSettings?: (payload: {organizerId: string; eventId: string | null}) => Promise<OrganizerTrackingSettings>;
 }
 
-const marketingNow = () => {
+const choice = () => {
   const consent = getMarketingConsent();
-  return consent?.version === currentConsentVersion && consent.marketing === true;
+  if (consent?.version !== currentConsentVersion || consent.analytics !== true) return "none" as const;
+  return consent.marketing === true ? "marketing" as const : "analytics" as const;
 };
 
 /**
- * Organiser-owned tags for a public organiser page or event page (#2063,
- * Option A). The organiser's IDs go into the first-party transport's separate
- * organiser destination set (`adTags.setOrganizer`); there is no other loader.
- * Settings are read only under a current marketing choice, and only a set the
- * public projection published (`enabled: true`) is used: under publication
- * policy v1 there is none, so nothing loads. A fresh epoch fences every async
- * response after navigation or a consent change; leaving the page clears the
- * set, and the transport itself stops on any ineligible route.
+ * Advertising tags on a public organiser page or event page (#2063, Option A),
+ * from one read of the public tracking projection:
+ *
+ * - Catch's own tags cover the organiser profile only when the server
+ *   classified it eligible (`profileTagsEligible`), under a current analytics
+ *   or marketing choice (`admitCatchOrganizerProfile`). Organiser profiles
+ *   are otherwise closed to Catch's tags.
+ * - The organiser's own IDs go into the first-party transport's separate
+ *   organiser set (`adTags.setOrganizer`) only under a current marketing
+ *   choice and only when the projection published them (`enabled: true`):
+ *   under publication policy v1 there is none, so nothing loads.
+ *
+ * A fresh epoch fences every async response after navigation or a consent
+ * change; leaving the page clears both, and the transport itself stops on any
+ * ineligible route or while a private surface (the owner view) is open.
  */
 export function observeOrganizerProviders(
   listing: HostListing,
@@ -40,29 +50,45 @@ export function observeOrganizerProviders(
   dependencies: ProviderObserverDependencies = {}
 ): () => void {
   const publicPath = window.location.pathname;
-  const eligible = isPublicApiEnabled(listing) && organizerPolicyForListing(listing).isPubliclyReadable &&
-    organizerAdPage(publicPath, window.location.search, window.location.hash) !== null;
+  const organizerRoute = organizerAdPage(publicPath, window.location.search, window.location.hash) !== null;
+  const profilePath = eventId === null ? catchOrganizerProfilePage(publicPath) : null;
+  const listingPublic = isPublicApiEnabled(listing) && organizerPolicyForListing(listing).isPubliclyReadable;
   let epoch = 0;
   let stopped = false;
+  const clear = () => {
+    setOrganizerAdDestinations(null);
+    if (profilePath) admitCatchOrganizerProfile(null);
+  };
   const refresh = async () => {
     const generation = ++epoch;
     setOrganizerAdDestinations(null);
-    if (stopped || !eligible || window.location.pathname !== publicPath || !marketingNow()) return;
+    const level = choice();
+    if (stopped || !listingPublic || window.location.pathname !== publicPath || level === "none" ||
+        (!profilePath && !(organizerRoute && level === "marketing"))) {
+      if (profilePath) admitCatchOrganizerProfile(null);
+      return;
+    }
     try {
       const settings = await (dependencies.readSettings ?? readOrganizerProviderSettings)({organizerId: listing.id, eventId});
-      if (stopped || generation !== epoch || window.location.pathname !== publicPath || !marketingNow()) return;
-      if (settings.enabled !== true || settings.organizerId !== listing.id || settings.eventId !== eventId) return;
+      const now = choice();
+      if (stopped || generation !== epoch || window.location.pathname !== publicPath || now === "none") return;
+      if (settings.organizerId !== listing.id || settings.eventId !== eventId) return;
+      if (profilePath) admitCatchOrganizerProfile(settings.profileTagsEligible === true ? profilePath : null);
+      if (now !== "marketing" || !organizerRoute || settings.enabled !== true) return;
       setOrganizerAdDestinations({organizerId: settings.organizerId, eventId: settings.eventId,
         metaPixelId: settings.metaPixelId, googleMeasurementId: settings.googleMeasurementId});
       trackOrganizerPageViewed();
-    } catch { /* Provider settings are optional; a denied or missing owner is silent. */ }
+    } catch {
+      // Provider settings are optional; a denied or missing owner is silent and keeps the profile closed.
+      if (profilePath && generation === epoch) admitCatchOrganizerProfile(null);
+    }
   };
   void refresh();
   window.addEventListener(marketingConsentChangedEvent, refresh);
   return () => {
     stopped = true;
     ++epoch;
-    setOrganizerAdDestinations(null);
+    clear();
     window.removeEventListener(marketingConsentChangedEvent, refresh);
   };
 }

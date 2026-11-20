@@ -1,5 +1,5 @@
 import {brand} from "@catch/brand";
-import {approvedCampaignLabels, currentConsentVersion, organizerAdPage, publicAdPage,
+import {approvedCampaignLabels, catchOrganizerProfilePage, currentConsentVersion, organizerAdPage, publicAdPage,
   type MeasurementConsent, type OrganizerTagPage} from "./catchMeasurement.ts";
 import {newOrganizerTagEventId, organizerBeginCheckout, organizerPageView, organizerPurchase, organizerViewContent,
   type OrganizerTagCommand} from "./organizerTagEvents.ts";
@@ -278,6 +278,14 @@ export function createAdTags(options: AdTagOptions = {}) {
   /** What the tags are granted right now. */
   let level: "none" | "analytics" | "marketing" = "none";
   const sent = new Set<string>();
+  /**
+   * The one organiser profile Catch's own tags may cover right now: admitted
+   * only after the server classified it eligible (`profileTagsEligible`,
+   * #2063), and only while that profile is the current page.
+   */
+  let admittedProfile: string | null = null;
+  /** Open private surfaces on a public path (the owner view): nothing sends while any is open. */
+  let privateHolds = 0;
 
   const choiceLevel = (value: MeasurementConsent | null): "none" | "analytics" | "marketing" =>
     value?.version !== currentConsentVersion || value.analytics !== true ? "none" :
@@ -287,8 +295,9 @@ export function createAdTags(options: AdTagOptions = {}) {
   function currentPage(): {location: string} | null {
     if (typeof window === "undefined" || typeof document === "undefined") return null;
     const {hostname, pathname, search, hash} = window.location;
-    if (!hostAllowed(hostname)) return null;
-    const path = publicAdPage(pathname);
+    if (!hostAllowed(hostname) || privateHolds > 0) return null;
+    const profile = admittedProfile !== null && catchOrganizerProfilePage(pathname) === admittedProfile ? admittedProfile : null;
+    const path = publicAdPage(pathname) ?? profile;
     if (!path || !/^(?:#[A-Za-z0-9_-]*)?$/u.test(hash)) return null;
     for (const key of new URLSearchParams(search).keys()) if (!adQueryKey.test(key)) return null;
     return {location: pageLocation(path, search)};
@@ -404,7 +413,7 @@ export function createAdTags(options: AdTagOptions = {}) {
 
   /** The eligible organiser page for the current set, or null: same host rule, route class and scope. */
   function organizerPage(): OrganizerTagPage | null {
-    if (!organizer || typeof window === "undefined" || typeof document === "undefined") return null;
+    if (!organizer || privateHolds > 0 || typeof window === "undefined" || typeof document === "undefined") return null;
     const {hostname, pathname, search, hash} = window.location;
     if (!hostAllowed(hostname)) return null;
     const page = organizerAdPage(pathname, search, hash);
@@ -485,6 +494,33 @@ export function createAdTags(options: AdTagOptions = {}) {
 
   return {
     sync,
+
+    /**
+     * Admits one organiser profile path to Catch's own tags, or clears it.
+     * The caller passes only a profile the server classified eligible; the
+     * path must still be an organiser profile route (`catchOrganizerProfilePage`).
+     */
+    admitOrganizerProfile(path: string | null): boolean {
+      const next = path === null ? null : catchOrganizerProfilePage(path);
+      const changed = next !== admittedProfile;
+      admittedProfile = next;
+      return changed;
+    },
+
+    /**
+     * Holds every tag (Catch's and the organiser set's) silent while a private
+     * surface is open on a public path, such as the owner view. Returns the
+     * release; holds nest.
+     */
+    holdForPrivateSurface(): () => void {
+      privateHolds += 1;
+      let released = false;
+      return () => {
+        if (released) return;
+        released = true;
+        privateHolds = Math.max(0, privateHolds - 1);
+      };
+    },
 
     /**
      * Sets or clears the organiser destination set. The caller passes only a

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_resource_views.schema.json",
   "title": "ProgramResourceViewDocument",
-  "description": "Server-maintained, staff-readable label of one programme pickup point, hotel or function for the work shell: exactly the fields getProgramWorkAccess returns for it. The id is {programId}__{kind}__{resourceId}. Written by triggers on programPickupPoints, programHotels and programFunctions. A hotel's reception contact and notes, a function's venue notes, location, instructions and dress code, and a pickup point's coordinates and instructions are never copied. Which accounts read a view comes from their programAccessViews work lists. Never identity, permission or mutation authority.",
+  "description": "Server-maintained, staff-readable label of one programme pickup point, hotel or function for the work shell: exactly the fields getProgramWorkAccess returns for it. The id is {programId}__{kind}__{resourceId}. Written by triggers on programPickupPoints, programHotels and programFunctions. A hotel's reception contact and notes, a function's venue notes, location, instructions and dress code, and a pickup point's coordinates and instructions are never copied. Which accounts read a view comes from their programAccessViews work lists; the communications duty also reads every function label, so photo albums carry function names. Never identity, permission or mutation authority.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "programResourceViews",

@@ -130,6 +130,35 @@ describe("programme work shell rules", () => {
         "programResourceViews"), where("kind", "==", "hotel"))));
     });
 
+  it("lets the communications duty read every function label, nothing else",
+    async () => {
+      await seedResource("function", "f-1");
+      await seedResource("function", "f-2");
+      await seedResource("hotel", "h-1");
+      await seedView("comms-1", {duties: {communications: future(2)}});
+      await seedView("ended-1", {duties: {communications: Date.now() - 1000}});
+      await seedView("lapsed-1", {duties: {communications: future(2)},
+        expiresAtMillis: Date.now() - 1000});
+      await seedView("greeter-1", {duties: {airportGreeter: future(2)}});
+      await seedView("setup-1", {status: "inactive", expiresAtMillis: null,
+        organizerManager: true});
+      const labels = await assertSucceeds(listKind("comms-1", "function"));
+      if (labels.size !== 2) {
+        throw new Error(`expected 2 functions, got ${labels.size}`);
+      }
+      await assertSucceeds(resourceDoc("comms-1", "function", "f-2"));
+      // Function labels only: other kinds still follow the work lists.
+      await assertFails(listKind("comms-1", "hotel"));
+      await assertFails(resourceDoc("comms-1", "hotel", "h-1"));
+      // An ended duty, a lapsed view, another duty, an organizer manager's
+      // setup-only view and a stranger read none.
+      await assertFails(listKind("ended-1", "function"));
+      await assertFails(listKind("lapsed-1", "function"));
+      await assertFails(listKind("greeter-1", "function"));
+      await assertFails(listKind("setup-1", "function"));
+      await assertFails(resourceDoc("stranger", "function", "f-1"));
+    });
+
   it("denies a deleted account and any write", async () => {
     await seedResource("hotel", "h-1");
     await seedView("gone-1", {workHotel: {"*": future(2)}});

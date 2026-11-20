@@ -5003,10 +5003,12 @@ capability allowlist at grant time so program-scoped limit checks do not
 drift with later catalog edits.
 
 `programAccessViews/{programId}__{uid}` (#1339) is one account's current
-authority over one programme, written by triggers on `programStaffGrants` and
-`organizerPrograms` (`onProgramAccessViewGrantChanged`,
-`onProgramAccessViewProgramChanged`) and created for existing owners and grants
-by the `program-access-views` copy-forward migration, and repaired by
+authority over one programme, written by triggers on `programStaffGrants`,
+`organizerPrograms` and `organizers` (`onProgramAccessViewGrantChanged`,
+`onProgramAccessViewProgramChanged`, `onProgramAccessViewOrganizerChanged`) and
+created for existing owners and grants by the `program-access-views`
+copy-forward migration, for organiser managers by
+`program-access-views-organizer-managers`, and repaired by
 `program-access-views-refresh` (a view that differs from what the triggers would
 compute now is rewritten under a last-update-time precondition; nothing is
 deleted). The programme's creator
@@ -5031,12 +5033,22 @@ transport dispatcher and coordinator assignments reach, as `pickup|hotel` keys
 tuples with their scopes and own expiries, and `grantExpiresAtMillis` the grant's
 own expiry, as `getProgramWorkAccess` returns them, because a phone's policies
 need one assignment to cover both ends of a transport route, which the flattened
-maps cannot say. Rules compare these with
-`request.time` through `hasProgramDuty`, `programDutyCoversPickup`,
+maps cannot say. `organizerManager` is true while the account manages the
+programme's organizer (`hostUserId`, `ownerUserId` or `hostUserIds`, the fields
+`requireProgramSetupAccess` reads): setup authority over the programme's list
+row and detail, with no end and independent of `status`, and never a duty. An
+organiser manager who neither created the programme nor holds a live grant gets
+a view with `status: inactive`, `role: staff`, empty maps and the flag, so no
+rules helper and no work screen admits it; the organizer trigger rewrites an
+account's views of every programme of the organizer when it becomes or stops
+being a manager, and a view carrying nothing else is deleted. Rules compare
+these with `request.time` through `hasProgramDuty`, `programDutyCoversPickup`,
 `programDutyCoversHotel`, `programDutyCoversFunction` and `isProgramManager`;
 each dimension is checked alone, as the callables' `allowed*Ids` union them, so
 a read that needs one assignment to satisfy two dimensions stays a callable.
-The account reads only its own view by its derived id; nothing lists views.
+The account reads its own view by its derived id, and lists only its own views
+by a query naming its uid (the Host app names the organiser too, to gate the
+programme list offline).
 They hold ids, duty names and instants and no name or phone digits, so account
 deletion and archive anonymization have nothing personal to scrub there. A
 phone enforces the same instants offline from the cached view and its clock.
@@ -5054,7 +5066,9 @@ coordinates or instructions. Rules let any account with live access read the
 header by id, and read a resource by id when its `programAccessViews` work list
 reaches it; a query naming the programme and one kind lists every resource of
 that kind when the work list's `*` key is live (the owner always), and a scoped
-account reads its named ids one by one. With the access view they replace the
+account reads its named ids one by one. The communications duty also reads and
+lists every function label (labels and counts, no guest or contact data), so
+photo albums are named for staff whose duties reach no function. With the access view they replace the
 callable, which stays deployed for older builds.
 `programDoorFunctions/{functionId}`, `programDoorRows/{functionId}__{guestId}`
 and `programDoorJournalViews/{journalId}` (#1339) are the door of one function,
@@ -5192,7 +5206,11 @@ function, pickup point and hotel setup lists (a function's live expected and
 checked-in counts excluded; they stay in `programResourceViews`). The creator
 and the organizer's current managers read and list it (by `createdBy` or
 `organizerId`), a live `programAdmin` duty reads one by id, and a deleted
-account reads nothing. Guest, household, journey and staff counts are not in
+account reads nothing. Offline the Host app applies the same authority from the
+account's access views: the detail opens while the programme's view holds setup
+authority (creator, `organizerManager` or a live `programAdmin` duty), and the
+list shows only the rows whose programme's view is the creator's or carries
+`organizerManager`. Guest, household, journey and staff counts are not in
 it. The anonymiser's scrubs of hotel contacts and the programme's `anonymizedAt`
 reach it through the same triggers.
 

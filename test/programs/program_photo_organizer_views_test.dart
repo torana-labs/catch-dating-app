@@ -14,13 +14,20 @@ void main() {
   final now = DateTime.utc(2026, 11, 20, 10);
   final hour = now.add(const Duration(hours: 1)).millisecondsSinceEpoch;
 
-  Map<String, Object?> access(String role, Map<String, int> duties) => {
-    'programId': 'p1',
+  Map<String, Object?> access(
+    String role,
+    Map<String, int> duties, {
+    String programId = 'p1',
+    String status = 'active',
+    bool organizerManager = false,
+  }) => {
+    'programId': programId,
     'organizerId': 'o1',
     'uid': 'u1',
     'ownerUid': 'owner',
     'role': role,
-    'status': 'active',
+    'status': status,
+    'organizerManager': organizerManager,
     'activeFromMillis': 0,
     'expiresAtMillis': role == 'manager' ? null : hour,
     'duties': duties,
@@ -141,6 +148,72 @@ void main() {
     );
 
     test(
+      'the communications duty names every album, whatever its work list',
+      () async {
+        Map<String, Object?> label(String id, String name, int day) => {
+          'programId': 'p1',
+          'organizerId': 'o1',
+          'kind': 'function',
+          'resourceId': id,
+          'active': true,
+          'label': name,
+          'pickupKind': null,
+          'iataCode': null,
+          'terminal': null,
+          'venueName': 'Lawn',
+          'startsAtMillis': DateTime.utc(2026, 11, day).millisecondsSinceEpoch,
+          'endsAtMillis': DateTime.utc(2026, 11, day, 5).millisecondsSinceEpoch,
+          'checkInEnabled': true,
+          'status': 'scheduled',
+          'expectedCount': 0,
+          'checkedInCount': 0,
+          'version': 1,
+        };
+        for (final (view, ok) in [
+          // Communications alone: its work list reaches no function.
+          (access('staff', {'communications': hour}), true),
+          (access('staff', {'hotelDesk': hour}), false),
+          (access('manager', {}), true),
+        ]) {
+          final firestore = FakeFirebaseFirestore();
+          await firestore
+              .collection('programAccessViews')
+              .doc('p1__u1')
+              .set(view);
+          for (final row in [
+            label('f2', 'Wedding', 22),
+            label('f1', 'Sangeet', 20),
+          ]) {
+            await firestore
+                .collection('programResourceViews')
+                .doc('p1__function__${row['resourceId']}')
+                .set(row);
+          }
+          await firestore
+              .collection('programResourceViews')
+              .doc('p1__hotel__h1')
+              .set({...label('h1', 'Hotel', 20), 'kind': 'hotel'});
+          final clock = AppClock.custom(() => now);
+          final functions = ProgramPhotoViewsRepository(
+            firestore,
+            ProgramAccessRepository(firestore, clock),
+          ).watchFunctions('p1', 'u1');
+          if (ok) {
+            expect((await functions.first).map((f) => f.name), [
+              'Sangeet',
+              'Wedding',
+            ]);
+          } else {
+            await expectLater(
+              functions,
+              emitsError(isA<PermissionException>()),
+            );
+          }
+        }
+      },
+    );
+
+    test(
       'the communications duty lists the records, others are denied',
       () async {
         for (final (view, ok) in [
@@ -225,34 +298,106 @@ void main() {
       expect(detail.counts, {'guests': 120});
     });
 
-    test('the organiser lists its programmes, soonest start first', () async {
+    OrganizerProgramViewsRepository repository(
+      FakeFirebaseFirestore firestore,
+    ) {
+      final clock = AppClock.custom(() => now);
+      return OrganizerProgramViewsRepository(
+        firestore,
+        ProgramAccessRepository(firestore, clock),
+        clock,
+      );
+    }
+
+    Future<void> seedAccess(
+      FakeFirebaseFirestore firestore,
+      Map<String, Object?> view,
+    ) => firestore
+        .collection('programAccessViews')
+        .doc('${view['programId']}__u1')
+        .set(view);
+
+    Map<String, Object?> setupOnly(String programId) => access(
+      'staff',
+      {},
+      programId: programId,
+      status: 'inactive',
+      organizerManager: true,
+    );
+
+    test(
+      'the organiser lists the programmes its views list, soonest first',
+      () async {
+        final firestore = FakeFirebaseFirestore();
+        for (final (id, start, organizer) in [
+          ('a', 100, 'o1'),
+          ('b', 300, 'o1'),
+          ('c', 200, 'o9'),
+          ('d', 400, 'o1'),
+          ('e', 500, 'o1'),
+        ]) {
+          await firestore.collection('organizerProgramViews').doc(id).set({
+            ...view(),
+            'programId': id,
+            'organizerId': organizer,
+            'startsAtMillis': start,
+          });
+        }
+        // a: an organiser manager's setup-only view; b: the creator's;
+        // d: a staff view with a duty but no organiser management; e: none.
+        await seedAccess(firestore, setupOnly('a'));
+        await seedAccess(firestore, access('manager', {}, programId: 'b'));
+        await seedAccess(
+          firestore,
+          access('staff', {'programAdmin': hour}, programId: 'd'),
+        );
+        final rows = await repository(
+          firestore,
+        ).watchProgrammes('o1', 'u1').first;
+        expect(rows.map((row) => row['programId']), ['b', 'a']);
+        final summary = organizerProgramSummaryFromView(rows.first);
+        expect(summary.status, ProgramStatus.active);
+        expect(summary.archivedAt, isNull);
+      },
+    );
+
+    test('the detail opens for setup authority and no one else', () async {
       final firestore = FakeFirebaseFirestore();
-      for (final (id, start, organizer) in [
-        ('a', 100, 'o1'),
-        ('b', 300, 'o1'),
-        ('c', 200, 'o9'),
-      ]) {
+      for (final id in ['a', 'b', 'c']) {
         await firestore.collection('organizerProgramViews').doc(id).set({
           ...view(),
           'programId': id,
-          'organizerId': organizer,
-          'startsAtMillis': start,
         });
       }
-      final rows = await OrganizerProgramViewsRepository(
+      await seedAccess(firestore, setupOnly('a'));
+      await seedAccess(
         firestore,
-      ).watchProgrammes('o1').first;
-      expect(rows.map((row) => row['programId']), ['b', 'a']);
-      final summary = organizerProgramSummaryFromView(rows.first);
-      expect(summary.status, ProgramStatus.active);
-      expect(summary.archivedAt, isNull);
+        access('staff', {'programAdmin': hour}, programId: 'b'),
+      );
+      await seedAccess(
+        firestore,
+        access('staff', {'communications': hour}, programId: 'c'),
+      );
+      final programmes = repository(firestore);
+      expect(
+        (await programmes.watchProgramme('a', 'u1').first)['programId'],
+        'a',
+      );
+      expect(
+        (await programmes.watchProgramme('b', 'u1').first)['programId'],
+        'b',
+      );
+      await expectLater(
+        programmes.watchProgramme('c', 'u1'),
+        emitsError(isA<PermissionException>()),
+      );
     });
 
     test('an unknown programme is not found', () async {
+      final firestore = FakeFirebaseFirestore();
+      await seedAccess(firestore, access('manager', {}, programId: 'nope'));
       await expectLater(
-        OrganizerProgramViewsRepository(
-          FakeFirebaseFirestore(),
-        ).watchProgramme('nope'),
+        repository(firestore).watchProgramme('nope', 'u1'),
         emitsError(isA<DocumentNotFoundException>()),
       );
     });

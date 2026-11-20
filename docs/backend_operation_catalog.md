@@ -730,8 +730,9 @@ approved.
 `listProgramPhotos` splits in two. Photo records are read directly:
 `programPhotos` is readable by managers and the communications duty (a query
 naming the programme), so albums, counts, captions and visibility come from the
-phone's own grouping, and function names come from the work shell's function
-labels. The one thing a phone cannot make is a short-lived URL, so
+phone's own grouping, and function names come from the programme's function
+labels in `programResourceViews`, which the communications duty lists whatever
+its work list reaches (#2175). The one thing a phone cannot make is a short-lived URL, so
 `signProgramPhotoUrls` (managers and communications staff, at most 60 photo ids
 and optionally the cover) reads each named photo itself, signs only files that
 belong to this programme and returns URLs that expire within ten minutes. It
@@ -739,9 +740,9 @@ never signs a path the phone names, and Storage rules stay closed to client
 reads (a download URL carries a token that does not expire). `listProgramPhotos`
 stays deployed for older builds, retire-later. Current Host builds list the
 records (a page of 100 at a time up to 1,000, newest first), build the albums
-and name them from the work shell's functions (a communications account whose
-work list reaches no functions sees no function album), and sign the cover and
-the albums' first photos and the photos shown in calls of at most 60.
+and name them from every function label of the programme (read under the same
+communications gate), and sign the cover and the albums' first photos and the
+photos shown in calls of at most 60.
 
 `listOrganizerPrograms` and `getOrganizerProgram` move to
 `organizerProgramViews`: the programme object, its creator, the function count
@@ -766,9 +767,15 @@ ask the callable (`listOrganizerPrograms` with `programId` for one row) for the
 counts. Current Host builds read the programme and the organiser's list
 (`OrganizerProgramViewsRepository`) from `organizerProgramViews` by `organizerId`; the
 programme's detail asks `getOrganizerProgram` for its counts alongside, and shows
-without them when that fails. These reads are not gated on a programme access
-view, since an organiser manager who did not create the programme has none:
-rules end them online.
+without them when that fails. Rules end these reads online. Offline the phone
+gates them on the account's access views (#2175): an organiser manager who did
+not create the programme gets a setup-only view (`organizerManager: true`,
+inactive for duties) from the trigger on `organizers`, kept current as the
+organizer's managers change. The detail opens while its programme's view holds
+setup authority (creator, organiser manager or a live `programAdmin` duty); the
+list shows only the rows whose programme's view is the creator's or an
+organiser manager's, read with one query on the account's own views naming its
+uid and the organiser.
 
 **Retire-later callables (programme read batches 3 to 5, #1339).** Deployed for
 older builds, no current client calls them: `getProgramArrivalsRoster`,
