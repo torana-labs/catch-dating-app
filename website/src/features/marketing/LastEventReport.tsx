@@ -91,7 +91,7 @@ export function LastEventReport({id, ground, labels, kicker, title, lead, pageTi
     const problem = problems[field];
     return problem ? text(problemLabels[problem], {max: fieldMaxima[field]}) : null;
   };
-  const values = figures ? {
+  const values: Readonly<Record<string, string>> = figures ? {
     sold: count(figures.sold),
     came: count(figures.came),
     price: money(figures.price),
