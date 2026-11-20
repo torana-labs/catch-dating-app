@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
@@ -6,6 +7,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repo
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/events/events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,9 +41,16 @@ class HostEventsRequest {
 Stream<List<Map<Object?, Object?>>> hostEventsProgrammeViews(
   Ref ref,
   String organizerId,
-) => ref
-    .watch(organizerProgramViewsRepositoryProvider)
-    .watchProgrammes(organizerId);
+) async* {
+  final uid = await ref.watch(uidProvider.future);
+  if (uid == null || uid.isEmpty) {
+    throw const SignInRequiredException('view your programs');
+  }
+  // Rows the account's access views admit (creator or organiser manager).
+  yield* ref
+      .watch(organizerProgramViewsRepositoryProvider)
+      .watchProgrammes(organizerId, uid);
+}
 
 /// The first `listOrganizerPrograms` page, read for the guest, flying-in and
 /// replied counts that stay on that callable (server-trust, #1339).

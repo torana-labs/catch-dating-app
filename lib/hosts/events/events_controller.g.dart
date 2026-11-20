@@ -72,7 +72,7 @@ final class HostEventsProgrammeViewsProvider
 }
 
 String _$hostEventsProgrammeViewsHash() =>
-    r'a625517537cc6263672f7b0b5df9b5647cf7ae61';
+    r'5c1f74fe3a08378557dcbd95637ccf4cecca3b43';
 
 /// The organizer's programmes, live from `organizerProgramViews` (#1339).
 
