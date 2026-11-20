@@ -50,8 +50,46 @@ class HostDuplicatePairCard extends StatelessWidget {
             align: CatchStackAlign.start,
             equal: true,
             children: [
+              // One side of the pair: who they are and what it holds.
               for (final person in pair.contacts)
-                _HostDuplicatePerson(person: person),
+                CatchStack(
+                  gap: CatchStackGap.g4,
+                  align: CatchStackAlign.start,
+                  children: [
+                    CatchAvatar.system(
+                      size: CatchAvatarSize.md,
+                      name: person.displayName,
+                    ),
+                    CatchText(
+                      person.displayName,
+                      variant: CatchTextVariant.titleRow,
+                    ),
+                    if (person.phoneE164 case final phone?)
+                      CatchText(
+                        phone,
+                        variant: CatchTextVariant.bodySmall,
+                        numeric: true,
+                      ),
+                    if (person.email case final email?)
+                      CatchText(email, variant: CatchTextVariant.bodySmall),
+                    if (person.phoneE164 == null && person.email == null)
+                      CatchText(
+                        l10n.hostPeopleDuplicatesNoContact,
+                        variant: CatchTextVariant.bodySmall,
+                        tone: CatchTextTone.secondary,
+                      ),
+                    CatchText(
+                      hostDuplicateSourceLabel(l10n, person.primarySource),
+                      variant: CatchTextVariant.bodyMeta,
+                      tone: CatchTextTone.secondary,
+                    ),
+                    if (person.linkedAccount)
+                      CatchBadge(
+                        label: l10n.hostPeopleDuplicatesCatchAccount,
+                        tone: CatchBadgeTone.brand,
+                      ),
+                  ],
+                ),
             ],
           ),
           CatchStack(
@@ -124,48 +162,6 @@ class HostDuplicatePairCard extends StatelessWidget {
             ),
         ],
       ),
-    );
-  }
-}
-
-/// One side of the pair: who they are and what the record holds.
-class _HostDuplicatePerson extends StatelessWidget {
-  const _HostDuplicatePerson({required this.person});
-
-  final HostContactMergeCandidateContact person;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final phone = person.phoneE164;
-    final email = person.email;
-    return CatchStack(
-      gap: CatchStackGap.g4,
-      align: CatchStackAlign.start,
-      children: [
-        CatchAvatar.system(size: CatchAvatarSize.md, name: person.displayName),
-        CatchText(person.displayName, variant: CatchTextVariant.titleRow),
-        if (phone != null)
-          CatchText(phone, variant: CatchTextVariant.bodySmall, numeric: true),
-        if (email != null)
-          CatchText(email, variant: CatchTextVariant.bodySmall),
-        if (phone == null && email == null)
-          CatchText(
-            l10n.hostPeopleDuplicatesNoContact,
-            variant: CatchTextVariant.bodySmall,
-            tone: CatchTextTone.secondary,
-          ),
-        CatchText(
-          hostDuplicateSourceLabel(l10n, person.primarySource),
-          variant: CatchTextVariant.bodyMeta,
-          tone: CatchTextTone.secondary,
-        ),
-        if (person.linkedAccount)
-          CatchBadge(
-            label: l10n.hostPeopleDuplicatesCatchAccount,
-            tone: CatchBadgeTone.brand,
-          ),
-      ],
     );
   }
 }
