@@ -88,6 +88,7 @@ function Hero({captures}: {captures: CaptureSlots}) {
       kicker={hero.kicker}
       lead={hero.body}
       link={{label: hero.walkthrough, href: hostWalkthroughHref}}
+      linkLead={hero.walkthroughLead}
       media={today ? <CatchAppCaptureImage {...today} bleed caption={undefined} size="hero" tilt="left" /> : undefined}
       note={hero.terms}
       // A phone already has the stores a tap away (the start band and the dock); the card is for a laptop.

@@ -34,8 +34,10 @@
   text-decoration: none;
 }
 
-.link:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .link:hover {
+    text-decoration: underline;
+  }
 }
 
 .link:focus-visible {
@@ -98,7 +100,9 @@
 }
 
 a.main:focus-visible { outline: var(--catch-stroke-focus) solid var(--catch-theme-focus); outline-offset: var(--catch-space-micro2); border-radius: var(--catch-radius-sm); }
-a.main:hover .text > :first-child { text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) {
+  a.main:hover .text > :first-child { text-decoration: underline; text-underline-offset: 3px; }
+}
 
 .logo {
   display: inline-flex;

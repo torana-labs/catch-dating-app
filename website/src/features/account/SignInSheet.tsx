@@ -160,7 +160,7 @@ export function SiteAccountProvider({children}: {children: ReactNode}) {
     if (state === "signedIn") {
       return {bar: <SiteAccountMenu controller={menu} />,
         menu: {label: copy.headerAccount, href: "/account/"},
-        phoneMenu: (links, menuLabel) => <SiteAccountMenu controller={menu} links={links} menuLabel={menuLabel} phone />};
+        phoneMenu: (links) => <SiteAccountMenu controller={menu} links={links} phone />};
     }
     return {bar: wrap(<HeaderSignInButton onPressed={() => setOpen((value) => !value)} />),
       menu: {label: copy.headerSignIn, onPressed: () => setOpen(true)}};

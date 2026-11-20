@@ -61,7 +61,9 @@
 
 button.row { cursor: pointer; }
 
-button.row:hover .title.title { color: var(--catch-palette-white); }
+@media (hover: hover) {
+  button.row:hover .title.title { color: var(--catch-palette-white); }
+}
 
 button.row:focus-visible {
   outline: var(--catch-stroke-focus) solid var(--catch-palette-night-ink);

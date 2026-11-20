@@ -271,7 +271,7 @@ The canvas owns these values (blueprint D26). `tool/design/playbook/import_kit_t
 | `.pg .mbar` gap (phone) | `8px` | `space.s2` | match |
 | `.pg .mbar` padding (phone) | `8px` | `space.s2` | match |
 | `.pg .mbar` border-radius (phone) | `999px` | `radius.pill` | match |
-| `.pg .mbar` box-shadow (phone) | `0 16px 40px -12px rgba(0,0,0,.5)` | `website.shadow.dock` | own |
+| `.pg .mbar` box-shadow (phone) | `0 0 0 1px rgba(255,255,255,.14),0 1px 2px rgba(20,17,20,.2)` | `website.shadow.dock` | own |
 | `.pg .mbar .b` height (phone) | `44px` | `size.touchMin` | match |
 | `.pg .mbar .b.wab` width (phone) | `44px` | `size.touchMin` | match |
 | `.mbar .b.sec` border-color (phone) | `rgba(255,255,255,.6)` | `website.color.dockSecondaryLine` | own |

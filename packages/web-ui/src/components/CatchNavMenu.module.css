@@ -46,7 +46,9 @@
 }
 
 .menu .trigger[data-appearance="link"]::after { display: none; }
-.menu .trigger[data-appearance="link"]:hover { --catch-button-fg: var(--catch-palette-ink); }
+@media (hover: hover) {
+  .menu .trigger[data-appearance="link"]:hover { --catch-button-fg: var(--catch-palette-ink); }
+}
 .menu .trigger[data-appearance="link"] .chevron { margin-inline-start: var(--catch-space-s1); }
 
 .menu .trigger[data-appearance="link"] .chevron > svg {
@@ -132,8 +134,11 @@
   content: "";
 }
 
-.link:hover::after,
 .link:focus-visible::after { opacity: var(--catch-opacity-control-overlay-hover); }
+
+@media (hover: hover) {
+  .link:hover::after { opacity: var(--catch-opacity-control-overlay-hover); }
+}
 
 .link:focus-visible {
   outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);

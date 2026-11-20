@@ -128,7 +128,9 @@
 
 .bar[data-wide] .iconButton,
 .bar[data-variant="moment"] .iconButton { width: 32px; height: 32px; border-color: transparent; }
-.iconButton:hover { background: var(--catch-theme-bg); }
+@media (hover: hover) {
+  .iconButton:hover { background: var(--catch-theme-bg); }
+}
 
 .textAction {
   padding: 0;
@@ -142,7 +144,9 @@
   cursor: pointer;
 }
 
-.textAction:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) {
+  .textAction:hover { text-decoration: underline; text-underline-offset: 3px; }
+}
 
 .iconButton:focus-visible,
 .textAction:focus-visible {
@@ -214,6 +218,8 @@
 
 .siteActions { display: inline-flex; flex: none; align-items: center; gap: var(--catch-website-header-gap); }
 
+.siteWide { display: contents; }
+
 .account { display: inline-flex; flex: none; align-items: center; }
 
 .links {
@@ -236,7 +242,9 @@
   cursor: pointer;
 }
 
-.siteLink:hover { color: var(--catch-palette-ink); }
+@media (hover: hover) {
+  .siteLink:hover { color: var(--catch-palette-ink); }
+}
 
 .siteMenuLink { display: inline-flex; }
 
@@ -311,7 +319,15 @@
 
   .links,
   .account,
-  .contactLabel { display: none; }
+  .contactLabel,
+  .siteWide { display: none; }
 
   .siteMenu { display: inline-flex; }
+
+  /*
+   * The wordmark keeps its size; the actions are the part that gives way, so
+   * a crowded phone row never draws a control over the wordmark.
+   */
+  .site { flex: none; }
+  .siteActions { flex: 0 1 auto; min-width: 0; }
 }

@@ -71,8 +71,11 @@
   content: "";
 }
 
-.row:enabled:hover::after,
 .row:focus-visible::after { opacity: var(--catch-opacity-control-overlay-hover); }
+
+@media (hover: hover) {
+  .row:enabled:hover::after { opacity: var(--catch-opacity-control-overlay-hover); }
+}
 .row:enabled:active::after { opacity: 0.08; }
 
 .row:focus-visible {

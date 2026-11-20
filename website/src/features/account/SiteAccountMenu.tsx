@@ -1,4 +1,4 @@
-import {CatchAccountButton, CatchAdaptiveSheet, CatchAvatar, CatchButton, CatchIndexRow, CatchSection, CatchStack} from "@catch/web-ui";
+import {CatchAccountButton, CatchAdaptiveSheet, CatchButton, CatchIndexRow, CatchSection, CatchStack} from "@catch/web-ui";
 import {useState} from "react";
 import {interpolateContent as fill} from "@content/interpolate";
 import {signInCopy} from "../../content/account";
@@ -21,21 +21,19 @@ function nameOf(controller: SiteAccountMenuController) {
  * pages open it from a 32px initials avatar as a 320px dropdown; phones open
  * it as a sheet from the Menu button, which carries the avatar.
  */
-export function SiteAccountMenu({controller, phone, links = [], menuLabel}: {
+export function SiteAccountMenu({controller, phone, links = []}: {
   controller: SiteAccountMenuController;
   /** The phone Menu button and sheet, with the site links; otherwise the wide avatar. */
   phone?: boolean;
   links?: readonly Link[];
-  menuLabel?: string;
 }) {
   const [open, setOpen] = useState(false);
   const name = nameOf(controller);
   const summary = controller.summary;
-  const trigger = phone ? (
-    <CatchButton label={menuLabel ?? copy.label} leading={<CatchAvatar name={name} size={24} />} onPressed={() => setOpen((value) => !value)}
-      semanticsLabel={fill(copy.phoneLabel, {name})} size="sm" variant="secondary" />
-  ) : (
-    <CatchAccountButton expanded={open} label={fill(copy.avatarLabel, {name})} name={name} onPressed={() => setOpen((value) => !value)} />
+  // Phones and wide pages share the initials avatar; on phones it is also the menu, so it is named for both.
+  const trigger = (
+    <CatchAccountButton expanded={open} label={fill(phone ? copy.phoneLabel : copy.avatarLabel, {name})} name={name}
+      onPressed={() => setOpen((value) => !value)} popup={phone ? "dialog" : "menu"} />
   );
   return (
     <CatchAdaptiveSheet align="end" closeLabel={signInCopy.close} onClose={() => setOpen(false)} open={open}

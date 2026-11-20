@@ -297,7 +297,9 @@
   transition: opacity var(--catch-duration-quick) var(--catch-motion-standard-curve);
 }
 
-.pressable:hover::before { opacity: var(--catch-opacity-hover); }
+@media (hover: hover) {
+  .pressable:hover::before { opacity: var(--catch-opacity-hover); }
+}
 .pressable:active { transform: scale(0.99); }
 .pressable:active::before { opacity: var(--catch-opacity-pressed); }
 

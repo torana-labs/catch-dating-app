@@ -197,36 +197,6 @@
       "notes": "Website T4 under D18 (Navigation proposal, 15 Nov: the site top bar opens pages only; a long single page's sections slide in once it scrolls away, as on Apple's product pages). The host landing and Catch for weddings place it right after PublicSiteHeader. Search aliases: SectionNav, StickySubnav, LocalNav, JumpNav, InPageNav."
     },
     {
-      "id": "shared_public_page_footer",
-      "kind": "supporting-component",
-      "routeIds": [
-        "event_offer",
-        "public_form"
-      ],
-      "owner": "shared/site",
-      "source": "website/src/shared/site/PublicSiteChrome.tsx",
-      "exportName": "PublicPageFooter",
-      "comparedWith": [
-        "catch.button",
-        "catch.stack",
-        "catch.text"
-      ],
-      "comparisonReason": "The rebuilt public pages' short footer: the wordmark across from quiet site links, with an optional operator line. It arranges Text, Stack and Button and implements none of them.",
-      "css": [
-        "packages/web-ui/src/components/CatchStack.module.css",
-        "packages/web-ui/src/components/CatchText.module.css",
-        "packages/web-ui/src/components/CatchButton.module.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "page-links",
-          "site-and-legal-links"
-        ]
-      },
-      "notes": "The boards' short footer for transactional pages: the form and offer pages pass the site and legal links and the operator line. Organiser pages served on their own domain will use it with its default links (Privacy, Terms, For organisers, Help) once custom domains ship; on the site's own domain organiser and event pages use PublicSiteFooter (owner decision, 14 Nov 2026)."
-    },
-    {
       "id": "route_home",
       "kind": "route",
       "routeIds": [
@@ -1572,8 +1542,8 @@
       "source": "packages/web-ui/src/components/CatchHeroSection.tsx",
       "exportName": "CatchHeroSection",
       "comparedWith": [
-        "catch.button",
-        "catch.chip",
+                "catch.chip",
+        "catch.icon",
         "catch.detail_media",
         "catch.metric_strip",
         "catch.root",
@@ -1582,7 +1552,7 @@
         "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "The opening band of a website page (the playbook kit's hero and photo hero): kicker, h1, lead, tag chips, footnoted proof lines, band actions, a side link, and a screen beside it with a floating stat card, or a full-bleed photo. It composes catch.button, catch.chip, catch.detail_media, catch.stack, catch.surface and catch.text inside its own ground (catch.root's ground provider); it is a page band, not any of those parts, and implements none of their contracts. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
+      "comparisonReason": "The opening band of a website page (the playbook kit's hero and photo hero): kicker, h1, lead, tag chips, footnoted proof lines, band actions, a side link, and a screen beside it with a floating stat card, or a full-bleed photo. It composes catch.chip, catch.icon (the side link's arrow), catch.detail_media, catch.stack, catch.surface and catch.text inside its own ground (catch.root's ground provider); it is a page band, not any of those parts, and implements none of their contracts. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
       "css": [
         "packages/web-ui/src/components/CatchHeroSection.module.css"
       ],
@@ -1611,6 +1581,7 @@
       "exportName": "CatchSplitSection",
       "comparedWith": [
         "catch.button",
+        "catch.icon",
         "catch.journey_steps",
         "catch.marker",
         "catch.metric_strip",
@@ -1619,7 +1590,7 @@
         "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "A two-column website band (the kit's split, timeline and checklist): a heading with ticks, groups, numbered or timed steps, ticked checks, a metric and actions, beside an optional media column. It lays out catch.journey_steps, catch.marker, catch.metric_strip, catch.button and catch.text on catch.stack inside a catch.surface band; it is a band layout, not a step list, metric strip or surface. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators); it places a catch.metric_strip metric rather than being one.",
+      "comparisonReason": "A two-column website band (the kit's split, timeline and checklist): a heading with ticks, groups, numbered or timed steps, ticked checks, a metric and actions, beside an optional media column. It lays out catch.journey_steps, catch.marker, catch.metric_strip, catch.button, catch.icon (a linked group title's arrow) and catch.text on catch.stack inside a catch.surface band; it is a band layout, not a step list, metric strip or surface. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators); it places a catch.metric_strip metric rather than being one.",
       "css": [
         "packages/web-ui/src/components/CatchSplitSection.module.css"
       ],

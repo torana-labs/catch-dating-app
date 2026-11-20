@@ -29,7 +29,7 @@
 .segmented[data-variant="summary"] .option[data-selected] { background: var(--catch-theme-primary); color: var(--catch-theme-primary-ink); }
 .segmented[data-variant="summary"] .label { white-space: normal; overflow-wrap: anywhere; font-size: var(--catch-typography-web-secondary-size); line-height: var(--catch-typography-web-secondary-line-height); }
 .option::before { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; content: ""; }
-.option:enabled:hover::before { background: currentColor; opacity: 0.05; }
+@media (hover: hover) { .option:enabled:hover::before { background: currentColor; opacity: 0.05; } }
 .option:enabled:active::before { background: currentColor; opacity: 0.14; }
 .option:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink); outline-offset: calc(-1 * var(--catch-stroke-focus-ring)); }
 .rail:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink); outline-offset: calc(-1 * var(--catch-stroke-focus-ring)); }

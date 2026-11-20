@@ -17,8 +17,10 @@
   transition: box-shadow var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 
-.card:hover {
-  box-shadow: var(--catch-elevation-raised);
+@media (hover: hover) {
+  .card:hover {
+    box-shadow: var(--catch-elevation-raised);
+  }
 }
 
 .card:focus-visible {
@@ -116,7 +118,9 @@
   box-shadow: var(--catch-website-shadow-card-ring);
 }
 
-.card[data-layout="kit"]:hover { box-shadow: var(--catch-website-shadow-card-ring), var(--catch-elevation-raised); }
+@media (hover: hover) {
+  .card[data-layout="kit"]:hover { box-shadow: var(--catch-website-shadow-card-ring), var(--catch-elevation-raised); }
+}
 
 .card[data-layout="kit"] .media {
   height: var(--catch-website-plan-media-height);

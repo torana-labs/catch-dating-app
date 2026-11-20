@@ -311,23 +311,6 @@ export const siteFooterCopy = {
 } as const;
 
 /**
- * The site top bar and the short footer the rebuilt public pages share,
- * as the RbWebOrgV2 and RbWebEventV2 boards draw them (shared/site/PublicSiteChrome.tsx).
- */
-export const publicPageChromeCopy = {
-  getApp: guestAppActionLabel,
-  getAppHref: guestAppHref,
-  wordmark: brand.name,
-  footerLabel: "Site links",
-  footerLinks: [
-    {label: "Privacy", href: "/privacy/"},
-    {label: "Terms", href: "/terms/"},
-    {label: "For organisers", href: "/host/"},
-    {label: "Help", href: "/help/"},
-  ],
-} as const;
-
-/**
  * The Cities column a guest page shows when it doesn't list its own: every
  * live city in the market catalog, then the all-cities page (the canvas's
  * guest footer always carries Cities).

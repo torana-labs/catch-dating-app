@@ -38,7 +38,8 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--catch-space-s3);
-  min-height: var(--catch-size-control-md);
+  /* The site bar's own height, so the bar it replaces keeps its room around the controls. */
+  min-height: var(--catch-website-header-height);
 }
 
 .links {
@@ -65,7 +66,9 @@
   white-space: nowrap;
 }
 
-.link:hover { color: var(--catch-theme-ink); }
+@media (hover: hover) {
+  .link:hover { color: var(--catch-theme-ink); }
+}
 
 .link:focus-visible {
   outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-focus);
@@ -105,6 +108,7 @@
 
 /* Phones: one menu named after the section you are in. */
 @media (max-width: 599px) {
+  .row { min-height: var(--catch-website-header-compact-height); }
   .links { display: none; }
   .menu { display: inline-flex; }
 }

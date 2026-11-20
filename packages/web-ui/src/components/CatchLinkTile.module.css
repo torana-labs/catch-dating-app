@@ -31,7 +31,9 @@
   transition: opacity var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 
-.tile:hover::after { opacity: var(--catch-opacity-control-overlay-hover); }
+@media (hover: hover) {
+  .tile:hover::after { opacity: var(--catch-opacity-control-overlay-hover); }
+}
 
 .tile:focus-visible {
   outline: var(--catch-stroke-focus-ring) solid var(--catch-palette-ink);

@@ -51,7 +51,9 @@
   stroke-width: 2;
 }
 
-.button:hover:not(:disabled) .visual { background: color-mix(in srgb, var(--catch-theme-ink) 4%, var(--catch-theme-surface)); }
+@media (hover: hover) {
+  .button:hover:not(:disabled) .visual { background: color-mix(in srgb, var(--catch-theme-ink) 4%, var(--catch-theme-surface)); }
+}
 
 .button:active:not(:disabled) .visual {
   transform: scale(0.92);

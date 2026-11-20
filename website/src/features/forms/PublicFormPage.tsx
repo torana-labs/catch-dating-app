@@ -19,10 +19,9 @@ import {
   useCatchPane,
 } from "@catch/web-ui";
 import {eventDetailCopy} from "../../content/events";
-import {publicSiteCopy, siteFooterLegalLinks} from "@content/site";
 import {useEffect, useId, useRef, type FormEvent, type ReactNode} from "react";
 import {useParams} from "react-router";
-import {PublicPageFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {Form} from "../../shared/ui/primitives";
 import {PublicFormFileInput, PublicFormSignatureInput} from "../../shared/ui/primitives/publicForms";
 import type {FormStatus as FormStatusModel} from "../../shared/forms/types";
@@ -106,11 +105,7 @@ export function PublicFormView({controller}: {controller: Controller}) {
             />
           </CatchPageBody>
         </WebsitePageMain>
-        {controller.embed ? null : (
-          <CatchPageBody constrainToContentWidth pb="s8" pt="s6">
-            <PublicPageFooter label={publicFormsCopy.footerLabel} links={[...publicSiteCopy.nav, ...siteFooterLegalLinks]} note={publicSiteCopy.footerOperator} />
-          </CatchPageBody>
-        )}
+        {controller.embed ? null : <PublicSiteFooter navLabel={publicFormsCopy.footerLabel} variant="minimal" />}
       </CatchRoot>
     </div>
   );

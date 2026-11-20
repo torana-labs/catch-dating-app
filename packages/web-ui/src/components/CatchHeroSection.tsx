@@ -4,11 +4,11 @@ import {useId, type HTMLAttributes, type ReactNode} from "react";
 import {catchBandActions, catchBandColor, catchBandFootnoteMark, catchBandKickerAccent, type CatchBandAction, type CatchBandFootnote, type CatchBandLink} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
 import {CatchBandHeader, type CatchKickerAccent} from "./CatchBandHeader";
-import {CatchButton} from "./CatchButton";
 import {CatchChip} from "./CatchChip";
 import {CatchDateTile, type CatchDateTileProps} from "./CatchDateTile";
 import {CatchGroundProvider} from "./CatchGroundProvider";
 import {CatchHeroImage} from "./CatchHeroImage";
+import {CatchIcon} from "./CatchIcon";
 import {CatchStack} from "./CatchStack";
 import {CatchSurface} from "./CatchSurface";
 import {CatchText} from "./CatchText";
@@ -72,8 +72,10 @@ export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>,
   note?: string;
   /** split: a white card under the actions, such as a WhatsApp notify form. */
   notice?: CatchHeroSectionNotice;
-  /** A side link under everything, drawn as a neutral text button. */
+  /** A side link under everything: an underlined link with an arrow, at the start edge. */
   link?: CatchBandLink;
+  /** A sentence before the side link that says who it is for, such as "Running a venue?". */
+  linkLead?: string;
   /** split: the media column, usually a CatchScreenPreview. It sits on the band's bottom edge. */
   media?: ReactNode;
   /** split: a small card floating over the media. */
@@ -113,6 +115,7 @@ export function CatchHeroSection({
   note,
   notice,
   link,
+  linkLead,
   media,
   aside,
   ground,
@@ -155,7 +158,12 @@ export function CatchHeroSection({
         </div>
       ) : null}
       {note ? <CatchText as="p" tone="secondary" variant="body-meta">{note}</CatchText> : null}
-      {link ? <span className={styles.link}><CatchButton href={link.href} label={link.label} recipe="text" tone="neutral" /></span> : null}
+      {link ? (
+        <CatchText as="p" className={styles.link} tone="secondary" variant="body-meta">
+          {linkLead ? <>{linkLead} </> : null}
+          <a className={styles.linkAction} href={link.href}>{link.label}<span aria-hidden="true" className={styles.linkArrow}><CatchIcon name="forward" size={16} /></span></a>
+        </CatchText>
+      ) : null}
     </CatchStack>
   );
 

@@ -4,7 +4,7 @@
 .consumer-home p { line-height: 1.5; margin: var(--catch-space-micro14) 0; }
 .consumer-home .brand__logo { width: 90px; height: 42px; object-fit: contain; }
 .consumer-home .button { border-radius: var(--catch-radius-xs); background: var(--website-accent); color: var(--catch-color-light-primary-ink); min-height: 48px; gap: var(--catch-space-s4); padding: 0 22px; font-family: inherit; font-size: 15px; box-shadow: none; }
-.consumer-home .button:hover { background: color-mix(in srgb, var(--website-accent) 86%, var(--website-surface)); }
+@media (hover: hover) { .consumer-home .button:hover { background: color-mix(in srgb, var(--website-accent) 86%, var(--website-surface)); } }
 .consumer-home :focus-visible { outline: 3px solid var(--catch-focus-ring-color); outline-offset: 4px; }
 @media (min-width: 1600px) { .consumer-home { --consumer-gutter: max(80px, calc((100vw - 1440px)/2)); } }
 @media (max-width: 700px) {

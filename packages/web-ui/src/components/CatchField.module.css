@@ -46,9 +46,11 @@
   .field { transition: none; }
 }
 
-.field[data-input-mode="editable"]:hover:not([data-focused]) {
-  background: color-mix(in srgb, var(--catch-theme-ink)
-    calc(var(--catch-opacity-control-overlay-hover) * 100%), var(--catch-field-rest-fill, transparent));
+@media (hover: hover) {
+  .field[data-input-mode="editable"]:hover:not([data-focused]) {
+    background: color-mix(in srgb, var(--catch-theme-ink)
+      calc(var(--catch-opacity-control-overlay-hover) * 100%), var(--catch-field-rest-fill, transparent));
+  }
 }
 
 .field[data-focused] {
@@ -237,13 +239,21 @@
  * leaves the box alone, as the canvas's notify fields do. Focus rings the box.
  */
 :global([data-block="band"]:not([data-band="ink"])) .field,
-:global([data-block="band"]:not([data-band="ink"])) .field[data-input-mode="editable"]:hover:not([data-focused]),
 :global([data-block="band"]:not([data-band="ink"])) .field[data-focused] {
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+}
+@media (hover: hover) {
+  :global([data-block="band"]:not([data-band="ink"])) .field[data-input-mode="editable"]:hover:not([data-focused]) {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
 }
 
 :global([data-block="band"]:not([data-band="ink"])) .field:has(.control:focus-visible) {
@@ -365,9 +375,11 @@
   cursor: pointer;
 }
 
-.field .phoneChip:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--catch-theme-ink)
-    calc(var(--catch-opacity-control-overlay-hover) * 100%), var(--catch-theme-tile));
+@media (hover: hover) {
+  .field .phoneChip:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--catch-theme-ink)
+      calc(var(--catch-opacity-control-overlay-hover) * 100%), var(--catch-theme-tile));
+  }
 }
 
 .field .phoneChip:focus-visible {

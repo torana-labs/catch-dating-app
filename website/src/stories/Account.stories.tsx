@@ -188,7 +188,7 @@ function SignedInPreview({args}: {args: AccountPageViewProps}) {
   return (
     <SiteAccountActionProvider value={{bar: <SiteAccountMenu controller={menuController} />,
       menu: {label: signInCopy.headerAccount, href: "/account/"},
-      phoneMenu: (links, menuLabel) => <SiteAccountMenu controller={menuController} links={links} menuLabel={menuLabel} phone />}}>
+      phoneMenu: (links) => <SiteAccountMenu controller={menuController} links={links} phone />}}>
       <AccountPageView {...args} />
     </SiteAccountActionProvider>
   );

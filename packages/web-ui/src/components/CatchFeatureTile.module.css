@@ -90,8 +90,11 @@
   transition: opacity var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 
-.tile[data-link]:hover { transform: translateY(calc(-1 * var(--catch-space-micro2))); }
-.tile[data-link]:hover::after { opacity: var(--catch-opacity-control-overlay-hover); }
+@media (hover: hover) {
+  .tile[data-link]:hover { transform: translateY(calc(-1 * var(--catch-space-micro2))); }
+  .tile[data-link]:hover::after { opacity: var(--catch-opacity-control-overlay-hover); }
+}
+
 .tile[data-link]:active { transform: none; }
 .tile[data-link]:active::after { opacity: calc(2 * var(--catch-opacity-control-overlay-hover)); }
 
@@ -112,15 +115,19 @@
   transition: transform var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 
-.tile[data-link]:hover .arrow { transform: translateX(var(--catch-space-s1)); }
+@media (hover: hover) {
+  .tile[data-link]:hover .arrow { transform: translateX(var(--catch-space-s1)); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .tile[data-link],
   .tile[data-link]::after,
   .arrow { transition: none; }
 
-  .tile[data-link]:hover,
-  .tile[data-link]:hover .arrow { transform: none; }
+  @media (hover: hover) {
+    .tile[data-link]:hover,
+    .tile[data-link]:hover .arrow { transform: none; }
+  }
 }
 
 @container catch-page (width < 840px) {

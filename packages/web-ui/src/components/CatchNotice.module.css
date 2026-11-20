@@ -96,7 +96,9 @@ button.notice:focus-visible {
   height: 18px;
 }
 
-.dismiss:hover { background: color-mix(in srgb, var(--catch-theme-ink) 5%, transparent); }
+@media (hover: hover) {
+  .dismiss:hover { background: color-mix(in srgb, var(--catch-theme-ink) 5%, transparent); }
+}
 
 .dismiss:focus-visible {
   outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);

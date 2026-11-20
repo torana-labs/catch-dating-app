@@ -25,13 +25,13 @@
     box-shadow var(--catch-motion-micro) var(--catch-motion-standard-curve);
 }
 
-.button:hover,
 .button:focus-visible {
   background: var(--website-accent-muted);
   box-shadow: var(--catch-elevation-card);
   transform: translateY(-1px);
 }
 
+@media (hover: hover) { .button:hover { background: var(--website-accent-muted); box-shadow: var(--catch-elevation-card); transform: translateY(-1px); } }
 .button:active {
   transform: translateY(0);
 }
@@ -55,15 +55,14 @@
   color: var(--website-text);
 }
 
-.button--ghost:hover,
 .button--ghost:focus-visible,
-.button--ghost-light:hover,
 .button--ghost-light:focus-visible {
   border-color: var(--website-accent);
   background: var(--website-ghost-hover-bg);
   color: var(--website-text);
 }
 
+@media (hover: hover) { .button--ghost:hover, .button--ghost-light:hover { border-color: var(--website-accent); background: var(--website-ghost-hover-bg); color: var(--website-text); } }
 /* Kicker label role (UiLabel primitive). */
 .ui-label {
   color: var(--website-text-muted);

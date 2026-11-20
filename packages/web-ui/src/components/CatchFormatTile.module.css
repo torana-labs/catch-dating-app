@@ -47,8 +47,10 @@
   --catch-tile-ink: var(--catch-format-nights-out-ink-secondary);
 }
 
-.tile:hover {
-  transform: translateY(calc(var(--catch-space-micro2) * -1));
+@media (hover: hover) {
+  .tile:hover {
+    transform: translateY(calc(var(--catch-space-micro2) * -1));
+  }
 }
 
 .tile:active {
@@ -101,8 +103,13 @@
     transition: none;
   }
 
-  .tile:hover,
   .tile:active {
     transform: none;
+  }
+
+  @media (hover: hover) {
+    .tile:hover {
+      transform: none;
+    }
   }
 }

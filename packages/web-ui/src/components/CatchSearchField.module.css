@@ -142,7 +142,9 @@
 .search .leading svg { height: var(--catch-search-icon-size); }
 .search button:disabled { cursor: default; }
 .search button:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-primary); outline-offset: var(--catch-space-micro2); }
-.search .trigger:enabled:hover, .search .action:enabled:hover::before { background: color-mix(in srgb, var(--catch-theme-ink) calc(var(--catch-opacity-control-overlay-hover) * 100%), var(--catch-search-action-bg)); }
+@media (hover: hover) {
+  .search .trigger:enabled:hover, .search .action:enabled:hover::before { background: color-mix(in srgb, var(--catch-theme-ink) calc(var(--catch-opacity-control-overlay-hover) * 100%), var(--catch-search-action-bg)); }
+}
 .search .trigger:enabled:active, .search .action:enabled:active::before { background: color-mix(in srgb, var(--catch-theme-ink) 8%, var(--catch-search-action-bg)); }
 
 @media (prefers-reduced-motion: reduce) {
