@@ -10,10 +10,12 @@ export const tryItToolCommands = {
   guests: "guests.import-list",
   report: "sales.import-past",
   night: "night.plan",
+  form: "form.import-from-link",
 } as const satisfies Record<string, TryItCommandId>;
 export type TryItToolKind = keyof typeof tryItToolCommands;
 /**
- * The tools that start from a link, which this folder's TryItTool draws; the
+ * The tools that start from a link, which this folder's TryItTool draws
+ * (form: a public Google Form, made a private draft form); the
  * guest list tool is features/guestImportTryIt, Reports' export upload is
  * features/pastSalesTryIt and the plan-a-night tool is NightPlanTryIt.tsx.
  */
@@ -27,8 +29,10 @@ export type TryItLinkToolKind = Exclude<TryItToolKind, "guests" | "report" | "ni
  * is in production. guests.import-list's tool is the guest list upload
  * (features/guestImportTryIt); sales.import-past's is Reports' export upload
  * (features/pastSalesTryIt); night.plan's is the plan-a-night tool
- * (NightPlanTryIt.tsx). Form import has no website tool yet, so its band
- * stays hidden. Reports' numbers-only path needs no
+ * (NightPlanTryIt.tsx). form.import-from-link's tool (TryItTool, `form`) is
+ * built and tested but left out, so the Forms page's band stays hidden;
+ * switching it on is adding it here and flipping the page's try sections to
+ * built. Reports' numbers-only path needs no
  * command: it is the lastEventReport custom section, worked out in the
  * page, beside the export upload.
  */
@@ -54,12 +58,16 @@ export const playbookTryItTools: Readonly<Record<string, TryItToolKind>> = {
   product_guests: "guests",
   product_reports: "report",
   product_room: "night",
+  product_forms: "form",
 };
 
-/** The tool a page's tool forms open, or null when the page has none or its command is not website-ready. */
-export function playbookTryItTool(pageId: string): TryItToolKind | null {
+/**
+ * The tool a page's tool forms open, or null when the page has none or its
+ * command is not website-ready. `ready` is websiteReadyTryItCommands except
+ * on the Forms page's owner preview (playbookLeadForms.ts).
+ */
+export function playbookTryItTool(pageId: string, ready: readonly string[] = websiteReadyTryItCommands): TryItToolKind | null {
   const tool = Object.hasOwn(playbookTryItTools, pageId) ? playbookTryItTools[pageId] : null;
-  const ready: readonly string[] = websiteReadyTryItCommands;
   return tool && ready.includes(tryItToolCommands[tool]) ? tool : null;
 }
 
@@ -154,4 +162,43 @@ export function tryItLocalDate(localDate: string): string {
   const date = new Date(`${localDate}T12:00:00Z`);
   if (!Number.isFinite(date.getTime())) return localDate;
   return new Intl.DateTimeFormat("en-GB", {timeZone: "UTC", weekday: "short", day: "numeric", month: "short"}).format(date);
+}
+
+/**
+ * What form.import-from-link could not bring across, as the plain lines the
+ * preview shows (contracts/callable_responses/import_form_from_link_response
+ * .schema.json, result.flags). Codes this site knows have their own line;
+ * any other code, such as one added to the command later, shares the
+ * generic "couldn't bring this across" line (`other`).
+ */
+export const tryItFormFlagCodes = [
+  "grid_not_supported", "time_as_text", "file_upload_skipped", "media_skipped", "unknown_item_skipped", "other_option_dropped",
+  "branching_review", "navigation_not_supported", "extra_finish_dropped", "options_trimmed", "text_trimmed", "sections_limit",
+  "questions_limit", "logic_limit",
+] as const;
+export type TryItFormFlagCode = (typeof tryItFormFlagCodes)[number];
+
+/** One flag as the command sends it; `code` is read as any string, so a new code cannot break the page. */
+export interface TryItFormFlag {
+  readonly code: string;
+  readonly item: string | null;
+}
+
+/** Flags with the same line, together: the source questions or sections they name, each once, in order. */
+export interface TryItFormFlagGroup {
+  readonly code: TryItFormFlagCode | "other";
+  readonly items: readonly string[];
+}
+
+const knownFlag = (code: string): code is TryItFormFlagCode => (tryItFormFlagCodes as readonly string[]).includes(code);
+
+export function tryItFormFlagGroups(flags: readonly TryItFormFlag[]): TryItFormFlagGroup[] {
+  const groups = new Map<TryItFormFlagGroup["code"], string[]>();
+  for (const flag of flags) {
+    const code = knownFlag(flag.code) ? flag.code : "other";
+    const items = groups.get(code) ?? [];
+    if (flag.item && !items.includes(flag.item)) items.push(flag.item);
+    groups.set(code, items);
+  }
+  return [...groups].map(([code, items]) => ({code, items}));
 }

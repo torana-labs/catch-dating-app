@@ -141,6 +141,73 @@ export const tryItCopy = {
         qr: "QR code for {label}",
       },
     },
+    /**
+     * form.import-from-link: one public Google Form, read into a private
+     * draft form. It names Google Forms because that is the only link it
+     * reads; it brings no responses across.
+     */
+    form: {
+      title: "Bring your Google Form",
+      placeholder: "docs.google.com/forms/d/e/your-form-id/viewform",
+      chip: "Works with a public Google Form: paste the link you share with people.",
+      confirm: "Make my draft form",
+      /** Above the review when the form changed between the preview and the confirm. */
+      revised: "Your form changed since the preview. Here it is as it is now.",
+      found: {
+        /** {questions} and {sections} counted. */
+        counts: "{questions} questions in {sections} sections",
+        required: "Required",
+        /** {count} choices on a choice question. */
+        choices: "{count} choices",
+        /** {count} questions past the ones listed in a section. */
+        more: "{count} more questions",
+        /** {count} answer-based jumps the draft keeps. */
+        jumps: "{count} answer-based jumps came across: a choice still opens the section it led to.",
+        kinds: {
+          shortText: "Short answer",
+          longText: "Paragraph",
+          singleChoice: "One choice",
+          multiChoice: "Several choices",
+          date: "Date",
+          phone: "Phone number",
+          email: "Email",
+          url: "Link",
+          number: "Number",
+          boolean: "Yes or no",
+          file: "File upload",
+          acknowledgement: "Tick to agree",
+          signature: "Signature",
+          other: "Question",
+        },
+      },
+      flags: {
+        title: "To rebuild by hand",
+        /** One line per kind of thing the import could not bring across (tryItModel: tryItFormFlagCodes). */
+        codes: {
+          grid_not_supported: "Grid questions can’t come across. Rebuild each row as its own question.",
+          time_as_text: "Time questions come across as short answers.",
+          file_upload_skipped: "File upload questions were left out. Add them again as upload questions.",
+          media_skipped: "Images and videos were left out.",
+          unknown_item_skipped: "Items we couldn’t read were left out.",
+          other_option_dropped: "The “Other” write-in choice was left out.",
+          branching_review: "Some choices don’t jump to a section. Check where those answers go next.",
+          navigation_not_supported: "Jumps back to an earlier section, or straight to the end, were left out.",
+          extra_finish_dropped: "An extra jump to the end of the form was left out.",
+          options_trimmed: "Long lists of choices were cut to the most a form allows.",
+          text_trimmed: "Long text was shortened to fit.",
+          sections_limit: "Sections past the most a form allows were left out.",
+          questions_limit: "Questions past the most a form allows were left out.",
+          logic_limit: "Answer-based jumps past the most a form allows were left out.",
+        },
+        /** Any code this site doesn't know yet. */
+        other: "We couldn’t bring this across. Rebuild it by hand.",
+      },
+      draft: {
+        title: "Your draft form",
+        status: "Private draft",
+        lead: `Check its questions in ${host}, rebuild anything listed, then publish it. No one can open it until you do.`,
+      },
+    },
   },
 } as const;
 

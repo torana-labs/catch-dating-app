@@ -20,6 +20,8 @@ import type {ImportGuestListCallablePayload} from "../../functions/src/shared/ge
 import type {ImportGuestListCallableResponse} from "../../functions/src/shared/generated/importGuestListCallableResponse";
 import type {ImportPastSalesCallablePayload} from "../../functions/src/shared/generated/importPastSalesCallablePayload";
 import type {ImportPastSalesCallableResponse} from "../../functions/src/shared/generated/importPastSalesCallableResponse";
+import type {ImportFormFromLinkCallablePayload} from "../../functions/src/shared/generated/importFormFromLinkCallablePayload";
+import type {ImportFormFromLinkCallableResponse} from "../../functions/src/shared/generated/importFormFromLinkCallableResponse";
 import type {PlanNightCallablePayload} from "../../functions/src/shared/generated/planNightCallablePayload";
 import type {PlanNightCallableResponse} from "../../functions/src/shared/generated/planNightCallableResponse";
 import type {CreateEventRehearsalCallablePayload} from "../../functions/src/shared/generated/createEventRehearsalCallablePayload";
@@ -1108,6 +1110,7 @@ export interface TryItCommandCallables {
   importGuestList: {payload: ImportGuestListCallablePayload; response: ImportGuestListCallableResponse};
   importPastSales: {payload: ImportPastSalesCallablePayload; response: ImportPastSalesCallableResponse};
   planNight: {payload: PlanNightCallablePayload; response: PlanNightCallableResponse};
+  importFormFromLink: {payload: ImportFormFromLinkCallablePayload; response: ImportFormFromLinkCallableResponse};
 }
 
 /** Who a try-it command would run as: the signed-in account and its phone, when Firebase verified one by code. */

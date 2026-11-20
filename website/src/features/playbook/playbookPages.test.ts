@@ -228,6 +228,23 @@ describe("playbook page indexes", () => {
     }
   });
 
+  // form.import-from-link reads one public Google Form into a private draft
+  // form, with simple jumps as section rules and the rest flagged; it reads
+  // no other form tool and brings no responses (contracts/callable_responses/).
+  // Its hidden bands promise nothing more, and hold the tool form it draws.
+  it("words the Forms tool's hidden bands only as what form.import-from-link returns", () => {
+    const {raw} = loaded.find(({ref}) => ref.match.contentKey === "product_forms")!;
+    const bands = raw.sections.filter((section) => ["try", "start-try", "questions-coming"].includes(section.id));
+    expect(bands.map((section) => section.id)).toEqual(["try", "questions-coming", "start-try"]);
+    expect(bands.filter((section) => section.id !== "questions-coming").map((section) => section.status)).toEqual(["tryIt", "tryIt"]);
+    const text = JSON.stringify(bands.map(({statusNote: _note, ...section}) => section));
+    expect(text).not.toMatch(/Typeform|responses sheet|guest records?|every question|ready to share/iu);
+    for (const section of bands) {
+      if ("leadForm" in section && section.leadForm) expect(section.leadForm).toMatchObject({requestKind: "tool", input: "url", label: "Link to a Google Form"});
+    }
+    expect(playbookTryItTools.product_forms).toBe("form");
+  });
+
   it("shows Reports' export upload in the try band, with the numbers-only report beside it (owner, #2062 C7)", () => {
     const {raw} = loaded.find(({ref}) => ref.match.contentKey === "product_reports")!;
     const live = livePlaybookPage(raw);

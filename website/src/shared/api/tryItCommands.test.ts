@@ -3,6 +3,7 @@ import addFormats from "ajv-formats";
 import {readFileSync} from "node:fs";
 import path from "node:path";
 import {describe, expect, it, vi} from "vitest";
+import {formFixtures} from "../../stories/fixtures/formImportTryIt";
 import {eventFixtures, kitFixtures, organizerFixtures, workspaceFixtures} from "../../stories/fixtures/tryItCommands";
 import {
   createTryItAction,
@@ -19,7 +20,8 @@ const contracts = path.resolve(__dirname, "../../../../contracts");
 const ajv = new Ajv({allErrors: true, strict: false, validateSchema: false});
 addFormats(ajv);
 // The schemas the four commands' payloads and responses reference.
-for (const file of ["command_envelope.schema.json", "event_common.schema.json", "profile_common.schema.json"]) {
+for (const file of ["command_envelope.schema.json", "event_common.schema.json", "profile_common.schema.json", "organizer_form_common.schema.json",
+  "organizer_application_common.schema.json"]) {
   ajv.addSchema(JSON.parse(readFileSync(path.join(contracts, "shared", file), "utf8")));
 }
 const catalog = JSON.parse(readFileSync(path.join(contracts, "commands/catalog.json"), "utf8")) as {
@@ -77,6 +79,8 @@ describe("try-it command client", () => {
           event: {name: "Salt Air Social Run", localDate: "2026-11-16"}, mapping: {displayName: 0, ticketType: 1, revenueAmount: 2, phone: null},
           fallbackTicketPrice: {amountMinor: 40000, currency: "INR"}, currentFees: {percent: 2.5, perTicketMinor: 1000, currency: "INR"}, excludedRowIds: ["4"]}},
       "night.plan": {mode: "preview", idempotencyKey: tryItIdempotencyKey(), input: {format: "run", guestCount: 32, eventId: "evtSaltAirSocialRun01"}},
+      "form.import-from-link": {mode: "apply", idempotencyKey: tryItIdempotencyKey(), previewHash: "2".repeat(64),
+        input: {link: "https://docs.google.com/forms/d/e/FAKE-FORM-ID-driftwood-sign-up/viewform"}},
     };
     for (const [commandId, sample] of Object.entries(samples) as [TryItCommandId, (typeof samples)[TryItCommandId]][]) {
       let sent: unknown;
@@ -93,7 +97,7 @@ describe("try-it command client", () => {
   it("uses fixture envelopes each command's response schema accepts", () => {
     const sets: [TryItCommandId, Record<string, unknown>][] = [
       ["workspace.ensure", workspaceFixtures], ["organizer.import-from-link", organizerFixtures],
-      ["event.import-from-link", eventFixtures], ["promotion.create-kit", kitFixtures],
+      ["event.import-from-link", eventFixtures], ["promotion.create-kit", kitFixtures], ["form.import-from-link", formFixtures],
     ];
     for (const [commandId, fixtures] of sets) {
       const validate = validator(entry(commandId).responseSchema);
@@ -111,6 +115,10 @@ describe("try-it command client", () => {
     expect(await fail({code: "functions/aborted", details: {reason: "changed_since_preview"}})).toMatchObject({problem: "changed"});
     expect(await fail({code: "functions/already-exists", details: {reason: "idempotency_key_reused"}})).toMatchObject({problem: "key_reused"});
     expect(await fail({code: "functions/failed-precondition", details: {reason: "existing_listing"}})).toMatchObject({problem: "existing_listing"});
+    // form.import-from-link's apply, when the form can no longer be read.
+    for (const reason of ["form_not_public", "form_empty", "not_a_form_link", "form_provider_not_supported"]) {
+      expect(await fail({code: "functions/failed-precondition", details: {reason}}), reason).toMatchObject({problem: "link_unreadable", reason});
+    }
     expect(await fail(callableError("functions/invalid-argument", "Send a public https link."))).toMatchObject({problem: "invalid"});
     expect(await fail({code: "functions/permission-denied"})).toMatchObject({problem: "not_allowed"});
     expect(await fail(callableError("functions/internal", "internal"))).toMatchObject({problem: "offline"});

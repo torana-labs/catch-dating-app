@@ -20,8 +20,16 @@ import {Form} from "../../shared/ui/primitives";
 import {SignInSheetView} from "../account/SignInSheet";
 import {useSignInSheetController} from "../account/useSignInSheetController";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
-import type {TryItFlowState, TryItOrganizerMatch, TryItOrganizerProposal, TryItStage, TryItSummary} from "./tryItFlow";
-import {tryItCities, tryItEventWhen, tryItKitLinks, tryItLocalDate, type TryItLinkToolKind} from "./tryItModel";
+import type {TryItFlowState, TryItFormOutline, TryItOrganizerMatch, TryItOrganizerProposal, TryItStage, TryItSummary} from "./tryItFlow";
+import {
+  tryItCities,
+  tryItEventWhen,
+  tryItFormFlagGroups,
+  tryItKitLinks,
+  tryItLocalDate,
+  type TryItFormFlag,
+  type TryItLinkToolKind,
+} from "./tryItModel";
 import {useTryItToolController, type TryItToolController} from "./useTryItToolController";
 
 /** Where the tool sits: a try-it band's second column (a card), or a closing band's capture row. */
@@ -72,6 +80,49 @@ function OrganizerFound({proposal, verifyNote = false}: {proposal: TryItOrganize
       ) : null}
       {verifyNote && proposal.verificationNeeded ? <CatchText as="p" tone="secondary" variant="body-small">{found.verify}</CatchText> : null}
     </CatchStack>
+  );
+}
+
+const formQuestionsShown = 6;
+
+/** The draft form's sections and questions, as the import read them, and how many answer-based jumps it keeps. */
+function FormFound({form}: {form: TryItFormOutline}) {
+  const found = copy.tools.form.found;
+  const kinds: Readonly<Record<string, string>> = found.kinds;
+  return (
+    <CatchStack gap={8}>
+      <CatchText as="p" tone="secondary" variant="body-small">
+        {fill(found.counts, {questions: String(form.questionCount), sections: String(form.sections.length)})}
+      </CatchText>
+      {form.sections.map((section, sectionIndex) => (
+        <CatchSection container="tile" key={`${sectionIndex}-${section.title}`} title={section.title}>
+          {section.questions.slice(0, formQuestionsShown).map((question, index) => (
+            <CatchIndexRow density="compact" key={`${index}-${question.label}`} title={question.label} wrap
+              subtitle={[kinds[question.kind] ?? kinds.other, question.optionCount ? fill(found.choices, {count: String(question.optionCount)}) : null,
+                question.required ? found.required : null].filter(Boolean).join(" · ")} />
+          ))}
+          {section.questions.length > formQuestionsShown ? (
+            <CatchIndexRow density="compact" title={fill(found.more, {count: String(section.questions.length - formQuestionsShown)})} />
+          ) : null}
+        </CatchSection>
+      ))}
+      {form.ruleCount > 0 ? <CatchText as="p" tone="secondary" variant="body-small">{fill(found.jumps, {count: String(form.ruleCount)})}</CatchText> : null}
+    </CatchStack>
+  );
+}
+
+/** What the import could not bring across, one plain line per kind, with the questions or sections it came from. */
+function FormFlags({flags}: {flags: readonly TryItFormFlag[]}) {
+  const groups = tryItFormFlagGroups(flags);
+  if (!groups.length) return null;
+  const words = copy.tools.form.flags;
+  return (
+    <CatchSection container="tile" title={words.title}>
+      {groups.map((group) => (
+        <CatchIndexRow density="compact" key={group.code} title={group.code === "other" ? words.other : words.codes[group.code]} wrap
+          subtitle={group.items.length ? group.items.join(", ") : undefined} />
+      ))}
+    </CatchSection>
   );
 }
 
@@ -150,7 +201,7 @@ function StartStep({controller, form, tool, placement}: {controller: TryItToolCo
             size="sm" variant="quiet" />
         </CatchStack>
       ) : null}
-      {tool === "organizer" && placement === "split" ? <CatchText as="p" tone="secondary" variant="body-small">{copy.tools.organizer.chip}</CatchText> : null}
+      {(tool === "organizer" || tool === "form") && placement === "split" ? <CatchText as="p" tone="secondary" variant="body-small">{copy.tools[tool].chip}</CatchText> : null}
       <CatchText as="p" tone="secondary" variant="body-meta">{form.note ?? copy.private}</CatchText>
     </CatchStack>
   );
@@ -271,7 +322,10 @@ function StageBody({controller, form, tool, placement, analyticsPlacement}: TryI
     case "review":
       return (
         <CatchStack gap={12}>
+          {stage.step === "form" && stage.revised ? <CatchText as="p" variant="body">{copy.tools.form.revised}</CatchText> : null}
           <SummaryText live summary={stage.summary} />
+          {stage.step === "form" ? <FormFound form={stage.form} /> : null}
+          {stage.step === "form" ? <FormFlags flags={stage.flags} /> : null}
           {stage.step === "organizer" ? <OrganizerFound proposal={stage.proposal} /> : null}
           {stage.step === "organizer" && stage.match ? <Candidates match={stage.match} /> : null}
           {stage.step === "kit" ? (
@@ -297,6 +351,14 @@ function StageBody({controller, form, tool, placement, analyticsPlacement}: TryI
             </CatchSection>
           ) : null}
           {stage.step === "event" ? <CatchText as="p" tone="secondary" variant="body">{copy.tools.event.draft.lead}</CatchText> : null}
+          {stage.step === "form" ? (
+            <CatchSection container="tile" title={copy.tools.form.draft.title}>
+              <CatchIndexRow density="compact" status={copy.tools.form.draft.status} title={stage.form.title} wrap
+                subtitle={fill(copy.tools.form.found.counts, {questions: String(stage.form.questionCount), sections: String(stage.form.sections.length)})} />
+            </CatchSection>
+          ) : null}
+          {stage.step === "form" ? <FormFlags flags={stage.flags} /> : null}
+          {stage.step === "form" ? <CatchText as="p" tone="secondary" variant="body">{copy.tools.form.draft.lead}</CatchText> : null}
           {stage.step === "kit" ? (
             <CatchStack gap={12}>
               <CatchSection container="tile" title={copy.tools.kit.done.title}>

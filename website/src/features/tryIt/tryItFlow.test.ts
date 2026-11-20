@@ -8,6 +8,7 @@ import {
   scriptedTryItClient,
   workspaceFixtures,
 } from "../../stories/fixtures/tryItCommands";
+import {fixtureFormLink, fixtureFormTyped, formFixtures, formUnknownFlagPreview} from "../../stories/fixtures/formImportTryIt";
 import {createTryItFlow, type TryItDraftEvent, type TryItFlowDeps} from "./tryItFlow";
 import type {TryItToolKind} from "./tryItModel";
 
@@ -338,6 +339,82 @@ describe("try-it flow: promotion kit (Messages and growth)", () => {
     await flow.useRemembered();
     expect(stage().name).toBe("start");
     expect(flow.getState().remembered).toBeNull();
+  });
+});
+
+describe("try-it flow: form import (Forms)", () => {
+  it("previews the draft form with its sections, its jump rules and what to rebuild, then applies with the same key and hash", async () => {
+    const client = scriptedTryItClient({"form.import-from-link": {preview: [formFixtures.previewed], apply: [formFixtures.applied]}});
+    const {flow, stage} = flowWith("form", client);
+    flow.setLink(fixtureFormTyped);
+    await flow.submit();
+    expect(stage()).toMatchObject({name: "review", step: "form", revised: false, summary: formFixtures.previewed.summary,
+      form: {ruleCount: 2, sections: formFixtures.previewed.result.form.sections}, flags: formFixtures.previewed.result.flags});
+    await flow.confirm();
+    expect(stage()).toMatchObject({name: "done", step: "form", summary: formFixtures.applied.summary, form: {title: formFixtures.applied.result.form.title}});
+    expect(client.calls.map(({commandId, mode, idempotencyKey, previewHash, input}) => ({commandId, mode, idempotencyKey, previewHash, input}))).toEqual([
+      {commandId: "form.import-from-link", mode: "preview", idempotencyKey: "web_key000000000001", previewHash: undefined, input: {link: fixtureFormLink}},
+      {commandId: "form.import-from-link", mode: "apply", idempotencyKey: "web_key000000000001", previewHash: formFixtures.previewed.previewHash, input: {link: fixtureFormLink}},
+    ]);
+  });
+
+  it("keeps a flag code it does not know, for the generic line", async () => {
+    const client = scriptedTryItClient({"form.import-from-link": {preview: [formUnknownFlagPreview]}});
+    const {flow, stage} = flowWith("form", client);
+    flow.setLink(fixtureFormTyped);
+    await flow.submit();
+    expect(stage()).toMatchObject({name: "review", step: "form", flags: [{code: "quiz_scoring_dropped", item: "Route quiz"}]});
+  });
+
+  it("previews again with the same key when apply says the form changed, says so, and applies the new hash", async () => {
+    const client = scriptedTryItClient({"form.import-from-link": {preview: [formFixtures.previewed, formFixtures.previewedAgain],
+      apply: [{problem: "changed"}, {...formFixtures.applied, previewHash: formFixtures.previewedAgain.previewHash}]}});
+    const {flow, stage} = flowWith("form", client);
+    flow.setLink(fixtureFormTyped);
+    await flow.submit();
+    await flow.confirm();
+    expect(stage()).toMatchObject({name: "review", step: "form", revised: true, form: {questionCount: 7}});
+    await flow.confirm();
+    expect(stage()).toMatchObject({name: "done", step: "form"});
+    expect(client.calls.map((call) => [call.mode, call.previewHash])).toEqual([["preview", undefined], ["apply", formFixtures.previewed.previewHash],
+      ["preview", undefined], ["apply", formFixtures.previewedAgain.previewHash]]);
+    expect(new Set(client.calls.map((call) => call.idempotencyKey))).toEqual(new Set(["web_key000000000001"]));
+  });
+
+  it("asks an unverified visitor for the phone step, and a verified one with no profile for their brand and city, then previews the same link", async () => {
+    const unverified = scriptedTryItClient({}, null);
+    const first = flowWith("form", unverified);
+    first.flow.setLink(fixtureFormTyped);
+    await first.flow.submit();
+    expect(first.stage().name).toBe("account");
+    expect(unverified.calls).toEqual([]);
+
+    const client = scriptedTryItClient({
+      "workspace.ensure": {preview: [workspaceFixtures.previewNew], apply: [workspaceFixtures.applied]},
+      "form.import-from-link": {preview: [formFixtures.noWorkspace, formFixtures.previewed]},
+    });
+    const {flow, stage} = flowWith("form", client);
+    flow.setLink(fixtureFormTyped);
+    await flow.submit();
+    expect(stage().name).toBe("account");
+    flow.setBrand("Driftwood Bay Runners");
+    flow.setCity("in-mh-mumbai");
+    await flow.continueAccount();
+    expect(stage().name).toBe("workspace");
+    await flow.confirmWorkspace();
+    expect(stage()).toMatchObject({name: "review", step: "form"});
+    expect(client.calls.map((call) => `${call.commandId}:${call.mode}`)).toEqual(["form.import-from-link:preview", "workspace.ensure:preview",
+      "workspace.ensure:apply", "form.import-from-link:preview"]);
+    const imports = client.calls.filter((call) => call.commandId === "form.import-from-link");
+    expect(imports[0].idempotencyKey).toBe(imports[1].idempotencyKey);
+  });
+
+  it("shows a refused form in the command's own words", async () => {
+    const client = scriptedTryItClient({"form.import-from-link": {preview: [formFixtures.refused]}});
+    const {flow, stage} = flowWith("form", client);
+    flow.setLink(fixtureFormTyped);
+    await flow.submit();
+    expect(stage()).toMatchObject({name: "problem", reason: "refused", summary: formFixtures.refused.summary});
   });
 });
 
