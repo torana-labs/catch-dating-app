@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/contexts/forms/parts/host_form_row.dart';
 import 'package:catch_dating_app/hosts/forms/forms_state.dart';
@@ -79,15 +80,48 @@ class HostFormsBody extends StatelessWidget {
         ],
       );
     } else {
-      forms = CatchSection(
-        title: l10n.hostFormsYourForms,
+      final newTotal = state.newResponseTotal;
+      final takingAnswers = state.forms
+          .where((form) => form.status == HostFormLifecycleStatus.published)
+          .length;
+      forms = CatchStack(
+        gap: CatchStackGap.section,
         children: [
-          for (final form in state.forms)
-            HostFormRow(
-              key: ValueKey<String>('host-forms-row-${form.formId}'),
-              form: form,
-              onTap: () => onOpenForm(form),
-            ),
+          CatchStack(
+            direction: CatchStackDirection.row,
+            equal: true,
+            children: [
+              CatchMetricTile.stat(
+                key: const ValueKey<String>('host-forms-stat-new'),
+                label: l10n.hostFormsStatNewResponses,
+                value: newTotal == null ? '—' : '$newTotal',
+                note: newTotal == null || newTotal == 0
+                    ? null
+                    : l10n.hostFormsStatAcrossForms(
+                        count: state.formsWithNewResponses,
+                      ),
+                noteTone: CatchMetricTileTone.success,
+              ),
+              CatchMetricTile.stat(
+                key: const ValueKey<String>('host-forms-stat-taking'),
+                label: l10n.hostFormsStatusTakingAnswers,
+                value: '$takingAnswers',
+                note: l10n.hostFormsStatOfForms(count: state.forms.length),
+              ),
+            ],
+          ),
+          CatchSection(
+            title: l10n.hostFormsYourForms,
+            children: [
+              for (final form in state.forms)
+                HostFormRow(
+                  key: ValueKey<String>('host-forms-row-${form.formId}'),
+                  form: form,
+                  newCount: state.newResponseCounts[form.formId] ?? 0,
+                  onTap: () => onOpenForm(form),
+                ),
+            ],
+          ),
         ],
       );
     }

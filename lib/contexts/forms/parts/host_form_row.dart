@@ -8,10 +8,19 @@ import 'package:flutter/widgets.dart';
 /// A form in Your forms: its title, the kind badge, how many answered and
 /// where it shows, and whether it is taking answers.
 class HostFormRow extends StatelessWidget {
-  const HostFormRow({super.key, required this.form, required this.onTap});
+  const HostFormRow({
+    super.key,
+    required this.form,
+    required this.onTap,
+    this.newCount = 0,
+  });
 
   final HostFormSummary form;
   final VoidCallback onTap;
+
+  /// Answers waiting for a first look, shown as "N new" in place of the
+  /// chevron.
+  final int newCount;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +41,13 @@ class HostFormRow extends StatelessWidget {
       metaTone: form.status == HostFormLifecycleStatus.published
           ? CatchIndexRowTone.success
           : CatchIndexRowTone.neutral,
-      chevron: true,
+      trailing: newCount > 0
+          ? CatchBadge(
+              label: l10n.hostFormsRowNew(count: newCount),
+              emphasis: CatchBadgeEmphasis.solid,
+            )
+          : null,
+      chevron: newCount <= 0,
     );
   }
 }

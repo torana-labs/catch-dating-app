@@ -11,6 +11,7 @@ class HostFormsState {
   const HostFormsState({
     required this.status,
     this.forms = const <HostFormSummary>[],
+    this.newResponseCounts = const <String, int>{},
     this.canLoadMore = false,
     this.loadingMore = false,
     this.loadMoreError,
@@ -23,6 +24,24 @@ class HostFormsState {
 
   /// The organizer's forms, most recently updated first.
   final List<HostFormSummary> forms;
+
+  /// Answers waiting for a first look, by form id. A form without an entry
+  /// has not been counted yet.
+  final Map<String, int> newResponseCounts;
+
+  /// Answers waiting across the listed forms, or null until every listed
+  /// form has been counted.
+  int? get newResponseTotal =>
+      forms.every((form) => newResponseCounts.containsKey(form.formId))
+      ? forms.fold<int>(
+          0,
+          (total, form) => total + newResponseCounts[form.formId]!,
+        )
+      : null;
+
+  /// Listed forms with answers waiting.
+  int get formsWithNewResponses =>
+      forms.where((form) => (newResponseCounts[form.formId] ?? 0) > 0).length;
 
   /// Another page of forms exists.
   final bool canLoadMore;
