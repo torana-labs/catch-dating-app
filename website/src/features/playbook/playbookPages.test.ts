@@ -177,7 +177,7 @@ describe("playbook page indexes", () => {
   // The pages whose try-it band, buttons and closing tool form are live now.
   // A page joins when its command is in production and its sections flip to
   // built; its command must be website-ready (features/tryIt/tryItModel.ts).
-  const liveTryItPages = ["product_your_page", "product_bookings", "product_messages", "product_guests", "product_reports"];
+  const liveTryItPages = ["product_your_page", "product_bookings", "product_messages", "product_guests", "product_reports", "product_room"];
 
   it("hides every try-it band and button unless its command's website tool is ready, on every product page", () => {
     expect(productV2.map(({ref}) => ref.match.contentKey).sort()).toEqual([
@@ -206,7 +206,8 @@ describe("playbook page indexes", () => {
       // A ready page's try band holds its tool form, which the tool slot draws.
       expect(tryBand && "leadForm" in tryBand ? tryBand.leadForm?.requestKind : undefined, `${key} #try holds its tool form`).toBe("tool");
       // The guest list and Reports' export tools upload a file; the others read a link.
-      const input = playbookTryItTool(key) === "guests" || playbookTryItTool(key) === "report" ? "file" : "url";
+      // The plan-a-night tool asks for a format and a head count (text).
+      const input = playbookTryItTool(key) === "guests" || playbookTryItTool(key) === "report" ? "file" : playbookTryItTool(key) === "night" ? "text" : "url";
       for (const {section, form} of toolForms) expect(form.input, `${key} ${section.id} reads a ${input}`).toBe(input);
       const liveTry = live.sections.some((section) => section.id === "try");
       expect(liveTry, `${key} #try is live only once listed in liveTryItPages`).toBe(liveTryItPages.includes(key));

@@ -20,6 +20,10 @@ import type {ImportGuestListCallablePayload} from "../../functions/src/shared/ge
 import type {ImportGuestListCallableResponse} from "../../functions/src/shared/generated/importGuestListCallableResponse";
 import type {ImportPastSalesCallablePayload} from "../../functions/src/shared/generated/importPastSalesCallablePayload";
 import type {ImportPastSalesCallableResponse} from "../../functions/src/shared/generated/importPastSalesCallableResponse";
+import type {PlanNightCallablePayload} from "../../functions/src/shared/generated/planNightCallablePayload";
+import type {PlanNightCallableResponse} from "../../functions/src/shared/generated/planNightCallableResponse";
+import type {CreateEventRehearsalCallablePayload} from "../../functions/src/shared/generated/createEventRehearsalCallablePayload";
+import type {CreateEventRehearsalCallableResponse} from "../../functions/src/shared/generated/createEventRehearsalCallableResponse";
 import type {ReadPublicOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload";
 import type {PublicOrganizerTrackingSettingsCallableResponse} from "../../functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse";
 import type {ManagePublicEventCheckoutCallablePayload} from "../../functions/src/shared/generated/managePublicEventCheckoutCallablePayload";
@@ -1103,6 +1107,7 @@ export interface TryItCommandCallables {
   createPromotionKit: {payload: CreatePromotionKitCallablePayload; response: CreatePromotionKitCallableResponse};
   importGuestList: {payload: ImportGuestListCallablePayload; response: ImportGuestListCallableResponse};
   importPastSales: {payload: ImportPastSalesCallablePayload; response: ImportPastSalesCallableResponse};
+  planNight: {payload: PlanNightCallablePayload; response: PlanNightCallableResponse};
 }
 
 /** Who a try-it command would run as: the signed-in account and its phone, when Firebase verified one by code. */
@@ -1132,6 +1137,20 @@ export async function invokeTryItCommand<Name extends keyof TryItCommandCallable
 ): Promise<TryItCommandCallables[Name]["response"]> {
   return invokeWebsiteCallable<TryItCommandCallables[Name]["payload"], TryItCommandCallables[Name]["response"]>(
     callable, payload, claimFirebaseConfigured, "Try-it tools");
+}
+
+export type TryItRehearsalPayload = CreateEventRehearsalCallablePayload;
+export type TryItRehearsalResponse = CreateEventRehearsalCallableResponse;
+
+/**
+ * The plan-a-night tool's practice session: createEventRehearsal for the
+ * visitor's try-it workspace, with the setup night.plan answered. Not a
+ * command, so it has no envelope; it is the same callable Catch Host's
+ * dress rehearsal uses, as the signed-in account with App Check.
+ */
+export async function createTryItRehearsal(payload: TryItRehearsalPayload): Promise<TryItRehearsalResponse> {
+  return invokeWebsiteCallable<TryItRehearsalPayload, TryItRehearsalResponse>(
+    "createEventRehearsal", payload, claimFirebaseConfigured, "Try-it tools");
 }
 
 export async function registerPublicEvent(

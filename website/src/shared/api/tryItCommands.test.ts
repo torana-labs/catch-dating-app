@@ -76,6 +76,7 @@ describe("try-it command client", () => {
         input: {file: {fileName: "salt-air-sales.csv", contentBase64: "TmFtZSxUaWNrZXQsQW1vdW50Ck1lZXJhLEdlbmVyYWwsNDAwCg=="},
           event: {name: "Salt Air Social Run", localDate: "2026-11-16"}, mapping: {displayName: 0, ticketType: 1, revenueAmount: 2, phone: null},
           fallbackTicketPrice: {amountMinor: 40000, currency: "INR"}, currentFees: {percent: 2.5, perTicketMinor: 1000, currency: "INR"}, excludedRowIds: ["4"]}},
+      "night.plan": {mode: "preview", idempotencyKey: tryItIdempotencyKey(), input: {format: "run", guestCount: 32, eventId: "evtSaltAirSocialRun01"}},
     };
     for (const [commandId, sample] of Object.entries(samples) as [TryItCommandId, (typeof samples)[TryItCommandId]][]) {
       let sent: unknown;

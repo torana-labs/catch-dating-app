@@ -9,14 +9,15 @@ export const tryItToolCommands = {
   kit: "promotion.create-kit",
   guests: "guests.import-list",
   report: "sales.import-past",
+  night: "night.plan",
 } as const satisfies Record<string, TryItCommandId>;
 export type TryItToolKind = keyof typeof tryItToolCommands;
 /**
  * The tools that start from a link, which this folder's TryItTool draws; the
- * guest list tool is features/guestImportTryIt and Reports' export upload is
- * features/pastSalesTryIt.
+ * guest list tool is features/guestImportTryIt, Reports' export upload is
+ * features/pastSalesTryIt and the plan-a-night tool is NightPlanTryIt.tsx.
  */
-export type TryItLinkToolKind = Exclude<TryItToolKind, "guests" | "report">;
+export type TryItLinkToolKind = Exclude<TryItToolKind, "guests" | "report" | "night">;
 
 /**
  * The commands whose website tool is built and tested here. A product
@@ -25,8 +26,9 @@ export type TryItLinkToolKind = Exclude<TryItToolKind, "guests" | "report">;
  * one is visible is still the page's own `status`, flipped once its command
  * is in production. guests.import-list's tool is the guest list upload
  * (features/guestImportTryIt); sales.import-past's is Reports' export upload
- * (features/pastSalesTryIt). Plan a night and form import have no website
- * tool yet, so their bands stay hidden. Reports' numbers-only path needs no
+ * (features/pastSalesTryIt); night.plan's is the plan-a-night tool
+ * (NightPlanTryIt.tsx). Form import has no website tool yet, so its band
+ * stays hidden. Reports' numbers-only path needs no
  * command: it is the lastEventReport custom section, worked out in the
  * page, beside the export upload.
  */
@@ -36,6 +38,7 @@ export const websiteReadyTryItCommands = [
   "promotion.create-kit",
   "guests.import-list",
   "sales.import-past",
+  "night.plan",
 ] as const satisfies readonly TryItCommandId[];
 
 /**
@@ -50,6 +53,7 @@ export const playbookTryItTools: Readonly<Record<string, TryItToolKind>> = {
   tools_event_page_from_link: "event",
   product_guests: "guests",
   product_reports: "report",
+  product_room: "night",
 };
 
 /** The tool a page's tool forms open, or null when the page has none or its command is not website-ready. */

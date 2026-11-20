@@ -20,6 +20,7 @@ export const tryItCommandCallables = {
   "promotion.create-kit": "createPromotionKit",
   "guests.import-list": "importGuestList",
   "sales.import-past": "importPastSales",
+  "night.plan": "planNight",
 } as const satisfies Record<string, keyof TryItCommandCallables>;
 
 export type TryItCommandId = keyof typeof tryItCommandCallables;
