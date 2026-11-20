@@ -117,6 +117,12 @@ class FormBuilder {
       const options = this.options(answer[1], label, kind.kind === "singleChoice" ? question.key : null);
       if (options.length >= 2) {
         question.options = options;
+      } else if (kind.kind === "multiChoice" && options.length === 1) {
+        // One tick box ("I agree to the house rules") is an acknowledgement:
+        // the item's title stays the label and the box's text joins the help.
+        question.kind = "acknowledgement";
+        question.helpText = this.clip([question.helpText, options[0].label].filter(Boolean).join(" · "),
+          LIMITS.helpTextChars, label);
       } else {
         question.kind = "shortText";
       }
