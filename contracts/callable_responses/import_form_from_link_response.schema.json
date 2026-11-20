@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/import_form_from_link_response.schema.json",
   "title": "ImportFormFromLinkCallableResponse",
-  "description": "Response of form.import-from-link. needs_input: the caller must set up a try-it workspace first (result.reasons no_workspace). previewed: result.form outlines the private draft form apply would create, and result.flags lists what the host rebuilds by hand. refused: nothing can be imported (result.reasons). applied or replayed: result.formId names the private draft form in the workspace. Nothing here publishes a form or collects responses.",
+  "description": "Response of form.import-from-link. needs_input: the caller must set up a try-it workspace first (result.reasons no_workspace). previewed: result.form outlines the private draft form apply would create, and result.flags lists what the host rebuilds by hand. refused: nothing can be imported (result.reasons). Refusal reasons include not_a_form_link, form_provider_not_supported, link_unreadable, form_not_public, form_empty, listing_suppressed and, with the AI fallback on, form_unreadable, ai_cap_reached and ai_daily_limit. applied or replayed: result.formId names the private draft form in the workspace. Nothing here publishes a form or collects responses.",
   "type": "object",
   "additionalProperties": false,
   "required": ["commandId", "status", "previewHash", "summary", "effects", "result", "next", "receiptId"],
@@ -92,7 +92,9 @@
           }
         },
         "formId": {"type": ["string", "null"], "pattern": "^form_[a-f0-9]{32}$"},
-        "reasons": {"type": "array", "maxItems": 4, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,79}$"}}
+        "reasons": {"type": "array", "maxItems": 4, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,79}$"}},
+        "aiRead": {"type": "boolean", "description": "True when the AI fallback read the page's visible text because the form parser could not (#2062); the website marks every question for review. Optional: absent means false. Off until go-live."},
+        "reviewFields": {"type": "array", "maxItems": 200, "uniqueItems": true, "items": {"type": "string", "pattern": "^q[0-9]+(_[a-z0-9_]+)?$", "maxLength": 80}, "description": "Question keys the AI fallback read, for the host to check; empty unless aiRead."}
       }
     }
   }

@@ -53,6 +53,37 @@ export function googleFormData(snapshot: SnapshotLike | null): unknown[] | null 
   return Array.isArray(block?.value) ? block.value : null;
 }
 
+/** A question already read into native terms (the AI fallback's output). */
+export interface ReadQuestion {
+  label: string;
+  helpText: string | null;
+  kind: ImportedQuestion["kind"];
+  required: boolean;
+  /** Choice labels, in order; ignored for other kinds. */
+  options: string[];
+}
+
+/** A form already read into native terms, section by section. */
+export interface ReadForm {
+  title: string | null;
+  description: string | null;
+  sections: Array<{title: string | null; questions: ReadQuestion[]}>;
+}
+
+/**
+ * Builds an ImportedForm from a form already read into native terms, with
+ * the same native limits, keys, option handling and flags as a Google Form.
+ * It never adds logic: answer-based routing is the host's to rebuild.
+ */
+export function importReadForm(form: ReadForm, provider: ImportedForm["provider"]): ImportedForm {
+  const builder = new FormBuilder(text(form.title) ?? "Imported form", text(form.description));
+  form.sections.forEach((section, index) => {
+    if (index > 0 || text(section.title)) builder.startReadSection(section.title);
+    for (const question of section.questions) builder.addRead(question);
+  });
+  return builder.finish(provider);
+}
+
 /** Returns null when the data is not a readable Google Form. */
 export function importGoogleForm(data: unknown[]): ImportedForm | null {
   const info = Array.isArray(data[1]) ? data[1] : null;
@@ -114,24 +145,56 @@ class FormBuilder {
       privacyClass: kind.privacyClass,
     };
     if (kind.kind === "singleChoice" || kind.kind === "multiChoice") {
-      const options = this.options(answer[1], label, kind.kind === "singleChoice" ? question.key : null);
-      if (options.length >= 2) {
-        question.options = options;
-      } else if (kind.kind === "multiChoice" && options.length === 1) {
-        // One tick box ("I agree to the house rules") is an acknowledgement:
-        // the item's title stays the label and the box's text joins the help.
-        question.kind = "acknowledgement";
-        question.helpText = this.clip([question.helpText, options[0].label].filter(Boolean).join(" · "),
-          LIMITS.helpTextChars, label);
-      } else {
-        question.kind = "shortText";
-      }
+      this.applyOptions(question, this.options(answer[1], label, kind.kind === "singleChoice" ? question.key : null), label);
     }
     section.questions.push(question);
     this.questionCount += 1;
   }
 
-  finish(): ImportedForm {
+  /** Adds a question already read into native terms. */
+  addRead(item: ReadQuestion) {
+    const label = text(item.label);
+    if (this.questionCount >= LIMITS.questionsPerForm) return this.flag("questions_limit", label);
+    const section = this.sections[this.sections.length - 1];
+    if (section.questions.length >= LIMITS.questionsPerSection) return this.flag("questions_limit", label);
+    const question: ImportedQuestion = {
+      key: this.keyFor(label),
+      label: this.clip(label ?? `Question ${this.questionCount + 1}`, LIMITS.questionLabelChars, label) ?? "Question",
+      helpText: this.clip(text(item.helpText), LIMITS.helpTextChars, label),
+      kind: item.kind,
+      required: item.required === true,
+      canonicalFieldId: null,
+      privacyClass: privacyFor(item.kind, label),
+    };
+    if (item.kind === "singleChoice" || item.kind === "multiChoice") {
+      this.applyOptions(question, this.options(item.options.map((option) => [option, null, null, null, false]), label, null),
+        label);
+    }
+    section.questions.push(question);
+    this.questionCount += 1;
+  }
+
+  /** Starts a section from a form already read into native terms. */
+  startReadSection(title: string | null) {
+    this.startSection([null, title, null, ITEM.section], text(title));
+  }
+
+  /** Choice options, or what a choice question with too few becomes. */
+  private applyOptions(question: ImportedQuestion, options: Array<{label: string; value: string}>, label: string | null) {
+    if (options.length >= 2) {
+      question.options = options;
+    } else if (question.kind === "multiChoice" && options.length === 1) {
+      // One tick box ("I agree to the house rules") is an acknowledgement:
+      // the item's title stays the label and the box's text joins the help.
+      question.kind = "acknowledgement";
+      question.helpText = this.clip([question.helpText, options[0].label].filter(Boolean).join(" · "),
+        LIMITS.helpTextChars, label);
+    } else {
+      question.kind = "shortText";
+    }
+  }
+
+  finish(provider: ImportedForm["provider"] = "google_forms"): ImportedForm {
     const logic: ImportedLogicRule[] = [];
     for (const branch of this.branches) {
       const byTarget = new Map<number, string[]>();
@@ -152,7 +215,7 @@ class FormBuilder {
           values: values.slice(0, LIMITS.conditionValues), targetSectionId: this.sections[target].id});
       }
     }
-    return {provider: "google_forms", parserVersion: 1, title: this.title,
+    return {provider, parserVersion: 1, title: this.title,
       description: this.description, sections: this.sections, logic, flags: this.flags};
   }
 
@@ -255,6 +318,12 @@ function questionKind(type: number, label: string | null):
   case ITEM.time: return {kind: "shortText", privacyClass: "organizerCustom"};
   default: return null;
   }
+}
+
+/** Contact fields keep the contact privacy class; everything else is the organizer's. */
+function privacyFor(kind: ImportedQuestion["kind"], label: string | null): ImportedQuestion["privacyClass"] {
+  if (kind === "email" || kind === "phone") return "contact";
+  return kind === "shortText" && /\bname\b/i.test(label ?? "") ? "contact" : "organizerCustom";
 }
 
 function uniqueValue(value: string, seen: Set<string>): string {
