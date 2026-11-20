@@ -19372,6 +19372,30 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 response} other{{count} responses}} · {placement}'**
   String hostFormsRowSubtitle({required int count, required String placement});
 
+  /// Forms row badge: applications on this form still waiting for a first look.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 new} other{{count} new}}'**
+  String hostFormsRowNew({required int count});
+
+  /// Forms tab stat: applications across the forms still waiting for a first look.
+  ///
+  /// In en, this message translates to:
+  /// **'New responses'**
+  String get hostFormsStatNewResponses;
+
+  /// Forms tab stat note: how many forms the new responses are on.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{across 1 form} other{across {count} forms}}'**
+  String hostFormsStatAcrossForms({required int count});
+
+  /// Forms tab stat note under Taking answers: how many forms are listed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{of 1 form} other{of {count} forms}}'**
+  String hostFormsStatOfForms({required int count});
+
   /// Response status: not reviewed yet.
   ///
   /// In en, this message translates to:

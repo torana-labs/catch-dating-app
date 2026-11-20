@@ -55,7 +55,8 @@ void main() {
       expect(find.text('Application'), findsNWidgets(2));
       expect(find.text('Enquiry'), findsOneWidget);
       expect(find.text('Interest list'), findsOneWidget);
-      expect(find.text('Taking answers'), findsNWidgets(3));
+      // Three rows plus the Taking answers stat.
+      expect(find.text('Taking answers'), findsNWidgets(4));
       expect(find.text('Closed'), findsOneWidget);
       expect(find.text('Load more forms'), findsNothing);
 
@@ -65,6 +66,86 @@ void main() {
       await tester.tap(find.text('People'));
       await tester.pump();
       expect(views, [HostPeopleView.people]);
+    });
+
+    testWidgets('answers waiting show as N new and add up in the stats', (
+      tester,
+    ) async {
+      await pumpFormsBody(
+        tester,
+        HostFormsBody(
+          state: HostFormsState(
+            status: HostFormsStatus.content,
+            forms: formsList,
+            newResponseCounts: const {
+              'join-the-run': 12,
+              'quiz-enquiries': 2,
+              'supper-waitlist': 9,
+              'summer-league': 0,
+            },
+          ),
+          onView: (_) {},
+          onOpenForm: (_) {},
+          onCreate: () {},
+          onLoadMore: () {},
+        ),
+      );
+
+      expect(find.text('12 new'), findsOneWidget);
+      expect(find.text('2 new'), findsOneWidget);
+      expect(find.text('9 new'), findsOneWidget);
+      expect(find.text('0 new'), findsNothing);
+      final stat = find.byKey(const ValueKey<String>('host-forms-stat-new'));
+      expect(
+        find.descendant(of: stat, matching: find.text('23')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: stat, matching: find.text('across 3 forms')),
+        findsOneWidget,
+      );
+      final taking = find.byKey(
+        const ValueKey<String>('host-forms-stat-taking'),
+      );
+      expect(
+        find.descendant(of: taking, matching: find.text('3')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: taking, matching: find.text('of 4 forms')),
+        findsOneWidget,
+      );
+      // A row with answers waiting trades its chevron for the badge.
+      final rows = tester
+          .widgetList<CatchIndexRow>(find.byType(CatchIndexRow))
+          .toList();
+      expect(rows.map((row) => row.chevron), [false, false, false, true]);
+    });
+
+    testWidgets('the new total waits until every form is counted', (
+      tester,
+    ) async {
+      await pumpFormsBody(
+        tester,
+        HostFormsBody(
+          state: HostFormsState(
+            status: HostFormsStatus.content,
+            forms: formsList,
+            newResponseCounts: const {'join-the-run': 12},
+          ),
+          onView: (_) {},
+          onOpenForm: (_) {},
+          onCreate: () {},
+          onLoadMore: () {},
+        ),
+      );
+
+      final stat = find.byKey(const ValueKey<String>('host-forms-stat-new'));
+      expect(
+        find.descendant(of: stat, matching: find.text('—')),
+        findsOneWidget,
+      );
+      expect(find.text('12 new'), findsOneWidget);
     });
 
     testWidgets('an empty list offers a new form', (tester) async {

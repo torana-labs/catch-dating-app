@@ -58,7 +58,16 @@ Widget hostFormsCapture() => _frame(
     ],
   ),
   body: HostFormsBody(
-    state: HostFormsState(status: HostFormsStatus.content, forms: formsList),
+    state: HostFormsState(
+      status: HostFormsStatus.content,
+      forms: formsList,
+      newResponseCounts: const {
+        'join-the-run': 12,
+        'quiz-enquiries': 2,
+        'supper-waitlist': 9,
+        'summer-league': 0,
+      },
+    ),
     onView: (_) {},
     onOpenForm: (_) {},
     onCreate: () {},

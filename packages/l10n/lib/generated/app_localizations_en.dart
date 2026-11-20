@@ -12473,6 +12473,42 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String hostFormsRowNew({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new',
+      one: '1 new',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormsStatNewResponses => 'New responses';
+
+  @override
+  String hostFormsStatAcrossForms({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'across $count forms',
+      one: 'across 1 form',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostFormsStatOfForms({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'of $count forms',
+      one: 'of 1 form',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get hostFormsReviewNew => 'New';
 
   @override
