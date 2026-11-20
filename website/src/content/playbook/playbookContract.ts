@@ -12,8 +12,8 @@ import {applyBrandText, brand} from "../brand.ts";
  *
  * A page is copy and structure only. Colours are `Ground` names, never hex.
  * Links name a route id, an anchor on the page or a WhatsApp message, never a
- * URL. Media names a capture slot, an illustrative screen card or a photo
- * asset. Cards that list live things (plans, organisers, cities, stories)
+ * URL. Media names a capture slot (a real app screen from the capture
+ * pipeline; app screens are never drawn), a photo asset or a QR code. Cards that list live things (plans, organisers, cities, stories)
  * name their read model as a `source` and carry no items.
  *
  * Text rules on every copy string: no `[placeholder]` brackets, no hex
@@ -152,22 +152,6 @@ const featureStatus = oneOfValues(playbookFeatureStatuses);
 const action = obj({label: copy(), to: destination}, {emphasis: oneOfValues(["primary", "secondary"] as const), status: featureStatus}, "action");
 const actions = (max = 3) => list(action, 1, max);
 
-/** An illustrative screen: sample data drawn as a card, labelled as illustrative by the renderer. */
-const excerptCard = obj({title: copy()}, {
-  subtitle: copy(),
-  label: copy(),
-  stats: list(obj({value: copy(), label: copy()}), 1, 4),
-  rows: list(obj({title: copy()}, {detail: copy(), value: copy(), tag: copy()}), 1, 8),
-  bars: list(obj({label: copy(), value: copy(), share: range(0, 100)}), 1, 6),
-  fields: list(obj({label: copy()}, {placeholder: copy()}), 1, 6),
-  messages: list(obj({text: copy()}, {time: copy(), own: bool()}), 1, 8),
-  tiles: list(obj({title: copy(), body: copy()}, {ground}), 1, 6),
-  actions: list(copy(), 1, 3),
-  note: copy(),
-  /** A cover photo across the card's top. */
-  cover: str(assetPattern),
-}, "excerptCard");
-
 const photo = obj({kind: constant("photo"), asset: str(assetPattern), alt: copy()}, {note: copy()}, "photo");
 /** A QR code of a destination of this site, such as the start page, for a reader on a laptop to open on their phone. */
 const qr = obj({kind: constant("qr"), to: destination, label: copy()});
@@ -176,14 +160,12 @@ const mediaSpec: OneOfSpec = {
   name: "media",
   options: [
     obj({kind: constant("capture"), slot: str(slotPattern)}, {alt: copy()}),
-    obj({kind: constant("excerpt"), card: excerptCard}),
     photo,
     qr,
   ],
 };
 const media = mediaSpec as OneOfSpec<readonly [
   ObjectSpec<{kind: ConstSpec<"capture">; slot: StringSpec}, {alt: CopySpec}>,
-  ObjectSpec<{kind: ConstSpec<"excerpt">; card: typeof excerptCard}>,
   typeof photo,
   typeof qr,
 ]>;
@@ -358,7 +340,7 @@ const sectionSpec = {
       meta: copy(),
       aside: obj({ground, title: copy(), body: copy()}, {action}),
     }),
-    /** One illustrative screen or capture on its own, with an optional heading. */
+    /** One capture, photo or QR code on its own, with an optional heading. */
     screen: obj({...base("screen"), media}, {...sectionStatus, ...bandOptional, title: copy(), caption: copy()}),
     /**
      * A section drawn by a component the site provides, such as a calculator
@@ -373,17 +355,6 @@ const sectionSpec = {
       /** The title is the page's h1, as /pricing/'s fee band is. */
       pageTitle: bool(),
       labels: list(obj({key: str("^[a-z][A-Za-z0-9]*$"), text: copy()}), 1, 40),
-    }),
-    /** A one-job flow: its step rail or tabs, then the screens of the current step. */
-    flow: obj({...base("flow"), ...band, blocks: list(excerptCard, 1, 6)}, {
-      ...sectionStatus,
-      ...bandOptional,
-      steps: list(copy(), 2, 6),
-      currentStep: range(0, 5),
-      tabs: list(copy(), 2, 8),
-      currentTab: range(0, 7),
-      actions: actions(),
-      note: copy(),
     }),
   },
 } as const satisfies UnionSpec;
@@ -638,10 +609,6 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
     forEachMedia(section, (item, path) => mediaErrors(`${label}.${path}`, item));
     if (section.type === "hero" && live) {
       section.proof?.forEach((line, lineIndex) => footnote(`${label}.proof[${lineIndex}]`, line.footnote, /\d/u.test(line.text)));
-    }
-    if (section.type === "flow") {
-      if (section.currentStep !== undefined && section.currentStep >= (section.steps?.length ?? 0)) errors.push(`${label}.currentStep names no step`);
-      if (section.currentTab !== undefined && section.currentTab >= (section.tabs?.length ?? 0)) errors.push(`${label}.currentTab names no tab`);
     }
     if (section.type === "table") {
       section.rows.forEach((row, rowIndex) => {

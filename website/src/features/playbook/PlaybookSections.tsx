@@ -23,7 +23,6 @@ import {
   type CatchBandAction,
   type CatchBandGround,
   type CatchCardGridCity,
-  type CatchScreenPreviewProps,
 } from "@catch/web-ui";
 import type {ComponentType, ReactNode} from "react";
 import {playbookCopy} from "../../content/playbook/playbookCopy";
@@ -71,10 +70,11 @@ function footnoteMark(page: PlaybookPageDocument, id: string | undefined) {
 }
 
 /**
- * One media item as the kit draws it: a capture in its device frame, a photo,
- * or an illustrative screen card captioned as illustrative.
+ * One media item as the kit draws it: a capture of the real app in its device
+ * frame, a photo or a QR code. App screens are never drawn: they come only from
+ * the capture pipeline (docs/marketing_app_media_pipeline.md).
  */
-function PlaybookMediaView({media, captures, card = "card"}: {media: PlaybookMedia; captures: CaptureSlots; card?: "card" | "phonecard"}) {
+function PlaybookMediaView({media, captures}: {media: PlaybookMedia; captures: CaptureSlots}) {
   if (media.kind === "capture") {
     const capture = captureSlot(captures, media.slot);
     if (!capture) return null;
@@ -89,31 +89,11 @@ function PlaybookMediaView({media, captures, card = "card"}: {media: PlaybookMed
     const url = href.startsWith("/") ? `${brand.web.origin}${href}` : href;
     return <CatchScreenPreview flat kind="card" qr={url} semanticsLabel={media.label} title={media.label} />;
   }
-  if (media.kind === "photo") {
-    return <CatchScreenPreview image={media.asset} kind="photo" semanticsLabel={media.alt} tag={media.note} />;
-  }
-  const {card: screen} = media;
-  const props: CatchScreenPreviewProps = {
-    kind: card,
-    semanticsLabel: screen.subtitle ? `${screen.title}. ${screen.subtitle}` : screen.title,
-    caption: playbookCopy.illustrativeCaption,
-    title: screen.title,
-    subtitle: screen.subtitle,
-    label: screen.label,
-    stats: screen.stats,
-    bars: screen.bars,
-    rows: screen.rows?.map((row) => ({title: row.title, subtitle: row.detail, value: row.value, tag: row.tag})),
-    fields: screen.fields,
-    buttons: screen.actions?.map((label) => ({label})),
-    tiles: screen.tiles,
-    fine: screen.note,
-    cover: screen.cover,
-  };
-  return <CatchScreenPreview {...props} />;
+  return <CatchScreenPreview image={media.asset} kind="photo" semanticsLabel={media.alt} tag={media.note} />;
 }
 
-function media(section: {media?: PlaybookMedia}, captures: CaptureSlots, card?: "card" | "phonecard"): ReactNode {
-  return section.media ? <PlaybookMediaView captures={captures} card={card} media={section.media} /> : undefined;
+function media(section: {media?: PlaybookMedia}, captures: CaptureSlots): ReactNode {
+  return section.media ? <PlaybookMediaView captures={captures} media={section.media} /> : undefined;
 }
 
 /**
@@ -169,7 +149,7 @@ const HeroBinding: Binding<"hero"> = ({section, context}) => {
       layout={photo ? "photo" : "split"}
       lead={section.lead}
       link={section.aside ? controller.link(section.aside) : undefined}
-      media={photo ? undefined : media(section, captures, "phonecard")}
+      media={photo ? undefined : media(section, captures)}
       note={withWhatsAppReply(section.note, [...section.actions, section.aside])}
       proof={section.proof?.map((line) => ({text: line.text, footnote: footnoteMark(page, line.footnote)}))}
       title={section.title}
@@ -467,43 +447,6 @@ function CustomSlot({component, section, context}: {component: string; section: 
 /** A custom section through the closed registry. */
 const CustomBinding: Binding<"custom"> = ({section, context}) => <CustomSlot component={section.component} context={context} section={section} />;
 
-/** One step of a one-job flow: its progress rail or its tabs, then its screens, actions and fine print. */
-const FlowBinding: Binding<"flow"> = ({section, context}) => {
-  const current = section.currentStep ?? 0;
-  const navigation = section.steps ? (
-    <CatchFormStepList
-      current={current}
-      direction="row"
-      items={section.steps.map((title, index) => ({index, title, status: index < current ? "complete" : "needsInformation"}))}
-      label={playbookCopy.flowStepsLabel}
-      statusLabelBuilder={(status) => playbookCopy.flowStepStatus[status]}
-    />
-  ) : section.tabs ? (
-    <CatchPageTabBar
-      label={playbookCopy.flowTabsLabel}
-      options={section.tabs.map((label, index) => ({value: String(index), label}))}
-      selected={String(section.currentTab ?? 0)}
-    />
-  ) : undefined;
-  return (
-    <CatchBand as="div" ground={section.ground} id={section.id}>
-      <CatchFlowLayout
-        footer={section.note ? <CatchText tone="secondary" variant="body-meta">{section.note}</CatchText> : undefined}
-        kicker={section.kicker}
-        lead={section.lead}
-        level={2}
-        navigation={navigation}
-        title={section.title}
-      >
-        {section.blocks.map((block, index) => (
-          <PlaybookMediaView captures={context.captures} key={`${block.title}-${index}`} media={{kind: "excerpt", card: block}} />
-        ))}
-        <ActionRow actions={context.controller.actions(section.actions, section.id)} />
-      </CatchFlowLayout>
-    </CatchBand>
-  );
-};
-
 /**
  * Section type → the @catch/web-ui component that draws it. Types listed in
  * pendingPlaybookSectionTypes (./playbookBindings) have no component yet;
@@ -518,7 +461,6 @@ export const playbookSectionBindings: {readonly [T in BoundPlaybookSectionType]:
   faq: FaqBinding,
   cta: CtaBinding,
   screen: ScreenBinding,
-  flow: FlowBinding,
   pricing: PricingBinding,
   story: StoryBinding,
   tabs: TabsBinding,

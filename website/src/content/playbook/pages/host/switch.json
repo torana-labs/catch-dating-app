@@ -56,27 +56,7 @@
           "route": "host_first_event"
         }
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Sunday social run",
-          "subtitle": "Booked, paid and checked in",
-          "stats": [
-            {
-              "value": "28",
-              "label": "booked and paid"
-            },
-            {
-              "value": "26",
-              "label": "checked in"
-            },
-            {
-              "value": "7",
-              "label": "new"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-post-event-report"}
     },
     {
       "type": "tabs",

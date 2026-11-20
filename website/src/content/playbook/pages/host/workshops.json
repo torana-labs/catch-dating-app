@@ -41,24 +41,7 @@
           {"label": "Back again", "value": "5"}
         ]
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Saturday wheel-throwing",
-          "subtitle": "Clay Corner · Bandra",
-          "stats": [
-            {"value": "12", "label": "booked"},
-            {"value": "4", "label": "waitlist"},
-            {"value": "3", "label": "first time"}
-          ],
-          "rows": [
-            {"title": "Ira Desai", "detail": "First time · left-handed", "tag": "Paid"},
-            {"title": "Kabir Shah", "detail": "Came in October", "tag": "Paid"},
-            {"title": "Seat 12", "detail": "Offered to Tara, 2 hours left", "tag": "Offer open"}
-          ],
-          "note": "What to bring, on every booking"
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-door-arriving"}
     },
     {
       "type": "tiles",
@@ -87,17 +70,7 @@
         "What to bring, on every booking",
         "Reviews from people who came"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Guest details · Saturday wheel-throwing",
-          "rows": [
-            {"title": "Have you thrown on a wheel before?", "detail": "Once, years ago."},
-            {"title": "Anything we should know?", "detail": "Left-handed."},
-            {"title": "What would you like to make?", "detail": "A pair of mugs."}
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-form-response"}
     },
     {
       "type": "timeline",

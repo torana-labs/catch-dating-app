@@ -57,31 +57,7 @@
           "emphasis": "secondary"
         }
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Application · Long Table Supper",
-          "subtitle": "Answered on the phone, no app",
-          "rows": [
-            {
-              "title": "New to Mumbai, want to meet people who like food.",
-              "detail": "What brings you to a supper club?"
-            },
-            {
-              "title": "Vegetarian",
-              "detail": "What do you eat? Everything, vegetarian, vegan or Jain"
-            },
-            {
-              "title": "Anything else the kitchen should know?",
-              "detail": "Shown because they chose vegetarian"
-            },
-            {
-              "title": "₹200, refunded if you’re not chosen",
-              "detail": "Application fee"
-            }
-          ]
-        }
-      },
+      "media": {"kind": "capture", "slot": "guest-web-public-form"},
       "status": "built"
     },
     {
@@ -239,34 +215,7 @@
         "Export responses as a file",
         "Import past applications from a CSV or Excel file, such as a Google Forms or Typeform export"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Responses",
-          "rows": [
-            {
-              "title": "Ira Desai",
-              "detail": "Application · 2 hours ago · “New to Mumbai…”",
-              "tag": "In review"
-            },
-            {
-              "title": "Kabir Shah",
-              "detail": "Application · yesterday",
-              "tag": "Accepted · offered a place"
-            },
-            {
-              "title": "Tara Nair",
-              "detail": "Application · yesterday",
-              "tag": "Waitlisted"
-            },
-            {
-              "title": "Dev Malhotra",
-              "detail": "Waiver · signed 9:12 AM",
-              "tag": "Signed"
-            }
-          ]
-        }
-      },
+      "media": {"kind": "capture", "slot": "host-form-responses"},
       "status": "built"
     },
     {
@@ -310,29 +259,7 @@
         "Questions, choices and conditional questions carried over",
         "Past responses from the sheet land on guest records",
         "Publish it when you claim it, and keep your old link running until then"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "label": "Try it",
-          "title": "Bring a form from a link",
-          "fields": [
-            {
-              "label": "Link to a Google Form or Typeform",
-              "placeholder": "forms.gle/…"
-            },
-            {
-              "label": "Responses sheet (optional)",
-              "placeholder": "docs.google.com/spreadsheets/…"
-            }
-          ],
-          "actions": [
-            "Bring my form",
-            "Send it to my WhatsApp"
-          ],
-          "note": "Questions alone need no sign-in. Responses with names need your phone number first."
-        }
-      }
+      ]
     },
     {
       "type": "faq",

@@ -41,24 +41,7 @@
           {"label": "Came", "value": "48"}
         ]
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Groups, round 2",
-          "subtitle": "New-joiner social · Thursday",
-          "stats": [
-            {"value": "48", "label": "here"},
-            {"value": "7", "label": "teams"},
-            {"value": "14", "label": "new joiners"}
-          ],
-          "rows": [
-            {"title": "Group 1", "detail": "Design, Sales, Finance, Eng ×2, Ops", "tag": "6 · 5 teams"},
-            {"title": "Group 2", "detail": "Two new joiners, one from each floor", "tag": "6 · 6 teams"},
-            {"title": "Group 3", "detail": "Nobody who sits together", "tag": "6 · 4 teams"}
-          ],
-          "note": "Next round in 8 minutes · new groups"
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-formats-mix"}
     },
     {
       "type": "tiles",

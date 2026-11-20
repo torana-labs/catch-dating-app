@@ -36,23 +36,6 @@
       "aside": {
         "label": "A host looking for a sponsor? Tell us about your nights",
         "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I host events and I’m looking for a brand sponsor. Here’s what I run:"}
-      },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Run series · October",
-          "subtitle": "Four cities · 9 partner clubs",
-          "stats": [
-            {"value": "1,820", "label": "booked"},
-            {"value": "1,544", "label": "came"},
-            {"value": "38%", "label": "came again"}
-          ],
-          "bars": [
-            {"label": "Partner clubs", "value": "1,102", "share": 100},
-            {"label": "Creators", "value": "452", "share": 41},
-            {"label": "Your app", "value": "266", "share": 24}
-          ]
-        }
       }
     },
     {
@@ -85,20 +68,7 @@
       "kicker": "Attribution",
       "title": "Every partner, measured the same way.",
       "lead": "Give every host, creator, store and post its own link. {{brand.name}} follows each one from the first visit to a booking and to the door.",
-      "ticks": ["Visits, bookings and attendance for every link", "Repeat guests, not just first visits", "One report across cities and partners"],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Links · Run series",
-          "label": "Bookings per link",
-          "rows": [
-            {"title": "Driftwood Bay Runners", "detail": "Mumbai · 4 runs", "value": "412"},
-            {"title": "Sea Face Striders", "detail": "Mumbai · 4 runs", "value": "286"},
-            {"title": "Creator · @runwithrhea", "detail": "Reel and stories", "value": "198"},
-            {"title": "Store QR codes", "detail": "12 stores", "value": "131"}
-          ]
-        }
-      }
+      "ticks": ["Visits, bookings and attendance for every link", "Repeat guests, not just first visits", "One report across cities and partners"]
     },
     {
       "type": "checklist",

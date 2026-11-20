@@ -40,24 +40,6 @@
           {"label": "Back from last week", "value": "19"},
           {"label": "Waitlist", "value": "6"}
         ]
-      },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "This week",
-          "subtitle": "Hopline Brewing · Lower Parel",
-          "stats": [
-            {"value": "3", "label": "nights"},
-            {"value": "112", "label": "booked"},
-            {"value": "₹46k", "label": "paid"}
-          ],
-          "rows": [
-            {"title": "Tue · Pub quiz", "detail": "Your night · 12 teams", "tag": "48 of 60"},
-            {"title": "Thu · Supper on the deck", "detail": "Hosted by Long Table Supper", "tag": "24 of 24"},
-            {"title": "Sun · Run and brunch", "detail": "Hosted by Sunday Striders", "tag": "40 booked"}
-          ],
-          "note": "Tuesday quiz: 31 bookings came from your Instagram link"
-        }
       }
     },
     {
@@ -118,18 +100,7 @@
       "title": "Know who filled the room.",
       "lead": "Give every promoter, partner and post its own link. {{brand.name}} follows each one from the first visit to a paid booking, so you pay for what works.",
       "ticks": ["A link per promoter, poster or post", "Visits, bookings and revenue for each", "Followers and repeat guests by night"],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Links · Tuesday pub quiz",
-          "rows": [
-            {"title": "Instagram bio", "detail": "240 visits · 31 bookings · ₹12,400"},
-            {"title": "Promoter · Meera", "detail": "120 visits · 18 bookings · ₹7,200"},
-            {"title": "Table cards at the bar", "detail": "64 visits · 11 bookings · ₹4,400"},
-            {"title": "Partner · Long Table Supper list", "detail": "52 visits · 6 bookings · ₹2,400"}
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-event-share-links"}
     },
     {
       "type": "timeline",

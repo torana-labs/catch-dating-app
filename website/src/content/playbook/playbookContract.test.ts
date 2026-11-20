@@ -35,7 +35,7 @@ describe("playbook page contract", () => {
 
   it("names the section types after the kit concepts", () => {
     expect([...playbookSectionTypes].sort()).toEqual([
-      "article", "cards", "checklist", "cta", "custom", "faq", "flow", "hero", "pricing",
+      "article", "cards", "checklist", "cta", "custom", "faq", "hero", "pricing",
       "screen", "split", "story", "table", "tabs", "tiles", "timeline",
     ]);
   });

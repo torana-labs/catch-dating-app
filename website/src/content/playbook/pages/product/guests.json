@@ -50,35 +50,7 @@
           "emphasis": "secondary"
         }
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Guests · Long Table Supper",
-          "subtitle": "412 people · from {{brand.name}} bookings and 2 imports",
-          "rows": [
-            {
-              "title": "Regulars",
-              "detail": "3 or more dinners in 180 days"
-            },
-            {
-              "title": "First-timers",
-              "detail": "Came once"
-            },
-            {
-              "title": "Lapsed regulars",
-              "detail": "No dinner in 90 days"
-            },
-            {
-              "title": "Advocates",
-              "detail": "Brought someone with their link"
-            },
-            {
-              "title": "Reachable on WhatsApp",
-              "detail": "Opted in to hear from you"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-people"}
     },
     {
       "type": "split",
@@ -94,48 +66,7 @@
         "Names and phone numbers cleaned up, and duplicates merged with the reason shown",
         "Tags suggested from your data: pace, diet, how they heard about you, past events",
         "You review everything before it’s saved"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Import · guest_list_FINAL(2).xlsx",
-          "stats": [
-            {
-              "value": "1,204",
-              "label": "rows"
-            },
-            {
-              "value": "1,086",
-              "label": "people"
-            },
-            {
-              "value": "118",
-              "label": "merged"
-            }
-          ],
-          "rows": [
-            {
-              "title": "Column “Ph no.”",
-              "detail": "Read as phone number, 1,201 cleaned",
-              "tag": "Matched"
-            },
-            {
-              "title": "Column “Veg?”",
-              "detail": "Becomes a Diet tag",
-              "tag": "New tag"
-            },
-            {
-              "title": "Kabir S. and Kabir Shah",
-              "detail": "Same phone number",
-              "tag": "Merge"
-            }
-          ],
-          "actions": [
-            "Save 1,086 people",
-            "Review merges"
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "tiles",
@@ -201,30 +132,7 @@
         "Your private notes and tags, for you and your team",
         "A personal WhatsApp message in one tap"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Aanya Mehta",
-          "subtitle": "First came 12 Jul · 5 events",
-          "rows": [
-            {
-              "title": "Regular",
-              "detail": "3 events in the last 180 days",
-              "tag": "Group"
-            },
-            {
-              "title": "Advocate",
-              "detail": "3 friends through her link",
-              "tag": "Group"
-            },
-            {
-              "title": "WhatsApp",
-              "detail": "Opted in",
-              "tag": "Yes"
-            }
-          ]
-        }
-      },
+      "media": {"kind": "capture", "slot": "host-person"},
       "status": "built"
     },
     {
@@ -239,26 +147,6 @@
         "Undo any merge",
         "Where each record came from, always visible"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Same person?",
-          "rows": [
-            {
-              "title": "Aanya M.",
-              "detail": "Imported · Oct guest list · same phone number"
-            },
-            {
-              "title": "Aanya Mehta",
-              "detail": "{{brand.name}} booking · Nov · same phone number"
-            }
-          ],
-          "actions": [
-            "Merge",
-            "Keep separate"
-          ]
-        }
-      },
       "status": "built"
     },
     {

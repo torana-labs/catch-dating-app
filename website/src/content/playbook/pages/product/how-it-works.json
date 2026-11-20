@@ -307,42 +307,7 @@
           ]
         }
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Sunday Social Run · report",
-          "subtitle": "Driftwood Bay Runners · Sun 8 Nov",
-          "stats": [
-            {
-              "value": "34",
-              "label": "Booked"
-            },
-            {
-              "value": "31",
-              "label": "Checked in"
-            },
-            {
-              "value": "9",
-              "label": "First-timers"
-            }
-          ],
-          "rows": [
-            {
-              "title": "Rating",
-              "detail": "From 18 guests",
-              "value": "4.7"
-            },
-            {
-              "title": "New followers",
-              "value": "11"
-            },
-            {
-              "title": "Booked through the café’s link",
-              "value": "6"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-post-event-report"}
     },
     {
       "type": "tiles",

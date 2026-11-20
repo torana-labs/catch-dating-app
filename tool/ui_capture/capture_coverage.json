@@ -1245,9 +1245,12 @@
     },
     {
       "routeId": "hostOrganizerMembershipsScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P2",
-      "reason": "The Memberships spoke is new with host memberships MVP; widget tests cover the provider-free section. Add routed payout-blocked, plan-list and billing-paused captures in the next Host Clubs capture refresh."
+      "reason": "A live memberships programme with a monthly and a capped founding plan, through the production screen with a fixed controller.",
+      "captureIds": [
+        "host_organizer_memberships"
+      ]
     },
     {
       "routeId": "hostOrganizerDetailScreen",
@@ -1359,7 +1362,8 @@
         "host_manage_unauthorized",
         "host_live_console",
         "host_live_room_workspace",
-        "host_post_event_report"
+        "host_post_event_report",
+        "host_event_share_links"
       ],
       "reason": "Every host event link opens the rebuilt screens through this route: the event workspace, guest lists, live console, run and crawl boards, and report each have deterministic captures, and the route itself has loading, error, offline, not-found and unauthorized captures on its live section."
     },

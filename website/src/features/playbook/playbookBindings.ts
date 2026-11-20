@@ -25,14 +25,13 @@ type PlaybookCardSourceKind = PlaybookSectionOf<"cards">["source"]["kind"];
 
 /**
  * Options inside bound sections that no kit component draws yet:
- * - excerptMessages: an illustrative screen of chat messages (CatchScreenPreview has no chat bubbles);
  * - splitMediaFirst: the media column before the copy (CatchSplitSection always puts media second);
  * - splitGroupLinks: more than one link in a split's group (CatchSplitSectionGroup takes one);
  * - tileKicker: a label above a tile's title (CatchFeatureTile has none);
  * - phoneBar: a bar fixed to the foot of a phone screen (no site part yet);
  * - cardsFilters: filter chips over a cards band (the cities source takes no filter).
  */
-export type PendingPlaybookFeature = "excerptMessages" | "splitMediaFirst" | "splitGroupLinks" | "tileKicker" | "phoneBar" | "cardsFilters";
+export type PendingPlaybookFeature = "splitMediaFirst" | "splitGroupLinks" | "tileKicker" | "phoneBar" | "cardsFilters";
 
 /** The pending section types, features, card sources (`cards:<kind>`) and custom components (`custom:<key>`) a page uses; empty when the page renders. */
 export function pendingPlaybookBindings(page: PlaybookPageDocument): string[] {
@@ -53,12 +52,6 @@ export function pendingPlaybookBindings(page: PlaybookPageDocument): string[] {
     const ready: readonly string[] = readyPlaybookCustomComponents;
     if (section.type === "custom" && !ready.includes(section.component)) pending.add(`custom:${section.component}`);
     if (section.type === "pricing" && section.calculator && !ready.includes(section.calculator)) pending.add(`custom:${section.calculator}`);
-    const media = [
-      "media" in section ? section.media : undefined,
-      ...(section.type === "tabs" ? section.items.map((item) => item.media) : []),
-    ];
-    if (media.some((item) => item?.kind === "excerpt" && item.card.messages)) pending.add("excerptMessages" satisfies PendingPlaybookFeature);
-    if (section.type === "flow" && section.blocks.some((block) => block.messages)) pending.add("excerptMessages" satisfies PendingPlaybookFeature);
   }
   if (page.footer.phoneBar) pending.add("phoneBar" satisfies PendingPlaybookFeature);
   return [...pending].sort();

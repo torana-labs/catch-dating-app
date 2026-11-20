@@ -41,24 +41,7 @@
           {"label": "First-timers", "value": "5"}
         ]
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your community",
-          "subtitle": "Chapter and Chai · Indore",
-          "stats": [
-            {"value": "840", "label": "followers"},
-            {"value": "52", "label": "members"},
-            {"value": "3", "label": "this month"}
-          ],
-          "rows": [
-            {"title": "Sat · Monthly meetup", "detail": "This month: a novel set in Indore", "tag": "22 of 25"},
-            {"title": "Sun · Silent reading hour", "detail": "Members book 48 hours early", "tag": "Free · 31"},
-            {"title": "Thu · Author evening", "detail": "12 applied for 20 seats", "tag": "Applications"}
-          ],
-          "note": "9 followers came to their first meetup this month"
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-today"}
     },
     {
       "type": "tiles",
@@ -91,18 +74,7 @@
         "Free and paid meetups side by side",
         "Applications for the evenings you want to keep small"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Chapter and Chai · on {{brand.name}}",
-          "rows": [
-            {"title": "Next up", "detail": "Sat 14 Dec · Monthly meetup · ₹300 with chai"},
-            {"title": "Then", "detail": "Sun 15 Dec · Silent reading hour · free"},
-            {"title": "Recent review", "detail": "“Came alone, left with four people to swap books with.”"}
-          ],
-          "actions": ["Follow", "Become a member"]
-        }
-      }
+      "media": {"kind": "capture", "slot": "guest-follow-host"}
     },
     {
       "type": "timeline",

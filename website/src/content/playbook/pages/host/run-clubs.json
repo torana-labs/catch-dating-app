@@ -44,23 +44,7 @@
           {"label": "In a pod", "value": "32"}
         ]
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Pace pods",
-          "subtitle": "Salt Air Social Run · Sun 8 Nov",
-          "stats": [
-            {"value": "12", "label": "runners"},
-            {"value": "3", "label": "pods"},
-            {"value": "2", "label": "no pod yet"}
-          ],
-          "rows": [
-            {"title": "Chatty", "detail": "Around 7:30 a km · Dev, Ira and 2 more", "tag": "4 runners"},
-            {"title": "Steady", "detail": "Around 6:30 a km · Meher, Tara and 1 more", "tag": "3 runners"},
-            {"title": "Quick", "detail": "Around 5:30 a km · Rhea, Arjun and 1 more", "tag": "3 runners"}
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-formats-pods"}
     },
     {
       "type": "tiles",

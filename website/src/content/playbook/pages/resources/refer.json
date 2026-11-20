@@ -28,19 +28,7 @@
           "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I have a question about referring a host."},
           "emphasis": "secondary"
         }
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your referrals",
-          "subtitle": "Sample referrals",
-          "rows": [
-            {"title": "A supper club", "detail": "Paid their first bill", "tag": "Your next month is free"},
-            {"title": "A pickleball social", "detail": "Claimed their page", "tag": "60 days free"},
-            {"title": "A pub crawl", "detail": "Referred this week", "tag": "Waiting to claim"}
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "tiles",

@@ -41,24 +41,7 @@
           {"label": "Back home", "value": "40"}
         ]
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Groups · Kalsubai sunrise",
-          "subtitle": "Sahyadri Saturdays · 42 booked",
-          "stats": [
-            {"value": "42", "label": "checked in"},
-            {"value": "4", "label": "groups"},
-            {"value": "0", "label": "missing"}
-          ],
-          "rows": [
-            {"title": "Group 1 · steady", "detail": "Lead: Meera · 11 people", "tag": "All back"},
-            {"title": "Group 2 · easy", "detail": "Lead: Arjun · 10 people", "tag": "All back"},
-            {"title": "Group 3 · easy", "detail": "Lead: Dev · 11 people", "tag": "2 still out"}
-          ],
-          "note": "Regroup at the summit marker in 20 minutes"
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-formats-pods"}
     },
     {
       "type": "tiles",
@@ -87,17 +70,7 @@
         "Emergency details only you and your leads see",
         "Paid by UPI or card"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Booking · Kalsubai sunrise",
-          "rows": [
-            {"title": "How often do you trek?", "detail": "A few times a year"},
-            {"title": "Fitness level", "detail": "Steady: I can climb for 3 hours"},
-            {"title": "Waiver", "detail": "Read and signed, 9:12 AM", "tag": "Signed"}
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-form-response"}
     },
     {
       "type": "timeline",
