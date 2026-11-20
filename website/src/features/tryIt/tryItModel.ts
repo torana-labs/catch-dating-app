@@ -7,23 +7,38 @@ export const tryItToolCommands = {
   organizer: "organizer.import-from-link",
   event: "event.import-from-link",
   kit: "promotion.create-kit",
+  guests: "guests.import-list",
+  report: "sales.import-past",
+  night: "night.plan",
 } as const satisfies Record<string, TryItCommandId>;
 export type TryItToolKind = keyof typeof tryItToolCommands;
+/**
+ * The tools that start from a link, which this folder's TryItTool draws; the
+ * guest list tool is features/guestImportTryIt, Reports' export upload is
+ * features/pastSalesTryIt and the plan-a-night tool is NightPlanTryIt.tsx.
+ */
+export type TryItLinkToolKind = Exclude<TryItToolKind, "guests" | "report" | "night">;
 
 /**
  * The commands whose website tool is built and tested here. A product
  * page's try-it band, its "Try it" buttons and its closing tool form may be
  * visible only when its command is listed (playbookPages.test.ts); whether
  * one is visible is still the page's own `status`, flipped once its command
- * is in production. guests.import-list, plan a night, past sales and form
- * import have no website tool yet, so their bands stay hidden. Reports'
- * numbers-only path needs no command: it is the lastEventReport custom
- * section, worked out in the page, beside the hidden past-sales band.
+ * is in production. guests.import-list's tool is the guest list upload
+ * (features/guestImportTryIt); sales.import-past's is Reports' export upload
+ * (features/pastSalesTryIt); night.plan's is the plan-a-night tool
+ * (NightPlanTryIt.tsx). Form import has no website tool yet, so its band
+ * stays hidden. Reports' numbers-only path needs no
+ * command: it is the lastEventReport custom section, worked out in the
+ * page, beside the export upload.
  */
 export const websiteReadyTryItCommands = [
   "organizer.import-from-link",
   "event.import-from-link",
   "promotion.create-kit",
+  "guests.import-list",
+  "sales.import-past",
+  "night.plan",
 ] as const satisfies readonly TryItCommandId[];
 
 /**
@@ -36,6 +51,9 @@ export const playbookTryItTools: Readonly<Record<string, TryItToolKind>> = {
   product_bookings: "event",
   product_messages: "kit",
   tools_event_page_from_link: "event",
+  product_guests: "guests",
+  product_reports: "report",
+  product_room: "night",
 };
 
 /** The tool a page's tool forms open, or null when the page has none or its command is not website-ready. */

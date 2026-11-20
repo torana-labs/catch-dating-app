@@ -2518,7 +2518,8 @@
           "enum": [
             "tel",
             "url",
-            "text"
+            "text",
+            "file"
           ]
         },
         "fields": {

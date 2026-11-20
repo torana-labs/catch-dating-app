@@ -51,7 +51,8 @@ describe("try-it model", () => {
     expect(playbookTryItTool("product_bookings")).toBe("event");
     expect(playbookTryItTool("product_messages")).toBe("kit");
     expect(playbookTryItTool("tools_event_page_from_link")).toBe("event");
-    expect(playbookTryItTool("product_guests")).toBeNull();
+    expect(playbookTryItTool("product_guests")).toBe("guests");
+    expect(playbookTryItTool("product_reports")).toBe("report");
     expect(playbookTryItTool("constructor")).toBeNull();
   });
 
