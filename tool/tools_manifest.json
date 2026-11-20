@@ -416,7 +416,7 @@
       "id": "analytics:listing-program-report",
       "category": "analytics",
       "path": "tool/analytics/listing_program_report.mjs",
-      "command": "node tool/analytics/listing_program_report.mjs --env <dev|staging|prod> [--json] [--no-pilot]",
+      "command": "node tool/analytics/listing_program_report.mjs --env <dev|prod> [--json] [--no-pilot]",
       "surface": "remote-read",
       "status": "active",
       "role": "operator",
@@ -2681,7 +2681,7 @@
       "id": "data:migrate-form-domains",
       "category": "data",
       "path": "tool/data/migrate_form_domains_to_custom_domains.mjs",
-      "command": "node tool/data/migrate_form_domains_to_custom_domains.mjs --env <dev|staging|prod> [--apply [--retire-legacy]]",
+      "command": "node tool/data/migrate_form_domains_to_custom_domains.mjs --env <dev|prod> [--apply [--retire-legacy]]",
       "surface": "remote-destructive",
       "guard": "apply-and-prod-flag",
       "status": "active",
@@ -2748,7 +2748,7 @@
       "id": "data:purge-deck-era-records",
       "category": "data",
       "path": "tool/data/purge_deck_era_records.mjs",
-      "command": "node tool/data/purge_deck_era_records.mjs --env <dev|staging|prod>",
+      "command": "node tool/data/purge_deck_era_records.mjs --env <dev|prod>",
       "surface": "remote-destructive",
       "guard": "apply-and-prod-flag",
       "status": "active",
@@ -6706,6 +6706,23 @@
       "role": "gate",
       "alsoEnforces": [
         "WEB-UI-COMPONENT-001"
+      ]
+    },
+    {
+      "id": "marketing:website-imagery-audit",
+      "category": "marketing",
+      "path": "tool/marketing/audit_website_imagery.mjs",
+      "command": "node tool/marketing/audit_website_imagery.mjs --base-url <url>",
+      "surface": "local-writes-scratch",
+      "status": "active",
+      "description": "Opens every public website route on a running dev server at 390px and 1440px and flags large colour, pattern or empty blocks with no real media and little text, with a cropped screenshot of each, in ignored build/website-imagery-audit output. Reports only; it never edits the site or makes images.",
+      "checks": [
+        "node --check tool/marketing/audit_website_imagery.mjs",
+        "node --test tool/marketing/audit_website_imagery.test.mjs"
+      ],
+      "role": "finder",
+      "impactPaths": [
+        "tool/marketing/audit_website_imagery.test.mjs"
       ]
     },
     {
