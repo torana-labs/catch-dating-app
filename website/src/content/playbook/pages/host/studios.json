@@ -41,24 +41,7 @@
           {"label": "First-timers", "value": "8"}
         ]
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Members",
-          "subtitle": "Still Water Yoga · Bandra",
-          "stats": [
-            {"value": "64", "label": "active"},
-            {"value": "9", "label": "new this month"},
-            {"value": "3", "label": "paused"}
-          ],
-          "rows": [
-            {"title": "Studio member", "detail": "Weekly classes included · book 48 hours early", "tag": "₹2,400 a month"},
-            {"title": "Workshop member", "detail": "Half price on every workshop", "tag": "₹800 a month"},
-            {"title": "Not members yet", "detail": "Came 4 or more times in 60 days", "tag": "11 people"}
-          ],
-          "note": "Invite the 11 regulars to join"
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-people"}
     },
     {
       "type": "tiles",
@@ -87,18 +70,7 @@
         "Renewals by UPI Autopay, card or eNACH, paid to your own Razorpay account",
         "Members pause and cancel themselves; you can pause everyone for a break"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Plans · Still Water Yoga",
-          "rows": [
-            {"title": "Studio member · ₹2,400 a month or ₹24,000 a year", "detail": "Weekly classes included · workshops at half price · book 48 hours early"},
-            {"title": "Workshop member · ₹800 a month", "detail": "Half price on every workshop · book 24 hours early"},
-            {"title": "Founding circle · ₹18,000 a year · 20 places", "detail": "Everything included · members-only full-moon sessions"}
-          ],
-          "actions": ["Add a plan", "See members"]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-memberships"}
     },
     {
       "type": "timeline",

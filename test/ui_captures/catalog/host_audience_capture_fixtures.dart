@@ -4,8 +4,6 @@ final _audienceCaptureJourney = HostAudienceJourneyFixture.maya;
 Map<String, Object?> _audienceCaptureDetailMap() =>
     _audienceCaptureJourney.responseData();
 
-final _audienceCaptureApplication = _audienceCaptureJourney.application();
-
 class _AudienceCaptureResponses extends HostFormResponsesController {
   @override
   Future<HostFormResponsesState> build(

@@ -5,8 +5,6 @@ import {brand} from "../brand.ts";
 export const playbookCopy = {
   /** The breadcrumb row's accessible name. */
   breadcrumbLabel: "Breadcrumb",
-  /** Under every illustrative screen: sample data, not a real organiser. */
-  illustrativeCaption: "Illustrative screen",
   /** The footnotes band's accessible name. */
   footnotesLabel: "Notes",
   /** Beside every WhatsApp action: a person answers, without a promised hour. */

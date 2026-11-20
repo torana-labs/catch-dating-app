@@ -29,20 +29,7 @@
           "emphasis": "secondary"
         }
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your demo · Long Table Supper",
-          "subtitle": "Sample guests, your questions",
-          "label": "Practice · nothing real is sent",
-          "rows": [
-            {"title": "Review 6 applicants", "detail": "4 approved, 1 waitlisted, 1 declined"},
-            {"title": "Write the replies", "detail": "Approved and waitlist messages"},
-            {"title": "Let guests in", "detail": "8 of 12 here"},
-            {"title": "Handle a request", "detail": "Someone can’t find the venue"}
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-demo-practice"}
     },
     {
       "type": "tiles",
@@ -70,18 +57,7 @@
         "Your questions, set up for you",
         "Sample guests only; no real names, numbers or payments",
         "Afterwards, a draft of your form in {{brand.stores.hostAppName}}"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "How the link works",
-          "rows": [
-            {"title": "Private to you", "detail": "It opens with the phone number or email you gave us."},
-            {"title": "Up to three visits", "detail": "Open it up to three times before it expires."},
-            {"title": "Nothing real happens", "detail": "Nothing you do in the demo is published, sent to anyone or charged."}
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "cta",

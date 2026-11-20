@@ -42,7 +42,11 @@ the screen alone, so the website draws the only frame: `captureSlot` passes
 the record's device (`phone` for `generic-phone`, `tablet` for
 `generic-tablet`) and `CatchAppCaptureImage` draws the screen in
 `CatchDeviceFrame`. Playbook pages draw captures through `CatchScreenPreview`,
-which uses the same frame. A page never shows a frame inside a frame.
+which uses the same frame. A page never shows a frame inside a frame. A
+playbook section's media is a capture slot, a photo or a QR code: the
+playbook contract has no kind for a drawn app screen, so an app screen on a
+playbook page is always a capture (the drawn `excerpt` cards were retired on
+20 Nov 2026).
 
 ### Generic devices
 

@@ -38,18 +38,7 @@
           {"label": "Members", "value": "8"}
         ]
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Mumbai Food Diaries",
-          "subtitle": "Creator · 48k on Instagram · 1,240 followers on {{brand.name}}",
-          "rows": [
-            {"title": "Street food walk · Mohammed Ali Road", "detail": "Sat 30 Nov · 25 seats", "tag": "6 left"},
-            {"title": "Members’ supper", "detail": "Members only · Thu 12 Dec", "tag": "Members"}
-          ],
-          "actions": ["Follow", "Share"]
-        }
-      }
+      "media": {"kind": "capture", "slot": "guest-follow-host"}
     },
     {
       "type": "tiles",
@@ -73,17 +62,7 @@
       "title": "Know which post filled it.",
       "lead": "Make a link for each reel, story and collab. {{brand.name}} shows visits, bookings and revenue for each, so you know what works.",
       "ticks": ["A link per post, story or collab", "Bookings and revenue for each", "Followers who hear about the next meetup without you posting"],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Links · Street food walk",
-          "bars": [
-            {"label": "Bio link", "value": "11", "share": 100},
-            {"label": "Reel, 18 Nov", "value": "6", "share": 55},
-            {"label": "Collab story", "value": "2", "share": 18}
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-event-share-links"}
     },
     {
       "type": "timeline",

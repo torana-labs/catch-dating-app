@@ -41,24 +41,7 @@
           {"label": "First years", "value": "81"}
         ]
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your community",
-          "subtitle": "Film Society · IIT Indore",
-          "stats": [
-            {"value": "1,240", "label": "followers"},
-            {"value": "186", "label": "applied"},
-            {"value": "3", "label": "this month"}
-          ],
-          "rows": [
-            {"title": "Fri · Screening night", "detail": "₹49 for students · ₹99 for guests", "tag": "212 of 250"},
-            {"title": "Recruitment · core team", "detail": "186 applied · 24 accepted", "tag": "Applications"},
-            {"title": "Alumni meetup · Bengaluru", "detail": "Batches of 2015 to 2024", "tag": "Free · 64"}
-          ],
-          "note": "Hand over to the 2026 committee"
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-today"}
     },
     {
       "type": "tiles",
@@ -91,18 +74,7 @@
         "Charts of how everyone answered, and an export",
         "Bring in last year’s Google Forms responses"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Core team recruitment · 186 applied",
-          "rows": [
-            {"title": "Why the Film Society?", "detail": "I’ve run a screening club at school for two years…"},
-            {"title": "Which team?", "detail": "Events · Design"},
-            {"title": "Note from Kavya", "detail": "Strong. Interview on Tuesday, then accept."}
-          ],
-          "actions": ["Accept", "Decline"]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-form-response"}
     },
     {
       "type": "timeline",

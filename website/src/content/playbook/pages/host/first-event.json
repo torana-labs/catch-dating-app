@@ -56,49 +56,7 @@
           "route": "host_switch"
         }
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your first event",
-          "subtitle": "4 of 7 done",
-          "bars": [
-            {
-              "label": "Progress",
-              "value": "4 of 7",
-              "share": 57
-            }
-          ],
-          "rows": [
-            {
-              "title": "Download {{brand.stores.hostAppName}}",
-              "tag": "Done"
-            },
-            {
-              "title": "Make your page",
-              "tag": "Done"
-            },
-            {
-              "title": "Create the event",
-              "tag": "Done"
-            },
-            {
-              "title": "Connect payments",
-              "tag": "Done"
-            },
-            {
-              "title": "Share your link"
-            },
-            {
-              "title": "Run the door",
-              "detail": "On the night"
-            },
-            {
-              "title": "Follow up",
-              "detail": "Next morning"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-create-first-event"}
     },
     {
       "type": "tabs",

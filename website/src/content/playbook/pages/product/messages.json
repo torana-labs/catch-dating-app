@@ -50,35 +50,7 @@
           "emphasis": "secondary"
         }
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Where Sunday’s 52 runners came from",
-          "subtitle": "Sunday Social Run · 24 Nov",
-          "bars": [
-            {
-              "label": "Followers",
-              "value": "21",
-              "share": 100
-            },
-            {
-              "label": "Instagram bio",
-              "value": "13",
-              "share": 62
-            },
-            {
-              "label": "Aanya’s invites",
-              "value": "9",
-              "share": 43
-            },
-            {
-              "label": "Café counter link",
-              "value": "6",
-              "share": 29
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-event-share-links"}
     },
     {
       "type": "tiles",
@@ -128,34 +100,7 @@
         "Visits, bookings and revenue for every link",
         "In your event report, link by link"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Links · last 30 days",
-          "rows": [
-            {
-              "title": "Reel · 12 Nov",
-              "detail": "1,204 visits · 14 booked",
-              "value": "₹5,600"
-            },
-            {
-              "title": "Promoter · Kabir",
-              "detail": "41 visits · 9 booked",
-              "value": "₹3,600"
-            },
-            {
-              "title": "Café counter",
-              "detail": "88 visits · 6 booked",
-              "value": "₹2,400"
-            },
-            {
-              "title": "Newsletter",
-              "detail": "186 visits · 24 booked",
-              "value": "₹9,600"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-event-share-links"}
     },
     {
       "type": "split",
@@ -171,35 +116,7 @@
         "Visits, bookings and revenue for every link",
         "Promoter commission worked out from their link",
         "Bookings also reach your own pixel, so your ads learn too"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Links · last 30 days",
-          "rows": [
-            {
-              "title": "Reel · 12 Nov",
-              "detail": "1,204 visits · 14 booked",
-              "value": "₹5,600"
-            },
-            {
-              "title": "Promoter · Kabir",
-              "detail": "41 visits · 9 booked · ₹360 commission",
-              "value": "₹3,600"
-            },
-            {
-              "title": "Café counter QR",
-              "detail": "88 scans · 6 booked",
-              "value": "₹2,400"
-            },
-            {
-              "title": "Newsletter",
-              "detail": "186 visits · 24 booked",
-              "value": "₹9,600"
-            }
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "split",
@@ -213,31 +130,7 @@
         "A personal invite link for every guest, made for them",
         "Shares and bookings counted to the person who sent them",
         "Advocates, the guests who bring people, as a group in your records"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Advocates",
-          "subtitle": "Last 6 months",
-          "rows": [
-            {
-              "title": "Aanya Mehta",
-              "detail": "14 friends booked through her link",
-              "tag": "Advocate"
-            },
-            {
-              "title": "Kabir Shah",
-              "detail": "8 friends",
-              "tag": "Advocate"
-            },
-            {
-              "title": "Meher Joshi",
-              "detail": "5 friends",
-              "tag": "Advocate"
-            }
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "split",
@@ -253,36 +146,7 @@
         "Shares and bookings counted to the person who sent them",
         "For each guest: the friends they brought and, separately, what those friends paid on {{brand.name}}",
         "Reward them in a tap: a free ticket, a member discount or a thank-you"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your top ambassadors",
-          "subtitle": "Last 6 months · by friends brought",
-          "rows": [
-            {
-              "title": "Aanya Mehta",
-              "detail": "14 friends · ₹9,800 in their tickets",
-              "tag": "Top ambassador"
-            },
-            {
-              "title": "Kabir Shah",
-              "detail": "8 friends · ₹5,200",
-              "tag": "Advocate"
-            },
-            {
-              "title": "Meher Joshi",
-              "detail": "5 friends · ₹2,000",
-              "tag": "Advocate"
-            }
-          ],
-          "actions": [
-            "Send Aanya a free ticket",
-            "Message all three"
-          ],
-          "note": "Spend counts verified {{brand.name}} payments only, net of refunds."
-        }
-      }
+      ]
     },
     {
       "type": "split",
@@ -292,39 +156,7 @@
       "kicker": "Automations",
       "title": "The messages you’d forget to send, sent.",
       "lead": "Confirmations, changes, cancellations and a feedback request go out for every booking, and guests on the app get a push reminder before the start, so guests always know where to be.",
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Event messages · Sunday social run",
-          "rows": [
-            {
-              "title": "Booking confirmation",
-              "detail": "Where to be and when",
-              "tag": "On"
-            },
-            {
-              "title": "Push reminder",
-              "detail": "15 minutes before the start, on the {{brand.name}} app",
-              "tag": "On"
-            },
-            {
-              "title": "Change notice",
-              "detail": "New time or place, to everyone booked",
-              "tag": "On"
-            },
-            {
-              "title": "Cancellation and refund",
-              "detail": "Refunded by your policy",
-              "tag": "On"
-            },
-            {
-              "title": "Feedback request",
-              "detail": "After the event, to everyone booked",
-              "tag": "On"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-automations"}
     },
     {
       "type": "split",
@@ -340,27 +172,7 @@
         "Delivered and read counts for every send",
         "Replies land in one inbox, and you can answer them there"
       ],
-      "body": "Setting it up: connect a WhatsApp Business number through Meta, once. It takes about 20 minutes, and we’ll do it with you.",
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Campaign · New date: Long Table Supper",
-          "stats": [
-            {
-              "value": "212",
-              "label": "sent"
-            },
-            {
-              "value": "204",
-              "label": "delivered"
-            },
-            {
-              "value": "161",
-              "label": "read"
-            }
-          ]
-        }
-      }
+      "body": "Setting it up: connect a WhatsApp Business number through Meta, once. It takes about 20 minutes, and we’ll do it with you."
     },
     {
       "type": "checklist",

@@ -95,28 +95,7 @@
         "Always optional. Anyone can skip, or ask for someone else",
         "Never paired with someone they’ve blocked or reported"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your first hello",
-          "subtitle": "Sunday Social Run · Sandbar Promenade",
-          "rows": [
-            {
-              "title": "Find Meher",
-              "detail": "Blue cap, by the fountain",
-              "tag": "2 min"
-            },
-            {
-              "title": "Your mission",
-              "detail": "Find out where each of you ran your first 5K"
-            }
-          ],
-          "actions": [
-            "We’ve said hi",
-            "Skip"
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "guest-first-hello"}
     },
     {
       "type": "split",
@@ -133,28 +112,7 @@
         "Always optional. Anyone can skip",
         "You see who has said hello and who’s still on their own"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your first hello",
-          "subtitle": "Sunday Social Run · Sandbar Promenade",
-          "rows": [
-            {
-              "title": "Find Meher",
-              "detail": "Blue cap, by the fountain",
-              "tag": "2 min"
-            },
-            {
-              "title": "Your mission",
-              "detail": "Find out where each of you ran your first 5K"
-            }
-          ],
-          "actions": [
-            "We’ve said hi",
-            "Skip"
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "guest-first-hello"}
     },
     {
       "type": "tabs",
@@ -199,45 +157,7 @@
               "body": "Runners get a feedback prompt after the finish, and your report shows who came for the first time and who came back."
             }
           ],
-          "media": {
-            "kind": "excerpt",
-            "card": {
-              "title": "Pace pods",
-              "subtitle": "Sunday Social Run · Sandbar Promenade",
-              "stats": [
-                {
-                  "value": "12",
-                  "label": "runners"
-                },
-                {
-                  "value": "3",
-                  "label": "pods"
-                },
-                {
-                  "value": "2",
-                  "label": "no pod yet"
-                }
-              ],
-              "rows": [
-                {
-                  "title": "Chatty",
-                  "detail": "Around 7:30 a km · Dev, Ira and 2 more",
-                  "tag": "4 runners"
-                },
-                {
-                  "title": "Steady",
-                  "detail": "Around 6:30 a km · Meher, Tara and 1 more",
-                  "tag": "3 runners"
-                },
-                {
-                  "title": "Quick",
-                  "detail": "Around 5:30 a km · Rhea, Arjun and 1 more",
-                  "tag": "3 runners"
-                }
-              ],
-              "note": "First hello: ask your pod where they ran their first 5K."
-            }
-          }
+          "media": {"kind": "capture", "slot": "host-formats-pods"}
         },
         {
           "label": "Dinners",
@@ -272,45 +192,7 @@
               "body": "Guests get a feedback prompt, and can say privately who they talked to. You see the totals, never who named whom."
             }
           ],
-          "media": {
-            "kind": "excerpt",
-            "card": {
-              "title": "Seating",
-              "subtitle": "Long Table Supper · Khar West",
-              "stats": [
-                {
-                  "value": "23",
-                  "label": "seated"
-                },
-                {
-                  "value": "4",
-                  "label": "tables"
-                },
-                {
-                  "value": "1",
-                  "label": "late"
-                }
-              ],
-              "rows": [
-                {
-                  "title": "Table 1",
-                  "detail": "Aanya, Kabir, Meher, Dev, Tara, Rohan",
-                  "tag": "6 seated"
-                },
-                {
-                  "title": "Table 2",
-                  "detail": "Zara, Ishaan, Vikram, Ira and 2 more",
-                  "tag": "6 seated"
-                },
-                {
-                  "title": "Table 3",
-                  "detail": "One seat for a late arrival",
-                  "tag": "5 of 6"
-                }
-              ],
-              "note": "New seats for dessert in 10 minutes"
-            }
-          }
+          "media": {"kind": "capture", "slot": "host-formats-rules"}
         },
         {
           "label": "Games and quizzes",
@@ -345,45 +227,7 @@
               "body": "Start a countdown, and the final standings appear on every guest’s phone at once."
             }
           ],
-          "media": {
-            "kind": "excerpt",
-            "card": {
-              "title": "Round 4 of 6",
-              "subtitle": "Tuesday Trivia Night · Harbour Room",
-              "stats": [
-                {
-                  "value": "6",
-                  "label": "teams"
-                },
-                {
-                  "value": "30",
-                  "label": "players"
-                },
-                {
-                  "value": "4/6",
-                  "label": "scored"
-                }
-              ],
-              "rows": [
-                {
-                  "title": "Quizzy Rascals",
-                  "detail": "Table 2 · 5 players",
-                  "tag": "41"
-                },
-                {
-                  "title": "Harbour Lights",
-                  "detail": "Table 5 · 5 players",
-                  "tag": "38"
-                },
-                {
-                  "title": "Standings",
-                  "detail": "Revealed after round 6",
-                  "tag": "Hidden"
-                }
-              ],
-              "note": "Next: mix the teams"
-            }
-          }
+          "media": {"kind": "capture", "slot": "host-live-scores"}
         },
         {
           "label": "Pickleball",
@@ -418,45 +262,7 @@
               "body": "Record each round’s results, and reveal the final standings at the end."
             }
           ],
-          "media": {
-            "kind": "excerpt",
-            "card": {
-              "title": "Round 3 of 8",
-              "subtitle": "Pickleball Social · Andheri West",
-              "stats": [
-                {
-                  "value": "40",
-                  "label": "players"
-                },
-                {
-                  "value": "3",
-                  "label": "courts"
-                },
-                {
-                  "value": "28",
-                  "label": "sitting out"
-                }
-              ],
-              "rows": [
-                {
-                  "title": "Court 1",
-                  "detail": "Meher and Dev v Ira and Kabir",
-                  "tag": "Level 3"
-                },
-                {
-                  "title": "Court 2",
-                  "detail": "Tara and Rohan v Zara and Arjun",
-                  "tag": "Level 2"
-                },
-                {
-                  "title": "Court 3",
-                  "detail": "Aanya and Vikram v Rhea and Ishaan",
-                  "tag": "Level 2"
-                }
-              ],
-              "note": "Sitting out: mix in the lounge"
-            }
-          }
+          "media": {"kind": "capture", "slot": "host-formats-courts"}
         },
         {
           "label": "Pub crawls",
@@ -491,45 +297,7 @@
               "body": "At the last stop, mark everyone accounted for. Anyone not marked stays on your list before you close the night."
             }
           ],
-          "media": {
-            "kind": "excerpt",
-            "card": {
-              "title": "Stop 2 of 4",
-              "subtitle": "Friday Bandra Pub Crawl",
-              "stats": [
-                {
-                  "value": "20",
-                  "label": "guests"
-                },
-                {
-                  "value": "4",
-                  "label": "stops"
-                },
-                {
-                  "value": "18",
-                  "label": "left stop 1"
-                }
-              ],
-              "rows": [
-                {
-                  "title": "Lead · Meher",
-                  "detail": "Confirmed: left stop 1 at 8:42",
-                  "tag": "18 of 20"
-                },
-                {
-                  "title": "Sweep · Dev",
-                  "detail": "2 still at stop 1",
-                  "tag": "On it"
-                },
-                {
-                  "title": "Late arrival",
-                  "detail": "Sent to stop 2, not stop 1",
-                  "tag": "Ira"
-                }
-              ],
-              "note": "End-of-night sweep at the last stop"
-            }
-          }
+          "media": {"kind": "capture", "slot": "host-formats-crawl-move"}
         }
       ]
     },
@@ -546,31 +314,7 @@
         "Open requests on your live console, newest first",
         "You make the introduction, or let it go"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Help me say hi · 3 requests",
-          "subtitle": "Long Table Supper · 9:20 PM",
-          "rows": [
-            {
-              "title": "Ira would like to meet",
-              "detail": "“Whoever organised the dessert swap”",
-              "tag": "New"
-            },
-            {
-              "title": "Kabir would like to meet",
-              "detail": "“Anyone else into bouldering”",
-              "tag": "Introduced"
-            },
-            {
-              "title": "Tara would like to meet",
-              "detail": "“The person at table 3 with the film camera”",
-              "tag": "Asked them"
-            }
-          ],
-          "note": "Only you and your team see these"
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-live-needs"}
     },
     {
       "type": "split",

@@ -21,18 +21,7 @@
       "actions": [
         {"label": "See what’s on", "to": {"route": "visitor_discovery"}, "emphasis": "primary"},
         {"label": "Read the code of conduct", "to": {"anchor": "conduct"}, "emphasis": "secondary"}
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "How reviews are labelled",
-          "subtitle": "On every host’s page",
-          "rows": [
-            {"title": "Booked on {{brand.name}}", "detail": "The reviewer booked this plan on {{brand.name}}.", "tag": "Booked on {{brand.name}}"},
-            {"title": "Unverified", "detail": "Anyone can review a page. Reviews from people who didn’t book here say so.", "tag": "Unverified"}
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "tiles",
@@ -79,18 +68,7 @@
         {"label": "1", "title": "A code from their Instagram", "body": "The host sends us a one-time code from the page’s own Instagram account. It only works from that account, for 30 minutes."},
         {"label": "2", "title": "Or a code on their Luma calendar", "body": "The host pastes the code into their Luma calendar’s description, and we read it on their public calendar."},
         {"label": "3", "title": "Or a review by our team", "body": "No Instagram or Luma? The host sends links that show the page is theirs, like their website or a post that names them, and our team checks them."}
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "What a host page can say",
-          "rows": [
-            {"title": "Unclaimed", "detail": "Built from public sources. The host hasn’t confirmed it yet."},
-            {"title": "Claim under review", "detail": "The host asked for a review, and our team is checking."},
-            {"title": "Owner verified", "detail": "The host proved the page is theirs."}
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "split",
@@ -99,17 +77,7 @@
       "kicker": "Code of conduct",
       "title": "What everyone agrees to.",
       "lead": "Everyone who uses {{brand.name}} agrees to our terms of use. These are the parts about how people treat each other, in the terms’ own words.",
-      "actions": [{"label": "Read the full terms", "to": {"route": "terms"}, "emphasis": "secondary"}],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "The code, in short",
-          "rows": [
-            {"title": "Hosts", "detail": "Run the event as described. Honour the cancellation policy you chose. Treat every guest lawfully and respectfully."},
-            {"title": "Guests", "detail": "Treat people lawfully and respectfully. No harassment, threats, stalking, discrimination or exploitation. Don’t impersonate anyone, and don’t expose anyone’s private information."}
-          ]
-        }
-      }
+      "actions": [{"label": "Read the full terms", "to": {"route": "terms"}, "emphasis": "secondary"}]
     },
     {
       "type": "split",
@@ -130,18 +98,7 @@
           "emphasis": "primary"
         },
         {"label": "Help and safety", "to": {"route": "help"}, "emphasis": "secondary"}
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "What to tell us",
-          "rows": [
-            {"title": "The plan and the host", "detail": "The event, and the host’s page"},
-            {"title": "When it happened", "detail": "The approximate time is enough"},
-            {"title": "What happened", "detail": "Keep any messages, receipts or screenshots"}
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "faq",

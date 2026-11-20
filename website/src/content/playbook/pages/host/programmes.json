@@ -55,34 +55,7 @@
           "route": "weddings"
         }
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "See you there, Mehra family",
-          "subtitle": "Your weekend · Team offsite",
-          "rows": [
-            {
-              "title": "Friday · Coach from the office, 8:30 AM",
-              "detail": "2 travellers"
-            },
-            {
-              "title": "Staying at the hillside resort",
-              "detail": "Room 214 · IDs: 2 of 2 checked"
-            },
-            {
-              "title": "Lunch on the lawn"
-            },
-            {
-              "title": "Strategy session",
-              "detail": "Conference hall"
-            },
-            {
-              "title": "Dinner by the pool",
-              "detail": "Smart casual"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "wedding-itinerary"}
     },
     {
       "type": "tiles",
@@ -161,29 +134,7 @@
         "Each trip shows when it’s on the way and when it’s arrived",
         "Departures planned the same way"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Arrivals",
-          "rows": [
-            {
-              "title": "Morning flight · Mehra family",
-              "detail": "2 travellers · 3 bags",
-              "tag": "Car 2 · arrived"
-            },
-            {
-              "title": "Afternoon flight · Shah and Rao",
-              "detail": "4 travellers",
-              "tag": "Car 4 · on the way"
-            },
-            {
-              "title": "Evening train · 11 guests",
-              "detail": "From the city station",
-              "tag": "Coach · waiting"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-staff-arrivals"}
     },
     {
       "type": "checklist",

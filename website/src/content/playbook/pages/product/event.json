@@ -58,49 +58,7 @@
           "emphasis": "secondary"
         }
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Door · Friday Bandra Pub Crawl",
-          "subtitle": "Stop 1 · The Harbour Tap · 7:42 PM",
-          "stats": [
-            {
-              "value": "31",
-              "label": "checked in"
-            },
-            {
-              "value": "9",
-              "label": "still to come"
-            },
-            {
-              "value": "2",
-              "label": "walk-ins"
-            }
-          ],
-          "rows": [
-            {
-              "title": "Aanya Mehta",
-              "detail": "First time with you",
-              "tag": "Checked in"
-            },
-            {
-              "title": "Kabir Shah",
-              "detail": "Regular",
-              "tag": "Checked in 7:31"
-            },
-            {
-              "title": "Ira Desai · 2 places",
-              "detail": "One booking, one pass",
-              "tag": "Not here yet"
-            },
-            {
-              "title": "Rohan Kapoor",
-              "detail": "Added at the door",
-              "tag": "Walk-in"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-door-arriving"}
     },
     {
       "type": "tiles",
@@ -165,31 +123,7 @@
         "Your team tries the guest controls on their own phones",
         "Fix the plan before the night, not during it"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Practice run of show",
-          "subtitle": "Dress rehearsal · Saturday Trivia Social",
-          "rows": [
-            {
-              "title": "7:00 Doors",
-              "detail": "Practice check-in, not counted",
-              "tag": "Done"
-            },
-            {
-              "title": "7:15 Teams",
-              "detail": "3 practice guests placed",
-              "tag": "Now"
-            },
-            {
-              "title": "7:30 Round 1",
-              "detail": "Scores entered by the quizmaster",
-              "tag": "Next"
-            }
-          ],
-          "note": "Your practice prompt: say hello to your team"
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-live-console"}
     },
     {
       "type": "split",
@@ -223,30 +157,7 @@
         "Urgent reports flagged to you on the night",
         "{{brand.name}}’s safety team follows up, and can restrict someone across {{brand.name}}",
         "A record of what happened and what you did about it"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Safety · Friday Bandra Pub Crawl",
-          "rows": [
-            {
-              "title": "Report from a guest",
-              "detail": "Stop 3 · 10:48 PM · marked urgent",
-              "tag": "Open"
-            },
-            {
-              "title": "Your note",
-              "detail": "Spoke to the guest, moved the other person to group B",
-              "tag": "Handled"
-            },
-            {
-              "title": "{{brand.name}} safety team",
-              "detail": "Following up tomorrow",
-              "tag": "With {{brand.name}}"
-            }
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "split",
@@ -261,29 +172,7 @@
         "Door staff see one event’s list, until their access ends",
         "Take anyone’s access back at any time"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your team",
-          "rows": [
-            {
-              "title": "You",
-              "detail": "Owner · your page, events and payments setup",
-              "tag": "Owner"
-            },
-            {
-              "title": "Meera Iyer",
-              "detail": "Manager · runs events with you",
-              "tag": "Manager"
-            },
-            {
-              "title": "Arjun Rao",
-              "detail": "Door · Sunday social run only",
-              "tag": "Until 9 AM Sun"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-team"}
     },
     {
       "type": "split",
@@ -299,35 +188,7 @@
         "Door staff see one event’s list, until it ends",
         "A finance role sees payouts and bills, not guests",
         "Take anyone’s access back in a tap"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your team",
-          "rows": [
-            {
-              "title": "You",
-              "detail": "Owner · your page, events and payments",
-              "tag": "Owner"
-            },
-            {
-              "title": "Meera Iyer",
-              "detail": "Co-host · runs events with you",
-              "tag": "Host"
-            },
-            {
-              "title": "Arjun Rao",
-              "detail": "Door · Sunday social run only",
-              "tag": "Until 9 AM Sun"
-            },
-            {
-              "title": "Priya Nair",
-              "detail": "Finance · payouts and bills",
-              "tag": "Finance"
-            }
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "split",
@@ -343,25 +204,7 @@
         "A door list with QR check-in and plus-ones",
         "A printable door poster with your code",
         "Sign in with your phone first, so guest names stay private"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "label": "Try it",
-          "title": "Get your door ready",
-          "fields": [
-            {
-              "label": "Guest list (CSV or Excel)",
-              "placeholder": "Choose a file"
-            }
-          ],
-          "actions": [
-            "Upload a list",
-            "Connect Luma"
-          ],
-          "note": "You’ll sign in with your phone number before uploading."
-        }
-      }
+      ]
     },
     {
       "type": "faq",

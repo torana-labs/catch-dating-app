@@ -56,36 +56,7 @@
           },
           "emphasis": "secondary"
         }
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Who can book · Long Table Supper",
-          "subtitle": "Saffron Table · Fri 28 Nov · 24 seats",
-          "rows": [
-            {
-              "title": "Applications",
-              "detail": "New guests fill in your form first",
-              "tag": "On"
-            },
-            {
-              "title": "Balance",
-              "detail": "12 women, 12 men",
-              "tag": "On"
-            },
-            {
-              "title": "Age",
-              "detail": "25 to 40",
-              "tag": "On"
-            },
-            {
-              "title": "Members",
-              "detail": "₹200 off, booking 48 hours early",
-              "tag": "Members"
-            }
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "tiles",
@@ -133,32 +104,7 @@
         "Approval lives on their guest record, so you can change it any time",
         "Members can be approved automatically"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Application · Saffron Table",
-          "subtitle": "Ira Desai · first time",
-          "rows": [
-            {
-              "title": "What brings you here?",
-              "detail": "New to Mumbai, looking for people who like to cook."
-            },
-            {
-              "title": "Coming with anyone?",
-              "detail": "On my own."
-            },
-            {
-              "title": "Dietary needs",
-              "detail": "Vegetarian"
-            }
-          ],
-          "actions": [
-            "Approve for all events",
-            "This event only"
-          ],
-          "note": "Answers come from your application form."
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-application"}
     },
     {
       "type": "split",
@@ -172,32 +118,7 @@
         "A cap for women and a cap for men, or none",
         "An age range for each event",
         "Set once on the event, and every booking is checked against it"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Balance · Long Table Supper",
-          "bars": [
-            {
-              "label": "Women",
-              "value": "9 of 12",
-              "share": 75
-            },
-            {
-              "label": "Men",
-              "value": "12 of 12",
-              "share": 100
-            }
-          ],
-          "rows": [
-            {
-              "title": "Age range",
-              "detail": "25 to 40",
-              "tag": "On"
-            }
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "split",
@@ -213,37 +134,7 @@
         "An age range, checked against the date of birth on the guest’s profile",
         "A waitlist for each group, so a cancellation goes to the right person",
         "Guests only see whether they can book, never your numbers. Anyone who hasn’t shared their gender is asked once, at booking"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Balance · Long Table Supper",
-          "bars": [
-            {
-              "label": "Women",
-              "value": "9 of 11",
-              "share": 82
-            },
-            {
-              "label": "Men",
-              "value": "11 of 11 · 4 waiting",
-              "share": 100
-            },
-            {
-              "label": "Non-binary or other",
-              "value": "1 of 2",
-              "share": 50
-            }
-          ],
-          "rows": [
-            {
-              "title": "Age range",
-              "detail": "25 to 40",
-              "tag": "On"
-            }
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "split",
@@ -260,40 +151,7 @@
         "Members-only events, and a cap on how many members you take",
         "Paid through Razorpay, and renewed each month or year"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Saffron Table Members",
-          "subtitle": "₹1,500 a month · ₹15,000 a year",
-          "stats": [
-            {
-              "value": "86",
-              "label": "members"
-            },
-            {
-              "value": "₹1.2L",
-              "label": "a month"
-            }
-          ],
-          "rows": [
-            {
-              "title": "Member price",
-              "detail": "₹200 off every supper",
-              "tag": "On"
-            },
-            {
-              "title": "Early access",
-              "detail": "48 hours before everyone else",
-              "tag": "On"
-            },
-            {
-              "title": "Members only",
-              "detail": "Chef’s table, last Friday of the month",
-              "tag": "12 seats"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-memberships"}
     },
     {
       "type": "tiles",

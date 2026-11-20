@@ -41,24 +41,7 @@
           {"label": "On a team", "value": "30"}
         ]
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Round 4 of 6",
-          "subtitle": "Tuesday Trivia Night · Harbour Room",
-          "stats": [
-            {"value": "6", "label": "teams"},
-            {"value": "30", "label": "players"},
-            {"value": "4/6", "label": "scored"}
-          ],
-          "rows": [
-            {"title": "Quizzy Rascals", "detail": "Table 2 · 5 players · 2 came alone", "tag": "41"},
-            {"title": "Harbour Lights", "detail": "Table 5 · 5 players", "tag": "38"},
-            {"title": "Leaderboard", "detail": "Revealed after round 6", "tag": "hidden"}
-          ],
-          "note": "Teams can mix between rounds"
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-live-scores"}
     },
     {
       "type": "tiles",

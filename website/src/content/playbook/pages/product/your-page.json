@@ -58,40 +58,7 @@
         }
       ],
       "note": "Free to set up. Your page is made and edited in the {{brand.stores.hostAppName}} app.",
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Driftwood Bay Runners",
-          "subtitle": "Run club · Bandra · 212 followers",
-          "label": "Verified",
-          "cover": "/assets/marketing/catch-hero-event-1680.jpg",
-          "rows": [
-            {
-              "title": "Salt Air Social Run",
-              "detail": "Next up · Sun 23 Nov · 6:30 AM",
-              "tag": "Book"
-            },
-            {
-              "title": "Route video · the sea face 5K",
-              "detail": "YouTube",
-              "tag": "Link"
-            },
-            {
-              "title": "WhatsApp community",
-              "tag": "Link"
-            },
-            {
-              "title": "Sandbar 10K",
-              "detail": "On another site",
-              "tag": "Links out"
-            }
-          ],
-          "actions": [
-            "Follow",
-            "Share"
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "guest-follow-host"}
     },
     {
       "type": "split",
@@ -107,31 +74,7 @@
         "Or embed your events on any website with one line of code",
         "Bookings and payments still run on {{brand.name}}, so nothing breaks",
         "Your name up front. “Made with {{brand.name}}” stays small"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your domain",
-          "subtitle": "events.driftwoodbayrunners.example",
-          "rows": [
-            {
-              "title": "Domain connected",
-              "detail": "Checked 2 minutes ago",
-              "tag": "Live"
-            },
-            {
-              "title": "Security certificate",
-              "detail": "Renews by itself",
-              "tag": "Issued"
-            },
-            {
-              "title": "Events embed",
-              "detail": "On driftwoodbayrunners.example/runs",
-              "tag": "Showing 4 events"
-            }
-          ]
-        }
-      }
+      ]
     },
     {
       "type": "split",
@@ -148,30 +91,7 @@
         "Sent only for visitors who accept marketing cookies",
         "Audiences you own, instead of paying to reach strangers every time"
       ],
-      "body": "Why it matters: someone who has already visited your page costs far less to win back than someone who’s never heard of you.",
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Tracking · Driftwood Bay Runners",
-          "rows": [
-            {
-              "title": "Meta Pixel",
-              "detail": "ID ending 3456",
-              "tag": "Receiving events"
-            },
-            {
-              "title": "Google tag",
-              "detail": "G-•••• 8KX2",
-              "tag": "Receiving events"
-            },
-            {
-              "title": "Last purchase sent",
-              "detail": "Sunday Social Run · ₹400 · 7:12 AM",
-              "tag": "Both"
-            }
-          ]
-        }
-      }
+      "body": "Why it matters: someone who has already visited your page costs far less to win back than someone who’s never heard of you."
     },
     {
       "type": "split",
@@ -186,43 +106,7 @@
         "Where clicks came from: Instagram, WhatsApp, a QR code and more",
         "Every page carries “Made with {{brand.name}}”, so the next organiser can make one too"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Your page · last 30 days",
-          "stats": [
-            {
-              "value": "1,840",
-              "label": "Visits"
-            },
-            {
-              "value": "64",
-              "label": "New followers"
-            },
-            {
-              "value": "212",
-              "label": "Taps on Book"
-            }
-          ],
-          "bars": [
-            {
-              "label": "Instagram",
-              "value": "820",
-              "share": 100
-            },
-            {
-              "label": "WhatsApp",
-              "value": "310",
-              "share": 38
-            },
-            {
-              "label": "QR code",
-              "value": "170",
-              "share": 21
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-insights"}
     },
     {
       "type": "tiles",

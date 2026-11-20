@@ -57,44 +57,7 @@
           "emphasis": "secondary"
         }
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Report · Sunday social run, 24 Nov",
-          "subtitle": "Ready in {{brand.stores.hostAppName}} after the event",
-          "stats": [
-            {
-              "value": "46/52",
-              "label": "came"
-            },
-            {
-              "value": "11",
-              "label": "new to you"
-            },
-            {
-              "value": "4.8",
-              "label": "rating"
-            }
-          ],
-          "rows": [
-            {
-              "title": "Ticket sales",
-              "detail": "From 46 payments",
-              "value": "₹13,800"
-            },
-            {
-              "title": "What guests said",
-              "detail": "21 reviews",
-              "value": "Read"
-            },
-            {
-              "title": "Bring these 46 back",
-              "detail": "Next Sunday · 40 places",
-              "value": "Invite"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-post-event-report"}
     },
     {
       "type": "split",
@@ -129,38 +92,7 @@
         "Public reviews and private notes, kept apart",
         "What people asked for, summed up across events"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Feedback · Long Table Supper",
-          "stats": [
-            {
-              "value": "4.8",
-              "label": "average"
-            },
-            {
-              "value": "38",
-              "label": "responses"
-            },
-            {
-              "value": "82%",
-              "label": "would come back"
-            }
-          ],
-          "rows": [
-            {
-              "title": "“Loved the dessert swap. More of that.”",
-              "detail": "Public review",
-              "tag": "On your page"
-            },
-            {
-              "title": "“Table 4 was a bit cramped.”",
-              "detail": "Private note",
-              "tag": "Only you"
-            }
-          ]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-post-event-report"}
     },
     {
       "type": "tiles",
@@ -215,34 +147,7 @@
         "Free events never appear on a bill",
         "Memberships and form fees count toward the same cap"
       ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "{{brand.name}} bill · one month",
-          "rows": [
-            {
-              "title": "Sunday social runs × 4",
-              "value": "₹0"
-            },
-            {
-              "title": "Coached 10K × 2 · ₹48,000",
-              "value": "₹2,400"
-            },
-            {
-              "title": "Memberships · ₹36,000",
-              "value": "₹1,800"
-            },
-            {
-              "title": "Refunds · −₹3,000",
-              "value": "−₹150"
-            },
-            {
-              "title": "{{brand.name}} fee this month",
-              "value": "₹4,050"
-            }
-          ]
-        }
-      },
+      "media": {"kind": "capture", "slot": "host-payments"},
       "status": "built"
     },
     {

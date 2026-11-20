@@ -159,10 +159,8 @@ import 'package:catch_dating_app/hosts/events/rehearsal_practice_tools_screen.da
 import 'package:catch_dating_app/hosts/insights/host_event_photos_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_photos_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
-import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
@@ -289,15 +287,19 @@ import '../../test_pump_helpers.dart';
 import '../fixtures/host_audience_journey_fixture.dart';
 import '../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../support/capture_device.dart';
+import 'entries/event_success_companion_first_hello_assigned.dart';
 import 'entries/event_success_companion_micro_pod_assignment.dart';
 import 'entries/guest_after_event.dart';
 import 'entries/guest_book_sheet.dart';
 import 'entries/guest_follow_host.dart';
 import 'entries/guest_group_chat.dart';
 import 'entries/guest_reminder.dart';
+import 'entries/host_application_detail.dart';
+import 'entries/host_automations_phone.dart';
 import 'entries/host_create_first_event.dart';
 import 'entries/host_door_arriving.dart';
 import 'entries/host_door_in.dart';
+import 'entries/host_event_share_links.dart';
 import 'entries/host_formats_courts_phone.dart';
 import 'entries/host_formats_courts_setup_phone.dart';
 import 'entries/host_formats_crawl_move_phone.dart';
@@ -306,10 +308,16 @@ import 'entries/host_formats_mix_phone.dart';
 import 'entries/host_formats_pods_phone.dart';
 import 'entries/host_formats_rules_phone.dart';
 import 'entries/host_home_dashboard.dart';
+import 'entries/host_insights_phone.dart';
 import 'entries/host_live_console.dart';
 import 'entries/host_live_needs_phone.dart';
 import 'entries/host_live_now_tablet.dart';
 import 'entries/host_live_scores_phone.dart';
+import 'entries/host_organizer_memberships.dart';
+import 'entries/host_organizer_payments_phone.dart';
+import 'entries/host_organizer_team_phone.dart';
+import 'entries/host_people_phone.dart';
+import 'entries/host_person_phone.dart';
 import 'entries/host_post_event_report.dart';
 import 'entries/host_programme_guests_desktop.dart';
 import 'entries/host_programme_inbox_phone.dart';
@@ -317,6 +325,9 @@ import 'entries/host_programme_live_board_desktop.dart';
 import 'entries/host_programme_message_phone.dart';
 import 'entries/host_programme_reconcile_desktop.dart';
 import 'entries/host_programme_rooms_desktop.dart';
+import 'entries/host_response_phone.dart';
+import 'entries/host_responses_phone.dart';
+import 'entries/host_staff_arrivals_phone.dart';
 import 'entries/host_staff_departures_phone.dart';
 import 'entries/host_staff_door_phone.dart';
 import 'entries/match_chat_context.dart';
@@ -327,6 +338,7 @@ import 'shared/capture_fixtures.dart';
 import 'shared/capture_viewer.dart';
 import 'shared/door_capture.dart';
 import 'shared/event_success_companion_capture.dart';
+import 'shared/host_insights_capture.dart';
 import 'shared/host_live_capture.dart';
 import 'shared/host_routed_shell_capture.dart';
 import 'shared/host_shell_capture_overrides.dart';
@@ -2406,145 +2418,6 @@ Widget _doorScanCapture() => DoorScanScreen(
 
 // Insights on the system: the last thirty days of a busy organizer, with
 // this week still filling.
-HostAnalyticsEventRow _hostInsightsNight(
-  String id,
-  String title,
-  DateTime start, {
-  required int booked,
-  required num fillRate,
-  required num rating,
-  int revenue = 0,
-  int payments = 0,
-  int matches = 0,
-}) => HostAnalyticsEventRow(
-  eventId: id,
-  organizerId: hostTodayOrganizer.id,
-  title: title,
-  startTime: start,
-  status: 'completed',
-  bookedCount: booked,
-  checkedInCount: booked,
-  waitlistedCount: 0,
-  fillRate: fillRate,
-  checkInRate: 100,
-  grossRevenueMinor: revenue,
-  currency: 'INR',
-  checkoutStartedCount: payments,
-  checkoutDropoffCount: 0,
-  paymentCompletedCount: payments,
-  paymentFailedCount: 0,
-  paymentRefundedCount: 0,
-  reviewCount: 14,
-  averageRating: rating,
-  demandCount: 0,
-  inviteOpenCount: 0,
-  mutualMatchCount: matches,
-  chatStartedCount: 0,
-  repeatAttendeeCount: 0,
-);
-
-HostAnalyticsReport _hostInsightsReport({
-  List<HostAnalyticsEventRow>? topEvents,
-}) {
-  final source = HostOperationsFixtures.analyticsReport;
-  return HostAnalyticsReport(
-    generatedAt: _hostTodayNow,
-    timezone: 'Asia/Kolkata',
-    summaryCards: const [
-      HostAnalyticsMetricCard(
-        id: HostAnalyticsMetricIds.bookings,
-        label: 'Bookings',
-        value: 312,
-        previousValue: 264,
-        unit: HostAnalyticsMetricUnit.count,
-        status: HostAnalyticsMetricStatus.ready,
-      ),
-      HostAnalyticsMetricCard(
-        id: HostAnalyticsMetricIds.revenue,
-        label: 'Revenue',
-        value: 14800000,
-        previousValue: 13300000,
-        unit: HostAnalyticsMetricUnit.moneyMinor,
-        status: HostAnalyticsMetricStatus.ready,
-      ),
-    ],
-    trend: [
-      for (final (index, bookings) in const [58, 64, 71, 82, 37].indexed)
-        HostAnalyticsTrendPoint(
-          periodStart: DateTime(2026, 9, 29).add(Duration(days: 7 * index)),
-          periodEnd: DateTime(2026, 10, 6).add(Duration(days: 7 * index)),
-          metrics: {HostAnalyticsTrendKeys.bookings: bookings},
-        ),
-    ],
-    topEvents:
-        topEvents ??
-        [
-          _hostInsightsNight(
-            'design-insights-supper',
-            'Long Table Supper',
-            DateTime(2026, 10, 21, 20),
-            booked: 14,
-            fillRate: 100,
-            rating: 4.9,
-          ),
-          _hostInsightsNight(
-            'design-insights-trivia',
-            'Tuesday Trivia Night',
-            DateTime(2026, 10, 20, 19, 30),
-            booked: 29,
-            fillRate: 96.67,
-            rating: 4.8,
-          ),
-          _hostInsightsNight(
-            'design-insights-run',
-            'Salt Air Social Run',
-            DateTime(2026, 10, 18, 6, 30),
-            booked: 32,
-            fillRate: 80,
-            rating: 4.7,
-          ),
-        ],
-    reviewSummary: source.reviewSummary,
-    discoverySummary: const HostAnalyticsDiscoverySummary(
-      listingViews: 3412,
-      searchAppearances: 0,
-      eventViews: 0,
-      organizerSaves: 0,
-      eventSaves: 0,
-      contactClicks: 0,
-      claimClicks: 0,
-      outboundClicks: 0,
-      linkClicks: 1086,
-    ),
-    dataQuality: const [],
-    linkSummary: const HostAnalyticsLinkSummary(
-      trafficSources: {
-        HostAnalyticsTrafficSource.instagram: 61,
-        HostAnalyticsTrafficSource.whatsapp: 22,
-        HostAnalyticsTrafficSource.direct: 11,
-        HostAnalyticsTrafficSource.other: 6,
-      },
-    ),
-  );
-}
-
-List<Object> _hostInsightsCaptureOverrides() => [
-  ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),
-  ...hostOperationsProviderOverrides(
-    hostedOrganizers: [hostTodayOrganizer],
-    ownedOrganizers: [hostTodayOrganizer],
-    analyticsRepository: HostFixtureAnalyticsRepository(
-      report: _hostInsightsReport(),
-    ),
-  ),
-];
-
-Widget _hostInsightsCapture() => HostRoutedShellCapture(
-  initialLocation: '/host/organizer',
-  activeIndex: 4,
-  child: HostInsightsScreen(initialOrganizerId: hostTodayOrganizer.id),
-);
-
 // The event report the night of a trivia event: who came, what guests said
 // and the next Tuesday to bring them back to.
 final _hostReportNow = DateTime(2026, 10, 27, 23, 10);
@@ -2615,9 +2488,9 @@ List<Object> _hostReportCaptureOverrides() => [
     hostedOrganizers: [hostTodayOrganizer],
     ownedOrganizers: [hostTodayOrganizer],
     analyticsRepository: HostFixtureAnalyticsRepository(
-      report: _hostInsightsReport(
+      report: hostInsightsReport(
         topEvents: [
-          _hostInsightsNight(
+          hostInsightsNight(
             _hostReportEvent.id,
             'Tuesday Trivia Night',
             _hostReportEvent.startTime,
@@ -6970,6 +6843,20 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_live_console': () => hostLiveConsoleCapture,
   'host_post_event_report': () => hostPostEventReportCapture,
   'guest_after_event': () => guestAfterEventCapture,
+  'host_insights_phone': () => hostInsightsPhoneCapture,
+  'host_application_detail': () => hostApplicationDetailCapture,
+  'host_organizer_memberships': () => hostOrganizerMembershipsCapture,
+  'host_event_share_links': () => hostEventShareLinksCapture,
+  'event_success_companion_first_hello_assigned': () =>
+      eventSuccessCompanionFirstHelloAssignedCapture,
+  'host_organizer_payments_phone': () => hostOrganizerPaymentsPhoneCapture,
+  'host_organizer_team_phone': () => hostOrganizerTeamPhoneCapture,
+  'host_staff_arrivals_phone': () => hostStaffArrivalsPhoneCapture,
+  'host_automations_phone': () => hostAutomationsPhoneCapture,
+  'host_person_phone': () => hostPersonPhoneCapture,
+  'host_people_phone': () => hostPeoplePhoneCapture,
+  'host_response_phone': () => hostResponsePhoneCapture,
+  'host_responses_phone': () => hostResponsesPhoneCapture,
   'guest_book_sheet': () => guestBookSheetCapture,
   'guest_follow_host': () => guestFollowHostCapture,
   'guest_group_chat': () => guestGroupChatCapture,
@@ -7113,13 +7000,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: hostStaffCaptureOverrides(),
     builder: (context) => hostStaffJobsCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_staff_arrivals_phone',
-    routeIds: const <String>['hostWorkArrivalsScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: hostStaffCaptureOverrides(),
-    builder: (context) => hostStaffArrivalsCapture(),
-  ),
+  hostStaffArrivalsPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_staff_dispatch_phone',
     routeIds: const <String>['hostWorkDispatchScreen'],
@@ -7157,13 +7038,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => hostStaffAlertsCapture(),
   ),
   hostStaffDeparturesPhoneCapture,
-  ScreenCaptureEntry(
-    id: 'host_people_phone',
-    routeIds: const <String>['hostAudienceScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: hostPeopleCaptureOverrides(),
-    builder: (context) => hostPeopleCapture(),
-  ),
+  hostPeoplePhoneCapture,
   ScreenCaptureEntry(
     id: 'host_people_desktop',
     routeIds: const <String>['hostAudienceScreen'],
@@ -7171,13 +7046,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: hostPeopleCaptureOverrides(),
     builder: (context) => hostPeopleDesktopCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_person_phone',
-    routeIds: const <String>['hostCustomerDetailScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: hostPeopleCaptureOverrides(),
-    builder: (context) => hostPersonCapture(),
-  ),
+  hostPersonPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_messages_phone',
     routeIds: const <String>['hostInboxScreen'],
@@ -7192,13 +7061,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: hostPeopleCaptureOverrides(),
     builder: (context) => hostComposeCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_automations_phone',
-    routeIds: const <String>['hostAudienceAutomationsScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: hostPeopleCaptureOverrides(),
-    builder: (context) => hostAutomationsCapture(),
-  ),
+  hostAutomationsPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_saved_group_phone',
     routeIds: const <String>['hostSavedAudienceDetailScreen'],
@@ -8456,21 +8319,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     device: CaptureDevice.claudePhone390,
     builder: (_) => hostFormsCaptures['host_form_share_phone']!(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_responses_phone',
-    routeIds: const <String>[
-      'hostFormBuilderScreen',
-      'hostFormAnalyticsScreen',
-    ],
-    device: CaptureDevice.claudePhone390,
-    builder: (_) => hostFormsCaptures['host_responses_phone']!(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_response_phone',
-    routeIds: const <String>['hostFormResponseDetailScreen'],
-    device: CaptureDevice.claudePhone390,
-    builder: (_) => hostFormsCaptures['host_response_phone']!(),
-  ),
+  hostResponsesPhoneCapture,
+  hostResponsePhoneCapture,
   ScreenCaptureEntry(
     id: 'host_offer_phone',
     routeIds: const <String>['hostResponseOfferScreen'],
@@ -8554,13 +8404,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   hostFormatsCrawlMovePhoneCapture,
   hostFormatsPodsPhoneCapture,
   hostFormatsRulesPhoneCapture,
-  ScreenCaptureEntry(
-    id: 'host_insights_phone',
-    routeIds: const <String>['hostOrganizersScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: _hostInsightsCaptureOverrides(),
-    builder: (context) => _hostInsightsCapture(),
-  ),
+  hostInsightsPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_event_report_phone',
     routeIds: const <String>['hostAppEventManageScreen'],
@@ -8601,20 +8445,8 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _organizerCaptureOverrides(),
     builder: (context) => organizerPageEditCapture(),
   ),
-  ScreenCaptureEntry(
-    id: 'host_organizer_payments_phone',
-    routeIds: const <String>['hostOrganizerPaymentsScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: _organizerCaptureOverrides(),
-    builder: (context) => organizerPaymentsCapture(),
-  ),
-  ScreenCaptureEntry(
-    id: 'host_organizer_team_phone',
-    routeIds: const <String>['hostOrganizerTeamScreen'],
-    device: CaptureDevice.claudePhone390,
-    providerOverrides: _organizerCaptureOverrides(),
-    builder: (context) => organizerTeamCapture(),
-  ),
+  hostOrganizerPaymentsPhoneCapture,
+  hostOrganizerTeamPhoneCapture,
   ScreenCaptureEntry(
     id: 'host_organizer_settings_phone',
     routeIds: const <String>['hostOrganizerScreen'],
@@ -11569,20 +11401,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
           EventSuccessCompanionMutationCaptureMode.firstHelloStartPending,
     ),
   ),
-  ScreenCaptureEntry(
-    id: 'event_success_companion_first_hello_assigned',
-    routeIds: const <String>['eventSuccessCompanionScreen'],
-    device: CaptureDevice.iphone17Pro,
-    providerOverrides: eventSuccessCompanionProviderOverrides(),
-    builder: (context) => eventSuccessCompanionCapture(
-      plan: EventSuccessCompanionFixtures.firstHelloPlan,
-      arrivalMission: EventSuccessCompanionFixtures.arrivalMission,
-      now: EventSuccessCompanionFixtures.socialStart.subtract(
-        const Duration(minutes: 5),
-      ),
-      onCompleteArrivalMission: (_, _) async {},
-    ),
-  ),
+  eventSuccessCompanionFirstHelloAssignedCapture,
   ScreenCaptureEntry(
     id: 'event_success_companion_first_hello_complete_pending',
     routeIds: const <String>['eventSuccessCompanionScreen'],
@@ -12365,27 +12184,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       await pumpFeatureUi(tester);
     },
   ),
-  ScreenCaptureEntry(
-    id: 'host_application_detail',
-    routeIds: const <String>['hostApplicationDetailScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => const HostApplicationDetailScreen(
-      organizerId: 'org_1',
-      applicationId: 'design-application-1',
-    ),
-    providerOverrides: [
-      hostFormResponseDetailProvider(
-        organizerId: 'org_1',
-        responseId: _audienceCaptureJourney.responseId,
-      ).overrideWith((_) async => _audienceCaptureResponse),
-      ..._audienceCaptureSources('org_1'),
-      hostApplicationDetailProvider(
-        'org_1',
-        'design-application-1',
-      ).overrideWithValue(AsyncData(_audienceCaptureApplication)),
-    ],
-    includeOverlays: true,
-  ),
+  hostApplicationDetailCapture,
   ScreenCaptureEntry(
     id: 'host_customer_add',
     routeIds: const <String>['hostAddCustomerScreen'],

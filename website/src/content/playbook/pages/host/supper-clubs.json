@@ -41,24 +41,7 @@
           {"label": "Waitlist", "value": "9"}
         ]
       },
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Seating",
-          "subtitle": "Long Table Supper · Khar West",
-          "stats": [
-            {"value": "23", "label": "seated"},
-            {"value": "4", "label": "tables"},
-            {"value": "1", "label": "late"}
-          ],
-          "rows": [
-            {"title": "Table 1", "detail": "Aanya, Kabir, Meher, Dev, Tara, Rohan", "tag": "6 seated"},
-            {"title": "Table 2", "detail": "Zara, Ishaan, Vikram, Ira and 2 more", "tag": "6 seated"},
-            {"title": "Table 3", "detail": "One seat for a late arrival", "tag": "5 of 6"}
-          ],
-          "note": "Dessert swap in 10 minutes · 8 people move"
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-formats-rules"}
     },
     {
       "type": "tiles",
@@ -82,18 +65,7 @@
       "title": "Know who’s coming before you set the table.",
       "lead": "Ask what you want to know. Approve with a tap; approved guests pay to confirm. Keep the table balanced and the evening yours.",
       "ticks": ["Your questions, on your page", "Approve, decline or waitlist each person", "Paid at booking, by UPI or card"],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Application · Long Table Supper",
-          "rows": [
-            {"title": "What brings you to a supper club?", "detail": "New to Mumbai, want to meet people who like food."},
-            {"title": "Anything we should know about what you eat?", "detail": "Vegetarian."},
-            {"title": "Who are you coming with?", "detail": "One friend, Zara."}
-          ],
-          "actions": ["Approve", "Waitlist"]
-        }
-      }
+      "media": {"kind": "capture", "slot": "host-application"}
     },
     {
       "type": "timeline",
