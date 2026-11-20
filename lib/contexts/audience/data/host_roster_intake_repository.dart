@@ -14,11 +14,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_roster_intake_repository.g.dart';
 
-// keepalive: one callable client owns guest-list preview, resume, revise and
-// apply across the event-scoped intake surface. Every call is the
-// guests.import-list command (contracts/commands/catalog.json): a file
-// preview, or a review session named by id. manageHostRosterIntake stays
+// Every call is the guests.import-list command (contracts/commands/catalog.json):
+// a file preview, or a review session named by id. manageHostRosterIntake stays
 // deployed only for older app builds.
+//
+// keepalive: one callable client owns guest-list preview, resume, revise and
+// apply across the event-scoped intake surface.
 @Riverpod(keepAlive: true)
 HostRosterIntakeRepository hostRosterIntakeRepository(Ref ref) =>
     HostRosterIntakeRepository(ref.watch(firebaseFunctionsProvider));
