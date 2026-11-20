@@ -8,6 +8,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../test_pump_helpers.dart';
 import '../people_test_pump.dart';
 import 'duplicates_fixtures.dart';
 
@@ -198,7 +199,7 @@ void main() {
         ),
       );
       await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       return popped;
     }
 
@@ -227,7 +228,7 @@ void main() {
         findsOneWidget,
       );
       await tester.tap(find.byKey(const ValueKey('host-merge-confirm')));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(popped, ['rk-import']);
     });

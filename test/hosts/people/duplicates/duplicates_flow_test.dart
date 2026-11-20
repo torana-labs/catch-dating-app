@@ -7,6 +7,7 @@ import 'package:catch_dating_app/hosts/people/person_screen.dart';
 import 'package:catch_dating_app/hosts/people/person_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -40,7 +41,7 @@ Future<void> _pumpApp(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  await pumpFeatureUi(tester);
 }
 
 HostActiveContactMerge _merge() => HostActiveContactMerge(
@@ -67,10 +68,10 @@ void main() {
 
     expect(find.text('Possible duplicates'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('host-duplicate-merge-pair-1')));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Merge these records?'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('host-merge-confirm')));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(contacts.merges.single.survivor, 'rk');
     expect(contacts.merges.single.confirm, isTrue);
@@ -78,7 +79,7 @@ void main() {
     expect(find.text('Merged into Rhea Kapoor'), findsOneWidget);
 
     await tester.tap(find.text('Undo'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(contacts.undos, ['receipt-1']);
     expect(contacts.listCursors, [null, null, null]);
@@ -98,7 +99,7 @@ void main() {
     await tester.tap(
       find.byKey(const ValueKey('host-duplicate-different-pair-1')),
     );
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(contacts.reviews.single.differentPeople, isTrue);
     expect(contacts.listCursors, [null, null]);
@@ -187,7 +188,7 @@ void main() {
 
     await tester.ensureVisible(find.text('Undo merge'));
     await tester.tap(find.text('Undo merge'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Undo this merge?'), findsOneWidget);
     expect(
       find.text(
@@ -196,8 +197,13 @@ void main() {
       ),
       findsOneWidget,
     );
-    await tester.tap(find.text('Undo merge').last);
-    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(CatchDialog<bool>),
+        matching: find.text('Undo merge'),
+      ),
+    );
+    await pumpFeatureUi(tester);
 
     expect(contacts.undos, ['receipt-1']);
     expect(find.text('Merge undone'), findsOneWidget);
