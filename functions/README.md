@@ -543,6 +543,7 @@ enter previews.
 | `createPromotionKit` | `src/commands/createPromotionKit.ts` | Command `promotion.create-kit`: one tracked invite link per channel or promoter for an event the caller manages. |
 | `importFormFromLink` | `src/commands/importFormFromLink.ts` | Command `form.import-from-link`: creates a private draft form in a try-it workspace from one public Google Form. |
 | `planNight` | `src/commands/planNight.ts` | Command `night.plan`: plans a night (groups, mixing moment, missions, rehearsal setup) and saves it on a try-it draft event. |
+| `importPastSales` | `src/commands/importPastSales.ts` | Command `sales.import-past`: reads one past night's guest or sales export into a sales, attendance and fee comparison report, and saves the night as a private past draft event in the try-it workspace. |
 | `issueProgramWebLink` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `listEventHostPhotos` | `src/events/eventHostPhotos.ts` | Host photos as signed URLs for checked-in guests and the host team. |
 | `listProgramIdTracker` | `src/programs/guestIds.ts` | ID tracker: staying guests with ID status and signed images. |

@@ -69,7 +69,8 @@ export async function resolveGuestListTarget(
   }
   const organizerId = lookup.kind === "existing" ?
     lookup.pointer.organizerId : lookup.organizerId;
-  const draftId = await currentTryItDraft(db, lookup, organizerId);
+  const draftId = await currentTryItDraft(db, lookup, organizerId,
+    deps.now().getTime());
   if (draftId) return {eventId: draftId, organizerId, source: "try_it_draft"};
 
   const market = marketForIdOrAlias(marketIdOf(lookup.organizer));
@@ -128,17 +129,26 @@ export async function recordTryItEvent(db: FirebaseFirestore.Firestore,
 /** The newest recorded try-it event that is still a private, active draft. */
 export async function currentTryItDraft(db: FirebaseFirestore.Firestore,
   lookup: Exclude<WorkspaceLookup, {kind: "new"}>,
-  organizerId: string): Promise<string | null> {
+  organizerId: string, nowMillis: number): Promise<string | null> {
   if (lookup.kind !== "existing") return null;
   const ids = [...(lookup.pointer.tryItEventIds ?? [])].reverse();
   for (const id of ids) {
     const event = (await db.collection("events").doc(id).get()).data();
+    // A night that already happened (sales.import-past) is a record, not the
+    // draft new guests or plans land on.
     if (event && event.organizerId === organizerId &&
-        event.publicationState === "private" && event.status === "active") {
+        event.publicationState === "private" && event.status === "active" &&
+        !startedBefore(event.startTime, nowMillis)) {
       return id;
     }
   }
   return null;
+}
+
+function startedBefore(startTime: unknown, nowMillis: number): boolean {
+  const value = startTime as {seconds?: unknown; _seconds?: unknown} | null;
+  const seconds = value?.seconds ?? value?._seconds;
+  return typeof seconds === "number" && seconds * 1000 < nowMillis;
 }
 
 /** One placeholder per workspace organizer and UTC day. */

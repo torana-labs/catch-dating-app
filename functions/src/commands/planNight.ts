@@ -120,7 +120,7 @@ async function apply(db: FirebaseFirestore.Firestore, deps: PlanNightDeps, ctx: 
   }
   assertConfirmMatches(COMMAND_ID, data.confirm, hash);
   const organizerId = workspaceOrganizerId(lookup);
-  const eventId = ctx.input.eventId ?? await currentTryItDraft(db, lookup, organizerId);
+  const eventId = ctx.input.eventId ?? await currentTryItDraft(db, lookup, organizerId, now.getTime());
   if (!eventId) return respond(ctx, "refused", {organizerId, plan, hash, reasons: ["no_draft_event"]});
   await setTryItDraftActivity(db, deps, {uid: ctx.uid, organizerId, eventId, plan, lookup,
     requestId: `nightplan-${createHash("sha256").update(`${ctx.uid}\u0000${data.idempotencyKey}`).digest("hex").slice(0, 40)}`});

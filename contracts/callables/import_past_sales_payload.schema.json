@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/import_past_sales_payload.schema.json",
+  "title": "ImportPastSalesCallablePayload",
+  "description": "Command sales.import-past (contracts/commands/catalog.json; #2062 C7). A phone-verified caller with a try-it workspace sends one past night's guest or sales export (CSV, XLSX or vCard), read by the same converters as guests.import-list. Preview returns a report for that night (tickets, sales, sales by ticket type, attendance when the export records check-ins, first-timers and repeat guests when earlier nights were imported) and a fee comparison: Catch's fee from the platform's commercial terms against the fees the host says their current tool charged. Nothing is stored on preview. Apply saves the night as a private past draft event in the workspace, with its guests saved through the guest import review. Send the same file for preview and apply, and reuse the preview's idempotency key.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode", "idempotencyKey", "surface", "input"],
+  "properties": {
+    "mode": {"$ref": "../shared/command_envelope.schema.json#/definitions/mode"},
+    "idempotencyKey": {"$ref": "../shared/command_envelope.schema.json#/definitions/idempotencyKey"},
+    "surface": {"$ref": "../shared/command_envelope.schema.json#/definitions/surface"},
+    "confirm": {"$ref": "../shared/command_envelope.schema.json#/definitions/confirm"},
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file"],
+      "properties": {
+        "file": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fileName", "contentBase64"],
+          "properties": {
+            "fileName": {"type": "string", "minLength": 5, "maxLength": 255, "pattern": "\\.(?:[Cc][Ss][Vv]|[Xx][Ll][Ss][Xx]|[Vv][Cc][Ff])$"},
+            "contentBase64": {"type": "string", "minLength": 4, "maxLength": 7000000, "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+              "description": "The file's bytes, base64. At most 5 MB before encoding."}
+          }
+        },
+        "event": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "The past night, as the host remembers it. Defaults: the name \"Past event\" and yesterday in the workspace's city.",
+          "properties": {
+            "name": {"type": "string", "minLength": 1, "maxLength": 120},
+            "localDate": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$", "description": "Today or earlier, in the workspace's city."},
+            "localStartTime": {"type": "string", "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"}
+          }
+        },
+        "mapping": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Column choices by index in result.headers, as in guests.import-list; required when result.needsMapping is true.",
+          "properties": {
+            "displayName": {"$ref": "#/definitions/column"},
+            "phone": {"$ref": "#/definitions/column"},
+            "email": {"$ref": "#/definitions/column"},
+            "externalReference": {"$ref": "#/definitions/column"},
+            "arrivalGroup": {"$ref": "#/definitions/column"},
+            "ticketType": {"$ref": "#/definitions/column"},
+            "status": {"$ref": "#/definitions/column"},
+            "city": {"$ref": "#/definitions/column"},
+            "revenueAmount": {"$ref": "#/definitions/column"},
+            "revenueCurrency": {"$ref": "#/definitions/column"}
+          }
+        },
+        "fallbackTicketPrice": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["amountMinor", "currency"],
+          "description": "The ticket price for rows the file gives no amount for, recorded as the host's estimate.",
+          "properties": {
+            "amountMinor": {"type": "integer", "minimum": 0, "maximum": 100000000},
+            "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
+          }
+        },
+        "currentFees": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["currency"],
+          "description": "What the host's current ticketing tool charged for this night, as the host enters it. Any mix of a percentage, an amount per ticket and a monthly subscription.",
+          "properties": {
+            "percent": {"type": "number", "minimum": 0, "maximum": 100},
+            "perTicketMinor": {"type": "integer", "minimum": 0, "maximum": 10000000},
+            "monthlySubscriptionMinor": {"type": "integer", "minimum": 0, "maximum": 100000000},
+            "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
+          }
+        },
+        "excludedRowIds": {"type": "array", "maxItems": 250, "uniqueItems": true,
+          "description": "Rows left out of the report and the import, by result.rows[].rowId.",
+          "items": {"type": "string", "minLength": 1, "maxLength": 120}}
+      }
+    }
+  },
+  "definitions": {
+    "column": {"type": ["integer", "null"], "minimum": 0, "maximum": 40}
+  }
+}
