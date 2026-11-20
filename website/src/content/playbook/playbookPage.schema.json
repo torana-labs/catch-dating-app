@@ -469,7 +469,7 @@
                       ]
                     },
                     "link": {
-                      "$ref": "#/$defs/action"
+                      "$ref": "#/$defs/tileLink"
                     }
                   }
                 },
@@ -2333,6 +2333,29 @@
         },
         "note": {
           "$ref": "#/$defs/copy"
+        }
+      }
+    },
+    "tileLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "to"
+      ],
+      "properties": {
+        "to": {
+          "$ref": "#/$defs/destination"
+        },
+        "label": {
+          "$ref": "#/$defs/copy"
+        },
+        "status": {
+          "enum": [
+            "built",
+            "partly",
+            "new",
+            "tryIt"
+          ]
         }
       }
     }

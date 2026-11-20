@@ -57,7 +57,6 @@
           "body": "The route, the time, pace groups with a lead and a sweep, the morning itself and following up.",
           "ground": "coral",
           "link": {
-            "label": "Read the guide",
             "to": {
               "page": "playbook_guide/run-club"
             }
@@ -68,7 +67,6 @@
           "body": "The venue, the format, pricing per seat, the guest mix, the night itself and following up.",
           "ground": "yellow",
           "link": {
-            "label": "Read the guide",
             "to": {
               "page": "playbook_guide/supper-club"
             }
@@ -79,7 +77,6 @@
           "body": "The venue, rounds and teams, running the quiz, the night itself and following up.",
           "ground": "mint",
           "link": {
-            "label": "Read the guide",
             "to": {
               "page": "playbook_guide/quiz-night"
             }
@@ -90,7 +87,6 @@
           "body": "Courts, rotating doubles, capacity from court time, the session itself and following up.",
           "ground": "indigo",
           "link": {
-            "label": "Read the guide",
             "to": {
               "page": "playbook_guide/racket-sports"
             }

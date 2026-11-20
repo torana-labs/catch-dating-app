@@ -50,7 +50,7 @@ describe("City format page", {timeout: 20_000}, () => {
     expect(within(organisers).getByRole("link", {name: "Driftwood Bay Runners"}).getAttribute("href")).toBe("/organizers/driftwood-bay-runners/");
     expect(within(organisers).getByRole("link", {name: "Follow Driftwood Bay Runners"}).getAttribute("href")).toBe("/organizers/driftwood-bay-runners/");
     expect(within(organisers).getByRole("heading", {name: "Run a club in Mumbai?"})).toBeTruthy();
-    expect(within(organisers).getByRole("link", {name: "List your club"}).getAttribute("href")).toBe("/host/");
+    expect(within(organisers).getByRole("link", {name: /List your club/u}).getAttribute("href")).toBe("/host/");
     expect(within(band("Joining a run club in Mumbai.")).getByText(/Stay for coffee/u)).toBeTruthy();
     // The city's other indexed format pages, and the newcomers' page.
     const more = band("Other things to do");

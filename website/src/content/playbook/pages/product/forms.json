@@ -74,7 +74,7 @@
           "then": "Then: offer approved people a place",
           "ground": "indigoSoft",
           "link": {
-            "label": "Bookings and memberships",
+            "label": "Part of Bookings and memberships",
             "to": {
               "route": "product_bookings"
             }
@@ -86,7 +86,7 @@
           "then": "Then: add them to the event’s guest list",
           "ground": "indigoSoft",
           "link": {
-            "label": "Bookings and memberships",
+            "label": "Part of Bookings and memberships",
             "to": {
               "route": "product_bookings"
             }
@@ -98,7 +98,7 @@
           "then": "Then: it’s on their record for the night",
           "ground": "mintSoft",
           "link": {
-            "label": "Running the event",
+            "label": "Part of Running the event",
             "to": {
               "route": "product_event"
             }
@@ -110,7 +110,7 @@
           "then": "Then: a signed receipt for that event",
           "ground": "mintSoft",
           "link": {
-            "label": "Running the event",
+            "label": "Part of Running the event",
             "to": {
               "route": "product_event"
             }
@@ -122,7 +122,7 @@
           "then": "Then: it rolls into your event feedback",
           "ground": "skySoft",
           "link": {
-            "label": "Reports and payouts",
+            "label": "Part of Reports and payouts",
             "to": {
               "route": "product_reports"
             }
@@ -134,7 +134,7 @@
           "then": "Then: answers and charts, ready to export",
           "ground": "pinkSoft",
           "link": {
-            "label": "Guest records",
+            "label": "Part of Guest records",
             "to": {
               "route": "product_guests"
             }

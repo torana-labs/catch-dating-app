@@ -168,7 +168,7 @@ const TilesBinding: Binding<"tiles"> = ({section, context}) => {
         <TileGrid columns={section.columns}>
           {section.items.map((item) => (
             <CatchFeatureTile body={item.body} figure={item.figure} figureNote={item.figureNote} fix={item.fix} ground={item.ground}
-              key={item.title} level={section.pageTitle ? 2 : 3} link={item.link ? context.controller.link(item.link) : undefined}
+              key={item.title} level={section.pageTitle ? 2 : 3} link={item.link ? {href: context.controller.href(item.link.to), label: item.link.label} : undefined}
               list={item.list} then={item.then} title={item.title} />
           ))}
         </TileGrid>

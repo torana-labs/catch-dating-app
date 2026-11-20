@@ -21,12 +21,13 @@ type Story = StoryObj<typeof meta>;
 
 const body = "A sentence or two about what this sample feature does.";
 
-/** One tile of each anatomy: a problem and its fix, a figure, ticked lines, and a link. */
+/** One tile of each anatomy: a problem and its fix, a figure, ticked lines, a link with words, and a link that ends in an arrow alone. */
 const anatomies: (CatchFeatureTileProps & {key: string})[] = [
   {key: "fix", title: "A sample problem", body, fix: "A sample line about what is done about it."},
   {key: "figure", title: "A sample figure", figure: "00", figureNote: "Sample unit", body, then: "A sample line about what happens afterwards."},
   {key: "list", title: "A sample checklist", list: ["The first sample line", "The second sample line", "A third sample line that runs long enough to wrap"]},
   {key: "link", title: "A sample link", body, link: {label: "Sample link", href: "#sample"}},
+  {key: "arrow", title: "A sample destination", body, link: {href: "#destination"}},
 ];
 
 function Row({tiles, ground}: {tiles: (CatchFeatureTileProps & {key: string})[]; ground?: CatchFeatureTileProps["ground"]}) {

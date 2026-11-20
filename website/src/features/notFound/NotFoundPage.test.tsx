@@ -17,7 +17,8 @@ const routePaths = new Set<string>(
 );
 
 const band = () => within(screen.getByRole("region", {name: copy.title}));
-const linkHref = (name: string) => band().getByRole("link", {name}).getAttribute("href");
+/** A link by its words: a tile's link is named by all it says, so its words match anywhere in that name. */
+const linkHref = (name: string) => band().getByRole("link", {name: new RegExp(name, "u")}).getAttribute("href");
 
 describe("not-found page", () => {
   it("opens with the page-not-found headline as the page's one h1, under the site header", () => {
@@ -30,7 +31,7 @@ describe("not-found page", () => {
     expect(screen.getByRole("contentinfo")).toBeTruthy();
   });
 
-  it("offers four ways on, each a tile with its link, then the way home and to help", () => {
+  it("offers four ways on, each tile one link, then the way home and to help", () => {
     render(<NotFoundPage />);
     expect(band().getAllByRole("heading", {level: 2}).map((heading) => heading.textContent))
       .toEqual(["What’s on", "Organizer directory", "Claim a listing", `Host on ${brand.name}`]);

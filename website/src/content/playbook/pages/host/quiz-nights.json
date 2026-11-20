@@ -99,7 +99,7 @@
             "See exactly who came through your venue’s link",
             "Run it yourself, or host a quizmaster who uses {{brand.name}}"
           ],
-          "link": {"label": "{{brand.name}} for venues", "to": {"route": "host_venues"}}
+          "link": {"to": {"route": "host_venues"}}
         }
       ]
     },
