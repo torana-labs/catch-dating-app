@@ -79,6 +79,12 @@ import {
 //   applies exactly the reviewed rows and records a command receipt.
 // - With no input.eventId, the guests go on the caller's try-it workspace's
 //   private draft event, made if needed (guestListTarget.ts).
+// - With input.sessionId instead of a file, the command reviews and applies
+//   a review session that already holds the rows: one Catch Host started
+//   from a file earlier, or a guest list forwarded by email or WhatsApp
+//   (eventRosterHandoffs.ts). Only row exclusions can change; a different
+//   mapping needs the file again. This is how Catch Host resumes, revises
+//   and saves every guest list, so it never needs manageHostRosterIntake.
 
 export const COMMAND_ID = "guests.import-list";
 const HOUR_MS = 60 * 60 * 1000;
@@ -138,14 +144,34 @@ export async function importGuestListHandler(
   await deps.checkRateLimit(db, caller.uid, "importGuestList",
     {maxRequests: 60, windowMs: HOUR_MS});
   const input = data.input;
-  const bytes = Buffer.from(input.file.contentBase64, "base64");
+  if (input.sessionId !== undefined) {
+    if (input.file || input.mapping || input.fallbackRevenue) {
+      throw refusal("session_input_conflict",
+        "Send either a file or a review session, not both. A different " +
+        "mapping needs the file again.");
+    }
+    return reviewSession(db, deps, caller.uid, data, input.sessionId);
+  }
+  if (!input.file) {
+    if (data.mode === "preview" && input.eventId !== undefined &&
+        !input.mapping && !input.fallbackRevenue && !input.excludedRowIds) {
+      // No file and no session: the newest guest list waiting for review on
+      // this event, such as one forwarded by email or WhatsApp.
+      const waiting = await latestSessionId(db, deps, caller.uid,
+        input.eventId);
+      return reviewSession(db, deps, caller.uid, data, waiting);
+    }
+    throw refusal("roster_missing_file", "Send the guest-list file.");
+  }
+  const file0 = input.file;
+  const bytes = Buffer.from(file0.contentBase64, "base64");
   if (bytes.byteLength === 0 || bytes.byteLength > MAX_FILE_BYTES) {
     throw refusal("roster_file_too_large");
   }
   const fileFingerprint = createHash("sha256").update(bytes).digest("hex");
   let file: GuestFileRead;
   try {
-    file = await readGuestFile({fileName: input.file.fileName, bytes});
+    file = await readGuestFile({fileName: file0.fileName, bytes});
   } catch (error) {
     throw refusal(errorCode(error));
   }
@@ -157,7 +183,7 @@ export async function importGuestListHandler(
   // What the preview hash and the receipt cover: the event, and the file by
   // fingerprint, never its contents.
   const requestInput = {eventId, fileFingerprint,
-    fileName: input.file.fileName, mapping: input.mapping ?? null,
+    fileName: file0.fileName, mapping: input.mapping ?? null,
     fallbackRevenue: input.fallbackRevenue ?? null,
     excludedRowIds: [...(input.excludedRowIds ?? [])].sort()};
 
@@ -226,7 +252,7 @@ export async function importGuestListHandler(
   const review = await asHttps(async () => {
     let draft = await startHostRosterIntake(intakeDeps, {
       hostUid: caller.uid, organizerId, eventId,
-      fileFingerprint, fileName: input.file.fileName,
+      fileFingerprint, fileName: file0.fileName,
       // The review session and import receipt know csv and xlsx; a vCard is
       // tabular text, and its file name and converter id record the source.
       format: file.format === "xlsx" ? "xlsx" : "csv",
@@ -262,55 +288,203 @@ export async function importGuestListHandler(
     target});
   }
 
-  const requestHash = commandRequestHash(COMMAND_ID, caller.uid,
-    requestInput, data.confirm ?? null);
+  return applyReviewed(db, deps, caller.uid, data, {requestInput,
+    previewHash, review, preview, intakeDeps, target,
+    describeApplied: (imported, receiptId) => describe({status: "applied",
+      previewHash, receiptId, file, read, shapes, review, preview, eventId,
+      imported, receiptImportId: review.receipt?.importId ?? null,
+      suggestions, extraMapping,
+      mappedBy: mappedBy(input.mapping, modelProposal),
+      reviewFields: input.mapping ? [] : modelProposal?.fields ?? [],
+      target}),
+    logFields: {converter: read.adapter.adapterId}});
+}
+
+type Payload = ImportGuestListCallablePayload;
+
+/**
+ * Apply for both inputs: replays a receipt, checks the confirm against the
+ * preview, applies exactly the reviewed rows and records the receipt.
+ * @return {Promise<Response>} The applied (or replayed) response.
+ */
+async function applyReviewed(db: FirebaseFirestore.Firestore,
+  deps: ImportGuestListDeps, uid: string, data: Payload, params: {
+    requestInput: unknown;
+    previewHash: string;
+    review: ManageHostRosterIntakeResponse;
+    preview: HostRosterIntakePreview;
+    intakeDeps: HostRosterIntakeManageDeps;
+    target: GuestListTarget;
+    describeApplied: (imported: EventAttendeeImportResult | null,
+      receiptId: string) => Response;
+    logFields: Record<string, string>;
+  }): Promise<Response> {
+  const {review, preview, target} = params;
+  const requestHash = commandRequestHash(COMMAND_ID, uid,
+    params.requestInput, data.confirm ?? null);
   const replayed = await db.runTransaction((tx) => replayCommand<Response>(
-    tx, db, {commandId: COMMAND_ID, uid: caller.uid,
+    tx, db, {commandId: COMMAND_ID, uid,
       idempotencyKey: data.idempotencyKey, requestHash,
       nowMillis: deps.now().getTime()}));
   if (replayed) return {...replayed.response, status: "replayed"};
-  assertConfirmMatches(COMMAND_ID, data.confirm, previewHash);
+  assertConfirmMatches(COMMAND_ID, data.confirm, params.previewHash);
   if (review.draft.state === "review" && !preview.eligibleForApply) {
     throw new HttpsError("failed-precondition",
       "Some guests need a look before this list can be saved.",
       {reason: "needs_review"});
   }
   const imported = review.draft.state === "applied" ? null :
-    await asHttps(() => applyHostRosterIntake({hostUid: caller.uid,
+    await asHttps(() => applyHostRosterIntake({hostUid: uid,
       sessionId: review.draft.sessionId, reviewHash: preview.reviewHash},
-    intakeDeps));
-  const receiptId = commandReceiptDocumentId(db, COMMAND_ID, caller.uid,
+    params.intakeDeps));
+  const receiptId = commandReceiptDocumentId(db, COMMAND_ID, uid,
     data.idempotencyKey);
-  const applied = describe({status: "applied", previewHash, receiptId, file,
-    read, shapes, review, preview, eventId, imported,
-    receiptImportId: review.receipt?.importId ?? null, suggestions,
-    extraMapping, mappedBy: mappedBy(input.mapping, modelProposal),
-    reviewFields: input.mapping ? [] : modelProposal?.fields ?? [],
-    target});
+  const applied = params.describeApplied(imported, receiptId);
   return db.runTransaction(async (tx) => {
     const now = deps.now();
     const again = await replayCommand<Response>(tx, db, {
-      commandId: COMMAND_ID, uid: caller.uid,
+      commandId: COMMAND_ID, uid,
       idempotencyKey: data.idempotencyKey, requestHash,
       nowMillis: now.getTime()});
     if (again) return {...again.response, status: "replayed" as const};
     if (target.source !== "event") {
       // Reads come first in a transaction: the workspace before any write.
-      await recordTryItEvent(db, deps, {uid: caller.uid, eventId,
+      await recordTryItEvent(db, deps, {uid, eventId: target.eventId,
         commandId: COMMAND_ID, surface: data.surface,
         organizerName: null}, tx);
     }
-    recordCommand(tx, db, {commandId: COMMAND_ID, uid: caller.uid,
+    recordCommand(tx, db, {commandId: COMMAND_ID, uid,
       idempotencyKey: data.idempotencyKey, requestHash,
       nowMillis: now.getTime(), response: applied});
     if (imported) {
       // Counts only: names, phones and the file stay out of logs.
-      logger.info("Guest list imported.", {eventId,
-        converter: read.adapter.adapterId, surface: data.surface,
+      logger.info("Guest list imported.", {eventId: target.eventId,
+        ...params.logFields, surface: data.surface,
         created: imported.createdCount, updated: imported.updatedCount});
     }
     return applied;
   });
+}
+
+/**
+ * Preview or apply for a review session that already holds its rows (a
+ * file read earlier, or a forwarded guest list). The preview hash covers
+ * the session, its event and the excluded rows.
+ * @return {Promise<Response>} The preview, or the applied response.
+ */
+async function reviewSession(db: FirebaseFirestore.Firestore,
+  deps: ImportGuestListDeps, uid: string, data: Payload,
+  sessionId: string): Promise<Response> {
+  const input = data.input;
+  const intakeDeps = deps.intake();
+  let found: Awaited<ReturnType<typeof intakeDeps.store.get>>;
+  try {
+    found = await intakeDeps.store.get({sessionId, hostUid: uid},
+      intakeDeps.authorize);
+  } catch (error) {
+    // A malformed id or another account's session reads as not found, so a
+    // caller learns nothing about sessions that aren't theirs.
+    if (error instanceof HttpsError) throw error;
+    found = null;
+  }
+  if (!found) {
+    throw new HttpsError("not-found", "This guest list review wasn't found.",
+      {reason: "session_not_found"});
+  }
+  if (input.eventId !== undefined && input.eventId !== found.eventId) {
+    throw refusal("session_event_mismatch",
+      "This guest list review is for a different event.");
+  }
+  const excludedRowIds = [...(input.excludedRowIds ?? [])].sort();
+  const requestInput = {eventId: found.eventId, sessionId, excludedRowIds};
+  const review = await asHttps(async () => {
+    let draft = found;
+    if (draft.state === "review" &&
+        JSON.stringify([...draft.excludedRowIds].sort()) !==
+          JSON.stringify(excludedRowIds)) {
+      draft = await intakeDeps.store.revise({sessionId, hostUid: uid,
+        expectedRevision: draft.revision, rows: draft.rows,
+        excludedRowIds, mapping: draft.mapping}, intakeDeps.authorize);
+    }
+    return reviewResponse(draft, intakeDeps);
+  });
+  const preview = review.preview;
+  if (!preview) {
+    throw new HttpsError("internal", "Roster intake review is missing.");
+  }
+  const previewHash = commandPreviewHash(COMMAND_ID, uid, requestInput,
+    {reviewHash: preview.reviewHash});
+  const suggestions = review.draft.state === "review" ?
+    await suggestGuestMergesAndTags(db, found.organizerId, preview) : [];
+  const target: GuestListTarget = {eventId: found.eventId,
+    organizerId: found.organizerId, source: "event"};
+  const describeSession = (status: "previewed" | "applied",
+    imported: EventAttendeeImportResult | null, receiptId: string | null) =>
+    describeReviewSession({status, previewHash, receiptId, review, preview,
+      imported, receiptImportId: review.receipt?.importId ?? null,
+      suggestions});
+  if (data.mode === "preview") {
+    return describeSession(review.draft.state === "applied" ? "applied" :
+      "previewed", null, null);
+  }
+  return applyReviewed(db, deps, uid, data, {requestInput, previewHash,
+    review, preview, intakeDeps, target,
+    describeApplied: (imported, receiptId) =>
+      describeSession("applied", imported, receiptId),
+    logFields: {converter: SESSION_CONVERTER_ID}});
+}
+
+/**
+ * The caller's newest review session still open for one event, or a
+ * not-found refusal (reason no_draft_in_review) when nothing is waiting.
+ * @return {Promise<string>} The session id.
+ */
+async function latestSessionId(db: FirebaseFirestore.Firestore,
+  deps: ImportGuestListDeps, uid: string, eventId: string): Promise<string> {
+  const intakeDeps = deps.intake();
+  const event = await db.collection("events").doc(eventId).get();
+  const organizerId = event.data()?.organizerId;
+  if (typeof organizerId !== "string" || !intakeDeps.store.latestInReview) {
+    throw new HttpsError("not-found", "No guest list is waiting for review.",
+      {reason: "no_draft_in_review"});
+  }
+  const latest = await asHttps(() => intakeDeps.store.latestInReview!({
+    hostUid: uid, organizerId, eventId}, intakeDeps.authorize));
+  if (!latest) {
+    throw new HttpsError("not-found", "No guest list is waiting for review.",
+      {reason: "no_draft_in_review"});
+  }
+  return latest.sessionId;
+}
+
+/** The converter id a session-based response reports: no file was read. */
+const SESSION_CONVERTER_ID = "review-session-v1";
+
+function describeReviewSession(params: {
+  status: "previewed" | "applied";
+  previewHash: string;
+  receiptId: string | null;
+  review: ManageHostRosterIntakeResponse;
+  preview: HostRosterIntakePreview;
+  imported: EventAttendeeImportResult | null;
+  receiptImportId: string | null;
+  suggestions: GuestSuggestion[];
+}): Response {
+  const {draft} = params.review;
+  const mapping = emptyMapping();
+  for (const [field, column] of Object.entries(draft.mapping)) {
+    if (field in mapping) mapping[field as keyof Mapping] = column;
+  }
+  const lines = summaryLines({status: params.status, preview: params.preview,
+    review: params.review, imported: params.imported, skipped: 0,
+    truncatedCount: 0, suggestions: params.suggestions,
+    readAs: `Read from the guest list waiting for review (${
+      draft.fileName.slice(0, 80)}).`, extra: []});
+  return responseFrom({...params, counts: {...params.preview.counts,
+    skipped: 0}, lines, eventId: draft.eventId, fileFormat: draft.format,
+  converter: {id: SESSION_CONVERTER_ID, support: "generic", confidence: 0},
+  headers: draft.headers, columnShapes: [], mapping, mappedBy: "converter",
+  reviewFields: [], skipped: [], truncatedCount: 0});
 }
 
 export const importGuestList = onCall(appCheckCallableOptions,
@@ -413,9 +587,55 @@ function describe(params: {
   reviewFields: GuestField[];
   target: GuestListTarget;
 }): Response {
-  const {status, preview, read, review, imported} = params;
-  const counts = {...preview.counts, skipped: read.skipped.length};
-  const alreadyApplied = review.draft.state === "applied" && !imported;
+  const {preview, read} = params;
+  const extra: string[] = [];
+  if (params.target.source === "try_it_placeholder" ||
+      params.target.source === "try_it_draft") {
+    extra.push(params.target.source === "try_it_placeholder" ?
+      "Guests go on a private draft event called \"Guest list\" in your " +
+        "profile; rename or date it in the Host app." :
+      "Guests go on your private draft event in your profile.");
+  }
+  if (params.mappedBy === "model") {
+    extra.push("We guessed which column is which from the headers; check " +
+      "the columns before you confirm.");
+  }
+  const lines = summaryLines({status: params.status, preview,
+    review: params.review, imported: params.imported,
+    skipped: read.skipped.length, truncatedCount: read.truncatedCount,
+    suggestions: params.suggestions,
+    readAs: `Read as ${converterLabel(read.adapter.adapterId)}.`, extra});
+  const mapping = emptyMapping();
+  for (const [field, column] of Object.entries({...read.mapping,
+    ...params.extraMapping})) {
+    if (field in mapping) mapping[field as keyof Mapping] = column;
+  }
+  return responseFrom({...params,
+    receiptImportId: params.receiptImportId ?? null,
+    counts: {...preview.counts, skipped: read.skipped.length}, lines,
+    fileFormat: params.file.format,
+    converter: {id: read.adapter.adapterId, support: read.adapter.support,
+      confidence: read.adapter.confidence},
+    headers: read.headers,
+    columnShapes: params.shapes.slice(0, read.headers.length),
+    mapping, skipped: read.skipped, truncatedCount: read.truncatedCount});
+}
+
+/** The plain-English lines both inputs show, from the review's counts. */
+function summaryLines(params: {
+  status: "previewed" | "applied";
+  preview: HostRosterIntakePreview;
+  review: ManageHostRosterIntakeResponse;
+  imported: EventAttendeeImportResult | null;
+  skipped: number;
+  truncatedCount: number;
+  suggestions: GuestSuggestion[];
+  readAs: string;
+  extra: string[];
+}): {headline: string; lines: string[]} {
+  const {status, preview, imported} = params;
+  const counts = {...preview.counts, skipped: params.skipped};
+  const alreadyApplied = params.review.draft.state === "applied" && !imported;
   const guests = (count: number) => count === 1 ? "1 guest" :
     `${count} guests`;
   const headline = status === "previewed" ?
@@ -423,18 +643,7 @@ function describe(params: {
     alreadyApplied ? "This guest list was already saved." :
       `Saved: ${guests(imported?.createdCount ?? 0)} added, ` +
         `${guests(imported?.updatedCount ?? 0)} updated.`;
-  const lines = [`Read as ${converterLabel(read.adapter.adapterId)}.`];
-  if (params.target.source === "try_it_placeholder" ||
-      params.target.source === "try_it_draft") {
-    lines.push(params.target.source === "try_it_placeholder" ?
-      "Guests go on a private draft event called \"Guest list\" in your " +
-        "profile; rename or date it in the Host app." :
-      "Guests go on your private draft event in your profile.");
-  }
-  if (params.mappedBy === "model") {
-    lines.push("We guessed which column is which from the headers; check " +
-      "the columns before you confirm.");
-  }
+  const lines = [params.readAs, ...params.extra];
   if (counts.needsReview + counts.identityConflict > 0) {
     lines.push(`${guests(counts.needsReview + counts.identityConflict)} ` +
       "need a look first: fix them in the file, or leave them out.");
@@ -457,50 +666,79 @@ function describe(params: {
     lines.push(`${counts.skipped} row${counts.skipped === 1 ? "" : "s"} ` +
       "skipped (no name, or a cancelled or failed booking).");
   }
-  if (read.truncatedCount > 0) {
-    lines.push(`Only the first 250 guests were read; ${read.truncatedCount}` +
-      " more rows were left out.");
+  if (params.truncatedCount > 0) {
+    lines.push(`Only the first 250 guests were read; ${
+      params.truncatedCount} more rows were left out.`);
   }
   lines.push("Nothing is saved until you confirm, and guests are not " +
     "messaged.");
+  return {headline, lines: lines.slice(0, 12)};
+}
+
+/** The response both inputs return, from what each one read. */
+function responseFrom(params: {
+  status: "previewed" | "applied";
+  previewHash: string;
+  receiptId: string | null;
+  review: ManageHostRosterIntakeResponse;
+  preview: HostRosterIntakePreview;
+  eventId: string;
+  imported: EventAttendeeImportResult | null;
+  receiptImportId: string | null;
+  suggestions: GuestSuggestion[];
+  counts: Response["result"]["counts"];
+  lines: {headline: string; lines: string[]};
+  fileFormat: Response["result"]["fileFormat"];
+  converter: Response["result"]["converter"];
+  headers: string[];
+  columnShapes: ColumnShape[];
+  mapping: Mapping;
+  mappedBy: "converter" | "host" | "model";
+  reviewFields: GuestField[];
+  skipped: Response["result"]["skipped"];
+  truncatedCount: number;
+}): Response {
+  const {status, preview, imported} = params;
   const importId = imported?.importId ?? params.receiptImportId ?? null;
   const importSummary = imported ? {importId: imported.importId,
     status: imported.status, createdCount: imported.createdCount,
     updatedCount: imported.updatedCount,
     skippedCount: imported.skippedCount} : null;
-  const mapping = emptyMapping();
-  for (const [field, column] of Object.entries({...read.mapping,
-    ...params.extraMapping})) {
-    if (field in mapping) mapping[field as keyof Mapping] = column;
-  }
   return {
     commandId: COMMAND_ID, status, previewHash: params.previewHash,
-    summary: {headline, lines: lines.slice(0, 12)},
+    summary: params.lines,
     effects: status === "applied" && importId ? [{kind: "guests_imported",
       ref: `eventAttendeeImports/${importId}`.slice(0, 300),
       label: "Event guest list"}] : [],
     next: [], receiptId: params.receiptId,
-    result: {eventId: params.eventId, fileFormat: params.file.format,
-      converter: {id: read.adapter.adapterId, support: read.adapter.support,
-        confidence: read.adapter.confidence},
-      headers: read.headers.map((header) => header.slice(0, 120)),
-      columnShapes: params.shapes.slice(0, read.headers.length),
-      mapping, mappedBy: params.mappedBy,
+    result: {eventId: params.eventId, fileFormat: params.fileFormat,
+      converter: params.converter,
+      headers: params.headers.map((header) => header.slice(0, 120)),
+      columnShapes: params.columnShapes,
+      mapping: params.mapping, mappedBy: params.mappedBy,
       aiRead: params.mappedBy === "model",
       reviewFields: params.mappedBy === "model" ? [...params.reviewFields] : [],
       needsMapping: false,
       sessionId: preview.sessionId,
       revision: preview.revision, reviewHash: preview.reviewHash,
-      eligibleForApply: preview.eligibleForApply, counts,
+      eligibleForApply: preview.eligibleForApply, counts: params.counts,
       rows: preview.rows.map((row) => ({rowId: row.rowId,
         sourceRowNumber: row.sourceRowNumber,
         displayName: row.displayName.slice(0, 120), kind: row.kind,
         issueCode: row.issueCode?.slice(0, 80) ?? null,
-        changedFields: [...row.changedFields]})),
-      skipped: read.skipped.slice(0, 250).map((row) => ({
+        changedFields: [...row.changedFields],
+        externalReference: row.externalReference?.slice(0, 120) ?? null,
+        fieldChanges: row.fieldChanges.slice(0, 11).map((change) => ({
+          field: change.field,
+          currentValue: change.currentValue?.slice(0, 300) ?? null,
+          proposedValue: change.proposedValue?.slice(0, 300) ?? null,
+          origin: change.origin ?? null}))})),
+      fileName: params.review.draft.fileName,
+      excludedRowIds: [...params.review.draft.excludedRowIds],
+      skipped: params.skipped.slice(0, 250).map((row) => ({
         sourceRowNumber: row.sourceRowNumber, reason: row.reason})),
       suggestions: params.suggestions,
-      truncatedCount: read.truncatedCount, import: importSummary},
+      truncatedCount: params.truncatedCount, import: importSummary},
   };
 }
 

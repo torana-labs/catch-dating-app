@@ -166,6 +166,77 @@ test("rows that need a look block apply until the host leaves them out", async (
   assert.equal((imports[0] as {rows: unknown[]}).rows.length, 1);
 });
 
+function sessionEnvelope(mode: "preview" | "apply", sessionId: string, extra: Record<string, unknown> = {},
+  input: Record<string, unknown> = {}) {
+  return {mode, idempotencyKey: "guest-import-session-0001", surface: "catch_host",
+    input: {sessionId, ...input}, ...extra};
+}
+
+test("a review session is previewed, revised and saved by its id, without the file", async () => {
+  const {deps, imports} = harness();
+  const csv = "Name,Phone\nAsha Sample,9876543210\nRavi Sample,12\n";
+  const started = await importGuestListHandler(call(envelope("preview", csv)), deps);
+  const sessionId = started.result.sessionId!;
+
+  const preview = await importGuestListHandler(call(sessionEnvelope("preview", sessionId)), deps);
+  valid(validate.response, preview, "session preview");
+  assert.equal(preview.status, "previewed");
+  assert.equal(preview.result.sessionId, sessionId);
+  assert.equal(preview.result.eventId, EVENT);
+  assert.equal(preview.result.converter.id, "review-session-v1");
+  assert.equal(preview.result.eligibleForApply, false);
+  const flagged = preview.result.rows.find((row) => row.kind === "needsReview")!;
+
+  const excluded = {excludedRowIds: [flagged.rowId]};
+  const revised = await importGuestListHandler(call(sessionEnvelope("preview", sessionId, {}, excluded)), deps);
+  assert.equal(revised.result.eligibleForApply, true);
+  assert.notEqual(revised.previewHash, preview.previewHash);
+
+  const confirm = {commandId: "guests.import-list", previewHash: revised.previewHash};
+  await assert.rejects(importGuestListHandler(call(sessionEnvelope("apply", sessionId,
+    {confirm: {commandId: "guests.import-list", previewHash: preview.previewHash}}, excluded)), deps),
+  (error: {details?: {reason?: string}}) => error.details?.reason === "changed_since_preview");
+  const applied = await importGuestListHandler(call(sessionEnvelope("apply", sessionId, {confirm}, excluded)), deps);
+  valid(validate.response, applied, "session apply");
+  assert.equal(applied.status, "applied");
+  assert.match(applied.receiptId ?? "", /^guestsImportList_[a-f0-9]{64}$/u);
+  assert.equal((imports[0] as {rows: unknown[]}).rows.length, 1);
+
+  const replayed = await importGuestListHandler(call(sessionEnvelope("apply", sessionId, {confirm}, excluded)), deps);
+  assert.equal(replayed.status, "replayed");
+  assert.equal(imports.length, 1);
+});
+
+test("with only an event, preview opens the newest guest list waiting for review there", async () => {
+  const {deps} = harness();
+  const reason = (code: string) => (error: {details?: {reason?: string}}) => error.details?.reason === code;
+  const only = {mode: "preview", idempotencyKey: "guest-import-latest-01", surface: "catch_host", input: {eventId: EVENT}};
+  await assert.rejects(importGuestListHandler(call(only), deps), reason("no_draft_in_review"));
+  const started = await importGuestListHandler(call(envelope("preview", LUMA_CSV)), deps);
+  const waiting = await importGuestListHandler(call(only), deps);
+  valid(validate.response, waiting, "latest");
+  assert.equal(waiting.result.sessionId, started.result.sessionId);
+  assert.equal(waiting.result.fileName, "guests.csv");
+  await assert.rejects(importGuestListHandler(call({...only, mode: "apply"}), deps), reason("roster_missing_file"));
+});
+
+test("a review session refuses a file or mapping alongside it, another event, or an unknown id", async () => {
+  const {deps} = harness();
+  const started = await importGuestListHandler(call(envelope("preview", LUMA_CSV)), deps);
+  const sessionId = started.result.sessionId!;
+  const reason = (code: string) => (error: {details?: {reason?: string}}) => error.details?.reason === code;
+  await assert.rejects(importGuestListHandler(call(sessionEnvelope("preview", sessionId, {},
+    {mapping: {displayName: 0}})), deps), reason("session_input_conflict"));
+  await assert.rejects(importGuestListHandler(call({...envelope("preview", LUMA_CSV), input: {...envelope("preview",
+    LUMA_CSV).input, sessionId}}), deps), reason("session_input_conflict"));
+  await assert.rejects(importGuestListHandler(call(sessionEnvelope("preview", sessionId, {},
+    {eventId: "event-2"})), deps), reason("session_event_mismatch"));
+  await assert.rejects(importGuestListHandler(call(sessionEnvelope("preview", "missing-session")), deps),
+    reason("session_not_found"));
+  await assert.rejects(importGuestListHandler(call({mode: "preview", idempotencyKey: "guest-import-0009",
+    surface: "cli", input: {eventId: EVENT, excludedRowIds: ["row-1"]}}), deps), reason("roster_missing_file"));
+});
+
 test("a caller who doesn't manage the event is refused by the review session", async () => {
   const {deps} = harness({authorize: async () => {
     throw new HttpsError("permission-denied", "Only an organizer manager can review this roster intake.");

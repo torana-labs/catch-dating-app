@@ -1,11 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
-import 'package:catch_dating_app/contexts/audience/data/host_roster_file_parser.dart';
-import 'package:catch_dating_app/contexts/audience/data/host_roster_file_service.dart';
-import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
-import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/organizer_event_venue_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
@@ -64,35 +59,6 @@ class CreateEventController extends _$CreateEventController {
           defaultEventCapacity: defaultEventCapacity,
         );
   }
-
-  Future<HostRosterTable?> pickRosterFile({
-    ExternalBookingProvider? providerHint,
-  }) async {
-    final file = await ref.read(hostRosterFileServiceProvider).pickRosterFile();
-    if (file == null) return null;
-    return parseHostRosterFile(
-      fileName: file.name,
-      bytes: file.bytes,
-      providerHint: providerHint,
-    );
-  }
-
-  Future<EventAttendeeImportResult> importRoster({
-    required String eventId,
-    required HostRosterImportPlan plan,
-  }) => ref
-      .read(eventAttendeeRepositoryProvider)
-      .importAttendees(
-        eventId: eventId,
-        importKey: hostRosterImportKey(
-          format: plan.format,
-          rows: plan.rows,
-          fileName: plan.fileName,
-        ),
-        fileName: plan.fileName,
-        format: plan.format,
-        rows: plan.rows,
-      );
 
   Future<PickedEventPhoto?> pickEventPhoto({int imageQuality = 82}) async {
     final image = await ref

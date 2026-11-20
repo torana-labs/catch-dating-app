@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
 import 'package:catch_dating_app/contexts/audience/data/host_provider_repository.dart';
-import 'package:catch_dating_app/contexts/audience/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/contexts/audience/data/host_roster_file_service.dart';
 import 'package:catch_dating_app/contexts/audience/data/host_roster_intake_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/guest_list_import_preview.dart';
@@ -9,7 +8,6 @@ import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repositor
 import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_runtime_claim_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_runtime_claim_request.dart';
 import 'package:catch_dating_app/contexts/insights/domain/insights_tags.dart';
 import 'package:catch_platform/cache/app_clock.dart';
@@ -31,20 +29,6 @@ class HostOperationalRosterController {
 
   final Ref _ref;
 
-  Future<HostRosterTable?> pickRosterFile({
-    ExternalBookingProvider? providerHint,
-  }) async {
-    final file = await _ref
-        .read(hostRosterFileServiceProvider)
-        .pickRosterFile();
-    if (file == null) return null;
-    return parseHostRosterFile(
-      fileName: file.name,
-      bytes: file.bytes,
-      providerHint: providerHint,
-    );
-  }
-
   Future<EventAttendeeImportResult> importAttendees({
     required String eventId,
     required String importKey,
@@ -61,14 +45,6 @@ class HostOperationalRosterController {
         rows: rows,
       );
 
-  Future<HostRosterIntakeReview> startRosterIntake({
-    required String eventId,
-    required String organizerId,
-    required HostRosterImportPlan plan,
-  }) => _ref
-      .read(hostRosterIntakeRepositoryProvider)
-      .start(eventId: eventId, organizerId: organizerId, plan: plan);
-
   Future<HostRosterIntakeReview> setRosterIntakeExcludedRows(
     HostRosterIntakeReview review,
     Iterable<String> rowIds,
@@ -76,12 +52,9 @@ class HostOperationalRosterController {
       .read(hostRosterIntakeRepositoryProvider)
       .setExcludedRows(review, rowIds);
 
-  Future<String?> latestRosterIntakeInReview({
-    required String eventId,
-    required String organizerId,
-  }) => _ref
+  Future<String?> latestRosterIntakeInReview({required String eventId}) => _ref
       .read(hostRosterIntakeRepositoryProvider)
-      .latestInReviewSessionId(eventId: eventId, organizerId: organizerId);
+      .latestInReviewSessionId(eventId: eventId);
 
   Future<HostRosterIntakeReview> resumeRosterIntake(String sessionId) =>
       _ref.read(hostRosterIntakeRepositoryProvider).resume(sessionId);
