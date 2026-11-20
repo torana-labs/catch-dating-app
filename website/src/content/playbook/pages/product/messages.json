@@ -107,7 +107,7 @@
       "id": "promoter-commission",
       "ground": "ink",
       "status": "new",
-      "statusNote": "Tracked links and their counts are built. Promoter commission, QR codes per link and sending bookings to the host’s own pixel are not. Show this in place of the band above when they ship.",
+      "statusNote": "Tracked links, their counts and a QR code per link are built. Promoter commission and sending bookings to the host’s own pixel are not. Show this in place of the band above when they ship.",
       "kicker": "Tracked links",
       "title": "Know which post sold the tickets.",
       "lead": "Make a link for every promoter, venue, poster and post in a few seconds. Every visit, booking and rupee is counted against the link it came from, so you spend time and money where it works.",

@@ -29,7 +29,7 @@ const allowedFeatureImports = new Map([
   ["eventAssistance", new Set(["eventMessaging"])],
   ["eventRuntime", new Set(["eventMessaging"])],
   // The guest list try-it tool shares the try-it tools' phone step (the one
-  // sign-in sheet), cities and store badges.
+  // sign-in sheet), cities, column choice and store badges.
   ["guestImportTryIt", new Set(["account", "marketing", "tryIt"])],
   // The discovery pages (/<city>/<format>/, /new-to-<city>/) read the city
   // catalog and chrome the city pages own, and send city alerts through the
@@ -41,8 +41,8 @@ const allowedFeatureImports = new Map([
   ["host", new Set(["marketing"])],
   ["organizers", new Set(["account", "claims", "events", "marketing", "reviews"])],
   // Reports' export upload shares the try-it tools' phone step (the one
-  // sign-in sheet), cities, dates and store badges, and the numbers report's
-  // amount parser.
+  // sign-in sheet), cities, dates, column choice and store badges, and the
+  // numbers report's amount parser.
   ["pastSalesTryIt", new Set(["account", "marketing", "tryIt"])],
   // A playbook page's closing band carries Catch Host's store badges, a tool
   // form opens the page's try-it tool (the guest list and Reports' export
