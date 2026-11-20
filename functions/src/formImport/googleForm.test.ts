@@ -123,6 +123,20 @@ test("a choice question left with fewer than two options becomes short text", ()
   assert.equal(imported.sections[0].questions[0].options, undefined);
 });
 
+test("a single tick box becomes a required acknowledgement", () => {
+  const imported = importGoogleForm(form([
+    question(1, "House rules", 4, [option("I agree to the house rules")]),
+  ]));
+  assert.ok(imported);
+  const [rules] = imported.sections[0].questions;
+  assert.equal(rules.kind, "acknowledgement");
+  assert.equal(rules.label, "House rules");
+  assert.equal(rules.helpText, "I agree to the house rules");
+  assert.equal(rules.required, true);
+  assert.equal(rules.options, undefined);
+  assert.deepEqual(imported.flags, []);
+});
+
 test("long text is trimmed to native limits and flagged once", () => {
   const long = "x".repeat(300);
   const imported = importGoogleForm(form([question(1, long, 0)], {title: "t".repeat(200)}));
