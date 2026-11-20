@@ -2888,15 +2888,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Submit to Razorpay';
 
   @override
-  String get hostsCatchRosterBoardLabelOpenProfile => 'Open profile';
-
-  @override
-  String get hostsCatchRosterBoardLabelApproveRequest => 'Approve request';
-
-  @override
-  String get hostsCatchRosterBoardLabelDeclineRequest => 'Decline request';
-
-  @override
   String get hostsHostOrganizerToolsLabelPostUpdate => 'Post update';
 
   @override
@@ -5278,30 +5269,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pick one when the room needs an easy next line.';
 
   @override
-  String get eventSuccessEventSuccessHostLiveTitleLiveModeNeedsSaved =>
-      'Live mode needs saved setup';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveTitleLiveModeWasNot =>
-      'Live mode was not configured';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveBodySaveTheLiveGuide =>
-      'Save the live guide before the event to enable guided controls. Attendance and check-in stay available from this Live tab.';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveBodyThisEventDidNot =>
-      'This event did not have a live guide saved before it started. Attendance and check-in remain available; guided live controls stay unavailable for this event.';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveTitleNoLiveStepsSelected =>
-      'No live steps selected';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveBodyThisSavedSetupDoes =>
-      'This saved setup does not include any tools the host can use during the event.';
-
-  @override
   String get eventSuccessEventSuccessHostLiveTitleConversationCues =>
       'Conversation cues';
 
@@ -5312,117 +5279,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested =>
       'Close with one suggested first message for people who pick each other.';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveTitleGuestPresence =>
-      'Guest presence';
-
-  @override
-  String
-  get eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished =>
-      'Presence can update the next prepared round. Published rounds stay unchanged.';
-
-  @override
-  String eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft({
-    required int count,
-  }) {
-    return '$count guests may have left. Regenerate the next round before publishing?';
-  }
-
-  @override
-  String get eventSuccessEventSuccessHostLiveLabelRegenerateNextRound =>
-      'Regenerate next round';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveTitleLateArrivals =>
-      'Late arrivals';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveLabelPlaceNextRound =>
-      'Place next round';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveTitleSupportingControls =>
-      'Supporting controls';
-
-  @override
-  String
-  get eventSuccessEventSuccessHostLiveSubtitleControlsThatStayAvailable =>
-      'Controls that stay available without competing with the current live step.';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveLabelMarkLiveGuideComplete =>
-      'Mark live guide complete';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveTitleControlsForThisStep =>
-      'Controls for this step';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving =>
-      'Handle these before moving the room forward.';
-
-  @override
-  String
-  get eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton =>
-      'eventSuccessPreviousStepButton';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveLabelPrevious => 'Previous';
-
-  @override
-  String
-  get eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton =>
-      'eventSuccessNextStepButton';
-
-  @override
-  String get eventSuccessEventSuccessHostOverridesTextSmallStarterGroups =>
-      'Small starter groups';
-
-  @override
-  String eventSuccessEventSuccessHostOverridesLabelLengthAssigned({
-    required Object length,
-  }) {
-    return '$length assigned';
-  }
-
-  @override
-  String eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut({
-    required Object optedOutCount,
-  }) {
-    return '$optedOutCount opted out';
-  }
-
-  @override
-  String get eventSuccessEventSuccessHostOverridesLabelHostEdited =>
-      'Host edited';
-
-  @override
-  String get eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted =>
-      'Regenerate to remove opted-out attendee cards from the current pod set.';
-
-  @override
-  String
-  get eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards =>
-      'Generate attendee pod cards from the roster, excluding opted-out attendees.';
-
-  @override
-  String
-  get eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf =>
-      'Generate attendee pod cards from the current booked and checked-in roster.';
-
-  @override
-  String
-  get eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneratemicropodsbutton =>
-      'eventSuccessGenerateMicroPodsButton';
-
-  @override
-  String get eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods =>
-      'Generate micro-pods';
-
-  @override
-  String get eventSuccessEventSuccessHostOverridesLabelRegenerate =>
-      'Regenerate';
 
   @override
   String get eventSuccessEventSuccessHostOverridesLabelEditGroups =>
@@ -5486,60 +5342,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Remove attendee';
 
   @override
-  String get eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations =>
-      'Timed partner rotations';
-
-  @override
-  String eventSuccessEventSuccessHostOverridesLabelRoundcountRounds({
-    required Object roundCount,
-  }) {
-    return '$roundCount rounds';
-  }
-
-  @override
-  String
-  get eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde =>
-      'Regenerate to remove opted-out attendees from timed rotations.';
-
-  @override
-  String
-  get eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent =>
-      'Generate pairings from event duration, saved cadence, checked-in participants and, for singles formats, mutual interest.';
-
-  @override
-  String
-  eventSuccessEventSuccessHostOverridesLabelEventrotationcapacityPossible({
-    required Object eventRotationCapacity,
-  }) {
-    return '$eventRotationCapacity possible';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessHostOverridesLabelSitoutroundcountPlannedBreaks({
-    required Object sitOutRoundCount,
-  }) {
-    return '$sitOutRoundCount planned breaks';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessHostOverridesLabelRepeatpeercountRepeatedPeers({
-    required Object repeatPeerCount,
-  }) {
-    return '$repeatPeerCount repeated peers';
-  }
-
-  @override
-  String
-  get eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneraterotationsbutton =>
-      'eventSuccessGenerateRotationsButton';
-
-  @override
-  String get eventSuccessEventSuccessHostOverridesLabelGenerateRotations =>
-      'Generate rotations';
-
-  @override
   String get eventSuccessEventSuccessHostOverridesLabelEditRotations =>
       'Edit rotations';
 
@@ -5570,235 +5372,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Remove pair';
 
   @override
-  String eventSuccessEventSuccessHostOverridesLabelKeyValueAssigned({
-    required Object key,
-    required Object value,
-  }) {
-    return '$key · $value assigned';
-  }
-
-  @override
-  String get eventSuccessEventSuccessHostOverridesTextAssignmentNotes =>
-      'Assignment notes';
-
-  @override
-  String get eventSuccessEventSuccessHostReportTitleNoEventReportYet =>
-      'No event report yet';
-
-  @override
-  String get eventSuccessEventSuccessHostReportBodyTheLiveEventGuide =>
-      'The live event guide was not saved for this event, so there is no post-event report to review. Attendance reporting remains available on this screen.';
-
-  @override
-  String get eventSuccessEventSuccessHostReportTitlePostEventInsightsAre =>
-      'Post-event insights are off';
-
-  @override
-  String get eventSuccessEventSuccessHostReportBodyThisEventGuideDoes =>
-      'This event guide does not include post-event coaching for the host.';
-
-  @override
-  String
-  get eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback =>
-      'Waiting for attendee feedback';
-
-  @override
-  String
-  eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse({
-    required Object feedbackCount,
-    required Object value2,
-  }) {
-    return '$feedbackCount attendee feedback response$value2';
-  }
-
-  @override
-  String
-  get eventSuccessEventSuccessHostReportBodyTheReportCombinesAttendance =>
-      'The report combines attendance, safe aggregate feedback, assignment coverage, and explicit host-help requests. Private notes, safety concerns, and individual opener choices are not shown to hosts.';
-
-  @override
-  String get eventSuccessEventSuccessHostReportTextHowReliableIsThis =>
-      'How reliable is this report?';
-
-  @override
-  String get eventSuccessEventSuccessHostReportTextShowsWhetherTheReport =>
-      'Shows whether the report is based on enough live data to trust.';
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelFeedback => 'Feedback';
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelConversationExclusions =>
-      'Conversation exclusions';
-
-  @override
-  String
-  eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses({
-    required Object conversationGraphResponseCount,
-    required Object checkedInCount,
-  }) {
-    return '$conversationGraphResponseCount/$checkedInCount responses';
-  }
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelCaughtSomeone =>
-      'Picked someone';
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelPeopleIncluded =>
-      'People included';
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelOptedOut => 'Opted out';
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelWingmanHelp =>
-      'Host-help requests';
-
-  @override
-  String
-  eventSuccessEventSuccessHostReportLabelFeedbackresponsecountCheckedincountFeedback({
-    required Object feedbackResponseCount,
-    required Object checkedInCount,
-  }) {
-    return '$feedbackResponseCount/$checkedInCount feedback';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone({
-    required Object attendeesWhoCaughtSomeone,
-  }) {
-    return '$attendeesWhoCaughtSomeone picked someone';
-  }
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelCatchesSent => 'Picks sent';
-
-  @override
-  String
-  eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned({
-    required Object assignmentParticipantCount,
-  }) {
-    return '$assignmentParticipantCount assigned';
-  }
-
-  @override
-  String eventSuccessEventSuccessHostReportLabelAssignmentoptoutcountOptedOut({
-    required Object assignmentOptOutCount,
-  }) {
-    return '$assignmentOptOutCount opted out';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessHostReportLabelWingmanrequestcountHostHelpRequests({
-    required Object wingmanRequestCount,
-  }) {
-    return '$wingmanRequestCount host-help requests';
-  }
-
-  @override
-  String get eventSuccessEventSuccessHostReportTextEventFunnel =>
-      'Event funnel';
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelDemandToBooked =>
-      'Demand to booked';
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelRequestsApproved =>
-      'Requests approved';
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelOffersAccepted =>
-      'Offers accepted';
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelPaymentComplete =>
-      'Payment complete';
-
-  @override
-  String get eventSuccessEventSuccessHostReportLabelRepeatAttendees =>
-      'Repeat attendees';
-
-  @override
-  String eventSuccessEventSuccessHostReportLabelTotaldemandcountPeopleInDemand({
-    required Object totalDemandCount,
-  }) {
-    return '$totalDemandCount people in demand';
-  }
-
-  @override
-  String eventSuccessEventSuccessHostReportLabelWaitlistjoincountWaitlisted({
-    required Object waitlistJoinCount,
-  }) {
-    return '$waitlistJoinCount waitlisted';
-  }
-
-  @override
-  String eventSuccessEventSuccessHostReportLabelPaymentcompletedcountPaid({
-    required Object paymentCompletedCount,
-  }) {
-    return '$paymentCompletedCount paid';
-  }
-
-  @override
-  String eventSuccessEventSuccessHostReportLabelChatstartedcountChatsStarted({
-    required Object chatStartedCount,
-  }) {
-    return '$chatStartedCount chats started';
-  }
-
-  @override
-  String get eventSuccessEventSuccessHostSetupTitleEventStartedWithoutA =>
-      'Event started without a saved guide';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupTitleLiveGuideCanNo =>
-      'Live guide can no longer be saved';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupBodyThisEventBeganBefore =>
-      'This event began before a live guide was saved. Attendance and check-in still work, but the Live tab won\'t have any guided controls for this event.';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupBodyBookingsHaveAlreadyStarted =>
-      'Bookings have already started. Attendance and check-in still work, but the Live tab won\'t have guided controls unless a guide was saved first.';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet =>
-      'Setup not saved yet';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs =>
-      'This default plan is visible here only. Save it so the Live tab is ready when the event starts.';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupTitleSettingsAreLocked =>
-      'Settings are locked';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupBodyBookingsHaveStartedSo =>
-      'Bookings have started, so the saved guide is locked in. Switch to the Live tab to drive the event in real time once it starts.';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupBodyTheEventHasStarted =>
-      'The event has started — setup is locked. Use the Live tab to control the event right now, and the Report tab afterward.';
-
-  @override
   String get eventSuccessEventSuccessHostSetupTitleYourPlan => 'Your plan';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupLabelSaveChanges =>
-      'Save changes';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupLabelSaveSetup => 'Save setup';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupLabelSaveLiveGuide =>
-      'Save live guide';
 
   @override
   String get eventSuccessEventSuccessHostSetupTextTargetAttendees =>
@@ -5821,27 +5395,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessEventSuccessHostSetupTitleBeforeLaunch =>
       'Before launch';
-
-  @override
-  String get eventSuccessEventSuccessHostSetupTextUnsavedChanges =>
-      'Unsaved changes';
-
-  @override
-  String eventSuccessEventSuccessHostSharedLabelLengthTools({
-    required Object length,
-  }) {
-    return '$length tools';
-  }
-
-  @override
-  String get eventSuccessEventSuccessHostSharedLabelNotSaved => 'Not saved';
-
-  @override
-  String eventSuccessEventSuccessHostSharedLabelLengthSelected({
-    required Object length,
-  }) {
-    return '$length selected';
-  }
 
   @override
   String get eventSuccessEventSuccessHostSharedTextMatchClueQuestions =>
@@ -5867,55 +5420,6 @@ class AppLocalizationsEn extends AppLocalizations {
       '\"Help me say hi\" requests';
 
   @override
-  String eventSuccessEventSuccessHostSharedLabelLengthActive({
-    required Object length,
-  }) {
-    return '$length active';
-  }
-
-  @override
-  String
-  get eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThe =>
-      'Attendees explicitly asked the host for help. Use rotation edits or live facilitation to pair them safely.';
-
-  @override
-  String
-  get eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThef44110 =>
-      'Attendees explicitly asked the host for help. Use this as live facilitation context.';
-
-  @override
-  String get eventSuccessEventSuccessHostSharedTextNoHostHelpRequests =>
-      'No host-help requests yet.';
-
-  @override
-  String get eventSuccessEventSuccessHostSharedLabelHostVisible =>
-      'Host visible';
-
-  @override
-  String
-  get eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst =>
-      'Generate assignments first';
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealActionsLabelRevealNow =>
-      'Reveal now';
-
-  @override
-  String eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1({
-    required Object value1,
-  }) {
-    return 'Reveal round $value1';
-  }
-
-  @override
-  String
-  eventSuccessEventSuccessLiveRevealActionsLabelDropCountdownsecondsSCountdown({
-    required Object countdownSeconds,
-  }) {
-    return 'Drop ${countdownSeconds}s countdown';
-  }
-
-  @override
   String get eventSuccessEventSuccessLiveRevealAttendeeLabelUnlocking =>
       'Unlocking';
 
@@ -5926,34 +5430,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessEventSuccessLiveRevealAttendeeLabelWaiting =>
       'Waiting';
-
-  @override
-  String
-  get eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal =>
-      'Synchronized partner reveal';
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealHostLabelNoAssignments =>
-      'No assignments';
-
-  @override
-  String eventSuccessEventSuccessLiveRevealHostLabelValue1RoundcountShown({
-    required Object value1,
-    required Object roundCount,
-  }) {
-    return '$value1/$roundCount shown';
-  }
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealHostCaptionSeconds => 'seconds';
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealHostCaptionRevealed =>
-      'revealed';
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealHostCaptionNextRound =>
-      'next round';
 
   @override
   String get eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold =>
@@ -6045,24 +5521,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object peerName,
   }) {
     return '$timeRange · $peerName';
-  }
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealWidgetsLabelHiddenUntilReveal =>
-      'Hidden until reveal';
-
-  @override
-  String eventSuccessEventSuccessLiveRevealWidgetsLabelRoundValue1({
-    required Object value1,
-  }) {
-    return 'Round $value1';
-  }
-
-  @override
-  String eventSuccessEventSuccessLiveRevealWidgetsTextRValue1({
-    required Object value1,
-  }) {
-    return 'R$value1';
   }
 
   @override
@@ -6562,13 +6020,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessEventSuccessCompanionWingmanTextThisAttendee =>
       'this attendee';
-
-  @override
-  String get eventSuccessEventSuccessHostReportBodyThePostEventReport =>
-      'The post-event report appears once checked-in attendees share feedback. There is no signal to summarize yet.';
-
-  @override
-  String get eventSuccessEventSuccessHostReportTitleS => 's';
 
   @override
   String get exploreExploreScreenMessageTryAnotherCityFrom =>
@@ -8628,29 +8079,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String eventSuccessEventSuccessHostLiveVisiblecopyAttendeesAtLocationnameSee({
-    required Object locationName,
-    required Object attendeeExperience,
-  }) {
-    return 'Attendees at $locationName see: $attendeeExperience';
-  }
-
-  @override
-  String get eventSuccessEventSuccessHostLiveVisiblecopyFinalStep =>
-      'Final step';
-
-  @override
-  String eventSuccessEventSuccessHostLiveVisiblecopyNextTitle({
-    required Object title,
-  }) {
-    return 'Next: $title';
-  }
-
-  @override
-  String get eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1 =>
-      'host_override_v1';
-
-  @override
   String get eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne =>
       'Add at least one group.';
 
@@ -8721,23 +8149,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds({
-    required Object remainingSeconds,
-  }) {
-    return '$remainingSeconds';
-  }
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealHostVisiblecopyOk => 'OK';
-
-  @override
-  String eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1({
-    required Object value1,
-  }) {
-    return '$value1';
-  }
-
-  @override
   String get eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyPartner =>
       'Partner';
 
@@ -8748,16 +8159,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$format-$format2';
   }
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyDone => 'Done';
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyNow => 'Now';
-
-  @override
-  String get eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyHidden =>
-      'Hidden';
 
   @override
   String eventsCalendarScreenVisiblecopyCalendarAgendaDayDatekey({
@@ -9704,101 +9105,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Rotation reveal';
 
   @override
-  String get eventSuccessControlRoomSynced => 'Synced';
-
-  @override
-  String eventSuccessControlRoomLiveSyncStatus({required String syncStatus}) {
-    return 'Live now · $syncStatus';
-  }
-
-  @override
-  String get eventSuccessControlRoomSyncing => 'Saving';
-
-  @override
-  String get eventSuccessControlRoomSaveFailed => 'Save failed';
-
-  @override
-  String get eventSuccessControlRoomOffline => 'Offline';
-
-  @override
-  String get eventSuccessControlRoomNeedsReview => 'Needs review';
-
-  @override
-  String eventSuccessControlRoomStepProgress({
-    required int current,
-    required int total,
-    required String stage,
-  }) {
-    return 'Step $current of $total · $stage';
-  }
-
-  @override
-  String eventSuccessEventSuccessHostLiveLabelBeatNumber({
-    required int number,
-  }) {
-    return 'Beat $number';
-  }
-
-  @override
-  String eventSuccessEventSuccessHostLiveLabelRoundNumber({
-    required int number,
-  }) {
-    return 'Round $number';
-  }
-
-  @override
-  String get eventSuccessEventSuccessHostLiveLabelFirstCourse => 'First course';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveLabelSecondCourse =>
-      'Second course';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveLabelThirdCourse => 'Third course';
-
-  @override
-  String get eventSuccessEventSuccessHostLiveLabelFourthCourse =>
-      'Fourth course';
-
-  @override
-  String eventSuccessEventSuccessHostLiveLabelCourseNumber({
-    required int number,
-  }) {
-    return 'Course $number';
-  }
-
-  @override
-  String eventSuccessEventSuccessHostLiveLabelLegNumber({required int number}) {
-    return 'Leg $number';
-  }
-
-  @override
-  String eventSuccessEventSuccessHostLiveLabelStopNumber({
-    required int number,
-  }) {
-    return 'Stop $number';
-  }
-
-  @override
-  String get eventSuccessControlRoomUpNext => 'Up next';
-
-  @override
-  String get eventSuccessControlRoomGuests => 'Guests';
-
-  @override
-  String eventSuccessControlRoomGuestsSummary({
-    required int checkedIn,
-    required int expected,
-  }) {
-    return '$checkedIn checked in · $expected expected';
-  }
-
-  @override
-  String eventSuccessControlRoomGuestsCheckedInOnly({required int checkedIn}) {
-    return '$checkedIn checked in';
-  }
-
-  @override
   String get eventSuccessControlRoomExclusionAlertTitle =>
       'Guests need an introduction';
 
@@ -9815,51 +9121,6 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0 not been assigned to anyone in $minutes minutes.';
   }
-
-  @override
-  String get eventSuccessControlRoomHelpFallback => 'Help & fallback';
-
-  @override
-  String get eventSuccessControlRoomHelpFallbackSubtitle =>
-      'Recovery steps for the room';
-
-  @override
-  String eventSuccessControlRoomContinueTo({required String title}) {
-    return 'Continue to $title';
-  }
-
-  @override
-  String get eventSuccessControlRoomFallbackTitle => 'Keep the room moving';
-
-  @override
-  String get eventSuccessControlRoomFallbackSubtitle =>
-      'A simple reset when the plan or connection gets in the way.';
-
-  @override
-  String get eventSuccessControlRoomFallbackStayTitle => 'Stay on this step';
-
-  @override
-  String get eventSuccessControlRoomFallbackStayBody =>
-      'Keep using the instruction on screen while you settle the room.';
-
-  @override
-  String get eventSuccessControlRoomFallbackGuestsTitle =>
-      'Take attendance manually';
-
-  @override
-  String get eventSuccessControlRoomFallbackGuestsBody =>
-      'Open Guests to check people in or add anyone who was not booked through Catch.';
-
-  @override
-  String get eventSuccessControlRoomFallbackContinueTitle =>
-      'Continue when ready';
-
-  @override
-  String get eventSuccessControlRoomFallbackContinueBody =>
-      'The guide only moves when you tap the primary action, so the room stays in your control.';
-
-  @override
-  String get eventSuccessControlRoomFallbackDone => 'Back to Control Room';
 
   @override
   String get eventSuccessEventSuccessHostSharedLabelSetup => 'Setup';
@@ -12091,9 +11352,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOperationalRosterOutboxDiscard => 'Discard stale changes';
 
   @override
-  String get eventSuccessLiveControlCancelCountdownLabel => 'Cancel countdown';
-
-  @override
   String get hostLiveViewsLabel => 'Live views';
 
   @override
@@ -13242,59 +12500,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormsResponseFailed => 'That did not save. Try again.';
 
   @override
-  String get eventSuccessLiveControlPublishRevealTitle =>
-      'Publish this reveal?';
-
-  @override
-  String eventSuccessLiveControlPublishRevealMessage({
-    required int roundNumber,
-  }) {
-    return 'Round $roundNumber will become visible to everyone and cannot be hidden again.';
-  }
-
-  @override
-  String get eventSuccessLiveControlPublishRevealConfirmLabel =>
-      'Publish reveal';
-
-  @override
-  String get eventSuccessLiveControlStartCountdownTitle =>
-      'Start the final countdown?';
-
-  @override
-  String eventSuccessLiveControlStartCountdownMessage({
-    required int roundNumber,
-    required int countdownSeconds,
-  }) {
-    return 'Round $roundNumber will publish after $countdownSeconds seconds and cannot be hidden again.';
-  }
-
-  @override
-  String get eventSuccessLiveControlStartCountdownConfirmLabel =>
-      'Start countdown';
-
-  @override
-  String eventSuccessLiveControlPublishRotationRoundLabel({
-    required int roundNumber,
-  }) {
-    return 'Publish round $roundNumber';
-  }
-
-  @override
-  String get eventSuccessLiveControlPublishRotationTitle =>
-      'Publish this rotation?';
-
-  @override
-  String eventSuccessLiveControlPublishRotationMessage({
-    required int roundNumber,
-  }) {
-    return 'Round $roundNumber will become visible to attendees and cannot be withdrawn.';
-  }
-
-  @override
-  String get eventSuccessLiveControlPublishRotationConfirmLabel =>
-      'Publish rotation';
-
-  @override
   String get eventSuccessLiveControlStandingsRevealLabel => 'Standings reveal';
 
   @override
@@ -13306,30 +12511,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String eventSuccessLiveControlRankValue({required int rank}) {
     return 'Rank $rank';
   }
-
-  @override
-  String eventSuccessLiveControlRecordRoundTitle({required int roundNumber}) {
-    return 'Record round $roundNumber';
-  }
-
-  @override
-  String get eventSuccessLiveControlRankEntryInstructions =>
-      'Enter one unique rank for every unit. The table stays hidden until the existing reveal.';
-
-  @override
-  String get eventSuccessLiveControlScoreEntryInstructions =>
-      'Enter this round’s score for every unit. Totals stay hidden until the existing reveal.';
-
-  @override
-  String get eventSuccessLiveControlEmptyUnitsMessage =>
-      'Generate the live units before recording outcomes.';
-
-  @override
-  String get eventSuccessLiveControlEmptyScoreTeamsMessage =>
-      'Check in guests and give each team an arrival group before recording points.';
-
-  @override
-  String get eventSuccessLiveControlSaveRoundLabel => 'Save round for reveal';
 
   @override
   String get hostsEventSuccessStepRoomLayoutTitle => 'Room layout';
@@ -13948,71 +13129,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventSuccessAccountabilityDeparted => 'Departed';
-
-  @override
-  String get eventSuccessAccountabilityWarningTitle =>
-      'Some guests aren’t marked yet';
-
-  @override
-  String eventSuccessAccountabilityWarningMessage({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count checked-in guests aren’t marked returned or departed.',
-      one: '1 checked-in guest isn’t marked returned or departed.',
-    );
-    return '$_temp0 People sometimes leave without checking out. Review the list if useful, or finish anyway.';
-  }
-
-  @override
-  String get eventSuccessAccountabilityReviewAction => 'Review sweep';
-
-  @override
-  String get eventSuccessAccountabilityFinishAnywayAction => 'Finish anyway';
-
-  @override
-  String eventSuccessHostResourceUnavailableTitle({required String resource}) {
-    return '$resource unavailable';
-  }
-
-  @override
-  String get eventSuccessHostResourceLiveGuide => 'Live guide';
-
-  @override
-  String get eventSuccessHostResourceGuestRoster => 'Guest roster';
-
-  @override
-  String get eventSuccessHostResourceMicroPodAssignments =>
-      'Micro-pod assignments';
-
-  @override
-  String get eventSuccessHostResourcePublishedRotations =>
-      'Published rotations';
-
-  @override
-  String get eventSuccessHostResourceRotationDrafts => 'Rotation drafts';
-
-  @override
-  String get eventSuccessHostResourceMicroPodProfiles =>
-      'Micro-pod attendee profiles';
-
-  @override
-  String get eventSuccessHostResourceRotationProfiles =>
-      'Rotation attendee profiles';
-
-  @override
-  String get eventSuccessHostResourceAttendeePreferences =>
-      'Attendee preferences';
-
-  @override
-  String get eventSuccessHostResourceHostHelpRequests => 'Host-help requests';
-
-  @override
-  String get eventSuccessHostResourceHostHelpProfiles =>
-      'Host-help attendee profiles';
-
-  @override
-  String get eventSuccessHostResourceEventReport => 'Event report';
 
   @override
   String get hostApplicationsUnavailable => 'Applications unavailable';
@@ -14924,107 +14040,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventRehearsalTitle => 'Dress rehearsal';
 
   @override
-  String get hostEventRehearsalManageSubtitle => 'Host · Manage';
-
-  @override
   String get hostEventRehearsalBadge => 'Rehearsal';
-
-  @override
-  String get hostEventRehearsalSyntheticGuests => 'Practice guests';
-
-  @override
-  String get hostEventRehearsalPracticeGuest => 'Practice guest';
-
-  @override
-  String get hostEventRehearsalLatePracticeGuest =>
-      'Late arrival · Practice guest';
-
-  @override
-  String hostEventRehearsalClockPill({required String time}) {
-    return 'Virtual $time';
-  }
-
-  @override
-  String get hostEventRehearsalPracticeTools => 'Practice tools';
-
-  @override
-  String get hostEventRehearsalPracticeToolsBody =>
-      'Control synthetic guests, the companion phone, faults, time, and deterministic replays.';
-
-  @override
-  String get hostEventRehearsalRunSheetBody =>
-      'Change only the simulated clock and rehearsal lifecycle.';
-
-  @override
-  String hostEventRehearsalCoachProgress({
-    required int current,
-    required int total,
-  }) {
-    return 'Task $current of $total';
-  }
-
-  @override
-  String get hostEventRehearsalCoachWhy => 'Why?';
-
-  @override
-  String get hostEventRehearsalCoachGotIt => 'Got it';
-
-  @override
-  String get hostEventRehearsalCoachCollapsed =>
-      'Coach is ready when you need the next practice task.';
-
-  @override
-  String get hostEventRehearsalCoachShow => 'Show Coach';
-
-  @override
-  String hostEventRehearsalCoachResolveLate({required String name}) {
-    return 'Resolve $name\'s late arrival';
-  }
-
-  @override
-  String hostEventRehearsalCoachPlaceGuest({required String name}) {
-    return 'Place $name in the current round';
-  }
-
-  @override
-  String get hostEventRehearsalCoachPlaceGuestBody =>
-      'Use the same Room control you will use on event day.';
-
-  @override
-  String hostEventRehearsalCoachResolveHelp({required String name}) {
-    return 'Resolve $name\'s help request';
-  }
-
-  @override
-  String get hostEventRehearsalCoachSameControl =>
-      'Use the same control you will use on event day.';
-
-  @override
-  String get hostEventRehearsalCoachStart => 'Start the virtual event';
-
-  @override
-  String get hostEventRehearsalCoachStartBody =>
-      'Open the virtual clock to start, then operate the real Host runtime.';
-
-  @override
-  String get hostEventRehearsalCoachResume => 'Resume the virtual event';
-
-  @override
-  String get hostEventRehearsalCoachAdvance => 'Run the current Host step';
-
-  @override
-  String get hostEventRehearsalCoachComplete => 'Review your rehearsal';
-
-  @override
-  String get hostEventRehearsalCoachCompleteBody =>
-      'Open Practice tools to replay, fork, or export the deterministic run.';
-
-  @override
-  String get hostEventRehearsalCoachWhyTitle => 'Why this task?';
-
-  @override
-  String get hostEventRehearsalCoachWhyBody =>
-      'The Coach highlights a real Host control, but synthetic state proves the outcome. Dismissing guidance never completes a task.';
 
   @override
   String get hostEventRehearsalLeaveTitle => 'Leave rehearsal?';
@@ -15682,119 +14698,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventSuccessRoomSetupLoadingBody =>
       'Your reusable layouts will appear here.';
-
-  @override
-  String get eventSuccessLiveWorkspaceNow => 'Now';
-
-  @override
-  String get eventSuccessLiveWorkspaceGuests => 'Guests';
-
-  @override
-  String get eventSuccessLiveWorkspaceRoom => 'Room';
-
-  @override
-  String get eventSuccessHostResourceRoomLayout => 'room layout';
-
-  @override
-  String get eventSuccessRoomWorkspaceWholeGroupTitle => 'One shared room';
-
-  @override
-  String get eventSuccessRoomWorkspaceWholeGroupBody =>
-      'This format runs as one group, so it does not need assigned tables or zones.';
-
-  @override
-  String get eventSuccessRoomWorkspaceUnconfiguredTitle =>
-      'Room layout not configured';
-
-  @override
-  String get eventSuccessRoomWorkspaceUnconfiguredBody =>
-      'Choose or create a room layout in Preparation before the event starts. Live controls remain available in Now.';
-
-  @override
-  String get eventSuccessRoomWorkspaceLoadingTitle => 'Opening the room map';
-
-  @override
-  String get eventSuccessRoomWorkspaceLoadingBody =>
-      'Loading placements and room geometry.';
-
-  @override
-  String get eventSuccessRoomWorkspaceWaitingTitle => 'Waiting for placements';
-
-  @override
-  String get eventSuccessRoomWorkspaceWaitingBody =>
-      'The saved room is ready. Placements appear here after the event guide generates groups or rotations.';
-
-  @override
-  String eventSuccessRoomWorkspaceCapacitySummary({
-    required String units,
-    required int seats,
-  }) {
-    return '$units · $seats seats';
-  }
-
-  @override
-  String eventSuccessRoomWorkspaceTableCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count tables',
-      one: '1 table',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String eventSuccessRoomWorkspaceRowCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count rows',
-      one: '1 row',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String eventSuccessRoomWorkspaceCourtCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count courts',
-      one: '1 court',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String eventSuccessRoomWorkspaceZoneCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count zones',
-      one: '1 zone',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String eventSuccessRoomWorkspaceAreaCount({required int count}) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count areas',
-      one: '1 area',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get eventSuccessRoomWorkspacePlaced => 'Placed';
-
-  @override
-  String get eventSuccessRoomWorkspaceUnconfirmed => 'Unconfirmed';
-
-  @override
-  String get eventSuccessRoomWorkspaceNeedsAttention => 'Needs attention';
 
   @override
   String get hostMomentsTitle => 'Moments';
