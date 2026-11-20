@@ -395,6 +395,8 @@ export function validateReleaseOwnership({
     ["main-only guard", /github\.ref == 'refs\/heads\/main'/u],
     ["iOS release lane", /bundle exec fastlane ios release role:/u],
     ["Android release lane", /bundle exec fastlane android release role:/u],
+    ["a both-stores choice that releases iOS and Android under one approval", /options: \[both, ios, android\]/u],
+    ["an input check that runs before the approval", /^ {4}needs: inputs$/mu],
   ]) {
     if (!marker.test(production)) {
       findings.push(`${releaseFiles.productionWorkflow} is missing ${label}`);
@@ -441,7 +443,8 @@ export function validateReleaseOwnership({
     ["androidBeta", "internal track upload", /track: "internal"/u],
     ["iosRelease", "submission without a new binary", /skip_binary_upload: true/u],
     ["androidRelease", "promotion without a new bundle", /skip_upload_aab: true/u],
-    ["androidRelease", "promotion from the internal track", /track: "internal",\s*track_promote_to: "production"/u],
+    ["androidRelease", "promotion from the testing track that holds the version code", /track: source_track,\s*track_promote_to: "production"/u],
+    ["androidRelease", "a source-track search that skips production", /\(PLAY_TRACKS - \["production"\]\)\.find/u],
   ]) {
     if (lanes[lane] && !marker.test(lanes[lane])) {
       findings.push(`${releaseFiles.lanes} ${lane} lane is missing ${label}`);

@@ -415,22 +415,37 @@ platform :android do
     ])
   end
 
-  desc "Promote a version already on the internal track to production as a staged rollout"
+  desc "Promote a version testers already have to production as a staged rollout"
   lane :release do |options|
     role = role_option(options)
     target = app_target(role)
+    package_name = target["android.applicationId"]
     version_code = options[:version_code].to_s
     rollout = options[:rollout].to_s
     UI.user_error!("version_code:<Play version code> is required") unless version_code.match?(/\A\d+\z/)
     UI.user_error!("rollout must be a fraction in (0, 1]") unless rollout.match?(/\A(0?\.\d+|1(\.0+)?)\z/) && rollout.to_f.positive?
-    upload_to_play_store(package_name: target["android.applicationId"], track: "internal",
+    # A nightly Mobile Beta can replace the internal-track release while a
+    # production run waits for approval, so look for the version code on every
+    # testing track instead of assuming the internal one.
+    codes = ->(track) { google_play_track_version_codes(package_name: package_name, track: track).map(&:to_i) }
+    source_track = (PLAY_TRACKS - ["production"]).find { |track| codes.call(track).include?(version_code.to_i) }
+    unless source_track
+      if codes.call("production").include?(version_code.to_i)
+        UI.user_error!("Version code #{version_code} is already on the production track; nothing to promote")
+      end
+      UI.user_error!("Version code #{version_code} is on no testing track. The internal track now holds " \
+                     "#{codes.call("internal").join(", ").then { |list| list.empty? ? "nothing" : list }}; " \
+                     "start a new run with the version code testers have")
+    end
+    upload_to_play_store(package_name: package_name, track: source_track,
                          track_promote_to: "production", version_code: version_code.to_i,
                          rollout: rollout,
                          track_promote_release_status: rollout.to_f >= 1 ? "completed" : "inProgress",
                          skip_upload_aab: true, skip_upload_apk: true, skip_upload_metadata: true,
                          skip_upload_changelogs: true, skip_upload_images: true, skip_upload_screenshots: true)
     summarize("Play production rollout (#{role})", [
-      ["Package", target["android.applicationId"]], ["Version code", version_code], ["Rollout", rollout]
+      ["Package", package_name], ["Version code", version_code], ["Promoted from", source_track],
+      ["Rollout", rollout]
     ])
   end
 

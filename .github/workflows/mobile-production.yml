@@ -4,11 +4,12 @@ name: Mobile Production
 # for App Store review as a phased release that goes public automatically on
 # approval; run again for a version already submitted, it switches that version
 # to release on approval, or releases it now if Apple approved it.
-# Android promotes that internal-track version code to production as a staged
-# rollout. Nothing is rebuilt or re-uploaded, so production gets the exact
-# bytes testers used. The prod-mobile-release environment requires a reviewer's
-# approval before either job runs. Operator guide: docs/release_operations.md,
-# "Mobile releases".
+# Android promotes that version code to production as a staged rollout, from
+# whichever testing track holds it. Nothing is rebuilt or re-uploaded, so
+# production gets the exact bytes testers used. Choose both stores to release
+# them in one run: the prod-mobile-release environment requires a reviewer's
+# approval, and one approval covers every job waiting in the run. Operator
+# guide: docs/release_operations.md, "Mobile releases".
 
 on:
   workflow_dispatch:
@@ -18,13 +19,18 @@ on:
         type: choice
         options: [consumer, host]
       platform:
-        description: Store to release to
+        description: Stores to release to
         type: choice
-        options: [ios, android]
-      build:
-        description: TestFlight build number (iOS) or Play version code (Android) that testers have
+        options: [both, ios, android]
+        default: both
+      ios_build:
+        description: TestFlight build number testers have (iOS or both)
         type: string
-        required: true
+        default: ""
+      android_version_code:
+        description: Play version code testers have (Android or both)
+        type: string
+        default: ""
       rollout:
         description: Android rollout fraction, for example 0.1 for 10%
         type: string
@@ -34,13 +40,43 @@ permissions:
   contents: read
 
 concurrency:
-  group: mobile-production-${{ inputs.platform }}-${{ inputs.app }}
+  group: mobile-production-${{ inputs.app }}
   cancel-in-progress: false
 
 jobs:
+  inputs:
+    # Fails before anyone is asked to approve, so a missing or malformed
+    # build number never wastes an approval.
+    name: Check the release inputs
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check build numbers for the chosen stores
+        env:
+          PLATFORM: ${{ inputs.platform }}
+          IOS_BUILD: ${{ inputs.ios_build }}
+          ANDROID_VERSION_CODE: ${{ inputs.android_version_code }}
+          ROLLOUT: ${{ inputs.rollout }}
+        run: |
+          status=0
+          if [ "$PLATFORM" != android ] && ! printf '%s' "$IOS_BUILD" | grep -Eq '^[0-9]+$'; then
+            echo "::error::ios_build must be the TestFlight build number testers have"; status=1
+          fi
+          if [ "$PLATFORM" != ios ]; then
+            if ! printf '%s' "$ANDROID_VERSION_CODE" | grep -Eq '^[0-9]+$'; then
+              echo "::error::android_version_code must be the Play version code testers have"; status=1
+            fi
+            if ! printf '%s' "$ROLLOUT" | grep -Eq '^(0?\.[0-9]+|1(\.0+)?)$'; then
+              echo "::error::rollout must be a fraction in (0, 1], for example 0.1"; status=1
+            fi
+          fi
+          exit "$status"
+
   ios:
-    name: Submit iOS ${{ inputs.app }} ${{ inputs.build }} for review
-    if: ${{ github.ref == 'refs/heads/main' && inputs.platform == 'ios' }}
+    name: Submit iOS ${{ inputs.app }} ${{ inputs.ios_build }} for review
+    needs: inputs
+    if: ${{ github.ref == 'refs/heads/main' && inputs.platform != 'android' }}
     runs-on: macos-26
     environment: prod-mobile-release
     timeout-minutes: 30
@@ -62,7 +98,7 @@ jobs:
           APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          BUILD: ${{ inputs.build }}
+          BUILD: ${{ inputs.ios_build }}
           FASTLANE_SKIP_UPDATE_CHECK: "1"
           FASTLANE_HIDE_CHANGELOG: "1"
           LC_ALL: en_US.UTF-8
@@ -70,8 +106,9 @@ jobs:
         run: bundle exec fastlane ios release role:${{ inputs.app }} "build:$BUILD"
 
   android:
-    name: Roll out Android ${{ inputs.app }} ${{ inputs.build }}
-    if: ${{ github.ref == 'refs/heads/main' && inputs.platform == 'android' }}
+    name: Roll out Android ${{ inputs.app }} ${{ inputs.android_version_code }}
+    needs: inputs
+    if: ${{ github.ref == 'refs/heads/main' && inputs.platform != 'ios' }}
     runs-on: ubuntu-latest
     environment: prod-mobile-release
     timeout-minutes: 20
@@ -98,7 +135,7 @@ jobs:
           service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
       - name: Promote to production
         env:
-          BUILD: ${{ inputs.build }}
+          BUILD: ${{ inputs.android_version_code }}
           ROLLOUT: ${{ inputs.rollout }}
           FASTLANE_SKIP_UPDATE_CHECK: "1"
           FASTLANE_HIDE_CHANGELOG: "1"

@@ -369,6 +369,21 @@ test("release ownership keeps production manual, reviewer-gated and rebuild-free
   assertFinding(findings, "iosRelease lane must promote a tested build, not rebuild");
 });
 
+test("release ownership keeps one approval for both stores and a track-aware Android promotion", () => {
+  const findings = releaseFindings({
+    productionWorkflowSource: releaseSources.productionWorkflowSource
+      .replace("options: [both, ios, android]", "options: [ios, android]")
+      .replaceAll("    needs: inputs\n", ""),
+    fastfileSource: releaseSources.fastfileSource
+      .replace("track: source_track,", 'track: "internal",')
+      .replace('(PLAY_TRACKS - ["production"]).find', "PLAY_TRACKS.find"),
+  });
+  assertFinding(findings, "mobile-production.yml is missing a both-stores choice");
+  assertFinding(findings, "mobile-production.yml is missing an input check that runs before the approval");
+  assertFinding(findings, "androidRelease lane is missing promotion from the testing track that holds the version code");
+  assertFinding(findings, "androidRelease lane is missing a source-track search that skips production");
+});
+
 test("release ownership keeps beta lanes away from production and signing overrides", () => {
   const findings = releaseFindings({
     fastfileSource: releaseSources.fastfileSource
