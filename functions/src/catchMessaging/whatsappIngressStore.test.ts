@@ -61,14 +61,16 @@ test("conflicting first STOP cannot prevent later signed STOPs from committing",
     const batch = events(["STOP", "STOP", "New support"],
       ["wamid.conflict", "wamid.stop-two", "wamid.support"]);
     batch[1] = {...batch[1], participantId: "919000000002"};
-    await assert.rejects(
-      persistCatchWhatsappWebhookEvents(db, batch, now + 1000));
+    // The conflicting STOP's denial is committed, so the batch is
+    // acknowledged and the support message behind it still lands.
+    assert.equal(
+      await persistCatchWhatsappWebhookEvents(db, batch, now + 1000), 1);
     for (const stop of batch.slice(0, 2)) {
       assert.equal(fake.records.has(CATCH_ENDPOINT_STOPS + "/" +
       catchStopId(stop, catchEndpointHash("+" + stop.participantId))), true);
     }
     assert.equal(fake.records.has(
-      CATCH_RECEIPTS + "/" + batch[2].eventId), false);
+      CATCH_RECEIPTS + "/" + batch[2].eventId), true);
     assert.equal(fake.records.get(
       CATCH_RECEIPTS + "/" + original.eventId)!.text, "Please help");
   });
@@ -101,8 +103,8 @@ test("webhook persists canonical ingress evidence and preserves replay " +
   await persistCatchWhatsappWebhookEvents(db,
     [{...event, payloadHash: "c".repeat(64)}], now + 1000);
   assert.deepEqual(fake.records.get(key), original);
-  await assert.rejects(persistCatchWhatsappWebhookEvents(db,
-    [{...event, text: "Changed support"}], now + 2000));
+  assert.equal(await persistCatchWhatsappWebhookEvents(db,
+    [{...event, text: "Changed support"}], now + 2000), 1);
   assert.deepEqual(fake.records.get(key), original);
   assert.equal(fake.records.get(
     CATCH_INGRESS_EVIDENCE + "/" + event.eventId)!.state, "blocked");

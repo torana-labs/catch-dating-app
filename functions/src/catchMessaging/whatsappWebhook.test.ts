@@ -261,11 +261,44 @@ test("only existing receipts count as successful persistence retries",
     }
     const missingReceipt = store();
     missingReceipt.docs.set(proofKey, {...original.get(proofKey)!});
-    await assert.rejects(persistCatchWhatsappWebhookEvents(missingReceipt.db,
-      events, now + 1000), /Catch ingress requires reconciliation/);
+    assert.equal(await persistCatchWhatsappWebhookEvents(missingReceipt.db,
+      events, now + 1000), 1);
     assert.equal(missingReceipt.docs.has(receiptKey), false);
     assert.equal(missingReceipt.docs.get(proofKey)!.state, "blocked");
   });
+
+test("a non-text message is recorded blocked and acknowledged, and the " +
+  "text behind it still lands", async () => {
+  const db = store();
+  const image = {id: "wamid.image", from: "919000000001",
+    timestamp: "1790854245", type: "image", image: {id: "media-1"}};
+  const raw = payload([image, incoming]);
+  const [blocked, text] = parseCatchWhatsappWebhook(raw, config);
+  const now = 1790854245000;
+  const receive = (at: number) => handleCatchWhatsappWebhook(signed(raw),
+    config, (events) => persistCatchWhatsappWebhookEvents(db.db, events, at));
+  // Meta retries anything but a 200 for a week; a committed denial must not
+  // put the callback in that loop.
+  assert.deepEqual(await receive(now), {status: 200, body: "ok"});
+  assert.deepEqual(await receive(now + 1000), {status: 200, body: "ok"});
+  assert.equal(db.docs.get(CATCH_INGRESS_EVIDENCE + "/" + blocked.eventId)!
+    .state, "blocked");
+  assert.equal(db.docs.get(CATCH_INGRESS_EVIDENCE + "/" + text.eventId)!
+    .state, "accepted");
+  await db.db.runTransaction((tx) => assertCatchIngressAccepted(tx, db.db,
+    readCatchReceipt(db.docs.get(CATCH_WEBHOOK_COLLECTION + "/" +
+      text.eventId))));
+});
+
+test("a scope refusal says which configured id did not match", async () => {
+  const mustNotWrite = async () => assert.fail("must not write");
+  assert.deepEqual(await handleCatchWhatsappWebhook(signed(payload([incoming],
+    [], "999")), config, mustNotWrite), {status: 403,
+    body: "Foreign account."});
+  assert.deepEqual(await handleCatchWhatsappWebhook(signed(payload([incoming],
+    [], config.wabaId, "999")), config, mustNotWrite), {status: 403,
+    body: "Foreign sender."});
+});
 
 test("invalid internal receipts cannot reach the writer", async () => {
   const db = store();
