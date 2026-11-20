@@ -8,7 +8,7 @@ import {
   plainReader,
   suppressionModule,
 } from "../../listingSuppressions/registry";
-import {appCheckCallableOptions} from "../../shared/callableOptions";
+import {appCheckCallableOptionsWithSecrets} from "../../shared/callableOptions";
 import type {OrganizerDocument} from "../../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
 import {assertCanBeClaimed, organizerClaimRequestId} from "../organizerClaimApproval";
@@ -156,7 +156,7 @@ export async function findClaimableOrganizersHandler(
 }
 
 export const findClaimableOrganizers = onCall(
-  {...appCheckCallableOptions, secrets: [listingSuppressionHmacKey]},
+  appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey]),
   (request) => findClaimableOrganizersHandler(request)
 );
 

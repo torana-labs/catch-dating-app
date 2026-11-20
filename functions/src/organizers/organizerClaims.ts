@@ -1,7 +1,10 @@
 import crypto from "node:crypto";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {
+  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets,
+} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {requireAdminRole} from "../admin/adminAuth";
 import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
@@ -381,7 +384,7 @@ function uniqueStrings(values: unknown[]): string[] {
 }
 
 export const requestOrganizerClaim = onCall(
-  {...appCheckCallableOptions, secrets: [listingSuppressionHmacKey]},
+  appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey]),
   (request) => requestOrganizerClaimHandler(request)
 );
 export const adminDecideOrganizerClaim = onCall(
