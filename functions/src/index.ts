@@ -390,6 +390,11 @@ export {
   adminDecideOrganizerClaim,
   requestOrganizerClaim,
 } from "./organizers/organizerClaims";
+export {findClaimableOrganizers} from "./organizers/phoneLeads/find";
+export {
+  onInstantDraftPhoneLeads,
+  onSalesRelationshipPhoneLeads,
+} from "./organizers/phoneLeads/sync";
 export {
   confirmOrganizerClaimVerification,
   getOrganizerClaimVerificationOptions,
