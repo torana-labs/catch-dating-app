@@ -16,6 +16,8 @@ import type {ImportEventFromLinkCallablePayload} from "../../functions/src/share
 import type {ImportEventFromLinkCallableResponse} from "../../functions/src/shared/generated/importEventFromLinkCallableResponse";
 import type {CreatePromotionKitCallablePayload} from "../../functions/src/shared/generated/createPromotionKitCallablePayload";
 import type {CreatePromotionKitCallableResponse} from "../../functions/src/shared/generated/createPromotionKitCallableResponse";
+import type {ImportGuestListCallablePayload} from "../../functions/src/shared/generated/importGuestListCallablePayload";
+import type {ImportGuestListCallableResponse} from "../../functions/src/shared/generated/importGuestListCallableResponse";
 import type {ReadPublicOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload";
 import type {PublicOrganizerTrackingSettingsCallableResponse} from "../../functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse";
 import type {ManagePublicEventCheckoutCallablePayload} from "../../functions/src/shared/generated/managePublicEventCheckoutCallablePayload";
@@ -1097,6 +1099,7 @@ export interface TryItCommandCallables {
   importOrganizerFromLink: {payload: ImportOrganizerFromLinkCallablePayload; response: ImportOrganizerFromLinkCallableResponse};
   importEventFromLink: {payload: ImportEventFromLinkCallablePayload; response: ImportEventFromLinkCallableResponse};
   createPromotionKit: {payload: CreatePromotionKitCallablePayload; response: CreatePromotionKitCallableResponse};
+  importGuestList: {payload: ImportGuestListCallablePayload; response: ImportGuestListCallableResponse};
 }
 
 /** Who a try-it command would run as: the signed-in account and its phone, when Firebase verified one by code. */

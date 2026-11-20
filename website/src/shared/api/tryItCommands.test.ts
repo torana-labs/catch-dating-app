@@ -69,6 +69,9 @@ describe("try-it command client", () => {
       "event.import-from-link": {mode: "preview", idempotencyKey: tryItIdempotencyKey(), input: {link: "https://events.example/salt-air", eventKey: "wiSaltAirSocialRun"}},
       "promotion.create-kit": {mode: "apply", idempotencyKey: tryItIdempotencyKey(), previewHash: "e".repeat(64),
         input: {eventId: "evtSaltAirSocialRun01", links: [kitLink("Instagram", "channel", "instagram"), kitLink("Kabir", "promoter")]}},
+      "guests.import-list": {mode: "preview", idempotencyKey: tryItIdempotencyKey(),
+        input: {file: {fileName: "salt-air-guests.csv", contentBase64: "TmFtZSxQaG9uZQpNZWVyYSBJeWVyLCs5MTk4MjAwMDAwMDEK"},
+          mapping: {displayName: 0, phone: 1, email: null, ticketType: null}, excludedRowIds: ["row-3"]}},
     };
     for (const [commandId, sample] of Object.entries(samples) as [TryItCommandId, (typeof samples)[TryItCommandId]][]) {
       let sent: unknown;

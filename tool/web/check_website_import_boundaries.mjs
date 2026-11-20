@@ -28,6 +28,9 @@ const allowedFeatureImports = new Map([
   // Verified event text preferences are shared by registration and guest runtime.
   ["eventAssistance", new Set(["eventMessaging"])],
   ["eventRuntime", new Set(["eventMessaging"])],
+  // The guest list try-it tool shares the try-it tools' phone step (the one
+  // sign-in sheet), cities and store badges.
+  ["guestImportTryIt", new Set(["account", "marketing", "tryIt"])],
   // The discovery pages (/<city>/<format>/, /new-to-<city>/) read the city
   // catalog and chrome the city pages own, and send city alerts through the
   // site lead client (features/marketing); Explore ends with their capture.
@@ -38,9 +41,10 @@ const allowedFeatureImports = new Map([
   ["host", new Set(["marketing"])],
   ["organizers", new Set(["account", "claims", "events", "marketing", "reviews"])],
   // A playbook page's closing band carries Catch Host's store badges, a tool
-  // form opens the page's try-it tool, and the /refer/ form carries the
+  // form opens the page's try-it tool (the guest list upload is its own
+  // feature), and the /refer/ form carries the
   // referral sign-in above it.
-  ["playbook", new Set(["marketing", "referral", "tryIt"])],
+  ["playbook", new Set(["guestImportTryIt", "marketing", "referral", "tryIt"])],
   // The /refer/ form signs the referrer in with the one shared sign-in sheet.
   ["referral", new Set(["account"])],
   ["reviews", new Set(["organizers"])],
