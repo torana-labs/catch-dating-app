@@ -11,7 +11,8 @@ type Question = OrganizerFormDraftDocument["definition"]["sections"][number]["qu
  * questions by key; the materializer resolves both to native ids.
  */
 export interface ImportedForm {
-  provider: "google_forms";
+  /** google_forms: the page's own form data; ai_read: the AI fallback read the page text (#2062). */
+  provider: "google_forms" | "ai_read";
   parserVersion: 1;
   title: string;
   description: string | null;

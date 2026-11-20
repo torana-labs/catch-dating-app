@@ -15,6 +15,10 @@ import {packagedIntake} from "../operations/supplyIntake/runtime";
 import {pageSourceFor} from "../operations/supplyIntake/worker";
 import {createOrganizerFormInTransaction, materializeImportedForm} from "../organizers/organizerForms";
 import {googleFormData, importGoogleForm} from "../formImport/googleForm";
+import {AI_FORM_INPUT_SCHEMA, AI_FORM_MAX_OUTPUT_TOKENS, AI_FORM_OUTPUT_SCHEMA, AI_FORM_PROMPT, AI_FORM_PROMPT_VERSION,
+  AI_FORM_TASK, aiFormInput, importAiForm} from "../formImport/aiForm";
+import {defaultAiFallbackDeps, runAiFallback, type AiFallbackDeps, type AiFallbackRequest, type AiFallbackResult} from
+  "./aiFallback/runner";
 import type {ImportedForm} from "../formImport/importedForm";
 import type {ImportFormFromLinkCallablePayload} from
   "../shared/generated/importFormFromLinkCallablePayload";
@@ -53,7 +57,15 @@ import {readTryItWorkspace, stageTryItWorkspace, type WorkspaceLookup} from "./w
 // form's own address once the read has followed it, before anything is kept.
 //
 // Typeform and the other form providers need the form owner's credentials to
-// read a definition, so they are refused with that reason rather than guessed.
+// read a definition, so they are refused with that reason rather than guessed,
+// while the AI fallback is off. With it on (#2062, step 5), a page this
+// command's own parser cannot read (another form builder, any other public
+// page, or a Google Form without its page data) is read from its visible
+// text by the shared AI fallback (aiFallback/, formImport/aiForm.ts) into the
+// same draft shape. The do-not-list check still comes first, the Google
+// parser stays primary, and the draft lists every AI-read question for the
+// host to check (aiRead, reviewFields). Apply reads the page again: the same
+// text hits the fallback's cache, so preview and apply cost one paid read.
 
 export const COMMAND_ID = "form.import-from-link";
 const HOUR_MS = 60 * 60 * 1000;
@@ -70,7 +82,20 @@ export interface FormPageReading {
   finalUrl: string | null;
   /** The form's page data, when the page carried it. */
   data: unknown[] | null;
+  /** The page's title and visible text, for the AI fallback only. */
+  title?: string | null;
+  text?: string | null;
 }
+
+/** The AI fallback as this command uses it. */
+export interface FormAiFallback {
+  /** Whether the fallback is switched on; throws when it is half switched on. */
+  enabled(): Promise<boolean>;
+  read(request: {uid: string; input: {pageTitle: string; pageText: string}}): Promise<AiFallbackResult>;
+}
+
+/** A per-call ceiling above the worst case of one page read (about US$0.67 at the price book's rates). */
+export const AI_FORM_MAX_COST_MICROS = 750_000;
 
 export interface FormPageReader {
   read(input: {url: string; runKey: string}): Promise<FormPageReading>;
@@ -88,6 +113,8 @@ export interface ImportFormFromLinkDeps {
   publicFormId: () => string;
   reader: () => FormPageReader;
   suppression: () => FormSuppressionCheck;
+  /** Absent: the AI fallback is off. */
+  aiFallback?: () => FormAiFallback;
 }
 
 const defaultDeps: ImportFormFromLinkDeps = {
@@ -99,7 +126,23 @@ const defaultDeps: ImportFormFromLinkDeps = {
   publicFormId: () => randomBytes(24).toString("base64url"),
   reader: () => guardedFormPageReader({db: () => admin.firestore(), now: () => new Date()}),
   suppression: () => registryFormSuppression({db: () => admin.firestore(), now: () => new Date()}),
+  aiFallback: () => sharedFormAiFallback(),
 };
+
+/** One page read as the shared AI fallback runs it. */
+export function formAiFallbackRequest(uid: string, input: {pageTitle: string; pageText: string}): AiFallbackRequest {
+  return {uid, commandId: COMMAND_ID, task: AI_FORM_TASK, promptVersion: AI_FORM_PROMPT_VERSION, prompt: AI_FORM_PROMPT,
+    input, inputSchema: AI_FORM_INPUT_SCHEMA, outputSchema: AI_FORM_OUTPUT_SCHEMA,
+    maxOutputTokens: AI_FORM_MAX_OUTPUT_TOKENS, maxCostMicros: AI_FORM_MAX_COST_MICROS};
+}
+
+/** The shared AI fallback, off until its policy is switched on. */
+export function sharedFormAiFallback(deps: AiFallbackDeps = defaultAiFallbackDeps()): FormAiFallback {
+  return {
+    enabled: async () => (await deps.policy()) !== null,
+    read: ({uid, input}) => runAiFallback(formAiFallbackRequest(uid, input), deps),
+  };
+}
 
 /**
  * The do-not-list check for form links: keys the links as Supply Intake keys
@@ -127,8 +170,11 @@ export function guardedFormPageReader(deps: {db: () => FirebaseFirestore.Firesto
       const {source, settle} = await pageSourceFor({db: deps.db(), now: deps.now}, policy, "web_instant_draft");
       try {
         const {snapshot, receipt} = await source.capture({runKey, url, namedScripts: ["FB_PUBLIC_LOAD_DATA_"]});
-        return {outcome: receipt.outcome, finalUrl: receipt.finalUrl,
-          data: googleFormData(snapshot as {embeddedJson?: Array<{id: string | null; value: unknown}>} | null)};
+        const page = snapshot as {embeddedJson?: Array<{id: string | null; value: unknown}>; title?: unknown;
+          text?: unknown} | null;
+        return {outcome: receipt.outcome, finalUrl: receipt.finalUrl, data: googleFormData(page),
+          title: typeof page?.title === "string" ? page.title : null,
+          text: typeof page?.text === "string" ? page.text : null};
       } finally {
         await settle();
       }
@@ -146,7 +192,7 @@ interface Context {
 
 /** What a read produced: the imported form and its draft outline, or why not. */
 type Found =
-  | {ok: true; imported: ImportedForm; outline: FormOutline; hash: string}
+  | {ok: true; imported: ImportedForm; outline: FormOutline; hash: string; aiRead: boolean; reviewFields: string[]}
   | {ok: false; reason: string};
 
 export async function importFormFromLinkHandler(request: CallableRequest<unknown>,
@@ -166,15 +212,21 @@ export async function importFormFromLinkHandler(request: CallableRequest<unknown
     formId: importedFormId(commandKey)};
   const db = deps.firestore();
   await deps.checkRateLimit(db, caller.uid, "importFormFromLink", {maxRequests: 120, windowMs: HOUR_MS});
+  const aiReader = lazyAiFallback(deps);
+  // With the AI fallback on, a link this command's own parser can't read is
+  // read on a best-effort basis instead of being sent to staff.
+  if (ctx.link.support !== "instant" && await aiReader()) {
+    ctx.link = {provider: ctx.link.provider, support: "best_effort", reason: "ai_fallback"};
+  }
 
   const lookup = await db.runTransaction((tx) => readTryItWorkspace(tx, db, caller.uid), {readOnly: true});
-  if (data.mode === "apply") return apply(db, deps, request, ctx, data, caller.phone, lookup);
+  if (data.mode === "apply") return apply(db, deps, request, ctx, data, caller.phone, lookup, aiReader);
   if (lookup.kind === "new") return respond(ctx, "needs_input", {reasons: ["no_workspace"]});
   const organizerId = workspaceOrganizerId(lookup);
-  if (ctx.link.support !== "instant") {
+  if (ctx.link.support === "staff_follow_up") {
     return respond(ctx, "refused", {organizerId, reasons: [ctx.link.reason ?? "not_a_form_link"]});
   }
-  const found = await readForm(db, deps, request, ctx, caller.phone);
+  const found = await readForm(db, deps, request, ctx, caller.phone, aiReader);
   if (!found.ok) return respond(ctx, "refused", {organizerId, reasons: [found.reason]});
   return respond(ctx, "previewed", {organizerId, found});
 }
@@ -187,7 +239,8 @@ export const importFormFromLink = onCall(appCheckCallableOptionsWithSecrets([lis
  * create the draft form, then record it on the workspace with the receipt.
  */
 async function apply(db: FirebaseFirestore.Firestore, deps: ImportFormFromLinkDeps, request: CallableRequest<unknown>,
-  ctx: Context, data: ImportFormFromLinkCallablePayload, phone: string, lookup: WorkspaceLookup): Promise<Response> {
+  ctx: Context, data: ImportFormFromLinkCallablePayload, phone: string, lookup: WorkspaceLookup,
+  ai: LazyAiFallback): Promise<Response> {
   const now = deps.now();
   const requestHash = commandRequestHash(COMMAND_ID, ctx.uid, ctx.input, data.confirm ?? null);
   const receiptId = commandReceiptDocumentId(db, COMMAND_ID, ctx.uid, data.idempotencyKey);
@@ -198,11 +251,11 @@ async function apply(db: FirebaseFirestore.Firestore, deps: ImportFormFromLinkDe
   if (lookup.kind === "new") {
     throw new HttpsError("failed-precondition", "Set up your organizer profile first.", {reason: "no_workspace"});
   }
-  if (ctx.link.support !== "instant") {
+  if (ctx.link.support === "staff_follow_up") {
     throw new HttpsError("failed-precondition", "This link can't be imported.", {reason: ctx.link.reason ?? "not_a_form_link"});
   }
   const organizerId = workspaceOrganizerId(lookup);
-  const found = await readForm(db, deps, request, ctx, phone);
+  const found = await readForm(db, deps, request, ctx, phone, ai);
   if (!found.ok) {
     throw new HttpsError("failed-precondition", REFUSALS[found.reason] ?? REFUSALS.link_unreadable, {reason: found.reason});
   }
@@ -230,7 +283,7 @@ async function apply(db: FirebaseFirestore.Firestore, deps: ImportFormFromLinkDe
 
 /** Reads the form page once, within this command's own limits and the shared page allowance. */
 async function readForm(db: FirebaseFirestore.Firestore, deps: ImportFormFromLinkDeps, request: CallableRequest<unknown>,
-  ctx: Context, phone: string): Promise<Found> {
+  ctx: Context, phone: string, aiReader: LazyAiFallback): Promise<Found> {
   await deps.checkRateLimit(db, limiterKey("phone", phone), "importFormFromLinkRead", {maxRequests: 10, windowMs: HOUR_MS});
   await deps.checkRateLimit(db, limiterKey("ip", clientAddress(request)), "importFormFromLinkAddress", {maxRequests: 30, windowMs: HOUR_MS});
   await deps.checkRateLimit(db, "try-it-form-imports", "importFormFromLinkDaily", {maxRequests: 100, windowMs: DAY_MS});
@@ -238,14 +291,51 @@ async function readForm(db: FirebaseFirestore.Firestore, deps: ImportFormFromLin
   if (await suppressed(suppression, [ctx.input.link])) return {ok: false, reason: "listing_suppressed"};
   const reading = await deps.reader().read({url: ctx.input.link, runKey: `tryitform-${ctx.commandKey.slice(0, 40)}`});
   if (reading.outcome !== "fetched") return {ok: false, reason: "link_unreadable"};
-  if (!isGoogleFormUrl(reading.finalUrl)) return {ok: false, reason: "not_a_form_link"};
-  if (reading.finalUrl !== ctx.input.link && await suppressed(suppression, [reading.finalUrl as string])) {
+  const google = isGoogleFormUrl(reading.finalUrl);
+  // The fallback's switch is read only when the parser can't do the job, so
+  // a Google Form never depends on it.
+  if (!google && !await aiReader()) return {ok: false, reason: "not_a_form_link"};
+  if (reading.finalUrl && reading.finalUrl !== ctx.input.link && await suppressed(suppression, [reading.finalUrl])) {
     return {ok: false, reason: "listing_suppressed"};
   }
-  if (!reading.data) return {ok: false, reason: "form_not_public"};
-  const imported = importGoogleForm(reading.data);
-  if (!imported) return {ok: false, reason: "form_not_public"};
-  if (imported.sections.every((section) => section.questions.length === 0)) return {ok: false, reason: "form_empty"};
+  const parsed = google && reading.data ? importGoogleForm(reading.data) : null;
+  if (parsed && parsed.sections.some((section) => section.questions.length > 0)) return foundForm(ctx, parsed, false, []);
+  const ai = await aiReader();
+  if (!ai) return {ok: false, reason: parsed ? "form_empty" : "form_not_public"};
+  return readWithAi(ctx, ai, reading, google);
+}
+
+/** The AI fallback when it is switched on, checked at most once per request. */
+type LazyAiFallback = () => Promise<FormAiFallback | null>;
+
+function lazyAiFallback(deps: ImportFormFromLinkDeps): LazyAiFallback {
+  let pending: Promise<FormAiFallback | null> | null = null;
+  return () => {
+    pending ??= (async () => {
+      const ai = deps.aiFallback ? deps.aiFallback() : null;
+      return ai && await ai.enabled() ? ai : null;
+    })();
+    return pending;
+  };
+}
+
+/** The AI fallback's read of a page the parser couldn't read: its visible text only. */
+async function readWithAi(ctx: Context, ai: FormAiFallback, reading: FormPageReading, google: boolean): Promise<Found> {
+  const input = aiFormInput(reading.title, reading.text);
+  if (!input) return {ok: false, reason: "form_unreadable"};
+  const result = await ai.read({uid: ctx.uid, input});
+  // Switched off between the check and the read: answer as the parser would.
+  if (result.status === "off") return {ok: false, reason: google ? "form_not_public" : "not_a_form_link"};
+  if (result.status === "refused") {
+    return {ok: false, reason: result.reason === "ai_unreadable" ? "form_unreadable" : result.reason};
+  }
+  const read = importAiForm(result.output);
+  if (!read) return {ok: false, reason: "form_unreadable"};
+  return foundForm(ctx, read.imported, true, read.reviewFields);
+}
+
+/** The draft outline and preview hash for an imported form. */
+function foundForm(ctx: Context, imported: ImportedForm, aiRead: boolean, reviewFields: string[]): Found {
   const definition = materializeImportedForm({content: imported, formId: ctx.formId, defaultTargetKind: "organizer",
     defaultTargetId: null});
   const outline: FormOutline = {title: definition.title, description: definition.description,
@@ -253,7 +343,7 @@ async function readForm(db: FirebaseFirestore.Firestore, deps: ImportFormFromLin
     ruleCount: definition.logicRules.length,
     sections: definition.sections.map((section) => ({title: section.title, questions: section.questions.map((question) =>
       ({label: question.label, kind: question.kind, required: question.required, optionCount: question.options.length}))}))};
-  return {ok: true, imported, outline, hash: commandPreviewHash(COMMAND_ID, ctx.uid, ctx.input,
+  return {ok: true, imported, outline, aiRead, reviewFields, hash: commandPreviewHash(COMMAND_ID, ctx.uid, ctx.input,
     {formId: ctx.formId, imported})};
 }
 
@@ -312,7 +402,8 @@ function respond(ctx: Context, status: Response["status"], options: {organizerId
     next: reasons.includes("no_workspace") ? [{commandId: "workspace.ensure", label: "Set up your organizer profile"}] : [],
     receiptId: options.receiptId ?? null,
     result: {organizerId: options.organizerId ?? null, link: ctx.link, form: found?.outline ?? null,
-      flags: found?.imported.flags ?? [], formId, reasons},
+      flags: found?.imported.flags ?? [], formId, reasons, aiRead: found?.aiRead ?? false,
+      reviewFields: found?.reviewFields ?? []},
   };
 }
 
@@ -323,6 +414,9 @@ const REFUSALS: Record<string, string> = {
   form_not_public: "This form isn't public, so we can't read its questions.",
   form_empty: "This form has no questions we can bring across.",
   listing_suppressed: "Catch can't import forms for this organizer. Contact support if you think this is a mistake.",
+  form_unreadable: "We couldn't find form questions on this page. Check it's the form itself, or rebuild it in the Host app.",
+  ai_cap_reached: "We couldn't read this automatically right now. Try again next month, or rebuild it in the Host app.",
+  ai_daily_limit: "You've used today's automatic reads. Try again tomorrow, or rebuild it in the Host app.",
 };
 
 function summaryFor(status: Response["status"], found: {imported: ImportedForm; outline: FormOutline} | null,
@@ -337,6 +431,7 @@ function summaryFor(status: Response["status"], found: {imported: ImportedForm; 
   const lines = [`${outline.questionCount} questions in ${outline.sections.length} sections.`];
   if (outline.ruleCount > 0) lines.push(`${outline.ruleCount} answer-based sections carried over.`);
   if (imported.flags.length > 0) lines.push(`${imported.flags.length} things to check or rebuild by hand.`);
+  if (imported.provider === "ai_read") lines.push("Read by AI from the page: check every question before you publish.");
   lines.push("It stays a private draft: no one can open it until you publish it.");
   return status === "previewed" ?
     {headline: `We'll draft "${outline.title}".`.slice(0, 200), lines} :

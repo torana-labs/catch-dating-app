@@ -5542,7 +5542,14 @@ documents carry no `expiresAt` and stay as the spend record) and
 TTL. `guests.import-list` and `sales.import-past` answer `aiRead` and
 `reviewFields` (the columns the model chose; past sales may also choose the
 amount, currency and city columns) so the host checks them. Both fields are
-optional: absent means false.
+optional: absent means false. `form.import-from-link` answers the same two
+fields when the fallback read a form page its parser could not (another form
+builder, any other public page, or a Google Form without its page data):
+the model sees the page's title and visible text only, fills the same
+`ImportedForm` draft (`functions/src/formImport/aiForm.ts`, built through the
+Google reader's limits and flags), never writes answer-based logic (a page
+that says some questions depend on answers gets `branching_review`), and
+every question key it read is in `reviewFields`.
 
 ### Organizer Application Intake
 

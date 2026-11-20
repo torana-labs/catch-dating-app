@@ -8,6 +8,7 @@ import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
 import {validateOrganizerFormDefinition} from "../organizers/organizerForms";
 import {ensureTryItWorkspaceHandler} from "./ensureTryItWorkspace";
 import {formLink, importedFormId, importFormFromLinkHandler, type FormPageReading} from "./importFormFromLink";
+import type {AiFallbackResult} from "./aiFallback/runner";
 import {commandReceiptKey} from "./envelope";
 import {tryItWorkspaceOrganizerId} from "./workspace";
 
@@ -250,4 +251,126 @@ test("an unavailable do-not-list stops the import and reads nothing (fails close
     (error: {code?: string; details?: {reason?: string}}) =>
       error.code === "unavailable" && error.details?.reason === "suppression_unavailable");
   assert.deepEqual(h.reads, []);
+});
+
+// The AI fallback (#2062, step 5): a fake in place of the shared fallback,
+// which aiForm.test.ts runs through the real runner.
+const OTHER = "https://forms.example.com/fictional-lantern-walk";
+const aiAnswer = {title: "Lantern Walk sign-up", description: "", conditional: true, sections: [{title: "", questions: [
+  {label: "Your name", helpText: "", kind: "shortText", required: true, options: []},
+  {label: "Pace", helpText: "", kind: "singleChoice", required: false, options: ["Easy", "Brisk"]},
+]}]};
+
+function withAi(h: Awaited<ReturnType<typeof withWorkspace>>, options: {enabled?: boolean;
+  result?: (input: {pageTitle: string; pageText: string}) => AiFallbackResult} = {}) {
+  const asked: Array<{pageTitle: string; pageText: string}> = [];
+  let checks = 0;
+  const deps = {...h.deps, aiFallback: () => ({
+    enabled: async () => {
+      checks++;
+      return options.enabled ?? true;
+    },
+    read: async ({input}: {uid: string; input: {pageTitle: string; pageText: string}}) => {
+      asked.push(input);
+      return options.result ? options.result(input) : {status: "read" as const, output: aiAnswer, cacheHit: asked.length > 1};
+    },
+  })};
+  return {deps, asked, checks: () => checks};
+}
+
+const otherPage = (text = "Lantern Walk sign-up. Your name. Pace: Easy or Brisk."): FormPageReading =>
+  ({outcome: "fetched", finalUrl: OTHER, data: null, title: "Lantern Walk", text});
+
+test("with the AI fallback switched off, other form tools are refused as before and nothing is read", async () => {
+  const h = await withWorkspace({[OTHER]: otherPage()});
+  const ai = withAi(h, {enabled: false});
+  const response = await importFormFromLinkHandler(call(envelope("preview", OTHER)), ai.deps);
+  valid(response, "ai off");
+  assert.equal(response.status, "refused");
+  assert.deepEqual(response.result.reasons, ["not_a_form_link"]);
+  assert.equal(response.result.link.support, "staff_follow_up");
+  assert.equal(response.result.aiRead, false);
+  assert.deepEqual(h.reads, []);
+  assert.deepEqual(ai.asked, []);
+});
+
+test("a Google Form the parser reads never asks the AI fallback, or even its switch", async () => {
+  const h = await withWorkspace();
+  const ai = withAi(h);
+  const response = await importFormFromLinkHandler(call(envelope("preview")), ai.deps);
+  assert.equal(response.status, "previewed");
+  assert.equal(response.result.aiRead, false);
+  assert.deepEqual(response.result.reviewFields, []);
+  assert.equal(ai.checks(), 0);
+  assert.deepEqual(ai.asked, []);
+});
+
+test("with the AI fallback on, another form tool's page is read from its text into a draft to review", async () => {
+  const h = await withWorkspace({[OTHER]: otherPage()});
+  const ai = withAi(h);
+  const preview = await importFormFromLinkHandler(call(envelope("preview", OTHER)), ai.deps);
+  valid(preview, "ai preview");
+  assert.equal(preview.status, "previewed");
+  assert.deepEqual(preview.result.link, {provider: null, support: "best_effort", reason: "ai_fallback"});
+  assert.equal(preview.result.aiRead, true);
+  assert.deepEqual(preview.result.reviewFields, ["q1_your_name", "q2_pace"]);
+  assert.equal(preview.result.form?.ruleCount, 0);
+  assert.deepEqual(preview.result.flags, [{code: "branching_review", item: null}]);
+  assert.ok(preview.summary.lines.some((line) => line.startsWith("Read by AI")));
+  assert.deepEqual(ai.asked, [{pageTitle: "Lantern Walk", pageText: "Lantern Walk sign-up. Your name. Pace: Easy or Brisk."}]);
+  assert.deepEqual(h.registry.checked, [[OTHER]]);
+  assert.deepEqual(forms(h.db), []);
+
+  // Apply reads the same page text again (the shared cache answers it) and makes the draft.
+  const applied = await importFormFromLinkHandler(call(envelope("apply", OTHER,
+    {confirm: {commandId: "form.import-from-link", previewHash: preview.previewHash}})), ai.deps);
+  valid(applied, "ai apply");
+  assert.equal(applied.status, "applied");
+  assert.equal(applied.result.aiRead, true);
+  assert.equal(ai.asked.length, 2);
+  assert.deepEqual(ai.asked[1], ai.asked[0]);
+  const draft = h.db.read(`organizerFormDrafts/${FORM_ID}`) as {definition: Parameters<typeof validateOrganizerFormDefinition>[0]};
+  assert.doesNotThrow(() => validateOrganizerFormDefinition(draft.definition));
+  assert.deepEqual(draft.definition.sections[0].questions.map((item) => item.label), ["Your name", "Pace"]);
+});
+
+test("with the AI fallback on, a Google Form without its page data is read from its text", async () => {
+  const other = "https://docs.google.com/forms/d/e/fictional-scripted/viewform";
+  const h = await withWorkspace({[other]: {outcome: "fetched", finalUrl: other, data: null, title: "Lantern Walk",
+    text: "Your name. Pace."}});
+  const ai = withAi(h);
+  const response = await importFormFromLinkHandler(call(envelope("preview", other)), ai.deps);
+  assert.equal(response.status, "previewed");
+  assert.equal(response.result.link.support, "instant");
+  assert.equal(response.result.aiRead, true);
+});
+
+test("the AI fallback's refusals: nothing found, the month's cap, the day's limit", async () => {
+  const cases: Array<[AiFallbackResult | null, string, string]> = [
+    [{status: "read", output: {...aiAnswer, sections: []}, cacheHit: false}, "form_unreadable", otherPage().text as string],
+    [{status: "refused", reason: "ai_unreadable"}, "form_unreadable", otherPage().text as string],
+    [{status: "refused", reason: "ai_cap_reached"}, "ai_cap_reached", otherPage().text as string],
+    [{status: "refused", reason: "ai_daily_limit"}, "ai_daily_limit", otherPage().text as string],
+    [null, "form_unreadable", "   "],
+  ];
+  for (const [result, reason, text] of cases) {
+    const h = await withWorkspace({[OTHER]: otherPage(text)});
+    const ai = withAi(h, {result: () => result ?? {status: "off"}});
+    const response = await importFormFromLinkHandler(call({...envelope("preview", OTHER), idempotencyKey: `form-${reason}`}), ai.deps);
+    valid(response, reason);
+    assert.equal(response.status, "refused", reason);
+    assert.deepEqual(response.result.reasons, [reason]);
+    assert.equal(response.result.form, null);
+    if (text.trim() === "") assert.deepEqual(ai.asked, []);
+  }
+});
+
+test("with the AI fallback on, the do-not-list still comes before any read", async () => {
+  const h = await withWorkspace({[OTHER]: otherPage()});
+  h.registry.blocked.add(OTHER);
+  const ai = withAi(h);
+  const response = await importFormFromLinkHandler(call(envelope("preview", OTHER)), ai.deps);
+  assert.deepEqual(response.result.reasons, ["listing_suppressed"]);
+  assert.deepEqual(h.reads, []);
+  assert.deepEqual(ai.asked, []);
 });
