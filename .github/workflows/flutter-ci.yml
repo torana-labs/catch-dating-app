@@ -334,7 +334,6 @@ jobs:
           CATCH_FORM_PROFILE_CAPTURE_DIR: /tmp/catch-form-profile-review
           CATCH_MESSAGING_CAPTURE_DIR: /tmp/catch-messaging-permissions-review
           CATCH_CHAT_SAFETY_CAPTURE_DIR: /tmp/catch-chat-safety-review
-          CATCH_MATCHING_HOST_REVIEW_DIR: /tmp/catch-matching-host-review
         run: |
           jq -er --arg sha "$GITHUB_SHA" --argjson index "$SHARD_INDEX" \
             '.sourceSha == $sha and (.shards[$index].files | length > 0)' \
@@ -381,7 +380,6 @@ jobs:
               'form-profile-question': ('/tmp/catch-form-profile-review', 'test/hosts/forms/host_form_profile_question_section_test.dart'),
               'messaging-permissions': ('/tmp/catch-messaging-permissions-review', 'test/safety/messaging_permissions_widget_test.dart'),
               'chat-safety': ('/tmp/catch-chat-safety-review', 'test/chats/event_chat_message_actions_widget_test.dart'),
-              'matching-host': ('/tmp/catch-matching-host-review', 'test/event_success/event_success_assignment_features_test.dart'),
               'audience-response-catalog': ('artifacts/response-detail-review/after', 'test/ui_captures/response_detail_preview_test.dart'),
               'audience-person-catalog': ('artifacts/ui-captures/audience-person-review', 'test/ui_captures/fixtures/host_audience_journey_fixture_test.dart'),
           }
