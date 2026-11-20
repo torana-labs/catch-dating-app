@@ -328,7 +328,7 @@ String _nextRunLabel(Event event) {
   final day = EventFormatters.shortWeekday(event.startTime).toUpperCase();
   final month = EventFormatters.shortMonth(event.startTime).toUpperCase();
   final time = EventFormatters.time(event.startTime).toUpperCase();
-  return 'NEXT RUN · $day ${event.startTime.day} $month · $time';
+  return 'NEXT PLAN · $day ${event.startTime.day} $month · $time';
 }
 
 class OrganizerActivitySection extends StatelessWidget {

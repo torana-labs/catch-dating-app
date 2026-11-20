@@ -291,6 +291,11 @@ import '../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../support/capture_device.dart';
 import 'entries/event_success_companion_micro_pod_assignment.dart';
 import 'entries/guest_after_event.dart';
+import 'entries/guest_book_sheet.dart';
+import 'entries/guest_follow_host.dart';
+import 'entries/guest_group_chat.dart';
+import 'entries/guest_reminder.dart';
+import 'entries/host_create_first_event.dart';
 import 'entries/host_door_arriving.dart';
 import 'entries/host_door_in.dart';
 import 'entries/host_formats_courts_phone.dart';
@@ -6965,6 +6970,11 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_live_console': () => hostLiveConsoleCapture,
   'host_post_event_report': () => hostPostEventReportCapture,
   'guest_after_event': () => guestAfterEventCapture,
+  'guest_book_sheet': () => guestBookSheetCapture,
+  'guest_follow_host': () => guestFollowHostCapture,
+  'guest_group_chat': () => guestGroupChatCapture,
+  'guest_reminder': () => guestReminderCapture,
+  'host_create_first_event': () => hostCreateFirstEventCapture,
   'event_success_companion_micro_pod_assignment': () =>
       eventSuccessCompanionMicroPodAssignmentCapture,
   'match_chat_context': () => matchChatContextCapture,

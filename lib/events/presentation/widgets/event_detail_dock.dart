@@ -18,6 +18,7 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
@@ -128,7 +129,7 @@ class EventDetailDock extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final activity = ActivityPalette.resolve(context, event.activityKind);
     final bookingAccent = activity.accent;
-    final referenceNow = now ?? DateTime.now();
+    final referenceNow = now ?? ref.watch(appClockProvider).now();
     final ctaBackground = darkSurface ? t.ink : null;
     final ctaDivider = darkSurface
         ? CatchTokens.editorialWhite.withValues(

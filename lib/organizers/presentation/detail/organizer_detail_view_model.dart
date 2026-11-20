@@ -10,6 +10,7 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -89,6 +90,7 @@ AsyncValue<OrganizerDetailViewModel?> organizerDetailViewModel(
     uidAsync: uidAsync,
     membershipAsync: membershipAsync,
     appRole: AppConfig.appRole,
+    now: ref.watch(appClockProvider).now(),
   );
 }
 

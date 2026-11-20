@@ -34,6 +34,7 @@ import 'package:catch_kernel/organizer_supply_capabilities.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/errors/app_error_context.dart' as app_ops;
@@ -151,7 +152,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
           ),
         );
       }
-      final now = DateTime.now();
+      final now = ref.watch(appClockProvider).now();
       final sectionVisibility = eventDetailSectionVisibilityStateFrom(
         event: vm.event,
         participation: vm.participation,
@@ -473,7 +474,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
         _initialEventMatchesRoute &&
         canRenderGuestInitialEvent) {
       final event = widget.initialEvent!;
-      final now = DateTime.now();
+      final now = ref.watch(appClockProvider).now();
       final sectionVisibility = eventDetailSectionVisibilityStateFrom(
         event: event,
         participation: null,
