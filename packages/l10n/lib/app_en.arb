@@ -19695,7 +19695,7 @@
   "@hostFormsPlacementCampaign": {"description": "Where a form shows: a campaign link.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.forms"},
   "hostFormsRowSubtitle": "{count, plural, =1{1 response} other{{count} responses}} · {placement}",
   "@hostFormsRowSubtitle": {"description": "Forms list row subtitle: answer count and where it shows.", "placeholders": {"count": {"type": "int"}, "placement": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.forms"},
-  "hostFormsRowNew": "{count} new",
+  "hostFormsRowNew": "{count, plural, =1{1 new} other{{count} new}}",
   "@hostFormsRowNew": {"description": "Forms row badge: applications on this form still waiting for a first look.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.forms"},
   "hostFormsStatNewResponses": "New responses",
   "@hostFormsStatNewResponses": {"description": "Forms tab stat: applications across the forms still waiting for a first look.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.forms"},

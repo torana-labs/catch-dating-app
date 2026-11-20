@@ -19375,7 +19375,7 @@ abstract class AppLocalizations {
   /// Forms row badge: applications on this form still waiting for a first look.
   ///
   /// In en, this message translates to:
-  /// **'{count} new'**
+  /// **'{count, plural, =1{1 new} other{{count} new}}'**
   String hostFormsRowNew({required int count});
 
   /// Forms tab stat: applications across the forms still waiting for a first look.

@@ -12474,7 +12474,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostFormsRowNew({required int count}) {
-    return '$count new';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new',
+      one: '1 new',
+    );
+    return '$_temp0';
   }
 
   @override
