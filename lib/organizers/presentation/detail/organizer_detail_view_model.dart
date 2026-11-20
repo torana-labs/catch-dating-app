@@ -42,6 +42,7 @@ abstract class OrganizerDetailViewModel with _$OrganizerDetailViewModel {
 /// route and schedule. Reviews, profile, and membership state are secondary;
 /// they hydrate the detail screen when available without hiding newly-created
 /// events behind the route's placeholder body.
+// provider-graph: high-fan-out:organizerDetailViewModelProvider accepted -- One organizer page read: the organizer, its events, reviews, the viewer's identity, profile and follow, and the screen clock that decides which events are upcoming, so a capture or test can fix the time.
 @riverpod
 AsyncValue<OrganizerDetailViewModel?> organizerDetailViewModel(
   Ref ref,
