@@ -53,6 +53,8 @@ function formData(title = "Driftwood Supper Club RSVP") {
 function harness(pages: Record<string, FormPageReading> = {[LINK]: {outcome: "fetched", finalUrl: LINK, data: formData()}}) {
   const db = new FakeFirestore();
   const reads: string[] = [];
+  // The do-not-list: links it names, whether its key is missing, and every check.
+  const registry = {blocked: new Set<string>(), unavailable: false, checked: [] as string[][]};
   const deps = {
     firestore: () => db as unknown as FirebaseFirestore.Firestore,
     now: () => new Date(NOW),
@@ -67,8 +69,13 @@ function harness(pages: Record<string, FormPageReading> = {[LINK]: {outcome: "fe
       reads.push(url);
       return pages[url] ?? {outcome: "not_captured", finalUrl: null, data: null};
     }}),
+    suppression: () => async (urls: string[]) => {
+      registry.checked.push(urls);
+      if (registry.unavailable) return "unavailable" as const;
+      return urls.some((url) => registry.blocked.has(url)) ? "suppressed" as const : "clear" as const;
+    },
   };
-  return {db, deps, reads, pages};
+  return {db, deps, reads, pages, registry};
 }
 
 function call(data: unknown) {
@@ -200,4 +207,47 @@ test("an unreadable page, a page that left Google Forms, or a private form is re
     assert.equal(response.status, "refused", reason);
     assert.deepEqual(response.result.reasons, [reason]);
   }
+});
+
+test("a link on the do-not-list is refused on preview and apply before anything is read", async () => {
+  const h = await withWorkspace();
+  h.registry.blocked.add(LINK);
+  const preview = await importFormFromLinkHandler(call(envelope("preview")), h.deps);
+  valid(preview, "suppressed preview");
+  assert.equal(preview.status, "refused");
+  assert.deepEqual(preview.result.reasons, ["listing_suppressed"]);
+  assert.equal(preview.result.form, null);
+  await assert.rejects(importFormFromLinkHandler(call(envelope("apply", LINK,
+    {confirm: {commandId: "form.import-from-link", previewHash: preview.previewHash}})), h.deps),
+  (error: {code?: string; details?: {reason?: string}}) =>
+    error.code === "failed-precondition" && error.details?.reason === "listing_suppressed");
+  assert.deepEqual(h.reads, []);
+  assert.deepEqual(forms(h.db), []);
+});
+
+test("a short link is checked again at the form's own address before anything is kept", async () => {
+  const short = "https://forms.gle/fictional-short";
+  const h = await withWorkspace({[short]: {outcome: "fetched", finalUrl: LINK, data: formData()}});
+  h.registry.blocked.add(LINK);
+  const response = await importFormFromLinkHandler(call(envelope("preview", short)), h.deps);
+  valid(response, "suppressed final address");
+  assert.deepEqual(response.result.reasons, ["listing_suppressed"]);
+  assert.deepEqual(h.registry.checked, [[short], [LINK]]);
+  assert.deepEqual(forms(h.db), []);
+});
+
+test("a clear link is checked once when the page stays put", async () => {
+  const h = await withWorkspace();
+  const response = await importFormFromLinkHandler(call(envelope("preview")), h.deps);
+  assert.equal(response.status, "previewed");
+  assert.deepEqual(h.registry.checked, [[LINK]]);
+});
+
+test("an unavailable do-not-list stops the import and reads nothing (fails closed)", async () => {
+  const h = await withWorkspace();
+  h.registry.unavailable = true;
+  await assert.rejects(importFormFromLinkHandler(call(envelope("preview")), h.deps),
+    (error: {code?: string; details?: {reason?: string}}) =>
+      error.code === "unavailable" && error.details?.reason === "suppression_unavailable");
+  assert.deepEqual(h.reads, []);
 });

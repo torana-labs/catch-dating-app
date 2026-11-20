@@ -27,6 +27,9 @@ import * as listingReadyModule from "../catchMessaging/listingReadyReply";
 import * as instagramWebhookModule from "../organizers/instagramClaimWebhook";
 import * as approvalModule from "../admin/organizerListingApproval";
 import * as createOrganizerModule from "../organizers/createOrganizer";
+import * as formImportModule from "../commands/importFormFromLink";
+import * as eventImportModule from "../commands/importEventFromLink";
+import * as organizerImportModule from "../commands/importOrganizerFromLink";
 
 // Fictional organisers on reserved .example domains only. The suppressed one
 // is "Lantern Trail Runners"; every other name here is unrelated to it.
@@ -243,13 +246,34 @@ test("listing approval refuses a listing whose built links match a case, and fai
 test("every Function that reaches a suppression check binds the registry key", () => {
   const modules = [nominationsModule, refreshModule, triggersModule, instantDraftRequestModule,
     instantDraftStatusModule, whatsappReceiptModule, listingReadyModule, instagramWebhookModule, approvalModule,
-    createOrganizerModule];
+    createOrganizerModule, formImportModule, eventImportModule, organizerImportModule];
   const exports = Object.assign({}, ...modules) as Record<string, {__endpoint?: {secretEnvironmentVariables?: Array<{key: string}>}}>;
   for (const name of ["adminNominateOrganizer", "onSalesInboundIntentForIntake", "adminRefreshOrganizerEvents",
     "onSupplyIntakeRequestCreated", "recoverSupplyIntakeRequests", "requestInstantDraft", "getInstantDraft",
     "onCatchWhatsappWebhookEventCreated", "onMessageNominationListingReady", "instagramClaimWebhook",
-    "adminApproveOrganizerListing", "createOrganizer"]) {
+    "adminApproveOrganizerListing", "createOrganizer", "importFormFromLink", "importEventFromLink",
+    "importOrganizerFromLink"]) {
     const secrets = exports[name]?.__endpoint?.secretEnvironmentVariables?.map((secret) => secret.key) ?? [];
     assert.ok(secrets.includes(ENV), `${name} binds ${ENV}`);
   }
+});
+
+test("form import keys a form link as Supply Intake does, counts the refusal, and fails closed", async () => {
+  const db = new FakeFirestore();
+  const form = "https://docs.google.com/forms/d/e/fictional-lantern-trail-signup/viewform";
+  const module = await suppressionModule();
+  const record = {schemaVersion: 1, caseId: "TD-0043", reason: "removeAndDoNotList", active: true,
+    hashScheme: "hmac-sha256/listing-suppression-v1",
+    identityHashes: module.suppressionHashes(SECRET, module.suppressionKeysForIdentity({urls: [form]})),
+    identityKeyCounts: {labels: 1, links: 1, organizers: 0, slugs: 0}, createdAtMillis: NOW.getTime() - 1000,
+    updatedAtMillis: NOW.getTime() - 1000, reviewAtMillis: NOW.getTime() + 1000, createdBy: "workflow:organizer-takedown",
+    blockedIntakeCount: 0, lastBlockedAtMillis: null, reviewFlags: []};
+  db.write(`${LISTING_SUPPRESSIONS}/TD-0043`, record);
+  const check = formImportModule.registryFormSuppression({db: () => db as unknown as Firestore, now: () => NOW});
+  withKey(SECRET);
+  assert.equal(await check([form]), "suppressed");
+  assert.equal(caseDoc(db, "TD-0043").blockedIntakeCount, 1);
+  assert.equal(await check(["https://forms.gle/fictionalUnrelated"]), "clear");
+  withKey(null);
+  assert.equal(await check([form]), "unavailable");
 });
