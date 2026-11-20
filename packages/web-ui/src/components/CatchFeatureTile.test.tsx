@@ -49,18 +49,33 @@ describe("CatchFeatureTile", () => {
     }
   });
 
-  it("puts the fix, the afterwards line and the link in the foot, in that order", () => {
+  it("puts the fix, the afterwards line and the link's words and arrow in the foot, in that order", () => {
     render(<CatchFeatureTile fix="Sample fix line." link={{label: "Sample link", href: "/sample"}} then="Sample afterwards line." title="Sample feature" />);
     const fix = screen.getByText("Sample fix line.");
     const then = screen.getByText("Sample afterwards line.");
-    const link = screen.getByRole("link", {name: "Sample link"});
     expect(fix.dataset.variant).toBe("label-action");
     expect(then.dataset).toMatchObject({variant: "body-meta", tone: "secondary"});
     expect(fix.parentElement).toBe(then.parentElement);
-    expect(link.getAttribute("href")).toBe("/sample");
-    expect(link.dataset).toMatchObject({variant: "secondary", size: "sm", recipe: "default"});
     const foot = fix.parentElement!;
     expect([...foot.children].map((node) => node.textContent)).toEqual(["Sample fix line.", "Sample afterwards line.", "Sample link"]);
+  });
+
+  it("is one link across its whole face, named by everything it says, with no button inside", () => {
+    render(<CatchFeatureTile body="A sample body." link={{label: "Build my page", href: "/sample"}} title="Sample feature" />);
+    const link = screen.getByRole("link");
+    expect(link.getAttribute("href")).toBe("/sample");
+    expect(link.dataset.link).toBe("");
+    expect(within(link).getByRole("heading", {level: 3, name: "Sample feature"})).toBeTruthy();
+    expect(link.textContent).toBe("Sample featureA sample body.Build my page");
+    expect(screen.queryByRole("button")).toBeNull();
+    expect(screen.getAllByRole("link")).toHaveLength(1);
+  });
+
+  it("ends in an arrow alone when the link has no words of its own", () => {
+    render(<CatchFeatureTile link={{href: "/your-page/"}} title="Your page" />);
+    const link = screen.getByRole("link", {name: "Your page"});
+    expect(link.textContent).toBe("Your page");
+    expect(link.querySelector("[aria-hidden='true'] svg")).not.toBeNull();
   });
 
   it("takes every palette ground, the ink one in the dark theme", () => {
@@ -70,15 +85,15 @@ describe("CatchFeatureTile", () => {
     }
   });
 
-  it("tells its children the tile is their ground, so a link keeps its outline on a tile band", () => {
+  it("keeps its ground and theme as a link, white on a tile band and glass in the dark theme", () => {
     render(
       <CatchSurface block="band" color="tile">
         <CatchFeatureTile ground="white" link={{label: "On white", href: "#white"}} title="White" />
         <CatchFeatureTile ground="ink" link={{label: "On glass", href: "#glass"}} title="Glass" />
       </CatchSurface>,
     );
-    expect(screen.getByRole("link", {name: "On white"}).dataset.on).toBe("ground");
-    expect(screen.getByRole("link", {name: "On glass"}).dataset.on).toBe("night");
+    expect(screen.getByRole("link", {name: /White/u}).dataset).toMatchObject({ground: "white", catchTheme: "light"});
+    expect(screen.getByRole("link", {name: /Glass/u}).dataset).toMatchObject({ground: "ink", catchTheme: "dark"});
   });
 
   it("turns to glass on an ink band unless a ground is given", () => {

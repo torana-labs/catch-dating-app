@@ -69,25 +69,25 @@
         {
           "title": "Quiz and game nights",
           "body": "Teams planned for you, scores entered live.",
-          "link": {"label": "For quiz nights", "to": {"route": "host_quiz_nights"}},
+          "link": {"to": {"route": "host_quiz_nights"}},
           "ground": "yellow"
         },
         {
           "title": "Supper clubs",
           "body": "Long tables, applications and seats planned for you.",
-          "link": {"label": "For supper clubs", "to": {"route": "host_supper_clubs"}},
+          "link": {"to": {"route": "host_supper_clubs"}},
           "ground": "pink"
         },
         {
           "title": "Court socials",
           "body": "Levels, rotations and court time for everyone.",
-          "link": {"label": "For racket sports", "to": {"route": "host_racket_sports"}},
+          "link": {"to": {"route": "host_racket_sports"}},
           "ground": "mint"
         },
         {
           "title": "Run and brunch",
           "body": "A club starts and finishes at your door.",
-          "link": {"label": "For run clubs", "to": {"route": "host_run_clubs"}},
+          "link": {"to": {"route": "host_run_clubs"}},
           "ground": "coral"
         }
       ]

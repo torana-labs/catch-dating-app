@@ -6159,7 +6159,7 @@
       "source": "packages/web-ui/src/components/CatchFeatureTile.tsx",
       "exportName": "CatchFeatureTile",
       "comparedWith": [
-        "catch.button",
+        "catch.icon",
         "catch.marker",
         "catch.root",
         "catch.text",
@@ -6167,7 +6167,7 @@
         "catch.icon_tile",
         "catch.option_card"
       ],
-      "comparisonReason": "One feature in a grid of features: an optional figure and note, an h3 title, a body, ticked lines and a foot with a fix line, an afterwards line and a link, filled with a Website v2 ground. It sets its copy with catch.text, ticks with catch.marker, draws its link as a small catch.button and re-provides its ground to its children as catch.root's ground does; it is not a button, a marker or a root. Its name shares the tile role noun with catch.analytics_metric, catch.icon_tile and catch.option_card, but it is an authored feature in a marketing grid: no measured value, no icon-only tile and no selectable option.",
+      "comparisonReason": "One feature in a grid of features: an optional figure and note, an h3 title, a body, ticked lines and a foot with a fix line, an afterwards line and a link's words and arrow, filled with a Website v2 ground. It sets its copy with catch.text, ticks with catch.marker and, when it has a link, becomes that link across its whole face with a catch.icon arrow at its foot, and re-provides its ground to its children as catch.root's ground does; it is not an icon, a marker or a root. Its name shares the tile role noun with catch.analytics_metric, catch.icon_tile and catch.option_card, but it is an authored feature in a marketing grid: no measured value, no icon-only tile and no selectable option.",
       "css": [
         "packages/web-ui/src/components/CatchFeatureTile.module.css"
       ],

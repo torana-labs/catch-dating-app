@@ -109,7 +109,6 @@
           "title": "Supper clubs on {{brand.name}}",
           "body": "What {{brand.name}} does for this kind of event, from booking to the day itself.",
           "link": {
-            "label": "See the page",
             "to": {
               "route": "host_supper_clubs"
             }
@@ -119,7 +118,6 @@
           "title": "Plan your first event",
           "body": "A step-by-step plan for your first event on {{brand.name}}.",
           "link": {
-            "label": "Plan it",
             "to": {
               "route": "host_first_event"
             }
@@ -129,7 +127,6 @@
           "title": "All the host playbooks",
           "body": "The other guides: run clubs, supper clubs, quiz nights and racket sports.",
           "link": {
-            "label": "See the playbooks",
             "to": {
               "route": "playbooks"
             }

@@ -151,6 +151,12 @@ const destination = destinationSpec as OneOfSpec<readonly [
 const featureStatus = oneOfValues(playbookFeatureStatuses);
 const action = obj({label: copy(), to: destination}, {emphasis: oneOfValues(["primary", "secondary"] as const), status: featureStatus}, "action");
 const actions = (max = 3) => list(action, 1, max);
+/**
+ * A tile's link: the whole tile opens it. `label` is for words the title
+ * doesn't already say, such as "Build my page"; leave it out when it would
+ * only repeat the title, and the tile ends in an arrow alone.
+ */
+const tileLink = obj({to: destination}, {label: copy(), status: featureStatus}, "tileLink");
 
 const photo = obj({kind: constant("photo"), asset: str(assetPattern), alt: copy()}, {note: copy()}, "photo");
 /** A QR code of a destination of this site, such as the start page, for a reader on a laptop to open on their phone. */
@@ -239,7 +245,7 @@ const sectionSpec = {
       /** A small label above the title. */
       kicker: copy(),
       ground,
-      link: action,
+      link: tileLink,
     }), 1, 12)}, {...sectionStatus, ...bandOptional, pageTitle: bool(), columns: int([2, 3, 4, 6]), align: oneOfValues(["start", "center"] as const), actions: actions(), foot: copy()}),
     split: obj({...base("split"), ...band}, {
       ...sectionStatus,
@@ -676,7 +682,7 @@ export function livePlaybookPage(page: PlaybookPageDocument): PlaybookPageDocume
     if (section.type === "hero" && section.aside && !liveAction(section.aside)) delete next.aside;
     if (section.type === "faq" && section.action && !liveAction(section.action)) delete next.action;
     if (section.type === "story" && section.link && !liveAction(section.link)) delete next.link;
-    if (section.type === "tiles") next.items = section.items.map((item) => item.link && !liveAction(item.link) ? without(item, "link") : item);
+    if (section.type === "tiles") next.items = section.items.map((item) => item.link && !playbookIsLive(item.link) ? without(item, "link") : item);
     if (section.type === "split" && section.groups) {
       next.groups = section.groups.map((group) => {
         const links = liveActions(group.links);
@@ -702,7 +708,8 @@ export function forEachAction(section: PlaybookSection, visit: (item: PlaybookAc
   if ("actions" in section) each(section.actions, "actions");
   if (section.type === "hero" && section.aside) visit(section.aside, "aside");
   if (section.type === "faq" && section.action) visit(section.action, "action");
-  if (section.type === "tiles") section.items.forEach((item, index) => item.link && visit(item.link, `items[${index}].link`));
+  // A tile link without words of its own is named by the tile's title.
+  if (section.type === "tiles") section.items.forEach((item, index) => item.link && visit({...item.link, label: item.link.label ?? item.title}, `items[${index}].link`));
   if (section.type === "split") section.groups?.forEach((group, index) => each(group.links, `groups[${index}].links`));
   if (section.type === "story" && section.link) visit(section.link, "link");
   if (section.type === "article" && section.aside?.action) visit(section.aside.action, "aside.action");

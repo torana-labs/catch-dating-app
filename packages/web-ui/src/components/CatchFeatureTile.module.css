@@ -6,7 +6,9 @@
  * the faint night fill CatchButton and CatchChip use. Ticked lines take the
  * system check marker, inked in the tile's fill. The foot (fix, afterwards
  * line, link) sits at the bottom, each line under a rule in the ground's ink
- * at the ground card's outline opacity.
+ * at the ground card's outline opacity. A linked tile is the link: the face
+ * takes the control overlay on hover (a press doubles it), lifts a little and
+ * nudges its arrow, as the site's other whole-card links do.
  */
 .tile {
   composes: ground from "./grounds.module.css";
@@ -69,7 +71,57 @@
   border-top: var(--catch-stroke-hairline) solid var(--catch-feature-rule);
 }
 
-.link { display: flex; }
+.tile[data-link] {
+  position: relative;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.tile[data-link]::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+  transition: opacity var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.tile[data-link]:hover { transform: translateY(calc(-1 * var(--catch-space-micro2))); }
+.tile[data-link]:hover::after { opacity: var(--catch-opacity-control-overlay-hover); }
+.tile[data-link]:active { transform: none; }
+.tile[data-link]:active::after { opacity: calc(2 * var(--catch-opacity-control-overlay-hover)); }
+
+.tile[data-link]:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.go {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-s1);
+  min-width: 0;
+}
+
+.arrow {
+  display: flex;
+  transition: transform var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.tile[data-link]:hover .arrow { transform: translateX(var(--catch-space-s1)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tile[data-link],
+  .tile[data-link]::after,
+  .arrow { transition: none; }
+
+  .tile[data-link]:hover,
+  .tile[data-link]:hover .arrow { transform: none; }
+}
 
 @container catch-page (width < 840px) {
   .tile { padding: var(--catch-space-s5); }

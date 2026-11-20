@@ -9,7 +9,8 @@ import {brand} from "./brand.ts";
 export interface NotFoundTileCopy {
   title: string;
   body: string;
-  link: {label: string; href: string};
+  /** The tile is the link; `label` only when it says more than the title. */
+  link: {label?: string; href: string};
 }
 
 export const notFoundCopy = {
@@ -31,7 +32,7 @@ export const notFoundCopy = {
     claim: {
       title: "Claim a listing",
       body: "If you own the page you expected, start from the host route or claim search.",
-      link: {label: "Claim a listing", href: "/claim/"},
+      link: {href: "/claim/"},
     },
     host: {
       title: `Host on ${brand.name}`,

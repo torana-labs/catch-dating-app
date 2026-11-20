@@ -60,7 +60,6 @@
           "body": "Your events, links and reviews on one page, for your bio.",
           "ground": "coral",
           "link": {
-            "label": "Your page",
             "to": {
               "route": "product_your_page"
             }
@@ -72,7 +71,6 @@
           "body": "Who gets in, what they pay, and members who pay less.",
           "ground": "indigo",
           "link": {
-            "label": "Bookings and memberships",
             "to": {
               "route": "product_bookings"
             }
@@ -84,7 +82,6 @@
           "body": "Event messages that send themselves, and links that show what sold.",
           "ground": "yellow",
           "link": {
-            "label": "Messages and growth",
             "to": {
               "route": "product_messages"
             }
@@ -96,7 +93,6 @@
           "body": "A first hello, groups that mix, and introductions when a guest asks.",
           "ground": "magenta",
           "link": {
-            "label": "The room",
             "to": {
               "route": "product_room"
             }
@@ -108,7 +104,6 @@
           "body": "The door, the live console, a dress rehearsal and your team.",
           "ground": "mint",
           "link": {
-            "label": "Running the event",
             "to": {
               "route": "product_event"
             }
@@ -120,7 +115,6 @@
           "body": "One record per guest, from every booking and every list you bring.",
           "ground": "pink",
           "link": {
-            "label": "Guest records",
             "to": {
               "route": "product_guests"
             }
@@ -132,7 +126,6 @@
           "body": "What worked, what guests said, and your money in your own account.",
           "ground": "sky",
           "link": {
-            "label": "Reports and payouts",
             "to": {
               "route": "product_reports"
             }
@@ -143,7 +136,6 @@
           "body": "Applications, waivers and feedback, with every answer on the guest’s record.",
           "ground": "yellowSoft",
           "link": {
-            "label": "Forms",
             "to": {
               "route": "product_forms"
             }

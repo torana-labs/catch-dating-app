@@ -3,14 +3,14 @@
 import type {HTMLAttributes} from "react";
 import {catchGroundIsNight} from "./catchCoreVocabulary";
 import {useCatch} from "./catchRootContext";
-import {CatchButton} from "./CatchButton";
+import {CatchIcon} from "./CatchIcon";
 import {CatchGroundProvider} from "./CatchGroundProvider";
 import {CatchMarker} from "./CatchMarker";
 import {CatchText} from "./CatchText";
 import type {Ground} from "./palette";
 import styles from "./CatchFeatureTile.module.css";
 
-export interface CatchFeatureTileProps extends Omit<HTMLAttributes<HTMLDivElement>, "children" | "className" | "color" | "style" | "title"> {
+export interface CatchFeatureTileProps extends Omit<HTMLAttributes<HTMLElement>, "children" | "className" | "color" | "style" | "title"> {
   /** The feature's name. Resolved copy; the caller localizes it. */
   title: string;
   /**
@@ -31,8 +31,12 @@ export interface CatchFeatureTileProps extends Omit<HTMLAttributes<HTMLDivElemen
   fix?: string;
   /** What happens afterwards: a quieter line at the foot, under the fix. */
   then?: string;
-  /** A link at the very foot, drawn as a small secondary button. */
-  link?: {label: string; href: string};
+  /**
+   * Makes the whole tile a link. Its foot ends in an arrow, after `label` when
+   * the link says something the title doesn't (such as "Build my page"); leave
+   * `label` out when it would only repeat the title.
+   */
+  link?: {label?: string; href: string};
   /**
    * The Website v2 ground the tile is filled with; its text takes that
    * ground's inks. `ink` draws glass, a faint light fill for a tile on an ink
@@ -45,21 +49,27 @@ export interface CatchFeatureTileProps extends Omit<HTMLAttributes<HTMLDivElemen
 /**
  * One feature in a grid of features: an optional figure with its note, a
  * title, a body, ticked lines, and a foot of the fix, an afterwards line and
- * a link. The foot sits at the bottom, so tiles that a row stretches to one
- * height line up their feet. Lay tiles out with CatchStack (a row with equal
- * set and collapseBelow) or CatchGrid.
+ * a link. With a link the whole tile is the link, so it takes a hover and a
+ * press across its whole face rather than a small button repeating its title.
+ * The foot sits at the bottom, so tiles that a row stretches to one height
+ * line up their feet. Lay tiles out with CatchStack (a row with equal set and
+ * collapseBelow) or CatchGrid.
  */
 export function CatchFeatureTile({title, level = 3, body, figure, figureNote, list, fix, then, link, ground, ...rest}: CatchFeatureTileProps) {
   const context = useCatch();
   const resolved: Ground = ground ?? (catchGroundIsNight(context.ground) ? "ink" : "paper");
   const lines = list?.filter((line) => line.trim() !== "") ?? [];
   const foot = fix || then || link;
+  const label = link?.label?.trim();
+  const Root = link ? "a" : "div";
   return (
-    <div
+    <Root
       {...rest}
       className={styles.tile}
       data-catch-theme={resolved === "ink" ? "dark" : "light"}
       data-ground={resolved}
+      data-link={link ? "" : undefined}
+      href={link?.href}
     >
       {/* The tile is its children's ground: the night one on ink, the plain one otherwise, so a button keeps its outline on a white tile in a tile band. */}
       <CatchGroundProvider ground={resolved === "ink" ? "night" : "ground"}>
@@ -85,10 +95,15 @@ export function CatchFeatureTile({title, level = 3, body, figure, figureNote, li
           <div className={styles.foot}>
             {fix ? <CatchText as="p" className={styles.rule} variant="label-action">{fix}</CatchText> : null}
             {then ? <CatchText as="p" className={styles.rule} tone="secondary" variant="body-meta">{then}</CatchText> : null}
-            {link ? <span className={styles.link}><CatchButton href={link.href} label={link.label} size="sm" variant="secondary" /></span> : null}
+            {link ? (
+              <span className={styles.go}>
+                {label ? <CatchText variant="label-action">{label}</CatchText> : null}
+                <span aria-hidden="true" className={styles.arrow}><CatchIcon name="forward" size={20} /></span>
+              </span>
+            ) : null}
           </div>
         ) : null}
       </CatchGroundProvider>
-    </div>
+    </Root>
   );
 }
