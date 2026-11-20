@@ -1317,8 +1317,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Pixel and GA4 ids are configuration, not credentials, and the rest of
+    // the document is the revision fence and the last manager to save, so a
+    // current manager reads it directly; the app derives whether it may be
+    // edited from the organizer. Saves stay on setOrganizerTrackingSettings.
     match /organizerTrackingSettings/{organizerId} {
-      allow read, write: if false;
+      allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
     }
     // Owner view (#1109): daily page activity and the monthly follower-message
     // allowance are written and read only by Functions.
@@ -1563,6 +1568,25 @@ service cloud.firestore {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
     }
+    // One shown contact's traits, revenue and newest event rows for the Host
+    // person page; the name, endpoints, tags and revision are on
+    // hostContactSummaries. It holds no linked account, identity evidence or
+    // payment id. A view not written yet reads as missing.
+    match /hostContactDetailViews/{contactId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    // One application exactly as getOrganizerApplicationDetail returns it:
+    // the submitted answers (none once the response is withdrawn), outreach
+    // derived from them, the People link and the applicant's membership.
+    // Only the organizer's current managers read it, by id; review and
+    // membership decisions stay on their fenced callables.
+    match /hostApplicationDetailViews/{applicationId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
     // One retained WhatsApp thread's inbox summary. Its latest message body
     // and contact name are personal data, so only the organizer's current
     // managers read it; the phone hash and sender connection stay on the
@@ -1576,6 +1600,53 @@ service cloud.firestore {
     // One Sends row: campaign, announcement or follower update. Approval,
     // dispatch and the campaign report stay on the reviewed callables.
     match /hostSendSummaries/{sendId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    // The organizer's current owner (ownerUserId, else the primary host).
+    function isHostSummaryOwner(organizerId) {
+      let organizer = get(/databases/$(database)/documents/organizers/$(
+        organizerId)).data;
+      return isHostSummaryManager(organizerId)
+        && (organizer.get('ownerUserId', null) != null
+          ? organizer.ownerUserId == request.auth.uid
+          : organizer.get('hostUserId', null) == request.auth.uid);
+    }
+    // Catch's sent and closed bills to an organizer, as listOrganizerBills
+    // returns them: only its owner reads them.
+    match /hostOrganizerBillViews/{billId} {
+      allow get, list: if isHostSummaryOwner(resource.data.organizerId);
+      allow write: if false;
+    }
+    // How a page got here, one view per reader holding only that reader's
+    // own claim. A current manager gets their view; someone whose claim is
+    // still being checked gets or lists their waiting views.
+    match /hostOrganizerJourneyViews/{viewId} {
+      allow get: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && resource.data.uid == request.auth.uid
+        && (resource.data.waitingClaim == true
+          || isHostSummaryManager(resource.data.organizerId));
+      allow list: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && resource.data.uid == request.auth.uid
+        && resource.data.waitingClaim == true;
+      allow write: if false;
+    }
+    // Automation rules and runs as Host automations show them: the rule
+    // definition without its webhook secret, and each run with its rule's
+    // name. Saves stay on the revision-fenced automation callables.
+    match /hostFormAutomationRuleViews/{ruleId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    match /hostFormAutomationRunViews/{runId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    // One form fee payment's ledger row: amounts, status, times, receipt and
+    // provider reference ids. Answers, the respondent's identity and contact,
+    // and the payment connection stay on the server-only guestPayments
+    // document; refunds stay on the reviewed callables.
+    match /hostFormPaymentViews/{paymentId} {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
     }
@@ -1623,8 +1694,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // The team's notes on a contact. A current manager of the note's
+    // organizer lists one contact's notes, newest first; the note holds the
+    // body, its author and its revision, which the detail callable already
+    // returned to every manager. Writes stay on the note callables.
     match /organizerContactNotes/{noteId} {
-      allow read, write: if false;
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
     }
 
     // Manager-asserted outreach attempts are append-only facts written and
@@ -1644,11 +1720,15 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Manual-send tasks contain endpoint and prefill snapshots. Only
-    // manager-authorized callables may prepare, inspect, or advance them; an
-    // external-app launch is never a delivery receipt.
+    // Manual-send tasks contain endpoint and prefill snapshots, which the
+    // organizer's current managers already see when they prepare or open a
+    // handoff. They list their organizer's tasks directly (Sends' by-hand
+    // queue); authority comes from the organizer document, never from the
+    // task. Only manager-authorized callables prepare, validate or advance a
+    // task; an external-app launch is never a delivery receipt.
     match /organizerManualSendTasks/{taskId} {
-      allow read, write: if false;
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
     }
 
     // Today attention rows are server-evaluated projections, written ahead of
@@ -1990,6 +2070,20 @@ service cloud.firestore {
 
     match /organizerMomentSweepState/{sweepId} {
       allow read, write: if false;
+    }
+
+    // The Moments board (#1339): one row per event or programme moment with
+    // its sent count and next run. Programme rows are read by the owner and
+    // the communications duty (a query naming scopeKind and programId);
+    // event rows by the event organiser's current managers (a query naming
+    // scopeKind and eventId). The sender connection stays server-only.
+    match /organizerMomentViews/{momentId} {
+      allow get, list: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && ((resource.data.scopeKind == 'program'
+            && hasProgramDuty(resource.data.programId, 'communications'))
+          || (resource.data.scopeKind == 'event'
+            && isOrganizerHostForEvent(resource.data.eventId)));
+      allow write: if false;
     }
 
     match /organizerBroadcastSummaries/{broadcastId} {
@@ -2334,6 +2428,15 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // The staff work list (#1339): one row per programme grant, event grant
+    // and team membership of one account, read only by that account (a query
+    // naming uid). Titles, the organiser's name and duty names only.
+    match /hostAssignmentViews/{viewId} {
+      allow get, list: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
     // The grantee gets their own grant. The organizer's current managers list
     // an event's grants for the staff panel; the query names the organizer.
     match /eventStaffGrants/{grantId} {
@@ -2579,6 +2682,16 @@ service cloud.firestore {
       allow get, list: if programDutyCoversHotel(resource.data.programId,
         'hotelDesk', resource.data.hotelId);
       allow write: if false;
+    }
+
+    // One hotel's room board (#1339): blocks, stays with their revisions and
+    // the guests still needing a room, read by id by the hotel desk covering
+    // the hotel (coordinators and the owner too). No contact field.
+    match /programHotelRoomViews/{viewId} {
+      allow get: if viewId == resource.data.programId + '__' + resource.data.hotelId
+        && programDutyCoversHotel(resource.data.programId, 'hotelDesk',
+          resource.data.hotelId);
+      allow list, write: if false;
     }
 
     // The administrators' staff list (#1339): one row per grant, readable by

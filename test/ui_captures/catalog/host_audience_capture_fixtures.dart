@@ -100,7 +100,7 @@ class _AudienceCaptureAutomations extends HostFormAutomationsController {
       ),
     ],
     runs: const [],
-    nextCursor: null,
+    hasMore: false,
   );
 }
 

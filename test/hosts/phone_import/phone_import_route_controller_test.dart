@@ -134,12 +134,10 @@ class _Assignments implements HostWorkRepository {
   List<HostWorkAssignment> rows = [];
   Future<void> Function()? beforeReturn;
   @override
-  Future<HostWorkAssignments> listAssignments({
-    bool includeExpired = false,
-  }) async {
+  Stream<HostWorkAssignments> watchAssignments(String uid) async* {
     calls++;
     await beforeReturn?.call();
-    return HostWorkAssignments(
+    yield HostWorkAssignments(
       assignments: rows,
       shellEntry: HostWorkShellEntry.managerShell,
     );
@@ -157,9 +155,6 @@ HostWorkAssignment _assignment({
   subtitle: null,
   organizerName: 'Staff planner',
   duties: const [],
-  destinations: const [],
-  overflowDestinations: const [],
-  shellMode: HostWorkShellMode.task,
   grantExpiresAt: DateTime.now().add(const Duration(days: 1)),
 );
 

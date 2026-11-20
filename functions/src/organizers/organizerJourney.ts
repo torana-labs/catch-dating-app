@@ -24,9 +24,9 @@ import {validateListMyOrganizerJourneysCallableResponse} from
   "../shared/generated/validators/listMyOrganizerJourneysOutput";
 
 type Db = FirebaseFirestore.Firestore;
-type Journey = Result["journeys"][number];
+export type Journey = Result["journeys"][number];
 type Step = Journey["steps"][number];
-type Claim = Partial<OrganizerClaimRequestDocument>;
+export type Claim = Partial<OrganizerClaimRequestDocument>;
 
 const maxWaitingClaims = 5;
 
@@ -89,30 +89,76 @@ export function organizerJourneyView(input: {
   };
 }
 
+/** The records one organizer's journey is read from, for every caller. */
+export interface OrganizerJourneySources {
+  claims: Claim[];
+  intake: Array<Partial<SupplyIntakeRequestsDocument>>;
+  firstEvent: Partial<EventDocument> | undefined;
+  growth: Partial<OrganizerGrowthFactsDocument> | undefined;
+}
+
+/** Reads cap the sources the same way for the callable and the view. */
+export const organizerJourneyClaimCap = 20;
+export const organizerJourneyIntakeCap = 10;
+
+/**
+ * The source queries of one organizer's journey. The callable reads them
+ * directly; the view trigger reads them inside its transaction.
+ * @param {Db} db Firestore.
+ * @param {string} organizerId The organizer.
+ * @return {object} The four reads.
+ */
+export function organizerJourneySourceRefs(db: Db, organizerId: string) {
+  return {
+    claims: db.collection("organizerClaimRequests")
+      .where("organizerId", "==", organizerId).limit(organizerJourneyClaimCap),
+    intake: db.collection("supplyIntakeRequests")
+      .where("approval.organizerId", "==", organizerId)
+      .limit(organizerJourneyIntakeCap),
+    firstEvent: db.collection("events").where("organizerId", "==", organizerId)
+      .orderBy("startTime", "asc").limit(1),
+    growth: db.collection("organizerGrowthFacts").doc(organizerId),
+  };
+}
+
+/**
+ * The journey one caller sees from already-read sources.
+ * @param {string} organizerId The organizer.
+ * @param {Partial<OrganizerDocument>} organizer The organizer document.
+ * @param {OrganizerJourneySources} sources The other records.
+ * @param {string} uid The caller.
+ * @return {Journey} The caller's journey.
+ */
+export function organizerJourneyFromSources(organizerId: string,
+  organizer: Partial<OrganizerDocument>, sources: OrganizerJourneySources,
+  uid: string): Journey {
+  return organizerJourneyView({
+    organizerId, organizer, claims: sources.claims,
+    firstEvent: sources.firstEvent, uid,
+    nomination: sources.intake.find((item) =>
+      item.request?.kind !== "event_refresh") ?? null,
+    firstPaidBookingAt: sources.growth?.milestones?.firstPaidBookingAt ?? null,
+  });
+}
+
 async function readJourney(db: Db, organizerId: string,
   organizer: Partial<OrganizerDocument>, uid: string): Promise<Journey> {
+  const refs = organizerJourneySourceRefs(db, organizerId);
   const [claims, intake, firstEvent, growth] = await Promise.all([
-    db.collection("organizerClaimRequests")
-      .where("organizerId", "==", organizerId).limit(20).get()
+    refs.claims.get()
       .then((snap) => snap.docs.map((doc) => doc.data() as Claim)),
-    db.collection("supplyIntakeRequests")
-      .where("approval.organizerId", "==", organizerId).limit(10).get()
+    refs.intake.get()
       .then((snap) => snap.docs.map((doc) =>
         doc.data() as Partial<SupplyIntakeRequestsDocument>)),
-    db.collection("events").where("organizerId", "==", organizerId)
-      .orderBy("startTime", "asc").limit(1).get()
+    refs.firstEvent.get()
       .then((snap) => snap.docs[0]?.data() as Partial<EventDocument> |
         undefined),
-    db.collection("organizerGrowthFacts").doc(organizerId).get()
+    refs.growth.get()
       .then((snap) => snap.data() as
         Partial<OrganizerGrowthFactsDocument> | undefined),
   ]);
-  return organizerJourneyView({
-    organizerId, organizer, claims, firstEvent, uid,
-    nomination: intake.find((item) =>
-      item.request?.kind !== "event_refresh") ?? null,
-    firstPaidBookingAt: growth?.milestones?.firstPaidBookingAt ?? null,
-  });
+  return organizerJourneyFromSources(organizerId, organizer,
+    {claims, intake, firstEvent, growth}, uid);
 }
 
 /**

@@ -1,129 +1,145 @@
 import 'package:catch_dating_app/contexts/programmes/domain/host_work_assignment.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Map<Object?, Object?> assignmentMap({
+final _now = DateTime.utc(2026, 11, 20, 10);
+int _ms(Duration after) => _now.add(after).millisecondsSinceEpoch;
+
+Map<Object?, Object?> row({
   String kind = 'program',
   String scopeId = 'program_1',
-  String? subtitle = 'Feb 13–15 · Delhi',
-  Object? duties,
-  Object? destinations = const ['arrivals', 'dispatch'],
-  Object? overflowDestinations = const [],
-  String shellMode = 'tabs',
-  Object? grantExpiresAtMillis,
+  String status = 'active',
+  int activeFromMillis = 0,
+  int? grantExpiresAtMillis,
+  List<Map<String, Object?>>? duties,
 }) => {
+  'uid': 'staff_1',
   'kind': kind,
   'scopeId': scopeId,
   'organizerId': 'org_1',
-  'title': 'Kapoor–Shah Wedding',
-  'subtitle': subtitle,
+  'title': 'Kapoor-Shah Wedding',
   'organizerName': 'Catch Events Co.',
+  'status': status,
+  'activeFromMillis': activeFromMillis,
+  'grantExpiresAtMillis': grantExpiresAtMillis ?? _ms(const Duration(days: 2)),
   'duties':
       duties ??
       [
         {
           'duty': 'airportGreeter',
           'pickupPointIds': ['del_t3'],
+          'expiresAtMillis': _ms(const Duration(days: 1)),
         },
       ],
-  'destinations': destinations,
-  'overflowDestinations': overflowDestinations,
-  'shellMode': shellMode,
-  'grantExpiresAtMillis': grantExpiresAtMillis,
+  'version': 1,
 };
 
 void main() {
-  group('HostWorkAssignment', () {
-    test('parses exact expiring administration as a Team task', () {
-      final assignment = HostWorkAssignment.fromMap(
-        assignmentMap(
-          duties: const [
-            {'duty': 'programAdmin'},
+  group('HostWorkAssignments.fromViews', () {
+    test('lists a live programme row with its duties and soonest end', () {
+      final result = HostWorkAssignments.fromViews([
+        row(
+          duties: [
+            {
+              'duty': 'airportGreeter',
+              'pickupPointIds': ['del_t3'],
+              'expiresAtMillis': _ms(const Duration(days: 1)),
+            },
+            {
+              'duty': 'hotelDesk',
+              'hotelIds': ['h1'],
+              'expiresAtMillis': _ms(const Duration(hours: 3)),
+            },
           ],
-          destinations: const ['team'],
-          shellMode: 'task',
-          grantExpiresAtMillis: 1771882200000,
         ),
-      );
-      expect(assignment.duties.single.duty, HostWorkDuty.programAdmin);
-      expect(assignment.destinations, [HostWorkDestination.team]);
-      expect(assignment.grantExpiresAt, isNotNull);
-    });
-
-    test('parses a scoped program assignment', () {
-      final assignment = HostWorkAssignment.fromMap(
-        assignmentMap(grantExpiresAtMillis: 1771882200000),
-      );
-      expect(assignment.kind, HostWorkScopeKind.program);
+      ], _now);
+      final assignment = result.assignments.single;
       expect(assignment.isProgram, isTrue);
-      expect(assignment.scopeId, 'program_1');
-      expect(assignment.title, 'Kapoor–Shah Wedding');
-      expect(assignment.subtitle, 'Feb 13–15 · Delhi');
+      expect(assignment.title, 'Kapoor-Shah Wedding');
       expect(assignment.organizerName, 'Catch Events Co.');
-      expect(assignment.duties.single.duty, HostWorkDuty.airportGreeter);
-      expect(assignment.duties.single.pickupPointIds, {'del_t3'});
-      expect(assignment.destinations, [
-        HostWorkDestination.arrivals,
-        HostWorkDestination.dispatch,
+      expect(assignment.duties.map((duty) => duty.duty), [
+        HostWorkDuty.airportGreeter,
+        HostWorkDuty.hotelDesk,
       ]);
-      expect(assignment.shellMode, HostWorkShellMode.tabs);
-      expect(assignment.grantExpiresAt, isNotNull);
-    });
-
-    test('parses an event assignment with role-mapped duties', () {
-      final assignment = HostWorkAssignment.fromMap(
-        assignmentMap(
-          kind: 'event',
-          scopeId: 'event_1',
-          duties: const [
-            {'duty': 'eventLead'},
-          ],
-          destinations: const ['nowNext', 'door', 'attention'],
-        ),
-      );
-      expect(assignment.isProgram, isFalse);
-      expect(assignment.duties.single.duty, HostWorkDuty.eventLead);
-      expect(assignment.destinations.last, HostWorkDestination.attention);
-    });
-
-    test('drops unknown destinations instead of failing the list', () {
-      final assignment = HostWorkAssignment.fromMap(
-        assignmentMap(destinations: const ['arrivals', 'futureDestination']),
-      );
-      expect(assignment.destinations, [HostWorkDestination.arrivals]);
-    });
-
-    test('rejects an unknown duty name', () {
+      expect(assignment.duties.first.pickupPointIds, {'del_t3'});
       expect(
-        () => HostWorkAssignment.fromMap(
-          assignmentMap(
-            duties: const [
-              {'duty': 'futureDuty'},
-            ],
-          ),
+        assignment.grantExpiresAt,
+        DateTime.fromMillisecondsSinceEpoch(
+          _ms(const Duration(hours: 3)),
+          isUtc: true,
         ),
-        throwsFormatException,
+      );
+      expect(result.shellEntry, HostWorkShellEntry.workShell);
+      expect(
+        result.nextChangeAt!.millisecondsSinceEpoch,
+        _ms(const Duration(hours: 3)),
       );
     });
-  });
 
-  group('HostWorkAssignments', () {
-    test('parses the shell entry and assignment list', () {
-      final result = HostWorkAssignments.fromCallableData({
-        'assignments': [assignmentMap()],
-        'shellEntry': 'workShell',
-      });
-      expect(result.shellEntry, HostWorkShellEntry.workShell);
-      expect(result.assignments, hasLength(1));
-      expect(result.isEmpty, isFalse);
+    test('drops expired duties, expired grants, inactive and future rows', () {
+      final result = HostWorkAssignments.fromViews([
+        row(
+          scopeId: 'expired_duties',
+          duties: [
+            {
+              'duty': 'hotelDesk',
+              'expiresAtMillis': _ms(-const Duration(minutes: 1)),
+            },
+          ],
+        ),
+        row(
+          scopeId: 'expired_grant',
+          grantExpiresAtMillis: _ms(-const Duration(minutes: 1)),
+        ),
+        row(scopeId: 'revoked', status: 'inactive'),
+        row(
+          scopeId: 'not_yet',
+          activeFromMillis: _ms(const Duration(minutes: 5)),
+        ),
+      ], _now);
+      expect(result.assignments, isEmpty);
+      expect(result.shellEntry, HostWorkShellEntry.none);
+      expect(
+        result.nextChangeAt!.millisecondsSinceEpoch,
+        _ms(const Duration(minutes: 5)),
+      );
     });
 
-    test('parses the manager shell entry with no assignments', () {
-      final result = HostWorkAssignments.fromCallableData(const {
-        'assignments': [],
-        'shellEntry': 'managerShell',
-      });
+    test('sorts events before programmes and skips unknown duties', () {
+      final result = HostWorkAssignments.fromViews([
+        row(scopeId: 'program_b'),
+        row(
+          kind: 'event',
+          scopeId: 'event_a',
+          duties: [
+            {
+              'duty': 'functionCheckIn',
+              'expiresAtMillis': _ms(const Duration(days: 1)),
+            },
+            {
+              'duty': 'futureDuty',
+              'expiresAtMillis': _ms(const Duration(days: 1)),
+            },
+          ],
+        ),
+      ], _now);
+      expect(result.assignments.map((a) => a.scopeId), [
+        'event_a',
+        'program_b',
+      ]);
+      expect(result.assignments.first.kind, HostWorkScopeKind.event);
+      expect(
+        result.assignments.first.duties.single.duty,
+        HostWorkDuty.functionCheckIn,
+      );
+    });
+
+    test('an active team membership lands in the manager shell', () {
+      final result = HostWorkAssignments.fromViews([
+        row(),
+        row(kind: 'team', scopeId: 'org_1', duties: const []),
+      ], _now);
       expect(result.shellEntry, HostWorkShellEntry.managerShell);
-      expect(result.isEmpty, isTrue);
+      expect(result.assignments, hasLength(1));
     });
   });
 }

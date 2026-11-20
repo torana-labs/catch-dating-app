@@ -1,18 +1,16 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_program_audience_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 class _Repository extends Fake implements ProgramSetupRepository {
-  final detail = Completer<OrganizerProgramDetail>();
   final requestedCursors = <String?>[];
   final guestPages = <Completer<ProgramGuestListPage>>[];
-
-  @override
-  Future<OrganizerProgramDetail> getProgram(String programId) => detail.future;
 
   @override
   Future<ProgramGuestListPage> listGuests(
@@ -27,25 +25,26 @@ class _Repository extends Fake implements ProgramSetupRepository {
   }
 }
 
-OrganizerProgramDetail _detail({String organizerId = 'org'}) =>
-    OrganizerProgramDetail(
-      program: OrganizerProgramSettings(
-        programId: 'older-program',
-        organizerId: organizerId,
-        kind: ProgramKind.wedding,
-        title: 'Older program',
-        timezone: 'Asia/Kolkata',
-        status: ProgramStatus.active,
-        startsAt: DateTime(2026),
-        endsAt: DateTime(2026, 2),
-        capabilities: const [],
-        revision: 1,
-      ),
-      functions: const [],
-      pickupPoints: const [],
-      hotels: const [],
-      counts: const {},
-    );
+Map<Object?, Object?> _view({String organizerId = 'org'}) => {
+  'programId': 'older-program',
+  'organizerId': organizerId,
+  'kind': 'wedding',
+  'title': 'Older program',
+  'status': 'active',
+  'revision': 1,
+  'functions': const <Object?>[],
+};
+
+/// The programme's view listener, overridden with [views].
+List<Override> _overrides(
+  _Repository repository,
+  Stream<Map<Object?, Object?>> views,
+) => [
+  programSetupRepositoryProvider.overrideWithValue(repository),
+  organizerProgramViewStreamProvider(
+    'older-program',
+  ).overrideWith((ref) => views),
+];
 
 ProgramGuestRow _guest(int index, {String? contactId}) => ProgramGuestRow(
   guestId: 'guest-$index',
@@ -74,10 +73,10 @@ void main() {
     'direct ownership check precedes guests, including older programs',
     () async {
       final repository = _Repository();
+      final views = StreamController<Map<Object?, Object?>>();
+      addTearDown(views.close);
       final container = ProviderContainer(
-        overrides: [
-          programSetupRepositoryProvider.overrideWithValue(repository),
-        ],
+        overrides: _overrides(repository, views.stream),
       );
       addTearDown(container.dispose);
       final provider = hostInboxProgramAudiencePagesProvider(
@@ -87,8 +86,9 @@ void main() {
       final subscription = container.listen(provider, (_, _) {});
       addTearDown(subscription.close);
       final result = container.read(provider.future);
+      await pumpEventQueue();
       expect(repository.requestedCursors, isEmpty);
-      repository.detail.complete(_detail());
+      views.add(_view());
       await pumpEventQueue();
       expect(repository.requestedCursors, [null]);
       repository.guestPages.single.complete(_page([_guest(1)]));
@@ -97,10 +97,12 @@ void main() {
   );
 
   test('foreign program never requests a guest page', () async {
-    final repository = _Repository()
-      ..detail.complete(_detail(organizerId: 'foreign'));
+    final repository = _Repository();
     final container = ProviderContainer(
-      overrides: [programSetupRepositoryProvider.overrideWithValue(repository)],
+      overrides: _overrides(
+        repository,
+        Stream.value(_view(organizerId: 'foreign')),
+      ),
     );
     addTearDown(container.dispose);
     final provider = hostInboxProgramAudiencePagesProvider(
@@ -116,11 +118,9 @@ void main() {
   test(
     'loads past 200 guests and keeps unlinked guests out of contacts',
     () async {
-      final repository = _Repository()..detail.complete(_detail());
+      final repository = _Repository();
       final container = ProviderContainer(
-        overrides: [
-          programSetupRepositoryProvider.overrideWithValue(repository),
-        ],
+        overrides: _overrides(repository, Stream.value(_view())),
       );
       addTearDown(container.dispose);
       final provider = hostInboxProgramAudiencePagesProvider(
@@ -156,11 +156,9 @@ void main() {
   test(
     'page failure retains prior guests and retries the same cursor',
     () async {
-      final repository = _Repository()..detail.complete(_detail());
+      final repository = _Repository();
       final container = ProviderContainer(
-        overrides: [
-          programSetupRepositoryProvider.overrideWithValue(repository),
-        ],
+        overrides: _overrides(repository, Stream.value(_view())),
       );
       addTearDown(container.dispose);
       final provider = hostInboxProgramAudiencePagesProvider(

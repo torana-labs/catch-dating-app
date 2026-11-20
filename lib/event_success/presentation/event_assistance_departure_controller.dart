@@ -6,7 +6,6 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_pro
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_route_change.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_provider.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_host_guests_provider.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -86,7 +85,6 @@ class EventAssistanceDepartureController
     requireDepartureAccount(ref, action.session.account);
     action.change.requireResult(result);
     // The group's view is a listener; the trigger delivers this departure.
-    ref.invalidate(eventAssistanceHostGuestsForAccountProvider);
     return result;
   }
 

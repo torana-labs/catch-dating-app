@@ -642,16 +642,32 @@ final class HostFormAnalyticsFamily extends $Family
   String toString() => r'hostFormAnalyticsProvider';
 }
 
+/// The automation rules and run history of an organizer, or of one form
+/// when `formId` is set, from listeners: a rule saved or switched elsewhere
+/// and a run that finishes show at once. Saves and switches stay on the
+/// revision-fenced callables; a saved rule shows at once and gives way to
+/// its view when the view reaches that revision.
+
 @ProviderFor(HostFormAutomationsController)
 final hostFormAutomationsControllerProvider =
     HostFormAutomationsControllerFamily._();
 
+/// The automation rules and run history of an organizer, or of one form
+/// when `formId` is set, from listeners: a rule saved or switched elsewhere
+/// and a run that finishes show at once. Saves and switches stay on the
+/// revision-fenced callables; a saved rule shows at once and gives way to
+/// its view when the view reaches that revision.
 final class HostFormAutomationsControllerProvider
     extends
         $AsyncNotifierProvider<
           HostFormAutomationsController,
           HostFormAutomationsState
         > {
+  /// The automation rules and run history of an organizer, or of one form
+  /// when `formId` is set, from listeners: a rule saved or switched elsewhere
+  /// and a run that finishes show at once. Saves and switches stay on the
+  /// revision-fenced callables; a saved rule shows at once and gives way to
+  /// its view when the view reaches that revision.
   HostFormAutomationsControllerProvider._({
     required HostFormAutomationsControllerFamily super.from,
     required (String, String?) super.argument,
@@ -690,7 +706,13 @@ final class HostFormAutomationsControllerProvider
 }
 
 String _$hostFormAutomationsControllerHash() =>
-    r'd28b40bc7da8b32f90e4fb383ca4a32ba74459c6';
+    r'e125c7cd730173cc8ffe038ba19d549a90ab7ee2';
+
+/// The automation rules and run history of an organizer, or of one form
+/// when `formId` is set, from listeners: a rule saved or switched elsewhere
+/// and a run that finishes show at once. Saves and switches stay on the
+/// revision-fenced callables; a saved rule shows at once and gives way to
+/// its view when the view reaches that revision.
 
 final class HostFormAutomationsControllerFamily extends $Family
     with
@@ -710,6 +732,12 @@ final class HostFormAutomationsControllerFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// The automation rules and run history of an organizer, or of one form
+  /// when `formId` is set, from listeners: a rule saved or switched elsewhere
+  /// and a run that finishes show at once. Saves and switches stay on the
+  /// revision-fenced callables; a saved rule shows at once and gives way to
+  /// its view when the view reaches that revision.
+
   HostFormAutomationsControllerProvider call(
     String organizerId,
     String? formId,
@@ -721,6 +749,12 @@ final class HostFormAutomationsControllerFamily extends $Family
   @override
   String toString() => r'hostFormAutomationsControllerProvider';
 }
+
+/// The automation rules and run history of an organizer, or of one form
+/// when `formId` is set, from listeners: a rule saved or switched elsewhere
+/// and a run that finishes show at once. Saves and switches stay on the
+/// revision-fenced callables; a saved rule shows at once and gives way to
+/// its view when the view reaches that revision.
 
 abstract class _$HostFormAutomationsController
     extends $AsyncNotifier<HostFormAutomationsState> {

@@ -11,7 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Planned messages (RbHostProgramMessages), read from
-/// `listOrganizerMoments` with the programme scope. A row opens the
+/// `organizerMomentViews` with the programme scope. A row opens the
 /// message; Plan another message opens a new one.
 class HostProgrammeMessagesScreen extends ConsumerWidget {
   const HostProgrammeMessagesScreen({super.key, required this.programId});

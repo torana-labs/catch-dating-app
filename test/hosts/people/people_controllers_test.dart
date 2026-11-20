@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_reposi
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
@@ -237,23 +238,89 @@ void main() {
     expect(contacts.queries.single.segment, HostAudienceSegment.lapsedRegular);
   });
 
-  test('a person reads the record with its history', () async {
+  test('a person reads their row, detail facts and newest note', () async {
+    final detail = peopleDetail();
     final container = ProviderContainer.test(
       overrides: [
-        hostAudienceContactHistoryProvider(
-          _org,
-          'rk',
-        ).overrideWith((ref) async => peopleDetail()),
+        hostContactSummaryRowProvider(_org, 'rk').overrideWith(
+          (ref) => Stream.value((
+            contact: HostAudienceContact(
+              contactId: 'rk',
+              displayName: detail.displayName,
+              phoneE164: null,
+              email: null,
+              identityState: HostAudienceIdentityState.verified,
+              identityConfidence: 'verified',
+              ambiguousCandidateCount: 0,
+              attendedEventCount: 6,
+              expectedEventCount: 6,
+              lastAttendedAt: null,
+              segments: const {HostAudienceSegment.regular},
+              manualTags: detail.manualTags,
+              whatsappStatus: HostAudiencePermissionStatus.optedIn,
+              whatsappAdminSuppressed: false,
+              smsStatus: HostAudiencePermissionStatus.unknown,
+              sourceCoverage: HostAudienceSourceCoverage.exact,
+              revision: 3,
+            ),
+            linkedAccount: true,
+          )),
+        ),
+        hostContactDetailFactsProvider(_org, 'rk').overrideWith(
+          (ref) => Stream.value(
+            HostContactDetailFacts(
+              traits: detail.traits,
+              revenue: detail.revenue,
+              events: detail.events,
+              eventsTruncated: false,
+            ),
+          ),
+        ),
+        hostContactNotesProvider(_org, 'rk').overrideWith(
+          (ref) => Stream.value((notes: detail.notes, truncated: false)),
+        ),
       ],
     );
     container.listen(hostPersonControllerProvider(_org, 'rk'), (_, _) {});
     await _settle(container);
     final state = container.read(hostPersonControllerProvider(_org, 'rk'));
     expect(state.status, HostPersonStatus.ready);
+    expect(state.name, 'Rhea Kapoor');
     expect(state.nights, 6);
     expect(state.spentMinor, 349400);
     expect(state.since, DateTime(2026, 3, 3, 19, 30));
     expect(state.nightsWithYou.first.eventId, 'e1');
+    expect(state.detail!.manualTags.map((tag) => tag.label), [
+      'Trivia regular',
+      'Brings friends',
+      'Vegetarian',
+    ]);
+    expect(state.detail!.notes.single.noteId, 'n1');
+    expect(state.detail!.revision, 3);
+    expect(state.detail!.historyLoaded, isFalse);
+  });
+
+  test('a person whose detail view is missing shows the error', () async {
+    final container = ProviderContainer.test(
+      overrides: [
+        hostContactSummaryRowProvider(
+          _org,
+          'rk',
+        ).overrideWith((ref) => const Stream.empty()),
+        hostContactDetailFactsProvider(_org, 'rk').overrideWith(
+          (ref) => Stream.error(const FormatException('missing view')),
+        ),
+        hostContactNotesProvider(_org, 'rk').overrideWith(
+          (ref) => Stream.value((notes: const [], truncated: false)),
+        ),
+      ],
+      retry: (_, _) => null,
+    );
+    container.listen(hostPersonControllerProvider(_org, 'rk'), (_, _) {});
+    await _settle(container);
+    final state = container.read(hostPersonControllerProvider(_org, 'rk'));
+    expect(state.status, HostPersonStatus.error);
+    expect(state.error, isA<FormatException>());
   });
 
   test('Automatic messages groups the rules and counts this month', () async {
@@ -304,7 +371,7 @@ void main() {
                   completedAt: null,
                 ),
             ],
-            nextCursor: null,
+            hasMore: false,
           ),
         ),
       ],
@@ -401,11 +468,8 @@ void main() {
           (ref) => Future<HostMessagingSetup>.error(StateError('offline')),
         ),
         hostPeopleAutomationsProvider(_org).overrideWith(
-          (ref) async => const HostFormAutomationPage(
-            rules: [],
-            runs: [],
-            nextCursor: null,
-          ),
+          (ref) async =>
+              const HostFormAutomationPage(rules: [], runs: [], hasMore: false),
         ),
       ],
     );

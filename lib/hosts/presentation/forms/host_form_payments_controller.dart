@@ -1,5 +1,6 @@
-import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_payment_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment_record.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_form_payments_controller.g.dart';
@@ -7,78 +8,44 @@ part 'host_form_payments_controller.g.dart';
 class HostFormPaymentsState {
   const HostFormPaymentsState({
     required this.items,
-    required this.nextCursor,
+    required this.hasMore,
     this.loadingMore = false,
     this.loadMoreError,
   });
   final List<HostFormPaymentRecord> items;
-  final String? nextCursor;
+
+  /// Whether older payments follow; stays true after a failed page so
+  /// asking again retries it.
+  final bool hasMore;
   final bool loadingMore;
   final Object? loadMoreError;
 }
 
+/// One form's fee payments in one filter, a page at a time and live: a
+/// checkout that completes, fails or is refunded moves at once.
 @riverpod
 class HostFormPaymentsController extends _$HostFormPaymentsController {
-  int _generation = 0;
+  late LivePager<HostFormPaymentRecord> _pager;
 
   @override
-  Future<HostFormPaymentsState> build(
+  Stream<HostFormPaymentsState> build(
     String organizerId,
     String formId,
     HostFormPaymentFilter filter,
-  ) async {
-    _generation++;
-    final page = await ref
-        .read(hostFormsRepositoryProvider)
-        .listPayments(organizerId: organizerId, formId: formId, filter: filter);
-    return HostFormPaymentsState(
-      items: page.items,
-      nextCursor: page.nextCursor,
+  ) {
+    _pager = ref
+        .watch(hostFormPaymentReadsProvider)
+        .watchPages(organizerId: organizerId, formId: formId, filter: filter);
+    return _pager.pages.map(
+      (pages) => HostFormPaymentsState(
+        items: pages.items,
+        hasMore: pages.hasMore,
+        loadingMore: pages.loadingMore,
+        loadMoreError: pages.nextPageError,
+      ),
     );
   }
 
-  Future<void> loadMore() async {
-    final current = state.asData?.value;
-    if (current == null || current.loadingMore || current.nextCursor == null) {
-      return;
-    }
-    final generation = _generation;
-    state = AsyncData(
-      HostFormPaymentsState(
-        items: current.items,
-        nextCursor: current.nextCursor,
-        loadingMore: true,
-      ),
-    );
-    try {
-      final page = await ref
-          .read(hostFormsRepositoryProvider)
-          .listPayments(
-            organizerId: organizerId,
-            formId: formId,
-            filter: filter,
-            cursor: current.nextCursor,
-          );
-      if (!ref.mounted || generation != _generation) return;
-      final byId = {
-        for (final item in current.items) item.paymentId: item,
-        for (final item in page.items) item.paymentId: item,
-      };
-      state = AsyncData(
-        HostFormPaymentsState(
-          items: List.unmodifiable(byId.values),
-          nextCursor: page.nextCursor,
-        ),
-      );
-    } on Object catch (error) {
-      if (!ref.mounted || generation != _generation) return;
-      state = AsyncData(
-        HostFormPaymentsState(
-          items: current.items,
-          nextCursor: current.nextCursor,
-          loadMoreError: error,
-        ),
-      );
-    }
-  }
+  /// Opens the next page, or retries the one that failed.
+  void loadMore() => _pager.loadMore();
 }

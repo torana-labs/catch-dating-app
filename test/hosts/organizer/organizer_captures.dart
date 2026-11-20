@@ -112,7 +112,9 @@ List<Override> organizerCaptureOverrides() => [
   hostFormPaymentControllerProvider.overrideWith2(
     (_) => _CapturePaymentSetup(),
   ),
-  hostOrganizerBillsProvider.overrideWith((ref, organizerId) async => _bills),
+  hostOrganizerBillsProvider.overrideWith(
+    (ref, organizerId) => Stream.value(_bills),
+  ),
   hostOrganizerBillingStatusProvider.overrideWith(
     (ref, organizerId) async => HostOrganizerBillingStatus(
       trial: HostTrialStatus(

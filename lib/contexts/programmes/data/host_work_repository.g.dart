@@ -55,29 +55,29 @@ final class HostWorkRepositoryProvider
 }
 
 String _$hostWorkRepositoryHash() =>
-    r'59b0d1ffbc2052446370f62bf38fdb2984f7cc45';
+    r'6b419812b44be454fa67fd1f50d1626c61cb3ba0';
 
-/// The caller's live assignments. Refetches whenever the signed-in account
-/// changes so a different OTP session never sees stale grants.
+/// The caller's live assignments, rebuilt whenever the signed-in account
+/// changes so a different OTP session never sees another account's grants.
 
 @ProviderFor(hostWorkAssignments)
 final hostWorkAssignmentsProvider = HostWorkAssignmentsProvider._();
 
-/// The caller's live assignments. Refetches whenever the signed-in account
-/// changes so a different OTP session never sees stale grants.
+/// The caller's live assignments, rebuilt whenever the signed-in account
+/// changes so a different OTP session never sees another account's grants.
 
 final class HostWorkAssignmentsProvider
     extends
         $FunctionalProvider<
           AsyncValue<HostWorkAssignments>,
           HostWorkAssignments,
-          FutureOr<HostWorkAssignments>
+          Stream<HostWorkAssignments>
         >
     with
         $FutureModifier<HostWorkAssignments>,
-        $FutureProvider<HostWorkAssignments> {
-  /// The caller's live assignments. Refetches whenever the signed-in account
-  /// changes so a different OTP session never sees stale grants.
+        $StreamProvider<HostWorkAssignments> {
+  /// The caller's live assignments, rebuilt whenever the signed-in account
+  /// changes so a different OTP session never sees another account's grants.
   HostWorkAssignmentsProvider._()
     : super(
         from: null,
@@ -94,15 +94,15 @@ final class HostWorkAssignmentsProvider
 
   @$internal
   @override
-  $FutureProviderElement<HostWorkAssignments> $createElement(
+  $StreamProviderElement<HostWorkAssignments> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<HostWorkAssignments> create(Ref ref) {
+  Stream<HostWorkAssignments> create(Ref ref) {
     return hostWorkAssignments(ref);
   }
 }
 
 String _$hostWorkAssignmentsHash() =>
-    r'6551d8b5672b782f3ed275c395b627d663cb6672';
+    r'4923cbd3c0fc6838e53e235a2fa37ded2238ae29';

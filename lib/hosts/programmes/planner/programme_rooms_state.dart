@@ -3,8 +3,8 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:flutter/foundation.dart';
 
 /// Rooms at one hotel: the programme (for its hotels) and the hotel's room
-/// board from `getProgramHotelRooms` (room blocks, stays and the guests
-/// still waiting for a room).
+/// board from its `programHotelRoomViews` listener (room blocks, stays and
+/// the guests still waiting for a room).
 @immutable
 class HostProgrammeRoomsState {
   const HostProgrammeRoomsState({

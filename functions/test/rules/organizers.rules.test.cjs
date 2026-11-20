@@ -283,7 +283,7 @@ describe("firestore.rules", () => {
       ), organizerEventVenue({venueId: "venue-2"})));
     });
 
-    it("keeps contact notes and manual-tag vocabularies callable-only", async () => {
+    it("lets managers read their contact notes and keeps outreach and manual-tag vocabularies callable-only", async () => {
       const createdAt = Timestamp.fromDate(
         new Date("2026-08-16T10:00:00.000Z"),
       );
@@ -325,13 +325,28 @@ describe("firestore.rules", () => {
         updatedByUid: "owner-2",
       });
 
+      const ownerDb = authedDb("owner-2");
+      await assertSucceeds(getDoc(doc(ownerDb, "organizerContactNotes",
+        "note-2")));
+      const notes = await assertSucceeds(getDocs(query(
+        collection(ownerDb, "organizerContactNotes"),
+        where("organizerId", "==", "organizer-2"),
+        where("contactId", "==", "contact-2"),
+        orderBy("createdAt", "desc"),
+        orderBy(documentId(), "desc"),
+        limit(1),
+      )));
+      assert.deepEqual(notes.docs.map((note) => note.id), ["note-2"]);
+      const foreignDb = authedDb("owner-1");
+      await assertFails(getDoc(doc(foreignDb, "organizerContactNotes",
+        "note-2")));
+      await assertFails(getDocs(query(
+        collection(foreignDb, "organizerContactNotes"),
+        where("organizerId", "==", "organizer-2"),
+      )));
+      await assertFails(getDocs(collection(ownerDb, "organizerContactNotes")));
       for (const uid of ["owner-2", "owner-1"]) {
         const db = authedDb(uid);
-        await assertFails(getDoc(doc(db, "organizerContactNotes", "note-2")));
-        await assertFails(getDocs(query(
-          collection(db, "organizerContactNotes"),
-          where("organizerId", "==", "organizer-2"),
-        )));
         await assertFails(getDoc(doc(
           db,
           "organizerContactOutreach",
@@ -1496,14 +1511,13 @@ describe("firestore.rules", () => {
       }
     });
 
-    it("keeps organizer tracking settings server-only", async () => {
+    it("keeps organizer tracking settings server-written", async () => {
       await seed(["organizerTrackingSettings", "organizer-1"], {
         organizerId: "organizer-1", revision: 1, metaPixelId: "123456",
       });
       for (const db of [authedDb("owner-1"), authedDb("owner-2"),
         testEnv.unauthenticatedContext().firestore()]) {
         const ref = doc(db, "organizerTrackingSettings", "organizer-1");
-        await assertFails(getDoc(ref));
         await assertFails(updateDoc(ref, {revision: 2}));
         await assertFails(deleteDoc(ref));
         await assertFails(setDoc(doc(db, "organizerTrackingSettings", "forged"), {

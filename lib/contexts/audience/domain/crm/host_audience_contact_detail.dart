@@ -144,6 +144,66 @@ class HostAudienceContactDetail {
     );
   }
 
+  /// One person as the People pages read them from listeners: the
+  /// directory [contact] row (name, endpoints, tags, revision), the
+  /// [facts] the contact detail read model keeps (traits, revenue and the
+  /// newest event rows) and the team's newest [notes]. Permission evidence,
+  /// provenance and operational history are not read here, so they are
+  /// marked unavailable (`historyLoaded` is false), as an overview read
+  /// marked them.
+  factory HostAudienceContactDetail.fromReadModels({
+    required String organizerId,
+    required HostAudienceContact contact,
+    required bool linkedAccount,
+    required HostContactDetailFacts facts,
+    required List<HostCustomerNote> notes,
+    required bool notesTruncated,
+  }) => HostAudienceContactDetail(
+    organizerId: organizerId,
+    contactId: contact.contactId,
+    displayName: contact.displayName,
+    sourceDisplayName: contact.displayName,
+    displayNameOverride: null,
+    phoneE164: contact.phoneE164,
+    email: contact.email,
+    linkedAccount: linkedAccount,
+    identityState: contact.identityState,
+    identityConfidence: contact.identityConfidence,
+    ambiguousCandidateCount: contact.ambiguousCandidateCount,
+    whatsappAdminSuppressed: contact.whatsappAdminSuppressed,
+    whatsappPermission: HostCustomerWhatsappPermission(
+      status: contact.whatsappStatus,
+      evidenceStatus: HostCustomerPermissionEvidenceStatus.unavailable,
+      receiptId: null,
+      source: null,
+      sourceFormId: null,
+      sourceFormTitle: null,
+      decisionAt: null,
+      identityStrength: null,
+    ),
+    origins: const [],
+    originsTruncated: false,
+    traits: facts.traits,
+    revenue: facts.revenue,
+    events: facts.events,
+    eventsTruncated: facts.eventsTruncated,
+    manualTags: contact.manualTags,
+    notes: notes,
+    notesTruncated: notesTruncated,
+    sendsCoverage: HostCustomerHistoryCoverage.unavailable,
+    historyLoaded: false,
+    timeline: const [],
+    timelineTruncated: false,
+    timelineCoverage: const HostCustomerTimelineCoverage(
+      forms: HostCustomerTimelineCoverageValue.unavailable,
+      events: HostCustomerTimelineCoverageValue.unavailable,
+      sends: HostCustomerTimelineCoverageValue.unavailable,
+      replies: HostCustomerTimelineCoverageValue.unavailable,
+      outreach: HostCustomerTimelineCoverageValue.unavailable,
+    ),
+    revision: contact.revision,
+  );
+
   final String organizerId;
   final String contactId;
   final String displayName;
@@ -180,4 +240,36 @@ class HostAudienceContactDetail {
   final HostCustomerTimelineCoverage timelineCoverage;
   final List<HostActiveContactMerge> activeMerges;
   final int revision;
+}
+
+/// A contact's traits, revenue and newest event rows from the
+/// `hostContactDetailViews` read model, exactly as the detail callable
+/// returns them.
+class HostContactDetailFacts {
+  const HostContactDetailFacts({
+    required this.traits,
+    required this.revenue,
+    required this.events,
+    required this.eventsTruncated,
+  });
+
+  factory HostContactDetailFacts.fromMap(Map<Object?, Object?> map) =>
+      HostContactDetailFacts(
+        traits: HostCustomerTraits.fromMap(
+          crmRequiredMap(map['traits'], 'customer traits'),
+        ),
+        revenue: HostCustomerRevenue.fromMap(
+          crmRequiredMap(map['revenue'], 'customer revenue'),
+        ),
+        events: crmMapList(
+          map['events'],
+          'contact events',
+        ).map(HostAudienceEventFact.fromMap).toList(growable: false),
+        eventsTruncated: crmRequiredBool(map, 'eventsTruncated'),
+      );
+
+  final HostCustomerTraits traits;
+  final HostCustomerRevenue revenue;
+  final List<HostAudienceEventFact> events;
+  final bool eventsTruncated;
 }

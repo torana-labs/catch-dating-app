@@ -55,102 +55,29 @@ final class HostApplicationRepositoryProvider
 }
 
 String _$hostApplicationRepositoryHash() =>
-    r'c0073b9e1ad3d65345e4f5db3664ce0931eef798';
+    r'25c92064f6a08f8947a36cf9e43a370d9b7bba46';
 
-@ProviderFor(hostApplications)
-final hostApplicationsProvider = HostApplicationsFamily._();
-
-final class HostApplicationsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<HostApplicationPage>,
-          HostApplicationPage,
-          FutureOr<HostApplicationPage>
-        >
-    with
-        $FutureModifier<HostApplicationPage>,
-        $FutureProvider<HostApplicationPage> {
-  HostApplicationsProvider._({
-    required HostApplicationsFamily super.from,
-    required HostApplicationListRequest super.argument,
-  }) : super(
-         retry: null,
-         name: r'hostApplicationsProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$hostApplicationsHash();
-
-  @override
-  String toString() {
-    return r'hostApplicationsProvider'
-        ''
-        '($argument)';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<HostApplicationPage> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<HostApplicationPage> create(Ref ref) {
-    final argument = this.argument as HostApplicationListRequest;
-    return hostApplications(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is HostApplicationsProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$hostApplicationsHash() => r'63f5cbbdd882358038c8e80a40b23ae4cf9cad49';
-
-final class HostApplicationsFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<HostApplicationPage>,
-          HostApplicationListRequest
-        > {
-  HostApplicationsFamily._()
-    : super(
-        retry: null,
-        name: r'hostApplicationsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  HostApplicationsProvider call(HostApplicationListRequest request) =>
-      HostApplicationsProvider._(argument: request, from: this);
-
-  @override
-  String toString() => r'hostApplicationsProvider';
-}
+/// One application's review, as a Firestore listener on its read model:
+/// writes never invalidate it, the server's triggers deliver them.
 
 @ProviderFor(hostApplicationDetail)
 final hostApplicationDetailProvider = HostApplicationDetailFamily._();
+
+/// One application's review, as a Firestore listener on its read model:
+/// writes never invalidate it, the server's triggers deliver them.
 
 final class HostApplicationDetailProvider
     extends
         $FunctionalProvider<
           AsyncValue<HostApplicationDetail>,
           HostApplicationDetail,
-          FutureOr<HostApplicationDetail>
+          Stream<HostApplicationDetail>
         >
     with
         $FutureModifier<HostApplicationDetail>,
-        $FutureProvider<HostApplicationDetail> {
+        $StreamProvider<HostApplicationDetail> {
+  /// One application's review, as a Firestore listener on its read model:
+  /// writes never invalidate it, the server's triggers deliver them.
   HostApplicationDetailProvider._({
     required HostApplicationDetailFamily super.from,
     required (String, String) super.argument,
@@ -174,12 +101,12 @@ final class HostApplicationDetailProvider
 
   @$internal
   @override
-  $FutureProviderElement<HostApplicationDetail> $createElement(
+  $StreamProviderElement<HostApplicationDetail> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<HostApplicationDetail> create(Ref ref) {
+  Stream<HostApplicationDetail> create(Ref ref) {
     final argument = this.argument as (String, String);
     return hostApplicationDetail(ref, argument.$1, argument.$2);
   }
@@ -196,12 +123,15 @@ final class HostApplicationDetailProvider
 }
 
 String _$hostApplicationDetailHash() =>
-    r'25b010fae1565f70e9f811cca7a0e883761e6ffa';
+    r'3675ad0af42ee25db7f7fd0962aa676b631595ba';
+
+/// One application's review, as a Firestore listener on its read model:
+/// writes never invalidate it, the server's triggers deliver them.
 
 final class HostApplicationDetailFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<HostApplicationDetail>,
+          Stream<HostApplicationDetail>,
           (String, String)
         > {
   HostApplicationDetailFamily._()
@@ -212,6 +142,9 @@ final class HostApplicationDetailFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// One application's review, as a Firestore listener on its read model:
+  /// writes never invalidate it, the server's triggers deliver them.
 
   HostApplicationDetailProvider call(
     String organizerId,

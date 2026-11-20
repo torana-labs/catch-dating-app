@@ -196,11 +196,9 @@ class _Assignments implements HostWorkRepository {
   String planner = 'planner';
   int calls = 0;
   @override
-  Future<HostWorkAssignments> listAssignments({
-    bool includeExpired = false,
-  }) async {
+  Stream<HostWorkAssignments> watchAssignments(String uid) async* {
     calls++;
-    return HostWorkAssignments(
+    yield HostWorkAssignments(
       shellEntry: HostWorkShellEntry.workShell,
       assignments: [
         HostWorkAssignment(
@@ -211,9 +209,6 @@ class _Assignments implements HostWorkRepository {
           subtitle: 'Wedding',
           organizerName: 'Synthetic planner',
           duties: const [],
-          destinations: const [],
-          overflowDestinations: const [],
-          shellMode: HostWorkShellMode.task,
           grantExpiresAt: DateTime.now().add(const Duration(days: 1)),
         ),
       ],

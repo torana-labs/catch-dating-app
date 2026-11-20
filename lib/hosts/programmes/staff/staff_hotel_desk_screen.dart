@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/programmes/data/program_room_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_hotel_desk_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_hotel_desk_state.dart';
@@ -196,11 +196,7 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
     try {
       // provider-graph: ownership-widget-async-callback:_StaffHotelDeskScreenState._run:await:command watch CAT156 -- Each desk command is a programme operations controller call passed in by the row; the widget tracks which row is busy and the last error for display only. Lift busy/error into the operations controller in the CAT156 migration.
       await command();
-      if (!mounted) return;
-      // The inbound board is a listener and delivers the change itself.
-      ref.invalidate(
-        programHotelRoomsProvider(widget.programId, widget.hotelId),
-      );
+      // The inbound and room boards are listeners and deliver the change.
     } on Object catch (error) {
       if (mounted) setState(() => _error = error);
     } finally {

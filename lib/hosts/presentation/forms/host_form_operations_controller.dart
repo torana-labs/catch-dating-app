@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_campaign_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_automation_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_analytics.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_conversion.dart';
@@ -251,7 +252,7 @@ class HostFormAutomationsState {
   const HostFormAutomationsState({
     required this.rules,
     required this.runs,
-    required this.nextCursor,
+    required this.hasMore,
     this.loadingMore = false,
     this.mutatingRuleIds = const {},
     this.error,
@@ -259,86 +260,89 @@ class HostFormAutomationsState {
 
   final List<HostFormAutomationRule> rules;
   final List<HostFormAutomationRun> runs;
-  final String? nextCursor;
+
+  /// Whether older runs follow; stays true after a failed page so asking
+  /// again retries it.
+  final bool hasMore;
   final bool loadingMore;
   final Set<String> mutatingRuleIds;
   final Object? error;
 
-  bool get canLoadMore => nextCursor != null && !loadingMore;
-
-  HostFormAutomationsState copyWith({
-    List<HostFormAutomationRule>? rules,
-    List<HostFormAutomationRun>? runs,
-    String? nextCursor,
-    bool clearNextCursor = false,
-    bool? loadingMore,
-    Set<String>? mutatingRuleIds,
-    Object? error,
-    bool clearError = false,
-  }) => HostFormAutomationsState(
-    rules: rules ?? this.rules,
-    runs: runs ?? this.runs,
-    nextCursor: clearNextCursor ? null : nextCursor ?? this.nextCursor,
-    loadingMore: loadingMore ?? this.loadingMore,
-    mutatingRuleIds: mutatingRuleIds ?? this.mutatingRuleIds,
-    error: clearError ? null : error ?? this.error,
-  );
+  bool get canLoadMore => hasMore && !loadingMore;
 }
 
+/// The automation rules and run history of an organizer, or of one form
+/// when `formId` is set, from listeners: a rule saved or switched elsewhere
+/// and a run that finishes show at once. Saves and switches stay on the
+/// revision-fenced callables; a saved rule shows at once and gives way to
+/// its view when the view reaches that revision.
 @riverpod
 class HostFormAutomationsController extends _$HostFormAutomationsController {
+  List<HostFormAutomationRule> _rules = const [];
+  LivePages<HostFormAutomationRun> _runs = const LivePages(
+    items: [],
+    hasMore: false,
+  );
+  Set<String> _mutating = const {};
+  Object? _error;
+  final _saved = <String, HostFormAutomationRule>{};
+
   @override
   Future<HostFormAutomationsState> build(
     String organizerId,
     String? formId,
   ) async {
-    final page = await ref
-        .read(hostFormsRepositoryProvider)
-        .listAutomations(organizerId: organizerId, formId: formId);
-    return _fromPage(page);
+    _rules = await ref.watch(
+      hostFormAutomationRulesProvider(organizerId, formId).future,
+    );
+    _runs = await ref.watch(
+      hostFormAutomationRunPagesProvider(organizerId, formId).future,
+    );
+    return _compose();
   }
 
-  Future<void> loadMore() async {
+  HostFormAutomationsState _compose() {
+    final viewed = {for (final rule in _rules) rule.ruleId: rule};
+    _saved.removeWhere(
+      (ruleId, saved) => (viewed[ruleId]?.revision ?? 0) >= saved.revision,
+    );
+    return HostFormAutomationsState(
+      rules: List.unmodifiable([
+        for (final saved in _saved.values)
+          if (!viewed.containsKey(saved.ruleId)) saved,
+        for (final rule in _rules) _saved[rule.ruleId] ?? rule,
+      ]),
+      runs: _runs.items,
+      hasMore: _runs.hasMore,
+      loadingMore: _runs.loadingMore,
+      mutatingRuleIds: _mutating,
+      error: _error ?? _runs.nextPageError,
+    );
+  }
+
+  void _publish() {
+    if (state.hasValue) state = AsyncData(_compose());
+  }
+
+  void _keep(HostFormAutomationRule saved) {
+    if (formId == null || saved.formId == formId) _saved[saved.ruleId] = saved;
+  }
+
+  /// Opens the next page of runs, or retries the one that failed.
+  void loadMore() {
     final current = state.asData?.value;
     if (current == null || !current.canLoadMore) return;
-    state = AsyncData(current.copyWith(loadingMore: true, clearError: true));
-    try {
-      final page = await ref
-          .read(hostFormsRepositoryProvider)
-          .listAutomations(
-            organizerId: organizerId,
-            formId: formId,
-            cursor: current.nextCursor,
-          );
-      final byId = <String, HostFormAutomationRun>{
-        for (final run in current.runs) run.runId: run,
-        for (final run in page.runs) run.runId: run,
-      };
-      state = AsyncData(
-        current.copyWith(
-          rules: page.rules,
-          runs: List.unmodifiable(byId.values),
-          nextCursor: page.nextCursor,
-          clearNextCursor: page.nextCursor == null,
-          loadingMore: false,
-        ),
-      );
-    } on Object catch (error) {
-      state = AsyncData(current.copyWith(loadingMore: false, error: error));
-    }
+    _error = null;
+    ref
+        .read(hostFormAutomationRunPagesProvider(organizerId, formId).notifier)
+        .loadMore();
   }
 
   Future<bool> setEnabled(HostFormAutomationRule rule, bool enabled) async {
-    final current = state.asData?.value;
-    if (current == null || current.mutatingRuleIds.contains(rule.ruleId)) {
-      return false;
-    }
-    state = AsyncData(
-      current.copyWith(
-        mutatingRuleIds: {...current.mutatingRuleIds, rule.ruleId},
-        clearError: true,
-      ),
-    );
+    if (!state.hasValue || _mutating.contains(rule.ruleId)) return false;
+    _mutating = {..._mutating, rule.ruleId};
+    _error = null;
+    _publish();
     try {
       final updated = await ref
           .read(hostFormsRepositoryProvider)
@@ -348,26 +352,16 @@ class HostFormAutomationsController extends _$HostFormAutomationsController {
             expectedRevision: rule.revision,
             enabled: enabled,
           );
-      final latest = state.asData?.value ?? current;
-      state = AsyncData(
-        latest.copyWith(
-          rules: [
-            for (final candidate in latest.rules)
-              if (candidate.ruleId == updated.ruleId) updated else candidate,
-          ],
-          mutatingRuleIds: {...latest.mutatingRuleIds}..remove(rule.ruleId),
-          clearError: true,
-        ),
-      );
+      if (!ref.mounted) return true;
+      _keep(updated);
+      _mutating = {..._mutating}..remove(rule.ruleId);
+      _publish();
       return true;
     } on Object catch (error) {
-      final latest = state.asData?.value ?? current;
-      state = AsyncData(
-        latest.copyWith(
-          mutatingRuleIds: {...latest.mutatingRuleIds}..remove(rule.ruleId),
-          error: error,
-        ),
-      );
+      if (!ref.mounted) return false;
+      _mutating = {..._mutating}..remove(rule.ruleId);
+      _error = error;
+      _publish();
       return false;
     }
   }
@@ -400,17 +394,10 @@ class HostFormAutomationsController extends _$HostFormAutomationsController {
           ruleId: existing?.ruleId,
           expectedRevision: existing?.revision,
         );
-    final current = state.asData?.value;
-    if (current != null) {
-      state = AsyncData(
-        current.copyWith(
-          rules: [
-            saved,
-            ...current.rules.where((rule) => rule.ruleId != saved.ruleId),
-          ],
-          clearError: true,
-        ),
-      );
+    if (ref.mounted) {
+      _keep(saved);
+      _error = null;
+      _publish();
     }
     return saved;
   }
@@ -424,15 +411,11 @@ class HostFormAutomationsController extends _$HostFormAutomationsController {
     required HostFormAutomationTrigger trigger,
     required List<HostFormAutomationActionKind> actions,
   }) async {
-    final current = state.asData?.value;
-    if (current == null) return false;
+    if (!state.hasValue) return false;
     const mutationId = 'new';
-    state = AsyncData(
-      current.copyWith(
-        mutatingRuleIds: {...current.mutatingRuleIds, mutationId},
-        clearError: true,
-      ),
-    );
+    _mutating = {..._mutating, mutationId};
+    _error = null;
+    _publish();
     try {
       final requestId = 'automation_${DateTime.now().microsecondsSinceEpoch}';
       final saved = await ref
@@ -457,33 +440,19 @@ class HostFormAutomationsController extends _$HostFormAutomationsController {
                 },
             ],
           );
-      final latest = state.asData?.value ?? current;
-      state = AsyncData(
-        latest.copyWith(
-          rules: [saved, ...latest.rules],
-          mutatingRuleIds: {...latest.mutatingRuleIds}..remove(mutationId),
-          clearError: true,
-        ),
-      );
+      if (!ref.mounted) return true;
+      _keep(saved);
+      _mutating = {..._mutating}..remove(mutationId);
+      _publish();
       return true;
     } on Object catch (error) {
-      final latest = state.asData?.value ?? current;
-      state = AsyncData(
-        latest.copyWith(
-          mutatingRuleIds: {...latest.mutatingRuleIds}..remove(mutationId),
-          error: error,
-        ),
-      );
+      if (!ref.mounted) return false;
+      _mutating = {..._mutating}..remove(mutationId);
+      _error = error;
+      _publish();
       return false;
     }
   }
-
-  HostFormAutomationsState _fromPage(HostFormAutomationPage page) =>
-      HostFormAutomationsState(
-        rules: page.rules,
-        runs: page.runs,
-        nextCursor: page.nextCursor,
-      );
 }
 
 @immutable

@@ -8,27 +8,220 @@ part of 'events_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The organizer's programmes, the first page of the programmes read. A
-/// failed read leaves the Programmes section out rather than failing Events.
+/// The organizer's programmes, live from `organizerProgramViews` (#1339).
+
+@ProviderFor(hostEventsProgrammeViews)
+final hostEventsProgrammeViewsProvider = HostEventsProgrammeViewsFamily._();
+
+/// The organizer's programmes, live from `organizerProgramViews` (#1339).
+
+final class HostEventsProgrammeViewsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Map<Object?, Object?>>>,
+          List<Map<Object?, Object?>>,
+          Stream<List<Map<Object?, Object?>>>
+        >
+    with
+        $FutureModifier<List<Map<Object?, Object?>>>,
+        $StreamProvider<List<Map<Object?, Object?>>> {
+  /// The organizer's programmes, live from `organizerProgramViews` (#1339).
+  HostEventsProgrammeViewsProvider._({
+    required HostEventsProgrammeViewsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostEventsProgrammeViewsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostEventsProgrammeViewsHash();
+
+  @override
+  String toString() {
+    return r'hostEventsProgrammeViewsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Map<Object?, Object?>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Map<Object?, Object?>>> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostEventsProgrammeViews(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostEventsProgrammeViewsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostEventsProgrammeViewsHash() =>
+    r'a625517537cc6263672f7b0b5df9b5647cf7ae61';
+
+/// The organizer's programmes, live from `organizerProgramViews` (#1339).
+
+final class HostEventsProgrammeViewsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<Stream<List<Map<Object?, Object?>>>, String> {
+  HostEventsProgrammeViewsFamily._()
+    : super(
+        retry: null,
+        name: r'hostEventsProgrammeViewsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The organizer's programmes, live from `organizerProgramViews` (#1339).
+
+  HostEventsProgrammeViewsProvider call(String organizerId) =>
+      HostEventsProgrammeViewsProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostEventsProgrammeViewsProvider';
+}
+
+/// The first `listOrganizerPrograms` page, read for the guest, flying-in and
+/// replied counts that stay on that callable (server-trust, #1339).
+
+@ProviderFor(hostEventsProgrammeCounts)
+final hostEventsProgrammeCountsProvider = HostEventsProgrammeCountsFamily._();
+
+/// The first `listOrganizerPrograms` page, read for the guest, flying-in and
+/// replied counts that stay on that callable (server-trust, #1339).
+
+final class HostEventsProgrammeCountsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<OrganizerProgramInventoryPage>,
+          OrganizerProgramInventoryPage,
+          FutureOr<OrganizerProgramInventoryPage>
+        >
+    with
+        $FutureModifier<OrganizerProgramInventoryPage>,
+        $FutureProvider<OrganizerProgramInventoryPage> {
+  /// The first `listOrganizerPrograms` page, read for the guest, flying-in and
+  /// replied counts that stay on that callable (server-trust, #1339).
+  HostEventsProgrammeCountsProvider._({
+    required HostEventsProgrammeCountsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostEventsProgrammeCountsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostEventsProgrammeCountsHash();
+
+  @override
+  String toString() {
+    return r'hostEventsProgrammeCountsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<OrganizerProgramInventoryPage> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<OrganizerProgramInventoryPage> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostEventsProgrammeCounts(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostEventsProgrammeCountsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostEventsProgrammeCountsHash() =>
+    r'9d79dfa7686618b7f33f5755ac0b3f876670102d';
+
+/// The first `listOrganizerPrograms` page, read for the guest, flying-in and
+/// replied counts that stay on that callable (server-trust, #1339).
+
+final class HostEventsProgrammeCountsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<OrganizerProgramInventoryPage>,
+          String
+        > {
+  HostEventsProgrammeCountsFamily._()
+    : super(
+        retry: null,
+        name: r'hostEventsProgrammeCountsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The first `listOrganizerPrograms` page, read for the guest, flying-in and
+  /// replied counts that stay on that callable (server-trust, #1339).
+
+  HostEventsProgrammeCountsProvider call(String organizerId) =>
+      HostEventsProgrammeCountsProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostEventsProgrammeCountsProvider';
+}
+
+/// The organizer's programmes for the Events tab: the rows paint from the
+/// programme views first, and the counts fill in when the callable returns.
+/// A creator who manages nothing lists only through the callable, so its rows
+/// stand in when the views read fails. A failed read leaves the Programmes
+/// section out rather than failing Events.
 
 @ProviderFor(hostEventsProgrammes)
 final hostEventsProgrammesProvider = HostEventsProgrammesFamily._();
 
-/// The organizer's programmes, the first page of the programmes read. A
-/// failed read leaves the Programmes section out rather than failing Events.
+/// The organizer's programmes for the Events tab: the rows paint from the
+/// programme views first, and the counts fill in when the callable returns.
+/// A creator who manages nothing lists only through the callable, so its rows
+/// stand in when the views read fails. A failed read leaves the Programmes
+/// section out rather than failing Events.
 
 final class HostEventsProgrammesProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<OrganizerProgramListRow>>,
           List<OrganizerProgramListRow>,
-          FutureOr<List<OrganizerProgramListRow>>
+          List<OrganizerProgramListRow>,
+          List<OrganizerProgramListRow>
         >
-    with
-        $FutureModifier<List<OrganizerProgramListRow>>,
-        $FutureProvider<List<OrganizerProgramListRow>> {
-  /// The organizer's programmes, the first page of the programmes read. A
-  /// failed read leaves the Programmes section out rather than failing Events.
+    with $Provider<List<OrganizerProgramListRow>> {
+  /// The organizer's programmes for the Events tab: the rows paint from the
+  /// programme views first, and the counts fill in when the callable returns.
+  /// A creator who manages nothing lists only through the callable, so its rows
+  /// stand in when the views read fails. A failed read leaves the Programmes
+  /// section out rather than failing Events.
   HostEventsProgrammesProvider._({
     required HostEventsProgrammesFamily super.from,
     required String super.argument,
@@ -52,14 +245,24 @@ final class HostEventsProgrammesProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<OrganizerProgramListRow>> $createElement(
+  $ProviderElement<List<OrganizerProgramListRow>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $ProviderElement(pointer);
 
   @override
-  FutureOr<List<OrganizerProgramListRow>> create(Ref ref) {
+  List<OrganizerProgramListRow> create(Ref ref) {
     final argument = this.argument as String;
     return hostEventsProgrammes(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<OrganizerProgramListRow> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<OrganizerProgramListRow>>(
+        value,
+      ),
+    );
   }
 
   @override
@@ -74,17 +277,16 @@ final class HostEventsProgrammesProvider
 }
 
 String _$hostEventsProgrammesHash() =>
-    r'70fa88294f9791011227def0476ca8e570f2b55e';
+    r'dc2490cc76818892f9ce1388ccf80bfeb92274a4';
 
-/// The organizer's programmes, the first page of the programmes read. A
-/// failed read leaves the Programmes section out rather than failing Events.
+/// The organizer's programmes for the Events tab: the rows paint from the
+/// programme views first, and the counts fill in when the callable returns.
+/// A creator who manages nothing lists only through the callable, so its rows
+/// stand in when the views read fails. A failed read leaves the Programmes
+/// section out rather than failing Events.
 
 final class HostEventsProgrammesFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<List<OrganizerProgramListRow>>,
-          String
-        > {
+    with $FunctionalFamilyOverride<List<OrganizerProgramListRow>, String> {
   HostEventsProgrammesFamily._()
     : super(
         retry: null,
@@ -94,8 +296,11 @@ final class HostEventsProgrammesFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The organizer's programmes, the first page of the programmes read. A
-  /// failed read leaves the Programmes section out rather than failing Events.
+  /// The organizer's programmes for the Events tab: the rows paint from the
+  /// programme views first, and the counts fill in when the callable returns.
+  /// A creator who manages nothing lists only through the callable, so its rows
+  /// stand in when the views read fails. A failed read leaves the Programmes
+  /// section out rather than failing Events.
 
   HostEventsProgrammesProvider call(String organizerId) =>
       HostEventsProgrammesProvider._(argument: organizerId, from: this);
@@ -180,7 +385,7 @@ final class HostEventsControllerProvider
 }
 
 String _$hostEventsControllerHash() =>
-    r'7a01ec556438fc2021eea827e12ebdac12be2175';
+    r'1cad11b023d41f463905c7c8d3115f63f7a5e896';
 
 /// The Events tab: the coming events and the drafts through their
 /// listeners, past events through the events read owner, and the

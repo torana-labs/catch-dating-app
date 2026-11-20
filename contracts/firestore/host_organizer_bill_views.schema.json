@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_organizer_bill_views.schema.json",
+  "title": "HostOrganizerBillViewDocument",
+  "description": "Server-maintained owner read view of one of Catch's bills to an organizer, for the Host Organiser tab and Payments screen: exactly the row listOrganizerBills returns for it. The view id is the billId. Written by a trigger on organizerBills; a bill still waiting to be sent has no view. Reminders, history, terms revisions, staff ids and the payment link id stay on the bill; the payment link URL is present only while the bill is unpaid. Never identity, permission or mutation authority: the organizer's current owner reads it under rules.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostOrganizerBillViews",
+  "x-firestore-path": "hostOrganizerBillViews/{billId}",
+  "x-document-id-field": "billId",
+  "x-owner": "Host read model projector (hostReadModels organizer bill view trigger) from organizerBills",
+  "required": [
+    "organizerId",
+    "billId",
+    "periodEndMillis",
+    "month",
+    "bill",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "billId": {
+      "$ref": "organizer_bills.schema.json#/properties/billId",
+      "x-catch-ownership": "server-only"
+    },
+    "periodEndMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}$",
+      "x-catch-ownership": "server-only"
+    },
+    "bill": {
+      "$ref": "../callable_responses/list_organizer_bills_response.schema.json#/definitions/bill",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
@@ -60,6 +63,90 @@ void main() {
       expect(current.canEdit, isTrue);
     },
   );
+  test('the stored document reads with defaults and the policy kept off', () {
+    final never = HostTrackingSettings.fromDocument(
+      null,
+      'organizer-a',
+      canEdit: false,
+    );
+    expect(never.revision, 0);
+    expect(never.metaPixelId, isNull);
+    expect(never.canEdit, isFalse);
+    expect(never.editBlockedReason, 'unclaimed');
+    final stored = HostTrackingSettings.fromDocument(
+      {
+        'organizerId': 'organizer-a',
+        'revision': 3,
+        'metaPixelId': '123456',
+        'googleMeasurementId': 'G-ABCD1234',
+        'enabled': false,
+        'updatedByUid': 'manager',
+        'updatedAtMillis': 1,
+      },
+      'organizer-a',
+      canEdit: true,
+    );
+    expect(stored.revision, 3);
+    expect(stored.metaPixelId, '123456');
+    expect(stored.googleMeasurementId, 'G-ABCD1234');
+    expect(stored.enabled, isFalse);
+    expect(stored.editBlockedReason, 'none');
+    expect(
+      () => HostTrackingSettings.fromDocument(
+        {'organizerId': 'organizer-b', 'revision': 1},
+        'organizer-a',
+        canEdit: true,
+      ),
+      throwsFormatException,
+    );
+    expect(
+      () => HostTrackingSettings.fromDocument(
+        {'organizerId': 'organizer-a', 'revision': 1, 'metaPixelId': 'x'},
+        'organizer-a',
+        canEdit: true,
+      ),
+      throwsFormatException,
+    );
+  });
+
+  test('editing follows the organizer as the server decides it', () {
+    final firstParty = _organizer();
+    expect(organizerTrackingEditable(firstParty), isTrue);
+    expect(
+      organizerTrackingEditable(
+        firstParty.copyWith(
+          ownership: OrganizerOwnership.fromJson(const {'state': 'claimed'}),
+        ),
+      ),
+      isFalse,
+    );
+    expect(
+      organizerTrackingEditable(
+        firstParty.copyWith(
+          ownership: OrganizerOwnership.fromJson(const {'state': 'claimed'}),
+          claim: OrganizerClaim.fromJson(const {'state': 'verified'}),
+        ),
+      ),
+      isTrue,
+    );
+    expect(
+      organizerTrackingEditable(firstParty.copyWith(archived: true)),
+      isFalse,
+    );
+    expect(
+      organizerTrackingEditable(
+        firstParty.copyWith(
+          claim: OrganizerClaim.fromJson(const {'state': 'suppressed'}),
+        ),
+      ),
+      isFalse,
+    );
+    expect(
+      organizerTrackingEditable(firstParty.copyWith(ownerUserId: null)),
+      isFalse,
+    );
+  });
+
   test(
     'Settings saves retain displayed revision and explicit null IDs',
     () async {
@@ -150,6 +237,7 @@ void main() {
       overrides: [
         uidProvider.overrideWith((ref) => accounts.stream),
         hostTrackingSettingsRepositoryProvider.overrideWithValue(repository),
+        _organizerOverride,
       ],
     );
     addTearDown(accounts.close);
@@ -206,11 +294,13 @@ void main() {
           .pending,
       isTrue,
     );
-    repository.pendingRead = Completer<HostTrackingSettings>();
+    final readForB = repository.pendingRead =
+        StreamController<HostTrackingSettings>();
+    addTearDown(readForB.close);
     accounts.add('account-b');
     await pumpUntilFound(tester, find.byType(CircularProgressIndicator));
     expect(find.byType(HostTrackingSettingsInputSection), findsNothing);
-    repository.pendingRead!.complete(_settings('organizer-a'));
+    readForB.add(_settings('organizer-a'));
     repository.pendingRead = null;
     await pump();
     editor = tester.widget<HostTrackingSettingsInputSection>(
@@ -312,6 +402,7 @@ void main() {
         overrides: [
           uidProvider.overrideWith((ref) => accounts.stream),
           hostTrackingSettingsRepositoryProvider.overrideWithValue(repository),
+          _organizerOverride,
         ],
       );
       addTearDown(accounts.close);
@@ -325,14 +416,16 @@ void main() {
         throwsA(isA<SignInRequiredException>()),
       );
       expect(repository.reads, 0);
-      repository.pendingRead = Completer<HostTrackingSettings>();
+      final read = repository.pendingRead =
+          StreamController<HostTrackingSettings>();
+      addTearDown(read.close);
       accounts.add('account-a');
       await flushTestEventQueue();
       await container.pump();
       accounts.add(null);
       await flushTestEventQueue();
       await container.pump();
-      repository.pendingRead!.complete(_settings('organizer-a', revision: 99));
+      read.add(_settings('organizer-a', revision: 99));
       await container.pump();
       expect(
         container.read(hostTrackingSettingsProvider('organizer-a')).asData,
@@ -347,13 +440,16 @@ class _RecordingTrackingRepository implements HostTrackingSettingsRepository {
   int writes = 0;
   int reads = 0;
   Completer<HostTrackingSettings>? pending;
-  Completer<HostTrackingSettings>? pendingRead;
+  // Each test closes the controller it hands over in a tear-down.
+  // ignore: close_sinks
+  StreamController<HostTrackingSettings>? pendingRead;
   @override
-  Future<HostTrackingSettings> read(String organizerId) async {
+  Stream<HostTrackingSettings> watch(
+    String organizerId, {
+    required bool canEdit,
+  }) {
     reads++;
-    return pendingRead == null
-        ? _settings(organizerId)
-        : await pendingRead!.future;
+    return pendingRead?.stream ?? Stream.value(_settings(organizerId));
   }
 
   @override
@@ -381,8 +477,25 @@ ProviderContainer _container(_RecordingTrackingRepository repository) =>
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('account-a')),
         hostTrackingSettingsRepositoryProvider.overrideWithValue(repository),
+        _organizerOverride,
       ],
     );
+
+Organizer _organizer() => Organizer(
+  id: 'organizer-a',
+  name: 'Lantern Lane',
+  description: 'Quiz nights.',
+  location: 'mumbai',
+  area: 'Bandra',
+  hostUserId: 'account-a',
+  ownerUserId: 'account-a',
+  createdAt: DateTime(2026),
+  ownership: OrganizerOwnership.fromJson(const {'state': 'userCreated'}),
+);
+
+final _organizerOverride = watchOrganizerProvider.overrideWith(
+  (ref, id) => Stream.value(_organizer().copyWith(id: id)),
+);
 HostTrackingSettingsScope _scope(
   ProviderContainer container,
   String account,

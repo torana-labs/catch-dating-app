@@ -56,142 +56,53 @@ final class HostCommunicationRepositoryProvider
 }
 
 String _$hostCommunicationRepositoryHash() =>
-    r'0a6da7bc178d12551b9cc580fd3ae8a85e7d48f8';
+    r'7c48b79454fbc75e9224cd661e0dd4896ae8de49';
 
-@ProviderFor(hostCommunicationPlan)
-final hostCommunicationPlanProvider = HostCommunicationPlanFamily._();
+/// The organizer's active by-hand handoffs, a page at a time, every row
+/// shown live.
 
-final class HostCommunicationPlanProvider
+@ProviderFor(HostManualSendTaskPages)
+final hostManualSendTaskPagesProvider = HostManualSendTaskPagesFamily._();
+
+/// The organizer's active by-hand handoffs, a page at a time, every row
+/// shown live.
+final class HostManualSendTaskPagesProvider
     extends
-        $FunctionalProvider<
-          AsyncValue<HostCommunicationPlan>,
-          HostCommunicationPlan,
-          FutureOr<HostCommunicationPlan>
-        >
-    with
-        $FutureModifier<HostCommunicationPlan>,
-        $FutureProvider<HostCommunicationPlan> {
-  HostCommunicationPlanProvider._({
-    required HostCommunicationPlanFamily super.from,
-    required (String, String) super.argument,
-  }) : super(
-         retry: null,
-         name: r'hostCommunicationPlanProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$hostCommunicationPlanHash();
-
-  @override
-  String toString() {
-    return r'hostCommunicationPlanProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<HostCommunicationPlan> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<HostCommunicationPlan> create(Ref ref) {
-    final argument = this.argument as (String, String);
-    return hostCommunicationPlan(ref, argument.$1, argument.$2);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is HostCommunicationPlanProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$hostCommunicationPlanHash() =>
-    r'2738739ced9cd19b6552bc0fd5ff9cc3727a393a';
-
-final class HostCommunicationPlanFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<HostCommunicationPlan>,
-          (String, String)
+        $StreamNotifierProvider<
+          HostManualSendTaskPages,
+          LivePages<HostManualSendTask>
         > {
-  HostCommunicationPlanFamily._()
-    : super(
-        retry: null,
-        name: r'hostCommunicationPlanProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  HostCommunicationPlanProvider call(String organizerId, String contactId) =>
-      HostCommunicationPlanProvider._(
-        argument: (organizerId, contactId),
-        from: this,
-      );
-
-  @override
-  String toString() => r'hostCommunicationPlanProvider';
-}
-
-@ProviderFor(hostManualSendTasks)
-final hostManualSendTasksProvider = HostManualSendTasksFamily._();
-
-final class HostManualSendTasksProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<HostManualSendTaskPage>,
-          HostManualSendTaskPage,
-          FutureOr<HostManualSendTaskPage>
-        >
-    with
-        $FutureModifier<HostManualSendTaskPage>,
-        $FutureProvider<HostManualSendTaskPage> {
-  HostManualSendTasksProvider._({
-    required HostManualSendTasksFamily super.from,
+  /// The organizer's active by-hand handoffs, a page at a time, every row
+  /// shown live.
+  HostManualSendTaskPagesProvider._({
+    required HostManualSendTaskPagesFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'hostManualSendTasksProvider',
+         name: r'hostManualSendTaskPagesProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$hostManualSendTasksHash();
+  String debugGetCreateSourceHash() => _$hostManualSendTaskPagesHash();
 
   @override
   String toString() {
-    return r'hostManualSendTasksProvider'
+    return r'hostManualSendTaskPagesProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $FutureProviderElement<HostManualSendTaskPage> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<HostManualSendTaskPage> create(Ref ref) {
-    final argument = this.argument as String;
-    return hostManualSendTasks(ref, argument);
-  }
+  HostManualSendTaskPages create() => HostManualSendTaskPages();
 
   @override
   bool operator ==(Object other) {
-    return other is HostManualSendTasksProvider && other.argument == argument;
+    return other is HostManualSendTaskPagesProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -200,23 +111,69 @@ final class HostManualSendTasksProvider
   }
 }
 
-String _$hostManualSendTasksHash() =>
-    r'27167ae7cfa6973d8e826d90a29565346b29264b';
+String _$hostManualSendTaskPagesHash() =>
+    r'5eb9d16f1ce81a99443e5178d1646775451e27d2';
 
-final class HostManualSendTasksFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<HostManualSendTaskPage>, String> {
-  HostManualSendTasksFamily._()
+/// The organizer's active by-hand handoffs, a page at a time, every row
+/// shown live.
+
+final class HostManualSendTaskPagesFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          HostManualSendTaskPages,
+          AsyncValue<LivePages<HostManualSendTask>>,
+          LivePages<HostManualSendTask>,
+          Stream<LivePages<HostManualSendTask>>,
+          String
+        > {
+  HostManualSendTaskPagesFamily._()
     : super(
         retry: null,
-        name: r'hostManualSendTasksProvider',
+        name: r'hostManualSendTaskPagesProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  HostManualSendTasksProvider call(String organizerId) =>
-      HostManualSendTasksProvider._(argument: organizerId, from: this);
+  /// The organizer's active by-hand handoffs, a page at a time, every row
+  /// shown live.
+
+  HostManualSendTaskPagesProvider call(String organizerId) =>
+      HostManualSendTaskPagesProvider._(argument: organizerId, from: this);
 
   @override
-  String toString() => r'hostManualSendTasksProvider';
+  String toString() => r'hostManualSendTaskPagesProvider';
+}
+
+/// The organizer's active by-hand handoffs, a page at a time, every row
+/// shown live.
+
+abstract class _$HostManualSendTaskPages
+    extends $StreamNotifier<LivePages<HostManualSendTask>> {
+  late final _$args = ref.$arg as String;
+  String get organizerId => _$args;
+
+  Stream<LivePages<HostManualSendTask>> build(String organizerId);
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<LivePages<HostManualSendTask>>,
+              LivePages<HostManualSendTask>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<LivePages<HostManualSendTask>>,
+                LivePages<HostManualSendTask>
+              >,
+              AsyncValue<LivePages<HostManualSendTask>>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
+  }
 }

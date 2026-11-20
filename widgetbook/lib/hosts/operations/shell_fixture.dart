@@ -162,6 +162,10 @@ class WidgetbookHostShellScope extends StatelessWidget {
       hostTrackingSettingsRepositoryProvider.overrideWithValue(
         const _WidgetbookTrackingSettingsRepository(),
       ),
+      hostTrackingSettingsProvider.overrideWith(
+        (ref, organizerId) => const _WidgetbookTrackingSettingsRepository()
+            .watch(organizerId, canEdit: true),
+      ),
     ];
     for (final organizerId in eventOrganizerIds) {
       final organizer = organizersById[organizerId];
@@ -359,17 +363,12 @@ class _WidgetbookTrackingSettingsRepository
     implements HostTrackingSettingsRepository {
   const _WidgetbookTrackingSettingsRepository();
   @override
-  Future<HostTrackingSettings> read(String organizerId) async =>
-      HostTrackingSettings(
-        organizerId: organizerId,
-        revision: 0,
-        metaPixelId: null,
-        googleMeasurementId: null,
-        enabled: false,
-        publicationAllowed: false,
-        canEdit: true,
-        editBlockedReason: 'none',
-      );
+  Stream<HostTrackingSettings> watch(
+    String organizerId, {
+    required bool canEdit,
+  }) => Stream.value(
+    HostTrackingSettings.fromDocument(null, organizerId, canEdit: canEdit),
+  );
   @override
   Future<HostTrackingSettings> save(
     SetOrganizerTrackingSettingsCallableRequest request,

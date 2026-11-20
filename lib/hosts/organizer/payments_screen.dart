@@ -115,8 +115,7 @@ class OrganizerPaymentsScreen extends ConsumerWidget {
       case OrganizerPaymentsAction.retryConnection:
         ref.invalidate(connection);
       case OrganizerPaymentsAction.retryBills:
-        ref.invalidate(hostOrganizerBillsProvider(organizer.id));
-        ref.invalidate(hostOrganizerBillingStatusProvider(organizer.id));
+        _retryBillReads(ref, organizer.id);
       case OrganizerPaymentsAction.disconnect:
         final ready = state.readyConnection;
         if (ready == null) return;
@@ -143,4 +142,10 @@ class OrganizerPaymentsScreen extends ConsumerWidget {
         );
     }
   }
+}
+
+/// Restarts the bills listener and the billing status read after a failure.
+void _retryBillReads(WidgetRef ref, String organizerId) {
+  ref.invalidate(hostOrganizerBillsProvider(organizerId));
+  ref.invalidate(hostOrganizerBillingStatusProvider(organizerId));
 }

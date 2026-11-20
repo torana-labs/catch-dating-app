@@ -8,6 +8,7 @@ import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
@@ -26,15 +27,13 @@ class HostManualSendList extends ConsumerStatefulWidget {
 }
 
 class _HostManualSendListState extends ConsumerState<HostManualSendList> {
-  List<HostManualSendTask> _additionalTasks = const [];
-  String? _additionalNextCursor;
-  bool _loadingMore = false;
   bool _replanning = false;
   Map<String, HostManualSendTaskReplanResult> _replanResults = const {};
 
   @override
   Widget build(BuildContext context) {
-    final tasks = ref.watch(hostManualSendTasksProvider(widget.organizerId));
+    final provider = hostManualSendTaskPagesProvider(widget.organizerId);
+    final tasks = ref.watch(provider);
     return tasks.when(
       loading: () => CatchSection.fieldRows(
         key: const ValueKey('host-manual-send-queue-loading'),
@@ -51,54 +50,27 @@ class _HostManualSendListState extends ConsumerState<HostManualSendList> {
         error,
         context: AppErrorContext.organizer,
         mode: CatchErrorStateMode.compact,
-        onRetry: _resetAndReload,
+        onRetry: _retry,
       ),
-      data: (page) => HostManualSendListBody(
-        page: page,
-        additionalTasks: _additionalTasks,
-        additionalNextCursor: _additionalNextCursor,
-        loadingMore: _loadingMore,
+      data: (pages) => HostManualSendListBody(
+        pages: pages,
         replanning: _replanning,
         onOpenTask: _openTask,
-        onLoadMore: _loadMore,
+        onLoadMore: () => ref.read(provider.notifier).loadMore(),
         onReplan: _replan,
       ),
     );
   }
 
+  /// The listener shows the task's new state, so a closed sheet only clears
+  /// the route checks it may have made stale.
   Future<void> _openTask(HostManualSendTask task) async {
     final changed = await showCatchBottomSheet<bool>(
       context: context,
       builder: (_) => HostManualSendTaskSheet(task: task),
     );
     if (!mounted || changed != true) return;
-    _resetAndReload();
-  }
-
-  Future<void> _loadMore(String cursor) async {
-    if (_loadingMore) return;
-    setState(() => _loadingMore = true);
-    try {
-      // provider-graph: ownership-widget-async:_HostManualSendListState._loadMore:await:hostAudienceControllerProvider.listManualSendTasks watch CAT156 -- Existing bounded review signal at _HostManualSendListState._loadMore (await:hostAudienceControllerProvider.listManualSendTasks). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
-      final page = await ref
-          .read(hostAudienceControllerProvider)
-          .listManualSendTasks(organizerId: widget.organizerId, cursor: cursor);
-      if (!mounted) return;
-      setState(() {
-        _additionalTasks = [..._additionalTasks, ...page.tasks];
-        _additionalNextCursor = page.nextCursor;
-      });
-    } on Object catch (error) {
-      if (mounted) {
-        showCatchNoticeError(
-          context,
-          error,
-          errorContext: AppErrorContext.organizer,
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loadingMore = false);
-    }
+    setState(() => _replanResults = const {});
   }
 
   Future<void> _replan(List<HostManualSendTask> tasks) async {
@@ -150,50 +122,35 @@ class _HostManualSendListState extends ConsumerState<HostManualSendList> {
     }
   }
 
-  void _resetAndReload() {
-    if (mounted) {
-      setState(() {
-        _additionalTasks = const [];
-        _additionalNextCursor = null;
-        _replanResults = const {};
-      });
-    }
-    ref.invalidate(hostManualSendTasksProvider(widget.organizerId));
+  void _retry() {
+    if (mounted) setState(() => _replanResults = const {});
+    ref.invalidate(hostManualSendTaskPagesProvider(widget.organizerId));
   }
 }
 
 class HostManualSendListBody extends StatelessWidget {
   const HostManualSendListBody({
     super.key,
-    required this.page,
-    required this.additionalTasks,
-    required this.additionalNextCursor,
-    required this.loadingMore,
+    required this.pages,
     required this.replanning,
     required this.onOpenTask,
     required this.onLoadMore,
     required this.onReplan,
   });
 
-  final HostManualSendTaskPage page;
-  final List<HostManualSendTask> additionalTasks;
-  final String? additionalNextCursor;
-  final bool loadingMore;
+  final LivePages<HostManualSendTask> pages;
   final bool replanning;
   final ValueChanged<HostManualSendTask> onOpenTask;
-  final ValueChanged<String> onLoadMore;
+  final VoidCallback onLoadMore;
   final ValueChanged<List<HostManualSendTask>> onReplan;
 
   @override
   Widget build(BuildContext context) {
     final seen = <String>{};
-    final tasks = [...page.tasks, ...additionalTasks]
+    final tasks = pages.items
         .where((task) => task.active && seen.add(task.taskId))
         .toList(growable: false);
     if (tasks.isEmpty) return const SizedBox.shrink();
-    final nextCursor = additionalTasks.isEmpty
-        ? page.nextCursor
-        : additionalNextCursor;
     return CatchSection.fieldRows(
       key: const ValueKey('host-manual-send-queue'),
       title: context.l10n.hostManualSendQueueTitle,
@@ -216,15 +173,15 @@ class HostManualSendListBody extends StatelessWidget {
             variant: CatchLegacyTextVariant.bodyM,
             color: CatchTokens.of(context).ink,
           ),
-          if (nextCursor != null) ...[
+          if (pages.hasMore) ...[
             gapH12,
             CatchButton(
               label: context.l10n.hostSendsLoadMore,
               variant: CatchButtonVariant.secondary,
-              status: (loadingMore)
+              status: (pages.loadingMore)
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
-              onPressed: loadingMore ? null : () => onLoadMore(nextCursor),
+              onPressed: pages.loadingMore ? null : onLoadMore,
             ),
           ],
         ],

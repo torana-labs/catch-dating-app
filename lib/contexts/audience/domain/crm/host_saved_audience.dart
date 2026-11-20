@@ -146,23 +146,3 @@ class HostSavedAudiencePreview {
 }
 
 enum HostSavedAudienceMembershipMode { rules, selectedPeople }
-
-class HostStaticAudienceMember {
-  const HostStaticAudienceMember({
-    required this.selectedContactId,
-    required this.contactId,
-    required this.displayName,
-    required this.available,
-  });
-  factory HostStaticAudienceMember.fromMap(Map<Object?, Object?> map) =>
-      HostStaticAudienceMember(
-        selectedContactId: crmRequiredString(map, 'selectedContactId'),
-        contactId: crmNullableString(map['contactId']),
-        displayName: crmNullableString(map['displayName']),
-        available: crmRequiredBool(map, 'available'),
-      );
-  final String selectedContactId;
-  final String? contactId;
-  final String? displayName;
-  final bool available;
-}

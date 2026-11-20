@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_room_views_repository.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_rooms_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'programme_rooms_controller.g.dart';
 
 /// Rooms at [hotelId] (or the programme's first hotel): the programme and
-/// the hotel's room board, both callables.
+/// the hotel's room board (a listener on its view).
 @riverpod
 HostProgrammeRoomsState hostProgrammeRoomsController(
   Ref ref,

@@ -4,7 +4,6 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_reposi
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
@@ -40,11 +39,6 @@ class HostAudienceController {
   final HostSavedAudienceRepository _savedAudiences;
   final HostWhatsappRepository _whatsapp;
   final HostCampaignRepository _campaign;
-
-  Future<HostAudienceContactDetail> getContactDetail({
-    required String organizerId,
-    required String contactId,
-  }) => _contacts.getContactDetail(organizerId, contactId);
 
   Future<void> mutateContact({
     required String organizerId,
@@ -206,14 +200,6 @@ class HostAudienceController {
   }) => _communication.replanManualSendTasks(
     organizerId: organizerId,
     taskIds: taskIds,
-  );
-
-  Future<HostManualSendTaskPage> listManualSendTasks({
-    required String organizerId,
-    String? cursor,
-  }) => _communication.listManualSendTasks(
-    organizerId: organizerId,
-    cursor: cursor,
   );
 
   Future<void> sendWhatsappReply({

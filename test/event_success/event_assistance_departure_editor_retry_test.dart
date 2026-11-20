@@ -1,12 +1,10 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_editor.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_host_guests_provider.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'event_assistance_departure_fixtures.dart';
 import 'event_assistance_departure_session_fixtures.dart';
-import 'event_assistance_host_guests_fixtures.dart';
 
 void main() {
   late DepartureSessionHarness h;
@@ -129,28 +127,18 @@ void main() {
     },
   );
 
-  test(
-    'success refreshes Host assistance reads and keeps the progress listener',
-    () async {
-      final guests = eventAssistanceHostGuestsProvider(hostGuestsSelection());
-      h.container.listen(guests, (_, _) {});
-      await h.container.pump();
-      expect(h.guests.reads, hasLength(1));
-      final editor = h.editor()..selectDestination(departureStop);
-      final first = editor.submit();
-      h.repository.completeConfirmation(0);
-      await first;
-      for (var i = 0; i < 5 && h.guests.reads.length < 2; i++) {
-        await h.container.pump();
-      }
-      expect(h.guests.reads, hasLength(2));
-      expect(
-        h.repository.reads,
-        hasLength(1),
-        reason: 'the trigger delivers the departure to the open listener',
-      );
-    },
-  );
+  test('success keeps the progress listener', () async {
+    final editor = h.editor()..selectDestination(departureStop);
+    final first = editor.submit();
+    h.repository.completeConfirmation(0);
+    await first;
+    await h.container.pump();
+    expect(
+      h.repository.reads,
+      hasLength(1),
+      reason: 'the trigger delivers the departure to the open listener',
+    );
+  });
 
   test(
     'account switch during save prevents success and never exposes the old form',

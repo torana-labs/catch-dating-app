@@ -8,16 +8,22 @@ part of 'host_form_payments_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// One form's fee payments in one filter, a page at a time and live: a
+/// checkout that completes, fails or is refunded moves at once.
 
 @ProviderFor(HostFormPaymentsController)
 final hostFormPaymentsControllerProvider = HostFormPaymentsControllerFamily._();
 
+/// One form's fee payments in one filter, a page at a time and live: a
+/// checkout that completes, fails or is refunded moves at once.
 final class HostFormPaymentsControllerProvider
     extends
-        $AsyncNotifierProvider<
+        $StreamNotifierProvider<
           HostFormPaymentsController,
           HostFormPaymentsState
         > {
+  /// One form's fee payments in one filter, a page at a time and live: a
+  /// checkout that completes, fails or is refunded moves at once.
   HostFormPaymentsControllerProvider._({
     required HostFormPaymentsControllerFamily super.from,
     required (String, String, HostFormPaymentFilter) super.argument,
@@ -56,7 +62,10 @@ final class HostFormPaymentsControllerProvider
 }
 
 String _$hostFormPaymentsControllerHash() =>
-    r'2cb81ab726727faacbb752ae0624e5d432925805';
+    r'67503d632ddbf7960ed15e430f0a24f74bf8799d';
+
+/// One form's fee payments in one filter, a page at a time and live: a
+/// checkout that completes, fails or is refunded moves at once.
 
 final class HostFormPaymentsControllerFamily extends $Family
     with
@@ -64,7 +73,7 @@ final class HostFormPaymentsControllerFamily extends $Family
           HostFormPaymentsController,
           AsyncValue<HostFormPaymentsState>,
           HostFormPaymentsState,
-          FutureOr<HostFormPaymentsState>,
+          Stream<HostFormPaymentsState>,
           (String, String, HostFormPaymentFilter)
         > {
   HostFormPaymentsControllerFamily._()
@@ -75,6 +84,9 @@ final class HostFormPaymentsControllerFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// One form's fee payments in one filter, a page at a time and live: a
+  /// checkout that completes, fails or is refunded moves at once.
 
   HostFormPaymentsControllerProvider call(
     String organizerId,
@@ -89,14 +101,17 @@ final class HostFormPaymentsControllerFamily extends $Family
   String toString() => r'hostFormPaymentsControllerProvider';
 }
 
+/// One form's fee payments in one filter, a page at a time and live: a
+/// checkout that completes, fails or is refunded moves at once.
+
 abstract class _$HostFormPaymentsController
-    extends $AsyncNotifier<HostFormPaymentsState> {
+    extends $StreamNotifier<HostFormPaymentsState> {
   late final _$args = ref.$arg as (String, String, HostFormPaymentFilter);
   String get organizerId => _$args.$1;
   String get formId => _$args.$2;
   HostFormPaymentFilter get filter => _$args.$3;
 
-  FutureOr<HostFormPaymentsState> build(
+  Stream<HostFormPaymentsState> build(
     String organizerId,
     String formId,
     HostFormPaymentFilter filter,

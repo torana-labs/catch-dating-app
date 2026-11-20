@@ -56,29 +56,32 @@ final class OrganizerJourneyRepositoryProvider
 }
 
 String _$organizerJourneyRepositoryHash() =>
-    r'ca7bb38244012238460bd136ecd46d255da0a289';
+    r'499954b8939d28cc54c18080acc4673e97ff1448';
 
-/// A callable read on the container retry policy; the sheet keeps its own
-/// Retry for a failure that is not retryable.
+/// One organizer's journey for its hosts, or, with null, each page the
+/// signed-in account is waiting to claim. A Firestore listener: a claim
+/// decided while the sheet is open shows without a reload.
 
 @ProviderFor(organizerJourneys)
 final organizerJourneysProvider = OrganizerJourneysFamily._();
 
-/// A callable read on the container retry policy; the sheet keeps its own
-/// Retry for a failure that is not retryable.
+/// One organizer's journey for its hosts, or, with null, each page the
+/// signed-in account is waiting to claim. A Firestore listener: a claim
+/// decided while the sheet is open shows without a reload.
 
 final class OrganizerJourneysProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<OrganizerJourney>>,
           List<OrganizerJourney>,
-          FutureOr<List<OrganizerJourney>>
+          Stream<List<OrganizerJourney>>
         >
     with
         $FutureModifier<List<OrganizerJourney>>,
-        $FutureProvider<List<OrganizerJourney>> {
-  /// A callable read on the container retry policy; the sheet keeps its own
-  /// Retry for a failure that is not retryable.
+        $StreamProvider<List<OrganizerJourney>> {
+  /// One organizer's journey for its hosts, or, with null, each page the
+  /// signed-in account is waiting to claim. A Firestore listener: a claim
+  /// decided while the sheet is open shows without a reload.
   OrganizerJourneysProvider._({
     required OrganizerJourneysFamily super.from,
     required String? super.argument,
@@ -102,12 +105,12 @@ final class OrganizerJourneysProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<OrganizerJourney>> $createElement(
+  $StreamProviderElement<List<OrganizerJourney>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<OrganizerJourney>> create(Ref ref) {
+  Stream<List<OrganizerJourney>> create(Ref ref) {
     final argument = this.argument as String?;
     return organizerJourneys(ref, argument);
   }
@@ -123,13 +126,14 @@ final class OrganizerJourneysProvider
   }
 }
 
-String _$organizerJourneysHash() => r'52828068672f98fc74f0bf8b9d09d8d35349cf6c';
+String _$organizerJourneysHash() => r'085274385103ed3d87527242674074ce09230c44';
 
-/// A callable read on the container retry policy; the sheet keeps its own
-/// Retry for a failure that is not retryable.
+/// One organizer's journey for its hosts, or, with null, each page the
+/// signed-in account is waiting to claim. A Firestore listener: a claim
+/// decided while the sheet is open shows without a reload.
 
 final class OrganizerJourneysFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<OrganizerJourney>>, String?> {
+    with $FunctionalFamilyOverride<Stream<List<OrganizerJourney>>, String?> {
   OrganizerJourneysFamily._()
     : super(
         retry: null,
@@ -139,8 +143,9 @@ final class OrganizerJourneysFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// A callable read on the container retry policy; the sheet keeps its own
-  /// Retry for a failure that is not retryable.
+  /// One organizer's journey for its hosts, or, with null, each page the
+  /// signed-in account is waiting to claim. A Firestore listener: a claim
+  /// decided while the sheet is open shows without a reload.
 
   OrganizerJourneysProvider call(String? organizerId) =>
       OrganizerJourneysProvider._(argument: organizerId, from: this);

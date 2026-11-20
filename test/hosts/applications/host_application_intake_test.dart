@@ -35,7 +35,7 @@ void main() {
         hostApplicationDetailProvider(
           'org-1',
           'app-1',
-        ).overrideWith((_) async => _detail(false, linked: true)),
+        ).overrideWith((_) => Stream.value(_detail(false, linked: true))),
       ]),
     );
     await pumpFeatureUi(tester);
@@ -57,10 +57,9 @@ void main() {
     await tester.pumpWidget(
       _app([
         hostApplicationsControllerProvider.overrideWithValue(controller),
-        hostApplicationDetailProvider(
-          'org-1',
-          'app-1',
-        ).overrideWith((_) async => _detail(false, sourceResponseId: 'resp-1')),
+        hostApplicationDetailProvider('org-1', 'app-1').overrideWith(
+          (_) => Stream.value(_detail(false, sourceResponseId: 'resp-1')),
+        ),
         hostFormResponseDetailProvider(
           organizerId: 'org-1',
           responseId: 'resp-1',
@@ -96,7 +95,7 @@ void main() {
         hostApplicationDetailProvider(
           'org-1',
           'app-1',
-        ).overrideWith((ref) async => _detail(false, contacts: true)),
+        ).overrideWith((ref) => Stream.value(_detail(false, contacts: true))),
       ]),
     );
     await pumpFeatureUi(tester);
@@ -116,7 +115,7 @@ void main() {
         hostApplicationDetailProvider(
           'org-1',
           'app-1',
-        ).overrideWith((ref) async => _detail(false, revoked: true)),
+        ).overrideWith((ref) => Stream.value(_detail(false, revoked: true))),
       ]),
     );
     await pumpFeatureUi(tester);
