@@ -22,7 +22,6 @@ export function whatsappChatHref(message: string) {
 
 /** The messages each WhatsApp button types for the person, and the buttons' words. */
 export const whatsappChatCopy = {
-  hostLinkMessage: `Hi ${brand.name}, please send me the ${brand.stores.hostAppName} link.`,
   hostQuestionMessage: `Hi ${brand.name}, I have a question about hosting on ${brand.name}.`,
   generalMessage: `Hi ${brand.name}, I have a question.`,
   chat: "Chat on WhatsApp",

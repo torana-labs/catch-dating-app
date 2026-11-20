@@ -18,4 +18,9 @@ export const publishedLegalContent: PublishedLegalContent = {
 export const legalPageCopy = {
   tocLabel: "On this page",
   related: "Related pages",
+  /** Under the WhatsApp button: the other ways in, as one sentence. {email} and {contact} are links. */
+  contactLine: "Or email {email}, or see the {contact}.",
+  /** The same line on the contact page itself. */
+  contactLineHere: "Or email {email}.",
+  contactPage: "contact page",
 } as const;

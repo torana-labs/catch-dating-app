@@ -26,9 +26,9 @@ describe("useHomePageController", () => {
     expect(result.current.note).toBe("Showing 2 of 2 this week · Pickleball");
   });
 
-  it("lets a visitor switch to another open city from the plans band", () => {
+  it("lists no other cities in the plans band: the header's city picker switches city", () => {
     const {result} = renderHook(() => useHomePageController(mumbaiLiveCatalog));
-    expect(result.current.otherCities).toEqual([{label: "Plans in Indore", href: "/?city=indore"}]);
+    expect("otherCities" in result.current).toBe(false);
   });
 
   it("names what a launching city's organisers run and loads another city's page", () => {

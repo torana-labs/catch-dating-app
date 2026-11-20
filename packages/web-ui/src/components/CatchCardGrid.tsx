@@ -10,6 +10,7 @@ import {CatchIcon} from "./CatchIcon";
 import type {CatchIconName} from "../icons/catchIconRoles";
 import {CatchEmptyState} from "./CatchEmptyState";
 import {CatchHeroImage} from "./CatchHeroImage";
+import {CatchLinkedText} from "./CatchLinkedText";
 import {CatchOrganizerCard, type CatchOrganizerCardProps} from "./CatchOrganizerCard";
 import {CatchPlanCard, type CatchPlanCardProps} from "./CatchPlanCard";
 import {CatchReviewItem, type CatchReviewItemProps} from "./CatchReviewItem";
@@ -140,14 +141,16 @@ interface CatchCardGridBaseProps extends Omit<HTMLAttributes<HTMLElement>, "chil
   align?: "start" | "center";
   /** The filter controls between the header and the cards; the page owns their state and passes the filtered items. */
   filters?: ReactNode;
-  /** A row of links under the header, such as other cities, drawn as small secondary buttons. */
-  links?: readonly CatchBandLink[];
   /** Shown in place of the cards when there are no items. */
   empty?: CatchCardGridEmpty;
   /** D20 buttons under the cards. */
   actions?: readonly CatchBandAction[];
-  /** One button across from the header, at its foot (the canvas's .hd); under it on phones. */
-  headerAction?: CatchBandAction;
+  /**
+   * The link to everything the cards stand for, such as "See all 14 plans in
+   * Mumbai", under the cards where a reader finishes scanning; never beside
+   * the heading (21 Nov 2026).
+   */
+  moreLink?: CatchBandLink;
   /** Chip links under the cards, such as more formats. */
   chips?: readonly CatchCardGridChip[];
   /** Titled rows of chip links after the chips, each list named by its title. */
@@ -265,7 +268,7 @@ function cards(props: CatchCardGridItems, heading: "h2" | "h3"): {id: string; no
  */
 export function CatchCardGrid(props: CatchCardGridProps) {
   const {
-    title, label, level = 2, kicker, kickerTone, kickerAccent, lead, align = "start", filters, links, empty, actions, headerAction, chips, chipGroups, footer,
+    title, label, level = 2, kicker, kickerTone, kickerAccent, lead, align = "start", filters, empty, actions, moreLink, chips, chipGroups, footer,
     columns = 3, layout = "grid", ground, kind, items, ...rest
   } = props;
   const titleId = `${useId()}-title`;
@@ -281,23 +284,8 @@ export function CatchCardGrid(props: CatchCardGridProps) {
       color={catchBandColor(ground)}
       data-kind={kind}
     >
-      {title ? (() => {
-        const header = <CatchBandHeader align={align} kicker={kicker} kickerAccent={catchBandKickerAccent(kickerAccent, ground, "pink")} kickerTone={kickerTone} lead={lead} level={level} size={level === 1 ? "hero" : "section"} title={title} titleId={titleId} />;
-        return headerAction ? (
-          <div className={styles.head}>
-            {header}
-            <span className={styles.headAction}>
-              <CatchButton href={headerAction.href} label={headerAction.label} newTab={headerAction.newTab} onPressed={headerAction.onPressed} variant={headerAction.variant ?? "primary"} />
-            </span>
-          </div>
-        ) : header;
-      })() : null}
+      {title ? <CatchBandHeader align={align} kicker={kicker} kickerAccent={catchBandKickerAccent(kickerAccent, ground, "pink")} kickerTone={kickerTone} lead={lead} level={level} size={level === 1 ? "hero" : "section"} title={title} titleId={titleId} /> : null}
       {filters != null ? <div className={styles.filters} data-align={align}>{filters}</div> : null}
-      {links && links.length > 0 ? (
-        <CatchStack as="ul" className={styles.links} direction="row" gap={8} justify={align === "center" ? "center" : undefined} wrap>
-          {links.map((link) => <li key={link.href}><CatchButton href={link.href} label={link.label} size="sm" variant="secondary" /></li>)}
-        </CatchStack>
-      ) : null}
       {list.length > 0 ? (
         <div className={styles.frame}>
           <ul className={styles.grid} data-columns={columns} data-kind={kind} data-layout={layout}>
@@ -307,6 +295,7 @@ export function CatchCardGrid(props: CatchCardGridProps) {
       ) : empty ? (
         <CatchEmptyState actions={empty.actions} announce="polite" message={empty.message} surface title={empty.title} />
       ) : null}
+      {moreLink && list.length > 0 ? <CatchLinkedText parts={[{label: moreLink.label, href: moreLink.href, arrow: true}]} tone="primary" variant="body-small" /> : null}
       {chips && chips.length > 0 ? <ChipList chips={chips} /> : null}
       {chipGroups?.filter((group) => group.chips.length > 0).map((group, index) => (
         <div className={styles.chipGroup} key={group.title}>

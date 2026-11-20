@@ -1,4 +1,4 @@
-import {cleanup, render, screen, within} from "@testing-library/react";
+import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {CatchStepCards} from "./CatchStepCards";
 
@@ -21,5 +21,14 @@ describe("CatchStepCards", () => {
     render(<CatchStepCards current={0} headingLevel={2} on="colour" steps={steps} />);
     expect(screen.getAllByRole("listitem").map((item) => item.hasAttribute("data-filled"))).toEqual([true, false, false]);
     expect(screen.getAllByRole("heading", {level: 2})).toHaveLength(3);
+  });
+
+  it("makes each step a button that picks it when the page passes onSelected", () => {
+    const picked: number[] = [];
+    render(<CatchStepCards current={0} onSelected={(index) => picked.push(index)} steps={[{title: "First step"}, {title: "Second step"}]} />);
+    const buttons = screen.getAllByRole("button");
+    expect(buttons.map((button) => button.getAttribute("aria-pressed"))).toEqual(["true", "false"]);
+    fireEvent.click(buttons[1]);
+    expect(picked).toEqual([1]);
   });
 });

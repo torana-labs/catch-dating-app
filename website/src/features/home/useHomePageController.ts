@@ -70,6 +70,11 @@ export function useHomePageController(catalog: HomeCatalog, navigate: (href: str
     weekCount: week.length,
     /** True when the band shows the next two weeks: a quiet week, or a thin city. */
     upcoming,
+    /**
+     * An open city with nothing in the next two weeks: the plans band becomes
+     * the WhatsApp sign-up, never a heading over an empty list (21 Nov 2026).
+     */
+    empty: live && !unavailable && ahead.length === 0 && week.length === 0,
     note,
     /** Only the organisers Settings → Discovery lets the band show, and none below its minimum. */
     organizers: homeOrganizers(plans).slice(0, live ? 8 : 4).map((organizer) => organizerCard(organizer, city)),
@@ -83,9 +88,6 @@ export function useHomePageController(catalog: HomeCatalog, navigate: (href: str
       if (slug !== city.slug) navigate(cityHref(slug));
     },
     cityHref,
-    /** The other open cities, so a visitor can switch from the plans band. */
-    otherCities: catalog.cities.filter((other) => other.status === "live" && other.slug !== city.slug)
-      .map((other) => ({label: fill(copy.week.cityLink, {city: other.label}), href: cityHref(other.slug)})),
     exploreHref: cityPagePath(city.slug),
     /** The city's new-to-the-city page and its format pages that exist, for the entry tile, the format cards and the chrome. */
     discovery: cityDiscoveryLinks(catalog),

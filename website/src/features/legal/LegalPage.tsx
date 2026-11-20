@@ -1,9 +1,10 @@
-import {CatchButton, CatchGroundCard, CatchStack, CatchText} from "@catch/web-ui";
+import {CatchButton, CatchGroundCard, CatchLinkedText, CatchStack, CatchText, type CatchLinkedTextPart} from "@catch/web-ui";
 import type {PublishedLegalPage, PublishedLegalSection} from "../../content/types";
 import {legalPageCopy, publishedLegalContent} from "../../content/legal";
 import {fallbackPublicContact, renderContactText, type PublicContact} from "../../content/publicContact";
 import {siteFooterCopy, whatsappChatCopy, whatsappChatHref} from "../../content/site";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {linkedParts} from "../../shared/text/linkedParts";
 import {LegalDocument, type LegalDocumentSection} from "../../shared/ui/primitives";
 
 const contactPath = "/contact/";
@@ -31,6 +32,15 @@ function relatedLinks(page: PublishedLegalPage) {
  * with the reply line, a person on WhatsApp, the support email and the
  * document's related pages. /contact/ leads with the WhatsApp button.
  */
+/** The other ways in, under the WhatsApp button: the email, and the contact page unless this is it. */
+function LegalContactLine({contactPath, email}: {contactPath?: string; email: string}) {
+  const links: Record<string, CatchLinkedTextPart> = {
+    email: {label: email, href: `mailto:${email}`},
+    ...(contactPath ? {contact: {label: legalPageCopy.contactPage, href: contactPath}} : {}),
+  };
+  return <CatchLinkedText parts={linkedParts(contactPath ? legalPageCopy.contactLine : legalPageCopy.contactLineHere, links)} tone="primary" />;
+}
+
 export function LegalPage({page, effectiveDate, contact = fallbackPublicContact}: {
   page: PublishedLegalPage;
   effectiveDate: string;
@@ -55,20 +65,17 @@ export function LegalPage({page, effectiveDate, contact = fallbackPublicContact}
               <CatchStack gap={12}>
                 <CatchText as="h2" variant="title-row">{ui.contactPrompt}</CatchText>
                 <CatchText as="p" variant="body-small">{siteFooterCopy.helpBand.title}</CatchText>
-                <CatchStack align="start" gap={8}>
-                  {/* A person on WhatsApp, not only an email (leak 7). */}
+                {/* A person on WhatsApp, not only an email (leak 7): the one button; the other routes are a sentence. */}
+                <CatchStack align="start">
                   <CatchButton href={whatsappChatHref(whatsappChatCopy.generalMessage)} label={whatsappChatCopy.chat}
                     newTab size="md" variant="primary" />
-                  {onContactPage ? null : (
-                    <CatchButton href={contactPath} label={publishedLegalContent.pages.contact.title} size="md" variant="secondary" />
-                  )}
-                  <CatchButton href={`mailto:${contact.supportEmail}`} label={contact.supportEmail} recipe="text" tone="neutral" />
                 </CatchStack>
+                <LegalContactLine contactPath={onContactPage ? undefined : contactPath} email={contact.supportEmail} />
                 {related.length ? (
                   <CatchStack gap={4}>
                     <CatchText as="h3" tone="secondary" variant="label-kicker">{legalPageCopy.related}</CatchText>
                     {related.map((link) => (
-                      <CatchButton href={link.href} key={link.href} label={link.label} recipe="text" tone="neutral" />
+                      <CatchLinkedText key={link.href} parts={[{label: link.label, href: link.href, arrow: true}]} tone="primary" />
                     ))}
                   </CatchStack>
                 ) : null}

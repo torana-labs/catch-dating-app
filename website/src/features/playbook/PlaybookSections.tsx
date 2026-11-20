@@ -37,6 +37,7 @@ import {
 import {captureSlot, type CaptureSlots} from "../../shared/media/captureSlot";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
 import type {BoundPlaybookSectionType} from "./playbookBindings";
+import {AppDownloadQr} from "../marketing/AppDownloadQr";
 import {playbookCustomSections, type PlaybookCustomSectionProps} from "./custom/customSections";
 import {brand} from "../../content/brand";
 import {citiesPageCopy} from "../../content/citiesPage";
@@ -189,7 +190,8 @@ const SplitBinding: Binding<"split"> = ({section, context}) => (
       marker: group.label,
       list: group.list,
       // One link per group until CatchSplitSectionGroup takes more (playbookBindings: splitGroupLinks).
-      link: group.links?.[0] ? context.controller.link(group.links[0]) : undefined,
+      // Without words of its own, the group's title is the link.
+      link: group.links?.[0] ? {href: context.controller.href(group.links[0].to), label: group.links[0].label} : undefined,
     }))}
     id={section.id}
     kicker={section.kicker}
@@ -269,6 +271,10 @@ const CtaBinding: Binding<"cta"> = ({section, context}) => {
       lead={section.lead}
       media={media(section, context.captures)}
       stores={stores}
+      // Wide pages offer the app as the QR code that opens this band on the phone, as every app band does.
+      storesWide={section.storeBadges ? (
+        <AppDownloadQr app={section.storeBadges} value={`${brand.web.origin}${context.controller.href({route: context.page.route, anchor: section.id})}`} />
+      ) : undefined}
       title={section.title}
     />
   );

@@ -97,7 +97,6 @@
       "walkthroughStep": "Get found",
       "pages": [
         "/",
-        "/host/",
         "/mumbai/run-clubs/"
       ]
     },
@@ -549,7 +548,9 @@
       "alt": "Creating an event in Catch Host, step 1 of 4: Saturday Trivia Social as a quiz or trivia night",
       "caption": "Your first event in Catch Host, one step at a time.",
       "walkthroughStep": "Create",
-      "pages": []
+      "pages": [
+        "/host/"
+      ]
     },
     {
       "id": "host-demo-practice",
@@ -735,7 +736,9 @@
       "alt": "Payments and billing in Catch Host: guests pay the organiser's own Razorpay account, this month's Catch bill and past bills",
       "caption": "Ticket money goes to you; Catch sends one bill a month.",
       "walkthroughStep": "Payments",
-      "pages": []
+      "pages": [
+        "/host/"
+      ]
     },
     {
       "id": "host-insights",

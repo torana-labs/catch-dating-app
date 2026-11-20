@@ -27,6 +27,36 @@
 
 .steps[data-on="night"] .step[data-filled] { background: var(--catch-website-color-step-on-ink); }
 
+/*
+ * Pickable steps (onSelected): each card is a button filling its row; the
+ * picked one takes the filled card, the others show it faintly on hover.
+ */
+.pickable { display: block; }
+
+.pickable .step {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.pickable[data-filled] .step { background: var(--catch-website-color-step-on-light); }
+.steps[data-on="night"] .pickable[data-filled] .step { background: var(--catch-website-color-step-on-ink); }
+
+.pickable .step:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+@media (hover: hover) {
+  .pickable:not([data-filled]) .step:hover { background: color-mix(in srgb, var(--catch-website-color-step-on-light) 50%, transparent); }
+}
+
 .stepNumber {
   color: var(--catch-palette-coral);
   font-family: var(--catch-font-stack-display);

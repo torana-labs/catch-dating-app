@@ -29,7 +29,7 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Every kind on an expanded page: plans with filters and actions, organisers
- * on paper, cities with links, reviews, stories four across, people under a
+ * on paper, cities with a link to all, reviews, stories four across, people under a
  * level-1 centred headline, and the empty state.
  */
 export const Contract: Story = {
@@ -52,8 +52,8 @@ export const Contract: Story = {
           {id: "c", title: "Third sample city", status: "Launching soon", action: {label: "Get notified", href: "#"}},
         ]}
         kind="city"
-        links={[{label: "First link", href: "#first"}, {label: "Second link", href: "#second"}]}
-        title="Cities with links"
+        moreLink={{label: "See every sample city", href: "#cities"}}
+        title="Cities with a link to all"
       />
       <CatchCardGrid
         items={[
@@ -132,8 +132,8 @@ export const HomepageKinds: Story = {
       <CatchRoot size="expanded" theme="day">
         <CatchCardGrid align="center" columns={6} items={entries} kicker="Sample kicker" kind="entry" title="Sample entry tiles" />
         <CatchCardGrid chips={chips} columns={5} items={formats} kicker="Sample kicker" kickerAccent="mint" kind="format" layout="rail" title="Sample formats" />
-        <CatchCardGrid ground="paper" headerAction={{label: "Sample action", href: "#"}} items={plans.map((plan, index) => ({...plan, date: {weekday: "Sun", day: String(20 + index), month: "Nov"}}))}
-          kind="plan" layout="rail" title="Sample dated plans" />
+        <CatchCardGrid ground="paper" items={plans.map((plan, index) => ({...plan, date: {weekday: "Sun", day: String(20 + index), month: "Nov"}}))}
+          kind="plan" layout="rail" moreLink={{label: "See all sample plans", href: "#"}} title="Sample dated plans" />
       </CatchRoot>
       <CatchRoot size="compact" theme="day">
         <div style={{width: 390, container: "catch-page / inline-size"}}>

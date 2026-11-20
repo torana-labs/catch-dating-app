@@ -18,6 +18,14 @@
   list-style: none;
 }
 
+/* With storesWide, wide pages show the QR code and link; phones and tablets keep the badges. */
+.stores[data-phone-only] { display: none; }
+
+@container catch-page (width < 840px) {
+  .stores[data-phone-only] { display: flex; }
+  .storesWide { display: none; }
+}
+
 .media {
   display: flex;
   justify-content: center;

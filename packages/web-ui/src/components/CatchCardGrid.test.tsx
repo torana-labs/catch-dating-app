@@ -26,22 +26,24 @@ describe("CatchCardGrid", () => {
     expect(screen.queryByRole("heading", {level: 2})).toBeNull();
   });
 
-  it("places the filters slot and the links between the header and the cards", () => {
+  it("places the filters slot between the header and the cards, and the link to all under the cards", () => {
     render(
       <CatchCardGrid
         filters={<div role="group" aria-label="Sample filters" />}
         items={plans}
         kind="plan"
-        links={[{label: "Other link", href: "/other"}]}
+        moreLink={{label: "See all plans", href: "/plans/"}}
         title="Plans"
       />,
     );
     const filters = screen.getByRole("group", {name: "Sample filters"});
-    const link = screen.getByRole("link", {name: "Other link"});
     const card = screen.getByRole("link", {name: /First plan/});
-    expect(filters.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(link.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const more = screen.getByRole("link", {name: "See all plans"});
+    expect(filters.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(card.compareDocumentPosition(more) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(more.getAttribute("href")).toBe("/plans/");
   });
+
 
   it("shows the empty state, announced, when there are no items", () => {
     render(<CatchCardGrid empty={{title: "Nothing here yet", message: "Try another filter."}} items={[]} kind="plan" title="Plans" />);
@@ -118,10 +120,10 @@ describe("CatchCardGrid", () => {
     expect((container.querySelector("ul") as HTMLElement).dataset).toMatchObject({kind: "entry", columns: "6"});
   });
 
-  it("draws format cards with a photo, or the format's artwork without one, in a rail with chips and a header action", () => {
+  it("draws format cards with a photo, or the format's artwork without one, in a rail with chips", () => {
     const {container} = render(
       <CatchCardGrid chips={[{label: "Yoga and fitness", href: "/mumbai/?q=yoga", dot: "indigo"}]} columns={5}
-        headerAction={{label: "See everything", href: "/mumbai/"}} items={[
+        items={[
           {id: "run", title: "Runs and walks", body: "Pace groups.", more: "Run clubs in Mumbai", href: "/mumbai/?format=run", ground: "coral", format: "run", photoUrl: "/run.jpg"},
           {id: "games", title: "Games and quizzes", body: "Teams and rounds.", more: "Quiz nights in Mumbai", href: "/mumbai/?format=games", ground: "yellow", format: "games"},
         ]} kind="format" layout="rail" title="Start with what you feel like doing" />,
@@ -131,10 +133,6 @@ describe("CatchCardGrid", () => {
     expect(screen.getByRole("link", {name: /Games and quizzes/}).querySelector("img[src='/run.jpg']")).toBeNull();
     expect((container.querySelector("ul") as HTMLElement).dataset).toMatchObject({kind: "format", layout: "rail"});
     expect(screen.getByRole("link", {name: "Yoga and fitness"}).getAttribute("href")).toBe("/mumbai/?q=yoga");
-    const heading = screen.getByRole("heading", {level: 2});
-    const action = screen.getByRole("link", {name: "See everything"});
-    expect(heading.compareDocumentPosition(action) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(action.compareDocumentPosition(run) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("adds titled chip rows after the chips, each list named by its title, with a dot only where a chip names one", () => {

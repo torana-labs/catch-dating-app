@@ -1,6 +1,7 @@
 import {act, cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {brand} from "@catch/brand";
+import {appDownloadCopy} from "@content/appDownload";
 import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
 import {hostFeeCalculatorCopy, hostPricingFacts} from "@content/pricing";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
@@ -14,7 +15,7 @@ afterEach(() => {
 
 // The page's capture slots, as the website manifest records them (the real
 // bindings are checked against capture_manifest.json in marketingCaptures.test.tsx).
-const slotIds = ["host-today", "host-live-tablet", "guest-explore", ...new Set(hostNightFormats.flatMap((format) => format.moments.map((moment) => moment.slot)))];
+const slotIds = ["host-today", "host-create-first-event", "host-payments", "host-live-tablet", ...new Set(hostNightFormats.flatMap((format) => format.moments.map((moment) => moment.slot)))];
 const marketingCaptures: CaptureSlots = Object.fromEntries(slotIds.map((id) => [id, {
   id, audience: "host", surface: id, device: "generic-phone", webPath: `/captures/${id}.png`, width: 804, height: 1748,
   alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Run the night", pages: ["/host/"],
@@ -45,7 +46,7 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(sectionLinks).toEqual(["#ways", "#night", "#pricing", "#faq", "#start"]);
     for (const href of sectionLinks) expect(container.querySelector(href!), href!).toBeTruthy();
     expect(sections.getByRole("link", {name: copy.sections.start, hidden: true}).getAttribute("href")).toBe("#start");
-    const bands: string[] = [copy.ways.title, copy.ways.stagesTitle, copy.night.title, copy.compare.title, copy.pricing.title,
+    const bands: string[] = [copy.ways.title, copy.ways.stagesTitle, copy.night.title, copy.switch.title, copy.pricing.title,
       copy.talk.title, copy.faq.title, copy.start.title];
     const headings = screen.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent ?? "");
     expect(headings.filter((heading) => bands.includes(heading))).toEqual(bands);
@@ -58,7 +59,7 @@ describe("host landing", {timeout: 20_000}, () => {
     renderPage();
     const hero = within(screen.getByRole("region", {name: copy.hero.title}));
     expect(hero.getByText(copy.hero.terms)).toBeTruthy();
-    expect(hero.queryByRole("img", {name: copy.start.qrLabel})).toBeNull();
+    expect(hero.queryByRole("img", {name: appDownloadCopy.host.qrLabel})).toBeNull();
     expect(copy.hero.terms).toContain(`${hostPricingFacts.cap} a month`);
     const apple = screen.getAllByRole("link", {name: "Download on the App Store"});
     expect(apple.map((link) => link.getAttribute("href"))).toEqual([brand.stores.host.ios]);
@@ -145,13 +146,12 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(pricing.getByRole("link", {name: copy.pricing.full}).getAttribute("href")).toBe("/pricing/");
   });
 
-  it("compares only the tools the owner allows, with the fee a month", () => {
+  it("says what only Catch does in three tiles and leaves the full comparison to the pricing page", () => {
     renderPage();
-    const table = within(screen.getByRole("table"));
-    expect(table.getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual([copy.compare.rowHeader, ...copy.compare.columns]);
-    const allowed = /^(WhatsApp, Forms and UPI|Luma|District|Meetup)$/u;
-    for (const column of copy.compare.columns.slice(1)) expect(column).toMatch(allowed);
-    expect(table.getByText(`${hostPricingFacts.rate}, never more than ${hostPricingFacts.cap} a month`)).toBeTruthy();
+    const band = within(screen.getByRole("region", {name: copy.switch.title}));
+    expect(band.getAllByRole("heading", {level: 3}).map((heading) => heading.textContent)).toEqual(copy.switch.tiles.map((tile) => tile.title));
+    expect(screen.queryByRole("table")).toBeNull();
+    expect(band.getByRole("link", {name: copy.switch.compareLink}).getAttribute("href")).toBe("/pricing/#compare");
   });
 
   it("sends every person to WhatsApp, with the message already typed, and the walkthrough to its request page", () => {
@@ -181,6 +181,20 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(start.getByRole("link", {name: "Download on the App Store"}).getAttribute("href")).toBe(brand.stores.host.ios);
     expect(start.getByRole("link", {name: copy.start.personWhatsapp}).getAttribute("href")!.startsWith(whatsappPrefix)).toBe(true);
     expect(start.getByRole("link", {name: copy.start.weddings}).getAttribute("href")).toBe("/weddings/");
+  });
+
+  it("lets the reader pick a step and shows that step's Catch Host screen, with the people and weddings lines as sentences", () => {
+    renderPage();
+    const start = within(screen.getByRole("region", {name: copy.start.title}));
+    const steps = start.getAllByRole("button", {pressed: false}).concat(start.getAllByRole("button", {pressed: true}))
+      .filter((button) => copy.start.steps.some((step) => button.textContent?.includes(step.title)));
+    expect(steps).toHaveLength(3);
+    expect(start.getByRole("img", {name: "Screen host-today"})).toBeTruthy();
+    fireEvent.click(start.getByRole("button", {name: new RegExp(copy.start.steps[1].title, "u")}));
+    expect(start.getByRole("img", {name: "Screen host-create-first-event"})).toBeTruthy();
+    expect(start.queryByRole("img", {name: "Screen host-today"})).toBeNull();
+    expect(start.getByText(/Prefer a person\?/u).textContent).toBe(`Prefer a person? ${copy.start.personWhatsapp} or ${copy.start.personWalkthrough}.`);
+    expect(start.getByRole("link", {name: copy.start.personWalkthrough}).getAttribute("href")).toBe("/host/walkthrough/");
   });
 
   it("answers the FAQ in place, trial and reminder questions included", () => {

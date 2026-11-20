@@ -1,9 +1,8 @@
 "use client";
 
-import {useId, type HTMLAttributes, type ReactNode} from "react";
+import {useEffect, useId, useState, type HTMLAttributes, type ReactNode} from "react";
 import type {CatchTextTone} from "./catchCoreVocabulary";
 import {CatchBandHeader} from "./CatchBandHeader";
-import {CatchButton} from "./CatchButton";
 import {CatchMarker} from "./CatchMarker";
 import {CatchSurface} from "./CatchSurface";
 import {CatchText} from "./CatchText";
@@ -43,6 +42,37 @@ export interface CatchArticleBodyProps extends Omit<HTMLAttributes<HTMLElement>,
 }
 
 /**
+ * The section being read: the last one whose top has passed a line a third of
+ * the way down the window, so the contents list can mark where the reader is.
+ * Before any section reaches that line it is the first.
+ */
+function useSectionInView(ids: readonly string[]): string | undefined {
+  const [current, setCurrent] = useState<string | undefined>(ids[0]);
+  const key = ids.join(" ");
+  useEffect(() => {
+    const list = key ? key.split(" ") : [];
+    if (list.length === 0 || typeof window === "undefined") return undefined;
+    const update = () => {
+      const line = window.innerHeight / 3;
+      let found = list[0];
+      for (const sectionId of list) {
+        const top = document.getElementById(sectionId)?.getBoundingClientRect().top;
+        if (top !== undefined && top <= line) found = sectionId;
+      }
+      setCurrent(found);
+    };
+    update();
+    window.addEventListener("scroll", update, {passive: true});
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [key]);
+  return current;
+}
+
+/**
  * The body of a guide or article page (the playbook kit's article): a
  * CatchBandHeader with a meta line, then sections, each an anchored
  * section named by its heading with paragraphs, a ticked list and a tip;
@@ -55,6 +85,7 @@ export function CatchArticleBody({title, level = 1, kicker, kickerTone, lead, me
   const titleId = `${id}-title`;
   const heading = level === 1 ? "h2" : "h3";
   const hasSide = Boolean(tocLabel) || aside != null;
+  const current = useSectionInView(tocLabel ? sections.map((section) => section.id) : []);
   return (
     <CatchSurface {...rest} aria-labelledby={titleId} as="article" block="band">
       <div className={styles.article} data-side={hasSide ? "" : undefined}>
@@ -93,8 +124,8 @@ export function CatchArticleBody({title, level = 1, kicker, kickerTone, lead, me
                 <CatchText as="p" tone="secondary" variant="label-kicker">{tocLabel}</CatchText>
                 <ol className={styles.links}>
                   {sections.map((section) => (
-                    <li className={styles.link} key={section.id}>
-                      <CatchButton href={`#${section.id}`} label={section.title} recipe="text" tone="neutral" />
+                    <li key={section.id}>
+                      <a aria-current={section.id === current ? "location" : undefined} className={styles.link} href={`#${section.id}`}>{section.title}</a>
                     </li>
                   ))}
                 </ol>
