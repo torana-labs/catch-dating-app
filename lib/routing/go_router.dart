@@ -54,6 +54,7 @@ import 'package:catch_dating_app/hosts/organizer/settings_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/team_screen.dart';
 import 'package:catch_dating_app/hosts/people/automations_screen.dart';
 import 'package:catch_dating_app/hosts/people/compose_screen.dart';
+import 'package:catch_dating_app/hosts/people/duplicates/duplicates_screen.dart';
 import 'package:catch_dating_app/hosts/people/messages_screen.dart';
 import 'package:catch_dating_app/hosts/people/people_screen.dart';
 import 'package:catch_dating_app/hosts/people/person_screen.dart';
@@ -1246,6 +1247,15 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => hostFormScreenForUri(
       state.uri,
       formId: state.pathParameters['formId']!,
+    ),
+  ),
+  HostWorkspaceDestination(
+    root: HostWorkspaceRoot.people,
+    audienceView: HostAudienceView.people,
+    path: Routes.hostPeopleDuplicatesScreen.path,
+    name: Routes.hostPeopleDuplicatesScreen.name,
+    builder: (context, state) => HostPeopleDuplicatesScreen(
+      organizerId: state.uri.queryParameters['organizerId'] ?? '',
     ),
   ),
   HostWorkspaceDestination(

@@ -303,6 +303,25 @@ class HostContactsRepository {
     parse: HostAudienceExport.fromCallableData,
   );
 
+  /// One page of the duplicate review: pairs with the evidence for each,
+  /// the pairs marked as different people, and the cursor to the next page.
+  /// The server never lists a pair from a name match alone.
+  Future<HostContactMergeCandidatePage> listMergeCandidates(
+    String organizerId, {
+    String? cursor,
+    int limit = ReadLimitPolicy.historyPage,
+  }) => callHostCrm(
+    _functions,
+    name: 'listOrganizerContactMergeCandidates',
+    payload: ListOrganizerContactMergeCandidatesCallableRequest(
+      organizerId: organizerId,
+      limit: limit > 50 ? 50 : limit,
+      cursor: cursor,
+    ).toJson(),
+    action: 'load organizer contact merge candidates',
+    parse: HostContactMergeCandidatePage.fromCallableData,
+  );
+
   Future<void> reviewMergeCandidate({
     required String organizerId,
     required HostContactMergeCandidate candidate,
@@ -323,7 +342,9 @@ class HostContactsRepository {
     parse: (value) => value,
   );
 
-  Future<void> mergeContacts({
+  /// Merges the pair into [survivorContactId], fenced by both records'
+  /// revisions; returns the receipt an undo names.
+  Future<HostContactMergeReceipt> mergeContacts({
     required String organizerId,
     required HostContactMergeCandidate candidate,
     required String survivorContactId,
@@ -336,7 +357,7 @@ class HostContactsRepository {
     final source = candidate.contacts.singleWhere(
       (contact) => contact.contactId != survivorContactId,
     );
-    return callHostCrm<Object?>(
+    return callHostCrm(
       _functions,
       name: 'mergeOrganizerContacts',
       payload: MergeOrganizerContactsCallableRequest(
@@ -349,15 +370,17 @@ class HostContactsRepository {
         idempotencyKey: idempotencyKey,
       ).toJson(),
       action: 'merge organizer contacts',
-      parse: (value) => value,
+      parse: HostContactMergeReceipt.fromCallableData,
     );
   }
 
-  Future<void> unmergeContacts({
+  /// Reverses one merge receipt: the facts it moved go back to the record
+  /// they came from.
+  Future<HostContactMergeReceipt> unmergeContacts({
     required String organizerId,
     required String mergeReceiptId,
     required String idempotencyKey,
-  }) => callHostCrm<Object?>(
+  }) => callHostCrm(
     _functions,
     name: 'unmergeOrganizerContacts',
     payload: UnmergeOrganizerContactsCallableRequest(
@@ -366,7 +389,7 @@ class HostContactsRepository {
       idempotencyKey: idempotencyKey,
     ).toJson(),
     action: 'undo organizer contact merge',
-    parse: (value) => value,
+    parse: HostContactMergeReceipt.fromCallableData,
   );
 }
 

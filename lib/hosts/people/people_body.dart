@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
+import 'package:catch_dating_app/hosts/people/duplicates/duplicates_state.dart';
+import 'package:catch_dating_app/hosts/people/parts/people_duplicates_row.dart';
 import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/people/widgets/people_list.dart';
 import 'package:catch_dating_app/hosts/people/widgets/people_tab_bar.dart';
@@ -21,6 +23,8 @@ class HostPeopleBody extends StatelessWidget {
     required this.onOpenPerson,
     required this.onLoadMore,
     required this.onRetry,
+    this.duplicates,
+    this.onOpenDuplicates,
   });
 
   final HostPeopleState state;
@@ -30,6 +34,10 @@ class HostPeopleBody extends StatelessWidget {
   final ValueChanged<HostAudienceContact> onOpenPerson;
   final VoidCallback onLoadMore;
   final VoidCallback onRetry;
+
+  /// The Possible duplicates row; null while the review is read.
+  final HostPeopleDuplicateSummary? duplicates;
+  final VoidCallback? onOpenDuplicates;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +75,11 @@ class HostPeopleBody extends StatelessWidget {
               ),
           ],
         ),
+        if ((duplicates, onOpenDuplicates) case (
+          final summary?,
+          final open?,
+        ) when summary.visible)
+          PeopleDuplicatesRow(summary: summary, onTap: open),
         HostPeopleList(
           state: state,
           kicker: hostPeopleKicker(l10n, numbers, state),

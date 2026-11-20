@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_revenue.dart';
 import 'package:flutter/foundation.dart';
 
@@ -46,6 +47,11 @@ class HostPersonState {
     }
     return null;
   }
+
+  /// Records merged into this person that can still be undone, newest
+  /// first.
+  List<HostActiveContactMerge> get merges =>
+      detail?.activeMerges ?? const <HostActiveContactMerge>[];
 
   /// Their nights, newest first.
   List<HostAudienceEventFact> get nightsWithYou {
