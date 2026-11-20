@@ -13326,7 +13326,7 @@
           "offline",
           "permission"
         ],
-        "owner": "HostCustomersDirectoryController, HostCustomersController, hostAllSavedAudiencesProvider, HostAudienceController, and hostAudienceContactDetailProvider"
+        "owner": "HostCustomersDirectoryController, HostCustomersController, hostAllSavedAudiencesProvider, HostAudienceController, and hostContactSummaryRowProvider + hostContactDetailFactsProvider + hostContactNotesProvider"
       },
       "name": "Host Audience",
       "owner": "hosts",
@@ -13404,7 +13404,7 @@
         "symbol": "HostPeopleScreen"
       },
       "stateController": {
-        "primary": "hostCustomersDirectoryControllerProvider + hostAllSavedAudiencesProvider + hostAudienceContactDetailProvider + hostOrganizerSelectionProvider",
+        "primary": "hostCustomersDirectoryControllerProvider + hostAllSavedAudiencesProvider + hostContactSummaryRowProvider + hostContactDetailFactsProvider + hostContactNotesProvider + hostOrganizerSelectionProvider",
         "files": [
           {
             "file": "lib/hosts/presentation/customers/host_customers_controller.dart",
@@ -13416,7 +13416,7 @@
           },
           {
             "file": "lib/contexts/audience/data/crm/host_contacts_repository.dart",
-            "symbol": "hostAudienceContactDetail"
+            "symbol": "hostContactDetailFacts"
           },
           {
             "file": "lib/hosts/presentation/host_organizer_selection_controller.dart",
@@ -13615,7 +13615,7 @@
           "id": "customer_detail_loading",
           "kind": "loading",
           "status": "implemented",
-          "source": "hostAudienceContactDetailProvider",
+          "source": "hostContactDetailFactsProvider",
           "nextAction": "Add deterministic detail loading capture."
         },
         {
@@ -14448,7 +14448,7 @@
           "id": "manual_handoff_queue",
           "kind": "populated",
           "status": "tested",
-          "source": "HostManualSendList + hostManualSendTasksProvider render durable organizer-scoped queued and handoffOpened tasks independently of managed Sends history.",
+          "source": "HostManualSendList + hostManualSendTaskPagesProvider render durable organizer-scoped queued and handoffOpened tasks independently of managed Sends history.",
           "tests": [
             "functions/src/organizers/organizerManualSendTasks.test.ts",
             "test/hosts/host_crm_repository_test.dart",
@@ -24557,7 +24557,7 @@
             "symbol": "ProgramHotelRoomsScreen"
           },
           {
-            "file": "lib/contexts/programmes/data/program_work_repository_rooms.dart",
+            "file": "lib/contexts/programmes/data/program_room_views_repository.dart",
             "symbol": "programHotelRooms"
           }
         ],
