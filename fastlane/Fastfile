@@ -415,7 +415,7 @@ platform :android do
     ])
   end
 
-  desc "Promote a version testers already have to production as a staged rollout"
+  desc "Promote a version testers already have to production as a staged rollout, or raise the rollout of one already there"
   lane :release do |options|
     role = role_option(options)
     target = app_target(role)
@@ -431,7 +431,19 @@ platform :android do
     source_track = (PLAY_TRACKS - ["production"]).find { |track| codes.call(track).include?(version_code.to_i) }
     unless source_track
       if codes.call("production").include?(version_code.to_i)
-        UI.user_error!("Version code #{version_code} is already on the production track; nothing to promote")
+        # Already promoted: raise (or finish) its staged rollout in place, as
+        # Play Console's "Increase rollout" does. Rollout 1 completes it.
+        upload_to_play_store(package_name: package_name, track: "production",
+                             version_code: version_code.to_i, rollout: rollout,
+                             release_status: rollout.to_f >= 1 ? "completed" : "inProgress",
+                             skip_upload_aab: true, skip_upload_apk: true, skip_upload_metadata: true,
+                             skip_upload_changelogs: true, skip_upload_images: true,
+                             skip_upload_screenshots: true)
+        summarize("Play production rollout (#{role})", [
+          ["Package", package_name], ["Version code", version_code], ["Promoted from", "production (rollout raised)"],
+          ["Rollout", rollout]
+        ])
+        next
       end
       UI.user_error!("Version code #{version_code} is on no testing track. The internal track now holds " \
                      "#{codes.call("internal").join(", ").then { |list| list.empty? ? "nothing" : list }}; " \
