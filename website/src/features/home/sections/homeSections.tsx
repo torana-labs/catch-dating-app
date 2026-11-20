@@ -11,7 +11,7 @@ import {
   CatchField,
   CatchGroundCard,
   CatchHeroSection,
-  CatchQrCode,
+  CatchLinkedText,
   CatchReviewItem,
   CatchSiteDock,
   CatchSplitSection,
@@ -23,6 +23,7 @@ import {
 } from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {homeCityAreas, homeFormats, homePageCopy as copy} from "@content/homePage";
+import {brand} from "@content/brand";
 import {interpolateContent as fill} from "@content/interpolate";
 import {activePhoneCountry} from "@content/markets";
 import {phoneFieldCopy} from "@content/phoneField";
@@ -30,6 +31,8 @@ import {guestAppActionLabel, guestAppHref, guestAppLive, whatsappChatCopy, whats
 import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
+import {AppDownloadQr} from "../../marketing/AppDownloadQr";
+import {linkedParts} from "../../../shared/text/linkedParts";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
 import {useFoundingHostOffer} from "../../marketing/useFoundingHostOffer";
 import {CityPicker} from "./CityPicker";
@@ -72,7 +75,7 @@ function HomeHero({captures, home, offerOpen}: {captures: CaptureSlots; home: Ho
   return (
     <CatchHeroSection
       actions={[
-        {label: home.state === "thin" ? copy.hero.thinAction : fill(copy.hero.busyAction, {city}), href: "#whats-on"},
+        {label: home.empty ? copy.hero.emptyAction : home.state === "thin" ? copy.hero.thinAction : fill(copy.hero.busyAction, {city}), href: "#whats-on"},
         {label: copy.hero.hostAction, href: "/host/"},
       ]}
       // The soonest real plan floats over the phone; there is none to show before a city has plans.
@@ -180,13 +183,16 @@ function PlanFilters({home}: {home: Home}) {
 
 /**
  * An open city's plans: this week, or the next two weeks when the week is
- * quiet or the city is thin, never an empty band. The other open cities sit
- * under the heading, so a visitor can switch city from here.
+ * quiet or the city is thin. With nothing in the next two weeks the band is
+ * the WhatsApp sign-up instead, never a heading over an empty list. A busy
+ * city ends with a link to everything under its cards. The header's city
+ * picker switches city; the band lists no other cities (21 Nov 2026).
  */
 function HomePlans({home}: {home: Home}) {
   const city = home.city.label;
   const areas = homeCityAreas[home.city.marketSlug];
   const thin = home.state === "thin";
+  if (home.empty) return <HomeSignUp home={home} />;
   return (
     <CatchCardGrid
       empty={{title: home.note}}
@@ -194,7 +200,6 @@ function HomePlans({home}: {home: Home}) {
       // A thin week offers new plans on WhatsApp under the cards (the board's .inline bar).
       footer={thin && !home.unavailable ? <CityAlertsBar home={home} /> : undefined}
       ground="paper"
-      headerAction={{label: thin ? copy.week.thinAction : fill(copy.week.action, {city}), href: home.exploreHref}}
       id="whats-on"
       items={home.plans.map((plan) => ({
         id: plan.key, href: plan.href, title: plan.title, label: plan.label, format: plan.format, detail: plan.detail,
@@ -206,8 +211,38 @@ function HomePlans({home}: {home: Home}) {
       kind="plan"
       layout="rail"
       lead={thin ? fill(copy.week.thinLead, {city}) : areas ? fill(copy.week.lead, {areas}) : fill(copy.week.leadNoAreas, {city})}
-      links={home.otherCities}
+      // A thin city already shows every plan; a busy one links to all of them under the cards.
+      moreLink={thin || home.unavailable ? undefined : {
+        label: home.weekCount === 1 ? fill(copy.week.seeAllOne, {city}) : fill(copy.week.seeAll, {count: home.weekCount, city}),
+        href: home.exploreHref,
+      }}
       title={fill(home.upcoming ? copy.week.upcomingTitle : copy.week.title, {city})}
+    />
+  );
+}
+
+/**
+ * A city with nothing in the next two weeks: the WhatsApp sign-up for its
+ * first plans, then a line for hosts. One column: the words, the number and
+ * button on their own row, the fine print, the host line.
+ */
+function HomeSignUp({home}: {home: Home}) {
+  const city = home.city.label;
+  const words = copy.week;
+  return (
+    <CatchCtaSection
+      capture={(
+        <CatchStack gap={16}>
+          <CityAlertsForm home={home} />
+          <CatchLinkedText parts={linkedParts(words.emptyHost, {host: {label: words.emptyHostLink, href: "/host/", arrow: true}})
+            .map((part) => typeof part === "string" && part.includes("{city}") ? fill(part, {city}) : part)} />
+        </CatchStack>
+      )}
+      ground="paper"
+      id="whats-on"
+      kicker={fill(words.eyebrowNew, {city})}
+      lead={fill(words.emptyLead, {city})}
+      title={fill(words.emptyTitle, {city})}
     />
   );
 }
@@ -235,31 +270,44 @@ function LeadStatus({problem, sent}: {problem: string | null; sent: string | nul
  */
 function CityAlertsBar({home}: {home: Home}) {
   const city = home.city.label;
-  const alerts = useCityAlertsController({label: city, slug: home.city.slug, source: home.citySource});
   const words = copy.alerts;
   return (
     <CatchGroundCard ground="white">
-      <CatchStack gap={8}>
-        {alerts.sent ? null : (
-          <Form aria-label={words.title} noValidate onSubmit={alerts.handleSubmit} pending={alerts.submitting}>
-            <CatchStack gap={8}>
-              <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={12}>
-                <CatchText as="p" variant="body"><CatchText as="span" variant="label-action">{words.title}</CatchText> {fill(words.body, {city})}</CatchText>
-                <CatchStack align="center" collapseBelow="medium" direction="row" gap={8} railWidth="fit">
-                  <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={alerts.phoneProblem} inputHint={words.phone}
-                    inputMode={alerts.submitting ? "inactive" : "editable"} labelMode="hidden" onChanged={alerts.setPhone}
-                    recipe="phone" required title={words.phone} value={alerts.phone} />
-                  <CatchButton label={alerts.sendProblem ? words.retry : words.action} onPressed={() => undefined} size="sm"
-                    status={alerts.submitting ? "loading" : "idle"} type="submit" />
-                </CatchStack>
-              </CatchStack>
-              <ConsentLine privacy={words.privacy} text={words.consent} />
-            </CatchStack>
-          </Form>
-        )}
-        <LeadStatus problem={alerts.sendProblem} sent={alerts.sent ? fill(words.sent, {city}) : null} />
+      <CatchStack gap={12}>
+        <CatchText as="p" variant="body"><CatchText as="span" variant="label-action">{words.title}</CatchText> {fill(words.body, {city})}</CatchText>
+        <CityAlertsForm home={home} />
       </CatchStack>
     </CatchGroundCard>
+  );
+}
+
+/**
+ * The city alerts form itself: the number and the button on one row (they
+ * stack on a phone), the consent line under them, then the outcome. Whatever
+ * introduces it sits above it, never beside it (21 Nov 2026).
+ */
+function CityAlertsForm({home}: {home: Home}) {
+  const city = home.city.label;
+  const alerts = useCityAlertsController({label: city, slug: home.city.slug, source: home.citySource});
+  const words = copy.alerts;
+  return (
+    <CatchStack gap={8}>
+      {alerts.sent ? null : (
+        <Form aria-label={words.title} noValidate onSubmit={alerts.handleSubmit} pending={alerts.submitting}>
+          <CatchStack gap={8}>
+            <CatchStack align="center" collapseBelow="medium" direction="row" gap={8} railWidth="fit">
+              <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={alerts.phoneProblem} inputHint={words.phone}
+                inputMode={alerts.submitting ? "inactive" : "editable"} labelMode="hidden" onChanged={alerts.setPhone}
+                recipe="phone" required title={words.phone} value={alerts.phone} />
+              <CatchButton label={alerts.sendProblem ? words.retry : words.action} onPressed={() => undefined}
+                status={alerts.submitting ? "loading" : "idle"} type="submit" />
+            </CatchStack>
+            <ConsentLine privacy={words.privacy} text={words.consent} />
+          </CatchStack>
+        </Form>
+      )}
+      <LeadStatus problem={alerts.sendProblem} sent={alerts.sent ? fill(words.sent, {city}) : null} />
+    </CatchStack>
   );
 }
 
@@ -452,17 +500,12 @@ function HomeApp({downloadUrl, home}: {downloadUrl?: string; home: Home}) {
   if (guestAppLive) {
     return (
       <CatchCtaSection
-        capture={downloadUrl ? (
-          <CatchStack align="start" gap={8}>
-            <CatchQrCode label={copy.app.qrLabel} value={downloadUrl} />
-            <CatchText variant="label-action">{copy.app.qr}</CatchText>
-          </CatchStack>
-        ) : undefined}
         id="app"
         kicker={copy.app.eyebrow}
         lead={copy.app.body}
         stores={stores.map((store) => ({badgeSrc: store.badgeSrc, comingSoon: store.comingSoon, href: store.href || undefined, label: store.accessibleLabel,
           onClick: store.onClick, size: "l", store: store.store}))}
+        storesWide={<AppDownloadQr app="guest" value={downloadUrl ?? `${brand.web.origin}/#app`} />}
         tiles={bento}
         title={copy.app.title}
         titleSize="feature"

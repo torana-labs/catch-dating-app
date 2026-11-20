@@ -334,6 +334,8 @@ export {CatchInset} from "./components/CatchInset";
 export type {CatchInsetElement, CatchInsetPadding, CatchInsetProps} from "./components/CatchInset";
 export {CatchLoadingIndicator} from "./components/CatchLoadingIndicator";
 export type {CatchLoadingIndicatorProps, CatchLoadingIndicatorVariant} from "./components/CatchLoadingIndicator";
+export {CatchLinkedText} from "./components/CatchLinkedText";
+export type {CatchLinkedTextLink, CatchLinkedTextPart, CatchLinkedTextProps} from "./components/CatchLinkedText";
 export {CatchLinkTile} from "./components/CatchLinkTile";
 export type {CatchLinkTileProps} from "./components/CatchLinkTile";
 export {CatchMenu} from "./components/CatchMenu";

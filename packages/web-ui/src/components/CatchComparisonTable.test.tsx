@@ -1,4 +1,4 @@
-import {cleanup, render, screen, within} from "@testing-library/react";
+import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {CatchComparisonTable} from "./CatchComparisonTable";
 
@@ -43,5 +43,19 @@ describe("CatchComparisonTable", () => {
     render(<CatchComparisonTable {...props} checked="Checked on a sample date" rowHeader="Property" source="Sample public pages" />);
     expect(screen.getByText("Sample public pages · Checked on a sample date").tagName).toBe("P");
     expect(screen.getAllByRole("columnheader")[0].textContent).toBe("Property");
+  });
+
+  it("as a ledger, sets the highlighted column beside one other the reader picks", () => {
+    render(<CatchComparisonTable {...props} compareLabel="Compare our option with" highlightColumn={0} rowHeader="What you need" />);
+    const picker = screen.getByRole("radiogroup", {name: "Compare our option with"});
+    const table = screen.getByRole("table", {name: "A sample comparison"});
+    expect(within(table).getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual(["What you need", "Our option", "First option"]);
+    const cells = within(table).getAllByRole("cell");
+    expect(cells).toHaveLength(4);
+    expect(cells[0].dataset.featured).toBe("");
+    expect(cells[1].dataset.status).toBe("no");
+    fireEvent.click(within(picker).getByRole("radio", {name: "Second option"}));
+    expect(within(table).getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual(["What you need", "Our option", "Second option"]);
+    expect(within(table).getAllByRole("cell")[1].dataset.status).toBe("unknown");
   });
 });

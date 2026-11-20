@@ -5,6 +5,7 @@ import runClubs from "./pages/host/run-clubs.json";
 import schema from "./playbookPage.schema.json";
 import {
   livePlaybookPage,
+  playbookLabelRepeatsTitle,
   playbookIsLive,
   playbookPageJsonSchema,
   playbookSectionTypes,
@@ -216,6 +217,29 @@ describe("playbook page contract", () => {
       (tiles.items as Mutable[])[0].ground = "coralSoft";
     });
     expect(validatePlaybookPage(softTile)).toEqual([]);
+  });
+
+  it("refuses a link label that only repeats its tile's or group's title", () => {
+    expect(playbookLabelRepeatsTitle("Your page", "Your page")).toBe(true);
+    expect(playbookLabelRepeatsTitle("Forms", "Forms, in every step")).toBe(true);
+    expect(playbookLabelRepeatsTitle("For supper clubs", "Supper clubs")).toBe(false);
+    expect(playbookLabelRepeatsTitle("Build my page", "Paste your Instagram or Luma")).toBe(false);
+    const tileRepeat = fixture((page) => {
+      const tiles = section(page, "tiles");
+      const item = (tiles.items as Mutable[])[0];
+      item.link = {label: item.title, to: {route: "host"}};
+    });
+    expect(validatePlaybookPage(tileRepeat).join("\n")).toMatch(/repeats the tile's title/u);
+    const groupRepeat = fixture((page) => {
+      page.sections.push({type: "split", id: "groups", ground: "paper", status: "built", kicker: "Sample", title: "Sample groups",
+        groups: [{title: "Your page", list: ["A line"], links: [{label: "Your page", to: {route: "host"}}]}]});
+    });
+    expect(validatePlaybookPage(groupRepeat).join("\n")).toMatch(/repeats the group's title/u);
+    const groupArrow = fixture((page) => {
+      page.sections.push({type: "split", id: "groups", ground: "paper", status: "built", kicker: "Sample", title: "Sample groups",
+        groups: [{title: "Your page", list: ["A line"], links: [{to: {route: "host"}}]}]});
+    });
+    expect(validatePlaybookPage(groupArrow).join("\n")).not.toMatch(/repeats/u);
   });
 
   it("checks the footer's own columns like any other link", () => {

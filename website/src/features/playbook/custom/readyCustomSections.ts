@@ -8,5 +8,5 @@ export type PlaybookCustomComponent = (typeof playbookCustomComponents)[number];
  * draws). The PR that builds a component adds its key here and the component
  * to ./customSections.tsx; the types fail if the two disagree.
  */
-export const readyPlaybookCustomComponents = ["pricingCalculator", "pricingExamples", "pricingCap", "pricingIncluded", "pricingOrganisations", "noShowCalculator", "appLaunchNotice", "lastEventReport"] as const satisfies readonly PlaybookCustomComponent[];
+export const readyPlaybookCustomComponents = ["pricingCalculator", "pricingExamples", "pricingCap", "pricingIncluded", "pricingOrganisations", "noShowCalculator", "appLaunchNotice", "lastEventReport", "hostCompare"] as const satisfies readonly PlaybookCustomComponent[];
 export type ReadyPlaybookCustomComponent = (typeof readyPlaybookCustomComponents)[number];

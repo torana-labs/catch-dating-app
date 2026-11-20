@@ -132,7 +132,7 @@ function CityFormatPageSections({captures, page}: {captures: CaptureSlots; page:
               media={checkedIn ? <CatchAppCaptureImage {...checkedIn} caption={undefined} size="sm" /> : undefined} />
           ) : null}
         </> : <CityFormatThin page={page} />}
-        <CatchCardGrid items={[]} kicker={page.more.kicker} kickerAccent="coral" kind="plan" links={page.more.links} title={page.more.title} />
+        <CatchCardGrid chips={page.more.links.map((link) => ({label: link.label, href: link.href}))} items={[]} kicker={page.more.kicker} kickerAccent="coral" kind="plan" title={page.more.title} />
         <CatchFaqSection items={page.faq.items} kicker={page.faq.kicker} title={page.faq.title} />
         <CityAlertsCapture interests={page.notify.interests} kicker={page.notify.kicker} place={page.notify.place} title={page.notify.title}
           media={explore ? <CatchAppCaptureImage {...explore} caption={undefined} size="md" /> : undefined} />
