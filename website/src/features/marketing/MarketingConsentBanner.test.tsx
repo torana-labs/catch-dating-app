@@ -34,10 +34,10 @@ test("analytics consent is separate from advertising and remains revocable", () 
 test("explicit marketing choice is versioned and can be withdrawn", () => {
   render(<Page />);
   fireEvent.click(screen.getByRole("button", {name: "Allow analytics and marketing"}));
-  expect(getMarketingConsent()).toMatchObject({version: 5, analytics: true, marketing: true});
+  expect(getMarketingConsent()).toMatchObject({version: 6, analytics: true, marketing: true});
   fireEvent.click(screen.getByRole("button", {name: "Privacy choices"}));
   fireEvent.click(screen.getByRole("button", {name: "Allow analytics"}));
-  expect(getMarketingConsent()).toMatchObject({version: 5, analytics: true, marketing: false});
+  expect(getMarketingConsent()).toMatchObject({version: 6, analytics: true, marketing: false});
 });
 
 test("legacy accepted choice still presents all choices and sibling-tab revocation refreshes the UI", () => {
@@ -53,7 +53,7 @@ test("legacy accepted choice still presents all choices and sibling-tab revocati
 });
 
 test("Next serves initial consent content and hydrates an existing choice without escalating it", async () => {
-  localStorage.setItem("catch_marketing_consent_v5", JSON.stringify({version: 5, measurementMode: "first_party_tags", choice: "essential",
+  localStorage.setItem("catch_marketing_consent_v6", JSON.stringify({version: 6, measurementMode: "first_party_tags", choice: "essential",
     analytics: false, marketing: false, updatedAt: new Date().toISOString()}));
   const html = renderToString(<MarketingConsentBanner serverRendered />);
   expect(html).toContain("Essential only");
