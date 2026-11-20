@@ -47,8 +47,7 @@
           "to": {
             "anchor": "try"
           },
-          "emphasis": "secondary",
-          "status": "tryIt"
+          "emphasis": "secondary"
         }
       ],
       "media": {
@@ -394,16 +393,15 @@
       "type": "split",
       "id": "try",
       "ground": "paper",
-      "status": "tryIt",
-      "statusNote": "Command: create a promotion kit (tracked links, QR codes, draft messages) for an event. Show this when the command ships.",
+      "status": "built",
       "kicker": "Try it with your event",
       "title": "Get a tracked link for everywhere you promote.",
-      "lead": "Paste your event link and list where you promote it: your Instagram, a WhatsApp group, your promoters, the café that keeps your posters. {{brand.name}} makes a link and QR code for each, and writes your confirmation, reminder and day-of messages from your event page.",
+      "lead": "Paste your event link and list where you promote it: your Instagram, a WhatsApp group, your promoters, the café that keeps your posters. {{brand.name}} brings the event over as a private draft, then makes a tracked link and a QR code for each place and person.",
       "ticks": [
-        "A link and QR code for every place you promote",
-        "Reminders written in your voice, previewed as WhatsApp messages",
-        "Invite links for your guests, switched on",
-        "Counting starts the moment you claim them"
+        "A tracked link for each place or person, up to eight",
+        "A QR code for each link, to print or put up",
+        "Your event comes over first, as a private draft",
+        "Nothing is sent to anyone, and the draft stays private until you publish it"
       ],
       "leadForm": {
         "id": "try_links",
@@ -465,38 +463,8 @@
       "ground": "yellow",
       "status": "built",
       "kicker": "Free for 30 days · founding hosts get 90",
-      "title": "Your next event, with its messages ready.",
-      "lead": "Every event comes with a confirmation, a push reminder before the start and a feedback request, ready to go.",
-      "actions": [
-        {
-          "label": "Start free trial",
-          "to": {
-            "route": "host_start"
-          },
-          "emphasis": "primary"
-        },
-        {
-          "label": "How {{brand.name}} works",
-          "to": {
-            "route": "how_it_works"
-          },
-          "emphasis": "secondary"
-        }
-      ],
-      "media": {
-        "kind": "capture",
-        "slot": "host-today"
-      }
-    },
-    {
-      "type": "cta",
-      "id": "start-try",
-      "ground": "yellow",
-      "status": "tryIt",
-      "statusNote": "The closing band of the promotion-kit tool. Show it, in place of the band above, when the command ships.",
-      "kicker": "Free for 30 days · founding hosts get 90",
       "title": "Know what’s working before your next post.",
-      "lead": "Paste your event link. We’ll make a tracked link for each place you promote it, and write your reminders.",
+      "lead": "Paste your event link. We’ll make a tracked link and a QR code for each place you promote it.",
       "leadForm": {
         "id": "final_links",
         "requestKind": "tool",
@@ -504,6 +472,7 @@
         "label": "Your event link",
         "submitLabel": "Make my links"
       },
+      "storeBadges": "host",
       "media": {
         "kind": "capture",
         "slot": "host-today"

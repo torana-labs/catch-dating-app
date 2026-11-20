@@ -47,8 +47,7 @@
           "to": {
             "anchor": "try"
           },
-          "emphasis": "secondary",
-          "status": "tryIt"
+          "emphasis": "secondary"
         },
         {
           "label": "See pricing",
@@ -336,16 +335,15 @@
       "type": "split",
       "id": "try",
       "ground": "paper",
-      "status": "tryIt",
-      "statusNote": "Command: import an event from a link, with suggested access rules and a membership plan. Show this when the command ships.",
+      "status": "built",
       "kicker": "Try it with your next event",
-      "title": "Turn an event you’ve already listed into a {{brand.name}} page.",
-      "lead": "Paste a link to an event on Luma, District, Eventbrite, Instagram or a Google Form. {{brand.name}} builds a bookable page with checkout, then suggests how to run it: who gets in, how to balance the room, and what a membership could earn you.",
+      "title": "Start your next event on {{brand.name}} from a link you already have.",
+      "lead": "Paste a link to an event you’ve already listed, on a ticketing page, your website or a social post. {{brand.name}} reads its name, date and start time and makes a private draft event in your city, ready for you to finish in {{brand.stores.hostAppName}}.",
       "ticks": [
-        "Title, date, venue, price and photos read from your link",
-        "Access rules suggested for your format: applications, balance, age",
-        "A membership plan priced from your tickets and how often people come",
-        "Open it for booking when you claim it"
+        "The event’s name, date and start time, read from your link",
+        "A page with several events? Choose the one to bring over",
+        "A private draft in your city: no one can see or book it",
+        "Waiting in {{brand.stores.hostAppName}} when you sign in with the same phone number"
       ],
       "leadForm": {
         "id": "try_event",
@@ -415,38 +413,8 @@
       "ground": "indigo",
       "status": "built",
       "kicker": "Free for 30 days · founding hosts get 90",
-      "title": "Take your next bookings on {{brand.name}}.",
-      "lead": "Bring your guest list from any tool. Nothing changes for guests until the doors open.",
-      "actions": [
-        {
-          "label": "Start free trial",
-          "to": {
-            "route": "host_start"
-          },
-          "emphasis": "primary"
-        },
-        {
-          "label": "How {{brand.name}} works",
-          "to": {
-            "route": "how_it_works"
-          },
-          "emphasis": "secondary"
-        }
-      ],
-      "media": {
-        "kind": "capture",
-        "slot": "guest-explore"
-      }
-    },
-    {
-      "type": "cta",
-      "id": "start-try",
-      "ground": "indigo",
-      "status": "tryIt",
-      "statusNote": "The closing band of the import-an-event tool. Show it, in place of the band above, when the command ships.",
-      "kicker": "Free for 30 days · founding hosts get 90",
-      "title": "Your next event, on {{brand.name}} in a minute.",
-      "lead": "Paste a link to an event you’ve already listed. We’ll build the page and suggest how to run it.",
+      "title": "Your next event, as a {{brand.name}} draft in a minute.",
+      "lead": "Paste a link to an event you’ve already listed. We’ll make it a private draft that you finish and publish in {{brand.stores.hostAppName}}.",
       "leadForm": {
         "id": "final_event",
         "requestKind": "tool",
@@ -454,6 +422,7 @@
         "label": "Link to an event",
         "submitLabel": "Build my event page"
       },
+      "storeBadges": "host",
       "media": {
         "kind": "capture",
         "slot": "guest-explore"
