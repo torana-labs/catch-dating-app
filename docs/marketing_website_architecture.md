@@ -250,8 +250,9 @@ that uses a section or option no kit component draws yet
   heads, and a live link to a hidden section fails validation. The product
   pages v2 (18 Nov 2026) keep their Partly and New features and every
   try-it band, button and closing tool form (`requestKind: "tool"` with
-  `input` url or text, which no slot sends) hidden this way until each
-  ships; flipping one is a content PR that sets it `built`.
+  `input` url, text or file, which no slot sends until its command is
+  website-ready) hidden this way until each ships; flipping one is a
+  content PR that sets it `built`.
 - **Indexing.** `meta.noindex` is the page's one approval flag. Every page
   starts `true`, so it is `noindex, follow` and out of both sitemaps; the
   owner's approval is the PR that sets it `false`. Ad landing pages stay
@@ -294,9 +295,14 @@ that uses a section or option no kit component draws yet
   host's tickets sold, ticket price and how many came, and the fee they say
   their current tool charges (a percentage and/or an amount per ticket),
   worked out in the page into ticket sales, show-up rate, the fee from
-  `hostFeeQuote` and the difference, with no sign-in, request or storage. The
-  export upload needs `sales.import-past` and the phone step, so the page's
-  `try` and `start-try` bands stay `tryIt` until it ships. `/playbooks/` and the `playbook_guide` pages
+  `hostFeeQuote` and the difference, with no sign-in, request or storage. Its
+  `try` band above it holds the export upload, a `file` tool form whose slot
+  draws `features/pastSalesTryIt`: after the try-it phone step the visitor's
+  export goes to `sales.import-past`, which previews the night's report and
+  fee comparison (asking for the columns when it cannot tell them apart, and
+  saying why when attendance, returning guests or the fee cannot be worked
+  out), then saves it to their private profile with the same key and the
+  preview's hash. The file goes only to that command. `/playbooks/` and the `playbook_guide` pages
   (`run-club`, `supper-club`, `quiz-night`, `racket-sports`) are `article`
   pages with one pricing line linking `/pricing/` and no typed fee figures.
   `/app/` is the `appLaunchNotice` custom section: the homepage's launch

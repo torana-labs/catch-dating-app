@@ -1,4 +1,5 @@
 import {guestImportToolNode} from "../guestImportTryIt/GuestImportTool";
+import {pastSalesToolNode} from "../pastSalesTryIt/PastSalesTool";
 import {playbookTryItTool} from "../tryIt/tryItModel";
 import {referralSignInNode} from "../referral/ReferralSignIn";
 import {tryItToolNode} from "../tryIt/TryItTool";
@@ -10,11 +11,13 @@ import type {PlaybookLeadFormProps, PlaybookLeadFormSlots} from "./usePlaybookPa
  * command, when the page has one whose command is website-ready
  * (tryItModel: playbookTryItTools, websiteReadyTryItCommands); otherwise
  * nothing. A tool form reads a link (`input` url or text) or, for the guest
- * list tool (features/guestImportTryIt), a file; never a number.
+ * list tool (features/guestImportTryIt) and Reports' export upload
+ * (features/pastSalesTryIt), a file; never a number.
  */
 function playbookToolFormNode({form, pageId, sectionId, placement}: PlaybookLeadFormProps) {
   const tool = (form.input ?? "tel") === "tel" ? null : playbookTryItTool(pageId);
   if (tool === "guests") return form.input === "file" ? guestImportToolNode({form, pageId, sectionId}) : null;
+  if (tool === "report") return form.input === "file" ? pastSalesToolNode({form, placement, pageId, sectionId}) : null;
   return tool && form.input !== "file" ? tryItToolNode({form, tool, placement, pageId, sectionId}) : null;
 }
 

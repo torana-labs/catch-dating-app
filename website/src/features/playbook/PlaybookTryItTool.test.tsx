@@ -2,6 +2,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {cleanup, fireEvent, render as renderInto, screen, waitFor, within} from "@testing-library/react";
 import {StrictMode, type ReactNode} from "react";
 import {afterEach, describe, expect, it, vi} from "vitest";
+import {pastSalesTryItCopy} from "@content/pastSalesTryIt";
 import {tryItCopy} from "@content/tryIt";
 import {eventFixtures, fixtureEventId, kitFixtures, organizerFixtures, scriptedTryItClient} from "../../stories/fixtures/tryItCommands";
 import {loadPlaybookPage, resolvePlaybookPage} from "./playbookPages";
@@ -19,6 +20,7 @@ const yourPage = (await loadPlaybookPage(resolvePlaybookPage("/product/your-page
 const bookings = (await loadPlaybookPage(resolvePlaybookPage("/product/bookings-and-memberships/")!))!;
 const messages = (await loadPlaybookPage(resolvePlaybookPage("/product/messages-and-growth/")!))!;
 const eventTool = (await loadPlaybookPage(resolvePlaybookPage("/tools/event-page-from-link/")!))!;
+const reports = (await loadPlaybookPage(resolvePlaybookPage("/product/reports-and-payouts/")!))!;
 
 describe("try-it tool on a product page", () => {
   it("draws Your page's tool in the try band and the closing band, and links the hero to it", () => {
@@ -70,6 +72,17 @@ describe("try-it tool on a product page", () => {
     expect(client.calls.map((call) => call.commandId)).toEqual(["event.import-from-link", "event.import-from-link", "promotion.create-kit", "promotion.create-kit"]);
     expect(client.calls[2].input).toMatchObject({eventId: fixtureEventId});
     for (const link of kitFixtures.applied.result.links) expect(band.getByText(link.url)).toBeTruthy();
+  });
+
+  it("draws Reports' export upload in the try band, the numbers report right after it, and links the hero and closing band to it", () => {
+    render(<PlaybookPage captures={{}} page={reports} />);
+    const band = within(document.getElementById("try")!);
+    expect(band.getByRole("form", {name: pastSalesTryItCopy.title})).toBeTruthy();
+    expect(band.getByRole("button", {name: "Build my report"})).toBeTruthy();
+    expect(document.getElementById("try")!.nextElementSibling?.id).toBe("numbers");
+    expect(within(document.getElementById("top")!).getByRole("link", {name: "See your last event as a report"}).getAttribute("href")).toBe("#try");
+    expect(within(document.getElementById("start")!).getByRole("link", {name: "Build my report"}).getAttribute("href")).toBe("#try");
+    expect(document.getElementById("start-try")).toBeNull();
   });
 
   it("runs the organiser import from the try band: preview, the summary, then apply and the claim step", async () => {

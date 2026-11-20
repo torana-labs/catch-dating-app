@@ -40,11 +40,15 @@ const allowedFeatureImports = new Map([
   ["hostBilling", new Set(["account"])],
   ["host", new Set(["marketing"])],
   ["organizers", new Set(["account", "claims", "events", "marketing", "reviews"])],
+  // Reports' export upload shares the try-it tools' phone step (the one
+  // sign-in sheet), cities, dates and store badges, and the numbers report's
+  // amount parser.
+  ["pastSalesTryIt", new Set(["account", "marketing", "tryIt"])],
   // A playbook page's closing band carries Catch Host's store badges, a tool
-  // form opens the page's try-it tool (the guest list upload is its own
-  // feature), and the /refer/ form carries the
+  // form opens the page's try-it tool (the guest list and Reports' export
+  // uploads are their own features), and the /refer/ form carries the
   // referral sign-in above it.
-  ["playbook", new Set(["guestImportTryIt", "marketing", "referral", "tryIt"])],
+  ["playbook", new Set(["guestImportTryIt", "marketing", "pastSalesTryIt", "referral", "tryIt"])],
   // The /refer/ form signs the referrer in with the one shared sign-in sheet.
   ["referral", new Set(["account"])],
   ["reviews", new Set(["organizers"])],
