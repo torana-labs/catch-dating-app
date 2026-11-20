@@ -131,3 +131,26 @@ export const onHostContactDetailViewEventWritten = onDocumentWritten({
   await reconcileHostContactDetailViewsForEvent(admin.firestore(),
     event.params.eventId);
 });
+
+/**
+ * The contact a merge receipt changes the merges of: the survivor it names.
+ * @param {Data} before The receipt before the write.
+ * @param {Data} after The receipt after the write.
+ * @return {string[]} Contact ids to evaluate.
+ */
+export function contactDetailContactsForMergeReceipt(before: Data,
+  after: Data): string[] {
+  return [...new Set([before?.survivorContactId, after?.survivorContactId])]
+    .filter((id): id is string => typeof id === "string" && id.length > 0);
+}
+
+/** A merge into a contact, or its reversal. */
+export const onHostContactDetailViewMergeReceiptWritten = onDocumentWritten({
+  ...options, document: "organizerContactMergeReceipts/{receiptId}",
+}, async (event) => {
+  const db = admin.firestore();
+  for (const contactId of contactDetailContactsForMergeReceipt(
+    event.data?.before.data(), event.data?.after.data())) {
+    await reconcileHostContactDetailView(db, contactId);
+  }
+});

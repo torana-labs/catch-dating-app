@@ -6063,16 +6063,17 @@
       ],
       "owner": "Host read model projector: hostReadModels contact detail view triggers",
       "read": "current organizer managers get by id while their account is not deleted; a view not written yet reads as missing",
-      "write": "server only; written from the contact, its trait row, its event edges, the linked verified account's Catch payments and event titles, deleted when the contact is deleted, hidden or merged",
+      "write": "server only; written from the contact, its trait row, its event edges, the linked verified account's Catch payments, event titles and the merge receipts that name it as survivor, deleted when the contact is deleted, hidden or merged",
       "exportedFunctions": [
         "onHostContactDetailViewContactWritten",
         "onHostContactDetailViewTraitsWritten",
         "onHostContactDetailViewEdgeWritten",
         "onHostContactDetailViewPaymentWritten",
-        "onHostContactDetailViewEventWritten"
+        "onHostContactDetailViewEventWritten",
+        "onHostContactDetailViewMergeReceiptWritten"
       ],
       "migrationNotes": [
-        "traits, revenue, events and eventsTruncated equal what getOrganizerContactDetail returns. The host-contact-detail-views copy-forward migration creates views for contacts shown before the triggers.",
+        "traits, revenue, events, eventsTruncated and activeMerges equal what getOrganizerContactDetail returns; activeMerges is absent on views written before it, which the client reads as no merges until the next write. The host-contact-detail-views copy-forward migration creates views for contacts shown before the triggers.",
         "The view holds no linked account id, identity evidence, endpoint or payment id; the Host person page reads the name, tags and revision from hostContactSummaries and the newest note from organizerContactNotes."
       ]
     },

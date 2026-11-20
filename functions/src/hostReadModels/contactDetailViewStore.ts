@@ -12,6 +12,7 @@ import {
   contactRevenue,
   eventDetailRow,
   maxDetailEvents,
+  readActiveContactMerges,
 } from "../organizers/organizerContacts";
 
 export const hostContactDetailViewsCollection = "hostContactDetailViews";
@@ -40,10 +41,11 @@ export function contactDetailVisible(
 /**
  * Reads one contact's detail view from current sources inside a transaction,
  * without writing: the traits, revenue and newest 100 event rows exactly as
- * getOrganizerContactDetail returns them. The contact, its trait row and its
- * event edges are read in the transaction, so a delayed trigger cannot bring
- * back a removed contact; event titles and Catch payments are read outside
- * it, so event and payment writes never wait on a view.
+ * getOrganizerContactDetail returns them, and the active merges into it. The
+ * contact, its trait row and its event edges are read in the transaction, so
+ * a delayed trigger cannot bring back a removed contact; event titles, Catch
+ * payments and the immutable merge receipts are read outside it, so event,
+ * payment and merge writes never wait on a view.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {FirebaseFirestore.Transaction} tx The read transaction.
  * @param {string} contactId The contact document id.
@@ -70,11 +72,12 @@ export async function readHostContactDetailView(
     .map((doc) => doc.data() as OrganizerContactEventEdgeDocument);
   const eventsTruncated = edgeSnap.size > maxDetailEvents;
   const eventIds = [...new Set(edges.map((edge) => edge.eventId))];
-  const [eventSnaps, revenue] = await Promise.all([
+  const [eventSnaps, revenue, activeMerges] = await Promise.all([
     eventIds.length === 0 ? Promise.resolve([]) : db.getAll(
       ...eventIds.map((eventId) => db.collection("events").doc(eventId))),
     contactRevenue({db, contact, eventEdges: edges,
       eventHistoryTruncated: eventsTruncated}),
+    readActiveContactMerges(db, contact.organizerId, contactId),
   ]);
   const events = new Map(eventSnaps
     .filter((snapshot) => snapshot.exists)
@@ -87,6 +90,7 @@ export async function readHostContactDetailView(
     events: edges.map((edge) => eventDetailRow(edge,
       revenue.byEvent.get(edge.eventId) ?? [], events.get(edge.eventId))),
     eventsTruncated,
+    activeMerges,
     version: 1,
   };
 }
