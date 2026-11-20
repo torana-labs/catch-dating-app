@@ -2,12 +2,14 @@ import {cleanup, fireEvent, render, screen, within} from "@testing-library/react
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {citiesPageCopy} from "@content/citiesPage";
 import {interpolateContent as fill} from "@content/interpolate";
+import {nightPlanTryItCopy} from "@content/nightPlanTryIt";
 import {websiteCities} from "@content/markets";
 import {playbookCopy} from "@content/playbook/playbookCopy";
 import {websiteLeadCopy} from "@content/websiteLead";
 import {loadPlaybookPage, resolvePlaybookPage} from "./playbookPages";
 import {PlaybookPage} from "./PlaybookPage";
 import {playbookStructuredData} from "./playbookStructuredData";
+import {playbookTryItTool} from "../tryIt/tryItModel";
 
 vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
 
@@ -159,13 +161,13 @@ describe("playbook page", () => {
   });
 
   it("draws a product page's live bands only: no try-it band or button, and the host footer", async () => {
-    const room = (await loadPlaybookPage(resolvePlaybookPage("/product/the-room/")!))!;
-    render(<PlaybookPage captures={captures} page={room} />);
-    expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Nobody comes to stand by the wall.");
+    const event = (await loadPlaybookPage(resolvePlaybookPage("/product/running-the-event/")!))!;
+    render(<PlaybookPage captures={captures} page={event} />);
+    expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Everything behind the scenes, on one screen.");
     expect(document.getElementById("try")).toBeNull();
     expect(document.getElementById("start-try")).toBeNull();
-    expect(document.getElementById("first-hello-missions")).toBeNull();
-    expect(screen.queryByRole("link", {name: "Plan your first hello"})).toBeNull();
+    expect(document.getElementById("safety")).toBeNull();
+    expect(screen.queryByRole("link", {name: "Get your door ready"})).toBeNull();
     expect(screen.queryByText(/mutual/iu)).toBeNull();
     const footer = within(screen.getByRole("contentinfo"));
     expect(footer.getByRole("link", {name: "The room"}).getAttribute("href")).toBe("/product/the-room/");
@@ -173,9 +175,23 @@ describe("playbook page", () => {
     expect(footer.getByRole("link", {name: "Forms"}).getAttribute("href")).toBe("/product/forms/");
     expect(footer.getByRole("link", {name: "Report or remove a listing"}).getAttribute("href")).toBe("/listings/request/");
     expect(footer.getByRole("button", {name: /privacy choices/iu})).toBeTruthy();
-    const faq = (playbookStructuredData(room, "/product/the-room/", "https://example.test") as {"@graph": {"@type": string; mainEntity?: unknown[]}[]})["@graph"]
+    const faq = (playbookStructuredData(event, "/product/running-the-event/", "https://example.test") as {"@graph": {"@type": string; mainEntity?: unknown[]}[]})["@graph"]
       .find((node) => node["@type"] === "FAQPage")!;
-    expect(faq.mainEntity).toHaveLength(4);
+    expect(faq.mainEntity).toHaveLength(6);
+  });
+
+  it("draws The room's plan-a-night band, the hero button to it and its closing band, while unbuilt missions stay out", async () => {
+    const room = (await loadPlaybookPage(resolvePlaybookPage("/product/the-room/")!))!;
+    render(<PlaybookPage captures={captures} page={room} />);
+    const band = document.getElementById("try");
+    expect(band).not.toBeNull();
+    expect(screen.getByRole("link", {name: "Plan your first hello"}).getAttribute("href")).toBe("#try");
+    expect(within(document.getElementById("start")!).getByRole("link", {name: "Plan my night"}).getAttribute("href")).toBe("#try");
+    expect(document.getElementById("start-try")).toBeNull();
+    expect(document.getElementById("first-hello-missions")).toBeNull();
+    expect(document.getElementById("questions-coming")).toBeNull();
+    // The tool draws in the band once night.plan is website-ready (features/tryIt/tryItModel.ts).
+    if (playbookTryItTool("product_room")) expect(within(band!).getByRole("form", {name: nightPlanTryItCopy.title})).toBeTruthy();
   });
 
   it("gives an organiser type page the same host footer and For hosts menu as the product pages", () => {

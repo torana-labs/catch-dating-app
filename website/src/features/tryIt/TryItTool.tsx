@@ -27,9 +27,12 @@ import {useTryItToolController, type TryItToolController} from "./useTryItToolCo
 /** Where the tool sits: a try-it band's second column (a card), or a closing band's capture row. */
 export type TryItPlacement = "split" | "cta";
 
+/** The tools that read a link; the plan-a-night tool draws its own card (./NightPlanTryIt.tsx). */
+type TryItLinkToolKind = Exclude<TryItToolKind, "night">;
+
 interface TryItToolProps {
   readonly form: PlaybookLeadForm;
-  readonly tool: TryItToolKind;
+  readonly tool: TryItLinkToolKind;
   readonly placement: TryItPlacement;
   readonly analyticsPlacement: string;
 }
@@ -118,7 +121,7 @@ function fieldText(problem: TryItFlowState["fields"][keyof TryItFlowState["field
   return copy.tools.kit[problem];
 }
 
-function StartStep({controller, form, tool, placement}: {controller: TryItToolController; form: PlaybookLeadForm; tool: TryItToolKind; placement: TryItPlacement}) {
+function StartStep({controller, form, tool, placement}: {controller: TryItToolController; form: PlaybookLeadForm; tool: TryItLinkToolKind; placement: TryItPlacement}) {
   const {state, flow} = controller;
   const card = copy.tools[tool];
   const inputMode = state.busy ? "inactive" : "editable";
@@ -377,7 +380,7 @@ function TryItTool(props: TryItToolProps) {
  * the closing band's capture row (a cta), running its command end to end.
  * Keyed by page, band and form, so each starts empty.
  */
-export function tryItToolNode(props: {form: PlaybookLeadForm; tool: TryItToolKind; placement: TryItPlacement; pageId: string; sectionId: string}): ReactNode {
+export function tryItToolNode(props: {form: PlaybookLeadForm; tool: TryItLinkToolKind; placement: TryItPlacement; pageId: string; sectionId: string}): ReactNode {
   const key = `${props.pageId}-${props.sectionId}-${props.form.id}`;
   return <TryItTool analyticsPlacement={`try_it_${props.pageId}_${props.sectionId}`} form={props.form} key={key} placement={props.placement} tool={props.tool} />;
 }
