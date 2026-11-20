@@ -23865,7 +23865,7 @@
       "topBar": {
         "role": "compact",
         "expression": "CatchLegacyTopBar",
-        "owner": "HostEventRehearsalStartScreen and HostEventRehearsalScreen",
+        "owner": "HostEventRehearsalStartScreen, HostRehearsalScreen and HostRehearsalPracticeScreen",
         "reason": "Setup and the live console are focused Host workspaces with explicit back navigation and persistent practice identity in page content."
       },
       "statePolicy": {
@@ -23885,8 +23885,8 @@
             "symbol": "eventRehearsal"
           },
           {
-            "file": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
-            "symbol": "HostEventRehearsalScreen"
+            "file": "lib/hosts/events/rehearsal_practice_controller.dart",
+            "symbol": "hostRehearsalPracticeController"
           }
         ],
         "mutationOwners": [
@@ -23952,7 +23952,7 @@
           "id": "host_event_rehearsal_running",
           "kind": "populated",
           "status": "tested",
-          "source": "HostEventRehearsalScreen virtual clock, simulator, guest link, and synthetic roster",
+          "source": "HostRehearsalPracticeScreen on the rebuilt console, with the virtual clock, simulator, guest link and synthetic roster in Practice tools",
           "tests": [
             "test/event_rehearsal/host_event_rehearsal_screen_test.dart",
             "test/event_rehearsal/event_rehearsal_domain_test.dart"
@@ -23991,7 +23991,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "A focused start route creates a deterministic practice room from a safe sample or source-event snapshot. The console then combines frozen setup, a rotatable guest phone link, virtual time controls, scenario and fault injection, a synthetic roster, and deterministic recap tools.",
+        "currentLayout": "A focused start route creates a deterministic practice room from a safe sample or source-event snapshot. The rehearsal screen lists the plan's steps; its practice door opens the rebuilt live console, run console or crawl board on the rehearsal projection. Practice tools hold frozen setup, a rotatable guest phone link, virtual time controls, scenario and fault injection, the assistance queues, a synthetic roster and deterministic recap tools.",
         "targetLayout": "Keep rehearsal as a first-class Host capability that mirrors event preparation, live operations, and recap while remaining structurally isolated from real guests, messages, payments, matches, and production event mutation paths.",
         "sections": [
           {
@@ -24021,13 +24021,13 @@
           },
           {
             "id": "section.host.event.rehearsal.console",
-            "name": "Virtual event, synthetic room, and recap",
+            "name": "Practice on the rebuilt console, with practice tools and recap",
             "status": "implemented_local",
             "layer": "screen-adapter",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
-              "symbol": "HostEventRehearsalScreen"
+              "file": "lib/hosts/events/rehearsal_practice_screen.dart",
+              "symbol": "HostRehearsalPracticeScreen"
             },
             "currentOwner": "event_rehearsal.presentation",
             "targetOwner": "event_rehearsal.presentation",

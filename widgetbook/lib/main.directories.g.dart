@@ -231,6 +231,8 @@ import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
     as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
 import 'package:widgetbook_workspace/hosts/host_phone_import_use_cases.dart'
     as _widgetbook_workspace_hosts_host_phone_import_use_cases;
+import 'package:widgetbook_workspace/hosts/host_rehearsal_practice_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases;
 import 'package:widgetbook_workspace/hosts/host_response_export_use_cases.dart'
     as _widgetbook_workspace_hosts_host_response_export_use_cases;
 import 'package:widgetbook_workspace/hosts/host_response_review_use_cases.dart'
@@ -9734,6 +9736,44 @@ final directories = <_widgetbook.WidgetbookNode>[
                                 .staffOperationsNoticeListUseCase,
                       ),
                     ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Rehearsal practice',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRehearsalPracticeScoresScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A practice round',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases
+                            .hostRehearsalPracticeScoresScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRehearsalPracticeScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A rehearsal on the live console',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases
+                            .hostRehearsalPracticeScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRehearsalPracticeToolsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Practice tools',
+                    builder:
+                        _widgetbook_workspace_hosts_host_rehearsal_practice_use_cases
+                            .hostRehearsalPracticeToolsScreenUseCase,
                   ),
                 ],
               ),
