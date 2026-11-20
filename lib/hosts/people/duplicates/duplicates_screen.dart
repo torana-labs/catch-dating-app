@@ -165,6 +165,7 @@ class _HostPeopleDuplicatesScreenState
   }) async {
     setState(() => _pendingPairId = pair.candidateId);
     try {
+      // provider-graph: ownership-widget-async-callback:_HostPeopleDuplicatesScreenState._command:await:command watch CAT156 -- Each merge command runs through its HostDuplicateCommands mutation, which owns pending and error (listened to above); the widget keeps only which pair the running command acts on, for that card's spinner. Move the pair id into the mutation state in the CAT156 migration.
       final result = await mutation.run(
         ref,
         (tx) => command(tx.get(hostDuplicateCommandsProvider)),
