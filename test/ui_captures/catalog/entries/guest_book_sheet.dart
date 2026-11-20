@@ -14,7 +14,6 @@ import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
-import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
