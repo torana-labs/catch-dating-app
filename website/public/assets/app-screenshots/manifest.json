@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-11",
+  "updated": "2026-11-20",
   "captures": [
     {
       "id": "guest-join-phone",
@@ -286,6 +286,84 @@
       "alt": "The morning after Saturday Trivia Social in the Catch app: a private rating for the organizer, the group chat, and the people you met to stay in touch with",
       "caption": "After the night: rate it privately, keep chatting and stay in touch.",
       "walkthroughStep": "Stay in touch",
+      "pages": []
+    },
+    {
+      "id": "guest-book-sheet",
+      "audience": "guest",
+      "surface": "Booking a plan in the Catch app",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/guest-book-sheet.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Saturday Trivia Social in the Catch app: what the night is, Harbour Room as the place, and Join event with 7 spots left",
+      "caption": "Book in a couple of taps: the plan, the place and the spots left.",
+      "walkthroughStep": "Book",
+      "pages": []
+    },
+    {
+      "id": "guest-reminder",
+      "audience": "guest",
+      "surface": "A guest's home the day before",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/guest-reminder.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "The Catch app home the evening before: Saturday Trivia Social tomorrow at Harbour Room, with directions and add to calendar",
+      "caption": "The day before: your plan, where to meet and directions.",
+      "walkthroughStep": "Reminders",
+      "pages": []
+    },
+    {
+      "id": "guest-group-chat",
+      "audience": "guest",
+      "surface": "The event group chat after the night",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/guest-group-chat.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Saturday Trivia Social's group chat in the Catch app the morning after, with guests planning to come back next Saturday",
+      "caption": "The group chat stays open after the night.",
+      "walkthroughStep": "Group chat",
+      "pages": []
+    },
+    {
+      "id": "guest-follow-host",
+      "audience": "guest",
+      "surface": "An organiser's page in the Catch app",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/guest-follow-host.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Evening Club's page in the Catch app: its next plan on Saturday 24 October and a Follow organizer button",
+      "caption": "Follow the hosts you like and see their next plan first.",
+      "walkthroughStep": "Follow",
+      "pages": []
+    },
+    {
+      "id": "host-create-first-event",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-create-first-event.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Creating an event in Catch Host, step 1 of 4: Saturday Trivia Social as a quiz or trivia night",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-demo-practice",
+      "audience": "host",
+      "surface": "A host's private demo link in the browser",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-demo-practice.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "A private Catch demo open in Safari: Your demo · Saturday Trivia Social, the four steps to try on a sample guest, and a note that nothing real is sent",
+      "caption": "Your demo link: try each step on a sample guest. Nothing is sent.",
+      "walkthroughStep": "Demo",
       "pages": []
     },
     {
