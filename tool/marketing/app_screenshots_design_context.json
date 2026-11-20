@@ -903,6 +903,292 @@
       }
     },
     {
+      "type": "marketing-app-capture",
+      "id": "guest-book-sheet",
+      "status": "active",
+      "audience": "guest",
+      "surface": "Booking a plan in the Catch app",
+      "fixtureKey": "hostMarketingIndia.guest.bookSheet",
+      "captureId": "guest_book_sheet",
+      "routeIds": [
+        "eventDetailScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-book-sheet.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-book-sheet.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-book-sheet.png"
+      },
+      "copy": {
+        "alt": "Saturday Trivia Social in the Catch app: what the night is, Harbour Room as the place, and Join event with 7 spots left",
+        "caption": "Book in a couple of taps: the plan, the place and the spots left.",
+        "walkthroughStep": "Book"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "guest-reminder",
+      "status": "active",
+      "audience": "guest",
+      "surface": "A guest's home the day before",
+      "fixtureKey": "hostMarketingIndia.guest.reminder",
+      "captureId": "guest_reminder",
+      "routeIds": [
+        "dashboardScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-reminder.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-reminder.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-reminder.png"
+      },
+      "copy": {
+        "alt": "The Catch app home the evening before: Saturday Trivia Social tomorrow at Harbour Room, with directions and add to calendar",
+        "caption": "The day before: your plan, where to meet and directions.",
+        "walkthroughStep": "Reminders"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "guest-group-chat",
+      "status": "active",
+      "audience": "guest",
+      "surface": "The event group chat after the night",
+      "fixtureKey": "hostMarketingIndia.guest.groupChat",
+      "captureId": "guest_group_chat",
+      "routeIds": [
+        "eventChatScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-group-chat.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-group-chat.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-group-chat.png"
+      },
+      "copy": {
+        "alt": "Saturday Trivia Social's group chat in the Catch app the morning after, with guests planning to come back next Saturday",
+        "caption": "The group chat stays open after the night.",
+        "walkthroughStep": "Group chat"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "guest-follow-host",
+      "status": "active",
+      "audience": "guest",
+      "surface": "An organiser's page in the Catch app",
+      "fixtureKey": "hostMarketingIndia.guest.followHost",
+      "captureId": "guest_follow_host",
+      "routeIds": [
+        "organizerDetailScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-follow-host.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-follow-host.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-follow-host.png"
+      },
+      "copy": {
+        "alt": "Evening Club's page in the Catch app: its next plan on Saturday 24 October and a Follow organizer button",
+        "caption": "Follow the hosts you like and see their next plan first.",
+        "walkthroughStep": "Follow"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-create-first-event",
+      "status": "active",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host",
+      "fixtureKey": "hostMarketingIndia.host.createFirstEvent",
+      "captureId": "host_create_first_event",
+      "routeIds": [
+        "hostCreateEventScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-first-event.png",
+        "websitePath": "website/public/assets/app-screenshots/host-create-first-event.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-first-event.png"
+      },
+      "copy": {
+        "alt": "Creating an event in Catch Host, step 1 of 4: Saturday Trivia Social as a quiz or trivia night",
+        "caption": "Your first event in Catch Host, one step at a time.",
+        "walkthroughStep": "Create"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "host-demo-practice",
+      "status": "active",
+      "audience": "host",
+      "surface": "A host's private demo link in the browser",
+      "story": {
+        "file": "website/src/stories/SalesDemo.stories.tsx",
+        "id": "marketing-website-sales-demo--demo-link-ready"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-sales-demo--demo-link-ready",
+      "routeIds": [
+        "sales_demo"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-demo-practice.png",
+        "websitePath": "website/public/assets/app-screenshots/host-demo-practice.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-demo-practice.png"
+      },
+      "copy": {
+        "alt": "A private Catch demo open in Safari: Your demo · Saturday Trivia Social, the four steps to try on a sample guest, and a note that nothing real is sent",
+        "caption": "Your demo link: try each step on a sample guest. Nothing is sent.",
+        "walkthroughStep": "Demo"
+      }
+    },
+    {
       "type": "marketing-web-capture",
       "id": "wedding-rsvp",
       "status": "active",

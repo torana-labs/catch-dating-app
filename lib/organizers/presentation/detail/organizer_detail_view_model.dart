@@ -10,6 +10,7 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -41,6 +42,7 @@ abstract class OrganizerDetailViewModel with _$OrganizerDetailViewModel {
 /// route and schedule. Reviews, profile, and membership state are secondary;
 /// they hydrate the detail screen when available without hiding newly-created
 /// events behind the route's placeholder body.
+// provider-graph: high-fan-out:organizerDetailViewModelProvider accepted -- One organizer page read: the organizer, its events, reviews, the viewer's identity, profile and follow, and the screen clock that decides which events are upcoming, so a capture or test can fix the time.
 @riverpod
 AsyncValue<OrganizerDetailViewModel?> organizerDetailViewModel(
   Ref ref,
@@ -89,6 +91,7 @@ AsyncValue<OrganizerDetailViewModel?> organizerDetailViewModel(
     uidAsync: uidAsync,
     membershipAsync: membershipAsync,
     appRole: AppConfig.appRole,
+    now: ref.watch(appClockProvider).now(),
   );
 }
 

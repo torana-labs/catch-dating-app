@@ -165,9 +165,12 @@
     },
     {
       "routeId": "eventChatScreen",
-      "status": "planned",
+      "status": "captured",
       "priority": "P2",
-      "reason": "Event conversation has production-widget light/dark, keyboard, reply, reaction and large-text review tests; canonical marketing capture registration remains planned."
+      "reason": "The guest's event chat the morning after, from the Mumbai marketing story; the production-widget tests cover keyboard, reply, reaction and large text.",
+      "captureIds": [
+        "guest_group_chat"
+      ]
     },
     {
       "routeId": "eventProfileSharingScreen",
@@ -223,7 +226,8 @@
         "dashboard_home_self_check_in",
         "dashboard_home_after_event_focus",
         "dashboard_home_self_check_in_pending",
-        "dashboard_home_self_check_in_error"
+        "dashboard_home_self_check_in_error",
+        "guest_reminder"
       ],
       "reason": "Main review surface plus deterministic route variants for loading, data-load errors, empty start, self check-in open/pending/error, after-event focus, recommendations loading/error, text scale, and reduced motion."
     },
@@ -309,7 +313,8 @@
         "club_detail_mutation_error",
         "club_detail_offline",
         "club_detail_text_scale_2",
-        "club_detail_reduced_motion"
+        "club_detail_reduced_motion",
+        "guest_follow_host"
       ],
       "reason": "Club Detail captured across member, visitor, guest, host public, loading, initial fallback loading, empty schedule, missing, error, mutation, offline, text-scale, and reduced-motion states."
     },
@@ -340,7 +345,8 @@
         "event_detail_booking_full",
         "event_detail_booking_attended",
         "event_detail_booking_past",
-        "event_detail_booking_cancelled"
+        "event_detail_booking_cancelled",
+        "guest_book_sheet"
       ],
       "reason": "Canonical event detail captured across standard, ticket, spotlight, loading, missing, error, guest, offline, accessibility, settled booking-state variants, and booking/cancel mutation pending, success snackbar, and failure feedback; reused by calendar, saved, and dashboard aliases."
     },
@@ -1295,7 +1301,8 @@
         "host_create_not_found",
         "host_create_unauthorized",
         "host_create_map_picker_offline",
-        "host_media_gallery_manager"
+        "host_media_gallery_manager",
+        "host_create_first_event"
       ],
       "reason": "Host app create-event route now has deterministic captures for initial club-extra hydration, route loading/error/offline/not-found/unauthorized, basics, validation, custom activity, inherited organizer identity, picked event photos, the shared 24-photo scalable gallery manager, selected location, map-picker offline search, schedule validation, policy age validation, invite-only policy, cohort caps policy, dynamic-pricing enabled/disabled/validation policy, draft picker/restored, unsaved-changes dialog, save-draft pending/error/offline, submit pending/error/offline, photo-upload offline, success, wizard location/schedule/policy/guide, text scale 2.0, reduced motion, and paired light/dark output. Remaining captures are reference-specific variants."
     },

@@ -83,7 +83,10 @@
     "tool/web/check_storybook_visuals.mjs": ["unlisted"],
     // marketing-captures.yml installs the lockfile-pinned Playwright package
     // separately on macOS and passes its directory to this renderer.
-    "tool/marketing/lib/web_capture_render.mjs": ["unlisted"]
+    "tool/marketing/lib/web_capture_render.mjs": ["unlisted"],
+    // Run by hand against a local website (docs/marketing_app_media_pipeline.md,
+    // Imagery Audit); Playwright comes from the website workspace's install.
+    "tool/marketing/audit_website_imagery.mjs": ["unlisted"]
   },
   "ignoreExportsUsedInFile": true,
   "ignoreBinaries": [
