@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import {describe, expect, it} from "vitest";
 import {websiteCities} from "@content/markets";
 import {playbookTryItTool, tryItCities, tryItEventWhen, tryItKitLinks, tryItKitLinksProblem, tryItLink, tryItLocalDate} from "./tryItModel";
@@ -11,7 +13,7 @@ describe("try-it model", () => {
     expect(tryItLink("  instagram.com/driftwoodbayrunners ", "organizer")).toBe("https://instagram.com/driftwoodbayrunners");
     expect(tryItLink("@driftwoodbayrunners", "organizer")).toBe("https://www.instagram.com/driftwoodbayrunners/");
     expect(tryItLink("@driftwoodbayrunners", "event")).toBeNull();
-    expect(tryItLink("lu.ma/sundaysupper", "event")).toBe("https://lu.ma/sundaysupper");
+    expect(tryItLink("tickets.example/sunday-supper", "event")).toBe("https://tickets.example/sunday-supper");
   });
 
   it("refuses what the commands refuse: no address, another scheme, credentials, a bare IP or a host with no dot", () => {
@@ -35,9 +37,12 @@ describe("try-it model", () => {
     expect(tryItKitLinksProblem(tryItKitLinks("a,b,c,d,e,f,g,h"))).toBeNull();
   });
 
-  it("offers only live cities, where an organiser can be created", () => {
+  it("offers the cities where an organiser can be created (surfaces.hostCreatable), not those that are merely live", () => {
+    const catalog = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../../contracts/catalogs/markets.json"), "utf8")) as
+      {cities: {marketId: string; surfaces: {hostCreatable: boolean; websiteListed: boolean}}[]};
+    const creatable = catalog.cities.filter((city) => city.surfaces.websiteListed && city.surfaces.hostCreatable).map((city) => city.marketId);
+    expect(tryItCities().map((city) => city.id)).toEqual(creatable);
     expect(tryItCities().length).toBeGreaterThan(0);
-    expect(tryItCities().every((city) => city.status === "live")).toBe(true);
     expect(tryItCities().length).toBeLessThan(websiteCities.length);
   });
 
@@ -45,6 +50,7 @@ describe("try-it model", () => {
     expect(playbookTryItTool("product_your_page")).toBe("organizer");
     expect(playbookTryItTool("product_bookings")).toBe("event");
     expect(playbookTryItTool("product_messages")).toBe("kit");
+    expect(playbookTryItTool("tools_event_page_from_link")).toBe("event");
     expect(playbookTryItTool("product_guests")).toBeNull();
     expect(playbookTryItTool("constructor")).toBeNull();
   });

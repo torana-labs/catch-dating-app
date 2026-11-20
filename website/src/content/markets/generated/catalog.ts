@@ -73,6 +73,7 @@ export const generatedWebsiteCities = [
     "legacySlugs": [],
     "timezone": "Asia/Kolkata",
     "status": "live",
+    "hostCreatable": true,
     "countryIsoCode": "IN",
     "latitude": 19.076,
     "longitude": 72.8777
@@ -86,6 +87,7 @@ export const generatedWebsiteCities = [
     "legacySlugs": [],
     "timezone": "Asia/Kolkata",
     "status": "live",
+    "hostCreatable": true,
     "countryIsoCode": "IN",
     "latitude": 22.7196,
     "longitude": 75.8577
@@ -105,6 +107,7 @@ export const generatedWebsiteCities = [
     ],
     "timezone": "Asia/Kolkata",
     "status": "waitlist",
+    "hostCreatable": false,
     "countryIsoCode": "IN",
     "latitude": 28.7041,
     "longitude": 77.1025
@@ -122,6 +125,7 @@ export const generatedWebsiteCities = [
     ],
     "timezone": "Asia/Kolkata",
     "status": "waitlist",
+    "hostCreatable": false,
     "countryIsoCode": "IN",
     "latitude": 12.9716,
     "longitude": 77.5946
@@ -135,6 +139,7 @@ export const generatedWebsiteCities = [
     "legacySlugs": [],
     "timezone": "Asia/Kolkata",
     "status": "waitlist",
+    "hostCreatable": false,
     "countryIsoCode": "IN",
     "latitude": 17.385,
     "longitude": 78.4867
@@ -148,6 +153,7 @@ export const generatedWebsiteCities = [
     "legacySlugs": [],
     "timezone": "Asia/Kolkata",
     "status": "waitlist",
+    "hostCreatable": false,
     "countryIsoCode": "IN",
     "latitude": 18.5204,
     "longitude": 73.8567
