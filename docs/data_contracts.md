@@ -5550,6 +5550,17 @@ the model sees the page's title and visible text only, fills the same
 Google reader's limits and flags), never writes answer-based logic (a page
 that says some questions depend on answers gets `branching_review`), and
 every question key it read is in `reviewFields`.
+`event.import-from-link` and `organizer.import-from-link` answer them too
+when their page adapters found nothing (or the link is a public platform
+with no adapter yet, `link.reason` `ai_fallback`): the model sees the title
+and visible text of the page snapshot Supply Intake already stored for the
+request, after its do-not-list check (`functions/src/commands/aiPage.ts`).
+An event read lists the page's events in its local date and time, with the
+name, date, time and venue in `reviewFields`; an organizer read fills only
+the name and description, and never adds events, links or identities.
+These two commands drive the shared core directly rather than the Supply
+Intake model fallback, whose in-memory budgets and cache would bypass the
+durable cap, daily limit, cache and audit rows above.
 
 ### Organizer Application Intake
 

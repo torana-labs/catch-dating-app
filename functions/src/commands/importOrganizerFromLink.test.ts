@@ -207,3 +207,112 @@ test("a page that matches another listed organizer routes to claim, and apply is
   await assert.rejects(importOrganizerFromLinkHandler(call(envelope("apply")), deps),
     (error: {details?: {reason?: string}}) => error.details?.reason === "existing_listing");
 });
+
+// AI fallback (#2062, step 6) ------------------------------------------------
+
+type AiRequest = {task: string; commandId: string; input: Record<string, unknown>};
+
+function fakeAi(answer: {status: "read"; output: unknown} | {status: "refused"; reason: string} | {status: "off"}) {
+  const reads: AiRequest[] = [];
+  return {reads, aiFallback: () => ({enabled: async () => true, read: async (request: AiRequest) => {
+    reads.push(request);
+    return answer.status === "read" ? {...answer, cacheHit: reads.length > 1} : answer;
+  }}) as never};
+}
+
+const SITE = "https://harbour-lights.example/";
+const SITE_TEXT = "Harbour Lights Supper Club. Long-table dinners for strangers, every other Thursday.";
+
+/** A finished read whose adapters found no name or description, with the page's stored snapshot. */
+function finishEmptyRead(db: FakeFirestore) {
+  const key = requestPath(db);
+  const requestId = key.split("/")[1];
+  const ref = `supply-intake/snapshots/${requestId}/${"e".repeat(64)}.json`;
+  db.write(key, {...db.read(key)!, status: "completed", result: {runId: "run-1", listingId: "listing-1",
+    listingWorkItemId: "item-listing", eventWorkItemIds: [], listingContentHash: "c".repeat(64), gaps: ["seed_page_unreadable"],
+    researchNeeded: false, eventCount: 0, stoppedReason: null, artifactHash: "a".repeat(64), snapshotRefs: [ref],
+    captureReceipts: [], duplicateCheck: {policyId: "organizer-matching-v1", authority: "advisory", verdict: "none",
+      reasons: [], organizersCompared: 2, inventoryHash: "d".repeat(64), inventory: {citySlug: "mumbai", limit: 1000,
+        truncated: false}, candidates: []}}});
+  db.write("operationWorkItems/item-listing", {normalizedPayload: {intake: {recordType: "organizer_listing_draft", listing: {
+    listingId: "listing-1", contentHash: "c".repeat(64), gaps: ["seed_page_unreadable"],
+    organizer: {name: null, description: null, categories: [], links: []}}}}});
+  return async (path: string) => path === ref ? {url: SITE, finalUrl: SITE, title: "Harbour Lights", text: SITE_TEXT} : null;
+}
+
+const siteEnvelope = (mode: "preview" | "apply", extra: Record<string, unknown> = {}) =>
+  envelope(mode, {input: {link: SITE, useImportedName: true}, ...extra});
+
+test("AI fallback: a page the adapters read nothing from gives the name and description, marked for review", async () => {
+  const {db, deps} = await withWorkspace();
+  const ai = fakeAi({status: "read", output: {name: "Harbour Lights Supper Club", description: "Long-table dinners for strangers."}});
+  await importOrganizerFromLinkHandler(call(siteEnvelope("preview")), {...deps, ...ai} as typeof deps);
+  const readSnapshot = finishEmptyRead(db);
+  const aiDeps = {...deps, ...ai, readSnapshot} as typeof deps;
+
+  const preview = await importOrganizerFromLinkHandler(call(siteEnvelope("preview")), aiDeps);
+  valid(validate.response, preview, "ai previewed");
+  assert.equal(preview.status, "previewed");
+  assert.equal(preview.result.aiRead, true);
+  assert.deepEqual(preview.result.reviewFields, ["name", "description"]);
+  assert.equal(preview.result.proposal?.name, "Harbour Lights Supper Club");
+  assert.equal(preview.result.proposal?.nameChanges, true);
+  assert.equal(preview.result.proposal?.eventCount, 0, "the AI adds no events");
+  assert.deepEqual(ai.reads[0].input, {pageTitle: "Harbour Lights", pageText: SITE_TEXT});
+  assert.equal(ai.reads[0].task, "organizer-page-reading");
+
+  const applied = await importOrganizerFromLinkHandler(call(siteEnvelope("apply", {confirm: {commandId: "organizer.import-from-link",
+    previewHash: preview.previewHash}})), aiDeps);
+  valid(validate.response, applied, "ai applied");
+  assert.equal(applied.status, "applied");
+  assert.equal(applied.result.aiRead, true);
+  const organizer = db.read(`organizers/${ORGANIZER_ID}`)!;
+  assert.equal(organizer.name, "Harbour Lights Supper Club");
+  assert.equal(organizer.description, "Long-table dinners for strangers.");
+  valid(validate.organizer, organizer, "organizer after ai apply");
+  assert.deepEqual(ai.reads[1].input, ai.reads[0].input, "apply's read is the cached one");
+});
+
+test("AI fallback: off, an empty page previews as before; on, refusals are plain reasons", async () => {
+  const off = await withWorkspace();
+  await importOrganizerFromLinkHandler(call(siteEnvelope("preview")), off.deps);
+  finishEmptyRead(off.db);
+  const before = await importOrganizerFromLinkHandler(call(siteEnvelope("preview")), off.deps);
+  valid(validate.response, before, "off");
+  assert.deepEqual([before.status, before.result.aiRead, before.result.proposal?.name], ["previewed", false, null]);
+
+  for (const [answer, reason] of [
+    [{status: "refused", reason: "ai_cap_reached"}, "ai_cap_reached"],
+    [{status: "refused", reason: "ai_daily_limit"}, "ai_daily_limit"],
+    [{status: "read", output: {name: "", description: " "}}, "ai_unreadable"],
+  ] as const) {
+    const {db, deps} = await withWorkspace();
+    const ai = fakeAi(answer as never);
+    await importOrganizerFromLinkHandler(call(siteEnvelope("preview")), {...deps, ...ai} as typeof deps);
+    const readSnapshot = finishEmptyRead(db);
+    const response = await importOrganizerFromLinkHandler(call(siteEnvelope("preview")), {...deps, ...ai, readSnapshot} as typeof deps);
+    valid(validate.response, response, reason);
+    assert.deepEqual([response.status, response.result.reasons], ["refused", [reason]]);
+  }
+
+  const {db, deps} = await withWorkspace();
+  const ai = fakeAi({status: "read", output: {name: "Ignored", description: "Ignored"}});
+  await importOrganizerFromLinkHandler(call(envelope("preview")), {...deps, ...ai} as typeof deps);
+  finishRead(db);
+  const adapters = await importOrganizerFromLinkHandler(call(envelope("preview")), {...deps, ...ai} as typeof deps);
+  assert.equal(adapters.result.aiRead, false, "a page the adapters read is never sent to the AI");
+  assert.equal(ai.reads.length, 0);
+});
+
+test("AI fallback: a public platform with no adapter is read only when the fallback is on", async () => {
+  const link = "https://partiful.com/u/harbour-lights";
+  const off = await withWorkspace();
+  const refused = await importOrganizerFromLinkHandler(call(envelope("preview", {input: {link}})), off.deps);
+  assert.deepEqual([refused.status, refused.result.reasons], ["refused", ["no_adapter"]]);
+  const {db, deps} = await withWorkspace();
+  const ai = fakeAi({status: "read", output: {name: "x", description: "y"}});
+  const running = await importOrganizerFromLinkHandler(call(envelope("preview", {input: {link}})), {...deps, ...ai} as typeof deps);
+  valid(validate.response, running, "no adapter, on");
+  assert.deepEqual([running.status, running.result.link.reason], ["running", "ai_fallback"]);
+  assert.notEqual(requestPath(db), "");
+});
