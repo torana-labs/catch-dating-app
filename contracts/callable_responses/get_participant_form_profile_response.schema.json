@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/get_participant_form_profile_response.schema.json",
   "title": "GetParticipantFormProfileCallableResponse",
-  "description": "Participant-only form review, with an optimistic profile revision and no unrelated CRM data.",
+  "description": "Participant-only form review, whose proposal, card and intake fields participantFormProfileViews and participantIntakeProfileViews reuse. The getParticipantFormProfile callable that first returned this shape is retired; the name stays so those views keep their types. No unrelated CRM data.",
   "type": "object",
   "additionalProperties": false,
   "required": [

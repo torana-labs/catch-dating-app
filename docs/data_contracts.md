@@ -4519,12 +4519,13 @@ server-only `catchCommunicationPreferences/{uid}` and
 other sender. A newer withdrawal wins over a delayed submission/capture, while
 replayed finalization is idempotent. Account deletion removes these preferences
 and receipts, and a deletion tombstone prevents a late payment from granting
-consent again. `listParticipantMessagingPreferences` lists only the signed-in
-UID's permissions, with at most 30 organizer rows and a document-ID cursor.
-The settings page reads the same summary from the guest-owned read model
-`guestMessagingPermissions/{permissionId}`: one row per sender (`catchpref_{uid}`
-for Catch, the `organizerCommunicationPreferences` id for an organizer), holding
-`uid`, `scope`, `organizerId` and the exact `preference` the callable computes.
+consent again. The settings page reads the signed-in guest's permissions from
+the guest-owned read model `guestMessagingPermissions/{permissionId}`: one row
+per sender (`catchpref_{uid}` for Catch, the `organizerCommunicationPreferences`
+id for an organizer), holding `uid`, `scope`, `organizerId` and the sender's
+`preference` summary, the same summary a withdrawal returns. The
+`listParticipantMessagingPreferences` callable it replaced is retired (Nov
+2026).
 Triggers on both preference and both receipt collections keep it current; the
 guest may get and list only their own rows, and nobody writes them. Organizer
 names come from the public organizer lookup, so a rename never rewrites rows.
@@ -4617,13 +4618,9 @@ Historical submissions and versions remain unchanged. Portable profile intake
 keeps its existing separate rules; no organizer-answer cache or new person root
 is introduced.
 
-`getParticipantFormProfile` resolves only the verified owner’s designated fields
-and returns current editable core values, core/intake revisions, and selected
-private-card question IDs. `listParticipantFormProfiles` queries the verified
-UID with a bounded document-ID cursor, then revalidates every source before
-projecting a summary. Withdrawn sources are skipped; an empty scanned page may
-still have a continuation cursor. No caller-supplied UID or organizer filter
-can expand this scope. `claimParticipantFormProfile`
+The guest reviews a form profile from read models (below); the
+`getParticipantFormProfile` and `listParticipantFormProfiles` callables they
+replaced are retired (Nov 2026). `claimParticipantFormProfile`
 requires explicit reviewed core values, selected question IDs, and versioned
 claim terms. It atomically updates `users`, private `participantOrganizerCards`
 answer pointers and a payload-bound `commandReceipts` entry
@@ -4633,11 +4630,11 @@ LinkedIn retains its existing private `participantIntakeProfiles` destination.
 Verified phone always comes from Auth, never an editable answer.
 
 Guest-owned read models carry the list and the review, so the app reads them
-directly instead of those two callables (#1339). `participantFormProfileViews/{responseId}` holds, for each
-proposal still available to its guest, exactly the proposal and card parts the
-review callable computes: designated answers, form title, submitted and claimed
-dates, `selectedCardQuestionIds`, `cardRevision` and `termsVersion`; the list's
-card field count is the length of the selection. The app's list query reads the
+directly (#1339). `participantFormProfileViews/{responseId}` holds, for each
+proposal still available to its guest, the proposal and card parts the claim
+rereads: designated answers, form title, submitted and claimed dates,
+`selectedCardQuestionIds`, `cardRevision` and `termsVersion`; the list's card
+field count is the length of the selection. The app's list query reads the
 guest's rows newest submission first (`uid`, `submittedAtMillis` descending,
 document id), twenty a page, with the last row id as cursor.
 `participantIntakeProfileViews/{uid}` holds only `intakeRevision` and the saved

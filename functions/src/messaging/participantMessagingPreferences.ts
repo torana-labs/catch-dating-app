@@ -1,6 +1,6 @@
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
-import {FieldPath, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError, onCall, type CallableRequest} from
   "firebase-functions/v2/https";
 import {runAssistanceTransaction as transact} from
@@ -22,8 +22,6 @@ import type {ListParticipantMessagingPreferencesCallableResponse as Page} from
 import type {WithdrawParticipantMessagingPermissionCallableResponse as Result}
   from
   "../shared/generated/withdrawParticipantMessagingPermissionCallableResponse";
-import {validateListParticipantMessagingPreferencesCallablePayload} from
-  "../shared/generated/validators/listParticipantMessagingPreferencesInput";
 import {validateWithdrawParticipantMessagingPermissionCallablePayload} from
   "../shared/generated/validators/withdrawParticipantMessagingPermissionInput";
 
@@ -141,53 +139,6 @@ async function assertActiveAccount(db: FirebaseFirestore.Firestore,
     throw new HttpsError("not-found",
       "These messaging settings are unavailable.");
   }
-}
-
-export async function listParticipantMessagingPreferencesHandler(
-  request: CallableRequest<unknown>, deps: Deps = defaults): Promise<Page> {
-  const uid = requireAuth(request);
-  const data = validateCallableWithAjv(request,
-    validateListParticipantMessagingPreferencesCallablePayload);
-  const db = deps.db();
-  await deps.rateLimit(db, uid, "listParticipantMessagingPreferences", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  const catchPreference = await transact(db, async (tx) => {
-    await assertActiveAccount(db, tx, uid);
-    const value = readPreference(await tx.get(db.collection(
-      "catchCommunicationPreferences").doc(uid)), uid, "catch", null);
-    return summarize(db, tx, value, "catch");
-  });
-  let query = db.collection("organizerCommunicationPreferences")
-    .where("uid", "==", uid).orderBy(FieldPath.documentId())
-    .limit(data.limit + 1);
-  if (data.cursor) query = query.startAfter(data.cursor);
-  const result = await query.get();
-  const page = result.docs.slice(0, data.limit);
-  const organizers: Page["organizers"] = [];
-  for (const row of page) {
-    const projected = await transact(db, async (tx) => {
-      await assertActiveAccount(db, tx, uid);
-      const snap = await tx.get(row.ref);
-      if (!snap.exists) return null;
-      const organizerId = snap.data()?.organizerId;
-      if (typeof organizerId !== "string" || row.id !==
-          organizerCommunicationPreferenceId(organizerId, uid)) {
-        throw new HttpsError("failed-precondition",
-          "Messaging permission ownership is inconsistent.");
-      }
-      const value = readPreference(snap, uid, "organizer", organizerId)!;
-      const organizer = await
-      tx.get(db.collection("organizers").doc(organizerId));
-      const name = organizer.data()?.name;
-      return {organizerId, organizerName: typeof name === "string" ? name :
-        null,
-      preference: await summarize(db, tx, value, "organizer")};
-    });
-    if (projected) organizers.push(projected);
-  }
-  return {catchPreference, organizers, nextCursor:
-    result.docs.length > data.limit ? page.at(-1)!.id : null};
 }
 
 export async function withdrawParticipantMessagingPermissionHandler(
@@ -321,9 +272,6 @@ export async function withdrawParticipantMessagingPermissionHandler(
   });
 }
 
-export const listParticipantMessagingPreferences = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 30, maxInstances: 20}),
-  (request) => listParticipantMessagingPreferencesHandler(request));
 export const withdrawParticipantMessagingPermission = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 30, maxInstances: 20}),
   (request) => withdrawParticipantMessagingPermissionHandler(request));

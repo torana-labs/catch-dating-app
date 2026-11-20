@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/list_participant_messaging_preferences_response.schema.json",
   "title": "ListParticipantMessagingPreferencesCallableResponse",
-  "description": "Bounded participant-only WhatsApp permission directory; no contact endpoints or CRM fields.",
+  "description": "Participant-only WhatsApp permission summaries, whose catchPreference shape guestMessagingPermissions.preference and the withdrawal response reuse. The listParticipantMessagingPreferences callable that first returned this shape is retired; the name stays so those shapes keep their type. No contact endpoints or CRM fields.",
   "type": "object",
   "additionalProperties": false,
   "required": [

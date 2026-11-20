@@ -13,12 +13,8 @@ import {
 import {checkRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {claimParticipantFormProfileCallablePayloadSchema} from
-  "../shared/generated/schemas/claimParticipantFormProfileInput";
 import {validateClaimParticipantFormProfileCallablePayload} from
   "../shared/generated/validators/claimParticipantFormProfileInput";
-import {validateGetParticipantFormProfileCallablePayload} from
-  "../shared/generated/validators/getParticipantFormProfileInput";
 import {userProfileDocumentSchema} from
   "../shared/generated/schemas/userProfileDocument";
 import {validateUserProfileDocument} from
@@ -27,8 +23,6 @@ import type {ClaimParticipantFormProfileCallablePayload as Payload} from
   "../shared/generated/claimParticipantFormProfileCallablePayload";
 import type {ClaimParticipantFormProfileCallableResponse as Result} from
   "../shared/generated/claimParticipantFormProfileCallableResponse";
-import type {GetParticipantFormProfileCallableResponse as Review} from
-  "../shared/generated/getParticipantFormProfileCallableResponse";
 import type {UserProfileDocument as User, ProfilePhoto,
   OrganizerFormAssetDocument as Asset,
   OrganizerFormResponseDocument as Response,
@@ -63,50 +57,6 @@ const defaults: ClaimDeps = {db: () => admin.firestore(),
   now: () => Timestamp.now(), rateLimit: checkRateLimit,
   copyPhoto: copyFormProfilePhoto,
   cleanupDeletedPhoto: removeDeletedClaimPhoto};
-
-export async function getParticipantFormProfileHandler(
-  request: CallableRequest<unknown>, deps: ClaimDeps = defaults):
-  Promise<Review> {
-  const {uid} = requireVerifiedParticipant(request);
-  const data = validateCallableWithAjv(request,
-    validateGetParticipantFormProfileCallablePayload);
-  const db = deps.db();
-  await deps.rateLimit(db, uid, "getParticipantFormProfile", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  return db.runTransaction(async (tx) => {
-    const [userSnap, intakeSnap] = await Promise.all([
-      tx.get(db.collection("users").doc(uid)),
-      tx.get(db.collection("participantIntakeProfiles").doc(uid)),
-    ]);
-    const proposal = await readParticipantFormProfileProposal({db, tx, uid,
-      responseId: data.responseId});
-    const user = userSnap.data() as User | undefined;
-    if (user?.deleted) throw unavailable();
-    const [cardSnap, organizerSnap] = await Promise.all([
-      tx.get(db.collection("participantOrganizerCards").doc(data.responseId)),
-      tx.get(db.collection("organizers").doc(proposal.organizerId)),
-    ]);
-    const card = cardSnap.data() as Card | undefined;
-    if (card && (card.uid !== uid || card.responseId !== data.responseId ||
-        card.organizerId !== proposal.organizerId)) throw unavailable();
-    const intake = intakeSnap.data() as Intake | undefined;
-    const linkedin = intake?.fields.find((field) =>
-      field.canonicalFieldId === "linkedinUrl")?.value;
-    const name = organizerSnap.data()?.name;
-    return {...proposal, profileRevision: user?.profileRevision ?? 0,
-      intakeRevision: intake?.revision ?? 0,
-      cardRevision: card?.revision ?? 0,
-      organizerName: typeof name === "string" ? name : null,
-      selectedCardQuestionIds: (card?.questionIds ?? []).filter((id) =>
-        proposal.fields.some((field) => field.questionId === id &&
-          field.destination === "organizerCard")),
-      currentProfile: user ? currentReviewedProfile(user) : null,
-      currentLinkedinUrl: linkedin?.valueKind === "text" ?
-        linkedin.textValue : null,
-      termsVersion: "form-profile-claim-v1"};
-  });
-}
 
 /** Only the verified participant can claim explicitly reviewed values. */
 export async function claimParticipantFormProfileHandler(
@@ -304,19 +254,9 @@ export function reviewedUserProfile(input: {
   return result as unknown as User;
 }
 
-function currentReviewedProfile(user: User): Payload["profile"] | null {
-  if (!user.dateOfBirth || !user.gender) return null;
-  const schema = claimParticipantFormProfileCallablePayloadSchema as {
-    properties: {profile: {properties: Record<string, unknown>}};
-  };
-  const allowed = new Set(Object.keys(schema.properties.profile.properties));
-  return {...Object.fromEntries(Object.entries(user).filter(([key]) =>
-    allowed.has(key))), dateOfBirth: user.dateOfBirth.toDate()
-    .toISOString().slice(0, 10)} as Payload["profile"];
-}
-
 /** Every selected source must have a reviewed destination. */
-function assertReviewedSelections(data: Payload, fields: Review["fields"]) {
+function assertReviewedSelections(data: Payload, fields: Awaited<
+  ReturnType<typeof readParticipantFormProfileProposal>>["fields"]) {
   const selected = new Set(data.selectedQuestionIds);
   let selectedLinkedin = false;
   for (const field of fields) {
@@ -369,9 +309,6 @@ function hash(value: string) {
   return createHash("sha256").update(value).digest("hex");
 }
 
-export const getParticipantFormProfile = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 30, maxInstances: 20}),
-  (request) => getParticipantFormProfileHandler(request));
 export const claimParticipantFormProfile = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 120, maxInstances: 20}),
   (request) => claimParticipantFormProfileHandler(request));
