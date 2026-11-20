@@ -5,6 +5,7 @@ import {
   CatchCardGrid,
   CatchCheckboxInput,
   CatchChip,
+  CatchConsentNote,
   CatchCtaSection,
   CatchFaqSection,
   CatchField,
@@ -211,14 +212,9 @@ function HomePlans({home}: {home: Home}) {
   );
 }
 
-/** The privacy policy beside a form's consent line, as the canvas's fine print. */
+/** A form's consent line with the privacy policy linked at its end (issue #2144). */
 function ConsentLine({privacy, text}: {privacy: string; text: string}) {
-  return (
-    <CatchStack direction="row" gap={8} railWidth="fit">
-      <CatchText tone="secondary" variant="body-meta">{text}</CatchText>
-      <CatchButton href="/privacy/" label={privacy} size="sm" variant="quiet" />
-    </CatchStack>
-  );
+  return <CatchConsentNote href="/privacy/" linkLabel={privacy} text={text} />;
 }
 
 /**
@@ -257,7 +253,7 @@ function CityAlertsBar({home}: {home: Home}) {
                     status={alerts.submitting ? "loading" : "idle"} type="submit" />
                 </CatchStack>
               </CatchStack>
-              <ConsentLine privacy={words.privacy} text={fill(words.consent, {city})} />
+              <ConsentLine privacy={words.privacy} text={words.consent} />
             </CatchStack>
           </Form>
         )}
@@ -281,8 +277,7 @@ function LaunchNoticeForm({home}: {home: Home}) {
               recipe="phone" required title={copy.notice.phone} value={notice.phone} />
             <CatchCheckboxInput label={fill(copy.notice.marketing, {city})} onChanged={notice.sending ? null : notice.setMarketing} value={notice.marketing} />
             <CatchButton fill label={copy.notice.action} onPressed={() => undefined} status={notice.sending ? "loading" : "idle"} type="submit" />
-            <CatchText tone="secondary" variant="body-small">{copy.notice.consent}</CatchText>
-            <CatchStack align="start"><CatchButton href="/privacy/" label={copy.notice.privacy} size="sm" variant="quiet" /></CatchStack>
+            <ConsentLine privacy={copy.notice.privacy} text={copy.notice.consent} />
           </CatchStack>
         </Form>
       )}
@@ -423,11 +418,7 @@ function AppNoticeForm({compact = false, home}: {compact?: boolean; home: Home})
             {compact ? <CatchStack collapseBelow="medium" direction="row" gap={8} railWidth="fit">{field}{submit}</CatchStack> : field}
             <CatchCheckboxInput label={fill(notify.newPlans, {city})} onChanged={notice.sending ? null : notice.setNewPlans} value={notice.newPlans} />
             {compact ? null : <CatchStack align="start">{submit}</CatchStack>}
-            {/* The consent line in the canvas's fine print, with the privacy policy across from it. */}
-            <CatchStack direction="row" gap={8} railWidth="fit">
-              <CatchText tone="secondary" variant="body-meta">{notify.consent}</CatchText>
-              <CatchButton href="/privacy/" label={notify.privacy} size="sm" variant="quiet" />
-            </CatchStack>
+            <ConsentLine privacy={notify.privacy} text={notify.consent} />
           </CatchStack>
         </Form>
       )}
@@ -508,6 +499,8 @@ function HostReferralForm({home}: {home: Home}) {
             <CatchStack collapseBelow="medium" direction="row" equal gap={8}>{field("fullName", words.name, "name")}{field("phone", words.phone)}</CatchStack>
             <CatchStack collapseBelow="medium" direction="row" equal gap={8}>{field("hostName", words.hostName, "off")}{field("hostLink", words.hostLink, "off")}</CatchStack>
             {field("relationship", words.relationship, "off")}
+            <CatchCheckboxInput label={fill(words.newPlans, {city: home.city.label})} onChanged={refer.submitting ? null : refer.setNewPlans}
+              value={refer.newPlans} />
             <CatchStack align="start">
               <CatchButton label={refer.sendProblem ? words.retry : words.action} onPressed={() => undefined} status={refer.submitting ? "loading" : "idle"} type="submit" />
             </CatchStack>

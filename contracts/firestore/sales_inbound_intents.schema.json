@@ -1451,6 +1451,30 @@
             }
           }
         },
+        "newPlansConsent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "purpose",
+            "version",
+            "decidedAt"
+          ],
+          "description": "A second consent from the form's unticked new-plans box, present only when it was ticked: new plans in the lead's city on WhatsApp, recorded only; nothing is sent until approved templates exist. city_alerts never carries it.",
+          "properties": {
+            "purpose": {
+              "enum": [
+                "cityNewPlans"
+              ]
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{1,40}$"
+            },
+            "decidedAt": {
+              "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+            }
+          }
+        },
         "sourcePage": {
           "type": "string",
           "pattern": "^/[^\\s?#]*$",

@@ -1,4 +1,4 @@
-import {CatchButton, CatchCtaSection, CatchField, CatchStack, CatchText, type CatchBandGround} from "@catch/web-ui";
+import {CatchButton, CatchConsentNote, CatchCtaSection, CatchField, CatchStack, CatchText, type CatchBandGround} from "@catch/web-ui";
 import {cityAlertsCopy as copy} from "@content/discovery/cityAlerts";
 import {interpolateContent as fill} from "@content/interpolate";
 import type {ReactNode} from "react";
@@ -28,10 +28,7 @@ function CityAlertsForm({alerts, city}: {alerts: CityAlertsController; city: str
                 title={copy.phone} value={alerts.phone} />
               <CatchButton label={copy.action} onPressed={() => undefined} status={alerts.sending ? "loading" : "idle"} type="submit" />
             </CatchStack>
-            <CatchStack direction="row" gap={8} railWidth="fit">
-              <CatchText tone="secondary" variant="body-meta">{fill(copy.consent, {city})}</CatchText>
-              <CatchButton href="/privacy/" label={copy.privacy} size="sm" variant="quiet" />
-            </CatchStack>
+            <CatchConsentNote href="/privacy/" linkLabel={copy.privacy} text={fill(copy.consent, {city})} />
           </CatchStack>
         </Form>
       )}

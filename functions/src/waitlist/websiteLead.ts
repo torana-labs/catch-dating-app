@@ -276,6 +276,11 @@ export async function handleWebsiteLead(
 
   const kind = normalized.requestKind as LeadKind;
   const lead = normalized.lead as LeadRequest;
+  // A ticked "also send me new plans" box is a second consent, for the
+  // lead's city; city alerts already ask for exactly that.
+  if (lead.newPlansConsent && kind === "city_alerts") {
+    return refused(400, "Please check your submission and try again.");
+  }
   const payloadKey = LEAD_PAYLOAD_KEYS[kind];
   const payload = lead[payloadKey] as Record<string, unknown>;
   const phone = lead.phone;
@@ -295,6 +300,10 @@ export async function handleWebsiteLead(
     phone,
     lead: {
       consent: {purpose: lead.consent.purpose, version: lead.consent.version},
+      ...(lead.newPlansConsent ? {newPlansConsent: {
+        purpose: lead.newPlansConsent.purpose,
+        version: lead.newPlansConsent.version,
+      }} : {}),
       sourcePage: lead.sourcePage,
       entry: lead.entry,
       ...(market ? {cityId: market.marketId,
@@ -395,6 +404,8 @@ export async function handleWebsiteLead(
       lead: {
         ...projection.lead,
         consent: {...projection.lead.consent, decidedAt: stamp},
+        ...(projection.lead.newPlansConsent ? {newPlansConsent: {
+          ...projection.lead.newPlansConsent, decidedAt: stamp}} : {}),
         ...(referralCredit ? {referralCredit} : {}),
       },
       createdAt: admin.firestore.FieldValue.serverTimestamp(),

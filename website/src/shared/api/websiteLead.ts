@@ -59,6 +59,8 @@ export type WebsiteLeadForm<Kind extends WebsiteLeadKind = WebsiteLeadKind> = {
     readonly kind: K;
     readonly phone: string;
     readonly consentVersion: string;
+    /** Set only when the form's unticked new-plans box was ticked: that box's wording, stored as its own cityNewPlans consent. */
+    readonly newPlansConsentVersion?: string;
     /** The page the form is on; any query or fragment is dropped. */
     readonly sourcePage: string;
     /** Which form on the page, such as the design's form id (rc-wa). */
@@ -99,8 +101,9 @@ function textOrAbsent(value: string | undefined): string | undefined {
 /**
  * The join-waitlist body for one lead form: the requestKind, the lead's
  * shared fields with the consent purpose its kind takes (cityNewPlans for
- * city alerts, leadFollowUp otherwise) and exactly one payload named for the
- * kind. The phone must already be E.164.
+ * city alerts, leadFollowUp otherwise), the ticked new-plans box as a second
+ * cityNewPlans consent, and exactly one payload named for the kind. The phone
+ * must already be E.164.
  */
 export function websiteLeadRequest(form: WebsiteLeadForm, phone: string, requestId: string): JoinWaitlistHTTPRequest {
   const fullName = textOrAbsent(form.fullName);
@@ -119,6 +122,8 @@ export function websiteLeadRequest(form: WebsiteLeadForm, phone: string, request
       requestId,
       phone,
       consent: {purpose: form.kind === "city_alerts" ? "cityNewPlans" : "leadFollowUp", version: form.consentVersion},
+      ...(form.newPlansConsentVersion && form.kind !== "city_alerts" ?
+        {newPlansConsent: {purpose: "cityNewPlans" as const, version: form.newPlansConsentVersion}} : {}),
       sourcePage: websiteLeadSourcePage(form.sourcePage),
       entry: form.entry,
       [payloadKeys[form.kind]]: form.answers,
