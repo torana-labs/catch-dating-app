@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/contexts/account/account.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_access_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_message_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
@@ -5,18 +7,37 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_planner_repository.g.dart';
 
 /// The planner's programme-wide reads and commands that are not setup:
-/// planned messages (programme moments) and how guest pages look. Reads are callables, like every
-/// programme read.
+/// planned messages (programme moments) and how guest pages look. The
+/// planned messages are a listener (#1339) on `organizerMomentViews`, gated
+/// on the communications duty (the owner holds it) so cached rows stop when
+/// it ends; the WhatsApp sender new messages send through stays on
+/// `listOrganizerMoments`, as sender connections are server-only.
 class ProgramPlannerRepository {
-  const ProgramPlannerRepository(this._functions);
+  const ProgramPlannerRepository(
+    this._functions,
+    this._firestore,
+    this._access,
+  );
+
+  /// A programme's planned messages; the callable read every one.
+  static const maxMessages = 200;
 
   final FirebaseFunctions _functions;
+  final FirebaseFirestore _firestore;
+  final ProgramAccessRepository _access;
+
+  static const _viewsContext = BackendErrorContext(
+    service: BackendService.firestore,
+    action: 'load the planned messages',
+    resource: 'organizerMomentViews',
+  );
 
   static Map<String, Object?> _scope(String programId) => {
     'kind': 'program',
@@ -24,14 +45,49 @@ class ProgramPlannerRepository {
   };
 
   /// The programme's planned messages with what each has sent and when it
-  /// runs next.
-  Future<ProgramPlannedMessages> listMessages(String programId) => _call(
+  /// runs next, live.
+  Stream<ProgramPlannedMessages> watchMessages(String programId, String uid) =>
+      _access.gated<ProgramPlannedMessages>(
+        programId,
+        uid,
+        needs: const {},
+        allows: (state) => state.view!.holdsDuty(
+          ProgramStaffDuty.communications,
+          state.evaluatedAt,
+        ),
+        scopeOf: (state) => 'messages',
+        data: (state) => withBackendErrorStream(
+          () => _firestore
+              .collection('organizerMomentViews')
+              .where('scopeKind', isEqualTo: 'program')
+              .where('programId', isEqualTo: programId)
+              .limit(maxMessages)
+              .snapshots()
+              .map(
+                (snapshot) => ProgramPlannedMessages.fromViews([
+                  for (final doc in snapshot.docs) doc.data(),
+                ]),
+              ),
+          context: _viewsContext,
+        ),
+      );
+
+  /// The organiser's active WhatsApp sender that new planned messages send
+  /// through, or null when none is active. Sender connections are
+  /// server-only, so this stays on `listOrganizerMoments`.
+  Future<String?> messageSender(String programId) => _call(
     name: 'listOrganizerMoments',
     payload: ListOrganizerMomentsCallableRequest(
       scope: _scope(programId),
     ).toJson(),
-    action: 'load the planned messages',
-    parse: ProgramPlannedMessages.fromCallableData,
+    action: 'load the message sender',
+    parse: (data) {
+      final sender = requiredMap(
+        data,
+        'planned messages',
+      )['senderConnectionId'];
+      return sender is String && sender.isNotEmpty ? sender : null;
+    },
   );
 
   /// Saves [draft] as a draft moment (or revises [momentId]) and returns
@@ -158,16 +214,35 @@ enum ProgramWebLinkKind {
   family,
 }
 
-// keepalive: one stateless callable facade shared by the planner screens.
+// keepalive: one stateless facade over account-free SDK singletons shared by
+// the planner screens.
 @Riverpod(keepAlive: true)
 ProgramPlannerRepository programPlannerRepository(Ref ref) =>
-    ProgramPlannerRepository(ref.watch(firebaseFunctionsProvider));
+    ProgramPlannerRepository(
+      ref.watch(firebaseFunctionsProvider),
+      ref.watch(firebaseFirestoreProvider),
+      ref.watch(programAccessRepositoryProvider),
+    );
 
+/// The programme's planned messages, live.
 @riverpod
-Future<ProgramPlannedMessages> programPlannedMessages(
+Stream<ProgramPlannedMessages> programPlannedMessages(
   Ref ref,
   String programId,
-) => ref.watch(programPlannerRepositoryProvider).listMessages(programId);
+) {
+  final uid = ref.watch(uidProvider).asData?.value;
+  if (uid == null || uid.isEmpty) {
+    throw const SignInRequiredException('view the planned messages');
+  }
+  return ref
+      .watch(programPlannerRepositoryProvider)
+      .watchMessages(programId, uid);
+}
+
+/// The WhatsApp sender new planned messages send through, or null.
+@riverpod
+Future<String?> programMessageSender(Ref ref, String programId) =>
+    ref.watch(programPlannerRepositoryProvider).messageSender(programId);
 
 /// The planner home: the organiser's programmes with their overview
 /// numbers, from the first `listOrganizerPrograms` page.

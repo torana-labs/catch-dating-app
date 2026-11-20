@@ -55,21 +55,26 @@ final class ProgramPlannerRepositoryProvider
 }
 
 String _$programPlannerRepositoryHash() =>
-    r'f44edc2037fa514c14faa6982d8755b932cbbe7b';
+    r'cbecaca63511aeb9c08b86a331943e93b68c2217';
+
+/// The programme's planned messages, live.
 
 @ProviderFor(programPlannedMessages)
 final programPlannedMessagesProvider = ProgramPlannedMessagesFamily._();
+
+/// The programme's planned messages, live.
 
 final class ProgramPlannedMessagesProvider
     extends
         $FunctionalProvider<
           AsyncValue<ProgramPlannedMessages>,
           ProgramPlannedMessages,
-          FutureOr<ProgramPlannedMessages>
+          Stream<ProgramPlannedMessages>
         >
     with
         $FutureModifier<ProgramPlannedMessages>,
-        $FutureProvider<ProgramPlannedMessages> {
+        $StreamProvider<ProgramPlannedMessages> {
+  /// The programme's planned messages, live.
   ProgramPlannedMessagesProvider._({
     required ProgramPlannedMessagesFamily super.from,
     required String super.argument,
@@ -93,12 +98,12 @@ final class ProgramPlannedMessagesProvider
 
   @$internal
   @override
-  $FutureProviderElement<ProgramPlannedMessages> $createElement(
+  $StreamProviderElement<ProgramPlannedMessages> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<ProgramPlannedMessages> create(Ref ref) {
+  Stream<ProgramPlannedMessages> create(Ref ref) {
     final argument = this.argument as String;
     return programPlannedMessages(ref, argument);
   }
@@ -116,10 +121,12 @@ final class ProgramPlannedMessagesProvider
 }
 
 String _$programPlannedMessagesHash() =>
-    r'2b831ebb8a2fc3e17615cdc0300cb8db3abe45bb';
+    r'0ecf1a7d0a95e7a6eccf1101b87126df4504a00d';
+
+/// The programme's planned messages, live.
 
 final class ProgramPlannedMessagesFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<ProgramPlannedMessages>, String> {
+    with $FunctionalFamilyOverride<Stream<ProgramPlannedMessages>, String> {
   ProgramPlannedMessagesFamily._()
     : super(
         retry: null,
@@ -129,11 +136,92 @@ final class ProgramPlannedMessagesFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// The programme's planned messages, live.
+
   ProgramPlannedMessagesProvider call(String programId) =>
       ProgramPlannedMessagesProvider._(argument: programId, from: this);
 
   @override
   String toString() => r'programPlannedMessagesProvider';
+}
+
+/// The WhatsApp sender new planned messages send through, or null.
+
+@ProviderFor(programMessageSender)
+final programMessageSenderProvider = ProgramMessageSenderFamily._();
+
+/// The WhatsApp sender new planned messages send through, or null.
+
+final class ProgramMessageSenderProvider
+    extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
+    with $FutureModifier<String?>, $FutureProvider<String?> {
+  /// The WhatsApp sender new planned messages send through, or null.
+  ProgramMessageSenderProvider._({
+    required ProgramMessageSenderFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programMessageSenderProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programMessageSenderHash();
+
+  @override
+  String toString() {
+    return r'programMessageSenderProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String?> create(Ref ref) {
+    final argument = this.argument as String;
+    return programMessageSender(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramMessageSenderProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programMessageSenderHash() =>
+    r'1d182525b2e71dc099c492e20c47d84fb2509272';
+
+/// The WhatsApp sender new planned messages send through, or null.
+
+final class ProgramMessageSenderFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<String?>, String> {
+  ProgramMessageSenderFamily._()
+    : super(
+        retry: null,
+        name: r'programMessageSenderProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The WhatsApp sender new planned messages send through, or null.
+
+  ProgramMessageSenderProvider call(String programId) =>
+      ProgramMessageSenderProvider._(argument: programId, from: this);
+
+  @override
+  String toString() => r'programMessageSenderProvider';
 }
 
 /// The planner home: the organiser's programmes with their overview

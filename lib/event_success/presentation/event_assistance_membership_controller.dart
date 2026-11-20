@@ -6,7 +6,6 @@ import 'package:catch_dating_app/contexts/live/data/event_assistance_membership_
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_host_guests_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_membership_provider.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
@@ -275,8 +274,7 @@ class EventAssistanceMembershipController
   }
 
   /// The membership view is a listener that delivers every write; it is
-  /// restarted only after it ended in an error. The host guest list is read
-  /// again.
+  /// restarted only after it ended in an error.
   void _refresh(AuthenticatedSession account) {
     if (ref
         .read(
@@ -287,7 +285,6 @@ class EventAssistanceMembershipController
         eventAssistanceMembershipForAccountProvider(scope, account: account),
       );
     }
-    ref.invalidate(eventAssistanceHostGuestsForAccountProvider);
   }
 
   void _publish(MembershipForm form) {

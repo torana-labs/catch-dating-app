@@ -37,7 +37,6 @@ part 'program_work_repository.g.dart';
 part 'program_work_repository_door.dart';
 part 'program_work_repository_live.dart';
 part 'program_work_repository_reports.dart';
-part 'program_work_repository_rooms.dart';
 
 /// Operational program surface: work access, arrivals roster, transport
 /// plan, readiness claims, dispatch, trip lifecycle and hotel inbound.
@@ -242,22 +241,6 @@ class ProgramWorkRepository {
     reason: reason,
     clientOperationId: clientOperationId,
     errorAction: 'void the trip',
-  );
-
-  /// The hotel desk's room board: block capacity, live stays, and routed
-  /// guests still needing a room — all scoped to `hotelId`.
-  Future<ProgramHotelRooms> getHotelRooms({
-    required String programId,
-    required String hotelId,
-  }) => _call(
-    name: 'getProgramHotelRooms',
-    authorityScopedRead: true,
-    payload: GetProgramHotelRoomsCallableRequest(
-      programId: programId,
-      hotelId: hotelId,
-    ).toJson(),
-    action: 'load the room board',
-    parse: ProgramHotelRooms.fromCallableData,
   );
 
   /// Assign or update one guest's stay — room block, room label, lifecycle

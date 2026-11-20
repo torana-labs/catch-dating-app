@@ -9,14 +9,14 @@ part of 'programme_rooms_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Rooms at [hotelId] (or the programme's first hotel): the programme and
-/// the hotel's room board, both callables.
+/// the hotel's room board (a listener on its view).
 
 @ProviderFor(hostProgrammeRoomsController)
 final hostProgrammeRoomsControllerProvider =
     HostProgrammeRoomsControllerFamily._();
 
 /// Rooms at [hotelId] (or the programme's first hotel): the programme and
-/// the hotel's room board, both callables.
+/// the hotel's room board (a listener on its view).
 
 final class HostProgrammeRoomsControllerProvider
     extends
@@ -27,7 +27,7 @@ final class HostProgrammeRoomsControllerProvider
         >
     with $Provider<HostProgrammeRoomsState> {
   /// Rooms at [hotelId] (or the programme's first hotel): the programme and
-  /// the hotel's room board, both callables.
+  /// the hotel's room board (a listener on its view).
   HostProgrammeRoomsControllerProvider._({
     required HostProgrammeRoomsControllerFamily super.from,
     required (String, String?) super.argument,
@@ -85,7 +85,7 @@ String _$hostProgrammeRoomsControllerHash() =>
     r'8ec8676fd8372e95388270b695b537fc6dfd68b6';
 
 /// Rooms at [hotelId] (or the programme's first hotel): the programme and
-/// the hotel's room board, both callables.
+/// the hotel's room board (a listener on its view).
 
 final class HostProgrammeRoomsControllerFamily extends $Family
     with $FunctionalFamilyOverride<HostProgrammeRoomsState, (String, String?)> {
@@ -99,7 +99,7 @@ final class HostProgrammeRoomsControllerFamily extends $Family
       );
 
   /// Rooms at [hotelId] (or the programme's first hotel): the programme and
-  /// the hotel's room board, both callables.
+  /// the hotel's room board (a listener on its view).
 
   HostProgrammeRoomsControllerProvider call(
     String programId,

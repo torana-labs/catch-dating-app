@@ -8,21 +8,24 @@ part of 'person_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// One person, from the existing contact record read with its history:
-/// facts, revenue, nights, tags and notes.
+/// One person from three listeners: the directory row (name, tags,
+/// revision), the contact detail read model (attendance, revenue, nights)
+/// and the team's newest note. A write reaches the page through them.
 
 @ProviderFor(hostPersonController)
 final hostPersonControllerProvider = HostPersonControllerFamily._();
 
-/// One person, from the existing contact record read with its history:
-/// facts, revenue, nights, tags and notes.
+/// One person from three listeners: the directory row (name, tags,
+/// revision), the contact detail read model (attendance, revenue, nights)
+/// and the team's newest note. A write reaches the page through them.
 
 final class HostPersonControllerProvider
     extends
         $FunctionalProvider<HostPersonState, HostPersonState, HostPersonState>
     with $Provider<HostPersonState> {
-  /// One person, from the existing contact record read with its history:
-  /// facts, revenue, nights, tags and notes.
+  /// One person from three listeners: the directory row (name, tags,
+  /// revision), the contact detail read model (attendance, revenue, nights)
+  /// and the team's newest note. A write reaches the page through them.
   HostPersonControllerProvider._({
     required HostPersonControllerFamily super.from,
     required (String, String) super.argument,
@@ -75,10 +78,11 @@ final class HostPersonControllerProvider
 }
 
 String _$hostPersonControllerHash() =>
-    r'192b392fae2f674bbbeb10cdf8ba6cde7db0e554';
+    r'2be681111ceb2ca01505cbc02e1ba48f510e780d';
 
-/// One person, from the existing contact record read with its history:
-/// facts, revenue, nights, tags and notes.
+/// One person from three listeners: the directory row (name, tags,
+/// revision), the contact detail read model (attendance, revenue, nights)
+/// and the team's newest note. A write reaches the page through them.
 
 final class HostPersonControllerFamily extends $Family
     with $FunctionalFamilyOverride<HostPersonState, (String, String)> {
@@ -91,8 +95,9 @@ final class HostPersonControllerFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One person, from the existing contact record read with its history:
-  /// facts, revenue, nights, tags and notes.
+  /// One person from three listeners: the directory row (name, tags,
+  /// revision), the contact detail read model (attendance, revenue, nights)
+  /// and the team's newest note. A write reaches the page through them.
 
   HostPersonControllerProvider call(String organizerId, String contactId) =>
       HostPersonControllerProvider._(

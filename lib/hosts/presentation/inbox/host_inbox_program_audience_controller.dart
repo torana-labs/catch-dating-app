@@ -1,4 +1,6 @@
+import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/organizer_program_views.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -39,22 +41,36 @@ class HostInboxProgramAudiencePages extends _$HostInboxProgramAudiencePages {
     _generation++;
     final repository = ref.watch(programSetupRepositoryProvider);
     // The latest-50 program menu is a navigation convenience, not authority.
-    // Fetch this exact program before requesting or displaying any guest page.
-    final detail = await repository.getProgram(programId);
-    if (detail.program.programId != programId ||
-        detail.program.organizerId != organizerId) {
+    // Read this exact programme's view (rules admit only its setup readers)
+    // before requesting or displaying any guest page. Only its identity and
+    // title are watched, so a setup-list change does not restart the pages.
+    final identity = await ref.watch(
+      organizerProgramViewStreamProvider(programId).selectAsync(
+        (view) => (
+          programId: view['programId'],
+          organizerId: view['organizerId'],
+          title: view['title'],
+          kind: view['kind'],
+          status: view['status'],
+          revision: view['revision'],
+        ),
+      ),
+    );
+    if (identity.programId != programId ||
+        identity.organizerId != organizerId) {
       throw StateError('Program is unavailable for this organizer.');
     }
+    final program = organizerProgramSummaryFromView({
+      'programId': identity.programId,
+      'title': identity.title,
+      'kind': identity.kind,
+      'status': identity.status,
+      'revision': identity.revision,
+    });
     final page = await repository.listGuests(programId);
     _checkPage(page);
     return HostInboxProgramAudiencePageState(
-      program: OrganizerProgramSummary(
-        programId: detail.program.programId,
-        title: detail.program.title,
-        kind: detail.program.kind,
-        status: detail.program.status,
-        revision: detail.program.revision,
-      ),
+      program: program,
       guestContactsById: Map.unmodifiable({
         for (final guest in page.guests) guest.guestId: guest.contactId,
       }),

@@ -68,8 +68,8 @@ class _PreviewMoments extends OrganizerMomentsController {
   final OrganizerMomentsState _state;
 
   @override
-  Future<OrganizerMomentsState> build(OrganizerMomentScope scope) async =>
-      _state;
+  Stream<OrganizerMomentsState> build(OrganizerMomentScope scope) =>
+      Stream.value(_state);
 }
 
 List<Override> _momentsOverrides(OrganizerMomentsState state) => [

@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign.dart
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_automation_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summary_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
@@ -195,35 +196,105 @@ void main() {
   );
 
   test(
-    'rule pause and history pagination preserve other run receipts',
+    'rules and run history are live views; a switch shows before its view',
     () async {
       final forms = _Forms();
+      final db = FakeFirebaseFirestore();
+      await _seedRule(db, _rule());
+      for (var index = 0; index < 51; index++) {
+        await db
+            .collection('hostFormAutomationRunViews')
+            .doc('run-$index')
+            .set(_runView('run-$index', createdAtMillis: 1000 - index));
+      }
       final container = ProviderContainer(
-        overrides: [hostFormsRepositoryProvider.overrideWithValue(forms)],
+        overrides: [
+          hostFormsRepositoryProvider.overrideWithValue(forms),
+          hostFormAutomationReadsProvider.overrideWithValue(
+            HostFormAutomationReads(_reader(db)),
+          ),
+        ],
       );
       addTearDown(container.dispose);
       final provider = hostFormAutomationsControllerProvider('org', null);
       final subscription = container.listen(provider, (_, _) {});
       addTearDown(subscription.close);
-      await container.read(provider.future);
+      var state = await container.read(provider.future);
+      expect(state.rules.single.enabled, isTrue);
+      expect(state.runs, hasLength(50));
+      expect(state.runs.first.ruleName, 'Welcome');
+      expect(state.canLoadMore, isTrue);
       expect(
         await container.read(provider.notifier).setEnabled(_rule(), false),
         isTrue,
       );
+      // The command's newer revision shows until the view reaches it.
       expect(
         container.read(provider).requireValue.rules.single.enabled,
         isFalse,
       );
-      await container.read(provider.notifier).loadMore();
-      expect(forms.cursors, [null, 'next']);
-      expect(container.read(provider).requireValue.runs.map((r) => r.runId), [
-        'first',
-        'second',
-      ]);
-      expect(container.read(provider).requireValue.canLoadMore, isFalse);
+      container.read(provider.notifier).loadMore();
+      await pumpEventQueue();
+      state = await container.read(provider.future);
+      expect(state.runs, hasLength(51));
+      expect(state.runs.last.runId, 'run-50');
+      expect(state.canLoadMore, isFalse);
+      // The view catches up with the switch and replaces the saved rule.
+      await _seedRule(db, _rule(enabled: false, revision: 4, name: 'Paused'));
+      await pumpEventQueue();
+      state = await container.read(provider.future);
+      expect(state.rules.single.name, 'Paused');
+      expect(state.rules.single.enabled, isFalse);
     },
   );
 }
+
+Future<void> _seedRule(FakeFirebaseFirestore db, HostFormAutomationRule rule) =>
+    db.collection('hostFormAutomationRuleViews').doc(rule.ruleId).set({
+      'organizerId': rule.organizerId,
+      'ruleId': rule.ruleId,
+      'formId': rule.formId,
+      'version': 1,
+      'row': {
+        'ruleId': rule.ruleId,
+        'organizerId': rule.organizerId,
+        'formId': rule.formId,
+        'name': rule.name,
+        'enabled': rule.enabled,
+        'revision': rule.revision,
+        'trigger': rule.trigger.name,
+        'triggerEventId': null,
+        'delayMinutes': 0,
+        'condition': null,
+        'actions': <Object?>[],
+        'updatedAtMillis': rule.updatedAt.millisecondsSinceEpoch,
+      },
+    });
+
+Map<String, Object?> _runView(String id, {required int createdAtMillis}) => {
+  'organizerId': 'org',
+  'runId': id,
+  'ruleId': 'rule',
+  'formId': null,
+  'createdAtMillis': createdAtMillis,
+  'ruleName': 'Welcome',
+  'version': 1,
+  'row': {
+    'runId': id,
+    'ruleId': 'rule',
+    'ruleRevision': 3,
+    'responseId': null,
+    'sourceId': null,
+    'dueAtMillis': null,
+    'eventKind': 'applicationAccepted',
+    'status': 'succeeded',
+    'attemptCount': 1,
+    'actionResults': <Object?>[],
+    'errorMessage': null,
+    'createdAtMillis': createdAtMillis,
+    'completedAtMillis': createdAtMillis,
+  },
+};
 
 Future<void> _pump(
   WidgetTester tester,
@@ -238,6 +309,9 @@ Future<void> _pump(
       retry: (_, _) => null,
       overrides: [
         hostFormsRepositoryProvider.overrideWithValue(forms),
+        hostFormAutomationReadsProvider.overrideWithValue(
+          HostFormAutomationReads(_reader()),
+        ),
         hostCampaignRepositoryProvider.overrideWithValue(crm),
         hostSavedAudienceFilterOptionsProvider('org').overrideWith(
           (ref) async => const HostSavedAudienceFilterOptions.empty(),
@@ -281,7 +355,6 @@ class _Forms extends HostFormsRepository {
         responses: HostResponseSummaryReads(_reader()),
       );
   final requests = <String>[];
-  final cursors = <String?>[];
   bool failOnce = false;
   Future<void>? saveWait;
   HostFormAutomationRule? last;
@@ -330,28 +403,12 @@ class _Forms extends HostFormsRepository {
   }
 
   @override
-  Future<HostFormAutomationPage> listAutomations({
-    required String organizerId,
-    required String? formId,
-    String? ruleId,
-    String? cursor,
-    int limit = 50,
-  }) async {
-    cursors.add(cursor);
-    return HostFormAutomationPage(
-      rules: [last ?? _rule()],
-      runs: [_run(cursor == null ? 'first' : 'second')],
-      nextCursor: cursor == null ? 'next' : null,
-    );
-  }
-
-  @override
   Future<HostFormAutomationRule> setAutomationEnabled({
     required String organizerId,
     required String ruleId,
     required int expectedRevision,
     required bool enabled,
-  }) async => last = _rule(enabled: enabled);
+  }) async => last = _rule(enabled: enabled, revision: expectedRevision + 1);
 }
 
 class _Crm extends HostCampaignRepository {
@@ -384,6 +441,8 @@ class _Crm extends HostCampaignRepository {
 
 HostFormAutomationRule _rule({
   bool enabled = true,
+  int revision = 3,
+  String name = 'Welcome',
   HostFormAutomationTrigger trigger =
       HostFormAutomationTrigger.applicationAccepted,
   List<HostFormAutomationAction> actions = const [],
@@ -391,26 +450,13 @@ HostFormAutomationRule _rule({
   ruleId: 'rule',
   organizerId: 'org',
   formId: null,
-  name: 'Welcome',
+  name: name,
   enabled: enabled,
-  revision: 3,
+  revision: revision,
   trigger: trigger,
   condition: null,
   actions: actions,
   updatedAt: DateTime(2026, 9, 3),
-);
-HostFormAutomationRun _run(String id) => HostFormAutomationRun(
-  runId: id,
-  ruleId: 'rule',
-  ruleRevision: 3,
-  responseId: null,
-  eventKind: 'applicationAccepted',
-  status: HostFormAutomationRunStatus.pending,
-  attemptCount: 0,
-  actionResults: const [],
-  errorMessage: null,
-  createdAt: DateTime(2026, 9, 3),
-  completedAt: null,
 );
 
 Finder _namedInput(String title) => find.descendant(
@@ -457,5 +503,5 @@ class _DraftPager implements LivePager<HostCampaignSendSummary> {
   }
 }
 
-HostSummaryReader _reader() =>
-    HostSummaryReader(FakeFirebaseFirestore(), actorId: () => 'host');
+HostSummaryReader _reader([FakeFirebaseFirestore? db]) =>
+    HostSummaryReader(db ?? FakeFirebaseFirestore(), actorId: () => 'host');

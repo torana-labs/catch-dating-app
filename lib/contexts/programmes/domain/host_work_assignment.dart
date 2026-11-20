@@ -1,10 +1,11 @@
-/// Server-resolved staff assignments for the unified host work shell.
+/// The caller's staff assignments for the unified host work shell.
 ///
-/// `listMyHostAssignments` is the authority: it returns the caller's live
-/// grants across event and program scopes together with the shell entry the
-/// app should render. The client parses destinations and duties into typed
-/// values but never derives access locally — every destination re-checks
-/// server-side authorization.
+/// They are read from the account's own `hostAssignmentViews` rows (#1339),
+/// one per programme grant, event grant and team membership, which a trigger
+/// keeps with the facts `listMyHostAssignments` filtered on. The phone keeps
+/// the rows live at its clock (approval start, grant and duty expiry) and
+/// works out the shell entry the callable decided. The list grants nothing:
+/// every destination re-checks its own authorization.
 library;
 
 import 'package:meta/meta.dart';
@@ -30,33 +31,6 @@ enum HostWorkDuty {
   stakeholderViewer,
   eventLead,
 }
-
-/// A restricted work-shell destination in canonical bottom-bar order.
-enum HostWorkDestination {
-  arrivals,
-  dispatch,
-  inbound,
-  rooms,
-  nowNext,
-  door,
-  walkIns,
-  attention,
-  guests,
-  rsvpInbox,
-  imports,
-  inbox,
-  moments,
-  trips,
-  exceptions,
-  export,
-  overview,
-  team,
-}
-
-/// How the per-assignment shell renders: a single focused task, a bottom
-/// bar of up to three destinations plus overflow, the program-locked
-/// coordinator workspace, or nothing reachable.
-enum HostWorkShellMode { task, tabs, programWorkspace, none }
 
 /// The app shell the caller should land in. Managers always get
 /// [managerShell] even when they also hold staff assignments; staff get
@@ -94,9 +68,8 @@ class HostWorkGrantedDuty {
   final Set<String> functionIds;
 }
 
-/// One staff assignment resolved server-side: the grant's canonical duties
-/// plus the derived shell destination set. Only live, unexpired grants are
-/// returned unless the caller asks for history.
+/// One live staff assignment: the grant's canonical duties that are live
+/// now, and when access ends (the grant or its soonest live duty).
 @immutable
 class HostWorkAssignment {
   const HostWorkAssignment({
@@ -107,38 +80,8 @@ class HostWorkAssignment {
     required this.subtitle,
     required this.organizerName,
     required this.duties,
-    required this.destinations,
-    required this.overflowDestinations,
-    required this.shellMode,
     required this.grantExpiresAt,
   });
-
-  factory HostWorkAssignment.fromMap(Map<Object?, Object?> map) =>
-      HostWorkAssignment(
-        kind: _requiredEnum(
-          HostWorkScopeKind.values,
-          _requiredString(map, 'kind'),
-        ),
-        scopeId: _requiredString(map, 'scopeId'),
-        organizerId: _requiredString(map, 'organizerId'),
-        title: _requiredString(map, 'title'),
-        subtitle: map['subtitle'] as String?,
-        organizerName: _requiredString(map, 'organizerName'),
-        duties: _mapList(
-          map['duties'],
-          'duties',
-        ).map(HostWorkGrantedDuty.fromMap).toList(growable: false),
-        destinations: _destinationList(map['destinations'], 'destinations'),
-        overflowDestinations: _destinationList(
-          map['overflowDestinations'],
-          'overflowDestinations',
-        ),
-        shellMode: _requiredEnum(
-          HostWorkShellMode.values,
-          _requiredString(map, 'shellMode'),
-        ),
-        grantExpiresAt: _nullableDateTime(map['grantExpiresAtMillis']),
-      );
 
   final HostWorkScopeKind kind;
 
@@ -149,53 +92,128 @@ class HostWorkAssignment {
   final String? subtitle;
   final String organizerName;
   final List<HostWorkGrantedDuty> duties;
-
-  /// Resolved destinations in canonical order; the shell renders the first
-  /// three plus an overflow entry.
-  final List<HostWorkDestination> destinations;
-
-  /// Destinations beyond the first three, for the overflow menu.
-  final List<HostWorkDestination> overflowDestinations;
-  final HostWorkShellMode shellMode;
   final DateTime? grantExpiresAt;
 
   bool get isProgram => kind == HostWorkScopeKind.program;
 }
 
-/// The callable response: the caller's assignments and the shell entry they
-/// should land in.
+/// The caller's live assignments and the shell entry they land in.
 @immutable
 class HostWorkAssignments {
   const HostWorkAssignments({
     required this.assignments,
     required this.shellEntry,
+    this.nextChangeAt,
   });
 
-  factory HostWorkAssignments.fromCallableData(Object? value) {
-    final map = _requiredMap(value);
+  /// The account's assignments at [now] from its `hostAssignmentViews` rows,
+  /// as `listMyHostAssignments` resolved them: a programme or event row is
+  /// live while it is active, its approval has begun, its grant has not
+  /// expired and one of its duties is live; only the live duties are listed,
+  /// and access ends at the grant's expiry or the soonest live duty's. Events
+  /// sort before programmes, then by id. An active team membership lands the
+  /// account in the manager shell; otherwise one live assignment lands it in
+  /// the work shell. [nextChangeAt] is the next instant the list changes.
+  factory HostWorkAssignments.fromViews(
+    List<Map<Object?, Object?>> rows,
+    DateTime now,
+  ) {
+    final at = now.millisecondsSinceEpoch;
+    var manager = false;
+    int? next;
+    void wake(int? instant) {
+      if (instant != null &&
+          instant > at &&
+          (next == null || instant < next!)) {
+        next = instant;
+      }
+    }
+
+    final assignments = <HostWorkAssignment>[];
+    for (final row in rows) {
+      if (row['status'] != 'active') continue;
+      final kind = row['kind'];
+      if (kind == 'team') {
+        manager = true;
+        continue;
+      }
+      final scopeKind = _enumByName(HostWorkScopeKind.values, '$kind');
+      if (scopeKind == null) continue;
+      final activeFrom = row['activeFromMillis'];
+      if (activeFrom is int && activeFrom > at) {
+        wake(activeFrom);
+        continue;
+      }
+      final grantExpiry = row['grantExpiresAtMillis'];
+      if (grantExpiry is int && grantExpiry <= at) continue;
+      final live = <(HostWorkGrantedDuty, int)>[];
+      for (final duty in _mapList(row['duties'], 'duties')) {
+        final expiry = duty['expiresAtMillis'];
+        if (expiry is! int || expiry <= at) continue;
+        final parsed = _dutyOrNull(duty);
+        if (parsed != null) live.add((parsed, expiry));
+      }
+      if (live.isEmpty) continue;
+      var endsAt = grantExpiry is int ? grantExpiry : live.first.$2;
+      for (final (_, expiry) in live) {
+        if (expiry < endsAt) endsAt = expiry;
+        wake(expiry);
+      }
+      wake(grantExpiry is int ? grantExpiry : null);
+      assignments.add(
+        HostWorkAssignment(
+          kind: scopeKind,
+          scopeId: _requiredString(row, 'scopeId'),
+          organizerId: _requiredString(row, 'organizerId'),
+          title: _requiredString(row, 'title'),
+          subtitle: null,
+          organizerName: _requiredString(row, 'organizerName'),
+          duties: [for (final (duty, _) in live) duty],
+          grantExpiresAt: DateTime.fromMillisecondsSinceEpoch(
+            endsAt,
+            isUtc: true,
+          ),
+        ),
+      );
+    }
+    assignments.sort((a, b) {
+      final byKind = a.kind.name.compareTo(b.kind.name);
+      return byKind != 0 ? byKind : a.scopeId.compareTo(b.scopeId);
+    });
     return HostWorkAssignments(
-      assignments: _mapList(
-        map['assignments'],
-        'assignments',
-      ).map(HostWorkAssignment.fromMap).toList(growable: false),
-      shellEntry: _requiredEnum(
-        HostWorkShellEntry.values,
-        _requiredString(map, 'shellEntry'),
-      ),
+      assignments: List.unmodifiable(assignments),
+      shellEntry: manager
+          ? HostWorkShellEntry.managerShell
+          : assignments.isNotEmpty
+          ? HostWorkShellEntry.workShell
+          : HostWorkShellEntry.none,
+      nextChangeAt: switch (next) {
+        final instant? => DateTime.fromMillisecondsSinceEpoch(
+          instant,
+          isUtc: true,
+        ),
+        null => null,
+      },
     );
   }
 
   final List<HostWorkAssignment> assignments;
   final HostWorkShellEntry shellEntry;
 
+  /// When an approval begins or a grant or duty ends, so the list is
+  /// rebuilt then without a new snapshot.
+  final DateTime? nextChangeAt;
+
   bool get isEmpty => assignments.isEmpty;
 }
 
-List<HostWorkDestination> _destinationList(Object? value, String field) {
-  return _stringList(value, field)
-      .map((name) => _enumByName(HostWorkDestination.values, name))
-      .nonNulls
-      .toList(growable: false);
+/// A duty a newer server may name that this build does not know is skipped.
+HostWorkGrantedDuty? _dutyOrNull(Map<Object?, Object?> map) {
+  final name = map['duty'];
+  if (name is! String || _enumByName(HostWorkDuty.values, name) == null) {
+    return null;
+  }
+  return HostWorkGrantedDuty.fromMap(map);
 }
 
 Map<Object?, Object?> _requiredMap(Object? value) {
@@ -216,25 +234,9 @@ List<Map<Object?, Object?>> _mapList(Object? value, String field) {
   return value.map(_requiredMap).toList(growable: false);
 }
 
-List<String> _stringList(Object? value, String field) {
-  if (value == null) return const [];
-  if (value is! List) {
-    throw FormatException('Missing host work assignment field "$field".');
-  }
-  return value.whereType<String>().toList(growable: false);
-}
-
 Set<String> _stringSet(Object? value) {
   if (value is! List) return const {};
   return value.whereType<String>().toSet();
-}
-
-DateTime? _nullableDateTime(Object? value) {
-  if (value == null) return null;
-  if (value is! int) {
-    throw const FormatException('Invalid host work assignment timestamp.');
-  }
-  return DateTime.fromMillisecondsSinceEpoch(value, isUtc: true);
 }
 
 T? _enumByName<T extends Enum>(List<T> values, String name) {
@@ -242,12 +244,4 @@ T? _enumByName<T extends Enum>(List<T> values, String name) {
     if (value.name == name) return value;
   }
   return null;
-}
-
-T _requiredEnum<T extends Enum>(List<T> values, String name) {
-  final value = _enumByName(values, name);
-  if (value == null) {
-    throw FormatException('Unknown host work assignment value "$name".');
-  }
-  return value;
 }

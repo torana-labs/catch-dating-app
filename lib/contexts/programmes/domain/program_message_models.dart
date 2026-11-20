@@ -26,7 +26,7 @@ enum ProgramMessageTemplate {
 }
 
 /// One programme moment as the planner board shows it: the moment's own
-/// fields plus the read-time plan summary from `listOrganizerMoments`.
+/// fields plus its plan summary from `organizerMomentViews`.
 class ProgramPlannedMessage {
   const ProgramPlannedMessage({
     required this.momentId,
@@ -66,13 +66,9 @@ class ProgramPlannedMessage {
   DateTime? get when => nextRunAt ?? scheduledAt;
 }
 
-/// A programme's planned messages, soonest first, and the WhatsApp sender
-/// new ones send through.
+/// A programme's planned messages, soonest first.
 class ProgramPlannedMessages {
-  const ProgramPlannedMessages({
-    required this.messages,
-    required this.senderConnectionId,
-  });
+  const ProgramPlannedMessages({required this.messages});
 
   /// Parses a `listOrganizerMoments` response for a programme scope. An
   /// older server without `plans` reads every moment as planned.
@@ -85,10 +81,55 @@ class ProgramPlannedMessages {
               : mapList(map['plans'], 'plans'))
         requiredString(plan, 'momentId'): plan,
     };
-    final messages = [
+    return ProgramPlannedMessages._sorted([
       for (final moment in mapList(map['moments'], 'moments'))
         _message(moment, plans[requiredString(moment, 'momentId')]),
-    ];
+    ]);
+  }
+
+  /// The programme's `organizerMomentViews` rows: each moment and its plan
+  /// summary. The board state that compares moments is worked out here, as
+  /// `listOrganizerMoments` did: the armed moment with the soonest planned
+  /// run is next (ties by id), an armed moment with sends and nothing
+  /// planned has sent, and a done moment that sent anything has sent.
+  factory ProgramPlannedMessages.fromViews(List<Map<Object?, Object?>> rows) {
+    String? nextId;
+    int? nextAt;
+    for (final row in rows) {
+      final moment = requiredMap(row['moment'], 'moment');
+      final due = requiredMap(row['plan'], 'plan')['nextRunAtMillis'];
+      final id = requiredString(moment, 'momentId');
+      if (moment['status'] != 'armed' || due is! int) continue;
+      if (nextAt == null ||
+          due < nextAt ||
+          (due == nextAt && id.compareTo(nextId!) < 0)) {
+        nextAt = due;
+        nextId = id;
+      }
+    }
+    return ProgramPlannedMessages._sorted([
+      for (final row in rows)
+        () {
+          final moment = requiredMap(row['moment'], 'moment');
+          final plan = requiredMap(row['plan'], 'plan');
+          final id = requiredString(moment, 'momentId');
+          final sent = requiredInt(plan, 'sentCount');
+          final due = plan['nextRunAtMillis'];
+          final state = switch (moment['status']) {
+            'draft' => ProgramMessageState.draft,
+            'paused' => ProgramMessageState.paused,
+            'done' =>
+              sent > 0 ? ProgramMessageState.sent : ProgramMessageState.done,
+            _ when id == nextId => ProgramMessageState.next,
+            _ when due == null && sent > 0 => ProgramMessageState.sent,
+            _ => ProgramMessageState.planned,
+          };
+          return _message(moment, {...plan, 'state': state.name});
+        }(),
+    ]);
+  }
+
+  factory ProgramPlannedMessages._sorted(List<ProgramPlannedMessage> messages) {
     messages.sort((a, b) {
       final left = a.when;
       final right = b.when;
@@ -97,15 +138,10 @@ class ProgramPlannedMessages {
       }
       return left.compareTo(right);
     });
-    final sender = map['senderConnectionId'];
-    return ProgramPlannedMessages(
-      messages: messages,
-      senderConnectionId: sender is String && sender.isNotEmpty ? sender : null,
-    );
+    return ProgramPlannedMessages(messages: List.unmodifiable(messages));
   }
 
   final List<ProgramPlannedMessage> messages;
-  final String? senderConnectionId;
 
   /// How many are still to go out.
   int get plannedCount => messages

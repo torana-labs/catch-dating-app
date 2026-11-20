@@ -117,7 +117,7 @@ void main() {
         overrides: [
           hostOrganizerBillsProvider(
             'lantern',
-          ).overrideWith((ref) async => [_bill()]),
+          ).overrideWith((ref) => Stream.value([_bill()])),
         ],
         child: MaterialApp(
           theme: AppTheme.light,

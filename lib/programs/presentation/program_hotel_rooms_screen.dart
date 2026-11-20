@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_room_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_stay_actions_controller.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -14,9 +14,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The hotel desk's room board for one property: routed guests still needing
 /// a room, every stay with its block/room/status, and the reserved blocks
-/// with live capacity. Mutations go through `upsertProgramStay` — the server
+/// with live capacity, read through a listener. Mutations go through
+/// `upsertProgramStay` with the stay revision the board carries; the server
 /// re-counts block occupancy inside the transaction, so a stale board can
-/// never overbook.
+/// never overbook, and the board shows the result when its view is rewritten.
 class ProgramHotelRoomsScreen extends ConsumerWidget {
   const ProgramHotelRoomsScreen({
     super.key,
@@ -26,6 +27,9 @@ class ProgramHotelRoomsScreen extends ConsumerWidget {
 
   final String programId;
   final String hotelId;
+
+  /// The board is a listener and delivers a saved stay itself.
+  static void _boardIsLive() {}
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -100,9 +104,7 @@ class ProgramHotelRoomsScreen extends ConsumerWidget {
                               key: ValueKey(guest.guestId),
                               guest: guest,
                               rooms: rooms,
-                              onChanged: () => ref.invalidate(
-                                programHotelRoomsProvider(programId, hotelId),
-                              ),
+                              onChanged: _boardIsLive,
                             ),
                         ],
                       ),
@@ -125,9 +127,7 @@ class ProgramHotelRoomsScreen extends ConsumerWidget {
                               key: ValueKey(stay.stayId),
                               stay: stay,
                               rooms: rooms,
-                              onChanged: () => ref.invalidate(
-                                programHotelRoomsProvider(programId, hotelId),
-                              ),
+                              onChanged: _boardIsLive,
                             ),
                         ],
                       ),

@@ -534,8 +534,8 @@
         {
           "id": "applications",
           "file": "lib/hosts/presentation/applications/host_applications_controller.dart",
-          "symbol": "HostApplicationsDirectoryController",
-          "role": "Organizer application intake queue."
+          "symbol": "HostApplicationsController",
+          "role": "Application review and community membership decisions."
         }
       ],
       "additionalDataContracts": [

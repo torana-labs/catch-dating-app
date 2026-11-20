@@ -188,7 +188,6 @@ Future<void> addHostPersonTag(
             labels: labels,
           ),
     );
-    refreshHostPerson(ref, detail.organizerId, detail.contactId);
   } on Object {
     // The mutation is watched for errors, which the screen shows.
   }
@@ -224,7 +223,6 @@ Future<void> addHostPersonNote(
             body: body,
           ),
     );
-    refreshHostPerson(ref, detail.organizerId, detail.contactId);
   } on Object {
     // The mutation is watched for errors, which the screen shows.
   }

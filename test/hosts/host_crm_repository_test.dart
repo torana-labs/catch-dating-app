@@ -18,7 +18,6 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
-import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -173,143 +172,6 @@ void main() {
       expect(exportPayload.containsKey('cursor'), isFalse);
     },
   );
-
-  test(
-    'communication plan is parsed from the server without local inference',
-    () async {
-      final functions = _TestFirebaseFunctions();
-      final callable =
-          functions.httpsCallable('resolveOrganizerCommunicationPlan')
-              as _TestHttpsCallable;
-      callable.resultData = {
-        'organizerId': 'organizer-1',
-        'intent': 'individualConversation',
-        'capabilityVersion': 1,
-        'resolvedAtMillis': 1700000000000,
-        'recipients': [
-          {
-            'contactId': 'contact-1',
-            'displayName': 'Asha',
-            'outcome': 'byHand',
-            'recommendedRouteId': 'personalWhatsappHandoff',
-            'routes': [
-              {
-                'routeId': 'catchChat',
-                'executionMode': 'managedDelivery',
-                'availability': 'unavailable',
-                'blocker': 'catchAccountRequired',
-              },
-              {
-                'routeId': 'personalWhatsappHandoff',
-                'executionMode': 'externalHandoff',
-                'availability': 'available',
-                'blocker': null,
-              },
-            ],
-          },
-        ],
-      };
-      final repository = HostCommunicationRepository(functions);
-
-      final plan = await repository.resolveIndividualCommunicationPlan(
-        organizerId: 'organizer-1',
-        contactId: 'contact-1',
-      );
-
-      expect(callable.calls.single, {
-        'organizerId': 'organizer-1',
-        'intent': 'individualConversation',
-        'target': {'kind': 'contact', 'contactId': 'contact-1'},
-      });
-      expect(plan.singleRecipient.outcome, HostCommunicationOutcome.byHand);
-      expect(
-        plan.singleRecipient.route(HostCommunicationRouteId.catchChat).blocker,
-        HostCommunicationRouteBlocker.catchAccountRequired,
-      );
-    },
-  );
-
-  test('communication plan parses an email handoff recommendation', () {
-    final plan = HostCommunicationPlan.fromCallableData({
-      'organizerId': 'organizer-1',
-      'intent': 'individualConversation',
-      'capabilityVersion': 2,
-      'resolvedAtMillis': 1700000000000,
-      'recipients': [
-        {
-          'contactId': 'contact-1',
-          'displayName': 'Asha',
-          'outcome': 'byHand',
-          'recommendedRouteId': 'personalEmailHandoff',
-          'routes': [
-            {
-              'routeId': 'catchChat',
-              'executionMode': 'managedDelivery',
-              'availability': 'unavailable',
-              'blocker': 'catchAccountRequired',
-            },
-            {
-              'routeId': 'personalWhatsappHandoff',
-              'executionMode': 'externalHandoff',
-              'availability': 'unavailable',
-              'blocker': 'missingPhone',
-            },
-            {
-              'routeId': 'personalEmailHandoff',
-              'executionMode': 'externalHandoff',
-              'availability': 'available',
-              'blocker': null,
-            },
-          ],
-        },
-      ],
-    });
-
-    expect(
-      plan.singleRecipient.recommendedRouteId,
-      HostCommunicationRouteId.personalEmailHandoff,
-    );
-    expect(
-      plan.singleRecipient
-          .route(HostCommunicationRouteId.personalWhatsappHandoff)
-          .blocker,
-      HostCommunicationRouteBlocker.missingPhone,
-    );
-  });
-
-  test('communication plan parser rejects contradictory route state', () {
-    expect(
-      () => HostCommunicationPlan.fromCallableData({
-        'organizerId': 'organizer-1',
-        'intent': 'individualConversation',
-        'capabilityVersion': 1,
-        'resolvedAtMillis': 1700000000000,
-        'recipients': [
-          {
-            'contactId': 'contact-1',
-            'displayName': 'Asha',
-            'outcome': 'inCatch',
-            'recommendedRouteId': 'catchChat',
-            'routes': [
-              {
-                'routeId': 'catchChat',
-                'executionMode': 'managedDelivery',
-                'availability': 'available',
-                'blocker': 'identityAmbiguous',
-              },
-              {
-                'routeId': 'personalWhatsappHandoff',
-                'executionMode': 'externalHandoff',
-                'availability': 'available',
-                'blocker': null,
-              },
-            ],
-          },
-        ],
-      }),
-      throwsFormatException,
-    );
-  });
 
   test('saved audience writes only the closed Customers definition', () async {
     final functions = _TestFirebaseFunctions();
@@ -874,87 +736,6 @@ void main() {
     );
   });
 
-  test(
-    'overview requests deferred history and respects unloaded metadata',
-    () async {
-      final functions = _TestFirebaseFunctions();
-      final callable =
-          functions.httpsCallable('getOrganizerContactDetail')
-              as _TestHttpsCallable;
-      callable.resultData = {...crmContactDetailData(), 'historyLoaded': false};
-      final detail = await _contacts(
-        functions,
-      ).getContactOverview('organizer-1', 'contact-1');
-      expect(detail.historyLoaded, isFalse);
-      expect(callable.calls.single, {
-        'organizerId': 'organizer-1',
-        'contactId': 'contact-1',
-        'includeHistory': false,
-      });
-    },
-  );
-
-  test(
-    'overview retries only the old server unknown-history-flag response',
-    () async {
-      final functions = _TestFirebaseFunctions();
-      final callable =
-          functions.httpsCallable('getOrganizerContactDetail')
-              as _TestHttpsCallable;
-      callable.resultData = crmContactDetailData();
-      callable.failures.add(
-        FirebaseFunctionsException(
-          code: 'invalid-argument',
-          message: 'includeHistory: must NOT have additional properties',
-        ),
-      );
-      final detail = await _contacts(
-        functions,
-      ).getContactOverview('organizer-1', 'contact-1');
-      expect(detail.historyLoaded, isTrue);
-      expect(detail.timeline, isNotEmpty);
-      expect(callable.calls, [
-        {
-          'organizerId': 'organizer-1',
-          'contactId': 'contact-1',
-          'includeHistory': false,
-        },
-        {'organizerId': 'organizer-1', 'contactId': 'contact-1'},
-      ]);
-    },
-  );
-
-  test(
-    'overview never retries permission or other validation failures',
-    () async {
-      for (final error in [
-        FirebaseFunctionsException(
-          code: 'permission-denied',
-          message: 'Organizer manager required',
-        ),
-        FirebaseFunctionsException(
-          code: 'invalid-argument',
-          message: 'contactId: must be string',
-        ),
-        FirebaseFunctionsException(
-          code: 'invalid-argument',
-          message: 'includeHistory: must be boolean',
-        ),
-      ]) {
-        final functions = _TestFirebaseFunctions();
-        final callable =
-            functions.httpsCallable('getOrganizerContactDetail')
-                as _TestHttpsCallable;
-        callable.failures.add(error);
-        await expectLater(
-          _contacts(functions).getContactOverview('organizer-1', 'contact-1'),
-          throwsA(isA<AppException>()),
-        );
-        expect(callable.calls, hasLength(1));
-      }
-    },
-  );
-
   test('parses contact detail without exposing private runtime answers', () {
     final data = crmContactDetailData();
     final detail = HostAudienceContactDetail.fromCallableData(data);
@@ -1017,19 +798,14 @@ void main() {
       'decisionRevision': dismissed ? 4 : null,
       'canReopen': dismissed,
     };
-    final page = HostContactMergeCandidatePage.fromCallableData({
-      'organizerId': 'organizer-1',
-      'candidates': [candidate(dismissed: false)],
-      'dismissedCandidates': [candidate(dismissed: true)],
-      'nextCursor': null,
-      'truncated': false,
-    });
+    final open = HostContactMergeCandidate.fromMap(candidate(dismissed: false));
+    final dismissed = HostContactMergeCandidate.fromMap(
+      candidate(dismissed: true),
+    );
 
-    expect(page.candidates.single.matchKinds, {
-      HostContactMergeMatchKind.sameVerifiedPhone,
-    });
-    expect(page.candidates.single.sharedEventCount, 1);
-    expect(page.dismissedCandidates.single.canReopen, isTrue);
+    expect(open.matchKinds, {HostContactMergeMatchKind.sameVerifiedPhone});
+    expect(open.sharedEventCount, 1);
+    expect(dismissed.canReopen, isTrue);
   });
 
   test('parses campaign blockers and aggregate delivery counts', () {

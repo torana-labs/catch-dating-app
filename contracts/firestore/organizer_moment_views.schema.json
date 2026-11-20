@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_moment_views.schema.json",
+  "title": "OrganizerMomentViewDocument",
+  "description": "Server-maintained Moments board row of one event or programme moment: the moment exactly as listOrganizerMoments returned it, and its plan summary from organizerMomentRuns (anchor, messages sent across dispatched runs, the earliest planned run while armed). The board state that compares moments (which armed moment runs next) is the phone's, from the scope's rows. Written by triggers on organizerMoments and organizerMomentRuns. Programme moments are readable by the programme owner and the communications duty (coordinators hold it), listed by a query naming scopeKind and programId; event moments by the event organiser's current managers, listed by a query naming scopeKind and eventId. Organiser-scope automation moments have no row. The organiser's WhatsApp sender connection stays on listOrganizerMoments. Never a phone number or other contact field, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerMomentViews",
+  "x-firestore-path": "organizerMomentViews/{momentId}",
+  "x-document-id-field": "momentId",
+  "x-owner": "Moments read model projector (organizerMomentViewTriggers)",
+  "required": [
+    "momentId",
+    "scopeKind",
+    "scopeId",
+    "programId",
+    "eventId",
+    "moment",
+    "plan",
+    "version"
+  ],
+  "properties": {
+    "momentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "scopeKind": {
+      "type": "string",
+      "enum": [
+        "event",
+        "program"
+      ]
+    },
+    "scopeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The programme of a programme moment; null for an event moment."
+    },
+    "eventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The event of an event moment; null for a programme moment."
+    },
+    "moment": {
+      "$ref": "../shared/moment_common.schema.json#/definitions/momentDefinition"
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anchor",
+        "sentCount",
+        "nextRunAtMillis"
+      ],
+      "properties": {
+        "anchor": {
+          "$ref": "../shared/moment_common.schema.json#/definitions/momentPlanAnchor"
+        },
+        "sentCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "Messages sent across every dispatched run."
+        },
+        "nextRunAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "The earliest planned run while the moment is armed, or null."
+        }
+      }
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

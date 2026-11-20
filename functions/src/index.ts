@@ -784,7 +784,15 @@ export {onOrganizerProgramViewChanged, onOrganizerProgramFunctionChanged,
   "./programs/organizerProgramViewTriggers";
 export {onProgramStaffViewGrantChanged, onProgramStaffViewProgramChanged} from
   "./programs/programStaffViewTriggers";
+export {onProgramHotelRoomStayChanged, onProgramHotelRoomBlockChanged,
+  onProgramHotelRoomHotelChanged, onProgramHotelRoomLegChanged,
+  onProgramHotelRoomGuestChanged, onProgramHotelRoomProgramChanged} from
+  "./programs/programHotelRoomViewTriggers";
 export {listMyHostAssignments} from "./hostWork/listMyHostAssignments";
+export {onHostAssignmentProgramGrantChanged, onHostAssignmentProgramChanged,
+  onHostAssignmentEventGrantChanged, onHostAssignmentEventChanged,
+  onHostAssignmentMembershipChanged, onHostAssignmentOrganizerChanged} from
+  "./hostWork/hostAssignmentViewTriggers";
 export {
   inviteProgramStaff,
   claimProgramStaffInvite,
@@ -809,6 +817,10 @@ export {
   runOrganizerMoment,
   listOrganizerMoments,
 } from "./moments/momentCallables";
+export {
+  onOrganizerMomentViewChanged,
+  onOrganizerMomentRunViewChanged,
+} from "./moments/organizerMomentViewTriggers";
 export {
   organizerMomentSweep,
   programTravelLegMoments,
@@ -1173,10 +1185,33 @@ export {onHostSendCampaignChanged, onHostSendAnnouncementChanged,
   onHostSendFollowerPostChanged, onHostSendFollowerDeliveryChanged,
   onHostSendTemplateChanged, onHostSendSavedAudienceChanged} from
   "./hostReadModels/sendSummaryTriggers";
+export {onHostOrganizerBillViewBillChanged} from
+  "./hostReadModels/organizerBillViewTriggers";
+export {onHostOrganizerJourneyViewOrganizerChanged,
+  onHostOrganizerJourneyViewClaimChanged,
+  onHostOrganizerJourneyViewIntakeChanged,
+  onHostOrganizerJourneyViewEventChanged,
+  onHostOrganizerJourneyViewGrowthChanged} from
+  "./hostReadModels/organizerJourneyViewTriggers";
+export {onHostFormAutomationRuleChanged, onHostFormAutomationRunChanged} from
+  "./hostReadModels/formAutomationViewTriggers";
+export {onHostFormPaymentViewPaymentChanged} from
+  "./hostReadModels/formPaymentViewTriggers";
 export {onHostRequestViewParticipationWritten, onHostRequestViewEventWritten,
   onHostRequestViewProfileWritten, onHostRequestViewContactSummaryWritten,
   onHostRequestViewContactWritten} from
   "./hostReadModels/requestViewTriggers";
+export {onHostContactDetailViewContactWritten,
+  onHostContactDetailViewTraitsWritten, onHostContactDetailViewEdgeWritten,
+  onHostContactDetailViewPaymentWritten,
+  onHostContactDetailViewEventWritten} from
+  "./hostReadModels/contactDetailViewTriggers";
+export {onHostApplicationDetailViewApplicationWritten,
+  onHostApplicationDetailViewFormResponseWritten,
+  onHostApplicationDetailViewImportedResponseWritten,
+  onHostApplicationDetailViewOriginWritten,
+  onHostApplicationDetailViewMembershipWritten} from
+  "./hostReadModels/applicationDetailViewTriggers";
 export {onHostRosterInsightEventChanged, onHostRosterInsightAttendeeChanged,
   onHostRosterInsightEdgeChanged, onHostRosterInsightContactChanged,
   onHostRosterInsightTraitsChanged,

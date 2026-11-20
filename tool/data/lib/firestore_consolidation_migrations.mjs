@@ -248,6 +248,48 @@ function requestViewRow(db, eventId) {
   return db.runTransaction((tx) => hostEventRequestView(db, tx, eventId, Date.now()));
 }
 
+let hostDetailViewModules = null;
+function functionsHostDetailViews() {
+  try {
+    const load = createFunctionsRequire();
+    hostDetailViewModules ??= {
+      contacts: load("./lib/hostReadModels/contactDetailViewStore.js"),
+      applications: load("./lib/hostReadModels/applicationDetailViewStore.js"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The host-contact-detail-views and host-application-detail-views " +
+      "migrations need compiled Functions; run `npm --prefix functions run " +
+      `build\` first (${error.message}).`,
+    );
+  }
+  return hostDetailViewModules;
+}
+
+/** One contact's detail view from current sources, read only. */
+async function contactDetailViewRow(db, contactId) {
+  const {readHostContactDetailView} = functionsHostDetailViews().contacts;
+  try {
+    return await db.runTransaction((tx) =>
+      readHostContactDetailView(db, tx, contactId));
+  } catch {
+    // A contact whose sources fail their contract gets no view, as in the
+    // trigger.
+    return null;
+  }
+}
+
+/** One application's manager view from current sources, read only. */
+async function applicationDetailViewRow(db, applicationId) {
+  const {readHostApplicationDetailView} = functionsHostDetailViews().applications;
+  try {
+    return await db.runTransaction((tx) =>
+      readHostApplicationDetailView(db, tx, applicationId));
+  } catch {
+    return null;
+  }
+}
+
 let guestMessagingPermissionModule = null;
 function functionsGuestMessagingPermissions() {
   try {
@@ -336,11 +378,71 @@ async function sendSummaryRow(db, source) {
   }
 }
 
+let formAutomationViewModule = null;
+let formPaymentViewModule = null;
+function functionsFormOperationViews() {
+  try {
+    const load = createFunctionsRequire();
+    formAutomationViewModule ??= load(
+      "./lib/hostReadModels/formAutomationViewStore.js");
+    formPaymentViewModule ??= load("./lib/hostReadModels/formPaymentViewStore.js");
+  } catch (error) {
+    throw new Error(
+      "The host-form-automation-views and host-form-payment-views migrations " +
+      "need compiled Functions; run `npm --prefix functions run build` " +
+      `first (${error.message}).`,
+    );
+  }
+  return {automations: formAutomationViewModule, payments: formPaymentViewModule};
+}
+
+/** One form operation view from current sources, read only. */
+async function formOperationViewRow(db, read, id) {
+  try {
+    return await db.runTransaction((tx) => read(db, tx, id));
+  } catch {
+    // A source that fails its contract gets no view, as in the trigger.
+    return null;
+  }
+}
+
 /** The organizer that owns an organizers/{organizerId}/posts document. */
 function organizerPostOwner(ref) {
   const organizer = ref?.parent?.parent;
   return organizer?.parent?.id === "organizers" && validId(organizer.id) ?
     organizer.id : null;
+}
+
+let organizerBillViewModule = null;
+let organizerJourneyViewModule = null;
+function functionsOrganizerScreenViews() {
+  try {
+    const load = createFunctionsRequire();
+    organizerBillViewModule ??= load(
+      "./lib/hostReadModels/organizerBillViewStore.js");
+    organizerJourneyViewModule ??= load(
+      "./lib/hostReadModels/organizerJourneyViewStore.js");
+  } catch (error) {
+    throw new Error(
+      "The host-organizer-bill-views and host-organizer-journey-views " +
+      "migrations need compiled Functions; run `npm --prefix functions run " +
+      `build\` first (${error.message}).`,
+    );
+  }
+  return {bills: organizerBillViewModule, journeys: organizerJourneyViewModule};
+}
+
+/** Every journey view one organizer should have, read only. */
+async function organizerJourneyViewRows(db, organizerId) {
+  const {readOrganizerJourneyViews} = functionsOrganizerScreenViews().journeys;
+  try {
+    const views = await db.runTransaction((tx) =>
+      readOrganizerJourneyViews(db, tx, organizerId));
+    return [...views].map(([targetId, data]) => ({targetId, data}));
+  } catch {
+    // Sources that fail their contract get no views, as in the trigger.
+    return [];
+  }
 }
 
 let programAccessViewModule = null;
@@ -587,6 +689,27 @@ async function newStaffView(db, programId, uid) {
     return null;
   }
 }
+
+const screenReadViewModules = {};
+/** A compiled Functions read model module for the screen-read migrations. */
+function functionsScreenReadViews(migration, modulePath) {
+  try {
+    screenReadViewModules[modulePath] ??= createFunctionsRequire()(modulePath);
+  } catch (error) {
+    throw new Error(
+      `The ${migration} migration needs compiled Functions; run ` +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return screenReadViewModules[modulePath];
+}
+const roomViews = () => functionsScreenReadViews("program-hotel-room-views",
+  "./lib/programs/programHotelRoomViews.js");
+const assignmentViews = () => functionsScreenReadViews("host-assignment-views",
+  "./lib/hostWork/hostAssignmentViews.js");
+const momentViews = () => functionsScreenReadViews("organizer-moment-views",
+  "./lib/moments/organizerMomentViews.js");
+const hostAssignmentNowMillis = Date.now();
 
 const profilePromptCatalog = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/catalogs/profile_prompts.json", import.meta.url), "utf8"));
@@ -1053,6 +1176,50 @@ export const MIGRATIONS = [
         targetId: (id, data) => data.status === "active" &&
           validId(data.organizerId) ? id : null,
         transform: (data, id, db) => requestViewRow(db, id),
+      },
+    ],
+  },
+  {
+    name: "host-contact-detail-views",
+    description:
+      "The Host person page reads hostContactDetailViews through a listener " +
+      "(#1339) instead of the getOrganizerContactDetail callable. Every shown " +
+      "contact (not deleted, hidden or merged, with a trait row of its " +
+      "organizer) without a view gets one, with the traits, revenue and " +
+      "newest 100 event rows the callable returns, as the new triggers write " +
+      "it. Existing views are never replaced; contacts, traits, event edges, " +
+      "events and payments are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerContacts",
+        target: "hostContactDetailViews",
+        skipReason: "deleted, hidden, merged or without a trait row",
+        targetId: (id, data) => validId(id) && validId(data.organizerId) &&
+          data.deletedAt == null && data.hiddenAt == null &&
+          data.identityState !== "merged" ? id : null,
+        transform: (data, id, db) => contactDetailViewRow(db, id),
+      },
+    ],
+  },
+  {
+    name: "host-application-detail-views",
+    description:
+      "The Host response, offer and response-offer pages read " +
+      "hostApplicationDetailViews through a listener (#1339) instead of the " +
+      "getOrganizerApplicationDetail callable. Every application without a " +
+      "view gets one, with exactly the detail the callable returns (no " +
+      "answers or outreach once its response is withdrawn), as the new " +
+      "triggers write it. Existing views are never replaced; applications, " +
+      "responses, origins and memberships are never changed. Build Functions " +
+      "first.",
+    steps: [
+      {
+        source: "organizerApplications",
+        target: "hostApplicationDetailViews",
+        skipReason: "no owner",
+        targetId: (id, data) => validId(id) && validId(data.organizerId) ?
+          id : null,
+        transform: (data, id, db) => applicationDetailViewRow(db, id),
       },
     ],
   },
@@ -1615,6 +1782,195 @@ export const MIGRATIONS = [
           `followerUpdate_${id}` : null,
         transform: (data, id, db, ref) => sendSummaryRow(db,
           {kind: "followerUpdate", organizerId: organizerPostOwner(ref), postId: id}),
+      },
+    ],
+  },
+  {
+    name: "host-organizer-bill-views",
+    description:
+      "The Host Organiser tab and Payments screen read the owner's bills " +
+      "from hostOrganizerBillViews through a listener instead of the " +
+      "listOrganizerBills callable. Every sent or closed organizerBills " +
+      "document without a view gets one, with the row the callable returns, " +
+      "as the new trigger writes it. Bills still waiting to be sent get " +
+      "none. Existing views are never replaced and bills are never changed. " +
+      "Build Functions first.",
+    steps: [
+      {
+        source: "organizerBills",
+        target: "hostOrganizerBillViews",
+        skipReason: "not sent yet, or no organizer",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id) =>
+          functionsOrganizerScreenViews().bills.organizerBillView(id, data),
+      },
+    ],
+  },
+  {
+    name: "host-organizer-journey-views",
+    description:
+      "The Host 'Your page so far' sheet and the waiting-claim notice read " +
+      "hostOrganizerJourneyViews through listeners instead of the " +
+      "listMyOrganizerJourneys callable. Every organizer gets one view per " +
+      "current manager and per person whose claim on it is still being " +
+      "checked, with the journey the callable returns to that person, as the " +
+      "new triggers write it. Organizers with neither get none. Existing " +
+      "views are never replaced; organizers, claims, intake requests, events " +
+      "and growth facts are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizers",
+        target: "hostOrganizerJourneyViews",
+        skipReason: "no manager and no waiting claim",
+        expand: (data, id, db) => validId(id) ?
+          organizerJourneyViewRows(db, id) : [],
+      },
+    ],
+  },
+  {
+    name: "host-form-automation-views",
+    description:
+      "Host automations and the rule editor read hostFormAutomationRuleViews " +
+      "and hostFormAutomationRunViews through listeners (#1339) instead of " +
+      "the listOrganizerFormAutomationRuns callable. Every automation rule " +
+      "and run without a view gets one, with the row the callable returns " +
+      "and, for a run, its rule's name, as the new triggers write it. " +
+      "Webhook secrets and run leases never appear. Existing views are never " +
+      "replaced; rules and runs are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerFormAutomationRules",
+        target: "hostFormAutomationRuleViews",
+        skipReason: "no owner",
+        targetId: (id, data) => validId(id) && validId(data.organizerId) ? id : null,
+        transform: (data, id, db) => formOperationViewRow(db,
+          functionsFormOperationViews().automations.readHostFormAutomationRuleView, id),
+      },
+      {
+        source: "organizerFormAutomationRuns",
+        target: "hostFormAutomationRunViews",
+        skipReason: "no owner or rule",
+        targetId: (id, data) => validId(id) && validId(data.organizerId) &&
+          validId(data.ruleId) ? id : null,
+        transform: (data, id, db) => formOperationViewRow(db,
+          functionsFormOperationViews().automations.readHostFormAutomationRunView, id),
+      },
+    ],
+  },
+  {
+    name: "host-form-payment-views",
+    description:
+      "The Host form payments section reads hostFormPaymentViews through a " +
+      "listener (#1339) instead of the listOrganizerFormPayments callable. " +
+      "Every guestPayments document whose purpose is form gets a view, with " +
+      "the ledger row the callable returns, as the new trigger writes it. " +
+      "Other checkouts get none, and answers, respondent identity and the " +
+      "payment connection never appear. Existing views are never replaced; " +
+      "payments are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "guestPayments",
+        target: "hostFormPaymentViews",
+        skipReason: "not a form fee, or no organizer or form",
+        targetId: (id, data) => data.purpose === "form" && validId(id) &&
+          validId(data.organizerId) && validId(data.formId) ? id : null,
+        transform: (data, id, db) => formOperationViewRow(db,
+          functionsFormOperationViews().payments.readHostFormPaymentView, id),
+      },
+    ],
+  },
+  {
+    name: "program-hotel-room-views",
+    description:
+      "The hotel desk and the planner's rooms read programHotelRoomViews " +
+      "through listeners (#1339) instead of the getProgramHotelRooms " +
+      "callable. Every programme hotel without a board gets one: the room " +
+      "blocks with their occupancy, the stays with guest names and the " +
+      "revisions upsertProgramStay fences on, and the routed guests still " +
+      "needing a room, as the new triggers write it, never a contact field " +
+      "or note. Existing boards are never replaced; hotels, blocks, stays, " +
+      "journeys and guests are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "programHotels",
+        target: "programHotelRoomViews",
+        skipReason: "not a hotel of an existing programme, or already viewed",
+        targetId: (id, data) => validId(id) && validId(data.programId) ?
+          `${data.programId}__${id}` : null,
+        transform: (data, id, db) => newTripView(db, "programHotelRoomViews",
+          `${data.programId}__${id}`, (tx) => roomViews()
+            .readProgramHotelRoomView(db, tx, data.programId, id)),
+      },
+    ],
+  },
+  {
+    name: "host-assignment-views",
+    description:
+      "The staff work list reads hostAssignmentViews through a listener " +
+      "(#1339) instead of the listMyHostAssignments callable. Every " +
+      "programme staff grant, event staff grant and organiser team " +
+      "membership without a row gets one for its account: the title, the " +
+      "organiser's name and the duties with their own expiries (expired " +
+      "duties left out), as the new triggers write it. Existing rows are " +
+      "never replaced; grants, memberships, programmes, events and " +
+      "organisers are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "programStaffGrants",
+        target: "hostAssignmentViews",
+        skipReason: "not a grant of one account and programme, or already viewed",
+        targetId: (id, data) => validId(data.programId) && validId(data.uid) &&
+          id === `${data.programId}__${data.uid}` ?
+          `${data.uid}__program_${data.programId}` : null,
+        transform: (data, id, db) => newTripView(db, "hostAssignmentViews",
+          `${data.uid}__program_${data.programId}`, (tx) => assignmentViews()
+            .readProgramAssignmentView(db, tx, data.uid, data.programId,
+              hostAssignmentNowMillis)),
+      },
+      {
+        source: "eventStaffGrants",
+        target: "hostAssignmentViews",
+        skipReason: "not a grant of one account and event, or already viewed",
+        targetId: (id, data) => validId(data.eventId) && validId(data.uid) ?
+          `${data.uid}__event_${data.eventId}` : null,
+        transform: (data, id, db) => newTripView(db, "hostAssignmentViews",
+          `${data.uid}__event_${data.eventId}`, async (tx) => (await
+          assignmentViews().readEventAssignmentView(db, tx, id)).view),
+      },
+      {
+        source: "organizerTeamMemberships",
+        target: "hostAssignmentViews",
+        skipReason: "not an active membership, or already viewed",
+        targetId: (id, data) => validId(data.organizerId) && validId(data.uid) &&
+          data.status === "active" ?
+          `${data.uid}__team_${data.organizerId}` : null,
+        transform: (data, id, db) => newTripView(db, "hostAssignmentViews",
+          `${data.uid}__team_${data.organizerId}`, async (tx) => (await
+          assignmentViews().readTeamAssignmentView(db, tx, id)).view),
+      },
+    ],
+  },
+  {
+    name: "organizer-moment-views",
+    description:
+      "The event Moments screen and the programme's planned messages read " +
+      "organizerMomentViews through listeners (#1339) instead of the " +
+      "listOrganizerMoments callable. Every event and programme moment " +
+      "without a row gets one: the moment as the callable returned it and " +
+      "its sent count and next planned run from organizerMomentRuns. " +
+      "Organiser-scope automation moments get none, and the sender " +
+      "connection stays on the callable. Existing rows are never replaced; " +
+      "moments and runs are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerMoments",
+        target: "organizerMomentViews",
+        skipReason: "an organiser-scope or unreadable moment, or already viewed",
+        targetId: (id, data) => validId(id) &&
+          (data.scopeKind === "event" || data.scopeKind === "program") ?
+          id : null,
+        transform: (data, id, db) => newTripView(db, "organizerMomentViews",
+          id, (tx) => momentViews().readOrganizerMomentView(db, tx, id)),
       },
     ],
   },

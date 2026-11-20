@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_automation_reads.dart';
 import 'package:catch_dating_app/hosts/people/automations_controller.dart';
 import 'package:catch_dating_app/hosts/people/automations_state.dart';
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
@@ -213,4 +214,5 @@ void retryHostMessagesReads(WidgetRef ref, String organizerId) => ref
   ..invalidate(chatsListViewModelProvider)
   ..invalidate(hostWhatsappThreadPagesProvider(organizerId))
   ..invalidate(watchEventsForOrganizerProvider(organizerId))
-  ..invalidate(hostPeopleAutomationsProvider(organizerId));
+  ..invalidate(hostFormAutomationRulesProvider(organizerId, null))
+  ..invalidate(hostFormAutomationRunPagesProvider(organizerId, null));

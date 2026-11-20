@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_form_automation_rule_views.schema.json",
+  "title": "HostFormAutomationRuleViewDocument",
+  "description": "Server-maintained manager read view of one organizer automation rule for Host automations and the rule editor, with exactly the rule row listOrganizerFormAutomationRuns returns: the definition, with the webhook secret reduced to whether one is set. The view id is the rule id. Written by a trigger on organizerFormAutomationRules. Never the webhook secret, and never identity, permission or mutation authority: saves stay on the revision-fenced createOrganizerFormAutomation and setOrganizerFormAutomationState callables.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostFormAutomationRuleViews",
+  "x-firestore-path": "hostFormAutomationRuleViews/{ruleId}",
+  "x-document-id-field": "ruleId",
+  "x-owner": "Host read model projector (hostReadModels form automation view triggers)",
+  "required": [
+    "organizerId",
+    "ruleId",
+    "formId",
+    "row",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "ruleId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "formId": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/automationRuleProjection",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

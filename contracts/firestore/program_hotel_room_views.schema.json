@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_hotel_room_views.schema.json",
+  "title": "ProgramHotelRoomViewDocument",
+  "description": "Server-maintained room board of one programme hotel: exactly what getProgramHotelRooms returned without the caller's access expiry and the read time. The room blocks with their peak occupancy and rooms left, every stay at the hotel with the guest's display name and the stay revision upsertProgramStay fences on, and the guests routed to the hotel (an inbound journey that is not a no-show, or a stay here) with no live stay, each with the block the allocation policy would suggest. Written by triggers on programStays, programRoomBlocks, programHotels, programTravelLegs, programGuests and the programme's time zone. Readable by accounts whose hotel desk duty covers the hotel (coordinators hold it), and the programme owner. Guest and block ids and display names only: never a phone number, email, note or other contact field, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programHotelRoomViews",
+  "x-firestore-path": "programHotelRoomViews/{programId}__{hotelId}",
+  "x-document-id-field": "viewId",
+  "x-owner": "Programme read model projector (programHotelRoomViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "hotelId",
+    "hotelName",
+    "overflow",
+    "roomBlocks",
+    "stays",
+    "unplacedGuests",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "hotelId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "hotelName": {
+      "type": "string"
+    },
+    "overflow": {
+      "type": "boolean",
+      "description": "The hotel has more than 500 room blocks, 2,000 stays or 2,000 inbound journeys (the callable's complete-read caps), or the board would not fit a document: the lists are empty and the phone says the board is too large, as the callable refused it."
+    },
+    "roomBlocks": {
+      "$ref": "../callable_responses/program_hotel_rooms_response.schema.json#/properties/roomBlocks"
+    },
+    "stays": {
+      "$ref": "../callable_responses/program_hotel_rooms_response.schema.json#/properties/stays"
+    },
+    "unplacedGuests": {
+      "$ref": "../callable_responses/program_hotel_rooms_response.schema.json#/properties/unplacedGuests"
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

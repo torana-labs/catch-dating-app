@@ -128,7 +128,7 @@ import {organizerCommunicationPreferenceId} from
 // Creating and changing contacts share one mutation budget.
 const mutateContactRateLimit = {maxRequests: 60, windowMs: 60 * 1000};
 const defaultContactPageSize = 50;
-const maxDetailEvents = 100;
+export const maxDetailEvents = 100;
 const maxDetailNotes = 100;
 const maxDetailOutreach = 100;
 const maxOutreachFutureSkewMillis = 5 * 60 * 1000;
@@ -947,19 +947,7 @@ export async function getOrganizerContactDetailHandler(
     whatsappPermission: permission,
     origins: provenance.origins,
     originsTruncated: (originSnap?.size ?? 0) > maxDetailOrigins,
-    traits: {
-      expectedEventCount: traits.expectedEventCount,
-      attendedEventCount: traits.attendedEventCount,
-      cancelledEventCount: traits.cancelledEventCount,
-      noShowCount: traits.noShowCount,
-      importedEventCount: traits.importedEventCount,
-      attendanceRate: traits.attendanceRate,
-      segmentIds: traits.segmentIds,
-      whatsappStatus: traits.whatsappStatus,
-      smsStatus: traits.smsStatus,
-      sourceCoverage: traits.sourceCoverage,
-      ...(traits.membership ? {membership: traits.membership} : {}),
-    },
+    traits: contactDetailTraits(traits),
     revenue: revenueResult.revenue,
     events,
     eventsTruncated: eventSnap.size > maxDetailEvents,
@@ -980,6 +968,30 @@ export async function getOrganizerContactDetailHandler(
     timelineCoverage: timelineResult.coverage,
     activeMerges,
     revision: contact.revision,
+  };
+}
+
+/**
+ * The traits block of the contact detail: attendance, reliability, segment
+ * and reachability facts, never an identity or permission receipt.
+ * @param {OrganizerContactTraitDocument} traits The contact's trait row.
+ * @return {object} The detail's traits.
+ */
+export function contactDetailTraits(
+  traits: OrganizerContactTraitDocument
+): GetOrganizerContactDetailCallableResponse["traits"] {
+  return {
+    expectedEventCount: traits.expectedEventCount,
+    attendedEventCount: traits.attendedEventCount,
+    cancelledEventCount: traits.cancelledEventCount,
+    noShowCount: traits.noShowCount,
+    importedEventCount: traits.importedEventCount,
+    attendanceRate: traits.attendanceRate,
+    segmentIds: traits.segmentIds,
+    whatsappStatus: traits.whatsappStatus,
+    smsStatus: traits.smsStatus,
+    sourceCoverage: traits.sourceCoverage,
+    ...(traits.membership ? {membership: traits.membership} : {}),
   };
 }
 
@@ -1488,7 +1500,8 @@ async function activeMergeRows(params: {
   }));
 }
 
-async function contactRevenue(params: {
+/** Revenue facts for one contact: Catch payments and reported amounts. */
+export async function contactRevenue(params: {
   db: FirebaseFirestore.Firestore;
   contact: OrganizerContactDocument;
   eventEdges: OrganizerContactEventEdgeDocument[];
@@ -1539,7 +1552,7 @@ interface RevenueFact {
   allocation: "perAttendee" | "sharedOrder";
 }
 
-interface ContactRevenueResult {
+export interface ContactRevenueResult {
   revenue: GetOrganizerContactDetailCallableResponse["revenue"];
   byEvent: Map<
     string,
@@ -2799,7 +2812,8 @@ function assertActiveOrganizerContact(
   }
 }
 
-function eventDetailRow(
+/** One contact-event edge as the contact detail shows it. */
+export function eventDetailRow(
   edge: OrganizerContactEventEdgeDocument,
   revenues:
     GetOrganizerContactDetailCallableResponse["events"][number]["revenues"],

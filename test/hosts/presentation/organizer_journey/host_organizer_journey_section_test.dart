@@ -102,7 +102,9 @@ void main() {
       tester,
       const HostWaitingClaimsSection(),
       overrides: [
-        organizerJourneysProvider(null).overrideWith((ref) async => [_waiting]),
+        organizerJourneysProvider(
+          null,
+        ).overrideWith((ref) => Stream.value([_waiting])),
       ],
     );
     expect(find.text('Your claim is being checked'), findsOneWidget);
@@ -117,7 +119,7 @@ void main() {
       overrides: [
         organizerJourneysProvider(
           null,
-        ).overrideWith((ref) async => throw StateError('offline')),
+        ).overrideWith((ref) => Stream.error(StateError('offline'))),
       ],
     );
     expect(find.text('Your claim is being checked'), findsNothing);
@@ -133,7 +135,7 @@ void main() {
       overrides: [
         organizerJourneysProvider(
           'moonmoth',
-        ).overrideWith((ref) async => [_waiting]),
+        ).overrideWith((ref) => Stream.value([_waiting])),
       ],
     );
     expect(find.text('Someone nominated Moonmoth'), findsOneWidget);

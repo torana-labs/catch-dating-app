@@ -457,41 +457,32 @@ void main() {
       'sources': <Object?>[],
       'privacyThreshold': 5,
     });
-    final automations = HostFormAutomationPage.fromCallableData(const {
-      'rules': <Object?>[
+    final rule = HostFormAutomationRule.fromMap(const {
+      'ruleId': 'rule_1',
+      'organizerId': 'org_1',
+      'formId': 'form_1',
+      'name': 'Notify my team',
+      'enabled': true,
+      'revision': 1,
+      'trigger': 'responseSubmitted',
+      'condition': null,
+      'actions': <Object?>[
         {
-          'ruleId': 'rule_1',
-          'organizerId': 'org_1',
-          'formId': 'form_1',
-          'name': 'Notify my team',
-          'enabled': true,
-          'revision': 1,
-          'trigger': 'responseSubmitted',
-          'condition': null,
-          'actions': <Object?>[
-            {
-              'actionId': 'action_1',
-              'kind': 'notifyTeam',
-              'tagId': null,
-              'eventId': null,
-              'webhookUrl': null,
-              'webhookSecretConfigured': false,
-              'channel': null,
-            },
-          ],
-          'updatedAtMillis': 10,
+          'actionId': 'action_1',
+          'kind': 'notifyTeam',
+          'tagId': null,
+          'eventId': null,
+          'webhookUrl': null,
+          'webhookSecretConfigured': false,
+          'channel': null,
         },
       ],
-      'runs': <Object?>[],
-      'nextCursor': null,
+      'updatedAtMillis': 10,
     });
 
     expect(analytics.completionRate, 0.75);
-    expect(automations.rules.single.enabled, isTrue);
-    expect(
-      automations.rules.single.actions.single.kind,
-      HostFormAutomationActionKind.notifyTeam,
-    );
+    expect(rule.enabled, isTrue);
+    expect(rule.actions.single.kind, HostFormAutomationActionKind.notifyTeam);
   });
 }
 

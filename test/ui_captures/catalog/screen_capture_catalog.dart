@@ -22,7 +22,6 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_reposi
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
@@ -4268,16 +4267,11 @@ List<Object> _hostInboxProviderOverrides({
       (ref, notifier) =>
           Stream.value(const LivePages(items: [], hasMore: false)),
     ),
-    hostManualSendTasksProvider(
+    hostManualSendTaskPagesProvider(
       HostInboxSurfaceFixtures.organizer.id,
-    ).overrideWithValue(
-      AsyncData(
-        HostManualSendTaskPage(
-          organizerId: HostInboxSurfaceFixtures.organizer.id,
-          tasks: const [],
-          nextCursor: null,
-        ),
-      ),
+    ).overrideWithBuild(
+      (ref, notifier) =>
+          Stream.value(const LivePages(items: [], hasMore: false)),
     ),
     hostWhatsappThreadPagesProvider(
       HostInboxSurfaceFixtures.organizer.id,

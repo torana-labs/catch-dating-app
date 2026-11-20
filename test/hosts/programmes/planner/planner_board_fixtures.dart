@@ -105,7 +105,6 @@ final plannerMessages = ProgramPlannedMessages.fromCallableData({
     ),
     _plan('reply-chase', 'date', null, 'draft'),
   ],
-  'senderConnectionId': 'wa-meher',
 });
 
 /// The boards' wedding with marigold branding and Meher's credit.

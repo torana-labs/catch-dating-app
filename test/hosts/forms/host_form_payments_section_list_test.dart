@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_payment_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment_record.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_detail_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payments_section_list.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -34,16 +35,16 @@ HostFormPaymentRecord _record(HostFormPaymentStatus status) =>
           : null,
     );
 
-class _Repository extends Fake implements HostFormsRepository {
+class _Repository extends Fake implements HostFormPaymentReads {
   final filters = <HostFormPaymentFilter>[];
   bool empty = false;
   @override
-  Future<HostFormPaymentPage> listPayments({
+  LivePager<HostFormPaymentRecord> watchPages({
     required String organizerId,
     required String formId,
     HostFormPaymentFilter filter = HostFormPaymentFilter.all,
-    String? cursor,
-  }) async {
+    int pageSize = 50,
+  }) {
     expect((organizerId, formId), ('org', 'form'));
     filters.add(filter);
     final statuses = filter.statuses.isEmpty
@@ -53,11 +54,18 @@ class _Repository extends Fake implements HostFormsRepository {
             HostFormPaymentStatus.refundPending,
           ]
         : filter.statuses;
-    return HostFormPaymentPage(
-      items: empty ? [] : statuses.map(_record).toList(),
-      nextCursor: null,
-    );
+    return _OnePage(empty ? const [] : statuses.map(_record).toList());
   }
+}
+
+class _OnePage implements LivePager<HostFormPaymentRecord> {
+  _OnePage(this.items);
+  final List<HostFormPaymentRecord> items;
+  @override
+  Stream<LivePages<HostFormPaymentRecord>> get pages =>
+      Stream.value(LivePages(items: items, hasMore: false));
+  @override
+  void loadMore() {}
 }
 
 void main() {
@@ -154,7 +162,7 @@ Future<void> _pump(
   addTearDown(tester.view.resetPhysicalSize);
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [hostFormsRepositoryProvider.overrideWithValue(repository)],
+      overrides: [hostFormPaymentReadsProvider.overrideWithValue(repository)],
       child: RepaintBoundary(
         key: _captureKey,
         child: MaterialApp(

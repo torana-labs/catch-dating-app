@@ -7,7 +7,6 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountab
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_accountability_provider.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_host_guests_provider.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -172,7 +171,6 @@ class EventAssistanceAccountabilityController
           ).notifier,
         )
         .reload();
-    _refresh();
     state = const AccountabilityIdle();
   }
 
@@ -290,12 +288,6 @@ class EventAssistanceAccountabilityController
     release?.call();
   }
 
-  /// The visit review is a listener that delivers every write; only the
-  /// host guest list is read again.
-  void _refresh() {
-    ref.invalidate(eventAssistanceHostGuestsForAccountProvider);
-  }
-
   void _publish(AccountabilityForm form) {
     // Error/ready callbacks can act before the previous async stack unwinds.
     _inFlight = null;
@@ -316,7 +308,6 @@ class EventAssistanceAccountabilityController
       }
       change.requireResult(result);
       _clearPending();
-      _refresh();
       _publish(
         form._after(AccountabilityPhase.saved, change: change, result: result),
       );
@@ -338,7 +329,6 @@ class EventAssistanceAccountabilityController
             }.contains(error.code);
         if (definitive) {
           _clearPending();
-          _refresh();
         }
         _publish(
           form._after(

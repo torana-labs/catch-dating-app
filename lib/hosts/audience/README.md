@@ -184,7 +184,7 @@ Typed handoffs:
 | `HostFormEditorController` | `lib/hosts/presentation/forms/host_forms_controller.dart` | Draft/editor state and publication actions. |
 | `HostFormResponsesController` | `lib/hosts/presentation/forms/host_form_operations_controller.dart` | Response list and review-facing projection. |
 | `HostFormAutomationsController` | `lib/hosts/presentation/forms/host_form_operations_controller.dart` | Automation configuration and run recovery. |
-| `HostApplicationsDirectoryController` | `lib/hosts/presentation/applications/host_applications_controller.dart` | Organizer application intake queue. |
+| `HostApplicationsController` | `lib/hosts/presentation/applications/host_applications_controller.dart` | Application review and community membership decisions. |
 
 ## Shared dependencies
 

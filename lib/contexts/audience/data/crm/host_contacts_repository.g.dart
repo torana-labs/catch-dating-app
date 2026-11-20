@@ -55,7 +55,7 @@ final class HostContactsRepositoryProvider
 }
 
 String _$hostContactsRepositoryHash() =>
-    r'8e2caba6ee48733cd6b923371b620dadc5a9f56c';
+    r'2086cff638353a888e1fdf75f2c06a14aecc6deb';
 
 /// The organizer's contact directory document, as a listener.
 
@@ -405,55 +405,167 @@ final class HostAudienceFamily extends $Family
   String toString() => r'hostAudienceProvider';
 }
 
-@ProviderFor(hostAudienceContactDetail)
-final hostAudienceContactDetailProvider = HostAudienceContactDetailFamily._();
+/// One person's directory row: name, endpoints, tags and revision. It is a
+/// Firestore listener: writes never invalidate it, the server's projector
+/// delivers them.
 
-final class HostAudienceContactDetailProvider
+@ProviderFor(hostContactSummaryRow)
+final hostContactSummaryRowProvider = HostContactSummaryRowFamily._();
+
+/// One person's directory row: name, endpoints, tags and revision. It is a
+/// Firestore listener: writes never invalidate it, the server's projector
+/// delivers them.
+
+final class HostContactSummaryRowProvider
     extends
         $FunctionalProvider<
-          AsyncValue<HostAudienceContactDetail>,
-          HostAudienceContactDetail,
-          FutureOr<HostAudienceContactDetail>
+          AsyncValue<HostContactSummaryRow>,
+          HostContactSummaryRow,
+          Stream<HostContactSummaryRow>
         >
     with
-        $FutureModifier<HostAudienceContactDetail>,
-        $FutureProvider<HostAudienceContactDetail> {
-  HostAudienceContactDetailProvider._({
-    required HostAudienceContactDetailFamily super.from,
+        $FutureModifier<HostContactSummaryRow>,
+        $StreamProvider<HostContactSummaryRow> {
+  /// One person's directory row: name, endpoints, tags and revision. It is a
+  /// Firestore listener: writes never invalidate it, the server's projector
+  /// delivers them.
+  HostContactSummaryRowProvider._({
+    required HostContactSummaryRowFamily super.from,
     required (String, String) super.argument,
   }) : super(
          retry: null,
-         name: r'hostAudienceContactDetailProvider',
+         name: r'hostContactSummaryRowProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$hostAudienceContactDetailHash();
+  String debugGetCreateSourceHash() => _$hostContactSummaryRowHash();
 
   @override
   String toString() {
-    return r'hostAudienceContactDetailProvider'
+    return r'hostContactSummaryRowProvider'
         ''
         '$argument';
   }
 
   @$internal
   @override
-  $FutureProviderElement<HostAudienceContactDetail> $createElement(
+  $StreamProviderElement<HostContactSummaryRow> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<HostAudienceContactDetail> create(Ref ref) {
+  Stream<HostContactSummaryRow> create(Ref ref) {
     final argument = this.argument as (String, String);
-    return hostAudienceContactDetail(ref, argument.$1, argument.$2);
+    return hostContactSummaryRow(ref, argument.$1, argument.$2);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is HostAudienceContactDetailProvider &&
+    return other is HostContactSummaryRowProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostContactSummaryRowHash() =>
+    r'631ce02ec5ef319e464571b28f59d78ed076d786';
+
+/// One person's directory row: name, endpoints, tags and revision. It is a
+/// Firestore listener: writes never invalidate it, the server's projector
+/// delivers them.
+
+final class HostContactSummaryRowFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<HostContactSummaryRow>,
+          (String, String)
+        > {
+  HostContactSummaryRowFamily._()
+    : super(
+        retry: null,
+        name: r'hostContactSummaryRowProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// One person's directory row: name, endpoints, tags and revision. It is a
+  /// Firestore listener: writes never invalidate it, the server's projector
+  /// delivers them.
+
+  HostContactSummaryRowProvider call(String organizerId, String contactId) =>
+      HostContactSummaryRowProvider._(
+        argument: (organizerId, contactId),
+        from: this,
+      );
+
+  @override
+  String toString() => r'hostContactSummaryRowProvider';
+}
+
+/// One person's traits, revenue and newest event rows, as a listener on
+/// the contact detail read model.
+
+@ProviderFor(hostContactDetailFacts)
+final hostContactDetailFactsProvider = HostContactDetailFactsFamily._();
+
+/// One person's traits, revenue and newest event rows, as a listener on
+/// the contact detail read model.
+
+final class HostContactDetailFactsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostContactDetailFacts>,
+          HostContactDetailFacts,
+          Stream<HostContactDetailFacts>
+        >
+    with
+        $FutureModifier<HostContactDetailFacts>,
+        $StreamProvider<HostContactDetailFacts> {
+  /// One person's traits, revenue and newest event rows, as a listener on
+  /// the contact detail read model.
+  HostContactDetailFactsProvider._({
+    required HostContactDetailFactsFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostContactDetailFactsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostContactDetailFactsHash();
+
+  @override
+  String toString() {
+    return r'hostContactDetailFactsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<HostContactDetailFacts> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<HostContactDetailFacts> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return hostContactDetailFacts(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostContactDetailFactsProvider &&
         other.argument == argument;
   }
 
@@ -463,86 +575,92 @@ final class HostAudienceContactDetailProvider
   }
 }
 
-String _$hostAudienceContactDetailHash() =>
-    r'528ff06e5ba8a801b99b89e4672fb3d1e8edd437';
+String _$hostContactDetailFactsHash() =>
+    r'9ddce7d08b74994f69faa6a837eec5a61ee56dab';
 
-final class HostAudienceContactDetailFamily extends $Family
+/// One person's traits, revenue and newest event rows, as a listener on
+/// the contact detail read model.
+
+final class HostContactDetailFactsFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<HostAudienceContactDetail>,
+          Stream<HostContactDetailFacts>,
           (String, String)
         > {
-  HostAudienceContactDetailFamily._()
+  HostContactDetailFactsFamily._()
     : super(
         retry: null,
-        name: r'hostAudienceContactDetailProvider',
+        name: r'hostContactDetailFactsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  HostAudienceContactDetailProvider call(
-    String organizerId,
-    String contactId,
-  ) => HostAudienceContactDetailProvider._(
-    argument: (organizerId, contactId),
-    from: this,
-  );
+  /// One person's traits, revenue and newest event rows, as a listener on
+  /// the contact detail read model.
+
+  HostContactDetailFactsProvider call(String organizerId, String contactId) =>
+      HostContactDetailFactsProvider._(
+        argument: (organizerId, contactId),
+        from: this,
+      );
 
   @override
-  String toString() => r'hostAudienceContactDetailProvider';
+  String toString() => r'hostContactDetailFactsProvider';
 }
 
-@ProviderFor(hostAudienceContactHistory)
-final hostAudienceContactHistoryProvider = HostAudienceContactHistoryFamily._();
+/// The team's newest note on one person, as a listener.
 
-final class HostAudienceContactHistoryProvider
+@ProviderFor(hostContactNotes)
+final hostContactNotesProvider = HostContactNotesFamily._();
+
+/// The team's newest note on one person, as a listener.
+
+final class HostContactNotesProvider
     extends
         $FunctionalProvider<
-          AsyncValue<HostAudienceContactDetail>,
-          HostAudienceContactDetail,
-          FutureOr<HostAudienceContactDetail>
+          AsyncValue<HostContactNotes>,
+          HostContactNotes,
+          Stream<HostContactNotes>
         >
-    with
-        $FutureModifier<HostAudienceContactDetail>,
-        $FutureProvider<HostAudienceContactDetail> {
-  HostAudienceContactHistoryProvider._({
-    required HostAudienceContactHistoryFamily super.from,
+    with $FutureModifier<HostContactNotes>, $StreamProvider<HostContactNotes> {
+  /// The team's newest note on one person, as a listener.
+  HostContactNotesProvider._({
+    required HostContactNotesFamily super.from,
     required (String, String) super.argument,
   }) : super(
          retry: null,
-         name: r'hostAudienceContactHistoryProvider',
+         name: r'hostContactNotesProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$hostAudienceContactHistoryHash();
+  String debugGetCreateSourceHash() => _$hostContactNotesHash();
 
   @override
   String toString() {
-    return r'hostAudienceContactHistoryProvider'
+    return r'hostContactNotesProvider'
         ''
         '$argument';
   }
 
   @$internal
   @override
-  $FutureProviderElement<HostAudienceContactDetail> $createElement(
+  $StreamProviderElement<HostContactNotes> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<HostAudienceContactDetail> create(Ref ref) {
+  Stream<HostContactNotes> create(Ref ref) {
     final argument = this.argument as (String, String);
-    return hostAudienceContactHistory(ref, argument.$1, argument.$2);
+    return hostContactNotes(ref, argument.$1, argument.$2);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is HostAudienceContactHistoryProvider &&
-        other.argument == argument;
+    return other is HostContactNotesProvider && other.argument == argument;
   }
 
   @override
@@ -551,32 +669,29 @@ final class HostAudienceContactHistoryProvider
   }
 }
 
-String _$hostAudienceContactHistoryHash() =>
-    r'830333676526fd666dbabd3f5982b295d5e12177';
+String _$hostContactNotesHash() => r'89c21620e8d4b1fe461a556dba556fded8f82faf';
 
-final class HostAudienceContactHistoryFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<HostAudienceContactDetail>,
-          (String, String)
-        > {
-  HostAudienceContactHistoryFamily._()
+/// The team's newest note on one person, as a listener.
+
+final class HostContactNotesFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<HostContactNotes>, (String, String)> {
+  HostContactNotesFamily._()
     : super(
         retry: null,
-        name: r'hostAudienceContactHistoryProvider',
+        name: r'hostContactNotesProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  HostAudienceContactHistoryProvider call(
-    String organizerId,
-    String contactId,
-  ) => HostAudienceContactHistoryProvider._(
-    argument: (organizerId, contactId),
-    from: this,
-  );
+  /// The team's newest note on one person, as a listener.
+
+  HostContactNotesProvider call(String organizerId, String contactId) =>
+      HostContactNotesProvider._(
+        argument: (organizerId, contactId),
+        from: this,
+      );
 
   @override
-  String toString() => r'hostAudienceContactHistoryProvider';
+  String toString() => r'hostContactNotesProvider';
 }

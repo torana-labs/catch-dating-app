@@ -3321,9 +3321,26 @@ counts document. Single segment and single filter-family queries use indexes.
 A name search is a prefix match on `searchName`, alone or with one filter
 family, and lists its matches by name whatever the selected sort; only
 intersecting filter groups (segments with tags) retain server evaluation. A
-page that is the whole result reports an exact count. Detail
-history, permission evidence and financial facts remain callable reads until
-an independently verified detail read contract is available.
+page that is the whole result reports an exact count.
+
+The Host person page reads one contact through three bounded listeners, each
+its own section: the contact's `hostContactSummaries` row (name, endpoints,
+tags and the revision the tag command fences on), its
+`hostContactDetailViews/{contactId}` document and its newest
+`organizerContactNotes` note (`limit + 1`, so the page knows whether older
+notes exist). The detail view holds exactly the traits, revenue and newest
+100 event rows `getOrganizerContactDetail` returns, rebuilt by the contact
+detail view triggers from the contact, its trait row and event edges (read in
+one transaction), event titles and the linked verified account's Catch
+payments; a deleted, hidden or merged contact has none, and it never holds a
+linked account id, identity evidence, endpoint or payment id. Current managers
+get the view by id and list one contact's notes under rules; a view not
+written yet reads as missing, which the page shows as an error to retry, never
+a callable fallback. Permission evidence, provenance, sends, the timeline and
+merge receipts are not read models: the person page does not show them, and
+`getOrganizerContactDetail` stays deployed for older Host builds. The
+`host-contact-detail-views` copy-forward migration writes views for contacts
+shown before the triggers.
 
 The same read boundary applies to `hostFormSummaries/{formId}` and
 `hostEventSummaries/{eventId}`. Forms contain the existing list DTO, not the
@@ -3639,7 +3656,7 @@ fallback, is retired. `listOrganizerContacts` and
 `getOrganizerContactDetail` are separate manager-authorized, server-paginated
 boundaries. They return only organizer-owned endpoints plus explainable
 attendance/reachability facts; no Event Success private input is a CRM field. The
-current detail UI requests `includeHistory: false`: attendance, revenue, memory,
+Host detail UI of older builds requests `includeHistory: false`: attendance, revenue, memory,
 permission, and source provenance remain available, while campaign, broadcast,
 manual-send, reply, form-response timeline, and merge-history reads are deferred
 until History opens. `historyLoaded: false` and unavailable timeline coverage
@@ -3742,8 +3759,9 @@ exact audience-state hash; approval requires the current resolution to match it
 before freezing recipients, so a count-preserving membership change cannot
 silently pass.
 
-`organizerManualSendTasks/{taskId}` is the server-only durable external-handoff
-queue. One task represents one organizer, contact, originating send, intent,
+`organizerManualSendTasks/{taskId}` is the server-written durable
+external-handoff queue; the organizer's current managers list it directly under
+rules (Sends' by-hand queue), and every write stays on the callables. One task represents one organizer, contact, originating send, intent,
 route, permission/capability snapshot, idempotency key, endpoint snapshot/hash,
 bounded prefill content with TTL, and progress state. Its only progress states
 are `queued`, `handoffOpened`, `hostMarkedSent`, `skipped`, `cancelled`,
@@ -3761,9 +3779,14 @@ Existing tasks never auto-dispatch after a capability change. An explicit host
 re-plan rechecks
 current authority and returns advice only; it does not write, supersede, remove,
 complete, or dispatch any task. A separate explicit host action is required to
-close manual work. Active queue reads apply the server-time expiry bound in the
-indexed query rather than waiting for asynchronous TTL deletion to hide stale
-work.
+close manual work. The callable's active queue applied the server-time expiry
+bound in its indexed query; current Host builds list `active` tasks newest
+change first in live pages of 50 and read a task past `expiresAt` as expired
+and inactive on the device, so stale work is hidden before asynchronous TTL
+deletion. The documents hold the endpoint and prefill snapshots managers
+already receive from prepare and open, plus hashes and idempotency fields that
+grant nothing (the task id binds the preparing account). `listOrganizerManualSendTasks`
+stays deployed for older Host builds.
 
 The communication plan also resolves a personal-device email handoff when the
 contact record carries an email address. It is an external `mailto` launch with
@@ -4271,6 +4294,17 @@ reserves capacity (legacy omission means zero). Finalization decrements the
 reservation and creates exactly one normal response in the same transaction.
 A late capture after release, or a missing/changed frozen submission, enters
 idempotent refund processing rather than creating an application.
+
+`hostFormPaymentViews/{paymentId}` holds one manager row per form fee
+(`purpose: form`): `organizerId`, `paymentId`, `formId`, `status`,
+`createdAtMillis`, `version` and `row`, exactly the ledger row
+`listOrganizerFormPayments` returns (status, mode, amounts, times, receipt,
+response id and provider reference ids). A trigger on `guestPayments` keeps it
+current and the `host-form-payment-views` copy-forward migration creates rows
+for fees recorded before it. Current managers list one form's rows, optionally
+by status, newest first under rules. Answers, the respondent's identity and
+contact, the connection, the account and hashes stay on the server-only ledger
+document; `listOrganizerFormPayments` stays for older Host builds.
 
 `organizerFormPaymentWebhooks` stores minimal signed-event receipts. Raw bytes
 are verified against the bound merchant or platform secret and account before
@@ -5160,6 +5194,46 @@ about the flight, claimant or pickup point; hotel desk duty covering the hotel
 reads them by a query naming `programId` and `hotelId`. Neither holds a phone
 number or other contact field.
 
+`programHotelRoomViews/{programId}__{hotelId}` (#1339) is one hotel's room
+board, kept by triggers on `programStays`, `programRoomBlocks`,
+`programHotels`, inbound `programTravelLegs`, `programGuests` (name and groups)
+and the programme's time zone, and created for existing hotels by the
+`program-hotel-room-views` copy-forward migration. It is exactly what
+`getProgramHotelRooms` returns without the caller's access expiry and the read
+time: the blocks with their peak occupancy and rooms left, every stay at the
+hotel with the guest's display name and its revision (the `upsertProgramStay`
+fence), and the routed guests with no live stay with the suggested block. Past
+the callable's complete-read caps (500 blocks, 2,000 stays or inbound
+journeys) or a document's size, it is written with `overflow: true` and empty
+lists. The hotel desk duty covering the hotel reads it by id; it holds guest
+and block ids and display names only, never a contact field or a note.
+
+`hostAssignmentViews/{uid}__{kind}_{scopeId}` (#1339) is one account's staff
+work list: a row per programme staff grant (`program`), event staff grant
+(`event`) and organiser team membership (`team`), kept by triggers on those
+three sources and on programme titles and status, event names and organiser
+names, and created for existing sources by the `host-assignment-views`
+copy-forward migration. A row carries what `listMyHostAssignments` listed (the
+title, the organiser's name, the duties with their scopes) and the facts its
+clock filtering used: `status` (inactive when the grant is revoked, its
+programme archived or gone, its event gone, or no duty can be live again),
+`activeFromMillis` (the owner approval instant), `grantExpiresAtMillis` and
+each duty's `expiresAtMillis`. Only the account it names reads it, by a query
+naming `uid`.
+
+`organizerMomentViews/{momentId}` (#1339) is one event or programme moment on
+the Moments board, kept by triggers on `organizerMoments` and
+`organizerMomentRuns` and created for existing moments by the
+`organizer-moment-views` copy-forward migration: the moment exactly as
+`listOrganizerMoments` returns it, `scopeKind`, `scopeId`, `programId` or
+`eventId`, and `plan` (anchor, messages sent across dispatched runs, the
+earliest planned run while armed). The board state that compares moments is
+the reader's. Programme rows are read by the owner and the communications duty
+(a query naming `scopeKind` and `programId`), event rows by the event
+organiser's current managers (a query naming `scopeKind` and `eventId`).
+Organiser-scope automation moments have no row, and the organiser's WhatsApp
+sender stays on the callable.
+
 `programStaffViews/{programId}__{uid}` (#1339) is the administrators' staff
 list, kept by triggers on `programStaffGrants` and `organizerPrograms` and
 created for existing grants by the `program-staff-views` copy-forward
@@ -5514,6 +5588,22 @@ contracts: suggestions are private and review-required, response snapshots are
 server-built from the published question version, and grant-aware Host reads
 enforce exact question/canonical-field ids. Provider connectors remain source
 adapters over the same model, not provider-specific schemas.
+
+The Host response, offer and response-offer pages read one application from
+`hostApplicationDetailViews/{applicationId}` through a listener instead of
+`getOrganizerApplicationDetail`. The view's `detail` is exactly what that
+callable returns, from the projection they share: the generic form's
+submitted answers or the imported snapshot, outreach derived from those
+answers, the current People link and the applicant's community membership; a
+withdrawn, erased or mismatched response leaves a masked applicant with no
+answers, outreach or membership. The application detail view triggers reread
+every source in one transaction when the application, its generic-form or
+imported response, its contact origin or the applicant's membership changes,
+and write only on change. Current managers get a view by id under rules; it is
+never review or membership authority, because those commands reread every
+source in their transactions. The callable stays deployed for older Host
+builds, and the `host-application-detail-views` copy-forward migration writes
+views for applications recorded before the triggers.
 
 The executable policies in `contracts/catalogs/person_fields.json` also bind
 the role projections:
@@ -5942,6 +6032,7 @@ host locks:
 | `organizers/{organizerId}.ownership` | organizer claim/create/update callables | `programmatic` before ownership, `claimed` after approval. |
 | `organizers/{organizerId}.publicPage.indexReview` | admin organizer indexing | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |
 | `reviews/{reviewId}.ownerResponse` | `setReviewResponse` | Server-owned owner response rendered by app and website review surfaces. |
+| `hostOrganizerJourneyViews/{organizerId}_{uid}` | organizer journey view triggers | How a page got here, as one reader sees it: `organizerId`, `uid`, `waitingClaim`, `version` and `journey`, exactly what `listMyOrganizerJourneys` returns that reader. One view per current manager and per person whose own claim is pending; someone else's claim, staff names, the nominator and decision reasons never reach it. Triggers on `organizers`, `organizerClaimRequests`, `supplyIntakeRequests`, `events` and `organizerGrowthFacts` rebuild an organizer's views in one transaction and delete those of people no longer managers or claimants; the `host-organizer-journey-views` copy-forward migration creates views for existing organizers. Only the view's own `uid` reads it: a get while a current manager or while the claim waits, a list of their waiting views. `listMyOrganizerJourneys` stays for older Host builds. |
 
 ## Listing Suppressions
 
@@ -6167,8 +6258,15 @@ and the host billing website for that organizer
 (`/host/billing/?organizerId={organizerId}`); the push carries no link.
 
 Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
-owner reads their own through `listOrganizerBills`, which leaves out unsent
-bills and everything only staff need (reminders, history, terms revisions).
+owner reads their own through `listOrganizerBills` (the host billing website),
+which leaves out unsent bills and everything only staff need (reminders,
+history, terms revisions). The Host app reads the same rows from
+`hostOrganizerBillViews/{billId}` (`organizerId`, `billId`, `periodEndMillis`,
+`month`, `version` and `bill`, exactly the callable's row; the payment link only
+while unpaid) through a listener, newest first; a trigger on `organizerBills`
+keeps them and the `host-organizer-bill-views` copy-forward migration creates
+views for bills sent before it. Only the organizer's current owner reads them
+under rules.
 The host billing website finds the caller's organizers through
 `listMyOwnedOrganizers`: the organizers whose `ownerUserId` is the caller, or
 whose legacy `hostUserId` is when no owner is recorded (the owner rule of every
@@ -6868,6 +6966,19 @@ send. Companion Moments carry deterministic `(rule, action)` identity and are
 never organizer-editable. The pre-cutover `automationOrigin` campaign drain
 path is removed — no legacy campaigns existed, and ordinary campaigns now flow
 only through their own scheduler/worker.
+Managers read them through two views. `hostFormAutomationRuleViews/{ruleId}`
+holds `organizerId`, `ruleId`, `formId`, `version` and `row`, exactly the rule
+row `listOrganizerFormAutomationRuns` returns, with the webhook secret reduced to
+`webhookSecretConfigured`. `hostFormAutomationRunViews/{runId}` holds
+`organizerId`, `runId`, `ruleId`, `formId`, `createdAtMillis`, `ruleName`,
+`version` and `row`, the run row the callable returns plus the rule's current
+name (null when the rule is gone or belongs to another organizer); leases,
+error codes and source occurrence times stay on the run. Triggers on rules and
+runs keep them current, a rule rename reconciles its runs' views, and the
+`host-form-automation-views` copy-forward migration creates views for earlier
+rules and runs. Current managers list them under rules by `organizerId` and
+optionally `formId`. `listOrganizerFormAutomationRuns` stays for older Host
+builds.
 The backend operation catalog owns execution, retry and signed-webhook semantics.
 
 ### Event Service WhatsApp Consent Contract

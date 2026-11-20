@@ -188,17 +188,19 @@ HostFormPaymentRecord _payment(HostFormPaymentStatus status) =>
 
 class _Payments extends HostFormPaymentsController {
   @override
-  Future<HostFormPaymentsState> build(
+  Stream<HostFormPaymentsState> build(
     String organizerId,
     String formId,
     HostFormPaymentFilter filter,
-  ) async => HostFormPaymentsState(
-    items:
-        (filter.statuses.isEmpty
-                ? HostFormPaymentStatus.values
-                : filter.statuses)
-            .map(_payment)
-            .toList(),
-    nextCursor: null,
+  ) => Stream.value(
+    HostFormPaymentsState(
+      items:
+          (filter.statuses.isEmpty
+                  ? HostFormPaymentStatus.values
+                  : filter.statuses)
+              .map(_payment)
+              .toList(),
+      hasMore: false,
+    ),
   );
 }

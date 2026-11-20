@@ -56,4 +56,4 @@ final class OrganizerMomentsRepositoryProvider
 }
 
 String _$organizerMomentsRepositoryHash() =>
-    r'3f25e7b8fdf0489786107c118fd02d2d1337b068';
+    r'a41ee71b305cf4279e6727c9c13e61db3cd6acbe';

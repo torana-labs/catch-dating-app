@@ -44,8 +44,9 @@ class OrganizerJourneyStep {
   final String? detail;
 }
 
-/// How a page got here, as its organizer sees it, read through
-/// `listMyOrganizerJourneys`.
+/// How a page got here, as its organizer sees it, read from the reader's own
+/// `hostOrganizerJourneyViews` document (the `listMyOrganizerJourneys`
+/// shape).
 class OrganizerJourney {
   const OrganizerJourney({
     required this.organizerId,

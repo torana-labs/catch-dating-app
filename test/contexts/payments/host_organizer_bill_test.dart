@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_dating_app/contexts/payments/data/host_organizer_bills_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
 import 'package:catch_dating_app/contexts/payments/parts/host_organizer_bill_row.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -147,4 +150,61 @@ void main() {
       isFalse,
     );
   });
+
+  test('the owner reads bill views newest first, live', () async {
+    final db = FakeFirebaseFirestore();
+    Future<void> view(
+      String billId,
+      String month,
+      int periodEnd, {
+      String organizerId = 'lantern',
+    }) => db.collection('hostOrganizerBillViews').doc(billId).set({
+      'organizerId': organizerId,
+      'billId': billId,
+      'periodEndMillis': periodEnd,
+      'month': month,
+      'bill': {..._bill(), 'billId': billId, 'month': month},
+      'version': 1,
+    });
+    await view('lantern_2026-09', '2026-09', 1);
+    await view('lantern_2026-10', '2026-10', 2);
+    await view('other_2026-11', '2026-11', 3, organizerId: 'other');
+    final repository = HostOrganizerBillsRepository(_NoFunctions(), db);
+    final bills = await repository.watch('lantern').first;
+    expect(bills.map((bill) => bill.billId), [
+      'lantern_2026-10',
+      'lantern_2026-09',
+    ]);
+    final updates = repository.watch('lantern');
+    await db.collection('hostOrganizerBillViews').doc('lantern_2026-10').set({
+      'organizerId': 'lantern',
+      'billId': 'lantern_2026-10',
+      'periodEndMillis': 2,
+      'month': '2026-10',
+      'bill': {
+        ..._bill(status: 'paid', paid: 640000, url: null),
+        'billId': 'lantern_2026-10',
+      },
+      'version': 1,
+    });
+    final paid = await updates.first;
+    expect(paid.first.status, HostOrganizerBillStatus.paid);
+    expect(paid.first.canPay, isFalse);
+  });
+
+  test('a bill view for another organizer is rejected', () async {
+    final db = FakeFirebaseFirestore();
+    await db.collection('hostOrganizerBillViews').doc('forged').set({
+      'organizerId': 'lantern',
+      'billId': 'other_2026-10',
+      'periodEndMillis': 1,
+      'month': '2026-10',
+      'bill': _bill(),
+      'version': 1,
+    });
+    final repository = HostOrganizerBillsRepository(_NoFunctions(), db);
+    await expectLater(repository.watch('lantern').first, throwsA(anything));
+  });
 }
+
+class _NoFunctions extends Fake implements FirebaseFunctions {}

@@ -90,7 +90,8 @@ class _HostAutomationsScreenState extends ConsumerState<HostAutomationsScreen> {
             .get(hostAutomationsCommandsProvider)
             .setEnabled(rule: rule, enabled: enabled),
       );
-      refreshHostAutomations(ref, widget.organizerId);
+      // The rule listener shows the switch; the command's rule shows until
+      // the listener reaches its revision.
     } on Object {
       // The mutation is watched for errors, which the screen shows.
     } finally {
