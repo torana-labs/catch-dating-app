@@ -10725,29 +10725,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostsOperationalRosterProviderMismatch =>
-      'The selected booking source does not match this spreadsheet. Catch used the columns in the file; review the mapping before importing.';
-
-  @override
-  String get hostsOperationalRosterLegacyEncoding =>
-      'This CSV is not UTF-8. Catch read it using a legacy encoding; check names and symbols carefully.';
-
-  @override
-  String hostsOperationalRosterMultipleWorksheets({required int count}) {
-    return 'This workbook has $count worksheets. Catch selected the best-matching guest worksheet; verify the columns before importing.';
-  }
-
-  @override
-  String hostsOperationalRosterImportAction({required int count}) {
-    return 'Review $count ready guests';
-  }
-
-  @override
-  String hostsOperationalRosterLimit({required int count}) {
-    return 'This import uses the first 250 guests. Put the remaining $count guests in another file.';
-  }
-
-  @override
   String get hostsOperationalRosterIssueUnsupported =>
       'Choose a CSV or XLSX spreadsheet.';
 
