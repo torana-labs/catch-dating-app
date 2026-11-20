@@ -61,7 +61,9 @@
         },
         "eventId": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"},
         "reasons": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,79}$"}},
-        "pollAfterMs": {"type": ["integer", "null"], "minimum": 500, "maximum": 60000}
+        "pollAfterMs": {"type": ["integer", "null"], "minimum": 500, "maximum": 60000},
+        "aiRead": {"type": "boolean", "description": "True when the AI fallback read the stored page text because the page adapters found nothing (#2062); the website marks reviewFields for the host to check. Optional: absent means false. Off until go-live."},
+        "reviewFields": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "enum": ["name", "localDate", "localStartTime", "venue"]}, "description": "Fields the AI fallback filled (the event name, date, time and venue), for the host to check; empty unless aiRead."}
       }
     }
   }

@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
@@ -26,6 +27,8 @@ import {
 import {classifyOrganizerLink, instagramHandle} from "./organizerLinks";
 import {readTryItWorkspace, stageTryItWorkspace, type WorkspaceLookup} from "./workspace";
 import {assertSameTryItRead, readTryItEvents, readTryItLink, tryItReadRequestId} from "./linkRead";
+import {aiOrganizerRequest, importAiOrganizer, lazyPageAi, sharedPageAiFallback, storageSnapshotReader, storedPageInput,
+  type AiOrganizer, type LazyPageAi, type PageAiDeps} from "./aiPage";
 
 // Command organizer.import-from-link (contracts/commands/catalog.json; #2060).
 // A phone-verified visitor with a try-it workspace sends one public link. The
@@ -39,6 +42,12 @@ import {assertSameTryItRead, readTryItEvents, readTryItLink, tryItReadRequestId}
 // unverified until proven, and the page cannot be published before that.
 // Imported events stay work items: they publish through the existing event
 // checks when the owner publishes the page. Nothing here publishes.
+//
+// With the AI fallback switched on (aiPage.ts, #2062), a page the adapters
+// read nothing from, or a public platform with no adapter yet, is read by the
+// AI from the stored page text for the organizer's name and description only;
+// both are marked for the host to check (reviewFields). The AI never adds
+// events, links or identities.
 
 export const COMMAND_ID = "organizer.import-from-link";
 const POLL_MS = 2_000;
@@ -56,7 +65,7 @@ type Proposal = NonNullable<Result["proposal"]>;
 type Match = NonNullable<Result["match"]>;
 type Data = Record<string, unknown>;
 
-export interface ImportOrganizerFromLinkDeps {
+export interface ImportOrganizerFromLinkDeps extends PageAiDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => Date;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
@@ -70,6 +79,8 @@ const defaultDeps: ImportOrganizerFromLinkDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   timestampFromDate: (date) => admin.firestore.Timestamp.fromDate(date),
   checkRateLimit: defaultCheckRateLimit,
+  aiFallback: () => sharedPageAiFallback(),
+  readSnapshot: storageSnapshotReader(),
 };
 
 interface Context {
@@ -79,6 +90,8 @@ interface Context {
   host: string;
   commandKey: string;
   requestId: string;
+  /** The AI fallback when it is switched on, checked at most once. */
+  ai: LazyPageAi;
 }
 
 export async function importOrganizerFromLinkHandler(request: CallableRequest<unknown>,
@@ -96,7 +109,7 @@ export async function importOrganizerFromLinkHandler(request: CallableRequest<un
   const commandKey = commandReceiptKey(caller.uid, data.idempotencyKey);
   const ctx: Context = {uid: caller.uid, input: {link: url.href, useImportedName: data.input.useImportedName === true},
     link: classifyOrganizerLink(url), host: url.hostname.replace(/^www\./u, ""), commandKey,
-    requestId: tryItReadRequestId([commandKey])};
+    requestId: tryItReadRequestId([commandKey]), ai: lazyPageAi(deps)};
   const db = deps.firestore();
   // Previews poll every two seconds while a page is read.
   await deps.checkRateLimit(db, caller.uid, "importOrganizerFromLink", {maxRequests: 900, windowMs: HOUR_MS});
@@ -106,6 +119,10 @@ export async function importOrganizerFromLinkHandler(request: CallableRequest<un
   const lookup = await db.runTransaction((tx) => readTryItWorkspace(tx, db, caller.uid), {readOnly: true});
   if (lookup.kind === "new") return respond(ctx, "needs_input", {reasons: ["no_workspace"]});
   const organizerId = workspaceOrganizerId(lookup);
+  if (ctx.link.support === "staff_follow_up" && ctx.link.reason === "no_adapter" && await ctx.ai()) {
+    // A public platform with no adapter yet: read, and the AI reads what the adapters can't.
+    ctx.link = {provider: ctx.link.provider, support: "best_effort", reason: "ai_fallback"};
+  }
   if (ctx.link.support === "staff_follow_up") return respond(ctx, "refused", {organizerId, reasons: [ctx.link.reason ?? "link_not_supported"]});
 
   const organizer = lookup.organizer;
@@ -117,14 +134,18 @@ export async function importOrganizerFromLinkHandler(request: CallableRequest<un
   if (read.state === "refused") return respond(ctx, "refused", {organizerId, reasons: [read.reason]});
   const stored = read.stored;
 
-  const [listing, organizerSnap] = await Promise.all([readListing(db, stored), db.collection("organizers").doc(organizerId).get()]);
+  const [adapterListing, organizerSnap] = await Promise.all([readListing(db, stored), db.collection("organizers").doc(organizerId).get()]);
+  const aiRead = await aiOrganizerRead(deps, ctx, stored, adapterListing);
+  if (aiRead.state === "refused") return respond(ctx, "refused", {organizerId, reasons: [aiRead.reason]});
+  const listing = withAiOrganizer(adapterListing, aiRead, ctx);
   if (!listing) return respond(ctx, "refused", {organizerId, reasons: ["link_unreadable"]});
+  const review = aiReview(aiRead);
   const match = await matchFor(db, stored, organizerId);
   const proposal = await proposalFor(db, stored, listing, organizerSnap.data() ?? {}, ctx);
   const hash = previewHashFor(ctx, listing, organizerSnap.data() ?? {}, match);
-  if (match?.verdict === "match") return respond(ctx, "needs_input", {organizerId, match, reasons: ["existing_listing"], hash});
+  if (match?.verdict === "match") return respond(ctx, "needs_input", {organizerId, match, reasons: ["existing_listing"], hash, ...review});
   return respond(ctx, "previewed", {organizerId, match, proposal,
-    reasons: match ? ["possible_existing_listing"] : [], hash});
+    reasons: match ? ["possible_existing_listing"] : [], hash, ...review});
 }
 
 export const importOrganizerFromLink = onCall(appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey],
@@ -135,6 +156,15 @@ async function apply(db: FirebaseFirestore.Firestore, deps: ImportOrganizerFromL
   data: ImportOrganizerFromLinkCallablePayload): Promise<Response> {
   const requestHash = commandRequestHash(COMMAND_ID, ctx.uid, ctx.input, data.confirm ?? null);
   const receiptId = commandReceiptDocumentId(db, COMMAND_ID, ctx.uid, data.idempotencyKey);
+  // The AI's read (a cache hit after the preview) happens outside the
+  // transaction; inside, it applies only while the adapters' listing is
+  // still the empty one it was read for.
+  const before = (await db.collection(supplyIntakeCollections.requests).doc(ctx.requestId).get()).data();
+  const aiRead = before && before.status === "completed" ?
+    await aiOrganizerRead(deps, ctx, before, await readListing(db, before)) : {state: "none" as const};
+  if (aiRead.state === "refused") {
+    throw new HttpsError("failed-precondition", "We couldn't read this page.", {reason: aiRead.reason});
+  }
   return db.runTransaction(async (tx) => {
     const now = deps.now();
     const replay = await replayCommand<Response>(tx, db, {commandId: COMMAND_ID, uid: ctx.uid,
@@ -155,7 +185,8 @@ async function apply(db: FirebaseFirestore.Firestore, deps: ImportOrganizerFromL
     }
     const listingRef = listingRefFor(db, stored);
     const listingSnap = listingRef ? await tx.get(listingRef) : null;
-    const listing = listingSnap ? listingFrom(listingSnap.data()) : null;
+    const adapterListing = listingSnap ? listingFrom(listingSnap.data()) : null;
+    const listing = withAiOrganizer(adapterListing, aiRead.state === "read" && needsAi(adapterListing) ? aiRead : {state: "none"}, ctx);
     if (!listing) throw new HttpsError("failed-precondition", "We couldn't read this page.", {reason: "link_unreadable"});
     const organizer = lookup.organizer;
     const match = await matchFor(db, stored, organizerId, tx);
@@ -173,7 +204,7 @@ async function apply(db: FirebaseFirestore.Firestore, deps: ImportOrganizerFromL
     tx.update(requestRef, {tryItImport: {...record(stored.tryItImport), appliedAt: now.toISOString()},
       updatedAt: now.toISOString()});
     const applied = respond(ctx, "applied", {organizerId, match, proposal, reasons: match ? ["possible_existing_listing"] : [],
-      hash, receiptId});
+      hash, receiptId, ...aiReview(aiRead.state === "read" && needsAi(adapterListing) ? aiRead : {state: "none"})});
     recordCommand(tx, db, {commandId: COMMAND_ID, uid: ctx.uid, idempotencyKey: data.idempotencyKey, requestHash,
       nowMillis: now.getTime(), response: compactForReceipt(applied)});
     return applied;
@@ -237,6 +268,54 @@ async function proposalFor(db: FirebaseFirestore.Firestore, stored: Data, listin
     gaps: listing.gaps,
     verificationNeeded: identitiesFor(listing).length > 0,
   };
+}
+
+/** What the AI fallback made of a page the adapters read nothing from. */
+type AiOrganizerRead =
+  | {state: "none"}
+  | {state: "read"; organizer: AiOrganizer}
+  | {state: "refused"; reason: "ai_cap_reached" | "ai_daily_limit" | "ai_unreadable"};
+
+/** True when the adapters found neither a name nor a description. */
+function needsAi(listing: Listing | null): boolean {
+  return !listing || (!listing.name && !listing.description);
+}
+
+/**
+ * Reads the stored page with the AI when the fallback is on and the adapters
+ * found nothing. Off, or switched off between the check and the read: none.
+ */
+async function aiOrganizerRead(deps: ImportOrganizerFromLinkDeps, ctx: Context, stored: Data,
+  listing: Listing | null): Promise<AiOrganizerRead> {
+  if (!needsAi(listing)) return {state: "none"};
+  const ai = await ctx.ai();
+  if (!ai) return {state: "none"};
+  const input = await storedPageInput(stored, ctx.requestId, ctx.input.link, deps.readSnapshot ?? storageSnapshotReader());
+  if (!input) return {state: "refused", reason: "ai_unreadable"};
+  const result = await ai.read(aiOrganizerRequest(ctx.uid, COMMAND_ID, input));
+  if (result.status === "off") return {state: "none"};
+  if (result.status === "refused") return {state: "refused", reason: result.reason};
+  const organizer = importAiOrganizer(result.output);
+  return organizer ? {state: "read", organizer} : {state: "refused", reason: "ai_unreadable"};
+}
+
+/**
+ * The listing with the AI's name and description where the adapters had
+ * none. Its content hash covers both, so a preview and its apply match.
+ */
+function withAiOrganizer(listing: Listing | null, read: AiOrganizerRead, ctx: Context): Listing | null {
+  if (read.state !== "read") return listing;
+  const {organizer} = read;
+  const base: Listing = listing ?? {listingId: `ai-${ctx.requestId}`.slice(0, 200), contentHash: "", name: null,
+    description: null, categories: [], links: [], gaps: []};
+  return {...base, name: base.name ?? organizer.name, description: base.description ?? organizer.description,
+    contentHash: createHash("sha256").update(`${base.contentHash}|ai|${organizer.contentHash}`).digest("hex")};
+}
+
+function aiReview(read: AiOrganizerRead): {aiRead: boolean; reviewFields: string[]} {
+  if (read.state !== "read") return {aiRead: false, reviewFields: []};
+  return {aiRead: true, reviewFields: [...(read.organizer.name ? ["name"] : []),
+    ...(read.organizer.description ? ["description"] : [])]};
 }
 
 /** Imported identities that need proof before publishing. */
@@ -312,18 +391,21 @@ function compactForReceipt(response: Response): Response {
 }
 
 function respond(ctx: Context, status: Response["status"], options: {organizerId?: string | null; proposal?: Proposal;
-  match?: Match | null; reasons?: string[]; hash?: string; receiptId?: string}): Response {
+  match?: Match | null; reasons?: string[]; hash?: string; receiptId?: string; aiRead?: boolean;
+  reviewFields?: string[]}): Response {
+  const aiRead = options.aiRead === true;
   const proposal = options.proposal ?? null;
   const match = options.match ?? null;
   const reasons = options.reasons ?? [];
   const hash = options.hash ?? commandPreviewHash(COMMAND_ID, ctx.uid, ctx.input, {status, reasons});
   return {
-    commandId: COMMAND_ID, status, previewHash: hash, summary: summaryFor(ctx, status, proposal, match, reasons),
+    commandId: COMMAND_ID, status, previewHash: hash, summary: summaryFor(ctx, status, proposal, match, reasons, aiRead),
     effects: status === "applied" && proposal ? effectsFor(options.organizerId ?? null, proposal) : [],
     next: reasons.includes("no_workspace") ? [{commandId: "workspace.ensure", label: "Set up your organizer profile"}] : [],
     receiptId: options.receiptId ?? null,
     result: {organizerId: options.organizerId ?? null, runId: status === "needs_input" && reasons.includes("no_workspace") ? null : ctx.requestId,
-      link: ctx.link, proposal, match, reasons, pollAfterMs: status === "running" ? POLL_MS : null},
+      link: ctx.link, proposal, match, reasons, pollAfterMs: status === "running" ? POLL_MS : null,
+      aiRead, reviewFields: aiRead ? reviewFieldsOf(options.reviewFields ?? []) : []},
   };
 }
 
@@ -338,6 +420,8 @@ function effectsFor(organizerId: string | null, proposal: Proposal): Response["e
   return effects;
 }
 
+const REVIEW_FIELDS = ["name", "description"] as const;
+
 const REFUSALS: Record<string, string> = {
   signed_in_site: "This site needs a sign-in, so we can't read it.",
   chat_invite: "Chat invites can't be read. Send your Instagram, Luma, Linktree or website instead.",
@@ -347,10 +431,13 @@ const REFUSALS: Record<string, string> = {
   form_link: "That's a form. Send your Instagram, Luma, Linktree or website instead.",
   listing_suppressed: "Catch can't make a page for this organizer. Contact support if you think this is a mistake.",
   link_unreadable: "We couldn't read this page. Check the link is public, or try another one.",
+  ai_unreadable: "We couldn't find your organizer details on this page. Try your Instagram, Luma or website instead.",
+  ai_cap_reached: "We couldn't read this automatically right now. Try again next month, or add your details in the Host app.",
+  ai_daily_limit: "You've used today's automatic reads. Try again tomorrow, or add your details in the Host app.",
 };
 
 function summaryFor(ctx: Context, status: Response["status"], proposal: Proposal | null, match: Match | null,
-  reasons: string[]): Response["summary"] {
+  reasons: string[], aiRead: boolean): Response["summary"] {
   if (status === "running") return {headline: `Reading ${ctx.host}…`, lines: ["This usually takes under a minute."]};
   if (status === "refused") return {headline: "We can't use this link.", lines: [REFUSALS[reasons[0]] ?? REFUSALS.link_unreadable]};
   if (status === "needs_input" && reasons.includes("no_workspace")) {
@@ -370,6 +457,7 @@ function summaryFor(ctx: Context, status: Response["status"], proposal: Proposal
   }
   if (proposal?.verificationNeeded) lines.push("Before you publish, we'll ask you to prove you run this Instagram or Luma page.");
   if (match) lines.push("This may already be on Catch. If it isn't you, you can still continue.");
+  if (aiRead && status === "previewed") lines.push("We read this page automatically. Check the name and description before you save.");
   const name = proposal?.name ?? ctx.host;
   return status === "previewed" ?
     {headline: `Here's what we found for "${name}".`.slice(0, 200), lines: lines.length ? lines : ["Nothing new to add from this page."]} :
@@ -390,4 +478,9 @@ function strings(value: unknown): string[] {
 
 function text(value: unknown, maxLength: number): string | null {
   return typeof value === "string" && value.trim() ? value.trim().slice(0, maxLength) : null;
+}
+
+/** The review fields the response schema names, in order. */
+function reviewFieldsOf(fields: string[]): NonNullable<Response["result"]["reviewFields"]> {
+  return REVIEW_FIELDS.filter((field) => fields.includes(field));
 }
