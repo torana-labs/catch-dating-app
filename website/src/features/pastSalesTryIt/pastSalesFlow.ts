@@ -61,7 +61,9 @@ export type PastSalesStage =
   | {readonly name: "mapping"; readonly headers: readonly string[]; readonly shapes: readonly string[]}
   | {readonly name: "review"; readonly report: PastSalesReport; readonly rows: readonly PastSalesReviewRow[]}
   | {readonly name: "done"; readonly report: PastSalesReport; readonly eventId: string; readonly imported: PastSalesImport | null}
-  | {readonly name: "problem"; readonly reason: PastSalesStopReason; readonly detail: string | null; readonly summary: TryItSummary | null};
+  | {readonly name: "problem"; readonly reason: PastSalesStopReason;
+    /** The command's own reason (its details.reason, or result.reasons on a refusal), when it gave one. */
+    readonly code: string | null; readonly summary: TryItSummary | null};
 
 export interface PastSalesFlowState {
   readonly stage: PastSalesStage;
@@ -160,8 +162,8 @@ export function createPastSalesFlow(deps: PastSalesFlowDeps): PastSalesFlow {
     state = {...state, ...patch};
     for (const listener of listeners) listener();
   };
-  const stop = (reason: PastSalesStopReason, detail: string | null = null, summary: TryItSummary | null = null) =>
-    set({busy: false, stage: {name: "problem", reason, detail, summary}});
+  const stop = (reason: PastSalesStopReason, code: string | null = null, summary: TryItSummary | null = null) =>
+    set({busy: false, stage: {name: "problem", reason, code, summary}});
 
   async function refreshCaller(): Promise<TryItCaller | null> {
     const caller = await client.caller();

@@ -2,11 +2,13 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {cleanup, fireEvent, render as renderInto, within} from "@testing-library/react";
 import {StrictMode, type ReactNode} from "react";
 import {afterEach, describe, expect, it, vi} from "vitest";
+import {applyBrand} from "@content/brand";
 import {pastSalesTryItCopy as copy} from "@content/pastSalesTryIt";
+import reportsPage from "@content/playbook/pages/product/reports.json";
+import {validatedPlaybookPage, type PlaybookLeadForm} from "@content/playbook/playbookContract";
 import {tryItCopy} from "@content/tryIt";
 import {fixtureExportFile, pastSalesFixtures, scriptedPastSalesClient} from "../../stories/fixtures/pastSalesTryItCommands";
-import {loadPlaybookPage, resolvePlaybookPage} from "../playbook/playbookPages";
-import {PlaybookPage} from "../playbook/PlaybookPage";
+import {pastSalesToolNode} from "./PastSalesTool";
 import {providePastSalesDeps, type PastSalesToolDeps} from "./usePastSalesToolController";
 
 vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
@@ -16,12 +18,15 @@ afterEach(cleanup);
 /** Both site shells mount the query client the sign-in sheet's controller uses; StrictMode mounts the tool twice, as in development. */
 const render = (node: ReactNode) => renderInto(<StrictMode><QueryClientProvider client={new QueryClient()}>{node}</QueryClientProvider></StrictMode>);
 
-const reports = (await loadPlaybookPage(resolvePlaybookPage("/product/reports-and-payouts/")!))!;
+// The tool form as the page's try band writes it (content/playbook/pages/product/reports.json).
+const tryBand = applyBrand(validatedPlaybookPage(reportsPage)).sections.find((section) => section.id === "try");
+const form = (tryBand && "leadForm" in tryBand ? tryBand.leadForm : undefined) as PlaybookLeadForm;
 const bytes = new TextEncoder().encode("Name,Ticket,Amount\nAnanya Rao,General,400\n");
 
 function renderPage(client: PastSalesToolDeps["client"]) {
-  render(providePastSalesDeps({client, readFile: async () => bytes, today: () => "2026-11-20"}, <PlaybookPage captures={{}} page={reports} />));
-  return within(document.getElementById("try")!);
+  const view = render(providePastSalesDeps({client, readFile: async () => bytes, today: () => "2026-11-20"},
+    pastSalesToolNode({form, placement: "split", pageId: "product_reports", sectionId: "try"})));
+  return within(view.container);
 }
 
 function upload(band: ReturnType<typeof within>, file = fixtureExportFile()) {
@@ -29,16 +34,15 @@ function upload(band: ReturnType<typeof within>, file = fixtureExportFile()) {
   fireEvent.click(band.getByRole("button", {name: "Build my report"}));
 }
 
-describe("Reports' export upload on the page", () => {
-  it("draws the upload in the try band, keeps the numbers report right after it, and links the hero and closing band to it", () => {
+describe("Reports' export upload", () => {
+  it("draws the card with the page's file label, button and privacy note", () => {
     const band = renderPage(scriptedPastSalesClient({}));
     expect(band.getByRole("heading", {name: copy.title})).toBeTruthy();
     expect(band.getByRole("form", {name: copy.title})).toBeTruthy();
-    expect(band.getByRole("group", {name: "Your sales or guest export"})).toBeTruthy();
-    expect(document.getElementById("try")!.nextElementSibling?.id).toBe("numbers");
-    expect(within(document.getElementById("top")!).getByRole("link", {name: "See your last event as a report"}).getAttribute("href")).toBe("#try");
-    expect(within(document.getElementById("start")!).getByRole("link", {name: "Build my report"}).getAttribute("href")).toBe("#try");
-    expect(document.getElementById("start-try")).toBeNull();
+    expect(band.getByRole("group", {name: form.label})).toBeTruthy();
+    expect(band.getByRole("button", {name: form.submitLabel})).toBeTruthy();
+    expect(band.getByText(form.note!)).toBeTruthy();
+    expect(form.note).toMatch(/goes only to Catch/u);
   });
 
   it("says why a file can't be sent, before anything leaves the page", () => {
@@ -83,7 +87,7 @@ describe("Reports' export upload on the page", () => {
     expect(band.getByText(copy.report.currentFeeMissing)).toBeTruthy();
     expect(band.getByText(copy.report.differenceMissing)).toBeTruthy();
     // Nothing on the card is a money figure: the fee, the sales and the difference are dashes.
-    expect(document.getElementById("try")!.textContent).not.toMatch(/₹/u);
+    expect(document.body.textContent).not.toMatch(/₹/u);
   });
 
   it("asks for the columns when the file's can't be told apart, then shows the report", async () => {

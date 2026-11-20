@@ -191,7 +191,7 @@ describe("past sales flow: the file, the phone step and errors", () => {
     const {flow, stage} = flowWith(client);
     flow.chooseFile(fixtureExportFile());
     await flow.submit();
-    expect(stage()).toEqual({name: "problem", reason: "invalid", detail: "roster_unsupported_file", summary: null});
+    expect(stage()).toEqual({name: "problem", reason: "invalid", code: "roster_unsupported_file", summary: null});
     flow.startOver();
     expect(stage().name).toBe("start");
     expect(flow.getState().file).toEqual({name: "salt-air-sales.csv", size: fixtureExportFile().size});

@@ -35,6 +35,7 @@ import {
   type PastSalesDetailField,
   type PastSalesReport,
 } from "./pastSalesModel";
+import {columnMappingFields} from "./ColumnMapping";
 import {usePastSalesToolController, type PastSalesToolController} from "./usePastSalesToolController";
 
 const noop = () => undefined;
@@ -132,27 +133,34 @@ function AccountStep({controller}: {controller: PastSalesToolController}) {
   );
 }
 
-function MappingStep({controller, headers}: {controller: PastSalesToolController; headers: readonly string[]}) {
+function MappingStep({controller, headers, shapes}: {controller: PastSalesToolController; headers: readonly string[]; shapes: readonly string[]}) {
   const {state, flow} = controller;
-  const columns = headers.map((_, index) => index);
-  const label = (index: number) => headers[index]?.trim() || fill(copy.mapping.untitled, {number: String(index + 1)});
+  const mapping = copy.mapping;
+  const problem = Object.values(state.mappingProblems)[0];
   return (
-    <Form aria-label={copy.mapping.title} noValidate onSubmit={controller.submitMapping} pending={state.busy}>
+    <Form aria-label={mapping.title} noValidate onSubmit={controller.submitMapping} pending={state.busy}>
       <CatchStack gap={12}>
         <CatchStack aria-live="polite" gap={4} role="status">
-          <CatchText as="h3" variant="display-xs">{copy.mapping.title}</CatchText>
-          <CatchText as="p" tone="secondary" variant="body">{copy.mapping.lead}</CatchText>
+          <CatchText as="h3" variant="display-xs">{mapping.title}</CatchText>
+          <CatchText as="p" tone="secondary" variant="body">{mapping.lead}</CatchText>
         </CatchStack>
-        {pastSalesMappingFields.map((field) => {
-          const problem = state.mappingProblems[field];
-          return (
-            <CatchField<number> errorText={problem ? copy.mapping[problem] : null} hintText={copy.mapping.none} inputMode={state.busy ? "inactive" : "editable"}
-              itemLabelBuilder={label} itemValueBuilder={String} key={field} labelMode="visible" onChanged={(column) => flow.setMapping(field, column)}
-              recipe="select" required={field === "displayName"} title={copy.mapping.fields[field]} value={state.mapping[field]} values={columns} />
-          );
+        {columnMappingFields({
+          busy: state.busy,
+          errorText: problem ? mapping[problem] : null,
+          fields: pastSalesMappingFields.map((field) => ({id: field, label: mapping.fields[field], required: field === "displayName"})),
+          headers,
+          hints: shapes.map((shape) => mapping.shapes[shape] ?? null),
+          onChanged: flow.setMapping,
+          value: state.mapping,
+          words: {
+            column: (header, hint) => hint ? fill(mapping.column, {header, hint}) : header,
+            fieldLabel: (label) => label,
+            none: mapping.none,
+            untitled: (number) => fill(mapping.untitled, {number: String(number)}),
+          },
         })}
         <CatchStack align="start" direction="row" gap={8} wrap>
-          <CatchButton label={copy.mapping.submit} onPressed={noop} status={state.busy ? "loading" : "idle"} type="submit" />
+          <CatchButton label={mapping.submit} onPressed={noop} status={state.busy ? "loading" : "idle"} type="submit" />
           <CatchButton label={copy.review.back} onPressed={state.busy ? null : flow.startOver} variant="quiet" />
         </CatchStack>
       </CatchStack>
@@ -269,8 +277,8 @@ function ClaimInHost({phone, placement}: {phone: string | null; placement: strin
 }
 
 /** The problem's words: the command's own reason when the site words it, else the shared try-it words. */
-export function pastSalesProblemText(stage: Extract<PastSalesStage, {name: "problem"}>): string[] {
-  if (stage.detail && copy.reasons[stage.detail]) return [copy.reasons[stage.detail]];
+function pastSalesProblemText(stage: Extract<PastSalesStage, {name: "problem"}>): string[] {
+  if (stage.code && copy.reasons[stage.code]) return [copy.reasons[stage.code]];
   if (stage.reason === "refused") return stage.summary ? [stage.summary.headline, ...stage.summary.lines] : [copy.fileUnreadable];
   if (stage.reason === "invalid") return [copy.fileUnreadable];
   return [tryItCopy.problems[stage.reason]];
@@ -300,7 +308,7 @@ function StageBody({controller, form, analyticsPlacement}: PastSalesToolProps & 
         </CatchStack>
       );
     case "mapping":
-      return <MappingStep controller={controller} headers={stage.headers} />;
+      return <MappingStep controller={controller} headers={stage.headers} shapes={stage.shapes} />;
     case "review":
       return <ReviewStep controller={controller} stage={stage} />;
     case "done":
@@ -316,7 +324,7 @@ function StageBody({controller, form, analyticsPlacement}: PastSalesToolProps & 
         </CatchStack>
       );
     case "problem": {
-      const retriable = !finalProblems.has(stage.reason) && !(stage.detail && copy.reasons[stage.detail]);
+      const retriable = !finalProblems.has(stage.reason) && !(stage.code && copy.reasons[stage.code]);
       const [headline, ...lines] = pastSalesProblemText(stage);
       return (
         <CatchStack gap={12}>
@@ -339,7 +347,7 @@ function StageBody({controller, form, analyticsPlacement}: PastSalesToolProps & 
  * of that night and the fee comparison (sales.import-past), behind the
  * try-it phone step, saved to their private profile only when they say so.
  */
-export function PastSalesTool({form, analyticsPlacement}: PastSalesToolProps) {
+function PastSalesTool({form, analyticsPlacement}: PastSalesToolProps) {
   const controller = usePastSalesToolController();
   return (
     <CatchGroundCard ground="white" outlined>

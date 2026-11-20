@@ -45,6 +45,16 @@ export const pastSalesTryItCopy = {
     none: "Not in this file",
     /** {number} counts columns from 1, for a column with no heading. */
     untitled: "Column {number}",
+    /** A column in the list: {header}, and {hint}, what most of its cells look like. */
+    column: "{header} ({hint})",
+    /** What a column's cells look like, by the command's column shape; a shape not listed adds nothing. */
+    shapes: {
+      "phone-like": "phone numbers",
+      "email-like": "emails",
+      "date-like": "dates",
+      number: "numbers",
+      empty: "empty",
+    } as Readonly<Record<string, string>>,
     fields: {
       displayName: "Guest name",
       phone: "Phone number",
