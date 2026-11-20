@@ -22,6 +22,7 @@ import {Form} from "../../shared/ui/primitives";
 import {SignInSheetView} from "../account/SignInSheet";
 import {useSignInSheetController} from "../account/useSignInSheetController";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
+import {columnMappingFields} from "../tryIt/ColumnMapping";
 import {tryItCities, tryItLocalDate} from "../tryIt/tryItModel";
 import type {PastSalesFlowState, PastSalesStage} from "./pastSalesFlow";
 import {
@@ -35,7 +36,6 @@ import {
   type PastSalesDetailField,
   type PastSalesReport,
 } from "./pastSalesModel";
-import {columnMappingFields} from "./ColumnMapping";
 import {usePastSalesToolController, type PastSalesToolController} from "./usePastSalesToolController";
 
 const noop = () => undefined;
