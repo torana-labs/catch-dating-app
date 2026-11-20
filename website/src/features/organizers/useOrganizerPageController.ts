@@ -10,6 +10,8 @@ import {observeOrganizerProviders} from "./observeOrganizerProviders";
 import type {OrganizerPageRecord} from "./organizerPage";
 import {organizerPageView, type OrganizerEventView, type OrganizerLinkView} from "./organizerPageView";
 import type {HostListing} from "./types";
+import {catchPhoneDisplay, catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 /** A sent phone code: confirming it signs in (or links) that verified phone. */
 export interface PhoneCodeChallenge {
@@ -60,12 +62,6 @@ const newRequestId = () => (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-
 export type OrganizerPageRole = "guest";
 
 type FollowStep = "phone" | "code" | "done";
-
-const phoneDigits = (raw: string) => {
-  const digits = raw.replace(/\D/gu, "");
-  const local = digits.length === 12 && digits.startsWith("91") ? digits.slice(2) : digits;
-  return /^[6-9]\d{9}$/u.test(local) ? local : "";
-};
 
 export function useOrganizerPageController({backends = organizerPageBackends, listing, page, readAt}: {
   backends?: OrganizerPageBackends;
@@ -162,14 +158,14 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
   }
 
   async function sendCode() {
-    const local = phoneDigits(phone);
-    if (!local) {setFollowError(copy.followSheet.invalidPhone); return;}
+    const e164 = catchPhoneE164(phone, activePhoneCountry);
+    if (!e164) {setFollowError(copy.followSheet.invalidPhone); return;}
     if (!phoneFollow || phoneMutation.isPending) return;
     setFollowError("");
     try {
       await phoneMutation.mutateAsync(async () => {
         challenge.current?.clear();
-        challenge.current = await phoneFollow.sendCode({phoneNumber: `+91${local}`, recaptchaId});
+        challenge.current = await phoneFollow.sendCode({phoneNumber: e164, recaptchaId});
       });
       setCode(""); setFollowStep("code");
     } catch {setFollowError(copy.followSheet.failed);}
@@ -217,7 +213,8 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
     } catch {setReviewError(copy.reviewForm.failed);}
   }
 
-  const phoneShown = phoneDigits(phone);
+  const phoneE164 = catchPhoneE164(phone, activePhoneCountry);
+  const phoneShown = phoneE164 ? catchPhoneDisplay(phoneE164) : "";
   return {
     role,
     view,
@@ -234,7 +231,7 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
         step: followStep,
         number: phone,
         setNumber: (value: string) => {setPhone(value); setFollowError("");},
-        shown: phoneShown ? `+91 ${phoneShown.slice(0, 5)} ${phoneShown.slice(5)}` : "",
+        shown: phoneShown,
         code,
         setCode: (value: string) => {setCode(value.replace(/\D/gu, "").slice(0, 6)); setFollowError("");},
         recaptchaId,

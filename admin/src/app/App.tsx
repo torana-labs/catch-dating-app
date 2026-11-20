@@ -50,6 +50,7 @@ import {AdminQueryProvider} from "../shared/query/queryClient";
 import {dataMode} from "../shared/api/dataMode";
 import type {AdminRoleClaim} from "../shared/types/adminTypes";
 import {AdminPendingOperationProvider} from "../shared/pendingOperation";
+import {adminPhoneFieldCopy} from "../shared/ui/phoneFieldCopy";
 
 const AdminShellFrame = lazy(() => import("./AdminShellFrame").then((m) => ({default: m.AdminShellFrame})));
 const PartnerRouteApp = lazy(() => import("./PartnerRouteApp").then((m) => ({default: m.PartnerRouteApp})));
@@ -186,13 +187,13 @@ function AdminRouteApp() {
   }, [canResolveNavigation, currentNav, navigate, route.redirect, routeNav]);
 
   const handleRequestPhoneCode = useCallback(async () => {
-    // A number without a dialling code is read as Indian; the hint shows +91.
-    // The check's country metadata loads here, off the initial bundle.
+    // The field reports the number with its country's dialling code. The
+    // check's country metadata loads here, off the initial bundle.
     const {catchPhoneE164} = await import("@catch/web-ui/phone");
     const normalizedPhoneNumber = catchPhoneE164(phoneNumber, "IN");
     if (!normalizedPhoneNumber) {
       setAuthError(
-        "Enter a valid phone number with country code, such as +91 90000 00000."
+        "Enter a valid mobile number."
       );
       return;
     }
@@ -437,15 +438,15 @@ function SignInScreen({
         <AdminForm onSubmit={handlePhoneSubmit}>
           {phoneSignInStage === "phone" ? (
             <CatchField
-              recipe="input"
-              autoComplete="tel"
+              recipe="phone"
+              copy={adminPhoneFieldCopy}
+              countryCode="IN"
               inputMode={isSigningIn ? "inactive" : "editable"}
               title="Phone number"
               name="phone"
               onChanged={onPhoneNumberChange}
-              inputHint="+91 90000 00000"
+              inputHint="90000 00000"
               value={phoneNumber}
-              keyboardType="phone"
             />
           ) : (
             <>

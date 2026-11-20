@@ -15,6 +15,12 @@ type Story = StoryObj<typeof meta>;
 
 const cities = ["Delhi", "Mumbai", "Bengaluru"];
 
+const phoneCopy = {
+  country: "Country code", search: "Search countries", noMatches: "No country matches", close: "Close",
+  problems: {tooShort: "Too short for a mobile number in {country}", tooLong: "Too long for a mobile number in {country}",
+    notMobile: "Not a mobile number in {country}"},
+};
+
 function PinGlyph() {
   return (
     <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -29,6 +35,7 @@ function Fields() {
   const [bio, setBio] = useState("Sunday runs along the Yamuna.");
   const [city, setCity] = useState<string | null>("Mumbai");
   const [reminders, setReminders] = useState(true);
+  const [phone, setPhone] = useState("");
   return (
     <CatchGap size="formField">
       <CatchField recipe="input" title="Name" inputHint="Your full name" value={name}
@@ -54,6 +61,11 @@ function Fields() {
       <CatchField recipe="input" title="Your mobile number" prefixText="+91" keyboardType="phone"
         autoComplete="tel-national" inputHint="98765 43210" helperText="Your pass and updates come by text." />
       <CatchField recipe="input" title="Longest run" suffixText="km" keyboardType="decimal" value="21.1" />
+      <CatchField recipe="phone" title="Mobile number" copy={phoneCopy} countryCode="IN" inputHint="98765 43210"
+        value={phone} onChanged={setPhone} />
+      <CatchField recipe="phone" title="WhatsApp number" copy={phoneCopy} countryCode="IN" initialValue="+61 412 345 678" />
+      <CatchField recipe="phone" title="Verified number" copy={phoneCopy} countryCode="IN" inputMode="readOnly"
+        initialValue="+91 98765 43210" />
       <CatchField recipe="toggle" title="Show reminders" body="A note the evening before each plan"
         value={reminders} onChanged={setReminders} />
       <CatchField recipe="toggle" title="Locked setting" value onChanged={null} />
@@ -63,7 +75,7 @@ function Fields() {
   );
 }
 
-/** catch.field on the web: input, multiline input, select and toggle recipes. */
+/** catch.field on the web: input, multiline input, select, phone and toggle recipes. */
 export const Contract: Story = {
   render: () => (
     <>

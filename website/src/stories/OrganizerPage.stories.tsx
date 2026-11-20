@@ -182,6 +182,8 @@ export const FollowByPhone: Story = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", {name: "Follow"}));
+    // The phone lane loads on first use; type once its country chip is there.
+    await canvas.findByRole("button", {name: /Country code/u});
     await userEvent.type(canvas.getByLabelText(/Mobile number/u), "98765 43210");
     await userEvent.click(canvas.getByRole("button", {name: "Send code"}));
     await expect(canvas.getByText("Sent to +91 98765 43210.")).toBeInTheDocument();

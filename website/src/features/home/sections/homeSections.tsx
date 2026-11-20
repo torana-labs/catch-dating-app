@@ -23,7 +23,8 @@ import {
 import type {ReactNode} from "react";
 import {homeCityAreas, homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
-import {activeMarket} from "@content/markets";
+import {activePhoneCountry} from "@content/markets";
+import {phoneFieldCopy} from "@content/phoneField";
 import {guestAppActionLabel, guestAppHref, guestAppLive, whatsappChatCopy, whatsappChatHref} from "@content/site";
 import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
@@ -249,9 +250,9 @@ function CityAlertsBar({home}: {home: Home}) {
               <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={12}>
                 <CatchText as="p" variant="body"><CatchText as="span" variant="label-action">{words.title}</CatchText> {fill(words.body, {city})}</CatchText>
                 <CatchStack align="center" collapseBelow="medium" direction="row" gap={8} railWidth="fit">
-                  <CatchField autoComplete="tel-national" errorText={alerts.phoneProblem} inputHint={words.phone}
-                    inputMode={alerts.submitting ? "inactive" : "editable"} keyboardType="phone" labelMode="hidden" onChanged={alerts.setPhone}
-                    prefixText={activeMarket.dialCode} recipe="input" required title={words.phone} value={alerts.phone} />
+                  <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={alerts.phoneProblem} inputHint={words.phone}
+                    inputMode={alerts.submitting ? "inactive" : "editable"} labelMode="hidden" onChanged={alerts.setPhone}
+                    recipe="phone" required title={words.phone} value={alerts.phone} />
                   <CatchButton label={alerts.sendProblem ? words.retry : words.action} onPressed={() => undefined} size="sm"
                     status={alerts.submitting ? "loading" : "idle"} type="submit" />
                 </CatchStack>
@@ -275,9 +276,9 @@ function LaunchNoticeForm({home}: {home: Home}) {
       {notice.joined ? null : (
         <Form noValidate onSubmit={notice.handleSubmit} pending={notice.sending}>
           <CatchStack gap={12}>
-            <CatchField autoComplete="tel-national" errorText={notice.status.tone === "is-error" ? notice.status.message : null} inputHint={copy.notice.phoneHint}
-              inputMode={notice.sending ? "inactive" : "editable"} keyboardType="phone" labelMode="hidden" onChanged={notice.setPhone} prefixText={activeMarket.dialCode}
-              recipe="input" required title={copy.notice.phone} value={notice.phone} />
+            <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={notice.status.tone === "is-error" ? notice.status.message : null}
+              inputHint={copy.notice.phoneHint} inputMode={notice.sending ? "inactive" : "editable"} labelMode="hidden" onChanged={notice.setPhone}
+              recipe="phone" required title={copy.notice.phone} value={notice.phone} />
             <CatchCheckboxInput label={fill(copy.notice.marketing, {city})} onChanged={notice.sending ? null : notice.setMarketing} value={notice.marketing} />
             <CatchButton fill label={copy.notice.action} onPressed={() => undefined} status={notice.sending ? "loading" : "idle"} type="submit" />
             <CatchText tone="secondary" variant="body-small">{copy.notice.consent}</CatchText>
@@ -407,9 +408,9 @@ function AppNoticeForm({compact = false, home}: {compact?: boolean; home: Home})
   const notice = useAppNoticeController(city, undefined, {slug: home.city.slug, source: home.citySource});
   const notify = copy.app.notify;
   const field = (
-    <CatchField autoComplete="tel-national" errorText={notice.status.tone === "is-error" ? notice.status.message : null} inputHint={notify.phoneHint}
-      inputMode={notice.sending ? "inactive" : "editable"} keyboardType="phone" labelMode="hidden" onChanged={notice.setPhone} prefixText={activeMarket.dialCode}
-      recipe="input" required title={notify.phone} value={notice.phone} />
+    <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={notice.status.tone === "is-error" ? notice.status.message : null}
+      inputHint={notify.phoneHint} inputMode={notice.sending ? "inactive" : "editable"} labelMode="hidden" onChanged={notice.setPhone}
+      recipe="phone" required title={notify.phone} value={notice.phone} />
   );
   const submit = (
     <CatchButton label={notify.action} onPressed={() => undefined} size={compact ? "sm" : "lg"} status={notice.sending ? "loading" : "idle"} type="submit" />
@@ -492,17 +493,19 @@ function HomeApp({downloadUrl, home}: {downloadUrl?: string; home: Home}) {
 function HostReferralForm({home}: {home: Home}) {
   const refer = useHostReferralController({label: home.city.label, slug: home.city.slug, source: home.citySource});
   const words = copy.refer;
-  const field = (name: HostReferralField, title: string, autoComplete?: string) => (
-    <CatchField autoComplete={autoComplete} errorText={refer.problem(name)} inputHint={title} inputMode={refer.submitting ? "inactive" : "editable"}
-      labelMode="hidden" onChanged={refer.set(name)} recipe="input" required title={title}
-      keyboardType={name === "phone" ? "phone" : undefined} prefixText={name === "phone" ? activeMarket.dialCode : undefined} value={refer.answers[name]} />
-  );
+  const field = (name: HostReferralField, title: string, autoComplete?: string) => {
+    const shared = {errorText: refer.problem(name), inputHint: title, inputMode: refer.submitting ? "inactive" as const : "editable" as const,
+      labelMode: "hidden" as const, onChanged: refer.set(name), required: true, title, value: refer.answers[name]};
+    return name === "phone" ?
+      <CatchField {...shared} copy={phoneFieldCopy} countryCode={activePhoneCountry} recipe="phone" /> :
+      <CatchField {...shared} autoComplete={autoComplete} recipe="input" />;
+  };
   return (
     <CatchStack gap={12}>
       {refer.sent ? null : (
         <Form aria-label={words.title} noValidate onSubmit={refer.handleSubmit} pending={refer.submitting}>
           <CatchStack gap={12}>
-            <CatchStack collapseBelow="medium" direction="row" equal gap={8}>{field("fullName", words.name, "name")}{field("phone", words.phone, "tel-national")}</CatchStack>
+            <CatchStack collapseBelow="medium" direction="row" equal gap={8}>{field("fullName", words.name, "name")}{field("phone", words.phone)}</CatchStack>
             <CatchStack collapseBelow="medium" direction="row" equal gap={8}>{field("hostName", words.hostName, "off")}{field("hostLink", words.hostLink, "off")}</CatchStack>
             {field("relationship", words.relationship, "off")}
             <CatchStack align="start">

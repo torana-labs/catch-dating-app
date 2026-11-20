@@ -1,11 +1,12 @@
 import {CatchButton, CatchCtaSection, CatchField, CatchStack, CatchText, type CatchBandGround} from "@catch/web-ui";
 import {cityAlertsCopy as copy} from "@content/discovery/cityAlerts";
 import {interpolateContent as fill} from "@content/interpolate";
-import {activeMarket} from "@content/markets";
 import type {ReactNode} from "react";
 import {Form} from "../../shared/ui/primitives";
 import type {CityAlertInterest, CityAlertPlace} from "./cityAlertsModel";
 import {useCityAlertsController, type CityAlertsController} from "./useCityAlertsController";
+import {phoneFieldCopy} from "@content/phoneField";
+import {activePhoneCountry} from "@content/markets";
 
 /** The band's anchor, which every page's "Get notified" action points at. */
 export const cityAlertsAnchor = "notify";
@@ -22,8 +23,8 @@ function CityAlertsForm({alerts, city}: {alerts: CityAlertsController; city: str
         <Form noValidate onSubmit={alerts.handleSubmit} pending={alerts.sending}>
           <CatchStack gap={8}>
             <CatchStack collapseBelow="medium" direction="row" gap={8} railWidth="fit">
-              <CatchField autoComplete="tel-national" errorText={alerts.error} inputMode={alerts.sending ? "inactive" : "editable"}
-                keyboardType="phone" labelMode="hidden" onChanged={alerts.setPhone} prefixText={activeMarket.dialCode} recipe="input" required
+              <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={alerts.error}
+                inputMode={alerts.sending ? "inactive" : "editable"} labelMode="hidden" onChanged={alerts.setPhone} recipe="phone" required
                 title={copy.phone} value={alerts.phone} />
               <CatchButton label={copy.action} onPressed={() => undefined} status={alerts.sending ? "loading" : "idle"} type="submit" />
             </CatchStack>

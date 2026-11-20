@@ -4942,6 +4942,10 @@
         "symbol": "CatchField",
         "file": "packages/web-ui/src/components/CatchField.tsx",
         "api": "styled",
+        "additionalSymbols": [
+          "CatchFieldPhone",
+          "CatchFieldCountryList"
+        ],
         "storybook": {
           "status": "ready",
           "story": "packages/web-ui/src/components/CatchField.stories.tsx",
@@ -4963,7 +4967,7 @@
             "dark"
           ]
         },
-        "notes": "React implements CatchField.input and CatchField.select as recipe=\"input\" | \"select\" on one component. The input recipe takes a controlled value where Flutter passes a controller, renders a text area when maxLines is not 1, and adds native min, max, step, pattern and minLength. The select recipe keys options through itemValueBuilder because web options are strings, and takes labelMode where Flutter's select takes showLabel. Native form attributes (id, name, form, required, autoComplete) pass through. Inside a Website v2 CatchGroundCard the field takes the boards' boxed input at rest from the card's --catch-field-rest-fill, --catch-field-rest-line and --catch-field-rest-stroke (field.restLineAlpha, field.restTintOnDarkAlpha); elsewhere it stays the quiet row. Flutter's always-editable CatchField.input now draws the boxed input (label above, 52px box, radius 12, field line) everywhere; the React recipe has not followed yet."
+        "notes": "React implements CatchField.input and CatchField.select as recipe=\"input\" | \"select\" on one component. The input recipe takes a controlled value where Flutter passes a controller, renders a text area when maxLines is not 1, and adds native min, max, step, pattern and minLength. The select recipe keys options through itemValueBuilder because web options are strings, and takes labelMode where Flutter's select takes showLabel. Native form attributes (id, name, form, required, autoComplete) pass through. Inside a Website v2 CatchGroundCard the field takes the boards' boxed input at rest from the card's --catch-field-rest-fill, --catch-field-rest-line and --catch-field-rest-stroke (field.restLineAlpha, field.restTintOnDarkAlpha); elsewhere it stays the quiet row. Flutter's always-editable CatchField.input now draws the boxed input (label above, 52px box, radius 12, field line) everywhere; the React recipe has not followed yet. The phone recipe (issue #2144) puts the dialling code in a chip that opens CatchFieldCountryList, and checks the number as a mobile number in its country; its lane, CatchFieldPhone, loads on first use so the country metadata stays out of pages without a phone field."
       },
       "level": "L3",
       "roleNoun": "Field",

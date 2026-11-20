@@ -41,7 +41,7 @@ async function register() {
   expect(screen.queryByRole("region", {name: "Event WhatsApp preferences"})).toBeNull();
   const name = await screen.findByLabelText(copy.nameLabel) as HTMLInputElement;
   expect(name.value).toBe("Fixture Guest");
-  expect((screen.getByLabelText(copy.phoneLabel) as HTMLInputElement).value).toBe("+919999999999");
+  expect((screen.getByLabelText(copy.phoneLabel) as HTMLInputElement).value).toBe("9999999999");
   fireEvent.click(screen.getByRole("button", {name: copy.registerAction}));
   await waitFor(() => expect(api.register).toHaveBeenCalledOnce());
 }

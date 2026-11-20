@@ -17,6 +17,8 @@ import type {SupplyIntakePolicy} from "../api/supplyIntakePolicyRepository";
 import type {ListingProgramController} from "../controllers/useListingProgramController";
 import type {SupplyIntakePolicyController} from "../controllers/useSupplyIntakePolicyController";
 import {nominatorSender, type SupplyNominatorController} from "../controllers/useSupplyNominatorController";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {adminPhoneFieldCopy} from "../../../../shared/ui/phoneFieldCopy";
 
 export type IntakePoliciesModel = Pick<SupplyIntakePolicyController, "policies" | "decide" | "isDeciding"> & {
   isLoading: boolean;
@@ -52,7 +54,6 @@ const channels: Array<{value: Channel; label: string}> = [
 ];
 const cities = [{value: "", label: "No default city"},
   ...launchMarkets.map((market) => ({value: market.publicPageCitySlug, label: market.cityName}))];
-const PHONE = /^\+[1-9][0-9]{6,14}$/u;
 const HANDLE = /^[a-z0-9._]{1,30}$/u;
 
 function policyState(policy: SupplyIntakePolicy): [string, CatchBadgeTone] {
@@ -168,10 +169,10 @@ function NominatorSheet({model, onClose}: {model: IntakeNominatorsModel; onClose
   const [role, setRole] = useState<Role>("associate");
   const [city, setCity] = useState("mumbai");
   const [active, setActive] = useState(true);
-  const phoneE164 = phone.replace(/[\s-]/gu, "");
+  const phoneE164 = catchPhoneE164(phone, "IN");
   const instagramHandle = instagramUsername(handle);
   const endpoint = channel === "whatsapp" ?
-    (PHONE.test(phoneE164) ? {phoneE164} : null) :
+    (phoneE164 ? {phoneE164} : null) :
     (HANDLE.test(instagramHandle) ? {instagramHandle} : null);
   const ready = endpoint !== null && displayName.trim().length > 0 && /^[A-Za-z0-9_-]{1,128}$/u.test(uid.trim());
   const submit = async () => {
@@ -189,8 +190,8 @@ function NominatorSheet({model, onClose}: {model: IntakeNominatorsModel; onClose
           itemLabelBuilder={(value) => channels.find((entry) => entry.value === value)?.label ?? value}
           onChanged={(value) => setChannel((value ?? "whatsapp") as Channel)} />
         {channel === "whatsapp" ?
-          <CatchField recipe="input" title="WhatsApp number" maxLength={20} value={phone} onChanged={setPhone}
-            helperText="With the country code, like +919800012345. Re-enter a number to change or switch it off." /> :
+          <CatchField recipe="phone" copy={adminPhoneFieldCopy} countryCode="IN" title="WhatsApp number" value={phone} onChanged={setPhone}
+            helperText="Re-enter a number to change or switch it off." /> :
           <CatchField recipe="input" title="Instagram username" maxLength={80} value={handle} onChanged={setHandle}
             helperText="Their username or profile link. Re-enter a username to change or switch it off." />}
         <CatchField recipe="input" title="Name" maxLength={80} value={displayName} onChanged={setDisplayName} />

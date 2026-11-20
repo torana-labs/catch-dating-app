@@ -61,7 +61,7 @@ export const listingRequestCopy = {
     name: {label: "Your full name"},
     role: {label: "Who are you?"},
     email: {label: "Email", hint: "you@yourorganisation.example", help: "We reply here."},
-    phone: {label: "Phone (optional)", hint: "+91 98765 43210"},
+    phone: {label: "Phone (optional)", hint: "98765 43210"},
     organisation: {label: "Organisation (optional)"},
     proofTitle: "How you'll show it's you",
     context: {label: "Anything we should know? (optional)", help: "One or two lines, up to {max} characters."},

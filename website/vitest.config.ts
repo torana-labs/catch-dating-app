@@ -25,6 +25,7 @@ export default mergeConfig(
               replacement: path.join(dirname, "src/stories/fixtures/syntheticHostListings.json"),
             }],
             include: ["src/**/*.test.{ts,tsx}"],
+            setupFiles: ["src/stories/fixtures/phoneLaneSetup.tsx"],
             mockReset: true,
             restoreMocks: true,
           },

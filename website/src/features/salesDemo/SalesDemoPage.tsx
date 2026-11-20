@@ -26,6 +26,7 @@ import {grantFromSalesDemoFragment, salesDemoActionTitle,
   "./salesDemoModel";
 import {useSalesDemoController} from "./useSalesDemoController";
 import {catchPhoneE164} from "@catch/web-ui/phone";
+import {phoneFieldCopy} from "@content/phoneField";
 import {activePhoneCountry} from "@content/markets";
 
 export function SalesDemoPage({api, auth = websiteSalesDemoAuth}: {
@@ -215,15 +216,15 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
             }} size="md" variant="quiet" /> : null}
         </Actions>
         <CatchField
-          recipe="input"
+          recipe="phone"
           id="sales-demo-phone"
           title={salesDemoCopy.orVerifyPhoneInternationalFormat}
-          autoComplete="tel"
+          copy={phoneFieldCopy}
+          countryCode={activePhoneCountry}
           value={phone}
           inputMode={busy || Boolean(challenge) ? "inactive" : "editable"}
           onChanged={(value) => setPhone(value)}
           inputHint={salesDemoCopy.phonePlaceholder}
-          keyboardType="phone"
         />
         <div id="sales-demo-recaptcha" />
         {!challenge ? <Actions><CatchButton label={salesDemoCopy.sendVerificationCode}

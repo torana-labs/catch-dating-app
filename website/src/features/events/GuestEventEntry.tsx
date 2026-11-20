@@ -9,6 +9,8 @@ import {guestEventAction, type GuestEventState} from "./guestEventAction";
 import {PublicEventRegistration} from "./PublicEventRegistration";
 import {useApprovalNotificationsController} from "./useApprovalNotificationsController";
 import {useGuestEventController} from "./useGuestEventController";
+import {phoneFieldCopy} from "@content/phoneField";
+import {activePhoneCountry} from "@content/markets";
 
 type Controller = ReturnType<typeof useGuestEventController>;
 type Flow = {uid: string; mode: "free" | "paid"};
@@ -94,14 +96,14 @@ function PhoneStep({c}: {c: Controller}) {
           />
         ) : (
           <CatchField
-            autoComplete="tel"
+            copy={phoneFieldCopy}
+            countryCode={activePhoneCountry}
             errorText={c.message || null}
             helperText={eventPageCopy.booking.phoneNote}
             id={`${c.recaptchaId}-phone`}
             inputMode={c.pending ? "inactive" : "editable"}
-            keyboardType="phone"
             onChanged={(value) => c.setPhone(value)}
-            recipe="input"
+            recipe="phone"
             title={copy.phone}
             value={c.phone}
           />

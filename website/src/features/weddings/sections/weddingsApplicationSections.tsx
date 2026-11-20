@@ -25,6 +25,8 @@ import {weddingsApplyCopy} from "../../../content/weddingsApply";
 import {PublicSiteFooter, WebsitePageMain} from "../../../shared/site";
 import type {WeddingsApplicationController, WeddingsStepOne} from "../useWeddingsController";
 import {firstName, sentSummary, stepTwoContact, stepTwoSummary} from "../weddingsModel";
+import {phoneFieldCopy} from "@content/phoneField";
+import {activePhoneCountry} from "@content/markets";
 
 const one = weddingsCopy.stepOne;
 const two = weddingsCopy.stepTwo;
@@ -95,8 +97,8 @@ export function StepOneCard({stepOne, onContinue, continueHref, idPrefix, titleA
         <CatchField autoComplete="organization" inputHint={one.company.hint} onChanged={(value) => update("company", value)} recipe="input" title={one.company.label}
           value={draft.company} />
       </CatchStack>
-      <CatchField autoComplete="tel-national" errorText={errors.phone} inputHint={one.phone.hint} keyboardType="phone" onChanged={(value) => update("phone", value)}
-        prefixText={one.phone.prefix} recipe="input" title={one.phone.label} value={draft.phone} />
+      <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={errors.phone} inputHint={one.phone.hint}
+        onChanged={(value) => update("phone", value)} recipe="phone" title={one.phone.label} value={draft.phone} />
       <CatchStack collapseBelow="medium" direction="row" equal gap={12}>
         <CatchField errorText={errors.date} keyboardType="date" onChanged={(value) => update("date", value)} recipe="input" title={one.date.label} value={draft.date} />
         <CatchField errorText={errors.destination} inputHint={one.destination.hint} onChanged={(value) => update("destination", value)} recipe="input"

@@ -54,6 +54,9 @@ import {
   eventRuntimeCeremonyTickMs,
   resolveEventRuntimeMarqueeFrame,
 } from "./eventRuntimeMotion";
+import {phoneFieldCopy} from "@content/phoneField";
+import {catchPhoneDisplay} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 export type EventRuntimeController = ReturnType<typeof useEventRuntimeController>;
 type RuntimeEvent = EventRuntimeBootstrap["event"];
@@ -147,8 +150,8 @@ function RuntimeStage({controller, format}: {controller: EventRuntimeController;
           <JoinHead body={copy.joinLead} event={event} title={event ? copy.joinTitle(event.title) : copy.phoneTitle} />
           <Form onSubmit={controller.handlePhoneSubmit} pending={pending}>
             <CatchStack gap={16}>
-              <CatchField autoComplete="tel" id="event-runtime-phone" inputHint={copy.phonePlaceholder}
-                keyboardType="phone" onChanged={(value) => controller.setPhoneNumber(value)} recipe="input"
+              <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} id="event-runtime-phone" inputHint={copy.phonePlaceholder}
+                onChanged={(value) => controller.setPhoneNumber(value)} recipe="phone"
                 title={copy.phoneLabel} value={controller.phoneNumber} />
               <div id={controller.recaptchaContainerId} />
               <CatchButton fill label={copy.sendCode} onPressed={noop} status={pending ? "loading" : "idle"} type="submit" />
@@ -181,7 +184,7 @@ function RuntimeStage({controller, format}: {controller: EventRuntimeController;
             <CatchStack gap={16}>
               {controller.phoneNumber ? (
                 <CatchField id="event-runtime-phone-verified" inputMode="readOnly" keyboardType="phone" recipe="input"
-                  suffixText={copy.verified} title={copy.phoneLabel} value={controller.phoneNumber} />
+                  suffixText={copy.verified} title={copy.phoneLabel} value={catchPhoneDisplay(controller.phoneNumber)} />
               ) : null}
               <CatchField autoComplete="name" id="event-runtime-name" maxLength={120}
                 onChanged={(value) => controller.setDisplayName(value)} recipe="input"

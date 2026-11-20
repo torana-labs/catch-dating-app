@@ -1,6 +1,8 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchField, CatchGap} from "@catch/web-ui";
 import {eventRuntimeCopy} from "../content/eventRuntime";
+import {activePhoneCountry} from "../content/markets";
+import {phoneFieldCopy} from "../content/phoneField";
 import {PageShell} from "../shared/site/PageShell";
 import {Button} from "../shared/ui/primitives/actions";
 import {EventRuntimeFrame, EventRuntimePanel} from "../shared/ui/primitives/eventRuntime";
@@ -25,8 +27,8 @@ export const JoinPhoneCheckIn: Story = {
       <EventRuntimeFrame brandLabel={eventRuntimeCopy.brand} brandWord={eventRuntimeCopy.brandWord} eventTitle={demoEventName}>
         <EventRuntimePanel body={eventRuntimeCopy.phoneBody} kicker={eventRuntimeCopy.phoneKicker} title={eventRuntimeCopy.phoneTitle}>
           <Form onSubmit={(event) => event.preventDefault()}><CatchGap size="formField">
-            <CatchField recipe="input" id="web-capture-join-phone" title={eventRuntimeCopy.phoneLabel}
-              inputHint={eventRuntimeCopy.phonePlaceholder} keyboardType="phone" />
+            <CatchField recipe="phone" copy={phoneFieldCopy} countryCode={activePhoneCountry} id="web-capture-join-phone"
+              title={eventRuntimeCopy.phoneLabel} inputHint={eventRuntimeCopy.phonePlaceholder} />
             <Button type="submit">{eventRuntimeCopy.sendCode}</Button>
           </CatchGap></Form>
         </EventRuntimePanel>

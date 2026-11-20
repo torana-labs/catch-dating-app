@@ -3,11 +3,31 @@ import {
   type FocusEvent,
   type KeyboardEvent,
   type ReactNode,
+  lazy,
+  Suspense,
   useId,
   useState,
 } from "react";
+import type {CatchPhoneCountryCode} from "../phone";
+import type {CatchFieldPhoneCopy} from "./CatchFieldPhone";
 import {CatchToggleInput} from "./CatchToggleInput";
 import styles from "./CatchField.module.css";
+
+/*
+ * The phone lane carries the country metadata (about 34 KB gzipped), so it
+ * loads only where a phone field renders, not with every field. A server
+ * render waits for it; in the browser the inert lane below holds its place.
+ */
+const CatchFieldPhoneLane = lazy(() => import("./CatchFieldPhone").then((module) => ({default: module.CatchFieldPhone})));
+
+function CatchFieldPhoneLoading({id, inputHint}: {id: string; inputHint?: string}) {
+  return (
+    <span className={styles.affixLane} data-phone="">
+      <span aria-hidden="true" className={styles.phoneChip} />
+      <input className={styles.control} id={id} placeholder={inputHint} readOnly type="tel" value="" />
+    </span>
+  );
+}
 
 /** Flutter `CatchFieldLabelTextMode`; hidden labels keep their accessible name. */
 export type CatchFieldLabelTextMode = "visible" | "hidden";
@@ -119,7 +139,36 @@ export interface CatchFieldToggleProps extends Omit<CatchFieldCommonProps, "labe
   value: boolean;
 }
 
-export type CatchFieldProps<T = string> = CatchFieldInputProps | CatchFieldSelectProps<T> | CatchFieldToggleProps;
+/**
+ * A mobile number (issue #2144): the same box as `input`, with the country's
+ * dialling code in a grey chip that opens the country list. The field reports
+ * the whole number, dialling code first ("+91 98765 43210"), so a form checks
+ * it with one call (@catch/web-ui/phone). It says nothing under the box until
+ * the number is wrong and the reader has left it.
+ */
+export interface CatchFieldPhoneProps extends Omit<CatchFieldCommonProps, "leading"> {
+  autofocus?: boolean;
+  copy: CatchFieldPhoneCopy;
+  /** The site's country: a number starts in it, and it heads the list. */
+  countryCode: CatchPhoneCountryCode;
+  /** Uncontrolled starting number, dialling code first. */
+  initialValue?: string;
+  inputHint?: string;
+  /** Names the countries in the list; the website's locale by default. */
+  locale?: string;
+  onBlur?: (value: string) => void;
+  onChanged?: (value: string) => void;
+  onSubmitted?: (value: string) => void;
+  recipe: "phone";
+  /** The number, dialling code first, or "" while empty. */
+  value?: string;
+}
+
+export type CatchFieldProps<T = string> =
+  | CatchFieldInputProps
+  | CatchFieldSelectProps<T>
+  | CatchFieldToggleProps
+  | CatchFieldPhoneProps;
 
 const nativeKeyboard: Record<CatchFieldKeyboardType, {type: string; inputMode?: "decimal" | "email" | "numeric" | "tel" | "url"}> = {
   text: {type: "text"},
@@ -135,8 +184,8 @@ const nativeKeyboard: Record<CatchFieldKeyboardType, {type: string; inputMode?: 
 
 /**
  * A labelled form field in one recipe of Flutter's `CatchField`: `input` for
- * text (a text area when it spans lines), `select` for one of a list and
- * `toggle` for a setting that is on or off. The
+ * text (a text area when it spans lines), `select` for one of a list,
+ * `toggle` for a setting that is on or off and `phone` for a mobile number. The
  * field paints a quiet row at rest and an active tile while focused; the
  * caller passes resolved copy. Inside a `CatchGroundCard` it takes the Website
  * v2 boards' boxed input at rest instead, from the card's
@@ -151,8 +200,10 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
   const [uncontrolledLength, setUncontrolledLength] = useState(
     props.recipe === "input" ? (props.initialValue ?? "").length : 0,
   );
+  const [phoneTyped, setPhoneTyped] = useState(props.recipe === "phone" ? props.initialValue ?? "" : "");
+  const [phoneProblem, setPhoneProblem] = useState<string | null>(null);
   const inputMode = props.inputMode ?? "editable";
-  const error = props.errorText?.trim() ? props.errorText.trim() : null;
+  const error = props.errorText?.trim() ? props.errorText.trim() : phoneProblem;
   const support = error ?? (props.helperText?.trim() ? props.helperText.trim() : null);
   const labelHidden = props.recipe !== "toggle" && props.labelMode === "hidden";
 
@@ -184,10 +235,40 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
     onFocus: () => setFocused(true),
   };
 
+  const leading = props.recipe === "phone" ? undefined : props.leading;
   let control: ReactNode;
   let counter: string | null = null;
   let counterVisible = false;
-  if (props.recipe === "input") {
+  if (props.recipe === "phone") {
+    const phone = props;
+    const value = phone.value ?? phoneTyped;
+    control = (
+      <Suspense fallback={<CatchFieldPhoneLoading id={id} inputHint={phone.inputHint} />}>
+      <CatchFieldPhoneLane
+        autoComplete={phone.autoComplete}
+        autoFocus={phone.autofocus}
+        copy={phone.copy}
+        countryCode={phone.countryCode}
+        describedBy={support ? supportId : undefined}
+        disabled={inputMode === "inactive"}
+        form={phone.form}
+        id={id}
+        inputHint={phone.inputHint}
+        invalid={error !== null}
+        locale={phone.locale ?? "en-IN"}
+        name={phone.name}
+        onBlur={(blurred) => {setFocused(false); phone.onBlur?.(blurred);}}
+        onFocus={() => setFocused(true)}
+        onProblem={setPhoneProblem}
+        onSubmitted={phone.onSubmitted}
+        onValue={(next) => {if (phone.value === undefined) setPhoneTyped(next); phone.onChanged?.(next);}}
+        readOnly={inputMode === "readOnly"}
+        required={phone.required}
+        value={value}
+      />
+      </Suspense>
+    );
+  } else if (props.recipe === "input") {
     const multiline = props.maxLines !== 1 && props.maxLines !== undefined;
     const length = props.value !== undefined ? props.value.length : uncontrolledLength;
     if (props.maxLength !== undefined) {
@@ -318,11 +399,11 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
       className={styles.field}
       data-focused={focused || undefined}
       data-input-mode={inputMode}
-      data-leading={props.leading ? "" : undefined}
+      data-leading={leading ? "" : undefined}
       data-recipe={props.recipe}
       data-status={error ? "error" : undefined}
     >
-      {props.leading ? <span aria-hidden="true" className={styles.leading}>{props.leading}</span> : null}
+      {leading ? <span aria-hidden="true" className={styles.leading}>{leading}</span> : null}
       <label className={labelHidden ? styles.hiddenLabel : styles.caption} htmlFor={id}>
         {props.title}
       </label>

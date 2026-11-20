@@ -65,15 +65,14 @@ describe("public form choices", () => {
     fireEvent.change(select, {target: {value: "in-mh-mumbai"}});
     expect(change).toHaveBeenCalledWith("city", "in-mh-mumbai");
   });
-  it("shows an India country picker instead of asking people to type +91", () => {
+  it("reads a phone answer in the site's country, its dialling code in the field's chip", () => {
     const change = renderForm({...city, label: "Phone number", kind: "phone",
       options: [], canonicalFieldId: null}, "+919876543210");
     const number = screen.getByRole("textbox", {name: "Phone number"}) as HTMLInputElement;
-    const country = screen.getByRole("combobox", {name: "Country code"}) as HTMLSelectElement;
-    expect(country.value).toBe("+91");
+    expect(screen.getByRole("button", {name: "Country code: India +91"})).toBeTruthy();
     expect(number.value).toBe("9876543210");
     fireEvent.change(number, {target: {value: "9876543211"}});
-    expect(change).toHaveBeenCalledWith("city", "+919876543211");
+    expect(change).toHaveBeenCalledWith("city", "+91 9876543211");
   });
 
   it("puts phone verification within the first page without duplicating the phone field", () => {
@@ -98,8 +97,8 @@ describe("public form choices", () => {
     expect(screen.getByRole("button", {name: "Send code"})).toBeTruthy();
     fireEvent.change(screen.getByRole("textbox", {name: "Mobile number"}),
       {target: {value: "9876543210"}});
-    expect(setPhoneNumber).toHaveBeenCalledWith("+919876543210");
-    expect(updateAnswer).toHaveBeenCalledWith("mobile", "+919876543210");
+    expect(setPhoneNumber).toHaveBeenCalledWith("+91 9876543210");
+    expect(updateAnswer).toHaveBeenCalledWith("mobile", "+91 9876543210");
   });
 
   it("requests validation when a field loses focus", () => {

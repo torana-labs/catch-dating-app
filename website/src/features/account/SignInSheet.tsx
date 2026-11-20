@@ -9,6 +9,8 @@ import {readLocal, signedInHintKey, writeLocal} from "./signInModel";
 import {SiteAccountMenu} from "./SiteAccountMenu";
 import {useSignInSheetController, type SignInSheetController} from "./useSignInSheetController";
 import {useSiteAccountMenuController} from "./useSiteAccountMenuController";
+import {phoneFieldCopy} from "@content/phoneField";
+import {activePhoneCountry} from "@content/markets";
 
 const noop = () => undefined;
 /** 0:28: minutes and two-digit seconds, as the apps count down. */
@@ -86,8 +88,8 @@ function SignInSteps({sheet}: {sheet: SignInSheetController}) {
   return (
     <Form noValidate onSubmit={sheet.sendCode} pending={sheet.pending}>
       <CatchStack gap={12}>
-        <CatchField autoComplete="tel" inputMode={sheet.pending ? "inactive" : "editable"} keyboardType="phone"
-          onChanged={sheet.setPhone} recipe="input" title={copy.phone} value={sheet.phone} />
+        <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} inputMode={sheet.pending ? "inactive" : "editable"}
+          onChanged={sheet.setPhone} recipe="phone" title={copy.phone} value={sheet.phone} />
         <CatchButton fullWidth label={copy.sendCode} onPressed={noop} status={busy} type="submit" />
         <CatchText align="center" as="p" variant="body-small">{copy.noPasswords}</CatchText>
       </CatchStack>

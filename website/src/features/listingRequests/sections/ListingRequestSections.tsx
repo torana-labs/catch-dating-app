@@ -17,6 +17,8 @@ import {
 } from "@catch/web-ui";
 import {interpolateContent as fill} from "@content/interpolate";
 import {listingRequestCopy as copy} from "@content/listingRequest";
+import {activePhoneCountry} from "@content/markets";
+import {phoneFieldCopy} from "@content/phoneField";
 import type {ReactNode} from "react";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {
@@ -240,7 +242,8 @@ function DetailsStep({controller}: {controller: ListingRequestController}) {
         options={roles} selected={(role) => draft.role === role} />
       <CatchStack collapseBelow="medium" direction="row" equal gap={12}>
         {input(controller, "email", d.email.label, {autoComplete: "email", help: d.email.help, hint: d.email.hint, keyboard: "emailAddress"})}
-        {input(controller, "phone", d.phone.label, {autoComplete: "tel", hint: d.phone.hint, keyboard: "phone"})}
+        <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={controller.errors.phone} inputHint={d.phone.hint}
+          onChanged={(value) => controller.update("phone", value as never)} recipe="phone" title={d.phone.label} value={String(draft.phone ?? "")} />
       </CatchStack>
       <ProofFields controller={controller} />
       {input(controller, "context", d.context.label, {help: fill(d.context.help, {max: contextMax}), lines: 3, maxLength: contextMax})}
