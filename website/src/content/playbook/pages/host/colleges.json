@@ -41,7 +41,7 @@
           {"label": "First years", "value": "81"}
         ]
       },
-      "media": {"kind": "capture", "slot": "host-today"}
+      "media": {"kind": "capture", "slot": "host-form-responses"}
     },
     {
       "type": "tiles",

@@ -202,7 +202,7 @@
       ],
       "media": {
         "kind": "capture",
-        "slot": "guest-explore"
+        "slot": "host-event-share-links"
       }
     },
     {

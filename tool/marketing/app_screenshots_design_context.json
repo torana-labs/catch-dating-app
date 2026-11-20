@@ -98,8 +98,8 @@
         "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-today.png"
       },
       "copy": {
-        "alt": "Catch Host on a Saturday: a trivia social tonight, two things left before doors",
-        "caption": "Today in Catch Host: tonight's event and what's left before doors.",
+        "alt": "Catch Host on a Saturday: a trivia social tonight, two applications waiting on a decision and two more events this week",
+        "caption": "Today in Catch Host: tonight's event, what needs you and the rest of the week.",
         "walkthroughStep": "Today"
       }
     },
@@ -286,8 +286,55 @@
         "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-post-event-report.png"
       },
       "copy": {
-        "alt": "Catch Host's report after the event: who came, who'd come back and what's next",
-        "caption": "After the night: who came and who'd come back.",
+        "alt": "Catch Host's report after the trivia social: 18 came, 12 of them new, rated 4.7 by three guests",
+        "caption": "After the night: who came, who was new and what they said.",
+        "walkthroughStep": "Follow up"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-post-event-report-more",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host event report, further down",
+      "fixtureKey": "hostMarketingIndia.host.postEventReportMore",
+      "captureId": "host_post_event_report_more",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report-more.png",
+        "websitePath": "website/public/assets/app-screenshots/host-post-event-report-more.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-post-event-report-more.png"
+      },
+      "copy": {
+        "alt": "Further down the same report: what guests said and an invite to next Saturday's social for everyone who came",
+        "caption": "Then bring the same crowd back to the next one.",
         "walkthroughStep": "Follow up"
       }
     },
