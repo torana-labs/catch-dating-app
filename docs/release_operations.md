@@ -2882,10 +2882,10 @@ complete for each target environment (`dev` and `prod`):
   recommended while Stripe remains available, KYC and bank fields are absent
   from Firestore, a failed retry continues the same linked account/product, and
   refresh moves pending/clarification/activated states into the matching Host UI.
-- [ ] Replace the temporary `RAZORPAY_WEBHOOK_SECRET` values before enabling
-  real Razorpay webhooks. As of 2026-06-26, `dev` and `prod` each
-  have an enabled placeholder Secret Manager version so unrelated Functions
-  deploys are not blocked while Razorpay account approval is pending.
+- [x] Replace the temporary `RAZORPAY_WEBHOOK_SECRET` values before enabling
+  real Razorpay webhooks. Done 2026-11-20: each project's single version is the
+  secret its Catch-account webhook signs with (store it without a trailing
+  newline; the Function signs the exact bytes).
 - [ ] Merge the backend change and let `Deploy backend` deploy it, approving
   the prod run; do not use a local deploy for the normal rollout.
 - [ ] Confirm packaged indexes reached `READY`, then confirm the Functions phase
@@ -2957,16 +2957,22 @@ the evidence in the release ticket.
 
 ### 4. Catch's own Razorpay account (Catch is paid)
 
-- [ ] Replace the test-mode `RAZORPAY_PUBLIC_KEY_ID` parameter and
-  `RAZORPAY_KEY_SECRET` secret with Catch's **live** keys per project (see
-  One-Time Environment Setup above: non-prod/prod still reuse test keys).
-- [ ] Enable Invoices and Payment Links on Catch's account. Bills are Razorpay
-  Invoices (payment link as fallback); tools-only purchases are payment links.
-- [ ] Add a webhook on Catch's account to
-  `https://asia-south1-<project>.cloudfunctions.net/razorpayWebhook` with events
-  `invoice.paid` and `payment_link.paid` (other events, including
-  `payment.captured`, are acknowledged and ignored), and replace the placeholder `RAZORPAY_WEBHOOK_SECRET`
-  version (One-Time Environment Setup above) with that webhook's secret.
+- [x] Catch's own keys per project, done 2026-11-20: `prod` uses Catch's
+  **live** key and `dev` Catch's test-mode key (`RAZORPAY_PUBLIC_KEY_ID`
+  parameter plus `RAZORPAY_KEY_SECRET`). Rotating a key means a new secret
+  version, the parameter update, and a named redeploy of every Function that
+  mounts the secret.
+- [x] Invoices and Payment Links answer in live mode on Catch's account. Bills
+  are Razorpay Invoices (payment link as fallback); tools-only purchases are
+  payment links.
+- [x] Webhooks on Catch's account, done 2026-11-20: live mode to the `prod`
+  `razorpayWebhook` and test mode to the `dev` one, each with only
+  `invoice.paid` and `payment_link.paid` (other events are acknowledged and
+  ignored) and signed with that project's `RAZORPAY_WEBHOOK_SECRET`. A dev test
+  payment link delivered `payment_link.paid` and the Function answered 200.
+- [ ] Before real bills: the checkout brand name must read Catch. Razorpay's
+  dashboard offers only the registered business or domain names, so this needs
+  a Razorpay support request.
 - [ ] Test mode first: send one bill, pay its invoice with a Razorpay test card,
   and confirm Admin → Money shows it paid; buy tools-only on the billing
   website, pay the link, and confirm the plan reads active.
