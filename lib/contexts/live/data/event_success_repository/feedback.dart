@@ -15,24 +15,6 @@ mixin _EventSuccessFeedbackRepository on _EventSuccessRepositoryCore {
         ),
       );
 
-  Stream<EventSuccessScorecard?> watchScorecardForEvent(String eventId) =>
-      withBackendErrorStream(
-        () => _db
-            .collection(_scorecardsPath)
-            .doc(eventId)
-            .snapshots()
-            .map(
-              (doc) => doc.exists
-                  ? _eventSuccessScorecardFromJson(doc.data() ?? const {})
-                  : null,
-            ),
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'load event report',
-          resource: _scorecardsPath,
-        ),
-      );
-
   Stream<EventSuccessFeedback?> watchFeedbackForUser({
     required String eventId,
     required String uid,

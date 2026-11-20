@@ -1,14 +1,6 @@
-import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_exclusion_ledger.dart';
-import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
-import 'package:catch_platform/theme/app_theme.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../events/events_test_helpers.dart' show buildEvent;
 
 void main() {
   test('alert boundary is inclusive at the configured threshold', () {
@@ -168,89 +160,6 @@ void main() {
     expect(
       ledger.entries.map((entry) => entry.isAccumulating),
       everyElement(isFalse),
-    );
-  });
-
-  testWidgets('control room alert uses the configured threshold', (
-    tester,
-  ) async {
-    final start = DateTime(2026, 8, 13, 18);
-    final event = buildEvent(
-      startTime: start,
-      endTime: start.add(const Duration(hours: 2)),
-    );
-    final plan = EventSuccessPlan.defaultForEvent(event, now: start);
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: EventSuccessHostWorkspacePageBody(
-            event: event,
-            plan: plan,
-            planIsPersisted: true,
-            roster: const EventParticipationRoster(
-              bookedIds: ['guest-1'],
-              checkedInIds: ['guest-1'],
-              waitlistedIds: [],
-            ),
-            initialTab: EventSuccessHostTab.live,
-            showTabs: false,
-            exclusionAlertThreshold: const Duration(minutes: 10),
-            exclusionReferenceNow: start.add(const Duration(minutes: 10)),
-          ),
-        ),
-      ),
-    );
-
-    expect(
-      find.byKey(const ValueKey('event_success.exclusion_alert')),
-      findsOne,
-    );
-    expect(find.text('Guests need an introduction'), findsOne);
-    expect(
-      find.text('1 person has not been assigned to anyone in 10 minutes.'),
-      findsOne,
-    );
-  });
-
-  testWidgets('control room stays quiet immediately before threshold', (
-    tester,
-  ) async {
-    final start = DateTime(2026, 8, 13, 18);
-    final event = buildEvent(
-      startTime: start,
-      endTime: start.add(const Duration(hours: 2)),
-    );
-    final plan = EventSuccessPlan.defaultForEvent(event, now: start);
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: EventSuccessHostWorkspacePageBody(
-            event: event,
-            plan: plan,
-            planIsPersisted: true,
-            roster: const EventParticipationRoster(
-              bookedIds: ['guest-1'],
-              checkedInIds: ['guest-1'],
-              waitlistedIds: [],
-            ),
-            initialTab: EventSuccessHostTab.live,
-            showTabs: false,
-            exclusionAlertThreshold: const Duration(minutes: 10),
-            exclusionReferenceNow: start.add(
-              const Duration(minutes: 9, seconds: 59),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    expect(
-      find.byKey(const ValueKey('event_success.exclusion_alert')),
-      findsNothing,
     );
   });
 }

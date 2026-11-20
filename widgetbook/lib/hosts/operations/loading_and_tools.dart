@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/participant_table.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -7,51 +6,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../../support/page_preview.dart';
 import 'preview.dart';
-
-@widgetbook.UseCase(
-  name: 'Roster primitive states',
-  type: ParticipantRowAction,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Roster primitive states',
-  type: ParticipantDecisionButton,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-Widget hostRosterPrimitiveCatalogStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'Catch roster primitives',
-    contractId: 'component.host.roster_primitives',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'decision row',
-        child: ParticipantTable(
-          columns: const ['Guest', 'Signal', 'Host action'],
-          rows: [
-            ParticipantRow(
-              person: 'Rhea Kapoor',
-              meta: 'Arriving 7:10 PM',
-              signal: 'Request',
-              tone: CatchBadgeTone.brand,
-              action: ParticipantDecideAction(
-                onProfile: () {},
-                onApprove: () {},
-                onDecline: () {},
-              ),
-            ),
-            ParticipantRow(
-              person: 'Aarav Mehta',
-              meta: 'Checked in',
-              signal: 'In',
-              tone: CatchBadgeTone.success,
-              action: ParticipantButtonAction(label: 'Undo', onPressed: () {}),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
 
 @widgetbook.UseCase(
   name: 'Action card states',
@@ -137,18 +91,3 @@ Widget hostEmptyStateStates(BuildContext context) {
 
 // Exact host coverage entries. These point narrow promoted classes at the
 // catalog route/component state that renders the owning workflow.
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: ParticipantRowAction,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictCatchRosterActionCellCatalogStates(BuildContext context) =>
-    hostRosterPrimitiveCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: ParticipantDecisionButton,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictCatchRosterDecideTargetCatalogStates(BuildContext context) =>
-    hostRosterPrimitiveCatalogStates(context);

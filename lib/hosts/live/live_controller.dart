@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_catch_format.dart';
@@ -12,6 +14,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
 import 'package:catch_dating_app/contexts/live/parts/live_plan_step_row.dart';
@@ -63,6 +66,76 @@ HostLiveState hostLiveController(Ref ref, Event event) {
       _ => const HostLiveState.loading(),
     };
   }
+  final roster = ref
+      .watch(watchEventParticipationRosterProvider(event.id))
+      .value;
+  final profile = EventSuccessActivityProfile.forFormat(event.eventFormat);
+  final standings = profile.unitOutcome == EventSuccessUnitOutcome.score
+      ? ref.watch(watchEventSuccessStandingsProvider(event.id)).value
+      : null;
+  final assignments =
+      ref.watch(watchEventSuccessAssignmentsProvider(event.id)).value ??
+      const <EventSuccessAssignment>[];
+  final presence = ref.watch(
+    eventSuccessPresenceSummaryProvider(
+      organizerId: event.organizerId,
+      eventId: event.id,
+      eventStartMillis: event.startTime.millisecondsSinceEpoch,
+    ),
+  );
+  final cases = ref.watch(
+    eventAssistanceCasesProvider(
+      EventAssistanceCaseQuery(
+        organizerId: event.organizerId,
+        eventId: event.id,
+      ),
+    ),
+  );
+  final deliveries = ref.watch(
+    eventAssistanceDeliveriesProvider(
+      EventAssistanceDeliveryQuery(
+        organizerId: event.organizerId,
+        eventId: event.id,
+      ),
+    ),
+  );
+  return hostLiveState(
+    event: event,
+    plan: plan,
+    roster: roster,
+    standings: standings,
+    assignments: assignments,
+    presence: presence.value,
+    cases: cases.value?.page.cases ?? const <AssistanceHostCase>[],
+    deliveries:
+        deliveries.value?.page.deliveries ?? const <AssistanceHostDelivery>[],
+    needsChecking: [
+      cases,
+      deliveries,
+      presence,
+    ].any((value) => catchAsyncStateFromAsyncValue(value).value == null),
+  );
+}
+
+/// The live console from plain values: the plan and the event's own
+/// counts, the roster, the scoreboard (for a format that keeps score), the
+/// teams, presence and its late arrivals, help requests and deliveries.
+/// [needsChecking] says a needs source has not answered yet. Without
+/// [boards] the console offers neither the room nor the format's board,
+/// which read and move a real event's guests. The live listeners and the
+/// rehearsal's practice console both build it here.
+HostLiveState hostLiveState({
+  required Event event,
+  required EventSuccessPlan plan,
+  EventParticipationRoster? roster,
+  EventSuccessStandings? standings,
+  List<EventSuccessAssignment> assignments = const [],
+  EventSuccessPresenceSummary? presence,
+  List<AssistanceHostCase> cases = const [],
+  List<AssistanceHostDelivery> deliveries = const [],
+  bool needsChecking = false,
+  bool boards = true,
+}) {
   final format = catchFormatForActivity(event.activityKind);
   final runtime = EventSuccessRuntime(
     plan: plan,
@@ -91,44 +164,10 @@ HostLiveState hostLiveController(Ref ref, Event event) {
     startsAt = startsAt.add(Duration(minutes: step.durationMinutes));
   }
 
-  final roster = ref
-      .watch(watchEventParticipationRosterProvider(event.id))
-      .value;
   final profile = EventSuccessActivityProfile.forFormat(event.eventFormat);
   final scores = profile.unitOutcome == EventSuccessUnitOutcome.score;
-  final standings = scores
-      ? ref.watch(watchEventSuccessStandingsProvider(event.id)).value
-      : null;
-  final units = _units(
-    plan,
-    ref.watch(watchEventSuccessAssignmentsProvider(event.id)).value ??
-        const <EventSuccessAssignment>[],
-  );
-  final presence = ref.watch(
-    eventSuccessPresenceSummaryProvider(
-      organizerId: event.organizerId,
-      eventId: event.id,
-      eventStartMillis: event.startTime.millisecondsSinceEpoch,
-    ),
-  );
-  final cases = ref.watch(
-    eventAssistanceCasesProvider(
-      EventAssistanceCaseQuery(
-        organizerId: event.organizerId,
-        eventId: event.id,
-      ),
-    ),
-  );
-  final deliveries = ref.watch(
-    eventAssistanceDeliveriesProvider(
-      EventAssistanceDeliveryQuery(
-        organizerId: event.organizerId,
-        eventId: event.id,
-      ),
-    ),
-  );
-  final summary = presence.value;
-  final ranked = [...?standings?.entries]
+  final units = _units(plan, assignments);
+  final ranked = [...?(scores ? standings : null)?.entries]
     ..sort((a, b) => a.position.compareTo(b.position));
 
   return HostLiveState(
@@ -149,33 +188,26 @@ HostLiveState hostLiveController(Ref ref, Event event) {
     needs: List<HostLiveNeed>.unmodifiable([
       // Most urgent first: a guest asking, a guest waiting for a place,
       // then a message that did not arrive; oldest first within each.
-      ...((cases.value?.page.cases ?? const <AssistanceHostCase>[])
-              .whereType<AssistanceOpenHostCase>()
-              .toList()
+      ...(cases.whereType<AssistanceOpenHostCase>().toList()
             ..sort((a, b) => a.receivedAt.compareTo(b.receivedAt)))
           .map(HostLiveHelpNeed.new),
-      ...((summary?.lateArrivals ?? const []).toList()..sort(
+      ...((presence?.lateArrivals ?? const []).toList()..sort(
             (a, b) => a.checkedInAtMillis.compareTo(b.checkedInAtMillis),
           ))
           .map(HostLiveArrivalNeed.new),
-      ...((deliveries.value?.page.deliveries ??
-                  const <AssistanceHostDelivery>[])
-              .whereType<AssistanceActionableDelivery>()
-              .toList()
+      ...(deliveries.whereType<AssistanceActionableDelivery>().toList()
             ..sort((a, b) => a.createdAt.compareTo(b.createdAt)))
           .map(HostLiveDeliveryNeed.new),
     ]),
-    needsChecking: [
-      cases,
-      deliveries,
-      presence,
-    ].any((value) => catchAsyncStateFromAsyncValue(value).value == null),
+    needsChecking: needsChecking,
     standings: List.unmodifiable(ranked),
-    scoredRounds: standings == null ? 0 : standings.latestRoundIndex + 1,
+    scoredRounds: !scores || standings == null
+        ? 0
+        : standings.latestRoundIndex + 1,
     scores: scores,
-    units: units,
-    presenceRevision: summary?.liveControlRevision ?? plan.liveControlRevision,
-    formatView: hostLiveFormatView(event),
+    units: boards ? units : const <HostLiveUnit>[],
+    presenceRevision: presence?.liveControlRevision ?? plan.liveControlRevision,
+    formatView: boards ? hostLiveFormatView(event) : null,
     stepStartedAt: _millis(plan.stepStartedAtMs),
     pausedAt: finished ? null : _millis(plan.pausedAtMs),
   );
@@ -228,7 +260,25 @@ HostLiveScoresState hostLiveScoresController(Ref ref, Event event) {
       attendees == null) {
     return const HostLiveScoresState.loading();
   }
-  final standings = standingsState.value;
+  return hostLiveScoresState(
+    event: event,
+    plan: plan,
+    standings: standingsState.value,
+    assignments: assignments,
+    attendees: attendees,
+  );
+}
+
+/// The scores screen from plain values: the plan, the scoreboard, the
+/// teams and the checked-in guests. The live listeners and the
+/// rehearsal's practice console both build it here.
+HostLiveScoresState hostLiveScoresState({
+  required Event event,
+  required EventSuccessPlan plan,
+  required EventSuccessStandings? standings,
+  required List<EventSuccessAssignment> assignments,
+  required List<EventAttendee> attendees,
+}) {
   final totals = <String, num>{
     for (final entry
         in standings?.entries ?? const <EventSuccessStandingEntry>[])

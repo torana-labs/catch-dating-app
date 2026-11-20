@@ -35,6 +35,7 @@ final class EventRehearsalRuntimeProjection {
     required this.outcomeUnits,
     this.standings,
     this.accountabilityAttendees = const [],
+    this.attendees = const [],
   });
 
   final Event event;
@@ -47,6 +48,10 @@ final class EventRehearsalRuntimeProjection {
   final List<EventSuccessOutcomeUnit> outcomeUnits;
   final EventSuccessStandings? standings;
   final List<EventAttendee> accountabilityAttendees;
+
+  /// Every made-up guest as a guest-list row: checked in or booked, with
+  /// the sweep's answer for those [accountabilityAttendees] carries.
+  final List<EventAttendee> attendees;
 }
 
 EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
@@ -146,6 +151,9 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     hostGoal: session.setup.hostGoal,
     attendeePrompt: session.setup.attendeePrompt,
     activeStepIndex: session.activeStepIndex,
+    pausedAtMs: session.status == EventRehearsalStatus.paused
+        ? virtualNow.millisecondsSinceEpoch
+        : null,
     liveControlRevision: session.runtimeRevision,
     publishedRevealRoundIndex: reveal?.publishedRound ?? -1,
     activeRevealRoundIndex:
@@ -279,6 +287,42 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     now: virtualNow,
   );
 
+  final accountabilityAttendees = <EventAttendee>[
+    for (final row
+        in rehearsal.accountabilityReviews?.rows ??
+            const <RehearsalAccountabilityRow>[])
+      if (row.evidence.checkedInAtMillis case final int checkedIn)
+        EventAttendee(
+          id: row.actorId,
+          eventId: eventId,
+          organizerId: session.organizerId,
+          displayName: rehearsal.actors
+              .firstWhere((actor) => actor.actorId == row.actorId)
+              .displayName,
+          searchName: rehearsal.actors
+              .firstWhere((actor) => actor.actorId == row.actorId)
+              .displayName
+              .toLowerCase(),
+          source: EventAttendeeSource.hostManual,
+          status: EventAttendeeStatus.checkedIn,
+          createdAt: DateTime.fromMillisecondsSinceEpoch(checkedIn),
+          updatedAt: virtualNow,
+          checkedInAt: DateTime.fromMillisecondsSinceEpoch(checkedIn),
+          accountabilityResolution: switch (row.evidence.disposition) {
+            AssistanceVisitDisposition.returned =>
+              EventSuccessAccountabilityResolution.returned,
+            AssistanceVisitDisposition.departed =>
+              EventSuccessAccountabilityResolution.departed,
+            AssistanceVisitDisposition.unresolved => null,
+          },
+          accountabilityResolvedForCheckInAt:
+              DateTime.fromMillisecondsSinceEpoch(checkedIn),
+        ),
+  ];
+  final accounted = {
+    for (final attendee in accountabilityAttendees) attendee.id: attendee,
+  };
+
   return EventRehearsalRuntimeProjection(
     event: event,
     plan: plan,
@@ -289,37 +333,17 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     assignments: assignments,
     outcomeUnits: outcomeUnits,
     standings: standings,
-    accountabilityAttendees: [
-      for (final row
-          in rehearsal.accountabilityReviews?.rows ??
-              const <RehearsalAccountabilityRow>[])
-        if (row.evidence.checkedInAtMillis case final int checkedIn)
-          EventAttendee(
-            id: row.actorId,
-            eventId: eventId,
-            organizerId: session.organizerId,
-            displayName: rehearsal.actors
-                .firstWhere((actor) => actor.actorId == row.actorId)
-                .displayName,
-            searchName: rehearsal.actors
-                .firstWhere((actor) => actor.actorId == row.actorId)
-                .displayName
-                .toLowerCase(),
-            source: EventAttendeeSource.hostManual,
-            status: EventAttendeeStatus.checkedIn,
-            createdAt: DateTime.fromMillisecondsSinceEpoch(checkedIn),
-            updatedAt: virtualNow,
-            checkedInAt: DateTime.fromMillisecondsSinceEpoch(checkedIn),
-            accountabilityResolution: switch (row.evidence.disposition) {
-              AssistanceVisitDisposition.returned =>
-                EventSuccessAccountabilityResolution.returned,
-              AssistanceVisitDisposition.departed =>
-                EventSuccessAccountabilityResolution.departed,
-              AssistanceVisitDisposition.unresolved => null,
-            },
-            accountabilityResolvedForCheckInAt:
-                DateTime.fromMillisecondsSinceEpoch(checkedIn),
-          ),
+    accountabilityAttendees: accountabilityAttendees,
+    attendees: [
+      for (final actor in rehearsal.actors)
+        accounted[actor.actorId] ??
+            _attendeeFor(
+              actor,
+              eventId: eventId,
+              organizerId: session.organizerId,
+              checkedInAt: roster.checkedInAtByUid[actor.actorId],
+              now: virtualNow,
+            ),
     ],
   );
 }
@@ -419,6 +443,27 @@ EventSuccessStandings? _standingsFor({
     updatedAt: updatedAt,
   );
 }
+
+EventAttendee _attendeeFor(
+  EventRehearsalActor actor, {
+  required String eventId,
+  required String organizerId,
+  required DateTime? checkedInAt,
+  required DateTime now,
+}) => EventAttendee(
+  id: actor.actorId,
+  eventId: eventId,
+  organizerId: organizerId,
+  displayName: actor.displayName,
+  searchName: actor.displayName.toLowerCase(),
+  source: EventAttendeeSource.hostManual,
+  status: checkedInAt == null
+      ? EventAttendeeStatus.registered
+      : EventAttendeeStatus.checkedIn,
+  createdAt: now,
+  updatedAt: now,
+  checkedInAt: checkedInAt,
+);
 
 bool _isCheckedIn(EventRehearsalActor actor) => switch (actor.status) {
   EventRehearsalActorStatus.present ||

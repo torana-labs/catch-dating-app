@@ -5191,27 +5191,6 @@
   "@hostsHostPaymentAccountCardBodyRazorpayTerms": {"description": "Razorpay terms explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
   "hostsHostPaymentAccountCardLabelSubmitRazorpay": "Submit to Razorpay",
   "@hostsHostPaymentAccountCardLabelSubmitRazorpay": {"description": "Submits Razorpay setup details.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_payment_account_card"},
-  "hostsCatchRosterBoardLabelOpenProfile": "Open profile",
-  "@hostsCatchRosterBoardLabelOpenProfile": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/catch_roster_board.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.catch_roster_board"
-  },
-  "hostsCatchRosterBoardLabelApproveRequest": "Approve request",
-  "@hostsCatchRosterBoardLabelApproveRequest": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/catch_roster_board.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.catch_roster_board"
-  },
-  "hostsCatchRosterBoardLabelDeclineRequest": "Decline request",
-  "@hostsCatchRosterBoardLabelDeclineRequest": {
-    "description": "Product copy used by lib/hosts/presentation/widgets/catch_roster_board.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.widgets.catch_roster_board"
-  },
   "hostsHostOrganizerToolsLabelPostUpdate": "Post update",
   "@hostsHostOrganizerToolsLabelPostUpdate": {
     "description": "Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).",
@@ -9485,48 +9464,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_body_screen"
   },
-  "eventSuccessEventSuccessHostLiveTitleLiveModeNeedsSaved": "Live mode needs saved setup",
-  "@eventSuccessEventSuccessHostLiveTitleLiveModeNeedsSaved": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveTitleLiveModeWasNot": "Live mode was not configured",
-  "@eventSuccessEventSuccessHostLiveTitleLiveModeWasNot": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveBodySaveTheLiveGuide": "Save the live guide before the event to enable guided controls. Attendance and check-in stay available from this Live tab.",
-  "@eventSuccessEventSuccessHostLiveBodySaveTheLiveGuide": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveBodyThisEventDidNot": "This event did not have a live guide saved before it started. Attendance and check-in remain available; guided live controls stay unavailable for this event.",
-  "@eventSuccessEventSuccessHostLiveBodyThisEventDidNot": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveTitleNoLiveStepsSelected": "No live steps selected",
-  "@eventSuccessEventSuccessHostLiveTitleNoLiveStepsSelected": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveBodyThisSavedSetupDoes": "This saved setup does not include any tools the host can use during the event.",
-  "@eventSuccessEventSuccessHostLiveBodyThisSavedSetupDoes": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
   "eventSuccessEventSuccessHostLiveTitleConversationCues": "Conversation cues",
   "@eventSuccessEventSuccessHostLiveTitleConversationCues": {
     "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).",
@@ -9547,181 +9484,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveTitleGuestPresence": "Guest presence",
-  "@eventSuccessEventSuccessHostLiveTitleGuestPresence": {
-    "description": "Title for the Host presence and late-arrival control.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished": "Presence can update the next prepared round. Published rounds stay unchanged.",
-  "@eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished": {
-    "description": "Explains the immutable published-round boundary.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft": "{count} guests may have left. Regenerate the next round before publishing?",
-  "@eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft": {
-    "description": "Host prompt when monitored guest heartbeats expire.",
-    "placeholders": {"count": {"type": "int"}},
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelRegenerateNextRound": "Regenerate next round",
-  "@eventSuccessEventSuccessHostLiveLabelRegenerateNextRound": {
-    "description": "Host action after reviewing likely departed guests.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveTitleLateArrivals": "Late arrivals",
-  "@eventSuccessEventSuccessHostLiveTitleLateArrivals": {
-    "description": "Host late-arrival section title.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelPlaceNextRound": "Place next round",
-  "@eventSuccessEventSuccessHostLiveLabelPlaceNextRound": {
-    "description": "Host action to place or hold a late attendee.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveTitleSupportingControls": "Supporting controls",
-  "@eventSuccessEventSuccessHostLiveTitleSupportingControls": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveSubtitleControlsThatStayAvailable": "Controls that stay available without competing with the current live step.",
-  "@eventSuccessEventSuccessHostLiveSubtitleControlsThatStayAvailable": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (subtitle).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelMarkLiveGuideComplete": "Mark live guide complete",
-  "@eventSuccessEventSuccessHostLiveLabelMarkLiveGuideComplete": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveTitleControlsForThisStep": "Controls for this step",
-  "@eventSuccessEventSuccessHostLiveTitleControlsForThisStep": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving": "Handle these before moving the room forward.",
-  "@eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (subtitle).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton": "eventSuccessPreviousStepButton",
-  "@eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (CatchButton).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelPrevious": "Previous",
-  "@eventSuccessEventSuccessHostLiveLabelPrevious": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton": "eventSuccessNextStepButton",
-  "@eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (CatchButton).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostOverridesTextSmallStarterGroups": "Small starter groups",
-  "@eventSuccessEventSuccessHostOverridesTextSmallStarterGroups": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesLabelLengthAssigned": "{length} assigned",
-  "@eventSuccessEventSuccessHostOverridesLabelLengthAssigned": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
-    "placeholders": {
-      "length": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut": "{optedOutCount} opted out",
-  "@eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
-    "placeholders": {
-      "optedOutCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesLabelHostEdited": "Host edited",
-  "@eventSuccessEventSuccessHostOverridesLabelHostEdited": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted": "Regenerate to remove opted-out attendee cards from the current pod set.",
-  "@eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards": "Generate attendee pod cards from the roster, excluding opted-out attendees.",
-  "@eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf": "Generate attendee pod cards from the current booked and checked-in roster.",
-  "@eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneratemicropodsbutton": "eventSuccessGenerateMicroPodsButton",
-  "@eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneratemicropodsbutton": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (CatchButton).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods": "Generate micro-pods",
-  "@eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesLabelRegenerate": "Regenerate",
-  "@eventSuccessEventSuccessHostOverridesLabelRegenerate": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelEditGroups": "Edit groups",
   "@eventSuccessEventSuccessHostOverridesLabelEditGroups": {
@@ -9827,81 +9589,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
-  "eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations": "Timed partner rotations",
-  "@eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesLabelRoundcountRounds": "{roundCount} rounds",
-  "@eventSuccessEventSuccessHostOverridesLabelRoundcountRounds": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
-    "placeholders": {
-      "roundCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde": "Regenerate to remove opted-out attendees from timed rotations.",
-  "@eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent": "Generate pairings from event duration, saved cadence, checked-in participants and, for singles formats, mutual interest.",
-  "@eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesLabelEventrotationcapacityPossible": "{eventRotationCapacity} possible",
-  "@eventSuccessEventSuccessHostOverridesLabelEventrotationcapacityPossible": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
-    "placeholders": {
-      "eventRotationCapacity": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesLabelSitoutroundcountPlannedBreaks": "{sitOutRoundCount} planned breaks",
-  "@eventSuccessEventSuccessHostOverridesLabelSitoutroundcountPlannedBreaks": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
-    "placeholders": {
-      "sitOutRoundCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesLabelRepeatpeercountRepeatedPeers": "{repeatPeerCount} repeated peers",
-  "@eventSuccessEventSuccessHostOverridesLabelRepeatpeercountRepeatedPeers": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
-    "placeholders": {
-      "repeatPeerCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneraterotationsbutton": "eventSuccessGenerateRotationsButton",
-  "@eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneraterotationsbutton": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (CatchButton).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesLabelGenerateRotations": "Generate rotations",
-  "@eventSuccessEventSuccessHostOverridesLabelGenerateRotations": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
   "eventSuccessEventSuccessHostOverridesLabelEditRotations": "Edit rotations",
   "@eventSuccessEventSuccessHostOverridesLabelEditRotations": {
     "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
@@ -9958,371 +9645,9 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
-  "eventSuccessEventSuccessHostOverridesLabelKeyValueAssigned": "{key} · {value} assigned",
-  "@eventSuccessEventSuccessHostOverridesLabelKeyValueAssigned": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
-    "placeholders": {
-      "key": {},
-      "value": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostOverridesTextAssignmentNotes": "Assignment notes",
-  "@eventSuccessEventSuccessHostOverridesTextAssignmentNotes": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
-  "eventSuccessEventSuccessHostReportTitleNoEventReportYet": "No event report yet",
-  "@eventSuccessEventSuccessHostReportTitleNoEventReportYet": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportBodyTheLiveEventGuide": "The live event guide was not saved for this event, so there is no post-event report to review. Attendance reporting remains available on this screen.",
-  "@eventSuccessEventSuccessHostReportBodyTheLiveEventGuide": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportTitlePostEventInsightsAre": "Post-event insights are off",
-  "@eventSuccessEventSuccessHostReportTitlePostEventInsightsAre": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportBodyThisEventGuideDoes": "This event guide does not include post-event coaching for the host.",
-  "@eventSuccessEventSuccessHostReportBodyThisEventGuideDoes": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback": "Waiting for attendee feedback",
-  "@eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse": "{feedbackCount} attendee feedback response{value2}",
-  "@eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
-    "placeholders": {
-      "feedbackCount": {},
-      "value2": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportBodyTheReportCombinesAttendance": "The report combines attendance, safe aggregate feedback, assignment coverage, and explicit host-help requests. Private notes, safety concerns, and individual opener choices are not shown to hosts.",
-  "@eventSuccessEventSuccessHostReportBodyTheReportCombinesAttendance": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportTextHowReliableIsThis": "How reliable is this report?",
-  "@eventSuccessEventSuccessHostReportTextHowReliableIsThis": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportTextShowsWhetherTheReport": "Shows whether the report is based on enough live data to trust.",
-  "@eventSuccessEventSuccessHostReportTextShowsWhetherTheReport": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelFeedback": "Feedback",
-  "@eventSuccessEventSuccessHostReportLabelFeedback": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelConversationExclusions": "Conversation exclusions",
-  "@eventSuccessEventSuccessHostReportLabelConversationExclusions": {
-    "description": "Aggregate count of respondents who confirmed no conversations; no attendee edges are shown.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses": "{conversationGraphResponseCount}/{checkedInCount} responses",
-  "@eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses": {
-    "description": "Aggregate conversation graph response coverage for the host recap.",
-    "placeholders": {
-      "conversationGraphResponseCount": {},
-      "checkedInCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelCaughtSomeone": "Picked someone",
-  "@eventSuccessEventSuccessHostReportLabelCaughtSomeone": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelPeopleIncluded": "People included",
-  "@eventSuccessEventSuccessHostReportLabelPeopleIncluded": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelOptedOut": "Opted out",
-  "@eventSuccessEventSuccessHostReportLabelOptedOut": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelWingmanHelp": "Host-help requests",
-  "@eventSuccessEventSuccessHostReportLabelWingmanHelp": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelFeedbackresponsecountCheckedincountFeedback": "{feedbackResponseCount}/{checkedInCount} feedback",
-  "@eventSuccessEventSuccessHostReportLabelFeedbackresponsecountCheckedincountFeedback": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
-    "placeholders": {
-      "feedbackResponseCount": {},
-      "checkedInCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone": "{attendeesWhoCaughtSomeone} picked someone",
-  "@eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
-    "placeholders": {
-      "attendeesWhoCaughtSomeone": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelCatchesSent": "Picks sent",
-  "@eventSuccessEventSuccessHostReportLabelCatchesSent": {
-    "description": "Label for the number of post-event catches sent.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned": "{assignmentParticipantCount} assigned",
-  "@eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
-    "placeholders": {
-      "assignmentParticipantCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelAssignmentoptoutcountOptedOut": "{assignmentOptOutCount} opted out",
-  "@eventSuccessEventSuccessHostReportLabelAssignmentoptoutcountOptedOut": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
-    "placeholders": {
-      "assignmentOptOutCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelWingmanrequestcountHostHelpRequests": "{wingmanRequestCount} host-help requests",
-  "@eventSuccessEventSuccessHostReportLabelWingmanrequestcountHostHelpRequests": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
-    "placeholders": {
-      "wingmanRequestCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportTextEventFunnel": "Event funnel",
-  "@eventSuccessEventSuccessHostReportTextEventFunnel": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelDemandToBooked": "Demand to booked",
-  "@eventSuccessEventSuccessHostReportLabelDemandToBooked": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelRequestsApproved": "Requests approved",
-  "@eventSuccessEventSuccessHostReportLabelRequestsApproved": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelOffersAccepted": "Offers accepted",
-  "@eventSuccessEventSuccessHostReportLabelOffersAccepted": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelPaymentComplete": "Payment complete",
-  "@eventSuccessEventSuccessHostReportLabelPaymentComplete": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelRepeatAttendees": "Repeat attendees",
-  "@eventSuccessEventSuccessHostReportLabelRepeatAttendees": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelTotaldemandcountPeopleInDemand": "{totalDemandCount} people in demand",
-  "@eventSuccessEventSuccessHostReportLabelTotaldemandcountPeopleInDemand": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
-    "placeholders": {
-      "totalDemandCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelWaitlistjoincountWaitlisted": "{waitlistJoinCount} waitlisted",
-  "@eventSuccessEventSuccessHostReportLabelWaitlistjoincountWaitlisted": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
-    "placeholders": {
-      "waitlistJoinCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelPaymentcompletedcountPaid": "{paymentCompletedCount} paid",
-  "@eventSuccessEventSuccessHostReportLabelPaymentcompletedcountPaid": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
-    "placeholders": {
-      "paymentCompletedCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportLabelChatstartedcountChatsStarted": "{chatStartedCount} chats started",
-  "@eventSuccessEventSuccessHostReportLabelChatstartedcountChatsStarted": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
-    "placeholders": {
-      "chatStartedCount": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostSetupTitleEventStartedWithoutA": "Event started without a saved guide",
-  "@eventSuccessEventSuccessHostSetupTitleEventStartedWithoutA": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupTitleLiveGuideCanNo": "Live guide can no longer be saved",
-  "@eventSuccessEventSuccessHostSetupTitleLiveGuideCanNo": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupBodyThisEventBeganBefore": "This event began before a live guide was saved. Attendance and check-in still work, but the Live tab won''t have any guided controls for this event.",
-  "@eventSuccessEventSuccessHostSetupBodyThisEventBeganBefore": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupBodyBookingsHaveAlreadyStarted": "Bookings have already started. Attendance and check-in still work, but the Live tab won''t have guided controls unless a guide was saved first.",
-  "@eventSuccessEventSuccessHostSetupBodyBookingsHaveAlreadyStarted": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet": "Setup not saved yet",
-  "@eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs": "This default plan is visible here only. Save it so the Live tab is ready when the event starts.",
-  "@eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupTitleSettingsAreLocked": "Settings are locked",
-  "@eventSuccessEventSuccessHostSetupTitleSettingsAreLocked": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupBodyBookingsHaveStartedSo": "Bookings have started, so the saved guide is locked in. Switch to the Live tab to drive the event in real time once it starts.",
-  "@eventSuccessEventSuccessHostSetupBodyBookingsHaveStartedSo": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupBodyTheEventHasStarted": "The event has started — setup is locked. Use the Live tab to control the event right now, and the Report tab afterward.",
-  "@eventSuccessEventSuccessHostSetupBodyTheEventHasStarted": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
   "eventSuccessEventSuccessHostSetupTitleYourPlan": "Your plan",
   "@eventSuccessEventSuccessHostSetupTitleYourPlan": {
     "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart, lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupLabelSaveChanges": "Save changes",
-  "@eventSuccessEventSuccessHostSetupLabelSaveChanges": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupLabelSaveSetup": "Save setup",
-  "@eventSuccessEventSuccessHostSetupLabelSaveSetup": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupLabelSaveLiveGuide": "Save live guide",
-  "@eventSuccessEventSuccessHostSetupLabelSaveLiveGuide": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
@@ -10358,40 +9683,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSetupTextUnsavedChanges": "Unsaved changes",
-  "@eventSuccessEventSuccessHostSetupTextUnsavedChanges": {
-    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
-  },
-  "eventSuccessEventSuccessHostSharedLabelLengthTools": "{length} tools",
-  "@eventSuccessEventSuccessHostSharedLabelLengthTools": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_plan_field_lanes.dart (label).",
-    "placeholders": {
-      "length": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
-  "eventSuccessEventSuccessHostSharedLabelNotSaved": "Not saved",
-  "@eventSuccessEventSuccessHostSharedLabelNotSaved": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_plan_field_lanes.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
-  "eventSuccessEventSuccessHostSharedLabelLengthSelected": "{length} selected",
-  "@eventSuccessEventSuccessHostSharedLabelLengthSelected": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_activity_field_lanes.dart (label).",
-    "placeholders": {
-      "length": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedTextMatchClueQuestions": "Conversation questions",
   "@eventSuccessEventSuccessHostSharedTextMatchClueQuestions": {
@@ -10435,78 +9726,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
-  "eventSuccessEventSuccessHostSharedLabelLengthActive": "{length} active",
-  "@eventSuccessEventSuccessHostSharedLabelLengthActive": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (label).",
-    "placeholders": {
-      "length": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
-  "eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThe": "Attendees explicitly asked the host for help. Use rotation edits or live facilitation to pair them safely.",
-  "@eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThe": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
-  "eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThef44110": "Attendees explicitly asked the host for help. Use this as live facilitation context.",
-  "@eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThef44110": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
-  "eventSuccessEventSuccessHostSharedTextNoHostHelpRequests": "No host-help requests yet.",
-  "@eventSuccessEventSuccessHostSharedTextNoHostHelpRequests": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
-  "eventSuccessEventSuccessHostSharedLabelHostVisible": "Host visible",
-  "@eventSuccessEventSuccessHostSharedLabelHostVisible": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
-  "eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst": "Generate assignments first",
-  "@eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"
-  },
-  "eventSuccessEventSuccessLiveRevealActionsLabelRevealNow": "Reveal now",
-  "@eventSuccessEventSuccessLiveRevealActionsLabelRevealNow": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"
-  },
-  "eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1": "Reveal round {value1}",
-  "@eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
-    "placeholders": {
-      "value1": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"
-  },
-  "eventSuccessEventSuccessLiveRevealActionsLabelDropCountdownsecondsSCountdown": "Drop {countdownSeconds}s countdown",
-  "@eventSuccessEventSuccessLiveRevealActionsLabelDropCountdownsecondsSCountdown": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
-    "placeholders": {
-      "countdownSeconds": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"
-  },
   "eventSuccessEventSuccessLiveRevealAttendeeLabelUnlocking": "Unlocking",
   "@eventSuccessEventSuccessLiveRevealAttendeeLabelUnlocking": {
     "description": "Product copy used by lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart (label).",
@@ -10527,52 +9746,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_attendee"
-  },
-  "eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal": "Synchronized partner reveal",
-  "@eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
-  },
-  "eventSuccessEventSuccessLiveRevealHostLabelNoAssignments": "No assignments",
-  "@eventSuccessEventSuccessLiveRevealHostLabelNoAssignments": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
-  },
-  "eventSuccessEventSuccessLiveRevealHostLabelValue1RoundcountShown": "{value1}/{roundCount} shown",
-  "@eventSuccessEventSuccessLiveRevealHostLabelValue1RoundcountShown": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).",
-    "placeholders": {
-      "value1": {},
-      "roundCount": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
-  },
-  "eventSuccessEventSuccessLiveRevealHostCaptionSeconds": "seconds",
-  "@eventSuccessEventSuccessLiveRevealHostCaptionSeconds": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
-  },
-  "eventSuccessEventSuccessLiveRevealHostCaptionRevealed": "revealed",
-  "@eventSuccessEventSuccessLiveRevealHostCaptionRevealed": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
-  },
-  "eventSuccessEventSuccessLiveRevealHostCaptionNextRound": "next round",
-  "@eventSuccessEventSuccessLiveRevealHostCaptionNextRound": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold": "Room hold",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold": {
@@ -10718,33 +9891,6 @@
     "placeholders": {
       "timeRange": {},
       "peerName": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
-  },
-  "eventSuccessEventSuccessLiveRevealWidgetsLabelHiddenUntilReveal": "Hidden until reveal",
-  "@eventSuccessEventSuccessLiveRevealWidgetsLabelHiddenUntilReveal": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
-  },
-  "eventSuccessEventSuccessLiveRevealWidgetsLabelRoundValue1": "Round {value1}",
-  "@eventSuccessEventSuccessLiveRevealWidgetsLabelRoundValue1": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
-    "placeholders": {
-      "value1": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
-  },
-  "eventSuccessEventSuccessLiveRevealWidgetsTextRValue1": "R{value1}",
-  "@eventSuccessEventSuccessLiveRevealWidgetsTextRValue1": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
-    "placeholders": {
-      "value1": {}
     },
     "x-audience": "consumer",
     "x-owner": "product",
@@ -11657,20 +10803,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.companion_parts.event_success_companion_wingman"
-  },
-  "eventSuccessEventSuccessHostReportBodyThePostEventReport": "The post-event report appears once checked-in attendees share feedback. There is no signal to summarize yet.",
-  "@eventSuccessEventSuccessHostReportBodyThePostEventReport": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
-  },
-  "eventSuccessEventSuccessHostReportTitleS": "s",
-  "@eventSuccessEventSuccessHostReportTitleS": {
-    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "exploreExploreScreenMessageTryAnotherCityFrom": "Try another city from the location control, or create the first organizer when you are ready to host.",
   "@exploreExploreScreenMessageTryAnotherCityFrom": {
@@ -15279,41 +14411,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_structure_config_editor"
   },
-  "eventSuccessEventSuccessHostLiveVisiblecopyAttendeesAtLocationnameSee": "Attendees at {locationName} see: {attendeeExperience}",
-  "@eventSuccessEventSuccessHostLiveVisiblecopyAttendeesAtLocationnameSee": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (visibleCopy).",
-    "placeholders": {
-      "locationName": {},
-      "attendeeExperience": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveVisiblecopyFinalStep": "Final step",
-  "@eventSuccessEventSuccessHostLiveVisiblecopyFinalStep": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveVisiblecopyNextTitle": "Next: {title}",
-  "@eventSuccessEventSuccessHostLiveVisiblecopyNextTitle": {
-    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_step_action_row.dart (visibleCopy).",
-    "placeholders": {
-      "title": {}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1": "host_override_v1",
-  "@eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1": {
-    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
-  },
   "eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne": "Add at least one group.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne": {
     "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
@@ -15418,33 +14515,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
-  "eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds": "{remainingSeconds}",
-  "@eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).",
-    "placeholders": {
-      "remainingSeconds": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
-  },
-  "eventSuccessEventSuccessLiveRevealHostVisiblecopyOk": "OK",
-  "@eventSuccessEventSuccessLiveRevealHostVisiblecopyOk": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
-  },
-  "eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1": "{value1}",
-  "@eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).",
-    "placeholders": {
-      "value1": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
-  },
   "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyPartner": "Partner",
   "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyPartner": {
     "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
@@ -15459,27 +14529,6 @@
       "format": {},
       "format2": {}
     },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
-  },
-  "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyDone": "Done",
-  "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyDone": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
-  },
-  "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyNow": "Now",
-  "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyNow": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
-  },
-  "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyHidden": "Hidden",
-  "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyHidden": {
-    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
@@ -17179,166 +16228,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_live_reveal_card"
   },
-  "eventSuccessControlRoomSynced": "Synced",
-  "@eventSuccessControlRoomSynced": {
-    "description": "Control Room sync status after the current live-guide state is stored.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomLiveSyncStatus": "Live now · {syncStatus}",
-  "@eventSuccessControlRoomLiveSyncStatus": {
-    "description": "Compact Control Room badge combining live state with persistence status.",
-    "placeholders": {
-      "syncStatus": {"type": "String"}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomSyncing": "Saving",
-  "@eventSuccessControlRoomSyncing": {
-    "description": "Control Room sync status while a live-guide mutation is pending.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomSaveFailed": "Save failed",
-  "@eventSuccessControlRoomSaveFailed": {
-    "description": "Control Room persistence status after a live-guide mutation fails.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomOffline": "Offline",
-  "@eventSuccessControlRoomOffline": {
-    "description": "Presentation state for a Control Room that has lost connectivity.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomNeedsReview": "Needs review",
-  "@eventSuccessControlRoomNeedsReview": {
-    "description": "Presentation state for a Control Room state conflict that needs host review.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomStepProgress": "Step {current} of {total} · {stage}",
-  "@eventSuccessControlRoomStepProgress": {
-    "description": "Current Control Room run-of-show step and total step count.",
-    "placeholders": {
-      "current": {"type": "int"},
-      "total": {"type": "int"},
-      "stage": {"type": "String"}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelBeatNumber": "Beat {number}",
-  "@eventSuccessEventSuccessHostLiveLabelBeatNumber": {
-    "description": "Numbered transition label for a continuous run of show.",
-    "placeholders": {"number": {"type": "int"}},
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelRoundNumber": "Round {number}",
-  "@eventSuccessEventSuccessHostLiveLabelRoundNumber": {
-    "description": "Numbered transition label for a round-based run of show.",
-    "placeholders": {"number": {"type": "int"}},
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelFirstCourse": "First course",
-  "@eventSuccessEventSuccessHostLiveLabelFirstCourse": {
-    "description": "First transition label for a course-based run of show.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelSecondCourse": "Second course",
-  "@eventSuccessEventSuccessHostLiveLabelSecondCourse": {
-    "description": "Second transition label for a course-based run of show.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelThirdCourse": "Third course",
-  "@eventSuccessEventSuccessHostLiveLabelThirdCourse": {
-    "description": "Third transition label for a course-based run of show.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelFourthCourse": "Fourth course",
-  "@eventSuccessEventSuccessHostLiveLabelFourthCourse": {
-    "description": "Fourth transition label for a course-based run of show.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelCourseNumber": "Course {number}",
-  "@eventSuccessEventSuccessHostLiveLabelCourseNumber": {
-    "description": "Fallback numbered transition label for later courses.",
-    "placeholders": {"number": {"type": "int"}},
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelLegNumber": "Leg {number}",
-  "@eventSuccessEventSuccessHostLiveLabelLegNumber": {
-    "description": "Numbered transition label for a segmented run of show.",
-    "placeholders": {"number": {"type": "int"}},
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostLiveLabelStopNumber": "Stop {number}",
-  "@eventSuccessEventSuccessHostLiveLabelStopNumber": {
-    "description": "Numbered transition label for a run of show that moves between stops.",
-    "placeholders": {"number": {"type": "int"}},
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomUpNext": "Up next",
-  "@eventSuccessControlRoomUpNext": {
-    "description": "Kicker above the next live-guide step in Control Room.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomGuests": "Guests",
-  "@eventSuccessControlRoomGuests": {
-    "description": "Control Room destination for the operational guest roster.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomGuestsSummary": "{checkedIn} checked in · {expected} expected",
-  "@eventSuccessControlRoomGuestsSummary": {
-    "description": "Control Room guest destination summary using roster counts rather than event capacity.",
-    "placeholders": {
-      "checkedIn": {"type": "int"},
-      "expected": {"type": "int"}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomGuestsCheckedInOnly": "{checkedIn} checked in",
-  "@eventSuccessControlRoomGuestsCheckedInOnly": {
-    "description": "Control Room guest summary when no authoritative expected count is available.",
-    "placeholders": {
-      "checkedIn": {"type": "int"}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
   "eventSuccessControlRoomExclusionAlertTitle": "Guests need an introduction",
   "@eventSuccessControlRoomExclusionAlertTitle": {
     "description": "Live Control Room intervention title when checked-in attendees reach the exclusion threshold.",
@@ -17356,114 +16245,6 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomHelpFallback": "Help & fallback",
-  "@eventSuccessControlRoomHelpFallback": {
-    "description": "Control Room destination for lightweight recovery guidance.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomHelpFallbackSubtitle": "Recovery steps for the room",
-  "@eventSuccessControlRoomHelpFallbackSubtitle": {
-    "description": "Summary under the Control Room fallback destination.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomContinueTo": "Continue to {title}",
-  "@eventSuccessControlRoomContinueTo": {
-    "description": "Primary Control Room action that advances to the named next step.",
-    "placeholders": {
-      "title": {"type": "String"}
-    },
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomFallbackTitle": "Keep the room moving",
-  "@eventSuccessControlRoomFallbackTitle": {
-    "description": "Title for the Control Room fallback guidance sheet.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomFallbackSubtitle": "A simple reset when the plan or connection gets in the way.",
-  "@eventSuccessControlRoomFallbackSubtitle": {
-    "description": "Subtitle for the Control Room fallback guidance sheet.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomFallbackStayTitle": "Stay on this step",
-  "@eventSuccessControlRoomFallbackStayTitle": {
-    "description": "First fallback instruction title.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomFallbackStayBody": "Keep using the instruction on screen while you settle the room.",
-  "@eventSuccessControlRoomFallbackStayBody": {
-    "description": "First fallback instruction body.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomFallbackGuestsTitle": "Take attendance manually",
-  "@eventSuccessControlRoomFallbackGuestsTitle": {
-    "description": "Second fallback instruction title.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomFallbackGuestsBody": "Open Guests to check people in or add anyone who was not booked through Catch.",
-  "@eventSuccessControlRoomFallbackGuestsBody": {
-    "description": "Second fallback instruction body.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomFallbackContinueTitle": "Continue when ready",
-  "@eventSuccessControlRoomFallbackContinueTitle": {
-    "description": "Third fallback instruction title.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomFallbackContinueBody": "The guide only moves when you tap the primary action, so the room stays in your control.",
-  "@eventSuccessControlRoomFallbackContinueBody": {
-    "description": "Third fallback instruction body.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessControlRoomFallbackDone": "Back to Control Room",
-  "@eventSuccessControlRoomFallbackDone": {
-    "description": "Dismisses the Control Room fallback guidance sheet.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_live"
-  },
-  "eventSuccessEventSuccessHostSharedLabelSetup": "Setup",
-  "@eventSuccessEventSuccessHostSharedLabelSetup": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
-  "eventSuccessEventSuccessHostSharedLabelLive": "Live",
-  "@eventSuccessEventSuccessHostSharedLabelLive": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
-  },
-  "eventSuccessEventSuccessHostSharedLabelReport": "Report",
-  "@eventSuccessEventSuccessHostSharedLabelReport": {
-    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventsEventDetailScreenStateVisiblecopyOrganizerReviewSummary": "{rating} FROM {reviewCount} ORGANIZER REVIEWS",
   "@eventsEventDetailScreenStateVisiblecopyOrganizerReviewSummary": {
@@ -19491,8 +18272,6 @@
   "@hostsOperationalRosterOutboxRetry": {"description": "Retry pending attendance changes.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
   "hostsOperationalRosterOutboxDiscard": "Discard stale changes",
   "@hostsOperationalRosterOutboxDiscard": {"description": "Discard attendance conflicts after review.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.widgets.host_operational_roster_panel"},
-  "eventSuccessLiveControlCancelCountdownLabel": "Cancel countdown",
-  "@eventSuccessLiveControlCancelCountdownLabel": {"description": "Cancels a reveal countdown before publication.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"},
   "hostLiveViewsLabel": "Live views",
   "@hostLiveViewsLabel": {"description": "Live console segmented control label for screen readers.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.live"},
   "hostLiveViewNow": "Now",
@@ -20121,44 +18900,12 @@
   "@hostFormsLetInFailed": {"description": "Form page: letting someone in failed.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.forms"},
   "hostFormsResponseFailed": "That did not save. Try again.",
   "@hostFormsResponseFailed": {"description": "One answer: a review or conversion failed.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.forms"},
-  "eventSuccessLiveControlPublishRevealTitle": "Publish this reveal?",
-  "@eventSuccessLiveControlPublishRevealTitle": {"description": "Confirmation title before an irreversible assignment reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"},
-  "eventSuccessLiveControlPublishRevealMessage": "Round {roundNumber} will become visible to everyone and cannot be hidden again.",
-  "@eventSuccessLiveControlPublishRevealMessage": {"description": "Irreversible reveal confirmation message.", "placeholders": {"roundNumber": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"},
-  "eventSuccessLiveControlPublishRevealConfirmLabel": "Publish reveal",
-  "@eventSuccessLiveControlPublishRevealConfirmLabel": {"description": "Confirms an irreversible assignment reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"},
-  "eventSuccessLiveControlStartCountdownTitle": "Start the final countdown?",
-  "@eventSuccessLiveControlStartCountdownTitle": {"description": "Confirmation title before starting an auto-publishing reveal countdown.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"},
-  "eventSuccessLiveControlStartCountdownMessage": "Round {roundNumber} will publish after {countdownSeconds} seconds and cannot be hidden again.",
-  "@eventSuccessLiveControlStartCountdownMessage": {"description": "Countdown confirmation explains automatic irreversible publication.", "placeholders": {"roundNumber": {"type": "int"}, "countdownSeconds": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"},
-  "eventSuccessLiveControlStartCountdownConfirmLabel": "Start countdown",
-  "@eventSuccessLiveControlStartCountdownConfirmLabel": {"description": "Confirms an auto-publishing reveal countdown.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"},
-  "eventSuccessLiveControlPublishRotationRoundLabel": "Publish round {roundNumber}",
-  "@eventSuccessLiveControlPublishRotationRoundLabel": {"description": "Publishes the prepared next rotation round.", "placeholders": {"roundNumber": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"},
-  "eventSuccessLiveControlPublishRotationTitle": "Publish this rotation?",
-  "@eventSuccessLiveControlPublishRotationTitle": {"description": "Confirmation title before publishing a prepared rotation.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"},
-  "eventSuccessLiveControlPublishRotationMessage": "Round {roundNumber} will become visible to attendees and cannot be withdrawn.",
-  "@eventSuccessLiveControlPublishRotationMessage": {"description": "Irreversible rotation publication message.", "placeholders": {"roundNumber": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"},
-  "eventSuccessLiveControlPublishRotationConfirmLabel": "Publish rotation",
   "eventSuccessLiveControlStandingsRevealLabel": "Standings reveal",
   "@eventSuccessLiveControlStandingsRevealLabel": {"description": "Labels the standings reveal mode in the live event control room.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_live_reveal_card"},
   "eventSuccessLiveControlPointsValue": "{points} pts",
   "@eventSuccessLiveControlPointsValue": {"description": "Formats a unit score in the published standings.", "placeholders": {"points": {"type": "num"}}, "x-audience": "shared", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
   "eventSuccessLiveControlRankValue": "Rank {rank}",
   "@eventSuccessLiveControlRankValue": {"description": "Formats a unit rank in the published standings.", "placeholders": {"rank": {"type": "int"}}, "x-audience": "shared", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
-  "eventSuccessLiveControlRecordRoundTitle": "Record round {roundNumber}",
-  "@eventSuccessLiveControlRecordRoundTitle": {"description": "Heads the host form for recording a round outcome.", "placeholders": {"roundNumber": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
-  "eventSuccessLiveControlRankEntryInstructions": "Enter one unique rank for every unit. The table stays hidden until the existing reveal.",
-  "@eventSuccessLiveControlRankEntryInstructions": {"description": "Explains how the host records ranked unit outcomes before reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
-  "eventSuccessLiveControlScoreEntryInstructions": "Enter this round’s score for every unit. Totals stay hidden until the existing reveal.",
-  "@eventSuccessLiveControlScoreEntryInstructions": {"description": "Explains how the host records scored unit outcomes before reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
-  "eventSuccessLiveControlEmptyUnitsMessage": "Generate the live units before recording outcomes.",
-  "@eventSuccessLiveControlEmptyUnitsMessage": {"description": "Explains why round outcomes cannot be recorded before units exist.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
-  "eventSuccessLiveControlEmptyScoreTeamsMessage": "Check in guests and give each team an arrival group before recording points.",
-  "@eventSuccessLiveControlEmptyScoreTeamsMessage": {"description": "Explains how quiz teams become scoreable units.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
-  "eventSuccessLiveControlSaveRoundLabel": "Save round for reveal",
-  "@eventSuccessLiveControlSaveRoundLabel": {"description": "Saves the current round outcomes for a later reveal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"},
-  "@eventSuccessLiveControlPublishRotationConfirmLabel": {"description": "Confirms an irreversible prepared rotation publication.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"},
   "hostsEventSuccessStepRoomLayoutTitle": "Room layout",
   "@hostsEventSuccessStepRoomLayoutTitle": {"description": "Reusable room layout selection title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.widgets.event_success_step"},
   "hostsEventSuccessStepRoomLayoutSubtitle": "Choose a reusable coarse layout for live placement. This is not a to-scale floor plan.",
@@ -20485,38 +19232,6 @@
   "@eventSuccessAccountabilityReturned": {"description": "Returned accountability choice.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
   "eventSuccessAccountabilityDeparted": "Departed",
   "@eventSuccessAccountabilityDeparted": {"description": "Departed accountability choice.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
-  "eventSuccessAccountabilityWarningTitle": "Some guests aren’t marked yet",
-  "@eventSuccessAccountabilityWarningTitle": {"description": "Completion warning title for an unresolved sweep.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
-  "eventSuccessAccountabilityWarningMessage": "{count, plural, =1{1 checked-in guest isn’t marked returned or departed.} other{{count} checked-in guests aren’t marked returned or departed.}} People sometimes leave without checking out. Review the list if useful, or finish anyway.",
-  "@eventSuccessAccountabilityWarningMessage": {"description": "Normalizes quiet departures while warning before completion.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
-  "eventSuccessAccountabilityReviewAction": "Review sweep",
-  "@eventSuccessAccountabilityReviewAction": {"description": "Dismisses completion to review unresolved guests.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
-  "eventSuccessAccountabilityFinishAnywayAction": "Finish anyway",
-  "@eventSuccessAccountabilityFinishAnywayAction": {"description": "Acknowledges unresolved guests and completes the event.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.host"},
-  "eventSuccessHostResourceUnavailableTitle": "{resource} unavailable",
-  "@eventSuccessHostResourceUnavailableTitle": {"description": "Names the Event Success resource whose local area could not load.", "placeholders": {"resource": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourceLiveGuide": "Live guide",
-  "@eventSuccessHostResourceLiveGuide": {"description": "Load-bearing Event Success plan resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourceGuestRoster": "Guest roster",
-  "@eventSuccessHostResourceGuestRoster": {"description": "Event Success operational roster resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourceMicroPodAssignments": "Micro-pod assignments",
-  "@eventSuccessHostResourceMicroPodAssignments": {"description": "Event Success micro-pod assignment resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourcePublishedRotations": "Published rotations",
-  "@eventSuccessHostResourcePublishedRotations": {"description": "Event Success published rotation resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourceRotationDrafts": "Rotation drafts",
-  "@eventSuccessHostResourceRotationDrafts": {"description": "Event Success Host-only rotation draft resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourceMicroPodProfiles": "Micro-pod attendee profiles",
-  "@eventSuccessHostResourceMicroPodProfiles": {"description": "Event Success micro-pod profile enrichment resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourceRotationProfiles": "Rotation attendee profiles",
-  "@eventSuccessHostResourceRotationProfiles": {"description": "Event Success rotation profile enrichment resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourceAttendeePreferences": "Attendee preferences",
-  "@eventSuccessHostResourceAttendeePreferences": {"description": "Event Success attendee preference resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourceHostHelpRequests": "Host-help requests",
-  "@eventSuccessHostResourceHostHelpRequests": {"description": "Event Success attendee Host-help request resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourceHostHelpProfiles": "Host-help attendee profiles",
-  "@eventSuccessHostResourceHostHelpProfiles": {"description": "Event Success Host-help profile enrichment resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourceEventReport": "Event report",
-  "@eventSuccessHostResourceEventReport": {"description": "Event Success aggregate scorecard resource name.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
   "hostApplicationsUnavailable": "Applications unavailable",
   "@hostApplicationsUnavailable": {"description": "Application-list or detail load failure title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
   "hostApplicationsReload": "Reload applications",
@@ -21077,60 +19792,8 @@
   "@hostsWizardStepOverviewSemantics": {"description": "Accessible label for the interactive wizard step counter.", "placeholders": {"step": {"type": "int"}, "total": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "core.widgets.catch_step_header"},
   "hostEventRehearsalTitle": "Dress rehearsal",
   "@hostEventRehearsalTitle": {"description": "Event rehearsal route title.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalManageSubtitle": "Host · Manage",
-  "@hostEventRehearsalManageSubtitle": {"description": "Canonical Host Manage route subtitle while rehearsing.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalBadge": "Rehearsal",
   "@hostEventRehearsalBadge": {"description": "Persistent rehearsal mode badge.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalSyntheticGuests": "Practice guests",
-  "@hostEventRehearsalSyntheticGuests": {"description": "Rehearsal data identity shown beside the mode badge.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalPracticeGuest": "Practice guest",
-  "@hostEventRehearsalPracticeGuest": {"description": "Synthetic guest subtitle in the canonical Host runtime.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalLatePracticeGuest": "Late arrival · Practice guest",
-  "@hostEventRehearsalLatePracticeGuest": {"description": "Synthetic late-arrival subtitle in the canonical Host runtime.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalClockPill": "Virtual {time}",
-  "@hostEventRehearsalClockPill": {"description": "Compact virtual-clock control in the rehearsal band.", "placeholders": {"time": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalPracticeTools": "Practice tools",
-  "@hostEventRehearsalPracticeTools": {"description": "Opens advanced rehearsal controls without replacing the real runtime.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalPracticeToolsBody": "Control synthetic guests, the companion phone, faults, time, and deterministic replays.",
-  "@hostEventRehearsalPracticeToolsBody": {"description": "Explains the advanced rehearsal tool sheet.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalRunSheetBody": "Change only the simulated clock and rehearsal lifecycle.",
-  "@hostEventRehearsalRunSheetBody": {"description": "Explains virtual run controls.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachProgress": "Task {current} of {total}",
-  "@hostEventRehearsalCoachProgress": {"description": "Coach task progress in the rehearsal dock.", "placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachWhy": "Why?",
-  "@hostEventRehearsalCoachWhy": {"description": "Explains why the current practice task matters.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachGotIt": "Got it",
-  "@hostEventRehearsalCoachGotIt": {"description": "Collapses the rehearsal Coach without completing the task.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachCollapsed": "Coach is ready when you need the next practice task.",
-  "@hostEventRehearsalCoachCollapsed": {"description": "Collapsed rehearsal Coach message.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachShow": "Show Coach",
-  "@hostEventRehearsalCoachShow": {"description": "Expands the rehearsal Coach.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachResolveLate": "Resolve {name}''s late arrival",
-  "@hostEventRehearsalCoachResolveLate": {"description": "Coach task for a synthetic late arrival.", "placeholders": {"name": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachPlaceGuest": "Place {name} in the current round",
-  "@hostEventRehearsalCoachPlaceGuest": {"description": "Coach task for placing a synthetic guest in the live room map.", "placeholders": {"name": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachPlaceGuestBody": "Use the same Room control you will use on event day.",
-  "@hostEventRehearsalCoachPlaceGuestBody": {"description": "Explains that the rehearsal placement task uses the canonical live Room control.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachResolveHelp": "Resolve {name}''s help request",
-  "@hostEventRehearsalCoachResolveHelp": {"description": "Coach task for a synthetic help request.", "placeholders": {"name": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachSameControl": "Use the same control you will use on event day.",
-  "@hostEventRehearsalCoachSameControl": {"description": "Reinforces that Coach points to production runtime controls.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachStart": "Start the virtual event",
-  "@hostEventRehearsalCoachStart": {"description": "Coach task before a rehearsal begins.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachStartBody": "Open the virtual clock to start, then operate the real Host runtime.",
-  "@hostEventRehearsalCoachStartBody": {"description": "Guidance for beginning a rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachResume": "Resume the virtual event",
-  "@hostEventRehearsalCoachResume": {"description": "Coach task for a paused rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachAdvance": "Run the current Host step",
-  "@hostEventRehearsalCoachAdvance": {"description": "Default Coach task during a running rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachComplete": "Review your rehearsal",
-  "@hostEventRehearsalCoachComplete": {"description": "Coach task after a rehearsal completes.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachCompleteBody": "Open Practice tools to replay, fork, or export the deterministic run.",
-  "@hostEventRehearsalCoachCompleteBody": {"description": "Coach guidance after rehearsal completion.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachWhyTitle": "Why this task?",
-  "@hostEventRehearsalCoachWhyTitle": {"description": "Title for the rehearsal Coach explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
-  "hostEventRehearsalCoachWhyBody": "The Coach highlights a real Host control, but synthetic state proves the outcome. Dismissing guidance never completes a task.",
-  "@hostEventRehearsalCoachWhyBody": {"description": "Explains Coach truth and completion semantics.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalLeaveTitle": "Leave rehearsal?",
   "@hostEventRehearsalLeaveTitle": {"description": "Confirms leaving an active rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalLeaveBody": "Your practice session stays available until it expires.",
@@ -21511,48 +20174,6 @@
   "@eventSuccessRoomSetupLoadingTitle": {"description": "Room setup loading-state title.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_room_setup_section"},
   "eventSuccessRoomSetupLoadingBody": "Your reusable layouts will appear here.",
   "@eventSuccessRoomSetupLoadingBody": {"description": "Room setup loading-state body.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_room_setup_section"},
-  "eventSuccessLiveWorkspaceNow": "Now",
-  "@eventSuccessLiveWorkspaceNow": {"description": "Current live moment workspace label.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessLiveWorkspaceGuests": "Guests",
-  "@eventSuccessLiveWorkspaceGuests": {"description": "Guest drawer action in the live workspace picker.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessLiveWorkspaceRoom": "Room",
-  "@eventSuccessLiveWorkspaceRoom": {"description": "Room map workspace label.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessHostResourceRoomLayout": "room layout",
-  "@eventSuccessHostResourceRoomLayout": {"description": "Room layout resource name used in retry copy.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_screen"},
-  "eventSuccessRoomWorkspaceWholeGroupTitle": "One shared room",
-  "@eventSuccessRoomWorkspaceWholeGroupTitle": {"description": "Whole-group room workspace title.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceWholeGroupBody": "This format runs as one group, so it does not need assigned tables or zones.",
-  "@eventSuccessRoomWorkspaceWholeGroupBody": {"description": "Whole-group room workspace explanation.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceUnconfiguredTitle": "Room layout not configured",
-  "@eventSuccessRoomWorkspaceUnconfiguredTitle": {"description": "Missing room layout runtime title.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceUnconfiguredBody": "Choose or create a room layout in Preparation before the event starts. Live controls remain available in Now.",
-  "@eventSuccessRoomWorkspaceUnconfiguredBody": {"description": "Missing room layout runtime guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceLoadingTitle": "Opening the room map",
-  "@eventSuccessRoomWorkspaceLoadingTitle": {"description": "Room map loading title.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceLoadingBody": "Loading placements and room geometry.",
-  "@eventSuccessRoomWorkspaceLoadingBody": {"description": "Room map loading body.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceWaitingTitle": "Waiting for placements",
-  "@eventSuccessRoomWorkspaceWaitingTitle": {"description": "Empty room placement title.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceWaitingBody": "The saved room is ready. Placements appear here after the event guide generates groups or rotations.",
-  "@eventSuccessRoomWorkspaceWaitingBody": {"description": "Empty room placement guidance.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceCapacitySummary": "{units} · {seats} seats",
-  "@eventSuccessRoomWorkspaceCapacitySummary": {"description": "Configured room unit and seat summary.", "placeholders": {"units": {"type": "String"}, "seats": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceTableCount": "{count, plural, =1{1 table} other{{count} tables}}",
-  "@eventSuccessRoomWorkspaceTableCount": {"description": "Round or rectangular table count.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceRowCount": "{count, plural, =1{1 row} other{{count} rows}}",
-  "@eventSuccessRoomWorkspaceRowCount": {"description": "Row layout unit count.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceCourtCount": "{count, plural, =1{1 court} other{{count} courts}}",
-  "@eventSuccessRoomWorkspaceCourtCount": {"description": "Court layout unit count.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceZoneCount": "{count, plural, =1{1 zone} other{{count} zones}}",
-  "@eventSuccessRoomWorkspaceZoneCount": {"description": "Zone layout unit count.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceAreaCount": "{count, plural, =1{1 area} other{{count} areas}}",
-  "@eventSuccessRoomWorkspaceAreaCount": {"description": "Mixed room-layout unit count.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspacePlaced": "Placed",
-  "@eventSuccessRoomWorkspacePlaced": {"description": "Placed attendee count label.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceUnconfirmed": "Unconfirmed",
-  "@eventSuccessRoomWorkspaceUnconfirmed": {"description": "Unconfirmed placement count label.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
-  "eventSuccessRoomWorkspaceNeedsAttention": "Needs attention",
-  "@eventSuccessRoomWorkspaceNeedsAttention": {"description": "Room placement attention count label.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_success_host_live"},
   "hostMomentsTitle": "Moments",
   "@hostMomentsTitle": {
     "description": "Moments list screen title.",
@@ -28691,6 +27312,10 @@
   "@hostEventsRehearsalOpenDoor": {"description": "Rehearsal button: open the practice screens.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
   "hostEventsRehearsalEnd": "End rehearsal",
   "@hostEventsRehearsalEnd": {"description": "Rehearsal button: end it.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
+  "hostEventsRehearsalPracticeTools": "Practice tools",
+  "@hostEventsRehearsalPracticeTools": {"description": "Practice tools screen title: the rehearsal's clock, made-up guests, queues and recap.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
+  "hostEventsRehearsalNothingSent": "Practice sends nothing. On the night, this messages your guests.",
+  "@hostEventsRehearsalNothingSent": {"description": "Notice when a practice console button would message real guests.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
   "hostEventsBack": "Back",
   "@hostEventsBack": {"description": "Back label on the event screens.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
   "hostPeopleTitle": "People",

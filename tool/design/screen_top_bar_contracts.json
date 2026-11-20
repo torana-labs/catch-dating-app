@@ -133,15 +133,6 @@
       "leading": "back"
     },
     {
-      "path": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
-      "role": "workspace",
-      "expression": "CatchLegacyTopBar.route",
-      "owner": "CatchLegacyTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back",
-      "reason": "The rehearsal runtime owns a responsive operational workspace header."
-    },
-    {
       "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",
@@ -514,13 +505,6 @@
       "role": "content",
       "owner": "CatchTextStyles.titleL",
       "reason": "Paper-ticket copy is theatrical event content inside the companion route."
-    },
-    {
-      "path": "lib/event_success/presentation/reveal/event_success_reveal_header.dart",
-      "symbol": "EventSuccessRevealHeader",
-      "role": "content",
-      "owner": "CatchTextStyles.titleL",
-      "reason": "Reveal headings label theatrical Event Success content inside the companion route and do not own navigation."
     },
     {
       "path": "lib/explore/presentation/widgets/explore_header.dart",

@@ -4804,24 +4804,6 @@ abstract class AppLocalizations {
   /// **'Submit to Razorpay'**
   String get hostsHostPaymentAccountCardLabelSubmitRazorpay;
 
-  /// Product copy used by lib/hosts/presentation/widgets/catch_roster_board.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Open profile'**
-  String get hostsCatchRosterBoardLabelOpenProfile;
-
-  /// Product copy used by lib/hosts/presentation/widgets/catch_roster_board.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Approve request'**
-  String get hostsCatchRosterBoardLabelApproveRequest;
-
-  /// Product copy used by lib/hosts/presentation/widgets/catch_roster_board.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Decline request'**
-  String get hostsCatchRosterBoardLabelDeclineRequest;
-
   /// Product copy used by lib/hosts/presentation/widgets/host_club_tools.dart (label).
   ///
   /// In en, this message translates to:
@@ -8430,42 +8412,6 @@ abstract class AppLocalizations {
   /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).
   ///
   /// In en, this message translates to:
-  /// **'Live mode needs saved setup'**
-  String get eventSuccessEventSuccessHostLiveTitleLiveModeNeedsSaved;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Live mode was not configured'**
-  String get eventSuccessEventSuccessHostLiveTitleLiveModeWasNot;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Save the live guide before the event to enable guided controls. Attendance and check-in stay available from this Live tab.'**
-  String get eventSuccessEventSuccessHostLiveBodySaveTheLiveGuide;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'This event did not have a live guide saved before it started. Attendance and check-in remain available; guided live controls stay unavailable for this event.'**
-  String get eventSuccessEventSuccessHostLiveBodyThisEventDidNot;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No live steps selected'**
-  String get eventSuccessEventSuccessHostLiveTitleNoLiveStepsSelected;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'This saved setup does not include any tools the host can use during the event.'**
-  String get eventSuccessEventSuccessHostLiveBodyThisSavedSetupDoes;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
   /// **'Conversation cues'**
   String get eventSuccessEventSuccessHostLiveTitleConversationCues;
 
@@ -8480,161 +8426,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close with one suggested first message for people who pick each other.'**
   String get eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested;
-
-  /// Title for the Host presence and late-arrival control.
-  ///
-  /// In en, this message translates to:
-  /// **'Guest presence'**
-  String get eventSuccessEventSuccessHostLiveTitleGuestPresence;
-
-  /// Explains the immutable published-round boundary.
-  ///
-  /// In en, this message translates to:
-  /// **'Presence can update the next prepared round. Published rounds stay unchanged.'**
-  String
-  get eventSuccessEventSuccessHostLiveSubtitlePresenceNeverChangesPublished;
-
-  /// Host prompt when monitored guest heartbeats expire.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} guests may have left. Regenerate the next round before publishing?'**
-  String eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft({
-    required int count,
-  });
-
-  /// Host action after reviewing likely departed guests.
-  ///
-  /// In en, this message translates to:
-  /// **'Regenerate next round'**
-  String get eventSuccessEventSuccessHostLiveLabelRegenerateNextRound;
-
-  /// Host late-arrival section title.
-  ///
-  /// In en, this message translates to:
-  /// **'Late arrivals'**
-  String get eventSuccessEventSuccessHostLiveTitleLateArrivals;
-
-  /// Host action to place or hold a late attendee.
-  ///
-  /// In en, this message translates to:
-  /// **'Place next round'**
-  String get eventSuccessEventSuccessHostLiveLabelPlaceNextRound;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Supporting controls'**
-  String get eventSuccessEventSuccessHostLiveTitleSupportingControls;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (subtitle).
-  ///
-  /// In en, this message translates to:
-  /// **'Controls that stay available without competing with the current live step.'**
-  String get eventSuccessEventSuccessHostLiveSubtitleControlsThatStayAvailable;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Mark live guide complete'**
-  String get eventSuccessEventSuccessHostLiveLabelMarkLiveGuideComplete;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Controls for this step'**
-  String get eventSuccessEventSuccessHostLiveTitleControlsForThisStep;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (subtitle).
-  ///
-  /// In en, this message translates to:
-  /// **'Handle these before moving the room forward.'**
-  String get eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (CatchButton).
-  ///
-  /// In en, this message translates to:
-  /// **'eventSuccessPreviousStepButton'**
-  String
-  get eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Previous'**
-  String get eventSuccessEventSuccessHostLiveLabelPrevious;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (CatchButton).
-  ///
-  /// In en, this message translates to:
-  /// **'eventSuccessNextStepButton'**
-  String
-  get eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Small starter groups'**
-  String get eventSuccessEventSuccessHostOverridesTextSmallStarterGroups;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{length} assigned'**
-  String eventSuccessEventSuccessHostOverridesLabelLengthAssigned({
-    required Object length,
-  });
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{optedOutCount} opted out'**
-  String eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut({
-    required Object optedOutCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Host edited'**
-  String get eventSuccessEventSuccessHostOverridesLabelHostEdited;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Regenerate to remove opted-out attendee cards from the current pod set.'**
-  String get eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Generate attendee pod cards from the roster, excluding opted-out attendees.'**
-  String get eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Generate attendee pod cards from the current booked and checked-in roster.'**
-  String
-  get eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (CatchButton).
-  ///
-  /// In en, this message translates to:
-  /// **'eventSuccessGenerateMicroPodsButton'**
-  String
-  get eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneratemicropodsbutton;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Generate micro-pods'**
-  String get eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Regenerate'**
-  String get eventSuccessEventSuccessHostOverridesLabelRegenerate;
 
   /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
@@ -8724,73 +8515,6 @@ abstract class AppLocalizations {
   /// **'Remove attendee'**
   String get eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee;
 
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Timed partner rotations'**
-  String get eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{roundCount} rounds'**
-  String eventSuccessEventSuccessHostOverridesLabelRoundcountRounds({
-    required Object roundCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Regenerate to remove opted-out attendees from timed rotations.'**
-  String
-  get eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Generate pairings from event duration, saved cadence, checked-in participants and, for singles formats, mutual interest.'**
-  String get eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{eventRotationCapacity} possible'**
-  String
-  eventSuccessEventSuccessHostOverridesLabelEventrotationcapacityPossible({
-    required Object eventRotationCapacity,
-  });
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{sitOutRoundCount} planned breaks'**
-  String
-  eventSuccessEventSuccessHostOverridesLabelSitoutroundcountPlannedBreaks({
-    required Object sitOutRoundCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{repeatPeerCount} repeated peers'**
-  String
-  eventSuccessEventSuccessHostOverridesLabelRepeatpeercountRepeatedPeers({
-    required Object repeatPeerCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (CatchButton).
-  ///
-  /// In en, this message translates to:
-  /// **'eventSuccessGenerateRotationsButton'**
-  String
-  get eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneraterotationsbutton;
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Generate rotations'**
-  String get eventSuccessEventSuccessHostOverridesLabelGenerateRotations;
-
   /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
@@ -8839,321 +8563,11 @@ abstract class AppLocalizations {
   /// **'Remove pair'**
   String get eventSuccessEventSuccessHostOverridesTooltipRemovePair;
 
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{key} · {value} assigned'**
-  String eventSuccessEventSuccessHostOverridesLabelKeyValueAssigned({
-    required Object key,
-    required Object value,
-  });
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Assignment notes'**
-  String get eventSuccessEventSuccessHostOverridesTextAssignmentNotes;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'No event report yet'**
-  String get eventSuccessEventSuccessHostReportTitleNoEventReportYet;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'The live event guide was not saved for this event, so there is no post-event report to review. Attendance reporting remains available on this screen.'**
-  String get eventSuccessEventSuccessHostReportBodyTheLiveEventGuide;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Post-event insights are off'**
-  String get eventSuccessEventSuccessHostReportTitlePostEventInsightsAre;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'This event guide does not include post-event coaching for the host.'**
-  String get eventSuccessEventSuccessHostReportBodyThisEventGuideDoes;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Waiting for attendee feedback'**
-  String get eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'{feedbackCount} attendee feedback response{value2}'**
-  String
-  eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse({
-    required Object feedbackCount,
-    required Object value2,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'The report combines attendance, safe aggregate feedback, assignment coverage, and explicit host-help requests. Private notes, safety concerns, and individual opener choices are not shown to hosts.'**
-  String get eventSuccessEventSuccessHostReportBodyTheReportCombinesAttendance;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'How reliable is this report?'**
-  String get eventSuccessEventSuccessHostReportTextHowReliableIsThis;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Shows whether the report is based on enough live data to trust.'**
-  String get eventSuccessEventSuccessHostReportTextShowsWhetherTheReport;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Feedback'**
-  String get eventSuccessEventSuccessHostReportLabelFeedback;
-
-  /// Aggregate count of respondents who confirmed no conversations; no attendee edges are shown.
-  ///
-  /// In en, this message translates to:
-  /// **'Conversation exclusions'**
-  String get eventSuccessEventSuccessHostReportLabelConversationExclusions;
-
-  /// Aggregate conversation graph response coverage for the host recap.
-  ///
-  /// In en, this message translates to:
-  /// **'{conversationGraphResponseCount}/{checkedInCount} responses'**
-  String
-  eventSuccessEventSuccessHostReportLabelConversationgraphresponsecountCheckedincountResponses({
-    required Object conversationGraphResponseCount,
-    required Object checkedInCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Picked someone'**
-  String get eventSuccessEventSuccessHostReportLabelCaughtSomeone;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'People included'**
-  String get eventSuccessEventSuccessHostReportLabelPeopleIncluded;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Opted out'**
-  String get eventSuccessEventSuccessHostReportLabelOptedOut;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Host-help requests'**
-  String get eventSuccessEventSuccessHostReportLabelWingmanHelp;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{feedbackResponseCount}/{checkedInCount} feedback'**
-  String
-  eventSuccessEventSuccessHostReportLabelFeedbackresponsecountCheckedincountFeedback({
-    required Object feedbackResponseCount,
-    required Object checkedInCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{attendeesWhoCaughtSomeone} picked someone'**
-  String
-  eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone({
-    required Object attendeesWhoCaughtSomeone,
-  });
-
-  /// Label for the number of post-event catches sent.
-  ///
-  /// In en, this message translates to:
-  /// **'Picks sent'**
-  String get eventSuccessEventSuccessHostReportLabelCatchesSent;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{assignmentParticipantCount} assigned'**
-  String
-  eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned({
-    required Object assignmentParticipantCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{assignmentOptOutCount} opted out'**
-  String eventSuccessEventSuccessHostReportLabelAssignmentoptoutcountOptedOut({
-    required Object assignmentOptOutCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{wingmanRequestCount} host-help requests'**
-  String
-  eventSuccessEventSuccessHostReportLabelWingmanrequestcountHostHelpRequests({
-    required Object wingmanRequestCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Event funnel'**
-  String get eventSuccessEventSuccessHostReportTextEventFunnel;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Demand to booked'**
-  String get eventSuccessEventSuccessHostReportLabelDemandToBooked;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Requests approved'**
-  String get eventSuccessEventSuccessHostReportLabelRequestsApproved;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Offers accepted'**
-  String get eventSuccessEventSuccessHostReportLabelOffersAccepted;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Payment complete'**
-  String get eventSuccessEventSuccessHostReportLabelPaymentComplete;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Repeat attendees'**
-  String get eventSuccessEventSuccessHostReportLabelRepeatAttendees;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{totalDemandCount} people in demand'**
-  String eventSuccessEventSuccessHostReportLabelTotaldemandcountPeopleInDemand({
-    required Object totalDemandCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{waitlistJoinCount} waitlisted'**
-  String eventSuccessEventSuccessHostReportLabelWaitlistjoincountWaitlisted({
-    required Object waitlistJoinCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{paymentCompletedCount} paid'**
-  String eventSuccessEventSuccessHostReportLabelPaymentcompletedcountPaid({
-    required Object paymentCompletedCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{chatStartedCount} chats started'**
-  String eventSuccessEventSuccessHostReportLabelChatstartedcountChatsStarted({
-    required Object chatStartedCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Event started without a saved guide'**
-  String get eventSuccessEventSuccessHostSetupTitleEventStartedWithoutA;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Live guide can no longer be saved'**
-  String get eventSuccessEventSuccessHostSetupTitleLiveGuideCanNo;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'This event began before a live guide was saved. Attendance and check-in still work, but the Live tab won\'\'t have any guided controls for this event.'**
-  String get eventSuccessEventSuccessHostSetupBodyThisEventBeganBefore;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Bookings have already started. Attendance and check-in still work, but the Live tab won\'\'t have guided controls unless a guide was saved first.'**
-  String get eventSuccessEventSuccessHostSetupBodyBookingsHaveAlreadyStarted;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Setup not saved yet'**
-  String get eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'This default plan is visible here only. Save it so the Live tab is ready when the event starts.'**
-  String get eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Settings are locked'**
-  String get eventSuccessEventSuccessHostSetupTitleSettingsAreLocked;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'Bookings have started, so the saved guide is locked in. Switch to the Live tab to drive the event in real time once it starts.'**
-  String get eventSuccessEventSuccessHostSetupBodyBookingsHaveStartedSo;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'The event has started — setup is locked. Use the Live tab to control the event right now, and the Report tab afterward.'**
-  String get eventSuccessEventSuccessHostSetupBodyTheEventHasStarted;
-
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart, lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Your plan'**
   String get eventSuccessEventSuccessHostSetupTitleYourPlan;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Save changes'**
-  String get eventSuccessEventSuccessHostSetupLabelSaveChanges;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Save setup'**
-  String get eventSuccessEventSuccessHostSetupLabelSaveSetup;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Save live guide'**
-  String get eventSuccessEventSuccessHostSetupLabelSaveLiveGuide;
 
   /// Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (Text).
   ///
@@ -9183,34 +8597,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Before launch'**
   String get eventSuccessEventSuccessHostSetupTitleBeforeLaunch;
-
-  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Unsaved changes'**
-  String get eventSuccessEventSuccessHostSetupTextUnsavedChanges;
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_plan_field_lanes.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{length} tools'**
-  String eventSuccessEventSuccessHostSharedLabelLengthTools({
-    required Object length,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_plan_field_lanes.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Not saved'**
-  String get eventSuccessEventSuccessHostSharedLabelNotSaved;
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_activity_field_lanes.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{length} selected'**
-  String eventSuccessEventSuccessHostSharedLabelLengthSelected({
-    required Object length,
-  });
 
   /// Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (Text).
   ///
@@ -9248,69 +8634,6 @@ abstract class AppLocalizations {
   /// **'\"Help me say hi\" requests'**
   String get eventSuccessEventSuccessHostSharedTextHelpMeSayHi;
 
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{length} active'**
-  String eventSuccessEventSuccessHostSharedLabelLengthActive({
-    required Object length,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Attendees explicitly asked the host for help. Use rotation edits or live facilitation to pair them safely.'**
-  String get eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThe;
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'Attendees explicitly asked the host for help. Use this as live facilitation context.'**
-  String
-  get eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThef44110;
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'No host-help requests yet.'**
-  String get eventSuccessEventSuccessHostSharedTextNoHostHelpRequests;
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Host visible'**
-  String get eventSuccessEventSuccessHostSharedLabelHostVisible;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Generate assignments first'**
-  String
-  get eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Reveal now'**
-  String get eventSuccessEventSuccessLiveRevealActionsLabelRevealNow;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Reveal round {value1}'**
-  String eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1({
-    required Object value1,
-  });
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Drop {countdownSeconds}s countdown'**
-  String
-  eventSuccessEventSuccessLiveRevealActionsLabelDropCountdownsecondsSCountdown({
-    required Object countdownSeconds,
-  });
-
   /// Product copy used by lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart (label).
   ///
   /// In en, this message translates to:
@@ -9328,46 +8651,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Waiting'**
   String get eventSuccessEventSuccessLiveRevealAttendeeLabelWaiting;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Synchronized partner reveal'**
-  String
-  get eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'No assignments'**
-  String get eventSuccessEventSuccessLiveRevealHostLabelNoAssignments;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{value1}/{roundCount} shown'**
-  String eventSuccessEventSuccessLiveRevealHostLabelValue1RoundcountShown({
-    required Object value1,
-    required Object roundCount,
-  });
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).
-  ///
-  /// In en, this message translates to:
-  /// **'seconds'**
-  String get eventSuccessEventSuccessLiveRevealHostCaptionSeconds;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).
-  ///
-  /// In en, this message translates to:
-  /// **'revealed'**
-  String get eventSuccessEventSuccessLiveRevealHostCaptionRevealed;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).
-  ///
-  /// In en, this message translates to:
-  /// **'next round'**
-  String get eventSuccessEventSuccessLiveRevealHostCaptionNextRound;
 
   /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
@@ -9494,28 +8777,6 @@ abstract class AppLocalizations {
   String eventSuccessEventSuccessLiveRevealWidgetsTextTimerangePeername({
     required Object timeRange,
     required Object peerName,
-  });
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Hidden until reveal'**
-  String get eventSuccessEventSuccessLiveRevealWidgetsLabelHiddenUntilReveal;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Round {value1}'**
-  String eventSuccessEventSuccessLiveRevealWidgetsLabelRoundValue1({
-    required Object value1,
-  });
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'R{value1}'**
-  String eventSuccessEventSuccessLiveRevealWidgetsTextRValue1({
-    required Object value1,
   });
 
   /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
@@ -10299,18 +9560,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'this attendee'**
   String get eventSuccessEventSuccessCompanionWingmanTextThisAttendee;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).
-  ///
-  /// In en, this message translates to:
-  /// **'The post-event report appears once checked-in attendees share feedback. There is no signal to summarize yet.'**
-  String get eventSuccessEventSuccessHostReportBodyThePostEventReport;
-
-  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'s'**
-  String get eventSuccessEventSuccessHostReportTitleS;
 
   /// Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).
   ///
@@ -13466,35 +12715,6 @@ abstract class AppLocalizations {
     required Object value2,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Attendees at {locationName} see: {attendeeExperience}'**
-  String eventSuccessEventSuccessHostLiveVisiblecopyAttendeesAtLocationnameSee({
-    required Object locationName,
-    required Object attendeeExperience,
-  });
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Final step'**
-  String get eventSuccessEventSuccessHostLiveVisiblecopyFinalStep;
-
-  /// Product copy used by lib/event_success/presentation/host_live/event_success_step_action_row.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Next: {title}'**
-  String eventSuccessEventSuccessHostLiveVisiblecopyNextTitle({
-    required Object title,
-  });
-
-  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'host_override_v1'**
-  String get eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1;
-
   /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
@@ -13591,28 +12811,6 @@ abstract class AppLocalizations {
     required Object targetName,
   });
 
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{remainingSeconds}'**
-  String eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds({
-    required Object remainingSeconds,
-  });
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'OK'**
-  String get eventSuccessEventSuccessLiveRevealHostVisiblecopyOk;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'{value1}'**
-  String eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1({
-    required Object value1,
-  });
-
   /// Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).
   ///
   /// In en, this message translates to:
@@ -13627,24 +12825,6 @@ abstract class AppLocalizations {
     required Object format,
     required Object format2,
   });
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Done'**
-  String get eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyDone;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Now'**
-  String get eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyNow;
-
-  /// Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Hidden'**
-  String get eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyHidden;
 
   /// Product copy used by lib/events/presentation/calendar/calendar_screen.dart (visibleCopy).
   ///
@@ -15079,137 +14259,6 @@ abstract class AppLocalizations {
   /// **'Rotation reveal'**
   String get eventSuccessEventSuccessLiveRevealCardLabelRotationReveal;
 
-  /// Control Room sync status after the current live-guide state is stored.
-  ///
-  /// In en, this message translates to:
-  /// **'Synced'**
-  String get eventSuccessControlRoomSynced;
-
-  /// Compact Control Room badge combining live state with persistence status.
-  ///
-  /// In en, this message translates to:
-  /// **'Live now · {syncStatus}'**
-  String eventSuccessControlRoomLiveSyncStatus({required String syncStatus});
-
-  /// Control Room sync status while a live-guide mutation is pending.
-  ///
-  /// In en, this message translates to:
-  /// **'Saving'**
-  String get eventSuccessControlRoomSyncing;
-
-  /// Control Room persistence status after a live-guide mutation fails.
-  ///
-  /// In en, this message translates to:
-  /// **'Save failed'**
-  String get eventSuccessControlRoomSaveFailed;
-
-  /// Presentation state for a Control Room that has lost connectivity.
-  ///
-  /// In en, this message translates to:
-  /// **'Offline'**
-  String get eventSuccessControlRoomOffline;
-
-  /// Presentation state for a Control Room state conflict that needs host review.
-  ///
-  /// In en, this message translates to:
-  /// **'Needs review'**
-  String get eventSuccessControlRoomNeedsReview;
-
-  /// Current Control Room run-of-show step and total step count.
-  ///
-  /// In en, this message translates to:
-  /// **'Step {current} of {total} · {stage}'**
-  String eventSuccessControlRoomStepProgress({
-    required int current,
-    required int total,
-    required String stage,
-  });
-
-  /// Numbered transition label for a continuous run of show.
-  ///
-  /// In en, this message translates to:
-  /// **'Beat {number}'**
-  String eventSuccessEventSuccessHostLiveLabelBeatNumber({required int number});
-
-  /// Numbered transition label for a round-based run of show.
-  ///
-  /// In en, this message translates to:
-  /// **'Round {number}'**
-  String eventSuccessEventSuccessHostLiveLabelRoundNumber({
-    required int number,
-  });
-
-  /// First transition label for a course-based run of show.
-  ///
-  /// In en, this message translates to:
-  /// **'First course'**
-  String get eventSuccessEventSuccessHostLiveLabelFirstCourse;
-
-  /// Second transition label for a course-based run of show.
-  ///
-  /// In en, this message translates to:
-  /// **'Second course'**
-  String get eventSuccessEventSuccessHostLiveLabelSecondCourse;
-
-  /// Third transition label for a course-based run of show.
-  ///
-  /// In en, this message translates to:
-  /// **'Third course'**
-  String get eventSuccessEventSuccessHostLiveLabelThirdCourse;
-
-  /// Fourth transition label for a course-based run of show.
-  ///
-  /// In en, this message translates to:
-  /// **'Fourth course'**
-  String get eventSuccessEventSuccessHostLiveLabelFourthCourse;
-
-  /// Fallback numbered transition label for later courses.
-  ///
-  /// In en, this message translates to:
-  /// **'Course {number}'**
-  String eventSuccessEventSuccessHostLiveLabelCourseNumber({
-    required int number,
-  });
-
-  /// Numbered transition label for a segmented run of show.
-  ///
-  /// In en, this message translates to:
-  /// **'Leg {number}'**
-  String eventSuccessEventSuccessHostLiveLabelLegNumber({required int number});
-
-  /// Numbered transition label for a run of show that moves between stops.
-  ///
-  /// In en, this message translates to:
-  /// **'Stop {number}'**
-  String eventSuccessEventSuccessHostLiveLabelStopNumber({required int number});
-
-  /// Kicker above the next live-guide step in Control Room.
-  ///
-  /// In en, this message translates to:
-  /// **'Up next'**
-  String get eventSuccessControlRoomUpNext;
-
-  /// Control Room destination for the operational guest roster.
-  ///
-  /// In en, this message translates to:
-  /// **'Guests'**
-  String get eventSuccessControlRoomGuests;
-
-  /// Control Room guest destination summary using roster counts rather than event capacity.
-  ///
-  /// In en, this message translates to:
-  /// **'{checkedIn} checked in · {expected} expected'**
-  String eventSuccessControlRoomGuestsSummary({
-    required int checkedIn,
-    required int expected,
-  });
-
-  /// Control Room guest summary when no authoritative expected count is available.
-  ///
-  /// In en, this message translates to:
-  /// **'{checkedIn} checked in'**
-  String eventSuccessControlRoomGuestsCheckedInOnly({required int checkedIn});
-
   /// Live Control Room intervention title when checked-in attendees reach the exclusion threshold.
   ///
   /// In en, this message translates to:
@@ -15224,96 +14273,6 @@ abstract class AppLocalizations {
     required int count,
     required int minutes,
   });
-
-  /// Control Room destination for lightweight recovery guidance.
-  ///
-  /// In en, this message translates to:
-  /// **'Help & fallback'**
-  String get eventSuccessControlRoomHelpFallback;
-
-  /// Summary under the Control Room fallback destination.
-  ///
-  /// In en, this message translates to:
-  /// **'Recovery steps for the room'**
-  String get eventSuccessControlRoomHelpFallbackSubtitle;
-
-  /// Primary Control Room action that advances to the named next step.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue to {title}'**
-  String eventSuccessControlRoomContinueTo({required String title});
-
-  /// Title for the Control Room fallback guidance sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep the room moving'**
-  String get eventSuccessControlRoomFallbackTitle;
-
-  /// Subtitle for the Control Room fallback guidance sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'A simple reset when the plan or connection gets in the way.'**
-  String get eventSuccessControlRoomFallbackSubtitle;
-
-  /// First fallback instruction title.
-  ///
-  /// In en, this message translates to:
-  /// **'Stay on this step'**
-  String get eventSuccessControlRoomFallbackStayTitle;
-
-  /// First fallback instruction body.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep using the instruction on screen while you settle the room.'**
-  String get eventSuccessControlRoomFallbackStayBody;
-
-  /// Second fallback instruction title.
-  ///
-  /// In en, this message translates to:
-  /// **'Take attendance manually'**
-  String get eventSuccessControlRoomFallbackGuestsTitle;
-
-  /// Second fallback instruction body.
-  ///
-  /// In en, this message translates to:
-  /// **'Open Guests to check people in or add anyone who was not booked through Catch.'**
-  String get eventSuccessControlRoomFallbackGuestsBody;
-
-  /// Third fallback instruction title.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue when ready'**
-  String get eventSuccessControlRoomFallbackContinueTitle;
-
-  /// Third fallback instruction body.
-  ///
-  /// In en, this message translates to:
-  /// **'The guide only moves when you tap the primary action, so the room stays in your control.'**
-  String get eventSuccessControlRoomFallbackContinueBody;
-
-  /// Dismisses the Control Room fallback guidance sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'Back to Control Room'**
-  String get eventSuccessControlRoomFallbackDone;
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Setup'**
-  String get eventSuccessEventSuccessHostSharedLabelSetup;
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Live'**
-  String get eventSuccessEventSuccessHostSharedLabelLive;
-
-  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Report'**
-  String get eventSuccessEventSuccessHostSharedLabelReport;
 
   /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
   ///
@@ -18760,12 +17719,6 @@ abstract class AppLocalizations {
   /// **'Discard stale changes'**
   String get hostsOperationalRosterOutboxDiscard;
 
-  /// Cancels a reveal countdown before publication.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel countdown'**
-  String get eventSuccessLiveControlCancelCountdownLabel;
-
   /// Live console segmented control label for screen readers.
   ///
   /// In en, this message translates to:
@@ -20660,75 +19613,6 @@ abstract class AppLocalizations {
   /// **'That did not save. Try again.'**
   String get hostFormsResponseFailed;
 
-  /// Confirmation title before an irreversible assignment reveal.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish this reveal?'**
-  String get eventSuccessLiveControlPublishRevealTitle;
-
-  /// Irreversible reveal confirmation message.
-  ///
-  /// In en, this message translates to:
-  /// **'Round {roundNumber} will become visible to everyone and cannot be hidden again.'**
-  String eventSuccessLiveControlPublishRevealMessage({
-    required int roundNumber,
-  });
-
-  /// Confirms an irreversible assignment reveal.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish reveal'**
-  String get eventSuccessLiveControlPublishRevealConfirmLabel;
-
-  /// Confirmation title before starting an auto-publishing reveal countdown.
-  ///
-  /// In en, this message translates to:
-  /// **'Start the final countdown?'**
-  String get eventSuccessLiveControlStartCountdownTitle;
-
-  /// Countdown confirmation explains automatic irreversible publication.
-  ///
-  /// In en, this message translates to:
-  /// **'Round {roundNumber} will publish after {countdownSeconds} seconds and cannot be hidden again.'**
-  String eventSuccessLiveControlStartCountdownMessage({
-    required int roundNumber,
-    required int countdownSeconds,
-  });
-
-  /// Confirms an auto-publishing reveal countdown.
-  ///
-  /// In en, this message translates to:
-  /// **'Start countdown'**
-  String get eventSuccessLiveControlStartCountdownConfirmLabel;
-
-  /// Publishes the prepared next rotation round.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish round {roundNumber}'**
-  String eventSuccessLiveControlPublishRotationRoundLabel({
-    required int roundNumber,
-  });
-
-  /// Confirmation title before publishing a prepared rotation.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish this rotation?'**
-  String get eventSuccessLiveControlPublishRotationTitle;
-
-  /// Irreversible rotation publication message.
-  ///
-  /// In en, this message translates to:
-  /// **'Round {roundNumber} will become visible to attendees and cannot be withdrawn.'**
-  String eventSuccessLiveControlPublishRotationMessage({
-    required int roundNumber,
-  });
-
-  /// Confirms an irreversible prepared rotation publication.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish rotation'**
-  String get eventSuccessLiveControlPublishRotationConfirmLabel;
-
   /// Labels the standings reveal mode in the live event control room.
   ///
   /// In en, this message translates to:
@@ -20746,42 +19630,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rank {rank}'**
   String eventSuccessLiveControlRankValue({required int rank});
-
-  /// Heads the host form for recording a round outcome.
-  ///
-  /// In en, this message translates to:
-  /// **'Record round {roundNumber}'**
-  String eventSuccessLiveControlRecordRoundTitle({required int roundNumber});
-
-  /// Explains how the host records ranked unit outcomes before reveal.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter one unique rank for every unit. The table stays hidden until the existing reveal.'**
-  String get eventSuccessLiveControlRankEntryInstructions;
-
-  /// Explains how the host records scored unit outcomes before reveal.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter this round’s score for every unit. Totals stay hidden until the existing reveal.'**
-  String get eventSuccessLiveControlScoreEntryInstructions;
-
-  /// Explains why round outcomes cannot be recorded before units exist.
-  ///
-  /// In en, this message translates to:
-  /// **'Generate the live units before recording outcomes.'**
-  String get eventSuccessLiveControlEmptyUnitsMessage;
-
-  /// Explains how quiz teams become scoreable units.
-  ///
-  /// In en, this message translates to:
-  /// **'Check in guests and give each team an arrival group before recording points.'**
-  String get eventSuccessLiveControlEmptyScoreTeamsMessage;
-
-  /// Saves the current round outcomes for a later reveal.
-  ///
-  /// In en, this message translates to:
-  /// **'Save round for reveal'**
-  String get eventSuccessLiveControlSaveRoundLabel;
 
   /// Reusable room layout selection title.
   ///
@@ -21772,102 +20620,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Departed'**
   String get eventSuccessAccountabilityDeparted;
-
-  /// Completion warning title for an unresolved sweep.
-  ///
-  /// In en, this message translates to:
-  /// **'Some guests aren’t marked yet'**
-  String get eventSuccessAccountabilityWarningTitle;
-
-  /// Normalizes quiet departures while warning before completion.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 checked-in guest isn’t marked returned or departed.} other{{count} checked-in guests aren’t marked returned or departed.}} People sometimes leave without checking out. Review the list if useful, or finish anyway.'**
-  String eventSuccessAccountabilityWarningMessage({required int count});
-
-  /// Dismisses completion to review unresolved guests.
-  ///
-  /// In en, this message translates to:
-  /// **'Review sweep'**
-  String get eventSuccessAccountabilityReviewAction;
-
-  /// Acknowledges unresolved guests and completes the event.
-  ///
-  /// In en, this message translates to:
-  /// **'Finish anyway'**
-  String get eventSuccessAccountabilityFinishAnywayAction;
-
-  /// Names the Event Success resource whose local area could not load.
-  ///
-  /// In en, this message translates to:
-  /// **'{resource} unavailable'**
-  String eventSuccessHostResourceUnavailableTitle({required String resource});
-
-  /// Load-bearing Event Success plan resource name.
-  ///
-  /// In en, this message translates to:
-  /// **'Live guide'**
-  String get eventSuccessHostResourceLiveGuide;
-
-  /// Event Success operational roster resource name.
-  ///
-  /// In en, this message translates to:
-  /// **'Guest roster'**
-  String get eventSuccessHostResourceGuestRoster;
-
-  /// Event Success micro-pod assignment resource name.
-  ///
-  /// In en, this message translates to:
-  /// **'Micro-pod assignments'**
-  String get eventSuccessHostResourceMicroPodAssignments;
-
-  /// Event Success published rotation resource name.
-  ///
-  /// In en, this message translates to:
-  /// **'Published rotations'**
-  String get eventSuccessHostResourcePublishedRotations;
-
-  /// Event Success Host-only rotation draft resource name.
-  ///
-  /// In en, this message translates to:
-  /// **'Rotation drafts'**
-  String get eventSuccessHostResourceRotationDrafts;
-
-  /// Event Success micro-pod profile enrichment resource name.
-  ///
-  /// In en, this message translates to:
-  /// **'Micro-pod attendee profiles'**
-  String get eventSuccessHostResourceMicroPodProfiles;
-
-  /// Event Success rotation profile enrichment resource name.
-  ///
-  /// In en, this message translates to:
-  /// **'Rotation attendee profiles'**
-  String get eventSuccessHostResourceRotationProfiles;
-
-  /// Event Success attendee preference resource name.
-  ///
-  /// In en, this message translates to:
-  /// **'Attendee preferences'**
-  String get eventSuccessHostResourceAttendeePreferences;
-
-  /// Event Success attendee Host-help request resource name.
-  ///
-  /// In en, this message translates to:
-  /// **'Host-help requests'**
-  String get eventSuccessHostResourceHostHelpRequests;
-
-  /// Event Success Host-help profile enrichment resource name.
-  ///
-  /// In en, this message translates to:
-  /// **'Host-help attendee profiles'**
-  String get eventSuccessHostResourceHostHelpProfiles;
-
-  /// Event Success aggregate scorecard resource name.
-  ///
-  /// In en, this message translates to:
-  /// **'Event report'**
-  String get eventSuccessHostResourceEventReport;
 
   /// Application-list or detail load failure title.
   ///
@@ -23546,170 +22298,11 @@ abstract class AppLocalizations {
   /// **'Dress rehearsal'**
   String get hostEventRehearsalTitle;
 
-  /// Canonical Host Manage route subtitle while rehearsing.
-  ///
-  /// In en, this message translates to:
-  /// **'Host · Manage'**
-  String get hostEventRehearsalManageSubtitle;
-
   /// Persistent rehearsal mode badge.
   ///
   /// In en, this message translates to:
   /// **'Rehearsal'**
   String get hostEventRehearsalBadge;
-
-  /// Rehearsal data identity shown beside the mode badge.
-  ///
-  /// In en, this message translates to:
-  /// **'Practice guests'**
-  String get hostEventRehearsalSyntheticGuests;
-
-  /// Synthetic guest subtitle in the canonical Host runtime.
-  ///
-  /// In en, this message translates to:
-  /// **'Practice guest'**
-  String get hostEventRehearsalPracticeGuest;
-
-  /// Synthetic late-arrival subtitle in the canonical Host runtime.
-  ///
-  /// In en, this message translates to:
-  /// **'Late arrival · Practice guest'**
-  String get hostEventRehearsalLatePracticeGuest;
-
-  /// Compact virtual-clock control in the rehearsal band.
-  ///
-  /// In en, this message translates to:
-  /// **'Virtual {time}'**
-  String hostEventRehearsalClockPill({required String time});
-
-  /// Opens advanced rehearsal controls without replacing the real runtime.
-  ///
-  /// In en, this message translates to:
-  /// **'Practice tools'**
-  String get hostEventRehearsalPracticeTools;
-
-  /// Explains the advanced rehearsal tool sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'Control synthetic guests, the companion phone, faults, time, and deterministic replays.'**
-  String get hostEventRehearsalPracticeToolsBody;
-
-  /// Explains virtual run controls.
-  ///
-  /// In en, this message translates to:
-  /// **'Change only the simulated clock and rehearsal lifecycle.'**
-  String get hostEventRehearsalRunSheetBody;
-
-  /// Coach task progress in the rehearsal dock.
-  ///
-  /// In en, this message translates to:
-  /// **'Task {current} of {total}'**
-  String hostEventRehearsalCoachProgress({
-    required int current,
-    required int total,
-  });
-
-  /// Explains why the current practice task matters.
-  ///
-  /// In en, this message translates to:
-  /// **'Why?'**
-  String get hostEventRehearsalCoachWhy;
-
-  /// Collapses the rehearsal Coach without completing the task.
-  ///
-  /// In en, this message translates to:
-  /// **'Got it'**
-  String get hostEventRehearsalCoachGotIt;
-
-  /// Collapsed rehearsal Coach message.
-  ///
-  /// In en, this message translates to:
-  /// **'Coach is ready when you need the next practice task.'**
-  String get hostEventRehearsalCoachCollapsed;
-
-  /// Expands the rehearsal Coach.
-  ///
-  /// In en, this message translates to:
-  /// **'Show Coach'**
-  String get hostEventRehearsalCoachShow;
-
-  /// Coach task for a synthetic late arrival.
-  ///
-  /// In en, this message translates to:
-  /// **'Resolve {name}\'\'s late arrival'**
-  String hostEventRehearsalCoachResolveLate({required String name});
-
-  /// Coach task for placing a synthetic guest in the live room map.
-  ///
-  /// In en, this message translates to:
-  /// **'Place {name} in the current round'**
-  String hostEventRehearsalCoachPlaceGuest({required String name});
-
-  /// Explains that the rehearsal placement task uses the canonical live Room control.
-  ///
-  /// In en, this message translates to:
-  /// **'Use the same Room control you will use on event day.'**
-  String get hostEventRehearsalCoachPlaceGuestBody;
-
-  /// Coach task for a synthetic help request.
-  ///
-  /// In en, this message translates to:
-  /// **'Resolve {name}\'\'s help request'**
-  String hostEventRehearsalCoachResolveHelp({required String name});
-
-  /// Reinforces that Coach points to production runtime controls.
-  ///
-  /// In en, this message translates to:
-  /// **'Use the same control you will use on event day.'**
-  String get hostEventRehearsalCoachSameControl;
-
-  /// Coach task before a rehearsal begins.
-  ///
-  /// In en, this message translates to:
-  /// **'Start the virtual event'**
-  String get hostEventRehearsalCoachStart;
-
-  /// Guidance for beginning a rehearsal.
-  ///
-  /// In en, this message translates to:
-  /// **'Open the virtual clock to start, then operate the real Host runtime.'**
-  String get hostEventRehearsalCoachStartBody;
-
-  /// Coach task for a paused rehearsal.
-  ///
-  /// In en, this message translates to:
-  /// **'Resume the virtual event'**
-  String get hostEventRehearsalCoachResume;
-
-  /// Default Coach task during a running rehearsal.
-  ///
-  /// In en, this message translates to:
-  /// **'Run the current Host step'**
-  String get hostEventRehearsalCoachAdvance;
-
-  /// Coach task after a rehearsal completes.
-  ///
-  /// In en, this message translates to:
-  /// **'Review your rehearsal'**
-  String get hostEventRehearsalCoachComplete;
-
-  /// Coach guidance after rehearsal completion.
-  ///
-  /// In en, this message translates to:
-  /// **'Open Practice tools to replay, fork, or export the deterministic run.'**
-  String get hostEventRehearsalCoachCompleteBody;
-
-  /// Title for the rehearsal Coach explanation.
-  ///
-  /// In en, this message translates to:
-  /// **'Why this task?'**
-  String get hostEventRehearsalCoachWhyTitle;
-
-  /// Explains Coach truth and completion semantics.
-  ///
-  /// In en, this message translates to:
-  /// **'The Coach highlights a real Host control, but synthetic state proves the outcome. Dismissing guidance never completes a task.'**
-  String get hostEventRehearsalCoachWhyBody;
 
   /// Confirms leaving an active rehearsal.
   ///
@@ -24865,135 +23458,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your reusable layouts will appear here.'**
   String get eventSuccessRoomSetupLoadingBody;
-
-  /// Current live moment workspace label.
-  ///
-  /// In en, this message translates to:
-  /// **'Now'**
-  String get eventSuccessLiveWorkspaceNow;
-
-  /// Guest drawer action in the live workspace picker.
-  ///
-  /// In en, this message translates to:
-  /// **'Guests'**
-  String get eventSuccessLiveWorkspaceGuests;
-
-  /// Room map workspace label.
-  ///
-  /// In en, this message translates to:
-  /// **'Room'**
-  String get eventSuccessLiveWorkspaceRoom;
-
-  /// Room layout resource name used in retry copy.
-  ///
-  /// In en, this message translates to:
-  /// **'room layout'**
-  String get eventSuccessHostResourceRoomLayout;
-
-  /// Whole-group room workspace title.
-  ///
-  /// In en, this message translates to:
-  /// **'One shared room'**
-  String get eventSuccessRoomWorkspaceWholeGroupTitle;
-
-  /// Whole-group room workspace explanation.
-  ///
-  /// In en, this message translates to:
-  /// **'This format runs as one group, so it does not need assigned tables or zones.'**
-  String get eventSuccessRoomWorkspaceWholeGroupBody;
-
-  /// Missing room layout runtime title.
-  ///
-  /// In en, this message translates to:
-  /// **'Room layout not configured'**
-  String get eventSuccessRoomWorkspaceUnconfiguredTitle;
-
-  /// Missing room layout runtime guidance.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose or create a room layout in Preparation before the event starts. Live controls remain available in Now.'**
-  String get eventSuccessRoomWorkspaceUnconfiguredBody;
-
-  /// Room map loading title.
-  ///
-  /// In en, this message translates to:
-  /// **'Opening the room map'**
-  String get eventSuccessRoomWorkspaceLoadingTitle;
-
-  /// Room map loading body.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading placements and room geometry.'**
-  String get eventSuccessRoomWorkspaceLoadingBody;
-
-  /// Empty room placement title.
-  ///
-  /// In en, this message translates to:
-  /// **'Waiting for placements'**
-  String get eventSuccessRoomWorkspaceWaitingTitle;
-
-  /// Empty room placement guidance.
-  ///
-  /// In en, this message translates to:
-  /// **'The saved room is ready. Placements appear here after the event guide generates groups or rotations.'**
-  String get eventSuccessRoomWorkspaceWaitingBody;
-
-  /// Configured room unit and seat summary.
-  ///
-  /// In en, this message translates to:
-  /// **'{units} · {seats} seats'**
-  String eventSuccessRoomWorkspaceCapacitySummary({
-    required String units,
-    required int seats,
-  });
-
-  /// Round or rectangular table count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 table} other{{count} tables}}'**
-  String eventSuccessRoomWorkspaceTableCount({required int count});
-
-  /// Row layout unit count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 row} other{{count} rows}}'**
-  String eventSuccessRoomWorkspaceRowCount({required int count});
-
-  /// Court layout unit count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 court} other{{count} courts}}'**
-  String eventSuccessRoomWorkspaceCourtCount({required int count});
-
-  /// Zone layout unit count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 zone} other{{count} zones}}'**
-  String eventSuccessRoomWorkspaceZoneCount({required int count});
-
-  /// Mixed room-layout unit count.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 area} other{{count} areas}}'**
-  String eventSuccessRoomWorkspaceAreaCount({required int count});
-
-  /// Placed attendee count label.
-  ///
-  /// In en, this message translates to:
-  /// **'Placed'**
-  String get eventSuccessRoomWorkspacePlaced;
-
-  /// Unconfirmed placement count label.
-  ///
-  /// In en, this message translates to:
-  /// **'Unconfirmed'**
-  String get eventSuccessRoomWorkspaceUnconfirmed;
-
-  /// Room placement attention count label.
-  ///
-  /// In en, this message translates to:
-  /// **'Needs attention'**
-  String get eventSuccessRoomWorkspaceNeedsAttention;
 
   /// Moments list screen title.
   ///
@@ -37767,6 +36231,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'End rehearsal'**
   String get hostEventsRehearsalEnd;
+
+  /// Practice tools screen title: the rehearsal's clock, made-up guests, queues and recap.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice tools'**
+  String get hostEventsRehearsalPracticeTools;
+
+  /// Notice when a practice console button would message real guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice sends nothing. On the night, this messages your guests.'**
+  String get hostEventsRehearsalNothingSent;
 
   /// Back label on the event screens.
   ///

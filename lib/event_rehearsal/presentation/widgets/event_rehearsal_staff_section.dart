@@ -97,51 +97,54 @@ class EventRehearsalStaffSection extends ConsumerWidget {
                   variant: CatchLegacyTextVariant.supporting,
                 ),
               ],
-              gapH12,
-              CatchFieldLanes.divided(
-                children: [
-                  for (final operator in staff.operators.values)
-                    for (final String? groupId in <String?>[
-                      ...operator.duties.keys,
-                      if (operator.duties.isEmpty) null,
-                    ])
-                      CatchField.content(
-                        copy: catchFieldCopy(l10n),
-                        title: operator.displayName,
-                        bodyMaxLines: 8,
-                        body: groupId == null
-                            ? l10n.hostEventRehearsalStaffNoDuty
-                            : '${staff.groups[groupId]?.label ?? l10n.hostEventRehearsalStaffFormerGroup} · ${assistanceGroupDutyLabel(l10n, operator.duties[groupId]!.duty)}\n${operator.duties[groupId]!.expiresAt <= staff.serverTime || operator.duties[groupId]!.sourceHash != staff.groups[groupId]?.sourceHash ? l10n.hostEventRehearsalStaffExpired : l10n.hostEventRehearsalStaffUntil(time: DateFormat.jm(Localizations.localeOf(context).toLanguageTag()).format(DateTime.fromMillisecondsSinceEpoch(operator.duties[groupId]!.expiresAt)))}',
-                        actions: Wrap(
-                          children: [
-                            if (staff.canAssign)
-                              CatchButton(
-                                label: l10n.hostEventRehearsalStaffEdit,
-                                variant: CatchButtonVariant.quiet,
-                                size: CatchButtonSize.md,
-                                onPressed: () => open(
-                                  review,
-                                  operatorId: operator.id,
-                                  groupId: groupId,
+              // No staff yet: only Add staff below.
+              if (staff.operators.isNotEmpty) ...[
+                gapH12,
+                CatchFieldLanes.divided(
+                  children: [
+                    for (final operator in staff.operators.values)
+                      for (final String? groupId in <String?>[
+                        ...operator.duties.keys,
+                        if (operator.duties.isEmpty) null,
+                      ])
+                        CatchField.content(
+                          copy: catchFieldCopy(l10n),
+                          title: operator.displayName,
+                          bodyMaxLines: 8,
+                          body: groupId == null
+                              ? l10n.hostEventRehearsalStaffNoDuty
+                              : '${staff.groups[groupId]?.label ?? l10n.hostEventRehearsalStaffFormerGroup} · ${assistanceGroupDutyLabel(l10n, operator.duties[groupId]!.duty)}\n${operator.duties[groupId]!.expiresAt <= staff.serverTime || operator.duties[groupId]!.sourceHash != staff.groups[groupId]?.sourceHash ? l10n.hostEventRehearsalStaffExpired : l10n.hostEventRehearsalStaffUntil(time: DateFormat.jm(Localizations.localeOf(context).toLanguageTag()).format(DateTime.fromMillisecondsSinceEpoch(operator.duties[groupId]!.expiresAt)))}',
+                          actions: Wrap(
+                            children: [
+                              if (staff.canAssign)
+                                CatchButton(
+                                  label: l10n.hostEventRehearsalStaffEdit,
+                                  variant: CatchButtonVariant.quiet,
+                                  size: CatchButtonSize.md,
+                                  onPressed: () => open(
+                                    review,
+                                    operatorId: operator.id,
+                                    groupId: groupId,
+                                  ),
                                 ),
-                              ),
-                            if (groupId != null)
-                              CatchButton(
-                                label: l10n.hostEventRehearsalStaffRemove,
-                                variant: CatchButtonVariant.quiet,
-                                size: CatchButtonSize.md,
-                                onPressed: () => open(
-                                  review,
-                                  operatorId: operator.id,
-                                  groupId: groupId,
-                                  remove: true,
+                              if (groupId != null)
+                                CatchButton(
+                                  label: l10n.hostEventRehearsalStaffRemove,
+                                  variant: CatchButtonVariant.quiet,
+                                  size: CatchButtonSize.md,
+                                  onPressed: () => open(
+                                    review,
+                                    operatorId: operator.id,
+                                    groupId: groupId,
+                                    remove: true,
+                                  ),
                                 ),
-                              ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                ],
-              ),
+                  ],
+                ),
+              ],
               if (staff.canAssign && staff.operators.length < 50) ...[
                 gapH12,
                 CatchButton(

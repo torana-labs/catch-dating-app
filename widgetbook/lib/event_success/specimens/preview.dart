@@ -21,7 +21,6 @@ enum EventSuccessStrictSurface {
   companion,
   defaults,
   featureBlocks,
-  host,
   liveReveal,
   questionnaire,
   setup,
@@ -59,13 +58,6 @@ Widget eventSuccessStrictPreview(
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [EventSuccessReportSectionList()],
-      ),
-    ),
-    EventSuccessStrictSurface.host => StrictCoverageScaffold(
-      componentName: componentName,
-      child: WidgetbookFixtureScope(
-        overrides: const [],
-        child: HostCoverageStates(),
       ),
     ),
     EventSuccessStrictSurface.liveReveal => StrictCoverageScaffold(

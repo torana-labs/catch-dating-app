@@ -52,7 +52,6 @@ import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/events/domain/organizer_event_venue.dart';
-import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks/modules.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
@@ -120,7 +119,6 @@ import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
@@ -156,6 +154,8 @@ import 'package:catch_dating_app/hosts/events/events_controller.dart'
     show HostEventsRequest, hostEventsControllerProvider;
 import 'package:catch_dating_app/hosts/events/events_screen.dart'
     show HostEventsTabScreen;
+import 'package:catch_dating_app/hosts/events/rehearsal_practice_screen.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_practice_tools_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_photos_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_photos_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_screen.dart';
@@ -3434,7 +3434,6 @@ List<Object> _hostManageRouteProviderOverrides({
   AsyncValue<EventPrivateAccess?>? privateAccessValue,
   AsyncValue<List<EventInviteLink>>? inviteLinksValue,
   AsyncValue<EventSuccessPlan?>? planValue,
-  AsyncValue<EventSuccessScorecard?>? scorecardValue,
   List<EventSuccessAssignment> assignments = const <EventSuccessAssignment>[],
   List<EventSuccessAssignment> rotationAssignments =
       const <EventSuccessAssignment>[],
@@ -3543,9 +3542,6 @@ List<Object> _hostManageRouteProviderOverrides({
     watchEventSuccessPlanProvider(
       effectiveEvent.id,
     ).overrideWithValue(planValue ?? const AsyncData<EventSuccessPlan?>(null)),
-    watchEventSuccessScorecardProvider(effectiveEvent.id).overrideWithValue(
-      scorecardValue ?? const AsyncData<EventSuccessScorecard?>(null),
-    ),
     watchEventSuccessAssignmentsProvider(
       effectiveEvent.id,
     ).overrideWith((ref) => Stream.value(assignments)),
@@ -10840,7 +10836,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
-    id: 'host_event_rehearsal_runtime_room',
+    id: 'host_event_rehearsal_practice_console',
     routeIds: const <String>['hostEventRehearsalScreen'],
     device: CaptureDevice.iphone17Pro,
     disableAnimations: true,
@@ -10849,7 +10845,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         (ref) => Stream.value(_eventRehearsalRuntimeCaptureBootstrap()),
       ),
     ],
-    builder: (context) => const HostEventRehearsalScreen(
+    builder: (context) => const HostRehearsalPracticeScreen(
       organizerId: 'capture-club',
       sessionId: 'capture-rehearsal',
     ),
@@ -10859,20 +10855,15 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     routeIds: const <String>['hostEventRehearsalScreen'],
     device: CaptureDevice.iphone17Pro,
     disableAnimations: true,
-    includeOverlays: true,
     providerOverrides: [
       eventRehearsalProvider('capture-rehearsal').overrideWith(
         (ref) => Stream.value(_eventRehearsalRuntimeCaptureBootstrap()),
       ),
     ],
-    builder: (context) => const HostEventRehearsalScreen(
+    builder: (context) => const HostRehearsalPracticeToolsScreen(
       organizerId: 'capture-club',
       sessionId: 'capture-rehearsal',
     ),
-    drive: (tester) async {
-      await tester.tap(find.byIcon(CatchIcons.more));
-      await pumpFeatureUi(tester);
-    },
   ),
   ScreenCaptureEntry(
     id: 'host_manage_route_loading',
@@ -10954,9 +10945,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       watchEventSuccessPlanProvider(
         _hostLiveRoomReferenceEvent.id,
       ).overrideWith((ref) => Stream.value(_hostLiveRoomReferencePlan)),
-      watchEventSuccessScorecardProvider(
-        _hostLiveRoomReferenceEvent.id,
-      ).overrideWith((ref) => Stream.value(null)),
       watchEventSuccessSelectedLayoutProvider(
         organizerId: _hostLiveRoomReferenceEvent.organizerId,
         layoutId: _hostLiveRoomReferenceLayout.layoutId,

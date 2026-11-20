@@ -354,10 +354,6 @@
     "recordEventAssistanceCheckpointCallablePayload": [
       "command.payload.correctionReason"
     ],
-    "recordEventSuccessUnitOutcomesCallablePayload": [
-      "entries.items.rank",
-      "entries.items.score"
-    ],
     "recordProgramFunctionRsvpCallablePayload": [
       "rsvpStatus"
     ],
@@ -384,9 +380,6 @@
       "command.configuration.options.deliveryPolicy.maxAttempts",
       "command.configuration.options.deliveryPolicy.maxAttemptsPerRoute",
       "command.configuration.options.deliveryPolicy.minimumRetrySeconds"
-    ],
-    "setEventSuccessAccountabilityResolutionCallablePayload": [
-      "resolution"
     ],
     "setOrganizerTrackingSettingsCallablePayload": [
       "enabled",

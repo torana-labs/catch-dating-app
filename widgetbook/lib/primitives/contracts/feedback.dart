@@ -439,16 +439,16 @@ Widget catchBannerStatusContractStates(BuildContext context) {
   final rehearsal = CatchBannerStatus(
     id: 'rehearsal',
     label: context.l10n.hostEventRehearsalBadge,
-    message: context.l10n.hostEventRehearsalSyntheticGuests,
+    message: context.l10n.hostEventsRehearsalBadge,
     icon: CatchIcons.people,
     color: t.danger,
     actions: [
       CatchBannerAction(
-        label: context.l10n.hostEventRehearsalClockPill(time: '5:00 PM'),
+        label: context.l10n.hostEventsRehearsalEnd,
         onPressed: widgetbookNoop,
       ),
       CatchBannerAction(
-        label: context.l10n.hostEventRehearsalPracticeTools,
+        label: context.l10n.hostEventsRehearsalPracticeTools,
         icon: CatchIcons.more,
         onPressed: widgetbookNoop,
       ),

@@ -19,8 +19,8 @@
       "workspaceRoute",
       "indexRoutes"
     ],
-    "imperativePageRouteCount": 33,
-    "imperativePageTargetCount": 28
+    "imperativePageRouteCount": 35,
+    "imperativePageTargetCount": 30
   },
   "routes": [
     {
@@ -1984,12 +1984,30 @@
       "fullscreenDialogExpression": null
     },
     {
-      "siteId": "material-page:lib/hosts/events/rehearsal_screen.dart:ad5dead709023a0e5a2491bc04a660384c171d1cff0c33a307b4c7159963a6da:1",
-      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventRehearsalScreen(organizerId:organizerId,sessionId:sessionId))",
+      "siteId": "material-page:lib/hosts/events/rehearsal_practice_screen.dart:7e5cbb6be3825174eaeb447adf422e1a4be20523b3245e75b656e06bfbb524a5:1",
+      "routeExpression": "MaterialPageRoute<void>(settings:const RouteSettings(name:hostRehearsalPracticeViewRouteName),builder:(_)=>HostRehearsalPracticeScoresScreen(organizerId:widget.organizerId,sessionId:widget.sessionId,onGuests:()=>_openView(HostLiveView.guests,state)))",
+      "sourcePath": "lib/hosts/events/rehearsal_practice_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostRehearsalPracticeScoresScreen(organizerId:widget.organizerId,sessionId:widget.sessionId,onGuests:()=>_openView(HostLiveView.guests,state))",
+      "presentationTarget": "HostRehearsalPracticeScoresScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/events/rehearsal_practice_tools_screen.dart:4ba7fc5fa4b0a8cbec9d1668576bfa3140102f535bb1124384664a4fc15668d8:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostRehearsalPracticeToolsScreen(organizerId:organizerId,sessionId:sessionId))",
+      "sourcePath": "lib/hosts/events/rehearsal_practice_tools_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostRehearsalPracticeToolsScreen(organizerId:organizerId,sessionId:sessionId)",
+      "presentationTarget": "HostRehearsalPracticeToolsScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/events/rehearsal_screen.dart:80c844e0594801587d21052f2f3538dc8716ceea899e3a901f9f51cca80316df:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostRehearsalPracticeScreen(organizerId:organizerId,sessionId:sessionId))",
       "sourcePath": "lib/hosts/events/rehearsal_screen.dart",
       "ordinal": 1,
-      "presentationExpression": "(_)=>HostEventRehearsalScreen(organizerId:organizerId,sessionId:sessionId)",
-      "presentationTarget": "HostEventRehearsalScreen",
+      "presentationExpression": "(_)=>HostRehearsalPracticeScreen(organizerId:organizerId,sessionId:sessionId)",
+      "presentationTarget": "HostRehearsalPracticeScreen",
       "fullscreenDialogExpression": null
     },
     {

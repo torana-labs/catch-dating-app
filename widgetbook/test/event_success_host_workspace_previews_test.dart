@@ -1,8 +1,3 @@
-import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_report/event_success_funnel_section.dart';
-import 'package:catch_dating_app/event_success/presentation/host_report/event_success_host_report_page_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_quality_section.dart';
-import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_host_setup_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_readiness_field.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_target_attendees_field.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -19,25 +14,12 @@ void main() {
   for (final scale in [1.0, 2.0]) {
     for (final (builder, type, count) in <(WidgetBuilder, Type, int)>[
       (
-        eventSuccessStrictEventSuccessHostPanel,
-        EventSuccessHostWorkspacePageBody,
-        1,
-      ),
-      (eventSuccessStrictSetupTab, EventSuccessHostSetupPageBody, 1),
-      (
         eventSuccessStrictTargetAttendeeControl,
         EventSuccessTargetAttendeesField,
         1,
       ),
       (eventSuccessStrictReadinessIssues, EventSuccessReadinessField, 1),
-      (eventSuccessStrictReportTab, EventSuccessHostReportPageBody, 1),
       (previewEventSuccessReportStatus, CatchSection, 1),
-      (
-        eventSuccessStrictHostReportSignalGrid,
-        EventSuccessReportQualitySection,
-        1,
-      ),
-      (eventSuccessStrictHostFunnelSummary, EventSuccessFunnelSection, 1),
     ]) {
       testWidgets('$type mounts at text scale $scale', (tester) async {
         tester.view.devicePixelRatio = 1;

@@ -9,14 +9,16 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_entry_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_operation_controller.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_staff_controller.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_guest_link_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator_body.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
-import 'package:catch_dating_app/event_success/event_success.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_practice_controller.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_practice_scores_screen.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_practice_screen.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_practice_tools_screen.dart';
+import 'package:catch_dating_app/hosts/live/live_scores_body.dart';
+import 'package:catch_dating_app/hosts/live/live_scores_state.dart';
 import 'package:catch_kernel/brand.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -92,7 +94,7 @@ void main() {
     expect(find.text('Start rehearsal'), findsOneWidget);
   });
 
-  testWidgets('host console renders an isolated live rehearsal projection', (
+  testWidgets('practice opens the rebuilt console on the rehearsal', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -102,7 +104,7 @@ void main() {
 
     await tester.pumpWidget(
       _app(
-        const HostEventRehearsalScreen(
+        const HostRehearsalPracticeScreen(
           organizerId: 'club-1',
           sessionId: 'session-1',
         ),
@@ -113,103 +115,49 @@ void main() {
         ],
       ),
     );
-    await tester.pump();
-    await tester.pump();
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
 
-    expect(find.text('Courtyard practice'), findsWidgets);
-    expect(find.text('REHEARSAL'), findsOneWidget);
-    final topBar = tester.widget<CatchLegacyTopBar>(
-      find.byType(CatchLegacyTopBar),
-    );
-    expect(topBar.title, 'Host · Manage');
-    expect(topBar.subtitle, 'Courtyard practice');
-    final titleFinder = find.descendant(
-      of: find.byType(CatchLegacyTopBar),
-      matching: find.text('Host · Manage'),
-    );
-    final titleContext = tester.element(titleFinder);
-    expect(
-      tester.widget<Text>(titleFinder).style,
-      CatchTextStyles.titleL(
-        titleContext,
-        color: CatchTokens.of(titleContext).ink,
-      ),
-    );
-    expect(find.text('Practice guests'), findsOneWidget);
-    final strip = tester.widget<CatchBanner>(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchBanner &&
-            widget.variant == CatchBannerVariant.statuses,
-      ),
-    );
-    expect(strip.statuses.single.id, 'rehearsal.session-1');
-    expect(strip.statuses.single.actions, hasLength(2));
-    expect(
-      tester
-          .getTopLeft(
-            find.byWidgetPredicate(
-              (widget) =>
-                  widget is CatchBanner &&
-                  widget.variant == CatchBannerVariant.statuses,
-            ),
-          )
-          .dy,
-      tester.getBottomLeft(find.byType(CatchLegacyTopBar)).dy,
-    );
-    expect(find.text('Setup'), findsNothing);
-    expect(find.text('Report'), findsNothing);
-    expect(find.text('Live guest phone'), findsNothing);
-    expect(find.textContaining('TASK 3 OF 8'), findsOneWidget);
-
-    await tester.tap(find.text('Room'));
-    await tester.pump();
-    expect(find.text('Room'), findsOneWidget);
-
-    final container = ProviderScope.containerOf(
-      tester.element(find.byType(HostEventRehearsalScreen)),
-    );
-    await tester.tap(find.text('Guests'));
-    await pumpFeatureUi(tester);
-
-    final guestSheet = find.byType(CatchSheet);
-    expect(guestSheet, findsOneWidget);
-    expect(tester.widget<CatchSheet>(guestSheet).title, 'Guests');
-    expect(
-      find.descendant(
-        of: guestSheet,
-        matching: find.byType(EventRehearsalRosterSection),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: guestSheet, matching: find.text('Rhea')),
-      findsOneWidget,
-    );
-    expect(find.text('Practice tools'), findsNothing);
-    expect(find.byType(EventRehearsalSetupSection), findsNothing);
-    expect(find.byType(EventRehearsalStaffSection), findsNothing);
-    expect(find.byType(EventRehearsalSimulatorBody), findsNothing);
-    expect(
-      container.read(eventRehearsalStaffControllerProvider('session-1').exists),
-      isFalse,
-    );
-    Navigator.of(tester.element(guestSheet)).pop();
-    await pumpFeatureUi(tester);
-
-    await tester.tap(find.byIcon(CatchIcons.more));
-    await pumpFeatureUi(tester);
-
-    expect(find.text('Practice tools'), findsOneWidget);
-    expect(find.text('Movement simulation'), findsOneWidget);
-    expect(find.textContaining('1 itinerary steps'), findsOneWidget);
-    expect(find.text('Meet the group at Courtyard stop.'), findsOneWidget);
-    expect(find.text('Live guest phone'), findsOneWidget);
-    expect(find.textContaining('anonymous synthetic guest'), findsOneWidget);
+    final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
+    expect(topBar.title, 'Courtyard practice');
+    expect(topBar.kicker, 'Rehearsal');
+    // The tag is the rehearsal's virtual clock, not the phone's.
+    expect(topBar.live, isNotNull);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('score rehearsal reuses the live outcome and reveal actions', (
+  testWidgets('practice tools carry the guest phone and movement setup', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 4000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      _app(
+        const HostRehearsalPracticeToolsScreen(
+          organizerId: 'club-1',
+          sessionId: 'session-1',
+        ),
+        overrides: [
+          eventRehearsalProvider(
+            'session-1',
+          ).overrideWith((ref) => Stream.value(_bootstrap())),
+        ],
+      ),
+    );
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
+
+    expect(find.text('Practice tools'), findsOneWidget);
+    expect(find.byType(EventRehearsalRunSection), findsOneWidget);
+    expect(find.byType(EventRehearsalSimulatorBody), findsOneWidget);
+    expect(find.byType(EventRehearsalSetupSection), findsOneWidget);
+    expect(find.byType(EventRehearsalRosterSection), findsOneWidget);
+    expect(find.byType(EventRehearsalRecapSection), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('score rehearsal reuses the rebuilt scores screen', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -217,11 +165,15 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
     final rehearsal = _scoreBootstrap();
+    final state = hostRehearsalPracticeState(rehearsal);
+    expect(state.live.scores, isTrue);
+    expect(state.scores.status, HostLiveScoresStatus.ready);
     await tester.pumpWidget(
       _app(
-        const HostEventRehearsalScreen(
+        HostRehearsalPracticeScoresScreen(
           organizerId: 'club-1',
           sessionId: 'session-1',
+          onGuests: () {},
         ),
         overrides: [
           eventRehearsalProvider(
@@ -233,20 +185,9 @@ void main() {
         ],
       ),
     );
-    await tester.pump();
-    await tester.pump();
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
 
-    final workspace = tester.widget<EventSuccessHostWorkspacePageBody>(
-      find.byType(EventSuccessHostWorkspacePageBody),
-    );
-    expect(workspace.outcomeUnits?.map((unit) => unit.id), [
-      'table-1',
-      'table-2',
-    ]);
-    expect(workspace.standings?.latestRoundIndex, -1);
-    expect(workspace.onRecordOutcomes, isNotNull);
-    expect(workspace.onStartRevealCountdown, isNotNull);
-    expect(workspace.onRevealRound, isNotNull);
+    expect(find.byType(HostLiveScoresBody), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -272,9 +213,7 @@ void main() {
     expect(find.text('+15 min'), findsOneWidget);
   });
 
-  testWidgets('host console reflows at 2x text without hiding live controls', (
-    tester,
-  ) async {
+  testWidgets('practice console reflows at 2x text', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(430, 932);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -283,7 +222,7 @@ void main() {
 
     await tester.pumpWidget(
       _app(
-        const HostEventRehearsalScreen(
+        const HostRehearsalPracticeScreen(
           organizerId: 'club-1',
           sessionId: 'session-1',
         ),
@@ -295,64 +234,12 @@ void main() {
         ],
       ),
     );
-    await pumpFeatureUi(tester);
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
 
-    expect(find.text('Sunday Morning Singles Mixer'), findsNWidgets(2));
-    expect(find.text('REHEARSAL'), findsOneWidget);
-    expect(find.text('Room'), findsOneWidget);
-    expect(find.text('Show Coach'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('placement Coach task opens Room on the real guest control', (
-    tester,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(430, 932);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.view.resetPhysicalSize);
-    final base = _bootstrap();
-    final rehearsal = EventRehearsalBootstrap(
-      session: base.session,
-      actors: const [
-        EventRehearsalActor(
-          actorId: 'actor-01',
-          displayName: 'Maya Shah',
-          persona: 'placementPractice',
-          status: EventRehearsalActorStatus.present,
-          guestMoment: EventRehearsalGuestMoment.assignment,
-          optedOut: false,
-          keepApartActorIds: [],
-          helpRequested: false,
-          promptCompleted: true,
-          layoutUnitId: 'table-1',
-        ),
-      ],
-      actions: base.actions,
-      guestUrl: base.guestUrl,
-      canUseInternalFaults: base.canUseInternalFaults,
+    expect(
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).title,
+      'Sunday Morning Singles Mixer',
     );
-
-    await tester.pumpWidget(
-      _app(
-        const HostEventRehearsalScreen(
-          organizerId: 'club-1',
-          sessionId: 'session-1',
-        ),
-        overrides: [
-          eventRehearsalProvider(
-            'session-1',
-          ).overrideWith((ref) => Stream.value(rehearsal)),
-        ],
-      ),
-    );
-    await pumpFeatureUi(tester);
-
-    expect(find.text('Room'), findsOneWidget);
-    expect(find.textContaining('TASK 4 OF 8'), findsOneWidget);
-    expect(find.text('Place Maya in the current round'), findsOneWidget);
-    expect(find.text('Maya Shah'), findsWidgets);
-    expect(find.textContaining('Move to Table'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

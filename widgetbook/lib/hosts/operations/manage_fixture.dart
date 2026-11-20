@@ -6,7 +6,6 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
-import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
@@ -65,7 +64,6 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
     this.privateAccessValue,
     this.inviteLinksValue,
     this.planValue,
-    this.scorecardValue,
     this.assignments = const <EventSuccessAssignment>[],
     this.rotationAssignments = const <EventSuccessAssignment>[],
     this.preferences = const <EventSuccessPreference>[],
@@ -88,7 +86,6 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
   final AsyncValue<EventPrivateAccess?>? privateAccessValue;
   final AsyncValue<List<EventInviteLink>>? inviteLinksValue;
   final AsyncValue<EventSuccessPlan?>? planValue;
-  final AsyncValue<EventSuccessScorecard?>? scorecardValue;
   final List<EventSuccessAssignment> assignments;
   final List<EventSuccessAssignment> rotationAssignments;
   final List<EventSuccessPreference> preferences;
@@ -181,9 +178,6 @@ class WidgetbookHostManageRouteScope extends StatelessWidget {
           watchEventSuccessPlanProvider(
             effectiveEvent.id,
           ).overrideWith((ref) => _streamValue(planValue, null)),
-          watchEventSuccessScorecardProvider(
-            effectiveEvent.id,
-          ).overrideWith((ref) => _streamValue(scorecardValue, null)),
           watchEventSuccessAssignmentsProvider(effectiveEvent.id).overrideWith((
             ref,
           ) {
