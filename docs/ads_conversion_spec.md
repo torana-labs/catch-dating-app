@@ -115,7 +115,7 @@ update and consent change; it is not injected into the host-only controller.
 
 - **What loads when.** Tags load once, only on a public page (see
   [Payload and attribution](#payload-and-attribution)) of the production site
-  (`brand.web.domain` and its `www` host), under a current version-5 choice.
+  (`brand.web.domain` and its `www` host), under a current version-6 choice.
   The analytics choice loads `gtag.js` (on its own data layer `catchTagLayer`)
   with GA4 only. The marketing choice adds the Ads tag to it and loads
   `fbevents.js`. Essential loads nothing, and nothing loads on dev or
@@ -376,13 +376,15 @@ its own replace semantics, behind its own gate.
 
 ## Consent and lifecycle
 
-The persistent `catch_marketing_consent_v5` receipt records version 5, choice,
+The persistent `catch_marketing_consent_v6` receipt records version 6, choice,
 analytics/marketing booleans, update time and the measurement mode
 (`first_party_tags`). A mode change requires a fresh choice. The banner offers
 essential only, analytics, and explicit analytics plus marketing, with a
-persistent Privacy choices control for withdrawal. Only a version-5 marketing
-choice loads the tags. Version 5 shipped with the first-party transport, so
-every earlier choice, made while advertising was disabled, asks again.
+persistent Privacy choices control for withdrawal. Only a version-6 marketing
+choice loads the tags. Version 5 shipped with the first-party transport;
+version 6 (owner decision relayed 19 Nov 2026, #2063) shipped when the banner
+began naming organisers' own Meta and Google tags, so every earlier choice,
+version 5 included, loads nothing and asks again.
 Legacy version-1 to version-4 choices, including `accepted`, can retain local
 analytics permission but never authorize the tags or marketing; the banner
 requires a fresh choice, and their stored campaign and click context is cleared.
@@ -476,7 +478,7 @@ everything on loss of analytics) or expiry removes it. Only the closed,
 reviewed source/medium/campaign/content vocabularies in `approvedCampaignLabels`
 persist in the existing HTTP attribution payload; unknown labels and search
 terms are discarded. `catchMeasurement.ts` owns the browser-only identifier
-context under a current version-5 choice. Click identifiers are excluded for
+context under a current version-6 choice. Click identifiers are excluded for
 analytics-only choices and never enter the diagnostic bus or existing lead HTTP
 payload. Storage failures drop the context.
 New campaigns require a reviewed vocabulary change. There is no URL-passthrough
@@ -585,7 +587,7 @@ a recorded receipt.
 | Item | State | Where |
 | --- | --- | --- |
 | Separation | Built: one transport, two isolated sets; iframe retired | `adTags.ts` (#2138, #2193); `adTagsIsolation.test.ts`, `adTagsOrganizer.test.ts` |
-| Consent gate | Built in the transport; banner line pending (#2194) | One v5 marketing receipt (`catch_marketing_consent_v5`), via `adTags.sync` |
+| Consent gate | Built; the banner names organiser tags (#2194) | One v6 marketing receipt (`catch_marketing_consent_v6`), via `adTags.sync` |
 | Eligible routes | Built | `organizerAdPage` (#2102, ad-click keys #2139) plus the set's own scope in `adTags.ts` (#2193) |
 | Event map | Built | `organizerTagEvents.ts` (#2102), sent only by the organiser set (#2193) |
 | Publication policy | Built, disabled | `organizerTrackingPublicationPolicy.ts` (#2097); profile classification (#2192) |
@@ -618,7 +620,7 @@ a recorded receipt.
   - The sandboxed iframe runtime that predated Option A
     (`organizer-tracking-runtime.*`, `trackingProviders.ts`) was removed;
     the first-party transport is the only loader.
-- **Consent.** The only basis is a current version-5 *marketing* choice. An
+- **Consent.** The only basis is a current version-6 *marketing* choice. An
   analytics-only choice loads nothing for organiser destinations. Legacy,
   downgraded and unknown receipts fail closed. Withdrawal revokes and stops
   organiser tags in the same page view, as it does for Catch's. Before

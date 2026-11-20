@@ -11,10 +11,11 @@ export interface MeasurementConsent {
   updatedAt: string;
 }
 
-/** The stored consent receipt version. Version 5 is the first under which a
- * marketing choice loads the first-party Google tag and Meta Pixel
- * (`adTags.ts`); every earlier choice asks again. */
-export const currentConsentVersion = 5 as const;
+/** The stored consent receipt version. Version 6 is the first under which the
+ * banner names organisers' own Meta and Google tags (owner decision relayed
+ * 19 Nov 2026, #2063): every earlier choice, version 5 included, asks again
+ * and loads nothing until it is answered. */
+export const currentConsentVersion = 6 as const;
 
 /** The live transport a stored consent choice was made under. The first-party
  * Google tag and Meta Pixel (`adTags.ts`) are "first_party_tags"; a choice

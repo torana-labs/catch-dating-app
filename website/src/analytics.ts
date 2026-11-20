@@ -13,7 +13,7 @@ type FormVariant = "member" | "host";
 export const marketingContentVersion = "website_copy_v2" as const;
 
 export interface MarketingConsent extends MeasurementConsent {
-  version: 1 | 2 | 3 | 4 | 5;
+  version: 1 | 2 | 3 | 4 | 5 | 6;
   measurementMode?: CatchMeasurementMode;
   choice: ConsentChoice;
   analytics: boolean;
@@ -66,10 +66,12 @@ export function openMarketingConsentPreferences() {
   }
 }
 const legacyConsentStorageKey = "catch_marketing_consent_v1";
-// Receipts from before the first-party tags (versions 2 to 4). They keep
-// analytics but never marketing, and the banner asks again.
-const previousConsentStorageKeys = ["catch_marketing_consent_v4", "catch_marketing_consent_v3", "catch_marketing_consent_v2"];
-const consentStorageKey = "catch_marketing_consent_v5";
+// Earlier receipts: versions 2 to 4 predate the first-party tags, and version 5
+// predates the banner naming organisers' own tags (#2063). They are read for
+// display only, never grant marketing, load nothing, and the banner asks again.
+const previousConsentStorageKeys = ["catch_marketing_consent_v5", "catch_marketing_consent_v4", "catch_marketing_consent_v3",
+  "catch_marketing_consent_v2"];
+const consentStorageKey = "catch_marketing_consent_v6";
 // The host-only acquisition contract has no transport; the first-party tags
 // are `adTags`, called directly below.
 const measurement = createCatchMeasurementController();
@@ -127,7 +129,7 @@ export function getMarketingConsent(): MarketingConsent | null {
   const previous = previousConsentStorageKeys.map((key) => readJson<MarketingConsent>(key)).find(Boolean);
   if (previous) {
     clearAttribution();
-    if (![2, 3, 4].includes(previous.version) || !validConsent(previous)) return null;
+    if (![2, 3, 4, 5].includes(previous.version) || !validConsent(previous)) return null;
     return {...previous, version: 2, choice: previous.analytics ? "analytics" : "essential", marketing: false};
   }
   const legacy = readJson<Omit<MarketingConsent, "version">>(legacyConsentStorageKey);

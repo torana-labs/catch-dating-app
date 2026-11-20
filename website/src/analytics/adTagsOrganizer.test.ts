@@ -5,7 +5,7 @@ import {createAdTags, type AdBooking, type OrganizerAdDestinations} from "./adTa
 type Globals = {catchTagLayer?: ArrayLike<unknown>[]; catchOrganizerTagLayer?: ArrayLike<unknown>[];
   fbq?: {queue: ArrayLike<unknown>[]}; _fbq?: unknown};
 const globals = () => window as unknown as Globals;
-const consent = (choice: "accepted" | "analytics" | "essential", version = 5) => ({version, choice,
+const consent = (choice: "accepted" | "analytics" | "essential", version = 6) => ({version, choice,
   analytics: choice !== "essential", marketing: choice === "accepted", updatedAt: "2026-11-19T19:00:00.000Z"});
 const catchPixel = "1844810253539672";
 const organizerPixel = "700000000000007";
@@ -37,7 +37,7 @@ function reset(path = "/events/synthetic-run/") {
 beforeEach(() => reset());
 
 describe("organiser destination set", () => {
-  it.each([null, consent("essential"), consent("analytics"), consent("accepted", 4)])(
+  it.each([null, consent("essential"), consent("analytics"), consent("accepted", 5)])(
     "loads and sends nothing without a current marketing choice (%#)", (choice) => {
       const ad = tags();
       ad.setOrganizer(eventSet);

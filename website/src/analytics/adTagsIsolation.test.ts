@@ -16,7 +16,7 @@ type Queue = {queue: ArrayLike<unknown>[]};
 type Globals = {catchTagLayer?: ArrayLike<unknown>[]; catchOrganizerTagLayer?: unknown[]; fbq?: Queue & ((...args: unknown[]) => void);
   _fbq?: unknown};
 const globals = () => window as unknown as Globals;
-const consent = {version: 5, choice: "accepted", analytics: true, marketing: true, updatedAt: "2026-11-19T08:00:00.000Z"};
+const consent = {version: 6, choice: "accepted", analytics: true, marketing: true, updatedAt: "2026-11-19T08:00:00.000Z"};
 const booking: AdBooking = {eventId: "synthetic-run", paymentId: `pp_${"b".repeat(32)}`, amountPaise: 45000, places: 2, mode: "live"};
 const otherPixel = "999000111222333";
 

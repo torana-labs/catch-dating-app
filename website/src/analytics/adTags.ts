@@ -422,7 +422,7 @@ export function createAdTags(options: AdTagOptions = {}) {
     return page.kind === "organizer" ? page : null;
   }
 
-  /** Only a current version-5 marketing choice, never analytics alone. */
+  /** Only a current-version marketing choice, never analytics alone. */
   const organizerConsentNow = () => choiceLevel(consent) === "marketing";
 
   function loadOrganizer(set: Readonly<OrganizerAdDestinations>) {

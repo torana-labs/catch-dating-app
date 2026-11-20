@@ -5,7 +5,7 @@ import {createAdTags, type OrganizerAdDestinations} from "./adTags";
 type Globals = {catchTagLayer?: ArrayLike<unknown>[]; catchOrganizerTagLayer?: ArrayLike<unknown>[];
   fbq?: {queue: ArrayLike<unknown>[]}; _fbq?: unknown};
 const globals = () => window as unknown as Globals;
-const consent = (choice: "accepted" | "analytics") => ({version: 5, choice, analytics: true,
+const consent = (choice: "accepted" | "analytics") => ({version: 6, choice, analytics: true,
   marketing: choice === "accepted", updatedAt: "2026-11-19T21:00:00.000Z"});
 const profile = "/organizers/harbour-line-run-club/";
 const catchEvents = (name: string) => (globals().catchTagLayer ?? []).map((entry) => Array.from(entry))
