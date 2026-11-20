@@ -10,7 +10,7 @@ name: Deploy backend
 # changed codebase, at most a dozen or so, and updating Functions costs
 # nothing. The daily run skips when prod already has that commit, and until the
 # environment's last delivered deploy recorded codebase hashes (a full run
-# writes them). Run it manually for prod, dev or staging, optionally as a full
+# writes them). Run it manually for prod or dev, optionally as a full
 # deploy (every codebase, even unchanged) or for named Functions only.
 # Operator guide: docs/release_operations.md, "Deploy backend".
 
@@ -24,7 +24,7 @@ on:
       environment:
         description: Environment to deploy
         type: choice
-        options: [prod, dev, staging]
+        options: [prod, dev]
         default: prod
       full:
         description: Redeploy every Function, including unchanged ones
@@ -116,14 +116,5 @@ jobs:
     with:
       environment: prod
       ref: ${{ needs.pick.outputs.ref || '' }}
-      full: ${{ inputs.full == true }}
-      functions: ${{ inputs.functions || '' }}
-
-  staging:
-    if: >-
-      ${{ github.event_name == 'workflow_dispatch' && inputs.environment == 'staging' }}
-    uses: ./.github/workflows/_backend-deploy.yml
-    with:
-      environment: staging
       full: ${{ inputs.full == true }}
       functions: ${{ inputs.functions || '' }}

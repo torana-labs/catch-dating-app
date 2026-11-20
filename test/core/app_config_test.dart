@@ -49,13 +49,12 @@ void main() {
   group('AppEnvironment.fromValue', () {
     test('parses supported environments', () {
       expect(AppEnvironment.fromValue('dev'), AppEnvironment.dev);
-      expect(AppEnvironment.fromValue('staging'), AppEnvironment.staging);
       expect(AppEnvironment.fromValue('prod'), AppEnvironment.prod);
       expect(AppEnvironment.fromValue('production'), AppEnvironment.prod);
     });
 
     test('normalizes case and whitespace', () {
-      expect(AppEnvironment.fromValue(' Staging '), AppEnvironment.staging);
+      expect(AppEnvironment.fromValue(' Dev '), AppEnvironment.dev);
     });
 
     test('throws on unsupported environment', () {
@@ -83,7 +82,7 @@ void main() {
       );
       expect(
         AppConfig.remoteConfigMinimumFetchIntervalFor(
-          environment: AppEnvironment.staging,
+          environment: AppEnvironment.dev,
           debugMode: false,
           useFirebaseEmulators: false,
         ),
@@ -140,7 +139,7 @@ void main() {
     test('allows explicit collection in non-production release builds', () {
       expect(
         AppConfig.shouldCollectObservabilityFor(
-          environment: AppEnvironment.staging,
+          environment: AppEnvironment.dev,
           releaseMode: true,
           profileMode: false,
           useFirebaseEmulators: false,
@@ -150,7 +149,7 @@ void main() {
       );
       expect(
         AppConfig.shouldCollectObservabilityFor(
-          environment: AppEnvironment.staging,
+          environment: AppEnvironment.dev,
           releaseMode: true,
           profileMode: false,
           useFirebaseEmulators: false,
@@ -163,7 +162,7 @@ void main() {
     test('allows explicit collection in non-production profile builds', () {
       expect(
         AppConfig.shouldCollectObservabilityFor(
-          environment: AppEnvironment.staging,
+          environment: AppEnvironment.dev,
           releaseMode: false,
           profileMode: true,
           useFirebaseEmulators: false,
@@ -173,7 +172,7 @@ void main() {
       );
       expect(
         AppConfig.shouldCollectObservabilityFor(
-          environment: AppEnvironment.staging,
+          environment: AppEnvironment.dev,
           releaseMode: false,
           profileMode: true,
           useFirebaseEmulators: false,
@@ -219,14 +218,6 @@ void main() {
       expect(
         AppConfig.canDisableAuthAppVerificationForTesting(
           environment: AppEnvironment.dev,
-          releaseMode: false,
-          requested: true,
-        ),
-        isTrue,
-      );
-      expect(
-        AppConfig.canDisableAuthAppVerificationForTesting(
-          environment: AppEnvironment.staging,
           releaseMode: false,
           requested: true,
         ),

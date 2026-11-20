@@ -141,7 +141,7 @@ test("legacy clubs-only document cannot satisfy current canonical callables", as
 });
 
 test("source changes do not relax live App Check enforcement", () => {
-  assert.equal(enforceAppCheckForRuntime({GCLOUD_PROJECT: "catchdates-staging"}), true);
+  assert.equal(enforceAppCheckForRuntime({GCLOUD_PROJECT: "catchdates-dev"}), true);
   assert.equal(enforceAppCheckForRuntime({FUNCTIONS_EMULATOR: "true",
-    GCLOUD_PROJECT: "catchdates-staging"}), true);
+    GCLOUD_PROJECT: "catchdates-dev"}), true);
 });

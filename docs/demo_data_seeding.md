@@ -7,7 +7,7 @@ status: active
 # Demo Data Seeding
 
 This repo has a repeatable Firebase Admin SDK seeder for filling Catch with
-realistic demo data. It is intended for TestFlight/dev/staging testing where
+realistic demo data. It is intended for TestFlight/dev testing where
 the app needs enough users, clubs, events, attendance history, profile decisions, matches,
 messages, payments, reviews, and notifications to exercise real flows.
 
@@ -964,19 +964,6 @@ node tool/data/validate_firestore_data.mjs --env dev
 
 If validation reports future events with `attended` participation edges,
 reseed the environment; the one-off repair script for those edges is retired.
-
-For staging:
-
-```bash
-node tool/demo/seed_demo_data.mjs \
-  --env staging \
-  --scenario beta-full \
-  --anchor-file tool/demo/demo_seed/beta_anchors.txt \
-  --apply \
-  --reset-synthetic
-
-node tool/data/validate_firestore_data.mjs --env staging
-```
 
 ## Apply To Current TestFlight/Prod
 

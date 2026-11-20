@@ -16,8 +16,8 @@ variable "android_apps" {
   }))
 
   validation {
-    condition     = alltrue([for key in keys(var.android_apps) : can(regex("^(dev|staging|prod)-(consumer|host)$", key))])
-    error_message = "android_apps keys must be <dev|staging|prod>-<consumer|host>."
+    condition     = alltrue([for key in keys(var.android_apps) : can(regex("^(dev|prod)-(consumer|host)$", key))])
+    error_message = "android_apps keys must be <dev|prod>-<consumer|host>."
   }
 
   validation {

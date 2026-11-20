@@ -256,9 +256,9 @@ run "form_payments_only_in_dev_and_prod" {
 
   variables {
     form_payment_environments = {
-      staging = {
-        project                           = "catchdates-staging"
-        functions_runtime_service_account = "822303414140-compute@developer.gserviceaccount.com"
+      qa = {
+        project                           = "catchdates-qa"
+        functions_runtime_service_account = "000000000000-compute@developer.gserviceaccount.com"
       }
     }
   }
@@ -359,9 +359,9 @@ run "takedown_preservation_only_in_dev_and_prod_for_the_deploy_identity" {
 
   variables {
     takedown_preservation_environments = {
-      staging = {
-        project                = "catchdates-staging"
-        deploy_service_account = "github-actions-deploy@catchdates-staging.iam.gserviceaccount.com"
+      qa = {
+        project                = "catchdates-qa"
+        deploy_service_account = "github-actions-deploy@catchdates-qa.iam.gserviceaccount.com"
       }
     }
   }

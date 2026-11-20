@@ -58,8 +58,9 @@ extension ProgramPhotosRepositoryApi on ProgramWorkRepository {
 }
 
 /// One album (or every photo), live from `programPhotos` (#1339). The
-/// album names come from the work shell's functions; the signed URLs from
-/// the server, in calls of at most 60 photos.
+/// album names come from the programme's function labels, which the
+/// communications duty reads whatever its work list reaches (#2175); the
+/// signed URLs from the server, in calls of at most 60 photos.
 @riverpod
 Future<ProgramReadView<ProgramPhotos>> programPhotosView(
   Ref ref,
@@ -69,10 +70,9 @@ Future<ProgramReadView<ProgramPhotos>> programPhotosView(
   final rows = await ref.watch(
     programPhotoRowsStreamProvider(programId).future,
   );
-  final work = await ref.watch(
-    programWorkEntryProvider(programId, null).future,
+  final functions = await ref.watch(
+    programPhotoFunctionsStreamProvider(programId).future,
   );
-  final functions = work.value.functions;
   final ids = programPhotoIdsToSign(rows, functions, functionId);
   final repository = ref.read(programWorkRepositoryProvider);
   final urls = <String, String>{};

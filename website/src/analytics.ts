@@ -265,6 +265,32 @@ export function setOrganizerAdDestinations(set: OrganizerAdDestinations | null) 
   adTags.setOrganizer(set);
 }
 
+/**
+ * Admits the current organiser profile to Catch's own tags (owner condition
+ * and classification decision, 19 Nov 2026, #2063), or clears it, and starts
+ * the profile's Catch page view once admitted. Only
+ * `observeOrganizerProviders` calls it, with the server's eligibility.
+ */
+export function admitCatchOrganizerProfile(path: string | null) {
+  const changed = adTags.admitOrganizerProfile(path);
+  refreshMeasurementContext();
+  // One Catch page view per admission; a repeated admission sends nothing.
+  return changed && path !== null ? adTags.pageView() : false;
+}
+
+/**
+ * Keeps every advertising tag silent while a private surface is open on a
+ * public path (the owner view on an organiser profile). Returns the release.
+ */
+export function holdAdTagsForPrivateSurface(): () => void {
+  const release = adTags.holdForPrivateSurface();
+  refreshMeasurementContext();
+  return () => {
+    release();
+    refreshMeasurementContext();
+  };
+}
+
 /** The organiser set's `page_view` / `PageView` for the current eligible page. */
 export function trackOrganizerPageViewed() {
   refreshMeasurementContext();

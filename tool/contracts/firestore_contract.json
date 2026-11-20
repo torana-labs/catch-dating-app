@@ -3213,17 +3213,20 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/program_access.rules.test.cjs",
       "rulesTestNames": [
-        "lets an account read only its own access view"
+        "lets an account read only its own access view",
+        "lists an account's own views by a query naming its uid, and no others"
       ],
       "owner": "Programme read model projector: programAccessViewTriggers",
-      "read": "an account gets only its own view by the derived id programId__uid while it is not deleted; never listed. Other programme read models authorize through it with one get()",
-      "write": "server only; written from the staff grant (and the owner-approval proof it carries) and from the programme's creator",
+      "read": "an account gets only its own view by the derived id programId__uid, and lists only its own views by a query naming its uid, while it is not deleted. Other programme read models authorize through it with one get()",
+      "write": "server only; written from the staff grant (and the owner-approval proof it carries), from the programme's creator and from the organizer's managers",
       "exportedFunctions": [
         "onProgramAccessViewGrantChanged",
-        "onProgramAccessViewProgramChanged"
+        "onProgramAccessViewProgramChanged",
+        "onProgramAccessViewOrganizerChanged"
       ],
       "migrationNotes": [
         "Mirrors requireProgramAccess without the clock: expiries, the grant expiry and the owner's authorization deadline are folded into per-duty instants that rules compare with request.time. The program-access-views copy-forward migration creates views for owners and grants that predate the triggers.",
+        "organizerManager mirrors requireProgramSetupAccess's organizer-manager branch for the phone's offline gate on the programme list and detail; it grants no duty, so an organizer manager's setup-only view is inactive. The program-access-views-organizer-managers migration creates views for organizer managers and adds the flag to existing views.",
         "The view holds ids, duty names and instants only, never the grant's name or phone digits, so account deletion and archive anonymization have no personal data to scrub in it; it keeps the uid the grant keeps."
       ]
     },
@@ -3256,10 +3259,11 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/program_work_shell.rules.test.cjs",
       "rulesTestNames": [
-        "reads a named resource only when the account's work list reaches it"
+        "reads a named resource only when the account's work list reaches it",
+        "lets the communications duty read every function label, nothing else"
       ],
       "owner": "Programme read model projector: programWorkViewTriggers",
-      "read": "an account gets a named resource when its programAccessViews work list reaches it, and lists a kind (query on programId and kind) when the list reaches every one; never while deleted",
+      "read": "an account gets a named resource when its programAccessViews work list reaches it, and lists a kind (query on programId and kind) when the list reaches every one; the communications duty also gets and lists every function label, for photo album names; never while deleted",
       "write": "server only; written from programPickupPoints, programHotels and programFunctions",
       "exportedFunctions": [
         "onProgramPickupPointViewChanged",

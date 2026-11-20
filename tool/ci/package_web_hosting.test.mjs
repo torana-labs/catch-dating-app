@@ -88,7 +88,6 @@ function makeSource(surface = "marketing") {
     projects: {
       default: "catchdates-dev",
       dev: "catchdates-dev",
-      staging: "catchdates-staging",
       prod: "catch-dating-app-64e51",
     },
     targets: {

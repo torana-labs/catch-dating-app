@@ -216,7 +216,7 @@ async function googleAccessToken(serviceAccount: string): Promise<string> {
 }
 
 /** Enqueues host conversions from growth milestones, only where delivery is
- * on, so dev and staging never hold advertising records. */
+ * on, so dev never holds advertising records. */
 export const onAdConversionGrowthFactsWritten = onDocumentWritten({
   document: "organizerGrowthFacts/{organizerId}",
 }, async (event) => {

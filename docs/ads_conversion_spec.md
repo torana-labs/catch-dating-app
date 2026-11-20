@@ -118,7 +118,7 @@ update and consent change; it is not injected into the host-only controller.
   (`brand.web.domain` and its `www` host), under a current version-5 choice.
   The analytics choice loads `gtag.js` (on its own data layer `catchTagLayer`)
   with GA4 only. The marketing choice adds the Ads tag to it and loads
-  `fbevents.js`. Essential loads nothing, and nothing loads on dev, staging or
+  `fbevents.js`. Essential loads nothing, and nothing loads on dev or
   preview hosts. There is no GTM.
 - **Consent.** Before any script runs, Consent Mode defaults deny all four
   purposes. The analytics choice grants `analytics_storage` only; the
@@ -264,7 +264,7 @@ The queue lives in `functions/src/acquisition/adConversions/`: the
 `onAdConversionGrowthFactsWritten` trigger enqueues host conversions into
 `adConversionDeliveries`, and the `sendAdConversions` worker sends them every
 five minutes. `AD_CONVERSIONS_MODE` controls both: `off` (the default, and the
-setting in dev and staging) enqueues and sends nothing; `validate` sends Meta
+setting in dev) enqueues and sends nothing; `validate` sends Meta
 test events, only when `AD_CONVERSIONS_META_TEST_EVENT_CODE` is set, and
 Google validate-only requests, and leaves records pending; `live` records real
 conversions. The Meta token is read at send time from the pinned version in
@@ -542,7 +542,7 @@ final-tree generators.
 The owner approved the destinations (GA4 property 559735544, Ads customer
 1016806229, Meta dataset 1844810253539672), the first-party transport, the
 consent and opt-out model, the eligible routes and the event map above on
-2026-11-17. Each destination is switched on only after a synthetic staging run
+2026-11-17. Each destination is switched on only after a synthetic dev run
 shows provider receipt (Meta Test Events, Google conversion diagnostics),
 consent changes, URL/title/referrer isolation, SPA shutdown, dedupe and the exact
 network payloads. GTM stays out; nothing may consume the existing bus
@@ -590,7 +590,7 @@ a recorded receipt.
 | Event map | Built | `organizerTagEvents.ts` (#2102), sent only by the organiser set (#2193) |
 | Publication policy | Built, disabled | `organizerTrackingPublicationPolicy.ts` (#2097); profile classification (#2192) |
 | Owner settings | Built | Website owner view live state (#2105); Catch Host policy-blocked line |
-| Test receipts | Plan below; not run | [Staging test plan](#organiser-tag-staging-test-plan) |
+| Test receipts | Plan below; not run | [Dev test plan](#organiser-tag-dev-test-plan) |
 | Owner policy sign-off | Signed off 19 Nov 2026 | #2063 |
 
 ### Rules the adapter must keep
@@ -638,13 +638,18 @@ a recorded receipt.
   - Single-page navigation to any other page stops sending.
 - **Catch's own tags on organiser profiles.** Organiser tags must never
   reduce Catch's own tracking (owner condition, 19 Nov 2026), so Catch's tags
-  are meant to cover organiser profiles too, through
-  `catchOrganizerProfilePage` (the same profile routes and flow exclusions as
-  `organizerAdPage`). They skip dating-classified and unclassified organisers,
-  failing closed: the server's `profileTagsEligible` (#2192) answers whether a
-  profile qualifies, and the excluded classes come from the publication policy
-  version. Until that answer is wired into the page lifecycle, `publicAdPage`
-  keeps every organiser page closed for Catch's tags, as before.
+  cover organiser profiles too, through `catchOrganizerProfilePage` (the same
+  profile routes and flow exclusions as `organizerAdPage`). They skip
+  dating-classified and unclassified organisers, failing closed: the server's
+  `profileTagsEligible` (#2192) answers whether a profile qualifies, and the
+  excluded classes come from the publication policy version.
+  `observeOrganizerProviders` reads it under any current analytics choice and
+  admits that one profile to Catch's tags (`adTags.admitOrganizerProfile`);
+  without a yes, `publicAdPage` keeps every organiser page closed. Campaign
+  labels and click identifiers are still captured only on `publicAdPage`.
+  - **Owner view.** While the owner view is shown on a profile, every tag,
+    Catch's and the organiser set's, stays silent
+    (`adTags.holdForPrivateSurface`).
 - **Event map.** The table shows the event pairs. Every page field is the fixed
   Catch origin plus path, with a fixed title and an empty referrer. Catch
   payment, request and organiser ids, guest data, answers, dating words, campaign
@@ -665,14 +670,14 @@ a recorded receipt.
   exclusion lists). External listings have no canonical classification and stay
   excluded.
 
-### Organiser tag staging test plan
+### Organiser tag dev test plan
 
-This is a plan, not a receipt. Nothing here has run. Run it only on staging,
-after the transport choice and with a staging-only policy version. **Never run
+This is a plan, not a receipt. Nothing here has run. Run it only on dev,
+after the transport choice and with a dev-only policy version. **Never run
 it against production, a live organiser or real IDs.**
 
 1. **Synthetic organiser.**
-   - Seed a first-party staging organiser `synthetic-organiser-2063` with a
+   - Seed a first-party dev organiser `synthetic-organiser-2063` with a
      published, indexable page.
    - Give it two published, active events: `synthetic-run-2063` (`running` /
      `pacePods`) and `synthetic-mixer-2063` (`singlesMixer`).
@@ -680,14 +685,14 @@ it against production, a live organiser or real IDs.**
      test property's `G-` ID. Record them only in the run notes, never in
      the repository.
 2. **Meta Test Events.** Open the dataset's Test Events tab with its test code
-   on the staging build. Expect:
+   on the dev build. Expect:
    - `PageView` on the organiser page.
    - `PageView` and `ViewContent` on `synthetic-run-2063`.
-   - `InitiateCheckout` and `Purchase` for a staging live-mode booking.
+   - `InitiateCheckout` and `Purchase` for a dev live-mode booking.
    - Every payload matches the event map snapshot exactly.
    - No Catch event reaches the organiser dataset, and the organiser dataset
      receives nothing on `synthetic-mixer-2063`.
-3. **GA4 DebugView.** Use `debug_mode` on the staging build only. Expect the
+3. **GA4 DebugView.** Use `debug_mode` on the dev build only. Expect the
    matching GA4 events, with:
    - `page_location` set to the Catch origin plus path,
    - `page_referrer` empty,

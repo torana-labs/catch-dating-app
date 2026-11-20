@@ -366,7 +366,7 @@ function requireValue(argv, index, flag) {
 
 function resolveEnvSpecs(args) {
   const projects = readFirebaseProjectAliases();
-  const envNames = args.all ? ["dev", "staging", "prod"] : args.envs;
+  const envNames = args.all ? ["dev", "prod"] : args.envs;
   return envNames.map((name) => {
     const projectId = projects[name];
     if (!projectId) {
@@ -403,8 +403,8 @@ Retired legacy paths:
   clubs/{organizerId}/events/{eventId}/{fileName}
 
 Options:
-  --env <dev|staging|prod>  Audit one environment. Repeatable.
-  --all                     Audit dev, staging, and prod.
+  --env <dev|prod>  Audit one environment. Repeatable.
+  --all                     Audit dev and prod.
   --apply                   Copy referenced legacy objects, update docs, and
                             delete retired legacy objects. Default is dry-run.
   --allow-prod              Required with --apply when prod is included.

@@ -11,7 +11,7 @@ repo_root="$state_dir/repo"
 mkdir -p "$repo_root/tool/env/dart_defines" "$repo_root/apps/host" "$repo_root/apps/consumer"
 cp "$source_root/tool/flutter_with_env.sh" "$repo_root/tool/"
 cp "$source_root/tool/write_ios_maps_key_xcconfig.sh" "$repo_root/tool/"
-for environment in dev staging prod local; do
+for environment in dev prod local; do
   printf '{}\n' >"$repo_root/tool/env/dart_defines/$environment.json"
 done
 : >"$repo_root/apps/host/pubspec.yaml"
@@ -24,7 +24,7 @@ printf '%s\n' \
   '    if [[ "$*" == *"--environment prod"* ]]; then' \
   '      printf "apps/consumer\tlib/main_prod.dart\tprod\tconsumerProd\n"' \
   '    else' \
-  '      printf "apps/consumer\tlib/main_staging.dart\tstaging\tconsumerStaging\n"' \
+  '      printf "apps/consumer\tlib/main_dev.dart\tdev\tconsumerDev\n"' \
   '    fi' \
   '  else' \
   '    printf "apps/host\tlib/main_prod.dart\thost-prod\thostProd\n"' \
@@ -109,11 +109,11 @@ expect_rejected \
 
 acceptance_target="integration_test/cat151_razorpay_acceptance_harness.dart"
 expect_rejected \
-  "resolves entrypoint 'lib/main_staging.dart'; caller supplied 'integration_test/other.dart'" \
-  staging --role consumer --platform ios run -d ios --profile -t integration_test/other.dart
+  "resolves entrypoint 'lib/main_dev.dart'; caller supplied 'integration_test/other.dart'" \
+  dev --role consumer --platform ios run -d ios --profile -t integration_test/other.dart
 expect_rejected \
   "does not permit '--'" \
-  staging --role consumer --platform ios run -d ios --profile -- integration_test/other.dart
+  dev --role consumer --platform ios run -d ios --profile -- integration_test/other.dart
 expect_rejected \
   "permits only a profile-mode Consumer run on native production" \
   prod --role host --platform ios run -d ios --profile -t "$acceptance_target"
@@ -128,7 +128,7 @@ expect_rejected \
   prod --role consumer --platform ios run -d ios -t "$acceptance_target"
 expect_rejected \
   "permits only a profile-mode Consumer run on native production" \
-  staging --role consumer --platform ios run -d ios --profile -t "$acceptance_target"
+  dev --role consumer --platform ios run -d ios --profile -t "$acceptance_target"
 expect_rejected \
   "permits only a profile-mode Consumer run on native production" \
   prod --role consumer --platform web run -d chrome --profile -t "$acceptance_target"
@@ -194,7 +194,7 @@ PATH="$stub_dir:$PATH" \
   FLUTTER_STUB_COUNT_FILE="$targeted_test_counter" \
   FLUTTER_STUB_ARGS_FILE="$targeted_test_args" \
   /bin/bash "$repo_root/tool/flutter_with_env.sh" \
-  staging --role consumer test test/example_test.dart
+  dev --role consumer test test/example_test.dart
 if [[ "$(<"$targeted_test_counter")" != "1" ]] ||
   ! grep -Fxq 'test/example_test.dart' "$targeted_test_args"; then
   echo "Expected ordinary positional Flutter test targets to remain supported." >&2

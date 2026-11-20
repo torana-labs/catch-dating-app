@@ -1,6 +1,27 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_access_view.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 
+/// The functions of `programResourceViews` rows of kind `function`, soonest
+/// start first: the work shell's function list, and the photo albums' names.
+List<ProgramFunction> programFunctionsFromResourceViews(
+  List<Map<Object?, Object?>> views,
+) => [
+  for (final view in views)
+    ProgramFunction(
+      functionId: requiredString(view, 'resourceId'),
+      name: requiredString(view, 'label'),
+      venueName: view['venueName'] as String?,
+      startsAt: requiredDateTime(view, 'startsAtMillis'),
+      endsAt: requiredDateTime(view, 'endsAtMillis'),
+      checkInEnabled: view['checkInEnabled'] != false,
+      status: ProgramFunctionStatus.values.byName(
+        requiredString(view, 'status'),
+      ),
+      expectedCount: requiredInt(view, 'expectedCount'),
+      checkedInCount: requiredInt(view, 'checkedInCount'),
+    ),
+]..sort((a, b) => a.startsAt.compareTo(b.startsAt));
+
 /// Builds what `getProgramWorkAccess` used to return from the three
 /// listener-backed sources: the account's access view, the programme's work
 /// summary and the resource labels its work lists reach. Each source holds
@@ -32,22 +53,7 @@ ProgramWorkAccess programWorkAccessFromViews({
           name: requiredString(view, 'label'),
         ),
   ]..sort((a, b) => a.hotelId.compareTo(b.hotelId));
-  final programFunctions = [
-    for (final view in functions)
-      ProgramFunction(
-        functionId: requiredString(view, 'resourceId'),
-        name: requiredString(view, 'label'),
-        venueName: view['venueName'] as String?,
-        startsAt: requiredDateTime(view, 'startsAtMillis'),
-        endsAt: requiredDateTime(view, 'endsAtMillis'),
-        checkInEnabled: view['checkInEnabled'] != false,
-        status: ProgramFunctionStatus.values.byName(
-          requiredString(view, 'status'),
-        ),
-        expectedCount: requiredInt(view, 'expectedCount'),
-        checkedInCount: requiredInt(view, 'checkedInCount'),
-      ),
-  ]..sort((a, b) => a.startsAt.compareTo(b.startsAt));
+  final programFunctions = programFunctionsFromResourceViews(functions);
   return ProgramWorkAccess(
     programId: access.programId,
     organizerId: requiredString(summary, 'organizerId'),

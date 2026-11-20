@@ -70,7 +70,7 @@ Feature routes and implementation details change frequently; inspect the feature
 
 ## Environments and releases
 
-Firebase aliases are `dev`, `staging`, and `prod`; the local default is `dev` as a guardrail, but all remote commands must still name an environment through `tool/firebase_with_env.sh`. Flutter environment definitions live under `tool/env/` and checked Firebase app files live under `firebase/<environment>/`.
+Firebase aliases are `dev` and `prod`; the local default is `dev` as a guardrail, but all remote commands must still name an environment through `tool/firebase_with_env.sh`. Flutter environment definitions live under `tool/env/` and checked Firebase app files live under `firebase/<environment>/`.
 
 Public web surfaces deploy independently:
 

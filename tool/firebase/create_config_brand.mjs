@@ -132,7 +132,7 @@ function resolveTargets(parsed) {
   if (parsed.project) return [{env: parsed.env ?? "custom", projectId: parsed.project}];
   if (parsed.all) {
     const aliases = readFirebaseProjectAliases();
-    return ["dev", "staging", "prod"].map((env) => ({env, projectId: aliases[env]}))
+    return ["dev", "prod"].map((env) => ({env, projectId: aliases[env]}))
       .filter((target) => target.projectId);
   }
   const env = parsed.env ?? "dev";
@@ -148,10 +148,10 @@ Options:
   --apply                 Write the document.
   --allow-prod            Required when --apply targets prod.
   --verify                Read the live document and fail if it differs from brand.json.
-  --all                   Target dev, staging, and prod.
+  --all                   Target dev and prod.
   --write-schema          Regenerate contracts/firestore/config_brand.schema.json.
   --json                  Print the plan and document as JSON.
-  --env <dev|staging|prod> Resolve project id from .firebaserc. Defaults to dev.
+  --env <dev|prod> Resolve project id from .firebaserc. Defaults to dev.
   --project <id>          Firebase project id override.
   --emulator              Use Firestore emulator at 127.0.0.1:8080.
   --emulator-host <host>  Use a custom Firestore emulator host.

@@ -1,11 +1,12 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {waitFor} from "@testing-library/react";
 
-const transport = vi.hoisted(() => ({set: vi.fn(), pageView: vi.fn()}));
+const transport = vi.hoisted(() => ({set: vi.fn(), pageView: vi.fn(), admit: vi.fn()}));
 vi.mock("../../analytics", async (importActual) => ({
   ...(await importActual<typeof import("../../analytics")>()),
   setOrganizerAdDestinations: transport.set,
   trackOrganizerPageViewed: transport.pageView,
+  admitCatchOrganizerProfile: transport.admit,
 }));
 import {setMarketingConsent} from "../../analytics";
 import {hostListings} from "./data";
@@ -15,7 +16,7 @@ const listing = {...hostListings[0], publicApi: {...hostListings[0].publicApi, s
 let sequence = 0;
 beforeEach(() => {
   localStorage.clear(); sessionStorage.clear(); sequence++;
-  transport.set.mockClear(); transport.pageView.mockClear();
+  transport.set.mockClear(); transport.pageView.mockClear(); transport.admit.mockClear();
 });
 function setup(path?: string) {
   const eventId = `event-${sequence}`;
@@ -93,5 +94,48 @@ describe("organiser tags through the first-party transport", () => {
       expect(state.readSettings).not.toHaveBeenCalled();
       stopPrivate();
     }
+  });
+
+  it("admits a server-eligible profile to Catch's tags under analytics alone, and clears it on leaving", async () => {
+    const state = setup(listing.path);
+    state.readSettings.mockResolvedValue({...state.settings, eventId: null, enabled: false, metaPixelId: null,
+      googleMeasurementId: null, profileTagsEligible: true});
+    setMarketingConsent("analytics");
+    const stop = observeOrganizerProviders(listing, null, state);
+    await waitFor(() => expect(transport.admit).toHaveBeenCalledWith(listing.path));
+    expect(state.readSettings).toHaveBeenCalledWith({organizerId: listing.id, eventId: null});
+    expect(transport.set.mock.calls.every(([set]) => set === null)).toBe(true);
+    stop();
+    expect(transport.admit).toHaveBeenLastCalledWith(null);
+  });
+
+  it("keeps the profile closed when the server says no, the read fails or consent is essential", async () => {
+    const state = setup(listing.path);
+    setMarketingConsent("accepted");
+    state.readSettings.mockResolvedValue({...state.settings, eventId: null, enabled: false, profileTagsEligible: false});
+    let stop = observeOrganizerProviders(listing, null, state);
+    await waitFor(() => expect(transport.admit).toHaveBeenCalled());
+    expect(transport.admit.mock.calls.every(([path]) => path === null)).toBe(true);
+    stop();
+    state.readSettings.mockRejectedValue(new Error("unavailable"));
+    stop = observeOrganizerProviders(listing, null, state);
+    await Promise.resolve(); await Promise.resolve();
+    expect(transport.admit.mock.calls.every(([path]) => path === null)).toBe(true);
+    stop();
+    setMarketingConsent("essential");
+    state.readSettings.mockClear();
+    stop = observeOrganizerProviders(listing, null, state);
+    expect(state.readSettings).not.toHaveBeenCalled();
+    stop();
+  });
+
+  it("never admits a profile from an event page read", async () => {
+    const state = setup();
+    state.readSettings.mockResolvedValue({...state.settings, profileTagsEligible: true});
+    setMarketingConsent("accepted");
+    const stop = observeOrganizerProviders(listing, state.eventId, state);
+    await waitFor(() => expect(transport.pageView).toHaveBeenCalled());
+    expect(transport.admit).not.toHaveBeenCalled();
+    stop();
   });
 });

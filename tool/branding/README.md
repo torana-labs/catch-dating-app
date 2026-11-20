@@ -37,19 +37,13 @@ It regenerates:
 
 - the Consumer native splash colors in `apps/consumer/pubspec.yaml`
 - `assets/branding/generated/catch_icon_dev.png`
-- `assets/branding/generated/catch_icon_staging.png`
 - `assets/branding/generated/catch_icon_host_dev.png`
-- `assets/branding/generated/catch_icon_host_staging.png`
 - `assets/branding/generated/catch_icon_host_prod.png`
-- Android `dev`/`staging` launcher icon resource overlays
-- Android `hostDev`/`hostStaging`/`hostProd` launcher icon resource overlays
-- iOS `AppIcon-dev` and `AppIcon-staging` asset catalogs
-- iOS `AppIcon-host-dev`, `AppIcon-host-staging`, and
-  `AppIcon-host-prod` asset catalogs
-- macOS `AppIcon-dev` and `AppIcon-staging` asset catalogs
-- macOS `AppIcon-host-dev`, `AppIcon-host-staging`, and
-  `AppIcon-host-prod` asset catalogs
-- the independent `apps/consumer` production, dev, and staging Android/iOS
+- Android `consumerDev` launcher icon resource overlays
+- Android `hostDev`/`hostProd` launcher icon resource overlays
+- iOS `AppIcon-dev`, `AppIcon-host-dev` and `AppIcon-host-prod` asset catalogs
+- the macOS `AppIcon-dev` asset catalog
+- the independent `apps/consumer` production and dev Android/iOS
   launcher resources
 - the Consumer-only iOS launch-screen constraints that place the generated
   `Catch_` alpha bounds at the Welcome reel's responsive `Catch` anchor
@@ -59,13 +53,12 @@ It regenerates:
 
 Consumer production uses `assets/branding/catch_icon.png`; the native-brand
 generator projects it into the default Android/iOS catalogs in
-`apps/consumer` and projects its ribboned variants into the dev/staging
-catalogs.
+`apps/consumer` and projects its ribboned variant into the dev catalogs.
 Host production uses the two-line `Catch Host` icon as its base, through the
 generated `AppIcon-host-prod` catalogs and Android `hostProd` launcher
 resources. Host native and Flutter startup frames use the separate centered
 `Catch Host` light/dark splash marks and never mount the Consumer Welcome reel.
-Dev and staging flavors use diagonal corner ribbons, so internal builds stay
+Dev flavors use a diagonal corner ribbon, so internal builds stay
 visually distinct without covering the consumer or host wordmarks.
 
 `flutter_native_splash:create`, run from `apps/consumer`, owns the Consumer
@@ -79,5 +72,5 @@ pubspec, and the generator is what writes them there.
 Launcher icons have no third-party generator: this generator owns every native
 launcher catalog. Do not reintroduce `flutter_launcher_icons`; it rewrites the
 Consumer Xcode project's per-flavor `ASSETCATALOG_COMPILER_APPICON_NAME`, so
-dev and staging builds would show the production icon. The Consumer web icons
+dev builds would show the production icon. The Consumer web icons
 under `apps/consumer/web/icons` are static copies of `catch_icon.png`.

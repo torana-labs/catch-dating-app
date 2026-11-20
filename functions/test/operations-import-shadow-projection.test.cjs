@@ -8,7 +8,6 @@ const {
 
 const aliases = {
   dev: "catchdates-dev",
-  staging: "catchdates-staging",
   prod: "catch-dating-app-64e51",
 };
 

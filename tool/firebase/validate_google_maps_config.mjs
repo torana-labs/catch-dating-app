@@ -11,7 +11,7 @@ const supportedPlacesRegionCodes = ["in", "np", "au", "us"];
 
 const args = parseArgs(process.argv.slice(2));
 const appRoot = resolveAppRoot(args.projectRoot);
-const envs = args.env ? [args.env] : ["dev", "staging", "prod"];
+const envs = args.env ? [args.env] : ["dev", "prod"];
 const platforms = args.platform === "all" ? ["ios", "android"] : [args.platform];
 const errors = [];
 
@@ -69,7 +69,7 @@ function parseArgs(argv) {
       throw new Error(`Unknown argument: ${arg}`);
     }
   }
-  if (parsed.env && !["dev", "staging", "prod"].includes(parsed.env)) {
+  if (parsed.env && !["dev", "prod"].includes(parsed.env)) {
     throw new Error(`Unsupported env: ${parsed.env}`);
   }
   if (!["ios", "android", "all"].includes(parsed.platform)) {
@@ -350,7 +350,7 @@ function printHelp() {
   console.log(`Usage: node tool/firebase/validate_google_maps_config.mjs [options]
 
 Options:
-  --env <dev|staging|prod>       Validate one environment. Defaults to all.
+  --env <dev|prod>       Validate one environment. Defaults to all.
   --platform <ios|android|all>   Validate one platform. Defaults to all.
   --ios-built-plist <path>       Also validate GoogleMapsApiKey in a built
                                  iOS app Info.plist.

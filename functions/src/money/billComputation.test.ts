@@ -195,7 +195,8 @@ test("credit under the minimum rolls over; totals per nominator", () => {
 test("payment link references stay within 40 characters per project", () => {
   const dev = billLinkReference("2026-27/031", "catchdates-dev");
   assert.match(dev, /^2026-27\/031-[a-f0-9]{6}$/u);
-  assert.notEqual(dev, billLinkReference("2026-27/031", "catchdates-staging"));
+  assert.notEqual(dev,
+    billLinkReference("2026-27/031", "catch-dating-app-64e51"));
   assert.ok(billLinkReference("2026-27/123456789012345678901234567890",
     "p").length <= 40);
 });

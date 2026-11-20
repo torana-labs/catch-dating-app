@@ -19,7 +19,7 @@ export const signingPermission = "iam.serviceAccounts.signBlob";
 export function uploadIdentityTarget(environment, projectId, purpose = "upload") {
   if (!["upload", "review"].includes(purpose)) throw new Error("Invalid asset purpose.");
   const account = purpose === "upload" ? accountId : "catch-form-review";
-  if (!["dev", "staging", "prod"].includes(environment) ||
+  if (!["dev", "prod"].includes(environment) ||
       !/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u.test(projectId ?? "")) {
     throw new Error("An explicit Catch environment and project are required.");
   }
@@ -210,8 +210,8 @@ export function parseArgs(argv) {
     else if (argv[i] === "--allow-prod") args.allowProd = true;
     else throw new Error(`Unknown argument: ${argv[i]}`);
   }
-  if (!["dev", "staging", "prod"].includes(args.environment)) {
-    throw new Error("Use --env dev|staging|prod. Default mode is read-only.");
+  if (!["dev", "prod"].includes(args.environment)) {
+    throw new Error("Use --env dev|prod. Default mode is read-only.");
   }
   if (args.apply && args.environment === "prod" && !args.allowProd) {
     throw new Error("Production provisioning requires --allow-prod.");

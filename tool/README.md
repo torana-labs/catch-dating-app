@@ -561,7 +561,7 @@ node tool/check_remote_ops_manifest.mjs --list
 
 ## Installable App Targets
 
-`tool/app_targets.json` is the checked Consumer/Host × dev/staging/prod target
+`tool/app_targets.json` is the checked Consumer/Host × dev/prod target
 matrix. Build wrappers and Apple flavor generation resolve identity from it;
 the app-target gate reconciles the remaining native, Firebase, capability,
 deep-link, force-update, and release surfaces. Each target has its own explicit
@@ -634,7 +634,7 @@ no apply mode:
 ```sh
 node tool/firebase/check_environment_readiness.mjs --manifest-only
 node tool/firebase/check_environment_readiness.mjs \
-  --env staging --targets functions:getCrossPathsSuggestions
+  --env dev --targets functions:getCrossPathsSuggestions
 ```
 
 `Deploy backend` (`.github/workflows/backend-deploy.yml`) runs this gate after
@@ -644,7 +644,6 @@ not-ready prerequisite stops the run; one the probe cannot confirm only warns.
 The backend deploys from an exact `main` commit through `Deploy backend`.
 - **Dev** deploys on every backend-relevant merge.
 - **Prod** deploys automatically after dev succeeds.
-- **Staging** deploys only when someone runs the workflow for it.
 
 Each environment's last deployed commit is its newest successful GitHub
 deployment with task `deploy:backend`; see
@@ -718,7 +717,7 @@ node tool/firebase/synthetic_backend_probe.mjs --env dev --uid <uid> --organizer
 
 `tool/firebase/report_environment_parity.mjs` is the one on-demand answer to
 "which features exist in which environment". It compares this checkout with
-live dev and prod (`--env dev,staging,prod` opts staging in) across deployable
+live dev and prod across deployable
 Functions, deployed Functions params against the GitHub variable the next
 deploy would materialize, GitHub environment variables and the jobs that read
 them, composite indexes and field overrides, Firestore and Storage rules, the
@@ -1302,25 +1301,25 @@ guard `apply-flag`).
 
 ### Storage media path hygiene
 
-`node tool/data/hygiene_media_paths.mjs --env <dev|staging|prod> [--apply [--allow-prod]] [--json]`
+`node tool/data/hygiene_media_paths.mjs --env <dev|prod> [--apply [--allow-prod]] [--json]`
 (`data:hygiene-media-paths`, guard `apply-and-prod-flag`, surface
 `remote-destructive`).
 
 - **What it does:** audits club and event media still stored under the
   retired `clubs/{organizerId}/…` paths, against the canonical
-  `users/{uid}/hostedMedia/{fileName}`. `--env` repeats; `--all` audits dev,
-  staging and prod.
+  `users/{uid}/hostedMedia/{fileName}`. `--env` repeats; `--all` audits dev
+  and prod.
 - **Apply:** `--apply` copies each referenced legacy object to its canonical
   path, updates the documents that point at it and then deletes the retired
   legacy objects. Production also needs `--allow-prod`.
 - **Before applying in production:** run the dry run for prod, save its
-  `--json` output with the change record, and apply to dev or staging first.
+  `--json` output with the change record, and apply to dev first.
   The delete step cannot be undone from this tool.
 
 ### Firestore projection repairs
 
 These three recompute a denormalised projection from its source documents.
-Each takes `--env <dev|staging|prod>` (or `--project <id>`), `--emulator` or
+Each takes `--env <dev|prod>` (or `--project <id>`), `--emulator` or
 `--emulator-host <host>`, `--json`, and writes only with `--apply` (guard
 `apply-flag`; none of them has a separate production flag, so name the
 environment explicitly).
@@ -1348,8 +1347,8 @@ environment explicitly).
   `--env` defaults to dev.
 - **Normally automatic:** `brand-config-publish.yml` publishes on every merge
   to main that changes the brand record or its writer (dev, then prod, with the
-  backend deploy's environment protection). Dispatch it to publish on demand,
-  staging included, rather than running the tool by hand.
+  backend deploy's environment protection). Dispatch it to publish on demand
+  rather than running the tool by hand.
 - **Apply by hand:** `--apply` writes the document; production also needs
   `--allow-prod`.
 - **Verify:** `--verify` reads the live document and fails if it differs from
@@ -1358,7 +1357,7 @@ environment explicitly).
 
 ### Functions deploy wrapper
 
-`node tool/firebase_functions.mjs <deploy|logs> <dev|staging|prod> [firebase args...] [--print]`
+`node tool/firebase_functions.mjs <deploy|logs> <dev|prod> [firebase args...] [--print]`
 (`firebase:functions-environment-wrapper`, surface `remote-deploy`, guard
 `none`).
 
@@ -1366,7 +1365,7 @@ environment explicitly).
   `logs` runs `firebase functions:log`, through `tool/firebase_with_env.sh`
   for the named environment. Extra arguments pass through to the Firebase CLI.
 - **No gate:** nothing confirms the deploy. Use `--print` to see the exact
-  command first. Staging and production Functions ship through
+  command first. Production Functions ship through
   `backend-deploy.yml`, which deploys the build CI tested (see
   [Deploy Backend](../docs/release_operations.md#deploy-backend)); use this
   wrapper for dev, for logs, or when that runbook says to.

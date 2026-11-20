@@ -74,7 +74,7 @@ function resolveTargets(parsed) {
 
   if (parsed.all) {
     const aliases = readFirebaseProjectAliases();
-    return ["dev", "staging", "prod"].map((env) => ({
+    return ["dev", "prod"].map((env) => ({
       env,
       projectId: aliases[env],
     })).filter((target) => target.projectId);
@@ -99,14 +99,14 @@ function printHelp() {
   console.log(`Usage: node tool/firebase/create_config_cities.mjs [options]
 
 Writes config/cities for one Firebase environment. The tool is dry-run by
-default; use --all intentionally for dev, staging, and prod.
+default; use --all intentionally for dev and prod.
 
 Options:
   --apply                 Write the config doc. Default is dry-run.
   --allow-prod            Required when --apply targets prod.
-  --all                   Target dev, staging, and prod.
+  --all                   Target dev and prod.
   --json                  Print compact summary as JSON.
-  --env <dev|staging|prod> Resolve project id from .firebaserc. Defaults to dev.
+  --env <dev|prod> Resolve project id from .firebaserc. Defaults to dev.
   --project <id>          Firebase project id override.
   --emulator              Use Firestore emulator at 127.0.0.1:8080.
   --emulator-host <host>  Use a custom Firestore emulator host.

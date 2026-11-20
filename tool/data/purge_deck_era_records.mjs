@@ -79,7 +79,7 @@ export async function main(argv = process.argv.slice(2), {
   }
   if (!args.env && !args.project && !args.emulatorHost) {
     throw new Error(
-      "Name the target explicitly with --env <dev|staging|prod>, --project <id> " +
+      "Name the target explicitly with --env <dev|prod>, --project <id> " +
       "or --emulator. This tool never falls back to an ambient project."
     );
   }
@@ -629,7 +629,7 @@ counters. Dry run by default. Build Functions first
 functions/lib/matching/deckEraDecision.js.
 
 Options:
-  --env <dev|staging|prod>  Resolve the project id from .firebaserc.
+  --env <dev|prod>  Resolve the project id from .firebaserc.
   --project <id>            Firebase project id.
   --emulator                Use the Firestore emulator at 127.0.0.1:8080.
   --emulator-host <host>    Use a custom Firestore emulator host.
