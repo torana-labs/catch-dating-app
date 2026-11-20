@@ -211,6 +211,8 @@
       "AdminListSalesInboundIntentsCallablePayload",
       "AdminListSalesOpportunitiesCallablePayload",
       "AdminListSalesTasksCallablePayload",
+      "AdminAiFallbackTestCallCallablePayload",
+      "AdminAiFallbackTestCallCallableResponse",
       "AdminListSupplyIntakePoliciesCallablePayload",
       "AdminListSupplyIntakePoliciesCallableResponse",
       "AdminListSupplyNominatorsCallablePayload",

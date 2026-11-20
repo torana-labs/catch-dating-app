@@ -179,6 +179,60 @@ access token.
 - Each programme also needs `enabled: true` in its assistant settings and a
   connected WhatsApp number.
 
+### The try-it AI fallback shares this federation
+
+The try-it import AI fallback (#2062, `functions/src/commands/aiFallback/`)
+calls Anthropic with the same federation params and the same token source.
+It has no params of its own. Its callables (the try-it import commands) set
+no `serviceAccount`, so they run as the default Functions runtime identity,
+`<project-number>-compute@developer.gserviceaccount.com`. This is the same
+identity `previewProgramAssistantReply` uses. The federation rule's CEL
+condition must list that identity's numeric id and email. The visitor
+fallback stays off in code until the owner switches it on, whatever these
+params say.
+
+### Live test call
+
+`adminAiFallbackTestCall` (Admin, then Settings, then Intake, then "AI reading
+for try-it imports"; or `catch-admin`, below) proves the federated sign-in
+before anything is switched on for visitors.
+- It sends one fixed, fictional guest-mapping request: three headers and
+  their shapes, no values. It goes through the same read path visitors will
+  use.
+- It ignores whether the visitor fallback is on, and it refuses without the
+  two federation params.
+- A paid test is charged against the fallback's US$50 monthly cap and writes
+  an `aiFallbackAudit` row with `test: true`. Each admin gets 5 paid tests a
+  day, and nothing is cached.
+- `dryRun` stops after the token exchange and spends nothing.
+- Admin or owner only.
+
+The owner's steps, per project (dev first):
+
+1. In the Claude Console, under Workload identity, open the federation rule
+   for this Firebase project. Create it as in the steps above if there is
+   none. Check that its CEL condition includes the default runtime identity:
+   - `gcloud iam service-accounts describe <project-number>-compute@developer.gserviceaccount.com --format='value(uniqueId)'`
+     gives the numeric id for `claims.sub`;
+   - the email goes in `claims.email`.
+   Keep the programme assistant's identities in the same condition.
+2. In GitHub, under Settings, then Environments, set
+   `PROGRAM_ASSISTANT_FEDERATION_RULE_ID` on that environment (`fdrl_…`)
+   and `ANTHROPIC_ORGANIZATION_ID` (the organization UUID).
+3. Deploy the backend, so the Functions read the new params.
+4. Run the test in Admin: first "Check sign-in" (dryRun), then "Run test
+   call". Or from a checkout, with an admin's Firebase ID token and an App
+   Check token in `CATCH_ADMIN_ID_TOKEN` and `CATCH_ADMIN_APP_CHECK_TOKEN`:
+   `node operations/src/admin-cli/main.mjs run organizer-intake.ai-fallback-test-call --project <firebase-project-id> --json '{"dryRun":true}' --apply --confirm organizer-intake.ai-fallback-test-call`,
+   then the same with `{"dryRun":false}`.
+5. Read the result:
+   - `ok: true` with the tokens and cost means the path works.
+   - Otherwise `failedStep` names where it stopped: `config` (a param is
+     blank), `token_mint` (Google identity token), `token_exchange` (the
+     rule refused; the Console's authentication history says why),
+     `messages_call` (with its HTTP status), `schema` (the answer was the
+     wrong shape) or `budget` (cap or daily test limit).
+
 ## Try it
 
 `previewProgramAssistantReply({programId, requestId, text, householdId?})`

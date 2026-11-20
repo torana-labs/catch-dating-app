@@ -214,6 +214,25 @@ const GUEST_MAPPING_INPUT_SCHEMA: Record<string, unknown> = {
 };
 
 /**
+ * The fixed request the admin live test call sends (adminAiFallbackTestCall):
+ * the real guest-mapping task, prompt and schemas over three fictional
+ * headers and their shapes, so a passing test proves the path visitors use.
+ * @return {object} The task, prompt version, prompt, input and schemas.
+ */
+export function guestMappingTestRequest(): {task: string;
+  promptVersion: string; prompt: string; input: Record<string, unknown>;
+  inputSchema: Record<string, unknown>;
+  outputSchema: Record<string, unknown>} {
+  return {task: VARIANTS.guest.task,
+    promptVersion: VARIANTS.guest.promptVersion,
+    prompt: GUEST_MAPPING_PROMPT,
+    input: {headers: ["Name", "Mobile", "Ticket"],
+      columnShapes: ["text", "phone-like", "text"]},
+    inputSchema: GUEST_MAPPING_INPUT_SCHEMA,
+    outputSchema: GUEST_MAPPING_OUTPUT_SCHEMA};
+}
+
+/**
  * The guest mapping runner over the shared AI fallback, for one visitor.
  * A refusal (cap, daily limit, unreadable) or the shared policy being off
  * throws, and the command asks the host to map the columns.

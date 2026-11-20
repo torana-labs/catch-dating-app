@@ -16,6 +16,7 @@ import {launchMarkets} from "../../../../shared/config/launchMarkets";
 import type {SupplyIntakePolicy} from "../api/supplyIntakePolicyRepository";
 import type {ListingProgramController} from "../controllers/useListingProgramController";
 import type {SupplyIntakePolicyController} from "../controllers/useSupplyIntakePolicyController";
+import type {AiFallbackTestController} from "../controllers/useAiFallbackTestController";
 import {nominatorSender, type SupplyNominatorController} from "../controllers/useSupplyNominatorController";
 import {catchPhoneE164} from "@catch/web-ui/phone";
 import {adminPhoneFieldCopy} from "../../../../shared/ui/phoneFieldCopy";
@@ -33,6 +34,8 @@ export type IntakeNominatorsModel = Pick<SupplyNominatorController, "nominators"
   isLoading: boolean;
   loadFailed: boolean;
 };
+
+export type IntakeAiTestModel = Pick<AiFallbackTestController, "run" | "isRunning" | "lastResult">;
 
 type Decision = "accept" | "hold" | "reject";
 type Role = "associate" | "partner";
@@ -216,10 +219,12 @@ function NominatorSheet({model, onClose}: {model: IntakeNominatorsModel; onClose
  * do on its own, its limits, who can nominate by message, and the launch
  * cities. Anyone else who messages Catch reaches Support, not Intake.
  */
-export function IntakeSettingsWorkspace({program, policies, nominators}: {
+export function IntakeSettingsWorkspace({program, policies, nominators, aiTest}: {
   program: IntakeListingProgramModel;
   policies: IntakePoliciesModel;
   nominators: IntakeNominatorsModel;
+  /** The try-it AI fallback's live sign-in test; absent in stories. */
+  aiTest?: IntakeAiTestModel;
 }) {
   const [deciding, setDeciding] = useState<SupplyIntakePolicy | null>(null);
   const [adding, setAdding] = useState(false);
@@ -241,6 +246,19 @@ export function IntakeSettingsWorkspace({program, policies, nominators}: {
               trailing={<CatchButton label="Decide" variant="secondary" size="sm" onPressed={() => setDeciding(policy)} />} />;
           })}
         </CatchSection>
+        {aiTest ? (
+          <CatchSection title="AI reading for try-it imports" container="tile"
+            note="Off for visitors. A test sends one fixed, fictional request and counts against the monthly cap.">
+            <CatchIndexRow title="Check sign-in" titleVariant="bodyM"
+              subtitle={aiTest.lastResult ?? "Checks the federation settings and exchanges a token. Spends nothing."}
+              trailing={<CatchButton label="Check sign-in" variant="secondary" size="sm" status={aiTest.isRunning ? "loading" : undefined}
+                onPressed={() => void aiTest.run(true)} />} />
+            <CatchIndexRow title="Make one live call" titleVariant="bodyM"
+              subtitle="A real model call through the same path visitors will use. Up to 5 a day."
+              trailing={<CatchButton label="Run test call" variant="secondary" size="sm" status={aiTest.isRunning ? "loading" : undefined}
+                onPressed={() => void aiTest.run(false)} />} />
+          </CatchSection>
+        ) : null}
         {limits.length ? (
           <CatchSection title="Limits" container="tile">
             {limits.map((limit) => <CatchIndexRow key={limit.label} title={limit.label} titleVariant="bodyM"

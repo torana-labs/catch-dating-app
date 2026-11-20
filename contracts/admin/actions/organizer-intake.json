@@ -113,6 +113,26 @@
       }
     },
     {
+      "actionId": "organizer-intake.ai-fallback-test-call",
+      "callable": "adminAiFallbackTestCall",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/settings/intake",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action",
+      "requestSchema": "contracts/callables/admin_ai_fallback_test_call_payload.schema.json",
+      "summary": "Make one live test call through the try-it AI fallback's federated sign-in (a fixed, fictional request; counts against the monthly cap). dryRun only exchanges a token.",
+      "example": {
+        "dryRun": true
+      }
+    },
+    {
       "actionId": "organizer-intake.list-supply-intake-policies",
       "callable": "adminListSupplyIntakePolicies",
       "workflowIds": [
