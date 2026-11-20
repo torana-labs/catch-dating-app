@@ -50,7 +50,7 @@
           "emphasis": "secondary"
         }
       ],
-      "media": {"kind": "capture", "slot": "host-event-share-links"}
+      "media": {"kind": "capture", "slot": "host-insights"}
     },
     {
       "type": "tiles",

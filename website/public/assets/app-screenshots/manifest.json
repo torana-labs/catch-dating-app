@@ -23,8 +23,8 @@
       "webPath": "/assets/app-screenshots/host-today.png",
       "width": 804,
       "height": 1748,
-      "alt": "Catch Host on a Saturday: a trivia social tonight, two things left before doors",
-      "caption": "Today in Catch Host: tonight's event and what's left before doors.",
+      "alt": "Catch Host on a Saturday: a trivia social tonight, two applications waiting on a decision and two more events this week",
+      "caption": "Today in Catch Host: tonight's event, what needs you and the rest of the week.",
       "walkthroughStep": "Today",
       "pages": [
         "/host/"
@@ -85,12 +85,25 @@
       "webPath": "/assets/app-screenshots/host-post-event-report.png",
       "width": 804,
       "height": 1748,
-      "alt": "Catch Host's report after the event: who came, who'd come back and what's next",
-      "caption": "After the night: who came and who'd come back.",
+      "alt": "Catch Host's report after the trivia social: 18 came, 12 of them new, rated 4.7 by three guests",
+      "caption": "After the night: who came, who was new and what they said.",
       "walkthroughStep": "Follow up",
       "pages": [
         "/host/"
       ]
+    },
+    {
+      "id": "host-post-event-report-more",
+      "audience": "host",
+      "surface": "Catch Host event report, further down",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-post-event-report-more.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Further down the same report: what guests said and an invite to next Saturday's social for everyone who came",
+      "caption": "Then bring the same crowd back to the next one.",
+      "walkthroughStep": "Follow up",
+      "pages": []
     },
     {
       "id": "host-formats-pods",
