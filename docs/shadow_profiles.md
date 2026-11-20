@@ -1,3 +1,9 @@
+---
+doc_id: shadow_organizer_profiles
+owner: host_tooling
+status: active
+---
+
 # Shadow Organizer Profiles
 
 Owner decision, 20 Nov 2026. Some organizers already have a page on Catch that
