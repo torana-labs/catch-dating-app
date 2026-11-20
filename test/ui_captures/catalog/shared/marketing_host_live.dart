@@ -93,9 +93,6 @@ List<Object> marketingHostManageOverrides(
   watchEventSuccessPlanProvider(event.id).overrideWith(
     (ref) => Stream.value(marketingHostPlan(event, complete: complete)),
   ),
-  watchEventSuccessScorecardProvider(
-    event.id,
-  ).overrideWith((ref) => Stream.value(null)),
   watchEventSuccessAssignmentsProvider(
     event.id,
   ).overrideWith((ref) => Stream.value(const <EventSuccessAssignment>[])),

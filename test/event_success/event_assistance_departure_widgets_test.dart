@@ -13,13 +13,13 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_departure_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_movement_section.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_practice_tools_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -37,7 +37,7 @@ import 'event_assistance_departure_fixtures.dart';
 void main() {
   setUpAll(loadCatchTestFonts);
   testWidgets(
-    'actual rehearsal runtime exposes group departure without a parallel runtime',
+    'practice tools expose group departure without a parallel runtime',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(430, 932);
@@ -57,7 +57,7 @@ void main() {
             theme: AppTheme.light,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: HostEventRehearsalScreen(
+            home: HostRehearsalPracticeToolsScreen(
               organizerId: repository.snapshot.session.organizerId,
               sessionId: repository.snapshot.session.id,
             ),

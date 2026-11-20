@@ -2,39 +2,24 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
-import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_companion_clock.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
-import 'package:catch_dating_app/contexts/live/domain/event_success_preference.dart';
-import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
-import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/event_success/presentation/companion/event_success_companion_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_keys.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_live/event_success_host_live_page_body.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
-import 'package:catch_l10n/generated/app_localizations_en.dart';
-import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -51,15 +36,8 @@ import 'event_success_live_test_helpers.dart';
 
 part 'event_success_companion_flow_tests.dart';
 part 'event_success_companion_profiles_tests.dart';
-part 'event_success_host_live_tests.dart';
-part 'event_success_host_setup_tests.dart';
-part 'event_success_live_host_completion_tests.dart';
-
-final _l10n = AppLocalizationsEn();
 
 void main() {
-  _registerEventSuccessHostSetupTests();
-  _registerEventSuccessHostLiveTests();
   _registerEventSuccessCompanionFlowTests();
   _registerEventSuccessCompanionProfilesTests();
 }
@@ -195,47 +173,6 @@ EventSuccessAssignment _rotationAssignment({
     source: source,
     createdAt: now,
     updatedAt: now,
-  );
-}
-
-EventSuccessWingmanRequest _wingmanRequest({
-  required Event event,
-  required String requesterUid,
-  required String targetUid,
-  required DateTime now,
-  String? note,
-}) {
-  return EventSuccessWingmanRequest(
-    id: eventSuccessWingmanRequestId(eventId: event.id, uid: requesterUid),
-    eventId: event.id,
-    organizerId: event.organizerId,
-    requesterUid: requesterUid,
-    targetUid: targetUid,
-    status: EventSuccessWingmanRequestStatus.active,
-    hostVisibleConsent: true,
-    note: note,
-    createdAt: now,
-    updatedAt: now,
-  );
-}
-
-EventAttendee _accountabilityAttendee({
-  required Event event,
-  required String id,
-  required String displayName,
-}) {
-  final checkedInAt = event.startTime.add(const Duration(minutes: 5));
-  return EventAttendee(
-    id: id,
-    eventId: event.id,
-    organizerId: event.organizerId,
-    displayName: displayName,
-    searchName: displayName.toLowerCase(),
-    source: EventAttendeeSource.hostImport,
-    status: EventAttendeeStatus.checkedIn,
-    createdAt: event.startTime,
-    updatedAt: checkedInAt,
-    checkedInAt: checkedInAt,
   );
 }
 

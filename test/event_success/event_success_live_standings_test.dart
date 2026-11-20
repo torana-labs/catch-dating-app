@@ -2,11 +2,8 @@ import 'package:catch_dating_app/contexts/formats/domain/event_success_activity_
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
-import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/theme/app_theme.dart';
-import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -67,78 +64,6 @@ void main() {
     expect(find.text('9 pts'), findsOneWidget);
     expect(find.text('Skip rotations'), findsNothing);
     expect(find.text('Skip micro-pods'), findsNothing);
-  });
-
-  testWidgets('Host records a complete score round inside the reveal card', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(800, 1400);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    final event = buildEvent(
-      eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.pubQuiz),
-    );
-    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
-    List<EventSuccessUnitOutcomeEntryInput>? recorded;
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: SingleChildScrollView(
-            child: EventSuccessHostRevealSurface(
-              event: event,
-              plan: plan,
-              podAssignments: const [],
-              rotationAssignments: const [],
-              preferences: const [],
-              outcomeUnits: const [
-                EventSuccessOutcomeUnit(id: 'team-a', label: 'Team A'),
-                EventSuccessOutcomeUnit(id: 'team-b', label: 'Team B'),
-              ],
-              now: event.startTime,
-              onRecordOutcomes:
-                  ({
-                    required expectedRevision,
-                    required roundIndex,
-                    required entries,
-                  }) async {
-                    expect(expectedRevision, 0);
-                    expect(roundIndex, 0);
-                    recorded = entries;
-                  },
-            ),
-          ),
-        ),
-      ),
-    );
-
-    for (final value in {'team-a': '9', 'team-b': '7'}.entries) {
-      final field = find.descendant(
-        of: find.byKey(ValueKey('event_success.outcome.0.${value.key}')),
-        matching: find.byType(EditableText),
-      );
-      await tester.enterText(field, value.value);
-      expect(tester.widget<EditableText>(field).controller.text, value.value);
-    }
-    await tester.pump();
-    final saveButton = find.text('Save round for reveal');
-    await tester.ensureVisible(saveButton);
-    final button = tester.widget<CatchButton>(
-      find.widgetWithText(CatchButton, 'Save round for reveal'),
-    );
-    expect(button.onPressed, isNotNull);
-    button.onPressed!();
-    await tester.pump();
-
-    expect(recorded, hasLength(2));
-    expect(recorded?.first, isA<EventSuccessScoreOutcomeInput>());
-    expect(recorded?.map((entry) => entry.toJson()).toList(), [
-      {'unitId': 'team-a', 'unitLabel': 'Team A', 'score': 9},
-      {'unitId': 'team-b', 'unitLabel': 'Team B', 'score': 7},
-    ]);
-    expect(find.text('Reveal now'), findsNothing);
   });
 }
 

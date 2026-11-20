@@ -1310,10 +1310,10 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": [
-        "host_event_rehearsal_runtime_room",
+        "host_event_rehearsal_practice_console",
         "host_event_rehearsal_practice_tools"
       ],
-      "reason": "The rehearsal route now has deterministic authenticated captures showing the production Setup/Live/Report shell, synthetic session boundary, virtual clock, Coach dock, canonical Room workspace, and the advanced Practice tools sheet. Theme pairs are emitted by the capture harness; accessibility and companion-state captures remain planned variants."
+      "reason": "The rehearsal route has deterministic authenticated captures of its practice door: the rebuilt live console on the rehearsal's made-up guests and virtual clock, and Practice tools. Theme pairs are emitted by the capture harness; accessibility and companion-state captures remain planned variants."
     },
     {
       "routeId": "hostAppEventDetailScreen",

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -10,9 +9,9 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_practice_role_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_practice_role_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
+import 'package:catch_dating_app/hosts/events/rehearsal_practice_tools_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -86,7 +85,7 @@ void main() {
           theme: AppTheme.light,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: HostEventRehearsalScreen(
+          home: HostRehearsalPracticeToolsScreen(
             organizerId: repository.snapshot.session.organizerId,
             sessionId: repository.snapshot.session.id,
           ),
@@ -97,7 +96,7 @@ void main() {
   }
 
   testWidgets(
-    'real rehearsal runtime opens the shared visit action and retains sweep completion warning',
+    'practice tools open the shared visit action and record a return',
     (tester) async {
       final wire = practiceVisitBootstrap();
       final projection = buildEventRehearsalRuntimeProjection(
@@ -116,19 +115,7 @@ void main() {
         EventRehearsalBootstrap.fromCallableData(wire),
       );
       await mount(tester, repository);
-      final panel = tester.widget<EventSuccessHostWorkspacePageBody>(
-        find.byType(EventSuccessHostWorkspacePageBody),
-      );
-      expect(panel.accountabilityMode, EventSuccessAccountability.sweep);
-      expect(panel.accountabilityAttendees, hasLength(2));
       expect(find.byType(EventAssistanceSweepSection), findsOneWidget);
-      final complete = find.text('Mark live guide complete');
-      await tester.ensureVisible(complete);
-      await tester.tap(complete);
-      await pumpFeatureUi(tester);
-      expect(find.text('Some guests aren’t marked yet'), findsOneWidget);
-      await tester.tap(find.text('Review sweep'));
-      await pumpFeatureUi(tester);
       final review = find.descendant(
         of: find.byKey(const ValueKey('sweep.guest.actor-01')),
         matching: find.text('Review visit'),
@@ -162,7 +149,7 @@ void main() {
   );
 
   testWidgets(
-    'real rehearsal runtime opens one guest group review without changing attendance',
+    'practice tools open one guest group review without changing attendance',
     (tester) async {
       final fixture =
           jsonDecode(
@@ -212,75 +199,57 @@ void main() {
     },
   );
 
-  testWidgets(
-    'selected expired practice duty opens read-only controls and stays visible in the rehearsal strip',
-    (tester) async {
-      final fixture =
-          jsonDecode(
-                File(
-                  'test/event_rehearsal/fixtures/staff_reviews.json',
-                ).readAsStringSync(),
-              )
-              as Map;
-      final repository =
-          _Repository(
-              EventRehearsalBootstrap.fromCallableData(fixture['manager']),
+  testWidgets('selected expired practice duty opens read-only visit controls', (
+    tester,
+  ) async {
+    final fixture =
+        jsonDecode(
+              File(
+                'test/event_rehearsal/fixtures/staff_reviews.json',
+              ).readAsStringSync(),
             )
-            ..roleSnapshot = EventRehearsalBootstrap.fromCallableData(
-              fixture['expired'],
-            );
-      await mount(tester, repository);
-      await tester.tap(find.byIcon(CatchIcons.more));
-      await pumpFeatureUi(tester);
-      await tester.ensureVisible(
-        find.byType(EventRehearsalPracticeRoleSection),
-      );
-      await tester.tap(find.text('Host').hitTestable());
-      await pumpFeatureUi(tester);
-      await tester.tap(find.widgetWithText(CatchMenuRow<Object?>, 'sweep'));
-      await pumpFeatureUi(tester);
-      final roleContext = tester.element(
-        find.byType(EventRehearsalPracticeRoleSection),
-      );
-      expect(
-        ProviderScope.containerOf(roleContext).read(
-          eventRehearsalPracticeRoleControllerProvider((
-            sessionId: repository.snapshot.session.id,
-            clockId: repository.snapshot.staffReview!.clockId,
-          )),
-        ),
-        'practice-staff:sweep',
-      );
-      Navigator.of(
-        tester.element(find.byType(EventRehearsalPracticeRoleSection)),
-      ).pop();
-      await pumpFeatureUi(tester);
-      final banner = tester.widget<CatchBanner>(
-        find.byWidgetPredicate(
-          (w) => w is CatchBanner && w.variant == CatchBannerVariant.statuses,
-        ),
-      );
-      expect(
-        banner.statuses.single.message,
-        'Synthetic guests · Assistance as sweep',
-      );
-      final review = find.descendant(
-        of: find.byKey(const ValueKey('sweep.guest.actor-01')),
-        matching: find.text('Review visit'),
-      );
-      await tester.ensureVisible(review);
-      await tester.tap(review);
-      await pumpFeatureUi(tester);
-      expect(repository.roleReads, ['practice-staff:sweep']);
-      expect(
-        find.text('Your current role cannot update this guest’s visit.'),
-        findsOneWidget,
-      );
-      expect(find.text('Mark returned'), findsNothing);
-      expect(repository.writes, isEmpty);
-      expect(tester.takeException(), isNull);
-    },
-  );
+            as Map;
+    final repository =
+        _Repository(
+            EventRehearsalBootstrap.fromCallableData(fixture['manager']),
+          )
+          ..roleSnapshot = EventRehearsalBootstrap.fromCallableData(
+            fixture['expired'],
+          );
+    await mount(tester, repository);
+    await tester.ensureVisible(find.byType(EventRehearsalPracticeRoleSection));
+    await tester.tap(find.text('Host').hitTestable());
+    await pumpFeatureUi(tester);
+    await tester.tap(find.widgetWithText(CatchMenuRow<Object?>, 'sweep'));
+    await pumpFeatureUi(tester);
+    final roleContext = tester.element(
+      find.byType(EventRehearsalPracticeRoleSection),
+    );
+    expect(
+      ProviderScope.containerOf(roleContext).read(
+        eventRehearsalPracticeRoleControllerProvider((
+          sessionId: repository.snapshot.session.id,
+          clockId: repository.snapshot.staffReview!.clockId,
+        )),
+      ),
+      'practice-staff:sweep',
+    );
+    final review = find.descendant(
+      of: find.byKey(const ValueKey('sweep.guest.actor-01')),
+      matching: find.text('Review visit'),
+    );
+    await tester.ensureVisible(review);
+    await tester.tap(review);
+    await pumpFeatureUi(tester);
+    expect(repository.roleReads, ['practice-staff:sweep']);
+    expect(
+      find.text('Your current role cannot update this guest’s visit.'),
+      findsOneWidget,
+    );
+    expect(find.text('Mark returned'), findsNothing);
+    expect(repository.writes, isEmpty);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 /// Mirrors the host view listener: each command's result arrives on [watch].
