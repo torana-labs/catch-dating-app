@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
+import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_tile.dart';
 import 'package:flutter/foundation.dart';
 
 /// Where Today is: still reading the events, showing tonight, showing the
@@ -54,7 +55,7 @@ class HostTodayNeedsYou {
 }
 
 /// The figures under Last 30 days.
-enum HostTodayStatKind { bookings, ticketSales }
+enum HostTodayStatKind { bookings, ticketSales, cameBack, followers }
 
 @immutable
 class HostTodayStat {
@@ -63,6 +64,7 @@ class HostTodayStat {
     required this.value,
     this.previousValue,
     this.currencyCode,
+    this.figure,
   });
 
   final HostTodayStatKind kind;
@@ -73,6 +75,9 @@ class HostTodayStat {
 
   /// Set for money in minor units.
   final String? currencyCode;
+
+  /// How the value reads, when not a plain count or money.
+  final HostAnalyticsFigure? figure;
 }
 
 /// Everything the Today body shows, as plain values.
