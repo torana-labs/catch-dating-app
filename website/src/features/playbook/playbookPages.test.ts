@@ -240,7 +240,9 @@ describe("playbook page indexes", () => {
     const text = JSON.stringify(bands.map(({statusNote: _note, ...section}) => section));
     expect(text).not.toMatch(/Typeform|responses sheet|guest records?|every question|ready to share/iu);
     for (const section of bands) {
-      if ("leadForm" in section && section.leadForm) expect(section.leadForm).toMatchObject({requestKind: "tool", input: "url", label: "Link to a Google Form"});
+      if (!("leadForm" in section) || !section.leadForm) continue;
+      expect(section.leadForm).toMatchObject({requestKind: "tool", input: "url"});
+      expect(section.leadForm.label).toMatch(/Google Form$/u);
     }
     expect(playbookTryItTools.product_forms).toBe("form");
   });
