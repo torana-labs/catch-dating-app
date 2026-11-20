@@ -819,6 +819,7 @@
     "CreatePromotionKitCallablePayload",
     "ImportFormFromLinkCallablePayload",
     "PlanNightCallablePayload",
+    "ImportPastSalesCallablePayload",
     "SaveEventSuccessPlanSetupCallablePayload"
   ],
   "types": [
@@ -1059,6 +1060,7 @@
     "CreatePromotionKitCallableResponse",
     "ImportFormFromLinkCallableResponse",
     "PlanNightCallableResponse",
+    "ImportPastSalesCallableResponse",
     "SaveEventSuccessPlanSetupCallableResponse"
   ]
 }

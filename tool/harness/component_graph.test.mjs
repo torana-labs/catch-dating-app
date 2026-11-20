@@ -962,6 +962,17 @@ test("form conversion authority selects emulator validation in every CI mode", (
   }
 });
 
+test("the website's host fee figures also run the Functions parity test", () => {
+  for (const mode of graph.modes) {
+    const result = plan("website/src/content/pricing.ts", mode);
+    assert.equal(result.complete, true, mode);
+    for (const target of ["marketing", "functions"]) {
+      assert.ok(result.operations.ciTargets.includes(target), `${mode} ${target}`);
+    }
+  }
+  assert.equal(plan("website/src/content/brand.ts").operations.ciTargets.includes("functions"), false);
+});
+
 test("backend integration conservatively covers runtime and mixed lanes", () => {
   assert.deepEqual(plan("functions/src/events/cancelEventSignUp.ts")
     .operations.ciTargets, ["contracts", "firestore_rules", "functions"]);

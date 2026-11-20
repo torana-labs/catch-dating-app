@@ -1040,6 +1040,7 @@ export {saveEventSuccessPlanSetup} from
   "./eventSuccess/saveEventSuccessPlanSetup";
 export {expireTryItWorkspaces} from "./commands/workspaceExpiry";
 export {importGuestList} from "./commands/importGuestList";
+export {importPastSales} from "./commands/importPastSales";
 
 export {
   getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,

@@ -91,6 +91,18 @@
       "surfaces": ["website", "catch_host", "cli"],
       "linkAllowance": null,
       "summary": "Plan a night for a format and head count: groups, the mixing moment, three missions and a practice-session setup, saved as the plan of the caller's try-it draft event. Nothing is sent to anyone."
+    },
+    {
+      "commandId": "sales.import-past",
+      "version": 1,
+      "callable": "importPastSales",
+      "payloadSchema": "contracts/callables/import_past_sales_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/import_past_sales_response.schema.json",
+      "effect": "draft",
+      "caller": "phone_verified",
+      "surfaces": ["website", "catch_host", "cli"],
+      "linkAllowance": null,
+      "summary": "Read one past night's guest or sales export into a report and a fee comparison against the host's current tool, then save the night as a private past draft event in the try-it workspace."
     }
   ]
 }

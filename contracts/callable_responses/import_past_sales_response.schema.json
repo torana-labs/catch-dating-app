@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/import_past_sales_response.schema.json",
+  "title": "ImportPastSalesCallableResponse",
+  "description": "Response of sales.import-past. needs_input: set up a try-it workspace first (result.reasons no_workspace), or choose the columns (result.needsMapping with result.headers and result.columnShapes). previewed: result.report is the night's report and fee comparison; nothing is stored. applied or replayed: result.eventId is the private past draft event and result.import the guests saved to it. refused: nothing can be read (result.reasons). Nothing here publishes an event or messages a guest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["commandId", "status", "previewHash", "summary", "effects", "result", "next", "receiptId"],
+  "properties": {
+    "commandId": {"const": "sales.import-past"},
+    "status": {"type": "string", "enum": ["previewed", "applied", "replayed", "needs_input", "refused"]},
+    "previewHash": {"$ref": "../shared/command_envelope.schema.json#/definitions/previewHash"},
+    "summary": {"$ref": "../shared/command_envelope.schema.json#/definitions/summary"},
+    "effects": {"type": "array", "maxItems": 12, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/effect"}},
+    "next": {"type": "array", "maxItems": 8, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/next"}},
+    "receiptId": {"type": ["string", "null"], "pattern": "^[a-z][A-Za-z0-9]{0,63}_[a-f0-9]{64}$"},
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organizerId", "eventId", "converter", "needsMapping", "headers", "columnShapes", "report", "rowsNeedingReview", "import", "reasons"],
+      "properties": {
+        "organizerId": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9]{20}$"},
+        "eventId": {"type": ["string", "null"], "maxLength": 180, "description": "The private past draft event; set on apply."},
+        "converter": {
+          "anyOf": [{"type": "null"}, {
+            "type": "object", "additionalProperties": false, "required": ["id", "support", "confidence"],
+            "properties": {
+              "id": {"type": "string", "maxLength": 40},
+              "support": {"type": "string", "enum": ["verified", "generic", "sampleRequired"]},
+              "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+            }
+          }]
+        },
+        "needsMapping": {"type": "boolean"},
+        "headers": {"type": "array", "maxItems": 41, "items": {"type": "string", "maxLength": 120}},
+        "columnShapes": {"type": "array", "maxItems": 41, "items": {"type": "string", "maxLength": 40}},
+        "report": {
+          "anyOf": [{"type": "null"}, {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["eventName", "localDate", "ticketsSold", "grossSalesMinor", "currency", "amountSource", "byTicketType", "attendance", "attendanceReason", "guests", "guestsReason", "fees", "skippedRows"],
+            "properties": {
+              "eventName": {"type": "string", "minLength": 1, "maxLength": 120},
+              "localDate": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+              "ticketsSold": {"type": "integer", "minimum": 0, "maximum": 100000},
+              "grossSalesMinor": {"type": ["integer", "null"], "minimum": 0},
+              "currency": {"type": ["string", "null"], "pattern": "^[A-Z]{3}$"},
+              "amountSource": {"type": "string", "enum": ["file", "estimate", "mixed", "none"], "description": "Where the sales figures came from: the file's amounts, the host's ticket price, both, or neither."},
+              "byTicketType": {"type": "array", "maxItems": 30, "items": {
+                "type": "object", "additionalProperties": false, "required": ["ticketType", "count", "grossMinor"],
+                "properties": {
+                  "ticketType": {"type": ["string", "null"], "maxLength": 120},
+                  "count": {"type": "integer", "minimum": 0},
+                  "grossMinor": {"type": ["integer", "null"], "minimum": 0}
+                }
+              }},
+              "attendance": {"anyOf": [{"type": "null"}, {
+                "type": "object", "additionalProperties": false, "required": ["came", "noShows", "showRate"],
+                "properties": {
+                  "came": {"type": "integer", "minimum": 0},
+                  "noShows": {"type": "integer", "minimum": 0},
+                  "showRate": {"type": "number", "minimum": 0, "maximum": 1}
+                }
+              }]},
+              "attendanceReason": {"type": ["string", "null"], "enum": [null, "no_checkin_status"]},
+              "guests": {"anyOf": [{"type": "null"}, {
+                "type": "object", "additionalProperties": false, "required": ["firstTime", "repeat"],
+                "properties": {
+                  "firstTime": {"type": "integer", "minimum": 0},
+                  "repeat": {"type": "integer", "minimum": 0}
+                }
+              }]},
+              "guestsReason": {"type": ["string", "null"], "enum": [null, "no_earlier_nights"]},
+              "fees": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["catch", "catchReason", "current", "differenceMinor", "gatewayNote"],
+                "properties": {
+                  "catch": {"anyOf": [{"type": "null"}, {
+                    "type": "object", "additionalProperties": false,
+                    "required": ["feeMinor", "rateBasisPoints", "effectiveRateBasisPoints", "capMinor", "capReachedAtMinor", "cycleDays", "freeTrialDays"],
+                    "properties": {
+                      "feeMinor": {"type": "integer", "minimum": 0, "description": "Catch's fee on this night's sales after the free trial, within one billing cycle."},
+                      "rateBasisPoints": {"type": "integer", "minimum": 0, "maximum": 10000},
+                      "effectiveRateBasisPoints": {"type": "integer", "minimum": 0, "maximum": 10000},
+                      "capMinor": {"type": ["integer", "null"], "minimum": 0},
+                      "capReachedAtMinor": {"type": ["integer", "null"], "minimum": 0},
+                      "cycleDays": {"type": "integer", "minimum": 1},
+                      "freeTrialDays": {"type": "integer", "minimum": 0}
+                    }
+                  }]},
+                  "catchReason": {"type": ["string", "null"], "enum": [null, "terms_unavailable", "no_sales_amounts", "currency_mismatch"]},
+                  "current": {"anyOf": [{"type": "null"}, {
+                    "type": "object", "additionalProperties": false, "required": ["feeMinor", "currency"],
+                    "properties": {
+                      "feeMinor": {"type": "integer", "minimum": 0},
+                      "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
+                    }
+                  }]},
+                  "differenceMinor": {"type": ["integer", "null"], "description": "Current fees minus Catch's fee; positive means Catch costs less."},
+                  "gatewayNote": {"type": "string", "maxLength": 200}
+                }
+              },
+              "skippedRows": {"type": "integer", "minimum": 0}
+            }
+          }]
+        },
+        "rowsNeedingReview": {"type": "array", "maxItems": 250, "description": "Rows that must be fixed in the file or left out (input.excludedRowIds) before apply.", "items": {
+          "type": "object", "additionalProperties": false, "required": ["rowId", "sourceRowNumber", "displayName", "issues"],
+          "properties": {
+            "rowId": {"type": "string", "maxLength": 120},
+            "sourceRowNumber": {"type": "integer", "minimum": 1},
+            "displayName": {"type": "string", "maxLength": 120},
+            "issues": {"type": "array", "maxItems": 10, "items": {"type": "string", "maxLength": 80}}
+          }
+        }},
+        "import": {"anyOf": [{"type": "null"}, {
+          "type": "object", "additionalProperties": false, "required": ["importId", "createdCount", "updatedCount"],
+          "properties": {
+            "importId": {"type": "string", "maxLength": 180},
+            "createdCount": {"type": "integer", "minimum": 0},
+            "updatedCount": {"type": "integer", "minimum": 0}
+          }
+        }]},
+        "reasons": {"type": "array", "maxItems": 4, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,79}$"}}
+      }
+    }
+  }
+}
