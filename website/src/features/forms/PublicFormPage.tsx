@@ -20,7 +20,7 @@ import {
 } from "@catch/web-ui";
 import {eventDetailCopy} from "../../content/events";
 import {publicSiteCopy, siteFooterLegalLinks} from "@content/site";
-import {useEffect, useId, useRef, useState, type FormEvent, type ReactNode} from "react";
+import {useEffect, useId, useRef, type FormEvent, type ReactNode} from "react";
 import {useParams} from "react-router";
 import {PublicPageFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {Form} from "../../shared/ui/primitives";
@@ -36,6 +36,9 @@ import {
 import {formProfileReviewUrl} from "./formProfileReviewLink";
 import {embedParentOrigin, resizePayload} from "./publicFormEmbed";
 import {usePublicFormController} from "./usePublicFormController";
+import {catchPhoneDisplay} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
+import {phoneFieldCopy} from "@content/phoneField";
 
 type Controller = ReturnType<typeof usePublicFormController>;
 
@@ -480,7 +483,7 @@ function InlinePhoneVerification({controller, question}: {controller: Controller
   if (controller.verifiedPhone) {
     return (
       <CatchField id="public-form-verified-phone" inputMode="readOnly" keyboardType="phone" recipe="input"
-        suffixText={publicFormsCopy.phoneVerified} title={question?.label ?? publicFormsCopy.phoneLabel} value={phoneValue} />
+        suffixText={publicFormsCopy.phoneVerified} title={question?.label ?? publicFormsCopy.phoneLabel} value={catchPhoneDisplay(phoneValue)} />
     );
   }
   return (
@@ -768,21 +771,8 @@ function QuestionField({
   );
 }
 
-const phoneDialOptions = [
-  {country: "India", dialCode: "+91"},
-  {country: "Nepal", dialCode: "+977"},
-  {country: "Australia", dialCode: "+61"},
-  {country: "United States", dialCode: "+1"},
-] as const;
-
-function PhoneNumberField({
-  id,
-  errorText,
-  label,
-  onBlur,
-  onChange,
-  value,
-}: {
+/** A phone question or the sign-in number: the shared phone field in the site's country. */
+function PhoneNumberField({id, errorText, label, onBlur, onChange, value}: {
   id: string;
   errorText?: string;
   label: string;
@@ -790,51 +780,9 @@ function PhoneNumberField({
   onChange: (value: string) => void;
   value: string;
 }) {
-  const [preferredCode, setPreferredCode] = useState("+91");
-  const known = phoneDialOptions.find((option) => value.startsWith(option.dialCode));
-  const selectedCode = known?.dialCode ?? (value.startsWith("+") ? "other" : preferredCode);
-  const national = known ? value.slice(known.dialCode.length) : value;
   return (
-    <CatchStack align="start" direction="row" equal gap={8}>
-      <CatchField
-        recipe="select"
-        id={`${id}-country`}
-        title={publicFormsCopy.phoneCountryLabel}
-        values={[...phoneDialOptions.map((option) => option.dialCode), "other"]}
-        itemLabelBuilder={(code) => {
-          const option = phoneDialOptions.find((item) => item.dialCode === code);
-          return option ? `${option.country} ${option.dialCode}` : publicFormsCopy.phoneOtherCountry;
-        }}
-        onBlur={onBlur}
-        onChanged={(nextCode) => {
-          if (!nextCode) return;
-          setPreferredCode(nextCode);
-          onChange(nextCode === "other" ? "" :
-            national ? `${nextCode}${national.replace(/\D/gu, "")}` : "");
-        }}
-        value={selectedCode}
-      />
-      <CatchField
-          recipe="input"
-          autoComplete={selectedCode === "other" ? "tel" : "tel-national"}
-          id={id}
-          keyboardType="phone"
-          errorText={errorText}
-          title={label}
-          onBlur={onBlur}
-          onChanged={(entered) => {
-            const trimmed = entered.trim();
-            if (!trimmed) { onChange(""); return; }
-            if (trimmed.startsWith("+") || selectedCode === "other") {
-              onChange(trimmed.replace(/[^+\d]/gu, ""));
-            } else {
-              onChange(`${selectedCode}${trimmed.replace(/\D/gu, "")}`);
-            }
-          }}
-          inputHint={selectedCode === "other" ? "+44 7123 456789" : publicFormsCopy.phoneNationalPlaceholder}
-          value={national}
-        />
-    </CatchStack>
+    <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={errorText} id={id}
+      onBlur={onBlur} onChanged={onChange} recipe="phone" title={label} value={value} />
   );
 }
 

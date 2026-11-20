@@ -1,6 +1,6 @@
 import {interpolateContent as fill} from "@content/interpolate";
 import {weddingsCopy} from "@content/weddings";
-import {catchPhoneE164} from "@catch/web-ui/phone";
+import {catchPhoneDisplay, catchPhoneE164} from "@catch/web-ui/phone";
 import {activePhoneCountry} from "@content/markets";
 
 const stepOneCopy = weddingsCopy.stepOne;
@@ -111,7 +111,8 @@ export function stepTwoSummary(draft: WeddingsStepOneDraft) {
 
 /** Step 2's line about who applied: name, company and number. */
 export function stepTwoContact(draft: WeddingsStepOneDraft) {
-  const phone = draft.phone.replace(/\D/gu, "").replace(/^(\d{5})(\d{5})$/u, "$1 $2");
+  const e164 = catchPhoneE164(draft.phone, activePhoneCountry);
+  const phone = e164 ? catchPhoneDisplay(e164) : draft.phone.trim();
   const company = draft.company.trim();
   return company
     ? fill(stepTwoCopy.contact, {name: draft.name.trim(), company, phone})

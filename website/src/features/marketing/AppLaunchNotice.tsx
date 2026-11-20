@@ -11,7 +11,8 @@ import {
   type CatchBandGround,
 } from "@catch/web-ui";
 import {homePageCopy} from "@content/homePage";
-import {activeMarket, websiteCities} from "@content/markets";
+import {activePhoneCountry, websiteCities} from "@content/markets";
+import {phoneFieldCopy} from "@content/phoneField";
 import type {MarketCity} from "@content/markets/types";
 import {Form} from "../../shared/ui/primitives";
 import {useAppNoticeController} from "./useAppNoticeController";
@@ -57,9 +58,9 @@ export function AppLaunchNotice({id, ground, kicker, title, lead, labels}: AppLa
             {notice.joined ? null : (
               <Form aria-label={title ?? notify.action} noValidate onSubmit={notice.handleSubmit} pending={notice.sending}>
                 <CatchStack gap={12}>
-                  <CatchField autoComplete="tel-national" errorText={notice.status.tone === "is-error" ? notice.status.message : null} inputHint={notify.phoneHint}
-                    inputMode={notice.sending ? "inactive" : "editable"} keyboardType="phone" onChanged={notice.setPhone} prefixText={activeMarket.dialCode}
-                    recipe="input" required title={notify.phone} value={notice.phone} />
+                  <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={notice.status.tone === "is-error" ? notice.status.message : null}
+                    inputHint={notify.phoneHint} inputMode={notice.sending ? "inactive" : "editable"} onChanged={notice.setPhone}
+                    recipe="phone" required title={notify.phone} value={notice.phone} />
                   <CatchField itemLabelBuilder={(item: MarketCity) => item.label} itemValueBuilder={(item: MarketCity) => item.slug}
                     onChanged={(item: MarketCity | null) => { if (item) setPicked(item); }} recipe="select" title={labels.city ?? ""} value={city} values={noticeCities} />
                   <CatchCheckboxInput label={fill(notify.newPlans, {city: city.label})} onChanged={notice.sending ? null : notice.setNewPlans} value={notice.newPlans} />

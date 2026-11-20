@@ -1,0 +1,94 @@
+/*
+ * The phone field's country list: a search line over plain rows. No outlines
+ * or dividers; the row under the pointer or the keys is tinted. It shows about
+ * six rows, then scrolls, whether it hangs from the field or fills a sheet.
+ */
+.list {
+  --catch-country-row-pad: var(--catch-space-s2);
+  --catch-country-row: calc(var(--catch-typography-web-field-value-line-height) + 2 * var(--catch-country-row-pad));
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+  min-width: 0;
+}
+
+.search {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--catch-size-control-lg);
+  margin: 0;
+  padding: 0 var(--catch-space-s3);
+  border: var(--catch-stroke-hairline) solid var(--catch-theme-line2);
+  border-radius: var(--catch-radius-interactive-tile);
+  background: var(--catch-theme-surface);
+  color: var(--catch-theme-ink);
+  font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--catch-typography-web-field-value-size);
+  line-height: var(--catch-typography-web-field-value-line-height);
+}
+
+.search::placeholder {
+  color: var(--catch-theme-ink3);
+}
+
+.search:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-primary);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.options {
+  max-block-size: calc(6.5 * var(--catch-country-row));
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content 16px;
+  align-items: center;
+  column-gap: var(--catch-space-s2);
+  min-block-size: var(--catch-country-row);
+  box-sizing: border-box;
+  padding: var(--catch-country-row-pad) var(--catch-space-s3);
+  border-radius: var(--catch-radius-sm);
+  color: var(--catch-theme-ink);
+  font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--catch-typography-web-field-value-size);
+  line-height: var(--catch-typography-web-field-value-line-height);
+  cursor: pointer;
+}
+
+.option[data-active] {
+  background: var(--catch-theme-tile);
+}
+
+.name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.dial {
+  color: var(--catch-theme-ink2);
+  font-variant-numeric: tabular-nums;
+}
+
+.tick {
+  display: flex;
+  color: var(--catch-theme-ink);
+}
+
+.empty {
+  margin: 0;
+  padding: var(--catch-country-row-pad) var(--catch-space-s3);
+  color: var(--catch-theme-ink2);
+  font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--catch-typography-web-field-label-size);
+  line-height: var(--catch-typography-web-field-label-line-height);
+}

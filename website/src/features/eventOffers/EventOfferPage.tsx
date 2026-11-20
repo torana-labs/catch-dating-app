@@ -28,6 +28,8 @@ import {Form} from "../../shared/ui/primitives";
 import type {OfferCredential} from "./offerCredential";
 import {useOfferCheckoutController} from "./useOfferCheckoutController";
 import {formatOfferAmount, paymentCopy} from "./offerCheckoutModel";
+import {phoneFieldCopy} from "@content/phoneField";
+import {activePhoneCountry} from "@content/markets";
 
 const noop = () => undefined;
 const titleId = "offer-title";
@@ -131,9 +133,8 @@ function OfferSteps({controller, card}: {controller: Controller; card: ReactNode
         <Form noValidate onSubmit={phase === "phone" ? controller.sendCode : controller.verifyCode} pending={pending}>
           <CatchStack gap={16}>
             {phase === "phone" ? (
-              <CatchField autoComplete="tel" id="offer-phone" inputHint={text.phonePlaceholder} keyboardType="phone"
-                onChanged={(value) => controller.setPhone(value.replace(/\s/gu, ""))} recipe="input" title={text.phoneLabel}
-                value={controller.phone} />
+              <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} id="offer-phone" inputHint={text.phonePlaceholder}
+                onChanged={controller.setPhone} recipe="phone" title={text.phoneLabel} value={controller.phone} />
             ) : (
               <CatchField autoComplete="one-time-code" id="offer-code" keyboardType="number" maxLength={6}
                 onChanged={(value) => controller.setCode(value.replace(/\D/gu, ""))} recipe="input" title={text.codeLabel}

@@ -1,6 +1,6 @@
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {useState} from "react";
-import {afterEach, describe, expect, it, vi} from "vitest";
+import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 import {CatchField} from "./CatchField";
 
 afterEach(cleanup);
@@ -220,5 +220,90 @@ describe("CatchField toggle recipe", () => {
     const ids = control.getAttribute("aria-describedby")!.split(" ");
     expect(ids).toHaveLength(2);
     expect(document.getElementById(ids[1])!.textContent).toBe("Couldn't save");
+  });
+});
+
+describe("CatchField phone recipe", () => {
+  // jsdom has no modal dialogs; on a phone width the list opens in the sheet's dialog.
+  beforeAll(() => {
+    HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {this.setAttribute("open", "");};
+    HTMLDialogElement.prototype.close = function close(this: HTMLDialogElement) {this.removeAttribute("open");};
+  });
+  const copy = {
+    country: "Country code", search: "Search countries", noMatches: "No country matches", close: "Close",
+    problems: {tooShort: "Too short for {country}", tooLong: "Too long for {country}", notMobile: "Not a mobile number in {country}"},
+  };
+  function Phone({initial = "", onChanged}: {initial?: string; onChanged?: (value: string) => void}) {
+    const [value, setValue] = useState(initial);
+    return <CatchField copy={copy} countryCode="IN" onChanged={(next) => {setValue(next); onChanged?.(next);}}
+      recipe="phone" title="Mobile number" value={value} />;
+  }
+
+  // The phone lane loads on first use, with an inert lane in its place until then; once loaded it renders at once.
+  beforeAll(async () => {
+    render(<Phone />);
+    expect((screen.getByLabelText("Mobile number") as HTMLInputElement).readOnly).toBe(true);
+    await screen.findByRole("button", {name: /Country code/u});
+    cleanup();
+  });
+
+  it("shows the site's dialling code in a chip and reports the number dialling code first", () => {
+    const onChanged = vi.fn();
+    render(<Phone onChanged={onChanged} />);
+    expect(screen.getByRole("button", {name: "Country code: India +91"}).textContent).toContain("+91");
+    fireEvent.change(screen.getByLabelText("Mobile number"), {target: {value: "98765 43210"}});
+    expect(onChanged).toHaveBeenLastCalledWith("+91 98765 43210");
+    expect((screen.getByLabelText("Mobile number") as HTMLInputElement).value).toBe("98765 43210");
+  });
+
+  it("moves the chip to a pasted number's country", () => {
+    const onChanged = vi.fn();
+    render(<Phone onChanged={onChanged} />);
+    fireEvent.change(screen.getByLabelText("Mobile number"), {target: {value: "+61 412 345 678"}});
+    expect(onChanged).toHaveBeenLastCalledWith("+61 412 345 678");
+    expect(screen.getByRole("button", {name: /Australia \+61/u})).toBeTruthy();
+    expect((screen.getByLabelText("Mobile number") as HTMLInputElement).value).toBe("412 345 678");
+  });
+
+  it("says what is wrong only after the reader leaves the box, and clears it once the number is right", () => {
+    render(<Phone />);
+    const box = screen.getByLabelText("Mobile number");
+    fireEvent.change(box, {target: {value: "98765"}});
+    expect(screen.queryByRole("alert")).toBeNull();
+    fireEvent.blur(box);
+    expect(screen.getByRole("alert").textContent).toBe("Too short for India");
+    expect(box.getAttribute("aria-invalid")).toBe("true");
+    fireEvent.change(box, {target: {value: "98765 43210"}});
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("picks another country from the list, from the keyboard", () => {
+    const onChanged = vi.fn();
+    render(<Phone initial="+91 98765 43210" onChanged={onChanged} />);
+    fireEvent.click(screen.getByRole("button", {name: /Country code/u}));
+    const search = screen.getByRole("combobox", {name: "Search countries"});
+    // The site's own country heads the list, ticked.
+    expect(screen.getAllByRole("option")[0].getAttribute("aria-selected")).toBe("true");
+    fireEvent.change(search, {target: {value: "nep"}});
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Nepal+977"]);
+    fireEvent.keyDown(search, {key: "Enter"});
+    expect(onChanged).toHaveBeenLastCalledWith("+977 98765 43210");
+    expect(screen.getByRole("button", {name: "Country code: Nepal +977"})).toBeTruthy();
+  });
+
+  it("finds a country by its dialling code and says when nothing matches", () => {
+    render(<Phone />);
+    fireEvent.click(screen.getByRole("button", {name: /Country code/u}));
+    const search = screen.getByRole("combobox", {name: "Search countries"});
+    fireEvent.change(search, {target: {value: "+44"}});
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toContain("United Kingdom+44");
+    fireEvent.change(search, {target: {value: "zzz"}});
+    expect(screen.getByText("No country matches")).toBeTruthy();
+  });
+
+  it("gives a FormData form the whole number under the field's name", () => {
+    const {container} = render(<CatchField copy={copy} countryCode="IN" initialValue="+91 98765 43210" name="phone"
+      recipe="phone" title="Mobile number" />);
+    expect((container.querySelector("input[type=hidden][name=phone]") as HTMLInputElement).value).toBe("+91 98765 43210");
   });
 });

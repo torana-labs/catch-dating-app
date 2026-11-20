@@ -14,7 +14,7 @@ export const eventOfferCopy = {
   "phoneTitle": "Let’s verify your phone",
   "phoneBody": "Use the number you shared with the host to see your private invitation.",
   "phoneLabel": "Phone number",
-  "phonePlaceholder": "+91 98765 43210",
+  "phonePlaceholder": "98765 43210",
   "sending": "Sending code",
   "send": "Send verification code",
   "otpKicker": "Check your messages",

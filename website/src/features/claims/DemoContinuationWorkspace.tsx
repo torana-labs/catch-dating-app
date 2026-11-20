@@ -22,6 +22,7 @@ import {salesDemoFormEditorUrl} from "../../shared/domain/salesDemoHandoff";
 import {useDemoContinuationController} from "./useDemoContinuationController";
 import {catchPhoneE164} from "@catch/web-ui/phone";
 import {activePhoneCountry} from "@content/markets";
+import {phoneFieldCopy} from "@content/phoneField";
 
 const continuationApi: SalesDemoContinuationApi = {
   get: (input) => invokeSalesDemoCallable("getSalesDemoContinuation", input),
@@ -65,13 +66,14 @@ function ContinuationWorkspace({continuationId, api, auth}: {
     <Button disabled={signingIn} onClick={() => void signIn()}>
       {c.viewer ? continuationCopy.verifyGoogle : continuationCopy.continueGoogle}</Button>
     <CatchField
-      recipe="input"
+      recipe="phone"
+      copy={phoneFieldCopy}
+      countryCode={activePhoneCountry}
       id="continuation-login-phone"
       title={continuationCopy.invitedPhone}
       value={phone}
       inputMode={signingIn || Boolean(challenge) ? "inactive" : "editable"}
       onChanged={(value) => setPhone(value)}
-      keyboardType="phone"
     />
     <div id="continuation-recaptcha" />
     {challenge ? <CatchField

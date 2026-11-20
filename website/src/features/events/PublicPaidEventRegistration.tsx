@@ -33,6 +33,8 @@ import { EventSmsPreferencePanel } from "../eventMessaging/EventSmsPreferencePan
 import { EventRcsPreferencesPanel } from "../eventMessaging/EventRcsPreferencesPanel";
 import { EventWhatsappPreferencesPanel } from "../eventMessaging/EventWhatsappPreferencesPanel";
 import {checkoutPlaces, MAX_CHECKOUT_PLACES, type CheckoutPlaceFields} from "./checkoutPlaces";
+import {phoneFieldCopy} from "@content/phoneField";
+import {activePhoneCountry} from "@content/markets";
 const noop = () => undefined;
 const money = (amount: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
@@ -178,15 +180,15 @@ export function PublicPaidRegistrationView(c: CheckoutView) {
           <CatchStack gap={12}>
             {phase === "phone" ? (
               <CatchField
-                recipe="input"
+                recipe="phone"
                 id={`${c.recaptchaId}-phone`}
                 title={text.phoneLabel}
-                autoComplete="tel"
+                copy={phoneFieldCopy}
+                countryCode={activePhoneCountry}
                 helperText={eventPageCopy.booking.phoneNote}
                 inputHint={text.phonePlaceholder}
                 value={c.phone}
-                onChanged={(value) => c.setPhone(value.replace(/\s/gu, ""))}
-                keyboardType="phone"
+                onChanged={c.setPhone}
               />
             ) : (
               <>

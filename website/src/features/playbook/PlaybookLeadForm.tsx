@@ -1,13 +1,14 @@
 import {CatchButton, CatchField, CatchGroundCard, CatchStack, CatchText} from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {interpolateContent as fill} from "@content/interpolate";
-import {activeMarket} from "@content/markets";
 import {playbookCopy} from "../../content/playbook/playbookCopy";
 import type {PlaybookLeadForm as PlaybookLeadFormContent} from "../../content/playbook/playbookContract";
 import {Form} from "../../shared/ui/primitives";
 import {playbookSendableLeadKind, type PlaybookLeadField, type PlaybookSendableLeadKind} from "./playbookLeadModel";
 import {usePlaybookLeadFormController} from "./usePlaybookLeadFormController";
 import type {PlaybookLeadFormProps} from "./usePlaybookPageController";
+import {phoneFieldCopy} from "@content/phoneField";
+import {activePhoneCountry} from "@content/markets";
 
 /** The consent line under the button, naming the button, with the privacy policy beside it. */
 function ConsentLine({action}: {action: string}) {
@@ -36,8 +37,8 @@ function PlaybookLeadForm({form, kind, leadIn}: {form: PlaybookLeadFormContent; 
   const card = fields.length > 0;
   const inputMode = lead.submitting ? "inactive" : "editable";
   const phone = (
-    <CatchField autoComplete="tel-national" errorText={lead.problem("phone")} inputHint={card ? undefined : form.label} inputMode={inputMode} keyboardType="phone"
-      labelMode={card ? "visible" : "hidden"} onChanged={lead.set("phone")} prefixText={activeMarket.dialCode} recipe="input" required
+    <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={lead.problem("phone")} inputHint={card ? undefined : form.label}
+      inputMode={inputMode} labelMode={card ? "visible" : "hidden"} onChanged={lead.set("phone")} recipe="phone" required
       title={form.label} value={lead.answers.phone ?? ""} />
   );
   const button = (

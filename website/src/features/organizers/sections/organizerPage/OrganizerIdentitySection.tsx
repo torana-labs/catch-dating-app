@@ -13,6 +13,8 @@ import {
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
 import {renderAccountForm} from "../../../account/accountForm";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
+import {phoneFieldCopy} from "@content/phoneField";
+import {activePhoneCountry} from "@content/markets";
 
 /**
  * The hero across the content width (owner-approved layout, 17 Nov 2026):
@@ -131,15 +133,14 @@ function OrganizerFollowSheet({error, name, phone}: {error: string; name: string
       {phone.step === "phone" ? (
         <CatchStack gap={12}>
         <CatchField
-          autoComplete="tel-national"
+          copy={phoneFieldCopy}
+          countryCode={activePhoneCountry}
           errorText={error || null}
           inputHint={sheet.phonePlaceholder}
           inputMode={phone.pending ? "inactive" : "editable"}
-          keyboardType="phone"
           onChanged={phone.setNumber}
           onSubmitted={phone.sendCode}
-          prefixText="+91"
-          recipe="input"
+          recipe="phone"
           title={sheet.phoneLabel}
           value={phone.number}
         />

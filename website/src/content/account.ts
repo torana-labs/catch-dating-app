@@ -44,7 +44,7 @@ export const signInCopy = {
   codeSent: "We sent a code to {phone}. Enter it to sign in.",
   noPasswords: "No passwords. We text you a code.",
   signedIn: "You are signed in.",
-  invalidPhone: "Enter your phone number with country code, like +91 98765 43210.",
+  invalidPhone: "Enter a valid mobile number.",
   invalidCode: "Enter the six-digit code.",
   incorrectCode: "That code is incorrect. Try again.",
   expired: "That code expired. Request a new one.",

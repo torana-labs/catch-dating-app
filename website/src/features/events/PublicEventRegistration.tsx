@@ -10,6 +10,8 @@ import {eventDetailCopy} from "../../content/events";
 import {usePendingRequestNavigationBlocked} from "../../shared/pendingRequest";
 import {Form} from "../../shared/ui/primitives";
 import {eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
+import {phoneFieldCopy} from "@content/phoneField";
+import {activePhoneCountry} from "@content/markets";
 
 const noop = () => undefined;
 
@@ -56,15 +58,15 @@ function FreeEventRegistration({
           value={displayName}
         />
         <CatchField
-          recipe="input"
-          autoComplete="tel"
+          recipe="phone"
+          copy={phoneFieldCopy}
+          countryCode={activePhoneCountry}
           inputMode={verified || pending || stage !== "details" ? "inactive" : "editable"}
           id={`${reactId}-event-registration-phone`}
           title={copy.phoneLabel}
           onChanged={(value) => setPhoneNumber(value)}
           inputHint={copy.phonePlaceholder}
           value={phoneNumber}
-          keyboardType="phone"
         />
         <CatchCheckboxInput label={copy.whatsappConsent} value={whatsappUpdates}
           onChanged={pending || stage !== "details" ? null : setWhatsappUpdates} />

@@ -334,3 +334,51 @@
   font-weight: var(--catch-typography-web-field-label-weight);
   line-height: var(--catch-typography-web-field-label-line-height);
 }
+
+/*
+ * The phone recipe's chip: the dialling code in a grey pill inside the box,
+ * with a chevron that says it opens. It keeps the value's size, so the box is
+ * the same height as any other field.
+ */
+.field .affixLane[data-phone] {
+  align-items: center;
+}
+
+.field .phoneChip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--catch-space-micro2);
+  margin: 0;
+  padding: 0 var(--catch-space-micro6) 0 var(--catch-space-s2);
+  border: 0;
+  border-radius: var(--catch-radius-xs);
+  background: var(--catch-theme-tile);
+  color: var(--catch-theme-ink);
+  font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--catch-typography-web-field-value-size);
+  font-weight: var(--catch-typography-web-field-value-weight);
+  line-height: var(--catch-typography-web-field-value-line-height);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.field .phoneChip:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-opacity-control-overlay-hover) * 100%), var(--catch-theme-tile));
+}
+
+.field .phoneChip:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-primary);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.field .phoneChip:disabled {
+  cursor: default;
+}
+
+.field .phoneChip > :last-child {
+  color: var(--catch-theme-ink2);
+}

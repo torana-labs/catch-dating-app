@@ -42,7 +42,7 @@ export const eventDetailCopy = {
       nameLabel: "Your name",
       namePlaceholder: "Name for the event roster",
       phoneLabel: "Mobile number",
-      phonePlaceholder: "+91 98765 43210",
+      phonePlaceholder: "98765 43210",
       codeLabel: "6-digit OTP",
       codePlaceholder: "123456",
       sendCodeAction: "Send OTP",

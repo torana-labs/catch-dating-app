@@ -80,6 +80,8 @@ const answerLeads = (answer: "accepted" | "failed") => () => {
 
 async function sendGuide(canvasElement: HTMLElement) {
   const form = within(within(canvasElement).getByRole("form", {name: guideForm.submitLabel}));
+  // The phone lane loads on first use; type once its country chip is there.
+  await form.findByRole("button", {name: /Country code/u});
   await userEvent.type(form.getByRole("textbox", {name: new RegExp(guideForm.label, "u")}), "98765 43210");
   await userEvent.click(form.getByRole("button", {name: guideForm.submitLabel}));
 }
@@ -157,6 +159,7 @@ export const WalkthroughSent1280: Story = {
     for (const [index, field] of (walkthroughForm.fields ?? []).entries()) {
       await userEvent.type(form.getByRole("textbox", {name: new RegExp(field.label, "u")}), answers[index]);
     }
+    await form.findByRole("button", {name: /Country code/u});
     await userEvent.type(form.getByRole("textbox", {name: new RegExp(walkthroughForm.label, "u")}), "98765 43210");
     await userEvent.click(form.getByRole("button", {name: walkthroughForm.submitLabel}));
     await expect(await within(canvasElement).findByText(playbookCopy.leadForm.sent.walkthrough)).toBeInTheDocument();

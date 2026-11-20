@@ -4,6 +4,8 @@ import {accountCopy} from "../../content/account";
 import {Form} from "../../shared/ui/primitives";
 import type {WebsiteAccountController} from "./useWebsiteAccountController";
 import {SignInButton} from "./SignInSheet";
+import {phoneFieldCopy} from "@content/phoneField";
+import {activePhoneCountry} from "@content/markets";
 
 const noop = () => undefined;
 
@@ -29,14 +31,14 @@ export function renderAccountForm(account: WebsiteAccountController, {askBirthDa
         inputMode={account.pending || account.stage === "code" ? "inactive" : "editable"}
       />
       <CatchField
-        recipe="input"
+        recipe="phone"
         id={`${account.id}-phone`}
-        autoComplete="tel"
+        copy={phoneFieldCopy}
+        countryCode={activePhoneCountry}
         title={accountCopy.phone}
         value={account.phoneNumber}
         onChanged={(value) => account.setPhoneNumber(value)}
         inputMode={account.verified || account.pending || account.stage === "code" ? "inactive" : "editable"}
-        keyboardType="phone"
       />
       {!account.account?.dateOfBirth && (account.ageRequired ||
         (askBirthDate && optionalAccountFields.includes("dateOfBirth"))) ? <CatchField

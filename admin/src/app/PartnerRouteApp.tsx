@@ -17,6 +17,7 @@ import {
 } from "../shared/ui/AdminPrimitives";
 import {AdminFeatureLoadingState} from "./AdminLoadingState";
 import {catchPhoneE164} from "@catch/web-ui/phone";
+import {adminPhoneFieldCopy} from "../shared/ui/phoneFieldCopy";
 const PartnerWorkspaceScreen = lazy(() => import("../features/partners/ui/PartnerWorkspaceScreen")
   .then((m) => ({default: m.PartnerWorkspaceScreen})));
 
@@ -62,10 +63,10 @@ function PartnerSignIn({error: sessionError}: {error: string | null}) {
       }
       void run(async () => {await confirmPhoneSignInCode(value);});
     } else {
-      // A number without a dialling code is read as Indian; the hint shows +91.
+      // The field reports the number with its country's dialling code.
       const value = catchPhoneE164(phone, "IN");
       if (!value) {
-        setError("Enter a valid phone number with country code, such as +91 90000 00000."); return;
+        setError("Enter a valid mobile number."); return;
       }
       void run(async () => {
         await requestPhoneSignInCode(value);
@@ -92,15 +93,15 @@ function PartnerSignIn({error: sessionError}: {error: string | null}) {
           keyboardType="number"
         />
       </> : <CatchField
-        recipe="input"
+        recipe="phone"
+        copy={adminPhoneFieldCopy}
+        countryCode="IN"
         title="Phone number"
         name="phone"
-        autoComplete="tel"
-        inputHint="+91 90000 00000"
+        inputHint="90000 00000"
         value={phone}
         onChanged={setPhone}
         inputMode={pending ? "inactive" : "editable"}
-        keyboardType="phone"
       />}
       <AdminSignInActions>
         <AdminButton type="submit" variant="primary" disabled={pending}>

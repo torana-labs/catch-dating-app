@@ -1,5 +1,7 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchField, CatchGap} from "@catch/web-ui";
+import {activePhoneCountry} from "../content/markets";
+import {phoneFieldCopy} from "../content/phoneField";
 import {consumerHomeStoryListings} from "./fixtures/consumerHome";
 import {publicEventListingsContext} from "../features/organizers/usePublicEventListingsController";
 import {MemoryRouter} from "react-router";
@@ -120,11 +122,12 @@ export const EventRuntime: Story = {
         >
           <Form onSubmit={(event) => event.preventDefault()}><CatchGap size="formField">
             <CatchField
-              recipe="input"
+              recipe="phone"
+              copy={phoneFieldCopy}
+              countryCode={activePhoneCountry}
               id="storybook-event-runtime-phone"
               title={eventRuntimeCopy.phoneLabel}
               inputHint={eventRuntimeCopy.phonePlaceholder}
-              keyboardType="phone"
             />
             <Button type="submit">{eventRuntimeCopy.sendCode}</Button>
           </CatchGap></Form>

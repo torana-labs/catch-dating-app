@@ -273,10 +273,16 @@ export type {CatchFactTileEmphasis, CatchFactTileNoteTone, CatchFactTileProps} f
 export {CatchFeatureTile} from "./components/CatchFeatureTile";
 export type {CatchFeatureTileProps} from "./components/CatchFeatureTile";
 export {CatchField} from "./components/CatchField";
+export {CatchFieldCountryList} from "./components/CatchFieldCountryList";
+export type {CatchFieldCountryListProps} from "./components/CatchFieldCountryList";
+// The phone lane CatchField loads on first use; importing it here is for direct use only.
+export {CatchFieldPhone} from "./components/CatchFieldPhone";
+export type {CatchFieldPhoneCopy, CatchFieldPhoneLaneProps} from "./components/CatchFieldPhone";
 export type {
   CatchFieldInputProps,
   CatchFieldKeyboardType,
   CatchFieldLabelTextMode,
+  CatchFieldPhoneProps,
   CatchFieldProps,
   CatchFieldSelectProps,
   CatchFieldSupportRowTone,
