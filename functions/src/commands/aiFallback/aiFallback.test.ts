@@ -30,6 +30,8 @@ const validate = {
   audit: contractValidator("AiFallbackAuditDocument"),
 };
 
+const stamp = (millis: number) => ({_seconds: Math.floor(millis / 1000), _nanoseconds: 0});
+
 function valid(validator: ReturnType<typeof contractValidator>, value: unknown, label: string) {
   assert.equal(validator(value), true, `${label}: ${JSON.stringify(validator.errors)}`);
 }
@@ -51,8 +53,9 @@ function harness(options: {policy?: ReadyAiFallbackPolicy | null; status?: numbe
   const deps: AiFallbackDeps = {
     db: db as unknown as FirebaseFirestore.Firestore,
     now: () => NOW,
-    serverTimestamp: () => NOW.toISOString() as unknown as FirebaseFirestore.FieldValue,
-    timestampFromMillis: (millis) => new Date(millis).toISOString() as unknown as FirebaseFirestore.Timestamp,
+    // Timestamps in the stored shape the Firestore contracts describe.
+    serverTimestamp: () => stamp(NOW.getTime()) as unknown as FirebaseFirestore.FieldValue,
+    timestampFromMillis: (millis) => stamp(millis) as unknown as FirebaseFirestore.Timestamp,
     policy: async () => options.policy === undefined ? READY : options.policy,
     modules: packagedModelModules,
     accessToken: async () => {

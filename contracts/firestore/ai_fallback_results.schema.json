@@ -15,7 +15,7 @@
     "cacheKey": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "task": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,99}$"},
     "recordJson": {"type": "string", "maxLength": 300000},
-    "createdAt": {"type": "string", "format": "date-time"},
-    "expiresAt": {"type": "string", "format": "date-time"}
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-firestore-ttl": true}
   }
 }

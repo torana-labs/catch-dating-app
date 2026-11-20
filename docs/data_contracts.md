@@ -5534,9 +5534,15 @@ shapes for files, never a guest's details.
 - `aiFallbackAudit/{auditId}` records each paid, failed or refused read: the
   command, task, outcome, tokens and cost only.
 
-All four are server-only. `expiresAt` on reader days and cached reads is for
-Firestore TTL policies. `guests.import-list` answers `aiRead` and
-`reviewFields` (the columns the model chose) so the host checks them.
+All four are server-only. `expiresAt` (a Firestore timestamp) drives the
+TTL policies on `aiFallbackUsage` (reader days after seven days; month
+documents carry no `expiresAt` and stay as the spend record) and
+`aiFallbackResults` (30 days), declared in `firestore.indexes.json`
+`fieldOverrides` and deployed with the Firestore indexes. Audit rows have no
+TTL. `guests.import-list` and `sales.import-past` answer `aiRead` and
+`reviewFields` (the columns the model chose; past sales may also choose the
+amount, currency and city columns) so the host checks them. Both fields are
+optional: absent means false.
 
 ### Organizer Application Intake
 

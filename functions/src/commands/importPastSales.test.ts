@@ -39,7 +39,7 @@ const SALES_CSV = "Name,Phone,Ticket Type,Amount,Currency,Status\n" +
 
 const PLAIN_CSV = "Name,Phone\nAsha Sample,98765 43210\nRavi Sample,98765 43211\n";
 
-function harness(options: {terms?: boolean} = {}) {
+function harness(options: {terms?: boolean; mappingProvider?: ImportPastSalesDeps["mappingProvider"]} = {}) {
   const db = new FakeFirestore();
   if (options.terms !== false) {
     for (const [path, value] of Object.entries(commercialTermsRecords())) db.write(path, value);
@@ -71,11 +71,12 @@ function harness(options: {terms?: boolean} = {}) {
       FirebaseFirestore.Timestamp,
     checkRateLimit: (async () => undefined) as never,
     intake: () => intake,
+    mappingProvider: options.mappingProvider ?? (() => null),
   };
   return {db, deps, imports};
 }
 
-async function withWorkspace(options: {terms?: boolean} = {}) {
+async function withWorkspace(options: Parameters<typeof harness>[0] = {}) {
   const h = harness(options);
   await ensureTryItWorkspaceHandler(call({mode: "apply", idempotencyKey: "workspace-request-01", surface: "website",
     input: {organizerName: "Sunrise Social Club", marketId: "in-mh-mumbai"}}), {
@@ -194,6 +195,68 @@ test("unknown columns ask for a mapping", async () => {
   assert.equal(response.status, "needs_input");
   assert.equal(response.result.needsMapping, true);
   assert.deepEqual(response.result.headers, ["Attendee", "Contact"]);
+});
+
+// An export no converter reads: "Attendee" is not a name header it knows.
+const UNKNOWN_CSV = "Attendee,Contact,Paid,Cur\nAsha Sample,9876543210,800,INR\nRavi Sample,9876543211,1200,INR\n";
+
+test("the AI fallback is off by default: unknown columns still ask for a mapping", async () => {
+  const {deps} = await withWorkspace();
+  const response = await importPastSalesHandler(call(envelope("preview", UNKNOWN_CSV)), deps);
+  assert.equal(response.result.needsMapping, true);
+  assert.equal(response.result.aiRead, false);
+  assert.deepEqual(response.result.reviewFields, []);
+});
+
+test("with the AI fallback on, it maps an unknown export from headers and shapes, for the host to check", async () => {
+  const seen: Array<{headers: string[]; sampleRows: string[][]}> = [];
+  const {deps} = await withWorkspace({mappingProvider: () => ({
+    async propose(input) {
+      seen.push(input);
+      return {mapping: {displayName: 0, phone: 1, revenueAmount: 2, revenueCurrency: 3}, confidence: 0.9};
+    },
+  })});
+  const response = await importPastSalesHandler(call(envelope("preview", UNKNOWN_CSV)), deps);
+  valid(validate.response, response, "ai read");
+  assert.equal(response.status, "previewed");
+  assert.equal(response.result.needsMapping, false);
+  assert.equal(response.result.aiRead, true);
+  assert.deepEqual([...(response.result.reviewFields ?? [])].sort(),
+    ["displayName", "phone", "revenueAmount", "revenueCurrency"]);
+  assert.ok(response.result.report);
+  // Headers and one row of shapes reach the model, never a cell value.
+  assert.deepEqual(seen[0].headers, ["Attendee", "Contact", "Paid", "Cur"]);
+  assert.equal(seen[0].sampleRows.length, 1);
+  assert.ok(!JSON.stringify(seen).includes("Asha"));
+  assert.ok(!JSON.stringify(seen).includes("98765"));
+});
+
+test("a host's own mapping is never sent to the AI fallback", async () => {
+  let calls = 0;
+  const {deps} = await withWorkspace({mappingProvider: () => ({
+    async propose() {
+      calls += 1;
+      return {mapping: {displayName: 0}, confidence: 0.9};
+    },
+  })});
+  const response = await importPastSalesHandler(call(envelope("preview", UNKNOWN_CSV,
+    {mapping: {displayName: 0, phone: 1, revenueAmount: 2, revenueCurrency: 3}})), deps);
+  assert.equal(response.status, "previewed");
+  assert.equal(response.result.aiRead, false);
+  assert.equal(calls, 0);
+});
+
+test("a refused or unusable AI read falls back to the host mapping the columns", async () => {
+  const {deps} = await withWorkspace({mappingProvider: () => ({
+    async propose() {
+      throw new Error("ai_cap_reached");
+    },
+  })});
+  const response = await importPastSalesHandler(call(envelope("preview", UNKNOWN_CSV)), deps);
+  valid(validate.response, response, "ai refused");
+  assert.equal(response.status, "needs_input");
+  assert.equal(response.result.needsMapping, true);
+  assert.equal(response.result.aiRead, false);
 });
 
 test("apply saves a private past draft with its guests and a receipt; a replay returns it", async () => {
