@@ -108,7 +108,7 @@ export const tryItCopy = {
     },
     event: {
       title: "Build your event from a link",
-      placeholder: "lu.ma/sundaysupper",
+      placeholder: "tickets.example/sunday-supper",
       confirm: "Make my draft event",
       draft: {
         title: "Your draft event",
@@ -120,7 +120,7 @@ export const tryItCopy = {
     },
     kit: {
       title: "Make your tracked links",
-      placeholder: "lu.ma/sunday-social",
+      placeholder: "tickets.example/sunday-social",
       channels: "Where you promote it",
       channelsPlaceholder: "Instagram, run club WhatsApp, Kabir, Brindle Café",
       channelsHint: "Up to 8, separated by commas.",

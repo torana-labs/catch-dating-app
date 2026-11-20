@@ -15,6 +15,7 @@ export const resourcesPlaybookPages: PlaybookPageIndex = {
   about: {file: "about.json", load: () => import("./about.json")},
   app_notify: {file: "app.json", load: () => import("./app.json")},
   tools_no_show_calculator: {file: "tools-no-show-calculator.json", load: () => import("./tools-no-show-calculator.json")},
+  tools_event_page_from_link: {file: "tools-event-page-from-link.json", load: () => import("./tools-event-page-from-link.json")},
   playbooks: {file: "playbooks.json", load: () => import("./playbooks.json")},
   "playbook_guide/run-club": {file: "playbook-run-club.json", load: () => import("./playbook-run-club.json")},
   "playbook_guide/supper-club": {file: "playbook-supper-club.json", load: () => import("./playbook-supper-club.json")},

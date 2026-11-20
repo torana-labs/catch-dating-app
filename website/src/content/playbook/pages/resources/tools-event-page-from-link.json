@@ -1,0 +1,114 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "tools_event_page_from_link",
+  "route": "tools_event_page_from_link",
+  "meta": {
+    "title": "Event page from a link | {{brand.stores.hostAppName}}",
+    "description": "Paste a link to an event you’ve already listed. {{brand.name}} reads its name, date and start time and makes a private draft event in your city, ready to finish and publish in {{brand.stores.hostAppName}}.",
+    "socialDescription": "Your next event, from a link you already have.",
+    "noindex": false
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        }
+      ],
+      "current": "Event page from a link"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "indigo",
+      "kicker": "Event page from a link",
+      "title": "Bring an event you’ve already listed to {{brand.name}}.",
+      "lead": "Paste the link. {{brand.name}} reads the event’s name, date and start time and makes a private draft in your city. Finish it and publish it in {{brand.stores.hostAppName}} when you’re ready.",
+      "actions": [
+        {
+          "label": "Paste a link",
+          "to": {
+            "anchor": "try"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "What it does",
+          "to": {
+            "anchor": "what-it-does"
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    },
+    {
+      "type": "split",
+      "id": "try",
+      "ground": "paper",
+      "kicker": "Try it",
+      "title": "Paste a link to an event.",
+      "lead": "A ticketing page, your website or a social post, with one event or several. Confirm your phone number with a code first, so the draft is yours.",
+      "ticks": [
+        "The event’s name, date and start time, read from your link",
+        "A page with several events? Choose the one to bring over",
+        "A private draft in your city: no one can see or book it",
+        "Waiting in {{brand.stores.hostAppName}} when you sign in with the same phone number"
+      ],
+      "leadForm": {
+        "id": "try_event",
+        "requestKind": "tool",
+        "input": "url",
+        "label": "Link to an event",
+        "submitLabel": "Build my event page",
+        "note": "Private until you claim it. Takes about a minute."
+      }
+    },
+    {
+      "type": "checklist",
+      "id": "what-it-does",
+      "ground": "white",
+      "kicker": "What it does",
+      "title": "What it does, and what it leaves to you.",
+      "items": [
+        {
+          "title": "Reads the basics",
+          "body": "The event’s name, date and start time, from the page you paste."
+        },
+        {
+          "title": "Asks when there’s a choice",
+          "body": "A page that lists several upcoming events shows them, and you choose one."
+        },
+        {
+          "title": "Keeps it private",
+          "body": "The draft sits in your profile. No one can see it, book it or get a message about it."
+        },
+        {
+          "title": "Leaves the rest to you",
+          "body": "The venue, tickets and who can book are yours to set in {{brand.stores.hostAppName}} before you publish."
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "indigo",
+      "kicker": "Then finish it",
+      "title": "Your draft waits in {{brand.stores.hostAppName}}.",
+      "lead": "Sign in with the phone number you confirmed here. Add the details and publish when you’re ready.",
+      "storeBadges": "host",
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
+    }
+  ]
+}

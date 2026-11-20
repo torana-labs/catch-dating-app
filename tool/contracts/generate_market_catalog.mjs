@@ -123,7 +123,9 @@ const titleCase = (slug) => slug.split("-")
 /**
  * Cities the public website lists (websiteListed), in catalog order. Aliases
  * are the human spellings listings use ("New Delhi", "Bangalore");
- * legacySlugs are the website's retired path slugs, which redirect.
+ * legacySlugs are the website's retired path slugs, which redirect;
+ * hostCreatable is whether an organiser can be created there (the try-it
+ * tools' city picker).
  */
 export function websiteCitiesFromCatalog(catalog) {
   return catalog.cities.filter((city) => city.surfaces.websiteListed)
@@ -142,6 +144,7 @@ export function websiteCitiesFromCatalog(catalog) {
         legacySlugs,
         timezone: city.timeZone,
         status: city.lifecycle,
+        hostCreatable: city.surfaces.hostCreatable,
         ...(city.launchDate === undefined ? {} : {launchDate: city.launchDate}),
         countryIsoCode: city.countryIsoCode,
         latitude: city.latitude,

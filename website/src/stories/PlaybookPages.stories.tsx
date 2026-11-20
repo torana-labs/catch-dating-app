@@ -23,6 +23,7 @@ import playbookRunClub from "@content/playbook/pages/resources/playbook-run-club
 import playbooks from "@content/playbook/pages/resources/playbooks.json";
 import stories from "@content/playbook/pages/resources/stories.json";
 import noShowCalculator from "@content/playbook/pages/resources/tools-no-show-calculator.json";
+import eventPageFromLink from "@content/playbook/pages/resources/tools-event-page-from-link.json";
 import {playbookCopy} from "@content/playbook/playbookCopy";
 import {livePlaybookPage, validatedPlaybookPage, type PlaybookPageDocument} from "@content/playbook/playbookContract";
 import {hostFeeCalculatorCopy} from "@content/pricing";
@@ -260,7 +261,7 @@ export const ProductYourPage390: Story = {
   render: () => <PlaybookAt page={yourPagePage} width={390} />,
 };
 
-/** The ProductBookings board's live bands: ways in, a balanced room, memberships and the checkout. */
+/** The ProductBookings board's live bands: ways in, a balanced room, memberships, the checkout and the event tool. */
 export const ProductBookings: Story = {
   name: "/product/bookings-and-memberships/ · 1280",
   parameters: {
@@ -277,7 +278,7 @@ export const ProductBookings390: Story = {
   render: () => <PlaybookAt page={bookingsPage} width={390} />,
 };
 
-/** The ProductGrowth board's live bands: four ways to reach people, tracked links, invite links, messages and WhatsApp campaigns. */
+/** The ProductGrowth board's live bands: four ways to reach people, tracked links, invite links, messages, WhatsApp campaigns and the kit tool. */
 export const ProductMessages: Story = {
   name: "/product/messages-and-growth/ · 1280",
   parameters: {
@@ -382,6 +383,7 @@ export const ProductForms390: Story = {
 // Resources: the no-show calculator, the host playbooks, the guest app page, and the shelved stories pages with fictional fixtures.
 // The pages as the renderer gets them: validated, with their brand tokens resolved.
 const calculatorPage = applyBrand(validatedPlaybookPage(noShowCalculator));
+const eventPageFromLinkPage = applyBrand(validatedPlaybookPage(eventPageFromLink));
 const playbooksPage = applyBrand(validatedPlaybookPage(playbooks));
 const runClubGuidePage = applyBrand(validatedPlaybookPage(playbookRunClub));
 const appPage = applyBrand(validatedPlaybookPage(app));
@@ -406,6 +408,24 @@ export const NoShowCalculatorPage390: Story = {
   name: "/tools/no-show-calculator/ · 390",
   parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["tools_no_show_calculator"], states: ["no-show-calculator"]}},
   render: () => <PlaybookAt page={calculatorPage} width={390} />,
+};
+
+/** The PlaybookLinkTool board: the hero, the event tool in its try band, what it does and the closing band with the Host app's badges. */
+export const EventPageFromLinkPage: Story = {
+  name: "/tools/event-page-from-link/ · 1280",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["tools_event_page_from_link"], states: ["event-page-from-link"]}},
+  render: () => <PlaybookAt page={eventPageFromLinkPage} width={1280} />,
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("heading", {level: 1})).toBeInTheDocument();
+    await expect(canvas.getByRole("button", {name: "Build my event page"})).toBeInTheDocument();
+  },
+};
+/** The phone board: the try band's tool card stacks under its ticks. */
+export const EventPageFromLinkPage390: Story = {
+  name: "/tools/event-page-from-link/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["tools_event_page_from_link"], states: ["event-page-from-link"]}},
+  render: () => <PlaybookAt page={eventPageFromLinkPage} width={390} />,
 };
 
 /** The PlaybookPlaybooks board without its readership card and city band: the intro and one tile per guide. */

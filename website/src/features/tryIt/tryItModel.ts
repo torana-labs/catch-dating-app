@@ -29,13 +29,13 @@ export const websiteReadyTryItCommands = [
 /**
  * The tool each playbook page's tool forms open, by page content key. A
  * `tool` lead form on a page not listed here draws nothing. The event tool
- * also serves the standalone /tools/event-page-from-link/ page once it is
- * written (`tools_event_page_from_link: "event"`).
+ * also serves the standalone /tools/event-page-from-link/ page.
  */
 export const playbookTryItTools: Readonly<Record<string, TryItToolKind>> = {
   product_your_page: "organizer",
   product_bookings: "event",
   product_messages: "kit",
+  tools_event_page_from_link: "event",
 };
 
 /** The tool a page's tool forms open, or null when the page has none or its command is not website-ready. */
@@ -76,9 +76,13 @@ export function tryItLink(typed: string, tool: TryItToolKind): string | null {
   return href.length >= 8 && href.length <= 2000 ? href : null;
 }
 
-/** The cities a try-it profile can start in: the live market cities, where organisers can be created. */
+/**
+ * The cities a try-it profile can start in: those where an organiser can be
+ * created (the catalog's surfaces.hostCreatable), which workspace.ensure
+ * checks again.
+ */
 export function tryItCities(): readonly MarketCity[] {
-  return websiteCities.filter((city) => city.status === "live");
+  return websiteCities.filter((city) => city.hostCreatable);
 }
 
 export type TryItKitLink = TryItInput<"promotion.create-kit">["links"][number];

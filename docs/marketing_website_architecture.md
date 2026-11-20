@@ -158,10 +158,10 @@ canvas guest bar's "New to Mumbai") when it renders (`cityDiscoveryLinks`
 in `features/discovery/discoveryModel.ts`). For hosts on guest pages stays a
 plain link to `/host/`, the canvas's quiet link. Links name only routes in
 `design/website/routes.json`. `/playbooks/` and
-`/tools/no-show-calculator/` are in the host footer's Resources column; the
-bar's Resources stays Help alone until the canvas's Resources menu is built.
-The other agreed future paths (`/refer/`, `/stories/`, `/compare/`,
-`/tools/event-page-from-link/`) join the host footer when the pages ship.
+`/tools/no-show-calculator/` and `/tools/event-page-from-link/` are in the
+host footer's Resources column; the bar's Resources stays Help alone until the
+canvas's Resources menu is built. The other agreed future paths
+(`/stories/`, `/compare/`) join the host footer when the pages ship.
 Every "Get the app" link off the homepage (`guestAppHref`, the guest header's
 action, the guest footer's Explore link, the city and event chrome) goes to
 `/app/`; the homepage's own header and dock keep their in-page `#app` band.
@@ -323,6 +323,28 @@ that uses a section or option no kit component draws yet
   approval (decision 20: three real stories). Fictional stories and a
   sample story page live in `website/src/stories/fixtures/hostStories.ts`
   for Storybook and tests only.
+- **Try-it tools.** A `tool` lead form (`requestKind: "tool"`, `input: "url"`)
+  draws its page's try-it tool (`features/tryIt`): `playbookTryItTools` in
+  `tryItModel.ts` names the tool for each page content key, and the tool
+  draws only while its command is in `websiteReadyTryItCommands`. Every tool
+  runs the command layer's order: the link; a phone-verified Firebase user
+  with App Check (surface `website`), asked for a brand name and a city only
+  when they have no private profile yet; `workspace.ensure`; then the tool's
+  command, previewed and applied with the same idempotency key and the
+  preview's hash. The city picker offers the catalog cities where an
+  organiser can be created (`surfaces.hostCreatable`, carried into the
+  website's generated market catalog), which `workspace.ensure` checks
+  again. Live now: Your page (`organizer.import-from-link`, a private
+  organiser draft to claim), Bookings and memberships and
+  `/tools/event-page-from-link/` (`event.import-from-link`, a private draft
+  event with its name, date, start time and city) and Messages and growth
+  (`promotion.create-kit`, a tracked `/invite/` link and QR code per place or
+  person; it imports the event first, or uses the draft this tab made). Each
+  result waits in the Host app for the same phone number, and nothing is
+  published or sent. A page's try band, hero button and closing tool form go
+  live together: its sections flip to `built`, its old closing band gives
+  way to the tool's (renamed `start`), and `playbookPages.test.ts` lists it
+  in `liveTryItPages`. The other product pages' try bands stay `tryIt`.
 - **Links and forms.** `usePlaybookPageController.ts` turns destinations into
   links and tags every action for analytics. Links to `/host/start/` and
   `/pricing/` land on the host landing's bands through `playbookRouteAliases`

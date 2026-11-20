@@ -89,6 +89,7 @@ const aboutLink = {href: "/about/", label: "About"} as const;
 const safetyLink = {href: "/safety/", label: "Safety"} as const;
 /** The free host tools and guides under Resources (the canvas's Resources menu and footer column). */
 const noShowCalculatorLink = {href: "/tools/no-show-calculator/", label: "No-show calculator"} as const;
+const eventPageFromLinkLink = {href: "/tools/event-page-from-link/", label: "Event page from a link"} as const;
 const hostPlaybooksLink = {href: "/playbooks/", label: "Host playbooks"} as const;
 
 /**
@@ -144,8 +145,9 @@ export const publicSiteCopy = {
  * hides it. Link only pages that exist in design/website/routes.json:
  * Resources is Help alone, a plain link; the canvas's Resources menu (host
  * stories, host playbooks, compare, the no-show calculator and the event
- * page from a link) is a separate change to the bar. The playbooks and the
- * calculator are in the host footer's Resources column meanwhile.
+ * page from a link) is a separate change to the bar. The playbooks, the
+ * calculator and the event page from a link are in the host footer's
+ * Resources column meanwhile.
  */
 export const siteHeaderCopy = {
   /** The breadcrumb row's accessible name. */
@@ -244,9 +246,9 @@ export const siteFooterCopy = {
    * host columns, as the product pages v2 drew them): the product pages,
    * the organiser type pages, the ways to start, resources and the brand's
    * column with the listing request and the legal links. Resources lists
-   * Forms, the host playbooks, the no-show calculator, the walkthrough,
-   * Refer a host and Help; pages the canvas names that are not built yet
-   * (host stories, compare, event page from a link) join when they ship.
+   * Forms, the host playbooks, the no-show calculator, the event page from a
+   * link, the walkthrough, Refer a host and Help; pages the canvas names that
+   * are not built yet (host stories, compare) join when they ship.
    */
   host: {
     columns: [
@@ -275,7 +277,8 @@ export const siteFooterCopy = {
         {href: programmesHref, label: "Programmes"},
       ]},
       {title: "Resources", links: [
-        productPageLinks.forms, hostPlaybooksLink, noShowCalculatorLink, {href: hostWalkthroughHref, label: "Book a walkthrough"},
+        productPageLinks.forms, hostPlaybooksLink, noShowCalculatorLink, eventPageFromLinkLink,
+        {href: hostWalkthroughHref, label: "Book a walkthrough"},
         {href: referHref, label: "Refer a host"}, helpLink,
       ]},
       {title: brand.name, links: [

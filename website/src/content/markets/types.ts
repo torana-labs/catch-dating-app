@@ -21,6 +21,8 @@ export interface MarketCity {
   readonly legacySlugs: readonly string[];
   readonly timezone: string;
   readonly status: MarketCityStatus;
+  /** Whether an organiser can be created in the city (the catalog's surfaces.hostCreatable). */
+  readonly hostCreatable: boolean;
   /** Planned launch day (YYYY-MM-DD) of a launching city. */
   readonly launchDate?: string;
   readonly countryIsoCode: string;
