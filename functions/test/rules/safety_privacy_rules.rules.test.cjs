@@ -191,6 +191,7 @@ describe("firestore.rules", () => {
         "aiFallbackUsage",
         "aiFallbackResults",
         "aiFallbackAudit",
+        "organizerPhoneLeads",
       ];
       for (const collectionName of collections) {
         await seed([collectionName, "record-1"], {schemaVersion: 1});

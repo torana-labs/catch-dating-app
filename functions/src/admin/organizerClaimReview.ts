@@ -42,6 +42,15 @@ export interface AdminOrganizerClaimRequestDetails
     exists: boolean;
     profileComplete: boolean;
   };
+  /**
+   * Set when the claimer's verified phone matched a phone Catch held for this
+   * organizer (shadow profiles). A hint for review, never proof on its own:
+   * a weak source is often a venue's or a shared line.
+   */
+  phoneMatch: {
+    sources: string[];
+    strength: "strong" | "medium" | "weak";
+  } | null;
   organizer: {
     exists: boolean;
     name: string | null;
@@ -160,6 +169,7 @@ function claimDetails(
       exists: requester !== null,
       profileComplete: requester?.profileComplete === true,
     },
+    phoneMatch: phoneMatchFor(claimRequest),
     organizer: {
       exists: organizer !== null,
       name: stringValue(organizer?.name),
@@ -169,6 +179,18 @@ function claimDetails(
       canonicalPath: stringValue(organizer?.publicPage?.canonicalPath),
     },
   };
+}
+
+function phoneMatchFor(
+  claimRequest: OrganizerClaimRequestDocument
+): AdminOrganizerClaimRequestDetails["phoneMatch"] {
+  const evidence = (claimRequest as {evidence?: unknown}).evidence;
+  if (!isRecord(evidence) || evidence.kind !== "phone_match") return null;
+  const strength = evidence.strength;
+  if (strength !== "strong" && strength !== "medium" && strength !== "weak") {
+    return null;
+  }
+  return {sources: stringArray(evidence.sources), strength};
 }
 
 function isoFromTimestamp(value: unknown): string | null {
