@@ -529,12 +529,13 @@ enter previews.
 | `adminManageFoundingHostOffers` | `src/foundingHosts/adminManageFoundingHostOffers.ts` | Admin Owner reads every city's founding-host offer, or opens one city and sets its cap (50 decided) and optional deadline; rewrites the public counter. |
 | `cleanUpStagedHostPhotosDaily` | `src/events/eventHostPhotoStagingCleanup.ts` | Daily: deletes staged host photo originals (still carrying EXIF) older than 24 hours. |
 | `createProgramAssetUpload` | `src/programs/programAssets.ts` | Signs one private programme file upload (guest ID, hamper photo, function photo, cover). |
+| `createPromotionKit` | `src/commands/createPromotionKit.ts` | Command `promotion.create-kit`: one tracked invite link per channel or promoter for an event the caller manages. |
 | `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
 | `deleteEventHostPhoto` | `src/events/eventHostPhotos.ts` | Removes a shared host photo and its files. |
 | `ensureTryItWorkspace` | `src/commands/ensureTryItWorkspace.ts` | Command `workspace.ensure`: gives a phone-verified caller their one private try-it organizer workspace. |
 | `expireTryItWorkspaces` | `src/commands/workspaceExpiry.ts` | Daily: removes try-it workspaces unused for 30 days, unless kept. |
+| `findClaimableOrganizers` | `src/organizers/phoneLeads/find.ts` | Shadow profiles (off): the "Is this you?" read for Catch Host setup; unclaimed organizers matched to the caller's verified phone, with prefill and missing fields. |
 | `followOrganizerByPhone` | `src/organizers/followOrganizerByPhone.ts` | Not yet described. |
-| `importGuestList` | `src/commands/importGuestList.ts` | Command `guests.import-list`: reads one guest-list file (CSV, XLSX or vCard) on the server with the converter for its format, reviews it through the host roster intake session and saves exactly the reviewed preview. |
 | `getOrganizerOwnerView` | `src/organizerInsights/ownerView.ts` | The website owner view for an organiser's team: role, capabilities, 30 days of organizerInsights, links, about, photos and follower-message usage. |
 | `getProgramAssistantSettings` | `src/programs/programWhatsapp/callables.ts` | Programme assistant settings (defaults when unsaved), the wedding's WhatsApp number and the staff for escalations; managers and coordinators. |
 | `getProgramDeparturesRoster` | `src/transport/programDepartures.ts` | Not yet described. |
@@ -546,11 +547,10 @@ enter previews.
 | `getProgramLiveBoard` | `src/programs/programLiveBoard.ts` | Not yet described. |
 | `getProgramVendorRunSheet` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `getProgramWhatsappThread` | `src/programs/programWhatsapp/callables.ts` | One guest WhatsApp thread with its household and retained messages; marks it read. Managers and communications staff. |
-| `importOrganizerFromLink` | `src/commands/importOrganizerFromLink.ts` | Command `organizer.import-from-link`: fills a try-it workspace from one public link, or routes to an existing listing's claim. |
 | `importEventFromLink` | `src/commands/importEventFromLink.ts` | Command `event.import-from-link`: creates a private draft event in a try-it workspace from one public event page. |
-| `createPromotionKit` | `src/commands/createPromotionKit.ts` | Command `promotion.create-kit`: one tracked invite link per channel or promoter for an event the caller manages. |
 | `importFormFromLink` | `src/commands/importFormFromLink.ts` | Command `form.import-from-link`: creates a private draft form in a try-it workspace from one public Google Form. |
-| `planNight` | `src/commands/planNight.ts` | Command `night.plan`: plans a night (groups, mixing moment, missions, rehearsal setup) and saves it on a try-it draft event. |
+| `importGuestList` | `src/commands/importGuestList.ts` | Command `guests.import-list`: reads one guest-list file (CSV, XLSX or vCard) on the server with the converter for its format, reviews it through the host roster intake session and saves exactly the reviewed preview. |
+| `importOrganizerFromLink` | `src/commands/importOrganizerFromLink.ts` | Command `organizer.import-from-link`: fills a try-it workspace from one public link, or routes to an existing listing's claim. |
 | `importPastSales` | `src/commands/importPastSales.ts` | Command `sales.import-past`: reads one past night's guest or sales export into a sales, attendance and fee comparison report, and saves the night as a private past draft event in the try-it workspace. |
 | `issueProgramWebLink` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `listEventHostPhotos` | `src/events/eventHostPhotos.ts` | Host photos as signed URLs for checked-in guests and the host team. |
@@ -578,13 +578,14 @@ enter previews.
 | `onGuestEventStatusParticipationWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when their Catch booking status changes |
 | `onGuestEventStatusPaymentWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when a website or offer payment changes |
 | `onHostDirectoryOrganizerCreated` | `src/hostReadModels/directoryActivation.ts` | Activates every Host directory read model (contacts, responses, forms, groups, events) for a new organizer |
+| `onInstantDraftPhoneLeads` | `src/organizers/phoneLeads/sync.ts` | Shadow profiles (off): records the phone an instant-draft submitter verified against the drafted organizer, hashed. |
 | `onOrganizerProgramFunctionChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a function's programme when the function changes |
 | `onOrganizerProgramHotelChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a hotel's programme when the hotel changes |
 | `onOrganizerProgramPickupPointChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a pickup point's programme when the point changes |
 | `onOrganizerProgramViewChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites a programme's setup view when its settings, dates, status, branding or retention dates change |
 | `onProgramAccessViewGrantChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites that account's programme access view when a staff grant changes |
-| `onProgramAccessViewProgramChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites the owner's view, and every staff and organizer manager view when the creator or organizer changes, when a programme changes |
 | `onProgramAccessViewOrganizerChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites an account's view of every programme of the organizer when it becomes or stops being an organizer manager |
+| `onProgramAccessViewProgramChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites the owner's view, and every staff and organizer manager view when the creator or organizer changes, when a programme changes |
 | `onProgramAlertLegChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Rewrites a journey's live board alerts and the programme's travel counts when its status changes |
 | `onProgramAlertResolutionChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Merges a taken, finished or deleted alert resolution into its live board alert |
 | `onProgramAlertSendChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Rewrites a live board alert when a staff attention send fires |
@@ -625,7 +626,9 @@ enter previews.
 | `onProgramWhatsappThreadViewProgramChanged` | `src/programs/programWhatsapp/threadViewTriggers.ts` | Rewrites every thread view of a programme when its side labels change |
 | `onProgramWhatsappThreadViewThreadChanged` | `src/programs/programWhatsapp/threadViewTriggers.ts` | Rewrites a thread's inbox view when its message, handling, language or read state changes |
 | `onProgramWorkSummaryChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a programme's work shell header when the programme changes |
+| `onSalesRelationshipPhoneLeads` | `src/organizers/phoneLeads/sync.ts` | Shadow profiles (off): records sales CRM phone endpoints against their organizer, hashed. |
 | `onSavedEventCardCreated` | `src/guestEvents/triggers.ts` | Writes a new saved-event edge's list card from its event |
+| `planNight` | `src/commands/planNight.ts` | Command `night.plan`: plans a night (groups, mixing moment, missions, rehearsal setup) and saves it on a try-it draft event. |
 | `previewProgramAssistantReply` | `src/programs/assistant/preview.ts` | The wedding assistant's Try it: the same policy, fact pack, model and budget as a guest message, nothing sent. |
 | `reconcileFoundingHostPlacesDaily` | `src/foundingHosts/foundingHostTriggers.ts` | Daily 04:25 India time: takes the founding places the trigger missed for organizers that gained an owner in the last three days, still one per owner per city. |
 | `reconcileProgramVendorBill` | `src/programs/vendorBills.ts` | Reviews, checks, questions or approves a vendor bill against recorded trips. |
