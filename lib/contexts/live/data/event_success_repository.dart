@@ -73,7 +73,6 @@ const _preferencesPath = 'eventSuccessPreferences';
 const _wingmanRequestsPath = 'eventSuccessWingmanRequests';
 const _arrivalMissionsPath = 'eventSuccessArrivalMissions';
 const _compatibilityResponsesPath = 'eventSuccessCompatibilityResponses';
-const _scorecardsPath = 'eventSuccessScorecards';
 const _standingsPath = 'eventSuccessStandings';
 const _layoutsPath = 'organizerEventSuccessLayouts';
 const _lateArrivalsPath = 'eventSuccessLateArrivals';

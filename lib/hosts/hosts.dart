@@ -41,5 +41,4 @@ export 'presentation/validators.dart'; // public-api: presentation value/helper 
 export 'presentation/widgets/host_event_check_in_qr_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_organizer_switcher_sheet.dart'; // public-api: shared Host-shell identity component
 export 'presentation/widgets/host_team_management_section.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/participant_table.dart'; // public-api: shared presentation component used outside this feature
 export 'today/host_today_screen.dart'; // public-api: route entry point exposed to app routing

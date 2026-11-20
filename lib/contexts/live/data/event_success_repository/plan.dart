@@ -64,8 +64,7 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
           .call<Object?>(
             SaveEventSuccessPlanSetupCallableRequest(
               eventId: plan.eventId,
-              expectedUpdatedAtMicros:
-                  expectedUpdatedAt.microsecondsSinceEpoch,
+              expectedUpdatedAtMicros: expectedUpdatedAt.microsecondsSinceEpoch,
               setup: eventSuccessPlanSetupFields(plan),
             ).toJson(),
           );
