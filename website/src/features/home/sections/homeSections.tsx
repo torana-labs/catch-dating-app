@@ -555,9 +555,11 @@ export function HomePageSections({captures, downloadUrl, home}: {captures: Captu
   return (
     <>
       <PublicSiteHeader
-        actions={<><CityPicker cities={home.cities} onChoose={home.chooseCity} selected={home.city} /><CatchButton href="#app" label={copy.header.app} size="sm" /></>}
+        actions={<CityPicker cities={home.cities} onChoose={home.chooseCity} selected={home.city} />}
         newToCity={chrome.newToCity}
         whatsOnHref={home.exploreHref}
+        // On phones the site dock carries Get notified, so the header keeps to the city and the menu.
+        wideActions={<CatchButton href="#app" label={copy.header.app} size="sm" />}
       />
       <WebsitePageMain id="top">
         <HomeHero captures={captures} home={home} offerOpen={offerOpen} />

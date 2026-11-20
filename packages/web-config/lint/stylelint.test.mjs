@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
+import postcss from "postcss";
 import stylelint from "stylelint";
 import {reportingOptions, sizeSpacingRules, tokenRules} from "./stylelint.mjs";
 
@@ -126,4 +128,40 @@ test("@catch/web-ui keeps spacing tokens off sizes and radii, and its debt only 
     if (count) found[path.relative(root, file.source).split(path.sep).join("/")] = count;
   }
   assert.deepEqual(found, webUiSizeSpacingDebt);
+});
+
+/**
+ * A hover style applies only where something can hover. On a phone a tap sets
+ * :hover and it stays until the next tap elsewhere, so an ungated hover leaves
+ * a button or card looking pressed after it was used. Every :hover selector in
+ * the web packages sits inside @media (hover: hover); :active and
+ * :focus-visible give touch and keyboard their own feedback.
+ */
+const ungatedHover = (css) => {
+  const found = [];
+  postcss.parse(css).walkRules((rule) => {
+    if (!rule.selector.includes(":hover")) return;
+    for (let parent = rule.parent; parent; parent = parent.parent) {
+      if (parent.type === "atrule" && parent.name === "media" && /\(\s*hover\s*:\s*hover\s*\)/u.test(parent.params)) return;
+    }
+    found.push(rule.selector);
+  });
+  return found;
+};
+
+test("the hover check finds an ungated hover and passes a gated one", () => {
+  assert.deepEqual(ungatedHover(".a:hover { color: red; }"), [".a:hover"]);
+  assert.deepEqual(ungatedHover("@media (hover: hover) { .a:hover { color: red; } }"), []);
+  assert.deepEqual(ungatedHover("@container x (width > 1px) { @media (hover: hover) { .a:hover { color: red; } } }"), []);
+});
+
+test("every hover style in the web packages is gated to devices that hover", () => {
+  const repo = fileURLToPath(new URL("../../../", import.meta.url));
+  const found = [];
+  for (const dir of ["packages/web-ui/src", "website/src", "admin/src"]) {
+    for (const file of fs.globSync("**/*.css", {cwd: path.join(repo, dir)})) {
+      for (const selector of ungatedHover(fs.readFileSync(path.join(repo, dir, file), "utf8"))) found.push(`${dir}/${file}: ${selector}`);
+    }
+  }
+  assert.deepEqual(found, []);
 });

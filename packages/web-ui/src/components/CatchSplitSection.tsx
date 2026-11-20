@@ -1,10 +1,11 @@
 "use client";
 
 import {useId, type HTMLAttributes, type ReactNode} from "react";
-import {catchBandActions, catchBandColor, catchBandKickerAccent, type CatchBandAction, type CatchBandLink} from "./catchBandParts";
+import {catchBandActions, catchBandColor, catchBandKickerAccent, type CatchBandAction} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
 import {CatchBandHeader, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchButton} from "./CatchButton";
+import {CatchIcon} from "./CatchIcon";
 import {CatchMarker} from "./CatchMarker";
 import {CatchMetricTile} from "./CatchMetricTile";
 import {CatchStack} from "./CatchStack";
@@ -23,7 +24,11 @@ export interface CatchSplitSectionGroup {
   title: string;
   marker?: string;
   list: readonly string[];
-  link?: CatchBandLink;
+  /**
+   * Where the group leads. Without `label` the title itself is the link, with
+   * an arrow; give a label only when it says something the title doesn't.
+   */
+  link?: {href: string; label?: string};
 }
 
 /** One item of a checklist: a title and a line under it. */
@@ -149,14 +154,18 @@ export function CatchSplitSection({
             <div className={styles.group} key={`${index}:${group.title}`}>
               <CatchText as={level === 1 ? "h2" : "h3"} className={styles.groupTitle} variant="title-bar">
                 {group.marker ? <span className={styles.marker}>{group.marker}</span> : null}
-                {group.title}
+                {group.link && !group.link.label ? (
+                  <a className={styles.titleLink} href={group.link.href}>
+                    {group.title}<span aria-hidden="true" className={styles.titleArrow}><CatchIcon name="forward" size={18} /></span>
+                  </a>
+                ) : group.title}
               </CatchText>
               <ul className={styles.lines}>
                 {group.list.map((line, position) => (
                   <li key={`${position}:${line}`}><CatchText tone="secondary" variant="body">{line}</CatchText></li>
                 ))}
               </ul>
-              {group.link ? <span className={styles.link}><CatchButton href={group.link.href} label={group.link.label} recipe="text" tone="neutral" /></span> : null}
+              {group.link?.label ? <span className={styles.link}><CatchButton href={group.link.href} label={group.link.label} recipe="text" tone="neutral" /></span> : null}
             </div>
           ))}
         </CatchStack>

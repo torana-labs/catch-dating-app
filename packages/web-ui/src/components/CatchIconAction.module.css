@@ -51,9 +51,15 @@
   backdrop-filter: blur(8px);
 }
 
-.button:hover { background-color: color-mix(in srgb, var(--catch-theme-ink) calc(var(--catch-opacity-hover) * 100%), transparent); }
-.button[data-variant="filled"]:hover { background: var(--catch-theme-primary); opacity: 0.92; }
-.button[data-variant="overlay"]:hover { background: var(--catch-palette-white); }
+@media (hover: hover) {
+  .button:hover { background-color: color-mix(in srgb, var(--catch-theme-ink) calc(var(--catch-opacity-hover) * 100%), transparent); }
+}
+@media (hover: hover) {
+  .button[data-variant="filled"]:hover { background: var(--catch-theme-primary); opacity: 0.92; }
+}
+@media (hover: hover) {
+  .button[data-variant="overlay"]:hover { background: var(--catch-palette-white); }
+}
 .button:active { transform: scale(0.94); }
 
 .button[aria-pressed="true"] {

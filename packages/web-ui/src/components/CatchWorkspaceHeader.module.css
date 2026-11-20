@@ -109,7 +109,9 @@
   cursor: pointer;
 }
 
-.iconButton:hover:not(:disabled) { background: var(--catch-theme-bg); }
+@media (hover: hover) {
+  .iconButton:hover:not(:disabled) { background: var(--catch-theme-bg); }
+}
 .iconButton:disabled { color: var(--catch-theme-ink3); cursor: default; }
 
 .views {

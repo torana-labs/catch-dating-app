@@ -46,8 +46,8 @@
 .table tr[data-pressable] { cursor: pointer; }
 .table tr[data-pressable]:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink); outline-offset: -2px; }
 .table tr[data-checked] td { background: color-mix(in srgb, var(--catch-theme-bg) 60%, transparent); }
-.table tr[aria-selected="true"] td,
-.table tr[data-pressable]:hover td { background: var(--catch-theme-bg); }
+.table tr[aria-selected="true"] td { background: var(--catch-theme-bg); }
+@media (hover: hover) { .table tr[data-pressable]:hover td { background: var(--catch-theme-bg); } }
 
 .check { width: 40px; padding-inline: var(--catch-space-s3) 0 !important; }
 

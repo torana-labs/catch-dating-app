@@ -250,7 +250,7 @@
   .pg .foot{margin:8px 8px 0;border-radius:28px;padding:36px 20px 26px}.pg .foot .cols{columns:2}.pg .foot .top .btns{flex-direction:row;align-items:center}.pg .foot .top .btns .b{width:auto}
   .pg .bigwm{font-size:31cqi;margin-top:40px}.pg .legal{flex-direction:column}
   .pg .note{display:none}
-  .pg .mbar{display:flex;position:sticky;bottom:8px;z-index:20;margin:8px;gap:8px;padding:8px;border-radius:999px;background:#141114;box-shadow:0 16px 40px -12px rgba(0,0,0,.5)}
+  .pg .mbar{display:flex;position:sticky;bottom:8px;z-index:20;margin:8px;gap:8px;padding:8px;border-radius:999px;background:#141114;box-shadow:0 0 0 1px rgba(255,255,255,.14),0 1px 2px rgba(20,17,20,.2)}
   .pg .mbar .b{flex:1;height:44px;border-color:#F07A55;background:#F07A55;color:#141114!important}
   .pg .mbar .b.wab{flex:0 0 auto;width:44px;padding:0;background:#25D366;border-color:#25D366}
 }

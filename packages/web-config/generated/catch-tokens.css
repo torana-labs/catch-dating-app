@@ -497,7 +497,7 @@
   --catch-website-steps-marker-width: 40px;
   --catch-website-section-compact-pad-top: 60px;
   --catch-website-shadow-device: 0 30px 60px -20px rgba(20, 17, 20, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.5);
-  --catch-website-shadow-dock: 0 16px 40px -12px rgba(0, 0, 0, 0.5);
+  --catch-website-shadow-dock: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 1px 2px rgba(20, 17, 20, 0.2);
   --catch-website-shadow-chip: 0 18px 40px -16px rgba(0, 0, 0, 0.45);
   --catch-website-shadow-card-ring: 0 0 0 1px rgba(20, 17, 20, 0.06);
   --catch-website-shadow-chip-ring: 0 0 0 1px rgba(20, 17, 20, 0.1);

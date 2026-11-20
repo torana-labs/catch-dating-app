@@ -33,7 +33,9 @@
 }
 
 .item[aria-current="page"] { color: var(--catch-theme-ink); }
-.item:hover { color: var(--catch-theme-ink); }
+@media (hover: hover) {
+  .item:hover { color: var(--catch-theme-ink); }
+}
 
 .item:focus-visible,
 .primary:focus-visible,

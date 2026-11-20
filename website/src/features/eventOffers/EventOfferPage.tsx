@@ -14,7 +14,6 @@ import {
 } from "@catch/web-ui";
 import {useEffect, useRef, type ReactNode} from "react";
 import {interpolateContent as fill} from "@content/interpolate";
-import {publicSiteCopy, siteFooterLegalLinks} from "@content/site";
 import {
   eventOfferCopy as text,
   eventOfferPageCopy as page,
@@ -23,7 +22,7 @@ import {
   offerCancellationRefund,
 } from "../../content/eventOffer";
 import {usePendingRequestNavigationBlocked} from "../../shared/pendingRequest";
-import {PublicPageFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {Form} from "../../shared/ui/primitives";
 import type {OfferCredential} from "./offerCredential";
 import {useOfferCheckoutController} from "./useOfferCheckoutController";
@@ -71,9 +70,7 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
           />
         </CatchPageBody>
       </WebsitePageMain>
-      <CatchPageBody constrainToContentWidth pb="s8" pt="s6">
-        <PublicPageFooter label={page.footerLabel} links={[...publicSiteCopy.nav, ...siteFooterLegalLinks]} note={publicSiteCopy.footerOperator} />
-      </CatchPageBody>
+      <PublicSiteFooter navLabel={page.footerLabel} variant="minimal" />
     </CatchRoot>
   );
 }

@@ -39,7 +39,7 @@
   cursor: pointer;
 }
 
-.action:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) { .action:hover { text-decoration: underline; text-underline-offset: 3px; } }
 .action:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink); outline-offset: 2px; }
 
 .list { display: flex; flex-direction: column; min-width: 0; }

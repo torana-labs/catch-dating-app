@@ -31,7 +31,9 @@
   content: "";
 }
 
-.card:hover::after { opacity: 0.08; }
+@media (hover: hover) {
+  .card:hover::after { opacity: 0.08; }
+}
 .card:active::after { opacity: 0.14; }
 
 .card:focus-visible {

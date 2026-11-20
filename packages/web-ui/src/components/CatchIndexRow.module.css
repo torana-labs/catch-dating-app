@@ -49,7 +49,9 @@
 }
 
 :is(a, button).row { cursor: pointer; }
-:is(a, button).row:hover::after { opacity: var(--catch-opacity-control-overlay-hover); }
+@media (hover: hover) {
+  :is(a, button).row:hover::after { opacity: var(--catch-opacity-control-overlay-hover); }
+}
 :is(a, button).row:active::after { opacity: 0.08; }
 
 :is(a, button).row:focus-visible {

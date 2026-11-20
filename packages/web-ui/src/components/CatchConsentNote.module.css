@@ -6,8 +6,10 @@
   text-underline-offset: 0.2em;
 }
 
-.link:hover {
-  color: var(--catch-theme-ink);
+@media (hover: hover) {
+  .link:hover {
+    color: var(--catch-theme-ink);
+  }
 }
 
 .link:focus-visible {

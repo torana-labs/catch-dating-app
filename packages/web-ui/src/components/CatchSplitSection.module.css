@@ -60,6 +60,42 @@
 
 .link { display: flex; }
 
+/* A group whose title is its link: the title in ink with an arrow after it, underlined on hover. */
+.titleLink {
+  color: inherit;
+  text-decoration: none;
+  text-decoration-thickness: var(--catch-stroke-hairline);
+  text-underline-offset: 0.2em;
+}
+
+.titleArrow {
+  display: inline-flex;
+  margin-inline-start: var(--catch-space-s1);
+  vertical-align: -0.1em;
+  transition: transform var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.titleLink:active { opacity: 0.7; }
+
+.titleLink:focus-visible {
+  border-radius: var(--catch-radius-xs);
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+@media (hover: hover) {
+  .titleLink:hover { text-decoration-line: underline; }
+  .titleLink:hover .titleArrow { transform: translateX(var(--catch-space-s1)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .titleArrow { transition: none; }
+
+  @media (hover: hover) {
+    .titleLink:hover .titleArrow { transform: none; }
+  }
+}
+
 .checks {
   display: grid;
   /* Two across while each check can be at least 14rem wide, else one. */

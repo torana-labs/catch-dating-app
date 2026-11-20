@@ -37,7 +37,9 @@ button.surface::after {
   pointer-events: none;
   content: "";
 }
-button.surface:hover::after { background: currentColor; opacity: var(--catch-opacity-control-overlay-hover); }
+@media (hover: hover) {
+  button.surface:hover::after { background: currentColor; opacity: var(--catch-opacity-control-overlay-hover); }
+}
 button.surface:active::after { background: currentColor; opacity: 0.08; }
 button.surface:focus-visible {
   outline: var(--catch-stroke-emphasis) solid var(--catch-theme-primary);

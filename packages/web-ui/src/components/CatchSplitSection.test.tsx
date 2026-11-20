@@ -54,6 +54,14 @@ describe("CatchSplitSection", () => {
     expect(screen.getByRole("link", {name: "Act"}).dataset.variant).toBe("primary");
   });
 
+  it("makes a group's title its link when the link has no words of its own, with no second link under it", () => {
+    render(<CatchSplitSection groups={[{title: "Your page", marker: "1", list: ["Line one"], link: {href: "/your-page/"}}]} title="Headline" />);
+    const heading = screen.getByRole("heading", {level: 3});
+    const link = within(heading).getByRole("link", {name: "Your page"});
+    expect(link.getAttribute("href")).toBe("/your-page/");
+    expect(screen.getAllByRole("link")).toHaveLength(1);
+  });
+
   it("puts steps in the second column without media, and under the copy beside media", () => {
     const steps = [{title: "First step", marker: "8:00 PM", body: "A note"}, {title: "Second step"}];
     const {rerender, container} = render(

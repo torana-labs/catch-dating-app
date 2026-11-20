@@ -175,12 +175,16 @@
 }
 
 /* Hover and press tint in the label colour, so feedback reads on every fill. */
-.button:not(:disabled):not([aria-disabled="true"]):not([data-static]):hover::after { opacity: var(--catch-button-overlay); }
+@media (hover: hover) {
+  .button:not(:disabled):not([aria-disabled="true"]):not([data-static]):hover::after { opacity: var(--catch-button-overlay); }
+}
 .button:not(:disabled):not([aria-disabled="true"]):not([data-static]):active::after { opacity: 0.14; }
 .button:not(:disabled):not([aria-disabled="true"]):not([data-static]):active { transform: scale(0.97); }
 
-.button[data-variant="secondary"]:not(:disabled):not([aria-disabled="true"]):not([data-static]):hover {
-  --catch-button-border: var(--catch-theme-ink);
+@media (hover: hover) {
+  .button[data-variant="secondary"]:not(:disabled):not([aria-disabled="true"]):not([data-static]):hover {
+    --catch-button-border: var(--catch-theme-ink);
+  }
 }
 
 .button:focus-visible {
@@ -245,16 +249,31 @@
 }
 
 /* Text: an inline or dialog action in the tone's colour. */
+/*
+ * Text: a link or quiet action in running text, not a pill. No fill ever; the
+ * label underlines on hover and dims while pressed, and a label that wraps
+ * keeps to the start edge like the text around it.
+ */
 .button[data-recipe="text"] {
   --catch-button-bg: transparent;
   --catch-button-border: transparent;
-  --catch-button-overlay: 0.05;
   min-width: var(--catch-interaction-ios-minimum-extent);
   min-height: var(--catch-interaction-ios-minimum-extent);
-  padding: 0 var(--catch-space-s2);
+  padding: 0;
   font-size: var(--catch-typography-web-secondary-size);
   font-weight: 700;
   line-height: var(--catch-typography-web-secondary-line-height);
+  text-align: start;
+  text-decoration-thickness: var(--catch-stroke-hairline);
+  text-underline-offset: 0.2em;
+}
+
+.button[data-recipe="text"] .content { justify-content: flex-start; }
+.button[data-recipe="text"]::after { display: none; }
+.button[data-recipe="text"]:not(:disabled):not([aria-disabled="true"]):not([data-static]):active { opacity: 0.7; transform: none; }
+
+@media (hover: hover) {
+  .button[data-recipe="text"]:not(:disabled):not([aria-disabled="true"]):not([data-static]):hover { text-decoration-line: underline; }
 }
 
 .button[data-recipe="text"][data-tone="primary"] { --catch-button-fg: var(--catch-theme-primary); }

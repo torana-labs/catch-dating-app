@@ -93,7 +93,9 @@
 .chip .icon[data-check] { width: var(--catch-chip-check-size); height: var(--catch-chip-check-size); }
 .chip .icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: var(--catch-stroke-emphasis); stroke-linecap: round; stroke-linejoin: round; }
 .chip .surface::before { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; content: ""; }
-.chip.control:enabled:hover .surface::before { background: currentColor; opacity: var(--catch-opacity-control-overlay-hover); }
+@media (hover: hover) {
+  .chip.control:enabled:hover .surface::before { background: currentColor; opacity: var(--catch-opacity-control-overlay-hover); }
+}
 .chip.control:enabled:active .surface::before { background: currentColor; opacity: 0.08; }
 .chip.control:enabled:active .surface { transform: scale(0.97); }
 .chip.control:focus-visible { outline: none; }
@@ -151,7 +153,9 @@
 }
 
 .system[data-on="night-tile"] { background: color-mix(in srgb, var(--catch-theme-ink) 8%, transparent); box-shadow: none; }
-.system[data-toggle]:not([data-selected]):hover { background-color: color-mix(in srgb, var(--catch-theme-ink) calc(var(--catch-opacity-hover) * 100%), transparent); }
+@media (hover: hover) {
+  .system[data-toggle]:not([data-selected]):hover { background-color: color-mix(in srgb, var(--catch-theme-ink) calc(var(--catch-opacity-hover) * 100%), transparent); }
+}
 .system:active { transform: scale(0.97); }
 .system[data-selected] { background: var(--catch-theme-primary); box-shadow: none; color: var(--catch-theme-on-primary); }
 .system[data-selected][data-format] { background: var(--catch-system-chip-accent); color: var(--catch-theme-on-format); }
@@ -181,7 +185,9 @@
 .inputLabel, .remove { margin: 0; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
 .inputLabel { display: inline-flex; align-items: center; gap: inherit; }
 .remove { display: inline-flex; margin-right: -6px; border-radius: var(--catch-radius-pill); opacity: 0.7; }
-.remove:hover { opacity: 1; }
+@media (hover: hover) {
+  .remove:hover { opacity: 1; }
+}
 .inputLabel:disabled, .remove:disabled { cursor: not-allowed; }
 .inputLabel:focus-visible, .remove:focus-visible { outline: var(--catch-stroke-focus) solid var(--catch-theme-focus); outline-offset: var(--catch-space-micro2); }
 

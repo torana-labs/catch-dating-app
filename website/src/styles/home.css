@@ -128,10 +128,7 @@ h3 {
   transition: background-color var(--catch-motion-base) var(--catch-motion-standard-curve);
 }
 
-.format-card:hover {
-  background: color-mix(in srgb, var(--format-soft) 55%, var(--website-surface));
-}
-
+@media (hover: hover) { .format-card:hover { background: color-mix(in srgb, var(--format-soft) 55%, var(--website-surface)); } }
 .format-card:nth-child(1) {
   --format-accent: var(--catch-activity-social-run-accent);
   --format-deep: var(--catch-activity-social-run-deep);
@@ -219,13 +216,13 @@ h3 {
     box-shadow var(--catch-motion-micro) var(--catch-motion-standard-curve);
 }
 
-.organizer-mini-card:hover,
 .organizer-mini-card:focus-visible {
   border-color: color-mix(in srgb, var(--activity) 45%, var(--website-line));
   box-shadow: var(--catch-elevation-raised);
   transform: translateY(-2px);
 }
 
+@media (hover: hover) { .organizer-mini-card:hover { border-color: color-mix(in srgb, var(--activity) 45%, var(--website-line)); box-shadow: var(--catch-elevation-raised); transform: translateY(-2px); } }
 .organizer-mini-card h3 {
   margin-top: var(--catch-space-micro6);
   font-size: 22px;

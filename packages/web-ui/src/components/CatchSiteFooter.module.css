@@ -170,7 +170,9 @@
   cursor: pointer;
 }
 
-.link:hover { color: var(--catch-ground-ink-ink); }
+@media (hover: hover) {
+  .link:hover { color: var(--catch-ground-ink-ink); }
+}
 
 .link:focus-visible {
   border-radius: var(--catch-radius-xs);

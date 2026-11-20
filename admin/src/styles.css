@@ -530,11 +530,11 @@ select {
   text-underline-offset: 2px;
 }
 
-.link-button:hover,
 .link-button:focus-visible {
   color: var(--ink);
 }
 
+@media (hover: hover) { .link-button:hover { color: var(--ink); } }
 /* The segmented control's narrow-screen select; catch.chip.field replaces it. */
 .field-control {
   display: grid;

@@ -2,7 +2,7 @@ import {CatchButton, CatchRoot} from "@catch/web-ui";
 import {useMemo} from "react";
 import type {PlaybookPageDocument} from "../../content/playbook/playbookContract";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
-import {PublicPageFooter, PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {playbookFormsPreviewToolSlot, playbookLeadForms} from "./playbookLeadForms";
 import {playbookSectionNode} from "./PlaybookSections";
 import {useFoundingHostOffer} from "../marketing/useFoundingHostOffer";
@@ -66,7 +66,7 @@ export function PlaybookPage({page: written, captures, leadForms: slots = playbo
       <WebsitePageMain>
         {page.sections.map((section) => playbookSectionNode(section, context))}
       </WebsitePageMain>
-      {page.footer.variant === "minimal" ? <PublicPageFooter /> : <PublicSiteFooter columns={columns} footnotes={footnotes} variant={page.footer.variant} />}
+      <PublicSiteFooter columns={columns} footnotes={footnotes} variant={page.footer.variant} />
     </CatchRoot>
   );
 }

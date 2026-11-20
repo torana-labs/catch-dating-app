@@ -38,4 +38,6 @@
 .flow > [data-tone="danger"] { color: var(--catch-theme-danger-text); }
 
 .link { color: inherit; text-decoration: underline; text-decoration-color: var(--catch-theme-line2); text-underline-offset: 3px; }
-.link:hover { text-decoration-color: currentColor; }
+@media (hover: hover) {
+  .link:hover { text-decoration-color: currentColor; }
+}

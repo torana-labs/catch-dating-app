@@ -85,6 +85,12 @@ export interface CatchTopBarProps {
    * links. menuExtras is ignored when it is given.
    */
   siteMenu?: ReactNode;
+  /**
+   * site: actions shown from 600px only, after `actions`. A page whose phone
+   * bar (CatchSiteDock) already carries an action passes it here, so a phone
+   * header keeps to the wordmark, its one control and the menu.
+   */
+  wideActions?: ReactNode;
 }
 
 function BarIconButton({action, icon}: {action: CatchTopBarAction; icon: "back" | "close"}) {
@@ -113,7 +119,7 @@ function SiteLink({action}: {action: CatchTopBarAction}) {
  * lines up with the navigation's header and every pane header. On phones the variants keep their
  * own shapes. Inside CatchViewport it gains a hairline once the body scrolls.
  */
-export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site", menuLabel = "Menu", subBrand, account, contact, menuExtras = [], siteMenu}: CatchTopBarProps) {
+export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site", menuLabel = "Menu", subBrand, account, contact, menuExtras = [], siteMenu, wideActions}: CatchTopBarProps) {
   const menuItems = [...(links ?? []).filter((link) => link.menu == null), ...menuExtras];
   const {scrolled, sizeClass} = useCatchViewport();
   if (variant === "site") {
@@ -139,6 +145,7 @@ export function CatchTopBar({variant = "tool", title, kicker, back, action, acti
             ) : null}
             {account ? <span className={styles.account}>{account}</span> : null}
             {actions}
+            {wideActions ? <span className={styles.siteWide}>{wideActions}</span> : null}
             {siteMenu != null ? <span className={styles.siteMenu}>{siteMenu}</span> : menuItems.length > 0 ? (
               <span className={styles.siteMenu}>
                 <CatchMenu

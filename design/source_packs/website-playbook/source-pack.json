@@ -76,7 +76,7 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "71185675acc65a4f8d2942889154c3054922e45e5e566199eee5d979b9338e6f"
+      "sha256": "d0cc50e26a0c8dbc88a4bd811a5a2dee9ec94420c8530225d90b126cb9733f9c"
     },
     {
       "path": "kit/KitArticle.dc.html",
@@ -156,7 +156,7 @@
     },
     {
       "path": "kit/playbook-panels.css",
-      "sha256": "1ed6c912f15a21938474a1275bd418edae93ca35996865e42e9d9e8608c437d1"
+      "sha256": "c5ed3aa6d74890b87d047a4ffc08e8140583e6955f93b5cec913304ac055b278"
     },
     {
       "path": "oneoff/PlaybookCompare.dc.html",

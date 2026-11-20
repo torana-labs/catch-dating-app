@@ -84,7 +84,10 @@ export const hostLandingCopy = {
     /** A person on WhatsApp, one tap from the headline (leak 7). */
     talk: "Talk to us on WhatsApp",
     /** Organisations ask for a walkthrough on its request page. */
-    walkthrough: "Running a venue, studio or company? Book a 15-minute walkthrough",
+    /** The line under the hero: who the walkthrough is for, then the link. */
+    walkthroughLead: "Running a venue, studio or company?",
+    // A non-breaking hyphen keeps "15‑minute" on one line.
+    walkthrough: "Book a 15‑minute walkthrough",
     terms: hostPricingLines.terms,
   },
   ways: {

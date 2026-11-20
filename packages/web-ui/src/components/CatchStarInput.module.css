@@ -23,7 +23,9 @@
   transition: background-color var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 
-.choice:hover { background: color-mix(in srgb, var(--catch-palette-coral) 14%, var(--catch-palette-white)); }
+@media (hover: hover) {
+  .choice:hover { background: color-mix(in srgb, var(--catch-palette-coral) 14%, var(--catch-palette-white)); }
+}
 
 .radio {
   position: absolute;
@@ -57,7 +59,9 @@
   opacity: var(--catch-field-disabled-opacity);
 }
 
-.input[data-disabled] .choice:hover { background: var(--catch-palette-white); }
+@media (hover: hover) {
+  .input[data-disabled] .choice:hover { background: var(--catch-palette-white); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .choice { transition: none; }

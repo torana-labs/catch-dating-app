@@ -37,9 +37,14 @@
   text-underline-offset: var(--catch-space-micro3);
 }
 
-.link:hover,
 .link[aria-current="page"] {
   text-decoration: underline;
+}
+
+@media (hover: hover) {
+  .link:hover {
+    text-decoration: underline;
+  }
 }
 
 .link:focus-visible,

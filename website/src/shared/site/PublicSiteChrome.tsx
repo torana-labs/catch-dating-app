@@ -16,7 +16,6 @@ import {
 import {createContext, useContext, type ReactNode} from "react";
 import {openMarketingConsentPreferences} from "../../analytics";
 import {
-  publicPageChromeCopy,
   publicSiteCopy,
   siteFooterCopy,
   siteFooterDefaultCities,
@@ -72,7 +71,8 @@ function wordmarkParts(title: string): {brand: string; subBrand?: string} {
 export type SiteHeaderVariant = "guest" | "host" | "minimal";
 
 /** Which footer a page carries: the guest columns or the host columns. */
-export type SiteFooterVariant = "guest" | "host";
+/** guest and host: the full footer. minimal: the same footer for a one-job page, with no help band and two short columns. */
+export type SiteFooterVariant = "guest" | "host" | "minimal";
 
 /**
  * A strip above the bar, such as a running offer: a lead in bold, its body
@@ -149,6 +149,7 @@ export function PublicSiteHeader({
   title = publicSiteCopy.wordmark,
   variant = "guest",
   whatsOnHref,
+  wideActions,
 }: {
   /** The page's own actions in place of the variant's primary action, such as the city picker and Get the app. */
   actions?: ReactNode;
@@ -168,6 +169,8 @@ export function PublicSiteHeader({
   variant?: SiteHeaderVariant;
   /** Where What's on goes: a city's pages point it at that city's Explore. */
   whatsOnHref?: string;
+  /** Actions shown from 600px only: one the page's phone bar already carries, such as Get notified. */
+  wideActions?: ReactNode;
 }) {
   const account = useContext(SiteAccountActionContext);
   const {brand, subBrand} = wordmarkParts(title);
@@ -197,6 +200,7 @@ export function PublicSiteHeader({
         subBrand={subBrand}
         title={brand}
         variant="site"
+        wideActions={wideActions}
       />
       {breadcrumbs ? (
         <CatchSurface as="div" block="band" padding="sm">
@@ -252,36 +256,6 @@ export function PrivacyChoicesButton() {
 /** "Privacy choices" as the last item of the site footer's last link column. */
 const privacyChoicesAction = {label: publicSiteCopy.privacyChoices, onPressed: openMarketingConsentPreferences};
 
-/**
- * The boards' short footer: the wordmark across from quiet links. The form,
- * offer, account and billing pages pass the site and legal links and the
- * operator line; the four default links wait for organiser pages served on
- * their own domain. Only a page that records site clicks passes
- * `onLinkPressed` (the private offer and form pages record none).
- */
-export function PublicPageFooter({label = publicPageChromeCopy.footerLabel, links = publicPageChromeCopy.footerLinks, note, onLinkPressed}: {
-  label?: string;
-  links?: readonly SiteNavItem[];
-  note?: string;
-  onLinkPressed?: (link: SiteNavItem) => void;
-}) {
-  return (
-    <CatchStack as="footer" gap={12}>
-      <CatchStack align="center" direction="row" gap={12} justify="between" wrap>
-        <CatchWordmark>{publicPageChromeCopy.wordmark}</CatchWordmark>
-        <CatchStack aria-label={label} as="nav" direction="row" gap={4} wrap>
-          {links.map((link) => (
-            <CatchButton href={link.href} key={`${link.label}-${link.href}`} label={link.label}
-              onPressed={onLinkPressed ? () => onLinkPressed(link) : undefined} size="sm" variant="quiet" />
-          ))}
-          <CatchButton label={publicSiteCopy.privacyChoices} onPressed={openMarketingConsentPreferences} size="sm" variant="quiet" />
-        </CatchStack>
-      </CatchStack>
-      {note ? <CatchText tone="secondary" variant="body-meta">{note}</CatchText> : null}
-    </CatchStack>
-  );
-}
-
 /** A city in the footer's Cities column, as the city pages and the homepage list them. */
 export interface SiteFooterCity {
   href: string;
@@ -305,7 +279,7 @@ function siteLinks(hrefs: readonly string[]): SiteNavItem[] {
  * add Help; host pages add the walkthrough request page. The band states no
  * hours.
  */
-function FooterHelpActions({variant}: {variant: SiteFooterVariant}) {
+function FooterHelpActions({variant}: {variant: Exclude<SiteFooterVariant, "minimal">}) {
   const band = siteFooterCopy.helpBand;
   const whatsapp = {href: whatsappChatHref(variant === "host" ? band.hostMessage : band.guestMessage), label: band.whatsapp};
   const second = variant === "host" ? band.walkthrough : band.guestHelp;
@@ -373,7 +347,9 @@ export function PublicSiteFooter({
   wordmark?: string;
 }) {
   const {brand, subBrand} = wordmarkParts(wordmark);
+  const minimal = variant === "minimal";
   const groups = columns ? columnFooterGroups(columns) :
+    minimal ? minimalFooterGroups(exploreHref) :
     variant === "host" ? hostFooterGroups(exploreHref) : guestFooterGroups({appHref, cities: cities ?? siteFooterDefaultCities, cityFormats, exploreHref});
   return (
     <CatchSiteFooter
@@ -381,17 +357,27 @@ export function PublicSiteFooter({
       brandLabel={brand}
       brandSubBrand={subBrand}
       // The canvas's five link columns, so each column keeps the canvas width.
-      columns={5 satisfies CatchSiteFooterColumns}
+      columns={(minimal ? 2 : 5) satisfies CatchSiteFooterColumns}
       footnotes={footnotes}
       groups={groups}
-      headerActions={helpBand ? <FooterHelpActions variant={variant} /> : undefined}
-      headerTitle={helpBand ? helpTitle : undefined}
+      headerActions={helpBand && !minimal ? <FooterHelpActions variant={variant} /> : undefined}
+      headerTitle={helpBand && !minimal ? helpTitle : undefined}
       navLabel={navLabel}
       note={publicSiteCopy.footerOperator}
-      onLinkPressed={trackFooter}
+      // One-job pages record no footer clicks: the private offer and form pages record none at all.
+      onLinkPressed={minimal ? undefined : trackFooter}
       tagline={tagline}
     />
   );
+}
+
+/** A one-job page's footer (a booking, a form, the trial start): where to go next, then help and legal ending in Privacy choices. */
+function minimalFooterGroups(exploreHref?: string): CatchSiteFooterGroup[] {
+  const [whatsOn] = siteFooterCopy.explore;
+  return [
+    {title: siteFooterCopy.groups.explore, links: [{...whatsOn, href: exploreHref ?? whatsOn.href}, siteFooterCopy.hosts[0]]},
+    {title: siteFooterCopy.groups.help, links: siteLinks(siteFooterCopy.helpOrder), action: privacyChoicesAction},
+  ];
 }
 
 function guestFooterGroups({appHref, cities, cityFormats, exploreHref}: {appHref?: string; cities?: readonly SiteFooterCity[]; cityFormats?: SiteFooterCityPages; exploreHref?: string}): CatchSiteFooterGroup[] {

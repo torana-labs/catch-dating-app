@@ -18,7 +18,9 @@
   transition: background-color var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 .tile[data-selected] { border-color: var(--catch-theme-ink); background: color-mix(in srgb, var(--catch-theme-ink) 4%, var(--catch-theme-surface)); }
-.tile:enabled:hover { background: color-mix(in srgb, var(--catch-theme-ink) 5%, var(--catch-theme-surface)); }
+@media (hover: hover) {
+  .tile:enabled:hover { background: color-mix(in srgb, var(--catch-theme-ink) 5%, var(--catch-theme-surface)); }
+}
 .tile:enabled:active { background: color-mix(in srgb, var(--catch-theme-ink) 14%, var(--catch-theme-surface)); }
 .tile:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink); outline-offset: var(--catch-space-micro2); }
 .tile:disabled { cursor: default; }

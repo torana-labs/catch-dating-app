@@ -48,7 +48,9 @@
   content: "";
 }
 
-.card[data-pressable]:hover .link { text-decoration: underline; }
+@media (hover: hover) {
+  .card[data-pressable]:hover .link { text-decoration: underline; }
+}
 
 .card:has(.link:focus-visible) {
   outline: var(--catch-stroke-focus) solid var(--catch-theme-focus);
