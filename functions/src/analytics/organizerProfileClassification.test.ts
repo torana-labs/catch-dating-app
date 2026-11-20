@@ -86,11 +86,15 @@ test("scraped runs and dinners qualify, but blocked words still exclude them",
       "sensitive");
   });
 
-test("native runs and dinners qualify; singles, crawls, seated tables do not",
+test("native runs and seated dinners qualify; singles, crawls, mixers do not",
   () => {
     assert.equal(classifyAt([run("socialRun")], []), "eligible");
     assert.equal(classifyAt([run("dinner")], [scraped("yoga")]), "eligible");
-    assert.equal(classifyAt([run("dinner", "seatedTable")], []), "sensitive");
+    assert.equal(classifyAt([run("dinner", "seatedTable")], []), "eligible");
+    assert.equal(classifyAt([run("singlesMixer", "freeFormMixer")], []),
+      "sensitive");
+    assert.equal(classifyAt([run("dinner", "pairedRotations")], []),
+      "sensitive");
     assert.equal(classifyAt([run("singlesMixer")], []), "sensitive");
     assert.equal(classifyAt([run("barCrawl")], []), "sensitive");
     assert.equal(classifyAt([run("running", "freeFormMixer")], []),
