@@ -250,16 +250,23 @@
       "id": "try",
       "ground": "paper",
       "status": "tryIt",
-      "statusNote": "Command: import a form from a link (Google Form, Typeform), optionally with its responses sheet. Show this when the command ships.",
+      "statusNote": "The form tool (features/tryIt, form.import-from-link) is built. Show it, with the hero button and the closing band below, once the command is in websiteReadyTryItCommands.",
       "kicker": "Try it with your form",
-      "title": "Bring your Google Form. Keep every question.",
-      "lead": "Paste a link to a Google Form or Typeform. {{brand.name}} rebuilds it as a {{brand.name}} form, with the same questions, the same choices and the questions that only show after certain answers, ready to share. Add the responses sheet and past answers become guest records too.",
+      "title": "Bring your Google Form over from its link.",
+      "lead": "Paste the link to a public Google Form. {{brand.name}} reads its sections, questions and choices and makes a private draft form in your profile. A choice that jumps to a later section still opens it, and anything a {{brand.name}} form can’t do yet is listed for you to rebuild by hand.",
       "ticks": [
-        "Google Forms and Typeform, from the link you already share",
-        "Questions, choices and conditional questions carried over",
-        "Past responses from the sheet land on guest records",
-        "Publish it when you claim it, and keep your old link running until then"
-      ]
+        "Sections, questions, choices and required answers, read from the link you already share",
+        "A choice that jumps to a later section still opens that section",
+        "Grid questions, uploads and anything else that can’t come across, listed by question",
+        "A private draft: no one can open it until you publish it in {{brand.stores.hostAppName}}"
+      ],
+      "leadForm": {
+        "id": "try_form",
+        "requestKind": "tool",
+        "input": "url",
+        "label": "Link to a Google Form",
+        "submitLabel": "Bring my form"
+      }
     },
     {
       "type": "faq",
@@ -308,17 +315,17 @@
       "id": "questions-coming",
       "ground": "white",
       "status": "new",
-      "statusNote": "Answers about importing a form from its link, which is not built. Show them with the try-it band.",
+      "statusNote": "Answers about importing a form from its link (form.import-from-link). Show them with the try-it band.",
       "kicker": "Questions",
       "title": "About bringing a form over.",
       "items": [
         {
           "question": "Can I bring my Google Form over?",
-          "answer": "Yes. Paste its link and {{brand.name}} rebuilds it with the same questions and choices. Add the responses sheet to bring past answers in as guest records."
+          "answer": "Yes. Paste the link to a public Google Form and {{brand.name}} makes a private draft form with its sections, questions and choices. Anything it can’t bring across, such as a grid question, is listed for you to rebuild."
         },
         {
-          "question": "What about Typeform?",
-          "answer": "Typeform works the same way: paste the link you share with people."
+          "question": "Does it bring the answers people already gave?",
+          "answer": "No. It brings the form, not its answers. To bring past answers in, export them as a CSV or Excel file and import them into the form."
         }
       ]
     },
@@ -356,17 +363,18 @@
       "id": "start-try",
       "ground": "indigo",
       "status": "tryIt",
-      "statusNote": "The closing band of the import-a-form tool. Show it, in place of the band above, when the command ships.",
+      "statusNote": "The closing band of the form tool. Show it, renamed start, in place of the band above, once form.import-from-link is in websiteReadyTryItCommands.",
       "kicker": "Free for 30 days · founding hosts get 90",
       "title": "Bring your form over in a minute.",
-      "lead": "Paste a link to a Google Form or Typeform. We’ll rebuild it on {{brand.name}}, ready to share.",
+      "lead": "Paste the link to a public Google Form. We’ll make it a private draft form that you check and publish in {{brand.stores.hostAppName}}.",
       "leadForm": {
         "id": "final_form",
         "requestKind": "tool",
         "input": "url",
-        "label": "Link to a Google Form or Typeform",
+        "label": "Link to a Google Form",
         "submitLabel": "Bring my form"
       },
+      "storeBadges": "host",
       "media": {
         "kind": "capture",
         "slot": "host-today"

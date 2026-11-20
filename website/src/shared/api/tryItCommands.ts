@@ -21,6 +21,7 @@ export const tryItCommandCallables = {
   "guests.import-list": "importGuestList",
   "sales.import-past": "importPastSales",
   "night.plan": "planNight",
+  "form.import-from-link": "importFormFromLink",
 } as const satisfies Record<string, keyof TryItCommandCallables>;
 
 export type TryItCommandId = keyof typeof tryItCommandCallables;
@@ -40,6 +41,8 @@ export type TryItMode = TryItPayload<TryItCommandId>["mode"];
  * - key_reused: this key already went with another request (already-exists): start a new action;
  * - not_ready: apply came before the read finished: preview again;
  * - no_workspace, existing_listing, market_not_open, multiple_organizers, link_unreadable, choose_event: the command's own reasons;
+ *   form.import-from-link's apply names a form it can no longer read (form_not_public, form_empty,
+ *   not_a_form_link, form_provider_not_supported) as link_unreadable;
  * - not_allowed: the caller does not manage the event (permission-denied, not-found);
  * - app_check: the browser could not prove it is the site in time;
  * - not_configured: this build has no Firebase;
@@ -68,6 +71,10 @@ const reasonProblems: Readonly<Record<string, TryItProblem>> = {
   market_not_open: "market_not_open",
   multiple_organizers: "multiple_organizers",
   link_unreadable: "link_unreadable",
+  form_not_public: "link_unreadable",
+  form_empty: "link_unreadable",
+  not_a_form_link: "link_unreadable",
+  form_provider_not_supported: "link_unreadable",
   choose_event: "choose_event",
   event_not_found: "choose_event",
 };

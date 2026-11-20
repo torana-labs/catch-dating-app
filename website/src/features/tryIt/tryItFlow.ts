@@ -11,6 +11,7 @@ import {
   tryItKitLinks,
   tryItKitLinksProblem,
   tryItLink,
+  type TryItFormFlag,
   type TryItKitLinksProblem,
   type TryItToolKind,
 } from "./tryItModel";
@@ -35,12 +36,20 @@ import {
  * The kit (promotion.create-kit) needs an event the visitor manages, so it
  * follows an event import in the same workspace: the draft this tab made,
  * or one imported as its first step.
+ *
+ * The form tool (form.import-from-link) answers its preview at once, with
+ * the draft form's outline and what the host rebuilds by hand (flags). Its
+ * apply reads the form again: when the form changed since the preview the
+ * server refuses (`changed`), the flow previews again with the same key, and
+ * the review says the form changed.
  */
 
 export type TryItSummary = TryItResponse<"workspace.ensure">["summary"];
 type OrganizerResponse = TryItResponse<"organizer.import-from-link">;
 type EventResponse = TryItResponse<"event.import-from-link">;
 type KitResponse = TryItResponse<"promotion.create-kit">;
+type FormResponse = TryItResponse<"form.import-from-link">;
+export type TryItFormOutline = NonNullable<FormResponse["result"]["form"]>;
 export type TryItOrganizerProposal = NonNullable<OrganizerResponse["result"]["proposal"]>;
 export type TryItOrganizerMatch = NonNullable<OrganizerResponse["result"]["match"]>;
 export type TryItFoundEvent = EventResponse["result"]["events"][number];
@@ -69,10 +78,13 @@ export type TryItStage =
     readonly match: TryItOrganizerMatch | null}
   | {readonly name: "review"; readonly step: "event"; readonly summary: TryItSummary; readonly proposal: TryItEventProposal}
   | {readonly name: "review"; readonly step: "kit"; readonly summary: TryItSummary; readonly links: readonly TryItKitResultLink[]}
+  | {readonly name: "review"; readonly step: "form"; readonly summary: TryItSummary; readonly form: TryItFormOutline;
+    readonly flags: readonly TryItFormFlag[]; readonly revised: boolean}
   | {readonly name: "channels"; readonly draft: TryItDraftEvent}
   | {readonly name: "done"; readonly step: "organizer"; readonly summary: TryItSummary; readonly proposal: TryItOrganizerProposal | null}
   | {readonly name: "done"; readonly step: "event"; readonly summary: TryItSummary; readonly draft: TryItDraftEvent; readonly proposal: TryItEventProposal}
   | {readonly name: "done"; readonly step: "kit"; readonly summary: TryItSummary; readonly draft: TryItDraftEvent; readonly links: readonly TryItKitResultLink[]}
+  | {readonly name: "done"; readonly step: "form"; readonly summary: TryItSummary; readonly form: TryItFormOutline; readonly flags: readonly TryItFormFlag[]}
   | {readonly name: "listed"; readonly summary: TryItSummary; readonly match: TryItOrganizerMatch}
   | {readonly name: "problem"; readonly reason: TryItStopReason; readonly summary: TryItSummary | null};
 
@@ -160,10 +172,13 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
   // One action per thing asked for: the workspace, the import of one link, the kit for one event.
   let workspace: {action: TryItAction<"workspace.ensure">; input: TryItInput<"workspace.ensure">; hash: string | null} | null = null;
   let importing: {link: string; eventKey: string | null; organizer: TryItAction<"organizer.import-from-link"> | null;
-    event: TryItAction<"event.import-from-link"> | null; hash: string | null; proposal: TryItOrganizerProposal | null} | null = null;
+    event: TryItAction<"event.import-from-link"> | null; form: TryItAction<"form.import-from-link"> | null; hash: string | null;
+    proposal: TryItOrganizerProposal | null; outline: {form: TryItFormOutline; flags: readonly TryItFormFlag[]} | null} | null = null;
   let kit: {action: TryItAction<"promotion.create-kit">; input: TryItInput<"promotion.create-kit">; hash: string | null} | null = null;
   let draft: TryItDraftEvent | null = null;
   let lastStep: {step: Step; apply: boolean} = {step: "import", apply: false};
+  // The import's apply was refused because the source changed: the next review says so.
+  let revised = false;
   // Bumped by startOver, so a call still in flight cannot move the new flow.
   let run = 0;
 
@@ -202,11 +217,12 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
     }
     if (problem === "key_reused") {
       // This key already went with another request: this one starts again with a new key.
-      (step === "workspace" ? workspace?.action : step === "kit" ? kit?.action : importing?.organizer ?? importing?.event)?.restart();
+      (step === "workspace" ? workspace?.action : step === "kit" ? kit?.action : importing?.organizer ?? importing?.event ?? importing?.form)?.restart();
     } else if (!["changed", "not_ready", "existing_listing", "choose_event"].includes(problem)) {
       return false;
     }
     // Preview again with the same key: the summary shows what is true now.
+    if (problem === "changed" && step === "import" && lastStep.apply) revised = true;
     if (step === "workspace") await previewWorkspace(attempt + 1);
     else if (step === "kit") await previewKit(attempt + 1);
     else await previewImport(attempt + 1);
@@ -251,9 +267,10 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
 
   function importFor(link: string) {
     if (!importing || importing.link !== link) {
-      importing = {link, eventKey: null, hash: null, proposal: null,
+      importing = {link, eventKey: null, hash: null, proposal: null, outline: null,
         organizer: tool === "organizer" ? action("organizer.import-from-link") : null,
-        event: tool === "organizer" ? null : action("event.import-from-link")};
+        event: tool === "event" || tool === "kit" ? action("event.import-from-link") : null,
+        form: tool === "form" ? action("form.import-from-link") : null};
     }
     return importing;
   }
@@ -306,6 +323,7 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
         }
         return stop("refused", response.summary);
       }
+      if (current.form) return previewForm(current, mine, attempt);
       if (!current.event) return;
       const input = {link, ...(current.eventKey ? {eventKey: current.eventKey} : {})};
       const call = await current.event.preview(input);
@@ -336,6 +354,28 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
     }
   }
 
+  async function previewForm(current: NonNullable<typeof importing>, mine: number, attempt: number): Promise<void> {
+    if (!current.form) return;
+    const call = await current.form.preview({link: current.link});
+    if (mine !== run) return;
+    if (!call.ok) return handleFailure(call.problem, "import", attempt);
+    const {response} = call;
+    const {result} = response;
+    if (response.status === "needs_input" && result.reasons.includes("no_workspace")) {
+      return void (await recover("no_workspace", "import", 1));
+    }
+    if (response.status === "previewed" && result.form) {
+      current.hash = response.previewHash;
+      current.outline = {form: result.form, flags: result.flags};
+      const changed = revised;
+      revised = false;
+      set({busy: false, stage: {name: "review", step: "form", summary: response.summary, form: result.form, flags: result.flags, revised: changed}});
+      return;
+    }
+    revised = false;
+    return stop("refused", response.summary);
+  }
+
   async function applyImport(attempt = 1): Promise<void> {
     const current = importing;
     if (!current?.hash) return previewImport();
@@ -352,6 +392,17 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
         {...response.result.proposal, events: response.result.proposal.events.length ? response.result.proposal.events : current.proposal?.events ?? []} :
         current.proposal;
       set({busy: false, stage: {name: "done", step: "organizer", summary: response.summary, proposal}});
+      return;
+    }
+    if (current.form) {
+      const call = await current.form.apply({link: current.link}, current.hash);
+      if (mine !== run) return;
+      if (!call.ok) return handleFailure(call.problem, "import", attempt);
+      const {response} = call;
+      const form = response.result.form ?? current.outline?.form ?? null;
+      if (!response.result.formId || !form || (response.status !== "applied" && response.status !== "replayed")) return stop("failed", response.summary);
+      set({busy: false, stage: {name: "done", step: "form", summary: response.summary, form,
+        flags: response.result.form ? response.result.flags : current.outline?.flags ?? []}});
       return;
     }
     if (!current.event) return;
@@ -545,6 +596,7 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
     },
     startOver() {
       run += 1;
+      revised = false;
       importing = null;
       kit = null;
       draft = null;

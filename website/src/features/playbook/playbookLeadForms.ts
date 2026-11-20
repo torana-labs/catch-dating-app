@@ -1,7 +1,7 @@
 import {guestImportToolNode} from "../guestImportTryIt/GuestImportTool";
 import {pastSalesToolNode} from "../pastSalesTryIt/PastSalesTool";
 import {nightPlanTryItNode} from "../tryIt/NightPlanTryIt";
-import {playbookTryItTool} from "../tryIt/tryItModel";
+import {playbookTryItTool, websiteReadyTryItCommands} from "../tryIt/tryItModel";
 import {referralSignInNode} from "../referral/ReferralSignIn";
 import {tryItToolNode} from "../tryIt/TryItTool";
 import {playbookLeadFormNode} from "./PlaybookLeadForm";
@@ -14,15 +14,25 @@ import type {PlaybookLeadFormProps, PlaybookLeadFormSlots} from "./usePlaybookPa
  * nothing. A tool form reads a link (`input` url or text) or, for the guest
  * list tool (features/guestImportTryIt) and Reports' export upload
  * (features/pastSalesTryIt), a file; the plan-a-night tool (`input` text)
- * draws its own format and head count fields. Never a number.
+ * draws its own format and head count fields. Never a number. `ready` is
+ * the website-ready commands (websiteReadyTryItCommands).
  */
-function playbookToolFormNode({form, pageId, sectionId, placement}: PlaybookLeadFormProps) {
-  const tool = (form.input ?? "tel") === "tel" ? null : playbookTryItTool(pageId);
+const toolFormSlot = (ready: readonly string[]) => ({form, pageId, sectionId, placement}: PlaybookLeadFormProps) => {
+  const tool = (form.input ?? "tel") === "tel" ? null : playbookTryItTool(pageId, ready);
   if (tool === "guests") return form.input === "file" ? guestImportToolNode({form, pageId, sectionId}) : null;
   if (tool === "report") return form.input === "file" ? pastSalesToolNode({form, placement, pageId, sectionId}) : null;
   if (tool === "night") return form.input === "text" ? nightPlanTryItNode({form, pageId, sectionId}) : null;
   return tool && form.input !== "file" ? tryItToolNode({form, tool, placement, pageId, sectionId}) : null;
-}
+};
+const playbookToolFormNode = toolFormSlot(websiteReadyTryItCommands);
+
+/**
+ * The tool slot on the Forms page's owner preview (?tryit=forms,
+ * ./usePlaybookTryItReveal.ts): form.import-from-link counts as website-ready
+ * there, and only there, so its hidden tool can be tried on the live site
+ * before it ships. Every other tool is as playbookLeadForms draws it.
+ */
+export const playbookFormsPreviewToolSlot = toolFormSlot([...websiteReadyTryItCommands, "form.import-from-link"]);
 
 /** The /refer/ form: the referral lead form with its sign-in (features/referral) above it. */
 function playbookReferralFormNode(props: PlaybookLeadFormProps) {

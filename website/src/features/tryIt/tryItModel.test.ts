@@ -2,7 +2,19 @@ import fs from "node:fs";
 import path from "node:path";
 import {describe, expect, it} from "vitest";
 import {websiteCities} from "@content/markets";
-import {playbookTryItTool, tryItCities, tryItEventWhen, tryItKitLinks, tryItKitLinksProblem, tryItLink, tryItLocalDate} from "./tryItModel";
+import {tryItCopy} from "@content/tryIt";
+import {
+  playbookTryItTool,
+  tryItCities,
+  tryItEventWhen,
+  tryItFormFlagCodes,
+  tryItFormFlagGroups,
+  tryItKitLinks,
+  tryItKitLinksProblem,
+  tryItLink,
+  tryItLocalDate,
+  websiteReadyTryItCommands,
+} from "./tryItModel";
 
 /** A kit link as the command takes it. */
 const kitLink = (name: string, kind: "channel" | "promoter", source?: string) => ({label: name, kind, ...(source ? {source} : {})});
@@ -54,6 +66,43 @@ describe("try-it model", () => {
     expect(playbookTryItTool("product_guests")).toBe("guests");
     expect(playbookTryItTool("product_reports")).toBe("report");
     expect(playbookTryItTool("constructor")).toBeNull();
+  });
+
+  it("keeps the Forms page's tool hidden while form.import-from-link is not website-ready, and opens it once it is", () => {
+    expect(websiteReadyTryItCommands).not.toContain("form.import-from-link");
+    expect(playbookTryItTool("product_forms")).toBeNull();
+    // Switching it on is adding the command to websiteReadyTryItCommands.
+    expect(playbookTryItTool("product_forms", [...websiteReadyTryItCommands, "form.import-from-link"])).toBe("form");
+    expect(playbookTryItTool("product_bookings", [...websiteReadyTryItCommands, "form.import-from-link"])).toBe("event");
+  });
+
+  it("takes a Google Form link as typed, and no handle", () => {
+    expect(tryItLink("docs.google.com/forms/d/e/FAKE-FORM-ID/viewform", "form")).toBe("https://docs.google.com/forms/d/e/FAKE-FORM-ID/viewform");
+    expect(tryItLink("@driftwoodbayrunners", "form")).toBeNull();
+  });
+
+  it("groups the form import's flags by line, each source item once, and puts unknown codes on the generic line", () => {
+    expect(tryItFormFlagGroups([
+      {code: "grid_not_supported", item: "Rate the route"},
+      {code: "text_trimmed", item: null},
+      {code: "grid_not_supported", item: "Rate the playlist"},
+      {code: "grid_not_supported", item: "Rate the route"},
+      {code: "quiz_scoring_dropped", item: "Route quiz"},
+      {code: "some_later_code", item: null},
+    ])).toEqual([
+      {code: "grid_not_supported", items: ["Rate the route", "Rate the playlist"]},
+      {code: "text_trimmed", items: []},
+      {code: "other", items: ["Route quiz"]},
+    ]);
+    expect(tryItFormFlagGroups([])).toEqual([]);
+  });
+
+  it("words every flag code the command's schema names today", () => {
+    const schema = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../../contracts/callable_responses/import_form_from_link_response.schema.json"), "utf8")) as
+      {properties: {result: {properties: {flags: {items: {properties: {code: {enum: string[]}}}}}}}};
+    const codes = schema.properties.result.properties.flags.items.properties.code.enum;
+    expect([...tryItFormFlagCodes].sort()).toEqual([...codes].sort());
+    for (const code of tryItFormFlagCodes) expect(tryItCopy.tools.form.flags.codes[code], code).toBeTruthy();
   });
 
   it("words dates in the market's timezone", () => {
