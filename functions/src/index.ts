@@ -642,6 +642,7 @@ export {
 export {
   adminListSupplyIntakePolicies,
 } from "./admin/supplyIntakePolicies";
+export {adminAiFallbackTestCall} from "./admin/aiFallbackTestCall";
 export {
   adminManageListingProgram,
 } from "./admin/listingProgram/settings";

@@ -63,6 +63,40 @@ export type AiFallbackResult =
   | {status: "read"; output: unknown; cacheHit: boolean}
   | {status: "refused"; reason: AiFallbackRefusalReason};
 
+/** What one read used, for the audit row and the admin test call. */
+export interface AiReadUsage {
+  inputTokens: number;
+  outputTokens: number;
+  costMicros: number;
+}
+
+/** A provider failure by code and HTTP status; never a body or a token. */
+export interface AiReadFailure {
+  code: string;
+  httpStatus: number | null;
+}
+
+/** One read in detail: the shared path under runAiFallback and the test. */
+export type AiReadOutcome =
+  | {status: "read"; output: unknown; cacheHit: boolean; usage: AiReadUsage;
+    modelId: string}
+  | {status: "refused"; reason: AiFallbackRefusalReason; usage: AiReadUsage;
+    failure: AiReadFailure | null};
+
+/** The policy fields one read needs. */
+export interface AiReadPolicy {
+  modelId: string;
+  monthlyCapMicros: number;
+  perUidDailyReads: number;
+}
+
+export interface AiReadOptions {
+  /** False for the admin test call: every test is a real, paid call. */
+  useCache: boolean;
+  /** Marks the audit row as an operator test, not a visitor read. */
+  test?: boolean;
+}
+
 interface ModelModules {
   GuardedModelRunner: new (options: Record<string, unknown>) => {
     run: (request: Record<string, unknown>) => Promise<{output: unknown;
@@ -154,13 +188,14 @@ function resultCache(deps: AiFallbackDeps, task: string) {
 }
 
 async function audit(deps: AiFallbackDeps, request: AiFallbackRequest,
-  outcome: "paid" | "failed" | "refused", usage: {inputTokens: number;
-    outputTokens: number; costMicros: number}): Promise<void> {
+  outcome: "paid" | "failed" | "refused", usage: AiReadUsage,
+  options: AiReadOptions): Promise<void> {
   try {
     await deps.db.collection(AI_FALLBACK_AUDIT).add({schemaVersion: 1,
       commandId: request.commandId, task: request.task, outcome,
       inputTokens: usage.inputTokens, outputTokens: usage.outputTokens,
       costMicros: usage.costMicros, monthKey: monthKeyOf(deps.now()),
+      ...(options.test ? {test: true} : {}),
       createdAt: deps.serverTimestamp()});
   } catch (error) {
     logger.warn("AI fallback audit row was not written.",
@@ -169,7 +204,7 @@ async function audit(deps: AiFallbackDeps, request: AiFallbackRequest,
   }
 }
 
-const NOTHING = {inputTokens: 0, outputTokens: 0, costMicros: 0};
+const NOTHING: AiReadUsage = {inputTokens: 0, outputTokens: 0, costMicros: 0};
 
 /**
  * Reads one input with the model when the policy is on. Never throws for a
@@ -181,11 +216,31 @@ export async function runAiFallback(request: AiFallbackRequest,
   deps: AiFallbackDeps = defaultAiFallbackDeps()): Promise<AiFallbackResult> {
   const policy = await deps.policy();
   if (!policy) return {status: "off"};
+  const outcome = await executeAiRead(request, deps, policy, {useCache: true});
+  return outcome.status === "read" ?
+    {status: "read", output: outcome.output, cacheHit: outcome.cacheHit} :
+    {status: "refused", reason: outcome.reason};
+}
+
+/** A cache port that never hits and keeps nothing (the admin test call). */
+const NO_CACHE = {get: async () => null, put: async () => undefined};
+
+/**
+ * One read under [policy]: the per-call ceiling, the durable reservation,
+ * the model call, the settle and the audit row. runAiFallback calls it once
+ * the visitor policy is on; the admin test call calls it with its own
+ * bounds and no cache. Never throws for a provider or budget failure.
+ * @return {Promise<AiReadOutcome>} The output, or a refusal, with usage.
+ */
+export async function executeAiRead(request: AiFallbackRequest,
+  deps: AiFallbackDeps, policy: AiReadPolicy, options: AiReadOptions):
+  Promise<AiReadOutcome> {
   const modules = await deps.modules();
   const inputBytes = Buffer.byteLength(JSON.stringify(request.input));
   if (inputBytes > MAX_INPUT_BYTES ||
       Buffer.byteLength(request.prompt) > MAX_PROMPT_BYTES) {
-    return {status: "refused", reason: "ai_unreadable"};
+    return {status: "refused", reason: "ai_unreadable", usage: NOTHING,
+      failure: null};
   }
   // Bytes bound tokens from above, so the reservation can only over-count.
   const estimatedInputTokens = inputBytes + Buffer.byteLength(request.prompt) +
@@ -196,7 +251,8 @@ export async function runAiFallback(request: AiFallbackRequest,
   if (worstMicros > request.maxCostMicros) {
     logger.warn("AI fallback read is above its per-call ceiling.",
       {task: request.task, worstMicros});
-    return {status: "refused", reason: "ai_unreadable"};
+    return {status: "refused", reason: "ai_unreadable", usage: NOTHING,
+      failure: null};
   }
   const provider = modules.createAnthropicProvider({enabled: true,
     authScheme: "oauth_bearer", modelId: policy.modelId,
@@ -211,7 +267,7 @@ export async function runAiFallback(request: AiFallbackRequest,
     {reservation: null};
   const runner = new modules.GuardedModelRunner({enabled: true, provider,
     providerId: "anthropic", modelId: policy.modelId,
-    cache: resultCache(deps, request.task),
+    cache: options.useCache ? resultCache(deps, request.task) : NO_CACHE,
     budget: new modules.BudgetLedger({limits: {modelCalls: 1,
       networkRequests: 1, modelInputTokens: estimatedInputTokens,
       modelOutputTokens: request.maxOutputTokens,
@@ -232,7 +288,8 @@ export async function runAiFallback(request: AiFallbackRequest,
       maxNetworkRequests: 1});
     const reservation = held.reservation;
     if (provenance.cacheHit || !reservation) {
-      return {status: "read", output, cacheHit: true};
+      return {status: "read", output, cacheHit: true, usage: NOTHING,
+        modelId: policy.modelId};
     }
     const tokens = provenance.metadata?.tokens;
     const costMicros = tokens ? modules.attemptCostMicros({
@@ -242,15 +299,18 @@ export async function runAiFallback(request: AiFallbackRequest,
       cacheWriteTokens: tokens.cacheWrite ?? 0}) : worstMicros;
     await settleAiRead(deps, reservation, {actualMicros: costMicros,
       paid: true});
-    await audit(deps, request, "paid", {costMicros,
+    const usage: AiReadUsage = {costMicros,
       inputTokens: tokens ? tokens.ordinaryInput + (tokens.cacheRead ?? 0) +
         (tokens.cacheWrite ?? 0) : 0,
-      outputTokens: tokens?.outputTotal ?? 0});
-    return {status: "read", output, cacheHit: false};
+      outputTokens: tokens?.outputTotal ?? 0};
+    await audit(deps, request, "paid", usage, options);
+    return {status: "read", output, cacheHit: false, usage,
+      modelId: policy.modelId};
   } catch (error) {
     if (error instanceof AiFallbackRefusal) {
-      await audit(deps, request, "refused", NOTHING);
-      return {status: "refused", reason: error.reason};
+      await audit(deps, request, "refused", NOTHING, options);
+      return {status: "refused", reason: error.reason, usage: NOTHING,
+        failure: null};
     }
     const reservation = held.reservation;
     let charged = 0;
@@ -265,10 +325,15 @@ export async function runAiFallback(request: AiFallbackRequest,
         {actualMicros: charged, paid: false})
         .catch(() => undefined);
     }
+    const code = (error as {code?: unknown})?.code;
+    const status = (error as {details?: {status?: unknown}})?.details?.status;
+    const failure: AiReadFailure = {
+      code: typeof code === "string" ? code : "error",
+      httpStatus: typeof status === "number" ? status : null};
     logger.warn("AI fallback read did not produce a usable draft.",
-      {task: request.task,
-        code: (error as {code?: unknown})?.code ?? "error"});
-    await audit(deps, request, "failed", {...NOTHING, costMicros: charged});
-    return {status: "refused", reason: "ai_unreadable"};
+      {task: request.task, code: failure.code});
+    const usage: AiReadUsage = {...NOTHING, costMicros: charged};
+    await audit(deps, request, "failed", usage, options);
+    return {status: "refused", reason: "ai_unreadable", usage, failure};
   }
 }
