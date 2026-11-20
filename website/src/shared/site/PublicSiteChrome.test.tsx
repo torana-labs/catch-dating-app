@@ -304,6 +304,7 @@ describe("canonical public chrome", () => {
       ["Start free trial", "/host/start/"], ["Pricing", "/pricing/"], ["Your first event", "/host/first-event/"], ["Switch to Catch", "/host/switch/"],
       ["Try a demo night", "/host/demo/"], ["Programmes", "/programmes/"],
       ["Forms", "/product/forms/"], ["Host playbooks", "/playbooks/"], ["No-show calculator", "/tools/no-show-calculator/"],
+      ["Event page from a link", "/tools/event-page-from-link/"],
       ["Book a walkthrough", "/host/walkthrough/"], ["Refer a host", "/refer/"], ["Help", "/help/"],
       ["What’s on", "/explore/"], ["About", "/about/"], ["Safety", "/safety/"], ["Contact", "/contact/"], ["Report or remove a listing", "/listings/request/"],
       ["Terms", "/terms/"], ["Privacy", "/privacy/"], ["Refunds", "/refunds/"],

@@ -168,7 +168,7 @@ describe("playbook page indexes", () => {
       "/pricing/", "/product/bookings-and-memberships/",
       "/product/forms/", "/product/guest-records/", "/product/messages-and-growth/", "/product/reports-and-payouts/",
       "/product/running-the-event/", "/product/the-room/", "/product/your-page/", "/programmes/", "/refer/", "/safety/",
-      "/tools/no-show-calculator/",
+      "/tools/event-page-from-link/", "/tools/no-show-calculator/",
     ]);
   });
 
@@ -177,7 +177,7 @@ describe("playbook page indexes", () => {
   // The pages whose try-it band, buttons and closing tool form are live now.
   // A page joins when its command is in production and its sections flip to
   // built; its command must be website-ready (features/tryIt/tryItModel.ts).
-  const liveTryItPages = ["product_your_page"];
+  const liveTryItPages = ["product_your_page", "product_bookings", "product_messages"];
 
   it("hides every try-it band and button unless its command's website tool is ready, on every product page", () => {
     expect(productV2.map(({ref}) => ref.match.contentKey).sort()).toEqual([
@@ -210,6 +210,19 @@ describe("playbook page indexes", () => {
       expect(liveTry, `${key} #try is live only once listed in liveTryItPages`).toBe(liveTryItPages.includes(key));
     }
     for (const key of liveTryItPages) expect(playbookTryItTool(key), `${key} has a website-ready tool`).not.toBeNull();
+  });
+
+  // event.import-from-link returns a private draft (name, date, start time,
+  // city) and promotion.create-kit tracked /invite/ links with a QR each
+  // (contracts/callable_responses/): their bands promise nothing more.
+  it("words the event and kit tools' bands only as what their commands return", () => {
+    for (const key of ["product_bookings", "product_messages", "tools_event_page_from_link"]) {
+      const {raw} = loaded.find(({ref}) => ref.match.contentKey === key)!;
+      const bands = livePlaybookPage(raw).sections.filter((section) => section.id === "try" || section.id === "start");
+      expect(bands.map((section) => section.id), key).toEqual(["try", "start"]);
+      const text = JSON.stringify(bands);
+      expect(text, key).not.toMatch(/checkout|member|access|balance|reminder|price|photo|suggest|bookable|day-of|Luma|Eventbrite|District|Google Form/iu);
+    }
   });
 
   it("shows Reports' numbers-only report while its export upload stays hidden (owner, #2062 C7 option c)", () => {
@@ -395,7 +408,7 @@ describe("shelved pages", () => {
 });
 
 describe("tool, guide and guest app pages", () => {
-  it.each(["/tools/no-show-calculator/", "/playbooks/", "/playbooks/run-club/", "/playbooks/supper-club/", "/playbooks/quiz-night/", "/playbooks/racket-sports/", "/app/"])(
+  it.each(["/tools/no-show-calculator/", "/tools/event-page-from-link/", "/playbooks/", "/playbooks/run-club/", "/playbooks/supper-club/", "/playbooks/quiz-night/", "/playbooks/racket-sports/", "/app/"])(
     "renders %s: every section bound, brand resolved, indexed (owner, 19 Nov 2026)", async (path) => {
       const page = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
       expect(page, path).not.toBeNull();
@@ -425,6 +438,16 @@ describe("tool, guide and guest app pages", () => {
     expect(calculator.sections.at(-1)!.type).toBe("cta");
     const closing = calculator.sections.at(-1)! as Extract<PlaybookPageDocument["sections"][number], {type: "cta"}>;
     expect(closing.actions?.map((item) => "route" in item.to ? item.to.route : null)).toEqual(["host_start", "host_walkthrough"]);
+  });
+
+  it("opens the event tool from /tools/event-page-from-link/'s try band, like Bookings' (event.import-from-link)", () => {
+    const tryForm = (key: string) => {
+      const band = livePlaybookPage(loaded.find(({ref}) => ref.match.contentKey === key)!.raw).sections.find((section) => section.id === "try");
+      return band?.type === "split" ? band.leadForm : undefined;
+    };
+    expect(playbookTryItTool("tools_event_page_from_link")).toBe("event");
+    expect(tryForm("tools_event_page_from_link")?.requestKind).toBe("tool");
+    expect(tryForm("tools_event_page_from_link")).toEqual(tryForm("product_bookings"));
   });
 
   it("asks for the guest app launch notice only while the app is on no store, with no dating wording or release date", () => {
