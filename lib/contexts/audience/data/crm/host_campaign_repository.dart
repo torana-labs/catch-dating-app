@@ -143,7 +143,8 @@ class HostCampaignRepository {
   );
 }
 
-// keepalive: Reuse the callable client for the campaign subdomain.
+// keepalive: account-free: Reuse the callable client for the campaign
+// subdomain.
 @Riverpod(keepAlive: true)
 HostCampaignRepository hostCampaignRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);

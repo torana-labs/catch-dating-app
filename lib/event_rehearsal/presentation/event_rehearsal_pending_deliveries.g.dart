@@ -10,7 +10,8 @@ part of 'event_rehearsal_pending_deliveries.dart';
 // ignore_for_file: type=lint, type=warning
 /// Discovery references only. Each delivery controller owns its command and retry.
 /// A server page may omit a message whose handoff succeeded without confirmation.
-// keepalive: Pending delivery discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending delivery discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 
 @ProviderFor(EventRehearsalPendingDeliveries)
 final eventRehearsalPendingDeliveriesProvider =
@@ -18,7 +19,8 @@ final eventRehearsalPendingDeliveriesProvider =
 
 /// Discovery references only. Each delivery controller owns its command and retry.
 /// A server page may omit a message whose handoff succeeded without confirmation.
-// keepalive: Pending delivery discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending delivery discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 final class EventRehearsalPendingDeliveriesProvider
     extends
         $NotifierProvider<
@@ -27,14 +29,15 @@ final class EventRehearsalPendingDeliveriesProvider
         > {
   /// Discovery references only. Each delivery controller owns its command and retry.
   /// A server page may omit a message whose handoff succeeded without confirmation.
-  // keepalive: Pending delivery discovery survives closed sheets until confirmation or account reset.
+  /// Session lifetime: pending delivery discovery survives closed sheets until
+  /// confirmation, and ends with the signed-in period.
   EventRehearsalPendingDeliveriesProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'eventRehearsalPendingDeliveriesProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -56,11 +59,12 @@ final class EventRehearsalPendingDeliveriesProvider
 }
 
 String _$eventRehearsalPendingDeliveriesHash() =>
-    r'8705facdce46c5f417f4952d467086f1afd98989';
+    r'9560512d52e673bb79cb7babba3494ddc79ef584';
 
 /// Discovery references only. Each delivery controller owns its command and retry.
 /// A server page may omit a message whose handoff succeeded without confirmation.
-// keepalive: Pending delivery discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending delivery discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 
 abstract class _$EventRehearsalPendingDeliveries
     extends $Notifier<Set<RehearsalDeliveryScope>> {

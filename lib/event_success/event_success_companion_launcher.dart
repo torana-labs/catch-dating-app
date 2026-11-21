@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
@@ -15,12 +16,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_success_companion_launcher.g.dart';
 
-// keepalive: companion launch de-dupe state must survive app-shell listener
-// rebuilds so attendance transitions do not relaunch the same companion route.
-@Riverpod(keepAlive: true)
+/// Session lifetime: the launch de-dupe state survives app-shell listener
+/// rebuilds, so an attendance transition never relaunches the same companion
+/// route, and the next account starts with none.
+@riverpod
 EventSuccessCompanionLaunchRegistry eventSuccessCompanionLaunchRegistry(
   Ref ref,
 ) {
+  ref.retainForCurrentSession();
   return EventSuccessCompanionLaunchRegistry();
 }
 

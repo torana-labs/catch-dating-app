@@ -6,13 +6,14 @@
   "mode": "report-only",
   "description": "Screen-data caching findings that existed when the rules landed, by exact rule, path, symbol and detail. The provider graph check fails only when a finding is not listed here (or occurs more often than its count). A context migration PR deletes the entries it fixes, so the list only shrinks; never add an entry to admit new code.",
   "countsByRule": {
-    "CACHE-LIFETIME-001": 1,
+    "CACHE-LIFETIME-001": 0,
     "CACHE-POLICY-001": 0,
     "CACHE-ACCOUNT-001": 0,
     "CACHE-KEY-001": 0,
-    "CACHE-INVALIDATE-001": 37,
+    "CACHE-INVALIDATE-001": 20,
     "CACHE-LISTENER-001": 0,
-    "KEEPALIVE-MANUAL-001": 0
+    "KEEPALIVE-MANUAL-001": 0,
+    "KEEPALIVE-SCOPE-001": 1
   },
   "findings": [
     {
@@ -136,10 +137,10 @@
       "detail": "invalidate:formProfilesControllerProvider"
     },
     {
-      "rule": "CACHE-LIFETIME-001",
-      "path": "lib/contexts/profiles/data/user_profile_repository.dart",
-      "symbol": "watchUserProfileProvider",
-      "detail": "keepAlive"
+      "rule": "KEEPALIVE-SCOPE-001",
+      "path": "lib/contexts/live/data/event_rehearsal_repository.dart",
+      "symbol": "eventRehearsalRepositoryProvider",
+      "detail": "no-scope"
     }
   ]
 }

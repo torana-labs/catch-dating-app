@@ -75,8 +75,9 @@ class HostFormAutomationReads {
       );
 }
 
-// keepalive: a stateless repository over account-free SDK singletons; the
-// reader checks the signed-in account on every read and rules authorize it.
+// keepalive: account-free: a stateless repository over account-free SDK
+// singletons; the reader checks the signed-in account on every read and rules
+// authorize it.
 @Riverpod(keepAlive: true)
 HostFormAutomationReads hostFormAutomationReads(Ref ref) {
   ref.watch(authenticatedSessionProvider);

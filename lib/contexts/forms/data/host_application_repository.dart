@@ -315,7 +315,8 @@ class HostApplicationRepository {
   );
 }
 
-// keepalive: this stateless repository is shared across Host application routes.
+// keepalive: account-free: this stateless repository is shared across Host
+// application routes.
 @Riverpod(keepAlive: true)
 HostApplicationRepository hostApplicationRepository(Ref ref) =>
     HostApplicationRepository(

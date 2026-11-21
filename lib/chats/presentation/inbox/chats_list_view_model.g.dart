@@ -8,19 +8,28 @@ part of 'chats_list_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Session lifetime: consumer Chats and the Host inbox share this text across
+/// tab switches and route re-entry, and the next account starts from an empty
+/// search.
 
 @ProviderFor(ChatSearchQuery)
 final chatSearchQueryProvider = ChatSearchQueryProvider._();
 
+/// Session lifetime: consumer Chats and the Host inbox share this text across
+/// tab switches and route re-entry, and the next account starts from an empty
+/// search.
 final class ChatSearchQueryProvider
     extends $NotifierProvider<ChatSearchQuery, String> {
+  /// Session lifetime: consumer Chats and the Host inbox share this text across
+  /// tab switches and route re-entry, and the next account starts from an empty
+  /// search.
   ChatSearchQueryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'chatSearchQueryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -41,7 +50,11 @@ final class ChatSearchQueryProvider
   }
 }
 
-String _$chatSearchQueryHash() => r'021bf1bff15d3432bb7b620cde16800db246c264';
+String _$chatSearchQueryHash() => r'18746479d57b7b04938ddb38c1d26dc8a2502f42';
+
+/// Session lifetime: consumer Chats and the Host inbox share this text across
+/// tab switches and route re-entry, and the next account starts from an empty
+/// search.
 
 abstract class _$ChatSearchQuery extends $Notifier<String> {
   String build();

@@ -7,13 +7,15 @@ part 'event_assistance_pending_deliveries.g.dart';
 
 /// Discovery references only. Each delivery controller owns its command and retry.
 /// A server page may omit a message whose handoff succeeded without confirmation.
-// keepalive: Pending delivery discovery survives closed sheets until confirmation or account reset.
-@Riverpod(keepAlive: true)
+/// Session lifetime: pending delivery discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
+@riverpod
 class EventAssistancePendingDeliveries
     extends _$EventAssistancePendingDeliveries {
   AuthenticatedSession? _account;
   @override
   Set<EventAssistanceDeliveryScope> build() {
+    ref.retainForCurrentSession();
     final auth = ref.watch(authenticatedSessionProvider);
     final authState = catchAsyncStateFromAsyncValue(auth);
     _account = !authState.isSettledData ? null : authState.value;

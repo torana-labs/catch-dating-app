@@ -28,7 +28,8 @@ class ConfigDocuments {
   );
 }
 
-// keepalive: a stateless facade over the app's Firestore singleton.
+// keepalive: account-free: a stateless facade over the app's Firestore
+// singleton.
 @Riverpod(keepAlive: true)
 ConfigDocuments configDocuments(Ref ref) =>
     ConfigDocuments(ref.watch(firebaseFirestoreProvider));

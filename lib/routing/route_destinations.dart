@@ -112,8 +112,8 @@ bool _isHostRoute(String? path) =>
     (path?.startsWith('${Routes.hostHomeScreen.path}/') ?? false);
 
 @visibleForTesting
-// keepalive: initial app location is startup routing state consumed by the
-// app-wide keepAlive GoRouter provider.
+// keepalive: account-free: initial app location is startup routing state
+// consumed by the app-wide keepAlive GoRouter provider.
 @Riverpod(keepAlive: true)
 String initialAppLocation(Ref ref) => _initialLocationFromPlatform();
 

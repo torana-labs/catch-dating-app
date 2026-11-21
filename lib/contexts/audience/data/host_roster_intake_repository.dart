@@ -18,8 +18,8 @@ part 'host_roster_intake_repository.g.dart';
 // a file preview, or a review session named by id. manageHostRosterIntake stays
 // deployed only for older app builds.
 //
-// keepalive: one callable client owns guest-list preview, resume, revise and
-// apply across the event-scoped intake surface.
+// keepalive: account-free: one callable client owns guest-list preview, resume,
+// revise and apply across the event-scoped intake surface.
 @Riverpod(keepAlive: true)
 HostRosterIntakeRepository hostRosterIntakeRepository(Ref ref) =>
     HostRosterIntakeRepository(ref.watch(firebaseFunctionsProvider));

@@ -40,15 +40,18 @@ Future<void> appShellFcmInitialization(
   final fcmService = ref.watch(fcmServiceProvider);
   if (!fcmService.isSupportedPlatform) return;
 
-  final arrivals = ref.read(foregroundNotificationControllerProvider.notifier);
   await fcmService.initialize(
     uid: uid,
     router: router,
     // SDK delivery occurs outside provider construction. Do not use a delayed
-    // build-time state mutation to establish the presentation session.
+    // build-time state mutation to establish the presentation session. The
+    // controller lives for one signed-in period, so it is read on delivery,
+    // and a delivery after this shell's session has gone is dropped.
     onForegroundMessage: (message) {
-      arrivals.startSession(uid);
-      arrivals.receive(uid, message);
+      if (!ref.mounted) return;
+      ref.read(foregroundNotificationControllerProvider.notifier)
+        ..startSession(uid)
+        ..receive(uid, message);
     },
   );
 }
@@ -127,8 +130,9 @@ class AppShell extends ConsumerWidget {
         analytics: analytics,
       );
       if (uid != prev?.asData?.value) {
+        // Clears the notice on screen too; the controller's own state ends
+        // with the signed-in period.
         ref.read(foregroundNotificationControllerProvider.notifier).reset();
-        ref.read(eventSuccessCompanionLaunchRegistryProvider).reset();
       }
       if (uid == null && prev?.asData?.value != null) {
         unawaited(ref.read(fcmServiceProvider).reset());

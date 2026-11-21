@@ -64,8 +64,9 @@ class _EventSuccessAudioPalette {
   }
 }
 
-// keepalive: live effects are driven through imperative ref.read calls, and
-// ambient-bed playback must not auto-dispose between route callbacks.
+// keepalive: account-free: live effects are driven through imperative ref.read
+// calls, and ambient-bed playback must not auto-dispose between route
+// callbacks.
 @Riverpod(keepAlive: true)
 EventSuccessLiveEffectsController eventSuccessLiveEffectsController(Ref ref) {
   final controller = EventSuccessLiveEffectsController();

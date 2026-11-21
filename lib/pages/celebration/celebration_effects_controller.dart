@@ -7,8 +7,8 @@ part 'celebration_effects_controller.g.dart';
 
 enum CelebrationMomentKind { eventCreated, eventJoined, eventCheckedIn, match }
 
-// keepalive: celebration effects coordinate transient app-wide moments across
-// route transitions.
+// keepalive: account-free: celebration effects coordinate transient app-wide
+// moments across route transitions.
 @Riverpod(keepAlive: true)
 CelebrationEffectsController celebrationEffectsController(Ref ref) {
   final controller = CelebrationEffectsController();

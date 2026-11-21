@@ -400,7 +400,8 @@ class HostContactsRepository {
   );
 }
 
-// keepalive: Reuse the callable client for the contacts subdomain.
+// keepalive: account-free: Reuse the callable client for the contacts
+// subdomain.
 @Riverpod(keepAlive: true)
 HostContactsRepository hostContactsRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);

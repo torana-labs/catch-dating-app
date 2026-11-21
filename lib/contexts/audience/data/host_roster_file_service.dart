@@ -41,7 +41,8 @@ class PluginHostRosterFileService implements HostRosterFileService {
   }
 }
 
-// keepalive: Host workflows share one process-wide file-picker boundary.
+// keepalive: account-free: Host workflows share one process-wide file-picker
+// boundary.
 @Riverpod(keepAlive: true)
 HostRosterFileService hostRosterFileService(Ref ref) =>
     const PluginHostRosterFileService();

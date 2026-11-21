@@ -72,7 +72,7 @@ class FirestoreEventChatSignalSource implements EventChatSignalSource {
   );
 }
 
-// keepalive: a stateless listener facade with no account state.
+// keepalive: account-free: a stateless listener facade with no account state.
 @Riverpod(keepAlive: true)
 EventChatSignalSource eventChatSignalSource(Ref ref) =>
     FirestoreEventChatSignalSource(ref.watch(firebaseFirestoreProvider));

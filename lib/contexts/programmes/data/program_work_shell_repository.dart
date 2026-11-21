@@ -178,7 +178,8 @@ Stream<List<T>> _all<T>(List<Stream<T>> streams) {
   return combined;
 }
 
-// keepalive: a stateless repository over account-free SDK singletons.
+// keepalive: account-free: a stateless repository over account-free SDK
+// singletons.
 @Riverpod(keepAlive: true)
 ProgramWorkShellRepository programWorkShellRepository(Ref ref) =>
     ProgramWorkShellRepository(

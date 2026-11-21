@@ -142,8 +142,8 @@ class EventParticipationRepository {
   );
 }
 
-// keepalive: participation repository is shared by event detail, rosters, and
-// host operations.
+// keepalive: account-free: participation repository is shared by event detail,
+// rosters, and host operations.
 @Riverpod(keepAlive: true)
 EventParticipationRepository eventParticipationRepository(Ref ref) =>
     EventParticipationRepository(ref.watch(firebaseFirestoreProvider));

@@ -86,8 +86,8 @@ class OrganizerPostsRepository {
   );
 }
 
-// keepalive: club post composer and quota streams share one Functions-backed
-// repository instance across host panels during a session.
+// keepalive: account-free: club post composer and quota streams share one
+// Functions-backed repository instance across host panels during a session.
 @Riverpod(keepAlive: true)
 OrganizerPostsRepository organizerPostsRepository(Ref ref) =>
     OrganizerPostsRepository(

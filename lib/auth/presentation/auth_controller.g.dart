@@ -62,7 +62,9 @@ String _$authInitialCountryDialCodeHash() =>
 /// This provider is keepAlive so the OTP step survives route rebuilds during
 /// authentication. Call [reset] or invalidate the provider when the auth flow is
 /// cancelled, completed, or the user signs out.
-// keepalive: OTP state must survive auth route rebuilds until explicit reset.
+// keepalive: account-free: phone and OTP state before any account is signed in;
+// it survives auth route rebuilds and AuthSessionController resets it at
+// sign-out.
 
 @ProviderFor(AuthController)
 final authControllerProvider = AuthControllerProvider._();
@@ -77,7 +79,9 @@ final authControllerProvider = AuthControllerProvider._();
 /// This provider is keepAlive so the OTP step survives route rebuilds during
 /// authentication. Call [reset] or invalidate the provider when the auth flow is
 /// cancelled, completed, or the user signs out.
-// keepalive: OTP state must survive auth route rebuilds until explicit reset.
+// keepalive: account-free: phone and OTP state before any account is signed in;
+// it survives auth route rebuilds and AuthSessionController resets it at
+// sign-out.
 final class AuthControllerProvider
     extends $NotifierProvider<AuthController, AuthScreenState> {
   /// **Pattern B: Flow controller with freezed state + Mutations**
@@ -90,7 +94,9 @@ final class AuthControllerProvider
   /// This provider is keepAlive so the OTP step survives route rebuilds during
   /// authentication. Call [reset] or invalidate the provider when the auth flow is
   /// cancelled, completed, or the user signs out.
-  // keepalive: OTP state must survive auth route rebuilds until explicit reset.
+  // keepalive: account-free: phone and OTP state before any account is signed in;
+  // it survives auth route rebuilds and AuthSessionController resets it at
+  // sign-out.
   AuthControllerProvider._()
     : super(
         from: null,
@@ -130,7 +136,9 @@ String _$authControllerHash() => r'509a96b50a91cb407b7084733d41f35a972e8229';
 /// This provider is keepAlive so the OTP step survives route rebuilds during
 /// authentication. Call [reset] or invalidate the provider when the auth flow is
 /// cancelled, completed, or the user signs out.
-// keepalive: OTP state must survive auth route rebuilds until explicit reset.
+// keepalive: account-free: phone and OTP state before any account is signed in;
+// it survives auth route rebuilds and AuthSessionController resets it at
+// sign-out.
 
 abstract class _$AuthController extends $Notifier<AuthScreenState> {
   AuthScreenState build();

@@ -324,7 +324,8 @@ void _ignoreChange() {}
 /// The account and organizer a programme is created for.
 typedef ProgramEventsScope = ({String accountId, String organizerId});
 
-// keepalive: a stateless journal facade; its entries are keyed by account.
+// keepalive: account-free: a stateless journal facade; it keys its entries by
+// account inside.
 @Riverpod(keepAlive: true)
 ProgramCreateJournal programCreateJournal(Ref ref) =>
     const ProgramCreateJournal();

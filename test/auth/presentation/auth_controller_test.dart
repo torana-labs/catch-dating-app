@@ -921,11 +921,15 @@ void main() {
       },
     );
 
-    test('signOut clears keepAlive Explore browse state', () async {
+    test('Explore browse state ends with the signed-in period', () async {
       final repository = _SignOutAuthRepository();
       final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
+      final uid = container.listen(uidProvider, (_, _) {});
+      addTearDown(uid.close);
+      repository.emitAuthState(TestUser(uid: 'uid-a'));
+      await container.pump();
 
       final defaultCity = container.read(selectedExploreCityProvider);
       final defaultFilters = container.read(exploreFiltersProvider);
@@ -935,6 +939,7 @@ void main() {
       container
           .read(exploreFiltersProvider.notifier)
           .setDistanceFilter(ExploreDistanceFilter.fiveKm);
+      await container.pump();
 
       expect(container.read(selectedExploreCityProvider), delhi);
       expect(
@@ -945,8 +950,13 @@ void main() {
       expect(container.read(exploreFiltersProvider), isNot(defaultFilters));
 
       await container.read(authSessionControllerProvider.notifier).signOut();
+      repository.emitAuthState(null);
+      await container.pump();
 
       expect(repository.signOutCallCount, 1);
+      expect(container.read(exploreSearchQueryProvider), isEmpty);
+      repository.emitAuthState(TestUser(uid: 'uid-b'));
+      await container.pump();
       expect(container.read(selectedExploreCityProvider), defaultCity);
       expect(
         container.read(selectedExploreCityWasUserSelectedProvider),

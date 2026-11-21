@@ -8,40 +8,40 @@ part of 'explore_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **KeepAlive notifier with internal flag**
-///
 /// Holds the currently selected city for club browsing. Uses an
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
-/// manual user pick. [keepAlive] is true so the city survives tab switches.
-// keepalive: selected city is user browse-session state shared by Explore list,
-// map, and city controllers across tab switches.
+/// manual user pick.
+///
+/// Session lifetime: the city is browse state shared by the Explore list, map
+/// and city controllers across tab switches, and the next account starts from
+/// the market default.
 
 @ProviderFor(SelectedExploreCity)
 final selectedExploreCityProvider = SelectedExploreCityProvider._();
 
-/// **KeepAlive notifier with internal flag**
-///
 /// Holds the currently selected city for club browsing. Uses an
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
-/// manual user pick. [keepAlive] is true so the city survives tab switches.
-// keepalive: selected city is user browse-session state shared by Explore list,
-// map, and city controllers across tab switches.
+/// manual user pick.
+///
+/// Session lifetime: the city is browse state shared by the Explore list, map
+/// and city controllers across tab switches, and the next account starts from
+/// the market default.
 final class SelectedExploreCityProvider
     extends $NotifierProvider<SelectedExploreCity, CityData> {
-  /// **KeepAlive notifier with internal flag**
-  ///
   /// Holds the currently selected city for club browsing. Uses an
   /// internal `_userSelected` flag so GPS auto-detection never overrides a
-  /// manual user pick. [keepAlive] is true so the city survives tab switches.
-  // keepalive: selected city is user browse-session state shared by Explore list,
-  // map, and city controllers across tab switches.
+  /// manual user pick.
+  ///
+  /// Session lifetime: the city is browse state shared by the Explore list, map
+  /// and city controllers across tab switches, and the next account starts from
+  /// the market default.
   SelectedExploreCityProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'selectedExploreCityProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -63,15 +63,15 @@ final class SelectedExploreCityProvider
 }
 
 String _$selectedExploreCityHash() =>
-    r'e9296874c56fdcb595f08354e139a15081e1e4db';
+    r'a0c4c2cf1cc5b82a61d5eaa32315458b76db89c6';
 
-/// **KeepAlive notifier with internal flag**
-///
 /// Holds the currently selected city for club browsing. Uses an
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
-/// manual user pick. [keepAlive] is true so the city survives tab switches.
-// keepalive: selected city is user browse-session state shared by Explore list,
-// map, and city controllers across tab switches.
+/// manual user pick.
+///
+/// Session lifetime: the city is browse state shared by the Explore list, map
+/// and city controllers across tab switches, and the next account starts from
+/// the market default.
 
 abstract class _$SelectedExploreCity extends $Notifier<CityData> {
   CityData build();
@@ -91,19 +91,26 @@ abstract class _$SelectedExploreCity extends $Notifier<CityData> {
   }
 }
 
+/// Session lifetime: whether the city was picked by hand, which protects that
+/// choice from later auto-detection while browsing.
+
 @ProviderFor(SelectedExploreCityWasUserSelected)
 final selectedExploreCityWasUserSelectedProvider =
     SelectedExploreCityWasUserSelectedProvider._();
 
+/// Session lifetime: whether the city was picked by hand, which protects that
+/// choice from later auto-detection while browsing.
 final class SelectedExploreCityWasUserSelectedProvider
     extends $NotifierProvider<SelectedExploreCityWasUserSelected, bool> {
+  /// Session lifetime: whether the city was picked by hand, which protects that
+  /// choice from later auto-detection while browsing.
   SelectedExploreCityWasUserSelectedProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'selectedExploreCityWasUserSelectedProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -127,7 +134,10 @@ final class SelectedExploreCityWasUserSelectedProvider
 }
 
 String _$selectedExploreCityWasUserSelectedHash() =>
-    r'40ae2f1de86c574c928e12765109bf863a1c83cc';
+    r'338ded55253758a9689aedcbc62e7190d7bb23df';
+
+/// Session lifetime: whether the city was picked by hand, which protects that
+/// choice from later auto-detection while browsing.
 
 abstract class _$SelectedExploreCityWasUserSelected extends $Notifier<bool> {
   bool build();
@@ -147,37 +157,31 @@ abstract class _$SelectedExploreCityWasUserSelected extends $Notifier<bool> {
   }
 }
 
-/// **KeepAlive notifier — simple string state**
+/// Holds the current search query text.
 ///
-/// Holds the current search query text. [keepAlive] ensures the query
-/// survives tab switches so the user's search isn't lost while browsing.
-// keepalive: query text is browse-session state and should survive Explore
-// route/chrome rebuilds.
+/// Session lifetime: the query survives tab switches and Explore route and
+/// chrome rebuilds, and the next account starts from an empty search.
 
 @ProviderFor(ExploreSearchQuery)
 final exploreSearchQueryProvider = ExploreSearchQueryProvider._();
 
-/// **KeepAlive notifier — simple string state**
+/// Holds the current search query text.
 ///
-/// Holds the current search query text. [keepAlive] ensures the query
-/// survives tab switches so the user's search isn't lost while browsing.
-// keepalive: query text is browse-session state and should survive Explore
-// route/chrome rebuilds.
+/// Session lifetime: the query survives tab switches and Explore route and
+/// chrome rebuilds, and the next account starts from an empty search.
 final class ExploreSearchQueryProvider
     extends $NotifierProvider<ExploreSearchQuery, String> {
-  /// **KeepAlive notifier — simple string state**
+  /// Holds the current search query text.
   ///
-  /// Holds the current search query text. [keepAlive] ensures the query
-  /// survives tab switches so the user's search isn't lost while browsing.
-  // keepalive: query text is browse-session state and should survive Explore
-  // route/chrome rebuilds.
+  /// Session lifetime: the query survives tab switches and Explore route and
+  /// chrome rebuilds, and the next account starts from an empty search.
   ExploreSearchQueryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'exploreSearchQueryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -199,14 +203,12 @@ final class ExploreSearchQueryProvider
 }
 
 String _$exploreSearchQueryHash() =>
-    r'c0e1950d6fde1fcdaccda0e59bb4388fd3563519';
+    r'88fb0f3df7583acd4310b07981a295c2e8e7c266';
 
-/// **KeepAlive notifier — simple string state**
+/// Holds the current search query text.
 ///
-/// Holds the current search query text. [keepAlive] ensures the query
-/// survives tab switches so the user's search isn't lost while browsing.
-// keepalive: query text is browse-session state and should survive Explore
-// route/chrome rebuilds.
+/// Session lifetime: the query survives tab switches and Explore route and
+/// chrome rebuilds, and the next account starts from an empty search.
 
 abstract class _$ExploreSearchQuery extends $Notifier<String> {
   String build();
@@ -299,18 +301,25 @@ final class DebouncedExploreSearchQueryProvider
 String _$debouncedExploreSearchQueryHash() =>
     r'0be4e553c01c500a1440750e22e28e250d3b37d3';
 
+/// Session lifetime: filters are browse state shared by the Explore list, map
+/// and feed view models, and the next account starts from the defaults.
+
 @ProviderFor(ExploreFilters)
 final exploreFiltersProvider = ExploreFiltersProvider._();
 
+/// Session lifetime: filters are browse state shared by the Explore list, map
+/// and feed view models, and the next account starts from the defaults.
 final class ExploreFiltersProvider
     extends $NotifierProvider<ExploreFilters, ExploreFilterSelection> {
+  /// Session lifetime: filters are browse state shared by the Explore list, map
+  /// and feed view models, and the next account starts from the defaults.
   ExploreFiltersProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'exploreFiltersProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -331,7 +340,10 @@ final class ExploreFiltersProvider
   }
 }
 
-String _$exploreFiltersHash() => r'3464cf43a58dfa1acbf58089bc7091de4ce8bc70';
+String _$exploreFiltersHash() => r'67382fa2afd68ea58db857b0756950d033516a82';
+
+/// Session lifetime: filters are browse state shared by the Explore list, map
+/// and feed view models, and the next account starts from the defaults.
 
 abstract class _$ExploreFilters extends $Notifier<ExploreFilterSelection> {
   ExploreFilterSelection build();

@@ -44,6 +44,7 @@ abstract interface class RazorpayCheckout {
 }
 
 /// Host and non-native shells intentionally have no Razorpay implementation.
-// keepalive: the native checkout factory is fixed by the installable app root.
+// keepalive: account-free: the native checkout factory is fixed by the
+// installable app root.
 @Riverpod(keepAlive: true)
 RazorpayCheckoutFactory? razorpayCheckoutFactory(Ref ref) => null;

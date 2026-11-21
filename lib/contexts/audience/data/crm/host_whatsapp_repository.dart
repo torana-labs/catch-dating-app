@@ -259,7 +259,8 @@ class HostWhatsappRepository {
   );
 }
 
-// keepalive: Reuse the callable client for the whatsapp subdomain.
+// keepalive: account-free: Reuse the callable client for the whatsapp
+// subdomain.
 @Riverpod(keepAlive: true)
 HostWhatsappRepository hostWhatsappRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);

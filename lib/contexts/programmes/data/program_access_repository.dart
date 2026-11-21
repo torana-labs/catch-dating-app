@@ -112,7 +112,8 @@ class ProgramAccessRepository {
   );
 }
 
-// keepalive: a stateless repository over account-free SDK singletons.
+// keepalive: account-free: a stateless repository over account-free SDK
+// singletons.
 @Riverpod(keepAlive: true)
 ProgramAccessRepository programAccessRepository(Ref ref) =>
     ProgramAccessRepository(

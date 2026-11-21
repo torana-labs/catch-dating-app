@@ -18,8 +18,8 @@ part 'auth_controller.g.dart';
 
 enum AuthStep { phone, otp }
 
-// keepalive: initial phone market is stable auth-flow state reused by phone
-// and OTP route rebuilds.
+// keepalive: account-free: the device's phone market, fixed for the process and
+// shared by the phone and OTP routes.
 @Riverpod(keepAlive: true)
 String authInitialCountryDialCode(Ref ref) {
   if (AppConfig.appRole.isHost) {
@@ -60,7 +60,9 @@ extension AuthScreenStateX on AuthScreenState {
 /// This provider is keepAlive so the OTP step survives route rebuilds during
 /// authentication. Call [reset] or invalidate the provider when the auth flow is
 /// cancelled, completed, or the user signs out.
-// keepalive: OTP state must survive auth route rebuilds until explicit reset.
+// keepalive: account-free: phone and OTP state before any account is signed in;
+// it survives auth route rebuilds and AuthSessionController resets it at
+// sign-out.
 @Riverpod(keepAlive: true)
 class AuthController extends _$AuthController {
   static final sendOtpMutation = Mutation<void>();
