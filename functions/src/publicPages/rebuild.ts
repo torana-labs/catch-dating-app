@@ -34,7 +34,7 @@ export const liveMarkets: ReadonlySet<string> = new Set(canonicalMarkets
   .filter((market) => market.launchStatus === "launched")
   .map((market) => market.slug));
 
-// The website reader's per-organizer bounds; past them it fails closed.
+// Per-organizer read bounds; past them the rebuild fails closed.
 const eventReadBound = 200;
 const reviewReadBound = 200;
 const recommendationReadBound = 4;
@@ -179,7 +179,7 @@ export async function readOrganizerScope(
       listing.path);
   const catchEvents = [...byOrganizer];
   // An id published as both kinds is ambiguous, so its event page is
-  // withheld, as the website reader withholds it.
+  // withheld.
   const [externalTwins, catchTwins] = await Promise.all([
     getAllInChunks(db, catchEvents.map((doc) => external.doc(doc.id))),
     getAllInChunks(db, externalEvents.map((doc) => events.doc(doc.id))),

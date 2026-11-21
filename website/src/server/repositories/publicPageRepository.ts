@@ -12,13 +12,13 @@ import type {
   HostListingExternalEvent,
 } from "../../features/organizers/types";
 import {organizerPath, publicDocumentId} from "../publicReadPolicy";
-import type {PublicDocument, PublicReader} from "./publicReader";
+import {readBounded, type PublicDocument, type PublicReader} from "./publicReader";
 
 /**
  * Functions maintain one read-model document per public organizer and event
- * page (functions/src/publicPages) with the same publication rules this
- * reader applies, so a page view reads one document. A page whose document
- * does not exist reads nothing else here.
+ * page (functions/src/publicPages) and decide publication and suppression
+ * there, so a page view reads one document and the catalog reads one per
+ * organizer. A page whose document does not exist reads nothing else here.
  */
 type PageEvent = OrganizerPublicPageDocument["upcomingEvents"][number];
 
@@ -33,6 +33,25 @@ function validOrganizerPage(doc: PublicDocument | undefined): OrganizerPublicPag
     (data as OrganizerPublicPageDocument).organizerId === doc.id &&
     organizerPath((data as OrganizerPublicPageDocument).path) ?
     data as OrganizerPublicPageDocument : null;
+}
+
+/** Most organizer pages the catalog reads; past it the read fails rather than truncate. */
+const catalogBound = 400;
+
+/**
+ * Every public organizer page, in organizer id order, for discovery, the
+ * directory, claim lookup and the sitemap. Pages that claim one path are all
+ * withheld rather than guessed between, as a page view withholds them.
+ */
+export async function listOrganizerPages(db: PublicReader): Promise<OrganizerPublicPageDocument[]> {
+  const pages = (await readBounded(db.collection("organizerPublicPage"), catalogBound))
+    .flatMap((doc) => {
+      const page = validOrganizerPage(doc);
+      return page ? [page] : [];
+    });
+  const counts = new Map<string, number>();
+  for (const page of pages) counts.set(page.path, (counts.get(page.path) ?? 0) + 1);
+  return pages.filter((page) => counts.get(page.path) === 1);
 }
 
 /** A canonical path wins; otherwise one unambiguous legacy alias resolves. */
@@ -117,6 +136,12 @@ function withPageEvents(listing: HostListing, items: readonly PageEvent[], readA
   const externalEvents = byId(items.flatMap((item) => item.source === "external" ?
     [item.event as HostListingExternalEvent] : []));
   return {...listing, catchEvents, ...(externalEvents.length ? {externalEvents} : {})};
+}
+
+/** One catalog entry: the organizer's listing with its listed events, without reviews. */
+export function organizerCatalogListing(page: OrganizerPublicPageDocument, readAt: number): HostListing {
+  const {reviewReadState: _reviewReadState, ...listing} = page.listing as HostListing;
+  return withPageEvents({...listing, reviews: []}, [...page.upcomingEvents, ...page.pastMoments], readAt);
 }
 
 /** Today's organizer page: its listing with events and reviews, then the recommendation rail. */

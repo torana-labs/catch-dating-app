@@ -5,6 +5,7 @@ import {initializeApp} from "firebase-admin/app";
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {chromium} from "playwright";
 import {organizerFixture} from "./organizerFixture.mjs";
+import {rebuildPublicPages} from "./publicPagesEmulator.mjs";
 import {sharedCachePage} from "./deployedSmoke.mjs";
 import {PUBLIC_PAGE_CACHE_CONTROL} from "../../src/app/next/publicPageCache.ts";
 import {explorePageCopy} from "../../src/content/explorePage.ts";
@@ -23,6 +24,8 @@ await db.doc("events/next-native-event").set({name: "Next proof event", organize
 const external = JSON.parse(fs.readFileSync(new URL("../../../contracts/fixtures/valid/external_event_doc.json", import.meta.url), "utf8"));
 external.canonicalHostId = external.canonicalHostId = "next-proof";
 await db.doc(`externalEvents/${external.eventId}`).set(external);
+const rebuild = () => rebuildPublicPages("demo-catch-nextjs", "next-proof");
+rebuild();
 const results = [];
 function customHostRequest(path) {
   return new Promise((resolve, reject) => {
@@ -165,6 +168,7 @@ try {
   await page.goForward(); await page.waitForURL("**/host/#how-it-works");
   await page.goto(origin + "/organizers/next-proof/");
   await db.doc("organizers/next-proof").update({"publicPage.publishStatus": "removed"});
+  rebuild();
   await check("/organizers/next-proof/", 404);
   await check("/events/next-native-event/", 404);
   const sitemap = await check("/sitemap.xml", 200);
@@ -172,6 +176,7 @@ try {
   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await page.getByRole("heading", {level: 1, name: "Next proof organizer", exact: true}).waitFor({state: "hidden"});
   await db.doc("organizers/next-proof").set({...organizer, publicPage: {...organizer.publicPage, indexStatus: "noindex", robots: "noindex, follow"}});
+  rebuild();
   const noindex = await check("/organizers/next-proof/", 200);
   assert(noindex.text.includes('content="noindex, follow"'));
   assert(!(await check("/sitemap.xml", 200)).text.includes("next-proof"));
@@ -180,5 +185,6 @@ try {
 } finally {
   await browser?.close();
   await db.doc("organizers/next-proof").set(organizer);
+  rebuild();
   await db.terminate();
 }

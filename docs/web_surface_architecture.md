@@ -469,44 +469,42 @@ The public website reads Firestore only on the server, through these layers:
   Raw documents never leave a repository.
 - A new public query uses equality filters only, or an index already deployed
   to production. Equality-only filters need no composite index.
-- A per-route assembler returns the same listing and event record the full
-  catalog would. `website/src/server/publicCatalog.test.ts` enforces that, and
-  that detail routes never read a whole events collection.
+- Public routes read only the public page read models (`organizerPublicPage`,
+  `eventPublicPage`, `cityPlans`), never `organizers`, `events`,
+  `externalEvents` or `reviews`. `website/src/server/publicCatalog.test.ts`
+  records every read and enforces that.
 
 | Route | Assembler | Reads |
 |---|---|---|
 | `/`, `/explore/`, `/cities/`, city pages (`/mumbai/`), `/api/home-catalog` | `assembleHomeCatalog` (`website/src/server/homeCatalog.ts`) | One `cityPlans` document get per market city; a city without a valid document is built from one `assemblePublicCatalog` read |
-| `/claim/`, sitemap, `/api/public-catalog` | `assemblePublicCatalog` | Published organizers, Catch events and external events, at most 400 each |
+| `/claim/`, sitemap, `/api/public-catalog` | `assemblePublicCatalog` | Every `organizerPublicPage` document, at most 400: each page's listing with its listed events |
 | `/organizers/<slug>/` and legacy aliases | `assembleOrganizerDetailCatalog` | One `organizerPublicPage` read by `path` (a second by `legacyPaths` for an alias) |
 | `/events/<id>/` | `assembleEventDetailCatalog` | One `eventPublicPage` document get |
 
-Organizer and event pages read Functions-maintained read models
-(`functions/src/publicPages`, CAT-250). Each document holds exactly what one
-page shows, built with a port of this reader's projectors (`publicReadPolicy`,
-`projectPublicOrganizer`, `projectLivePublicCatchEvent`, `publicExternalEvent`,
-`projectPublicReview`). The shared inputs and expected output in
-`contracts/fixtures/public_pages` hold the two to the same result:
-`website/src/server/publicPageParity.test.ts` writes the expected file and
-`functions/src/publicPages/parity.test.ts` must reproduce it. Catch is not a
-dating product (CAT-247), so the projectors keep that parity and dating framing
-(the `balanced` label, the `rotations` experience, the `singlesMixer` activity
-and the Event Success scorecard) is dropped where events are arranged for a
-page: by the read models, and on the website by the event repositories and the
+Every public route reads Functions-maintained read models
+(`functions/src/publicPages`, CAT-250), and publication is decided only where
+they are built. Each document holds exactly what one page shows, built by the
+public projectors there (`publicReadPolicy`, `projectPublicOrganizer`,
+`projectLivePublicCatchEvent`, `publicExternalEvent`, `projectPublicReview`).
+`functions/src/publicPages/projections.test.ts` holds their rules, and the
+golden output in `contracts/fixtures/public_pages` holds their result
+(`functions/src/publicPages/parity.test.ts`; rewrite it deliberately with
+`UPDATE_PUBLIC_PAGE_FIXTURES=1`). The website's live event list still projects
+`publicEvents` copies in the browser, and
+`website/src/server/publicCatchEventParity.test.ts` holds that
+projection to the same golden output. Catch is not a dating product (CAT-247),
+so dating framing (the `balanced` label, the `rotations` experience, the
+`singlesMixer` activity and the Event Success scorecard) is dropped where
+events are arranged for a page: by the read models, and on the website by the
 live event listing (`website/src/features/organizers/publicDatingFraming.ts`).
-`website/src/server/publicDatingFraming.test.ts` proves none of it leaves the
-server for an organiser, event or city read. Readers treat an event that ended
-after its page was built as past.
+The reader refuses a read model that carries it
+(`website/src/server/publicDatingFraming.test.ts`). Readers treat an event that
+ended after its page was built as past.
 
-Until every environment is backfilled, a page without a valid read model is
-assembled from its sources (`assembleOrganizerDetailFromSources`,
-`assembleEventDetailFromSources`) under the same publication rules, so a
-withdrawn page stays withdrawn either way. Those source reads are one to three
-path reads, that organizer's events (at most 200 per
-kind), three trust reads for recommendations and bounded reviews
-for an organizer page, and two document gets, the organizer plus a
-path-uniqueness read and bounded reviews for an event page.
+A page without a valid read model renders as not found and reads nothing
+else. Every environment is backfilled;
 `node functions/scripts/backfill-public-pages.cjs --project <id> --check`
-reports whether an environment still has pages without read models.
+reports whether one has pages out of date, and `--apply` rebuilds them.
 
 `assembleRouteCatalog` chooses the assembler from the path, and
 `resolvePublicRoute` is its only caller, so the proxy's status and redirect
