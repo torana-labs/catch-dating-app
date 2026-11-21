@@ -82,6 +82,60 @@ void main() {
 
       expect(find.text('Too many attempts. Try again later.'), findsOneWidget);
     });
+
+    testWidgets('carries the terms line and the ad-matching notice', (
+      tester,
+    ) async {
+      final opened = <String>[];
+      await pumpOnboardingBody(
+        tester,
+        HostSignInBody(
+          countryCode: '+91',
+          initialPhoneNumber: '',
+          canSend: false,
+          sending: false,
+          onPhoneChanged: (_) {},
+          onSend: () {},
+          onGetCatch: () {},
+          onOpenTerms: () => opened.add('terms'),
+          onOpenPrivacy: () => opened.add('privacy'),
+          onOpenAdMatching: () => opened.add('ads'),
+        ),
+      );
+
+      expect(
+        find.text(
+          'By continuing you agree to Catch’s terms and privacy policy.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'We share a coded version of your contact details with Google and '
+          'Meta to measure our ads and choose who sees them.',
+        ),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Terms'));
+      await tester.tap(find.text('Privacy policy'));
+      await tester.tap(find.text('How it works and how to opt out'));
+      expect(opened, ['terms', 'privacy', 'ads']);
+    });
+
+    testWidgets('leaves out a legal link this build has no address for', (
+      tester,
+    ) async {
+      await pump(tester);
+
+      expect(
+        find.text(
+          'By continuing you agree to Catch’s terms and privacy policy.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Terms'), findsNothing);
+      expect(find.text('How it works and how to opt out'), findsNothing);
+    });
   });
 
   group('code', () {
@@ -184,6 +238,7 @@ void main() {
   ) async {
     final formats = <HostSetupFormat>[];
     var logo = 0;
+    var adMatching = 0;
     await pumpOnboardingBody(
       tester,
       HostSetupDetailsBody(
@@ -191,6 +246,7 @@ void main() {
         onPickLogo: () => logo++,
         onDescriptionChanged: (_) {},
         onToggleFormat: formats.add,
+        onOpenAdMatching: () => adMatching++,
         createError: 'Could not create the page.',
       ),
     );
@@ -209,10 +265,20 @@ void main() {
     expect(find.text('Your link is made when you finish'), findsOneWidget);
     expect(find.text('Could not create the page.'), findsOneWidget);
 
+    expect(
+      find.text(
+        'We share a coded version of your contact details with Google and '
+        'Meta to measure our ads and choose who sees them.',
+      ),
+      findsOneWidget,
+    );
+
     await tester.tap(find.text('Social runs'));
     await tester.tap(find.text('Add a logo'));
+    await tester.tap(find.text('How it works and how to opt out'));
     expect(formats, [HostSetupFormat.run]);
     expect(logo, 1);
+    expect(adMatching, 1);
   });
 
   group('getting paid', () {
