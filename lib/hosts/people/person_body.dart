@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge.dart';
 import 'package:catch_dating_app/hosts/people/parts/people_night_row.dart';
 import 'package:catch_dating_app/hosts/people/person_state.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -11,7 +12,8 @@ import 'package:intl/intl.dart';
 /// and line, Message, their stats, Notes and tags and their nights. As the
 /// detail pane beside the People list: the pane header with Message, the
 /// avatar beside the name, the stats in one row, then their nights and
-/// Notes and tags.
+/// Notes and tags. Records merged into the person follow, each with Undo
+/// merge.
 class HostPersonBody extends StatelessWidget {
   const HostPersonBody({
     super.key,
@@ -21,6 +23,8 @@ class HostPersonBody extends StatelessWidget {
     required this.onRetry,
     this.pane = false,
     this.messaging = false,
+    this.onUndoMerge,
+    this.undoing = false,
   });
 
   final HostPersonState state;
@@ -33,6 +37,12 @@ class HostPersonBody extends StatelessWidget {
 
   /// A conversation is being opened.
   final bool messaging;
+
+  /// Undo one merge into the person; null hides the merged records.
+  final ValueChanged<HostActiveContactMerge>? onUndoMerge;
+
+  /// A merge is being undone.
+  final bool undoing;
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +87,30 @@ class HostPersonBody extends StatelessWidget {
       pane: pane,
       onAddTag: onAddTag,
     );
+    final undo = onUndoMerge;
+    final merged = undo == null || state.merges.isEmpty
+        ? null
+        : CatchSection(
+            title: l10n.hostPeopleMergedTitle,
+            children: [
+              for (final merge in state.merges)
+                CatchIndexRow(
+                  key: ValueKey<String>(
+                    'host-person-merge-${merge.mergeReceiptId}',
+                  ),
+                  title: merge.sourceDisplayName,
+                  subtitle: l10n.hostPeopleMergedOn(
+                    date: AppTimeFormatters.weekdayDayMonth(merge.mergedAt),
+                  ),
+                  density: CatchIndexRowSize.compact,
+                  action: CatchIndexRowAction(
+                    label: l10n.hostPeopleUndoMerge,
+                    onPressed: undoing ? null : () => undo(merge),
+                  ),
+                  onTap: null,
+                ),
+            ],
+          );
     if (pane) {
       return CatchStack(
         gap: CatchStackGap.g28,
@@ -111,7 +145,10 @@ class HostPersonBody extends StatelessWidget {
             ],
           ),
           stats,
-          CatchStack(gap: CatchStackGap.g32, children: [nights, notes]),
+          CatchStack(
+            gap: CatchStackGap.g32,
+            children: [nights, notes, ?merged],
+          ),
         ],
       );
     }
@@ -135,6 +172,7 @@ class HostPersonBody extends StatelessWidget {
         stats,
         notes,
         nights,
+        ?merged,
       ],
     );
   }

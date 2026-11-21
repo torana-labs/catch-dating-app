@@ -1542,7 +1542,7 @@
       "source": "packages/web-ui/src/components/CatchHeroSection.tsx",
       "exportName": "CatchHeroSection",
       "comparedWith": [
-                "catch.chip",
+        "catch.chip",
         "catch.icon",
         "catch.detail_media",
         "catch.metric_strip",
@@ -1803,11 +1803,12 @@
       "source": "packages/web-ui/src/components/CatchComparisonTable.tsx",
       "exportName": "CatchComparisonTable",
       "comparedWith": [
+        "catch.chip",
+        "catch.icon",
         "catch.surface",
-        "catch.text",
-        "catch.table"
+        "catch.text"
       ],
-      "comparisonReason": "A website comparison band (the kit's table): compared columns, a corner label, rows of text or yes/no marks, a highlighted column and its source and checked date, set with catch.text in a catch.surface band. It is a read-only comparison, not a data table.",
+      "comparisonReason": "A website comparison band (the kit's table): compared columns, rows of text or yes/no marks and a highlighted column with its source and checked date, set with catch.text in a catch.surface band. As a ledger it sets the highlighted column beside one other the reader picks with catch.chip choices, marking answers with catch.icon. It is a read-only comparison, not a data table, a chip or an icon.",
       "css": [
         "packages/web-ui/src/components/CatchComparisonTable.module.css"
       ],
@@ -1831,12 +1832,11 @@
       "source": "packages/web-ui/src/components/CatchArticleBody.tsx",
       "exportName": "CatchArticleBody",
       "comparedWith": [
-        "catch.button",
         "catch.marker",
         "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "A website guide or article body (the kit's article): headline, meta, a contents list of its sections, paragraphs, lists and tips, with an aside. It sets text with catch.text, list marks with catch.marker and contents links with catch.button in a catch.surface; it is a long-form reading layout, not any of those parts.",
+      "comparisonReason": "A website guide or article body (the kit's article): headline, meta, a contents list of its sections with the one being read marked, paragraphs, lists and tips, with an aside. It sets text with catch.text and list marks with catch.marker in a catch.surface, and draws its contents links itself; it is a long-form reading layout, not any of those parts.",
       "css": [
         "packages/web-ui/src/components/CatchArticleBody.module.css"
       ],
@@ -1922,13 +1922,11 @@
       "source": "packages/web-ui/src/components/CatchCardGrid.tsx",
       "exportName": "CatchCardGrid",
       "comparedWith": [
-        "catch.button",
         "catch.empty_state",
-        "catch.stack",
         "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "A band of cards: a band header, filters and links, then plan, organiser, city, review, story or person cards in a three- or four-column grid, with chip rows (a titled row's kicker set in CatchText), an empty state and the band's actions. It lays out CatchButton, CatchEmptyState, CatchStack, CatchSurface and CatchText and implements none of those contracts.",
+      "comparisonReason": "A band of cards: a band header and filters, then plan, organiser, city, review, story or person cards in a three- or four-column grid, a link to everything under them, chip rows (a titled row's kicker set in CatchText), an empty state and the band's actions. It lays out CatchEmptyState, CatchSurface and CatchText and implements none of those contracts.",
       "css": [
         "packages/web-ui/src/components/CatchCardGrid.module.css"
       ],
@@ -6747,11 +6745,7 @@
           "night"
         ]
       },
-      "notes": "Website T4 under D26 (playbook-panels.css .pg .steps). The canvas's numbered step cards: a display number beside each step's title and line on a translucent card, on the day, night or a colour ground; a current step fills only its card (.steps li.on). CatchSplitSection draws its unmarked steps with it; the host landing's start band sets it in its capture. Not catch.step_list (CatchStepList, the marked timeline). Search aliases: StepCards, NumberedSteps.",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "Numbered step cards that set each title and line in text; not a text contract, and not the marked timeline (catch.step_list)."
+      "notes": "Website T4 under D26 (playbook-panels.css .pg .steps). The canvas's numbered step cards: a display number beside each step's title and line on a translucent card, on the day, night or a colour ground; a current step fills only its card (.steps li.on). CatchSplitSection draws its unmarked steps with it; the host landing's start band sets it in its capture. Not catch.step_list (CatchStepList, the marked timeline). Search aliases: StepCards, NumberedSteps."
     },
     {
       "id": "shared_catch_fee_examples",
@@ -7179,6 +7173,81 @@
         "catch.text"
       ],
       "comparisonReason": "A sentence and an inline link set in the body-meta text role; it composes CatchText and draws its link as part of the sentence, so it is not a text role of its own."
+    },
+    {
+      "id": "shared_linked_text",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "home",
+        "privacy"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchLinkedText.tsx",
+      "exportName": "CatchLinkedText",
+      "css": [
+        "packages/web-ui/src/components/CatchLinkedText.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchLinkedText.stories.tsx",
+        "exportName": "States",
+        "states": [
+          "two-links",
+          "arrow",
+          "long-line"
+        ]
+      },
+      "notes": "Website T4 under D18 (website cleanup, 21 Nov 2026). A sentence with links inside it: the start band's \"Prefer a person? WhatsApp us or book a walkthrough\", the legal contact line, the home sign-up's host line, a card grid's link to everything. The links are underlined words in the sentence, never buttons beside it. Search aliases: InlineLinks, LinkSentence, RichText, TextWithLinks.",
+      "comparedWith": [
+        "catch.icon",
+        "catch.text",
+        "catch.typography"
+      ],
+      "comparisonReason": "A sentence set in a text role with links drawn inside it and an optional catch.icon arrow; it composes CatchText, so it is not a text role, a typography token or an icon."
+    },
+    {
+      "id": "app_download_qr",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "host",
+        "host_run_clubs"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/AppDownloadQr.tsx",
+      "exportName": "AppDownloadQr",
+      "css": [
+        "packages/web-ui/src/components/CatchQrCode.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "host",
+          "guest"
+        ]
+      },
+      "notes": "How a wide page offers an app (CatchCtaSection's storesWide, from 840px): a QR code that opens the page's download band on the phone, where the store button for that phone is, and a text link to have the app's link sent on WhatsApp. The host start band, the homepage app band and every playbook band with store badges use it, so the action reads the same everywhere (website cleanup, 21 Nov 2026). Its words live in content/appDownload.ts."
+    },
+    {
+      "id": "host_compare_section",
+      "kind": "supporting-component",
+      "routeIds": [
+        "pricing"
+      ],
+      "owner": "features/playbook",
+      "source": "website/src/features/playbook/custom/HostCompareSection.tsx",
+      "exportName": "HostCompareSection",
+      "css": [
+        "packages/web-ui/src/components/CatchComparisonTable.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "ledger"
+        ]
+      },
+      "notes": "/pricing/'s comparison (the playbook page's hostCompare custom section): how we compare with what hosts use today, as CatchComparisonTable's ledger of our column beside one tool the reader picks. Its words and every cell live in content/hostCompare.ts; the host page links here instead of repeating the table (website cleanup, 21 Nov 2026)."
     }
   ]
 }

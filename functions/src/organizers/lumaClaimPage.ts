@@ -1,8 +1,7 @@
 import * as admin from "firebase-admin";
 import type {Firestore} from "firebase-admin/firestore";
-import {packagedIntake} from "../operations/supplyIntake/runtime";
 import type {IntakePageSource} from "../operations/supplyIntake/runtime";
-import {pageSourceFor} from "../operations/supplyIntake/worker";
+import {pageFetchEnabled, withPageSource} from "../commands/pageRead";
 
 /** What a Luma claim check saw on the listing's public calendar page. */
 export interface LumaClaimPageReading {
@@ -46,27 +45,17 @@ export function defaultLumaClaimPageReader(): LumaClaimPageReader {
     now: () => new Date()});
 }
 
-/** Live reads through the guarded page fetcher and its monthly allowance. */
+/** Live reads through the shared guarded page reader (commands/pageRead.ts). */
 export function guardedLumaClaimPageReader(deps: {
   db: () => Firestore;
   now: () => Date;
 }): LumaClaimPageReader {
   return {
-    async enabled() {
-      const runtime = await packagedIntake();
-      return (await runtime.loadSupplyAcquisitionPolicy()).pageFetch.enabled;
-    },
-    async read(input) {
-      const runtime = await packagedIntake();
-      const policy = await runtime.loadSupplyAcquisitionPolicy();
-      const {source, settle} = await pageSourceFor(
-        {db: deps.db(), now: deps.now}, policy);
-      try {
-        return await readLumaClaimMarker(source, input);
-      } finally {
-        await settle();
-      }
-    },
+    enabled: pageFetchEnabled,
+    // The shared allowance: a claim check is staff-facing verification, not
+    // the website's instant-draft tool.
+    read: (input) => withPageSource(deps, "shared",
+      (source) => readLumaClaimMarker(source, input)),
   };
 }
 

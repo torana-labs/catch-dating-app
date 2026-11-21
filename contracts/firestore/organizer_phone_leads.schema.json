@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_phone_leads.schema.json",
+  "title": "OrganizerPhoneLeadDocument",
+  "description": "Shadow organizer profiles (docs/shadow_profiles.md). Server-only index from one phone number to the unclaimed organizers it was seen with. The document id is a keyed HMAC of the E.164 number (LISTING_SUPPRESSION_HMAC_KEY under the phone-lead: namespace); no document holds the number. Entries are keyed {source}__{organizerId}. findClaimableOrganizers reads it to offer a claim to the verified owner of that number; requestOrganizerClaim reads it to mark a claim for staff. Never shown to clients. Written only while the source's switch is on (all off by default).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerPhoneLeads",
+  "x-firestore-path": "organizerPhoneLeads/{leadId}",
+  "x-owner": "phone lead triggers (functions/src/organizers/phoneLeads/sync.ts)",
+  "required": ["schemaVersion", "updatedAt", "entries"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "updatedAt": {"type": "string", "format": "date-time"},
+    "entries": {
+      "type": "object",
+      "maxProperties": 50,
+      "propertyNames": {"pattern": "^(self_verified_submitter|sales_crm_verified|public_page|staff_entered)__[A-Za-z0-9_-]{1,200}$"},
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["organizerId", "source", "strength", "lastSeenAt"],
+        "properties": {
+          "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "source": {"type": "string", "enum": ["self_verified_submitter", "sales_crm_verified", "public_page", "staff_entered"]},
+          "strength": {"type": "string", "enum": ["strong", "medium", "weak"]},
+          "lastSeenAt": {"type": "string", "format": "date-time"}
+        }
+      }
+    }
+  }
+}

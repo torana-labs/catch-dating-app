@@ -5,6 +5,7 @@ import {AppLaunchNotice} from "../../marketing/AppLaunchNotice";
 import {LastEventReport} from "../../marketing/LastEventReport";
 import {NoShowCalculator} from "../../marketing/NoShowCalculator";
 import {PricingFeeCalculator} from "../../marketing/PricingFeeCalculator";
+import {HostCompareSection} from "./HostCompareSection";
 import {PricingCapBand, PricingExamplesBand, PricingFeeBand, PricingIncludedBand, PricingOrganisationsBand} from "../../marketing/PricingBands";
 import type {PlaybookPageController} from "../usePlaybookPageController";
 import type {ReadyPlaybookCustomComponent} from "./readyCustomSections";
@@ -102,4 +103,5 @@ export const playbookCustomSections: {readonly [K in ReadyPlaybookCustomComponen
   noShowCalculator: NoShowCalculatorSection,
   appLaunchNotice: AppLaunchNoticeSection,
   lastEventReport: LastEventReportSection,
+  hostCompare: HostCompareSection,
 };

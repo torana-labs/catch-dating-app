@@ -62,7 +62,7 @@ export const playbookFooterVariants = ["guest", "host", "minimal"] as const;
  */
 export const playbookCustomComponents = [
   "noShowCalculator", "eventPageFromLink", "walkthroughSlots", "appLaunchNotice", "lastEventReport",
-  "pricingCalculator", "pricingExamples", "pricingCap", "pricingIncluded", "pricingOrganisations",
+  "pricingCalculator", "pricingExamples", "pricingCap", "pricingIncluded", "pricingOrganisations", "hostCompare",
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -152,9 +152,10 @@ const featureStatus = oneOfValues(playbookFeatureStatuses);
 const action = obj({label: copy(), to: destination}, {emphasis: oneOfValues(["primary", "secondary"] as const), status: featureStatus}, "action");
 const actions = (max = 3) => list(action, 1, max);
 /**
- * A tile's link: the whole tile opens it. `label` is for words the title
- * doesn't already say, such as "Build my page"; leave it out when it would
- * only repeat the title, and the tile ends in an arrow alone.
+ * A tile's or a group's link: the whole tile, or the group's title, opens
+ * it. `label` is for words the title doesn't already say, such as "Build my
+ * page"; leave it out when it would only repeat the title, and the title ends
+ * in an arrow alone. The validator refuses a label that repeats its title.
  */
 const tileLink = obj({to: destination}, {label: copy(), status: featureStatus}, "tileLink");
 
@@ -258,7 +259,7 @@ const sectionSpec = {
       ticks: list(copy(), 1, 8),
       mediaFirst: bool(),
       actions: actions(),
-      groups: list(obj({title: copy(), list: list(copy(), 1, 8)}, {label: copy(), links: list(action, 1, 3)}), 1, 4),
+      groups: list(obj({title: copy(), list: list(copy(), 1, 8)}, {label: copy(), links: list(tileLink, 1, 3)}), 1, 4),
       steps: list(obj({label: copy(), title: copy(), body: copy()}), 1, 6),
       callout: obj({figure: copy(), text: copy()}),
     }),
@@ -610,7 +611,13 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
     if (section.type === "tiles") {
       section.items.forEach((item, itemIndex) => {
         if (item.ground && playbookTileOnlyGrounds.has(item.ground) && playbookTileOnlyGrounds.has(section.ground)) errors.push(`${label}.items[${itemIndex}] sits on a soft tint`);
+        if (item.link?.label && repeatsTitle(item.link.label, item.title)) errors.push(`${label}.items[${itemIndex}].link.label repeats the tile's title; leave the label out`);
       });
+    }
+    if (section.type === "split") {
+      section.groups?.forEach((group, groupIndex) => group.links?.forEach((link, linkIndex) => {
+        if (link.label && repeatsTitle(link.label, group.title)) errors.push(`${label}.groups[${groupIndex}].links[${linkIndex}].label repeats the group's title; leave the label out`);
+      }));
     }
     forEachMedia(section, (item, path) => mediaErrors(`${label}.${path}`, item));
     if (section.type === "hero" && live) {
@@ -685,7 +692,7 @@ export function livePlaybookPage(page: PlaybookPageDocument): PlaybookPageDocume
     if (section.type === "tiles") next.items = section.items.map((item) => item.link && !playbookIsLive(item.link) ? without(item, "link") : item);
     if (section.type === "split" && section.groups) {
       next.groups = section.groups.map((group) => {
-        const links = liveActions(group.links);
+        const links = group.links?.filter(playbookIsLive);
         return links?.length ? {...group, links} : without(group, "links");
       });
     }
@@ -702,6 +709,19 @@ function without<T extends object, K extends keyof T>(value: T, key: K): Omit<T,
   return copy;
 }
 
+/**
+ * Whether a link's words only repeat the title they sit under: the same words,
+ * or the title's opening words ("Forms" under "Forms, in every step"), with
+ * case and punctuation ignored.
+ */
+export function playbookLabelRepeatsTitle(label: string, title: string): boolean {
+  const words = (text: string) => text.toLowerCase().replace(/[^\p{L}\p{N}{}.]+/gu, " ").trim();
+  const link = words(label);
+  const heading = words(title);
+  return link !== "" && (link === heading || heading.startsWith(`${link} `));
+}
+const repeatsTitle = playbookLabelRepeatsTitle;
+
 /** Every action in a section, with its path for messages. */
 export function forEachAction(section: PlaybookSection, visit: (item: PlaybookAction, path: string) => void) {
   const each = (items: readonly PlaybookAction[] | undefined, path: string) => items?.forEach((item, index) => visit(item, `${path}[${index}]`));
@@ -710,7 +730,9 @@ export function forEachAction(section: PlaybookSection, visit: (item: PlaybookAc
   if (section.type === "faq" && section.action) visit(section.action, "action");
   // A tile link without words of its own is named by the tile's title.
   if (section.type === "tiles") section.items.forEach((item, index) => item.link && visit({...item.link, label: item.link.label ?? item.title}, `items[${index}].link`));
-  if (section.type === "split") section.groups?.forEach((group, index) => each(group.links, `groups[${index}].links`));
+  // So is a group link without words of its own, by the group's title.
+  if (section.type === "split") section.groups?.forEach((group, index) => group.links?.forEach((link, linkIndex) =>
+    visit({...link, label: link.label ?? group.title}, `groups[${index}].links[${linkIndex}]`)));
   if (section.type === "story" && section.link) visit(section.link, "link");
   if (section.type === "article" && section.aside?.action) visit(section.aside.action, "aside.action");
 }

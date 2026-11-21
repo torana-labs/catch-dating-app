@@ -187,6 +187,7 @@ class HostAudienceContactDetail {
     revenue: facts.revenue,
     events: facts.events,
     eventsTruncated: facts.eventsTruncated,
+    activeMerges: facts.activeMerges,
     manualTags: contact.manualTags,
     notes: notes,
     notesTruncated: notesTruncated,
@@ -251,6 +252,7 @@ class HostContactDetailFacts {
     required this.revenue,
     required this.events,
     required this.eventsTruncated,
+    this.activeMerges = const [],
   });
 
   factory HostContactDetailFacts.fromMap(Map<Object?, Object?> map) =>
@@ -266,10 +268,18 @@ class HostContactDetailFacts {
           'contact events',
         ).map(HostAudienceEventFact.fromMap).toList(growable: false),
         eventsTruncated: crmRequiredBool(map, 'eventsTruncated'),
+        activeMerges: crmOptionalMapList(
+          map['activeMerges'],
+          'active contact merges',
+        ).map(HostActiveContactMerge.fromMap).toList(growable: false),
       );
 
   final HostCustomerTraits traits;
   final HostCustomerRevenue revenue;
   final List<HostAudienceEventFact> events;
   final bool eventsTruncated;
+
+  /// Records merged into this person that can still be undone, newest
+  /// first; empty on a view written before merges were projected.
+  final List<HostActiveContactMerge> activeMerges;
 }

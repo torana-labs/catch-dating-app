@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/find_claimable_organizers_response.schema.json",
+  "title": "FindClaimableOrganizersCallableResponse",
+  "description": "Callable response returned by findClaimableOrganizers: unclaimed organizers whose recorded phone matches the caller's verified phone, with their public fields as the Catch Host onboarding prefill. enabled false (and no candidates) while the feature is off. Never holds the phone.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["enabled", "candidates"],
+  "properties": {
+    "enabled": {"type": "boolean"},
+    "candidates": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["organizerId", "claimPending", "sources", "strength", "prefill", "filled", "missing"],
+        "properties": {
+          "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "claimPending": {"type": "boolean", "description": "This caller already has a claim request under review for it."},
+          "sources": {"type": "array", "uniqueItems": true, "items": {"type": "string", "enum": ["self_verified_submitter", "sales_crm_verified", "public_page", "staff_entered"]}},
+          "strength": {"type": "string", "enum": ["strong", "medium", "weak"]},
+          "prefill": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "description", "cityName", "marketId", "organizerType", "categoryLabel", "tags", "instagramHandle", "photoUrl", "canonicalPath"],
+            "properties": {
+              "name": {"type": ["string", "null"]},
+              "description": {"type": ["string", "null"]},
+              "cityName": {"type": ["string", "null"]},
+              "marketId": {"type": ["string", "null"]},
+              "organizerType": {"type": ["string", "null"]},
+              "categoryLabel": {"type": ["string", "null"]},
+              "tags": {"type": "array", "maxItems": 12, "items": {"type": "string"}},
+              "instagramHandle": {"type": ["string", "null"]},
+              "photoUrl": {"type": ["string", "null"]},
+              "canonicalPath": {"type": ["string", "null"], "description": "Only for a published page."}
+            }
+          },
+          "filled": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/prefillField"}},
+          "missing": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/prefillField"}}
+        }
+      }
+    }
+  },
+  "definitions": {
+    "prefillField": {"type": "string", "enum": ["name", "description", "city", "organizerType", "photo", "instagramHandle"]}
+  }
+}

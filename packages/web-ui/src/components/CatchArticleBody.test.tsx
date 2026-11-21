@@ -1,4 +1,4 @@
-import {cleanup, render, screen, within} from "@testing-library/react";
+import {act, cleanup, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {CatchArticleBody} from "./CatchArticleBody";
 
@@ -40,5 +40,26 @@ describe("CatchArticleBody", () => {
     expect(container.querySelector("[data-side]")).toBeNull();
     rerender(<CatchArticleBody sections={sections} title="Guide" tocLabel="Contents" />);
     expect(container.querySelector("[data-side]")).not.toBeNull();
+  });
+
+  it("lists the sections as plain links and marks the one being read", () => {
+    render(<CatchArticleBody sections={sections} title="Guide" tocLabel="On this page" />);
+    const nav = screen.getByRole("navigation", {name: "On this page"});
+    const links = within(nav).getAllByRole("link");
+    expect(links.map((link) => link.getAttribute("href"))).toEqual(["#first", "#second"]);
+    expect(within(nav).queryByRole("button")).toBeNull();
+    // The first section's top has passed a third of the way down; the second is still below.
+    const place = (sectionId: string, top: number) => {
+      document.getElementById(sectionId)!.getBoundingClientRect = () => ({top} as DOMRect);
+    };
+    place("first", 100);
+    place("second", 2000);
+    act(() => {window.dispatchEvent(new Event("scroll"));});
+    expect(links[0].getAttribute("aria-current")).toBe("location");
+    expect(links[1].hasAttribute("aria-current")).toBe(false);
+    place("second", 120);
+    act(() => {window.dispatchEvent(new Event("scroll"));});
+    expect(links[1].getAttribute("aria-current")).toBe("location");
+    expect(links[0].hasAttribute("aria-current")).toBe(false);
   });
 });

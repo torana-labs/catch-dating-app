@@ -30,7 +30,7 @@ describe("the /pricing/ page content", () => {
   it("opens on the fee band with the calculator, then the cap and what is included, from the custom registry", () => {
     expect(page.sections.filter((item) => item.type === "custom").map((item) => [item.id, item.component, item.ground]))
       .toEqual([["fee", "pricingCalculator", "ink"], ["examples", "pricingExamples", "white"], ["cap", "pricingCap", "paper"],
-        ["included", "pricingIncluded", "white"], ["organisations", "pricingOrganisations", "white"]]);
+        ["included", "pricingIncluded", "white"], ["compare", "hostCompare", "paper"], ["organisations", "pricingOrganisations", "white"]]);
     expect(page.sections[0].id).toBe("fee");
   });
 

@@ -390,6 +390,11 @@ export {
   adminDecideOrganizerClaim,
   requestOrganizerClaim,
 } from "./organizers/organizerClaims";
+export {findClaimableOrganizers} from "./organizers/phoneLeads/find";
+export {
+  onInstantDraftPhoneLeads,
+  onSalesRelationshipPhoneLeads,
+} from "./organizers/phoneLeads/sync";
 export {
   confirmOrganizerClaimVerification,
   getOrganizerClaimVerificationOptions,
@@ -642,6 +647,7 @@ export {
 export {
   adminListSupplyIntakePolicies,
 } from "./admin/supplyIntakePolicies";
+export {adminAiFallbackTestCall} from "./admin/aiFallbackTestCall";
 export {
   adminManageListingProgram,
 } from "./admin/listingProgram/settings";
@@ -1201,7 +1207,8 @@ export {onHostRequestViewParticipationWritten, onHostRequestViewEventWritten,
 export {onHostContactDetailViewContactWritten,
   onHostContactDetailViewTraitsWritten, onHostContactDetailViewEdgeWritten,
   onHostContactDetailViewPaymentWritten,
-  onHostContactDetailViewEventWritten} from
+  onHostContactDetailViewEventWritten,
+  onHostContactDetailViewMergeReceiptWritten} from
   "./hostReadModels/contactDetailViewTriggers";
 export {onHostApplicationDetailViewApplicationWritten,
   onHostApplicationDetailViewFormResponseWritten,

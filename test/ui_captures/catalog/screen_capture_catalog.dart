@@ -319,6 +319,7 @@ import 'entries/host_organizer_team_phone.dart';
 import 'entries/host_people_phone.dart';
 import 'entries/host_person_phone.dart';
 import 'entries/host_post_event_report.dart';
+import 'entries/host_post_event_report_more.dart';
 import 'entries/host_programme_guests_desktop.dart';
 import 'entries/host_programme_inbox_phone.dart';
 import 'entries/host_programme_live_board_desktop.dart';
@@ -6842,6 +6843,7 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'member_event_discovery': () => memberEventDiscoveryCapture,
   'host_live_console': () => hostLiveConsoleCapture,
   'host_post_event_report': () => hostPostEventReportCapture,
+  'host_post_event_report_more': () => hostPostEventReportMoreCapture,
   'guest_after_event': () => guestAfterEventCapture,
   'host_insights_phone': () => hostInsightsPhoneCapture,
   'host_application_detail': () => hostApplicationDetailCapture,
@@ -10831,6 +10833,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   hostLiveConsoleCapture,
   hostPostEventReportCapture,
+  hostPostEventReportMoreCapture,
 
   ScreenCaptureEntry(
     id: 'notifications_activity',

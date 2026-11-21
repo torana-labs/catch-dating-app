@@ -45,6 +45,12 @@ export interface CatchCtaSectionProps extends Omit<HTMLAttributes<HTMLElement>, 
   /** App store badges, in order; each is a CatchStoreButton. */
   stores?: readonly CatchStoreButtonProps[];
   /**
+   * What takes the badges' place from 840px, on a laptop where nobody installs
+   * an app: the page's QR code and its "get the link" line. Phones and
+   * tablets keep the badges.
+   */
+  storesWide?: ReactNode;
+  /**
    * The phone-number capture under the actions: the page passes its real
    * form (a CatchField and a submit button), which owns its state and submit.
    */
@@ -98,6 +104,7 @@ export function CatchCtaSection({
   lead,
   actions,
   stores,
+  storesWide,
   capture,
   media,
   form,
@@ -114,10 +121,11 @@ export function CatchCtaSection({
       {catchBandActions(actions)}
       {capture != null ? <div className={styles.capture}>{capture}</div> : null}
       {stores && stores.length > 0 ? (
-        <CatchStack as="ul" className={styles.stores} direction="row" gap={12} wrap>
+        <CatchStack as="ul" className={styles.stores} data-phone-only={storesWide != null ? "" : undefined} direction="row" gap={12} wrap>
           {stores.map((store) => <li key={store.store}><CatchStoreButton {...store} /></li>)}
         </CatchStack>
       ) : null}
+      {storesWide != null ? <div className={styles.storesWide}>{storesWide}</div> : null}
     </CatchStack>
   );
   if (tiles && tiles.length > 0) {

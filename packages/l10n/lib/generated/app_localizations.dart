@@ -36997,6 +36997,285 @@ abstract class AppLocalizations {
   /// **'Check your connection and try again.'**
   String get hostPeopleGroupErrorBody;
 
+  /// People entry row and page title for the duplicate review.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible duplicates'**
+  String get hostPeopleDuplicatesTitle;
+
+  /// Possible duplicates row: how many pairs wait for review.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pair to review} other{{count} pairs to review}}'**
+  String hostPeopleDuplicatesEntryCount({required int count});
+
+  /// Possible duplicates row when more pairs follow the first page.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+ pairs to review'**
+  String hostPeopleDuplicatesEntryMore({required String count});
+
+  /// Possible duplicates row when only pairs marked different remain.
+  ///
+  /// In en, this message translates to:
+  /// **'None to review'**
+  String get hostPeopleDuplicatesEntryNone;
+
+  /// Possible duplicates page: what makes a pair.
+  ///
+  /// In en, this message translates to:
+  /// **'Records that share a phone, an email or a Catch account. A name alone never makes a pair.'**
+  String get hostPeopleDuplicatesIntro;
+
+  /// Possible duplicates view: pairs waiting for a decision.
+  ///
+  /// In en, this message translates to:
+  /// **'To review'**
+  String get hostPeopleDuplicatesViewOpen;
+
+  /// Possible duplicates view: pairs marked as different people.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked different'**
+  String get hostPeopleDuplicatesViewDifferent;
+
+  /// Possible duplicates note when the review stopped before checking every record.
+  ///
+  /// In en, this message translates to:
+  /// **'Some records weren’t checked this time, so more pairs may show up later.'**
+  String get hostPeopleDuplicatesTruncated;
+
+  /// Possible duplicates empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No possible duplicates.'**
+  String get hostPeopleDuplicatesEmpty;
+
+  /// Marked different empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is marked as different people.'**
+  String get hostPeopleDuplicatesEmptyDifferent;
+
+  /// Possible duplicates read failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load possible duplicates'**
+  String get hostPeopleDuplicatesErrorTitle;
+
+  /// Possible duplicates read failure body.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get hostPeopleDuplicatesErrorBody;
+
+  /// Possible duplicates note when the next page failed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t load more pairs.'**
+  String get hostPeopleDuplicatesMoreError;
+
+  /// Pair evidence: both records are linked to one Catch account.
+  ///
+  /// In en, this message translates to:
+  /// **'Same Catch account'**
+  String get hostPeopleDuplicatesEvidenceAccount;
+
+  /// Pair evidence: both records share a phone number someone verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Same verified phone'**
+  String get hostPeopleDuplicatesEvidenceVerifiedPhone;
+
+  /// Pair evidence: both records share a phone number the host imported or typed.
+  ///
+  /// In en, this message translates to:
+  /// **'Same phone from an import'**
+  String get hostPeopleDuplicatesEvidenceImportedPhone;
+
+  /// Pair evidence: both records share an email address.
+  ///
+  /// In en, this message translates to:
+  /// **'Same email'**
+  String get hostPeopleDuplicatesEvidenceEmail;
+
+  /// Pair evidence: nights both records are on.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No nights together} =1{Both on 1 night} other{Both on {count} nights}}'**
+  String hostPeopleDuplicatesSharedNights({required int count});
+
+  /// Pair person: the record is linked to a Catch account.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch account'**
+  String get hostPeopleDuplicatesCatchAccount;
+
+  /// Pair person: the record has neither a phone nor an email.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone or email'**
+  String get hostPeopleDuplicatesNoContact;
+
+  /// Pair person: where the record came from, a Catch booking.
+  ///
+  /// In en, this message translates to:
+  /// **'From a Catch booking'**
+  String get hostPeopleDuplicatesSourceCatchBooking;
+
+  /// Pair person: where the record came from, an imported spreadsheet.
+  ///
+  /// In en, this message translates to:
+  /// **'From a spreadsheet'**
+  String get hostPeopleDuplicatesSourceImport;
+
+  /// Pair person: where the record came from, added by hand.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by your team'**
+  String get hostPeopleDuplicatesSourceManual;
+
+  /// Pair person: where the record came from, a web registration.
+  ///
+  /// In en, this message translates to:
+  /// **'From a web sign-up'**
+  String get hostPeopleDuplicatesSourceWeb;
+
+  /// Pair person: where the record came from, a connected booking provider.
+  ///
+  /// In en, this message translates to:
+  /// **'From a booking provider'**
+  String get hostPeopleDuplicatesSourceProvider;
+
+  /// Pair person: where the record came from, a host form.
+  ///
+  /// In en, this message translates to:
+  /// **'From a form'**
+  String get hostPeopleDuplicatesSourceForm;
+
+  /// Pair action: merge the two records.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get hostPeopleDuplicatesMerge;
+
+  /// Pair action: mark the two records as different people.
+  ///
+  /// In en, this message translates to:
+  /// **'Not the same person'**
+  String get hostPeopleDuplicatesDifferent;
+
+  /// Marked different action: put the pair back to review.
+  ///
+  /// In en, this message translates to:
+  /// **'Show again'**
+  String get hostPeopleDuplicatesReopen;
+
+  /// Marked different note when someone else made the decision.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the teammate who marked this can show it again.'**
+  String get hostPeopleDuplicatesReopenOwnerOnly;
+
+  /// Notice after marking a pair as different people.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked as different people'**
+  String get hostPeopleDuplicatesMarkedNotice;
+
+  /// Notice after putting a pair back to review.
+  ///
+  /// In en, this message translates to:
+  /// **'Back in possible duplicates'**
+  String get hostPeopleDuplicatesReopenedNotice;
+
+  /// Merge sheet title.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge these records?'**
+  String get hostPeopleMergeTitle;
+
+  /// Merge sheet: label over the choice of which record stays.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get hostPeopleMergeKeep;
+
+  /// Merge sheet: what moves where.
+  ///
+  /// In en, this message translates to:
+  /// **'{source}’s nights, sources and contact details move to {survivor}, and {source} leaves your People list.'**
+  String hostPeopleMergeMoves({
+    required String source,
+    required String survivor,
+  });
+
+  /// Merge sheet: the two records have different phone numbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Their phone numbers differ. Merge only if they are the same person.'**
+  String get hostPeopleMergePhoneDiffers;
+
+  /// Merge sheet: the two records have different emails.
+  ///
+  /// In en, this message translates to:
+  /// **'Their emails differ. Merge only if they are the same person.'**
+  String get hostPeopleMergeEmailDiffers;
+
+  /// Merge sheet: where to undo the merge.
+  ///
+  /// In en, this message translates to:
+  /// **'You can undo this from {survivor}’s page.'**
+  String hostPeopleMergeUndoHint({required String survivor});
+
+  /// Notice after a merge.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged into {name}'**
+  String hostPeopleMergedNotice({required String name});
+
+  /// Merge notice action: undo the merge.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get hostPeopleMergeUndoAction;
+
+  /// Person section: records merged into this person.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged into this record'**
+  String get hostPeopleMergedTitle;
+
+  /// Person merged row: when the record was merged in.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged {date}'**
+  String hostPeopleMergedOn({required String date});
+
+  /// Person merged row action: undo the merge.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo merge'**
+  String get hostPeopleUndoMerge;
+
+  /// Undo merge confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo this merge?'**
+  String get hostPeopleUndoMergeTitle;
+
+  /// Undo merge confirmation body.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}’s nights, sources and contact details go back to their own record.'**
+  String hostPeopleUndoMergeBody({required String name});
+
+  /// Notice after undoing a merge.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge undone'**
+  String get hostPeopleUndoneNotice;
+
   /// Staff notice title: changes kept on the phone that have not reached the server.
   ///
   /// In en, this message translates to:

@@ -2,7 +2,6 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign_policy.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memory.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
@@ -518,47 +517,4 @@ class HostCustomersController {
     expectedRevision: note.revision,
     body: body,
   );
-
-  Future<void> markDifferentPeople({
-    required String organizerId,
-    required HostContactMergeCandidate candidate,
-  }) => _repository.reviewMergeCandidate(
-    organizerId: organizerId,
-    candidate: candidate,
-    differentPeople: true,
-  );
-
-  Future<void> reopenMergeCandidate({
-    required String organizerId,
-    required HostContactMergeCandidate candidate,
-  }) => _repository.reviewMergeCandidate(
-    organizerId: organizerId,
-    candidate: candidate,
-    differentPeople: false,
-  );
-
-  Future<void> mergeCustomers({
-    required String organizerId,
-    required HostContactMergeCandidate candidate,
-    required String survivorContactId,
-    required bool confirmConflicts,
-  }) => _repository.mergeContacts(
-    organizerId: organizerId,
-    candidate: candidate,
-    survivorContactId: survivorContactId,
-    confirmConflicts: confirmConflicts,
-    idempotencyKey: _mergeIdempotencyKey('merge', candidate.candidateId),
-  );
-
-  Future<void> unmergeCustomers({
-    required String organizerId,
-    required String mergeReceiptId,
-  }) => _repository.unmergeContacts(
-    organizerId: organizerId,
-    mergeReceiptId: mergeReceiptId,
-    idempotencyKey: _mergeIdempotencyKey('unmerge', mergeReceiptId),
-  );
 }
-
-String _mergeIdempotencyKey(String operation, String subjectId) =>
-    '$operation-$subjectId-${DateTime.now().microsecondsSinceEpoch}';

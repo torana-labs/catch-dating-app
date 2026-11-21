@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {verifyAdminHosting} from "./verify_admin_hosting.mjs";
+import {chunkRetryDelaysMs, verifyAdminHosting} from "./verify_admin_hosting.mjs";
 
 const html = '<script type="module" src="/assets/index-abc.js"></script>';
 const healthy = {
@@ -11,14 +11,30 @@ const healthy = {
   "/assets/index-abc.js": [200, "text/javascript", "public, max-age=31536000, immutable", ""],
 };
 
-function fakeFetch(routes) {
+// A route is one response, or a list served in order with the last repeating.
+function fakeFetch(routes, served = {}) {
   return async (url) => {
-    const [status, type, cache, body] = routes[new URL(url).pathname] ?? [404, "text/html", "", ""];
+    const path = new URL(url).pathname;
+    const route = routes[path] ?? [404, "text/html", "", ""];
+    const index = served[path] = (served[path] ?? -1) + 1;
+    const responses = Array.isArray(route[0]) ? route : [route];
+    const [status, type, cache, body] = responses[Math.min(index, responses.length - 1)];
     return new Response(body, {status, headers: {"content-type": type, "cache-control": cache}});
   };
 }
 
-const check = (routes) => verifyAdminHosting("https://admin.test", {fetchImpl: fakeFetch(routes), now: 1});
+const check = (routes, options = {}) => verifyAdminHosting("https://admin.test", {
+  fetchImpl: fakeFetch(routes, options.served),
+  now: 1,
+  sleep: async () => {},
+  ...options,
+});
+
+// Right after a deploy the CDN served the previous index.html, whose chunk the
+// release had just removed; a moment later / named the new chunk.
+const staleHtml = '<script type="module" src="/assets/index-old.js"></script>';
+const staleShell = [200, "text/html; charset=utf-8", "no-cache", staleHtml];
+const goneChunk = [404, "text/html", "no-cache", ""];
 
 test("healthy hosting passes", async () => {
   assert.deepEqual(await check(healthy), []);
@@ -42,11 +58,49 @@ test("a deep link that stops serving the app fails", async () => {
   assert.match(failures.join(), /\/now should serve the app: got 404/u);
 });
 
-test("chunks that aren't immutable fail", async () => {
-  const failures = await check({
-    ...healthy,
-    "/assets/index-abc.js": [200, "text/javascript", "max-age=3600", ""],
-  });
+test("the retries wait about a minute in all", () => {
+  const total = chunkRetryDelaysMs.reduce((sum, ms) => sum + ms, 0);
+  assert.ok(total >= 45000 && total <= 60000, `waits ${total}ms`);
+});
+
+test("a stale shell naming a removed chunk passes once / names the new chunk", async () => {
+  const waits = [];
+  const served = {};
+  const failures = await check(
+    {...healthy, "/": [staleShell, staleShell, healthy["/"]], "/assets/index-old.js": goneChunk},
+    {served, sleep: async (ms) => waits.push(ms)},
+  );
+  assert.deepEqual(failures, []);
+  assert.deepEqual(waits, chunkRetryDelaysMs.slice(0, 2));
+  assert.equal(served["/"], 2);
+  assert.equal(served["/assets/index-abc.js"], 0);
+});
+
+test("a chunk that stays 404 fails after the retries with the same messages", async () => {
+  const waits = [];
+  const failures = await check(
+    {...healthy, "/": staleShell, "/assets/index-old.js": goneChunk},
+    {sleep: async (ms) => waits.push(ms)},
+  );
+  assert.deepEqual(waits, chunkRetryDelaysMs);
+  assert.deepEqual(failures, [
+    '/assets/index-old.js should exist: got 404',
+    '/assets/index-old.js should be immutable: got "no-cache"',
+  ]);
+});
+
+test("a new shell whose chunk is also missing still fails", async () => {
+  const failures = await check({...healthy, "/": [staleShell, healthy["/"]], "/assets/index-abc.js": goneChunk});
+  assert.match(failures.join(), /\/assets\/index-abc\.js should exist: got 404/u);
+});
+
+test("chunks that aren't immutable fail without waiting", async () => {
+  const waits = [];
+  const failures = await check(
+    {...healthy, "/assets/index-abc.js": [200, "text/javascript", "max-age=3600", ""]},
+    {sleep: async (ms) => waits.push(ms)},
+  );
+  assert.deepEqual(waits, []);
   assert.match(failures.join(), /should be immutable/u);
 });
 

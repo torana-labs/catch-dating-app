@@ -942,6 +942,8 @@
   "AdminSetSupplyNominatorCallableResponse",
   "AdminListSupplyNominatorsCallablePayload",
   "AdminListSupplyNominatorsCallableResponse",
+  "AdminAiFallbackTestCallCallablePayload",
+  "AdminAiFallbackTestCallCallableResponse",
   "AdminListSupplyIntakePoliciesCallablePayload",
   "AdminListSupplyIntakePoliciesCallableResponse",
   "AdminRefreshOrganizerEventsCallablePayload",

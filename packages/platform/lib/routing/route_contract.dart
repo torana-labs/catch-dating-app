@@ -144,6 +144,10 @@ enum Routes {
     '/host/audience/applications/:applicationId',
     AppRouteAudience.host,
   ),
+  hostPeopleDuplicatesScreen(
+    '/host/audience/duplicates',
+    AppRouteAudience.host,
+  ),
   hostCustomerDetailScreen(
     '/host/audience/people/:contactId',
     AppRouteAudience.host,

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
+import 'package:catch_dating_app/hosts/people/duplicates/duplicates_controller.dart';
+import 'package:catch_dating_app/hosts/people/duplicates/duplicates_screen.dart';
 import 'package:catch_dating_app/hosts/people/people_body.dart';
 import 'package:catch_dating_app/hosts/people/people_controller.dart';
 import 'package:catch_dating_app/hosts/people/people_desktop_body.dart';
@@ -62,6 +64,12 @@ class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
       mutations: [HostPeopleCommands.messageMutation],
       errorContext: AppErrorContext.chat,
     );
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [HostDuplicateCommands.undoMutation],
+      errorContext: AppErrorContext.organizer,
+    );
     return CatchRoot(
       // The size class is read below the root that measures the window.
       child: Builder(
@@ -115,6 +123,13 @@ class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
             );
             void openView(HostPeopleView view) =>
                 openHostPeopleView(context, view, organizer.id);
+            final duplicates = ref.watch(
+              hostPeopleDuplicateSummaryProvider(organizer.id),
+            );
+            void openDuplicates() => context.pushNamed(
+              Routes.hostPeopleDuplicatesScreen.name,
+              queryParameters: {'organizerId': organizer.id},
+            );
             if (expanded) {
               final selectedId =
                   _selectedContactId ?? state.people.firstOrNull?.contactId;
@@ -130,6 +145,11 @@ class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
                         hostPersonControllerProvider(organizer.id, selectedId),
                       ),
                 messaging: messaging,
+                undoing: ref
+                    .watch(HostDuplicateCommands.undoMutation)
+                    .isPending,
+                duplicates: duplicates,
+                onOpenDuplicates: openDuplicates,
                 onView: openView,
                 onSearch: (value) => setState(() {
                   _search = value;
@@ -172,10 +192,20 @@ class _HostPeopleScreenState extends ConsumerState<HostPeopleScreen> {
                   if (selectedId == null) return;
                   refreshHostPerson(ref, organizer.id, selectedId);
                 },
+                onUndoMerge: (merge) => unawaited(
+                  confirmUndoHostMerge(
+                    context,
+                    ref,
+                    organizerId: organizer.id,
+                    merge: merge,
+                  ),
+                ),
               );
             } else {
               body = HostPeopleBody(
                 state: state,
+                duplicates: duplicates,
+                onOpenDuplicates: openDuplicates,
                 onView: openView,
                 onFilter: (filter) => setState(() => _filter = filter),
                 onOpenGroup: (group) => context.pushNamed(

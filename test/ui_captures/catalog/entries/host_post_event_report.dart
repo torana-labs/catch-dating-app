@@ -7,6 +7,7 @@ import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';
 import '../shared/marketing_host_live.dart';
 import '../shared/marketing_host_organizer.dart';
+import '../shared/marketing_host_report_data.dart';
 import '../shared/marketing_host_report_event.dart';
 
 final hostPostEventReportCapture = ScreenCaptureEntry(
@@ -16,10 +17,14 @@ final hostPostEventReportCapture = ScreenCaptureEntry(
   marketingFixtureKeys: const <String>[
     'hostMarketingIndia.host.postEventReport',
   ],
-  providerOverrides: marketingHostManageOverrides(
-    marketingHostReportEvent,
-    complete: true,
-  ),
+  providerOverrides: [
+    ...marketingHostManageOverrides(
+      marketingHostReportEvent,
+      complete: true,
+      reviews: marketingHostReportReviews,
+    ),
+    ...marketingHostReportOverrides(marketingHostReportEvent),
+  ],
   builder: (context) => HostEventReportScreen(
     organizer: marketingHostOrganizer,
     event: marketingHostReportEvent,

@@ -28,6 +28,7 @@ import * as instagramWebhookModule from "../organizers/instagramClaimWebhook";
 import * as approvalModule from "../admin/organizerListingApproval";
 import * as createOrganizerModule from "../organizers/createOrganizer";
 import * as formImportModule from "../commands/importFormFromLink";
+import * as pageReadModule from "../commands/pageRead";
 import * as eventImportModule from "../commands/importEventFromLink";
 import * as organizerImportModule from "../commands/importOrganizerFromLink";
 
@@ -269,7 +270,7 @@ test("form import keys a form link as Supply Intake does, counts the refusal, an
     updatedAtMillis: NOW.getTime() - 1000, reviewAtMillis: NOW.getTime() + 1000, createdBy: "workflow:organizer-takedown",
     blockedIntakeCount: 0, lastBlockedAtMillis: null, reviewFlags: []};
   db.write(`${LISTING_SUPPRESSIONS}/TD-0043`, record);
-  const check = formImportModule.registryFormSuppression({db: () => db as unknown as Firestore, now: () => NOW});
+  const check = pageReadModule.registryLinkSuppression({db: () => db as unknown as Firestore, now: () => NOW});
   withKey(SECRET);
   assert.equal(await check([form]), "suppressed");
   assert.equal(caseDoc(db, "TD-0043").blockedIntakeCount, 1);

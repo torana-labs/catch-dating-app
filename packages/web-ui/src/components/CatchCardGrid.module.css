@@ -24,7 +24,6 @@
   min-width: 0;
 }
 
-.links,
 .grid {
   margin: 0;
   padding: 0;
@@ -128,15 +127,6 @@
 }
 
 /* A header with one button across from it (.hd): the button at the header's foot, under it on phones. */
-.head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--catch-space-s8);
-}
-
-.headAction { display: flex; flex: none; }
-
 /*
  * Entry tiles (.ent): a colour or ink tile at radius xl, 20px inside, at
  * least 200px tall, the icon at the top and the title and line at the foot.
@@ -312,12 +302,6 @@
 }
 
 @media (max-width: 599px) {
-  .head {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--catch-space-s4);
-  }
-
   .grid[data-kind="entry"] { --catch-card-grid-gap: var(--catch-space-micro10); }
 
   .entry {

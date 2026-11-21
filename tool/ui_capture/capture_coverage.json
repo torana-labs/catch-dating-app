@@ -907,6 +907,12 @@
       ]
     },
     {
+      "routeId": "hostPeopleDuplicatesScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "The People duplicate review has focused widget tests for its list, merge confirmation, merge and undo flow; a deterministic capture is planned."
+    },
+    {
       "routeId": "hostCustomerDetailScreen",
       "status": "captured",
       "priority": "P1",
@@ -1363,6 +1369,7 @@
         "host_live_console",
         "host_live_room_workspace",
         "host_post_event_report",
+        "host_post_event_report_more",
         "host_event_share_links"
       ],
       "reason": "Every host event link opens the rebuilt screens through this route: the event workspace, guest lists, live console, run and crawl boards, and report each have deterministic captures, and the route itself has loading, error, offline, not-found and unauthorized captures on its live section."

@@ -1,3 +1,4 @@
+import {useState} from "react";
 import {
   CatchAppCaptureImage,
   CatchBand,
@@ -5,11 +6,12 @@ import {
   CatchButton,
   CatchCardGrid,
   CatchChip,
-  CatchComparisonTable,
   CatchCtaSection,
   CatchFaqSection,
+  CatchFeatureTile,
   CatchGrid,
   CatchHeroSection,
+  CatchLinkedText,
   CatchQrCode,
   CatchRoot,
   CatchRouteCard,
@@ -22,13 +24,16 @@ import {
   useCatch,
   type CatchAppCaptureImageProps,
 } from "@catch/web-ui";
+import {appDownloadCopy} from "@content/appDownload";
 import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
 import {brand} from "@content/brand";
 import {hostWalkthroughHref, whatsappChatCopy, whatsappChatHref} from "@content/site";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {captureSlot} from "../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {AppDownloadQr} from "../marketing/AppDownloadQr";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
+import {linkedParts} from "../../shared/text/linkedParts";
 import {PricingFeeBand} from "../marketing/PricingBands";
 import {hostLandingHref, useHostLandingController, type HostLandingController} from "./useHostLandingController";
 
@@ -67,9 +72,9 @@ function nightScreens(captures: CaptureSlots): Record<string, CatchAppCaptureIma
   };
 }
 
-/** The hero's laptop card's action (wide screens only, leak 6): a WhatsApp chat that asks for the link. */
+/** The hero's laptop card's action (wide screens only, leak 6): a WhatsApp chat that asks for the link, as a text link like the start band's. */
 function LaptopLink() {
-  return <CatchButton href={whatsappChatHref(whatsappChatCopy.hostLinkMessage)} label={copy.start.whatsappLink} newTab size="sm" />;
+  return <CatchButton href={whatsappChatHref(appDownloadCopy.host.whatsappMessage)} label={appDownloadCopy.host.whatsappLink} newTab recipe="text" tone="neutral" />;
 }
 
 /** The coral hero: the trial first, a person on WhatsApp one tap away (leak 7), the walkthrough for organisations and, on a laptop, the QR card. */
@@ -93,10 +98,9 @@ function Hero({captures}: {captures: CaptureSlots}) {
       note={hero.terms}
       // A phone already has the stores a tap away (the start band and the dock); the card is for a laptop.
       notice={sizeClass === "compact" ? undefined : {
-        title: copy.start.qrTitle,
-        body: copy.start.qrBody,
+        title: appDownloadCopy.host.title,
         // The QR code opens the start band on the phone, where both store buttons are.
-        leading: <CatchQrCode label={copy.start.qrLabel} size="s" value={`${brand.web.origin}/host/#start`} />,
+        leading: <CatchQrCode label={appDownloadCopy.host.qrLabel} size="s" value={`${brand.web.origin}/host/#start`} />,
         children: <LaptopLink />,
       }}
       title={hero.title}
@@ -191,24 +195,25 @@ function Night({captures, host}: {captures: CaptureSlots; host: Host}) {
 }
 
 /** What hosts use today, side by side; the retired #existing-tools anchor lands here. */
+/**
+ * Why hosts switch: the three things only Catch does, as tiles, then a link to
+ * the full comparison on /pricing/ (#compare). The full table is too much for
+ * a page that sells; the pricing page carries it (21 Nov 2026).
+ */
 function Compare() {
-  const compare = copy.compare;
+  const words = copy.switch;
   return (
     <>
       <RetiredAnchor id="existing-tools" />
-      <CatchComparisonTable
-        checked={compare.checked}
-        columns={compare.columns}
-        ground="paper"
-        highlightColumn={0}
-        id="compare"
-        kicker={compare.kicker}
-        lead={compare.body}
-        rowHeader={compare.rowHeader}
-        rows={compare.rows}
-        source={compare.source}
-        title={compare.title}
-      />
+      <CatchBand aria-labelledby="compare-title" as="section" ground="paper" id="compare">
+        <CatchStack gap={24}>
+          <CatchBandHeader kicker={words.kicker} title={words.title} titleId="compare-title" />
+          <CatchGrid columns={3}>
+            {words.tiles.map((tile) => <CatchFeatureTile body={tile.body} ground={tile.ground} key={tile.title} title={tile.title} />)}
+          </CatchGrid>
+          <CatchLinkedText parts={[words.compareLead, {label: words.compareLink, href: words.compareHref, arrow: true}]} tone="primary" />
+        </CatchStack>
+      </CatchBand>
     </>
   );
 }
@@ -279,34 +284,45 @@ function Faq() {
 }
 
 /** The free-trial start on yellow: three steps, Catch Host's badges, a person and weddings, beside Explore. The retired #apply anchor lands here. */
+/**
+ * The yellow free-trial start. The three steps are a picker: each shows its own
+ * Catch Host screen beside the list (the app's home, a first event, payments).
+ * The other ways in are two sentences with their links inside. Phones get the
+ * store badges; wider pages the QR code that opens this band on the phone and
+ * the WhatsApp link, as every band that offers an app does.
+ */
 function Start({captures}: {captures: CaptureSlots}) {
   const start = copy.start;
-  const explore = captureSlot(captures, "guest-explore");
+  const [step, setStep] = useState(0);
+  const screens = [
+    captureSlot(captures, "host-today"),
+    captureSlot(captures, "host-create-first-event"),
+    captureSlot(captures, "host-payments"),
+  ];
+  const screen = screens[step] ?? screens[0];
   const stores = useAppDownloadCtas({placement: "host_start", app: "host"});
   return (
     <CatchCtaSection
       capture={(
         <CatchStack gap={20} id="apply">
-          <CatchStepCards current={0} on="colour" steps={start.steps} />
-          <CatchStack align="center" direction="row" gap={8} wrap>
-            <CatchText variant="body-small">{start.personLead}</CatchText>
-            <CatchButton href={whatsappChatHref(whatsappChatCopy.hostQuestionMessage)} label={start.personWhatsapp} newTab size="sm" variant="quiet" />
-            <CatchButton href={hostWalkthroughHref} label={start.personWalkthrough} size="sm" variant="quiet" />
-          </CatchStack>
-          <CatchStack align="center" direction="row" gap={8} wrap>
-            <CatchText variant="body-small">{start.weddingsLead}</CatchText>
-            <CatchButton href={start.weddingsHref} label={start.weddings} size="sm" trailingIcon="forward" variant="quiet" />
+          <CatchStepCards current={step} on="colour" onSelected={setStep} steps={start.steps} />
+          <CatchStack gap={8}>
+            <CatchLinkedText parts={linkedParts(start.personLine, {
+              whatsapp: {label: start.personWhatsapp, href: whatsappChatHref(whatsappChatCopy.hostQuestionMessage), newTab: true},
+              walkthrough: {label: start.personWalkthrough, href: hostWalkthroughHref},
+            })} tone="primary" />
+            <CatchLinkedText parts={linkedParts(start.weddingsLine, {weddings: {label: start.weddings, href: start.weddingsHref, arrow: true}})} tone="primary" />
           </CatchStack>
         </CatchStack>
       )}
-      flush={explore != null}
       ground="yellow"
       id="start"
       kicker={start.kicker}
       lead={start.body}
-      media={explore ? <CatchAppCaptureImage {...explore} bleed caption={undefined} size="md" /> : undefined}
+      media={screen ? <CatchAppCaptureImage {...screen} caption={undefined} size="md" /> : undefined}
       stores={stores.map((store) => ({badgeSrc: store.badgeSrc, comingSoon: store.comingSoon, href: store.href || undefined, label: store.accessibleLabel,
         onClick: store.onClick, store: store.store}))}
+      storesWide={<AppDownloadQr app="host" value={`${brand.web.origin}/host/#start`} />}
       title={start.title}
     />
   );

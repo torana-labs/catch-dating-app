@@ -297,6 +297,8 @@ import 'package:widgetbook_workspace/hosts/operations/workflow_components.dart'
     as _widgetbook_workspace_hosts_operations_workflow_components;
 import 'package:widgetbook_workspace/hosts/organizer_moments_use_cases.dart'
     as _widgetbook_workspace_hosts_organizer_moments_use_cases;
+import 'package:widgetbook_workspace/hosts/people_duplicates_use_cases.dart'
+    as _widgetbook_workspace_hosts_people_duplicates_use_cases;
 import 'package:widgetbook_workspace/hosts/unified_event_setup_use_cases.dart'
     as _widgetbook_workspace_hosts_unified_event_setup_use_cases;
 import 'package:widgetbook_workspace/layout/host_workspace_use_cases.dart'
@@ -9627,6 +9629,89 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_live_tools_use_cases
                             .hostLiveToolsScreenUseCase,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'People',
+            children: [
+              _widgetbook.WidgetbookFolder(
+                name: 'Possible duplicates',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostDuplicatePairCard',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Marked different, someone else decided',
+                        builder:
+                            _widgetbook_workspace_hosts_people_duplicates_use_cases
+                                .duplicatePairMarked,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Pair to review',
+                        builder:
+                            _widgetbook_workspace_hosts_people_duplicates_use_cases
+                                .duplicatePairToReview,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostMergeConfirmSheet',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Keep a record, with differences',
+                        builder:
+                            _widgetbook_workspace_hosts_people_duplicates_use_cases
+                                .mergeConfirmSheet,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostPeopleDuplicatesBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Marked different',
+                        builder:
+                            _widgetbook_workspace_hosts_people_duplicates_use_cases
+                                .duplicatesMarkedDifferent,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'No possible duplicates',
+                        builder:
+                            _widgetbook_workspace_hosts_people_duplicates_use_cases
+                                .duplicatesEmpty,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Pairs to review',
+                        builder:
+                            _widgetbook_workspace_hosts_people_duplicates_use_cases
+                                .duplicatesToReview,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostPeopleDuplicatesScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Review page',
+                        builder:
+                            _widgetbook_workspace_hosts_people_duplicates_use_cases
+                                .duplicatesScreen,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'PeopleDuplicatesRow',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Pairs to review',
+                        builder:
+                            _widgetbook_workspace_hosts_people_duplicates_use_cases
+                                .peopleDuplicatesRow,
+                      ),
+                    ],
                   ),
                 ],
               ),

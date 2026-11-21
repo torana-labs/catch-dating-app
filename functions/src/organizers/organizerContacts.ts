@@ -1461,6 +1461,36 @@ function timelineEntryId(kind: string, sourceId: string): string {
     .digest("hex").slice(0, 40)}`;
 }
 
+/**
+ * The receipt-backed merges into one contact that are not reversed, newest
+ * first, as the detail callable returns them. The Host person page shows
+ * them from its detail view with an undo for each.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {string} organizerId The contact's organizer.
+ * @param {string} contactId The surviving contact.
+ * @return {Promise<GetOrganizerContactDetailCallableResponse["activeMerges"]>}
+ *     The newest 50 active merges.
+ */
+export async function readActiveContactMerges(
+  db: FirebaseFirestore.Firestore, organizerId: string, contactId: string
+): Promise<GetOrganizerContactDetailCallableResponse["activeMerges"]> {
+  const receipts = await db.collection("organizerContactMergeReceipts")
+    .where("organizerId", "==", organizerId)
+    .where("survivorContactId", "==", contactId)
+    .orderBy("createdAt", "desc")
+    .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+    .limit(maxDetailMergeReceipts)
+    .get();
+  return activeMergeRows({
+    db,
+    organizerId,
+    receipts: receipts.docs.map((document) => ({
+      id: document.id,
+      data: document.data() as OrganizerContactMergeReceiptDocument,
+    })),
+  });
+}
+
 async function activeMergeRows(params: {
   db: FirebaseFirestore.Firestore;
   organizerId: string;

@@ -2,8 +2,7 @@
 import {logger} from "firebase-functions";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import type {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {clientAddress} from "../instantDrafts/request";
-import {limiterKey} from "../instantDrafts/model";
+import {spendTryItReadBudget} from "./pageRead";
 import type {DraftLinkClassification} from "../instantDrafts/links";
 import {createSupplyIntakeRequest, intakeMarket, supplyIntakeRequestId,
   type SupplyIntakeTryItImport} from "../operations/supplyIntake/requests";
@@ -50,8 +49,8 @@ export type TryItLinkRead =
   | {state: "refused"; reason: "listing_suppressed" | "link_unreadable"}
   | {state: "completed"; stored: Data};
 
-const HOUR_MS = 60 * 60 * 1000;
-const DAY_MS = 24 * HOUR_MS;
+/** The key the organizer and event imports' shared daily budget counts under. */
+const TRY_IT_IMPORTS_DAILY_SCOPE = "try-it-imports";
 
 /** The Supply Intake request id a command's key reads into. */
 export function tryItReadRequestId(seed: readonly string[]): string {
@@ -67,9 +66,10 @@ export async function readTryItLink(db: FirebaseFirestore.Firestore, deps: TryIt
   const ref = db.collection(supplyIntakeCollections.requests).doc(params.requestId);
   let snap = await ref.get();
   if (!snap.exists) {
-    await deps.checkRateLimit(db, limiterKey("phone", params.phone), params.limits.phone, {maxRequests: 10, windowMs: HOUR_MS});
-    await deps.checkRateLimit(db, limiterKey("ip", clientAddress(request)), params.limits.address, {maxRequests: 30, windowMs: HOUR_MS});
-    await deps.checkRateLimit(db, "try-it-imports", params.limits.daily, {maxRequests: 100, windowMs: DAY_MS});
+    // The same budgets every try-it link read spends (pageRead.ts), under
+    // this command's own limiter names so live counters carry on.
+    await spendTryItReadBudget(db, deps.checkRateLimit, request, params.phone,
+      {...params.limits, dailyScope: TRY_IT_IMPORTS_DAILY_SCOPE});
     const created = await startTryItRead(db, deps, params);
     if (created === "suppressed") return {state: "refused", reason: "listing_suppressed"};
     snap = await ref.get();

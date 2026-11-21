@@ -51,16 +51,6 @@ const startTrial = "Start free trial";
 const facts = hostPricingFacts;
 const liveCities = new Intl.ListFormat(activeMarket.locale, {style: "long", type: "conjunction"}).format(activeMarket.cities.filter((city) => city.status === "live").map((city) => city.label));
 
-/** A comparison cell: its text, and whether it is a plain yes, a plain no or not published. */
-export interface HostCompareCell {
-  text: string;
-  status?: "yes" | "no" | "unknown";
-}
-
-const yes: HostCompareCell = {text: "Yes", status: "yes"};
-const no: HostCompareCell = {text: "No", status: "no"};
-const notPublished: HostCompareCell = {text: "Not published", status: "unknown"};
-
 /** Where a link on the page goes: a band on this page, or a WhatsApp chat with the message typed. */
 export type HostLandingTarget = {anchor: string} | {whatsapp: string} | {href: string};
 
@@ -145,31 +135,18 @@ export const hostLandingCopy = {
     timelineLabel: "Moments in the evening",
     position: "{index} of {total}",
   },
-  compare: {
-    kicker: "Compare",
-    title: `How ${brand.name} compares with what hosts use today.`,
-    body: "Most hosts start on WhatsApp, Google Forms and UPI screenshots. Others use Luma, District or Meetup. Here’s what each one does, taken from their own pages.",
-    rowHeader: "What you need",
-    columns: [brand.name, "WhatsApp, Forms and UPI", "Luma", "District", "Meetup"],
-    rows: [
-      {label: "Free events stay free", cells: [yes, yes, yes, notPublished, {text: "Organiser subscription", status: "no"}]},
-      {label: "Fee on paid tickets", cells: [
-        {text: fill("{rate}, never more than {cap} a month", {rate: facts.rate, cap: facts.cap})},
-        {text: "None, but you chase every payment"},
-        {text: "5% (0% on a US$59-a-month plan), plus card fees"},
-        {text: "Negotiated per event; no public rate"},
-        {text: "A service fee for attendees, plus your subscription"},
-      ]},
-      {label: "Paid in rupees, by UPI", cells: [yes, {text: "Screenshots to match"}, {text: "No: can’t pay hosts based in India", status: "no"}, yes, {text: "Not documented for India", status: "unknown"}]},
-      {label: "Applications and waitlists", cells: [{text: "Yes, with waitlist backfill", status: "yes"}, {text: "By hand", status: "no"}, yes, notPublished, {text: "Waitlists on free events only"}]},
-      {label: "Check-in at the door", cells: [{text: "QR or self check-in, phone or iPad", status: "yes"}, {text: "A printed list", status: "no"}, {text: "QR in the Luma app"}, notPublished, {text: "QR tickets"}]},
-      {label: "Runs the night: pace groups, teams, seating, court rotations", cells: [{text: "Yes, for each format", status: "yes"}, no, no, no, no]},
-      {label: "A first hello for every newcomer", cells: [yes, no, no, no, no]},
-      {label: "Every guest remembered across events", cells: [yes, {text: "In your head", status: "no"}, {text: "Partly: calendar subscribers"}, {text: "The platform keeps them", status: "no"}, {text: "Group members"}]},
-      {label: "Helps people find you", cells: [{text: fill("Growing: {cities}", {cities: liveCities}), status: "yes"}, no, {text: "Small audience in India"}, {text: "A large going-out marketplace"}, {text: "Interest groups"}]},
-    ] satisfies readonly {label: string; cells: readonly HostCompareCell[]}[],
-    checked: "Checked on 15 Nov 2026",
-    source: "From each company’s own pages. Meetup cells and District’s payout cell come from search results. “Not published” means we found no public statement, not that the feature is missing.",
+  /** Why hosts switch: the three things only we do, then the full comparison on /pricing/. */
+  switch: {
+    kicker: "Why hosts switch",
+    title: "What WhatsApp and ticketing apps can’t do.",
+    tiles: [
+      {ground: "mint", title: "Runs the night for you", body: "Pace groups, quiz teams, seating and court rotations, planned for each format."},
+      {ground: "yellow", title: "A first hello for every newcomer", body: "Nobody arrives alone: first-timers get a group before they walk in."},
+      {ground: "indigo", title: "Every guest remembered", body: "One record per guest across all your events, so regulars come back."},
+    ] satisfies readonly {ground: "mint" | "yellow" | "indigo"; title: string; body: string}[],
+    compareLead: "See how ",
+    compareLink: `${brand.name} compares with Luma, District and Meetup`,
+    compareHref: "/pricing/#compare",
   },
   pricing: {
     kicker: "Pricing",
@@ -225,19 +202,15 @@ export const hostLandingCopy = {
     title: "Your next event. A stronger foundation.",
     body: `Download ${brand.stores.hostAppName}, set up your first event, and run it tonight if you like.`,
     steps: [
-      {title: `Download ${brand.stores.hostAppName}`, body: "On iPhone, Android or iPad. On a laptop, scan the code or get the link on WhatsApp."},
+      {title: `Download ${brand.stores.hostAppName}`, body: "On iPhone, Android or iPad."},
       {title: "Set up your page and your first event", body: "Pick a format, set the price and publish when you’re ready."},
       {title: "Your free days start when doors open", body: fill("No {brand} fee on what you sell until {trialDays} days after your first event.", {brand: brand.name, trialDays: facts.trialDays})},
     ],
-    /** Wide screens only (leak 6): the QR opens this band on the phone, where both store buttons are. */
-    qrTitle: `On a laptop? Scan to get ${brand.stores.hostAppName}`,
-    qrBody: "Or we’ll send the link to your WhatsApp.",
-    qrLabel: `QR code that opens ${brand.name} for hosts on your phone`,
-    whatsappLink: "Get the link on WhatsApp",
-    personLead: "Prefer a person?",
+    /** The other ways in, as sentences under the steps: {whatsapp}, {walkthrough} and {weddings} are links. */
+    personLine: "Prefer a person? {whatsapp} or {walkthrough}.",
     personWhatsapp: "WhatsApp us",
-    personWalkthrough: "Book 15 minutes",
-    weddingsLead: "Running a wedding or a multi-day programme?",
+    personWalkthrough: "book a 15‑minute walkthrough",
+    weddingsLine: "Running a wedding or a multi-day programme? See {weddings}",
     weddings: `${brand.name} for weddings`,
     weddingsHref: "/weddings/",
   },

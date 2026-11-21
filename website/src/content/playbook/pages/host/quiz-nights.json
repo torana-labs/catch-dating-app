@@ -70,7 +70,7 @@
         {"time": "9:00 PM", "title": "Scores in, standings hidden", "body": "You enter each round’s scores. The standings stay hidden until you reveal them, so the last round still matters."},
         {"time": "9:40 PM", "title": "The reveal", "body": "Start a countdown, and the final standings appear on every guest’s phone at once."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-scores"}
+      "media": {"kind": "capture", "slot": "host-live-tablet"}
     },
     {
       "type": "tiles",

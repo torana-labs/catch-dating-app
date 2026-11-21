@@ -28,6 +28,8 @@ import {
 } from "./envelope";
 import {assertSameTryItRead, readTryItEvents, readTryItLink, tryItReadRequestId, type TryItEvent} from "./linkRead";
 import {readTryItWorkspace, stageTryItWorkspace, type WorkspaceLookup} from "./workspace";
+import {aiEventsRequest, importAiEvents, lazyPageAi, sharedPageAiFallback, storageSnapshotReader, storedPageInput,
+  type LazyPageAi, type PageAiDeps} from "./aiPage";
 
 // Command event.import-from-link (contracts/commands/catalog.json; #2062 C2).
 // A phone-verified visitor with a try-it workspace sends one public event page
@@ -39,6 +41,11 @@ import {readTryItWorkspace, stageTryItWorkspace, type WorkspaceLookup} from "./w
 // event setup takes, in the workspace's own city and timezone. The draft is
 // private: nothing publishes, takes bookings or messages anyone, and checkout,
 // venue and the rest are set in the Host app's setup steps.
+//
+// With the AI fallback switched on (aiPage.ts, #2062), a page whose adapters
+// find no event, or a public platform with no adapter yet, is read by the AI
+// from the stored page text; the events it reads are listed the same way and
+// every field it filled is marked for the host to check (reviewFields).
 
 export const COMMAND_ID = "event.import-from-link";
 const POLL_MS = 2_000;
@@ -52,7 +59,7 @@ type Response = ImportEventFromLinkCallableResponse;
 type Proposal = NonNullable<Response["result"]["proposal"]>;
 type Data = Record<string, unknown>;
 
-export interface ImportEventFromLinkDeps {
+export interface ImportEventFromLinkDeps extends PageAiDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => Date;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
@@ -66,6 +73,8 @@ const defaultDeps: ImportEventFromLinkDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   timestampFromMillis: (millis) => admin.firestore.Timestamp.fromMillis(millis),
   checkRateLimit: defaultCheckRateLimit,
+  aiFallback: () => sharedPageAiFallback(),
+  readSnapshot: storageSnapshotReader(),
 };
 
 interface Context {
@@ -75,6 +84,8 @@ interface Context {
   host: string;
   commandKey: string;
   requestId: string;
+  /** The AI fallback when it is switched on, checked at most once. */
+  ai: LazyPageAi;
 }
 
 /** What a preview found: the listed events, and the draft for the chosen one. */
@@ -84,6 +95,9 @@ interface Found {
   proposal: Proposal | null;
   reasons: string[];
   hash: string;
+  /** True when the AI read the page; reviewFields names what it filled. */
+  aiRead: boolean;
+  reviewFields: string[];
 }
 
 export async function importEventFromLinkHandler(request: CallableRequest<unknown>,
@@ -102,7 +116,7 @@ export async function importEventFromLinkHandler(request: CallableRequest<unknow
   const ctx: Context = {uid: caller.uid, input: {link: url.href, eventKey: data.input.eventKey ?? null},
     link: classifyDraftLink("event_link", url), host: url.hostname.replace(/^www\./u, ""), commandKey,
     // Seeded with the command so a key reused across commands reads separately.
-    requestId: tryItReadRequestId([COMMAND_ID, commandKey])};
+    requestId: tryItReadRequestId([COMMAND_ID, commandKey]), ai: lazyPageAi(deps)};
   const db = deps.firestore();
   // Previews poll every two seconds while a page is read.
   await deps.checkRateLimit(db, caller.uid, "importEventFromLink", {maxRequests: 900, windowMs: HOUR_MS});
@@ -112,6 +126,10 @@ export async function importEventFromLinkHandler(request: CallableRequest<unknow
   const lookup = await db.runTransaction((tx) => readTryItWorkspace(tx, db, caller.uid), {readOnly: true});
   if (lookup.kind === "new") return respond(ctx, "needs_input", {reasons: ["no_workspace"]});
   const organizerId = workspaceOrganizerId(lookup);
+  if (ctx.link.support === "staff_follow_up" && ctx.link.reason === "platform_adapter_missing" && await ctx.ai()) {
+    // A public platform with no adapter yet: read, and the AI reads what the adapters can't.
+    ctx.link = {provider: ctx.link.provider, support: "best_effort", reason: "ai_fallback"};
+  }
   if (ctx.link.support === "staff_follow_up") {
     return respond(ctx, "refused", {organizerId, reasons: [ctx.link.reason ?? "no_adapter"]});
   }
@@ -123,7 +141,7 @@ export async function importEventFromLinkHandler(request: CallableRequest<unknow
   if (read.state === "refused") return respond(ctx, "refused", {organizerId, reasons: [read.reason]});
   const found = await findDraft(db, deps, ctx, organizerId, organizer, read.stored);
   return respond(ctx, statusFor(found), {organizerId, events: found.events, proposal: found.proposal,
-    reasons: found.reasons, hash: found.hash});
+    reasons: found.reasons, hash: found.hash, aiRead: found.aiRead, reviewFields: found.reviewFields});
 }
 
 export const importEventFromLink = onCall(appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey],
@@ -178,7 +196,7 @@ async function apply(db: FirebaseFirestore.Firestore, deps: ImportEventFromLinkD
       organizerName: typeof lookup.organizer.name === "string" ? lookup.organizer.name : "Organizer", marketId: "",
       serverTimestamp: deps.serverTimestamp, draftEventId: setup.eventId});
     const applied = respond(ctx, "applied", {organizerId, events: [], proposal, reasons: [], hash: found.hash,
-      receiptId, eventId: setup.eventId});
+      receiptId, eventId: setup.eventId, aiRead: found.aiRead, reviewFields: found.reviewFields});
     recordCommand(tx, db, {commandId: COMMAND_ID, uid: ctx.uid, idempotencyKey: data.idempotencyKey, requestHash,
       nowMillis: now.getTime(), response: applied});
     return applied;
@@ -193,10 +211,16 @@ async function findDraft(db: FirebaseFirestore.Firestore, deps: ImportEventFromL
     .filter((event) => Number.isFinite(Date.parse(event.startAt)) && new Date(event.startAt).toISOString() > nowIso)
     .slice(0, LIST_EVENTS);
   const market = marketForIdOrAlias(marketIdOf(organizer));
-  const base = {organizerId, events};
+  const base = {organizerId, events, aiRead: false, reviewFields: []};
   const hashOf = (evidence: unknown) => commandPreviewHash(COMMAND_ID, ctx.uid, ctx.input, evidence);
-  if (events.length === 0) return {...base, proposal: null, reasons: ["no_upcoming_events"], hash: hashOf({reasons: ["no_upcoming_events"]})};
-  if (!market || !market.eventCreatable) return {...base, proposal: null, reasons: ["city_unavailable"], hash: hashOf({reasons: ["city_unavailable"]})};
+  const none = (reason: string): Found => ({...base, proposal: null, reasons: [reason], hash: hashOf({reasons: [reason]})});
+  if (events.length === 0) {
+    const ai = await ctx.ai();
+    if (!ai) return none("no_upcoming_events");
+    if (!market || !market.eventCreatable) return none("city_unavailable");
+    return aiDraft(deps, ctx, ai, organizerId, market, stored);
+  }
+  if (!market || !market.eventCreatable) return none("city_unavailable");
   const chosen = ctx.input.eventKey ? events.find((event) => event.eventKey === ctx.input.eventKey) ?? null :
     events.length === 1 ? events[0] : null;
   if (!chosen) {
@@ -208,6 +232,48 @@ async function findDraft(db: FirebaseFirestore.Firestore, deps: ImportEventFromL
     localDate: local.date, localStartTime: local.time, timezone: market.timeZone, cityId: market.cityId,
     marketId: market.marketId, venue: chosen.venue, sourceUrl: chosen.sourceUrl};
   return {...base, proposal, reasons: [], hash: hashOf({proposal, runId: ctx.requestId})};
+}
+
+type Market = NonNullable<ReturnType<typeof marketForIdOrAlias>>;
+
+/**
+ * The AI fallback's read of a page whose adapters found no event: the stored
+ * page text only. Its upcoming events are listed and chosen as the adapters'
+ * are, in the workspace's city, and every field it filled is for review.
+ */
+async function aiDraft(deps: ImportEventFromLinkDeps, ctx: Context, ai: NonNullable<Awaited<ReturnType<LazyPageAi>>>,
+  organizerId: string, market: Market, stored: Data): Promise<Found> {
+  const hashOf = (evidence: unknown) => commandPreviewHash(COMMAND_ID, ctx.uid, ctx.input, evidence);
+  const none = (reason: string, aiRead: boolean): Found => ({organizerId, events: [], proposal: null, reasons: [reason],
+    hash: hashOf({reasons: [reason], aiRead}), aiRead, reviewFields: []});
+  const input = await storedPageInput(stored, ctx.requestId, ctx.input.link, deps.readSnapshot ?? storageSnapshotReader());
+  if (!input) return none("ai_unreadable", false);
+  const result = await ai.read(aiEventsRequest(ctx.uid, COMMAND_ID, input));
+  // Switched off between the check and the read: answer as the adapters did.
+  if (result.status === "off") return none("no_upcoming_events", false);
+  if (result.status === "refused") return none(result.reason, false);
+  const read = importAiEvents(result.output);
+  if (read.length === 0) return none("ai_unreadable", true);
+  const now = localDateTime(deps.now().toISOString(), market.timeZone);
+  const upcoming = read.filter((event) => `${event.localDate}T${event.localStartTime}` > `${now.date}T${now.time}`)
+    .slice(0, LIST_EVENTS);
+  if (upcoming.length === 0) return none("no_upcoming_events", true);
+  const events: TryItEvent[] = upcoming.map((event) => ({eventKey: event.eventKey, title: event.title,
+    startAt: `${event.localDate}T${event.localStartTime}`, endAt: null, venue: event.venue, address: null, description: null,
+    sourceUrl: ctx.input.link}));
+  const base = {organizerId, events, aiRead: true};
+  const chosen = ctx.input.eventKey ? upcoming.find((event) => event.eventKey === ctx.input.eventKey) ?? null :
+    upcoming.length === 1 ? upcoming[0] : null;
+  if (!chosen) {
+    const reasons = [ctx.input.eventKey ? "event_not_found" : "choose_event"];
+    return {...base, proposal: null, reasons, reviewFields: [],
+      hash: hashOf({reasons, events: upcoming.map((event) => event.eventKey), aiRead: true})};
+  }
+  const proposal: Proposal = {eventKey: chosen.eventKey, name: chosen.title, localDate: chosen.localDate,
+    localStartTime: chosen.localStartTime, timezone: market.timeZone, cityId: market.cityId, marketId: market.marketId,
+    venue: chosen.venue, sourceUrl: ctx.input.link};
+  const reviewFields = ["name", "localDate", "localStartTime", ...(chosen.venue ? ["venue"] : [])];
+  return {...base, proposal, reasons: [], reviewFields, hash: hashOf({proposal, runId: ctx.requestId, aiRead: true})};
 }
 
 function statusFor(found: Found): Response["status"] {
@@ -241,7 +307,8 @@ function workspaceOrganizerId(lookup: WorkspaceLookup): string {
 
 function respond(ctx: Context, status: Response["status"], options: {organizerId?: string | null;
   events?: TryItEvent[]; proposal?: Proposal | null; reasons?: string[]; hash?: string; receiptId?: string;
-  eventId?: string}): Response {
+  eventId?: string; aiRead?: boolean; reviewFields?: string[]}): Response {
+  const aiRead = options.aiRead === true;
   const proposal = options.proposal ?? null;
   const reasons = options.reasons ?? [];
   const events = (options.events ?? []).map((event) => ({eventKey: event.eventKey, title: event.title,
@@ -250,30 +317,41 @@ function respond(ctx: Context, status: Response["status"], options: {organizerId
   return {
     commandId: COMMAND_ID, status,
     previewHash: options.hash ?? commandPreviewHash(COMMAND_ID, ctx.uid, ctx.input, {status, reasons}),
-    summary: summaryFor(ctx, status, proposal, events.length, reasons),
+    summary: summaryFor(ctx, status, proposal, events.length, reasons, aiRead),
     effects: status === "applied" && proposal && eventId ? [{kind: "draft_event", ref: `events/${eventId}`,
       label: `Private draft: ${proposal.name}`.slice(0, 200)}] : [],
     next: reasons.includes("no_workspace") ? [{commandId: "workspace.ensure", label: "Set up your organizer profile"}] : [],
     receiptId: options.receiptId ?? null,
     result: {organizerId: options.organizerId ?? null,
       runId: status === "needs_input" && reasons.includes("no_workspace") ? null : ctx.requestId,
-      link: ctx.link, events, proposal, eventId, reasons, pollAfterMs: status === "running" ? POLL_MS : null},
+      link: ctx.link, events, proposal, eventId, reasons, pollAfterMs: status === "running" ? POLL_MS : null,
+      aiRead, reviewFields: aiRead ? reviewFieldsOf(options.reviewFields ?? []) : []},
   };
 }
+
+const REVIEW_FIELDS = ["name", "localDate", "localStartTime", "venue"] as const;
+
+const AI_READ_LINE = "We read this page automatically. Check the name, date, time and venue before you save.";
 
 const REFUSALS: Record<string, string> = {
   signed_in_site: "This site needs a sign-in, so we can't read it.",
   chat_invite: "Chat invites can't be read. Send the event page instead.",
   short_link: "Short links hide where they go. Send the full link instead.",
   no_adapter: "We can't read this platform yet. Try the event's Luma or District page.",
+  platform_adapter_missing: "We can't read this platform yet. Try the event's Luma or District page.",
+  form_link_sent_as_event: "That's a form. Send the event page instead, or import the form with the Forms tool.",
+  instagram_post_not_read: "We can't read Instagram posts. Send the event page instead.",
   listing_suppressed: "Catch can't make events for this organizer. Contact support if you think this is a mistake.",
   link_unreadable: "We couldn't read this page. Check the link is public, or try another one.",
   no_upcoming_events: "We didn't find an upcoming event on this page.",
   city_unavailable: "Your profile's city isn't open for events yet.",
+  ai_unreadable: "We couldn't find an event on this page. Check it's the event page itself, or create the event in the Host app.",
+  ai_cap_reached: "We couldn't read this automatically right now. Try again next month, or create the event in the Host app.",
+  ai_daily_limit: "You've used today's automatic reads. Try again tomorrow, or create the event in the Host app.",
 };
 
 function summaryFor(ctx: Context, status: Response["status"], proposal: Proposal | null, eventCount: number,
-  reasons: string[]): Response["summary"] {
+  reasons: string[], aiRead: boolean): Response["summary"] {
   if (status === "running") return {headline: `Reading ${ctx.host}…`, lines: ["This usually takes under a minute."]};
   if (status === "refused") {
     return {headline: "We can't draft an event from this link.", lines: [REFUSALS[reasons[0]] ?? REFUSALS.link_unreadable]};
@@ -283,13 +361,20 @@ function summaryFor(ctx: Context, status: Response["status"], proposal: Proposal
   }
   if (!proposal) {
     return {headline: `We found ${eventCount} upcoming events.`, lines: [reasons[0] === "event_not_found" ?
-      "That event isn't on this page any more. Choose another." : "Choose the one to draft."]};
+      "That event isn't on this page any more. Choose another." : "Choose the one to draft.",
+    ...(aiRead ? [AI_READ_LINE] : [])]};
   }
   const when = `${proposal.localDate} at ${proposal.localStartTime}`;
   const lines = [`On ${when}.`, "It stays private: no one can see or book it until you publish it."];
   if (proposal.venue) lines.splice(1, 0, `At ${proposal.venue}. Add the venue in Details to show it.`);
+  if (aiRead && status === "previewed") lines.push(AI_READ_LINE);
   return status === "previewed" ?
     {headline: `We'll draft "${proposal.name}".`.slice(0, 200), lines} :
     {headline: `"${proposal.name}" is a private draft in your profile.`.slice(0, 200),
       lines: ["Finish the details, tickets and questions in the Host app."]};
+}
+
+/** The review fields the response schema names, in order. */
+function reviewFieldsOf(fields: string[]): NonNullable<Response["result"]["reviewFields"]> {
+  return REVIEW_FIELDS.filter((field) => fields.includes(field));
 }

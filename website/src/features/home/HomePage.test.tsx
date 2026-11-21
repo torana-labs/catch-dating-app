@@ -62,9 +62,11 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(quiz.textContent).toContain("Thu 7:30 PM");
     expect(quiz.textContent).toContain("6 left");
     expect(week.getByText("Hosted plans across Bandra, Khar, Andheri and Worli.")).toBeTruthy();
-    expect(week.getByRole("link", {name: "See everything in Mumbai"}).getAttribute("href")).toBe("/mumbai/");
-    // Switching city from the band loads that city's homepage.
-    expect(week.getByRole("link", {name: "Plans in Indore"}).getAttribute("href")).toBe("/?city=indore");
+    // The link to everything sits under the cards; the band lists no other cities (the header's picker switches city).
+    const all = week.getByRole("link", {name: "See all 10 plans in Mumbai"});
+    expect(all.getAttribute("href")).toBe("/mumbai/");
+    expect(quiz.compareDocumentPosition(all) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(week.queryByRole("link", {name: /^Plans in /u})).toBeNull();
   });
 
   it("orders a busy city's bands as the board: entry tiles, plans, formats, how a night works, proof, then the host band", () => {
@@ -224,15 +226,17 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(organisers.getAllByText(/Joining at launch/).length).toBe(2);
   });
 
-  it("shows a thin city everything ahead, dated, with the host band moved up and no format filter", () => {
+  it("turns an open city with nothing ahead into the WhatsApp sign-up, with the host band moved up and no empty list", () => {
     const {container} = render(<HomePage captures={captures} catalog={homeCatalogFixture("indore")} />);
     expect(screen.getByText("New in Indore · plans for the next two weeks")).toBeTruthy();
-    expect(screen.getByRole("link", {name: "See what’s coming up"}).getAttribute("href")).toBe("#whats-on");
-    const plans = within(screen.getByRole("region", {name: "Coming up in Indore"}));
-    expect(plans.getByText("Next two weeks")).toBeTruthy();
-    // A quiet city is never an empty page: it says what to do next.
-    expect(plans.getByText("No plans in Indore in the next two weeks yet. Follow the organisers below to hear about their next one first.")).toBeTruthy();
-    expect(plans.getByRole("link", {name: "See all upcoming plans"}).getAttribute("href")).toBe("/indore/");
+    expect(screen.getByRole("link", {name: "Get new plans on WhatsApp"}).getAttribute("href")).toBe("#whats-on");
+    const plans = within(screen.getByRole("region", {name: "Be first to hear when Indore’s next plans go up."}));
+    expect(plans.getByText("New in Indore")).toBeTruthy();
+    // Nothing advertises an empty list: no See-all link, no empty notice, no filters.
+    expect(plans.queryByRole("link", {name: "See all upcoming plans"})).toBeNull();
+    expect(plans.queryByText(/No plans in Indore/u)).toBeNull();
+    expect(plans.getByRole("button", {name: "Notify me"})).toBeTruthy();
+    expect(plans.getByRole("link", {name: "Host on Catch"}).getAttribute("href")).toBe("/host/");
     expect(plans.queryByRole("radiogroup")).toBeNull();
     expect(screen.queryByText(/^0 /u)).toBeNull();
     expect(bandTitles(container)[3]).toBe("Bring people together? Run the whole night from one screen.");
@@ -242,8 +246,9 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(hosts.getByText("Payment gateway fees are charged separately by the payment provider.")).toBeTruthy();
     expect(hosts.getByRole("link", {name: "Talk to us on WhatsApp"})).toBeTruthy();
     expect(screen.queryByText(/Here for the plans/u)).toBeNull();
-    // A thin week offers new plans on WhatsApp under the cards.
-    expect(within(plans.getByRole("form", {name: "Want to hear first?"})).getByText("New Indore plans on WhatsApp, about once a week.")).toBeTruthy();
+    // The sign-up is the band: its lead says what it sends, the form sits under it.
+    expect(plans.getByText("Hosts are getting set up. We’ll send new Indore plans on WhatsApp, about once a week.")).toBeTruthy();
+    expect(plans.getByRole("form", {name: "Want to hear first?"})).toBeTruthy();
   });
 
   it("sends a thin week's notify bar as a city alerts lead for the city, and confirms it", async () => {

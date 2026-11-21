@@ -80,20 +80,46 @@
   --catch-theme-ink2: var(--catch-ground-paper-ink-secondary);
 }
 
+/*
+ * The contents list: plain links on the label's edge along a hairline rail,
+ * in the body-small role. The section being read is set in ink with a
+ * marker on the rail; the others take the secondary ink.
+ */
 .links {
   margin: 0;
   padding: 0;
+  border-inline-start: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-opacity-ground-card-outline) * 100%), transparent);
   list-style: none;
 }
 
 .link {
-  display: flex;
-  padding: var(--catch-space-micro6) 0;
-  border-bottom: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink)
-    calc(var(--catch-opacity-ground-card-outline) * 100%), transparent);
+  display: block;
+  margin-inline-start: calc(-1 * var(--catch-stroke-hairline));
+  padding: var(--catch-space-micro6) 0 var(--catch-space-micro6) var(--catch-space-s3);
+  border-inline-start: var(--catch-stroke-emphasis) solid transparent;
+  color: var(--catch-theme-ink2);
+  font-family: var(--catch-typography-role-body-small-family), var(--catch-font-stack-sans);
+  font-size: var(--catch-typography-role-body-small-size);
+  line-height: var(--catch-typography-role-body-small-line-height);
+  text-decoration: none;
 }
 
-.link:last-child { border-bottom: 0; }
+.link[aria-current] {
+  border-inline-start-color: var(--catch-theme-ink);
+  color: var(--catch-theme-ink);
+  font-weight: var(--catch-typography-role-label-action-weight);
+}
+
+.link:focus-visible {
+  border-radius: var(--catch-radius-xs);
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+@media (hover: hover) {
+  .link:hover { color: var(--catch-theme-ink); }
+}
 
 @container catch-page (width < 840px) {
   .article,
