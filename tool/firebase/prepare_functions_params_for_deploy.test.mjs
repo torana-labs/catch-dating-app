@@ -677,6 +677,39 @@ test("partial Catch reply scope and unpaired sender ids never overwrite config",
     CATCH_WHATSAPP_REPLIES_ENABLED: "true"});
 });
 
+test("support replies need only the sender credential and Graph version", () => {
+  const sender = {
+    CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION,
+    CATCH_WHATSAPP_REPLY_GRAPH_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION,
+  };
+  const gates = {CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "true",
+    CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "true",
+    CATCH_WHATSAPP_REPLIES_ENABLED: "true"};
+  const result = prepareFunctionsParamsForDeploy({
+    functionsDir: fixture(), projectId: "catchdates-dev",
+    environment: {...publicIds, ...catchSender, ...sender, ...gates},
+  });
+  const contents = fs.readFileSync(result.outputPath, "utf8");
+  assert.match(contents, /^CATCH_WHATSAPP_REPLIES_ENABLED="true"$/m);
+  for (const [name, value] of Object.entries(sender)) {
+    assert.ok(contents.includes(`${name}=${JSON.stringify(value)}\n`));
+  }
+  assert.match(contents, /^CATCH_WHATSAPP_REPLY_RECIPIENT_E164=" "$/m);
+  // A trial field without the rest of the trial scope still fails closed.
+  for (const name of ["CATCH_WHATSAPP_REPLY_ACTOR_UID",
+    "CATCH_WHATSAPP_REPLY_RECIPIENT_UID", "CATCH_WHATSAPP_REPLY_RECIPIENT_E164",
+    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256"]) {
+    rejectsCatchConfig({...catchSender, ...sender, ...gates,
+      [name]: catchReplyScope[name]});
+  }
+  // Replies on without the sender pair fail closed.
+  for (const name of Object.keys(sender)) {
+    rejectsCatchConfig({...catchSender, ...sender, ...gates, [name]: " "});
+  }
+});
+
 test("malformed Catch scope rejects unsafe identities endpoints digests and versions", () => {
   const credential = catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION;
   const invalid = {
