@@ -67,6 +67,16 @@ describe("site events reach Google Analytics only after the analytics choice", (
     expect(recorded.analyticsEvent.mock.calls).toEqual([["cta_click", {cta_label: "organiser", cta_target: "organiser_page"}]]);
     expect(JSON.stringify(recorded.analyticsEvent.mock.calls)).not.toMatch(/synthetic-club|private/u);
   });
+
+  it("names outbound hosts only on an exact match: a look-alike host is external", () => {
+    setMarketingConsent("analytics");
+    for (const href of ["https://wa.me/910000000000", "https://api.whatsapp.com/send", "https://evilwhatsapp.com/x",
+      "https://whatsapp.com.example/x", "https://play.google.com.example/x"]) {
+      trackMarketingEvent("cta_click", {cta_label: "outbound", cta_href: href});
+    }
+    expect(recorded.analyticsEvent.mock.calls.map(([, parameters]) => (parameters as {cta_target: string}).cta_target))
+      .toEqual(["whatsapp", "whatsapp", "external", "external", "external"]);
+  });
 });
 
 describe("member, referral and host leads", () => {

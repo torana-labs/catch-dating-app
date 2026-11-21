@@ -454,7 +454,12 @@ const analyticsSlug = /^[a-z0-9][a-z0-9_-]{0,79}$/u;
 const formatValue = /^[A-Za-z]{2,20}$/u;
 const slugOrNull = (value: unknown) => typeof value === "string" && analyticsSlug.test(value) ? value : null;
 const leadFormEventNames: ReadonlySet<string> = new Set(Object.values(websiteLeadFormEvents));
-const storeHosts: Readonly<Record<string, string>> = {"apps.apple.com": "app_store", "play.google.com": "play_store"};
+/** Outbound hosts a CTA class names, matched exactly: a look-alike host is "external". */
+const outboundHostClasses: Readonly<Record<string, string>> = {
+  "apps.apple.com": "app_store", "play.google.com": "play_store",
+  "wa.me": "whatsapp", "whatsapp.com": "whatsapp", "www.whatsapp.com": "whatsapp", "api.whatsapp.com": "whatsapp",
+  "web.whatsapp.com": "whatsapp",
+};
 
 /** Where a CTA leads, as a class or a public path; never a query, a token or another site's address. */
 function ctaTarget(href: unknown): string | null {
@@ -466,8 +471,7 @@ function ctaTarget(href: unknown): string | null {
       if (target.pathname.startsWith("/organizers/")) return "organiser_page";
       return publicAdPage(target.pathname) ?? "private_page";
     }
-    if (target.hostname === "wa.me" || target.hostname.endsWith("whatsapp.com")) return "whatsapp";
-    return storeHosts[target.hostname] ?? "external";
+    return Object.hasOwn(outboundHostClasses, target.hostname) ? outboundHostClasses[target.hostname] : "external";
   } catch {
     return null;
   }
