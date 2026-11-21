@@ -87,6 +87,67 @@ void main() {
       expect(await repository.fetchEvent('event-1'), event);
     });
 
+    group('for a reader off the organizer team', () {
+      late EventRepository guest;
+
+      setUp(
+        () => guest = EventRepository(_GuestFirestore(firestore), functions),
+      );
+
+      test(
+        'reads by id fall back to the public copy, hidden price and all',
+        () async {
+          final event = buildEvent();
+          await _seedPublicCopy(
+            firestore,
+            event,
+            overrides: {'priceHiddenUntilBookingOpens': true},
+          );
+          await firestore.collection('publicEvents').doc(event.id).update({
+            'priceInPaise': FieldValue.delete(),
+          });
+
+          final fetched = await guest.fetchEvent(event.id);
+          expect(fetched?.id, event.id);
+          expect(fetched?.priceInPaise, 0);
+          expect(fetched?.priceHiddenUntilBookingOpens, isTrue);
+          await expectLater(
+            guest.watchEvent(event.id),
+            emits(predicate<Event?>((value) => value?.id == event.id)),
+          );
+        },
+      );
+
+      test('organizer and recommended lists read only listed copies', () async {
+        final listed = buildEvent(id: 'listed');
+        final linkOnly = buildEvent(id: 'link-only');
+        await _seedPublicCopy(firestore, listed);
+        await _seedPublicCopy(
+          firestore,
+          linkOnly,
+          overrides: {'listing': 'link'},
+        );
+
+        await expectLater(
+          guest.watchActiveEventsForOrganizer(
+            organizerId: 'club-1',
+            endsAfter: DateTime.now(),
+          ),
+          emits([listed]),
+        );
+        await expectLater(
+          guest.watchEventsForOrganizer(organizerId: 'club-1'),
+          emits([listed]),
+        );
+        expect(
+          (await guest.fetchUpcomingEventsForOrganizers(const [
+            'club-1',
+          ])).map((event) => event.id),
+          ['listed'],
+        );
+      });
+    });
+
     test('fetchEvent returns null when the document is missing', () async {
       expect(await repository.fetchEvent('event-missing'), isNull);
     });
