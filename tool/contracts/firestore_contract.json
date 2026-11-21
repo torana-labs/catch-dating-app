@@ -6028,7 +6028,7 @@
       ],
       "migrationNotes": [
         "bill equals what listOrganizerBills returns for the bill: no staff ids, reminders, history or link id, and the payment link only while unpaid. The host-organizer-bill-views copy-forward migration creates views for bills sent before the trigger.",
-        "listOrganizerBills stays deployed for released Host builds and the website owner pages."
+        "listOrganizerBills stays deployed for older Host builds only; current Host builds and the website billing portal read these views."
       ]
     },
     {
