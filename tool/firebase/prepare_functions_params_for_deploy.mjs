@@ -116,18 +116,25 @@ function normalizedProviderParams(environment = process.env, projectId) {
   // These are configuration checks, not historical STOP attestation or sending
   // authority. The runtime still requires current Auth/App Check, independently
   // reviewed readiness, verified recipient consent and an atomic one-shot claim.
-  const catchReplyScope = Object.fromEntries([
+  // Support conversation replies need only the pinned sender credential and
+  // Graph version; the four trial fields scope the one-recipient reply trial
+  // and are complete or entirely unconfigured on their own.
+  const catchReplySender = Object.fromEntries([
+    "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
+    "CATCH_WHATSAPP_REPLY_GRAPH_VERSION",
+  ].map((name) => [name, environment[name]?.trim() ?? ""]));
+  const catchReplyTrial = Object.fromEntries([
     "CATCH_WHATSAPP_REPLY_ACTOR_UID",
     "CATCH_WHATSAPP_REPLY_RECIPIENT_UID",
     "CATCH_WHATSAPP_REPLY_RECIPIENT_E164",
-    "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
-    "CATCH_WHATSAPP_REPLY_GRAPH_VERSION",
     "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256",
   ].map((name) => [name, environment[name]?.trim() ?? ""]));
+  const catchReplyScope = {...catchReplySender, ...catchReplyTrial};
+  const hasReplyTrial = Object.values(catchReplyTrial).some(Boolean);
   const hasReplyScope = Object.values(catchReplyScope).some(Boolean);
-  if (hasReplyScope || catchRepliesEnabled === "true") {
-    assert(Object.values(catchReplyScope).every(Boolean),
-      "Catch reply scope must be complete or entirely unconfigured");
+  if (hasReplyTrial) {
+    assert(Object.values(catchReplyTrial).every(Boolean),
+      "Catch reply trial scope must be complete or entirely unconfigured");
     for (const name of ["CATCH_WHATSAPP_REPLY_ACTOR_UID",
       "CATCH_WHATSAPP_REPLY_RECIPIENT_UID"]) {
       assert(/^[A-Za-z0-9_-]{1,128}$/.test(catchReplyScope[name]),
@@ -136,6 +143,14 @@ function normalizedProviderParams(environment = process.env, projectId) {
     assert(/^\+[1-9][0-9]{6,14}$/.test(
       catchReplyScope.CATCH_WHATSAPP_REPLY_RECIPIENT_E164),
     "CATCH_WHATSAPP_REPLY_RECIPIENT_E164 must be an E.164 endpoint");
+    assert(/^[a-f0-9]{64}$/.test(
+      catchReplyScope.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256),
+    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 must be a lowercase SHA-256 digest");
+  }
+  if (hasReplyScope || catchRepliesEnabled === "true") {
+    assert(Object.values(catchReplySender).every(Boolean),
+      "Catch reply sender credential and Graph version must be complete " +
+        "or entirely unconfigured");
     const credentialPrefix = secretPrefix +
       "CATCH_WHATSAPP_ACCESS_TOKEN/versions/";
     const credential = catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION;
@@ -146,9 +161,6 @@ function normalizedProviderParams(environment = process.env, projectId) {
     assert(/^v[1-9][0-9]*\.[0-9]+$/.test(
       catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION),
     "CATCH_WHATSAPP_REPLY_GRAPH_VERSION must be an explicit Graph version");
-    assert(/^[a-f0-9]{64}$/.test(
-      catchReplyScope.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256),
-    "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 must be a lowercase SHA-256 digest");
   }
   const catchWabaId = environment.CATCH_WHATSAPP_WABA_ID?.trim() ?? "";
   const catchPhoneNumberId = environment.CATCH_WHATSAPP_PHONE_NUMBER_ID
