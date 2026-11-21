@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/organizers/data/organizer_claims_repos
 import 'package:catch_dating_app/contexts/organizers/domain/claimable_organizer.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -108,6 +109,8 @@ class HostSetupClaimFormBody extends StatelessWidget {
           child: CatchField.input(
             key: const ValueKey<String>('host-setup-claim-name'),
             copy: copy,
+            contract: CatchContractConstraints
+                .requestOrganizerClaimCallablePayloadRequesterName,
             title: l10n.hostOnboardingClaimName,
             initialValue: claimantName,
             placeholder: l10n.hostOnboardingClaimNamePlaceholder,
