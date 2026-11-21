@@ -12,7 +12,7 @@ test("queries read the raw export views and bind their parameters", () => {
   for (const sql of [citiesSql("p.d"), guestCohortsSql("p.d"),
     weeksSql("p.d"), goingQuietSql("p.d")]) {
     assert.match(sql, /`p\.d\.events_raw_latest`/u);
-    assert.match(sql, /`p\.d\.event_participations_raw_latest`/u);
+    assert.match(sql, /`p\.d\.event_bookings_raw_latest`/u);
     assert.match(sql, /@market_id IS NULL/u);
     assert.doesNotMatch(sql, /\$\{/u);
   }

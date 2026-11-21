@@ -38,6 +38,9 @@ export const BIGQUERY_CHANGELOGS = Object.freeze({
   events: "catch_analytics.events_raw_changelog",
   reviews: "catch_analytics.reviews_raw_changelog",
   savedEvents: "catch_analytics.saved_events_raw_changelog",
+  eventBookings: "catch_analytics.event_bookings_raw_changelog",
+  // The export moved to eventBookings on 22 Nov 2026; the old table keeps
+  // the changelog rows written before then, so a takedown clears both.
   eventParticipations: "catch_analytics.event_participations_raw_changelog",
   eventInviteLinks: "catch_analytics.event_invite_links_raw_changelog",
   eventSuccessScorecards: "catch_marketplace_metrics.event_success_scorecards_raw_changelog",
