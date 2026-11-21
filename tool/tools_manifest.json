@@ -961,7 +961,6 @@
       "impactPaths": [
         "tool/architecture/provider_graph.dart",
         "test/tool/provider_graph_test.dart",
-        "tool/architecture/provider_graph_baseline.json",
         "lib/**/*.dart",
         "apps/*/lib/**/*.dart",
         "packages/platform/lib/**/*.dart"
