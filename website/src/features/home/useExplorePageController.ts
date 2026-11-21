@@ -1,6 +1,7 @@
 import {explorePageCopy as copy} from "@content/explorePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {useMemo} from "react";
+import {trackMarketingEvent} from "../../analytics";
 import {cityAlertsCopy} from "@content/discovery/cityAlerts";
 import {exploreAlertInterests} from "../discovery/cityAlertsModel";
 import {discoveryOrganizerCard, discoveryPlanCard} from "../discovery/discoveryCards";
@@ -53,8 +54,13 @@ export function useExplorePageController(catalog: HomeCatalog, location: {pathna
   const matchedOrganizers = useMemo(() => filterOrganizers(cityOrganizers(plans), filters),
     [plans, filters.query, filters.format]);
   const thisWeek = useMemo(() => weekPlans(plans.plans, readAt), [plans.plans, readAt]);
-  const update = (change: Partial<ExploreFilters>) =>
-    navigate(`${location.pathname}${exploreSearchFor({...filters, ...change}, location.search)}`, {replace: true});
+  const update = (change: Partial<ExploreFilters>) => {
+    const next = {...filters, ...change};
+    navigate(`${location.pathname}${exploreSearchFor(next, location.search)}`, {replace: true});
+    // The filter choices, never the search words: only whether there were any.
+    trackMarketingEvent("explore_filters_applied", {format: next.format, when: next.when, view: next.view,
+      has_query: next.query !== "", city: city.slug});
+  };
   const filtered = filters.query !== "" || filters.format !== "all" || filters.when !== "any";
   const live = plans.status === "live";
   const unavailable = catalog.phase === "unavailable";

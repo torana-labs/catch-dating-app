@@ -141,10 +141,10 @@ test("ad clicks expire 30 days after the latest click", () => {
 
 test("invalid consent flags fail closed and delete previous attribution", () => {
   setMarketingConsent("analytics");
-  localStorage.setItem("catch_marketing_consent_v6", JSON.stringify({version: 6, choice: "essential", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
+  localStorage.setItem("catch_marketing_consent_v7", JSON.stringify({version: 7, choice: "essential", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
   expect(getMarketingConsent()).toBeNull();
   expect(localStorage.getItem(ephemeralKey)).toBeNull();
-  localStorage.setItem("catch_marketing_consent_v6", JSON.stringify({version: 6, choice: "unknown", analytics: true, marketing: true, updatedAt: "bad"}));
+  localStorage.setItem("catch_marketing_consent_v7", JSON.stringify({version: 7, choice: "unknown", analytics: true, marketing: true, updatedAt: "bad"}));
   expect(getMarketingConsent()).toBeNull();
 });
 
@@ -180,7 +180,7 @@ test("legacy analytics-only UI choices cannot authorize marketing and request a 
   expect(getMarketingConsent()).toMatchObject({version: 1, choice: "analytics", analytics: true, marketing: false});
   expect(shouldShowMarketingConsentBanner()).toBe(true);
   setMarketingConsent("accepted");
-  expect(getMarketingConsent()).toMatchObject({version: 6, analytics: true, marketing: true});
+  expect(getMarketingConsent()).toMatchObject({version: 7, analytics: true, marketing: true});
   expect(shouldShowMarketingConsentBanner()).toBe(false);
   expect(localStorage.getItem("catch_marketing_consent_v1")).toBeNull();
 });
@@ -195,7 +195,7 @@ test("a version 4 choice, made while advertising was disabled, keeps analytics b
   expect(localStorage.getItem(catchAttributionKey)).toBeNull();
   expect(currentCheckoutAdContext()).toBeUndefined();
   setMarketingConsent("accepted");
-  expect(getMarketingConsent()).toMatchObject({version: 6, measurementMode: "first_party_tags", marketing: true});
+  expect(getMarketingConsent()).toMatchObject({version: 7, measurementMode: "first_party_tags", marketing: true});
   expect(localStorage.getItem("catch_marketing_consent_v4")).toBeNull();
   expect(shouldShowMarketingConsentBanner()).toBe(false);
 });
@@ -251,7 +251,7 @@ test("SPA views deduplicate a lifecycle render and count a real return visit wit
 
 
 test("a choice made under another measurement mode cannot authorise the tags", () => {
-  localStorage.setItem("catch_marketing_consent_v6", JSON.stringify({version: 6,
+  localStorage.setItem("catch_marketing_consent_v7", JSON.stringify({version: 7,
     measurementMode: "google-live-v1", choice: "accepted", analytics: true, marketing: true,
     updatedAt: new Date().toISOString()}));
   expect(getMarketingConsent()).toMatchObject({version: 2, marketing: false});
@@ -268,7 +268,7 @@ test("a version 5 choice, made before the banner named organisers' tags, asks ag
   expect(localStorage.getItem(catchAttributionKey)).toBeNull();
   expect(currentCheckoutAdContext()).toBeUndefined();
   setMarketingConsent("accepted");
-  expect(getMarketingConsent()).toMatchObject({version: 6, measurementMode: "first_party_tags", marketing: true});
+  expect(getMarketingConsent()).toMatchObject({version: 7, measurementMode: "first_party_tags", marketing: true});
   expect(localStorage.getItem("catch_marketing_consent_v5")).toBeNull();
   expect(shouldShowMarketingConsentBanner()).toBe(false);
 });
@@ -280,7 +280,7 @@ test("version two choices require fresh consent and cannot inherit marketing per
   expect(shouldShowMarketingConsentBanner()).toBe(true);
   setMarketingConsent("accepted");
   expect(localStorage.getItem("catch_marketing_consent_v2")).toBeNull();
-  expect(getMarketingConsent()).toMatchObject({version: 6, measurementMode: "first_party_tags"});
+  expect(getMarketingConsent()).toMatchObject({version: 7, measurementMode: "first_party_tags"});
 });
 
 

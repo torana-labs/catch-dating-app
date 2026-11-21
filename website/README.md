@@ -307,6 +307,7 @@ Primary web events:
 - `client_error`
 - `cta_click`
 - `lead_form_viewed`
+- `lead_form_started`
 - `lead_form_submitted`
 - `lead_form_succeeded`
 - `lead_form_failed`
@@ -331,6 +332,14 @@ Primary web events:
 - `organizer_contactClick`
 - `organizer_claimClick`
 - `organizer_outboundClick`
+- `store_cta_click`
+- `explore_filters_applied`
+- `scroll_depth` (25, 50, 75 and 90%)
+- `section_read` (seconds a `section[id]` band was in view)
+
+After the analytics choice, `analytics.ts` forwards the events it has a closed
+GA4 projection for (`googleAnalyticsProjection`) to Google Analytics through
+`adTags.analyticsEvent`; everything else stays on the local `dataLayer` bus.
 
 Claim conversion events use the ads contract keys `club_id` and `claim_role`.
 Consent-based marketing events are still recorded for public organizer pages

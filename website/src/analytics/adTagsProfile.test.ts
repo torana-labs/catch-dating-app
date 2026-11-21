@@ -5,7 +5,7 @@ import {createAdTags, type OrganizerAdDestinations} from "./adTags";
 type Globals = {catchTagLayer?: ArrayLike<unknown>[]; catchOrganizerTagLayer?: ArrayLike<unknown>[];
   fbq?: {queue: ArrayLike<unknown>[]}; _fbq?: unknown};
 const globals = () => window as unknown as Globals;
-const consent = (choice: "accepted" | "analytics") => ({version: 6, choice, analytics: true,
+const consent = (choice: "accepted" | "analytics") => ({version: 7, choice, analytics: true,
   marketing: choice === "accepted", updatedAt: "2026-11-19T21:00:00.000Z"});
 const profile = "/organizers/harbour-line-run-club/";
 const catchEvents = (name: string) => (globals().catchTagLayer ?? []).map((entry) => Array.from(entry))
@@ -34,7 +34,7 @@ describe("Catch's own tags on organiser profiles", () => {
     ad.sync(consent("analytics"));
     expect(ad.pageView()).toBe(true);
     expect((globals().catchTagLayer ?? []).map((entry) => Array.from(entry))).toContainEqual(
-      ["set", {page_location: `${brand.web.origin}${profile}`, page_title: brand.name}]);
+      ["set", {page_location: `${brand.web.origin}${profile}`, page_title: `Organiser page | ${brand.name}`}]);
     expect(catchEvents("page_view")).toHaveLength(1);
   });
 

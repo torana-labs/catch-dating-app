@@ -2,11 +2,7 @@ import {useQuery} from "@tanstack/react-query";
 import {createContext, createElement, useContext, useEffect, useState, type ReactNode} from "react";
 import {readLocal, signedInHintKey} from "../account/signInModel";
 import {useSignInSheetController} from "../account/useSignInSheetController";
-import {liveOwnedOrganizersPage, referralAccount, type ReferralAccountUser, type ReferralOwnedOrganizer} from "./referralAccountModel";
-
-/** Organizers read per page, and the most pages read, as host billing reads them. */
-const organizerPageSize = 50;
-const maxOrganizerPages = 10;
+import {liveOwnedOrganizers, referralAccount, type ReferralAccountUser, type ReferralOwnedOrganizer} from "./referralAccountModel";
 
 /** What the form reads about the visitor: the site's Firebase account unless a story or test provides another. */
 export interface ReferralAccountDeps {
@@ -14,8 +10,8 @@ export interface ReferralAccountDeps {
   readonly seenSignedIn: () => boolean;
   /** Calls back with the signed-in user (null when signed out) until stopped. */
   readonly watchUser: (callback: (user: ReferralAccountUser | null) => void) => () => void;
-  /** The live host pages the signed-in account owns (host billing's listMyOwnedOrganizers). */
-  readonly ownedOrganizers: () => Promise<ReferralOwnedOrganizer[]>;
+  /** The live host pages the signed-in account owns (the organizers rows host billing reads). */
+  readonly ownedOrganizers: (uid: string) => Promise<ReferralOwnedOrganizer[]>;
 }
 
 const siteDeps: ReferralAccountDeps = {
@@ -29,17 +25,26 @@ const siteDeps: ReferralAccountDeps = {
     }).catch(() => {if (!cancelled) callback(null);});
     return () => {cancelled = true; stop();};
   },
-  async ownedOrganizers() {
-    const {invokeHostBillingCallable} = await import("../../firebase");
-    const owned: ReferralOwnedOrganizer[] = [];
-    let after: string | null = null;
-    for (let page = 0; page < maxOrganizerPages; page++) {
-      const {organizers, next} = liveOwnedOrganizersPage(await invokeHostBillingCallable("listMyOwnedOrganizers", {afterOrganizerId: after, limit: organizerPageSize}));
-      for (const item of organizers) if (!owned.some((known) => known.organizerId === item.organizerId)) owned.push(item);
-      if (next === null || next === after) break;
-      after = next;
-    }
-    return owned;
+  async ownedOrganizers(uid) {
+    // The organizers rows the Host app reads; the form needs only the first answer.
+    const {watchOwnedOrganizers} = await import("../../firebaseReadModels");
+    return new Promise<ReferralOwnedOrganizer[]>((resolve, reject) => {
+      let stop: (() => void) | null = null;
+      let done = false;
+      const finish = () => {
+        done = true;
+        stop?.();
+      };
+      watchOwnedOrganizers(uid, (rows) => {
+        finish();
+        resolve(liveOwnedOrganizers(rows));
+      }, (error) => {
+        finish();
+        reject(error);
+      }).then((unsubscribe) => {
+        if (done) unsubscribe(); else stop = unsubscribe;
+      }, reject);
+    });
   },
 };
 
@@ -73,7 +78,7 @@ export function useReferralAccountController() {
   }, [watch, deps]);
   const uid = identity.user && !identity.user.isAnonymous ? identity.user.uid : null;
   const owned = useQuery({queryKey: ["referral-account", uid, "organizers"], enabled: Boolean(uid), retry: false, gcTime: 0,
-    queryFn: () => deps.ownedOrganizers()});
+    queryFn: () => deps.ownedOrganizers(uid!)});
   const sheet = useSignInSheetController({onSignedIn: () => {setSignInOpen(false); setWatch(true);}});
   const account = referralAccount({loaded: identity.loaded, user: identity.user,
     ownership: owned.isPending ? "pending" : owned.isError ? "failed" : owned.data});

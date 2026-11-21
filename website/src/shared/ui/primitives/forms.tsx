@@ -39,6 +39,8 @@ export const Form = forwardRef<
     <form
       {...props}
       aria-busy={pending || undefined}
+      // Microsoft Clarity never records what is in a form: answers, numbers or names.
+      data-clarity-mask={true}
       data-reveal={reveal || undefined}
       ref={ref}
     >

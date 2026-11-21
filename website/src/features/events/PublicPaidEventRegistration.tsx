@@ -1,6 +1,5 @@
 import {
   CatchButton,
-  CatchConsentNote,
   CatchField,
   CatchFormStepList,
   CatchIndexRow,
@@ -28,7 +27,6 @@ import {
   offerPaymentCopy,
 } from "../../content/eventOffer";
 import {publicCheckoutFlowCopy as flow} from "../../content/publicCheckout";
-import {adMatchingNoticeCopy as adNotice} from "../../content/legal";
 import {usePendingRequestNavigationBlocked} from "../../shared/pendingRequest";
 import {Form} from "../../shared/ui/primitives";
 import { EventSmsPreferencePanel } from "../eventMessaging/EventSmsPreferencePanel";
@@ -321,7 +319,6 @@ export function PublicPaidRegistrationView(c: CheckoutView) {
                 {!admission && (quote || payment?.checkout) ? (
                   <>
                     <CatchText as="p" tone="secondary" variant="body-small">{eventPageCopy.booking.securePayment}</CatchText>
-                    <CatchConsentNote href={adNotice.href} linkLabel={adNotice.linkLabel} text={adNotice.text} />
                   </>
                 ) : null}
                 {c.allowNewBookings && payment && ["expired", "refunded", "cancelled"].includes(payment.status) ? (

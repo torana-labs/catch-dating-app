@@ -1,6 +1,8 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useState} from "react";
 import {invokeHostBillingCallable, watchWebsiteAccountAuthState, type User} from "../../firebase";
+import {watchOrganizerBills, watchOwnedOrganizers} from "../../firebaseReadModels";
+import {liveReadErrorCode, useLiveRead} from "../../shared/query/useLiveRead";
 import {
   parseBills,
   parsePlanStatus,
@@ -14,22 +16,13 @@ import {
 import type {
   GetOrganizerBillingStatusCallablePayload,
   GetOrganizerBillingStatusCallableResponse,
-  ListMyOwnedOrganizersCallablePayload,
-  ListMyOwnedOrganizersCallableResponse,
-  ListOrganizerBillsCallablePayload,
   ManageOrganizerBillingPlanCallablePayload,
 } from "./contracts";
 
-type OwnedOrganizer = ListMyOwnedOrganizersCallableResponse["organizers"][number];
-
 export interface BillingOrganizer {
-  organizerId: OwnedOrganizer["organizerId"];
-  organizerName: OwnedOrganizer["name"];
+  organizerId: string;
+  organizerName: string;
 }
-
-/** Organizers read per page, and the most pages read (500 organizers). */
-const organizerPageSize = 50;
-const maxOrganizerPages = 10;
 
 type PlanAction = Exclude<ManageOrganizerBillingPlanCallablePayload["action"], "read">;
 
@@ -57,11 +50,8 @@ export interface HostBillingController {
   nowMillis: number;
 }
 
-/** Firebase callable errors carry their code; permission-denied means not the owner. */
-function errorCode(error: unknown): string | null {
-  const code = (error as {code?: unknown} | null)?.code;
-  return typeof code === "string" ? code.replace(/^functions\//u, "") : null;
-}
+/** Callable and Firestore errors carry their code; permission-denied means not the owner. */
+const errorCode = liveReadErrorCode;
 
 function initialOrganizerId(): string | null {
   if (typeof window === "undefined") return null;
@@ -84,45 +74,28 @@ export function useHostBillingController(): HostBillingController {
   useEffect(() => watchWebsiteAccountAuthState((user) => setIdentity({user, loaded: true})), []);
   const uid = identity.user?.uid ?? null;
 
-  // Every organizer the signed-in user owns, a page at a time.
-  const organizersQuery = useQuery({queryKey: ["host-billing", uid, "organizers"], enabled: Boolean(uid),
-    retry: false, gcTime: 0, queryFn: async (): Promise<BillingOrganizer[]> => {
-      const owned: BillingOrganizer[] = [];
-      let after: string | null = null;
-      for (let page = 0; page < maxOrganizerPages; page++) {
-        const payload: ListMyOwnedOrganizersCallablePayload = {afterOrganizerId: after, limit: organizerPageSize};
-        const reply = await invokeHostBillingCallable("listMyOwnedOrganizers", {...payload}) as
-          Untrusted<ListMyOwnedOrganizersCallableResponse> | null;
-        const entries: unknown[] = Array.isArray(reply?.organizers) ? reply.organizers : [];
-        for (const entry of entries) {
-          const item = (entry ?? {}) as Untrusted<OwnedOrganizer>;
-          if (typeof item.organizerId === "string" && !owned.some((known) => known.organizerId === item.organizerId)) {
-            owned.push({organizerId: item.organizerId,
-              organizerName: typeof item.name === "string" && item.name ? item.name : item.organizerId});
-          }
-        }
-        const next = reply?.nextAfterOrganizerId;
-        if (typeof next !== "string" || next === after) break;
-        after = next;
-      }
-      return owned;
-    }});
-  const organizers = organizersQuery.data ?? [];
+  // Every organizer the signed-in user owns, and the chosen one's bills: the
+  // same organizers rows and hostOrganizerBillViews the Host app listens to.
+  const organizersRead = useLiveRead<BillingOrganizer[]>(uid, (onValue, onError) =>
+    watchOwnedOrganizers(uid!, (rows) => onValue(rows.map((row) =>
+      ({organizerId: row.organizerId, organizerName: row.name}))), onError));
+  const organizers = organizersRead.data ?? [];
   const organizerId = chosen && (organizers.length === 0 || organizers.some((item) => item.organizerId === chosen)) ?
     chosen : organizers[0]?.organizerId ?? null;
+  const billsRead = useLiveRead<Bill[]>(uid && organizerId ? `${uid}/${organizerId}` : null,
+    (onValue, onError) => watchOrganizerBills(organizerId!, (bills) => onValue(parseBills({bills})), onError));
 
+  // Trial, plan and prices stay on the owner callables: they are computed, not stored.
   const billingQuery = useQuery({queryKey: ["host-billing", uid, organizerId], enabled: Boolean(uid && organizerId),
     retry: false, gcTime: 0, queryFn: async () => {
-      const payload: GetOrganizerBillingStatusCallablePayload & ListOrganizerBillsCallablePayload =
-        {organizerId: organizerId!};
+      const payload: GetOrganizerBillingStatusCallablePayload = {organizerId: organizerId!};
       const read: ManageOrganizerBillingPlanCallablePayload = {...payload, action: "read", expectedRevision: null};
-      const [status, planView, bills] = await Promise.all([
+      const [status, planView] = await Promise.all([
         invokeHostBillingCallable("getOrganizerBillingStatus", {...payload}),
-        invokeHostBillingCallable("manageOrganizerBillingPlan", {...read}),
-        invokeHostBillingCallable("listOrganizerBills", {...payload})]);
+        invokeHostBillingCallable("manageOrganizerBillingPlan", {...read})]);
       const statusRaw = status as Untrusted<GetOrganizerBillingStatusCallableResponse> | null;
       return {trial: parseTrial(statusRaw?.trial), plan: parsePlanStatus(statusRaw?.plan),
-        planView: parsePlanView(planView), bills: parseBills(bills)};
+        planView: parsePlanView(planView)};
     }});
 
   const action = useMutation({retry: false, gcTime: 0, mutationFn: async (kind: PlanAction) => {
@@ -145,13 +118,13 @@ export function useHostBillingController(): HostBillingController {
     window.location.assign(url);
   }
 
-  const failure = organizersQuery.error ?? billingQuery.error;
+  const failure = organizersRead.error ?? billingQuery.error ?? billsRead.error;
   const phase: HostBillingPhase = !identity.loaded ? "loading" :
     !uid ? "signedOut" :
-      organizersQuery.isPending ? "loading" :
+      organizersRead.status === "pending" ? "loading" :
         failure ? errorCode(failure) === "permission-denied" ? "notOwner" : "failed" :
           !organizerId ? "noOrganizers" :
-            billingQuery.isPending ? "loading" : "ready";
+            billingQuery.isPending || billsRead.status === "pending" ? "loading" : "ready";
   return {
     phase, user: identity.user, organizers, organizerId,
     selectOrganizer: (id) => {
@@ -160,7 +133,7 @@ export function useHostBillingController(): HostBillingController {
     trial: billingQuery.data?.trial ?? null,
     plan: billingQuery.data?.plan ?? null,
     planView: billingQuery.data?.planView ?? null,
-    bills: billingQuery.data?.bills ?? [],
+    bills: billsRead.data ?? [],
     acting: action.isPending,
     actionError,
     buyToolsOnly: () => action.mutate("buyToolsOnly"),

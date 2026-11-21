@@ -1,4 +1,5 @@
 import {CatchAdaptiveSheet, CatchButton, CatchField, CatchIndexRow, CatchSection, CatchStack, CatchText, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
+import {TermsLine} from "./TermsLine";
 import {interpolateContent as fill} from "@content/interpolate";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
 import {useEffect, useMemo, useState, type ReactNode, type RefObject} from "react";
@@ -91,6 +92,7 @@ function SignInSteps({sheet}: {sheet: SignInSheetController}) {
         <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} inputMode={sheet.pending ? "inactive" : "editable"}
           inputHint={copy.phoneHint} onChanged={sheet.setPhone} recipe="phone" title={copy.phone} value={sheet.phone} />
         <CatchButton fullWidth label={copy.sendCode} onPressed={noop} status={busy} type="submit" />
+        <TermsLine />
       </CatchStack>
     </Form>
   );

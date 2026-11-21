@@ -31,12 +31,17 @@ describe("useCityAlertsController", () => {
     expect(result.current.sent).toBe(true);
   });
 
-  it("records the form's viewed event once, by its kind and entry, never the number or city", async () => {
+  it("records the form's viewed and started events once each, by its kind and entry, never the number or city", async () => {
+    vi.mocked(trackWebsiteLeadFormEvent).mockReturnValue(true);
     const submission = stub({status: "sent", leadId: "f".repeat(64), isNew: true});
     const {result, rerender} = renderHook(() => useCityAlertsController(place, ["runs"], () => submission));
+    act(() => result.current.setPhone("98000"));
     act(() => result.current.setPhone("98000 00000"));
     rerender();
-    expect(trackWebsiteLeadFormEvent).toHaveBeenCalledExactlyOnceWith("viewed", {kind: "city_alerts", formId: "ex-wa"});
+    expect(vi.mocked(trackWebsiteLeadFormEvent).mock.calls).toEqual([
+      ["viewed", {kind: "city_alerts", formId: "ex-wa"}],
+      ["started", {kind: "city_alerts", formId: "ex-wa"}],
+    ]);
   });
 
   it("shows the lead client's words for a failure and clears them when the number changes", async () => {

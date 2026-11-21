@@ -1,5 +1,6 @@
 /**
- * The host billing callables' generated contract types, the one place this
+ * The host billing callables' generated contract types (a bill row is the
+ * listOrganizerBills shape its hostOrganizerBillViews row carries), the one place this
  * feature reaches into functions/src/shared/generated (the website import
  * boundary scanner allowlists this file only).
  */
@@ -7,12 +8,6 @@ export type {GetOrganizerBillingStatusCallablePayload} from
   "../../../../functions/src/shared/generated/getOrganizerBillingStatusCallablePayload";
 export type {GetOrganizerBillingStatusCallableResponse} from
   "../../../../functions/src/shared/generated/getOrganizerBillingStatusCallableResponse";
-export type {ListMyOwnedOrganizersCallablePayload} from
-  "../../../../functions/src/shared/generated/listMyOwnedOrganizersCallablePayload";
-export type {ListMyOwnedOrganizersCallableResponse} from
-  "../../../../functions/src/shared/generated/listMyOwnedOrganizersCallableResponse";
-export type {ListOrganizerBillsCallablePayload} from
-  "../../../../functions/src/shared/generated/listOrganizerBillsCallablePayload";
 export type {ListOrganizerBillsCallableResponse} from
   "../../../../functions/src/shared/generated/listOrganizerBillsCallableResponse";
 export type {ManageOrganizerBillingPlanCallablePayload} from

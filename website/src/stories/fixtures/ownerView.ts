@@ -78,7 +78,10 @@ export function ownerViewStoryBackends(view: OwnerViewData): OwnerViewBackends {
       ownerResponse: index === 0 ? {message: "See you Sunday, Riya!", hostName: "Kabir"} : null,
     })),
     replyToReview: async () => undefined,
-    getTracking: async () => tracking,
+    watchTracking: async (_organizerId, onValue) => {
+      onValue(tracking);
+      return () => undefined;
+    },
     saveTracking: async (input) => ({...tracking, ...input, revision: tracking.revision + 1}),
   };
 }

@@ -24,6 +24,7 @@ describe("useAppDownloadCtas", () => {
     expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_pending", {
       platform: "ios",
       placement: "home_hero",
+      app: "guest",
       page_path: "/?source=test",
     });
     expect(trackCtaClick).not.toHaveBeenCalled();
@@ -39,6 +40,7 @@ describe("useAppDownloadCtas", () => {
     expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_click", {
       platform: "android",
       placement: "home_app_band",
+      app: "guest",
       store_href: play.href,
       page_path: "/?source=test",
     });

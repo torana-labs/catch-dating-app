@@ -19,7 +19,6 @@ class HostSignInBody extends StatelessWidget {
     required this.onGetCatch,
     this.onOpenTerms,
     this.onOpenPrivacy,
-    this.onOpenAdMatching,
     this.phoneError,
     this.sendError,
   });
@@ -43,7 +42,6 @@ class HostSignInBody extends StatelessWidget {
   /// callback leaves its link out.
   final VoidCallback? onOpenTerms;
   final VoidCallback? onOpenPrivacy;
-  final VoidCallback? onOpenAdMatching;
 
   /// Shown under the field once the host has typed something unusable.
   final String? phoneError;
@@ -140,11 +138,6 @@ class HostSignInBody extends StatelessWidget {
                   variant: CatchTextVariant.bodySmall,
                   tone: CatchTextTone.secondary,
                 ),
-                CatchText(
-                  l10n.adMatchingNotice,
-                  variant: CatchTextVariant.bodySmall,
-                  tone: CatchTextTone.secondary,
-                ),
                 CatchStack(
                   direction: CatchStackDirection.row,
                   gap: CatchStackGap.g8,
@@ -161,13 +154,6 @@ class HostSignInBody extends StatelessWidget {
                       CatchButton(
                         label: l10n.authLegalPrivacyLink,
                         onPressed: onOpenPrivacy,
-                        variant: CatchButtonVariant.quiet,
-                        size: CatchButtonSize.sm,
-                      ),
-                    if (onOpenAdMatching != null)
-                      CatchButton(
-                        label: l10n.adMatchingNoticeLink,
-                        onPressed: onOpenAdMatching,
                         variant: CatchButtonVariant.quiet,
                         size: CatchButtonSize.sm,
                       ),

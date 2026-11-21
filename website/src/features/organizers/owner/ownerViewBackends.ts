@@ -13,8 +13,9 @@ import {
 /**
  * Everything the owner view reads and writes. Production calls the existing
  * organiser commands (updateOrganizer for about, setReviewResponse for
- * replies, get/setOrganizerTrackingSettings for Pixel and GA4) and the two
- * owner-view callables; stories pass fakes.
+ * replies, setOrganizerTrackingSettings for Pixel and GA4) and the two
+ * owner-view callables. Tracking settings are read from the Firestore read
+ * models the Host app listens to. Stories pass fakes.
  */
 export interface OwnerViewBackends {
   watchUser: (callback: (uid: string | null) => void) => () => void;
@@ -23,7 +24,9 @@ export interface OwnerViewBackends {
   saveAbout: (organizerId: string, description: string) => Promise<void>;
   listReviews: (organizerId: string) => Promise<OwnerReview[]>;
   replyToReview: (reviewId: string, message: string) => Promise<void>;
-  getTracking: (organizerId: string) => Promise<OwnerTrackingSettings>;
+  /** Listens to the tracking settings until the returned stop runs. */
+  watchTracking: (organizerId: string, onValue: (settings: OwnerTrackingSettings) => void,
+    onError: (error: Error) => void) => Promise<() => void>;
   saveTracking: (input: {organizerId: string; expectedRevision: number; metaPixelId: string | null;
     googleMeasurementId: string | null}) => Promise<OwnerTrackingSettings>;
 }
@@ -60,6 +63,9 @@ export const ownerViewBackends: OwnerViewBackends = {
   replyToReview: async (reviewId, message) => {
     await invoke("setReviewResponse", {reviewId, message});
   },
-  getTracking: async (organizerId) => ownerTrackingSettings(await invoke("getOrganizerTrackingSettings", {organizerId})),
+  watchTracking: async (organizerId, onValue, onError) => {
+    const {watchOrganizerTrackingSettings} = await import("../../../firebaseReadModels");
+    return watchOrganizerTrackingSettings(organizerId, (row) => onValue(ownerTrackingSettings(row)), onError);
+  },
   saveTracking: async (input) => ownerTrackingSettings(await invoke("setOrganizerTrackingSettings", {...input, enabled: false})),
 };

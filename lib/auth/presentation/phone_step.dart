@@ -301,8 +301,8 @@ class _PhoneStepState extends ConsumerState<PhoneStep> {
             ),
           ],
           gapH16,
-          // The legal line and the ad-matching notice, where the number is
-          // given, with their links under the words.
+          // The legal line, where the number is given, with its links under
+          // the words.
           CatchStack(
             key: const ValueKey<String>('auth-legal-notice'),
             gap: CatchStackGap.g4,
@@ -310,11 +310,6 @@ class _PhoneStepState extends ConsumerState<PhoneStep> {
             children: [
               CatchText(
                 l10n.authLegalAgreement,
-                variant: CatchTextVariant.bodySmall,
-                tone: CatchTextTone.secondary,
-              ),
-              CatchText(
-                l10n.adMatchingNotice,
                 variant: CatchTextVariant.bodySmall,
                 tone: CatchTextTone.secondary,
               ),
@@ -333,13 +328,6 @@ class _PhoneStepState extends ConsumerState<PhoneStep> {
                   if (AppConfig.privacyPolicyUrl case final uri?)
                     CatchButton(
                       label: l10n.authLegalPrivacyLink,
-                      onPressed: () => _openLink(uri),
-                      variant: CatchButtonVariant.quiet,
-                      size: CatchButtonSize.sm,
-                    ),
-                  if (AppConfig.adMatchingUrl case final uri?)
-                    CatchButton(
-                      label: l10n.adMatchingNoticeLink,
                       onPressed: () => _openLink(uri),
                       variant: CatchButtonVariant.quiet,
                       size: CatchButtonSize.sm,
