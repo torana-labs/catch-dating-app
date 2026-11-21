@@ -1,4 +1,4 @@
-import type {CatchAppCaptureImageDevice, CatchAppCaptureImageProps} from "@catch/web-ui";
+import type {CatchAppCaptureImageDevice, CatchAppCaptureImageProps, CatchHeroSectionFragment} from "@catch/web-ui";
 import type {CaptureRecord} from "../ui/primitives";
 
 export type CaptureSlots = Readonly<Record<string, CaptureRecord>>;
@@ -25,4 +25,16 @@ export function captureSlot(captures: CaptureSlots, id: string, loading?: "eager
   if (!capture) return null;
   return {src: capture.webPath, alt: capture.alt, width: capture.width, height: capture.height, caption: capture.caption,
     device: captureFrames[capture.device], loading};
+}
+
+/**
+ * A fragment capture, chosen by slot id: one real widget cut from another
+ * capture's screen (its `fragmentOf`), drawn at that screen's scale. Null when
+ * the slot is absent or is not a fragment of `screen`, so a hero shows only
+ * cut-outs of its own screen.
+ */
+export function captureFragment(captures: CaptureSlots, id: string, screen: string): CatchHeroSectionFragment | null {
+  const capture = captures[id];
+  if (!capture?.screenWidth || capture.fragmentOf !== screen) return null;
+  return {src: capture.webPath, width: capture.width, height: capture.height, screenWidth: capture.screenWidth};
 }
