@@ -178,7 +178,7 @@ Current implementation:
   phone entry without a Google action, phone submission must normalize E.164
   input, and the adapter must retain the Firebase phone OTP integration.
 - Backend authorization is enforced by callable functions, not by the React
-  shell. `functions/src/admin/adminAuth.ts` accepts these custom claims:
+  shell. `functions/src/platform/adminAuth.ts` accepts these custom claims:
   `admin`, `adminOwner`, `safetyReviewer`, `support`, `salesStaff`. The
   retired `finance` and `analyticsViewer` claims grant nothing.
 - `adminOwner` users can open Admin roles to review the bounded assignment

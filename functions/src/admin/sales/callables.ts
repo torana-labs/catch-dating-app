@@ -4,7 +4,7 @@ import {
   HttpsError,
   onCall,
 } from "firebase-functions/v2/https";
-import {adminRolesFromToken, requireAdminRole} from "../adminAuth";
+import {adminRolesFromToken, requireAdminRole} from "../../platform/adminAuth";
 import {appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";
 import {checkRateLimit} from "../../shared/rateLimit";
 import {

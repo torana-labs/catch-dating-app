@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
-import {AdminContext} from "./adminAuth";
+import {AdminContext} from "../platform/adminAuth";
 import {
   AdminActionExecutionRecord,
   adminListActionExecutionsHandler,

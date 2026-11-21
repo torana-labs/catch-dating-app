@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {organizerRouteReservationId} from
   "../admin/organizerPublishingGuards";
 import {growthFactsCollection} from "../growth/organizerGrowthFacts";

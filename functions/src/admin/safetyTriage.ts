@@ -3,11 +3,11 @@ import {CallableRequest, HttpsError, onCall} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {
   setAdminAuditLogInTransaction,
   writeAdminAuditLog,
-} from "./adminAudit";
+} from "../platform/adminAudit";
 import type {AdminDecideSafetyTriageItemCallablePayload} from
   "../shared/generated/adminDecideSafetyTriageItemCallablePayload";
 import type {AdminDecideSafetyTriageItemCallableResponse} from

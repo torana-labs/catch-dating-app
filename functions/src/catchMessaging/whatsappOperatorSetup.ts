@@ -1,7 +1,7 @@
 import type {CatchWhatsappOperatorSetupOperationDocument} from
   "../shared/generated/catchWhatsappOperatorSetupOperationDocument";
 import {createHash} from "node:crypto";
-import {ADMIN_ROLE_CLAIMS} from "../admin/adminAuth";
+import {ADMIN_ROLE_CLAIMS} from "../platform/adminAuth";
 import type {CatchAppAuthority, CatchFirebaseObservation,
   CatchVerifiedSession} from "./whatsappAppAuthority";
 

@@ -10,7 +10,7 @@ import {validateOperationWorkItem} from "../operations/validation";
 import {supplyIntakeCollections} from "../operations/supplyIntake/worker";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {listingApprovalRoles} from "./organizerListingApproval";
 
 // Anyone who reviews organizer intake can read the queue; approving it is

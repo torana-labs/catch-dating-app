@@ -2,9 +2,9 @@ import {bookingPayments} from "../payments/bookingPayments";
 import {onCall, CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {requireAdmin} from "./adminAuth";
-import type {AdminRoleClaim} from "./adminAuth";
-import {writeAdminAuditLog} from "./adminAudit";
+import {requireAdmin} from "../platform/adminAuth";
+import type {AdminRoleClaim} from "../platform/adminAuth";
+import {writeAdminAuditLog} from "../platform/adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {AdminGetOverviewCallableResponse} from
   "../shared/generated/adminGetOverviewCallableResponse";

@@ -15,7 +15,7 @@ import {
   validateAdminListEventDirectoryCallablePayload,
 } from "../shared/generated/validators/adminListEventDirectoryInput";
 import {validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
   catchEventStatus,

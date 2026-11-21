@@ -7,8 +7,8 @@ import type {AdminRecommendOrganizerClaimCallableResponse} from "../shared/gener
 import {validateAdminRecommendOrganizerClaimCallablePayload} from "../shared/generated/validators/adminRecommendOrganizerClaimInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {setAdminAuditLogInTransaction} from "./adminAudit";
-import {requireAdminRole} from "./adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
 
 /**
  * Ops recommend a claim; the owner decides it (adminDecideOrganizerClaim).

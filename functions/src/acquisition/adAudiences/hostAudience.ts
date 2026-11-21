@@ -6,7 +6,7 @@ import {onSchedule} from "firebase-functions/v2/scheduler";
 import {
   ADMIN_ROLE_CLAIMS,
   RETIRED_ADMIN_ROLE_CLAIMS,
-} from "../../admin/adminAuth";
+} from "../../platform/adminAuth";
 import type {AdAudienceRunDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {

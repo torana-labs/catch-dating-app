@@ -23,7 +23,7 @@ import {
   AdminContext,
   AdminRoleClaim,
   requireAdminRole,
-} from "./adminAuth";
+} from "../platform/adminAuth";
 
 const listExecutionRoles = ["admin", "adminOwner", "support"] as const;
 const executionCollection = "adminActionExecutions";

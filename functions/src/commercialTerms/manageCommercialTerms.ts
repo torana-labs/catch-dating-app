@@ -2,8 +2,8 @@ import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../admin/adminAuth";
-import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";

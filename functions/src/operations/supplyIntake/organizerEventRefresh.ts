@@ -10,8 +10,8 @@ import {validateAdminRefreshOrganizerEventsCallablePayload} from "../../shared/g
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
 import {marketForIdOrAlias} from "../../locations/marketConfig";
-import {requireAdminRole} from "../../admin/adminAuth";
-import {setAdminAuditLogInTransaction} from "../../admin/adminAudit";
+import {requireAdminRole} from "../../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
 import {createSupplyIntakeRequest, supplyIntakeRequestId} from "./requests";
 
 // The event-intake front door: read new events for an unclaimed organizer

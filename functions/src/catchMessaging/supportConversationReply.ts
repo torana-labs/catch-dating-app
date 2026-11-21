@@ -1,10 +1,10 @@
 import {Timestamp, type Firestore} from "firebase-admin/firestore";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
-import {requireAdminRole} from "../admin/adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {
   setAdminAuditLogInTransaction,
   writeAdminAuditLog,
-} from "../admin/adminAudit";
+} from "../platform/adminAudit";
 import {assertOutboundContentAllowed} from
   "../communications/outboundContentPolicy";
 import {MetaProviderError} from "../organizers/organizerWhatsappProvider";

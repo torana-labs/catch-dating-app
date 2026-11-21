@@ -1,6 +1,6 @@
 import {createHash} from "node:crypto";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
-import {requireAdminRole, adminRolesFromToken} from "../admin/adminAuth";
+import {requireAdminRole, adminRolesFromToken} from "../platform/adminAuth";
 import {assertOutboundContentAllowed} from
   "../communications/outboundContentPolicy";
 import type {CatchWhatsappReplyStore} from "./whatsappReplyStore";

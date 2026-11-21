@@ -5,8 +5,8 @@ import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
-import {AdminContext, requireAdminRole} from "../admin/adminAuth";
-import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
+import {AdminContext, requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {appCheckCallableOptions, appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
