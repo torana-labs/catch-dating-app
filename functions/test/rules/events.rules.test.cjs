@@ -53,39 +53,140 @@ describe("firestore.rules", () => {
       await assertFails(getDoc(doc(authedDb("host-1"), "events", "event-1")));
     });
 
-    it("direct reads allow published events and deny private or unlabelled ones", async () => {
+    it("only the organizer's team and the event's staff get a published event", async () => {
+      // Issue #1666: the canonical event carries gender and cohort counts,
+      // a hidden price and internal fields, so guests read publicEvents.
       const anonymous = testEnv.unauthenticatedContext().firestore();
-      await seed(["events", "published"], event());
+      await seed(["organizers", "club-1"], organizer({hostUserIds: ["cohost-1"]}));
+      await seed(["organizerTeamMemberships", "club-1_team-1"],
+        {organizerId: "club-1", uid: "team-1", role: "staff", status: "active"});
+      await seed(["organizerTeamMemberships", "club-1_former-1"],
+        {organizerId: "club-1", uid: "former-1", role: "staff", status: "removed"});
+      await seed(["events", "event-1"], event({genderCounts: {man: 3, woman: 1},
+        priceHiddenUntilBookingOpens: true, priceInPaise: 50000}));
       await seed(["events", "private"], event({publicationState: "private"}));
       const {publicationState: _omitted, ...unlabelled} = event();
       await seed(["events", "unlabelled"], unlabelled);
       await seed(["events", "malformed"], event({publicationState: null}));
-      await assertSucceeds(getDoc(doc(anonymous, "events", "published")));
+
+      for (const db of [anonymous, authedDb("guest-1"), authedDb("foreign-host"),
+        authedDb("former-1"), authedDb("operator-1")]) {
+        await assertFails(getDoc(doc(db, "events", "event-1")));
+      }
+      for (const uid of ["host-1", "cohost-1", "team-1"]) {
+        await assertSucceeds(getDoc(doc(authedDb(uid), "events", "event-1")));
+      }
+      await seed(["eventStaffGrants", "event-1__operator-1"],
+        eventStaffGrant({permissions: ["setAttendance"]}));
+      await assertSucceeds(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
+      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant({status: "revoked"}));
+      await assertFails(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
+      await seed(["eventStaffGrants", "event-1__operator-1"],
+        eventStaffGrant({organizerId: "other-club"}));
+      await assertFails(getDoc(doc(authedDb("operator-1"), "events", "event-1")));
       for (const id of ["private", "unlabelled", "malformed"]) {
         await assertFails(getDoc(doc(anonymous, "events", id)));
       }
+      await seed(["deletedUsers", "host-1"], {});
+      await assertFails(getDoc(doc(authedDb("host-1"), "events", "event-1")));
     });
 
-    it("requires publication-constrained lists even for organizers", async () => {
+    it("lists events only for one organizer the reader manages", async () => {
       await seed(["organizers", "club-1"], organizer());
+      await seed(["organizers", "club-2"], organizer({hostUserId: "foreign-host"}));
       await seed(["events", "published"], event());
+      await seed(["events", "link-only"], event({listing: "link"}));
       await seed(["events", "private"], event({publicationState: "private"}));
+      await seed(["events", "foreign"], event({organizerId: "club-2"}));
       const {publicationState: _omitted, ...unlabelled} = event();
       await seed(["events", "unlabelled"], unlabelled);
+      const published = (db, organizerId) => query(collection(db, "events"),
+        where("organizerId", "==", organizerId),
+        where("publicationState", "==", "published"));
       for (const db of [testEnv.unauthenticatedContext().firestore(),
         authedDb("guest-1"), authedDb("host-1"), authedDb("foreign-host")]) {
         await assertFails(getDocs(collection(db, "events")));
         await assertFails(getDocs(query(collection(db, "events"),
+          where("publicationState", "==", "published"))));
+        await assertFails(getDocs(query(collection(db, "events"),
+          where("publicationState", "==", "published"), where("listing", "==", "link"))));
+        await assertFails(getDocs(query(collection(db, "events"),
           where("organizerId", "==", "club-1"))));
         await assertFails(getDocs(query(collection(db, "events"),
           where("publicationState", "==", "private"))));
-        const published = await assertSucceeds(getDocs(query(
-          collection(db, "events"), where("publicationState", "==", "published"))));
-        assert.deepEqual(published.docs.map((row) => row.id), ["published"]);
-        const owned = await assertSucceeds(getDocs(query(collection(db, "events"),
-          where("organizerId", "==", "club-1"), where("publicationState", "==", "published"))));
-        assert.equal(owned.size, 1);
       }
+      for (const db of [testEnv.unauthenticatedContext().firestore(), authedDb("guest-1"),
+        authedDb("foreign-host")]) {
+        await assertFails(getDocs(published(db, "club-1")));
+      }
+      // The Host app's own query shape (Catch Host 1.0.5) keeps working,
+      // link-only events included.
+      const owned = await assertSucceeds(getDocs(published(authedDb("host-1"), "club-1")));
+      assert.deepEqual(owned.docs.map((row) => row.id).sort(), ["link-only", "published"]);
+      await assertSucceeds(getDocs(query(collection(authedDb("host-1"), "events"),
+        where("organizerId", "==", "club-1"), where("publicationState", "==", "published"),
+        where("status", "==", "active"), orderBy("startTime"), limit(10))));
+      await assertSucceeds(getDocs(published(authedDb("foreign-host"), "club-2")));
+      // Event rehearsal in Catch Host 1.0.5 asks for its own organizer with
+      // an "in" filter; naming another organizer too is denied.
+      await assertSucceeds(getDocs(query(collection(authedDb("host-1"), "events"),
+        where("publicationState", "==", "published"), where("organizerId", "in", ["club-1"]),
+        orderBy("startTime"), limit(10))));
+      await assertFails(getDocs(query(collection(authedDb("host-1"), "events"),
+        where("publicationState", "==", "published"),
+        where("organizerId", "in", ["club-1", "club-2"]))));
+    });
+
+    it("anyone gets a public event copy by id, and lists only listed ones", async () => {
+      const anonymous = testEnv.unauthenticatedContext().firestore();
+      const copy = (overrides = {}) => ({...event(), listing: "listed", ...overrides});
+      await seed(["publicEvents", "listed"], copy());
+      await seed(["publicEvents", "link-only"], copy({listing: "link"}));
+      for (const db of [anonymous, authedDb("guest-1")]) {
+        // A link-only event still opens for people with its link.
+        await assertSucceeds(getDoc(doc(db, "publicEvents", "link-only")));
+        await assertSucceeds(getDoc(doc(db, "publicEvents", "listed")));
+        await assertFails(getDocs(collection(db, "publicEvents")));
+        await assertFails(getDocs(query(collection(db, "publicEvents"),
+          where("publicationState", "==", "published"))));
+        await assertFails(getDocs(query(collection(db, "publicEvents"),
+          where("listing", "==", "link"))));
+        const listed = await assertSucceeds(getDocs(query(collection(db, "publicEvents"),
+          where("listing", "==", "listed"))));
+        assert.deepEqual(listed.docs.map((row) => row.id), ["listed"]);
+        await assertSucceeds(getDocs(query(collection(db, "publicEvents"),
+          where("listing", "==", "listed"), where("organizerId", "==", "club-1"),
+          where("publicationState", "==", "published"))));
+      }
+      await assertFails(setDoc(doc(authedDb("host-1"), "publicEvents", "listed"), copy()));
+      await assertFails(updateDoc(doc(authedDb("host-1"), "publicEvents", "listed"),
+        {bookedCount: 1}));
+      await assertFails(deleteDoc(doc(authedDb("host-1"), "publicEvents", "listed")));
+      await assertFails(setDoc(doc(anonymous, "publicEvents", "new"), copy()));
+    });
+
+    it("the copy a guest reads carries no gender counts and no hidden price or counts", async () => {
+      // The rules test builds the copy with the Functions projection the
+      // events trigger runs, so what anonymous readers get is the real thing.
+      const {projectPublicEvent} = require("../../lib/events/publicEventProjection");
+      const anonymous = testEnv.unauthenticatedContext().firestore();
+      await seed(["organizers", "club-1"], organizer());
+      const canonical = event({genderCounts: {man: 3, woman: 1},
+        cohortCounts: {menInterestedInWomen: 3}, waitlistedCohortCounts: {womenInterestedInMen: 1},
+        crossPathsPairHeldCount: 1, priceInPaise: 50000, priceHiddenUntilBookingOpens: true,
+        publicRegistrationEnabled: false, showGuestList: false, bookedCount: 4,
+        checkedInCount: 2, waitlistedCount: 1, adminSearch: {tokens: ["sunset"]}});
+      await seed(["events", "event-1"], canonical);
+      await seed(["publicEvents", "event-1"], projectPublicEvent(canonical));
+      await assertFails(getDoc(doc(anonymous, "events", "event-1")));
+      const read = (await assertSucceeds(getDoc(doc(anonymous, "publicEvents", "event-1")))).data();
+      for (const field of ["genderCounts", "cohortCounts", "waitlistedCohortCounts",
+        "crossPathsPairHeldCount", "priceInPaise", "checkedInCount", "waitlistedCount",
+        "adminSearch"]) {
+        assert.equal(field in read, false, field);
+      }
+      assert.equal(read.priceHiddenUntilBookingOpens, true);
+      assert.equal(read.listing, "listed");
     });
 
     it("private event cannot be bookmarked by guessing its ID", async () => {
@@ -153,8 +254,10 @@ describe("firestore.rules", () => {
       const hostRef = doc(authedDb("host-1"), "events", "event-1");
       const guestRef = doc(authedDb("runner-1"), "events", "event-1");
 
-      // Anyone may read the public copy; nobody may change it.
-      await assertSucceeds(getDoc(guestRef));
+      // The organizer's hosts read it, guests read publicEvents; nobody may
+      // change it.
+      await assertSucceeds(getDoc(hostRef));
+      await assertFails(getDoc(guestRef));
       await assertFails(updateDoc(hostRef, {organizerSummary: {...summary, appVisibility: "hidden"}}));
       await assertFails(updateDoc(guestRef, {"organizerSummary.rating": 5}));
       await assertFails(updateDoc(hostRef, {organizerSummary: null}));

@@ -46,10 +46,13 @@ export function projectLivePublicCatchEvent(id: string, raw: unknown,
   const format = record(data.eventFormat);
   const activityKind = text(format?.activityKind);
   const currency = text(data.currency);
+  // The public copy (#1666) leaves out a price hidden until booking opens.
+  const price = count(data.priceInPaise) ? data.priceInPaise :
+    data.priceHiddenUntilBookingOpens === true ? 0 : null;
   if (start === null || (data.endTime != null && (end === null || end <= start)) || !location ||
       !activityKind || !count(data.capacityLimit) || data.capacityLimit < 1 ||
-      !count(data.bookedCount) || !count(data.priceInPaise) ||
-      data.priceInPaise > 100_000_000 || !/^[A-Z]{3}$/u.test(currency)) return null;
+      !count(data.bookedCount) || price === null ||
+      price > 100_000_000 || !/^[A-Z]{3}$/u.test(currency)) return null;
   const timezone = text(data.eventTimezone) || "Asia/Kolkata";
   const policy = record(data.eventPolicy);
   const admission = record(policy?.admission);
@@ -60,7 +63,7 @@ export function projectLivePublicCatchEvent(id: string, raw: unknown,
     (data.crossPathsPairConfirmedCount ?? 0) !== 0 ||
     Object.values(record(data.crossPathsPairHeldCohortCounts) ?? {}).some((value) => value !== 0) ||
     constraints?.maxMen != null || constraints?.maxWomen != null ||
-    Boolean(policy && (!admission || !pricing || pricing.basePriceInPaise !== data.priceInPaise ||
+    Boolean(policy && (!admission || !pricing || pricing.basePriceInPaise !== price ||
       admission.format !== "open" || admission.inviteRequired || admission.membershipRequired ||
       admission.manualApprovalRequired || record(admission.privateAccessPolicy)?.mode !== "none" ||
       record(admission.crossPathsPairInventory)?.enabled || admission.balancedRatioPolicy != null ||
@@ -69,8 +72,10 @@ export function projectLivePublicCatchEvent(id: string, raw: unknown,
   const mode = !restricted && data.publicRegistrationEnabled === true
     ? data.publicRegistrationMode ?? "free" : "closed";
   if (mode !== "closed" && mode !== "free" && mode !== "paid") return null;
-  if (mode === "free" && data.priceInPaise !== 0 ||
-      mode === "paid" && (data.priceInPaise < 100 || currency !== "INR")) return null;
+  if (mode === "free" && price !== 0 ||
+      mode === "paid" && (price < 100 || currency !== "INR")) return null;
+  const priceHidden = data.priceHiddenUntilBookingOpens === true &&
+    mode === "closed";
   try {
     const dates = new Intl.DateTimeFormat("en-IN", {
       timeZone: timezone, dateStyle: "medium", timeStyle: "short",
@@ -96,11 +101,12 @@ export function projectLivePublicCatchEvent(id: string, raw: unknown,
       checkedInCount: count(data.checkedInCount) ? data.checkedInCount : 0,
       waitlistedCount: count(data.waitlistedCount) ? data.waitlistedCount : 0,
       publicRegistrationEnabled: mode !== "closed", registrationMode: mode,
-      amountPaise: data.priceInPaise, currency,
-      priceLabel: data.priceInPaise === 0 ? "Free" :
+      // A price the host hides until booking opens never reaches the page.
+      amountPaise: priceHidden ? 0 : price, currency,
+      priceLabel: priceHidden ? "" : price === 0 ? "Free" :
         new Intl.NumberFormat("en-IN", {style: "currency", currency,
-          maximumFractionDigits: data.priceInPaise % 100 === 0 ? 0 : 2})
-          .format(data.priceInPaise / 100),
+          maximumFractionDigits: price % 100 === 0 ? 0 : 2})
+          .format(price / 100),
     }};
   } catch {
     return null;

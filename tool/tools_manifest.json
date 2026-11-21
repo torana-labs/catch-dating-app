@@ -2552,6 +2552,21 @@
       "runbook": "docs/data_contracts.md#programme-whatsapp-threads"
     },
     {
+      "id": "data:backfill-public-events",
+      "category": "data",
+      "path": "functions/scripts/backfill-public-events.cjs",
+      "command": "npm --prefix functions run build && node functions/scripts/backfill-public-events.cjs --project <id> [--apply]",
+      "surface": "remote-write",
+      "guard": "apply-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "Creates, refreshes or removes publicEvents/{id} (#1666) for every event from the current event record. Dry run unless --apply; writes only publicEvents documents. Run before the events read rules deploy and again after the Functions deploy.",
+      "checks": [
+        "node --check functions/scripts/backfill-public-events.cjs"
+      ],
+      "runbook": "docs/data_contracts.md"
+    },
+    {
       "id": "data:backfill-public-organizers",
       "category": "data",
       "path": "functions/scripts/backfill-public-organizers.cjs",

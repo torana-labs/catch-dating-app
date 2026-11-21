@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
+import 'package:catch_platform/firebase/permission_fallback.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 

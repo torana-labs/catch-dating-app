@@ -1597,7 +1597,9 @@ export async function invokeSalesDemoCallable<Request, Response>(
     claimFirebaseConfigured, "Private demo");
 }
 
-/** Published-only live feed. Never deliver Firestore's local cache as authority. */
+/** Listed public event copies (#1666), live. Rules list only listed copies and
+ * keep events/{id} to the organizer's team. Never deliver Firestore's local
+ * cache as authority. */
 export async function subscribePublicCatchEvents(
   onSnapshotReceived: (snapshot: {
     metadata: {fromCache: boolean; hasPendingWrites: boolean};
@@ -1609,8 +1611,8 @@ export async function subscribePublicCatchEvents(
   if (!runtime) throw new Error("Public event service is unavailable.");
   const {getFirestore, collection, query, where, limit, onSnapshot} =
     await import("firebase/firestore");
-  const source = query(collection(getFirestore(runtime.app), "events"),
-    where("publicationState", "==", "published"), limit(401));
+  const source = query(collection(getFirestore(runtime.app), "publicEvents"),
+    where("listing", "==", "listed"), limit(401));
   return onSnapshot(source, {includeMetadataChanges: true}, onSnapshotReceived, onUnavailable);
 
 }

@@ -2986,12 +2986,44 @@ service cloud.firestore {
         );
     }
 
+    // An active staff grant for the event, whatever its duties: staff open
+    // the event they work on in the Host app.
+    function hasActiveEventStaffGrant(eventId, organizerId) {
+      let grant = /databases/$(database)/documents/eventStaffGrants/$(
+        eventStaffGrantDocId(eventId, request.auth.uid));
+      return isAuthed()
+        && exists(grant)
+        && get(grant).data.eventId == eventId
+        && get(grant).data.uid == request.auth.uid
+        && get(grant).data.organizerId == organizerId
+        && get(grant).data.status == 'active'
+        && get(grant).data.expiresAt > request.time;
+    }
+
+    // The canonical event holds booking counts by gender and cohort, Cross
+    // Paths pair counts, admin search, demo markers, setup defaults, provider
+    // evidence and the runtime join id, and rules cannot hide single fields
+    // (#1666). So only the organizer's own hosts, owner and active team, and
+    // the event's staff, read it. Everyone else reads publicEvents/{eventId};
+    // the apps fall back to it when this read is denied.
+    function readsCanonicalEvent(organizerId) {
+      return organizerId is string
+        && (isHostSummaryManager(organizerId)
+          || (isAuthed() && !isDeletedUser(request.auth.uid)
+            && hasActiveOrganizerTeamMembership(organizerId)));
+    }
+
     match /events/{eventId} {
-      allow get: if isPublicEventData(resource.data)
+      allow get: if (isPublicEventData(resource.data)
+          && (readsCanonicalEvent(resource.data.get('organizerId', null))
+            || hasActiveEventStaffGrant(eventId,
+              resource.data.get('organizerId', null))))
         || canReadPrivateEvent(eventId, resource.data);
-      // Manager draft inventory uses its authorized callable.
-      // Client filtering and Remote Config cannot enforce draft privacy.
-      allow list: if resource.data.publicationState == 'published';
+      // Manager draft inventory uses its authorized callable. A list must
+      // name one organizer the reader manages, as the Host app's own queries
+      // do, so Firestore can prove it; guest lists use publicEvents.
+      allow list: if resource.data.publicationState == 'published'
+        && readsCanonicalEvent(resource.data.organizerId);
 
       // Event creation is callable-owned so host authority and server-owned
       // booking fields stay in one backend contract.
@@ -3004,6 +3036,20 @@ service cloud.firestore {
       // Event deletion needs backend cleanup/refunds before it can be safely
       // exposed.
       allow delete: if false;
+    }
+
+    // Public event copy (#1666). reconcilePublicEvent writes it from the
+    // events trigger with an allowlist of events/{eventId} fields and the
+    // host's settings applied: no gender, cohort or pair counts, internals or
+    // join id; no price while it is hidden; no checked-in or waitlisted count
+    // while the guest list is hidden. Only a published event has a copy.
+    // Any single copy resolves by id, so a link-only event works for people
+    // with its link; a list returns only listed events, so nobody can
+    // enumerate link-only ones. The copy always carries listing.
+    match /publicEvents/{eventId} {
+      allow get: if true;
+      allow list: if resource.data.listing == 'listed';
+      allow write: if false;
     }
 
     match /externalEvents/{eventId} {

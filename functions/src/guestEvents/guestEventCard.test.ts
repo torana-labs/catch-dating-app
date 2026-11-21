@@ -48,6 +48,19 @@ test("the card copies list fields, never live counts", () => {
   assert.equal("checkedInCount" in card, false);
 });
 
+test("a price hidden until booking opens is left off the card", () => {
+  const hidden = guestEventCard("e1", asEvent(event({
+    priceHiddenUntilBookingOpens: true, publicRegistrationEnabled: false})));
+  assert.ok(hidden);
+  assert.ok(validateCard(hidden), JSON.stringify(validateCard.errors));
+  assert.equal(hidden.priceInPaise, null);
+  assert.equal(hidden.demandPricing, false);
+  assert.equal(hidden.priceHiddenUntilBookingOpens, true);
+  const open = guestEventCard("e1", asEvent(event({
+    priceHiddenUntilBookingOpens: true, publicRegistrationEnabled: true})));
+  assert.equal(open?.priceInPaise, 25000);
+});
+
 test("an event that cannot be listed has no card", () => {
   assert.equal(guestEventCard("e1", undefined), null);
   assert.equal(guestEventCard("e1", asEvent(event({startTime: null}))),
