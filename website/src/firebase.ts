@@ -66,6 +66,14 @@ import type {StartOrganizerClaimVerificationCallablePayload} from "../../functio
 import type {StartOrganizerClaimVerificationCallableResponse} from "../../functions/src/shared/generated/startOrganizerClaimVerificationCallableResponse";
 import type {ConfirmOrganizerClaimVerificationCallablePayload} from "../../functions/src/shared/generated/confirmOrganizerClaimVerificationCallablePayload";
 import type {ConfirmOrganizerClaimVerificationCallableResponse} from "../../functions/src/shared/generated/confirmOrganizerClaimVerificationCallableResponse";
+import type {GetOrganizerOwnerViewCallablePayload} from "../../functions/src/shared/generated/getOrganizerOwnerViewCallablePayload";
+import type {OrganizerOwnerViewCallableResponse} from "../../functions/src/shared/generated/organizerOwnerViewCallableResponse";
+import type {ManageOrganizerOwnerPageCallablePayload} from "../../functions/src/shared/generated/manageOrganizerOwnerPageCallablePayload";
+import type {ManageOrganizerOwnerPageCallableResponse} from "../../functions/src/shared/generated/manageOrganizerOwnerPageCallableResponse";
+import type {UpdateOrganizerCallablePayload} from "../../functions/src/shared/generated/updateOrganizerCallablePayload";
+import type {SetReviewResponseCallablePayload} from "../../functions/src/shared/generated/setReviewResponseCallablePayload";
+import type {SetOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/setOrganizerTrackingSettingsCallablePayload";
+import type {OrganizerTrackingSettingsCallableResponse} from "../../functions/src/shared/generated/organizerTrackingSettingsCallableResponse";
 import type {FirebaseApp} from "firebase/app";
 import type {AppCheck} from "firebase/app-check";
 import type {Auth, User} from "firebase/auth";
@@ -1729,11 +1737,38 @@ export function manageWebsiteAccount(payload: ManageWebsiteAccountCallablePayloa
   return invokeWebsiteCallable("manageWebsiteAccount", payload, claimFirebaseConfigured, "Website account");
 }
 /** The host billing portal's owner callables; the feature parses the replies. */
-export type HostBillingCallable = "getOrganizerBillingStatus" |
-  "manageOrganizerBillingPlan" | "listOrganizerBills" | "listMyOwnedOrganizers";
+export type HostBillingCallable = "getOrganizerBillingStatus" | "manageOrganizerBillingPlan";
 export function invokeHostBillingCallable(name: HostBillingCallable,
   payload: Record<string, unknown>): Promise<unknown> {
   return invokeWebsiteCallable(name, payload, claimFirebaseConfigured, "Host billing");
+}
+/**
+ * The organiser owner view on a claimed organiser page. Every call acts as
+ * the signed-in owner, editor or analyst; the server checks the role.
+ */
+export function getOrganizerOwnerView(
+  payload: GetOrganizerOwnerViewCallablePayload
+): Promise<OrganizerOwnerViewCallableResponse> {
+  return invokeWebsiteCallable("getOrganizerOwnerView", payload, claimFirebaseConfigured, "Organizer owner tools");
+}
+export function manageOrganizerOwnerPage(
+  payload: ManageOrganizerOwnerPageCallablePayload
+): Promise<ManageOrganizerOwnerPageCallableResponse> {
+  return invokeWebsiteCallable("manageOrganizerOwnerPage", payload, claimFirebaseConfigured, "Organizer owner tools");
+}
+/** Saves the organiser's about text through the organiser command the Host app uses. */
+export async function updateOrganizerDescription(organizerId: string, description: string): Promise<void> {
+  await invokeWebsiteCallable<UpdateOrganizerCallablePayload, unknown>("updateOrganizer",
+    {organizerId, fields: {description}}, claimFirebaseConfigured, "Organizer owner tools");
+}
+export async function setReviewResponse(payload: SetReviewResponseCallablePayload): Promise<void> {
+  await invokeWebsiteCallable<SetReviewResponseCallablePayload, unknown>("setReviewResponse", payload,
+    claimFirebaseConfigured, "Organizer owner tools");
+}
+export function setOrganizerTrackingSettings(
+  payload: SetOrganizerTrackingSettingsCallablePayload
+): Promise<OrganizerTrackingSettingsCallableResponse> {
+  return invokeWebsiteCallable("setOrganizerTrackingSettings", payload, claimFirebaseConfigured, "Organizer owner tools");
 }
 export function setWebsiteOrganizerFollow(organizerId: string, following: boolean, expectedUid: string): Promise<{following: boolean}> {
   return invokeWebsiteCallable(following ? "followOrganizer" : "unfollowOrganizer", {organizerId, expectedUid}, claimFirebaseConfigured, "Organizer following");

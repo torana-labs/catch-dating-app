@@ -30,7 +30,7 @@ export interface OwnedOrganizerRow {
 
 /**
  * Every organizer the account owns: ownerUserId, or the legacy hostUserId when
- * no owner is recorded, as listMyOwnedOrganizers and the Host app decide it.
+ * no owner is recorded, as the billing callables and the Host app decide it.
  * The two queries are shapes the organizers rules prove.
  */
 export async function watchOwnedOrganizers(uid: string, onValue: (rows: OwnedOrganizerRow[]) => void,

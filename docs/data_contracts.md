@@ -6404,20 +6404,21 @@ held, and `summariseOperatorAlertOverflow` emails one list of their links at
 minute 2 of the next hour.
 
 Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
-owner reads their own through `listOrganizerBills` (the host billing website),
-which leaves out unsent bills and everything only staff need (reminders,
-history, terms revisions). The Host app reads the same rows from
+owner reads their own bills, which leave out unsent bills and everything only
+staff need (reminders, history, terms revisions). The Host app and the host
+billing website read them from
 `hostOrganizerBillViews/{billId}` (`organizerId`, `billId`, `periodEndMillis`,
-`month`, `version` and `bill`, exactly the callable's row; the payment link only
+`month`, `version` and `bill`, exactly the `listOrganizerBills` row older Host
+builds still call for; the payment link only
 while unpaid) through a listener, newest first; a trigger on `organizerBills`
 keeps them and the `host-organizer-bill-views` copy-forward migration creates
 views for bills sent before it. Only the organizer's current owner reads them
 under rules.
-The host billing website finds the caller's organizers through
-`listMyOwnedOrganizers`: the organizers whose `ownerUserId` is the caller, or
+The host billing website finds the caller's organizers by listening to
+`organizers` under rules: the organizers whose `ownerUserId` is the caller, or
 whose legacy `hostUserId` is when no owner is recorded (the owner rule of every
-billing callable), archived ones included, a page of at most 50 at a time in
-organizer id order, each with its name and trial and plan status. No prices.
+billing callable), archived ones included. The `listMyOwnedOrganizers` callable
+that served this is retired.
 
 The free trial is computed, never stored (`functions/src/money/hostTrial.ts`).
 It starts at the organizer's first event, the start of the first non-cancelled

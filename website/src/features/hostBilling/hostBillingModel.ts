@@ -5,9 +5,10 @@ import type {
 } from "./contracts";
 
 /**
- * The host billing portal's data, parsed from the owner callables:
- * getOrganizerBillingStatus (trial and plan), manageOrganizerBillingPlan
- * (prices and the tools-only purchase) and listOrganizerBills (bills). The
+ * The host billing portal's data, parsed from the owner callables
+ * getOrganizerBillingStatus (trial and plan) and manageOrganizerBillingPlan
+ * (prices and the tools-only purchase), and from the hostOrganizerBillViews
+ * listener (bills, each the listOrganizerBills row shape). The
  * types come from the generated contracts in functions/src/shared/generated,
  * so a contract change fails the website typecheck. Parsing stays defensive:
  * a reply is read field by field (keyed by the contract) so an older or
@@ -25,7 +26,7 @@ export type PlanPrices = NonNullable<RawPlanView["prices"]>;
 export type PlanView = Omit<RawPlanView, "organizerId">;
 export type BillStatus = RawBill["status"];
 
-/** One bill as the portal shows it, derived from a listOrganizerBills row. */
+/** One bill as the portal shows it, derived from a hostOrganizerBillViews row's bill. */
 export interface Bill {
   billId: RawBill["billId"];
   month: RawBill["month"];
