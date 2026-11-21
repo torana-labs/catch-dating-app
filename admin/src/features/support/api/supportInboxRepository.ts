@@ -1,3 +1,10 @@
+import {httpsCallable} from "firebase/functions";
+import {loadAdminCallableValidators} from
+  "../../../generated/validators/adminCallableValidators";
+import type {CatchReplyCommand, CatchReplyResult} from
+  "../../../shared/contracts/catchWhatsappReplyContracts";
+import {dataMode} from "../../../shared/api/dataMode";
+import {functions} from "../../../shared/api/firebaseFunctions";
 import {
   getSupportConversation,
   listSupportConversations,
@@ -31,6 +38,12 @@ export type SupportLink = SupportDetail["conversation"]["links"][number];
 export type SupportStatus = SupportDetail["conversation"]["status"];
 export type SupportUpdate = AdminUpdateSupportConversationCallablePayload;
 export type SupportMessageInput = AdminRecordSupportMessageCallablePayload;
+export type SupportMessage = SupportDetail["messages"][number];
+export type SupportReplyState = NonNullable<
+  SupportDetail["conversation"]["reply"]>;
+export type SupportSendInput = Extract<CatchReplyCommand,
+  {purpose: "supportConversation"}>;
+export type SupportSendResult = CatchReplyResult;
 export type SavedReply =
   AdminListSupportSavedRepliesCallableResponse["items"][number];
 export type SavedReplyInput = AdminUpsertSupportSavedReplyCallablePayload;
@@ -64,4 +77,35 @@ export async function loadSavedReplies(): Promise<SavedReply[]> {
 
 export function saveSavedReply(payload: SavedReplyInput) {
   return upsertSupportSavedReply(payload);
+}
+
+const sendCallable = "adminSendCatchWhatsappReply";
+
+/**
+ * Sends a reply to a WhatsApp conversation from Catch's number. The same
+ * clientRequestId returns the first outcome rather than sending twice.
+ */
+export async function sendSupportReply(
+  payload: Omit<SupportSendInput, "purpose">
+): Promise<SupportSendResult> {
+  const request: SupportSendInput = {purpose: "supportConversation",
+    ...payload};
+  if (dataMode() === "sample") {
+    // Sample data has no WhatsApp: the reply is kept as a recorded one.
+    const recorded = await recordSupportMessage({
+      conversationId: request.conversationId, channel: "whatsapp",
+      contactAddress: null, displayName: null, direction: "outbound",
+      text: request.body, savedReplyId: request.savedReplyId});
+    return {operationId: `cwsupport_${"0".repeat(64)}`,
+      providerMessageId: "sample", deliveryStatus: "accepted",
+      replayed: false, conversationId: request.conversationId,
+      messageId: recorded.messageId};
+  }
+  const {validateAdminCallableRequest, validateAdminCallableResponse} =
+    await loadAdminCallableValidators(sendCallable);
+  validateAdminCallableRequest(sendCallable, request);
+  const response = await httpsCallable<SupportSendInput, SupportSendResult>(
+    functions, sendCallable)(request);
+  validateAdminCallableResponse(sendCallable, response.data);
+  return response.data;
 }

@@ -19,7 +19,7 @@ import {validateAdminSendCatchWhatsappReplyCallableResponse} from
   "../shared/generated/validators/adminSendCatchWhatsappReplyOutput";
 import type {AdminSendCatchWhatsappReplyCallableResponse} from
   "../shared/generated/adminSendCatchWhatsappReplyCallableResponse";
-import {catchTextSender} from "./catchSenderFactory";
+import {catchTextSender} from "./catchSender";
 import type {CatchTextSender} from "./autoReply";
 import {
   isSupportConversationReply,

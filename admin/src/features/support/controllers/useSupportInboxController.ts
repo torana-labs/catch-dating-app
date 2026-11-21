@@ -1,5 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {useCallback, useState} from "react";
+import {useCallback, useRef, useState} from "react";
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {useAdminPendingOperationGuard} from
   "../../../shared/pendingOperation";
@@ -10,6 +10,7 @@ import {
   saveSavedReply,
   saveSupportConversation,
   saveSupportMessage,
+  sendSupportReply,
   type SavedReply,
   type SavedReplyInput,
   type SupportAudience,
@@ -35,7 +36,10 @@ export interface SupportInboxController {
   setView: (view: SupportView) => void;
   setAudience: (audience: SupportAudience | null) => void;
   select: (conversationId: string | null) => void;
+  /** Records a reply sent another way (email, or WhatsApp while sending is off). */
   reply: (text: string, savedReplyId?: string | null) => Promise<boolean>;
+  /** Sends a WhatsApp reply from Catch's number; a retry never sends twice. */
+  sendReply: (text: string, savedReplyId?: string | null) => Promise<boolean>;
   addNote: (text: string) => Promise<boolean>;
   logEmail: (input: {address: string; displayName: string | null;
     text: string}) => Promise<boolean>;
@@ -49,7 +53,8 @@ export interface SupportInboxController {
  * Support (board AdminSupport): guest and organizer conversations from
  * WhatsApp, Instagram and logged email, longest waiting first, with the
  * selected conversation, saved replies, and reply, note, owner, status and
- * link actions. Replies are recorded; staff send them from the channel.
+ * link actions. WhatsApp replies are sent from Catch's number inside the
+ * 24-hour window when sending is on; other replies are recorded.
  */
 export function useSupportInboxController({
   onError,
@@ -83,6 +88,10 @@ export function useSupportInboxController({
   const messageMutation = useMutation({mutationFn: saveSupportMessage});
   const updateMutation = useMutation({mutationFn: saveSupportConversation});
   const replyMutation = useMutation({mutationFn: saveSavedReply});
+  const sendMutation = useMutation({mutationFn: sendSupportReply});
+  // One request id per draft: retrying the same text after a lost answer
+  // returns the first outcome instead of sending it again.
+  const pendingSend = useRef<{key: string; requestId: string} | null>(null);
 
   const run = useCallback(async (
     work: () => Promise<unknown>,
@@ -123,6 +132,32 @@ export function useSupportInboxController({
       savedReplyId}), notice, "Unable to save the message.");
   }, [current, messageMutation, onError, run]);
 
+  const send = useCallback((text: string, savedReplyId: string | null) => {
+    if (!current) return Promise.resolve(false);
+    const trimmed = text.trim();
+    if (!trimmed) {
+      onError("Write something first.");
+      return Promise.resolve(false);
+    }
+    const key = [current.conversationId, savedReplyId ?? "", trimmed]
+      .join("\n");
+    if (pendingSend.current?.key !== key) {
+      pendingSend.current = {key, requestId: newRequestId()};
+    }
+    const {requestId} = pendingSend.current;
+    return run(async () => {
+      try {
+        await sendMutation.mutateAsync({
+          conversationId: current.conversationId, clientRequestId: requestId,
+          body: trimmed, savedReplyId});
+        pendingSend.current = null;
+      } catch (error) {
+        if (isSettledRefusal(error)) pendingSend.current = null;
+        throw error;
+      }
+    }, "Reply sent.", "Unable to send the reply.");
+  }, [current, onError, run, sendMutation]);
+
   const update = useCallback((patch: {ownerUid?: string | null;
     status?: SupportStatus; links?: SupportLink[]}, notice: string) => {
     if (!current) return Promise.resolve(false);
@@ -148,7 +183,7 @@ export function useSupportInboxController({
     detailState: selectedId === null ? "idle" : detail.isPending ?
       "loading" : detail.isError ? "error" : "ready",
     isSaving: messageMutation.isPending || updateMutation.isPending ||
-      replyMutation.isPending,
+      replyMutation.isPending || sendMutation.isPending,
     setView: useCallback((next: SupportView) => {
       setViewState(next);
       setChosenId(null);
@@ -157,6 +192,8 @@ export function useSupportInboxController({
     select: setChosenId,
     reply: useCallback((text: string, savedReplyId: string | null = null) =>
       record("outbound", text, savedReplyId, "Reply recorded."), [record]),
+    sendReply: useCallback((text: string, savedReplyId: string | null =
+      null) => send(text, savedReplyId), [send]),
     addNote: useCallback((text: string) =>
       record("note", text, null, "Note added."), [record]),
     logEmail: useCallback((input) => {
@@ -187,4 +224,21 @@ export function useSupportInboxController({
         body: input.body.trim()}),
       "Saved reply kept.", "Unable to save the reply."), [replyMutation, run]),
   };
+}
+
+function newRequestId(): string {
+  return globalThis.crypto.randomUUID();
+}
+
+// The server answered and nothing is in flight, so a new attempt needs a
+// new request id. Lost answers (unavailable, network) keep the id.
+const settledCodes = new Set(["functions/failed-precondition",
+  "functions/already-exists", "functions/invalid-argument",
+  "functions/permission-denied", "functions/not-found",
+  "functions/resource-exhausted", "functions/unauthenticated"]);
+
+function isSettledRefusal(error: unknown): boolean {
+  const code = error && typeof error === "object" && "code" in error ?
+    String((error as {code: unknown}).code) : "";
+  return settledCodes.has(code);
 }
