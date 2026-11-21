@@ -22,11 +22,11 @@ function SignIn({initiallyOpen = false}: {initiallyOpen?: boolean}) {
   const [open, setOpen] = useState(initiallyOpen);
   const [phone, setPhone] = useState("");
   return (
-    <CatchAdaptiveSheet closeLabel="Close" footer={<CatchText as="p" tone="secondary" variant="body-meta">Signing in does not subscribe you to marketing messages.</CatchText>}
+    <CatchAdaptiveSheet closeLabel="Close" footer={<CatchText as="p" tone="secondary" variant="body-meta">We reply on WhatsApp.</CatchText>}
       onClose={() => setOpen(false)} open={open} subtitle="One Catch account for your plans, follows and reviews." title="Sign in"
       trigger={<CatchButton label="Sign in" onPressed={() => setOpen((value) => !value)} size="sm" variant="quiet" />} wide="dropdown" width={380}>
       <CatchGap size="formField">
-        <CatchField autoComplete="tel" keyboardType="phone" onChanged={setPhone} recipe="input" title="Phone number with country code" value={phone} />
+        <CatchField autoComplete="tel" keyboardType="phone" onChanged={setPhone} recipe="input" title="Phone number" value={phone} />
         <CatchButton fullWidth label="Text me a code" onPressed={() => undefined} />
       </CatchGap>
     </CatchAdaptiveSheet>
@@ -75,7 +75,7 @@ export const Contract: Story = {
     await waitFor(() => expect(panel).not.toBeInTheDocument());
     await waitFor(() => expect(trigger).toHaveFocus());
     await userEvent.click(trigger);
-    const field = await body.findByRole("textbox", {name: "Phone number with country code"});
+    const field = await body.findByRole("textbox", {name: "Phone number"});
     await expect(field).toHaveValue("+91 98765 43210");
     await userEvent.click(canvas.getByRole("button", {name: "View pass"}));
     const pass = await body.findByRole("dialog", {name: "Sunday Social Run"});

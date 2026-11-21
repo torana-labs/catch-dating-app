@@ -46,7 +46,7 @@ export const eventRuntimeCopy = {
   sendingCode: "Sending code...",
   otpKicker: "One quick check",
   otpTitle: "Enter the 6-digit code",
-  otpBody: `We sent it to the number you entered. ${brand.name} uses it only to match you to this event's guest list.`,
+  otpBody: "We sent it to the number you entered.",
   otpLabel: "Verification code",
   confirmCode: "Open event mode",
   confirmingCode: "Checking code...",

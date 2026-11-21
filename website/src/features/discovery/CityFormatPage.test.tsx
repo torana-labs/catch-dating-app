@@ -55,7 +55,7 @@ describe("City format page", {timeout: 20_000}, () => {
     // The city's other indexed format pages, and the newcomers' page.
     const more = band("Other things to do");
     expect(within(more).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/mumbai/nightlife/", "/new-to-mumbai/"]);
-    expect(within(band("Get new plans on WhatsApp.")).getByRole("button", {name: "Notify me"})).toBeTruthy();
+    expect(within(band("Get new plans on WhatsApp.")).getByRole("button", {name: "Get plans"})).toBeTruthy();
   });
 
   it("labels each unclaimed organiser's card in words with a report link carrying its id, and a claimed one with neither", () => {

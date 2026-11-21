@@ -14,7 +14,7 @@ describe("useLaunchNoticeController", () => {
     expect(submit).toHaveBeenCalledTimes(1);
     expect(submit.mock.calls[0][0]).toMatchObject({
       city: "Pune", role: "member",
-      whatsapp: {phone: "+919876543210", launchNotice: true, marketing: false, consentVersion: "city-launch-whatsapp-v1"},
+      whatsapp: {phone: "+919876543210", launchNotice: true, marketing: false, consentVersion: "city-launch-whatsapp-v2"},
     });
     expect(result.current.joined).toBe(true);
     expect(result.current.status.message).toBe("Done. We’ll message you on WhatsApp the day Catch opens in Pune.");

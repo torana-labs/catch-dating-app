@@ -5,7 +5,7 @@ export const accountCopy = {
   "loading": "Loading your account…",
   "ageIneligible": "Your age does not meet this event’s requirements.",
   "name": "Name",
-  "phone": "Phone number with country code",
+  "phone": "Phone number",
   "requiredBirth": "Date of birth — required for this event",
   "optionalBirth": "Date of birth (optional)",
   "code": "Verification code",
@@ -13,7 +13,7 @@ export const accountCopy = {
   "verify": "Verify and continue",
   "continue": "Continue",
   "sendCode": "Send verification code",
-  "privacy": `Your name and verified phone create your ${brand.name} account. Following does not subscribe you to marketing messages.`,
+  "privacy": `Your name and verified phone create your ${brand.name} account.`,
   "invalidDetails": "Enter your name and phone number with country code.",
   "invalidCode": "Enter the six-digit verification code.",
   "codeSent": "Code sent. Enter it to continue.",
@@ -27,12 +27,13 @@ export const accountCopy = {
   "otherWays": "Other ways to sign in"
 } as const;
 
-/** The one sign-in sheet, as in the apps: a phone number, then a six-digit code. No passwords. */
+/** The one sign-in sheet, as in the apps: a phone number, then a six-digit code. */
 export const signInCopy = {
   title: "Sign in",
   subtitle: `One ${brand.name} account for your plans, follows and reviews.`,
   close: "Close",
-  phone: "Phone number with country code",
+  phone: "Phone number",
+  phoneHint: "98765 43210",
   sendCode: "Text me a code",
   code: "Six-digit code",
   verify: "Sign in",
@@ -42,14 +43,12 @@ export const signInCopy = {
   resendIn: "Didn’t get it? Resend in {time}",
   resend: "Resend code",
   codeSent: "We sent a code to {phone}. Enter it to sign in.",
-  noPasswords: "No passwords. We text you a code.",
   signedIn: "You are signed in.",
   invalidPhone: "Enter a valid mobile number.",
   invalidCode: "Enter the six-digit code.",
   incorrectCode: "That code is incorrect. Try again.",
   expired: "That code expired. Request a new one.",
   failed: "Could not sign you in. Please try again.",
-  privacy: "Signing in does not subscribe you to marketing messages.",
   headerSignIn: "Sign in",
   headerAccount: "Account",
   /** The signed-in top bar's account menu (an avatar on wide pages, the Menu sheet on phones). */
