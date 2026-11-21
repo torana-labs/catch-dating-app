@@ -556,6 +556,8 @@ export interface PlaybookValidationContext {
   readonly familyRouteIds?: ReadonlySet<string>;
   /** Capture slot ids in the app-screenshot manifest. */
   readonly captureSlots: ReadonlySet<string>;
+  /** The manifest's fragment captures, each with the capture slot it is cut from (`fragmentOf`). */
+  readonly captureFragments?: ReadonlyMap<string, string>;
   /** Routes whose pages never enter search, such as ad landing pages. */
   readonly alwaysNoindexRoutes?: ReadonlySet<string>;
   /** The section ids of pages a `{route, anchor}` may link into; a route listed here must have the anchor. */
@@ -631,8 +633,12 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
     if (section.type === "hero" && section.fragments) {
       if (section.media?.kind !== "capture") errors.push(`${label}.fragments are cut from the hero's capture; give the hero capture media`);
       if (new Set(section.fragments).size !== section.fragments.length) errors.push(`${label}.fragments repeat a slot`);
+      const screen = section.media?.kind === "capture" ? section.media.slot : undefined;
       section.fragments.forEach((slot, index) => {
         if (context && !context.captureSlots.has(slot)) errors.push(`${label}.fragments[${index}] names unknown capture slot ${slot}`);
+        else if (context?.captureFragments && context.captureFragments.get(slot) !== screen) {
+          errors.push(`${label}.fragments[${index}] ${slot} is not a fragment cut from the hero's capture ${screen}`);
+        }
       });
     }
     if (section.type === "hero" && live) {

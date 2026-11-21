@@ -32,10 +32,10 @@ import {matchPlaybookRoute, playbookFamilyRoutes, playbookFixedRoutes, playbookP
 import {playbookTryItTool, playbookTryItTools, tryItToolCommands, websiteReadyTryItCommands} from "../tryIt/tryItModel";
 
 const websiteRoot = path.resolve(__dirname, "../../..");
-const captureSlots = new Set<string>(
-  (JSON.parse(fs.readFileSync(path.join(websiteRoot, "public/assets/app-screenshots/manifest.json"), "utf8")) as {captures: {id: string}[]})
-    .captures.map((capture) => capture.id),
-);
+const captureRecords = (JSON.parse(fs.readFileSync(path.join(websiteRoot, "public/assets/app-screenshots/manifest.json"), "utf8")) as
+  {captures: {id: string; fragmentOf?: string}[]}).captures;
+const captureSlots = new Set<string>(captureRecords.map((capture) => capture.id));
+const captureFragments = new Map(captureRecords.flatMap((capture) => (capture.fragmentOf ? [[capture.id, capture.fragmentOf] as const] : [])));
 const refs = registeredPlaybookPages();
 const loaded = await Promise.all(refs.map(async (ref) => ({ref, raw: (await ref.entry.load()).default as PlaybookPageDocument})));
 const fixedWithContent = new Set(refs.filter((ref) => "path" in ref.match.route).map((ref) => ref.match.route.id));
@@ -47,6 +47,7 @@ const context = {
   routeIds: new Set<string>([...Object.keys(siteRouteHrefs), ...playbookFixedRoutes.map((route) => route.id)]),
   familyRouteIds: new Set<string>(playbookFamilyRoutes.map((route) => route.id)),
   captureSlots,
+  captureFragments,
   alwaysNoindexRoutes: alwaysNoindexPlaybookRoutes,
   routeAnchors,
   pageAnchors,

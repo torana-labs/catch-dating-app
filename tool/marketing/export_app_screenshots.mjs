@@ -364,21 +364,47 @@ function validateEntryPlacement(capture, entry, catalog) {
   return errors;
 }
 
-// A fragment is cut from its screen's own render: its entry declares the
-// widget to cut out (fragment:) and reuses the screen entry's builder and
-// provider overrides, so the names and numbers it shows are the screen's.
+// A fragment is cut from its screen's own render: its entry names the widget
+// to cut out (fragment:) and passes every render option of the screen's entry
+// through by reference (builder, providerOverrides, drive, ...), so the
+// names and numbers it shows are the screen's. Only its identity, device and
+// fragment are its own.
+const fragmentOwnArguments = new Set(["id", "routeIds", "marketingFixtureKeys", "device", "fragment"]);
+
 function validateFragmentEntry(capture, entry, manifest, catalog) {
   const screen = (manifest.captures ?? []).find(other => other.id === capture.fragmentOf);
   const screenEntry = screen && !isWebCapture(screen) ? findCatalogEntry(catalog, screen.fixtureKey) : null;
   if (!screenEntry) return [`${capture.id}: fragmentOf must name the app capture it is cut from.`];
-  const source = catalog.sources.get(entry.file) ?? "";
-  const screenVariable = catalog.sources.get(screenEntry.file)?.match(/^final\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*ScreenCaptureEntry\(/mu)?.[1];
+  const screenSource = catalog.sources.get(screenEntry.file) ?? "";
+  const screenVariable = screenSource.match(/^final\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*ScreenCaptureEntry\(/mu)?.[1];
+  const [block] = extractCallBlocks(catalog.sources.get(entry.file) ?? "", "ScreenCaptureEntry");
+  const [screenBlock] = extractCallBlocks(screenSource, "ScreenCaptureEntry");
+  if (!screenVariable || !block || !screenBlock) return [`${capture.id}: cannot read ${entry.file} or ${screenEntry.file}.`];
   const errors = [];
-  if (!/\bfragment:\s*CaptureFragment\(/u.test(source)) errors.push(`${capture.id}: ${entry.file} must name the widget it cuts out (fragment: CaptureFragment(...)).`);
-  if (!screenVariable || !source.includes(`builder: ${screenVariable}.builder`) || !source.includes(`providerOverrides: ${screenVariable}.providerOverrides`)) {
-    errors.push(`${capture.id}: ${entry.file} must reuse ${screenVariable ?? screenEntry.id}'s builder and providerOverrides, so it cuts from the same screen.`);
+  const own = entryArguments(block);
+  if (!/^CaptureFragment\(/u.test(own.get("fragment") ?? "")) {
+    errors.push(`${capture.id}: ${entry.file} must name the widget it cuts out (fragment: CaptureFragment(...)).`);
+  }
+  for (const name of entryArguments(screenBlock).keys()) {
+    if (fragmentOwnArguments.has(name)) continue;
+    if (own.get(name) !== `${screenVariable}.${name}`) errors.push(`${capture.id}: ${entry.file} must pass ${name}: ${screenVariable}.${name}, so it cuts from the same screen.`);
+  }
+  for (const [name, value] of own) {
+    if (!fragmentOwnArguments.has(name) && value !== `${screenVariable}.${name}`) {
+      errors.push(`${capture.id}: ${entry.file} sets ${name} itself; a fragment takes ${screenVariable}.${name} or leaves it out.`);
+    }
   }
   return errors;
+}
+
+// The named arguments of a formatted ScreenCaptureEntry(...) call: each
+// starts a line at the call's own indent, and its value is the text up to
+// the next one (trailing comma dropped).
+function entryArguments(block) {
+  const body = block.slice(block.indexOf("(") + 1, -1);
+  const starts = [...body.matchAll(/^ {2}([A-Za-z_][A-Za-z0-9_]*):\s*/gmu)];
+  return new Map(starts.map((match, index) => [match[1],
+    body.slice(match.index + match[0].length, starts[index + 1]?.index ?? body.length).trim().replace(/,$/u, "")]));
 }
 
 // A web capture names the story it renders and the address Safari shows.
