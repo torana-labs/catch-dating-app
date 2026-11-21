@@ -5,7 +5,7 @@ import {spawnSync} from 'node:child_process';
 import {deflateRawSync, inflateRawSync} from 'node:zlib';
 import {fromRepo, repoRoot} from '../../lib/repo_paths.mjs';
 import {webCaptureInputHash} from './web_capture_inputs.mjs';
-import {framedSize, isCaptureDevice} from './capture_devices.mjs';
+import {captureSizeProblem, framedSize, isCaptureDevice, isFragmentCaptureDevice} from './capture_devices.mjs';
 import {captureCatalogIndex, marketingEntryFile} from '../../ui_capture/lib/capture_catalog_sources.mjs';
 
 // Provenance travels inside the PNG; there is no second capture registry.
@@ -359,7 +359,7 @@ function addTree(file, inputs) {
  * Stamps provenance into a freshly framed PNG. An app capture passes the
  * files its complete, successful render executed (executedFilesFromLcov).
  */
-export function stampCapture(capture, captureId, fontPath, {executedFiles} = {}) {
+export function stampCapture(capture, captureId, fontPath, {executedFiles, fragment} = {}) {
   const file = fromRepo(capture.sourcePath);
   const png = fs.readFileSync(file);
   const {width, height, chunks} = parsePng(png);
@@ -370,6 +370,8 @@ export function stampCapture(capture, captureId, fontPath, {executedFiles} = {})
   const web = capture.kind === 'web-capture';
   if (!web && !Array.isArray(executedFiles)) throw new Error(`${capture.id}: an app capture is stamped with its executed files.`);
   const inputFiles = web ? null : recordedInputFiles(capture, executedFiles);
+  const cutOut = isFragmentCaptureDevice(capture.device);
+  if (cutOut) assertFragmentRect(capture, fragment, width, height);
   const provenance = {
     version: web ? 1 : 2, ...recipeIdentity(capture, captureId),
     device: capture.device, outputScale: 2,
@@ -381,6 +383,8 @@ export function stampCapture(capture, captureId, fontPath, {executedFiles} = {})
     // whether a reused PNG predates a runner image change.
     runnerImage: process.env.ImageVersion ?? null,
     imageSha256: digest(image),
+    // A cut-out's place on the screen it was cut from, as shares of that screen.
+    ...(cutOut ? {fragment} : {}),
   };
   const chunk = encodeChunk(chunkType, Buffer.from(JSON.stringify(provenance)));
   fs.writeFileSync(file, Buffer.concat([image.subarray(0, image.length - 12), chunk, image.subarray(-12)]));
@@ -413,6 +417,7 @@ export function validateCaptureBytes(capture, captureId, bytes, {fontPath} = {})
         !/^[a-f0-9]{40}$/u.test(record.sourceRevision) || !/^[a-f0-9]{64}$/u.test(record.nativeFontSha256)) {
       throw new Error('Render provenance does not match the catalog/native iPhone recipe.');
     }
+    if (isFragmentCaptureDevice(capture.device)) assertFragmentRect(capture, record.fragment, width, height);
     if (fontPath && record.nativeFontSha256 !== digest(fs.readFileSync(fontPath))) throw new Error('Native font changed; render again.');
     if (record.imageSha256 !== digest(withoutProvenance(chunks))) throw new Error('PNG bytes differ from the recorded render.');
     const files = web ? null : decodeInputFiles(capture, record.inputFiles);
@@ -430,12 +435,34 @@ function recipeIdentity(capture, captureId) {
     : {captureId, fixtureKey: capture.fixtureKey, platform: 'ios'};
 }
 
+/**
+ * Where a cut-out sits on its screen, from its PNG's provenance: x, y, width
+ * and height as shares (0 to 1) of the screen it was cut from. Null for any
+ * other capture.
+ */
+export function fragmentRect(bytes) {
+  const record = parsePng(bytes).chunks.find(chunk => chunk.type === chunkType);
+  return record ? JSON.parse(record.data.toString('utf8')).fragment ?? null : null;
+}
+
+// The rect must be shares of the screen and match the PNG it places, to the pixel.
+function assertFragmentRect(capture, rect, width, height) {
+  const keys = ['x', 'y', 'width', 'height'];
+  if (!rect || typeof rect !== 'object' || Object.keys(rect).sort().join() !== [...keys].sort().join() ||
+      keys.some(key => typeof rect[key] !== 'number' || rect[key] < 0 || rect[key] > 1) ||
+      rect.x + rect.width > 1.0001 || rect.y + rect.height > 1.0001) {
+    throw new Error('A cut-out records its place on the screen (x, y, width, height as shares of 0 to 1); render again.');
+  }
+  const screen = framedSize(capture.device);
+  if (Math.abs(rect.width * screen.width - width) > 1 || Math.abs(rect.height * screen.height - height) > 1) {
+    throw new Error('A cut-out\'s recorded place does not match its PNG size; render again.');
+  }
+}
+
 function assertFrame(capture, width, height) {
   if (!isCaptureDevice(capture.device)) throw new Error(`Unsupported capture device ${capture.device}.`);
-  const expected = framedSize(capture.device);
-  if (width !== expected.width || height !== expected.height) {
-    throw new Error(`Expected framed ${capture.device} PNG ${expected.width}x${expected.height}, got ${width}x${height}.`);
-  }
+  const problem = captureSizeProblem(capture.device, width, height);
+  if (problem) throw new Error(problem);
 }
 
 function parsePng(png) {

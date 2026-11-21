@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {describe, expect, it} from "vitest";
+import {catchDeviceFrameVariables} from "@catch/web-ui";
 import {citiesPageCopy} from "@content/citiesPage";
 import {hostLandingCopy, hostNightFormats} from "@content/hostLanding";
 import {guestAppLive, siteFooterCopy, siteHeaderCopy} from "@content/site";
@@ -32,10 +33,11 @@ import {matchPlaybookRoute, playbookFamilyRoutes, playbookFixedRoutes, playbookP
 import {playbookTryItTool, playbookTryItTools, tryItToolCommands, websiteReadyTryItCommands} from "../tryIt/tryItModel";
 
 const websiteRoot = path.resolve(__dirname, "../../..");
-const captureSlots = new Set<string>(
-  (JSON.parse(fs.readFileSync(path.join(websiteRoot, "public/assets/app-screenshots/manifest.json"), "utf8")) as {captures: {id: string}[]})
-    .captures.map((capture) => capture.id),
-);
+type ScreenRect = {x: number; y: number; width: number; height: number};
+const captureRecords = (JSON.parse(fs.readFileSync(path.join(websiteRoot, "public/assets/app-screenshots/manifest.json"), "utf8")) as
+  {captures: {id: string; fragmentOf?: string; screenRect?: ScreenRect}[]}).captures;
+const captureSlots = new Set<string>(captureRecords.map((capture) => capture.id));
+const captureFragments = new Map(captureRecords.flatMap((capture) => (capture.fragmentOf ? [[capture.id, capture.fragmentOf] as const] : [])));
 const refs = registeredPlaybookPages();
 const loaded = await Promise.all(refs.map(async (ref) => ({ref, raw: (await ref.entry.load()).default as PlaybookPageDocument})));
 const fixedWithContent = new Set(refs.filter((ref) => "path" in ref.match.route).map((ref) => ref.match.route.id));
@@ -47,6 +49,7 @@ const context = {
   routeIds: new Set<string>([...Object.keys(siteRouteHrefs), ...playbookFixedRoutes.map((route) => route.id)]),
   familyRouteIds: new Set<string>(playbookFamilyRoutes.map((route) => route.id)),
   captureSlots,
+  captureFragments,
   alwaysNoindexRoutes: alwaysNoindexPlaybookRoutes,
   routeAnchors,
   pageAnchors,
@@ -109,6 +112,43 @@ describe("playbook page indexes", () => {
     const linked = new Set(hrefs);
     for (const route of playbookFixedRoutes.filter((candidate) => fixedWithContent.has(candidate.id))) {
       expect(linked.has(route.path), `${route.path} is linked from no menu, host footer or /host/`).toBe(true);
+    }
+  });
+
+  it("lifts each hero cut-out in place clear of the screen header and the others, and never across the phone's crop", () => {
+    // The hero draws a cut-out 1.1 times its size about its centre (CatchHeroSection.module.css).
+    const lifted = ({x, y, width, height}: ScreenRect) => ({left: x + width / 2 - 0.55 * width, right: x + width / 2 + 0.55 * width,
+      top: y + height / 2 - 0.55 * height, bottom: y + height / 2 + 0.55 * height});
+    // The status bar (62pt) and a top bar (about 60pt) of an 874pt screen: the context a reader needs.
+    const header = 0.14;
+    // Below 840px the band crops the phone at the compact media height: the share of the screen that shows.
+    const tokens = fs.readFileSync(path.join(websiteRoot, "../packages/web-config/generated/catch-tokens.css"), "utf8");
+    const px = (name: string) => Number(tokens.match(new RegExp(`--catch-${name}:\\s*([\\d.]+)px`))?.[1]);
+    const frame = catchDeviceFrameVariables("phone") as Record<string, string>;
+    const phone = px("website-hero-compact-phone-width");
+    const frameHeight = phone / Number(frame["--catch-device-aspect"]);
+    const topInset = (Number.parseFloat(frame["--catch-device-inset"]) / 100) * frameHeight;
+    const fold = (px("website-hero-compact-media-max") - topInset) / (frameHeight - 2 * topInset);
+    expect(fold).toBeGreaterThan(0.5);
+    for (const {ref, raw} of loaded) {
+      const hero = raw.sections.find((section) => section.type === "hero");
+      if (!hero || hero.type !== "hero" || !hero.fragments) continue;
+      const rects = hero.fragments.map((slot) => {
+        const rect = captureRecords.find((capture) => capture.id === slot)?.screenRect;
+        expect(rect, `${ref.match.contentKey}: ${slot} records where it was cut from`).toBeDefined();
+        return lifted(rect!);
+      });
+      expect(rects.slice(0, 2).some((rect) => rect.bottom <= fold), `${ref.match.contentKey}: no cut-out shows above the band's crop below 840px`).toBe(true);
+      rects.forEach((rect, index) => {
+        const slot = hero.fragments![index];
+        expect(rect.top, `${ref.match.contentKey}: ${slot} covers the screen header`).toBeGreaterThanOrEqual(header);
+        // Below 840px the first two show, and the band crops the phone: each is wholly above the crop, or wholly under it and cropped away.
+        if (index < 2) expect(rect.bottom <= fold || rect.top >= fold, `${ref.match.contentKey}: ${slot} straddles the band's crop below 840px`).toBe(true);
+        rects.slice(index + 1).forEach((other, offset) => {
+          const overlaps = rect.left < other.right && other.left < rect.right && rect.top < other.bottom && other.top < rect.bottom;
+          expect(overlaps, `${ref.match.contentKey}: ${slot} overlaps ${hero.fragments![index + offset + 1]}`).toBe(false);
+        });
+      });
     }
   });
 

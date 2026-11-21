@@ -276,6 +276,46 @@
       ]
     },
     {
+      "id": "host-formats-pods-chatty",
+      "audience": "host",
+      "surface": "Catch Host groups by pace, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-formats-pods-chatty.png",
+      "width": 772,
+      "height": 280,
+      "fragmentOf": "host-formats-pods",
+      "screenRect": {
+        "x": 0.0199,
+        "y": 0.32151,
+        "width": 0.9602,
+        "height": 0.16018
+      },
+      "alt": "The Chatty pod card: around 7:30 a km, four runners",
+      "caption": "The Chatty pod card: around 7:30 a km, four runners",
+      "walkthroughStep": "Plan",
+      "pages": []
+    },
+    {
+      "id": "host-formats-pods-needs-pod",
+      "audience": "host",
+      "surface": "Catch Host groups by pace, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-formats-pods-needs-pod.png",
+      "width": 780,
+      "height": 142,
+      "fragmentOf": "host-formats-pods",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.86842,
+        "width": 0.97015,
+        "height": 0.08124
+      },
+      "alt": "Sameer Shah under Needs a pod, with Steady suggested",
+      "caption": "Sameer Shah under Needs a pod, with Steady suggested",
+      "walkthroughStep": "Plan",
+      "pages": []
+    },
+    {
       "id": "host-door-in",
       "audience": "host",
       "surface": "Catch Host door, checked in",
@@ -304,6 +344,46 @@
       "pages": [
         "/host/"
       ]
+    },
+    {
+      "id": "host-door-arriving-new-guest",
+      "audience": "host",
+      "surface": "Catch Host door, arrivals, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-door-arriving-new-guest.png",
+      "width": 780,
+      "height": 136,
+      "fragmentOf": "host-door-arriving",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.50229,
+        "width": 0.97015,
+        "height": 0.0778
+      },
+      "alt": "Dev Patel, new, paid ₹998 for a first night, with Check in",
+      "caption": "Dev Patel, new, paid ₹998 for a first night, with Check in",
+      "walkthroughStep": "Check in",
+      "pages": []
+    },
+    {
+      "id": "host-door-arriving-regular",
+      "audience": "host",
+      "surface": "Catch Host door, arrivals, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-door-arriving-regular.png",
+      "width": 780,
+      "height": 136,
+      "fragmentOf": "host-door-arriving",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.73913,
+        "width": 0.97015,
+        "height": 0.0778
+      },
+      "alt": "Rhea Kapoor arriving, 5 nights with you, with Check in",
+      "caption": "Rhea Kapoor arriving, 5 nights with you, with Check in",
+      "walkthroughStep": "Check in",
+      "pages": []
     },
     {
       "id": "host-live-needs",
@@ -336,6 +416,46 @@
       ]
     },
     {
+      "id": "host-formats-rules-consent",
+      "audience": "host",
+      "surface": "Catch Host seating and level rules, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-formats-rules-consent.png",
+      "width": 772,
+      "height": 304,
+      "fragmentOf": "host-formats-rules",
+      "screenRect": {
+        "x": 0.0199,
+        "y": 0.42677,
+        "width": 0.9602,
+        "height": 0.17391
+      },
+      "alt": "Consent: answers are used only for this event and never shown to other guests",
+      "caption": "Consent: answers are used only for this event and never shown to other guests",
+      "walkthroughStep": "Plan",
+      "pages": []
+    },
+    {
+      "id": "host-formats-rules-first-time",
+      "audience": "host",
+      "surface": "Catch Host seating and level rules, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-formats-rules-first-time.png",
+      "width": 780,
+      "height": 184,
+      "fragmentOf": "host-formats-rules",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.3032,
+        "width": 0.97015,
+        "height": 0.10526
+      },
+      "alt": "Is this your first time with us? Spread evenly, 44 of 48 agreed",
+      "caption": "Is this your first time with us? Spread evenly, 44 of 48 agreed",
+      "walkthroughStep": "Plan",
+      "pages": []
+    },
+    {
       "id": "host-formats-mix",
       "audience": "host",
       "surface": "Catch Host mixing groups",
@@ -364,6 +484,66 @@
       "pages": [
         "/host/"
       ]
+    },
+    {
+      "id": "host-live-scores-team",
+      "audience": "host",
+      "surface": "Catch Host scores, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-live-scores-team.png",
+      "width": 780,
+      "height": 128,
+      "fragmentOf": "host-live-scores",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.33638,
+        "width": 0.97015,
+        "height": 0.07323
+      },
+      "alt": "Quizzy Rascals, 41 so far, with the round's score stepper",
+      "caption": "Quizzy Rascals, 41 so far, with the round's score stepper",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-scores-standings",
+      "audience": "host",
+      "surface": "Catch Host scores, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-live-scores-standings.png",
+      "width": 772,
+      "height": 524,
+      "fragmentOf": "host-live-scores",
+      "screenRect": {
+        "x": 0.0199,
+        "y": 0.65103,
+        "width": 0.9602,
+        "height": 0.29977
+      },
+      "alt": "Standings if you save now: Quizzy Rascals 41, Harbour Lights 38, Vada Pav Theory 35",
+      "caption": "Standings if you save now: Quizzy Rascals 41, Harbour Lights 38, Vada Pav Theory 35",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-scores-third-team",
+      "audience": "host",
+      "surface": "Catch Host scores, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-live-scores-third-team.png",
+      "width": 780,
+      "height": 128,
+      "fragmentOf": "host-live-scores",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.48513,
+        "width": 0.97015,
+        "height": 0.07323
+      },
+      "alt": "Vada Pav Theory, 35 so far, with the round's score stepper",
+      "caption": "Vada Pav Theory, 35 so far, with the round's score stepper",
+      "walkthroughStep": "Run the night",
+      "pages": []
     },
     {
       "id": "host-formats-courts-setup",
@@ -396,6 +576,46 @@
       ]
     },
     {
+      "id": "host-formats-courts-court",
+      "audience": "host",
+      "surface": "Catch Host courts live, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-formats-courts-court.png",
+      "width": 780,
+      "height": 152,
+      "fragmentOf": "host-formats-courts",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.44851,
+        "width": 0.97015,
+        "height": 0.08696
+      },
+      "alt": "Court 1: Sam and Rhea, 9:40 left",
+      "caption": "Court 1: Sam and Rhea, 9:40 left",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-formats-courts-sitting-out",
+      "audience": "host",
+      "surface": "Catch Host courts live, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-formats-courts-sitting-out.png",
+      "width": 780,
+      "height": 126,
+      "fragmentOf": "host-formats-courts",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.87071,
+        "width": 0.97015,
+        "height": 0.07208
+      },
+      "alt": "Neel Shah sitting out this round, playing next",
+      "caption": "Neel Shah sitting out this round, playing next",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
       "id": "host-formats-crawl",
       "audience": "host",
       "surface": "Catch Host crawl route",
@@ -424,6 +644,46 @@
       "pages": [
         "/host/"
       ]
+    },
+    {
+      "id": "host-formats-crawl-move-message",
+      "audience": "host",
+      "surface": "Catch Host moving groups between stops, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-formats-crawl-move-message.png",
+      "width": 764,
+      "height": 236,
+      "fragmentOf": "host-formats-crawl-move",
+      "screenRect": {
+        "x": 0.02488,
+        "y": 0.73913,
+        "width": 0.95025,
+        "height": 0.13501
+      },
+      "alt": "The message to the group: next stop Copperleaf, leaving in 10 minutes",
+      "caption": "The message to the group: next stop Copperleaf, leaving in 10 minutes",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-formats-crawl-move-map",
+      "audience": "host",
+      "surface": "Catch Host moving groups between stops, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-formats-crawl-move-map.png",
+      "width": 764,
+      "height": 451,
+      "fragmentOf": "host-formats-crawl-move",
+      "screenRect": {
+        "x": 0.02488,
+        "y": 0.25229,
+        "width": 0.95025,
+        "height": 0.25801
+      },
+      "alt": "The map from Gearbox Tavern to the next stop, Copperleaf",
+      "caption": "The map from Gearbox Tavern to the next stop, Copperleaf",
+      "walkthroughStep": "Run the night",
+      "pages": []
     },
     {
       "id": "guest-checked-in",
@@ -503,6 +763,46 @@
       "height": 1748,
       "alt": "Evening Club's page in the Catch app: its next plan on Saturday 24 October and a Follow organizer button",
       "caption": "Follow the hosts you like and see their next plan first.",
+      "walkthroughStep": "Follow",
+      "pages": []
+    },
+    {
+      "id": "guest-follow-host-followers",
+      "audience": "guest",
+      "surface": "An organiser's page in the Catch app, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/guest-follow-host-followers.png",
+      "width": 398,
+      "height": 220,
+      "fragmentOf": "guest-follow-host",
+      "screenRect": {
+        "x": 0.0199,
+        "y": 0.51373,
+        "width": 0.49502,
+        "height": 0.12586
+      },
+      "alt": "186 followers",
+      "caption": "186 followers",
+      "walkthroughStep": "Follow",
+      "pages": []
+    },
+    {
+      "id": "guest-follow-host-follow",
+      "audience": "guest",
+      "surface": "An organiser's page in the Catch app, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/guest-follow-host-follow.png",
+      "width": 664,
+      "height": 144,
+      "fragmentOf": "guest-follow-host",
+      "screenRect": {
+        "x": 0.1592,
+        "y": 0.84668,
+        "width": 0.82587,
+        "height": 0.08238
+      },
+      "alt": "The Follow organizer button",
+      "caption": "The Follow organizer button",
       "walkthroughStep": "Follow",
       "pages": []
     },
@@ -665,6 +965,26 @@
       "pages": []
     },
     {
+      "id": "host-form-responses-new",
+      "audience": "host",
+      "surface": "A form's responses in Catch Host, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-form-responses-new.png",
+      "width": 780,
+      "height": 172,
+      "fragmentOf": "host-form-responses",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.27689,
+        "width": 0.97015,
+        "height": 0.0984
+      },
+      "alt": "Tara Menon's new response: steady pace, 5 km, from Instagram",
+      "caption": "Tara Menon's new response: steady pace, 5 km, from Instagram",
+      "walkthroughStep": "Review",
+      "pages": []
+    },
+    {
       "id": "host-form-response",
       "audience": "host",
       "surface": "One form response in Catch Host",
@@ -704,6 +1024,46 @@
       "pages": []
     },
     {
+      "id": "host-people-regular",
+      "audience": "host",
+      "surface": "The organiser's people in Catch Host, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-people-regular.png",
+      "width": 780,
+      "height": 130,
+      "fragmentOf": "host-people",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.33066,
+        "width": 0.97015,
+        "height": 0.07437
+      },
+      "alt": "Rhea Kapoor, a regular: 6 nights, last on Tue 20 Oct",
+      "caption": "Rhea Kapoor, a regular: 6 nights, last on Tue 20 Oct",
+      "walkthroughStep": "People",
+      "pages": []
+    },
+    {
+      "id": "host-people-drifting",
+      "audience": "host",
+      "surface": "The organiser's people in Catch Host, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-people-drifting.png",
+      "width": 780,
+      "height": 130,
+      "fragmentOf": "host-people",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.55721,
+        "width": 0.97015,
+        "height": 0.07437
+      },
+      "alt": "Kabir Rao, drifting: 9 nights, last on Tue 25 Aug",
+      "caption": "Kabir Rao, drifting: 9 nights, last on Tue 25 Aug",
+      "walkthroughStep": "People",
+      "pages": []
+    },
+    {
       "id": "host-person",
       "audience": "host",
       "surface": "One guest's history in Catch Host",
@@ -739,6 +1099,26 @@
       "height": 1748,
       "alt": "An event's share screen in Catch Host: the private link and a named link for each place it was shared, with how many opened and booked",
       "caption": "A link for each place you share, and who booked from it.",
+      "walkthroughStep": "Share",
+      "pages": []
+    },
+    {
+      "id": "host-event-share-links-whatsapp",
+      "audience": "host",
+      "surface": "Invite links for an event in Catch Host, cut out",
+      "device": "fragment-phone",
+      "webPath": "/assets/app-screenshots/host-event-share-links-whatsapp.png",
+      "width": 780,
+      "height": 144,
+      "fragmentOf": "host-event-share-links",
+      "screenRect": {
+        "x": 0.01493,
+        "y": 0.56178,
+        "width": 0.97015,
+        "height": 0.08238
+      },
+      "alt": "The Alumni WhatsApp invite link: 64 opened, 7 booked",
+      "caption": "The Alumni WhatsApp invite link: 64 opened, 7 booked",
       "walkthroughStep": "Share",
       "pages": []
     },

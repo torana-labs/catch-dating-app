@@ -6,7 +6,8 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
-import {framedSize} from "./lib/capture_devices.mjs";
+import {framedSize, isCaptureDevice, isFragmentCaptureDevice} from "./lib/capture_devices.mjs";
+import {fragmentRect} from "./lib/capture_provenance.mjs";
 
 const sourceManifestPath = fromRepo("tool/marketing/capture_manifest.json");
 const websitePublicPrefix = "website/public/";
@@ -200,6 +201,7 @@ export function validateSourceManifest(manifest) {
       errors.push(`${label}: websitePath must not point at a placeholder.`);
     }
 
+    validateFragment(errors, label, capture, manifest.captures);
     if (capture.status === "active") {
       requireFile(errors, label, "sourcePath", capture.sourcePath);
     } else if (capture.status === "pending-fixture") {
@@ -209,6 +211,28 @@ export function validateSourceManifest(manifest) {
     validatePresentation(errors, label, capture);
   }
   return errors;
+}
+
+/**
+ * A fragment capture (device fragment-phone) is one widget cut from another
+ * app capture's generic-phone screen, named by `fragmentOf`, so its names and
+ * numbers agree with that screen. Its size comes from the rendered PNG, so it
+ * has no placeholder: it is active or paused, never pending.
+ */
+function validateFragment(errors, label, capture, captures) {
+  const fragment = isCaptureDevice(capture.device) && isFragmentCaptureDevice(capture.device);
+  if (!fragment) {
+    if (capture.fragmentOf !== undefined) errors.push(`${label}: only a fragment-phone capture is cut from another (fragmentOf).`);
+    return;
+  }
+  if (capture.kind === "web-capture") errors.push(`${label}: a fragment is cut from an app capture, not a web capture.`);
+  if (capture.status === "pending-fixture") errors.push(`${label}: a fragment's size follows its widget, so it cannot wait on a placeholder; render it or pause it.`);
+  const screen = captures.find((other) => other.id === capture.fragmentOf);
+  if (!screen || screen.device !== "generic-phone" || screen.kind === "web-capture") {
+    errors.push(`${label}: fragmentOf must name the generic-phone app capture it is cut from.`);
+  } else if (capture.status === "active" && screen.status !== "active") {
+    errors.push(`${label}: an active fragment needs its screen ${screen.id} active too.`);
+  }
 }
 
 // Fields for the pages that show a capture. None of them is a render input.
@@ -261,21 +285,31 @@ function scenarioProblems(label, {world, event, moment}) {
   return problems;
 }
 
-export function buildWebsiteManifest(manifest) {
+/**
+ * The website's capture records. A fragment's size follows its widget, so it
+ * is read from the PNG (`readPng` returns a capture's source bytes; the
+ * importer passes the artifact's), with the capture it is cut from and its
+ * place on that screen (`screenRect`, shares of the screen, from its
+ * provenance), so a page lays it over its own spot.
+ */
+export function buildWebsiteManifest(manifest, {readPng = (capture) => fs.readFileSync(fromRepo(capture.sourcePath))} = {}) {
   const captures = manifest.captures
     .filter((capture) => capture.status !== "paused")
     .map((capture) => {
       const isActive = capture.status === "active";
       const sourcePath = isActive ? capture.sourcePath : capture.placeholderPath;
       const webPath = toWebPath(isActive ? capture.websitePath : sourcePath);
+      const fragment = isFragmentCaptureDevice(capture.device);
+      const png = fragment ? readPng(capture) : null;
       return {
         id: capture.id,
         audience: capture.audience,
         surface: capture.surface,
         device: capture.device,
         webPath,
-        // The framed PNG's size, so pages reserve the image's space before it loads.
-        ...framedSize(capture.device),
+        // The PNG's size, so pages reserve the image's space before it loads.
+        ...(fragment ? pngSize(png) : framedSize(capture.device)),
+        ...(fragment ? {fragmentOf: capture.fragmentOf, screenRect: fragmentRect(png)} : {}),
         alt: capture.alt,
         caption: capture.caption,
         walkthroughStep: capture.walkthroughStep,
@@ -290,6 +324,10 @@ export function buildWebsiteManifest(manifest) {
   };
 }
 
+function pngSize(bytes) {
+  return {width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20)};
+}
+
 // A placeholder is a PNG at its device's size, the space pages reserve for the capture.
 function requirePlaceholder(errors, label, capture) {
   const repoPath = capture.placeholderPath;
@@ -300,6 +338,7 @@ function requirePlaceholder(errors, label, capture) {
   }
   let expected;
   try {
+    if (isFragmentCaptureDevice(capture.device)) return;
     expected = framedSize(capture.device);
   } catch {
     return;

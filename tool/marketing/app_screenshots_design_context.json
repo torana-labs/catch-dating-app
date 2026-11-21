@@ -951,6 +951,102 @@
     },
     {
       "type": "marketing-app-capture",
+      "id": "host-formats-pods-chatty",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host groups by pace, cut out",
+      "fixtureKey": "hostMarketingIndia.host.formatsPods.chattyPod",
+      "captureId": "host_formats_pods_chatty_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-pods-chatty.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-pods-chatty.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-pods-chatty.png"
+      },
+      "copy": {
+        "alt": "The Chatty pod card: around 7:30 a km, four runners",
+        "caption": "The Chatty pod card: around 7:30 a km, four runners",
+        "walkthroughStep": "Plan"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-pods-needs-pod",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host groups by pace, cut out",
+      "fixtureKey": "hostMarketingIndia.host.formatsPods.needsPod",
+      "captureId": "host_formats_pods_needs_pod_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-pods-needs-pod.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-pods-needs-pod.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-pods-needs-pod.png"
+      },
+      "copy": {
+        "alt": "Sameer Shah under Needs a pod, with Steady suggested",
+        "caption": "Sameer Shah under Needs a pod, with Steady suggested",
+        "walkthroughStep": "Plan"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
       "id": "host-door-in",
       "status": "active",
       "audience": "host",
@@ -1040,6 +1136,102 @@
       "copy": {
         "alt": "Catch Host's door screen listing guests arriving tonight",
         "caption": "The door: who's arriving and who's in.",
+        "walkthroughStep": "Check in"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-door-arriving-new-guest",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host door, arrivals, cut out",
+      "fixtureKey": "hostMarketingIndia.host.doorArriving.newGuest",
+      "captureId": "host_door_arriving_new_guest_fragment",
+      "routeIds": [
+        "hostEventRosterScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-door-arriving-new-guest.png",
+        "websitePath": "website/public/assets/app-screenshots/host-door-arriving-new-guest.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-door-arriving-new-guest.png"
+      },
+      "copy": {
+        "alt": "Dev Patel, new, paid ₹998 for a first night, with Check in",
+        "caption": "Dev Patel, new, paid ₹998 for a first night, with Check in",
+        "walkthroughStep": "Check in"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-door-arriving-regular",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host door, arrivals, cut out",
+      "fixtureKey": "hostMarketingIndia.host.doorArriving.regularGuest",
+      "captureId": "host_door_arriving_regular_fragment",
+      "routeIds": [
+        "hostEventRosterScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-door-arriving-regular.png",
+        "websitePath": "website/public/assets/app-screenshots/host-door-arriving-regular.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-door-arriving-regular.png"
+      },
+      "copy": {
+        "alt": "Rhea Kapoor arriving, 5 nights with you, with Check in",
+        "caption": "Rhea Kapoor arriving, 5 nights with you, with Check in",
         "walkthroughStep": "Check in"
       }
     },
@@ -1139,6 +1331,102 @@
     },
     {
       "type": "marketing-app-capture",
+      "id": "host-formats-rules-consent",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host seating and level rules, cut out",
+      "fixtureKey": "hostMarketingIndia.host.formatsRules.consent",
+      "captureId": "host_formats_rules_consent_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-rules-consent.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-rules-consent.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-rules-consent.png"
+      },
+      "copy": {
+        "alt": "Consent: answers are used only for this event and never shown to other guests",
+        "caption": "Consent: answers are used only for this event and never shown to other guests",
+        "walkthroughStep": "Plan"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-rules-first-time",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host seating and level rules, cut out",
+      "fixtureKey": "hostMarketingIndia.host.formatsRules.firstTimeRule",
+      "captureId": "host_formats_rules_first_time_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-rules-first-time.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-rules-first-time.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-rules-first-time.png"
+      },
+      "copy": {
+        "alt": "Is this your first time with us? Spread evenly, 44 of 48 agreed",
+        "caption": "Is this your first time with us? Spread evenly, 44 of 48 agreed",
+        "walkthroughStep": "Plan"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
       "id": "host-formats-mix",
       "status": "active",
       "audience": "host",
@@ -1228,6 +1516,150 @@
       "copy": {
         "alt": "Catch Host's scores screen with the leaderboard hidden until the end",
         "caption": "Scores in, standings hidden until the end.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-scores-team",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host scores, cut out",
+      "fixtureKey": "hostMarketingIndia.host.liveScores.teamScore",
+      "captureId": "host_live_scores_team_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-scores-team.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-scores-team.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-scores-team.png"
+      },
+      "copy": {
+        "alt": "Quizzy Rascals, 41 so far, with the round's score stepper",
+        "caption": "Quizzy Rascals, 41 so far, with the round's score stepper",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-scores-standings",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host scores, cut out",
+      "fixtureKey": "hostMarketingIndia.host.liveScores.standings",
+      "captureId": "host_live_scores_standings_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-scores-standings.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-scores-standings.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-scores-standings.png"
+      },
+      "copy": {
+        "alt": "Standings if you save now: Quizzy Rascals 41, Harbour Lights 38, Vada Pav Theory 35",
+        "caption": "Standings if you save now: Quizzy Rascals 41, Harbour Lights 38, Vada Pav Theory 35",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-scores-third-team",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host scores, cut out",
+      "fixtureKey": "hostMarketingIndia.host.liveScores.thirdTeamScore",
+      "captureId": "host_live_scores_third_team_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-scores-third-team.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-scores-third-team.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-scores-third-team.png"
+      },
+      "copy": {
+        "alt": "Vada Pav Theory, 35 so far, with the round's score stepper",
+        "caption": "Vada Pav Theory, 35 so far, with the round's score stepper",
         "walkthroughStep": "Run the night"
       }
     },
@@ -1327,6 +1759,102 @@
     },
     {
       "type": "marketing-app-capture",
+      "id": "host-formats-courts-court",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host courts live, cut out",
+      "fixtureKey": "hostMarketingIndia.host.formatsCourts.courtRow",
+      "captureId": "host_formats_courts_court_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-courts-court.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-courts-court.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-courts-court.png"
+      },
+      "copy": {
+        "alt": "Court 1: Sam and Rhea, 9:40 left",
+        "caption": "Court 1: Sam and Rhea, 9:40 left",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-courts-sitting-out",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host courts live, cut out",
+      "fixtureKey": "hostMarketingIndia.host.formatsCourts.sittingOut",
+      "captureId": "host_formats_courts_sitting_out_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-courts-sitting-out.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-courts-sitting-out.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-courts-sitting-out.png"
+      },
+      "copy": {
+        "alt": "Neel Shah sitting out this round, playing next",
+        "caption": "Neel Shah sitting out this round, playing next",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
       "id": "host-formats-crawl",
       "status": "active",
       "audience": "host",
@@ -1416,6 +1944,102 @@
       "copy": {
         "alt": "Catch Host's crawl screen confirming who left one stop and arrived at the next",
         "caption": "Each lead confirms who left and who arrived.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-crawl-move-message",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host moving groups between stops, cut out",
+      "fixtureKey": "hostMarketingIndia.host.formatsCrawlMove.groupMessage",
+      "captureId": "host_formats_crawl_move_message_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-crawl-move-message.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-crawl-move-message.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-crawl-move-message.png"
+      },
+      "copy": {
+        "alt": "The message to the group: next stop Copperleaf, leaving in 10 minutes",
+        "caption": "The message to the group: next stop Copperleaf, leaving in 10 minutes",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-formats-crawl-move-map",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host moving groups between stops, cut out",
+      "fixtureKey": "hostMarketingIndia.host.formatsCrawlMove.routeMap",
+      "captureId": "host_formats_crawl_move_map_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-formats-crawl-move-map.png",
+        "websitePath": "website/public/assets/app-screenshots/host-formats-crawl-move-map.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-crawl-move-map.png"
+      },
+      "copy": {
+        "alt": "The map from Gearbox Tavern to the next stop, Copperleaf",
+        "caption": "The map from Gearbox Tavern to the next stop, Copperleaf",
         "walkthroughStep": "Run the night"
       }
     },
@@ -1698,6 +2322,102 @@
       "copy": {
         "alt": "Evening Club's page in the Catch app: its next plan on Saturday 24 October and a Follow organizer button",
         "caption": "Follow the hosts you like and see their next plan first.",
+        "walkthroughStep": "Follow"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "guest-follow-host-followers",
+      "status": "active",
+      "audience": "guest",
+      "surface": "An organiser's page in the Catch app, cut out",
+      "fixtureKey": "hostMarketingIndia.guest.followHost.followers",
+      "captureId": "guest_follow_host_followers_fragment",
+      "routeIds": [
+        "organizerDetailScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-follow-host-followers.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-follow-host-followers.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-follow-host-followers.png"
+      },
+      "copy": {
+        "alt": "186 followers",
+        "caption": "186 followers",
+        "walkthroughStep": "Follow"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "guest-follow-host-follow",
+      "status": "active",
+      "audience": "guest",
+      "surface": "An organiser's page in the Catch app, cut out",
+      "fixtureKey": "hostMarketingIndia.guest.followHost.followButton",
+      "captureId": "guest_follow_host_follow_fragment",
+      "routeIds": [
+        "organizerDetailScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-follow-host-follow.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-follow-host-follow.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-follow-host-follow.png"
+      },
+      "copy": {
+        "alt": "The Follow organizer button",
+        "caption": "The Follow organizer button",
         "walkthroughStep": "Follow"
       }
     },
@@ -2272,6 +2992,55 @@
     },
     {
       "type": "marketing-app-capture",
+      "id": "host-form-responses-new",
+      "status": "active",
+      "audience": "host",
+      "surface": "A form's responses in Catch Host, cut out",
+      "fixtureKey": "hostAudience.forms.responses.newResponse",
+      "captureId": "host_form_responses_new_fragment",
+      "routeIds": [
+        "hostFormBuilderScreen",
+        "hostFormAnalyticsScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-form-responses-new.png",
+        "websitePath": "website/public/assets/app-screenshots/host-form-responses-new.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-form-responses-new.png"
+      },
+      "copy": {
+        "alt": "Tara Menon's new response: steady pace, 5 km, from Instagram",
+        "caption": "Tara Menon's new response: steady pace, 5 km, from Instagram",
+        "walkthroughStep": "Review"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
       "id": "host-form-response",
       "status": "active",
       "audience": "host",
@@ -2413,6 +3182,102 @@
     },
     {
       "type": "marketing-app-capture",
+      "id": "host-people-regular",
+      "status": "active",
+      "audience": "host",
+      "surface": "The organiser's people in Catch Host, cut out",
+      "fixtureKey": "hostAudience.people.list.regular",
+      "captureId": "host_people_regular_fragment",
+      "routeIds": [
+        "hostAudienceScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-people-regular.png",
+        "websitePath": "website/public/assets/app-screenshots/host-people-regular.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-people-regular.png"
+      },
+      "copy": {
+        "alt": "Rhea Kapoor, a regular: 6 nights, last on Tue 20 Oct",
+        "caption": "Rhea Kapoor, a regular: 6 nights, last on Tue 20 Oct",
+        "walkthroughStep": "People"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-people-drifting",
+      "status": "active",
+      "audience": "host",
+      "surface": "The organiser's people in Catch Host, cut out",
+      "fixtureKey": "hostAudience.people.list.drifting",
+      "captureId": "host_people_drifting_fragment",
+      "routeIds": [
+        "hostAudienceScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-people-drifting.png",
+        "websitePath": "website/public/assets/app-screenshots/host-people-drifting.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-people-drifting.png"
+      },
+      "copy": {
+        "alt": "Kabir Rao, drifting: 9 nights, last on Tue 25 Aug",
+        "caption": "Kabir Rao, drifting: 9 nights, last on Tue 25 Aug",
+        "walkthroughStep": "People"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
       "id": "host-person",
       "status": "active",
       "audience": "host",
@@ -2549,6 +3414,54 @@
       "copy": {
         "alt": "An event's share screen in Catch Host: the private link and a named link for each place it was shared, with how many opened and booked",
         "caption": "A link for each place you share, and who booked from it.",
+        "walkthroughStep": "Share"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-event-share-links-whatsapp",
+      "status": "active",
+      "audience": "host",
+      "surface": "Invite links for an event in Catch Host, cut out",
+      "fixtureKey": "hostOperations.event.shareLinks.whatsappLink",
+      "captureId": "host_event_share_links_whatsapp_fragment",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "fragment-phone",
+        "cutFrom": "screen",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-event-share-links-whatsapp.png",
+        "websitePath": "website/public/assets/app-screenshots/host-event-share-links-whatsapp.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-event-share-links-whatsapp.png"
+      },
+      "copy": {
+        "alt": "The Alumni WhatsApp invite link: 64 opened, 7 booked",
+        "caption": "The Alumni WhatsApp invite link: 64 opened, 7 booked",
         "walkthroughStep": "Share"
       }
     },

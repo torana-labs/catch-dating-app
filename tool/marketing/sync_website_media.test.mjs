@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import zlib from "node:zlib";
 import test from "node:test";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {framedSize} from "./lib/capture_devices.mjs";
@@ -10,6 +11,23 @@ const authored = JSON.parse(fs.readFileSync(fromRepo("tool/marketing/capture_man
 // A sample record to vary, held pending so the rules under test don't also
 // need its image on disk.
 const liveConsole = {...authored.captures.find(capture => capture.id === "host-live-console"), status: "pending-fixture"};
+
+// The smallest PNG fragmentRect reads: its header and one caPt provenance chunk.
+function pngWithProvenance(width, height, provenance) {
+  const chunk = (type, data) => {
+    const bytes = Buffer.alloc(data.length + 12);
+    bytes.writeUInt32BE(data.length);
+    bytes.write(type, 4, "ascii");
+    data.copy(bytes, 8);
+    bytes.writeUInt32BE(zlib.crc32(bytes.subarray(4, -4)), bytes.length - 4);
+    return bytes;
+  };
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width);
+  header.writeUInt32BE(height, 4);
+  return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk("IHDR", header),
+    chunk("caPt", Buffer.from(JSON.stringify(provenance))), chunk("IEND", Buffer.alloc(0))]);
+}
 
 function manifestWith(changes) {
   return {...authored, captures: [{...liveConsole, ...changes}]};
@@ -43,6 +61,25 @@ test("website records carry the framed size and the pages that show them", () =>
   assert.deepEqual(record.pages, liveConsole.pages);
   assert.equal(record.caption, liveConsole.caption);
   assert.equal("scenario" in record, false);
+});
+
+test("a fragment is cut from an active generic-phone app capture and takes its size from its PNG", () => {
+  const screen = {...liveConsole, id: "sample-screen", status: "active", pages: []};
+  const fragment = {...liveConsole, id: "sample-fragment", device: "fragment-phone", fragmentOf: "sample-screen", status: "active", pages: [],
+    sourcePath: screen.sourcePath, websitePath: "website/public/assets/app-screenshots/sample-fragment.png"};
+  const of = (...captures) => ({...authored, captures});
+  assert.deepEqual(validateSourceManifest(of(screen, fragment)), []);
+  assert.match(validateSourceManifest(of(screen, {...fragment, fragmentOf: "missing"})).join("\n"), /fragmentOf must name the generic-phone app capture/);
+  assert.match(validateSourceManifest(of({...screen, device: "generic-tablet"}, fragment)).join("\n"), /fragmentOf must name the generic-phone/);
+  assert.match(validateSourceManifest(of({...screen, status: "pending-fixture"}, fragment)).join("\n"), /needs its screen sample-screen active/);
+  assert.match(validateSourceManifest(of(screen, {...fragment, status: "pending-fixture"})).join("\n"), /cannot wait on a placeholder/);
+  assert.match(validateSourceManifest(of({...screen, fragmentOf: "sample-fragment"}, fragment)).join("\n"), /only a fragment-phone capture is cut from another/);
+  // A 2x crop's size, from its PNG header, and its place on the screen, from its provenance.
+  const rect = {x: 0.025, y: 0.3, width: 0.9005, height: 0.1327};
+  const record = buildWebsiteManifest(of(screen, fragment), {readPng: () => pngWithProvenance(724, 232, {fragment: rect})}).captures[1];
+  assert.deepEqual({width: record.width, height: record.height, fragmentOf: record.fragmentOf, screenRect: record.screenRect},
+    {width: 724, height: 232, fragmentOf: "sample-screen", screenRect: rect});
+  assert.equal("fragmentOf" in buildWebsiteManifest(of(screen)).captures[0], false);
 });
 
 test("a web capture names its story and address instead of a catalog fixture", () => {

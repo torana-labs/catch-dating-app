@@ -162,11 +162,13 @@ const tileLink = obj({to: destination}, {label: copy(), status: featureStatus}, 
 const photo = obj({kind: constant("photo"), asset: str(assetPattern), alt: copy()}, {note: copy()}, "photo");
 /** A QR code of a destination of this site, such as the start page, for a reader on a laptop to open on their phone. */
 const qr = obj({kind: constant("qr"), to: destination, label: copy()});
+/** A capture slot id in the app-screenshot manifest. */
+const captureSlot = str(slotPattern);
 const mediaSpec: OneOfSpec = {
   t: "oneOf",
   name: "media",
   options: [
-    obj({kind: constant("capture"), slot: str(slotPattern)}, {alt: copy()}),
+    obj({kind: constant("capture"), slot: captureSlot}, {alt: copy()}),
     photo,
     qr,
   ],
@@ -230,7 +232,13 @@ const sectionSpec = {
       kicker: copy(),
       proof: list(proofLine, 1, 3),
       aside: action,
-      chip: obj({title: copy(), rows: list(obj({label: copy(), value: copy()}), 1, 4)}),
+      /**
+       * Up to three cut-outs floating over the media: fragment captures, each
+       * a crop of one real widget from the hero's own capture (its
+       * `fragmentOf`), so names and numbers agree with the screen. There is
+       * no drawn card: a hero's floating parts are always captures.
+       */
+      fragments: list(captureSlot, 1, 3),
       tags: list(copy(), 1, 4),
       /** A short line under the actions. */
       note: copy(),
@@ -548,6 +556,8 @@ export interface PlaybookValidationContext {
   readonly familyRouteIds?: ReadonlySet<string>;
   /** Capture slot ids in the app-screenshot manifest. */
   readonly captureSlots: ReadonlySet<string>;
+  /** The manifest's fragment captures, each with the capture slot it is cut from (`fragmentOf`). */
+  readonly captureFragments?: ReadonlyMap<string, string>;
   /** Routes whose pages never enter search, such as ad landing pages. */
   readonly alwaysNoindexRoutes?: ReadonlySet<string>;
   /** The section ids of pages a `{route, anchor}` may link into; a route listed here must have the anchor. */
@@ -620,6 +630,17 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
       }));
     }
     forEachMedia(section, (item, path) => mediaErrors(`${label}.${path}`, item));
+    if (section.type === "hero" && section.fragments) {
+      if (section.media?.kind !== "capture") errors.push(`${label}.fragments are cut from the hero's capture; give the hero capture media`);
+      if (new Set(section.fragments).size !== section.fragments.length) errors.push(`${label}.fragments repeat a slot`);
+      const screen = section.media?.kind === "capture" ? section.media.slot : undefined;
+      section.fragments.forEach((slot, index) => {
+        if (context && !context.captureSlots.has(slot)) errors.push(`${label}.fragments[${index}] names unknown capture slot ${slot}`);
+        else if (context?.captureFragments && context.captureFragments.get(slot) !== screen) {
+          errors.push(`${label}.fragments[${index}] ${slot} is not a fragment cut from the hero's capture ${screen}`);
+        }
+      });
+    }
     if (section.type === "hero" && live) {
       section.proof?.forEach((line, lineIndex) => footnote(`${label}.proof[${lineIndex}]`, line.footnote, /\d/u.test(line.text)));
     }

@@ -33,14 +33,7 @@
         "label": "Running chapters in several cities? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Monthly meetup",
-        "rows": [
-          {"label": "Booked", "value": "22"},
-          {"label": "Members", "value": "14"},
-          {"label": "First-timers", "value": "5"}
-        ]
-      },
+      "fragments": ["host-people-regular", "host-people-drifting"],
       "media": {"kind": "capture", "slot": "host-people"}
     },
     {

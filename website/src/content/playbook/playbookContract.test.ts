@@ -18,7 +18,9 @@ import {
 const validateSchema = new Ajv2020({allErrors: true}).compile(schema);
 const context: PlaybookValidationContext = {
   routeIds: new Set(["host", "host_run_clubs", "host_start", "host_walkthrough", "pricing"]),
-  captureSlots: new Set(["host-formats-pods", "host-live-tablet-run-clubs", "host-create-run-clubs"]),
+  captureSlots: new Set(["host-formats-pods", "host-live-tablet-run-clubs", "host-create-run-clubs",
+    "host-formats-pods-chatty", "host-formats-pods-needs-pod"]),
+  captureFragments: new Map([["host-formats-pods-chatty", "host-formats-pods"], ["host-formats-pods-needs-pod", "host-formats-pods"]]),
 };
 
 type Mutable = {[key: string]: unknown};
@@ -131,6 +133,22 @@ describe("playbook page contract", () => {
     expect(validatePlaybookPage(unknownRoute, context).join("\n")).toMatch(/unknown route host_mixers/u);
     const unknownSlot = fixture((page) => {section(page, "timeline").media = {kind: "capture", slot: "host-run-morning"};});
     expect(validatePlaybookPage(unknownSlot, context).join("\n")).toMatch(/unknown capture slot host-run-morning/u);
+  });
+
+  it("floats only fragment captures of the hero's own screen, and has no drawn card", () => {
+    expect(validatePlaybookPage(runClubs, context)).toEqual([]);
+    const drawn = fixture((page) => {section(page, "hero").chip = {title: "Sunday run", rows: [{label: "Booked", value: "34"}]};});
+    expect(validatePlaybookPage(drawn).join("\n")).toMatch(/chip/u);
+    expect(validateSchema(drawn)).toBe(false);
+    const other = fixture((page) => {section(page, "hero").media = {kind: "capture", slot: "host-create-run-clubs"};});
+    expect(validatePlaybookPage(other, context).join("\n")).toMatch(/host-formats-pods-chatty is not a fragment cut from the hero's capture host-create-run-clubs/u);
+    const notFragment = fixture((page) => {section(page, "hero").fragments = ["host-live-tablet-run-clubs"];});
+    expect(validatePlaybookPage(notFragment, context).join("\n")).toMatch(/is not a fragment cut from/u);
+    const noScreen = fixture((page) => {delete section(page, "hero").media;});
+    expect(validatePlaybookPage(noScreen).join("\n")).toMatch(/fragments are cut from the hero's capture/u);
+    const four = fixture((page) => {section(page, "hero").fragments = ["a", "b", "c", "d"];});
+    expect(validateSchema(four)).toBe(false);
+    expect(validatePlaybookPage(four).length).toBeGreaterThan(0);
   });
 
   it("keeps ad landing pages out of search whatever their meta says", () => {

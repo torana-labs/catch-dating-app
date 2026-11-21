@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/capture_device.dart';
+import '../support/capture_fragment.dart';
 
 class ScreenCaptureEntry {
   const ScreenCaptureEntry({
@@ -17,6 +18,7 @@ class ScreenCaptureEntry {
     this.includeOverlays = false,
     this.drive,
     this.cleanup,
+    this.fragment,
   });
 
   final String id;
@@ -31,4 +33,7 @@ class ScreenCaptureEntry {
   final bool includeOverlays;
   final Future<void> Function(WidgetTester tester)? drive;
   final Future<void> Function(WidgetTester tester)? cleanup;
+
+  /// A fragment capture: the one widget to cut out of the screen.
+  final CaptureFragment? fragment;
 }

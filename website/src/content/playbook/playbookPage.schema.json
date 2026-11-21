@@ -317,39 +317,14 @@
               "aside": {
                 "$ref": "#/$defs/action"
               },
-              "chip": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "title",
-                  "rows"
-                ],
-                "properties": {
-                  "title": {
-                    "$ref": "#/$defs/copy"
-                  },
-                  "rows": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "label",
-                        "value"
-                      ],
-                      "properties": {
-                        "label": {
-                          "$ref": "#/$defs/copy"
-                        },
-                        "value": {
-                          "$ref": "#/$defs/copy"
-                        }
-                      }
-                    },
-                    "minItems": 1,
-                    "maxItems": 4
-                  }
-                }
+              "fragments": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "minItems": 1,
+                "maxItems": 3
               },
               "tags": {
                 "type": "array",

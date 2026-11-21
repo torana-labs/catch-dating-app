@@ -89,9 +89,13 @@ export interface CaptureRecord {
   /** The capture device (tool/marketing/lib/capture_devices.mjs), such as "generic-phone". */
   device: string;
   webPath: string;
-  /** PNG size in pixels: the device's screen alone. */
+  /** PNG size in pixels: the device's screen alone, or a fragment's crop. */
   width: number;
   height: number;
+  /** A fragment capture: the capture whose screen it is cut from. */
+  fragmentOf?: string;
+  /** A fragment capture: where it was cut from on that screen, as shares (0 to 1) of the screen. */
+  screenRect?: {x: number; y: number; width: number; height: number};
   alt: string;
   caption: string;
   walkthroughStep: string;

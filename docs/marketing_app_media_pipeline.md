@@ -114,6 +114,41 @@ Marketing styling imports the shared React web token layer from
 `packages/web-config/styles/catch-web.css`; the generated token CSS itself is
 owned by `node tool/design_tokens.mjs`.
 
+### Fragment captures
+
+A fragment is one real widget cut out of another app capture's screen, such
+as the Chatty pod card from the pace-pods screen. A playbook hero floats up to
+three over its own screenshot (`fragments` in the hero section, which replaced
+the hand-typed `chip` card on 21 Nov 2026: a drawn card's numbers disagreed
+with the screen beside it). Its manifest record has device `fragment-phone`
+and `fragmentOf`, the id of the `generic-phone` app capture it is cut from.
+
+Its catalog entry (`entries/<catalog id>.dart`, as for any marketing capture)
+reuses that screen entry's `builder` and `providerOverrides` and names the
+widget with `fragment: CaptureFragment(find: ...)`; the exporter refuses an
+entry that does neither, so a fragment always shows the screen's own synthetic
+data. `CaptureDevice.fragmentPhone` is the generic phone's screen, safe areas
+and status bar, so the widget lays out exactly as in the screen capture. The
+runner scrolls the widget into view only if it is below the fold, then crops
+the 2x PNG to the widget's box (plus any `padding` of screen ground) and fails
+if the widget is not wholly on screen. It writes where the crop sits on the
+screen (`x`, `y`, `width`, `height` as shares of 0 to 1) beside the PNG; the
+exporter copies the crop to `sourcePath` (there is no frame) and records that
+rect in its provenance, checked against the PNG's size. A fragment renders in
+its screen's process (see CI Behavior), so it costs its own test, not a whole
+render.
+
+A fragment's size follows its widget, so provenance accepts any PNG within the
+screen (`captureSizeProblem` in `capture_devices.mjs`) and the website record
+takes `width` and `height` from the PNG, adding `fragmentOf` and
+`screenRect` (the rect from its provenance). The hero lifts each cut-out in
+place: over the spot it was cut from on the phone frame's screen box, a little
+larger and raised, so nothing shows twice. A playbook page test keeps every
+hero's cut-outs clear of the screen header and of each other, and keeps the two
+shown below 840px from straddling the band's crop. A fragment is active or paused, never pending: there is no
+placeholder of an unknown size. The playbook renderer shows a hero's
+fragments only when their `fragmentOf` is the hero's own capture slot.
+
 ## Website Safari Captures
 
 A `web-capture` record names `story.file`, `story.id`, the website `routeId`
@@ -196,7 +231,12 @@ list of files the hash covers (`inputFiles`, deflated), so a later check
 rehashes exactly those files with no Flutter. The list comes from the render
 itself: the exporter renders each app capture alone with
 `flutter test --coverage`, and only a complete, successful render of that
-capture writes it. Solo renders pass the capture id in the environment rather
+capture writes it. A fragment capture renders in its screen's process instead
+(the screen, when selected, then its fragments, on the screen's device): that
+family shares one list, a superset of each member's. An unframed screen
+(`generic-phone`, `generic-tablet`, `desktop-browser`) is copied from the
+render with no `dart run` framing step; only `iphone-17-pro` is still framed.
+Solo renders pass the capture id in the environment rather
 than as a define, so they share one compiled test. It holds:
 
 - the shared harness files: the capture runner and test config,

@@ -10,6 +10,9 @@ import {loadPlaybookPage, resolvePlaybookPage} from "./playbookPages";
 import {PlaybookPage} from "./PlaybookPage";
 import {playbookStructuredData} from "./playbookStructuredData";
 import {playbookTryItTool} from "../tryIt/tryItModel";
+import fs from "node:fs";
+import path from "node:path";
+import type {CaptureSlots} from "../../shared/media/captureSlot";
 
 vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
 
@@ -20,6 +23,11 @@ afterEach(() => {
 
 const page = (await loadPlaybookPage(resolvePlaybookPage("/host/run-clubs/")!))!;
 const captures = {};
+// The website's capture records, as the app shell bundles them.
+const marketingCaptures: CaptureSlots = Object.fromEntries(
+  (JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../public/assets/app-screenshots/manifest.json"), "utf8")) as
+    {captures: CaptureSlots[string][]}).captures.map((capture) => [capture.id, capture]),
+);
 
 describe("playbook page", () => {
   it("draws the run-clubs page: the host header with its breadcrumb, one h1, each band in order, and the site footer", () => {
@@ -32,6 +40,21 @@ describe("playbook page", () => {
     }
     expect(screen.getByRole("navigation", {name: /breadcrumb/iu})).toBeTruthy();
     expect(screen.getByRole("contentinfo")).toBeTruthy();
+  });
+
+  it("floats the hero's real cut-outs over its screen, with no caption under the phone", () => {
+    render(<PlaybookPage captures={marketingCaptures} page={page} />);
+    const hero = document.getElementById("top")!;
+    expect(hero.querySelector("figcaption")).toBeNull();
+    expect(within(hero).queryByText(marketingCaptures["host-formats-pods"].caption)).toBeNull();
+    const cutouts = [...hero.querySelectorAll("[aria-hidden='true'] li img")].map((image) => image.getAttribute("src"));
+    expect(cutouts).toEqual(["host-formats-pods-chatty", "host-formats-pods-needs-pod"].map((id) => marketingCaptures[id].webPath));
+  });
+
+  it("draws no cut-out that is not a fragment of the hero's own screen", () => {
+    const stray = {...marketingCaptures, "host-formats-pods-chatty": {...marketingCaptures["host-formats-pods-chatty"], fragmentOf: "host-people"}};
+    render(<PlaybookPage captures={stray} page={page} />);
+    expect(document.getElementById("top")!.querySelectorAll("[aria-hidden='true'] li img")).toHaveLength(1);
   });
 
   it("sends the trial to /host/start/, and WhatsApp to a typed chat in a new tab", () => {
