@@ -9,11 +9,9 @@ type CatchItem = Extract<EventPageData["item"], {source: "catch"}>;
 /**
  * The event page for an event without an eventPublicPage read model,
  * arranged from its organizer listing as functions/src/publicPages/
- * pageModel.ts arranges the read model. Two readers need it: the Next server
- * until every environment is backfilled (assembleEventDetailFromSources;
- * functions/scripts/backfill-public-pages.cjs --check), and the static Vite
- * rollback build, which has only listings. Neither knows the organizer's
- * other events, so "More from" stays empty.
+ * pageModel.ts arranges the read model, for the static Vite rollback build,
+ * which has only listings. It does not know the organizer's other events, so
+ * "More from" stays empty.
  */
 export function eventPageFromListing(listing: HostListing, eventId: string): EventPageData | null {
   const catchEvent = listing.catchEvents?.find((event) => event.id === eventId);

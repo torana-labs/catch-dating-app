@@ -4,11 +4,11 @@ import {matchesJsonSchema} from "./jsonSchema";
 import type {HostListing} from "./publicOrganizer";
 
 /**
- * The public Catch event display projection. This mirrors
- * projectLivePublicCatchEvent in
- * website/src/features/organizers/publicCatchEventProjection.ts; the shared
- * parity fixtures in contracts/fixtures/public_pages hold both to the same
- * output. Booking rechecks live terms on the server.
+ * The public Catch event display projection. The website's live event list
+ * runs projectLivePublicCatchEvent
+ * (website/src/features/organizers/publicCatchEventProjection.ts) on
+ * publicEvents copies; the golden fixtures in contracts/fixtures/public_pages
+ * hold both to the same output. Booking rechecks live terms on the server.
  */
 export type PublicCatchEvent = NonNullable<HostListing["catchEvents"]>[number];
 export interface LivePublicCatchEvent {

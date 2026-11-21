@@ -27,7 +27,10 @@ Packaging replaces old runtime chunks rather than accumulating earlier builds.
 For isolated runtime acceptance, start the Firestore emulator on loopback port
 8765 with project `demo-catch-nextjs`. Start the packaged server with
 `FIRESTORE_EMULATOR_HOST=127.0.0.1:8765` and
-`CATCH_PUBLIC_FIRESTORE_PROJECT=demo-catch-nextjs`, then run:
+`CATCH_PUBLIC_FIRESTORE_PROJECT=demo-catch-nextjs`. The website reads only the
+public page read models, so after seeding an organizer the runs rebuild its
+pages with the Functions rebuild (`scripts/next/publicPagesEmulator.mjs`):
+build Functions first with `npm --prefix functions run build`. Then run:
 
 ```sh
 FIRESTORE_EMULATOR_HOST=127.0.0.1:8765 npm run test:next-runtime --workspace catch-marketing

@@ -29,9 +29,10 @@ function matchesFormat(value: string, format: unknown): boolean {
 }
 
 /**
- * The bounded draft-07 check the website reader applies to optional public
- * event fields (website/src/shared/contracts/jsonSchema.ts). The read model
- * uses the same check so both decide identically which optional fields show.
+ * The bounded draft-07 check the website's live event list applies to
+ * optional public event fields (website/src/shared/contracts/jsonSchema.ts).
+ * The read model uses the same check so both decide identically which
+ * optional fields show.
  */
 export function matchesJsonSchema(
   value: unknown,

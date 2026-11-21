@@ -14,11 +14,12 @@ import {
 } from "./publicReadPolicy";
 
 /**
- * The public organizer listing. This mirrors projectPublicOrganizer in
- * website/src/server/publicOrganizerProjection.ts and the projector behind
- * it (website/scripts/next/organizerProjection.mjs and
- * website/scripts/organizerListingReadiness.mjs). The shared parity fixtures
- * in contracts/fixtures/public_pages hold both to the same output.
+ * The public organizer listing every public page shows. The website reads it
+ * from the page read models and no longer projects organizers itself. It
+ * follows the build-time projector behind the website's generated listings
+ * (website/scripts/next/organizerProjection.mjs and
+ * website/scripts/organizerListingReadiness.mjs); the golden fixtures in
+ * contracts/fixtures/public_pages and projections.test.ts hold its output.
  */
 export type HostListing = WebsiteHostListingProjection;
 type Authority = HostListing["authority"];
