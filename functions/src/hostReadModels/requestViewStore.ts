@@ -48,10 +48,11 @@ export function requestViewEventFacts(
 }
 
 /**
- * Whether the host can offer this event's waitlisted people a spot, as
- * listOrganizerRequests decides it. An event whose stored policy fails its
- * contract offers nobody (and is logged) rather than blocking a trigger
- * retry loop; the nightly data validation reports the document.
+ * Whether the host can offer this event's waitlisted people a spot, as the
+ * retired listOrganizerRequests callable decided it. An event whose stored
+ * policy fails its contract offers nobody (and is logged) rather than
+ * blocking a trigger retry loop; the nightly data validation reports the
+ * document.
  * @param {EventDocument} event The event.
  * @return {boolean} Whether its waitlist is offerable.
  */
@@ -91,8 +92,8 @@ export function requestViewParticipationFacts(
  * null when the view should not exist: no event or owner, an event that is
  * not active or has ended, or nobody waiting. Join requests are the
  * participations awaiting host approval; the waitlist is numbered among the
- * rows the host can offer a spot, exactly as listOrganizerRequests numbers
- * them. Blocks are not applied: they depend on who reads.
+ * rows the host can offer a spot, exactly as the retired listOrganizerRequests
+ * callable numbered them. Blocks are not applied: they depend on who reads.
  * Read only, so the backfill can call it too.
  * @param {Db} db Firestore.
  * @param {Tx} tx The transaction to read in.
@@ -168,7 +169,8 @@ export async function hostEventRequestView(db: Db, tx: Tx, eventId: string,
 
 /**
  * Events each person came to with this organizer, from the contact summary
- * of the first contact linked to them (as listOrganizerRequests reads it).
+ * of the first contact linked to them (as the retired listOrganizerRequests
+ * callable read it).
  * @param {Db} db Firestore.
  * @param {Tx} tx The transaction to read in.
  * @param {string} organizerId The organizer.

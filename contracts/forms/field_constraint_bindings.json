@@ -327,26 +327,19 @@
       "status",
       "vehicleClasses.items.capabilities.items"
     ],
-    "programArrivalsRosterCallableResponse": [
-      "rows.items.curbSource",
-      "rows.items.flightStatus",
-      "rows.items.readiness",
-      "rows.items.unavailableReason"
-    ],
-    "programHotelInboundCallableResponse": [
-      "expectedLegs.items.readiness",
-      "trips.items.manifestSource"
-    ],
-    "programStaffListCallableResponse": [
-      "members.items.status"
+    "programArrivalViewDocument": [
+      "curbSource",
+      "flightStatus",
+      "readiness",
+      "unavailableReason"
     ],
     "programTransportPlanCallableResponse": [
       "groups.items.readiness",
       "unassigned.items.reason"
     ],
-    "programTripListCallableResponse": [
-      "trips.items.manifestSource",
-      "trips.items.status"
+    "programTripViewDocument": [
+      "manifestSource",
+      "status"
     ],
     "reassignEventAssistanceCheckpointReporterCallablePayload": [
       "command.payload.responsibleOperatorId"

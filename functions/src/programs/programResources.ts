@@ -39,12 +39,8 @@ import type {UpsertProgramHotelCallablePayload} from
   "../shared/generated/upsertProgramHotelCallablePayload";
 import type {UpsertTransportVendorCallablePayload} from
   "../shared/generated/upsertTransportVendorCallablePayload";
-import type {ListTransportVendorsCallablePayload} from
-  "../shared/generated/listTransportVendorsCallablePayload";
 import type {ProgramMutationCallableResponse} from
   "../shared/generated/programMutationCallableResponse";
-import type {TransportVendorListCallableResponse} from
-  "../shared/generated/transportVendorListCallableResponse";
 import {
   validateUpsertProgramFunctionCallablePayload,
 } from "../shared/generated/validators/upsertProgramFunctionInput";
@@ -57,9 +53,6 @@ import {
 import {
   validateUpsertTransportVendorCallablePayload,
 } from "../shared/generated/validators/upsertTransportVendorInput";
-import {
-  validateListTransportVendorsCallablePayload,
-} from "../shared/generated/validators/listTransportVendorsInput";
 
 interface ResourceDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -284,57 +277,6 @@ export async function upsertTransportVendorHandler(
     alreadyApplied: false};
 }
 
-export async function listTransportVendorsHandler(
-  request: CallableRequest<unknown>,
-  deps: ResourceDeps = defaultDeps
-): Promise<TransportVendorListCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<ListTransportVendorsCallablePayload>(
-    request, validateListTransportVendorsCallablePayload, normalizePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listTransportVendors", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  if (data.programId) {
-    // Dispatchers and coordinators may resolve bound vendors for a program.
-    const access = await requireProgramAccess({
-      db, programId: data.programId, actorUid, now: deps.now(),
-    });
-    requireProgramDuty(access, "transportDispatcher");
-    if (access.program.organizerId !== data.organizerId) {
-      throw new HttpsError("permission-denied",
-        "This program belongs to a different organizer.");
-    }
-  } else {
-    await requireOrganizerManager({
-      db, organizerId: data.organizerId, actorUid,
-    });
-  }
-  let query: FirebaseFirestore.Query = db.collection("transportVendors")
-    .where("organizerId", "==", data.organizerId)
-    .where("active", "==", true);
-  if (data.programId) {
-    query = query.where("programIds", "array-contains", data.programId);
-  }
-  const snap = await query.limit(101).get();
-  if (snap.size > 100) {
-    throw new HttpsError("resource-exhausted",
-      "This vendor inventory exceeds its 100-record limit.");
-  }
-  return {
-    vendors: snap.docs.map((doc) => {
-      const vendor = doc.data() as TransportVendorDocument;
-      return {
-        vendorId: doc.id,
-        name: vendor.name,
-        active: vendor.active,
-        boundToProgram: data.programId ?
-          vendor.programIds.includes(data.programId) : false,
-      };
-    }),
-  };
-}
-
 async function runUpsert(
   db: FirebaseFirestore.Firestore,
   ref: FirebaseFirestore.DocumentReference,
@@ -400,8 +342,4 @@ export const upsertProgramHotel = onCall(
 export const upsertTransportVendor = onCall(
   appCheckCallableOptionsWithLimits(resourceCallableLimits),
   (request) => upsertTransportVendorHandler(request)
-);
-export const listTransportVendors = onCall(
-  appCheckCallableOptionsWithLimits(resourceCallableLimits),
-  (request) => listTransportVendorsHandler(request)
 );

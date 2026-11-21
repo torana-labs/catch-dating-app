@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
-  commitEventOffersHandler, getEventOfferHandler, listEventOffersHandler,
+  commitEventOffersHandler,
   mutateEventOfferHandler, OfferCallableDependencies,
   previewEventOffersHandler, prepareEventOfferHandoffHandler,
   configureEventOfferPreferencesHandler,
@@ -40,7 +40,7 @@ function offer(): EventOffer {
 function fixture() {
   const actions: string[] = [];
   let authorized = true;
-  let saved = offer();
+  const saved = offer();
   const deps: OfferCallableDependencies = {
     firestore: () => ({}) as FirebaseFirestore.Firestore,
     checkRateLimit: async (_db, uid, action) => {
@@ -59,12 +59,10 @@ function fixture() {
       eventPaymentTerms: async () => null,
       eventPreferences: async () => null,
       offer: async () => saved,
-      listOffers: async () => [saved],
     } as unknown as OfferTransaction)}),
   };
   return {deps, actions,
-    setAuthorized: (value: boolean) => authorized = value,
-    setOffer: (value: EventOffer) => saved = value};
+    setAuthorized: (value: boolean) => authorized = value};
 }
 
 test("all offer endpoints require auth and exact input before database access",
@@ -74,7 +72,7 @@ test("all offer endpoints require auth and exact input before database access",
       throw new Error("Unexpected database access");
     };
     for (const handler of [previewEventOffersHandler, commitEventOffersHandler,
-      mutateEventOfferHandler, getEventOfferHandler, listEventOffersHandler,
+      mutateEventOfferHandler,
       prepareEventOfferHandoffHandler,
       configureEventOfferPreferencesHandler,
       previewEventOfferPreferencesHandler]) {
@@ -85,38 +83,6 @@ test("all offer endpoints require auth and exact input before database access",
     }
     assert.equal(h.actions.length, 0);
   });
-
-test("server-owned payload flags are rejected before any access", async () => {
-  const h = fixture();
-  await assert.rejects(getEventOfferHandler(request({...scope,
-    integrationReady: true}), h.deps), code("invalid-argument"));
-  assert.equal(h.actions.length, 0);
-});
-
-test("authorized reads validate complete server outputs", async () => {
-  const h = fixture();
-  const detail = await getEventOfferHandler(request(scope), h.deps);
-  assert.equal(detail.offer.paymentSnapshot.expectedAmountMinor, 0);
-  assert.equal(detail.effectiveStatus, "draft");
-  const page = await listEventOffersHandler(request({organizerId: "org1",
-    eventId: "event1", limit: 1}), h.deps);
-  assert.equal(page.items.length, 1);
-  assert.equal(page.items[0].contactId, "contact1");
-  assert.equal(page.nextCursor, null);
-  assert.deepEqual(h.actions, ["getEventOffer", "listEventOffers"]);
-  h.setOffer({...offer(), privateSecret: "never"} as EventOffer);
-  await assert.rejects(getEventOfferHandler(request(scope), h.deps),
-    code("internal"));
-});
-
-test("manager denial maps to a normalized permission error", async () => {
-  const h = fixture();
-  h.setAuthorized(false);
-  await assert.rejects(getEventOfferHandler(request(scope), h.deps),
-    code("permission-denied"));
-  await assert.rejects(listEventOffersHandler(request({organizerId: "org1",
-    eventId: "event1"}), h.deps), code("permission-denied"));
-});
 
 test("manual evidence commands cannot inject amount or provider-paid state",
   async () => {

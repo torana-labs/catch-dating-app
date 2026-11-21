@@ -115,7 +115,7 @@
         {"time": "8:00 PM", "title": "The night runs itself", "body": "Your quizmaster runs rounds and scores from a tablet. Your team runs the bar."},
         {"time": "Next morning", "title": "See who’ll come back", "body": "Photos and results go out, guests follow your venue, and you see which link filled the room."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-venues"}
     },
     {
       "type": "split",
@@ -206,7 +206,7 @@
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
       "leadForm": {"id": "venue_setup_guide", "requestKind": "guide", "format": "venues", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "media": {"kind": "capture", "slot": "host-create-venues"}
     }
   ]
 }

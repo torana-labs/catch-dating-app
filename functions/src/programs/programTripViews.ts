@@ -20,7 +20,8 @@ export const programHotelInboundViewsCollection = "programHotelInboundViews";
 export const noHotelKey = "~";
 
 /**
- * One trip's row, exactly as listProgramTrips returns it: the vehicle, plate,
+ * One trip's row, exactly as the retired listProgramTrips callable
+ * returned it: the vehicle, plate,
  * vendor name, status, times, passenger count and the manifest's guest names
  * (from the recorded dispatch snapshot when there is one), plus the pickup
  * and hotel keys rules match. The trip's notes, rate, driver and account ids
@@ -61,7 +62,8 @@ export function programTripView(tripId: string,
 
 /**
  * The hotel desk's expected-guest row of one inbound journey that is still
- * expected or ready, exactly as getProgramHotelInbound returns it.
+ * expected or ready, exactly as the retired getProgramHotelInbound
+ * callable returned it.
  * @param {string} legId The leg document id.
  * @param {FirebaseFirestore.DocumentData|undefined} data The leg.
  * @param {OrganizerProgramDocument["transportSettings"]|undefined} settings

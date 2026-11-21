@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_send_summaries.schema.json",
   "title": "HostSendSummaryDocument",
-  "description": "Server-maintained manager read view of one organizer Send for the Host Sends history and the automation message picker: a WhatsApp campaign, an event announcement or a follower update, with exactly the row listOrganizerCampaigns returns for it. The view id is the kind and the source id (campaign_{campaignId}, announcement_{broadcastId}, followerUpdate_{postId}). Written by triggers on organizerCampaigns, organizerBroadcastSummaries, organizer posts, organizerPostDeliveryOperations, and on template and saved audience renames. A follower update's WhatsApp leg campaign has no row of its own. Never message bodies, recipients, contact ids or delivery evidence, and never identity, permission or mutation authority.",
+  "description": "Server-maintained manager read view of one organizer Send for the Host Sends history and the automation message picker: a WhatsApp campaign, an event announcement or a follower update, with exactly the row the retired listOrganizerCampaigns callable returned for it. The view id is the kind and the source id (campaign_{campaignId}, announcement_{broadcastId}, followerUpdate_{postId}). Written by triggers on organizerCampaigns, organizerBroadcastSummaries, organizer posts, organizerPostDeliveryOperations, and on template and saved audience renames. A follower update's WhatsApp leg campaign has no row of its own. Never message bodies, recipients, contact ids or delivery evidence, and never identity, permission or mutation authority.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostSendSummaries",

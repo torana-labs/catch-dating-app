@@ -10,8 +10,13 @@
 // aiFallbackPolicies/current, which can also switch the fallback off, but
 // never on: an override only lowers or raises the numbers below.
 
-/** The only model the reviewed price book prices for this path. */
-export const AI_FALLBACK_MODEL_ID = "claude-opus-5-5";
+/**
+ * The model for this path, priced in the reviewed price book. Claude Haiku
+ * 5.5 since 21 Nov 2026 (owner's choice): on a 22-case comparison of these
+ * prompts it read events, organisers, forms and column maps as well as
+ * Claude Opus 5.5, faster and at about 1/35 of the cost per read.
+ */
+export const AI_FALLBACK_MODEL_ID = "claude-haiku-5-5";
 /** No override may raise the monthly cap above US$1,000. */
 export const AI_FALLBACK_MAX_MONTHLY_CAP_MICROS = 1_000_000_000;
 export const AI_FALLBACK_MAX_DAILY_READS = 100;

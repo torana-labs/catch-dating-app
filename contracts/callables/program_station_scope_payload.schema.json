@@ -2,11 +2,10 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/program_station_scope_payload.schema.json",
   "title": "ProgramStationScopeCallablePayload",
-  "description": "Pickup-station scoped program read shared by the arrivals roster and transport plan callables.",
+  "description": "Pickup-station scoped program read for the transport plan callable. The arrivals roster callable that shared it is retired; the arrivals roster is the programArrivalViews read model.",
   "type": "object",
   "additionalProperties": false,
   "x-callable-aliases": [
-    "getProgramArrivalsRoster",
     "getProgramTransportPlan"
   ],
   "required": [

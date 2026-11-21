@@ -30,24 +30,12 @@ import {updatePrivateEventPreferences as updatePreferences} from
 import {validateUpdatePrivateEventPreferencesCallablePayload} from
   "../../shared/generated/validators/updatePrivateEventPreferencesInput";
 import {assertPrivateEventBasicsEditable} from "./commitments";
-import {listPrivateEventSetups as listSetups} from "./listPrivateEventSetups";
-import {validateListPrivateEventSetupsCallablePayload} from
-  "../../shared/generated/validators/listPrivateEventSetupsInput";
-import {validatePrivateEventSetupListCallableResponse} from
-  "../../shared/generated/validators/privateEventSetupListOutput";
 
 import {updatePrivateEventDetails as updateDetails} from "./details";
 import {validateUpdatePrivateEventDetailsCallablePayload} from
   "../../shared/generated/validators/updatePrivateEventDetailsInput";
 import {validatePrivateEventSetupMutationCallableResponse} from
   "../../shared/generated/validators/privateEventSetupMutationOutput";
-
-import {listOfferEventTargets as listOfferTargets} from
-  "./listOfferEventTargets";
-import {validateListOfferEventTargetsCallablePayload} from
-  "../../shared/generated/validators/listOfferEventTargetsInput";
-import {validateOfferEventTargetListCallableResponse} from
-  "../../shared/generated/validators/offerEventTargetListOutput";
 
 import {setEventPublication as setPublication} from "./publication";
 import {armDefaultMomentsOnPublish} from "./publishMoments";
@@ -147,27 +135,6 @@ export async function updatePrivateEventPreferencesHandler(
 export const updatePrivateEventPreferences = onCall(appCheckCallableOptions,
   (request) => updatePrivateEventPreferencesHandler(request));
 
-/** Bounded manager list that also works for basics-only private events. */
-export async function listPrivateEventSetupsHandler(
-  request: CallableRequest<unknown>, deps = defaultDeps
-) {
-  const actorUid = requireAuth(request);
-  const command = validateCallableWithAjv(request,
-    validateListPrivateEventSetupsCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listPrivateEventSetups", {
-    maxRequests: 30, windowMs: 60 * 1000,
-  });
-  const result = await listSetups({actorUid, command, db});
-  if (!validatePrivateEventSetupListCallableResponse(result)) {
-    throw new HttpsError("internal", "Invalid private event list response.");
-  }
-  return result;
-}
-
-export const listPrivateEventSetups = onCall(appCheckCallableOptions,
-  (request) => listPrivateEventSetupsHandler(request));
-
 /** Adds optional details without publishing or activating paid admission. */
 export async function updatePrivateEventDetailsHandler(
   request: CallableRequest<unknown>, deps = defaultDeps
@@ -188,26 +155,6 @@ export async function updatePrivateEventDetailsHandler(
 }
 export const updatePrivateEventDetails = onCall(appCheckCallableOptions,
   (request) => updatePrivateEventDetailsHandler(request));
-
-/** Lists owned upcoming event choices; selecting never authorizes admission. */
-export async function listOfferEventTargetsHandler(
-  request: CallableRequest<unknown>, deps = defaultDeps
-) {
-  const actorUid = requireAuth(request);
-  const command = validateCallableWithAjv(request,
-    validateListOfferEventTargetsCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOfferEventTargets", {
-    maxRequests: 30, windowMs: 60 * 1000,
-  });
-  const result = await listOfferTargets({actorUid, command, db});
-  if (!validateOfferEventTargetListCallableResponse(result)) {
-    throw new HttpsError("internal", "Invalid event target list response.");
-  }
-  return result;
-}
-export const listOfferEventTargets = onCall(appCheckCallableOptions,
-  (request) => listOfferEventTargetsHandler(request));
 
 /** Changes visibility; registration and guest state stay separate. */
 export async function setEventPublicationHandler(

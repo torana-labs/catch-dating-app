@@ -52,7 +52,8 @@ export interface ArrivalContext {
 /**
  * The arrivals row of one inbound journey, or null when it is not on the
  * roster: not inbound, not expected, ready or disrupted, or of another
- * organizer. The fields are exactly those getProgramArrivalsRoster returns,
+ * organizer. The fields are exactly those the retired
+ * getProgramArrivalsRoster callable returned,
  * plus the claimant's account id and the pickup and hotel keys rules match.
  * @param {string} legId The leg document id.
  * @param {FirebaseFirestore.DocumentData|undefined} data The leg.
@@ -107,7 +108,8 @@ export interface DepartureContext {
 
 /**
  * The departures row of one outbound journey, or null when it is not on a
- * hotel's desk. Exactly the row getProgramDeparturesRoster returns.
+ * hotel's desk. Exactly the row the retired getProgramDeparturesRoster
+ * callable returned.
  * @param {string} legId The leg document id.
  * @param {FirebaseFirestore.DocumentData|undefined} data The leg.
  * @param {DepartureContext} context The documents the row reads.

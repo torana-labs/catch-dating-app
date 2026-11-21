@@ -587,12 +587,12 @@ test("Anthropic: oauth_bearer sends a federation token instead of x-api-key; unk
   assert.deepEqual(ANTHROPIC_MODELS.anthropic["claude-opus-5-5"].capabilities, ["json_schema"]);
 });
 
-test("Anthropic: Claude Opus 5.5 omits disabled thinking, asks for low effort and skips thinking blocks", async () => {
+for (const adaptiveModel of ["claude-opus-5-5", "claude-haiku-5-5"]) test(`Anthropic: ${adaptiveModel} omits disabled thinking, asks for low effort and skips thinking blocks`, async () => {
   const p = nativeProviders.anthropic;
-  const opusWire = (overrides = {}) => p.wire({model: "claude-opus-5-5",
+  const adaptiveWire = (overrides = {}) => p.wire({model: adaptiveModel,
     content: [{type: "thinking", thinking: "", signature: "synthetic"}, ...p.wire().content], ...overrides});
-  const f = fixture({modelId: "claude-opus-5-5"}, p.create, opusWire);
-  const result = await f.provider.run(nativeRequest("anthropic", {modelId: "claude-opus-5-5"}));
+  const f = fixture({modelId: adaptiveModel}, p.create, adaptiveWire);
+  const result = await f.provider.run(nativeRequest("anthropic", {modelId: adaptiveModel}));
   const body = JSON.parse(f.calls[0].options.body);
   assert.equal(body.thinking, undefined);
   assert.equal(body.temperature, undefined);
@@ -600,12 +600,12 @@ test("Anthropic: Claude Opus 5.5 omits disabled thinking, asks for low effort an
   assert.deepEqual(body.output_config.format, {type: "json_schema", schema: nativeSchema});
   assert.deepEqual(result.output, output);
   for (const bad of [
-    opusWire({content: [{type: "thinking", thinking: ""}]}),
-    opusWire({content: [{type: "thinking", thinking: ""}, ...p.wire().content, ...p.wire().content]}),
-    opusWire({content: [{type: "thinking", thinking: ""}, {type: "tool_use", input: "synthetic private tool"}]}),
+    adaptiveWire({content: [{type: "thinking", thinking: ""}]}),
+    adaptiveWire({content: [{type: "thinking", thinking: ""}, ...p.wire().content, ...p.wire().content]}),
+    adaptiveWire({content: [{type: "thinking", thinking: ""}, {type: "tool_use", input: "synthetic private tool"}]}),
   ]) {
-    const g = fixture({modelId: "claude-opus-5-5"}, p.create, () => bad);
-    await assert.rejects(g.provider.run(nativeRequest("anthropic", {modelId: "claude-opus-5-5"})),
+    const g = fixture({modelId: adaptiveModel}, p.create, () => bad);
+    await assert.rejects(g.provider.run(nativeRequest("anthropic", {modelId: adaptiveModel})),
       {code: "MODEL_PROVIDER_RESULT_INVALID"});
   }
 });

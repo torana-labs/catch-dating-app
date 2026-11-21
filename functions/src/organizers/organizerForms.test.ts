@@ -1,74 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
-import {CallableRequest} from "firebase-functions/v2/https";
-import {listOrganizerFormsHandler, validateOrganizerFormDefinition} from
-  "./organizerForms";
+import {validateOrganizerFormDefinition} from "./organizerForms";
 import {formAnswerDestination, requireFreeFormSubmission} from
   "./organizerFormCapabilities";
-import {AudienceTestStore} from "./organizerAudienceTestStore";
 
 type Definition = Parameters<typeof validateOrganizerFormDefinition>[0];
 type Question = Definition["sections"][number]["questions"][number];
-
-test("form list cursor binds filters and timestamp ties", async () => {
-  const timestamp = admin.firestore.Timestamp.fromMillis(1000);
-  const form = (title: string, status: "published" | "paused") => ({
-    organizerId: "org-1", title, description: null, purpose: "survey",
-    status, templateId: "blank", publicFormId: "public-form-123456789012",
-    defaultTargetKind: "organizer", defaultTargetId: null,
-    activeVersionId: "version-1", draftRevision: 1, publishedVersion: 1,
-    submittedResponseCount: 0, updatedAt: timestamp, publishedAt: timestamp,
-    lastResponseAt: null,
-  });
-  const store = new AudienceTestStore({
-    "organizers/org-1": {ownerUserId: "host-1", hostUserIds: ["host-1"],
-      hostProfiles: []},
-    "organizers/org-2": {ownerUserId: "host-1", hostUserIds: ["host-1"],
-      hostProfiles: []},
-    "organizerForms/form-a": form("Delhi A", "paused"),
-    "organizerForms/form-b": form("Delhi B", "published"),
-    "organizerForms/form-c": {...form("Mumbai C", "published"),
-      updatedAt: admin.firestore.Timestamp.fromMillis(900)},
-  });
-  const deps = {firestore: () => store.asFirestore(),
-    checkRateLimit: async () => undefined, timestamp: () => timestamp,
-    publicFormId: () => "public-form-123456789012"};
-  const payload = {organizerId: "org-1", statuses: ["paused", "published"],
-    purposes: ["survey", "feedback"], query: " DELHI ", cursor: null,
-    limit: 1};
-  const list = (data: object) => listOrganizerFormsHandler({auth: {
-    uid: "host-1", token: {}}, data} as CallableRequest<unknown>, deps);
-  const first = await list(payload);
-  assert.deepEqual(first.items.map((item) => item.formId), ["form-b"]);
-  assert.ok(first.nextCursor);
-  const second = await list({...payload,
-    statuses: ["published", "paused"],
-    purposes: ["feedback", "survey"], query: "delhi",
-    cursor: first.nextCursor});
-  assert.deepEqual(second.items.map((item) => item.formId), ["form-a"]);
-  const resized = await list({...payload, query: "delhi", limit: 2,
-    cursor: first.nextCursor});
-  assert.deepEqual(resized.items.map((item) => item.formId), ["form-a"]);
-  assert.ok(second.nextCursor,
-    "the remaining nonmatching row still needs a bounded continuation");
-  const exhausted = await list({...payload, query: "delhi",
-    cursor: second.nextCursor});
-  assert.deepEqual(exhausted.items, []);
-  assert.equal(exhausted.nextCursor, null);
-  for (const change of [
-    {query: "Mumbai"}, {statuses: ["published"]},
-    {purposes: ["feedback"]}, {organizerId: "org-2"},
-  ]) {
-    await assert.rejects(list({...payload, ...change,
-      cursor: first.nextCursor}), {code: "invalid-argument",
-      message: /Refresh to continue/u});
-  }
-  const legacy = Buffer.from(JSON.stringify({updatedAtMillis: 1000,
-    formId: "form-b"})).toString("base64url");
-  await assert.rejects(list({...payload, cursor: legacy}),
-    {code: "invalid-argument", message: /Refresh to continue/u});
-});
 
 test("form validator accepts a minimal publishable survey", () => {
   assert.deepEqual(validateOrganizerFormDefinition(definition()), []);

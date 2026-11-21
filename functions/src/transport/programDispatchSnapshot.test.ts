@@ -8,8 +8,6 @@ import type {TransportTripDocument}
   from "../shared/generated/firestoreAdminTypes";
 import {dispatchProgramTripHandler, markProgramTripArrivedHandler,
   voidProgramTripHandler} from "./programDispatch";
-import {getProgramHotelInboundHandler, listProgramTripsHandler}
-  from "./programTripReads";
 
 const input = {programId: "program-1", pickupPointId: "pp-t3",
   destinationHotelId: "hotel-1", vehicleClassId: "suv",
@@ -24,13 +22,6 @@ const tripDocument = (db: FakeFirestore, id: string) =>
 const isPrecondition = (error: unknown) =>
   error instanceof HttpsError && error.code === "failed-precondition";
 
-class TrackingFirestore extends FakeFirestore {
-  readonly reads: string[] = [];
-  override getDoc(path: string) {
-    this.reads.push(path);
-    return super.getDoc(path);
-  }
-}
 
 test("dispatch captures guest and class facts at recording time", async () => {
   const db = new FakeFirestore(readySeed());
@@ -88,7 +79,7 @@ test("a concurrent name edit is captured at commit", async () => {
 
 test("saved manifests survive changed or deleted source records and replay",
   async () => {
-    const db = new TrackingFirestore(readySeed());
+    const db = new FakeFirestore(readySeed());
     const result = await dispatch(db);
     const snapshot = tripDocument(db, result.tripId).dispatchSnapshot;
     db.docs.delete("programGuests/guest-1");
@@ -98,18 +89,6 @@ test("saved manifests survive changed or deleted source records and replay",
         .transportSettings as object),
       vehicleClasses: [],
     }});
-    db.reads.length = 0;
-    const ledger = await listProgramTripsHandler(request({
-      programId: "program-1"}, "manager-1"), deps(db));
-    const hotel = await getProgramHotelInboundHandler(request({
-      programId: "program-1", hotelId: "hotel-1"}, "hotelier-1"), deps(db));
-    for (const row of [ledger.trips[0], hotel.trips[0]]) {
-      assert.deepEqual(row.guestNames, ["Rohan Sharma"]);
-      assert.equal(row.manifestSource, "dispatchSnapshot");
-      assert.equal(row.vehicleClassLabel, "Innova / SUV");
-    }
-    assert.ok(!db.reads.includes("programGuests/guest-1"));
-    assert.ok(!db.reads.includes("programTravelLegs/leg-1"));
     const replay = await dispatch(db);
     assert.equal(replay.tripId, result.tripId);
     assert.equal(replay.alreadyApplied, true);
@@ -127,40 +106,4 @@ for (const action of [markProgramTripArrivedHandler, voidProgramTripHandler]) {
       reason: "Wrong dispatch"}, "dispatcher-1"), deps(db));
     assert.deepEqual(tripDocument(db, created.tripId).dispatchSnapshot, before);
   });
-}
-
-test("legacy names remain explicitly current and never invent a class label",
-  async () => {
-    const db = new FakeFirestore(readySeed());
-    const result = await dispatch(db);
-    const legacy = {...db.getDoc(`transportTrips/${result.tripId}`)!};
-    delete legacy.dispatchSnapshot;
-    db.setDoc(`transportTrips/${result.tripId}`, legacy);
-    db.updateDoc("programGuests/guest-1", {displayName: "Current name"});
-    const ledger = await listProgramTripsHandler(request({
-      programId: "program-1"}, "manager-1"), deps(db));
-    assert.equal(ledger.trips[0].manifestSource, "currentRecords");
-    assert.deepEqual(ledger.trips[0].guestNames, ["Current name"]);
-    assert.equal(ledger.trips[0].vehicleClassLabel, null);
-  });
-
-for (const corruption of ["null", "empty", "wrong-leg", "count", "class"]) {
-  test(`an invalid ${corruption} snapshot cannot fall back to current names`,
-    async () => {
-      const db = new FakeFirestore(readySeed());
-      const result = await dispatch(db);
-      const snapshot = tripDocument(db, result.tripId).dispatchSnapshot!;
-      const broken = corruption === "null" ? null : {
-        ...snapshot,
-        vehicleClass: corruption === "class" ?
-          {...snapshot.vehicleClass, id: "other"} : snapshot.vehicleClass,
-        manifest: corruption === "empty" ? [] : snapshot.manifest.map((row) =>
-          ({...row, legId: corruption === "wrong-leg" ? "other" : row.legId,
-            passengers: corruption === "count" ? 10 : row.passengers})),
-      };
-      db.updateDoc(`transportTrips/${result.tripId}`,
-        {dispatchSnapshot: broken});
-      await assert.rejects(listProgramTripsHandler(request({
-        programId: "program-1"}, "manager-1"), deps(db)), isPrecondition);
-    });
 }

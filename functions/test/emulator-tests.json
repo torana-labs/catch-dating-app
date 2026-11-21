@@ -119,7 +119,6 @@
   "lib/chats/eventChatProfilesEmulator.test.js",
   "lib/programs/programGuests.emulator.test.js",
   "lib/programs/programStaff.emulator.test.js",
-  "lib/transport/programTripReads.emulator.test.js",
   "lib/memberships/communityMembershipEmulator.test.js",
   "lib/organizers/organizerFormConversions.test.js",
   "lib/events/eventAttendees.test.js",

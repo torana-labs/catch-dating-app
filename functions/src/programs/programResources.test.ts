@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {baseSeed, deps, request, now} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
-import {listTransportVendorsHandler, upsertProgramFunctionHandler,
+import {upsertProgramFunctionHandler,
   upsertProgramHotelHandler, upsertProgramPickupPointHandler,
   upsertTransportVendorHandler} from "./programResources";
 import {createOrganizerProgramHandler} from "./programs";
@@ -141,64 +141,6 @@ test("vendor program removal can clear a stale binding", async () => {
   await vendorEdit(db, {programIds: []});
   assert.deepEqual(db.getDoc("transportVendors/vendor-1")!.programIds, []);
 });
-
-const list = (db: FakeFirestore, patch: object = {}, uid = "dispatcher-1") =>
-  listTransportVendorsHandler(request({organizerId: "org-1",
-    programId: "program-1", ...patch}, uid), deps(db));
-
-test("program authority cannot enumerate another organizer's vendors",
-  async () => {
-    const db = new FakeFirestore(baseSeed());
-    db.setDoc("transportVendors/foreign", {
-      ...db.getDoc("transportVendors/vendor-1"), organizerId: "foreign",
-    });
-    await assert.rejects(list(db, {organizerId: "foreign"}),
-      code("permission-denied"));
-  });
-
-test("unbound and inactive vendors cannot consume the program picker limit",
-  async () => {
-    const db = new FakeFirestore(baseSeed());
-    for (let i = 0; i < 120; i++) {
-      db.setDoc(`transportVendors/unbound-${i}`, {
-        ...db.getDoc("transportVendors/vendor-1"), programIds: ["other"],
-      });
-      db.setDoc(`transportVendors/inactive-${i}`, {
-        ...db.getDoc("transportVendors/vendor-1"), active: false,
-      });
-    }
-    db.setDoc("transportVendors/last-bound", {
-      ...db.getDoc("transportVendors/vendor-1"), name: "Late valid vendor",
-    });
-    const result = await list(db);
-    assert.deepEqual(result.vendors.map((vendor) => vendor.vendorId).sort(),
-      ["last-bound", "vendor-1"]);
-    assert.ok(result.vendors.every((v) => v.boundToProgram && v.active));
-    assert.ok(result.vendors.every((v) => !("phoneE164" in v)));
-  });
-
-test("organizer inventory remains manager-only and includes unbound vendors",
-  async () => {
-    const db = new FakeFirestore(baseSeed());
-    db.setDoc("transportVendors/unbound", {
-      ...db.getDoc("transportVendors/vendor-1"), programIds: [],
-    });
-    const result = await list(db, {programId: undefined}, "manager-1");
-    assert.equal(result.vendors.length, 2);
-    await assert.rejects(list(db, {programId: undefined}),
-      code("permission-denied"));
-  });
-
-test("vendor picker reports overflow instead of presenting an incomplete list",
-  async () => {
-    const db = new FakeFirestore(baseSeed());
-    for (let i = 0; i < 100; i++) {
-      db.setDoc(`transportVendors/active-${i}`, {
-        ...db.getDoc("transportVendors/vendor-1"),
-      });
-    }
-    await assert.rejects(list(db), code("resource-exhausted"));
-  });
 
 test("program creation cannot commit after organizer management is revoked",
   async () => {

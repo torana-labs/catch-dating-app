@@ -7,9 +7,7 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {validateCallableWithAjv} from "../shared/validation";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
-import {
-  programStaffGrantId, programProjectionExpiresAt,
-} from "../shared/programAuthority";
+import {programProjectionExpiresAt} from "../shared/programAuthority";
 import {legTiming} from "./travelLegTiming";
 import {loadArrivalLegContext} from "./programArrivalReads";
 import {
@@ -19,8 +17,6 @@ import {
 } from "./grouping";
 import type {ProgramStationScopeCallablePayload} from
   "../shared/generated/programStationScopeCallablePayload";
-import type {ProgramArrivalsRosterCallableResponse} from
-  "../shared/generated/programArrivalsRosterCallableResponse";
 import type {ProgramTransportPlanCallableResponse} from
   "../shared/generated/programTransportPlanCallableResponse";
 import {
@@ -32,89 +28,6 @@ import {defaultProgramDataDeps} from "../shared/programDataDeps";
 import type {ProgramDataDeps} from "../shared/programDataDeps";
 
 const arrivalsCallableLimits = {timeoutSeconds: 60, maxInstances: 40};
-export async function getProgramArrivalsRosterHandler(
-  request: CallableRequest<unknown>,
-  deps: ProgramDataDeps = defaultProgramDataDeps
-): Promise<ProgramArrivalsRosterCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<ProgramStationScopeCallablePayload>(
-    request, validateProgramStationScopeCallablePayload, normalizePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramArrivalsRoster", {
-    maxRequests: 120, windowMs: 60 * 1000,
-  });
-  const now = deps.now();
-  const stationAccess = await requireStationAccess(
-    db, data.programId, actorUid, now);
-  const {legs, guests, parties, hotels} = await loadArrivalLegContext(
-    db, data.programId, stationAccess, data.pickupPointId ?? null, "roster");
-  const settings = stationAccess.access.program.transportSettings;
-  // Resolve claimant display names through staff grants; never leak uids.
-  const claimantUids = [...new Set(legs.map((leg) => leg.doc.claimedByUid)
-    .filter((uid): uid is string => uid !== null))];
-  const claimantSnaps = await Promise.all(claimantUids.map((uid) =>
-    db.collection("programStaffGrants")
-      .doc(programStaffGrantId(data.programId, uid)).get()));
-  const claimantNames = new Map<string, string>();
-  claimantSnaps.forEach((snap, index) => {
-    const grant = snap.data() as
-      {displayName?: string; programId?: string} | undefined;
-    if (grant && grant.programId === data.programId &&
-        grant.displayName) {
-      claimantNames.set(claimantUids[index], grant.displayName);
-    }
-  });
-  return {
-    programId: data.programId,
-    pickupPointId: data.pickupPointId ?? null,
-    generatedAtMillis: now.toMillis(),
-    accessExpiresAtMillis: programProjectionExpiresAt(stationAccess.access,
-      stationAccess.assignments.filter((duty) => !data.pickupPointId ||
-        duty.pickupPointIds.length === 0 ||
-        duty.pickupPointIds.includes(data.pickupPointId))),
-    rows: legs.map((leg) => {
-      const timing = legTiming(leg.doc, settings);
-      const guest = guests.get(leg.doc.guestId);
-      const party = leg.doc.partyId ? parties.get(leg.doc.partyId) : null;
-      const claimed = leg.doc.claimedByUid;
-      return {
-        legId: leg.id,
-        guestId: leg.doc.guestId,
-        partyId: leg.doc.partyId,
-        guestDisplayName: guest?.displayName ?? "Guest",
-        partyLabel: party?.label ?? null,
-        partyGuestIds: party ? legs.filter((member) =>
-          party.legIds?.includes(member.id))
-          .map((member) => member.doc.guestId) :
-          [leg.doc.guestId],
-        passengers: leg.doc.passengers,
-        luggageUnits: leg.doc.luggageUnits,
-        flightNumber: leg.doc.flightNumber,
-        originIata: leg.doc.originIata,
-        arrivalTerminal: leg.doc.arrivalTerminal,
-        flightStatus: leg.doc.flightStatus,
-        curbAtMillis: timing.kind === "available" ?
-          timing.curbAtMillis : null,
-        curbSource: timing.kind === "available" ? timing.source : null,
-        unavailableReason: timing.kind === "unavailable" ?
-          timing.reason : null,
-        readiness: leg.doc.readiness,
-        claimedByDisplay: claimed ?
-          claimantNames.get(claimed) ?? "Staff" : null,
-        claimedByMe: claimed === actorUid,
-        destinationHotelId: leg.doc.destinationHotelId,
-        destinationLabel: leg.doc.destinationHotelId ?
-          hotels.get(leg.doc.destinationHotelId)?.name ?? "Unknown hotel" :
-          leg.doc.destinationLabel ?? "Unassigned",
-        requiredCapabilities: leg.doc.requiredCapabilities,
-        dedicatedVehicle: leg.doc.dedicatedVehicle,
-        revision: leg.doc.revision,
-      };
-    }),
-    vehicleClasses: settings.vehicleClasses,
-  };
-}
-
 export async function getProgramTransportPlanHandler(
   request: CallableRequest<unknown>,
   deps: ProgramDataDeps = defaultProgramDataDeps
@@ -352,10 +265,6 @@ function normalizePayload(value: unknown): unknown {
   return trimmed;
 }
 
-export const getProgramArrivalsRoster = onCall(
-  appCheckCallableOptionsWithLimits(arrivalsCallableLimits),
-  (request) => getProgramArrivalsRosterHandler(request)
-);
 export const getProgramTransportPlan = onCall(
   appCheckCallableOptionsWithLimits(arrivalsCallableLimits),
   (request) => getProgramTransportPlanHandler(request)

@@ -3109,7 +3109,7 @@ Organizer follower-update delivery uses the same backend-first boundary, but
 its durable retry scheduler is new and must be proved explicitly:
 
 1. Deploy the follower-delivery schemas, TTL policy, index, Firestore rules,
-   `createOrganizerPost`, `listOrganizerCampaigns`, and
+   `createOrganizerPost`, the `hostSendSummaries` triggers, and
    `dispatchPendingOrganizerFollowerUpdates` before releasing the matching Host
    client.
 2. In dev, then production, confirm the callable is reachable and

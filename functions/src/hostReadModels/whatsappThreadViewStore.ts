@@ -15,7 +15,8 @@ export const hostWhatsappThreadViewsCollection = "hostWhatsappThreadViews";
 /**
  * The manager inbox view of one retained WhatsApp thread, or null when the
  * thread is absent, lacks its owner or contact, or its retention has passed.
- * The fields are exactly the summary listOrganizerWhatsappThreads returns,
+ * The fields are exactly the summary the retired listOrganizerWhatsappThreads
+ * callable returned,
  * without the service-window flag that depends on the reader's clock, plus
  * the retention instant. Never the phone hash, the sender connection or the
  * message count.

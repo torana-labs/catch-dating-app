@@ -1430,7 +1430,7 @@
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "The view equals the listOrganizerWhatsappThreads summary without the clock-dependent serviceWindowOpen flag. The host-whatsapp-thread-views copy-forward migration creates views for threads retained before the triggers.",
+        "The view equals the summary the retired listOrganizerWhatsappThreads callable returned, without the clock-dependent serviceWindowOpen flag. The host-whatsapp-thread-views copy-forward migration creates views for threads retained before the triggers.",
         "Account deletion unlinks linkedUid on the views as it does on contacts."
       ]
     },
@@ -1456,7 +1456,7 @@
         "onHostSendSavedAudienceChanged"
       ],
       "migrationNotes": [
-        "row equals what listOrganizerCampaigns returns for the Send. The host-send-summaries copy-forward migration creates rows for Sends recorded before the triggers.",
+        "row equals what the retired listOrganizerCampaigns callable returned for the Send. The host-send-summaries copy-forward migration creates rows for Sends recorded before the triggers.",
         "Approval, dispatch, cancellation and getOrganizerCampaignReport stay callables: the report's revision is their write fence."
       ]
     },
@@ -1481,7 +1481,7 @@
         "onHostRequestViewContactWritten"
       ],
       "migrationNotes": [
-        "rows equal what listOrganizerRequests returns for the event, unfiltered by blocks; readers hide anyone with a block either way. The host-event-request-views copy-forward migration creates views for events that had people waiting before the triggers."
+        "rows equal what the retired listOrganizerRequests callable returned for the event, unfiltered by blocks; readers hide anyone with a block either way. The host-event-request-views copy-forward migration creates views for events that had people waiting before the triggers."
       ]
     },
     {
@@ -1873,7 +1873,6 @@
         "createOrganizerForm",
         "updateOrganizerFormDraft",
         "getOrganizerFormEditor",
-        "listOrganizerForms",
         "validateOrganizerFormDraft",
         "publishOrganizerForm",
         "setOrganizerFormLifecycle",
@@ -2163,11 +2162,9 @@
       "dartModel": "lib/contexts/audience/domain/crm/host_whatsapp_thread.dart",
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "organizer WhatsApp inbox and reply callables",
-      "read": "server only; managers read hostWhatsappThreadViews, and older Host builds the sanitized callable projection",
+      "read": "server only; managers read hostWhatsappThreadViews",
       "write": "server only",
       "exportedFunctions": [
-        "listOrganizerWhatsappThreads",
-        "getOrganizerWhatsappThread",
         "sendOrganizerWhatsappReply",
         "onHostWhatsappThreadViewThreadChanged"
       ],
@@ -2183,10 +2180,9 @@
       "dartModel": "lib/contexts/audience/domain/crm/host_whatsapp_thread.dart",
       "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
       "owner": "organizer WhatsApp inbox and reply callables",
-      "read": "current organizer managers get and list one thread's messages (organizerId and threadId equality); older Host builds use the bounded callable",
+      "read": "current organizer managers get and list one thread's messages (organizerId and threadId equality)",
       "write": "server only",
       "exportedFunctions": [
-        "getOrganizerWhatsappThread",
         "sendOrganizerWhatsappReply"
       ],
       "migrationNotes": [
@@ -2607,12 +2603,11 @@
       "typescriptInterface": "OrganizerBroadcastSummaryDocument",
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
-      "owner": "sendEventBroadcast projection and listOrganizerCampaigns callable",
-      "read": "server only; organizer managers receive sanitized Sends and contact-history rows through callables",
+      "owner": "sendEventBroadcast projection",
+      "read": "server only; organizer managers read Sends rows from hostSendSummaries and contact-history rows through callables",
       "write": "server only",
       "exportedFunctions": [
         "sendEventBroadcast",
-        "listOrganizerCampaigns",
         "getOrganizerContactDetail",
         "onHostSendAnnouncementChanged"
       ],
@@ -3105,8 +3100,6 @@
       "read": "grantee gets their own grant by id; the organizer's current managers list an event's grants with a query naming the organizer",
       "write": "server only",
       "exportedFunctions": [
-        "getEventOperatorAccess",
-        "listEventStaff",
         "grantEventStaff",
         "revokeEventStaff",
         "getEventAssistanceGroupStaff",
@@ -3410,7 +3403,7 @@
         "onProgramArrivalSettingsChanged"
       ],
       "migrationNotes": [
-        "Exactly the roster row getProgramArrivalsRoster returns, plus the claimant's account id in place of claimedByMe and the pickup and hotel keys rules match; never a phone number. Only expected, ready and disrupted inbound journeys have a view. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+        "Exactly the roster row the retired getProgramArrivalsRoster callable returned, plus the claimant's account id in place of claimedByMe and the pickup and hotel keys rules match; never a phone number. Only expected, ready and disrupted inbound journeys have a view. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
       ]
     },
     {
@@ -3433,7 +3426,7 @@
         "onProgramDepartureStayChanged"
       ],
       "migrationNotes": [
-        "Exactly the row getProgramDeparturesRoster returns; the desk counts are computed on the phone from the rows and its clock. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+        "Exactly the row the retired getProgramDeparturesRoster callable returned; the desk counts are computed on the phone from the rows and its clock. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
       ]
     },
     {
@@ -3475,7 +3468,7 @@
         "onProgramTripGuestChanged"
       ],
       "migrationNotes": [
-        "Exactly the row listProgramTrips returns, with the manifest's guest names from the recorded dispatch snapshot; the trip's notes, rate, driver and account ids stay in transportTrips. Hotel desks also read a trip's pickup point id, vendor id, kind, arrival time and void reason, which getProgramHotelInbound did not return. The program-trip-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+        "Exactly the row the retired listProgramTrips callable returned, with the manifest's guest names from the recorded dispatch snapshot; the trip's notes, rate, driver and account ids stay in transportTrips. Hotel desks also read a trip's pickup point id, vendor id, kind, arrival time and void reason, which getProgramHotelInbound did not return. The program-trip-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
       ]
     },
     {
@@ -3520,7 +3513,7 @@
         "onProgramStaffViewProgramChanged"
       ],
       "migrationNotes": [
-        "Exactly the member row listProgramStaff returns, with its clock-dependent status replaced by the facts it derives from (revoked, owner approval, when live duties start and end). Display names and the last four phone digits are personal data scrubbed with the grant by archive anonymization, which reaches the rows through the grant trigger. The program-staff-views copy-forward migration creates rows for grants that predate the triggers and leaves rows the triggers wrote alone."
+        "Exactly the member row the retired listProgramStaff callable returned, with its clock-dependent status replaced by the facts it derives from (revoked, owner approval, when live duties start and end). Display names and the last four phone digits are personal data scrubbed with the grant by archive anonymization, which reaches the rows through the grant trigger. The program-staff-views copy-forward migration creates rows for grants that predate the triggers and leaves rows the triggers wrote alone."
       ]
     },
     {
@@ -3773,7 +3766,7 @@
         "onProgramWhatsappThreadViewProgramChanged"
       ],
       "migrationNotes": [
-        "Exactly the row listProgramWhatsappThreads returns without the clock-dependent serviceWindowOpen, plus the household's label, primary contact name and guest count from getProgramWhatsappThread's header. The phone hash, sender connection and take-over uid stay in programWhatsappThreads. Deleted with its thread by the archive retention sweep. The program-whatsapp-thread-views copy-forward migration creates views for threads that predate the triggers and leaves views the triggers wrote alone."
+        "Exactly the row listProgramWhatsappThreads returns without the clock-dependent serviceWindowOpen, plus the household's label, primary contact name and guest count from the retired getProgramWhatsappThread callable's header. The phone hash, sender connection and take-over uid stay in programWhatsappThreads. Deleted with its thread by the archive retention sweep. The program-whatsapp-thread-views copy-forward migration creates views for threads that predate the triggers and leaves views the triggers wrote alone."
       ]
     },
     {
@@ -5010,14 +5003,12 @@
         "lets current managers read their organizer's event offers only"
       ],
       "owner": "event offer manager operations",
-      "read": "current organizer managers get an offer by id (missing reads as missing) and list an event's offers by organizerId, eventId and contactId; getEventOffer and listEventOffers remain for older builds",
+      "read": "current organizer managers get an offer by id (missing reads as missing) and list an event's offers by organizerId, eventId and contactId",
       "write": "server only",
       "exportedFunctions": [
         "previewEventOffers",
         "commitEventOffers",
-        "mutateEventOffer",
-        "getEventOffer",
-        "listEventOffers"
+        "mutateEventOffer"
       ]
     },
     {
@@ -5036,9 +5027,7 @@
       "exportedFunctions": [
         "previewEventOffers",
         "commitEventOffers",
-        "mutateEventOffer",
-        "getEventOffer",
-        "listEventOffers"
+        "mutateEventOffer"
       ]
     },
     {

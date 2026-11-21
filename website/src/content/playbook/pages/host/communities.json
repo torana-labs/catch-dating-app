@@ -89,7 +89,7 @@
         {"time": "The meetup", "title": "Everyone checked in", "body": "They scan in at the door. You see who’s new and say hello properly."},
         {"time": "Next morning", "title": "Thank them, and set the next one", "body": "Photos and a thank-you go out, reviews come in, and regulars who aren’t members yet get an invitation."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-communities"}
     },
     {
       "type": "checklist",
@@ -153,7 +153,7 @@
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
       "leadForm": {"id": "community_setup_guide", "requestKind": "guide", "format": "communities", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "media": {"kind": "capture", "slot": "host-create-communities"}
     }
   ]
 }

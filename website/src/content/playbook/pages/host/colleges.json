@@ -89,7 +89,7 @@
         {"time": "7:00 PM", "title": "Three hundred in, no queue", "body": "Everyone scans in on their own phone. Volunteers check off anyone without one."},
         {"time": "Next morning", "title": "Who came, for next time", "body": "First years, regulars and followers, in your records for the next event and the next committee."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-colleges"}
     },
     {
       "type": "checklist",
@@ -153,7 +153,7 @@
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
       "leadForm": {"id": "society_setup_guide", "requestKind": "guide", "format": "colleges", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "media": {"kind": "capture", "slot": "host-create-colleges"}
     }
   ]
 }

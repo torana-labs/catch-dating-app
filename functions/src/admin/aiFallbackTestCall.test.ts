@@ -20,7 +20,7 @@ const validateResponse = contractValidator("AdminAiFallbackTestCallCallableRespo
 const validateAudit = contractValidator("AiFallbackAuditDocument");
 
 function wire() {
-  return {id: "msg_fixture_test", type: "message", model: "claude-opus-5-5", role: "assistant",
+  return {id: "msg_fixture_test", type: "message", model: "claude-haiku-5-5", role: "assistant",
     stop_reason: "end_turn", stop_details: null, stop_sequence: null,
     content: [{type: "text", text: JSON.stringify({mapping: {displayName: 0, phone: 1}, confidence: 0.9})}],
     usage: {input_tokens: 320, cache_read_input_tokens: 0, cache_creation_input_tokens: 0, output_tokens: 30}};
@@ -77,7 +77,7 @@ test("one live test call uses the Bearer federation token, ignores the visitor s
   assert.equal(validateResponse(result), true, JSON.stringify(validateResponse.errors));
   assert.equal(result.ok, true);
   assert.equal(result.failedStep, null);
-  assert.equal(result.modelId, "claude-opus-5-5");
+  assert.equal(result.modelId, "claude-haiku-5-5");
   assert.equal(result.inputTokens, 320);
   assert.equal(result.outputTokens, 30);
   assert.ok(result.costMicros > 0);
