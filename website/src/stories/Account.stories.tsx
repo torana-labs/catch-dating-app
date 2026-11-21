@@ -12,7 +12,7 @@ import {SiteAccountActionProvider} from "../shared/site";
 import {CatchButton, useCatchAdaptiveSheetAnchor} from "@catch/web-ui";
 import type {SignInSheetController, SignInStage} from "../features/account/useSignInSheetController";
 import type {AccountTab} from "../features/account/accountPageModel";
-import type {WebsiteAccount} from "../firebase";
+import type {AccountView} from "../features/account/useWebsiteAccountController";
 
 // The signed-in guest's /account/ and the one sign-in sheet. No board exists
 // for these pages: they are drawn from the system and reviewed as captures at
@@ -21,7 +21,7 @@ const noop = () => undefined;
 const asyncNoop = async () => undefined;
 const quiet = {message: "", tone: "" as const};
 
-const account: WebsiteAccount = {
+const account: AccountView = {
   uid: "fixture-guest", accountReady: true, displayName: "Asha Rao", phoneNumber: "+919876543210",
   dateOfBirth: "1994-03-12", profileRevision: 3, following: null, eventAge: null,
   plans: [
@@ -56,7 +56,7 @@ const account: WebsiteAccount = {
     {organizerId: "table-for-ten", organizerName: "Table for Ten", whatsapp: "optedOut", sms: "unknown", whatsappReceiptId: "receipt-2"},
   ],
 };
-const empty: WebsiteAccount = {...account, plans: [], follows: [], reviews: [], messages: []};
+const empty: AccountView = {...account, plans: [], follows: [], reviews: [], messages: []};
 
 const base: AccountPageViewProps = {
   phase: "ready", account, tab: "plans", setTab: noop, notice: quiet, busy: null, refresh: noop,

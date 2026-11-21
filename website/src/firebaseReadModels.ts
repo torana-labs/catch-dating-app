@@ -138,3 +138,60 @@ export async function watchOrganizerTrackingSettings(organizerId: string,
   ];
   return () => stops.forEach((stop) => stop());
 }
+
+/** One document a listener delivered: its id and raw data, for the feature to parse. */
+export interface ReadModelRow {
+  id: string;
+  data: Record<string, unknown>;
+}
+
+/** Most rows of each kind the account page reads. */
+const accountRowLimit = 200;
+
+/**
+ * The signed-in guest's own rows behind the account page, each live until
+ * the returned stop runs: their guestEventStatuses (each with the event card
+ * their lists show), active organizerFollows, and reviews. Rules let a guest
+ * read only their own rows, and every query filters by the UID, so the
+ * rules can prove it. The callback runs once all three have arrived.
+ */
+export async function watchOwnAccountRows(uid: string,
+  onValue: (rows: {plans: ReadModelRow[]; follows: ReadModelRow[]; reviews: ReadModelRow[]}) => void,
+  onError: (error: Error) => void): Promise<StopWatching> {
+  const firestore = await signedInFirestore();
+  const {collection, limit, onSnapshot, query, where} = await import("firebase/firestore");
+  const rows: Partial<Record<"plans" | "follows" | "reviews", ReadModelRow[]>> = {};
+  const emit = () => {
+    if (rows.plans && rows.follows && rows.reviews) {
+      onValue({plans: rows.plans, follows: rows.follows, reviews: rows.reviews});
+    }
+  };
+  const listen = (key: "plans" | "follows" | "reviews", source: ReturnType<typeof query>) =>
+    onSnapshot(source, (snapshot) => {
+      rows[key] = snapshot.docs.map((doc) => ({id: doc.id, data: doc.data() as Record<string, unknown>}));
+      emit();
+    }, onError);
+  const stops = [
+    listen("plans", query(collection(firestore, "guestEventStatuses"), where("uid", "==", uid),
+      limit(accountRowLimit))),
+    listen("follows", query(collection(firestore, "organizerFollows"), where("uid", "==", uid),
+      where("status", "==", "active"), limit(accountRowLimit))),
+    listen("reviews", query(collection(firestore, "reviews"), where("reviewerUserId", "==", uid),
+      limit(accountRowLimit))),
+  ];
+  return () => stops.forEach((stop) => stop());
+}
+
+/**
+ * The organizers' public copies (publicOrganizers) by id, for names and page
+ * links on the account page. Anyone may get one; an organizer without a copy
+ * is left out.
+ */
+export async function readPublicOrganizers(ids: readonly string[]): Promise<Map<string, Record<string, unknown>>> {
+  const firestore = await signedInFirestore();
+  const {doc, getDoc} = await import("firebase/firestore");
+  const snapshots = await Promise.all([...new Set(ids)].map((id) =>
+    getDoc(doc(firestore, "publicOrganizers", id)).catch(() => null)));
+  return new Map(snapshots.flatMap((snapshot) =>
+    snapshot?.exists() ? [[snapshot.id, snapshot.data() as Record<string, unknown>]] : []));
+}
