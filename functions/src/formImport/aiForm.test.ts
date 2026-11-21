@@ -98,7 +98,7 @@ function fallback(policy: ReadyAiFallbackPolicy | null = READY) {
     accessToken: async () => "fixture-federation-token",
     transport: (async (_url: string, init: {body: string}) => {
       calls.push(JSON.parse(init.body));
-      return new Response(JSON.stringify({id: "msg_fixture_1", type: "message", model: "claude-opus-5-5",
+      return new Response(JSON.stringify({id: "msg_fixture_1", type: "message", model: "claude-haiku-5-5",
         role: "assistant", stop_reason: "end_turn", stop_details: null, stop_sequence: null,
         content: [{type: "text", text: JSON.stringify(answer)}],
         usage: {input_tokens: 2_000, cache_read_input_tokens: 0, cache_creation_input_tokens: 0, output_tokens: 400}}),
