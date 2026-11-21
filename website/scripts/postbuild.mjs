@@ -339,7 +339,8 @@ function buildLegalStaticBody(page, effectiveDate) {
     const links = (section.links ?? [])
       .map((link) => `<li><a href="${escapeHtml(String(link.href))}">${escapeHtml(String(link.label))}</a></li>`)
       .join("");
-    return `<section><h2>${escapeHtml(String(section.heading))}</h2>` +
+    const anchor = section.anchor ? ` id="${escapeHtml(String(section.anchor))}"` : "";
+    return `<section${anchor}><h2>${escapeHtml(String(section.heading))}</h2>` +
       `${paragraphs}${bullets ? `<ul>${bullets}</ul>` : ""}` +
       `${links ? `<ul>${links}</ul>` : ""}</section>`;
   }).join("");
