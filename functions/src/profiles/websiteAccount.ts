@@ -165,7 +165,7 @@ export async function manageWebsiteAccountHandler(
   if (data.action !== "read" || !data.sections) return account;
   return {
     ...account,
-    ...await readAccountSections(db, uid, data.sections, deps.now()),
+    ...await readAccountSections(db, uid, data.sections),
   };
 }
 

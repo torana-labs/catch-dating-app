@@ -36,8 +36,12 @@ export const PUBLIC_ORGANIZER_FIELDS = [
 /**
  * Public fields computed from the canonical document rather than copied.
  * womenLed resolves organizers/{id}.womenLed, whose audit fields stay private.
+ * publicPagePath is the published website page's canonical path, so a
+ * guest's own lists (the website account page) can link the page without
+ * reading the canonical document.
  */
-export const PUBLIC_ORGANIZER_DERIVED_FIELDS = ["womenLed"] as const;
+export const PUBLIC_ORGANIZER_DERIVED_FIELDS =
+  ["womenLed", "publicPagePath"] as const;
 
 const COLLECTION = "publicOrganizers";
 
@@ -51,9 +55,23 @@ function hasHost(source: Source): boolean {
 }
 
 /**
- * Whether an organizer gets a public projection at all. Scraped, unclaimed
- * listings that the app hides have no host and no projection; the website
- * serves them from organizerPublicPages once they are published.
+ * The published website page's canonical path, or null while the page is
+ * not published.
+ * @param {Source} source The canonical organizer document.
+ * @return {string | null} The path.
+ */
+export function publishedPagePath(source: Source): string | null {
+  const page = source.publicPage as Source | undefined;
+  const path = page?.canonicalPath;
+  return page?.publishStatus === "published" && typeof path === "string" &&
+    path.length <= 240 && /^\/organizers\/(?:[a-z0-9-]+\/){1,2}$/u.test(path) ?
+    path : null;
+}
+
+/**
+ * Whether an organizer gets a public projection at all: the app shows it,
+ * it has a host, or its website page is published. A scraped, unclaimed
+ * listing that is neither shown nor published has none.
  * @param {Source | undefined} source The canonical organizer document.
  * @return {boolean} True when guests may read the organizer by id.
  */
@@ -62,7 +80,8 @@ export function publicOrganizerEligible(source: Source | undefined): boolean {
   if (source.status !== "active" && source.status !== "archived") {
     return false;
   }
-  return source.appVisibility === "discoverable" || hasHost(source);
+  return source.appVisibility === "discoverable" || hasHost(source) ||
+    publishedPagePath(source) !== null;
 }
 
 /**
@@ -77,6 +96,7 @@ export function projectPublicOrganizer(source: Source): Source {
   }
   // Derived, never copied: the declaration's audit fields stay private.
   projection.womenLed = organizerWomenLed(source);
+  projection.publicPagePath = publishedPagePath(source);
   return projection;
 }
 

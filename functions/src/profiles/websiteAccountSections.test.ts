@@ -90,68 +90,39 @@ test("identity-only read leaves every section out", async () => {
   }
 });
 
-test("sections read only the signed-in UID's own records", async () => {
+test("messages read only the signed-in UID's own permissions", async () => {
   const h = fixture();
   const result = await manage(h.request({action: "read",
-    sections: ["plans", "following", "reviews", "messages"]}), h.deps);
+    sections: ["messages"]}), h.deps);
   assert.equal(validateResponse(result), true, JSON.stringify(result));
-  assert.deepEqual(result.plans?.map((plan) => [plan.eventId, plan.status,
-    plan.timing, plan.passAvailable, plan.organizerName]), [
-    ["soon", "signedUp", "upcoming", true, "Brindle Run Club"],
-    ["done", "attended", "past", false, "Quiz Night"],
-  ]);
-  assert.equal(result.plans?.[0].venue, "Cubbon Park gate");
-  assert.deepEqual(result.follows, [{organizerId: "run",
-    organizerName: "Brindle Run Club", path: "/organizers/brindle-run-club/",
-    followedAt: "2026-10-02T00:00:00.000Z"}]);
-  assert.deepEqual(result.reviews?.map((review) => [review.reviewId,
-    review.verified, review.moderationStatus, review.ownerResponse]), [
-    ["r2", false, "pending", null],
-    ["r1", true, "published", "Thanks Ada"],
-  ]);
   assert.deepEqual(result.messages, [
     {organizerId: "run", organizerName: "Brindle Run Club", whatsapp: "optedIn",
       sms: "unknown", whatsappReceiptId: "receipt1"},
     {organizerId: "quiz", organizerName: "Quiz Night", whatsapp: "optedOut",
       sms: "unknown", whatsappReceiptId: "receipt2"},
   ]);
-});
-
-test("an unpublished organizer page has no path", async () => {
-  const h = fixture();
-  h.store.records.set("organizerFollows/quiz_guest", {organizerId: "quiz",
-    uid: "guest", status: "active", followedAt: at("2026-09-02T00:00:00Z")});
-  const result = await manage(h.request({action: "read",
-    sections: ["following"]}), h.deps);
-  assert.equal(result.follows?.find((row) => row.organizerId === "quiz")?.path,
-    null);
-  assert.equal("plans" in result, false);
-});
-
-test("a cancelled event offers no pass", async () => {
-  const h = fixture();
-  h.store.records.set("events/soon", {...h.store.records.get("events/soon"),
-    status: "cancelled"});
-  const result = await manage(h.request({action: "read",
-    sections: ["plans"]}), h.deps);
-  assert.equal(result.plans?.[0].passAvailable, false);
+  for (const key of ["plans", "follows", "reviews"]) {
+    assert.equal(key in result, false);
+  }
 });
 
 test("sections are refused for an unavailable account", async () => {
   const h = fixture();
   h.store.records.set("deletedUsers/guest", {uid: "guest"});
   await assert.rejects(manage(h.request({action: "read",
-    sections: ["plans"]}), h.deps), /unavailable/);
+    sections: ["messages"]}), h.deps), /unavailable/);
 });
 
-test("the payload contract bounds the section list", () => {
+test("the payload contract allows only the messages section", () => {
   assert.equal(validateManageWebsiteAccountCallablePayload(
-    {action: "read", sections: ["plans", "plans"]}), false);
+    {action: "read", sections: ["messages", "messages"]}), false);
+  for (const section of ["plans", "following", "reviews", "matches"]) {
+    assert.equal(validateManageWebsiteAccountCallablePayload(
+      {action: "read", sections: [section]}), false, section);
+  }
   assert.equal(validateManageWebsiteAccountCallablePayload(
-    {action: "read", sections: ["matches"]}), false);
-  assert.equal(validateManageWebsiteAccountCallablePayload(
-    {action: "complete", sections: ["plans"], displayName: "Ada",
+    {action: "complete", sections: ["messages"], displayName: "Ada",
       expectedProfileRevision: 0, expectedUid: "guest"}), false);
   assert.equal(validateManageWebsiteAccountCallablePayload(
-    {action: "read", sections: ["reviews", "messages"]}), true);
+    {action: "read", sections: ["messages"]}), true);
 });

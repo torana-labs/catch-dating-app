@@ -7,27 +7,45 @@ const api = vi.hoisted(() => ({watch: vi.fn(), read: vi.fn(), follow: vi.fn(), w
 vi.mock("../../firebase", () => ({watchWebsiteAccountAuthState: api.watch, manageWebsiteAccount: api.read,
   beginWebsiteAccountPhoneVerification: vi.fn(), setWebsiteOrganizerFollow: api.follow,
   withdrawWebsiteMessagingPermission: api.withdraw, getWebsiteEventTicketCode: api.ticket, signOutWebsiteAccount: api.signOut}));
+const rows = vi.hoisted(() => ({watch: vi.fn(), names: vi.fn()}));
+vi.mock("../../firebaseReadModels", () => ({watchOwnAccountRows: rows.watch, readPublicOrganizers: rows.names}));
 import {useAccountPageController} from "./useAccountPageController";
 
 const user = {uid: "u", phoneNumber: "+919876543210"} as User;
-const plan = {eventId: "e1", eventName: "10K", organizerId: "o", organizerName: "Run", startsAt: "2026-11-15T00:30:00.000Z",
+const plan = {eventId: "e1", eventName: "10K", organizerId: "o", organizerName: "Run", startsAt: "2090-11-15T00:30:00.000Z",
   endsAt: null, venue: null, status: "signedUp" as const, timing: "upcoming" as const, passAvailable: true};
 const account = {uid: "u", accountReady: true, displayName: "Ada", phoneNumber: user.phoneNumber, dateOfBirth: null,
-  profileRevision: 2, following: null, eventAge: null, plans: [plan], follows: [], reviews: [],
+  profileRevision: 2, following: null, eventAge: null,
   messages: [{organizerId: "o", organizerName: "Run", whatsapp: "optedIn" as const, sms: "unknown" as const, whatsappReceiptId: "r1"}]};
+/** The guest's own event row for the plan, as guestEventStatuses holds it. */
+const planRow = {id: "e1_u", data: {uid: "u", eventId: "e1", participationStatus: "signedUp",
+  eventCard: {organizerId: "o", name: "10K", startTimeMillis: Date.parse(plan.startsAt), endTimeMillis: null, status: "active"}}};
 function harness(initial: User | null = user) {
   api.watch.mockImplementation((callback) => {callback(initial); return vi.fn();});
   const client = new QueryClient({defaultOptions: {queries: {retry: false}}});
   const wrapper = ({children}: PropsWithChildren) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
   return renderHook(() => useAccountPageController(), {wrapper});
 }
-beforeEach(() => {vi.clearAllMocks(); api.read.mockResolvedValue(account); window.history.replaceState(null, "", "/account/");});
+beforeEach(() => {
+  vi.clearAllMocks(); api.read.mockResolvedValue(account); window.history.replaceState(null, "", "/account/");
+  rows.watch.mockImplementation(async (_uid, onValue) => {onValue({plans: [planRow], follows: [], reviews: []}); return vi.fn();});
+  rows.names.mockResolvedValue(new Map([["o", {name: "Run"}]]));
+});
 
 describe("account page", () => {
-  it("reads every section of the signed-in account in one request", async () => {
+  it("reads messages through the account and the guest's own rows through listeners", async () => {
     const h = harness();
     await waitFor(() => expect(h.result.current.phase).toBe("ready"));
-    expect(api.read).toHaveBeenCalledWith({action: "read", sections: ["plans", "following", "reviews", "messages"]});
+    expect(api.read).toHaveBeenCalledWith({action: "read", sections: ["messages"]});
+    expect(rows.watch).toHaveBeenCalledWith("u", expect.any(Function), expect.any(Function));
+    expect(h.result.current.account?.plans).toEqual([plan]);
+    expect(h.result.current.account?.messages).toEqual(account.messages);
+  });
+  it("shows the page's error when the listeners are refused", async () => {
+    rows.watch.mockImplementation(async (_uid, _onValue, onError) => {onError(new Error("permission-denied")); return vi.fn();});
+    const h = harness();
+    await waitFor(() => expect(h.result.current.accountStep.status.tone).toBe("is-error"));
+    expect(h.result.current.phase).toBe("failed");
   });
   it("offers sign-in without reading anything when signed out", async () => {
     const h = harness(null);

@@ -3,17 +3,26 @@ import {accountCopy} from "../../content/account";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useId, useRef, useState, type FormEvent} from "react";
 import {beginWebsiteAccountPhoneVerification, manageWebsiteAccount,
-  watchWebsiteAccountAuthState, type PublicEventPhoneVerification, type User, type WebsiteAccountSection} from "../../firebase";
+  watchWebsiteAccountAuthState, type PublicEventPhoneVerification, type User, type WebsiteAccount} from "../../firebase";
 import type {FormStatus} from "../../shared/forms/types";
 import {catchPhoneE164} from "@catch/web-ui/phone";
 import {activePhoneCountry} from "@content/markets";
+import {useOwnAccountRows, type OwnAccountSections} from "./useOwnAccountRows";
+
+/** An account page section: messages come from the account read, the rest from the guest's own rows. */
+export type AccountSection = "plans" | "following" | "reviews" | "messages";
+/** The account with whichever sections were asked for. */
+export type AccountView = WebsiteAccount & Partial<OwnAccountSections>;
 
 /** Private account data is keyed by UID and discarded when its observer leaves. */
 export function useWebsiteAccountController(scope: {organizerId?: string; eventId?: string;
   /** The account page's own-record reads; other callers read identity only. */
-  sections?: readonly WebsiteAccountSection[];} = {}) {
+  sections?: readonly AccountSection[];} = {}) {
   const {organizerId, eventId, sections} = scope;
-  const sectionKey = sections?.join(",") ?? "";
+  // organizerCommunicationPreferences stays server-only, so messages come
+  // through the account read; the guest's own rows come from listeners.
+  const readsMessages = sections?.includes("messages") ?? false;
+  const listens = sections?.some((section) => section !== "messages") ?? false;
   const id = useId();
   const queryClient = useQueryClient();
   const recaptchaId = `account-${id.replace(/:/gu, "")}`;
@@ -50,11 +59,14 @@ export function useWebsiteAccountController(scope: {organizerId?: string; eventI
     return () => {live.current.mounted = false; live.current.epoch++; challenge.current?.clear(); stop();};
   }, []);
   const uid = identity.user?.uid ?? null;
-  const query = useQuery({queryKey: ["website-account", uid, organizerId ?? null, eventId ?? null, sectionKey],
+  const query = useQuery({queryKey: ["website-account", uid, organizerId ?? null, eventId ?? null, readsMessages],
     enabled: Boolean(uid), gcTime: 0, staleTime: 0, retry: false,
     queryFn: () => manageWebsiteAccount({action: "read", ...(organizerId ? {organizerId} : {}), ...(eventId ? {eventId} : {}),
-      ...(sections?.length ? {sections: [...sections]} : {})})});
-  const account = uid && !query.error && query.data?.uid === uid ? query.data : undefined;
+      ...(readsMessages ? {sections: ["messages" as const]} : {})})});
+  const rows = useOwnAccountRows(uid, listens);
+  const read = uid && !query.error && query.data?.uid === uid ? query.data : undefined;
+  const account: AccountView | undefined = read && (!listens || rows.sections) ? {...read, ...rows.sections} : undefined;
+  const rowsError = listens ? rows.error : null;
   const ready = Boolean(account?.accountReady && (!account.eventAge || account.eventAge.eligible));
   useEffect(() => {
     if (account) {
@@ -121,8 +133,10 @@ export function useWebsiteAccountController(scope: {organizerId?: string; eventI
       } finally {busy.current = false;}
     });
   }
-  return {id, uid, account, ready, loading: !identity.loaded || Boolean(uid && query.isPending),
-    pending: mutation.isPending, status: query.error ? {message: accountError(query.error), tone: "is-error" as const} : status,
+  return {id, uid, account, ready, loading: !identity.loaded || Boolean(uid && (query.isPending ||
+      (listens && !rows.sections && !rowsError))),
+    pending: mutation.isPending, status: query.error || rowsError ?
+      {message: accountError(query.error ?? rowsError), tone: "is-error" as const} : status,
     displayName, setDisplayName, phoneNumber, setPhoneNumber, dateOfBirth, setDateOfBirth,
     code, setCode, stage, recaptchaId, verified: Boolean(identity.user?.phoneNumber),
     ageRequired: Boolean(account?.eventAge?.needsDateOfBirth),
