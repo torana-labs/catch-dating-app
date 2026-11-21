@@ -44,8 +44,8 @@ class HostContactsRepository {
     HostContactDetailReads? detail,
   }) : _detailReads = detail;
 
-  /// The directory read model, name searches included. Only queries it
-  /// cannot serve (intersecting filter groups) use a callable.
+  /// The directory read model, name searches included. It serves every
+  /// directory query the app makes.
   final HostContactSummaryReads summaries;
 
   /// One person's page listeners: directory row, detail facts and notes.
@@ -87,42 +87,14 @@ class HostContactsRepository {
     return reads.watch(eventId);
   }
 
+  /// One page of [query] from the directory read model. A query the read
+  /// model cannot serve (see [HostContactSummaryReads.supports]) is an
+  /// [ArgumentError]: no Function evaluates directory queries any more.
   Future<HostAudiencePage> listContacts(
     String organizerId, {
     HostAudienceQuery query = const HostAudienceQuery(),
     int limit = ReadLimitPolicy.directoryPage,
-  }) async {
-    if (HostContactSummaryReads.supports(query)) {
-      return summaries.list(organizerId, query: query, limit: limit);
-    }
-    return callHostCrm(
-      _functions,
-      name: 'listOrganizerContacts',
-      payload: ListOrganizerContactsCallableRequest(
-        organizerId: organizerId,
-        limit: limit,
-        cursor: query.cursor,
-        query: query.search?.trim().isEmpty ?? true
-            ? null
-            : query.search?.trim(),
-        // The callable's canonical default is lastSeen. Omitting it keeps the
-        // default directory compatible during a rolling client/server rollout.
-        sort: query.sort == HostAudienceSort.lastSeen
-            ? null
-            : query.sort.wireValue,
-        segmentIds: query.segments.isEmpty
-            ? null
-            : (query.segments.map((s) => s.wireValue).toList()..sort()),
-        manualTagIds: query.manualTagIds.isEmpty
-            ? null
-            : (query.manualTagIds.toList()..sort()),
-        segmentId: query.segment?.wireValue,
-        manualTagId: query.manualTagId,
-      ).toJson(),
-      action: 'load organizer audience',
-      parse: HostAudiencePage.fromCallableData,
-    );
-  }
+  }) => summaries.list(organizerId, query: query, limit: limit);
 
   Future<({int count, HostAudienceMatchCountCoverage coverage})> countContacts(
     String organizerId, {
