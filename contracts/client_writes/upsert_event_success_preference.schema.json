@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/upsert_event_success_preference.schema.json",
+  "title": "UpsertEventSuccessPreferenceClientWrite",
+  "description": "Client-owned Firestore set of a guest's live-module opt-outs at eventSuccessPreferences/{preferenceId}, whose id derives from the event and the guest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "data"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preferenceId"
+      ],
+      "properties": {
+        "preferenceId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "$ref": "../firestore/event_success_preferences.schema.json"
+    }
+  },
+  "x-firestore-operation": [
+    "create",
+    "update"
+  ],
+  "x-firestore-path": "eventSuccessPreferences/{preferenceId}",
+  "x-owner": "event guest direct preference"
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/upsert_onboarding_draft.schema.json",
+  "title": "UpsertOnboardingDraftClientWrite",
+  "description": "Client-owned Firestore set of the private onboarding draft at onboarding_drafts/{uid} (OnboardingDraftRepository.saveDraft). Rules check only the routing-critical step, so the draft stays forward compatible.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "data"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid"
+      ],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "$ref": "../firestore/onboarding_drafts.schema.json"
+    }
+  },
+  "x-firestore-operation": [
+    "create",
+    "update"
+  ],
+  "x-firestore-path": "onboarding_drafts/{uid}",
+  "x-owner": "authenticated owner direct draft save"
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/delete_onboarding_draft.schema.json",
+  "title": "DeleteOnboardingDraftClientWrite",
+  "description": "Client-owned Firestore delete of the private onboarding draft at onboarding_drafts/{uid} (OnboardingDraftRepository.deleteDraft).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid"
+      ],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    }
+  },
+  "x-firestore-operation": "delete",
+  "x-firestore-path": "onboarding_drafts/{uid}",
+  "x-owner": "authenticated owner direct draft delete"
+}

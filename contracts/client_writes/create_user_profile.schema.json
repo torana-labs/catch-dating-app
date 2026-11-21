@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/create_user_profile.schema.json",
+  "title": "CreateUserProfileClientWrite",
+  "description": "Client-owned Firestore create of the initial private profile at users/{uid} after the onboarding identity step (UserProfileRepository.setUserProfile). Rules validate the full shape and refuse deleted, deletedAt, profileRevision and profileClaimedAt; later edits go through updateUserProfile.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "data"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid"
+      ],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "$ref": "../firestore/users.schema.json"
+    }
+  },
+  "x-firestore-operation": "create",
+  "x-firestore-path": "users/{uid}",
+  "x-owner": "authenticated owner direct create of the initial profile"
+}

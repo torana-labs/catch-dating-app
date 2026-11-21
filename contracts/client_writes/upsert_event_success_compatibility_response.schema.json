@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/upsert_event_success_compatibility_response.schema.json",
+  "title": "UpsertEventSuccessCompatibilityResponseClientWrite",
+  "description": "Client-owned Firestore set of a participant's compatibility answers at eventSuccessCompatibilityResponses/{responseId}, whose id derives from the event and the participant.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "data"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responseId"
+      ],
+      "properties": {
+        "responseId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "$ref": "../firestore/event_success_compatibility_responses.schema.json"
+    }
+  },
+  "x-firestore-operation": [
+    "create",
+    "update"
+  ],
+  "x-firestore-path": "eventSuccessCompatibilityResponses/{responseId}",
+  "x-owner": "event participant direct compatibility response"
+}
