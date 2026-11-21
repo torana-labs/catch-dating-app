@@ -1981,18 +1981,6 @@ abstract class AppLocalizations {
   /// **'Privacy policy'**
   String get authLegalPrivacyLink;
 
-  /// Ad-matching notice where a person gives their phone or email: app sign-up and Catch Host setup. Same words as the website notice (website/src/content/legal.ts); see docs/ads_conversion_spec.md, Ad-matching notice and opt-out.
-  ///
-  /// In en, this message translates to:
-  /// **'We share a coded version of your contact details with Google and Meta to measure our ads and choose who sees them.'**
-  String get adMatchingNotice;
-
-  /// Link under the ad-matching notice that opens the advertising section of the privacy policy.
-  ///
-  /// In en, this message translates to:
-  /// **'How it works and how to opt out'**
-  String get adMatchingNoticeLink;
-
   /// Heading on the one-time-code verification step.
   ///
   /// In en, this message translates to:

@@ -2053,22 +2053,6 @@
     "x-surface": "auth.phone.legal",
     "x-max-chars": 24
   },
-  "adMatchingNotice": "We share a coded version of your contact details with Google and Meta to measure our ads and choose who sees them.",
-  "@adMatchingNotice": {
-    "description": "Ad-matching notice where a person gives their phone or email: app sign-up and Catch Host setup. Same words as the website notice (website/src/content/legal.ts); see docs/ads_conversion_spec.md, Ad-matching notice and opt-out.",
-    "x-audience": "shared",
-    "x-owner": "legal",
-    "x-surface": "legal.ad_matching",
-    "x-max-chars": 140
-  },
-  "adMatchingNoticeLink": "How it works and how to opt out",
-  "@adMatchingNoticeLink": {
-    "description": "Link under the ad-matching notice that opens the advertising section of the privacy policy.",
-    "x-audience": "shared",
-    "x-owner": "legal",
-    "x-surface": "legal.ad_matching",
-    "x-max-chars": 40
-  },
   "authOtpTitle": "Enter the code",
   "@authOtpTitle": {
     "description": "Heading on the one-time-code verification step.",

@@ -1209,13 +1209,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authLegalPrivacyLink => 'Privacy policy';
 
   @override
-  String get adMatchingNotice =>
-      'We share a coded version of your contact details with Google and Meta to measure our ads and choose who sees them.';
-
-  @override
-  String get adMatchingNoticeLink => 'How it works and how to opt out';
-
-  @override
   String get authOtpTitle => 'Enter the code';
 
   @override
