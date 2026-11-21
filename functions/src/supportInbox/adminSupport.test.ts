@@ -134,6 +134,8 @@ test("a logged email starts a conversation; saved replies are kept",
       contactAddress: "Ishaan@example.com", displayName: "Ishaan Bose",
       direction: "inbound", text: "The sign-in code never arrives.",
       savedReplyId: null}), h.deps);
+    assert.deepEqual(Object.keys(result).sort(),
+      ["conversationId", "messageId"]);
     const conversation = h.db.getDoc(
       `supportConversations/${result.conversationId}`)!;
     assert.equal(conversation.contactAddress, "ishaan@example.com");

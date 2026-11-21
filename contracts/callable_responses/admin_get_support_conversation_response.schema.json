@@ -152,6 +152,49 @@
               }
             }
           }
+        },
+        "reply": {
+          "type": "object",
+          "description": "How staff reply here. send: a free-form WhatsApp text from Catch's number, possible only inside WhatsApp's 24-hour customer-service window after the person's last message. record: log a reply sent another way. blockedReason says why send is not possible now; windowClosed is where an approved template message would be offered.",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "canSend",
+            "blockedReason",
+            "windowClosesAtMillis"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "send",
+                "record"
+              ]
+            },
+            "canSend": {
+              "type": "boolean"
+            },
+            "blockedReason": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                null,
+                "switchedOff",
+                "noInboundMessage",
+                "windowClosed",
+                "stopped"
+              ]
+            },
+            "windowClosesAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            }
+          }
         }
       }
     },
@@ -202,8 +245,23 @@
             "type": "string",
             "enum": [
               "received",
-              "recorded"
+              "recorded",
+              "sending",
+              "accepted",
+              "sent",
+              "delivered",
+              "read",
+              "failed",
+              "unknown"
             ]
+          },
+          "deliveryErrorCode": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 999999999
           }
         }
       }

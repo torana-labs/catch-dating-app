@@ -80,7 +80,8 @@
         "string",
         "null"
       ],
-      "maxLength": 4096
+      "maxLength": 4096,
+      "description": "A text message's body. For any other inbound type, a short placeholder for Support such as \"[photo]\", \"[voice note]\", \"[document: menu.pdf]\" or a button's label; the media itself is never fetched, and only messageType \"text\" counts as text the person typed."
     },
     "textTruncated": {
       "type": "boolean"

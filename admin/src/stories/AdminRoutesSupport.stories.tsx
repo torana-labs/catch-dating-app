@@ -44,7 +44,7 @@ const storySupportInbox: SupportInboxController = {
     body: "Sorry about that. I'm looking at it now and will reply here.", active: true, updatedAtMillis: 0}],
   loadState: "ready", detailState: "ready", isSaving: false,
   setView: noop, setAudience: noop, select: noop,
-  reply: async () => true, addNote: async () => true, logEmail: async () => true,
+  reply: async () => true, sendReply: async () => true, addNote: async () => true, logEmail: async () => true,
   assign: async () => true, setStatus: async () => true, setLinks: async () => true, saveReply: async () => true,
 };
 

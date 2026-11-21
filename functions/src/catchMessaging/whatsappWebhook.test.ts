@@ -283,6 +283,10 @@ test("a non-text message is recorded blocked and acknowledged, and the " +
   assert.deepEqual(await receive(now + 1000), {status: 200, body: "ok"});
   assert.equal(db.docs.get(CATCH_INGRESS_EVIDENCE + "/" + blocked.eventId)!
     .state, "blocked");
+  // The receipt keeps a placeholder, so Support can show the photo arrived.
+  assert.equal(blocked.text, "[photo]");
+  assert.equal(db.docs.get(CATCH_WEBHOOK_COLLECTION + "/" + blocked.eventId)!
+    .text, "[photo]");
   assert.equal(db.docs.get(CATCH_INGRESS_EVIDENCE + "/" + text.eventId)!
     .state, "accepted");
   await db.db.runTransaction((tx) => assertCatchIngressAccepted(tx, db.db,

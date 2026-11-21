@@ -1,6 +1,7 @@
 import {createHash, createHmac, timingSafeEqual} from "node:crypto";
 import type {CatchWhatsappWebhookEventDocument} from
   "../shared/generated/catchWhatsappWebhookEventDocument";
+import {catchInboundPlaceholder} from "./whatsappInboundContent";
 
 export const MAX_WEBHOOK_BYTES = 3 * 1024 * 1024;
 export const MAX_WEBHOOK_EVENTS = 1000;
@@ -151,11 +152,15 @@ export function parseCatchWhatsappWebhook(rawBody: Buffer,
         if (originalText !== null && typeof originalText !== "string") {
           throw new Error("Invalid message text.");
         }
+        // Any other type keeps a short placeholder for Support ("[photo]",
+        // a button's label); the media itself is never fetched.
+        const placeholder = messageType === "text" ? null :
+          catchInboundPlaceholder(messageType, message);
         events.push({...base, eventId: "cwhe_" + hash(JSON.stringify([
           config.wabaId, config.phoneNumberId, "inbound", messageId])),
         eventKind: "inbound", messageId, providerTimestampSeconds,
         participantId: identity(message.from), messageType,
-        text: originalText?.slice(0, 4096) ?? null,
+        text: originalText?.slice(0, 4096) ?? placeholder,
         textTruncated: (originalText?.length ?? 0) > 4096,
         deliveryStatus: null, errorCodes: []});
       }
