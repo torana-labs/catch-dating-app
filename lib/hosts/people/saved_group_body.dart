@@ -122,19 +122,88 @@ class HostSavedGroupBody extends StatelessWidget {
         ],
       ),
     );
+    final chosenCount = state.definition?.selectedContactIds.length ?? 0;
+
+    final members = state.members;
+    final Widget handPicked;
+    if (members == null) {
+      handPicked = state.membersFailed
+          ? CatchErrorState(
+              title: l10n.hostPeopleGroupMembersError,
+              message: l10n.hostPeopleGroupCountErrorBody,
+              retryLabel: l10n.hostPeopleRetry,
+              onRetry: onRetry,
+              mode: CatchErrorStateMode.inline,
+            )
+          : const CatchLoadingIndicator();
+    } else {
+      final more = onMoreMembers;
+      handPicked = CatchStack(
+        gap: CatchStackGap.g8,
+        children: [
+          CatchSection(
+            title: l10n.hostPeopleGroupMembers(
+              count: chosenCount,
+              people: numbers.format(chosenCount),
+            ),
+            empty: l10n.hostPeopleGroupMembersEmpty,
+            children: [
+              for (final member in members)
+                if (member.displayName case final displayName?)
+                  CatchIndexRow(
+                    key: ValueKey<String>(
+                      'host-group-member-${member.contactId}',
+                    ),
+                    title: displayName,
+                    leading: CatchAvatar.system(
+                      size: CatchAvatarSize.md,
+                      name: displayName,
+                    ),
+                    density: CatchIndexRowSize.compact,
+                    onTap: () => onOpenPerson(
+                      HostSavedAudiencePreviewContact(
+                        contactId: member.contactId,
+                        displayName: displayName,
+                      ),
+                    ),
+                  )
+                else
+                  CatchIndexRow(
+                    key: ValueKey<String>(
+                      'host-group-member-${member.contactId}',
+                    ),
+                    title: l10n.hostPeopleGroupMemberGone,
+                    subtitle: l10n.hostPeopleGroupMemberGoneBody,
+                    density: CatchIndexRowSize.compact,
+                    onTap: null,
+                  ),
+            ],
+          ),
+          if (state.membersFailed)
+            CatchText(
+              l10n.hostPeopleGroupMembersMoreError,
+              variant: CatchTextVariant.bodyMeta,
+              tone: CatchTextTone.danger,
+            ),
+          if (state.moreMembers || state.membersFailed)
+            CatchButton(
+              key: const ValueKey<String>('host-group-members-more'),
+              label: state.membersFailed
+                  ? l10n.hostPeopleRetry
+                  : l10n.hostPeopleShowMore,
+              variant: CatchButtonVariant.quiet,
+              size: CatchButtonSize.sm,
+              onPressed: state.membersFailed ? onRetry : more,
+            ),
+        ],
+      );
+    }
     final preview = state.preview;
     final audience = state.audience;
     final Widget? match = audience == null
         ? null
         : state.handPicked
-        ? _HostSavedGroupMembers(
-            state: state,
-            numbers: numbers,
-            chosen: audience.definition.selectedContactIds.length,
-            onOpenPerson: onOpenPerson,
-            onRetry: onRetry,
-            onMore: onMoreMembers,
-          )
+        ? handPicked
         : preview == null
         ? (state.previewFailed
               ? CatchErrorState(
@@ -189,105 +258,6 @@ class HostSavedGroupBody extends StatelessWidget {
           ?match,
         ],
       ),
-    );
-  }
-}
-
-/// Everyone in a hand-picked group read so far, in the order chosen, with
-/// Show more under the list while people are left.
-class _HostSavedGroupMembers extends StatelessWidget {
-  const _HostSavedGroupMembers({
-    required this.state,
-    required this.numbers,
-    required this.chosen,
-    required this.onOpenPerson,
-    required this.onRetry,
-    required this.onMore,
-  });
-
-  final HostSavedGroupState state;
-  final NumberFormat numbers;
-
-  /// How many people the group holds.
-  final int chosen;
-  final ValueChanged<HostSavedAudiencePreviewContact> onOpenPerson;
-  final VoidCallback onRetry;
-  final VoidCallback? onMore;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final members = state.members;
-    if (members == null) {
-      return state.membersFailed
-          ? CatchErrorState(
-              title: l10n.hostPeopleGroupMembersError,
-              message: l10n.hostPeopleGroupCountErrorBody,
-              retryLabel: l10n.hostPeopleRetry,
-              onRetry: onRetry,
-              mode: CatchErrorStateMode.inline,
-            )
-          : const CatchLoadingIndicator();
-    }
-    final more = onMore;
-    return CatchStack(
-      gap: CatchStackGap.g8,
-      children: [
-        CatchSection(
-          title: l10n.hostPeopleGroupMembers(
-            count: chosen,
-            people: numbers.format(chosen),
-          ),
-          empty: l10n.hostPeopleGroupMembersEmpty,
-          children: [
-            for (final member in members)
-              if (member.displayName case final displayName?)
-                CatchIndexRow(
-                  key: ValueKey<String>(
-                    'host-group-member-${member.contactId}',
-                  ),
-                  title: displayName,
-                  leading: CatchAvatar.system(
-                    size: CatchAvatarSize.md,
-                    name: displayName,
-                  ),
-                  density: CatchIndexRowSize.compact,
-                  onTap: () => onOpenPerson(
-                    HostSavedAudiencePreviewContact(
-                      contactId: member.contactId,
-                      displayName: displayName,
-                    ),
-                  ),
-                )
-              else
-                CatchIndexRow(
-                  key: ValueKey<String>(
-                    'host-group-member-${member.contactId}',
-                  ),
-                  title: l10n.hostPeopleGroupMemberGone,
-                  subtitle: l10n.hostPeopleGroupMemberGoneBody,
-                  density: CatchIndexRowSize.compact,
-                  onTap: null,
-                ),
-          ],
-        ),
-        if (state.membersFailed)
-          CatchText(
-            l10n.hostPeopleGroupMembersMoreError,
-            variant: CatchTextVariant.bodyMeta,
-            tone: CatchTextTone.danger,
-          ),
-        if (state.moreMembers || state.membersFailed)
-          CatchButton(
-            key: const ValueKey<String>('host-group-members-more'),
-            label: state.membersFailed
-                ? l10n.hostPeopleRetry
-                : l10n.hostPeopleShowMore,
-            variant: CatchButtonVariant.quiet,
-            size: CatchButtonSize.sm,
-            onPressed: state.membersFailed ? onRetry : more,
-          ),
-      ],
     );
   }
 }
