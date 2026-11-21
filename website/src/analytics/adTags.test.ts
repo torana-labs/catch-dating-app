@@ -4,7 +4,7 @@ import {createAdTags, type AdBooking} from "./adTags";
 
 type Globals = {catchTagLayer?: ArrayLike<unknown>[]; fbq?: {queue: ArrayLike<unknown>[]; disablePushState?: boolean}; _fbq?: unknown};
 const globals = () => window as unknown as Globals;
-const consent = (choice: "accepted" | "analytics" | "essential", version = 6, updatedAt = "2026-11-18T10:00:00.000Z") => ({
+const consent = (choice: "accepted" | "analytics" | "essential", version = 7, updatedAt = "2026-11-18T10:00:00.000Z") => ({
   version, choice, analytics: choice !== "essential", marketing: choice === "accepted", updatedAt,
 });
 /** gtag commands as arrays (gtag.js reads them as Arguments objects). */
@@ -106,7 +106,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     const controller = tags();
     controller.sync(consent("analytics"));
     controller.pageView();
-    controller.sync(consent("accepted", 6, "2026-11-18T11:00:00.000Z"));
+    controller.sync(consent("accepted", 7, "2026-11-18T11:00:00.000Z"));
     expect(scripts()).toEqual([
       "https://www.googletagmanager.com/gtag/js?id=G-HZFG0DL2DK&l=catchTagLayer",
       "https://connect.facebook.net/en_US/fbevents.js",
@@ -124,7 +124,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     document.cookie = "_fbp=fb.1.1800000000000.1234567890; path=/";
     document.cookie = "_ga=GA1.1.123.456; path=/";
     document.cookie = "keep=1; path=/";
-    controller.sync(consent("analytics", 6, "2026-11-18T11:00:00.000Z"));
+    controller.sync(consent("analytics", 7, "2026-11-18T11:00:00.000Z"));
     expect(google().at(-1)).toEqual(["consent", "update",
       {ad_storage: "denied", analytics_storage: "granted", ad_user_data: "denied", ad_personalization: "denied"}]);
     expect(meta().at(-1)).toEqual(["consent", "revoke"]);
@@ -134,7 +134,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(controller.pageView()).toBe(true);
     expect(controller.viewItem({eventId: "synthetic-run", activityKind: "socialRun", city: "Pune", amountPaise: 45000})).toBe(true);
     expect(meta().length).toBe(metaBefore);
-    controller.sync(consent("essential", 6, "2026-11-18T11:30:00.000Z"));
+    controller.sync(consent("essential", 7, "2026-11-18T11:30:00.000Z"));
     expect(google().at(-1)).toEqual(["consent", "update",
       {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"}]);
     expect(document.cookie).not.toMatch(/_fbp|_ga/u);
@@ -145,7 +145,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(controller.beginCheckout(booking)).toBe(false);
     expect([google().length, meta().length]).toEqual(before);
     // A new marketing choice grants again without loading the scripts twice.
-    controller.sync(consent("accepted", 6, "2026-11-18T12:00:00.000Z"));
+    controller.sync(consent("accepted", 7, "2026-11-18T12:00:00.000Z"));
     expect(scripts()).toHaveLength(2);
     expect(google().at(-1)?.[2]).toMatchObject({ad_storage: "granted"});
     expect(meta().at(-1)).toEqual(["consent", "grant"]);

@@ -48,12 +48,12 @@ export function useAppDownloadCtas({placement, app = "guest", urls}: {placement:
   const click = useCallback((platform: StorePlatform, href: string) => {
     const page_path = `${window.location.pathname}${window.location.search}`;
     if (!href) {
-      trackMarketingEvent("store_cta_pending", {platform, placement, page_path});
+      trackMarketingEvent("store_cta_pending", {platform, placement, app, page_path});
       return;
     }
     trackCtaClick(`store_${placement}_${platform}`, href);
-    trackMarketingEvent("store_cta_click", {platform, placement, store_href: href, page_path});
-  }, [placement]);
+    trackMarketingEvent("store_cta_click", {platform, placement, app, store_href: href, page_path});
+  }, [placement, app]);
   return useMemo(() => ([
     {platform: "ios", store: "appStore", ...homePageCopy.stores.appStore, badgeSrc: badgeSrc.appStore, href: hrefs.ios},
     {platform: "android", store: "googlePlay", ...homePageCopy.stores.googlePlay, badgeSrc: badgeSrc.googlePlay, href: hrefs.android},

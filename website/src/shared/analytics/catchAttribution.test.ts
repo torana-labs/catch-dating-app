@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it} from "vitest";
 import {browserAttribution, catchAttributionKey, catchAttributionMaxAgeMs, safeBrowserAttribution} from "../../analytics/catchMeasurement";
 const now = 1792486200000;
-const consent = {version: 6, analytics: true, marketing: true, updatedAt: "2026-10-20T00:00:00Z"};
+const consent = {version: 7, analytics: true, marketing: true, updatedAt: "2026-10-20T00:00:00Z"};
 const base = {enabled: true, path: "/host/", search: "?gclid=SyntheticGoogle123&fbclid=SyntheticMeta123&email=secret@example.test",
   consent, storage: localStorage, now, random: () => 12345};
 beforeEach(() => localStorage.clear());

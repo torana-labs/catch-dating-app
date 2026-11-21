@@ -1,5 +1,5 @@
 import {websiteLeadCopy} from "@content/websiteLead";
-import {getMarketingConsent, trackHostLeadAccepted, trackWebsiteLeadFormEvent} from "../../analytics";
+import {getMarketingConsent, trackHostLeadAccepted, trackSiteLeadAccepted, trackWebsiteLeadFormEvent} from "../../analytics";
 import {
   createWebsiteLeadSubmission,
   type WebsiteLeadSubmission,
@@ -18,7 +18,9 @@ import {activePhoneCountry} from "@content/markets";
  * the lead client's problem, each naming only the lead kind, the form id
  * (the lead's entry) and the page. An accepted host enquiry also reaches the
  * Google and Meta tags under the marketing choice the send started with
- * (`trackHostLeadAccepted`), with the number just typed for ad matching.
+ * (`trackHostLeadAccepted`), with the number just typed for ad matching; an
+ * accepted referral or city alert reaches them as a member or referral lead
+ * with no contact data (`trackSiteLeadAccepted`).
  */
 export function createSiteLeadSubmission(
   overrides: Omit<WebsiteLeadSubmissionOptions, "messages" | "phoneCountry"> = {},
@@ -35,6 +37,7 @@ export function createSiteLeadSubmission(
         trackWebsiteLeadFormEvent("succeeded", identity);
         trackHostLeadAccepted({kind: form.kind, leadId: outcome.leadId,
           phone: catchPhoneE164(form.phone, activePhoneCountry)}, submissionConsent);
+        trackSiteLeadAccepted({kind: form.kind, leadId: outcome.leadId}, submissionConsent);
       } else trackWebsiteLeadFormEvent("failed", identity, outcome.status);
       return outcome;
     },

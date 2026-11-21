@@ -1,7 +1,7 @@
 import {type FormEvent, useRef, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import type {WebsiteLeadSubmission} from "../../shared/api/websiteLead";
-import {useLeadFormViewed} from "../marketing/useWebsiteLeadController";
+import {useLeadFormStarted, useLeadFormViewed} from "../marketing/useWebsiteLeadController";
 import {createSiteLeadSubmission} from "../marketing/websiteLead";
 import {cityAlertForm, type CityAlertInterest, type CityAlertPlace} from "./cityAlertsModel";
 
@@ -18,6 +18,7 @@ type Phase = "idle" | "sending" | "sent";
 export function useCityAlertsController(place: CityAlertPlace, interests: readonly CityAlertInterest[],
   makeSubmission: () => WebsiteLeadSubmission = createSiteLeadSubmission) {
   useLeadFormViewed({kind: "city_alerts", formId: place.entry});
+  const started = useLeadFormStarted({kind: "city_alerts", formId: place.entry});
   const [submission] = useState(makeSubmission);
   const [phone, setPhone] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
@@ -47,6 +48,7 @@ export function useCityAlertsController(place: CityAlertPlace, interests: readon
   return {
     phone,
     setPhone: (value: string) => {
+      started();
       setPhone(value);
       if (error) setError(null);
     },
