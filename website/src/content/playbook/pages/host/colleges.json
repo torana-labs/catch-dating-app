@@ -33,14 +33,7 @@
         "label": "Running an alumni network across cities? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Screening night",
-        "rows": [
-          {"label": "Booked", "value": "212"},
-          {"label": "Checked in", "value": "198"},
-          {"label": "First years", "value": "81"}
-        ]
-      },
+      "fragments": ["host-form-responses-new"],
       "media": {"kind": "capture", "slot": "host-form-responses"}
     },
     {

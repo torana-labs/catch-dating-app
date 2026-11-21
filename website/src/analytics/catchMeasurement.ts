@@ -13,9 +13,10 @@ export interface MeasurementConsent {
 
 /** The stored consent receipt version. Version 6 is the first under which the
  * banner names organisers' own Meta and Google tags (owner decision relayed
- * 19 Nov 2026, #2063): every earlier choice, version 5 included, asks again
- * and loads nothing until it is answered. */
-export const currentConsentVersion = 6 as const;
+ * 19 Nov 2026, #2063); version 7 is the first under which it names Microsoft
+ * Clarity with site analytics. Every earlier choice, version 6 included, asks
+ * again and loads nothing until it is answered. */
+export const currentConsentVersion = 7 as const;
 
 /** The live transport a stored consent choice was made under. The first-party
  * Google tag and Meta Pixel (`adTags.ts`) are "first_party_tags"; a choice

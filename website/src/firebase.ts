@@ -1316,11 +1316,28 @@ async function appCheckTokenWithinDeadline(appCheck: AppCheck) {
   }
 }
 
+/**
+ * The app's one Firestore instance. In a browser it keeps an IndexedDB cache
+ * shared across tabs, so a repeat visit paints from cache while the listener
+ * catches up; rules still decide every server read. Firestore can be set up
+ * only once per app, so a second caller, or a browser without IndexedDB,
+ * gets the existing or in-memory instance.
+ */
+async function websiteFirestore(app: FirebaseApp): Promise<Firestore> {
+  const firestore = await import("firebase/firestore");
+  if (typeof window === "undefined" || typeof indexedDB === "undefined") return firestore.getFirestore(app);
+  try {
+    return firestore.initializeFirestore(app, {localCache: firestore.persistentLocalCache({
+      tabManager: firestore.persistentMultipleTabManager()})});
+  } catch {
+    return firestore.getFirestore(app);
+  }
+}
+
 async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {
-  const [publicRuntime, {getAuth}, {getFirestore}] = await Promise.all([
+  const [publicRuntime, {getAuth}] = await Promise.all([
     getPublicFirebaseRuntime(),
     import("firebase/auth"),
-    import("firebase/firestore"),
   ]);
   if (!publicRuntime) return null;
   const {app, appCheck, functions} = publicRuntime;
@@ -1328,9 +1345,18 @@ async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {
     app,
     appCheck,
     auth: getAuth(app),
-    firestore: getFirestore(app),
+    firestore: await websiteFirestore(app),
     functions,
   };
+}
+
+/**
+ * Firestore for a signed-in page's own read models, or null when this build
+ * has no account sign-in. The page listens under the same rules the apps do.
+ */
+export async function getSignedInFirestore(): Promise<Firestore | null> {
+  const runtime = await getFirebaseRuntime();
+  return runtime && claimFirebaseConfigured ? runtime.firestore : null;
 }
 
 /**
@@ -1609,9 +1635,9 @@ export async function subscribePublicCatchEvents(
 ): Promise<() => void> {
   const runtime = await getPublicFirebaseRuntime();
   if (!runtime) throw new Error("Public event service is unavailable.");
-  const {getFirestore, collection, query, where, limit, onSnapshot} =
+  const {collection, query, where, limit, onSnapshot} =
     await import("firebase/firestore");
-  const source = query(collection(getFirestore(runtime.app), "publicEvents"),
+  const source = query(collection(await websiteFirestore(runtime.app), "publicEvents"),
     where("listing", "==", "listed"), limit(401));
   return onSnapshot(source, {includeMetadataChanges: true}, onSnapshotReceived, onUnavailable);
 

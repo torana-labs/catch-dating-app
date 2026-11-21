@@ -33,14 +33,7 @@
         "label": "Running wellness sessions for a company? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Sunday sound bath",
-        "rows": [
-          {"label": "Booked", "value": "22"},
-          {"label": "Members, included", "value": "14"},
-          {"label": "First-timers", "value": "8"}
-        ]
-      },
+      "fragments": ["host-people-regular", "host-people-drifting"],
       "media": {"kind": "capture", "slot": "host-people"}
     },
     {

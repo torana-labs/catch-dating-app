@@ -13,7 +13,11 @@ export const accountCopy = {
   "verify": "Verify and continue",
   "continue": "Continue",
   "sendCode": "Send verification code",
-  "privacy": `Your name and verified phone create your ${brand.name} account.`,
+  // The one legal line at sign-up, as the apps say it (authLegalAgreement). The
+  // privacy policy covers ad measurement; sign-up carries no separate notice.
+  "terms": `By continuing you agree to ${brand.name}'s {terms} and {privacy}.`,
+  "termsLink": "terms",
+  "privacyLink": "privacy policy",
   "invalidDetails": "Enter your name and phone number with country code.",
   "invalidCode": "Enter the six-digit verification code.",
   "codeSent": "Code sent. Enter it to continue.",

@@ -33,14 +33,7 @@
         "label": "Hosting dinners in a restaurant or for a company? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Long Table Supper",
-        "rows": [
-          {"label": "Applied", "value": "41"},
-          {"label": "Approved and paid", "value": "24"},
-          {"label": "Waitlist", "value": "9"}
-        ]
-      },
+      "fragments": ["host-formats-rules-consent", "host-formats-rules-first-time"],
       "media": {"kind": "capture", "slot": "host-formats-rules"}
     },
     {

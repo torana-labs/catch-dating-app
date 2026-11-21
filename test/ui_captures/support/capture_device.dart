@@ -58,6 +58,17 @@ class CaptureDevice {
     showsStatusBar: true,
   );
 
+  /// A cut-out of one widget from the generic phone's screen: the same size,
+  /// safe areas and status bar, so the widget lays out exactly as in the
+  /// phone capture it is cut from. The runner crops the PNG to the entry's
+  /// CaptureFragment.
+  static const fragmentPhone = CaptureDevice(
+    id: 'fragment-phone',
+    size: Size(402, 874),
+    safeArea: EdgeInsets.only(top: 62, bottom: 34),
+    showsStatusBar: true,
+  );
+
   /// A generic 11-inch tablet held landscape for marketing captures. The
   /// website draws its frame (CatchDeviceFrame kind tablet) and the exporter
   /// passes the screen through unframed. The phone status bar's geometry does
@@ -108,6 +119,7 @@ class CaptureDevice {
     iphone15,
     iphone17Pro,
     genericPhone,
+    fragmentPhone,
     genericTablet,
     desktopBrowser,
     auditMedium,

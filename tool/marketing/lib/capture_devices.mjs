@@ -11,6 +11,12 @@
 // (CatchDeviceFrame kind "phone", "tablet" or "browser"), so a page never
 // shows a frame inside a frame. iphone-17-pro keeps its older drawn frame
 // with a Dynamic Island for existing renders.
+//
+// fragment-phone is not a device but a cut-out of one: a single widget cut
+// from the generic phone's screen. The render lays the screen out exactly as
+// generic-phone does (same size, safe areas and status bar) and crops the PNG
+// to the widget, so the PNG is the widget alone at 2x, at most the screen's
+// size. Its size follows the widget, so it is read from the PNG, not this table.
 
 const devices = Object.freeze({
   "generic-phone": Object.freeze({
@@ -18,6 +24,13 @@ const devices = Object.freeze({
     logicalWidth: 402, logicalHeight: 874, outputScale: 2,
     safeArea: Object.freeze({top: 62, right: 0, bottom: 34, left: 0}),
     // Safari's status bar fills the top safe area.
+    safariStatusBar: 62,
+    canvasMargin: 0, frameInset: 0, outerRadius: 0, screenRadius: 0, dynamicIsland: null, framed: false,
+  }),
+  "fragment-phone": Object.freeze({
+    kind: "fragment",
+    logicalWidth: 402, logicalHeight: 874, outputScale: 2,
+    safeArea: Object.freeze({top: 62, right: 0, bottom: 34, left: 0}),
     safariStatusBar: 62,
     canvasMargin: 0, frameInset: 0, outerRadius: 0, screenRadius: 0, dynamicIsland: null, framed: false,
   }),
@@ -68,7 +81,31 @@ export function isFramedCaptureDevice(id) {
   return captureDevice(id).framed !== false;
 }
 
-/** The PNG's pixel size: the native screen, plus bezel and canvas margin on each side for a framed device. */
+/** Whether this device's captures are cut-outs of one widget, sized by the widget (see fragment-phone above). */
+export function isFragmentCaptureDevice(id) {
+  return captureDevice(id).kind === "fragment";
+}
+
+/**
+ * Why a PNG of this size is not a capture on this device, or null when it is.
+ * A device capture is exactly its framed size; a fragment is any size within
+ * the screen it is cut from.
+ */
+export function captureSizeProblem(id, width, height) {
+  const expected = framedSize(id);
+  if (isFragmentCaptureDevice(id)) {
+    if (width > 0 && height > 0 && width <= expected.width && height <= expected.height) return null;
+    return `Expected a ${id} cut-out within ${expected.width}x${expected.height}, got ${width}x${height}.`;
+  }
+  if (width === expected.width && height === expected.height) return null;
+  return `Expected framed ${id} PNG ${expected.width}x${expected.height}, got ${width}x${height}.`;
+}
+
+/**
+ * The PNG's pixel size: the native screen, plus bezel and canvas margin on
+ * each side for a framed device. For a fragment device, the screen it is cut
+ * from, the largest a cut-out can be.
+ */
 export function framedSize(id) {
   const {logicalWidth, logicalHeight, outputScale, canvasMargin, frameInset} = captureDevice(id);
   const edge = (canvasMargin + frameInset) * outputScale * 2;
@@ -81,6 +118,8 @@ export function deviceFrameSpec(id) {
   const scale = device.outputScale;
   return {
     id,
+    // A cut-out is drawn at the scale of this screen; its own size is the PNG's.
+    ...(device.kind === "fragment" ? {cutFrom: "screen"} : {}),
     logicalSize: {width: device.logicalWidth, height: device.logicalHeight},
     outputScale: scale,
     safeArea: {...device.safeArea},

@@ -314,7 +314,9 @@
         "club_detail_offline",
         "club_detail_text_scale_2",
         "club_detail_reduced_motion",
-        "guest_follow_host"
+        "guest_follow_host",
+        "guest_follow_host_followers_fragment",
+        "guest_follow_host_follow_fragment"
       ],
       "reason": "Club Detail captured across member, visitor, guest, host public, loading, initial fallback loading, empty schedule, missing, error, mutation, offline, text-scale, and reduced-motion states."
     },
@@ -720,6 +722,8 @@
       "captureIds": [
         "host_people_desktop",
         "host_people_phone",
+        "host_people_regular_fragment",
+        "host_people_drifting_fragment",
         "host_forms_phone"
       ],
       "reason": "The Audience destination has deterministic full-shell captures for People, Groups, Forms and Responses; large-text/theme captures use these same production entries."
@@ -739,6 +743,8 @@
       "priority": "P1",
       "captureIds": [
         "host_door_arriving",
+        "host_door_arriving_new_guest_fragment",
+        "host_door_arriving_regular_fragment",
         "host_door_in",
         "host_door_asked",
         "host_door_scan_checked_in",
@@ -839,7 +845,8 @@
         "host_form_settings",
         "host_form_phone",
         "host_form_builder_phone",
-        "host_responses_phone"
+        "host_responses_phone",
+        "host_form_responses_new_fragment"
       ],
       "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts."
     },
@@ -867,7 +874,8 @@
       "priority": "P2",
       "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
       "captureIds": [
-        "host_responses_phone"
+        "host_responses_phone",
+        "host_form_responses_new_fragment"
       ]
     },
     {
@@ -1373,15 +1381,26 @@
         "host_live_needs_phone",
         "host_live_needs_tablet",
         "host_live_scores_phone",
+        "host_live_scores_team_fragment",
+        "host_live_scores_standings_fragment",
+        "host_live_scores_third_team_fragment",
         "host_live_scores_tablet",
         "host_formats_courts_setup_phone",
         "host_formats_courts_phone",
+        "host_formats_courts_court_fragment",
+        "host_formats_courts_sitting_out_fragment",
         "host_formats_courts_tablet",
         "host_formats_mix_phone",
         "host_formats_crawl_phone",
         "host_formats_crawl_move_phone",
+        "host_formats_crawl_move_message_fragment",
+        "host_formats_crawl_move_map_fragment",
         "host_formats_pods_phone",
+        "host_formats_pods_chatty_fragment",
+        "host_formats_pods_needs_pod_fragment",
         "host_formats_rules_phone",
+        "host_formats_rules_consent_fragment",
+        "host_formats_rules_first_time_fragment",
         "host_manage_route_loading",
         "host_manage_route_error",
         "host_manage_route_offline",
@@ -1391,7 +1410,8 @@
         "host_live_room_workspace",
         "host_post_event_report",
         "host_post_event_report_more",
-        "host_event_share_links"
+        "host_event_share_links",
+        "host_event_share_links_whatsapp_fragment"
       ],
       "reason": "Every host event link opens the rebuilt screens through this route: the event workspace, guest lists, live console, run and crawl boards, and report each have deterministic captures, and the route itself has loading, error, offline, not-found and unauthorized captures on its live section."
     },

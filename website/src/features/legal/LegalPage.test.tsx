@@ -1,6 +1,6 @@
 import {expect, it} from "vitest";
 import {renderToStaticMarkup} from "react-dom/server";
-import {adMatchingNoticeCopy, publishedLegalContent} from "../../content/legal";
+import {publishedLegalContent} from "../../content/legal";
 import {LegalPage} from "./LegalPage";
 import {brand} from "@catch/brand";
 
@@ -24,11 +24,10 @@ it("renders section links as navigable anchors", () => {
   expect(markup).toContain('href="/delete-account/"');
 });
 
-it("gives the privacy policy advertising section the anchor the ad-matching notice links to", () => {
+it("gives the privacy policy advertising section a stable anchor", () => {
   const markup = renderToStaticMarkup(<LegalPage page={publishedLegalContent.pages.privacy}
     effectiveDate={publishedLegalContent.effectiveDate} />);
-  const anchor = adMatchingNoticeCopy.href.split("#")[1];
-  expect(adMatchingNoticeCopy.href.startsWith(publishedLegalContent.pages.privacy.path)).toBe(true);
+  const anchor = "ads";
   expect(markup).toContain(`id="${anchor}"`);
   const section = markup.slice(markup.indexOf(`id="${anchor}"`));
   expect(section).toContain("Advertising partners.");

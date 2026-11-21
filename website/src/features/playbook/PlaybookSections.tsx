@@ -34,7 +34,7 @@ import {
   type PlaybookPageDocument,
   type PlaybookSectionOf,
 } from "../../content/playbook/playbookContract";
-import {captureSlot, type CaptureSlots} from "../../shared/media/captureSlot";
+import {captureFragment, captureSlot, type CaptureSlots} from "../../shared/media/captureSlot";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
 import type {BoundPlaybookSectionType} from "./playbookBindings";
 import {AppDownloadQr} from "../marketing/AppDownloadQr";
@@ -73,15 +73,17 @@ function footnoteMark(page: PlaybookPageDocument, id: string | undefined) {
 /**
  * One media item as the kit draws it: a capture of the real app in its device
  * frame, a photo or a QR code. App screens are never drawn: they come only from
- * the capture pipeline (docs/marketing_app_media_pipeline.md).
+ * the capture pipeline (docs/marketing_app_media_pipeline.md). A capture
+ * carries its caption, except in a hero, which never captions its screen
+ * (the lead already says it).
  */
-function PlaybookMediaView({media, captures}: {media: PlaybookMedia; captures: CaptureSlots}) {
+function PlaybookMediaView({media, captures, captioned = true}: {media: PlaybookMedia; captures: CaptureSlots; captioned?: boolean}) {
   if (media.kind === "capture") {
     const capture = captureSlot(captures, media.slot);
     if (!capture) return null;
     const tablet = (capture.width ?? 0) > (capture.height ?? 0);
     return (
-      <CatchScreenPreview caption={typeof capture.caption === "string" ? capture.caption : undefined} image={capture.src}
+      <CatchScreenPreview caption={captioned && typeof capture.caption === "string" ? capture.caption : undefined} image={capture.src}
         kind={tablet ? "tablet" : "phone"} semanticsLabel={media.alt ?? capture.alt} />
     );
   }
@@ -139,10 +141,14 @@ function ActionRow({actions, whatsapp = false}: {actions: readonly CatchBandActi
 const HeroBinding: Binding<"hero"> = ({section, context}) => {
   const {controller, captures, page} = context;
   const photo = section.media?.kind === "photo" ? section.media : undefined;
+  const screen = section.media?.kind === "capture" ? section.media.slot : undefined;
+  const fragments = screen
+    ? (section.fragments ?? []).flatMap((slot) => captureFragment(captures, slot, screen) ?? [])
+    : [];
   return (
     <CatchHeroSection
       actions={controller.actions(section.actions, section.id)}
-      aside={section.chip}
+      fragments={fragments}
       ground={section.ground}
       id={section.id}
       kicker={section.kicker}
@@ -150,7 +156,7 @@ const HeroBinding: Binding<"hero"> = ({section, context}) => {
       layout={photo ? "photo" : "split"}
       lead={section.lead}
       link={section.aside ? controller.link(section.aside) : undefined}
-      media={photo ? undefined : media(section, captures)}
+      media={photo || !section.media ? undefined : <PlaybookMediaView captioned={false} captures={captures} media={section.media} />}
       note={withWhatsAppReply(section.note, [...section.actions, section.aside])}
       proof={section.proof?.map((line) => ({text: line.text, footnote: footnoteMark(page, line.footnote)}))}
       title={section.title}

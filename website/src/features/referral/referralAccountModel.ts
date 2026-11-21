@@ -49,22 +49,10 @@ export function referralAccount(input: {loaded: boolean; user: ReferralAccountUs
   return {status: "owner", name: input.ownership.length === 1 ? input.ownership[0].name : phone};
 }
 
-/** Untrusted reply fields: only the keys read, every value unknown. */
-type Untrusted = {readonly [key: string]: unknown};
-
 /**
- * The live host pages in one listMyOwnedOrganizers page, and its cursor. An
- * archived page earns nothing, so it is left out; malformed entries are
- * ignored.
+ * The live host pages among the organizers an account owns. An archived page
+ * earns nothing, so it is left out.
  */
-export function liveOwnedOrganizersPage(reply: unknown): {organizers: ReferralOwnedOrganizer[]; next: string | null} {
-  const page = (reply ?? {}) as Untrusted;
-  const entries: unknown[] = Array.isArray(page.organizers) ? page.organizers : [];
-  const organizers: ReferralOwnedOrganizer[] = [];
-  for (const entry of entries) {
-    const item = (entry ?? {}) as Untrusted;
-    if (typeof item.organizerId !== "string" || !item.organizerId || item.archived === true) continue;
-    organizers.push({organizerId: item.organizerId, name: typeof item.name === "string" && item.name ? item.name : item.organizerId});
-  }
-  return {organizers, next: typeof page.nextAfterOrganizerId === "string" ? page.nextAfterOrganizerId : null};
+export function liveOwnedOrganizers(rows: readonly {organizerId: string; name: string; archived: boolean}[]): ReferralOwnedOrganizer[] {
+  return rows.filter((row) => row.organizerId && !row.archived).map(({organizerId, name}) => ({organizerId, name: name || organizerId}));
 }

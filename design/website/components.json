@@ -1552,7 +1552,7 @@
         "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "The opening band of a website page (the playbook kit's hero and photo hero): kicker, h1, lead, tag chips, footnoted proof lines, band actions, a side link, and a screen beside it with a floating stat card, or a full-bleed photo. It composes catch.chip, catch.icon (the side link's arrow), catch.detail_media, catch.stack, catch.surface and catch.text inside its own ground (catch.root's ground provider); it is a page band, not any of those parts, and implements none of their contracts. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
+      "comparisonReason": "The opening band of a website page (the playbook kit's hero and photo hero): kicker, h1, lead, tag chips, footnoted proof lines, band actions, a side link, and a screen beside it with the plan chip or up to three cut-outs of that screen (fragment captures, never a drawn card) floating over it, or a full-bleed photo. It composes catch.chip, catch.icon (the side link's arrow), catch.detail_media, catch.stack, catch.surface and catch.text inside its own ground (catch.root's ground provider); it is a page band, not any of those parts, and implements none of their contracts. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
       "css": [
         "packages/web-ui/src/components/CatchHeroSection.module.css"
       ],
@@ -6509,6 +6509,26 @@
         ]
       },
       "notes": "A button that opens the sign-in sheet and reports the signed-in user."
+    },
+    {
+      "id": "terms_line",
+      "kind": "supporting-component",
+      "routeIds": [
+        "account"
+      ],
+      "owner": "features/account",
+      "source": "website/src/features/account/TermsLine.tsx",
+      "exportName": "TermsLine",
+      "css": [
+        "packages/web-ui/src/components/CatchLinkedText.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "signed-out"
+        ]
+      },
+      "notes": "The one legal line where someone signs up (sign-in sheet and the account step before booking): the terms and privacy policy, linked. The privacy policy covers ad measurement; there is no separate ad notice."
     },
     {
       "id": "site_account_menu",

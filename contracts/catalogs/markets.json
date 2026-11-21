@@ -102,7 +102,7 @@
       "aliases": ["delhi", "new-delhi", "delhi-ncr", "ncr"],
       "lifecycle": "waitlist",
       "surfaces": {"profileSelectable": false, "hostCreatable": false, "eventCreatable": false, "exploreVisible": false, "websiteListed": true},
-      "ads": {"host": "on", "guest": "off", "metaCityKeys": ["1023040", "1024627", "1025436", "1026297", "2678292"], "googleGeoTargetIds": [20456, 1007764, 1007765, 1007820, 1007826]},
+      "ads": {"host": "off", "guest": "off", "metaCityKeys": ["1023040", "1024627", "1025436", "1026297", "2678292"], "googleGeoTargetIds": [20456, 1007764, 1007765, 1007820, 1007826]},
       "legacyIds": ["in-delhi"]
     },
     {
@@ -120,7 +120,7 @@
       "aliases": ["bengaluru", "bangalore"],
       "lifecycle": "waitlist",
       "surfaces": {"profileSelectable": false, "hostCreatable": false, "eventCreatable": false, "exploreVisible": false, "websiteListed": true},
-      "ads": {"host": "on", "guest": "off", "metaCityKeys": ["1017930"], "googleGeoTargetIds": [1007768]},
+      "ads": {"host": "off", "guest": "off", "metaCityKeys": ["1017930"], "googleGeoTargetIds": [1007768]},
       "legacyIds": ["in-bangalore"]
     },
     {

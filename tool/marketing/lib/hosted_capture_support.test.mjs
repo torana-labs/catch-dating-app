@@ -141,6 +141,12 @@ export function fixture(t, {web = false, catalog = null} = {}) {
       const coverage = args.find(a => a.startsWith('--coverage-path='));
       if (coverage) { fs.mkdirSync(require('node:path').dirname(coverage.slice(16)), {recursive: true});
         fs.writeFileSync(coverage.slice(16), 'SF:lib/leaf.dart\\nDA:1,1\\nend_of_record\\n'); }
+      // Each capture's raw screen, as the runner writes it; unframed screens are copied from here.
+      const out = (args.find(a => a.startsWith('--dart-define=CAPTURE_OUTPUT_DIR=')) ?? '').split('=').slice(2).join('=');
+      for (const id of (process.env.CAPTURE_IDS ?? '').split(',').filter(Boolean)) if (out) {
+        fs.mkdirSync(out + '/' + id, {recursive: true});
+        fs.writeFileSync(out + '/' + id + '/light.png', Buffer.from(${JSON.stringify(png.toString("base64"))},'base64'));
+      }
       fs.appendFileSync(${JSON.stringify(calls)}, JSON.stringify({command:'flutter', args, ids: process.env.CAPTURE_IDS})+'\\n');
     }`);
   executable("dart", `const fs = require('node:fs'); const args = process.argv.slice(2);

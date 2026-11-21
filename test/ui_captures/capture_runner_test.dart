@@ -62,6 +62,7 @@ void main() {
         drive: entry.drive,
         cleanup: entry.cleanup,
         device: device,
+        fragment: entry.fragment,
         pixelRatio: pixelRatio,
         textScale: textScaleOverride ?? entry.textScale,
         disableAnimations: entry.disableAnimations,

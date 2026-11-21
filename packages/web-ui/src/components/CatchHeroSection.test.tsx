@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {CatchHeroSection} from "./CatchHeroSection";
@@ -55,18 +58,55 @@ describe("CatchHeroSection", () => {
     expect(screen.getAllByRole("listitem")).toHaveLength(4);
   });
 
-  it("sets the media beside the copy and floats the aside card over it", () => {
-    render(
+  it("sets the media beside the copy with no floating card of its own", () => {
+    const {container} = render(<CatchHeroSection media={<div data-testid="media" />} title="Headline" />);
+    expect(screen.getByTestId("media")).toBeTruthy();
+    expect(screen.getByRole("region").dataset.pad).toBe("none");
+    expect(container.querySelector("[data-floating]")).toBeNull();
+    expect(container.querySelector("dl")).toBeNull();
+  });
+
+  it("lifts up to three cut-outs of the media's screen in place, each over the spot it was cut from", () => {
+    const fragment = (name: string, x: number, y: number) => ({src: `/${name}.png`, width: 720, height: 120, rect: {x, y, width: 0.9, height: 0.07}});
+    const {container} = render(
       <CatchHeroSection
-        aside={{title: "Card title", rows: [{label: "First", value: "12"}, {label: "Second", value: "3"}]}}
+        fragments={[fragment("first", 0.05, 0.3), {src: "/second.png", width: 300, height: 100, rect: {x: 0.6, y: 0.5, width: 0.37, height: 0.06}},
+          fragment("third", 0.05, 0.7), fragment("fourth", 0.05, 0.9)]}
         media={<div data-testid="media" />}
         title="Headline"
       />,
     );
-    expect(screen.getByTestId("media")).toBeTruthy();
-    expect(screen.getByText("First").closest("dt")).not.toBeNull();
-    expect(screen.getByText("12").closest("dd")).not.toBeNull();
-    expect(screen.getByRole("region").dataset.pad).toBe("none");
+    const media = container.querySelector("[data-floating]")!;
+    expect(media.contains(screen.getByTestId("media"))).toBe(true);
+    const items = [...container.querySelectorAll("li")] as HTMLElement[];
+    expect(items.map((item) => item.querySelector("img")!.getAttribute("src"))).toEqual(["/first.png", "/second.png", "/third.png"]);
+    expect(items[0].style.getPropertyValue("--catch-hero-fragment-x")).toBe("0.05");
+    expect(items[0].style.getPropertyValue("--catch-hero-fragment-y")).toBe("0.3");
+    expect(items[0].style.getPropertyValue("--catch-hero-fragment-width")).toBe("0.9");
+    // A full-width row leans to alternate edges; a narrower one to the nearer edge.
+    expect(items.map((item) => item.dataset.side)).toEqual(["start", "end", "start"]);
+    // The layer takes the phone frame's geometry, so its list is the screen box.
+    expect((items[0].closest("ul")!.parentElement as HTMLElement).style.getPropertyValue("--catch-device-inset")).not.toBe("");
+    // They repeat parts of the screen the media already names, so they are decorative.
+    expect(items[0].closest("[aria-hidden='true']")).not.toBeNull();
+    expect(items[0].querySelector("img")!.getAttribute("alt")).toBe("");
+  });
+
+  it("hangs the media under the copy below the expanded width, so the phone never rises over the actions", () => {
+    const css = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "CatchHeroSection.module.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    // The layout steps only at the page's expanded width, never on a viewport media query.
+    expect(css).not.toMatch(/@media[^{]*width/);
+    const compact = css.slice(css.indexOf("@container catch-page (width < 840px)"));
+    expect(compact).toMatch(/\.media\s*\{[^}]*align-items:\s*flex-start/);
+    // A cropped media clips its foot (the band's bottom edge), never its top.
+    expect(compact).toMatch(/\.media\[data-floating\]\s*\{[^}]*overflow-y:\s*clip/);
+    expect(compact).toMatch(/\.fragment:nth-child\(n \+ 3\)\s*\{\s*display:\s*none/);
+  });
+
+  it("draws no cut-outs without media to cut them from", () => {
+    const {container} = render(<CatchHeroSection fragments={[{src: "/a.png", width: 400, height: 100, rect: {x: 0, y: 0.5, width: 0.5, height: 0.06}}]} title="Headline" />);
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("[data-floating]")).toBeNull();
   });
 
   it("paints the ground as the band colour and the ink ground in the dark theme", () => {

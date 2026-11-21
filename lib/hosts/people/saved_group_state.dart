@@ -6,6 +6,11 @@ import 'package:flutter/foundation.dart';
 /// to read it.
 enum HostSavedGroupStatus { loading, ready, error }
 
+/// One person a hand-picked group lists: the chosen contact id and, while
+/// the contact is in the directory, its name. No name means the contact was
+/// merged into another, removed or hidden.
+typedef HostSavedGroupMember = ({String contactId, String? displayName});
+
 /// A saved group and who it holds now.
 @immutable
 class HostSavedGroupState {
@@ -15,6 +20,9 @@ class HostSavedGroupState {
     this.preview,
     this.previewFailed = false,
     this.eventTitle,
+    this.members,
+    this.membersFailed = false,
+    this.moreMembers = false,
     this.error,
   });
 
@@ -35,6 +43,16 @@ class HostSavedGroupState {
 
   /// The count could not be read.
   final bool previewFailed;
+
+  /// A hand-picked group's people read so far, in the order chosen; null
+  /// while the first page is read, and for a group made of rules.
+  final List<HostSavedGroupMember>? members;
+
+  /// A page of a hand-picked group's people could not be read.
+  final bool membersFailed;
+
+  /// A hand-picked group has people past the pages read.
+  final bool moreMembers;
 
   /// The event a Went to rule names, when the events read has it.
   final String? eventTitle;

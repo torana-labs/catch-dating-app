@@ -1,7 +1,8 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useMemo, useState} from "react";
 import {ownerViewBackends, type OwnerViewBackends} from "./ownerViewBackends";
-import type {OwnerCapability, OwnerFollowerMessages, OwnerLink, OwnerViewData} from "./ownerViewTypes";
+import {useLiveRead} from "../../../shared/query/useLiveRead";
+import type {OwnerCapability, OwnerFollowerMessages, OwnerLink, OwnerTrackingSettings, OwnerViewData} from "./ownerViewTypes";
 
 /** The owner view's five tabs, each shown only when the role has one of its capabilities. */
 export type OwnerTab = "insights" | "links" | "page" | "audience" | "settings";
@@ -105,8 +106,9 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
         ...(input.whatsapp ? {channels: ["app", "whatsapp"]} : {})})});
 
   // Tracking settings.
-  const tracking = useQuery({queryKey: ["ownerTracking", organizerId], queryFn: () => backends.getTracking(organizerId),
-    enabled: open && tab === "settings" && can("settings"), retry: false});
+  // Live, so a save elsewhere shows here without a reload.
+  const tracking = useLiveRead<OwnerTrackingSettings>(open && tab === "settings" && can("settings") ?
+    `${uid}/${organizerId}` : null, (onValue, onError) => backends.watchTracking(organizerId, onValue, onError));
   const [pixelDraft, setPixelDraft] = useState<string | null>(null);
   const [gaDraft, setGaDraft] = useState<string | null>(null);
   const trackingMutation = useMutation({retry: false, gcTime: 0,
@@ -226,7 +228,7 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
       },
     },
     tracking: {
-      ready: tracking.isSuccess,
+      ready: tracking.status === "success",
       canEdit: tracking.data?.canEdit ?? false,
       live: tracking.data?.live ?? false,
       notLiveReason: tracking.data?.notLiveReason ?? null,
@@ -239,7 +241,7 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
         if (!tracking.data) return;
         void run("settings", "tracking", () => trackingMutation.mutateAsync({expectedRevision: tracking.data.revision,
           metaPixelId: pixel.trim() || null, googleMeasurementId: ga.trim() || null}),
-        () => {setPixelDraft(null); setGaDraft(null); void tracking.refetch();});
+        () => {setPixelDraft(null); setGaDraft(null);});
       },
     },
   };

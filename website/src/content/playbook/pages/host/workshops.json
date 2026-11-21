@@ -33,14 +33,7 @@
         "label": "Teaching for a company team? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Saturday wheel-throwing",
-        "rows": [
-          {"label": "Booked", "value": "12 of 12"},
-          {"label": "Waitlist", "value": "4"},
-          {"label": "Back again", "value": "5"}
-        ]
-      },
+      "fragments": ["host-door-arriving-new-guest", "host-door-arriving-regular"],
       "media": {"kind": "capture", "slot": "host-door-arriving"}
     },
     {

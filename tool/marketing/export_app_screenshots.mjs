@@ -5,7 +5,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
-import {captureDeviceIds, deviceFrameSpec} from "./lib/capture_devices.mjs";
+import {captureDeviceIds, deviceFrameSpec, isFragmentCaptureDevice, isFramedCaptureDevice} from "./lib/capture_devices.mjs";
 import {captureCatalogIndex, captureEntryPath, readCaptureCatalogFiles} from "../ui_capture/lib/capture_catalog_sources.mjs";
 
 const manifestPath = fromRepo("tool/marketing/capture_manifest.json");
@@ -236,24 +236,37 @@ async function updateExports(staleOnly = false) {
 
   // Each capture renders alone, with coverage, so its provenance records the
   // files that render executed. Only a successful, complete render of that
-  // capture produces the list; any failure stops before stamping.
+  // capture produces the list; any failure stops before stamping. A fragment
+  // renders in its screen's process instead (a family: the screen, when it is
+  // selected, then its fragments), on the screen's device, which fragment-phone
+  // mirrors; the family shares that process's coverage list, a superset of
+  // each member's. A fragment so costs its own test, not a whole process.
   const coverageDir = fromRepo(path.join(rawOutputDir, "coverage"));
-  for (const {capture, entry, inputHash} of selected) {
-    fs.rmSync(fromRepo(path.join(rawOutputDir, entry.id)), {recursive: true, force: true});
-    const lcovPath = path.join(coverageDir, `${entry.id}.lcov`);
+  const families = new Map();
+  for (const item of selected) {
+    const key = item.capture.fragmentOf ?? item.capture.id;
+    if (!families.has(key)) families.set(key, []);
+    families.get(key).push(item);
+  }
+  for (const [screenId, members] of families) {
+    members.sort((a, b) => Number(Boolean(a.capture.fragmentOf)) - Number(Boolean(b.capture.fragmentOf)));
+    const screen = (manifest.captures ?? []).find(capture => capture.id === screenId);
+    const device = screen?.device ?? members[0].capture.device;
+    for (const {entry} of members) fs.rmSync(fromRepo(path.join(rawOutputDir, entry.id)), {recursive: true, force: true});
+    const lcovPath = path.join(coverageDir, `${members[0].entry.id}.lcov`);
     fs.rmSync(lcovPath, {force: true});
-    let result = spawnSync(
+    const result = spawnSync(
       "node",
       [
         "tool/ui_capture/run_captures.mjs",
         "--ids",
-        entry.id,
+        members.map(({entry}) => entry.id).join(","),
         "--output-dir",
         rawOutputDir,
         "--device",
-        capture.device,
+        device,
         "--pixel-ratio",
-        String(deviceFrameSpec(capture.device).outputScale),
+        String(deviceFrameSpec(device).outputScale),
         "--platform",
         "ios",
         "--sf-font",
@@ -265,30 +278,35 @@ async function updateExports(staleOnly = false) {
     );
     if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
     if (!fs.existsSync(lcovPath)) {
-      fail("Marketing app screenshot export failed.", [`${capture.id}: the render wrote no coverage report.`]);
+      fail("Marketing app screenshot export failed.", [`${screenId}: the render wrote no coverage report.`]);
     }
     const executedFiles = executedFilesFromLcov(fs.readFileSync(lcovPath, "utf8"));
-    const inputPath = path.join(rawOutputDir, entry.id, "light.png");
-    fs.rmSync(fromRepo(capture.sourcePath), {force: true});
-    result = spawnSync(
-      "dart",
-      [
-        "run",
-        "tool/marketing/frame_device_capture.dart",
-        "--input",
-        inputPath,
-        "--output",
-        capture.sourcePath,
-        "--device",
-        capture.device,
-      ],
-      {cwd: repoRoot, stdio: "inherit"}
-    );
-    if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
-    if (staticInputHash(capture) !== inputHash) {
-      fail("Capture inputs changed during rendering.", ["Rerun the exporter from a stable source tree."]);
+    for (const {capture, entry, inputHash} of members) {
+      const inputPath = path.join(rawOutputDir, entry.id, "light.png");
+      fs.rmSync(fromRepo(capture.sourcePath), {force: true});
+      fs.mkdirSync(path.dirname(fromRepo(capture.sourcePath)), {recursive: true});
+      let fragment;
+      if (isFragmentCaptureDevice(capture.device)) {
+        // The runner already cut the widget out of its screen and wrote where it sits.
+        fs.copyFileSync(fromRepo(inputPath), fromRepo(capture.sourcePath));
+        fragment = JSON.parse(fs.readFileSync(fromRepo(inputPath.replace(/\.png$/u, ".fragment.json")), "utf8"));
+      } else if (!isFramedCaptureDevice(capture.device)) {
+        // An unframed screen is the render itself (the website draws its frame);
+        // the stamp checks its size.
+        fs.copyFileSync(fromRepo(inputPath), fromRepo(capture.sourcePath));
+      } else {
+        const framed = spawnSync(
+          "dart",
+          ["run", "tool/marketing/frame_device_capture.dart", "--input", inputPath, "--output", capture.sourcePath, "--device", capture.device],
+          {cwd: repoRoot, stdio: "inherit"}
+        );
+        if ((framed.status ?? 1) !== 0) process.exit(framed.status ?? 1);
+      }
+      if (staticInputHash(capture) !== inputHash) {
+        fail("Capture inputs changed during rendering.", ["Rerun the exporter from a stable source tree."]);
+      }
+      stampCapture(capture, entry.id, sfFont, {executedFiles, fragment});
     }
-    stampCapture(capture, entry.id, sfFont, {executedFiles});
   }
 }
 
@@ -330,6 +348,9 @@ function validateExports(manifest, catalog, {requireSources}) {
     }
 
     errors.push(...validateEntryPlacement(capture, entry, catalog));
+    if (supportedDevices.has(capture.device) && isFragmentCaptureDevice(capture.device)) {
+      errors.push(...validateFragmentEntry(capture, entry, manifest, catalog));
+    }
 
     if (requireSources && fs.existsSync(fromRepo(capture.sourcePath))) {
       errors.push(...validateCapture(capture, entry.id));
@@ -362,6 +383,48 @@ function validateEntryPlacement(capture, entry, catalog) {
     errors.push(`${capture.id}: ${captureCatalogIndex} marketingScreenCaptures must map '${entry.id}' to the entry declared in ${expected}.`);
   }
   return errors;
+}
+
+// A fragment is cut from its screen's own render: its entry names the widget
+// to cut out (fragment:) and passes every render option of the screen's entry
+// through by reference (builder, providerOverrides, drive, ...), so the
+// names and numbers it shows are the screen's. Only its identity, device and
+// fragment are its own.
+function validateFragmentEntry(capture, entry, manifest, catalog) {
+  const fragmentOwnArguments = new Set(["id", "routeIds", "marketingFixtureKeys", "device", "fragment"]);
+  const screen = (manifest.captures ?? []).find(other => other.id === capture.fragmentOf);
+  const screenEntry = screen && !isWebCapture(screen) ? findCatalogEntry(catalog, screen.fixtureKey) : null;
+  if (!screenEntry) return [`${capture.id}: fragmentOf must name the app capture it is cut from.`];
+  const screenSource = catalog.sources.get(screenEntry.file) ?? "";
+  const screenVariable = screenSource.match(/^final\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*ScreenCaptureEntry\(/mu)?.[1];
+  const [block] = extractCallBlocks(catalog.sources.get(entry.file) ?? "", "ScreenCaptureEntry");
+  const [screenBlock] = extractCallBlocks(screenSource, "ScreenCaptureEntry");
+  if (!screenVariable || !block || !screenBlock) return [`${capture.id}: cannot read ${entry.file} or ${screenEntry.file}.`];
+  const errors = [];
+  const own = entryArguments(block);
+  if (!/^CaptureFragment\(/u.test(own.get("fragment") ?? "")) {
+    errors.push(`${capture.id}: ${entry.file} must name the widget it cuts out (fragment: CaptureFragment(...)).`);
+  }
+  for (const name of entryArguments(screenBlock).keys()) {
+    if (fragmentOwnArguments.has(name)) continue;
+    if (own.get(name) !== `${screenVariable}.${name}`) errors.push(`${capture.id}: ${entry.file} must pass ${name}: ${screenVariable}.${name}, so it cuts from the same screen.`);
+  }
+  for (const [name, value] of own) {
+    if (!fragmentOwnArguments.has(name) && value !== `${screenVariable}.${name}`) {
+      errors.push(`${capture.id}: ${entry.file} sets ${name} itself; a fragment takes ${screenVariable}.${name} or leaves it out.`);
+    }
+  }
+  return errors;
+}
+
+// The named arguments of a formatted ScreenCaptureEntry(...) call: each
+// starts a line at the call's own indent, and its value is the text up to
+// the next one (trailing comma dropped).
+function entryArguments(block) {
+  const body = block.slice(block.indexOf("(") + 1, -1);
+  const starts = [...body.matchAll(/^ {2}([A-Za-z_][A-Za-z0-9_]*):\s*/gmu)];
+  return new Map(starts.map((match, index) => [match[1],
+    body.slice(match.index + match[0].length, starts[index + 1]?.index ?? body.length).trim().replace(/,$/u, "")]));
 }
 
 // A web capture names the story it renders and the address Safari shows.

@@ -273,3 +273,24 @@ test("unframed devices render as plain screens: the Dart framer passes them thro
   assert.deepEqual(screenContext({device: "desktop-browser"}), {viewport: {width: 1440, height: 900}, deviceScaleFactor: 2,
     isMobile: false, hasTouch: false, timezoneId: "Asia/Kolkata", locale: "en-IN", colorScheme: "light", reducedMotion: "reduce"});
 });
+
+test("a fragment-phone capture is a cut-out of the generic phone's screen, sized by its widget", async () => {
+  const {captureDevice, captureSizeProblem, deviceFrameSpec, isFragmentCaptureDevice, isPhoneCaptureDevice} = await import("./lib/capture_devices.mjs");
+  const phone = captureDevice("generic-phone");
+  const fragment = captureDevice("fragment-phone");
+  // Laid out on the very screen it is cut from, so the widget matches the phone capture.
+  for (const key of ["logicalWidth", "logicalHeight", "outputScale", "safeArea"]) assert.deepEqual(fragment[key], phone[key], key);
+  assert.equal(isFragmentCaptureDevice("fragment-phone"), true);
+  assert.equal(isFragmentCaptureDevice("generic-phone"), false);
+  assert.equal(isPhoneCaptureDevice("fragment-phone"), false);
+  assert.equal(captureSizeProblem("fragment-phone", 724, 232), null);
+  assert.match(captureSizeProblem("fragment-phone", 806, 232), /cut-out within 804x1748/u);
+  assert.match(captureSizeProblem("fragment-phone", 0, 232), /cut-out within/u);
+  assert.equal(captureSizeProblem("generic-phone", 804, 1748), null);
+  assert.match(captureSizeProblem("generic-phone", 724, 232), /Expected framed generic-phone PNG 804x1748/u);
+  assert.equal(deviceFrameSpec("fragment-phone").cutFrom, "screen");
+  assert.equal("cutFrom" in deviceFrameSpec("generic-phone"), false);
+  // The Flutter render lays out the same screen.
+  const flutterDevices = fs.readFileSync(fromRepo("test/ui_captures/support/capture_device.dart"), "utf8");
+  assert.match(flutterDevices, /id: 'fragment-phone',\s*size: Size\(402, 874\),\s*safeArea: EdgeInsets\.only\(top: 62, bottom: 34\)/u);
+});

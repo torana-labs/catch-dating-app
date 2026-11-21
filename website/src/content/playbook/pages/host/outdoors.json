@@ -33,14 +33,7 @@
         "label": "Running treks for a company? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Kalsubai sunrise",
-        "rows": [
-          {"label": "Waivers signed", "value": "42 of 42"},
-          {"label": "First trek", "value": "14"},
-          {"label": "Back home", "value": "40"}
-        ]
-      },
+      "fragments": ["host-formats-pods-chatty", "host-formats-pods-needs-pod"],
       "media": {"kind": "capture", "slot": "host-formats-pods"}
     },
     {

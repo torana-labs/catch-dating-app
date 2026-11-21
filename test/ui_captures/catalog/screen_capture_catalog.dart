@@ -292,6 +292,8 @@ import 'entries/event_success_companion_micro_pod_assignment.dart';
 import 'entries/guest_after_event.dart';
 import 'entries/guest_book_sheet.dart';
 import 'entries/guest_follow_host.dart';
+import 'entries/guest_follow_host_follow_fragment.dart';
+import 'entries/guest_follow_host_followers_fragment.dart';
 import 'entries/guest_group_chat.dart';
 import 'entries/guest_reminder.dart';
 import 'entries/host_application_detail.dart';
@@ -307,14 +309,26 @@ import 'entries/host_create_suppers.dart';
 import 'entries/host_create_teams.dart';
 import 'entries/host_create_venues.dart';
 import 'entries/host_door_arriving.dart';
+import 'entries/host_door_arriving_new_guest_fragment.dart';
+import 'entries/host_door_arriving_regular_fragment.dart';
 import 'entries/host_door_in.dart';
 import 'entries/host_event_share_links.dart';
+import 'entries/host_event_share_links_whatsapp_fragment.dart';
+import 'entries/host_form_responses_new_fragment.dart';
+import 'entries/host_formats_courts_court_fragment.dart';
 import 'entries/host_formats_courts_phone.dart';
 import 'entries/host_formats_courts_setup_phone.dart';
+import 'entries/host_formats_courts_sitting_out_fragment.dart';
+import 'entries/host_formats_crawl_move_map_fragment.dart';
+import 'entries/host_formats_crawl_move_message_fragment.dart';
 import 'entries/host_formats_crawl_move_phone.dart';
 import 'entries/host_formats_crawl_phone.dart';
 import 'entries/host_formats_mix_phone.dart';
+import 'entries/host_formats_pods_chatty_fragment.dart';
+import 'entries/host_formats_pods_needs_pod_fragment.dart';
 import 'entries/host_formats_pods_phone.dart';
+import 'entries/host_formats_rules_consent_fragment.dart';
+import 'entries/host_formats_rules_first_time_fragment.dart';
 import 'entries/host_formats_rules_phone.dart';
 import 'entries/host_home_dashboard.dart';
 import 'entries/host_insights_phone.dart';
@@ -322,6 +336,9 @@ import 'entries/host_live_console.dart';
 import 'entries/host_live_needs_phone.dart';
 import 'entries/host_live_now_tablet.dart';
 import 'entries/host_live_scores_phone.dart';
+import 'entries/host_live_scores_standings_fragment.dart';
+import 'entries/host_live_scores_team_fragment.dart';
+import 'entries/host_live_scores_third_team_fragment.dart';
 import 'entries/host_live_tablet_colleges.dart';
 import 'entries/host_live_tablet_communities.dart';
 import 'entries/host_live_tablet_creators.dart';
@@ -337,7 +354,9 @@ import 'entries/host_live_tablet_workshops.dart';
 import 'entries/host_organizer_memberships.dart';
 import 'entries/host_organizer_payments_phone.dart';
 import 'entries/host_organizer_team_phone.dart';
+import 'entries/host_people_drifting_fragment.dart';
 import 'entries/host_people_phone.dart';
+import 'entries/host_people_regular_fragment.dart';
 import 'entries/host_person_phone.dart';
 import 'entries/host_post_event_report.dart';
 import 'entries/host_post_event_report_more.dart';
@@ -6850,17 +6869,42 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_staff_departures_phone': () => hostStaffDeparturesPhoneCapture,
   'host_home_dashboard': () => hostHomeDashboardCapture,
   'host_door_arriving': () => hostDoorArrivingCapture,
+  'host_door_arriving_new_guest_fragment': () =>
+      hostDoorArrivingNewGuestFragmentCapture,
+  'host_door_arriving_regular_fragment': () =>
+      hostDoorArrivingRegularFragmentCapture,
   'host_door_in': () => hostDoorInCapture,
   'host_live_now_tablet': () => hostLiveNowTabletCapture,
   'host_live_needs_phone': () => hostLiveNeedsPhoneCapture,
   'host_live_scores_phone': () => hostLiveScoresPhoneCapture,
+  'host_live_scores_team_fragment': () => hostLiveScoresTeamFragmentCapture,
+  'host_live_scores_standings_fragment': () =>
+      hostLiveScoresStandingsFragmentCapture,
+  'host_live_scores_third_team_fragment': () =>
+      hostLiveScoresThirdTeamFragmentCapture,
   'host_formats_courts_setup_phone': () => hostFormatsCourtsSetupPhoneCapture,
   'host_formats_courts_phone': () => hostFormatsCourtsPhoneCapture,
+  'host_formats_courts_court_fragment': () =>
+      hostFormatsCourtsCourtFragmentCapture,
+  'host_formats_courts_sitting_out_fragment': () =>
+      hostFormatsCourtsSittingOutFragmentCapture,
   'host_formats_mix_phone': () => hostFormatsMixPhoneCapture,
   'host_formats_crawl_phone': () => hostFormatsCrawlPhoneCapture,
   'host_formats_crawl_move_phone': () => hostFormatsCrawlMovePhoneCapture,
+  'host_formats_crawl_move_message_fragment': () =>
+      hostFormatsCrawlMoveMessageFragmentCapture,
+  'host_formats_crawl_move_map_fragment': () =>
+      hostFormatsCrawlMoveMapFragmentCapture,
   'host_formats_pods_phone': () => hostFormatsPodsPhoneCapture,
+  'host_formats_pods_chatty_fragment': () =>
+      hostFormatsPodsChattyFragmentCapture,
+  'host_formats_pods_needs_pod_fragment': () =>
+      hostFormatsPodsNeedsPodFragmentCapture,
   'host_formats_rules_phone': () => hostFormatsRulesPhoneCapture,
+  'host_formats_rules_consent_fragment': () =>
+      hostFormatsRulesConsentFragmentCapture,
+  'host_formats_rules_first_time_fragment': () =>
+      hostFormatsRulesFirstTimeFragmentCapture,
   'member_event_discovery': () => memberEventDiscoveryCapture,
   'host_live_console': () => hostLiveConsoleCapture,
   'host_post_event_report': () => hostPostEventReportCapture,
@@ -6891,6 +6935,8 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_application_detail': () => hostApplicationDetailCapture,
   'host_organizer_memberships': () => hostOrganizerMembershipsCapture,
   'host_event_share_links': () => hostEventShareLinksCapture,
+  'host_event_share_links_whatsapp_fragment': () =>
+      hostEventShareLinksWhatsappFragmentCapture,
   'event_success_companion_first_hello_assigned': () =>
       eventSuccessCompanionFirstHelloAssignedCapture,
   'host_organizer_payments_phone': () => hostOrganizerPaymentsPhoneCapture,
@@ -6899,10 +6945,17 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_automations_phone': () => hostAutomationsPhoneCapture,
   'host_person_phone': () => hostPersonPhoneCapture,
   'host_people_phone': () => hostPeoplePhoneCapture,
+  'host_people_regular_fragment': () => hostPeopleRegularFragmentCapture,
+  'host_people_drifting_fragment': () => hostPeopleDriftingFragmentCapture,
   'host_response_phone': () => hostResponsePhoneCapture,
   'host_responses_phone': () => hostResponsesPhoneCapture,
+  'host_form_responses_new_fragment': () => hostFormResponsesNewFragmentCapture,
   'guest_book_sheet': () => guestBookSheetCapture,
   'guest_follow_host': () => guestFollowHostCapture,
+  'guest_follow_host_followers_fragment': () =>
+      guestFollowHostFollowersFragmentCapture,
+  'guest_follow_host_follow_fragment': () =>
+      guestFollowHostFollowFragmentCapture,
   'guest_group_chat': () => guestGroupChatCapture,
   'guest_reminder': () => guestReminderCapture,
   'host_create_first_event': () => hostCreateFirstEventCapture,
