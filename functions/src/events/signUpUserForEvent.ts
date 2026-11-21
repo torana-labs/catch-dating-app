@@ -24,7 +24,7 @@ import {
   participantUids,
   eventParticipationId,
   eventParticipationPatch,
-  eventParticipationsByStatusInTransaction,
+  eventBookingsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
 import {
   activityNotificationId,
@@ -105,7 +105,7 @@ export async function signUpUserForEvent(
   const eventRef = db.collection("events").doc(eventId);
   const userRef = db.collection("users").doc(userId);
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
   const pairHoldRef = options.crossPathsPairHoldId ?
     db.collection("crossPathsPairHolds").doc(options.crossPathsPairHoldId) :
@@ -122,7 +122,7 @@ export async function signUpUserForEvent(
       tx.get(eventRef),
       tx.get(userRef),
       tx.get(participationRef),
-      eventParticipationsByStatusInTransaction(tx, db, eventId, [
+      eventBookingsByStatusInTransaction(tx, db, eventId, [
         "signedUp",
         "attended",
       ]),

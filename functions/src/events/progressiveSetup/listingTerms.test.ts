@@ -69,7 +69,7 @@ test("fresh initialization fences markers and history", async () => {
     Object.assign(h.before, marker);
     await assert.rejects(h.run(), unavailable);
   }
-  for (const collection of ["eventAttendees", "eventParticipations",
+  for (const collection of ["eventAttendees", "eventBookings",
     "eventWaitlistOffers", "guestPayments", "organizerContactOrigins",
     "eventSeatReservations", "eventSeatIdentityAliases",
     "eventAttendeeImports",

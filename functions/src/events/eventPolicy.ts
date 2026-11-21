@@ -556,7 +556,7 @@ export async function rosterWithReservedWaitlistOffers(
 
   const participationSnaps = await Promise.all(
     offers.map((offer) => db
-      .collection("eventParticipations")
+      .collection("eventBookings")
       .doc(eventParticipationId(eventId, String(offer.uid ?? "")))
       .get())
   );
@@ -596,7 +596,7 @@ export async function rosterWithReservedWaitlistOffersInTransaction(
   const offers = offerSnap.docs.map((doc) => doc.data());
   const participationSnaps = await Promise.all(
     offers.map((offer) => tx.get(db
-      .collection("eventParticipations")
+      .collection("eventBookings")
       .doc(eventParticipationId(eventId, String(offer.uid ?? "")))))
   );
   return rosterWithReservableOfferData({

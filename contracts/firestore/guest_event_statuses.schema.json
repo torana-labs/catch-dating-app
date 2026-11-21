@@ -106,7 +106,7 @@
         {"type": "string", "enum": ["signedUp", "waitlisted", "attended", "cancelled"]},
         {"type": "null"}
       ],
-      "description": "The guest's Catch booking status (eventParticipations), or null without one. Any of these keeps the row, so the guest's booking lists read only their own rows. Absent on rows written before it existed; read as null.",
+      "description": "The guest's Catch booking status (eventBookings), or null without one. Any of these keeps the row, so the guest's booking lists read only their own rows. Absent on rows written before it existed; read as null.",
       "x-catch-ownership": "trigger-owned"
     },
     "eventCard": {

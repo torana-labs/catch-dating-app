@@ -153,7 +153,7 @@ test("late insertion patches only an unpublished draft", async () => {
       hostUserIds: [],
       hostProfiles: [],
     },
-    "eventParticipations/event-1_late-1": {
+    "eventBookings/event-1_late-1": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "late-1",

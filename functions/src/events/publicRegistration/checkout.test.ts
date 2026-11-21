@@ -109,7 +109,7 @@ test("public capture admits once without form authority", async () => {
   );
   assert.equal(
     [...h.store.rows.keys()].some((k) =>
-      /^(organizerForm|organizerApplications|eventParticipations)/u.test(k),
+      /^(organizerForm|organizerApplications|eventBookings)/u.test(k),
     ),
     false,
   );
@@ -268,7 +268,7 @@ test("native booking does not create another payment", async () => {
     h.paymentId,
   );
   h.store.get(`eventAttendees/${old.attendeeId}`)!.source = "catchBooking";
-  h.store.put(`eventParticipations/${eventId}_${uid}`, {
+  h.store.put(`eventBookings/${eventId}_${uid}`, {
     eventId,
     uid,
     organizerId: old.organizerId,
@@ -278,7 +278,7 @@ test("native booking does not create another payment", async () => {
   assert.ok("admission" in next);
   assert.equal(next.admission.attendeeId, old.attendeeId);
   assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)?.occupied, 1);
-  h.store.get(`eventParticipations/${eventId}_${uid}`)!.status =
+  h.store.get(`eventBookings/${eventId}_${uid}`)!.status =
     "cancelled";
   await assert.rejects(h.reserve({requestId: "native_stale_booking"}));
 });

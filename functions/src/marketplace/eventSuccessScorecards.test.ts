@@ -327,19 +327,19 @@ test(
           bookedCount: 4,
           checkedInCount: 3,
         },
-        "eventParticipations/event-1_user-1": participation(
+        "eventBookings/event-1_user-1": participation(
           "user-1",
           "attended"
         ),
-        "eventParticipations/event-1_user-2": participation(
+        "eventBookings/event-1_user-2": participation(
           "user-2",
           "attended"
         ),
-        "eventParticipations/event-1_user-3": participation(
+        "eventBookings/event-1_user-3": participation(
           "user-3",
           "attended"
         ),
-        "eventParticipations/event-1_user-4": participation(
+        "eventBookings/event-1_user-4": participation(
           "user-4",
           "signedUp"
         ),
@@ -444,20 +444,20 @@ test(
           checkedInCount: 2,
         },
         // Current event roster.
-        "eventParticipations/event-2_user-1": {
+        "eventBookings/event-2_user-1": {
           eventId: "event-2",
           organizerId: "club-1",
           uid: "user-1",
           status: "attended",
         },
-        "eventParticipations/event-2_user-2": {
+        "eventBookings/event-2_user-2": {
           eventId: "event-2",
           organizerId: "club-1",
           uid: "user-2",
           status: "attended",
         },
         // user-1 also attended a different event at the same club -> repeat.
-        "eventParticipations/event-1_user-1": {
+        "eventBookings/event-1_user-1": {
           eventId: "event-1",
           organizerId: "club-1",
           uid: "user-1",
@@ -465,7 +465,7 @@ test(
         },
         // user-2's only other participation is at a different club -> not a
         // repeat for club-1.
-        "eventParticipations/event-9_user-2": {
+        "eventBookings/event-9_user-2": {
           eventId: "event-9",
           organizerId: "club-2",
           uid: "user-2",
@@ -494,12 +494,12 @@ test(
           bookedCount: 2,
           checkedInCount: 2,
         },
-        "eventParticipations/event-1_user-1": participation(
+        "eventBookings/event-1_user-1": participation(
           "user-1",
           "attended",
           {inviteLinkId: "link-1"}
         ),
-        "eventParticipations/event-1_user-2": participation(
+        "eventBookings/event-1_user-2": participation(
           "user-2",
           "attended"
         ),

@@ -10,7 +10,7 @@ function lockedHarness() {
   const docs = new Map<string, Row>([
     ["events/event-1", {status: "active"}],
     ["users/runner-1", {name: "Runner"}],
-    ["eventParticipations/event-1_runner-1", {status: "waitlisted"}],
+    ["eventBookings/event-1_runner-1", {status: "waitlisted"}],
     ["eventSeatMigrationFences/event-1", {eventId: "event-1",
       migrationRevision: 1, state: "locked"}],
     ["eventSeatLedgers/event-1", {eventId: "event-1",

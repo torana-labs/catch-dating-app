@@ -121,8 +121,8 @@ export const onHostEventSetupViewAttendeeImportChanged = onDocumentWritten({
   ...options, document: "eventAttendeeImports/{documentId}",
 }, (event) => reconcileForWrite("eventAttendeeImports", event));
 export const onHostEventSetupViewParticipationChanged = onDocumentWritten({
-  ...options, document: "eventParticipations/{documentId}",
-}, (event) => reconcileForWrite("eventParticipations", event));
+  ...options, document: "eventBookings/{documentId}",
+}, (event) => reconcileForWrite("eventBookings", event));
 export const onHostEventSetupViewWaitlistOfferChanged = onDocumentWritten({
   ...options, document: "eventWaitlistOffers/{documentId}",
 }, (event) => reconcileForWrite("eventWaitlistOffers", event));

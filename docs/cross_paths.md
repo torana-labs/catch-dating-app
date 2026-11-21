@@ -154,8 +154,8 @@ parallel systems:
 3. `ViewerEventAvailability.canBookNow` already identifies `open`, `saved`, and
    `approvedToBook` states. Cross Paths must reuse this admission decision
    instead of reimplementing event capacity logic.
-4. `eventParticipations/{eventId_uid}` is the canonical booking, waitlist,
-   attendance, and cancellation edge.
+4. `eventBookings/{eventId_uid}` (named `eventParticipations` until Nov 2026)
+   is the canonical booking, waitlist, attendance, and cancellation edge.
 5. Existing profile decisions and dating matches are attendance-gated. Both
    people must have attended the same event. Cross Paths must not weaken that
    contract.
@@ -170,7 +170,7 @@ parallel systems:
 ### Roster privacy foundation (implemented)
 
 `CROSS-PATHS-PRIVACY-001` was closed on 2026-08-05. Firestore rules now allow
-a member to read only their own deterministic `eventParticipations` edge while
+a member to read only their own deterministic `eventBookings` edge while
 an authorized organizer retains access to the roster they manage. The existing
 post-event Catch deck, Event Recap, and identified attendee-avatar enrichment
 resolve candidates through the App-Check-protected `fetchSwipeCandidates`
@@ -509,7 +509,7 @@ For an unbooked viewer:
 
 1. Open the event or `Join and invite` intent.
 2. Complete the existing booking/payment flow.
-3. Confirm that `eventParticipations/{eventId_uid}` is `signedUp`.
+3. Confirm that `eventBookings/{eventId_uid}` is `signedUp`.
 4. Revalidate the suggestion.
 5. Ask for final invitation confirmation.
 6. Send the invitation.
@@ -671,7 +671,7 @@ Functions tests.
 
 ### Firestore rules
 
-- `eventParticipations`: self read or authorized organizer read only.
+- `eventBookings`: self read or authorized organizer read only.
 - `eventCrossPathsConsents`: caller may read their own state; writes are
   callable-owned.
 - `crossPathsShowcaseEligibility`: no consumer client reads/writes.

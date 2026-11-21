@@ -49,7 +49,7 @@ test("validate report surfaces demo readiness gaps", async () => {
       uid_a: {name: "Asha"},
     },
     matches: {},
-    eventParticipations: {},
+    eventBookings: {},
     savedEvents: {},
     guestPayments: {},
     profileDecisions: {uid_a: {outgoing: {}}},
@@ -77,7 +77,7 @@ test("buildDemoChecklist converts validation counts into capabilities", async ()
         messages: {message_1: {text: "Hi"}},
       },
     },
-    eventParticipations: {
+    eventBookings: {
       run_1_uid_a: {uid: "uid_a", eventId: "run_1", status: "attended"},
       run_checkin_uid_a: {
         uid: "uid_a",
@@ -242,7 +242,7 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
         startTime: "2026-05-10T06:00:00.000Z",
       },
     },
-    eventParticipations: {
+    eventBookings: {
       p1: {eventId: "demo_past"},
       p2: {eventId: "demo_future"},
     },
@@ -300,7 +300,7 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
   assert.deepEqual(plan.staleEventIds, ["demo_cancelled", "demo_past"]);
   assert.deepEqual([...plan.paths].sort(), [
     "scheduleLocks/organizer_lock",
-    "eventParticipations/p1",
+    "eventBookings/p1",
     "events/demo_cancelled",
     "events/demo_past",
     "matches/match_1",
@@ -349,7 +349,7 @@ test("buildCheckInEventPlan creates a signed-up event inside the check-in window
     publicProfiles: {
       uid_a: {name: "Asha"},
     },
-    eventParticipations: {},
+    eventBookings: {},
     events: {},
   });
 
@@ -388,7 +388,7 @@ test("buildCheckInEventPlan creates a signed-up event inside the check-in window
   });
   assert.equal(eventDoc.data.bookedCount, 1);
   assert.equal(
-    plan.docs.some((doc) => doc.path === `eventParticipations/${plan.eventId}_uid_a`),
+    plan.docs.some((doc) => doc.path === `eventBookings/${plan.eventId}_uid_a`),
     true
   );
 });

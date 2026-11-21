@@ -16,7 +16,7 @@ import {isPublicPaymentBooking} from "./catchBookingBridge";
 import {cancelPaidEventAdmission} from
   "../../payments/eventCheckout/eventPaymentCancellation";
 
-const edge = `eventParticipations/${eventId}_${uid}`;
+const edge = `eventBookings/${eventId}_${uid}`;
 
 async function catchUserFixture() {
   const h = await publicCapturedFixture();

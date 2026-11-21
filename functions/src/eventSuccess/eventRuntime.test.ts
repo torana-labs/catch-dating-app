@@ -621,7 +621,7 @@ test("verified phone claims the matching imported attendee", async () => {
   assert.equal(h.firestore.get(`eventAttendees/${attendeeId}`)?.linkedUid,
     "runner-1");
   assert.equal(h.firestore.get("users/runner-1"), undefined);
-  assert.equal(h.firestore.get("eventParticipations/event-1_runner-1"),
+  assert.equal(h.firestore.get("eventBookings/event-1_runner-1"),
     undefined);
 });
 
@@ -724,7 +724,7 @@ test("ready Catch reservation can claim runtime before display projection",
       .update(`event-1\u001f${key}`).digest("hex");
     const docs: Record<string, FakeData> = {
       "events/event-1": currentEvent,
-      "eventParticipations/event-1_runner-1": {eventId: "event-1",
+      "eventBookings/event-1_runner-1": {eventId: "event-1",
         organizerId: "organizer-1", uid, status: "signedUp"},
       "eventSeatMigrationFences/event-1": {eventId: "event-1",
         migrationRevision: 1, state: "ready"},
@@ -865,7 +865,7 @@ test("canonical import feeds verified claim, readiness and checked-in roster",
       h.firestore as unknown as FirebaseFirestore.Firestore, "event-1");
     assert.deepEqual(readyPool.map((row) => [row.uid, row.status,
       row.source]), [["runner-1", "attended", "externalRuntime"]]);
-    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1"),
+    assert.equal(h.firestore.get("eventBookings/event-1_runner-1"),
       undefined);
     assert.equal(h.firestore.get("organizerCommunicationPreferences/" +
       organizerCommunicationPreferenceId("organizer-1", "runner-1")),
@@ -1096,7 +1096,7 @@ test("ready runtime attendance checks in without a Consumer booking edge",
       "checkedIn"
     );
     assert.equal(
-      h.firestore.get("eventParticipations/event-1_runner-1"),
+      h.firestore.get("eventBookings/event-1_runner-1"),
       undefined
     );
   });

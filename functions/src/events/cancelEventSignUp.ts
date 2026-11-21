@@ -31,7 +31,7 @@ import {
   eventParticipationId,
   eventWaitlistOfferId,
   eventParticipationPatch,
-  eventParticipationsByStatusInTransaction,
+  eventBookingsByStatusInTransaction,
   waitlistedEventParticipationsInTransaction,
 } from "../shared/relationshipDocuments";
 import {checkRateLimit} from "../shared/rateLimit";
@@ -165,7 +165,7 @@ export async function cancelEventSignUpHandler(
   const eventRef = db.collection("events").doc(eventId);
   const userRef = db.collection("users").doc(userId);
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
 
   const committed = await db.runTransaction(async (tx) => {
@@ -182,7 +182,7 @@ export async function cancelEventSignUpHandler(
       tx.get(eventRef),
       tx.get(userRef),
       tx.get(participationRef),
-      eventParticipationsByStatusInTransaction(tx, db, eventId, [
+      eventBookingsByStatusInTransaction(tx, db, eventId, [
         "signedUp",
         "attended",
       ]),
@@ -673,7 +673,7 @@ async function cancellationRefundPreflight(input: {
   const snapshot = payments.docs[0];
   if (!snapshot) return null;
   const payment = requireDoc<PaymentDocument>(snapshot, "PaymentDocument");
-  const participation = await input.db.collection("eventParticipations")
+  const participation = await input.db.collection("eventBookings")
     .doc(eventParticipationId(input.eventId, input.userId)).get();
   const needsAuthorization = participation.data()?.status === "signedUp" ||
     payment.cancellationRefund?.state === "pending";

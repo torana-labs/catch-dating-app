@@ -24,7 +24,7 @@ import {
   eventParticipationId,
   eventWaitlistOfferId,
   eventParticipationPatch,
-  eventParticipationsByStatusInTransaction,
+  eventBookingsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
 import {checkRateLimit} from "../shared/rateLimit";
 import {
@@ -102,7 +102,7 @@ export async function joinEventWaitlistHandler(
 
   const eventRef = db.collection("events").doc(eventId);
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
 
   await db.runTransaction(async (tx) => {
@@ -117,7 +117,7 @@ export async function joinEventWaitlistHandler(
         tx.get(eventRef),
         tx.get(db.collection("users").doc(userId)),
         tx.get(participationRef),
-        eventParticipationsByStatusInTransaction(tx, db, eventId, [
+        eventBookingsByStatusInTransaction(tx, db, eventId, [
           "signedUp",
           "attended",
         ]),
@@ -297,7 +297,7 @@ export async function leaveEventWaitlistHandler(
 
   const eventRef = db.collection("events").doc(eventId);
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
   const offerRef = db
     .collection("eventWaitlistOffers")

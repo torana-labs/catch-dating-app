@@ -62,7 +62,7 @@ export function requestViewAttendedCount(data: Data): number | null {
 
 /** Keeps the request views of the events a person waits on current. */
 export const onHostRequestViewParticipationWritten = onDocumentWritten({
-  ...options, document: "eventParticipations/{participationId}",
+  ...options, document: "eventBookings/{participationId}",
 }, async (event) => {
   const db = admin.firestore();
   for (const eventId of requestViewEventsForParticipation(

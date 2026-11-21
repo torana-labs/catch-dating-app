@@ -18,7 +18,7 @@ type SourceData = FirebaseFirestore.DocumentData | undefined;
 export type AttentionSource =
   | "organizers"
   | "events"
-  | "eventParticipations"
+  | "eventBookings"
   | "eventAssistanceCases"
   | "operationWorkItems"
   | "organizerApplications"
@@ -89,7 +89,7 @@ const routes: Record<FieldRoutedSource, AttentionRoute> = {
     skipUpdate: (before, after) => attentionEventFields.every((field) =>
       isDeepStrictEqual(before?.[field], after?.[field])),
   },
-  eventParticipations: {
+  eventBookings: {
     organizerIds: organizerIdsAt("organizerId"),
     skipUpdate: neither((data) => data?.hostApprovalStatus === "pending"),
   },
@@ -187,8 +187,8 @@ export const onOrganizerAttentionEventChanged = onDocumentWritten({
   ...options, document: "events/{documentId}",
 }, (event) => reconcileForWrite("events", event));
 export const onOrganizerAttentionParticipationChanged = onDocumentWritten({
-  ...options, document: "eventParticipations/{documentId}",
-}, (event) => reconcileForWrite("eventParticipations", event));
+  ...options, document: "eventBookings/{documentId}",
+}, (event) => reconcileForWrite("eventBookings", event));
 export const onOrganizerAttentionAssistanceCaseChanged = onDocumentWritten({
   ...options, document: "eventAssistanceCases/{documentId}",
 }, (event) => reconcileForWrite("eventAssistanceCases", event));

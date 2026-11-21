@@ -372,7 +372,7 @@ export async function claimEventRuntimeAccessHandler(
     const walkInPolicy = currentEvent.runtimeAccess!.walkInPolicy;
     if (!attendee && walkInPolicy === "deny") {
       const currentParticipation = seatMode === "ready" ? await tx.get(db
-        .collection("eventParticipations")
+        .collection("eventBookings")
         .doc(eventParticipationId(resolved.eventId, uid))) : null;
       const current = currentParticipation?.data();
       const organizerId = currentEvent.organizerId;
@@ -461,7 +461,7 @@ export async function claimEventRuntimeAccessHandler(
         };
         nextBookedCount = prepared.plan.ledger!.occupied;
       } else if (!attendee && reservation?.active) {
-        const participation = await tx.get(db.collection("eventParticipations")
+        const participation = await tx.get(db.collection("eventBookings")
           .doc(eventParticipationId(resolved.eventId, uid)));
         const current = participation.data();
         if (!current || current.eventId !== resolved.eventId ||

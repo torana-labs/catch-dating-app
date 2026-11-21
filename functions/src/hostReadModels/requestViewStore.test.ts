@@ -32,12 +32,12 @@ const waiting = (uid: string, millis: number, extra = {}) => ({
 function world(docs: Record<string, Record<string, unknown>> = {}) {
   return new AudienceTestStore({
     "events/e1": event(),
-    "eventParticipations/e1_zoya": waiting("zoya", 300),
-    "eventParticipations/e1_ishaan": waiting("ishaan", 200,
+    "eventBookings/e1_zoya": waiting("zoya", 300),
+    "eventBookings/e1_ishaan": waiting("ishaan", 200,
       {hostApprovalStatus: "pending"}),
-    "eventParticipations/e1_nikhil": waiting("nikhil", 100,
+    "eventBookings/e1_nikhil": waiting("nikhil", 100,
       {waitlistOfferStatus: "active", waitlistOfferExpiresAt: at(900_000)}),
-    "eventParticipations/e1_gone": {...waiting("gone", 50),
+    "eventBookings/e1_gone": {...waiting("gone", 50),
       status: "cancelled"},
     "publicProfiles/zoya": {name: "  Zoya Merchant "},
     "publicProfiles/nikhil": {name: "Nikhil Rao"},
@@ -128,7 +128,7 @@ test("a long queue is cut to the view's size and marked incomplete",
   async () => {
     const docs: Record<string, Record<string, unknown>> = {};
     for (let index = 0; index < maxRequestViewRows + 5; index++) {
-      docs[`eventParticipations/e1_p${index}`] =
+      docs[`eventBookings/e1_p${index}`] =
         waiting(`p${index}`, 1000 + index);
     }
     const db = world(docs);
@@ -140,7 +140,7 @@ test("a long queue is cut to the view's size and marked incomplete",
 test("a person's change re-evaluates each event they wait on", async () => {
   const db = world({
     "events/e2": event({organizerId: "other"}),
-    "eventParticipations/e2_zoya": {...waiting("zoya", 400), eventId: "e2",
+    "eventBookings/e2_zoya": {...waiting("zoya", 400), eventId: "e2",
       organizerId: "other"},
   });
   await reconcileHostEventRequestViewsForPerson(db.asFirestore(), "zoya",

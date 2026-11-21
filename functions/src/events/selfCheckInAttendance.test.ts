@@ -19,13 +19,13 @@ function harness() {
       startTime: admin.firestore.Timestamp.fromMillis(1_300_000),
       checkedInCount: 0,
     },
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       organizerId: "organizer-1",
       uid: "runner-1",
       status: "signedUp",
     },
-    "eventParticipations/event-1_runner-2": {
+    "eventBookings/event-1_runner-2": {
       eventId: "event-1",
       organizerId: "organizer-1",
       uid: "runner-2",
@@ -72,10 +72,10 @@ test("one live venue session admits different signed-up attendees",
     }), h.deps);
 
     assert.equal(h.firestore.get(
-      "eventParticipations/event-1_runner-1"
+      "eventBookings/event-1_runner-1"
     )?.status, "attended");
     assert.equal(h.firestore.get(
-      "eventParticipations/event-1_runner-2"
+      "eventBookings/event-1_runner-2"
     )?.status, "attended");
     for (const uid of ["runner-1", "runner-2"]) {
       const redemptionId = eventVenueSessionRedemptionId({
@@ -103,7 +103,7 @@ test("a location claim without a live Host token cannot write attendance",
         error.code === "invalid-argument"
     );
     assert.equal(h.firestore.get(
-      "eventParticipations/event-1_runner-1"
+      "eventBookings/event-1_runner-1"
     )?.status, "signedUp");
   });
 

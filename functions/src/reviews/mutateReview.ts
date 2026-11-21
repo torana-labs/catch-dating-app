@@ -7,7 +7,7 @@ import {moderateText} from "../moderation/textFilter";
 import type {
   ReviewDocument,
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   UserProfileDocument,
   OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -126,7 +126,7 @@ export async function createEventReviewHandler(
   const userRef = db.collection("users").doc(reviewerUserId);
   const deletedUserRef = db.collection("deletedUsers").doc(reviewerUserId);
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(data.eventId, reviewerUserId));
 
   await db.runTransaction(async (tx) => {
@@ -529,9 +529,9 @@ function assertCanWriteReview(
     );
   }
 
-  const participation = requireDoc<EventParticipationDocument>(
+  const participation = requireDoc<EventBookingDocument>(
     participationSnap,
-    "EventParticipationDocument"
+    "EventBookingDocument"
   );
   if (participation.status !== "attended") {
     throw new HttpsError(

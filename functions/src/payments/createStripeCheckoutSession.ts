@@ -93,10 +93,10 @@ export async function createStripeCheckoutSessionHandler(
   ] = await Promise.all([
     db.collection("events").doc(eventId).get(),
     db.collection("users").doc(uid).get(),
-    db.collection("eventParticipations")
+    db.collection("eventBookings")
       .doc(eventParticipationId(eventId, uid))
       .get(),
-    db.collection("eventParticipations")
+    db.collection("eventBookings")
       .where("eventId", "==", eventId)
       .where("status", "in", ["signedUp", "attended"])
       .get(),

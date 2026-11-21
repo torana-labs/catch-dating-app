@@ -139,11 +139,11 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
       status: "active",
       endTime: ts("2026-05-02T02:30:00.000Z"),
     },
-    "eventParticipations/event-1_runner-1": participation(
+    "eventBookings/event-1_runner-1": participation(
       "runner-1",
       "2026-05-02T02:30:00.000Z"
     ),
-    "eventParticipations/event-1_runner-2": participation(
+    "eventBookings/event-1_runner-2": participation(
       "runner-2",
       "2026-05-02T02:40:00.000Z"
     ),
@@ -181,7 +181,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
 
 test("returns only eligible candidates in attendance order", async () => {
   const {deps, rateLimitCalls} = harness({
-    "eventParticipations/event-1_runner-7": participation(
+    "eventBookings/event-1_runner-7": participation(
       "runner-7",
       "2026-05-02T02:35:00.000Z"
     ),
@@ -191,7 +191,7 @@ test("returns only eligible candidates in attendance order", async () => {
       dateOfBirth: ts("1998-01-01T00:00:00.000Z"),
     }),
     "publicProfiles/runner-7": publicProfile("Asha", 28),
-    "eventParticipations/event-1_runner-3": participation(
+    "eventBookings/event-1_runner-3": participation(
       "runner-3",
       "2026-05-02T02:45:00.000Z"
     ),
@@ -201,7 +201,7 @@ test("returns only eligible candidates in attendance order", async () => {
       blockerUserId: "runner-3",
       blockedUserId: "runner-1",
     },
-    "eventParticipations/event-1_runner-4": participation(
+    "eventBookings/event-1_runner-4": participation(
       "runner-4",
       "2026-05-02T02:50:00.000Z"
     ),
@@ -210,7 +210,7 @@ test("returns only eligible candidates in attendance order", async () => {
     "profileDecisions/runner-1/outgoing/runner-4": {
       targetId: "runner-4",
     },
-    "eventParticipations/event-1_runner-5": participation(
+    "eventBookings/event-1_runner-5": participation(
       "runner-5",
       "2026-05-02T02:55:00.000Z"
     ),
@@ -219,7 +219,7 @@ test("returns only eligible candidates in attendance order", async () => {
       interestedInGenders: ["woman"],
     }),
     "publicProfiles/runner-5": publicProfile("Not reciprocal", 29),
-    "eventParticipations/event-1_runner-6": participation(
+    "eventBookings/event-1_runner-6": participation(
       "runner-6",
       "2026-05-02T03:00:00.000Z"
     ),
@@ -244,7 +244,7 @@ test("returns only eligible candidates in attendance order", async () => {
 
 test("only current picks hide someone; deck-era decisions do not", async () => {
   const candidate = (uid: string, attendedAt: string) => ({
-    [`eventParticipations/event-1_${uid}`]: participation(uid, attendedAt),
+    [`eventBookings/event-1_${uid}`]: participation(uid, attendedAt),
     [`users/${uid}`]: profile({gender: "woman"}),
     [`publicProfiles/${uid}`]: publicProfile(uid, 29),
   });
@@ -308,7 +308,7 @@ test("fails closed outside the window or without attendance", async () => {
   assert.deepEqual(expiredResult, {profiles: []});
 
   const notAttended = harness({
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       ...participation("runner-1", "2026-05-02T02:30:00.000Z"),
       status: "signedUp",
     },

@@ -58,7 +58,7 @@ derived source data, then provide a truthful end-to-end path for:
 - `events/{eventId}` remains the canonical event aggregate.
 - `EventFormatSnapshot.activityDetails.routePlan` remains the route owner.
 - `EventMeetingLocation` remains the reusable exact-location shape.
-- `eventParticipations` and `eventRuntimeParticipants` remain attendee/runtime
+- `eventBookings` and `eventRuntimeParticipants` remain attendee/runtime
   identity edges; a live position is not attendance or a booking.
 - Host create/update remains callable-owned. Clients do not write event or
   live-position documents directly.

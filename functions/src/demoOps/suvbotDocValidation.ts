@@ -10,8 +10,8 @@ import {
   validateEventDocument,
 } from "../shared/generated/validators/eventDocument";
 import {
-  validateEventParticipationDocument,
-} from "../shared/generated/validators/eventParticipationDocument";
+  validateEventBookingDocument,
+} from "../shared/generated/validators/eventBookingDocument";
 import {
   validateEventAttendeeDocument,
 } from "../shared/generated/validators/eventAttendeeDocument";
@@ -54,8 +54,8 @@ const contractedPaths: ReadonlyArray<{
   {pattern: /^organizers\/[^/]+$/u, validate: validateOrganizerDocument},
   {pattern: /^events\/[^/]+$/u, validate: validateEventDocument},
   {
-    pattern: /^eventParticipations\/[^/]+$/u,
-    validate: validateEventParticipationDocument,
+    pattern: /^eventBookings\/[^/]+$/u,
+    validate: validateEventBookingDocument,
   },
   {
     pattern: /^eventAttendees\/[^/]+$/u,

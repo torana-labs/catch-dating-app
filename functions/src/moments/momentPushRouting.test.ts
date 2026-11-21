@@ -39,7 +39,7 @@ function setup(event: Record<string, unknown> = {
     "events/evt": {status: "active", publicationState: "published",
       setupRevision: 1, startTime: NOW + 900_000,
       endTime: NOW + 4_500_000, revision: 1, ...event},
-    "eventParticipations/one":
+    "eventBookings/one":
       {eventId: "evt", uid: "one", status: "signedUp"},
     "users/one": {},
     "users/one/pushInstallations/device-one":
@@ -154,12 +154,12 @@ for (const [user, device] of [[{prefsEventReminders: false}, true],
 test("each participant payload belongs only to its resolved UID and token",
   async () => {
     const h = setup();
-    h.db.setDoc("eventParticipations/two",
+    h.db.setDoc("eventBookings/two",
       {eventId: "evt", uid: "two", status: "signedUp"});
     h.db.setDoc("users/two", {});
     h.db.setDoc("users/two/pushInstallations/device",
       {token: "token-two", appRole: "consumer"});
-    h.db.setDoc("eventParticipations/foreign",
+    h.db.setDoc("eventBookings/foreign",
       {eventId: "other-event", uid: "foreign", status: "signedUp"});
     h.db.setDoc("users/foreign", {});
     h.db.setDoc("users/foreign/pushInstallations/device",

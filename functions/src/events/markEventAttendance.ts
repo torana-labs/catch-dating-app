@@ -136,7 +136,7 @@ export async function markEventAttendanceHandler(
   }
 
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
 
   // Read the participation edge and apply the checkedInCount delta inside one

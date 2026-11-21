@@ -61,7 +61,7 @@ test("message safety actions enforce authority and replay boundaries",
       const organizer = await put("organizers", organizerId,
         {ownerUserId: host, hostUserId: host,
           hostUserIds: [], hostProfiles: []});
-      const participation = await put("eventParticipations",
+      const participation = await put("eventBookings",
         `${eventId}_${person}`, {eventId, organizerId, uid: person,
           status: "signedUp"});
       for (const uid of [host, person]) {

@@ -656,7 +656,7 @@
   "EventInviteTouchDocument",
   "EventShareIntentDocument",
   "EventInviteAttributionDocument",
-  "EventParticipationDocument",
+  "EventBookingDocument",
   "EventAttendeeDocument",
   "PushInstallationDocument",
   "AdminAuditLogDocument",

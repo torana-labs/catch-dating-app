@@ -28,7 +28,7 @@ function seed(db: FakeFirestore, value: MomentDefinition): void {
   db.setDoc(`users/${value.momentId}`, {});
   db.setDoc(`users/${value.momentId}/pushInstallations/device`,
     {token: "synthetic-token", appRole: "consumer"});
-  db.setDoc(`eventParticipations/${value.momentId}`, {
+  db.setDoc(`eventBookings/${value.momentId}`, {
     eventId: value.momentId, uid: value.momentId, status: "signedUp",
   });
 }
@@ -218,7 +218,7 @@ test("partial dispatch retains sent journals across the next sweep",
     const db = new FakeFirestore({});
     seed(db, moment("a_retry"));
     seed(db, moment("b_healthy"));
-    db.setDoc("eventParticipations/a_second", {
+    db.setDoc("eventBookings/a_second", {
       eventId: "a_retry", uid: "second", status: "signedUp",
     });
     db.setDoc("users/second", {});

@@ -75,7 +75,7 @@ async function runMembershipRace(
         expectedApplicationRevision: null, reason: "Synthetic race"}),
     ]);
     assert.equal(revocation.status, "fulfilled");
-    const participation = await db.doc(`eventParticipations/event1_${h.uid}`)
+    const participation = await db.doc(`eventBookings/event1_${h.uid}`)
       .get();
     assert.equal(participation.exists, booking.status === "fulfilled");
     assert.equal((await db.doc("events/event1").get()).data()?.bookedCount,

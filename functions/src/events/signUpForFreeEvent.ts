@@ -100,7 +100,7 @@ export async function signUpForFreeEventHandler(
   const [eventSnap, userSnap, participationSnap] = await Promise.all([
     db.collection("events").doc(eventId).get(),
     db.collection("users").doc(uid).get(),
-    db.collection("eventParticipations")
+    db.collection("eventBookings")
       .doc(eventParticipationId(eventId, uid))
       .get(),
   ]);

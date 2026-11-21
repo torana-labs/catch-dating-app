@@ -235,22 +235,22 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
 
 test("generates micro-pod assignments for active participants", async () => {
   const {firestore, deps, rateLimitCalls} = harness({
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       uid: "runner-1",
       status: "attended",
     },
-    "eventParticipations/event-1_runner-2": {
+    "eventBookings/event-1_runner-2": {
       eventId: "event-1",
       uid: "runner-2",
       status: "signedUp",
     },
-    "eventParticipations/event-1_runner-3": {
+    "eventBookings/event-1_runner-3": {
       eventId: "event-1",
       uid: "runner-3",
       status: "signedUp",
     },
-    "eventParticipations/event-1_runner-4": {
+    "eventBookings/event-1_runner-4": {
       eventId: "event-1",
       uid: "runner-4",
       status: "waitlisted",
@@ -283,32 +283,32 @@ test("generates micro-pod assignments for active participants", async () => {
 
 test("keeps blocked participant pairs out of the same pod", async () => {
   const {firestore, deps} = harness({
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       uid: "runner-1",
       status: "signedUp",
     },
-    "eventParticipations/event-1_runner-2": {
+    "eventBookings/event-1_runner-2": {
       eventId: "event-1",
       uid: "runner-2",
       status: "signedUp",
     },
-    "eventParticipations/event-1_runner-3": {
+    "eventBookings/event-1_runner-3": {
       eventId: "event-1",
       uid: "runner-3",
       status: "signedUp",
     },
-    "eventParticipations/event-1_runner-4": {
+    "eventBookings/event-1_runner-4": {
       eventId: "event-1",
       uid: "runner-4",
       status: "signedUp",
     },
-    "eventParticipations/event-1_runner-5": {
+    "eventBookings/event-1_runner-5": {
       eventId: "event-1",
       uid: "runner-5",
       status: "signedUp",
     },
-    "eventParticipations/event-1_runner-6": {
+    "eventBookings/event-1_runner-6": {
       eventId: "event-1",
       uid: "runner-6",
       status: "signedUp",
@@ -351,7 +351,7 @@ test("uses saved unit size for generated pod count", async () => {
     },
     ...Object.fromEntries(
       Array.from({length: 7}, (_, index) => [
-        `eventParticipations/event-1_runner-${index + 1}`,
+        `eventBookings/event-1_runner-${index + 1}`,
         {
           eventId: "event-1",
           uid: `runner-${index + 1}`,
@@ -383,7 +383,7 @@ test("uses unit kind labels for table assignments", async () => {
     },
     ...Object.fromEntries(
       Array.from({length: 6}, (_, index) => [
-        `eventParticipations/event-1_runner-${index + 1}`,
+        `eventBookings/event-1_runner-${index + 1}`,
         {
           eventId: "event-1",
           uid: `runner-${index + 1}`,
@@ -425,7 +425,7 @@ test("uses saved fixed unit count when present", async () => {
     },
     ...Object.fromEntries(
       Array.from({length: 10}, (_, index) => [
-        `eventParticipations/event-1_runner-${index + 1}`,
+        `eventBookings/event-1_runner-${index + 1}`,
         {
           eventId: "event-1",
           uid: `runner-${index + 1}`,
@@ -445,17 +445,17 @@ test("uses saved fixed unit count when present", async () => {
 
 test("excludes opted-out attendees from generated pods", async () => {
   const {firestore, deps} = harness({
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       uid: "runner-1",
       status: "signedUp",
     },
-    "eventParticipations/event-1_runner-2": {
+    "eventBookings/event-1_runner-2": {
       eventId: "event-1",
       uid: "runner-2",
       status: "signedUp",
     },
-    "eventParticipations/event-1_runner-3": {
+    "eventBookings/event-1_runner-3": {
       eventId: "event-1",
       uid: "runner-3",
       status: "signedUp",
@@ -491,22 +491,22 @@ test("excludes opted-out attendees from generated pods", async () => {
 
 test("prefers checked-in attendees once a live pod can be formed", async () => {
   const {firestore, deps} = harness({
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       uid: "runner-1",
       status: "attended",
     },
-    "eventParticipations/event-1_runner-2": {
+    "eventBookings/event-1_runner-2": {
       eventId: "event-1",
       uid: "runner-2",
       status: "attended",
     },
-    "eventParticipations/event-1_runner-3": {
+    "eventBookings/event-1_runner-3": {
       eventId: "event-1",
       uid: "runner-3",
       status: "signedUp",
     },
-    "eventParticipations/event-1_runner-4": {
+    "eventBookings/event-1_runner-4": {
       eventId: "event-1",
       uid: "runner-4",
       status: "signedUp",
@@ -556,10 +556,10 @@ test("uses profile cohorts as pod balancing tie-breakers", async () => {
         unitCount: 2,
       },
     },
-    "eventParticipations/event-1_runner-1": participation("runner-1"),
-    "eventParticipations/event-1_runner-2": participation("runner-2"),
-    "eventParticipations/event-1_runner-3": participation("runner-3"),
-    "eventParticipations/event-1_runner-4": participation("runner-4"),
+    "eventBookings/event-1_runner-1": participation("runner-1"),
+    "eventBookings/event-1_runner-2": participation("runner-2"),
+    "eventBookings/event-1_runner-3": participation("runner-3"),
+    "eventBookings/event-1_runner-4": participation("runner-4"),
     "users/runner-1": user("man", ["woman"]),
     "users/runner-2": user("man", ["woman"]),
     "users/runner-3": user("woman", ["man"]),
@@ -595,7 +595,7 @@ test("configured consented answers influence published pod groups",
     const source = Object.fromEntries(ids.flatMap((uid) => {
       const choice = ["runner-1", "runner-3"].includes(uid) ? "a" : "b";
       return [
-        [`eventParticipations/event-1_${uid}`, participation(uid)],
+        [`eventBookings/event-1_${uid}`, participation(uid)],
         [`organizerFormResponses/response-${uid}`, {
           organizerId: "club-1", formId: "form-1",
           versionId: "version-1", status: "submitted",
@@ -689,15 +689,15 @@ test("custom team formats generate balanced teams", async () => {
         unitCount: 2,
       },
     },
-    "eventParticipations/event-1_gay-man-1": participation("gay-man-1"),
-    "eventParticipations/event-1_gay-man-2": participation("gay-man-2"),
-    "eventParticipations/event-1_straight-man-1":
+    "eventBookings/event-1_gay-man-1": participation("gay-man-1"),
+    "eventBookings/event-1_gay-man-2": participation("gay-man-2"),
+    "eventBookings/event-1_straight-man-1":
       participation("straight-man-1"),
-    "eventParticipations/event-1_straight-man-2":
+    "eventBookings/event-1_straight-man-2":
       participation("straight-man-2"),
-    "eventParticipations/event-1_straight-woman-1":
+    "eventBookings/event-1_straight-woman-1":
       participation("straight-woman-1"),
-    "eventParticipations/event-1_straight-woman-2":
+    "eventBookings/event-1_straight-woman-2":
       participation("straight-woman-2"),
     "users/gay-man-1": user("man", ["man"]),
     "users/gay-man-2": user("man", ["man"]),
@@ -744,12 +744,12 @@ test("rejects a format with no assignment algorithm", async () => {
         rotationIntervalMinutes: 20,
       },
     },
-    "eventParticipations/event-1_runner-1": participation("runner-1"),
-    "eventParticipations/event-1_runner-2": participation("runner-2"),
-    "eventParticipations/event-1_runner-3": participation("runner-3"),
-    "eventParticipations/event-1_runner-4": participation("runner-4"),
-    "eventParticipations/event-1_runner-5": participation("runner-5"),
-    "eventParticipations/event-1_runner-6": participation("runner-6"),
+    "eventBookings/event-1_runner-1": participation("runner-1"),
+    "eventBookings/event-1_runner-2": participation("runner-2"),
+    "eventBookings/event-1_runner-3": participation("runner-3"),
+    "eventBookings/event-1_runner-4": participation("runner-4"),
+    "eventBookings/event-1_runner-5": participation("runner-5"),
+    "eventBookings/event-1_runner-6": participation("runner-6"),
   });
 
   await assert.rejects(
@@ -790,10 +790,10 @@ test("lets hosts override rotating table groups", async () => {
         rotationIntervalMinutes: 20,
       },
     },
-    "eventParticipations/event-1_runner-1": participation("runner-1"),
-    "eventParticipations/event-1_runner-2": participation("runner-2"),
-    "eventParticipations/event-1_runner-3": participation("runner-3"),
-    "eventParticipations/event-1_runner-4": participation("runner-4"),
+    "eventBookings/event-1_runner-1": participation("runner-1"),
+    "eventBookings/event-1_runner-2": participation("runner-2"),
+    "eventBookings/event-1_runner-3": participation("runner-3"),
+    "eventBookings/event-1_runner-4": participation("runner-4"),
   });
 
   const result = await overrideEventSuccessGroupsHandler(
@@ -845,10 +845,10 @@ test("lets hosts override static team groups", async () => {
         unitCount: 2,
       },
     },
-    "eventParticipations/event-1_runner-1": participation("runner-1"),
-    "eventParticipations/event-1_runner-2": participation("runner-2"),
-    "eventParticipations/event-1_runner-3": participation("runner-3"),
-    "eventParticipations/event-1_runner-4": participation("runner-4"),
+    "eventBookings/event-1_runner-1": participation("runner-1"),
+    "eventBookings/event-1_runner-2": participation("runner-2"),
+    "eventBookings/event-1_runner-3": participation("runner-3"),
+    "eventBookings/event-1_runner-4": participation("runner-4"),
   });
 
   const result = await overrideEventSuccessGroupsHandler(
@@ -889,8 +889,8 @@ test("rejects blocked attendees in host group overrides", async () => {
         unitCount: 1,
       },
     },
-    "eventParticipations/event-1_runner-1": participation("runner-1"),
-    "eventParticipations/event-1_runner-2": participation("runner-2"),
+    "eventBookings/event-1_runner-1": participation("runner-1"),
+    "eventBookings/event-1_runner-2": participation("runner-2"),
     "blocks/block-1": {
       blockerUserId: "runner-1",
       blockedUserId: "runner-2",
@@ -960,8 +960,8 @@ test("uses the same group engine for pair-sized units", async () => {
         unitSize: 2,
       },
     },
-    "eventParticipations/event-1_runner-1": participation("runner-1"),
-    "eventParticipations/event-1_runner-2": participation("runner-2"),
+    "eventBookings/event-1_runner-1": participation("runner-1"),
+    "eventBookings/event-1_runner-2": participation("runner-2"),
   });
 
   const result = await generateEventSuccessPodsHandler(

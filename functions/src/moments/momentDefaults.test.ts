@@ -115,7 +115,7 @@ test("provisioned reminder fires through the sweep and honors the " +
     "legacy send-once semantics", async () => {
   const db = new FakeFirestore({
     "events/e1": activeEvent(NOW + 10 * 60 * 1000),
-    "eventParticipations/p1":
+    "eventBookings/p1":
       {eventId: "e1", uid: "u1", status: "signedUp"},
     "users/u1": {},
   });
@@ -145,7 +145,7 @@ test("an at-anchor run inside the grace window skips once the anchor " +
   const runId = `e1_at_start_1_${start}`;
   const db = new FakeFirestore({
     "events/e1": activeEvent(start),
-    "eventParticipations/p1":
+    "eventBookings/p1":
       {eventId: "e1", uid: "u1", status: "signedUp"},
     "users/u1": {},
     "organizerMoments/e1_at_start": {

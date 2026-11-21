@@ -503,7 +503,7 @@ APIs. Do not relax existing Event required-location or booking invariants.
 This is an additive rollout: existing public social Events and their attendees
 continue unchanged. The new program guest is invitation membership at a different
 scope; a linked EventAttendee is a function's admission/attendance fact. Neither
-replaces `organizerContacts` as a CRM identity or `eventParticipations` as a real
+replaces `organizerContacts` as a CRM identity or `eventBookings` as a real
 Consumer booking.
 
 #### Identity and membership

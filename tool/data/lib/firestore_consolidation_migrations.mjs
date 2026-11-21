@@ -160,14 +160,14 @@ const validId = (value) => typeof value === "string" && value.length > 0 && !val
 async function guestEventSourcePaths(db, eventId, uid) {
   const byId = (snap) => snap.docs.map((doc) => doc.ref.path).sort();
   const [booking, roster, payments, applications, invitations] = await Promise.all([
-    db.collection("eventParticipations").doc(`${eventId}_${uid}`).get(),
+    db.collection("eventBookings").doc(`${eventId}_${uid}`).get(),
     db.collection("eventAttendees").where("eventId", "==", eventId).where("linkedUid", "==", uid).get(),
     db.collection("guestPayments").where("eventId", "==", eventId).where("recipientUid", "==", uid).get(),
     db.collection("organizerApplications").where("targetId", "==", eventId).where("linkedUid", "==", uid).get(),
     db.collection("organizerEventOfferRecipients").where("eventId", "==", eventId).where("recipientUid", "==", uid).get(),
   ]);
   return [
-    ...(booking.exists ? [`eventParticipations/${eventId}_${uid}`] : []),
+    ...(booking.exists ? [`eventBookings/${eventId}_${uid}`] : []),
     ...byId(roster),
     ...byId({docs: payments.docs.filter((doc) => ["publicEvent", "offer"].includes(doc.data().purpose))}),
     ...byId({docs: applications.docs.filter((doc) => doc.data().targetKind === "event")}),
@@ -920,13 +920,13 @@ export const MIGRATIONS = [
   {
     name: "catch-booking-roster",
     description:
-      "Every eventParticipations booking gets one eventAttendees roster row " +
+      "Every eventBookings booking gets one eventAttendees roster row " +
       "and links to it (attendeeId). The booking stays the one record of the " +
       "guest's booking; the row is the Host's view of that guest. Existing " +
       "linked rows are reused, never replaced; nothing is deleted.",
     steps: [
       {
-        source: "eventParticipations",
+        source: "eventBookings",
         target: "eventAttendees",
         skipReason: "already has a roster row",
         targetId: async (id, data, db) => {
@@ -948,7 +948,7 @@ export const MIGRATIONS = [
       },
       {
         kind: "fill",
-        collection: "eventParticipations",
+        collection: "eventBookings",
         fill: async (data, id, db) => {
           if (typeof data.attendeeId === "string" && data.attendeeId) return null;
           if (typeof data.eventId !== "string" || typeof data.uid !== "string") return null;
@@ -1016,7 +1016,7 @@ export const MIGRATIONS = [
         transform: (data, id, db) => chatDirectoryRow(db, data.eventId, data.uid),
       },
       {
-        source: "eventParticipations",
+        source: "eventBookings",
         target: "eventChatDirectoryEntries",
         skipReason: "no current access, or created from the chat membership",
         targetId: async (id, data, db) => {
@@ -1037,7 +1037,7 @@ export const MIGRATIONS = [
           const [member, booking] = await Promise.all([
             db.collection("eventChatMemberships").where("eventId", "==", data.eventId)
               .where("uid", "==", data.linkedUid).limit(1).get(),
-            db.collection("eventParticipations").doc(`${data.eventId}_${data.linkedUid}`).get(),
+            db.collection("eventBookings").doc(`${data.eventId}_${data.linkedUid}`).get(),
           ]);
           const booked = ["signedUp", "attended"].includes(booking.data()?.status);
           return member.empty && !booked ? `${data.eventId}_${data.linkedUid}` : null;
@@ -1062,6 +1062,25 @@ export const MIGRATIONS = [
     ],
   },
   {
+    name: "event-bookings",
+    description:
+      "The booking collection is renamed from eventParticipations to " +
+      "eventBookings (Nov 2026). Every eventParticipations document is " +
+      "copied to eventBookings with the same id and the same data. A booking " +
+      "already in eventBookings is never replaced, and nothing is deleted; " +
+      "the onEventBookingMirroredToLegacy trigger then keeps " +
+      "eventParticipations as a read-only copy for released apps until " +
+      "phase 2 retires it. Deploy rules, indexes and Functions first.",
+    steps: [
+      {
+        source: "eventParticipations",
+        target: "eventBookings",
+        targetId: (id) => id,
+        transform: (data) => ({...data}),
+      },
+    ],
+  },
+  {
     name: "guest-event-read-models",
     description:
       "Every published event gets the eventGuestEntries document and every " +
@@ -1082,7 +1101,7 @@ export const MIGRATIONS = [
           return db.runTransaction((tx) => eventGuestEntry(db, tx, id, guestEventNowMillis));
         },
       },
-      guestEventStatusStep("eventParticipations", "eventId", "uid"),
+      guestEventStatusStep("eventBookings", "eventId", "uid"),
       guestEventStatusStep("eventAttendees", "eventId", "linkedUid"),
       guestEventStatusStep("guestPayments", "eventId", "recipientUid",
         (data) => ["publicEvent", "offer"].includes(data.purpose)),
@@ -1102,7 +1121,7 @@ export const MIGRATIONS = [
       "write them. Only absent or null fields are added and no document is " +
       "replaced or removed. Build Functions first.",
     steps: [
-      missingGuestEventStatusStep("eventParticipations", "eventId", "uid"),
+      missingGuestEventStatusStep("eventBookings", "eventId", "uid"),
       {
         kind: "fill",
         collection: "guestEventStatuses",

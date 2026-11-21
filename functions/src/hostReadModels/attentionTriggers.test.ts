@@ -44,9 +44,9 @@ test("event updates run only when a derivation field changes", async () => {
 test("each source skips only updates that cannot touch the queue",
   async () => {
     const cases: Array<[AttentionSource, Data, Data, string[]]> = [
-      ["eventParticipations", {organizerId: "org", hostApprovalStatus: "none"},
+      ["eventBookings", {organizerId: "org", hostApprovalStatus: "none"},
         {organizerId: "org", hostApprovalStatus: "approved"}, []],
-      ["eventParticipations", {organizerId: "org",
+      ["eventBookings", {organizerId: "org",
         hostApprovalStatus: "pending"}, {organizerId: "org",
         hostApprovalStatus: "approved"}, ["org"]],
       ["eventAssistanceCases", {context: {organizerId: "org",
@@ -90,7 +90,7 @@ test("each source skips only updates that cannot touch the queue",
         `${source} ${JSON.stringify(after)}`);
     }
     // Creates and deletes are never skipped, even when irrelevant.
-    assert.deepEqual(await resolve("eventParticipations", undefined,
+    assert.deepEqual(await resolve("eventBookings", undefined,
       {organizerId: "org", hostApprovalStatus: "none"}), ["org"]);
     assert.deepEqual(await resolve("organizerMomentSends",
       {organizerId: "org", actionKind: "notify"}, undefined), ["org"]);

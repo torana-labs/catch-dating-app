@@ -3,7 +3,7 @@ import {CallableRequest, HttpsError, onCall} from
 import * as admin from "firebase-admin";
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {EventIdCallablePayload} from
@@ -67,7 +67,7 @@ export async function fetchSwipeCandidatesHandler(
 
   const [eventSnap, viewerParticipationSnap, viewerSnap] = await Promise.all([
     db.collection("events").doc(data.eventId).get(),
-    db.collection("eventParticipations")
+    db.collection("eventBookings")
       .doc(eventParticipationId(data.eventId, viewerUid)).get(),
     db.collection("users").doc(viewerUid).get(),
   ]);
@@ -81,9 +81,9 @@ export async function fetchSwipeCandidatesHandler(
   }
 
   const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-  const viewerParticipation = requireDoc<EventParticipationDocument>(
+  const viewerParticipation = requireDoc<EventBookingDocument>(
     viewerParticipationSnap,
-    "EventParticipationDocument"
+    "EventBookingDocument"
   );
   const viewer = requireDoc<UserProfileDocument>(
     viewerSnap,
@@ -99,7 +99,7 @@ export async function fetchSwipeCandidatesHandler(
     return emptyResponse();
   }
 
-  const participationSnap = await db.collection("eventParticipations")
+  const participationSnap = await db.collection("eventBookings")
     .where("eventId", "==", data.eventId)
     .where("status", "==", "attended")
     .limit(boundedCandidateLimit)
@@ -180,9 +180,9 @@ function orderedUniqueCandidateIds(
   viewerUid: string
 ): string[] {
   const participations = docs
-    .map((doc) => requireDoc<EventParticipationDocument>(
+    .map((doc) => requireDoc<EventBookingDocument>(
       doc,
-      "EventParticipationDocument"
+      "EventBookingDocument"
     ))
     .filter((participation) =>
       participation.uid !== viewerUid && participation.status === "attended"
@@ -202,7 +202,7 @@ function orderedUniqueCandidateIds(
 }
 
 function participationTimeMillis(
-  participation: EventParticipationDocument
+  participation: EventBookingDocument
 ): number {
   return (
     participation.attendedAt ??

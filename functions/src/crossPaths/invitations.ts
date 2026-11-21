@@ -17,7 +17,7 @@ import type {
   CrossPathsShowcaseEligibilityDocument,
   EventCrossPathsConsentDocument,
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   PublicProfileDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -1039,12 +1039,12 @@ export const expireCrossPathsInvitations = onSchedule(
 );
 
 export const onCrossPathsParticipationWritten = onDocumentWritten(
-  "eventParticipations/{participationId}",
+  "eventBookings/{participationId}",
   async (event) => {
     const after = event.data?.after.data() as
-      EventParticipationDocument | undefined;
+      EventBookingDocument | undefined;
     const before = event.data?.before.data() as
-      EventParticipationDocument | undefined;
+      EventBookingDocument | undefined;
     const row = after ?? before;
     if (!row || after?.status === "signedUp") return;
     await invalidateCrossPathsInvitations({
@@ -1123,9 +1123,9 @@ function invitationRefs(
 ) {
   return {
     event: db.collection("events").doc(eventId),
-    senderParticipation: db.collection("eventParticipations")
+    senderParticipation: db.collection("eventBookings")
       .doc(`${eventId}_${senderUid}`),
-    recipientParticipation: db.collection("eventParticipations")
+    recipientParticipation: db.collection("eventBookings")
       .doc(`${eventId}_${recipientUid}`),
     senderConsent: db.collection("eventCrossPathsConsents")
       .doc(`${eventId}_${senderUid}`),
@@ -1186,11 +1186,11 @@ function signedUpParticipation(
   snap: FirebaseFirestore.DocumentSnapshot,
   eventId: string,
   uid: string
-): EventParticipationDocument | undefined {
+): EventBookingDocument | undefined {
   if (!snap.exists) return undefined;
-  const row = requireDoc<EventParticipationDocument>(
+  const row = requireDoc<EventBookingDocument>(
     snap,
-    "EventParticipationDocument (Cross Paths invitation)"
+    "EventBookingDocument (Cross Paths invitation)"
   );
   return row.eventId === eventId &&
     row.uid === uid &&
@@ -1203,9 +1203,9 @@ function missingOrCancelledParticipation(
   uid: string
 ): boolean {
   if (!snap.exists) return true;
-  const row = requireDoc<EventParticipationDocument>(
+  const row = requireDoc<EventBookingDocument>(
     snap,
-    "EventParticipationDocument (Cross Paths pair requester)"
+    "EventBookingDocument (Cross Paths pair requester)"
   );
   return row.eventId === eventId && row.uid === uid &&
     row.status === "cancelled";

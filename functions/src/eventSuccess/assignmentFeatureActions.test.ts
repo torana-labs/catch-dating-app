@@ -43,7 +43,7 @@ function fixture() {
         validation: {minNumber: 0, maxNumber: 100}, options: []}]}]}},
     "organizerForms/form-1": {organizerId: "org-1",
       title: "Event choices", activeVersionId: "version-1"},
-    "eventParticipations/event-1_user-1": {eventId: "event-1",
+    "eventBookings/event-1_user-1": {eventId: "event-1",
       uid: "user-1", status: "signedUp"},
     "organizerFormResponses/response-1": {organizerId: "org-1",
       formId: "form-1", versionId: "version-1", status: "submitted",
@@ -180,7 +180,7 @@ test("preview caps roster query before loading profile or answer documents",
   async () => {
     const {docs, deps} = fixture();
     for (let i = 0; i < 1001; i++) {
-      docs[`eventParticipations/event-1_extra-${i}`] = {
+      docs[`eventBookings/event-1_extra-${i}`] = {
         eventId: "event-1", uid: `extra-${i}`, status: "signedUp"};
     }
     await assert.rejects(() => previewEventAssignmentFeaturesHandler({

@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import type {
   EventAttendeeDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {eventAttendeeId, normalizeRosterPhone} from "./eventAttendees";
@@ -10,7 +10,7 @@ import {catchBookingAttendeeDocument} from "./eventAttendeeProjection";
 
 /**
  * In-transaction roster writer for Catch bookings. The booking
- * (eventParticipations) is the one record of a guest's booking; its roster
+ * (eventBookings) is the one record of a guest's booking; its roster
  * row is the Host's view of that guest. A booking callable reads the
  * account's roster slot with its other reads, then writes the roster row and
  * the booking's link to it beside the booking it already writes, so the
@@ -45,7 +45,7 @@ export async function readCatchBookingRoster(params: {
   verifiedPhone?: () => Promise<string | null>;
 }): Promise<CatchBookingRosterSlot> {
   const {db, tx, eventId, uid} = params;
-  const bookingRef = db.collection("eventParticipations")
+  const bookingRef = db.collection("eventBookings")
     .doc(eventParticipationId(eventId, uid));
   const stored = (await tx.get(bookingRef)).data()?.attendeeId;
   const linkedAttendeeId = typeof stored === "string" && stored ?
@@ -82,12 +82,12 @@ export async function readCatchBookingRoster(params: {
  * The booking as it will read after a merge write of `patch` over `before`.
  * @param {object | undefined} before Stored booking.
  * @param {Record<string, unknown>} patch Merge patch being written.
- * @return {EventParticipationDocument} Booking after the write.
+ * @return {EventBookingDocument} Booking after the write.
  */
 export function participationAfterPatch(
   before: object | undefined,
   patch: Record<string, unknown>
-): EventParticipationDocument {
+): EventBookingDocument {
   const deleteSentinel = admin.firestore.FieldValue.delete();
   const after: Record<string, unknown> = {...(before ?? {})};
   for (const [key, value] of Object.entries(patch)) {
@@ -98,7 +98,7 @@ export function participationAfterPatch(
       after[key] = value;
     }
   }
-  return after as unknown as EventParticipationDocument;
+  return after as unknown as EventBookingDocument;
 }
 
 /**
@@ -113,7 +113,7 @@ export function writeCatchBookingRoster(params: {
   db: FirebaseFirestore.Firestore;
   tx: FirebaseFirestore.Transaction;
   slot: CatchBookingRosterSlot;
-  booking: EventParticipationDocument;
+  booking: EventBookingDocument;
   now: FirebaseFirestore.Timestamp;
   seatReady?: boolean;
   /** The caller writes the row itself in this transaction. */

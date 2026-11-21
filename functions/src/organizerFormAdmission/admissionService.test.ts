@@ -205,7 +205,7 @@ test("retained Catch participation materializes missing display-only roster",
       {eventId, canonicalKey: catchKey, identityRevision: 1,
         active: true, revision: 1, reservedAtMillis: 1000,
         releasedAtMillis: null});
-    store.put(`eventParticipations/${eventId}_${uid}`, {
+    store.put(`eventBookings/${eventId}_${uid}`, {
       eventId, organizerId: org, uid,
       status: "signedUp", createdAt: ts(1000),
       signedUpAt: ts(1000)});
@@ -428,7 +428,7 @@ test("active waitlist offers protect the last seat until expiry", async () => {
   store.get(`events/${eventId}`)!.bookedCount = 1;
   store.put("eventWaitlistOffers/waitlist1", {eventId, uid: "waiting1",
     status: "active", cohortAtOffer: "queerOrOpen", expiresAt: ts(3000)});
-  store.put(`eventParticipations/${eventParticipationId(eventId, "waiting1")}`,
+  store.put(`eventBookings/${eventParticipationId(eventId, "waiting1")}`,
     {eventId, uid: "waiting1", status: "waitlisted"});
   await assert.rejects(commit(), denied);
   assert.deepEqual(store.writes, []);
@@ -527,7 +527,7 @@ test("checkout holds and waitlist offers share remaining admission capacity",
     store.put("eventWaitlistOffers/waitlist1", {eventId, uid: "waiting1",
       status: "active", cohortAtOffer: "queerOrOpen", expiresAt: ts(3000)});
     const participationId = eventParticipationId(eventId, "waiting1");
-    store.put(`eventParticipations/${participationId}`,
+    store.put(`eventBookings/${participationId}`,
       {eventId, uid: "waiting1", status: "waitlisted"});
     await assert.rejects(commit(), denied);
     assert.deepEqual(store.writes, []);

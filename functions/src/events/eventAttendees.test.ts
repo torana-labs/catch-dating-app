@@ -1121,7 +1121,7 @@ test("ready Host attendance reserves and releases one canonical guest seat",
       expectedRevision: 2, clientOperationId: "ready-recheck-in-0001",
     }), deps);
     firestore.update("eventAttendees/attendee-1", {linkedUid: "user-1"});
-    firestore.set("eventParticipations/event-1_user-1", {
+    firestore.set("eventBookings/event-1_user-1", {
       eventId: "event-1", organizerId: "organizer-1", uid: "user-1",
       status: "signedUp",
     });
@@ -1150,14 +1150,14 @@ test("ready Host attendance reserves and releases one canonical guest seat",
         }))}`);
     const reservationPath = `eventSeatReservations/${createHash("sha256")
       .update("event-1\u001fguest_1").digest("hex")}`;
-    firestore.update("eventParticipations/event-1_user-1", {
+    firestore.update("eventBookings/event-1_user-1", {
       organizerId: "organizer-2",
     });
     await assert.rejects(noOp("foreign-participation-noop-0001"),
       (error) => error instanceof HttpsError &&
         error.code === "failed-precondition");
     assert.equal(noOpReceipt("foreign-participation-noop-0001"), undefined);
-    firestore.update("eventParticipations/event-1_user-1", {
+    firestore.update("eventBookings/event-1_user-1", {
       organizerId: "organizer-1",
     });
     firestore.update("eventSeatLedgers/event-1", {policyHash: "f".repeat(64)});

@@ -63,7 +63,7 @@ test("Firestore room participants are current, bounded and private",
           occupation: "Private occupation"});
         await put("eventChatMemberships", memberId(eventId, uid), member(uid));
       }
-      const admission = await put("eventParticipations", `${eventId}_${person}`,
+      const admission = await put("eventBookings", `${eventId}_${person}`,
         {eventId, organizerId, uid: person,
           status: "signedUp"});
       await t.test("silent participants expose no answers", async () => {

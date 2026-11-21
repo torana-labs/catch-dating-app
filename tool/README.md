@@ -1327,7 +1327,7 @@ environment explicitly).
 | Tool | Command | Recomputes |
 |---|---|---|
 | `data:repair-club-hosts` | `node tool/data/recompute_organizer_host_profiles.mjs` | Club host fields (`ownerUserId`, `hostUserIds`, `hostProfiles`, `profileImageUrl`) from `hostProfiles/{uid}`, keeping a club's existing host snapshot when no host profile exists yet. |
-| `data:repair-event-aggregates` | `node tool/data/recompute_event_aggregate_counts.mjs` | `events/{eventId}` counts from `eventParticipations`: `bookedCount` and `genderCounts` (signed up plus attended), `checkedInCount` (attended), `waitlistedCount`. |
+| `data:repair-event-aggregates` | `node tool/data/recompute_event_aggregate_counts.mjs` | `events/{eventId}` counts from `eventBookings`: `bookedCount` and `genderCounts` (signed up plus attended), `checkedInCount` (attended), `waitlistedCount`. |
 | `data:repair-organizer-follower-counts` | `node tool/data/recompute_organizer_follower_counts.mjs` | `organizers/{organizerId}.followerCount` from active `organizerFollows` edges. |
 
 - **Run order:** emulator or dev first, then the target environment without

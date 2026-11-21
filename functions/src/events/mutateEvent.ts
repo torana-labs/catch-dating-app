@@ -63,7 +63,7 @@ import {
 } from "../shared/notifications";
 import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {
-  eventParticipationsByStatusInTransaction,
+  eventBookingsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
 import {
   assertValidEventTimeRange,
@@ -521,7 +521,7 @@ export async function updateEventHandler(
     ] =
       await Promise.all([
         tx.get(organizerRef),
-        eventParticipationsByStatusInTransaction(tx, db, data.eventId, [
+        eventBookingsByStatusInTransaction(tx, db, data.eventId, [
           "signedUp",
           "waitlisted",
           "attended",
@@ -733,7 +733,7 @@ export async function cancelEventHandler(
     const [organizerSnap, participantEdges] =
       await Promise.all([
         tx.get(organizerRef),
-        eventParticipationsByStatusInTransaction(tx, db, data.eventId, [
+        eventBookingsByStatusInTransaction(tx, db, data.eventId, [
           "signedUp",
           "waitlisted",
         ]),
@@ -859,7 +859,7 @@ export async function deleteEventHandler(
     ] = await Promise.all([
       tx.get(organizerRef),
       tx.get(deletedUserRef),
-      tx.get(db.collection("eventParticipations")
+      tx.get(db.collection("eventBookings")
         .where("eventId", "==", data.eventId)
         .limit(1)),
       tx.get(bookingPayments(db)
@@ -2186,12 +2186,12 @@ async function notifyEventParticipants(params: {
   try {
     const [signedUp, waitlisted] = await Promise.all([
       params.db
-        .collection("eventParticipations")
+        .collection("eventBookings")
         .where("eventId", "==", params.eventId)
         .where("status", "==", "signedUp")
         .get(),
       params.db
-        .collection("eventParticipations")
+        .collection("eventBookings")
         .where("eventId", "==", params.eventId)
         .where("status", "==", "waitlisted")
         .get(),

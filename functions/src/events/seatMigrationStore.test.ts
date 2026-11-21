@@ -70,7 +70,7 @@ test("150 imported and 50 Catch participants reconcile one capacity",
     const h = setup(150);
     h.store.rows.set("events/event1", {...event(), bookedCount: 50});
     for (let index = 0; index < 50; index++) {
-      h.store.rows.set(`eventParticipations/edge${index}`, {
+      h.store.rows.set(`eventBookings/edge${index}`, {
         eventId: "event1", organizerId: "org1", uid: `uid${index}`,
         status: "signedUp"});
     }
@@ -233,7 +233,7 @@ test("new live participation after staging denies final activation",
       const run = h.store.rows.get("eventSeatMigrationRuns/event1");
       if (!changed && run?.phase === "apply" &&
           run.outputCursor === run.outputCount) {
-        h.store.rows.set("eventParticipations/new-edge", {
+        h.store.rows.set("eventBookings/new-edge", {
           eventId: "event1", organizerId: "org1", uid: "late-uid",
           status: "waitlisted"});
         changed = true;
@@ -352,7 +352,7 @@ test("combined roster reservations may exceed one source bound", async () => {
   h.store.rows.set("events/event1", {...event(), bookedCount: 150,
     capacityLimit: 400});
   for (let index = 0; index < 150; index++) {
-    h.store.rows.set(`eventParticipations/edge${index}`, {
+    h.store.rows.set(`eventBookings/edge${index}`, {
       eventId: "event1", organizerId: "org1", uid: `uid${index}`,
       status: "signedUp"});
   }

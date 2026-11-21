@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_attendees.schema.json",
   "title": "EventAttendeeDocument",
-  "description": "The Host's private roster row for one person at one event, stored at eventAttendees/{attendeeId}: roster identity, contact details, attendance and Host notes. Since L5 it holds no booking; a Catch booking lives only in eventParticipations, which names this row in attendeeId. Rows also come from Host imports and public registration. The booking field is tolerated on old documents only.",
+  "description": "The Host's private roster row for one person at one event, stored at eventAttendees/{attendeeId}: roster identity, contact details, attendance and Host notes. Since L5 it holds no booking; a Catch booking lives only in eventBookings, which names this row in attendeeId. Rows also come from Host imports and public registration. The booking field is tolerated on old documents only.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventAttendees",
@@ -202,7 +202,7 @@
     "booking": {
       "type": ["object", "null"],
       "additionalProperties": false,
-      "description": "Retired 15 Nov 2026: the booking lives only in eventParticipations, which links to this row through attendeeId. Nothing writes or reads this field; it stays in the schema only because the legal hold keeps the copies already stored on existing rows. Remove it when the hold lifts.",
+      "description": "Retired 15 Nov 2026: the booking lives only in eventBookings, which links to this row through attendeeId. Nothing writes or reads this field; it stays in the schema only because the legal hold keeps the copies already stored on existing rows. Remove it when the hold lifts.",
       "x-catch-ownership": "callable-owned",
       "required": ["status", "createdAt", "signedUpAt", "waitlistedAt", "attendedAt", "cancelledAt", "paymentId", "genderAtSignup", "deletedAt"],
       "properties": {

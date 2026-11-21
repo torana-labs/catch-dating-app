@@ -188,9 +188,9 @@ test("suspend and ban are owner-only", async () => {
 test("a ban signs the person out, cancels future bookings, blocks their " +
   "phone, and lifting it restores everything", async () => {
   const h = harness({
-    "eventParticipations/e1__guest-1": {uid: "guest-1", eventId: "e1",
+    "eventBookings/e1__guest-1": {uid: "guest-1", eventId: "e1",
       status: "signedUp"},
-    "eventParticipations/e2__guest-1": {uid: "guest-1", eventId: "e2",
+    "eventBookings/e2__guest-1": {uid: "guest-1", eventId: "e2",
       status: "signedUp"},
     "events/e1": {startTime: Timestamp.fromMillis(T0 + DAY)},
     "events/e2": {startTime: Timestamp.fromMillis(T0 - DAY)},

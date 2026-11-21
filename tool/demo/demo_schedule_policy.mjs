@@ -65,7 +65,7 @@ export function scheduleComplianceIssues({
     if (!event) {
       issues.push({
         code: "missing-participation-event",
-        path: participation.path ?? `eventParticipations/${participation.id ?? "unknown"}`,
+        path: participation.path ?? `eventBookings/${participation.id ?? "unknown"}`,
         message: `Participation references missing events/${data.eventId}.`,
       });
       continue;
@@ -73,7 +73,7 @@ export function scheduleComplianceIssues({
     if (event.status === "cancelled") {
       issues.push({
         code: "scheduled-participation-cancelled-event",
-        path: participation.path ?? `eventParticipations/${participation.id ?? "unknown"}`,
+        path: participation.path ?? `eventBookings/${participation.id ?? "unknown"}`,
         message: `Scheduled participation references cancelled events/${event.eventId}.`,
       });
       continue;
@@ -84,7 +84,7 @@ export function scheduleComplianceIssues({
       organizerId: data.organizerId ?? event.organizerId,
       startTimeMillis: event.startTimeMillis,
       endTimeMillis: event.endTimeMillis,
-      path: participation.path ?? `eventParticipations/${participation.id ?? `${data.eventId}_${data.uid}`}`,
+      path: participation.path ?? `eventBookings/${participation.id ?? `${data.eventId}_${data.uid}`}`,
     });
   }
 
@@ -183,7 +183,7 @@ export async function assertNoUserEventScheduleConflictInFirestore({
   event,
 }) {
   const next = eventWindow(event);
-  const participationSnap = await db.collection("eventParticipations")
+  const participationSnap = await db.collection("eventBookings")
     .where("uid", "==", uid)
     .get();
   for (const doc of participationSnap.docs) {

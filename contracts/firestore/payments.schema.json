@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/payments.schema.json",
   "title": "PaymentDocument",
-  "description": "One guest's in-app Catch booking payment (Razorpay or Stripe checkout): a document in the single guest-payment ledger guestPayments/{paymentId} with purpose booking (every guest checkout shares that ledger; purpose names the flow). Its id is the provider payment id (Razorpay) or an auto id (Stripe); the booking names it in eventParticipations.paymentId. The guest who paid can read it.",
+  "description": "One guest's in-app Catch booking payment (Razorpay or Stripe checkout): a document in the single guest-payment ledger guestPayments/{paymentId} with purpose booking (every guest checkout shares that ledger; purpose names the flow). Its id is the provider payment id (Razorpay) or an auto id (Stripe); the booking names it in eventBookings.paymentId. The guest who paid can read it.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "guestPayments",

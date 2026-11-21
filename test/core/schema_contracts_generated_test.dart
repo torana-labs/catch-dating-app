@@ -262,7 +262,7 @@ void main() {
       'ExternalEventDocument',
       'EventPrivateAccessDocument',
       'EventInviteLinkDocument',
-      'EventParticipationDocument',
+      'EventBookingDocument',
       'EventWaitlistOfferDocument',
       'EventSuccessPlanDocument',
       'EventSuccessFeedbackDocument',
@@ -328,7 +328,7 @@ void main() {
       'firestore/external_events.schema.json',
       'firestore/event_private_access.schema.json',
       'firestore/event_invite_links.schema.json',
-      'firestore/event_participations.schema.json',
+      'firestore/event_bookings.schema.json',
       'firestore/event_waitlist_offers.schema.json',
       'firestore/event_success_plans.schema.json',
       'firestore/event_success_feedback.schema.json',
@@ -417,7 +417,7 @@ void main() {
         'valid/event_invite_link_doc.json',
       ),
       _SchemaFixtureCase.valid(
-        'EventParticipationDocument',
+        'EventBookingDocument',
         'valid/event_participation_doc.json',
       ),
       _SchemaFixtureCase.valid(

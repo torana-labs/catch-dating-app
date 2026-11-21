@@ -1,6 +1,6 @@
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   HostEventRequestViewDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {isEventPolicyTerms} from "./configuredEvent";
@@ -9,7 +9,7 @@ import {eventPolicyFromEvent} from "./eventPolicy";
 // Ordering and waitlist rules the hostEventRequestViews read model applies.
 
 type Row = HostEventRequestViewDocument["rows"][number];
-type Participation = EventParticipationDocument;
+type Participation = EventBookingDocument;
 
 /**
  * Whether a waitlisted person is the host's to offer a spot. An event that
