@@ -83,9 +83,11 @@ test("changed transitive inputs and changed native font invalidate reuse", t => 
 });
 
 
-test("a successful no-op framer cannot package an invalidated capture", t => {
+test("a successful no-op render cannot package an invalidated capture", t => {
   const f = fixture(t);
-  f.executable("dart", "process.exit(0);");
+  // A render that passes but writes no screen: an unframed capture has nothing to copy.
+  const flutter = fs.readFileSync(path.join(path.dirname(f.calls), "bin/flutter"), "utf8");
+  f.executable("flutter", flutter.split("\n").slice(1).join("\n").replace("fs.writeFileSync(out + '/' + id + '/light.png'", "void (out + '/' + id + '/light.png'"));
   assert.throws(() => exportHostedCaptures(f.options), /failed/);
   assert.ok(!fs.existsSync(f.options.outputDir));
 });

@@ -40,7 +40,8 @@ test("real canonical wrappers export all 12 with exact provenance and complete b
   // Each capture renders alone with coverage, so it records its own inputs.
   const renders = calls.filter(c => c.command === "flutter");
   assert.equal(renders.length, 12);
-  assert.equal(calls.filter(c => c.command === "dart").length, 12);
+  // generic-phone screens are unframed: the exporter copies the render, with no framing step.
+  assert.equal(calls.filter(c => c.command === "dart").length, 0);
   for (const {args, ids} of renders) {
     assert.ok(args.includes("--dart-define=CAPTURE_PLATFORM=ios"));
     assert.ok(args.some(a => a.startsWith("--coverage-path=")));

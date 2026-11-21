@@ -5,7 +5,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
-import {captureDeviceIds, deviceFrameSpec, isFragmentCaptureDevice} from "./lib/capture_devices.mjs";
+import {captureDeviceIds, deviceFrameSpec, isFragmentCaptureDevice, isFramedCaptureDevice} from "./lib/capture_devices.mjs";
 import {captureCatalogIndex, captureEntryPath, readCaptureCatalogFiles} from "../ui_capture/lib/capture_catalog_sources.mjs";
 
 const manifestPath = fromRepo("tool/marketing/capture_manifest.json");
@@ -236,24 +236,37 @@ async function updateExports(staleOnly = false) {
 
   // Each capture renders alone, with coverage, so its provenance records the
   // files that render executed. Only a successful, complete render of that
-  // capture produces the list; any failure stops before stamping.
+  // capture produces the list; any failure stops before stamping. A fragment
+  // renders in its screen's process instead (a family: the screen, when it is
+  // selected, then its fragments), on the screen's device, which fragment-phone
+  // mirrors; the family shares that process's coverage list, a superset of
+  // each member's. A fragment so costs its own test, not a whole process.
   const coverageDir = fromRepo(path.join(rawOutputDir, "coverage"));
-  for (const {capture, entry, inputHash} of selected) {
-    fs.rmSync(fromRepo(path.join(rawOutputDir, entry.id)), {recursive: true, force: true});
-    const lcovPath = path.join(coverageDir, `${entry.id}.lcov`);
+  const families = new Map();
+  for (const item of selected) {
+    const key = item.capture.fragmentOf ?? item.capture.id;
+    if (!families.has(key)) families.set(key, []);
+    families.get(key).push(item);
+  }
+  for (const [screenId, members] of families) {
+    members.sort((a, b) => Number(Boolean(a.capture.fragmentOf)) - Number(Boolean(b.capture.fragmentOf)));
+    const screen = (manifest.captures ?? []).find(capture => capture.id === screenId);
+    const device = screen?.device ?? members[0].capture.device;
+    for (const {entry} of members) fs.rmSync(fromRepo(path.join(rawOutputDir, entry.id)), {recursive: true, force: true});
+    const lcovPath = path.join(coverageDir, `${members[0].entry.id}.lcov`);
     fs.rmSync(lcovPath, {force: true});
-    let result = spawnSync(
+    const result = spawnSync(
       "node",
       [
         "tool/ui_capture/run_captures.mjs",
         "--ids",
-        entry.id,
+        members.map(({entry}) => entry.id).join(","),
         "--output-dir",
         rawOutputDir,
         "--device",
-        capture.device,
+        device,
         "--pixel-ratio",
-        String(deviceFrameSpec(capture.device).outputScale),
+        String(deviceFrameSpec(device).outputScale),
         "--platform",
         "ios",
         "--sf-font",
@@ -265,29 +278,35 @@ async function updateExports(staleOnly = false) {
     );
     if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
     if (!fs.existsSync(lcovPath)) {
-      fail("Marketing app screenshot export failed.", [`${capture.id}: the render wrote no coverage report.`]);
+      fail("Marketing app screenshot export failed.", [`${screenId}: the render wrote no coverage report.`]);
     }
     const executedFiles = executedFilesFromLcov(fs.readFileSync(lcovPath, "utf8"));
-    const inputPath = path.join(rawOutputDir, entry.id, "light.png");
-    fs.rmSync(fromRepo(capture.sourcePath), {force: true});
-    let fragment;
-    if (isFragmentCaptureDevice(capture.device)) {
-      // The runner already cut the widget out of its screen and wrote where it sits; there is no frame to draw.
+    for (const {capture, entry, inputHash} of members) {
+      const inputPath = path.join(rawOutputDir, entry.id, "light.png");
+      fs.rmSync(fromRepo(capture.sourcePath), {force: true});
       fs.mkdirSync(path.dirname(fromRepo(capture.sourcePath)), {recursive: true});
-      fs.copyFileSync(fromRepo(inputPath), fromRepo(capture.sourcePath));
-      fragment = JSON.parse(fs.readFileSync(fromRepo(inputPath.replace(/\.png$/u, ".fragment.json")), "utf8"));
-    } else {
-      result = spawnSync(
-        "dart",
-        ["run", "tool/marketing/frame_device_capture.dart", "--input", inputPath, "--output", capture.sourcePath, "--device", capture.device],
-        {cwd: repoRoot, stdio: "inherit"}
-      );
-      if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
+      let fragment;
+      if (isFragmentCaptureDevice(capture.device)) {
+        // The runner already cut the widget out of its screen and wrote where it sits.
+        fs.copyFileSync(fromRepo(inputPath), fromRepo(capture.sourcePath));
+        fragment = JSON.parse(fs.readFileSync(fromRepo(inputPath.replace(/\.png$/u, ".fragment.json")), "utf8"));
+      } else if (!isFramedCaptureDevice(capture.device)) {
+        // An unframed screen is the render itself (the website draws its frame);
+        // the stamp checks its size.
+        fs.copyFileSync(fromRepo(inputPath), fromRepo(capture.sourcePath));
+      } else {
+        const framed = spawnSync(
+          "dart",
+          ["run", "tool/marketing/frame_device_capture.dart", "--input", inputPath, "--output", capture.sourcePath, "--device", capture.device],
+          {cwd: repoRoot, stdio: "inherit"}
+        );
+        if ((framed.status ?? 1) !== 0) process.exit(framed.status ?? 1);
+      }
+      if (staticInputHash(capture) !== inputHash) {
+        fail("Capture inputs changed during rendering.", ["Rerun the exporter from a stable source tree."]);
+      }
+      stampCapture(capture, entry.id, sfFont, {executedFiles, fragment});
     }
-    if (staticInputHash(capture) !== inputHash) {
-      fail("Capture inputs changed during rendering.", ["Rerun the exporter from a stable source tree."]);
-    }
-    stampCapture(capture, entry.id, sfFont, {executedFiles, fragment});
   }
 }
 

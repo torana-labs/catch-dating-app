@@ -3,7 +3,7 @@
 // each capture's inputs to its own imports; see
 // docs/marketing_app_media_pipeline.md.
 
-import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/capture_device.dart';
@@ -22,8 +22,7 @@ final hostLiveScoresThirdTeamFragmentCapture = ScreenCaptureEntry(
   providerOverrides: hostLiveScoresPhoneCapture.providerOverrides,
   builder: hostLiveScoresPhoneCapture.builder,
   fragment: CaptureFragment(
-    find: () =>
-        nearestFragment(find.text('Vada Pav Theory').first, CatchIndexRow),
+    find: () => find.byKey(const ValueKey<String>('host-live-scores-vp')),
     padding: fragmentRowPadding,
   ),
 );
