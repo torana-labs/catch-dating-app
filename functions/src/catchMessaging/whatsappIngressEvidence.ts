@@ -73,6 +73,10 @@ export function deriveCatchIngressEvidence(
         errors.length !== 0) unavailable();
     key = [event.wabaId, event.phoneNumberId, "inbound", event.messageId];
     classification = "text";
+    // A photo, voice note or button reply carries only a Support placeholder
+    // in text. It stays blocked here, so it can never be read as typed words
+    // (nominations, STOP, the reply trial); the receipt consumer still
+    // records it in the Support conversation.
     if (event.messageType !== "text") ambiguity = "unsupported-message";
     else if (event.textTruncated) ambiguity = "truncated-text";
     else if (event.text === null || !event.text.trim()) {
