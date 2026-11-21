@@ -1,189 +1,221 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {FieldValue, type Firestore} from "firebase-admin/firestore";
-import type {EmailSubmission, TransactionalEmail} from "../email/emailProvider";
-import {ALERTS, LEASE, LIFETIME, deliverHostAlert, dispatchHostAlerts,
-  eligibleHostAlert, enqueueHostAlert} from "./delivery";
-import {BRAND} from "../shared/generated/brand";
+import {Timestamp} from "firebase-admin/firestore";
+import type {EmailSubmission, TransactionalEmail} from
+  "../email/emailProvider";
+import {FakeFirestore} from "../shared/testing/fakeFirestore";
+import {
+  ALERTS,
+  SETTINGS_PATH,
+  alertOnSalesIntent,
+  alertOnSupportMessage,
+  summariseOverflow,
+} from "./delivery";
 
-const clock = 1792512000000;
-const eventId = `host_lead_${clock}_00000000-0000-4000-8000-000000000001`;
-const intentId = "a".repeat(64);
-const sourcePath = `salesInboundIntents/${intentId}`;
-const alertPath = `${ALERTS}/${eventId}`;
-const source = {source: "website", classification: "sales_private",
-  hostLead: {eventId, isNew: true}, status: "needs_identity_review",
-  hostApplication: {organizationName: "Private Company"},
-  fullName: "Private Applicant", email: "private@organizer.in",
-  submissionId: "request-one"};
+const clock = Date.UTC(2026, 10, 21, 8, 35);
+const conversationId = `whatsapp-${"b".repeat(64)}`;
+const settings = {
+  schemaVersion: 1,
+  email: {provider: "resend", accountId: "account-fixture",
+    from: "billing@catch.example",
+    credentialVersion: "projects/demo/secrets/EMAIL/versions/1"},
+  operatorAlerts: {enabled: true, recipients: ["staff@catch.example",
+    "owner@catch.example"], from: "alerts@catch.example", hourlyCap: 2},
+  updatedAtMillis: 1,
+};
 
-function fixture() {
-  const rows = new Map<string, Record<string, unknown>>([[sourcePath, source]]);
-  let serial: Promise<unknown> = Promise.resolve();
-  let time = clock;
-  const read = (path: string) => ({exists: rows.has(path),
-    data: () => structuredClone(rows.get(path))});
-  const db = {
-    collection: (name: string) => ({doc: (id: string) => ({
-      path: `${name}/${id}`, get: async () => read(`${name}/${id}`),
-    })}),
-    runTransaction: (run: (tx: unknown) => Promise<unknown>) => {
-      const result = serial.then(async () => {
-        let writing = false;
-        const writes: Array<() => void> = [];
-        const value = await run({
-          get: async ({path}: {path: string}) => {
-            assert.equal(writing, false); return read(path);
-          },
-          create: ({path}: {path: string}, value: Record<string, unknown>) => {
-            writing = true; assert.equal(rows.has(path), false);
-            writes.push(() => {
-              rows.set(path, structuredClone(value));
-            });
-          },
-          update: ({path}: {path: string}, patch: Record<string, unknown>) => {
-            writing = true;
-            writes.push(() => {
-              const next = {...rows.get(path)};
-              for (const [key, value] of Object.entries(patch)) {
-                if (value instanceof FieldValue) delete next[key];
-                else next[key] = value;
-              }
-              rows.set(path, structuredClone(next));
-            });
-          },
-        });
-        writes.forEach((write) => write());
-        return value;
-      });
-      serial = result.catch(() => undefined);
-      return result;
-    },
-  } as unknown as Firestore;
-  const base = {enabled: true, since: clock, db, now: () => time};
-  const sent: TransactionalEmail[] = [];
-  let outcome: EmailSubmission =
-    {kind: "accepted", providerMessageId: "mail-1"};
-  const provider = {id: "resend", submit: async (mail: TransactionalEmail) => {
-    sent.push(mail); return outcome;
-  }};
-  return {rows, sent, base, provider,
-    time: (value: number) => {
-      time = value;
-    },
-    outcome: (value: EmailSubmission) => {
-      outcome = value;
-    },
-    enqueue: () => enqueueHostAlert({...base, intentId}),
-    deliver: () => deliverHostAlert({...base, provider, eventId})};
+function intent(id: number, patch: Record<string, unknown> = {}) {
+  return [`salesInboundIntents/${String(id).repeat(64).slice(0, 64)}`, {
+    status: "needs_identity_review", source: "meta_lead_ad",
+    submissionId: `meta-${id}`, fullName: "Sample Person",
+    email: "sample@organizer.in", city: "Pune",
+    createdAt: Timestamp.fromMillis(clock - 1000),
+    hostApplication: {organizationName: "Lantern Run Club"}, ...patch,
+  }] as const;
 }
 
-test("eligibility excludes legacy, replay, internal QA and pre-activation data",
-  () => {
-    assert.ok(eligibleHostAlert(source, clock, clock));
-    for (const patch of [{source: "partner"}, {hostLead: null},
-      {hostLead: {eventId, isNew: false}}, {status: "dismissed"},
-      {submissionId: "internal_qa_delivery"}, {fullName: "[QA] Synthetic"},
-      {email: "qa@example.test"}, {email: "qa@demo.example.com"},
-      {hostApplication: null}]) {
-      assert.equal(eligibleHostAlert({...source, ...patch}, clock, clock),
-        null);
-    }
-    for (const [since, now] of [[clock + 1, clock + 2],
-      [clock, clock + LIFETIME], [0, clock], [clock, clock - 1]]) {
-      assert.equal(eligibleHostAlert(source, since, now), null);
-    }
-  });
-
-test("disabled paths touch no database or sender", async () => {
-  const f = fixture();
-  const base = {...f.base, enabled: false, db: {
-    collection: () => {
-      throw new Error("disabled database");
+function fixture(seed: Record<string, Record<string, unknown>> = {}) {
+  const db = new FakeFirestore({[SETTINGS_PATH]: settings, ...seed});
+  const sent: TransactionalEmail[] = [];
+  let time = clock;
+  let outcomes: EmailSubmission[] = [];
+  const deps = {
+    db: () => db.asFirestore(),
+    now: () => time,
+    emailSender: async () => ({id: "fake", submit: async (
+      mail: TransactionalEmail) => {
+      sent.push(mail);
+      return outcomes.shift() ??
+        {kind: "accepted" as const, providerMessageId: `mail-${sent.length}`};
+    }}),
+  };
+  return {db, sent, deps,
+    at: (value: number) => {
+      time = value;
     },
-  } as unknown as Firestore};
-  assert.equal(await enqueueHostAlert({...base, intentId}), false);
-  assert.equal(await deliverHostAlert({...base, eventId,
-    provider: f.provider}), "disabled");
-  assert.equal(await dispatchHostAlerts({...base, provider: f.provider}), 0);
-});
+    outcomes: (value: EmailSubmission[]) => {
+      outcomes = value;
+    }};
+}
 
-test("concurrent workers send one notice without applicant data",
+const leadId = (id: number) => String(id).repeat(64).slice(0, 64);
+
+test("switched off: nothing is written or sent",
   async () => {
-    const f = fixture();
-    assert.deepEqual(await Promise.all([f.enqueue(), f.enqueue()]),
-      [true, false]);
-    await Promise.all([f.deliver(), f.deliver()]);
-    assert.equal(f.sent.length, 1);
-    const mail = f.sent[0];
-    // brand-literal-ok: the owner's review inbox, not the support address.
-    assert.equal(mail.to, "suvrat.garg@gmail.com"); // brand-literal-ok: inbox
-    assert.equal(mail.from, `host@${BRAND.senders.emailDomain}`);
-    assert.ok(mail.text.includes(`${BRAND.web.adminOrigin}/`));
-    assert.equal(mail.html, undefined);
-    for (const value of ["Private Applicant", "Private Company",
-      "private@organizer.in", intentId]) {
-      assert.equal(JSON.stringify(mail).includes(value), false);
-      assert.equal(JSON.stringify(f.rows.get(alertPath)).includes(value),
-        value === intentId);
+    for (const operatorAlerts of [undefined, {...settings.operatorAlerts,
+      enabled: false}]) {
+      const f = fixture(Object.fromEntries([intent(1)]));
+      f.db.put(SETTINGS_PATH, {...settings, operatorAlerts});
+      assert.equal(await alertOnSalesIntent(f.deps, leadId(1)), "disabled");
+      assert.equal(await summariseOverflow(f.deps), 0);
+      assert.deepEqual(f.db.paths(ALERTS), []);
+      assert.equal(f.sent.length, 0);
     }
-    assert.equal(f.rows.get(alertPath)?.status, "accepted");
-    assert.equal(f.rows.get(alertPath)?.providerMessageId, "mail-1");
-    assert.equal(f.rows.get(alertPath)?.nextAttemptAt, undefined);
-    await f.enqueue(); await f.deliver();
-    assert.equal(f.sent.length, 1);
-  });
-
-test("missing or dismissed intake stops queued delivery", async () => {
-  for (const removed of [true, false]) {
-    const f = fixture(); await f.enqueue();
-    if (removed) f.rows.delete(sourcePath);
-    else f.rows.set(sourcePath, {...source, status: "dismissed"});
-    await f.deliver();
+    const f = fixture(Object.fromEntries([intent(1)]));
+    f.db.put(SETTINGS_PATH, {...settings, email: null});
+    assert.equal(await alertOnSalesIntent(f.deps, leadId(1)), "disabled");
+    f.db.put(SETTINGS_PATH, {...settings, operatorAlerts: {
+      ...settings.operatorAlerts, recipients: []}});
+    assert.equal(await alertOnSalesIntent(f.deps, leadId(1)), "disabled");
     assert.equal(f.sent.length, 0);
-    assert.equal(f.rows.get(alertPath)?.status, "stopped");
-  }
-});
-
-test("uncertain sends never automatically retry", async () => {
-  const f = fixture(); await f.enqueue(); f.outcome({kind: "unknown"});
-  assert.equal(await f.deliver(), "unknown");
-  await f.deliver(); assert.equal(f.sent.length, 1);
-  const g = fixture(); await g.enqueue();
-  g.rows.set(alertPath, {...g.rows.get(alertPath), status: "sending",
-    attempts: 1, attemptId: "00000000-0000-4000-8000-000000000002",
-    nextAttemptAt: clock + LEASE});
-  g.time(clock + LEASE); await g.deliver(); await g.deliver();
-  assert.equal(g.rows.get(alertPath)?.status, "unknown");
-  assert.equal(g.rows.get(alertPath)?.nextAttemptAt, undefined);
-  assert.equal(g.sent.length, 0);
-});
-
-test("only explicit throttles retry, bounded by attempts and original deadline",
-  async () => {
-    const f = fixture(); await f.enqueue();
-    f.outcome({kind: "deferred", reason: "rateLimited",
-      retryAfterMillis: 1000});
-    for (let i = 0; i < 5; i++) {
-      f.time(clock + i * 60_000); await f.deliver();
-    }
-    assert.equal(f.sent.length, 5);
-    assert.equal(new Set(f.sent.map((mail) => mail.idempotencyKey)).size, 1);
-    assert.equal(f.rows.get(alertPath)?.status, "failed");
-    assert.equal(f.rows.get(alertPath)?.nextAttemptAt, undefined);
-    await f.deliver(); assert.equal(f.sent.length, 5);
-    const g = fixture(); await g.enqueue();
-    g.outcome({kind: "deferred", reason: "quotaExceeded",
-      retryAfterMillis: LIFETIME});
-    assert.equal(await g.deliver(), "failed");
   });
 
-test("sender rejection is terminal; expiry cannot send", async () => {
-  const f = fixture(); await f.enqueue();
-  f.outcome({kind: "rejected", reason: "senderUnavailable"});
-  assert.equal(await f.deliver(), "failed");
-  await f.deliver(); assert.equal(f.sent.length, 1);
-  const g = fixture(); await g.enqueue(); g.time(clock + LIFETIME);
-  await g.deliver(); assert.equal(g.sent.length, 0);
-  assert.equal(g.rows.get(alertPath)?.status, "stopped");
+test("one email per lead to every recipient, however often it is retried",
+  async () => {
+    const f = fixture(Object.fromEntries([intent(1)]));
+    const results = await Promise.all([1, 2, 3].map(() =>
+      alertOnSalesIntent(f.deps, leadId(1))));
+    assert.deepEqual(results.sort(), ["duplicate", "duplicate", "sent"]);
+    assert.equal(f.sent.length, 1);
+    assert.deepEqual(f.sent[0].to, settings.operatorAlerts.recipients);
+    assert.equal(f.sent[0].from, "alerts@catch.example");
+    const receipt = f.db.get(`${ALERTS}/lead_${leadId(1)}`);
+    assert.equal(receipt?.status, "sent");
+    assert.equal(receipt?.acceptedCount, 2);
+    assert.equal(receipt?.providerMessageId, "mail-1");
+    // The receipt keeps ids and links, never the lead's details.
+    for (const value of ["Sample Person", "Lantern", "sample@organizer.in"]) {
+      assert.equal(JSON.stringify(receipt).includes(value), false);
+    }
+  });
+
+test("stale, closed and partner rows send nothing", async () => {
+  const f = fixture(Object.fromEntries([
+    intent(1, {createdAt: Timestamp.fromMillis(clock - 7 * 3_600_000)}),
+    intent(2, {source: "partner"}),
+  ]));
+  assert.equal(await alertOnSalesIntent(f.deps, leadId(1)), "stale");
+  assert.equal(await alertOnSalesIntent(f.deps, leadId(2)), "ignored");
+  assert.equal(await alertOnSalesIntent(f.deps, leadId(3)), "ignored");
+  assert.equal(f.sent.length, 0);
+});
+
+test("past the hourly cap alerts are held, then summarised once", async () => {
+  const f = fixture(Object.fromEntries([1, 2, 3, 4].map((id) => intent(id))));
+  const outcomes = [];
+  for (const id of [1, 2, 3, 4]) {
+    outcomes.push(await alertOnSalesIntent(f.deps, leadId(id)));
+  }
+  assert.deepEqual(outcomes, ["sent", "sent", "overflow", "overflow"]);
+  assert.equal(f.sent.length, 2);
+  const window = f.db.get(`${ALERTS}/hourly/windows/2026112108`);
+  assert.equal(window?.sentCount, 2);
+  assert.equal(window?.overflowCount, 2);
+  assert.equal(window?.summaryStatus, "pending");
+  // Not before the hour closes.
+  assert.equal(await summariseOverflow(f.deps), 0);
+  f.at(clock + 3_600_000);
+  assert.equal(await summariseOverflow(f.deps), 1);
+  assert.equal(f.sent.length, 3);
+  const summary = f.sent[2];
+  assert.equal(summary.subject, "2 more Catch alerts in one hour");
+  assert.ok(summary.text.includes(`/inbox/enquiry-${leadId(3)}`));
+  assert.ok(summary.text.includes(`/inbox/enquiry-${leadId(4)}`));
+  assert.equal(summary.text.includes("Sample Person"), false);
+  assert.equal(f.db.get(`${ALERTS}/hourly/windows/2026112108`)
+    ?.summaryStatus, "sent");
+  assert.equal(await summariseOverflow(f.deps), 0);
+  assert.equal(f.sent.length, 3);
+  // A new hour has a fresh allowance.
+  f.db.put(intent(5)[0], {...intent(5)[1],
+    createdAt: Timestamp.fromMillis(clock + 3_600_000)});
+  assert.equal(await alertOnSalesIntent(f.deps, leadId(5)), "sent");
+});
+
+test("uncertain and rejected sends are recorded and never repeated",
+  async () => {
+    const f = fixture(Object.fromEntries([intent(1), intent(2)]));
+    f.outcomes([{kind: "unknown"},
+      {kind: "rejected", reason: "senderUnavailable"}]);
+    assert.equal(await alertOnSalesIntent(f.deps, leadId(1)), "unknown");
+    assert.equal(await alertOnSalesIntent(f.deps, leadId(2)), "failed");
+    assert.equal(await alertOnSalesIntent(f.deps, leadId(1)), "duplicate");
+    assert.equal(f.sent.length, 2);
+    assert.equal(f.db.get(`${ALERTS}/lead_${leadId(1)}`)?.status, "unknown");
+  });
+
+test("a short throttle is waited out once with the same key", async () => {
+  const f = fixture(Object.fromEntries([intent(1)]));
+  f.outcomes([{kind: "deferred", reason: "rateLimited",
+    retryAfterMillis: 1}]);
+  assert.equal(await alertOnSalesIntent(f.deps, leadId(1)), "sent");
+  assert.equal(f.sent.length, 2);
+  assert.equal(f.sent[0].idempotencyKey, f.sent[1].idempotencyKey);
+  const g = fixture(Object.fromEntries([intent(1)]));
+  g.outcomes([{kind: "deferred", reason: "quotaExceeded",
+    retryAfterMillis: 3_600_000}]);
+  assert.equal(await alertOnSalesIntent(g.deps, leadId(1)), "failed");
+  assert.equal(g.sent.length, 1);
+});
+
+function supportSeed(messages: Array<[string, Record<string, unknown>]>,
+  createdAt = clock) {
+  return {
+    [`supportConversations/${conversationId}`]: {channel: "whatsapp",
+      displayName: "Sample Person", audience: "guest",
+      createdAt: Timestamp.fromMillis(createdAt)},
+    ...Object.fromEntries(messages.map(([id, row]) => [
+      `supportConversations/${conversationId}/messages/${id}`,
+      {direction: "inbound", authorUid: null, text: "Hello there", ...row}])),
+  };
+}
+
+test("support: a new conversation alerts; a quick follow-up does not",
+  async () => {
+    const f = fixture(supportSeed([
+      ["src-first-message", {at: Timestamp.fromMillis(clock)}],
+      ["src-second-message", {at: Timestamp.fromMillis(clock + 60_000)}],
+    ]));
+    assert.equal(await alertOnSupportMessage(f.deps, conversationId,
+      "src-first-message"), "sent");
+    f.at(clock + 60_000);
+    assert.equal(await alertOnSupportMessage(f.deps, conversationId,
+      "src-second-message"), "ignored");
+    assert.equal(f.sent.length, 1);
+    assert.match(f.sent[0].subject, /^WhatsApp message: Sample Person$/u);
+    assert.ok(f.sent[0].text.includes(`/support/${conversationId}`));
+  });
+
+test("support: an inbound message after four quiet hours alerts, even with " +
+  "staff replies in between; staff-logged messages never do", async () => {
+  const start = clock - 5 * 3_600_000;
+  const f = fixture(supportSeed([
+    ["src-opening-message", {at: Timestamp.fromMillis(start)}],
+    ["msg-staff-reply-1", {direction: "outbound", authorUid: "staff",
+      at: Timestamp.fromMillis(clock - 3_600_000)}],
+    ["src-returning-message", {at: Timestamp.fromMillis(clock)}],
+    ["msg-logged-email-1", {authorUid: "staff",
+      at: Timestamp.fromMillis(clock + 1000)}],
+  ], start));
+  assert.equal(await alertOnSupportMessage(f.deps, conversationId,
+    "src-returning-message"), "sent");
+  assert.equal(await alertOnSupportMessage(f.deps, conversationId,
+    "msg-logged-email-1"), "ignored");
+  assert.equal(f.sent.length, 1);
+  assert.ok(f.sent[0].text.includes(
+    "WhatsApp message (First message from them in over 4 hours)"));
+  const receipts = f.db.paths(ALERTS).filter((path) =>
+    /^hostOperatorAlerts\/support_/u.test(path));
+  assert.equal(receipts.length, 1);
+  assert.equal(f.db.get(receipts[0])?.kind, "supportReturn");
 });

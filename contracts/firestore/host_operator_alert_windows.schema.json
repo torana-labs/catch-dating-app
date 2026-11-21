@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_operator_alert_windows.schema.json",
+  "title": "HostOperatorAlertWindowDocument",
+  "description": "The staff alert count for one UTC clock hour, which enforces the hourly cap. Alerts past the cap are counted as overflow and listed in one summary email after the hour closes. scopeId is always hourly.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostOperatorAlertWindows",
+  "x-firestore-path": "hostOperatorAlerts/{scopeId}/windows/{windowId}",
+  "x-document-id-field": "windowId",
+  "x-owner": "Operator alert triggers (functions/src/hostAlerts)",
+  "required": [
+    "schemaVersion",
+    "windowId",
+    "sentCount",
+    "overflowCount",
+    "summaryStatus",
+    "createdAtMillis",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "windowId": {
+      "type": "string",
+      "pattern": "^[0-9]{10}$",
+      "description": "UTC yyyyMMddHH."
+    },
+    "sentCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 60
+    },
+    "overflowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "summaryStatus": {
+      "enum": [
+        "none",
+        "pending",
+        "sending",
+        "sent",
+        "failed",
+        "unknown"
+      ],
+      "description": "none: no overflow. pending: overflow waits for the summary after the hour closes. The rest record the summary email outcome; it is never resent."
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

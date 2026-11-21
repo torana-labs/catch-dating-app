@@ -1,44 +1,68 @@
 import * as admin from "firebase-admin";
+import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
+import * as logger from "firebase-functions/logger";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {defineBoolean, defineSecret, defineString} from
-  "firebase-functions/params";
 import {ResendEmailProvider} from "../email/resendEmailProvider";
-import {dispatchHostAlerts, enqueueHostAlert} from "./delivery";
+import {SecretVersionReferenceGuard} from "../shared/secretVersionReference";
+import {
+  alertOnSalesIntent,
+  alertOnSupportMessage,
+  summariseOverflow,
+  type OperatorAlertDeps,
+} from "./delivery";
 
-// The credential binding and start cutoff need a reviewed runtime release.
-// These functions are deliberately not exported by the deployment index yet.
-const enabled = defineBoolean("CATCH_HOST_OPERATOR_ALERTS_ENABLED",
-  {default: false});
-const start = defineString("CATCH_HOST_OPERATOR_ALERTS_SINCE",
-  {default: ""});
-const token = defineSecret("CATCH_HOST_OPERATOR_ALERTS_RESEND_KEY");
-function configuration() {
-  const since = Date.parse(start.value());
-  return {enabled: enabled.value() && Number.isSafeInteger(since) && since > 0,
-    since};
-}
+/**
+ * Staff alerts for new support conversations and new leads. Everything is
+ * switched off until billingNoticeSettings/platform carries operatorAlerts
+ * with enabled true (docs/backend_operation_catalog.md, "Operator alerts"),
+ * so deploying these Functions emails nobody. The email credential is the
+ * pinned catch.transactional-email-credential/v1 version that settings
+ * document already names for bill notices.
+ */
+const secrets = new SecretManagerServiceClient();
+const references = new SecretVersionReferenceGuard();
 
-export const onHostApplicationAccepted = onDocumentCreated({
-  document: "salesInboundIntents/{intentId}", region: "asia-south1",
-  // Firebase resolves this to the selected deployment project. Provisioning
-  // is separate; this intake identity must never receive the mailer secret.
-  serviceAccount: "catch-host-alert-intake@",
-  retry: true, maxInstances: 2,
+export const defaultOperatorAlertDeps: OperatorAlertDeps = {
+  db: () => admin.firestore(),
+  now: Date.now,
+  emailSender: async (settings) => {
+    await references.assert(settings.credentialVersion, /^[A-Za-z0-9_-]+$/u);
+    const [result] = await secrets.accessSecretVersion({
+      name: settings.credentialVersion});
+    const data = result.payload?.data;
+    if (!data || data.length > 8192) return null;
+    const secret = JSON.parse(data.toString("utf8")) as
+      Record<string, unknown>;
+    if (secret.schema !== "catch.transactional-email-credential/v1" ||
+        secret.provider !== settings.provider ||
+        secret.accountId !== settings.accountId ||
+        typeof secret.apiKey !== "string") return null;
+    return new ResendEmailProvider(secret.apiKey);
+  },
+  warn: (message, fields) => logger.warn(message, fields),
+};
+
+// One instance each keeps a burst under the email provider's request rate;
+// retried events are safe because each source has one receipt.
+export const alertOperatorOnSupportMessage = onDocumentCreated({
+  document: "supportConversations/{conversationId}/messages/{messageId}",
+  retry: true, maxInstances: 1, timeoutSeconds: 60,
 }, async (event) => {
-  const config = configuration();
-  if (!config.enabled) return;
-  await enqueueHostAlert({...config, db: admin.firestore(),
-    intentId: event.params.intentId});
+  await alertOnSupportMessage(defaultOperatorAlertDeps,
+    event.params.conversationId, event.params.messageId);
 });
 
-export const dispatchHostApplicationAlerts = onSchedule({
-  schedule: "every 1 minutes", region: "asia-south1", maxInstances: 1,
-  serviceAccount: "catch-host-alert-mailer@",
-  timeoutSeconds: 300, retryCount: 0, secrets: [token],
+export const alertOperatorOnSalesLead = onDocumentCreated({
+  document: "salesInboundIntents/{intentId}",
+  retry: true, maxInstances: 1, timeoutSeconds: 60,
+}, async (event) => {
+  await alertOnSalesIntent(defaultOperatorAlertDeps, event.params.intentId);
+});
+
+export const summariseOperatorAlertOverflow = onSchedule({
+  schedule: "2 * * * *", timeZone: "Asia/Kolkata", timeoutSeconds: 120,
+  maxInstances: 1, retryCount: 0,
 }, async () => {
-  const config = configuration();
-  if (!config.enabled) return;
-  await dispatchHostAlerts({...config, db: admin.firestore(),
-    provider: new ResendEmailProvider(token.value())});
+  await summariseOverflow(defaultOperatorAlertDeps);
 });
