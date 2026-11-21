@@ -5,7 +5,7 @@ import {spawnSync} from 'node:child_process';
 import {deflateRawSync, inflateRawSync} from 'node:zlib';
 import {fromRepo, repoRoot} from '../../lib/repo_paths.mjs';
 import {webCaptureInputHash} from './web_capture_inputs.mjs';
-import {framedSize, isCaptureDevice} from './capture_devices.mjs';
+import {captureSizeProblem, isCaptureDevice} from './capture_devices.mjs';
 import {captureCatalogIndex, marketingEntryFile} from '../../ui_capture/lib/capture_catalog_sources.mjs';
 
 // Provenance travels inside the PNG; there is no second capture registry.
@@ -432,10 +432,8 @@ function recipeIdentity(capture, captureId) {
 
 function assertFrame(capture, width, height) {
   if (!isCaptureDevice(capture.device)) throw new Error(`Unsupported capture device ${capture.device}.`);
-  const expected = framedSize(capture.device);
-  if (width !== expected.width || height !== expected.height) {
-    throw new Error(`Expected framed ${capture.device} PNG ${expected.width}x${expected.height}, got ${width}x${height}.`);
-  }
+  const problem = captureSizeProblem(capture.device, width, height);
+  if (problem) throw new Error(problem);
 }
 
 function parsePng(png) {

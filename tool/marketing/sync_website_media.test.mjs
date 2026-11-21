@@ -45,6 +45,27 @@ test("website records carry the framed size and the pages that show them", () =>
   assert.equal("scenario" in record, false);
 });
 
+test("a fragment is cut from an active generic-phone app capture and takes its size from its PNG", () => {
+  const screen = {...liveConsole, id: "sample-screen", status: "active", pages: []};
+  const fragment = {...liveConsole, id: "sample-fragment", device: "fragment-phone", fragmentOf: "sample-screen", status: "active", pages: [],
+    sourcePath: screen.sourcePath, websitePath: "website/public/assets/app-screenshots/sample-fragment.png"};
+  const of = (...captures) => ({...authored, captures});
+  assert.deepEqual(validateSourceManifest(of(screen, fragment)), []);
+  assert.match(validateSourceManifest(of(screen, {...fragment, fragmentOf: "missing"})).join("\n"), /fragmentOf must name the generic-phone app capture/);
+  assert.match(validateSourceManifest(of({...screen, device: "generic-tablet"}, fragment)).join("\n"), /fragmentOf must name the generic-phone/);
+  assert.match(validateSourceManifest(of({...screen, status: "pending-fixture"}, fragment)).join("\n"), /needs its screen sample-screen active/);
+  assert.match(validateSourceManifest(of(screen, {...fragment, status: "pending-fixture"})).join("\n"), /cannot wait on a placeholder/);
+  assert.match(validateSourceManifest(of({...screen, fragmentOf: "sample-fragment"}, fragment)).join("\n"), /only a fragment-phone capture is cut from another/);
+  // A 2x crop's size, read from its own PNG header.
+  const png = Buffer.alloc(24);
+  png.writeUInt32BE(724, 16);
+  png.writeUInt32BE(232, 20);
+  const record = buildWebsiteManifest(of(screen, fragment), {readPng: () => png}).captures[1];
+  assert.deepEqual({width: record.width, height: record.height, fragmentOf: record.fragmentOf, screenWidth: record.screenWidth},
+    {width: 724, height: 232, fragmentOf: "sample-screen", screenWidth: framedSize("generic-phone").width});
+  assert.equal("fragmentOf" in buildWebsiteManifest(of(screen)).captures[0], false);
+});
+
 test("a web capture names its story and address instead of a catalog fixture", () => {
   const web = {kind: "web-capture", fixtureKey: undefined, address: brand.web.domain,
     story: {file: "website/src/stories/WebCaptures.stories.tsx", id: "marketing-website-web-captures--join-phone-check-in"}};

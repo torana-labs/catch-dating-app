@@ -5,7 +5,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {extractCallBlocks} from "../lib/dart_call_blocks.mjs";
-import {captureDeviceIds, deviceFrameSpec} from "./lib/capture_devices.mjs";
+import {captureDeviceIds, deviceFrameSpec, isFragmentCaptureDevice} from "./lib/capture_devices.mjs";
 import {captureCatalogIndex, captureEntryPath, readCaptureCatalogFiles} from "../ui_capture/lib/capture_catalog_sources.mjs";
 
 const manifestPath = fromRepo("tool/marketing/capture_manifest.json");
@@ -270,21 +270,18 @@ async function updateExports(staleOnly = false) {
     const executedFiles = executedFilesFromLcov(fs.readFileSync(lcovPath, "utf8"));
     const inputPath = path.join(rawOutputDir, entry.id, "light.png");
     fs.rmSync(fromRepo(capture.sourcePath), {force: true});
-    result = spawnSync(
-      "dart",
-      [
-        "run",
-        "tool/marketing/frame_device_capture.dart",
-        "--input",
-        inputPath,
-        "--output",
-        capture.sourcePath,
-        "--device",
-        capture.device,
-      ],
-      {cwd: repoRoot, stdio: "inherit"}
-    );
-    if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
+    if (isFragmentCaptureDevice(capture.device)) {
+      // The runner already cut the widget out of its screen; there is no frame to draw.
+      fs.mkdirSync(path.dirname(fromRepo(capture.sourcePath)), {recursive: true});
+      fs.copyFileSync(fromRepo(inputPath), fromRepo(capture.sourcePath));
+    } else {
+      result = spawnSync(
+        "dart",
+        ["run", "tool/marketing/frame_device_capture.dart", "--input", inputPath, "--output", capture.sourcePath, "--device", capture.device],
+        {cwd: repoRoot, stdio: "inherit"}
+      );
+      if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
+    }
     if (staticInputHash(capture) !== inputHash) {
       fail("Capture inputs changed during rendering.", ["Rerun the exporter from a stable source tree."]);
     }
@@ -330,6 +327,9 @@ function validateExports(manifest, catalog, {requireSources}) {
     }
 
     errors.push(...validateEntryPlacement(capture, entry, catalog));
+    if (supportedDevices.has(capture.device) && isFragmentCaptureDevice(capture.device)) {
+      errors.push(...validateFragmentEntry(capture, entry, manifest, catalog));
+    }
 
     if (requireSources && fs.existsSync(fromRepo(capture.sourcePath))) {
       errors.push(...validateCapture(capture, entry.id));
@@ -360,6 +360,23 @@ function validateEntryPlacement(capture, entry, catalog) {
   const mapping = new RegExp(`^\\s*'${entry.id}':\\s*\\(\\)\\s*=>\\s*${variable}\\s*,`, "mu");
   if (!variable || !mapping.test(index) || !index.includes(`import 'entries/${entry.id}.dart';`)) {
     errors.push(`${capture.id}: ${captureCatalogIndex} marketingScreenCaptures must map '${entry.id}' to the entry declared in ${expected}.`);
+  }
+  return errors;
+}
+
+// A fragment is cut from its screen's own render: its entry declares the
+// widget to cut out (fragment:) and reuses the screen entry's builder and
+// provider overrides, so the names and numbers it shows are the screen's.
+function validateFragmentEntry(capture, entry, manifest, catalog) {
+  const screen = (manifest.captures ?? []).find(other => other.id === capture.fragmentOf);
+  const screenEntry = screen && !isWebCapture(screen) ? findCatalogEntry(catalog, screen.fixtureKey) : null;
+  if (!screenEntry) return [`${capture.id}: fragmentOf must name the app capture it is cut from.`];
+  const source = catalog.sources.get(entry.file) ?? "";
+  const screenVariable = catalog.sources.get(screenEntry.file)?.match(/^final\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*ScreenCaptureEntry\(/mu)?.[1];
+  const errors = [];
+  if (!/\bfragment:\s*CaptureFragment\(/u.test(source)) errors.push(`${capture.id}: ${entry.file} must name the widget it cuts out (fragment: CaptureFragment(...)).`);
+  if (!screenVariable || !source.includes(`builder: ${screenVariable}.builder`) || !source.includes(`providerOverrides: ${screenVariable}.providerOverrides`)) {
+    errors.push(`${capture.id}: ${entry.file} must reuse ${screenVariable ?? screenEntry.id}'s builder and providerOverrides, so it cuts from the same screen.`);
   }
   return errors;
 }

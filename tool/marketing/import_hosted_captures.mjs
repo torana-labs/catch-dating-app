@@ -284,7 +284,7 @@ function verifyFiles({files, binding}, {built = false, toolChecks = false} = {})
   }
   assert.equal(fontHashes.size, 1, "Capture bundle mixes native fonts.");
   assert.ok(files.get(designPath).equals(json(design)), "Capture design context differs from source.");
-  assert.ok(files.get(websiteManifestPath).equals(json(buildWebsiteManifest(context.manifest))), "Website capture copy differs from authored source.");
+  assert.ok(files.get(websiteManifestPath).equals(json(buildWebsiteManifest(context.manifest, {readPng: capture => files.get(capture.sourcePath)}))), "Website capture copy differs from authored source.");
   return {...context, receipt};
 }
 

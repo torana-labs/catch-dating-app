@@ -114,6 +114,34 @@ Marketing styling imports the shared React web token layer from
 `packages/web-config/styles/catch-web.css`; the generated token CSS itself is
 owned by `node tool/design_tokens.mjs`.
 
+### Fragment captures
+
+A fragment is one real widget cut out of another app capture's screen, such
+as the Chatty pod card from the pace-pods screen. A playbook hero floats up to
+three over its own screenshot (`fragments` in the hero section, which replaced
+the hand-typed `chip` card on 21 Nov 2026: a drawn card's numbers disagreed
+with the screen beside it). Its manifest record has device `fragment-phone`
+and `fragmentOf`, the id of the `generic-phone` app capture it is cut from.
+
+Its catalog entry (`entries/<catalog id>.dart`, as for any marketing capture)
+reuses that screen entry's `builder` and `providerOverrides` and names the
+widget with `fragment: CaptureFragment(find: ...)`; the exporter refuses an
+entry that does neither, so a fragment always shows the screen's own synthetic
+data. `CaptureDevice.fragmentPhone` is the generic phone's screen, safe areas
+and status bar, so the widget lays out exactly as in the screen capture. The
+runner scrolls the widget into view only if it is below the fold, then crops
+the 2x PNG to the widget's box (plus any `padding` of screen ground) and fails
+if the widget is not wholly on screen. The exporter copies that crop to
+`sourcePath`; there is no frame.
+
+A fragment's size follows its widget, so provenance accepts any PNG within the
+screen (`captureSizeProblem` in `capture_devices.mjs`) and the website record
+takes `width` and `height` from the PNG, adding `fragmentOf` and
+`screenWidth` (the screen's pixel width, 804) so the page draws the cut-out at
+the screen's scale. A fragment is active or paused, never pending: there is no
+placeholder of an unknown size. The playbook renderer shows a hero's
+fragments only when their `fragmentOf` is the hero's own capture slot.
+
 ## Website Safari Captures
 
 A `web-capture` record names `story.file`, `story.id`, the website `routeId`

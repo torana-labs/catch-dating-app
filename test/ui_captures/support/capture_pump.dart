@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../test_pump_helpers.dart';
 import 'capture_asset_bundle.dart';
 import 'capture_device.dart';
+import 'capture_fragment.dart';
 
 class CaptureTheme {
   const CaptureTheme(this.name, this.brightness);
@@ -60,6 +61,7 @@ Future<List<CaptureArtifact>> captureCatchWidget(
   Future<void> Function(WidgetTester tester)? drive,
   Future<void> Function(WidgetTester tester)? cleanup,
   CaptureDevice device = CaptureDevice.reviewPhone,
+  CaptureFragment? fragment,
   double pixelRatio = 1.0,
   double textScale = 1.0,
   bool disableAnimations = false,
@@ -121,6 +123,9 @@ Future<List<CaptureArtifact>> captureCatchWidget(
       await _pumpCaptureFrame(tester);
     }
 
+    final crop = fragment == null
+        ? null
+        : await _fragmentRect(tester, boundaryKey, fragment);
     final file = _captureFile(
       outputDirectory: outputDirectory,
       id: id,
@@ -128,7 +133,12 @@ Future<List<CaptureArtifact>> captureCatchWidget(
       layout: outputLayout,
     );
     await tester.runAsync(
-      () => _writeBoundaryPng(boundaryKey, file, pixelRatio: pixelRatio),
+      () => _writeBoundaryPng(
+        boundaryKey,
+        file,
+        pixelRatio: pixelRatio,
+        crop: crop,
+      ),
     );
     artifacts.add(CaptureArtifact(id: id, theme: theme, file: file));
     if (cleanup != null) {
@@ -168,14 +178,45 @@ Future<void> _pumpCaptureFrame(WidgetTester tester) async {
   await pumpFeatureUiFor(tester, CatchMotion.base);
 }
 
+/// The fragment's box on the captured screen, in points, with its padding.
+/// A widget below the fold is scrolled into view first (only as far as it
+/// takes, so a visible widget stays put); one that still is not wholly on
+/// the screen fails the capture rather than cutting out half a widget.
+Future<Rect> _fragmentRect(
+  WidgetTester tester,
+  GlobalKey boundaryKey,
+  CaptureFragment fragment,
+) async {
+  final finder = fragment.find();
+  expect(finder, findsOneWidget, reason: 'A fragment cuts out one widget.');
+  await Scrollable.ensureVisible(
+    tester.element(finder),
+    alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+  );
+  await _pumpCaptureFrame(tester);
+  final boundary =
+      boundaryKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+  final box = tester.renderObject<RenderBox>(finder);
+  final screen = Offset.zero & boundary.size;
+  final widget = box.localToGlobal(Offset.zero, ancestor: boundary) & box.size;
+  if (widget.isEmpty || widget.intersect(screen).size != widget.size) {
+    throw StateError(
+      'The fragment ${widget.toString()} is not wholly on the screen $screen.',
+    );
+  }
+  return fragment.padding.inflateRect(widget).intersect(screen);
+}
+
 Future<void> _writeBoundaryPng(
   GlobalKey key,
   File file, {
   required double pixelRatio,
+  Rect? crop,
 }) async {
   final boundary =
       key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-  final image = await boundary.toImage(pixelRatio: pixelRatio);
+  var image = await boundary.toImage(pixelRatio: pixelRatio);
+  if (crop != null) image = await _cropImage(image, crop, pixelRatio);
   final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
   image.dispose();
 
@@ -185,6 +226,35 @@ Future<void> _writeBoundaryPng(
 
   await file.create(recursive: true);
   await file.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
+}
+
+/// Cuts [crop] (in points) out of [image], rounded out to whole pixels.
+Future<ui.Image> _cropImage(
+  ui.Image image,
+  Rect crop,
+  double pixelRatio,
+) async {
+  final source = Rect.fromLTRB(
+    (crop.left * pixelRatio).floorToDouble(),
+    (crop.top * pixelRatio).floorToDouble(),
+    (crop.right * pixelRatio).ceilToDouble().clamp(0, image.width.toDouble()),
+    (crop.bottom * pixelRatio).ceilToDouble().clamp(0, image.height.toDouble()),
+  );
+  final recorder = ui.PictureRecorder();
+  Canvas(recorder).drawImageRect(
+    image,
+    source,
+    Offset.zero & source.size,
+    Paint()..filterQuality = FilterQuality.none,
+  );
+  final picture = recorder.endRecording();
+  final cropped = await picture.toImage(
+    source.width.toInt(),
+    source.height.toInt(),
+  );
+  picture.dispose();
+  image.dispose();
+  return cropped;
 }
 
 Widget _frame({
