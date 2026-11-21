@@ -1601,6 +1601,14 @@ service cloud.firestore {
         || isHostSummaryManager(resource.data.organizerId);
       allow list, write: if false;
     }
+    // One event's attendance report exactly as getEventAttendanceReport
+    // returns it, for Host close-out. Only the organizer's current managers
+    // read it, by id; no-shows are recorded through recordEventNoShow.
+    match /hostEventAttendanceReports/{eventId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
     // One application exactly as getOrganizerApplicationDetail returns it:
     // the submitted answers (none once the response is withdrawn), outreach
     // derived from them, the People link and the applicant's membership.

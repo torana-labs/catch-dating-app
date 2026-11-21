@@ -35788,6 +35788,48 @@ abstract class AppLocalizations {
   /// **'Guests choose who they would like to see again'**
   String get hostEventsCloseOutPicksBody;
 
+  /// Close-out section title: the attendance report.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance report'**
+  String get hostEventsCloseOutReportTitle;
+
+  /// Attendance report row: guests checked in.
+  ///
+  /// In en, this message translates to:
+  /// **'Came'**
+  String get hostEventsCloseOutReportCame;
+
+  /// Attendance report row: guests recorded as not coming.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn’t come'**
+  String get hostEventsCloseOutReportNoShows;
+
+  /// Attendance report row: booked guests nobody checked in or recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Not marked yet'**
+  String get hostEventsCloseOutReportUnmarked;
+
+  /// Attendance report row: invited, waitlisted or cancelled guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist or cancelled'**
+  String get hostEventsCloseOutReportNotExpected;
+
+  /// Notice: a no-show can't be recorded before the event ends.
+  ///
+  /// In en, this message translates to:
+  /// **'You can mark who didn’t come once the night has ended.'**
+  String get hostEventsCloseOutNoShowTooEarly;
+
+  /// Notice: the guest is checked in or had no place.
+  ///
+  /// In en, this message translates to:
+  /// **'This guest can’t be marked as not coming.'**
+  String get hostEventsCloseOutNoShowUnavailable;
+
   /// Close out switch: a note to no-shows.
   ///
   /// In en, this message translates to:

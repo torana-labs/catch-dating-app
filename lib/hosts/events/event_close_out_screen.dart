@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_attendance_report_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_close_out_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_attendance_report.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_body.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_commands_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_controller.dart';
@@ -21,10 +23,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// each booked guest nobody checked in, and the after-closing switches,
 /// with Close out and Later in the dock.
 ///
-/// It watches [hostEventCloseOutControllerProvider], records each mark
-/// through the attendance outbox, as the door does, and saves the switches
-/// through `setEventCloseOut` (the thank-you is an event moment). Later
-/// leaves without saving.
+/// It watches [hostEventCloseOutControllerProvider]. Came checks the guest
+/// in through the attendance outbox, as the door does; Didn't come records
+/// a no-show through `recordEventNoShow` (or undoes a check-in made here).
+/// The switches save through `setEventCloseOut` (the thank-you is an event
+/// moment). Later leaves without saving.
 class HostEventCloseOutScreen extends ConsumerStatefulWidget {
   const HostEventCloseOutScreen({super.key, required this.request});
 
@@ -43,6 +46,10 @@ class _HostEventCloseOutScreenState
   /// One request id per close-out, so a retry cannot apply it twice.
   String? _requestId;
 
+  /// One operation id per guest's no-show until it lands, so a retry
+  /// replays rather than records twice.
+  final Map<String, String> _noShowOperations = {};
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -57,6 +64,7 @@ class _HostEventCloseOutScreenState
       mutations: [
         HostEventCommands.attendanceMutation,
         HostEventCloseOutCommands.closeOutMutation,
+        HostEventCloseOutCommands.noShowMutation,
       ],
       errorContext: AppErrorContext.event,
     );
@@ -80,6 +88,7 @@ class _HostEventCloseOutScreenState
             ref.invalidate(watchEventProvider(request.eventId));
             ref.invalidate(watchEventAttendeesProvider(request.eventId));
             ref.invalidate(watchEventCloseOutProvider(request.eventId));
+            ref.invalidate(watchEventAttendanceReportProvider(request.eventId));
           },
           options: options,
           onOption: ready
@@ -146,6 +155,10 @@ class _HostEventCloseOutScreenState
 
   void _mark(EventAttendee attendee, bool came) {
     setState(() => _marks[attendee.id] = came);
+    if (!came && attendee.status != EventAttendeeStatus.checkedIn) {
+      unawaited(_recordNoShow(attendee));
+      return;
+    }
     unawaited(
       HostEventCommands.attendanceMutation
           .run(
@@ -156,5 +169,40 @@ class _HostEventCloseOutScreenState
           )
           .then<void>((_) {}, onError: (Object _) {}),
     );
+  }
+
+  Future<void> _recordNoShow(EventAttendee attendee) async {
+    final organizerId = widget.request.organizerId;
+    final l10n = context.l10n;
+    final operationId = _noShowOperations[attendee.id] ??= hostEventRequestId();
+    final EventNoShowOutcome outcome;
+    try {
+      outcome = await HostEventCloseOutCommands.noShowMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostEventCloseOutCommandsProvider.notifier)
+            .recordNoShow(
+              organizerId: organizerId,
+              eventId: widget.request.eventId,
+              attendeeId: attendee.id,
+              operationId: operationId,
+            ),
+      );
+    } on Object {
+      // The mutation's error shows as a notice; the mark is not kept.
+      if (mounted) setState(() => _marks.remove(attendee.id));
+      return;
+    }
+    _noShowOperations.remove(attendee.id);
+    if (!mounted) return;
+    final notice = switch (outcome) {
+      EventNoShowOutcome.recorded || EventNoShowOutcome.alreadyRecorded => null,
+      EventNoShowOutcome.notFinished => l10n.hostEventsCloseOutNoShowTooEarly,
+      EventNoShowOutcome.attended || EventNoShowOutcome.notExpected =>
+        l10n.hostEventsCloseOutNoShowUnavailable,
+    };
+    if (notice == null) return;
+    setState(() => _marks.remove(attendee.id));
+    showCatchNotice(context, notice, tone: CatchNoticeTone.warning);
   }
 }

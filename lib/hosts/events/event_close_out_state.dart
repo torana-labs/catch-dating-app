@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_attendance_report.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_close_out.dart';
 import 'package:flutter/foundation.dart';
 
@@ -20,6 +21,7 @@ class HostEventCloseOutState {
     this.checked = const <EventAttendee>[],
     this.organizerId,
     this.closeOut = EventCloseOut.none,
+    this.report,
     this.error,
   });
 
@@ -47,7 +49,15 @@ class HostEventCloseOutState {
   /// The after-closing choices as saved; [EventCloseOut.none] before the
   /// first close-out.
   final EventCloseOut closeOut;
+
+  /// The attendance report as the server last wrote it: who came, who was
+  /// recorded as not coming and who is not marked yet. Null until written.
+  final EventAttendanceReport? report;
   final Object? error;
+
+  /// Whether the guest is recorded as not coming.
+  bool recordedNoShow(EventAttendee attendee) =>
+      report?.noShowAttendeeIds.contains(attendee.id) ?? false;
 
   /// The after-closing switches as saved.
   Map<HostEventCloseOutOption, bool> get options => {
