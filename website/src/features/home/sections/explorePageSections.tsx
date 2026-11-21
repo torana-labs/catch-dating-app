@@ -169,13 +169,14 @@ function ExploreHosts({explore}: {explore: Explore}) {
  * organisers from its cityPlans read model, with Plans and Organisers as
  * tabs, filtered by format, date and search; the hosts under the plans on
  * the tint panel; and, when the week is quiet, the window is empty or the
- * city is not open yet, the WhatsApp band for new plans beside the app.
+ * city is not open yet, the WhatsApp band for new plans beside this page
+ * open in Safari.
  * Then the footer and the phone action bar. It arranges library parts and
  * binds the controller's view of the city to them (D18).
  */
 export function ExplorePageSections({captures = {}, explore}: {captures?: CaptureSlots; explore: Explore}) {
   const capture = explore.state === "quiet" || explore.state === "empty" || explore.state === "soon";
-  const screen = captureSlot(captures, "guest-explore");
+  const screen = captureSlot(captures, "guest-web-whats-on");
   return (
     <CitySiteChrome cities={explore.cities} city={explore.city} discovery={explore.discovery}
       dock={<DiscoveryDock href={`#${resultsAnchor}`} label={discoveryPagesCopy.dock.explore} message={explore.notifyMessage} />}

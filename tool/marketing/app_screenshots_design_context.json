@@ -1900,6 +1900,57 @@
     },
     {
       "type": "marketing-web-capture",
+      "id": "guest-web-whats-on",
+      "status": "active",
+      "audience": "guest",
+      "surface": "A city's What's on page in the browser",
+      "story": {
+        "file": "website/src/stories/WebCapturesWhatsOn.stories.tsx",
+        "id": "marketing-website-web-captures-whats-on--mumbai-plans"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-web-captures-whats-on--mumbai-plans",
+      "routeIds": [
+        "visitor_discovery"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/guest-web-whats-on.png",
+        "websitePath": "website/public/assets/app-screenshots/guest-web-whats-on.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-web-whats-on.png"
+      },
+      "copy": {
+        "alt": "Mumbai's What's on page open in Safari at catchdates.com: 11 plans, nearest first, with a Thursday pub quiz and a supper at the top",
+        "caption": "The city's plans for the next two weeks, on the website. Nothing to download.",
+        "walkthroughStep": "Get found"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
       "id": "wedding-rsvp",
       "status": "active",
       "audience": "guest",
@@ -1997,6 +2048,57 @@
       "copy": {
         "alt": "A family's itinerary for the wedding weekend in a phone browser: functions, times, dress codes and their car",
         "caption": "Each family's own itinerary, with only the functions they are invited to.",
+        "walkthroughStep": "Invite"
+      }
+    },
+    {
+      "type": "marketing-web-capture",
+      "id": "programme-itinerary",
+      "status": "active",
+      "audience": "guest",
+      "surface": "Guest itinerary link for a company offsite in the browser",
+      "story": {
+        "file": "website/src/stories/WebCapturesProgramme.stories.tsx",
+        "id": "marketing-website-web-captures-programme-itinerary--offsite-itinerary"
+      },
+      "address": "catchdates.com",
+      "captureId": "marketing-website-web-captures-programme-itinerary--offsite-itinerary",
+      "routeIds": [
+        "programme_itinerary"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/programme-itinerary.png",
+        "websitePath": "website/public/assets/app-screenshots/programme-itinerary.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/programme-itinerary.png"
+      },
+      "copy": {
+        "alt": "A team's itinerary for a company offsite in Goa in a phone browser: their flight in, the resort and the welcome dinner",
+        "caption": "Each team's own itinerary: flights, rooms and sessions, in one link.",
         "walkthroughStep": "Invite"
       }
     },

@@ -58,8 +58,7 @@
       "caption": "Guests find tonight's plans in the Catch app.",
       "walkthroughStep": "Get found",
       "pages": [
-        "/",
-        "/mumbai/run-clubs/"
+        "/"
       ]
     },
     {
@@ -283,8 +282,7 @@
       "walkthroughStep": "Show up",
       "pages": [
         "/",
-        "/mumbai/run-clubs/",
-        "/new-to-mumbai/"
+        "/mumbai/run-clubs/"
       ]
     },
     {
@@ -565,6 +563,23 @@
       "pages": []
     },
     {
+      "id": "guest-web-whats-on",
+      "audience": "guest",
+      "surface": "A city's What's on page in the browser",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/guest-web-whats-on.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Mumbai's What's on page open in Safari at catchdates.com: 11 plans, nearest first, with a Thursday pub quiz and a supper at the top",
+      "caption": "The city's plans for the next two weeks, on the website. Nothing to download.",
+      "walkthroughStep": "Get found",
+      "pages": [
+        "/",
+        "/mumbai/run-clubs/",
+        "/new-to-mumbai/"
+      ]
+    },
+    {
       "id": "wedding-rsvp",
       "audience": "guest",
       "surface": "Household reply link in the browser",
@@ -593,6 +608,19 @@
       "pages": [
         "/weddings/"
       ]
+    },
+    {
+      "id": "programme-itinerary",
+      "audience": "guest",
+      "surface": "Guest itinerary link for a company offsite in the browser",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/programme-itinerary.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "A team's itinerary for a company offsite in Goa in a phone browser: their flight in, the resort and the welcome dinner",
+      "caption": "Each team's own itinerary: flights, rooms and sessions, in one link.",
+      "walkthroughStep": "Invite",
+      "pages": []
     },
     {
       "id": "wedding-whatsapp",

@@ -105,13 +105,13 @@ function CityFormatThin({page}: {page: Page}) {
  * the plans, who runs them and the first-time guide; below it, the thin
  * layout. In both, the city's other format pages, the questions, the
  * WhatsApp band, the footer and the phone action bar. The first-time guide
- * shows a guest's phone after checking in and the WhatsApp band the app's
- * Explore screen, as the board's phones. It arranges library parts and binds
- * the controller (D18).
+ * shows a guest's phone after checking in and the WhatsApp band the city's
+ * What's on page in Safari. It arranges library parts and binds the
+ * controller (D18).
  */
 function CityFormatPageSections({captures, page}: {captures: CaptureSlots; page: Page}) {
   const checkedIn = captureSlot(captures, "guest-checked-in");
-  const explore = captureSlot(captures, "guest-explore");
+  const whatsOn = captureSlot(captures, "guest-web-whats-on");
   return (
     <CitySiteChrome cities={page.cities} city={page.city} discovery={page.discovery} dock={<DiscoveryDock href={page.dock.href} label={page.dock.label} message={page.notify.message} />}
       exploreHref={page.exploreHref} onChooseCity={page.chooseCity} showWhatsOn={page.showWhatsOn}>
@@ -135,7 +135,7 @@ function CityFormatPageSections({captures, page}: {captures: CaptureSlots; page:
         <CatchCardGrid chips={page.more.links.map((link) => ({label: link.label, href: link.href}))} items={[]} kicker={page.more.kicker} kickerAccent="coral" kind="plan" title={page.more.title} />
         <CatchFaqSection items={page.faq.items} kicker={page.faq.kicker} title={page.faq.title} />
         <CityAlertsCapture interests={page.notify.interests} kicker={page.notify.kicker} place={page.notify.place} title={page.notify.title}
-          media={explore ? <CatchAppCaptureImage {...explore} caption={undefined} size="md" /> : undefined} />
+          media={whatsOn ? <CatchAppCaptureImage {...whatsOn} caption={undefined} size="md" /> : undefined} />
       </>}
     </CitySiteChrome>
   );
