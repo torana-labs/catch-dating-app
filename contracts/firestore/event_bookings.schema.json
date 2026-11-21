@@ -1,12 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/event_participations.schema.json",
-  "title": "EventParticipationDocument",
-  "description": "A guest's one Catch booking for an event, stored at eventParticipations/{eventId}_{uid}: its lifecycle, payment, host approval, waitlist offer and signup cohort. Readable by the guest and the event's hosts; written only by booking callables. Its roster row (attendeeId) is the Host's view of the same guest.",
+  "$id": "https://catch.app/contracts/firestore/event_bookings.schema.json",
+  "title": "EventBookingDocument",
+  "description": "A guest's one Catch booking for an event, stored at eventBookings/{eventId}_{uid}: its lifecycle, payment, host approval, waitlist offer and signup cohort. Readable by the guest and the event's hosts; written only by booking callables. Its roster row (attendeeId) is the Host's view of the same guest. Named eventParticipations until Nov 2026; while released apps still read that name, the transitional onEventBookingMirroredToLegacy trigger copies every booking write and delete to eventParticipations/{eventId}_{uid} with the same id and document (removed in phase 2 of the rename).",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "eventParticipations",
-  "x-firestore-path": "eventParticipations/{participationId}",
+  "x-firestore-collection": "eventBookings",
+  "x-firestore-path": "eventBookings/{bookingId}",
   "x-document-id-field": "id",
   "x-owner": "booking, waitlist, attendance, cancellation, and account-deletion callables",
   "x-internal-demo-fields": [

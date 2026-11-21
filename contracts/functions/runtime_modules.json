@@ -290,7 +290,7 @@
     "EventOfferMutationCallableResponse",
     "EventOfferPreviewCallableResponse",
     "EventOperatorAccessCallablePayload",
-    "EventParticipationDocument",
+    "EventBookingDocument",
     "EventPaymentTerms",
     "EventPlanChangeDocument",
     "EventPublicPageDocument",

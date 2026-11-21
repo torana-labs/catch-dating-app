@@ -1421,7 +1421,7 @@ test("full form saves can change copy with guests when schedule is unchanged",
     const original = publishedProgressiveEvent();
     const h = harness({"organizers/club-1": organizer(),
       "events/event-1": original,
-      "eventParticipations/event-1_runner-1": {eventId: "event-1",
+      "eventBookings/event-1_runner-1": {eventId: "event-1",
         organizerId: "club-1", uid: "runner-1", status: "signedUp"},
       "users/runner-1": {prefsRunStatusUpdates: true},
       ...guestInstallation("runner-1", "token-1")});
@@ -1559,19 +1559,19 @@ test("updateEventHandler notifies participants for location changes",
     const h = harness({
       "organizers/club-1": organizer(),
       "events/event-1": event(),
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-1",
         status: "signedUp",
       },
-      "eventParticipations/event-1_runner-2": {
+      "eventBookings/event-1_runner-2": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-2",
         status: "waitlisted",
       },
-      "eventParticipations/event-1_runner-3": {
+      "eventBookings/event-1_runner-3": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-3",
@@ -1638,7 +1638,7 @@ test("updateEventHandler rejects schedule changes once participants exist",
     const h = harness({
       "organizers/club-1": organizer(),
       "events/event-1": event(),
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-1",
@@ -1677,7 +1677,7 @@ test("updateEventHandler skips participant notifications for copy-only edits",
     const h = harness({
       "organizers/club-1": organizer(),
       "events/event-1": event(),
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-1",
@@ -1737,13 +1737,13 @@ test("cancelEventHandler marks the event cancelled and notifies participants",
     const h = harness({
       "organizers/club-1": organizer(),
       "events/event-1": event(),
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-1",
         status: "signedUp",
       },
-      "eventParticipations/event-1_runner-2": {
+      "eventBookings/event-1_runner-2": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-2",
@@ -1825,7 +1825,7 @@ test("deleteEventHandler rejects events with user activity", async () => {
   const h = harness({
     "organizers/club-1": organizer(),
     "events/event-1": event(),
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       uid: "runner-1",
       status: "signedUp",

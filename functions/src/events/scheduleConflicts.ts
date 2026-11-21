@@ -268,7 +268,7 @@ export async function assertNoUserEventScheduleConflict(
   }
 
   const participationSnap = await db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .where("uid", "==", params.uid)
     .where("status", "in", USER_SCHEDULE_STATUSES)
     .get();
@@ -385,7 +385,7 @@ export async function readUserEventScheduleConflictInTransaction(
   options: {readLimit?: number} = {}
 ): Promise<boolean | null> {
   assertValidEventTimeRange(params.startTimeMillis, params.endTimeMillis);
-  let query = db.collection("eventParticipations")
+  let query = db.collection("eventBookings")
     .where("uid", "==", params.uid)
     .where("status", "in", USER_SCHEDULE_STATUSES);
   if (options.readLimit !== undefined) {

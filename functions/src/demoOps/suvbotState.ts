@@ -128,7 +128,7 @@ export async function buildResetPlan(
       paths.add(`eventSuccessScorecards/${eventId}`);
       await collectQuery(db.collection("eventAttendees")
         .where("eventId", "==", eventId), (doc) => paths.add(doc.ref.path));
-      await collectQuery(db.collection("eventParticipations")
+      await collectQuery(db.collection("eventBookings")
         .where("eventId", "==", eventId), collect);
     }
     for (const castUid of castUids) {
@@ -143,7 +143,7 @@ export async function buildResetPlan(
   }
   if (scope === "all" || scope === "bookings") {
     for (const [collection, field] of [
-      ["eventParticipations", "uid"],
+      ["eventBookings", "uid"],
       ["scheduleLocks", "uid"],
       ["savedEvents", "uid"],
     ]) {
@@ -308,7 +308,7 @@ export async function repairDemoEventAggregates(
     const eventSnap = await db.collection("events").doc(eventId).get();
     const event = eventSnap.data();
     if (!eventSnap.exists || !event || !isDemoOwned(event)) continue;
-    const participations = await db.collection("eventParticipations")
+    const participations = await db.collection("eventBookings")
       .where("eventId", "==", eventId)
       .get();
     const booked = participations.docs
@@ -368,7 +368,7 @@ export async function summarizeDemoState(
   const [world, saved, participations, matches, payments] = await Promise.all([
     latestWorldManifest(db, uid),
     db.collection("savedEvents").where("uid", "==", uid).get(),
-    db.collection("eventParticipations").where("uid", "==", uid).get(),
+    db.collection("eventBookings").where("uid", "==", uid).get(),
     db.collection("matches").where("participantIds", "array-contains", uid)
       .get(),
     bookingPayments(db).where("userId", "==", uid).get(),

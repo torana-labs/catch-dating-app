@@ -21,7 +21,7 @@ import {
 } from "../shared/generated/catalogs/profilePromptCatalog";
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   EventPolicyBundleDocument,
   Gender,
   UserProfileDocument,
@@ -328,11 +328,11 @@ export function buildSuvbotWorldPlan(
     }
     for (const row of participations) {
       // The booking links to its roster row, as a booking callable writes.
-      const booking = row.doc as unknown as EventParticipationDocument;
+      const booking = row.doc as unknown as EventBookingDocument;
       const attendeeId = eventAttendeeId(eventDocId, `uid:${row.uid}`);
       const rosterNow = booking.updatedAt as FirebaseFirestore.Timestamp;
       docs.push({
-        path: `eventParticipations/${eventDocId}_${row.uid}`,
+        path: `eventBookings/${eventDocId}_${row.uid}`,
         data: {...row.doc, attendeeId},
       });
       docs.push({

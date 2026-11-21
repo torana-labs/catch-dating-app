@@ -78,7 +78,7 @@ export async function selfCheckInAttendanceHandler(
     nowMillis: now.toMillis(),
   });
   const eventRef = db.collection("events").doc(eventId);
-  const participationRef = db.collection("eventParticipations")
+  const participationRef = db.collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
   const sessionRef = db.collection("eventVenueSessions")
     .doc(claims.sessionId);

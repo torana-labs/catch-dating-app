@@ -105,14 +105,14 @@ test("fixture can bind the event and participations to one hidden organizer", ()
     },
   });
   assert.deepEqual(
-    docs.filter((doc) => doc.path.startsWith("eventParticipations/")),
+    docs.filter((doc) => doc.path.startsWith("eventBookings/")),
     [
       {
-        path: "eventParticipations/demo-event_viewer",
+        path: "eventBookings/demo-event_viewer",
         data: {organizerId: "courtside"},
       },
       {
-        path: "eventParticipations/demo-event_candidate",
+        path: "eventBookings/demo-event_candidate",
         data: {organizerId: "courtside"},
       },
     ]

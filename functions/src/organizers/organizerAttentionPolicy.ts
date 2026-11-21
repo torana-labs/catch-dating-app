@@ -8,7 +8,7 @@ import type {EventAssistanceDeliveryWork} from
   "../shared/generated/eventAssistanceDeliveryWork";
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   HostPaymentAccountDocument,
   OrganizerApplicationDocument,
   OrganizerAttentionItemDocument,
@@ -106,7 +106,7 @@ export interface OrganizerAttentionSources {
   deliveryReviewWorkItems: Array<
     AttentionSourceRow<DeliveryReviewAttentionSource>
   >;
-  eventParticipations: Array<AttentionSourceRow<EventParticipationDocument>>;
+  eventBookings: Array<AttentionSourceRow<EventBookingDocument>>;
   applications: Array<AttentionSourceRow<OrganizerApplicationDocument>>;
   providerSyncRuns: Array<AttentionSourceRow<ProviderSyncRunDocument>>;
   automationRules: Array<
@@ -436,9 +436,9 @@ export function deriveOrganizerAttentionItems(params: {
 
   const pendingRequestsByEvent = new Map<
     string,
-    Array<AttentionSourceRow<EventParticipationDocument>>
+    Array<AttentionSourceRow<EventBookingDocument>>
   >();
-  for (const row of params.sources.eventParticipations) {
+  for (const row of params.sources.eventBookings) {
     if (row.data.status !== "waitlisted" ||
         row.data.hostApprovalStatus !== "pending") continue;
     const event = activeEventsById.get(row.data.eventId);
@@ -457,6 +457,7 @@ export function deriveOrganizerAttentionItems(params: {
     items.push(buildItem({
       kind: "eventJoinRequestReview",
       scope: "event",
+      // A stored label that released Host builds parse, not a collection path.
       sourceOwner: "eventParticipations",
       sourceId: eventId,
       sourceRevision: revisionOf({
@@ -933,7 +934,7 @@ function providerRunTime(
 }
 
 function requestOpenedAtMillis(
-  row: AttentionSourceRow<EventParticipationDocument>
+  row: AttentionSourceRow<EventBookingDocument>
 ): number {
   return row.data.waitlistedAt?.toMillis() ?? row.data.createdAt.toMillis();
 }

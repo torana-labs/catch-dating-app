@@ -56,6 +56,10 @@ export {
 } from "./payments/razorpayHostAccounts";
 export {stripeWebhook} from "./payments/stripeWebhook";
 export {signUpForFreeEvent} from "./events/signUpForFreeEvent";
+// TRANSITIONAL: keeps eventParticipations readable for released apps until
+// phase 2 of the eventBookings rename.
+export {onEventBookingMirroredToLegacy} from
+  "./events/eventBookingLegacyMirror";
 export {cancelEventSignUp} from "./events/cancelEventSignUp";
 export {
   joinEventWaitlist,

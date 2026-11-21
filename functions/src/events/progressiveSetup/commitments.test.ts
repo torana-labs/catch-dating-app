@@ -100,7 +100,7 @@ test("another event's commitments do not block this basics edit", async () => {
 });
 
 for (const collection of [
-  "eventAttendees", "eventAttendeeImports", "eventParticipations",
+  "eventAttendees", "eventAttendeeImports", "eventBookings",
   "eventWaitlistOffers", "organizerEventOffers", "guestPayments",
 ]) {
   test(`${collection} commitment blocks a basics move`, async () => {

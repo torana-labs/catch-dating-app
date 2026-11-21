@@ -1432,7 +1432,7 @@ function participation(
   status: "signedUp" | "attended" = "signedUp"
 ): Record<string, FakeData> {
   return {
-    [`eventParticipations/event-1_${uid}`]: {
+    [`eventBookings/event-1_${uid}`]: {
       eventId: "event-1",
       uid,
       status,

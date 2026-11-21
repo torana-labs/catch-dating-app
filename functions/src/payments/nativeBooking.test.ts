@@ -16,14 +16,14 @@ const booking: NativePaidBooking = {userId: "user1", eventId: "event1",
   amountMinor: 1000, currency: "INR", provider: "razorpay",
   razorpayOwnership: {projectId: "catchdates-dev", schema: "1"}};
 const paymentPath = "guestPayments/pay_one";
-const participationPath = "eventParticipations/event1_user1";
+const participationPath = "eventBookings/event1_user1";
 function admit(store: Store) {
   return store.db().runTransaction(async (tx) => {
     const apply = await prepareNativePaidBooking({db: store.db(), tx, booking,
       eventId: booking.eventId, userId: booking.userId,
       paymentId: booking.paymentId});
     apply();
-    tx.set(store.db().collection("eventParticipations").doc("event1_user1"),
+    tx.set(store.db().collection("eventBookings").doc("event1_user1"),
       {paymentId: booking.paymentId,
         status: "signedUp"});
   });

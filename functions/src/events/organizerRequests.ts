@@ -9,7 +9,7 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {hasBlockingRelationship} from "../safety/blocking";
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {ListOrganizerRequestsCallablePayload as Payload} from
@@ -25,7 +25,7 @@ import {eventPolicyFromEvent} from "./eventPolicy";
 
 type Row = Result["rows"][number];
 type Db = FirebaseFirestore.Firestore;
-type Participation = EventParticipationDocument;
+type Participation = EventBookingDocument;
 
 export const maxRequestEvents = 50;
 export const maxRequestRows = 100;
@@ -124,7 +124,7 @@ export async function listOrganizerRequestsHandler(
   const events = new Map(eventsSnap.docs.slice(0, maxRequestEvents)
     .map((doc) => [doc.id, doc.data() as EventDocument]));
 
-  const pendingSnap = await db.collection("eventParticipations")
+  const pendingSnap = await db.collection("eventBookings")
     .where("organizerId", "==", organizerId)
     .where("hostApprovalStatus", "==", "pending")
     .limit(maxRequestRows + 1).get();
@@ -139,7 +139,7 @@ export async function listOrganizerRequestsHandler(
     if (((event as {waitlistedCount?: number}).waitlistedCount ?? 0) === 0) {
       return;
     }
-    const snap = await db.collection("eventParticipations")
+    const snap = await db.collection("eventBookings")
       .where("eventId", "==", eventId)
       .where("status", "==", "waitlisted")
       .orderBy("waitlistedAt")

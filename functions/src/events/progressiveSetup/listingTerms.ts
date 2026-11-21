@@ -93,7 +93,7 @@ export async function preparePrivateListingTerms(params: {
     throw new HttpsError("failed-precondition",
       "Reconcile existing guests before changing admission terms.");
   }
-  for (const collection of ["eventAttendees", "eventParticipations",
+  for (const collection of ["eventAttendees", "eventBookings",
     "eventWaitlistOffers", GUEST_PAYMENTS, "organizerContactOrigins",
     "eventSeatReservations", "eventSeatIdentityAliases",
     "eventAttendeeImports"]) {

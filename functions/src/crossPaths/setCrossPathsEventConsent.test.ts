@@ -127,7 +127,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
       crossPathsDiscoveryEnabled: true,
       discoveryMarketId: "in-mh-mumbai",
     },
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       uid: "runner-1",
       status: "signedUp",
@@ -204,7 +204,7 @@ test("fails closed when global consent is missing or booking is not confirmed",
     );
 
     const waitlisted = harness({
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         eventId: "event-1",
         uid: "runner-1",
         status: "waitlisted",
@@ -283,7 +283,7 @@ test(
     const original = timestamp(1_700_000_000_000);
     const h = harness({
       "users/runner-1": {},
-      "eventParticipations/event-1_runner-1": undefined,
+      "eventBookings/event-1_runner-1": undefined,
       "eventCrossPathsConsents/event-1_runner-1": {
         eventId: "event-1",
         uid: "runner-1",

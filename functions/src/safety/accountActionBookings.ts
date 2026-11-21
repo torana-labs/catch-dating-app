@@ -65,7 +65,7 @@ export async function cancelFutureBookingsForSafety(
     failedEventIds: [],
   };
   const [participations, attendees] = await Promise.all([
-    db.collection("eventParticipations").where("uid", "==", uid).get(),
+    db.collection("eventBookings").where("uid", "==", uid).get(),
     db.collection("eventAttendees").where("linkedUid", "==", uid).get(),
   ]);
   const handled = new Set<string>();

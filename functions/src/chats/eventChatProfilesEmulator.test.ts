@@ -159,7 +159,7 @@ test(
         );
       }
       const participation = await put(
-        "eventParticipations",
+        "eventBookings",
         `${eventId}_${person}`,
         {
           uid: person,

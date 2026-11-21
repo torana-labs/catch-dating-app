@@ -88,7 +88,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
     if (!quote) unavailable();
     const [receipt, participationSnap] = await Promise.all([
       input.readAdmission({db, tx, payment, paymentId}),
-      tx.get(db.collection("eventParticipations")
+      tx.get(db.collection("eventBookings")
         .doc(eventParticipationId(eventId, recipientUid))),
     ]);
     if ((event.organizerId) !== organizerId ||
@@ -166,7 +166,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
     const bridgedCounts = bridgedBooking && input.guest ?
       catchBookingCancellation({db, tx, rosterSlot: rosterSlot!,
         participationRef: db
-          .collection("eventParticipations")
+          .collection("eventBookings")
           .doc(eventParticipationId(eventId, recipientUid)),
         participation: participation!, event: event as EventDocument,
         eventId, uid: recipientUid}) : {};

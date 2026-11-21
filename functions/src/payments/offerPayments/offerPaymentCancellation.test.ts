@@ -46,7 +46,7 @@ test("host cancellation releases its paid seat and preserves financial proof",
 test("cancellation preserves an independent booking's shared canonical seat",
   async () => {
     const h = await fixture();
-    h.store.put("eventParticipations/" + eventParticipationId(eventId, uid),
+    h.store.put("eventBookings/" + eventParticipationId(eventId, uid),
       {eventId, uid, organizerId: org, status: "signedUp"});
     await h.cancel();
     assert.equal(h.payment().cancellation?.seatRetained, true);

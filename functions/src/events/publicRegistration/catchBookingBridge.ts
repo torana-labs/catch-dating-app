@@ -50,7 +50,7 @@ export async function prepareCatchBookingAdmission(input: {
   attendeeId: string;
 }) {
   const {db, tx, eventId, uid, paymentId} = input;
-  const participationRef = db.collection("eventParticipations")
+  const participationRef = db.collection("eventBookings")
     .doc(eventParticipationId(eventId, uid));
   const [userSnap, participationSnap, rosterSlot] = await Promise.all([
     tx.get(db.collection("users").doc(uid)),

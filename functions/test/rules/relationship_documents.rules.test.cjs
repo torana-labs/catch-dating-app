@@ -122,6 +122,33 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
+        ["eventBookings", "event-1_runner-1"],
+        eventParticipation(),
+      );
+
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "eventBookings", "event-1_runner-1")),
+      );
+      await assertSucceeds(
+        getDoc(doc(authedDb("host-1"), "eventBookings", "event-1_runner-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-3"), "eventBookings", "event-1_runner-1")),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "eventBookings", "event-1_runner-1"),
+          eventParticipation(),
+        ),
+      );
+    });
+
+    // TRANSITIONAL (phase 1 of the eventBookings rename): the legacy mirror
+    // stays readable exactly as before until phase 2 retires it.
+    it("keeps the legacy eventParticipations mirror readable as before and closed to client writes", async () => {
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["events", "event-1"], event());
+      await seed(
         ["eventParticipations", "event-1_runner-1"],
         eventParticipation(),
       );
@@ -135,19 +162,53 @@ describe("firestore.rules", () => {
       await assertFails(
         getDoc(doc(authedDb("runner-3"), "eventParticipations", "event-1_runner-1")),
       );
-      await assertFails(
-        setDoc(
-          doc(authedDb("runner-1"), "eventParticipations", "event-1_runner-1"),
-          eventParticipation(),
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("host-1"), "eventParticipations"),
+            where("eventId", "==", "event-1"),
+            where("status", "in", ["signedUp", "waitlisted", "attended"]),
+          ),
         ),
       );
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("runner-1"), "eventParticipations"),
+            where("uid", "==", "runner-1"),
+            where("status", "in", ["signedUp", "waitlisted"]),
+          ),
+        ),
+      );
+      await assertFails(
+        getDocs(
+          query(
+            collection(authedDb("runner-3"), "eventParticipations"),
+            where("eventId", "==", "event-1"),
+          ),
+        ),
+      );
+      for (const uid of ["runner-1", "host-1"]) {
+        await assertFails(
+          setDoc(
+            doc(authedDb(uid), "eventParticipations", "event-1_runner-1"),
+            eventParticipation(),
+          ),
+        );
+        await assertFails(
+          setDoc(
+            doc(authedDb(uid), "eventBookings", "event-1_runner-1"),
+            eventParticipation(),
+          ),
+        );
+      }
     });
 
     it("allows users to query their own missing event participation edge", async () => {
       await assertSucceeds(
         getDocs(
           query(
-            collection(authedDb("runner-1"), "eventParticipations"),
+            collection(authedDb("runner-1"), "eventBookings"),
             where("eventId", "==", "event-404"),
             where("uid", "==", "runner-1"),
           ),
@@ -1097,11 +1158,11 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({uid: "runner-1", status: "signedUp"}),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({
           uid: "runner-2",
           status: "waitlisted",
@@ -1113,7 +1174,7 @@ describe("firestore.rules", () => {
       await assertFails(
         getDocs(
           query(
-            collection(authedDb("runner-3"), "eventParticipations"),
+            collection(authedDb("runner-3"), "eventBookings"),
             where("eventId", "==", "event-1"),
             where("status", "in", ["signedUp", "waitlisted", "attended"]),
           ),
@@ -1122,7 +1183,7 @@ describe("firestore.rules", () => {
       await assertSucceeds(
         getDocs(
           query(
-            collection(authedDb("host-1"), "eventParticipations"),
+            collection(authedDb("host-1"), "eventBookings"),
             where("eventId", "==", "event-1"),
             where("status", "in", ["signedUp", "waitlisted", "attended"]),
           ),
@@ -1134,7 +1195,7 @@ describe("firestore.rules", () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({
           status: "cancelled",
           signedUpAt: null,
@@ -1143,15 +1204,15 @@ describe("firestore.rules", () => {
       );
 
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-1"), "eventParticipations", "event-1_runner-1")),
+        getDoc(doc(authedDb("runner-1"), "eventBookings", "event-1_runner-1")),
       );
       await assertFails(
-        getDoc(doc(authedDb("runner-3"), "eventParticipations", "event-1_runner-1")),
+        getDoc(doc(authedDb("runner-3"), "eventBookings", "event-1_runner-1")),
       );
       await assertFails(
         getDocs(
           query(
-            collection(authedDb("runner-3"), "eventParticipations"),
+            collection(authedDb("runner-3"), "eventBookings"),
             where("eventId", "==", "event-1"),
           ),
         ),

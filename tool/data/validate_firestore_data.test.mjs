@@ -27,7 +27,7 @@ function doc(docPath, data) {
 }
 function collections(overrides = {}) {
   return Object.fromEntries(["users", "hostProfiles", "publicProfiles",
-    "organizers", "organizerFollows", "events", "eventParticipations", "savedEvents",
+    "organizers", "organizerFollows", "events", "eventBookings", "savedEvents",
     "reviews", "matches", "onboarding_drafts", "scheduleLocks", "outgoing", "messages"]
     .map((name) => [name, overrides[name] ?? []]));
 }
@@ -139,14 +139,14 @@ test("canonical decisions enforce path identity, event existence and attendance 
   assert.ok(report.issues.some((item) => item.code === "unrecognized-outgoing-path"));
   assert.ok(reportFor({outgoing: [doc(canonical, data)]}).issues.some((item) => item.code === "missing-swipe-event"));
   const attended = [data.swiperId, data.targetId].map((uid) =>
-    doc(`eventParticipations/${data.eventId}_${uid}`, {eventId: data.eventId, uid, status: "attended"}));
-  assert.ok(!findings(reportFor({...base, eventParticipations: attended, outgoing: [doc(canonical, data)]}), canonical)
+    doc(`eventBookings/${data.eventId}_${uid}`, {eventId: data.eventId, uid, status: "attended"}));
+  assert.ok(!findings(reportFor({...base, eventBookings: attended, outgoing: [doc(canonical, data)]}), canonical)
     .some((item) => item.code === "swipe-event-attendance-mismatch"));
 });
 
 test("unscheduled drafts still reject scheduled participation", () => {
   const report = reportFor({organizers: [organizer()], events: [doc("events/e1", privateEvent())],
-    eventParticipations: [doc("eventParticipations/e1_u1", {eventId: "e1", uid: "u1", status: "signedUp"})]});
+    eventBookings: [doc("eventBookings/e1_u1", {eventId: "e1", uid: "u1", status: "signedUp"})]});
   assert.ok(report.issues.some((item) => item.code === "participation-event-unscheduled"));
   assert.ok(report.issues.some((item) => item.code === "event-count-drift"));
 });

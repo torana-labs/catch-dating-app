@@ -168,7 +168,7 @@ test(
   async () => {
     const h = harness({
       "events/event-1": event({priceInPaise: 25000, waitlistedCount: 1}),
-      "eventParticipations/event-1_runner-2": participation("runner-2"),
+      "eventBookings/event-1_runner-2": participation("runner-2"),
     });
 
     const result = await decideEventJoinRequestHandler(
@@ -179,7 +179,7 @@ test(
     assert.deepEqual(result, {decision: "approved", booked: false});
     assert.deepEqual(h.signUpCalls, []);
     assert.equal(
-      h.firestore.get("eventParticipations/event-1_runner-2")
+      h.firestore.get("eventBookings/event-1_runner-2")
         ?.hostApprovalStatus,
       "approved"
     );
@@ -198,7 +198,7 @@ test(
 test("decideEventJoinRequestHandler books approved free requests", async () => {
   const h = harness({
     "events/event-1": event({priceInPaise: 0, waitlistedCount: 1}),
-    "eventParticipations/event-1_runner-2": participation("runner-2"),
+    "eventBookings/event-1_runner-2": participation("runner-2"),
   });
 
   const result = await decideEventJoinRequestHandler(
@@ -220,7 +220,7 @@ test("decideEventJoinRequestHandler declines active requests", async () => {
       waitlistedCount: 1,
       waitlistedCohortCounts: {menInterestedInWomen: 1},
     }),
-    "eventParticipations/event-1_runner-2": participation("runner-2"),
+    "eventBookings/event-1_runner-2": participation("runner-2"),
     "scheduleLocks/user_runner-2_494184": {
       uid: "runner-2",
       eventId: "event-1",
@@ -239,11 +239,11 @@ test("decideEventJoinRequestHandler declines active requests", async () => {
     {menInterestedInWomen: 0}
   );
   assert.equal(
-    h.firestore.get("eventParticipations/event-1_runner-2")?.status,
+    h.firestore.get("eventBookings/event-1_runner-2")?.status,
     "cancelled"
   );
   assert.equal(
-    h.firestore.get("eventParticipations/event-1_runner-2")
+    h.firestore.get("eventBookings/event-1_runner-2")
       ?.hostApprovalStatus,
     "declined"
   );
@@ -254,7 +254,7 @@ test("decideEventJoinRequestHandler declines active requests", async () => {
 /** The account's roster row, found through its booking's link. */
 function rosterRow(h: {firestore: {get: (path: string) => unknown}},
   uid: string) {
-  const pointer = h.firestore.get(`eventParticipations/event-1_${uid}`) as
+  const pointer = h.firestore.get(`eventBookings/event-1_${uid}`) as
     {attendeeId?: string} | undefined;
   return h.firestore.get(`eventAttendees/${pointer?.attendeeId}`) as
     {status?: string; booking?: {hostApprovalStatus?: unknown}} | undefined;
@@ -262,7 +262,7 @@ function rosterRow(h: {firestore: {get: (path: string) => unknown}},
 
 test("decideEventJoinRequestHandler rejects non-hosts", async () => {
   const h = harness({
-    "eventParticipations/event-1_runner-2": participation("runner-2"),
+    "eventBookings/event-1_runner-2": participation("runner-2"),
   });
 
   await assert.rejects(

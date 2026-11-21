@@ -497,7 +497,7 @@ export async function resolveMomentRecipients(
     if (scope.kind !== "event") {
       return {recipients: [], suppressedNoEndpoint: 0};
     }
-    const participations = await db.collection("eventParticipations")
+    const participations = await db.collection("eventBookings")
       .where("eventId", "==", scope.eventId).get();
     const recipients: ResolvedRecipient[] = [];
     for (const doc of participations.docs) {

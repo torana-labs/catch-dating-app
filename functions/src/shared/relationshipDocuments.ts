@@ -114,7 +114,7 @@ export function savedEventId(uid: string, eventId: string): string {
  * @param {EventParticipationStatus[]} statuses Statuses to include.
  * @return {Promise<EventParticipationSnapshot[]>} Matching edge docs.
  */
-export async function eventParticipationsByStatusInTransaction(
+export async function eventBookingsByStatusInTransaction(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
   eventId: string,
@@ -123,7 +123,7 @@ export async function eventParticipationsByStatusInTransaction(
 ): Promise<EventParticipationSnapshot[]> {
   if (statuses.length === 0) return [];
   let query = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .where("eventId", "==", eventId)
     .where("status", "in", statuses);
   if (options.limit !== undefined) query = query.limit(options.limit);
@@ -147,7 +147,7 @@ export async function waitlistedEventParticipationsInTransaction(
   eventId: string
 ): Promise<EventParticipationSnapshot[]> {
   const query = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .where("eventId", "==", eventId)
     .where("status", "==", "waitlisted")
     .orderBy("waitlistedAt", "asc");

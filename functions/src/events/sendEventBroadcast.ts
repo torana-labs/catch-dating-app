@@ -18,7 +18,7 @@ import {
 } from "../shared/eventBroadcasts";
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   OrganizerBroadcastSummaryDocument,
   OrganizerContactDocument,
   UserProfileDocument,
@@ -353,7 +353,7 @@ async function claimBroadcast(params: {
     let targetUids = existing ? parseTargetUids(existing.targetUids) : [];
     if (!existing || !Array.isArray(existing.targetUids)) {
       const participationQuery = params.db
-        .collection("eventParticipations")
+        .collection("eventBookings")
         .where("eventId", "==", params.data.eventId)
         .where("status", "in", statusesForAudience(params.data.audience))
         .limit(maxRecipients + 1);
@@ -365,7 +365,7 @@ async function claimBroadcast(params: {
         );
       }
       targetUids = [...new Set(participationSnap.docs
-        .map((doc) => (doc.data() as EventParticipationDocument).uid)
+        .map((doc) => (doc.data() as EventBookingDocument).uid)
         .filter((uid): uid is string =>
           typeof uid === "string" &&
           uid.length > 0 &&

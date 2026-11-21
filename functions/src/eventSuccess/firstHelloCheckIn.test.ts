@@ -197,7 +197,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
       issuedAt: ts("2026-05-02T01:34:00.000Z"),
       expiresAt: ts("2026-05-02T01:36:00.000Z"),
     },
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-1",
@@ -206,7 +206,7 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
       cohortAtSignup: "menInterestedInWomen",
       paymentId: "payment-1",
     },
-    "eventParticipations/event-1_runner-2": {
+    "eventBookings/event-1_runner-2": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-2",
@@ -300,8 +300,8 @@ test(
   "start First Hello works for event-scoped external attendees",
   async () => {
     const {firestore, deps} = harness({
-      "eventParticipations/event-1_runner-1": undefined,
-      "eventParticipations/event-1_runner-2": undefined,
+      "eventBookings/event-1_runner-1": undefined,
+      "eventBookings/event-1_runner-2": undefined,
       "users/runner-1": undefined,
       "publicProfiles/runner-2": undefined,
       "eventRuntimeParticipants/event-1_runner-1": runtimeParticipant({
@@ -349,8 +349,8 @@ test(
 
 test("First Hello uses neutral fallback without profile answers", async () => {
   const {firestore, deps} = harness({
-    "eventParticipations/event-1_runner-1": undefined,
-    "eventParticipations/event-1_runner-2": undefined,
+    "eventBookings/event-1_runner-1": undefined,
+    "eventBookings/event-1_runner-2": undefined,
     "users/runner-1": undefined,
     "publicProfiles/runner-2": undefined,
     "eventRuntimeParticipants/event-1_runner-1": runtimeParticipant({
@@ -393,7 +393,7 @@ test(
   "start First Hello rejects when no compatible attendee is checked in",
   async () => {
     const {deps} = harness({
-      "eventParticipations/event-1_runner-2": {
+      "eventBookings/event-1_runner-2": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-2",
@@ -459,7 +459,7 @@ test("complete First Hello marks attendance", async () => {
   );
 
   const mission = firestore.get("eventSuccessArrivalMissions/event-1_runner-1");
-  const participation = firestore.get("eventParticipations/event-1_runner-1");
+  const participation = firestore.get("eventBookings/event-1_runner-1");
   assert.deepEqual(result, {attended: true});
   assert.deepEqual(rateLimitCalls, [
     "runner-1:completeEventSuccessFirstHelloMission",

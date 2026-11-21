@@ -432,7 +432,8 @@ enter previews.
 | `onBlockCreated` | `src/safety/` | `blocks/{id}` onCreate — closes existing matches |
 | `onCrossPathsConsentWritten` | `src/crossPaths/` | Cross Paths consent onWrite — invalidates pending invitations after revocation while preserving accepted intent |
 | `onCrossPathsEventWritten` | `src/crossPaths/` | `events/{eventId}` onWrite — invalidates invitations/holds when an event becomes unavailable |
-| `onCrossPathsParticipationWritten` | `src/crossPaths/` | `eventParticipations/{id}` onWrite — invalidates invitations/holds when participation ends |
+| `onCrossPathsParticipationWritten` | `src/crossPaths/` | `eventBookings/{id}` onWrite — invalidates invitations/holds when participation ends |
+| `onEventBookingMirroredToLegacy` | `src/events/eventBookingLegacyMirror.ts` | TRANSITIONAL: `eventBookings/{id}` onWrite — copies the booking (or its deletion) to the legacy `eventParticipations/{id}` mirror that released app builds read; removed in phase 2 of the rename |
 | `onCrossPathsBlockCreated` | `src/crossPaths/` | `blocks/{id}` onCreate — invalidates invitations/holds and closes accepted event plans |
 | `onEventAttendeeAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Event attendee writes project organizer-scoped contact and attendance history |
 | `onOrganizerCommunicationPreferenceAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Organizer communication preferences update consent-safe audience reachability |

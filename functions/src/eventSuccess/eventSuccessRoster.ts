@@ -1,6 +1,6 @@
 import type {
   EventAttendeeDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   EventRuntimeParticipantDocument,
   Gender,
   PublicProfileDocument,
@@ -37,7 +37,7 @@ export async function loadEventSuccessRoster(
   eventId: string,
   maxEntries?: number
 ): Promise<EventSuccessRosterParticipant[]> {
-  const participationQuery = db.collection("eventParticipations")
+  const participationQuery = db.collection("eventBookings")
     .where("eventId", "==", eventId);
   const runtimeQuery = db.collection("eventRuntimeParticipants")
     .where("eventId", "==", eventId);
@@ -53,9 +53,9 @@ export async function loadEventSuccessRoster(
       "Event roster exceeds supported preview cohort.");
   }
   const consumerEdges = participationSnap.docs.map((snap) =>
-    requireDoc<EventParticipationDocument>(
+    requireDoc<EventBookingDocument>(
       snap,
-      "EventParticipationDocument"
+      "EventBookingDocument"
     ));
   const [consumerProfiles, publicProfiles] = await Promise.all([
     Promise.all(consumerEdges.map((edge) =>
@@ -156,7 +156,7 @@ export async function loadEventSuccessRosterParticipant(
   eventId: string,
   uid: string
 ): Promise<EventSuccessRosterParticipant | null> {
-  const participationRef = db.collection("eventParticipations")
+  const participationRef = db.collection("eventBookings")
     .doc(eventParticipationId(eventId, uid));
   const runtimeRef = db.collection("eventRuntimeParticipants")
     .doc(eventRuntimeParticipantId(eventId, uid));
@@ -172,9 +172,9 @@ export async function loadEventSuccessRosterParticipant(
     db.collection("publicProfiles").doc(uid).get(),
   ]);
   if (participationSnap.exists) {
-    const edge = requireDoc<EventParticipationDocument>(
+    const edge = requireDoc<EventBookingDocument>(
       participationSnap,
-      "EventParticipationDocument"
+      "EventBookingDocument"
     );
     const profile = userSnap.exists ? requireDoc<UserProfileDocument>(
       userSnap,

@@ -5,7 +5,7 @@ import {GUEST_PAYMENTS} from "./guestPayments";
  * in the one guest-payment ledger with purpose `booking`. Their ids are the
  * provider payment id (Razorpay) or an auto id (Stripe), never one of the
  * other flows' prefixes, and bookings point at them through
- * eventParticipations.paymentId. A booking may also name a website payment
+ * eventBookings.paymentId. A booking may also name a website payment
  * (pp_), so every read here checks the purpose before trusting a document.
  */
 export const BOOKING_PAYMENT_PURPOSE = "booking";

@@ -393,7 +393,7 @@ function assertConsistentWorld({
   const prefix = suvbotSeedPrefix(uid);
   const docs = [...store.docs];
   const participations = docs
-    .filter(([docPath]) => docPath.startsWith("eventParticipations/"))
+    .filter(([docPath]) => docPath.startsWith("eventBookings/"))
     .map(([, data]) => data);
   const primary = world.events.find((event) => event.guestPerspective) ??
     world.events[0];
@@ -645,8 +645,8 @@ test("clearDemoState covers the retired CLI reset fixture", async () => {
   const uid = "uid_a";
   const store = storeWithTester(uid, "in-mh-mumbai");
   const seed: Record<string, FakeData> = {
-    "eventParticipations/demo_run_uid_a": {uid, synthetic: true},
-    "eventParticipations/real_run_uid_a": {uid},
+    "eventBookings/demo_run_uid_a": {uid, synthetic: true},
+    "eventBookings/real_run_uid_a": {uid},
     "savedEvents/demo_saved": {uid, demoOps: true},
     "savedEvents/from_manifest": {uid},
     "demoOpsEvents/op_1": {
@@ -679,7 +679,7 @@ test("clearDemoState covers the retired CLI reset fixture", async () => {
   const remaining = Object.keys(seed)
     .filter((docPath) => store.docs.has(docPath));
   assert.deepEqual(remaining.sort(), [
-    "eventParticipations/real_run_uid_a",
+    "eventBookings/real_run_uid_a",
     "matches/match_2",
     "notifications/uid_a/items/real",
     "profileDecisions/uid_a/outgoing/uid_c",

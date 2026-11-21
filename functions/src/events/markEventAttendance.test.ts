@@ -60,7 +60,7 @@ test(
 
     assert.deepEqual(h.notifications, []);
     // The check-in moves the guest's roster row in the same transaction.
-    const pointer = h.firestore.get("eventParticipations/event-1_runner-1");
+    const pointer = h.firestore.get("eventBookings/event-1_runner-1");
     const row = h.firestore.get(`eventAttendees/${pointer?.attendeeId}`);
     assert.equal(row?.status, "checkedIn");
     assert.equal(row?.linkedUid, "runner-1");
@@ -79,7 +79,7 @@ function buildHarness(
       hostUserIds: ["host-1"],
       hostProfiles: [],
     },
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-1",

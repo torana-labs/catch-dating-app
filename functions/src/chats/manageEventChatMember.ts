@@ -7,7 +7,7 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import type {EventChatMembershipDocument as Membership,
-  EventParticipationDocument, EventAttendeeDocument} from
+  EventBookingDocument, EventAttendeeDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {validateManageEventChatMemberCallablePayload} from
   "../shared/generated/validators/manageEventChatMemberInput";
@@ -80,15 +80,15 @@ export async function manageEventChatMemberHandler(
         throw new HttpsError("failed-precondition", "Member is not removed.");
       }
       const [participationSnap, attendeeRows] = await Promise.all([
-        tx.get(db.collection("eventParticipations")
+        tx.get(db.collection("eventBookings")
           .doc(`${data.eventId}_${data.targetUid}`)),
         tx.get(db.collection("eventAttendees")
           .where("eventId", "==", data.eventId)
           .where("linkedUid", "==", data.targetUid).limit(2)),
       ]);
       const participation = participationSnap.exists ?
-        requireDoc<EventParticipationDocument>(participationSnap,
-          "EventParticipationDocument") : null;
+        requireDoc<EventBookingDocument>(participationSnap,
+          "EventBookingDocument") : null;
       const attendees = attendeeRows.docs.map((row) =>
         requireDoc<EventAttendeeDocument>(row, "EventAttendeeDocument"));
       if (!hasEventChatAdmission(data.eventId, actor.view.organizerId,

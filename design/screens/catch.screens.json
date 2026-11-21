@@ -14124,7 +14124,7 @@
             "symbol": "HostOrganizerPostController"
           }
         ],
-        "notes": "HostInboxScreen is the Host-owned Inbox destination and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, groups every registered route under In Catch or WhatsApp, owns the route-specific follower composer and durable personal-WhatsApp handoff queue, and owns the complete campaign lifecycle; its compatibility wire value remains campaigns. Manual handoffs distinguish queued, device-opened and explicit host-asserted states, revalidate a stored endpoint immediately before every queue launch, and never claim provider delivery or read evidence. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out. Person rows combine only server-verified organizer-scoped identity. Every reply chooses one authorized route; paging, read receipts and drafts retain source identity and account generation. New message selects a person before resolving available routes."
+        "notes": "HostInboxScreen is the Host-owned Inbox destination and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventBookings rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, groups every registered route under In Catch or WhatsApp, owns the route-specific follower composer and durable personal-WhatsApp handoff queue, and owns the complete campaign lifecycle; its compatibility wire value remains campaigns. Manual handoffs distinguish queued, device-opened and explicit host-asserted states, revalidate a stored endpoint immediately before every queue launch, and never claim provider delivery or read evidence. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out. Person rows combine only server-verified organizer-scoped identity. Every reply chooses one authorized route; paging, read receipts and drafts retain source identity and account generation. New message selects a person before resolving available routes."
       },
       "designRefs": [
         {
@@ -14415,7 +14415,7 @@
           "id": "roster_without_threads",
           "kind": "empty",
           "status": "captured",
-          "source": "HostInboxViewModel derives broadcast counts from eventParticipations, independently of personal inquiry thread count.",
+          "source": "HostInboxViewModel derives broadcast counts from eventBookings, independently of personal inquiry thread count.",
           "nextAction": "Keep roster and thread count assertions separate when audience policy evolves.",
           "previewIds": [
             "HostInboxScreen/Event-scoped states"
@@ -14923,7 +14923,7 @@
               "prospective",
               "roster_without_threads"
             ],
-            "migration": "Implemented. Typed scope never uses General as an event-id sentinel, and audience counts come from eventParticipations rather than conversation totals.",
+            "migration": "Implemented. Typed scope never uses General as an event-id sentinel, and audience counts come from eventBookings rather than conversation totals.",
             "previewIds": [
               "HostInboxScreen/Event-scoped states"
             ]

@@ -1,7 +1,7 @@
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
-import type {EventParticipationDocument} from
+import type {EventBookingDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {readSeatMigrationWriterFence} from
   "../events/seatMigrationPaged";
@@ -26,7 +26,7 @@ function decrement(value: unknown, label: string): number {
   return Number(value) - 1;
 }
 
-function legacyEventPatch(participation: EventParticipationDocument):
+function legacyEventPatch(participation: EventBookingDocument):
   Record<string, unknown> {
   switch (participation.status) {
   case "signedUp": {
@@ -62,7 +62,7 @@ export async function deleteAccountEventParticipations(params: {
   if (!ID.test(uid) || !Number.isSafeInteger(nowMillis) || nowMillis < 0) {
     unavailable("Account deletion seat scope is invalid.");
   }
-  const participations = await db.collection("eventParticipations")
+  const participations = await db.collection("eventBookings")
     .where("uid", "==", uid).get();
   const linkedAttendees = await db.collection("eventAttendees")
     .where("linkedUid", "==", uid).get();
@@ -98,7 +98,7 @@ export async function deleteAccountEventParticipations(params: {
     const found = byEvent.get(eventId);
     await db.runTransaction(async (tx) => {
       const currentSnap = found ? await tx.get(found.ref) : null;
-      const current = currentSnap?.data() as EventParticipationDocument |
+      const current = currentSnap?.data() as EventBookingDocument |
         undefined;
       if (current && (current.uid !== uid || current.eventId !== eventId)) {
         unavailable("Current participation identity is malformed.");

@@ -186,7 +186,7 @@ function startMillis(event: EventDocument): number | null {
 export async function hasCheckedIn(db: FirebaseFirestore.Firestore,
   eventId: string, uid: string): Promise<boolean> {
   const [participationSnap, runtimeSnap] = await Promise.all([
-    db.collection("eventParticipations")
+    db.collection("eventBookings")
       .doc(eventParticipationId(eventId, uid)).get(),
     db.collection("eventRuntimeParticipants").doc(`${eventId}_${uid}`).get(),
   ]);

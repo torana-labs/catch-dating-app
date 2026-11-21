@@ -30,7 +30,7 @@
     "kind": {
       "type": "string",
       "enum": [
-        "eventParticipations",
+        "eventBookings",
         "eventAttendees",
         "organizerContactOrigins"
       ],

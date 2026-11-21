@@ -175,7 +175,7 @@ export async function prepareProviderSeatChanges(params: {
     }
     let catchActive = false;
     if (document.linkedUid) {
-      const participation = (await tx.get(db.collection("eventParticipations")
+      const participation = (await tx.get(db.collection("eventBookings")
         .doc(eventParticipationId(eventId, document.linkedUid)))).data();
       catchActive = participation?.uid === document.linkedUid &&
         participation.eventId === eventId &&

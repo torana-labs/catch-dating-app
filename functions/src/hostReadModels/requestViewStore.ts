@@ -2,7 +2,7 @@ import {isDeepStrictEqual} from "node:util";
 import * as logger from "firebase-functions/logger";
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   HostEventRequestViewDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {compareRequestRows, isOfferableWaitlistRow} from
@@ -58,7 +58,7 @@ export function requestViewEventFacts(
 function waitlistOfferable(event: EventDocument): boolean {
   try {
     return isOfferableWaitlistRow({status: "waitlisted"} as
-      EventParticipationDocument, event);
+      EventBookingDocument, event);
   } catch (error) {
     logger.warn("Request view treats an event that fails its policy " +
       "contract as having no offerable waitlist.", {
@@ -77,7 +77,7 @@ function waitlistOfferable(event: EventDocument): boolean {
 export function requestViewParticipationFacts(
   data: FirebaseFirestore.DocumentData | undefined): unknown {
   if (data?.status !== "waitlisted") return null;
-  const row = data as EventParticipationDocument;
+  const row = data as EventBookingDocument;
   return {eventId: row.eventId ?? null, uid: row.uid ?? null,
     hostApprovalStatus: row.hostApprovalStatus ?? null,
     waitlistedAt: millisOf(row.waitlistedAt),
@@ -109,7 +109,7 @@ export async function hostEventRequestView(db: Db, tx: Tx, eventId: string,
   if (!event || !validId(organizerId) || event.status !== "active" ||
       endMillis === null || endMillis <= nowMillis) return null;
 
-  const waiting = await tx.get(db.collection("eventParticipations")
+  const waiting = await tx.get(db.collection("eventBookings")
     .where("eventId", "==", eventId)
     .where("status", "==", "waitlisted")
     .orderBy("waitlistedAt")
@@ -117,10 +117,10 @@ export async function hostEventRequestView(db: Db, tx: Tx, eventId: string,
   let complete = waiting.docs.length <= maxScannedParticipations;
   const offerable = waitlistOfferable(event);
   let position = 0;
-  const entries: {row: EventParticipationDocument;
+  const entries: {row: EventBookingDocument;
     position: number | null}[] = [];
   for (const doc of waiting.docs.slice(0, maxScannedParticipations)) {
-    const row = doc.data() as EventParticipationDocument;
+    const row = doc.data() as EventBookingDocument;
     if (!validId(row.uid) || row.eventId !== eventId) continue;
     if (row.hostApprovalStatus === "pending") {
       entries.push({row, position: null});
@@ -237,13 +237,13 @@ export async function reconcileHostEventRequestViewsForPerson(db: Db,
   uid: string, organizerId: string | null = null,
   nowMillis = Date.now()): Promise<void> {
   if (!validId(uid)) return;
-  const waiting = await db.collection("eventParticipations")
+  const waiting = await db.collection("eventBookings")
     .where("uid", "==", uid)
     .where("status", "==", "waitlisted")
     .limit(maxScannedParticipations).get();
   const eventIds = new Set<string>();
   for (const doc of waiting.docs) {
-    const row = doc.data() as EventParticipationDocument;
+    const row = doc.data() as EventBookingDocument;
     if (organizerId !== null && row.organizerId !== organizerId) continue;
     if (validId(row.eventId)) eventIds.add(row.eventId);
   }

@@ -198,7 +198,7 @@ export const onEventChatDirectoryMembershipWritten = onDocumentWritten({
   ["status", "revision", "notificationsMuted"])));
 
 export const onEventChatDirectoryParticipationWritten = onDocumentWritten({
-  ...options, document: "eventParticipations/{documentId}",
+  ...options, document: "eventBookings/{documentId}",
 }, (event) => refreshPairs(eventChatDirectoryPairs(...versions(event), "uid",
   ["status", "organizerId"])));
 

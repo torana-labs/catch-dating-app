@@ -284,7 +284,7 @@ export function buildParticipationDoc({
     event.data.endTime.toDate() :
     null;
   return {
-    path: `eventParticipations/${event.id}_${uid}`,
+    path: `eventBookings/${event.id}_${uid}`,
     data: {
       ...marker,
       eventId: event.id,
@@ -342,7 +342,7 @@ export async function buildMakeEventFullPlan({
   const eventSnap = await db.collection("events").doc(eventId).get();
   if (!eventSnap.exists) throw new Error(`Missing events/${eventId}.`);
   const event = {id: eventSnap.id, path: eventSnap.ref.path, data: eventSnap.data()};
-  const existing = await db.collection("eventParticipations")
+  const existing = await db.collection("eventBookings")
     .where("eventId", "==", eventId)
     .get();
   const activeCount = existing.docs
@@ -827,7 +827,7 @@ export async function buildValidateDemoStateReport({db, phone, uid, now = new Da
   ] = await Promise.all([
     db.collection("publicProfiles").doc(userId).get(),
     db.collection("matches").where("participantIds", "array-contains", userId).get(),
-    db.collection("eventParticipations").where("uid", "==", userId).get(),
+    db.collection("eventBookings").where("uid", "==", userId).get(),
     db.collection("savedEvents").where("uid", "==", userId).get(),
     db.collection("guestPayments").where("purpose", "==", "booking")
       .where("userId", "==", userId).get(),
@@ -1027,7 +1027,7 @@ export async function buildLaunchCleanupPlan({
     "organizers",
     "organizerTeamMemberships",
     "events",
-    "eventParticipations",
+    "eventBookings",
     "eventCrossPathsConsents",
     "crossPathsShowcaseEligibility",
     "scheduleLocks",
@@ -1133,7 +1133,7 @@ export async function buildStaleEventCleanupPlan({
   }
 
   for (const collectionName of [
-    "eventParticipations",
+    "eventBookings",
     "scheduleLocks",
     "savedEvents",
     "guestPayments",

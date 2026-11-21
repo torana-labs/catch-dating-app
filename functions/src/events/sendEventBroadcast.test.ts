@@ -255,17 +255,17 @@ function baseDocs(
       hostUserIds: ["host-1", "cohost-1"],
       hostProfiles: [],
     },
-    "eventParticipations/event-1_user-1": {
+    "eventBookings/event-1_user-1": {
       eventId: "event-1",
       uid: "user-1",
       status: "signedUp",
     },
-    "eventParticipations/event-1_user-2": {
+    "eventBookings/event-1_user-2": {
       eventId: "event-1",
       uid: "user-2",
       status: "attended",
     },
-    "eventParticipations/event-1_user-3": {
+    "eventBookings/event-1_user-3": {
       eventId: "event-1",
       uid: "user-3",
       status: "waitlisted",
@@ -402,17 +402,17 @@ test("sendEventBroadcast sends booked Activity and preference-gated push",
 test("prospective audience excludes blocks, deleted users, and missing users",
   async () => {
     const docs = baseDocs({
-      "eventParticipations/event-1_user-4": {
+      "eventBookings/event-1_user-4": {
         eventId: "event-1",
         uid: "user-4",
         status: "waitlisted",
       },
-      "eventParticipations/event-1_user-5": {
+      "eventBookings/event-1_user-5": {
         eventId: "event-1",
         uid: "user-5",
         status: "waitlisted",
       },
-      "eventParticipations/event-1_user-6": {
+      "eventBookings/event-1_user-6": {
         eventId: "event-1",
         uid: "user-6",
         status: "waitlisted",
@@ -532,8 +532,8 @@ test("push rejection stays partial with sanitized evidence", async () => {
 test("zero-recipient audience returns an explicit completed result",
   async () => {
     const h = harness(baseDocs({
-      "eventParticipations/event-1_user-1": undefined,
-      "eventParticipations/event-1_user-2": undefined,
+      "eventBookings/event-1_user-1": undefined,
+      "eventBookings/event-1_user-2": undefined,
     }));
     const result = await sendEventBroadcastHandler(
       request("host-1", payload()),
@@ -597,12 +597,12 @@ test("authorization, moderation, and lifecycle failures write nothing",
 test("raw audience cap rejects 501 before sender filtering or fanout",
   async () => {
     const docs = baseDocs({
-      "eventParticipations/event-1_user-1": undefined,
-      "eventParticipations/event-1_user-2": undefined,
-      "eventParticipations/event-1_user-3": undefined,
+      "eventBookings/event-1_user-1": undefined,
+      "eventBookings/event-1_user-2": undefined,
+      "eventBookings/event-1_user-3": undefined,
     });
     for (let i = 0; i < 501; i += 1) {
-      docs[`eventParticipations/event-1_cap-${i}`] = {
+      docs[`eventBookings/event-1_cap-${i}`] = {
         eventId: "event-1",
         uid: i === 500 ? "host-1" : `cap-${i}`,
         status: "signedUp",
@@ -618,12 +618,12 @@ test("raw audience cap rejects 501 before sender filtering or fanout",
 
 test("raw audience cap accepts exactly 500 before deduplication", async () => {
   const docs = baseDocs({
-    "eventParticipations/event-1_user-1": undefined,
-    "eventParticipations/event-1_user-2": undefined,
-    "eventParticipations/event-1_user-3": undefined,
+    "eventBookings/event-1_user-1": undefined,
+    "eventBookings/event-1_user-2": undefined,
+    "eventBookings/event-1_user-3": undefined,
   });
   for (let i = 0; i < 500; i += 1) {
-    docs[`eventParticipations/event-1_cap-${i}`] = {
+    docs[`eventBookings/event-1_cap-${i}`] = {
       eventId: "event-1",
       uid: "user-1",
       status: "signedUp",

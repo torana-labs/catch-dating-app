@@ -42,7 +42,7 @@ test("scheduled, announcement-only, paused and archived room authority",
         status: "active"});
       await ref("organizers", organizerId).set({ownerUserId: host,
         hostUserId: host, hostUserIds: [], hostProfiles: []});
-      await ref("eventParticipations", `${eventId}_${person}`).set({
+      await ref("eventBookings", `${eventId}_${person}`).set({
         eventId, organizerId, uid: person, status: "signedUp"});
       for (const uid of [host, person]) {
         await ref("users", uid).set({displayName: uid,
@@ -85,7 +85,7 @@ test("scheduled, announcement-only, paused and archived room authority",
       const batch = db.batch();
       for (const path of [ref("events", eventId),
         ref("organizers", organizerId),
-        ref("eventParticipations", `${eventId}_${person}`),
+        ref("eventBookings", `${eventId}_${person}`),
         ref("eventChatRooms", eventId),
         ref("users", host), ref("users", person)]) batch.delete(path);
       for (const collection of ["eventChatMemberships", "eventChatMessages"]) {

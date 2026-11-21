@@ -550,7 +550,7 @@ The website is already split out of the old monolithic shell:
   for Consumer dating-profile setup. The mutation is server-owned, links or
   creates an `eventAttendees` record with `webOtp` source, and returns only the
   attendee's event-scoped state. The website never reads a private roster or
-  writes `eventParticipations` directly. A first registration may seed a private
+  writes `eventBookings` directly. A first registration may seed a private
   onboarding draft with the attendee-supplied name and verified phone for an
   intentional later Consumer onboarding continuation; this does not create a
   profile. Optional organizer WhatsApp and SMS permissions are independent,

@@ -6,7 +6,7 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   EventRuntimeParticipantDocument,
   EventSuccessAssignmentDocument,
   EventSuccessPlanDocument,
@@ -491,14 +491,14 @@ async function requireSpatialReader(
     if (isEventOrganizerManager(organizer, event, uid)) return;
   }
   const [participationSnap, runtimeSnap] = await Promise.all([
-    db.collection("eventParticipations")
+    db.collection("eventBookings")
       .doc(eventParticipationId(eventId, uid)).get(),
     db.collection("eventRuntimeParticipants").doc(`${eventId}_${uid}`).get(),
   ]);
   const participation = participationSnap.exists ?
-    requireDoc<EventParticipationDocument>(
+    requireDoc<EventBookingDocument>(
       participationSnap,
-      "EventParticipationDocument"
+      "EventBookingDocument"
     ) : null;
   const runtime = runtimeSnap.exists ?
     requireDoc<EventRuntimeParticipantDocument>(

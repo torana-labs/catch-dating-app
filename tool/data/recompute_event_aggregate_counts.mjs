@@ -45,7 +45,7 @@ export async function main(argv = process.argv.slice(2)) {
 export async function buildEventAggregateRepairPlan(firestore) {
   const [eventsSnap, participationsSnap] = await Promise.all([
     firestore.collection("events").get(),
-    firestore.collection("eventParticipations").get(),
+    firestore.collection("eventBookings").get(),
   ]);
 
   const eventIds = new Set(eventsSnap.docs.map((doc) => doc.id));
@@ -156,7 +156,7 @@ function normalizeObject(value) {
 function printHelp() {
   console.log(`Usage: node tool/data/recompute_event_aggregate_counts.mjs [options]
 
-Recomputes events/{eventId} aggregate projections from eventParticipations edges.
+Recomputes events/{eventId} aggregate projections from eventBookings edges.
 bookedCount counts signedUp + attended, checkedInCount counts attended,
 waitlistedCount counts waitlisted, and genderCounts counts signedUp + attended.
 

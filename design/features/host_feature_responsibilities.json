@@ -758,7 +758,7 @@
         "contracts/callables/replan_organizer_manual_send_tasks_payload.schema.json",
         "contracts/firestore/organizers.schema.json",
         "contracts/firestore/event_broadcasts.schema.json",
-        "contracts/firestore/event_participations.schema.json",
+        "contracts/firestore/event_bookings.schema.json",
         "contracts/firestore/events.schema.json",
         "contracts/firestore/matches.schema.json",
         "contracts/firestore/organizer_campaign_recipients.schema.json",

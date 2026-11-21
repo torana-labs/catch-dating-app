@@ -34,7 +34,7 @@ export async function readAccountSections(
       })));
   const [participations, follows, reviews, preferences] = await Promise.all([
     wanted.has("plans") ?
-      own("eventParticipations", "uid", limits.plans * 2) : null,
+      own("eventBookings", "uid", limits.plans * 2) : null,
     wanted.has("following") ?
       own("organizerFollows", "uid", limits.follows * 2) : null,
     wanted.has("reviews") ?

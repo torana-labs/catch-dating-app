@@ -4,7 +4,7 @@ import * as admin from "firebase-admin";
 import type {
   EventAttendeeDocument,
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   EventRuntimeParticipantDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
@@ -428,7 +428,7 @@ async function requireCheckedInEventSuccessParticipant(
   eventId: string,
   uid: string
 ): Promise<void> {
-  const participationRef = db.collection("eventParticipations")
+  const participationRef = db.collection("eventBookings")
     .doc(eventParticipationId(eventId, uid));
   const runtimeRef = db.collection("eventRuntimeParticipants")
     .doc(eventRuntimeParticipantId(eventId, uid));
@@ -437,9 +437,9 @@ async function requireCheckedInEventSuccessParticipant(
     tx.get(runtimeRef),
   ]);
   if (participationSnap.exists) {
-    const participation = requireDoc<EventParticipationDocument>(
+    const participation = requireDoc<EventBookingDocument>(
       participationSnap,
-      "EventParticipationDocument"
+      "EventBookingDocument"
     );
     if (
       participation.eventId === eventId &&

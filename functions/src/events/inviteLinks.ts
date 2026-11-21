@@ -12,7 +12,7 @@ import {
 import type {
   EventDocument,
   EventAttendeeDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   EventInviteLinkDocument,
   EventInviteLinkSecretDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -336,7 +336,7 @@ export async function createAttendeeInviteLinkHandler(
   const eventRef = db.collection("events").doc(payload.eventId);
   const runtimeRef = db.collection("eventRuntimeParticipants")
     .doc(`${payload.eventId}_${actorUid}`);
-  const participationRef = db.collection("eventParticipations")
+  const participationRef = db.collection("eventBookings")
     .doc(eventParticipationId(payload.eventId, actorUid));
   const authPhone = normalizeRosterPhone(
     typeof request.auth?.token.phone_number === "string" ?
@@ -365,7 +365,7 @@ export async function createAttendeeInviteLinkHandler(
       accessStatus?: string;
     } | undefined;
     const participation = participationSnap.data() as
-      EventParticipationDocument | undefined;
+      EventBookingDocument | undefined;
     const validRuntime = runtime?.eventId === payload.eventId &&
       runtime.uid === actorUid && Boolean(runtime.eventAttendeeId) &&
       ["needsInput", "ready"].includes(runtime.accessStatus ?? "");
