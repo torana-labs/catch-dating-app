@@ -214,8 +214,8 @@ enum ProgramWebLinkKind {
   family,
 }
 
-// keepalive: one stateless facade over account-free SDK singletons shared by
-// the planner screens.
+// keepalive: account-free: one stateless facade over account-free SDK
+// singletons shared by the planner screens.
 @Riverpod(keepAlive: true)
 ProgramPlannerRepository programPlannerRepository(Ref ref) =>
     ProgramPlannerRepository(

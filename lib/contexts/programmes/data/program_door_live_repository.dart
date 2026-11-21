@@ -329,7 +329,8 @@ class ProgramDoorLiveRepository {
   }
 }
 
-// keepalive: a stateless repository over account-free SDK singletons.
+// keepalive: account-free: a stateless repository over account-free SDK
+// singletons.
 @Riverpod(keepAlive: true)
 ProgramDoorLiveRepository programDoorLiveRepository(Ref ref) =>
     ProgramDoorLiveRepository(

@@ -94,7 +94,8 @@ ProgramHotelRooms programHotelRoomsFromView(
   });
 }
 
-// keepalive: a stateless repository over account-free SDK singletons.
+// keepalive: account-free: a stateless repository over account-free SDK
+// singletons.
 @Riverpod(keepAlive: true)
 ProgramRoomViewsRepository programRoomViewsRepository(Ref ref) =>
     ProgramRoomViewsRepository(

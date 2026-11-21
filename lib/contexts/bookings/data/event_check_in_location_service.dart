@@ -5,8 +5,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_check_in_location_service.g.dart';
 
-// keepalive: check-in location service is a shared platform facade for event
-// arrival actions.
+// keepalive: account-free: check-in location service is a shared platform
+// facade for event arrival actions.
 @Riverpod(keepAlive: true)
 EventCheckInLocationService eventCheckInLocationService(Ref ref) =>
     const GeolocatorEventCheckInLocationService();

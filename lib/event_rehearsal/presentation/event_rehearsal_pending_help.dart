@@ -7,12 +7,14 @@ part 'event_rehearsal_pending_help.g.dart';
 
 /// Discovery references only. Each case editor owns its command and retry.
 /// A server page may omit a case whose save succeeded without confirmation.
-// keepalive: Pending case discovery survives closed sheets until confirmation or account reset.
-@Riverpod(keepAlive: true)
+/// Session lifetime: pending case discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
+@riverpod
 class EventRehearsalPendingHelp extends _$EventRehearsalPendingHelp {
   AuthenticatedSession? _account;
   @override
   Set<RehearsalHelpScope> build() {
+    ref.retainForCurrentSession();
     final auth = ref.watch(authenticatedSessionProvider);
     final authState = catchAsyncStateFromAsyncValue(auth);
     _account = !authState.isSettledData ? null : authState.value;

@@ -179,7 +179,8 @@ class HostSavedAudienceRepository {
   );
 }
 
-// keepalive: Reuse the callable client for the saved audience subdomain.
+// keepalive: account-free: Reuse the callable client for the saved audience
+// subdomain.
 @Riverpod(keepAlive: true)
 HostSavedAudienceRepository hostSavedAudienceRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);

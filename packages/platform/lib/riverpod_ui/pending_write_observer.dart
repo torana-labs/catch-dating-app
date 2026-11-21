@@ -10,7 +10,7 @@ part 'pending_write_observer.g.dart';
 
 /// How many writes have run longer than [writeStillWorkingAfter]. The notice
 /// overlay says "Still working" while it is above zero.
-// keepalive: app-wide UI state, like the notice queue it feeds.
+// keepalive: account-free: app-wide UI state, like the notice queue it feeds.
 @Riverpod(keepAlive: true)
 class StillWorkingWrites extends _$StillWorkingWrites {
   @override

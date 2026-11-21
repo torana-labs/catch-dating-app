@@ -10,7 +10,8 @@ part of 'event_assistance_pending_settings.dart';
 // ignore_for_file: type=lint, type=warning
 /// Discovery references only. Each settings editor owns its command and retry.
 /// Current event setup may omit a group whose setting save remains unconfirmed.
-// keepalive: Pending setting discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending setting discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 
 @ProviderFor(EventAssistancePendingSettings)
 final eventAssistancePendingSettingsProvider =
@@ -18,7 +19,8 @@ final eventAssistancePendingSettingsProvider =
 
 /// Discovery references only. Each settings editor owns its command and retry.
 /// Current event setup may omit a group whose setting save remains unconfirmed.
-// keepalive: Pending setting discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending setting discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 final class EventAssistancePendingSettingsProvider
     extends
         $NotifierProvider<
@@ -27,14 +29,15 @@ final class EventAssistancePendingSettingsProvider
         > {
   /// Discovery references only. Each settings editor owns its command and retry.
   /// Current event setup may omit a group whose setting save remains unconfirmed.
-  // keepalive: Pending setting discovery survives closed sheets until confirmation or account reset.
+  /// Session lifetime: pending setting discovery survives closed sheets until
+  /// confirmation, and ends with the signed-in period.
   EventAssistancePendingSettingsProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'eventAssistancePendingSettingsProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -58,11 +61,12 @@ final class EventAssistancePendingSettingsProvider
 }
 
 String _$eventAssistancePendingSettingsHash() =>
-    r'bad8b8043e5bb67e5ac9f3dd1ea5f1977946c42e';
+    r'7809554be0e075ea65614d75afb317aaf5d0613c';
 
 /// Discovery references only. Each settings editor owns its command and retry.
 /// Current event setup may omit a group whose setting save remains unconfirmed.
-// keepalive: Pending setting discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending setting discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 
 abstract class _$EventAssistancePendingSettings
     extends $Notifier<Set<EventAssistanceGroupScope>> {

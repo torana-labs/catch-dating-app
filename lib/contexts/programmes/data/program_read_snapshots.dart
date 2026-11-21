@@ -252,8 +252,9 @@ String programSnapshotScope(
   String? stationId,
 ]) => stationId == null ? '$kind:$programId' : '$kind:$programId:$stationId';
 
-// keepalive: shares the SharedPreferences instance with the outbox store's
-// lifecycle so cold-start reads don't race instance creation.
+// keepalive: account-free: a durable store keyed by account inside that clears
+// the previous account's snapshots on an account change, and shares the outbox
+// store's SharedPreferences lifecycle so cold-start reads do not race.
 @Riverpod(keepAlive: true)
 ProgramReadSnapshotStore programReadSnapshotStore(Ref ref) {
   final store = SharedPreferencesProgramReadSnapshotStore();

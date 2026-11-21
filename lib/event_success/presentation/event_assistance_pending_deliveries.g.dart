@@ -10,7 +10,8 @@ part of 'event_assistance_pending_deliveries.dart';
 // ignore_for_file: type=lint, type=warning
 /// Discovery references only. Each delivery controller owns its command and retry.
 /// A server page may omit a message whose handoff succeeded without confirmation.
-// keepalive: Pending delivery discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending delivery discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 
 @ProviderFor(EventAssistancePendingDeliveries)
 final eventAssistancePendingDeliveriesProvider =
@@ -18,7 +19,8 @@ final eventAssistancePendingDeliveriesProvider =
 
 /// Discovery references only. Each delivery controller owns its command and retry.
 /// A server page may omit a message whose handoff succeeded without confirmation.
-// keepalive: Pending delivery discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending delivery discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 final class EventAssistancePendingDeliveriesProvider
     extends
         $NotifierProvider<
@@ -27,14 +29,15 @@ final class EventAssistancePendingDeliveriesProvider
         > {
   /// Discovery references only. Each delivery controller owns its command and retry.
   /// A server page may omit a message whose handoff succeeded without confirmation.
-  // keepalive: Pending delivery discovery survives closed sheets until confirmation or account reset.
+  /// Session lifetime: pending delivery discovery survives closed sheets until
+  /// confirmation, and ends with the signed-in period.
   EventAssistancePendingDeliveriesProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'eventAssistancePendingDeliveriesProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -59,11 +62,12 @@ final class EventAssistancePendingDeliveriesProvider
 }
 
 String _$eventAssistancePendingDeliveriesHash() =>
-    r'43bd550a837b37715008d41b5078aec8bbffa18d';
+    r'973da8d122e5321a15c0229e2beda113d77c9820';
 
 /// Discovery references only. Each delivery controller owns its command and retry.
 /// A server page may omit a message whose handoff succeeded without confirmation.
-// keepalive: Pending delivery discovery survives closed sheets until confirmation or account reset.
+/// Session lifetime: pending delivery discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
 
 abstract class _$EventAssistancePendingDeliveries
     extends $Notifier<Set<EventAssistanceDeliveryScope>> {

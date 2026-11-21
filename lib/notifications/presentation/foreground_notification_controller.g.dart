@@ -8,24 +8,30 @@ part of 'foreground_notification_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Session lifetime: one arrival stream survives route changes for the
+/// signed-in period, and its de-duplication never outlives it.
 
 @ProviderFor(ForegroundNotificationController)
 final foregroundNotificationControllerProvider =
     ForegroundNotificationControllerProvider._();
 
+/// Session lifetime: one arrival stream survives route changes for the
+/// signed-in period, and its de-duplication never outlives it.
 final class ForegroundNotificationControllerProvider
     extends
         $NotifierProvider<
           ForegroundNotificationController,
           ForegroundNotification?
         > {
+  /// Session lifetime: one arrival stream survives route changes for the
+  /// signed-in period, and its de-duplication never outlives it.
   ForegroundNotificationControllerProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'foregroundNotificationControllerProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,7 +54,10 @@ final class ForegroundNotificationControllerProvider
 }
 
 String _$foregroundNotificationControllerHash() =>
-    r'd1e2e8a4cacf14019813579a9bdbe939d173631a';
+    r'b4b49876a48fb4d09138ecdd824e8e6c9503821a';
+
+/// Session lifetime: one arrival stream survives route changes for the
+/// signed-in period, and its de-duplication never outlives it.
 
 abstract class _$ForegroundNotificationController
     extends $Notifier<ForegroundNotification?> {

@@ -9,13 +9,15 @@ part of 'razorpay_checkout.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Host and non-native shells intentionally have no Razorpay implementation.
-// keepalive: the native checkout factory is fixed by the installable app root.
+// keepalive: account-free: the native checkout factory is fixed by the
+// installable app root.
 
 @ProviderFor(razorpayCheckoutFactory)
 final razorpayCheckoutFactoryProvider = RazorpayCheckoutFactoryProvider._();
 
 /// Host and non-native shells intentionally have no Razorpay implementation.
-// keepalive: the native checkout factory is fixed by the installable app root.
+// keepalive: account-free: the native checkout factory is fixed by the
+// installable app root.
 
 final class RazorpayCheckoutFactoryProvider
     extends
@@ -26,7 +28,8 @@ final class RazorpayCheckoutFactoryProvider
         >
     with $Provider<RazorpayCheckoutFactory?> {
   /// Host and non-native shells intentionally have no Razorpay implementation.
-  // keepalive: the native checkout factory is fixed by the installable app root.
+  // keepalive: account-free: the native checkout factory is fixed by the
+  // installable app root.
   RazorpayCheckoutFactoryProvider._()
     : super(
         from: null,

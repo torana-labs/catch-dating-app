@@ -14,8 +14,8 @@ part 'app_version_config_provider.g.dart';
 /// Reads are synchronous — all Remote Config values were fetched and activated
 /// at startup, falling back to [kAppVersionConfigDefaults] when the fetch
 /// failed.
-// keepalive: version config is a global route gate read synchronously after
-// startup Remote Config activation.
+// keepalive: account-free: version config is a global route gate read
+// synchronously after startup Remote Config activation.
 @Riverpod(keepAlive: true)
 AppVersionConfig appVersionConfig(Ref ref) {
   final remoteConfig = ref.watch(firebaseRemoteConfigProvider);

@@ -100,8 +100,8 @@ double _toRad(double deg) => deg * pi / 180;
 /// List of supported cities, fetched once and cached for the app lifetime.
 ///
 /// Returns the Firestore-backed list or the 9 hardcoded defaults.
-// keepalive: city repository backs global city selection and should remain a
-// single cached Firestore facade.
+// keepalive: account-free: city repository backs global city selection and
+// should remain a single cached Firestore facade.
 @Riverpod(keepAlive: true)
 CityRepository cityRepository(Ref ref) => CityRepository(
   ref.watch(configDocumentsProvider),

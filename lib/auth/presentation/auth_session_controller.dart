@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/explore/explore.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_platform/firebase/firestore_cache_wipe.dart';
@@ -12,12 +11,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_session_controller.g.dart';
 
-// provider-graph: high-fan-out:authSessionControllerProvider accepted -- These ten dependencies belong to one sign-out boundary: auth repository, auth and onboarding flow controllers, four session-scoped Explore browse roots, the existing FCM service, the session cache-tag registry and the on-device Firestore cache wipe. Installation removal runs while account authorization is still valid, without initializing an unused service; flow state is cleared centrally, and the cache is wiped after sign-out and before another account can sign in. Auth session, FCM lifecycle and cache-wipe tests cover cleanup, in-flight sign-out deduplication and bounded unregister failure.
-// provider-graph: cross-feature-presentation:authSessionControllerProvider->selectedExploreCityWasUserSelectedProvider accepted -- Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's manual city-selection guard. The focused AuthSessionController test proves reset behavior.
-// provider-graph: cross-feature-presentation:authSessionControllerProvider->selectedExploreCityProvider accepted -- Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's selected city. The focused AuthSessionController test proves reset behavior.
 // provider-graph: cross-feature-presentation:authSessionControllerProvider->onboardingControllerProvider accepted -- Sign-out is the app-session boundary and must reset the public onboarding controller plus its Mutations. This is the documented controller-to-controller command seam, not a read-model or widget dependency.
-// provider-graph: cross-feature-presentation:authSessionControllerProvider->exploreSearchQueryProvider accepted -- Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's search query. The focused AuthSessionController test proves reset behavior.
-// provider-graph: cross-feature-presentation:authSessionControllerProvider->exploreFiltersProvider accepted -- Sign-out is the app-session boundary and invalidates the keepAlive Explore browse roots so a new account cannot inherit the prior account's filters. The focused AuthSessionController test proves reset behavior.
 /// **Pattern A: Action controller + static Mutations**
 ///
 /// Owns session-level auth side effects such as sign-out. This keeps widgets
@@ -75,14 +69,6 @@ class AuthSessionController extends _$AuthSessionController {
     OnboardingController.completeMutation.reset(ref);
     ref.invalidate(authControllerProvider);
     ref.invalidate(onboardingControllerProvider);
-    // Explore browse preferences are session-scoped even though they are kept
-    // alive across tab switches. Reset all four roots so a new account cannot
-    // inherit the previous account's city, manual-selection guard, query, or
-    // filters.
-    ref.invalidate(selectedExploreCityProvider);
-    ref.invalidate(selectedExploreCityWasUserSelectedProvider);
-    ref.invalidate(exploreSearchQueryProvider);
-    ref.invalidate(exploreFiltersProvider);
     // Cache tags are session-scoped: one account's writes never reach the
     // next account's reads.
     ref.invalidate(cacheTagsProvider);

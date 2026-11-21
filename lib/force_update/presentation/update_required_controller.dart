@@ -5,8 +5,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'update_required_controller.g.dart';
 
-// keepalive: update-required controller handles global store/deep-link actions
-// outside individual feature routes.
+// keepalive: account-free: update-required controller handles global
+// store/deep-link actions outside individual feature routes.
 @Riverpod(keepAlive: true)
 UpdateRequiredController updateRequiredController(Ref ref) =>
     UpdateRequiredController(ref.watch(externalLinkControllerProvider));

@@ -3,10 +3,12 @@ import 'package:catch_dating_app/notifications/presentation/foreground_notificat
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_listener.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -147,7 +149,9 @@ void main() {
   testWidgets(
     'foreground receipt renders globally, taps route, and active chat suppresses another card',
     (tester) async {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [firebaseAuthProvider.overrideWithValue(MockFirebaseAuth())],
+      );
       addTearDown(container.dispose);
       final chatPath = AppConfig.appRole.isHost
           ? '/host/inbox/abc'

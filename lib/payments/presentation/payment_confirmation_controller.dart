@@ -9,8 +9,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'payment_confirmation_controller.g.dart';
 
-// keepalive: payment confirmation actions coordinate shared calendar, link,
-// and share side effects after checkout.
+// keepalive: account-free: payment confirmation actions coordinate shared
+// calendar, link, and share side effects after checkout.
 @Riverpod(keepAlive: true)
 PaymentConfirmationController paymentConfirmationController(Ref ref) {
   return PaymentConfirmationController(

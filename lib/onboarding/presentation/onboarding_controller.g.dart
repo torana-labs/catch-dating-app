@@ -19,8 +19,9 @@ part of 'onboarding_controller.dart';
 ///
 /// **When to use this pattern:** Multi-step flows where state must survive
 /// navigation and a freezed data class captures the full form state.
-// keepalive: onboarding state must survive step navigation until completion or
-// explicit invalidation.
+///
+/// Session lifetime: the form state survives step navigation until completion
+/// or an explicit reset, and never outlives the signed-in period.
 
 @ProviderFor(OnboardingController)
 final onboardingControllerProvider = OnboardingControllerProvider._();
@@ -36,8 +37,9 @@ final onboardingControllerProvider = OnboardingControllerProvider._();
 ///
 /// **When to use this pattern:** Multi-step flows where state must survive
 /// navigation and a freezed data class captures the full form state.
-// keepalive: onboarding state must survive step navigation until completion or
-// explicit invalidation.
+///
+/// Session lifetime: the form state survives step navigation until completion
+/// or an explicit reset, and never outlives the signed-in period.
 final class OnboardingControllerProvider
     extends $NotifierProvider<OnboardingController, OnboardingData> {
   /// **Pattern B: Flow controller with freezed state + Mutations**
@@ -51,15 +53,16 @@ final class OnboardingControllerProvider
   ///
   /// **When to use this pattern:** Multi-step flows where state must survive
   /// navigation and a freezed data class captures the full form state.
-  // keepalive: onboarding state must survive step navigation until completion or
-  // explicit invalidation.
+  ///
+  /// Session lifetime: the form state survives step navigation until completion
+  /// or an explicit reset, and never outlives the signed-in period.
   OnboardingControllerProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'onboardingControllerProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -81,7 +84,7 @@ final class OnboardingControllerProvider
 }
 
 String _$onboardingControllerHash() =>
-    r'2656d5ed65eb6d096351e2b9228521c338f13cf0';
+    r'756fddf21d984fa957d24ae74283f4a82463cabc';
 
 /// **Pattern B: Flow controller with freezed state + Mutations**
 ///
@@ -94,8 +97,9 @@ String _$onboardingControllerHash() =>
 ///
 /// **When to use this pattern:** Multi-step flows where state must survive
 /// navigation and a freezed data class captures the full form state.
-// keepalive: onboarding state must survive step navigation until completion or
-// explicit invalidation.
+///
+/// Session lifetime: the form state survives step navigation until completion
+/// or an explicit reset, and never outlives the signed-in period.
 
 abstract class _$OnboardingController extends $Notifier<OnboardingData> {
   OnboardingData build();

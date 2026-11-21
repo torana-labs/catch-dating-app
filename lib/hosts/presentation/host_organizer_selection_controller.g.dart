@@ -8,19 +8,34 @@ part of 'host_organizer_selection_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// The organizer the Host shell has selected for [uid].
+///
+/// Session lifetime: the selection survives branch changes while [uid] is
+/// signed in, and is dropped at sign-out or an account change. A key for an
+/// account that is not the signed-in one holds no lease.
 
 @ProviderFor(HostOrganizerSelection)
 final hostOrganizerSelectionProvider = HostOrganizerSelectionFamily._();
 
+/// The organizer the Host shell has selected for [uid].
+///
+/// Session lifetime: the selection survives branch changes while [uid] is
+/// signed in, and is dropped at sign-out or an account change. A key for an
+/// account that is not the signed-in one holds no lease.
 final class HostOrganizerSelectionProvider
     extends $NotifierProvider<HostOrganizerSelection, String?> {
+  /// The organizer the Host shell has selected for [uid].
+  ///
+  /// Session lifetime: the selection survives branch changes while [uid] is
+  /// signed in, and is dropped at sign-out or an account change. A key for an
+  /// account that is not the signed-in one holds no lease.
   HostOrganizerSelectionProvider._({
     required HostOrganizerSelectionFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
          name: r'hostOrganizerSelectionProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -60,7 +75,13 @@ final class HostOrganizerSelectionProvider
 }
 
 String _$hostOrganizerSelectionHash() =>
-    r'05ad2a3e8d400dde4bd3ab30c5b092c806cdcbd3';
+    r'a8b29d59b965690f15305f7d6f6095f81f7fbb7c';
+
+/// The organizer the Host shell has selected for [uid].
+///
+/// Session lifetime: the selection survives branch changes while [uid] is
+/// signed in, and is dropped at sign-out or an account change. A key for an
+/// account that is not the signed-in one holds no lease.
 
 final class HostOrganizerSelectionFamily extends $Family
     with
@@ -77,8 +98,14 @@ final class HostOrganizerSelectionFamily extends $Family
         name: r'hostOrganizerSelectionProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
+
+  /// The organizer the Host shell has selected for [uid].
+  ///
+  /// Session lifetime: the selection survives branch changes while [uid] is
+  /// signed in, and is dropped at sign-out or an account change. A key for an
+  /// account that is not the signed-in one holds no lease.
 
   HostOrganizerSelectionProvider call(String uid) =>
       HostOrganizerSelectionProvider._(argument: uid, from: this);
@@ -86,6 +113,12 @@ final class HostOrganizerSelectionFamily extends $Family
   @override
   String toString() => r'hostOrganizerSelectionProvider';
 }
+
+/// The organizer the Host shell has selected for [uid].
+///
+/// Session lifetime: the selection survives branch changes while [uid] is
+/// signed in, and is dropped at sign-out or an account change. A key for an
+/// account that is not the signed-in one holds no lease.
 
 abstract class _$HostOrganizerSelection extends $Notifier<String?> {
   late final _$args = ref.$arg as String;

@@ -630,7 +630,8 @@ class JournalHostResponseExportGateway implements HostResponseExportGateway {
   }
 }
 
-// keepalive: one stateless callable facade is shared by every Forms route.
+// keepalive: account-free: one stateless callable facade is shared by every
+// Forms route.
 @Riverpod(keepAlive: true)
 HostFormsRepository hostFormsRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);

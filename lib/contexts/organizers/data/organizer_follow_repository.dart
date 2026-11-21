@@ -59,8 +59,8 @@ class OrganizerFollowRepository {
   ) => OrganizerFollow.fromJson({...doc.data(), 'id': doc.id});
 }
 
-// keepalive: the follow repository is a shared Firestore facade for organiser
-// follow checks across host and public routes.
+// keepalive: account-free: the follow repository is a shared Firestore facade
+// for organiser follow checks across host and public routes.
 @Riverpod(keepAlive: true)
 OrganizerFollowRepository organizerFollowRepository(Ref ref) =>
     OrganizerFollowRepository(ref.watch(firebaseFirestoreProvider));

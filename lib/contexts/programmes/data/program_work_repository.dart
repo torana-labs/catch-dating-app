@@ -483,8 +483,8 @@ class ProgramWorkRepository {
   }
 }
 
-// keepalive: the keep-alive operations outbox watches this repository, so it
-// must outlive any individual screen subscription.
+// keepalive: account-free: the keep-alive operations outbox watches this
+// repository, so it must outlive any individual screen subscription.
 @Riverpod(keepAlive: true)
 ProgramWorkRepository programWorkRepository(Ref ref) {
   final auth = ref.watch(firebaseAuthProvider);
