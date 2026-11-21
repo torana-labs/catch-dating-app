@@ -1,7 +1,12 @@
 import {randomUUID} from "node:crypto";
 import * as admin from "firebase-admin";
+import {defineBoolean, defineString} from "firebase-functions/params";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
+import {CATCH_ENDPOINT_STOPS} from "../catchMessaging/whatsappEndpointStops";
+import {catchEndpointHash, catchStopId} from
+  "../catchMessaging/whatsappReply";
+import {supportReplyState, type SupportReplyState} from "./whatsappReplies";
 import {requireAdminRole} from "../admin/adminAuth";
 import {
   setAdminAuditLogInTransaction,
@@ -51,19 +56,14 @@ import {validateAdminUpsertSupportSavedReplyCallablePayload} from
   "../shared/generated/validators/adminUpsertSupportSavedReplyInput";
 import {
   SUPPORT_CONVERSATIONS,
+  SUPPORT_ROLES,
   SUPPORT_SAVED_REPLIES,
   SupportInboxDeps,
   defaultSupportInboxDeps,
   recordSupportMessage,
 } from "./conversations";
 
-/** Ops and support run the inbox; the owner can too. */
-export const SUPPORT_ROLES = [
-  "admin",
-  "adminOwner",
-  "safetyReviewer",
-  "support",
-] as const;
+export {SUPPORT_ROLES} from "./conversations";
 
 type Conversation = SupportConversationDocument;
 type Message = SupportConversationMessageDocument;
@@ -71,13 +71,52 @@ type Message = SupportConversationMessageDocument;
 export interface AdminSupportDeps extends SupportInboxDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   checkRateLimit?: typeof defaultCheckRateLimit;
+  /**
+   * Whether staff can send WhatsApp replies from Catch's number, and the
+   * number's ids for the STOP lookup. Absent: replies are recorded only.
+   */
+  whatsappReplies?: () => {enabled: boolean; wabaId: string;
+    phoneNumberId: string};
 }
+
+// The switch and account ids adminSendCatchWhatsappReply uses.
+const repliesEnabled = defineBoolean("CATCH_WHATSAPP_REPLIES_ENABLED",
+  {default: false});
+const catchWabaId = defineString("CATCH_WHATSAPP_WABA_ID", {default: ""});
+const catchPhoneNumberId = defineString("CATCH_WHATSAPP_PHONE_NUMBER_ID",
+  {default: ""});
 
 const defaultDeps: AdminSupportDeps = {
   ...defaultSupportInboxDeps,
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   checkRateLimit: defaultCheckRateLimit,
+  whatsappReplies: () => ({enabled: repliesEnabled.value(),
+    wabaId: catchWabaId.value().trim(),
+    phoneNumberId: catchPhoneNumberId.value().trim()}),
 };
+
+/**
+ * How staff can reply to this conversation now: send from Catch's number
+ * inside the window, or record a reply sent another way.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {Conversation} conversation The conversation.
+ * @param {AdminSupportDeps} deps Dependencies.
+ * @return {Promise<SupportReplyState>} Reply state.
+ */
+async function replyStateFor(db: FirebaseFirestore.Firestore,
+  conversation: Conversation, deps: AdminSupportDeps):
+  Promise<SupportReplyState> {
+  const config = deps.whatsappReplies?.();
+  const sendingOn = Boolean(config?.enabled &&
+    /^[0-9]{1,32}$/u.test(config.wabaId) &&
+    /^[0-9]{1,32}$/u.test(config.phoneNumberId));
+  const stopped = sendingOn && conversation.channel === "whatsapp" ?
+    (await db.collection(CATCH_ENDPOINT_STOPS).doc(catchStopId(config!,
+      catchEndpointHash(conversation.contactAddress))).get()).exists :
+    false;
+  return supportReplyState(conversation, {sendingOn, stopped,
+    nowMillis: deps.now().toMillis()});
+}
 
 function millis(value: FirebaseFirestore.Timestamp | null | undefined):
   number | null {
@@ -180,6 +219,7 @@ export async function adminGetSupportConversationHandler(
     `${SUPPORT_CONVERSATIONS}/${payload.conversationId}/messages`)
     .orderBy("at", "desc").limit(200).get())
     .docs.map((doc) => doc.data() as Message).reverse();
+  const reply = await replyStateFor(db, conversation, deps);
   await writeAdminAuditLog(db, context, {
     action: "adminGetSupportConversation",
     targetPath: `${SUPPORT_CONVERSATIONS}/${payload.conversationId}`,
@@ -193,6 +233,7 @@ export async function adminGetSupportConversationHandler(
       uid: conversation.uid,
       organizerId: conversation.organizerId,
       links: conversation.links,
+      reply,
     },
     messages: messages.map((message) => ({
       messageId: message.messageId,
@@ -201,6 +242,8 @@ export async function adminGetSupportConversationHandler(
       authorUid: message.authorUid,
       atMillis: millis(message.at) ?? 0,
       deliveryState: message.deliveryState,
+      ...(message.deliveryErrorCode !== undefined ?
+        {deliveryErrorCode: message.deliveryErrorCode} : {}),
     })),
   };
 }

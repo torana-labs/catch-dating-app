@@ -1,7 +1,8 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {getAuth} from "firebase-admin/auth";
 import {getApp} from "firebase-admin/app";
-import {getFirestore, type Firestore} from "firebase-admin/firestore";
+import {FieldValue, getFirestore, type Firestore} from
+  "firebase-admin/firestore";
 import {defineBoolean, defineString} from "firebase-functions/params";
 import {
   HttpsError,
@@ -16,6 +17,15 @@ import {validateAdminReviewCatchWhatsappInboundCallableResponse} from
   "../shared/generated/validators/adminReviewCatchWhatsappInboundOutput";
 import {validateAdminSendCatchWhatsappReplyCallableResponse} from
   "../shared/generated/validators/adminSendCatchWhatsappReplyOutput";
+import type {AdminSendCatchWhatsappReplyCallableResponse} from
+  "../shared/generated/adminSendCatchWhatsappReplyCallableResponse";
+import {catchTextSender} from "./catchSenderFactory";
+import type {CatchTextSender} from "./autoReply";
+import {
+  isSupportConversationReply,
+  sendSupportConversationReply,
+  type SupportConversationReplyConfig,
+} from "./supportConversationReply";
 import {
   authorizeCatchReply,
   parseCatchReplyInput,
@@ -46,6 +56,9 @@ export function createCatchReplyHandlers(deps: {
   prepare: (config: CatchReplyConfig) => Promise<PreparedCatchReply>;
   rateLimit: typeof checkRateLimit;
   authority?: () => CatchAppAuthorityStore;
+  /** Staff replies to a Support conversation (purpose supportConversation). */
+  supportReply?: (request: CallableRequest<unknown>) =>
+    Promise<AdminSendCatchWhatsappReplyCallableResponse>;
 }) {
   async function authorize(request: CallableRequest<unknown>) {
     const config = {...deps.config()};
@@ -83,6 +96,17 @@ export function createCatchReplyHandlers(deps: {
       return result;
     },
     send: async (request: CallableRequest<unknown>) => {
+      if (isSupportConversationReply(request.data)) {
+        if (!deps.supportReply) {
+          throw new HttpsError("failed-precondition",
+            "Support replies are unavailable.");
+        }
+        const result = await deps.supportReply(request);
+        if (!validateAdminSendCatchWhatsappReplyCallableResponse(result)) {
+          throw new HttpsError("internal", "Invalid support reply result.");
+        }
+        return result;
+      }
       await authorize(request);
       const input = parseCatchReplyInput(request.data);
       const db = deps.db();
@@ -136,6 +160,27 @@ const evidence = defineString("CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256", {
   default: "",
 });
 
+// Support conversation replies share the trial's switch, account ids and
+// pinned sender credential, but not its one-recipient scope: any WhatsApp
+// conversation inside its 24-hour window, by the support roles.
+let cachedSupportSender: {version: string;
+  sender: Promise<CatchTextSender | null>} | null = null;
+function supportSender(
+  config: SupportConversationReplyConfig
+): Promise<CatchTextSender | null> {
+  const version = credential.value().trim();
+  if (cachedSupportSender?.version !== version) {
+    const sender = catchTextSender({credentialVersion: version,
+      graphVersion: graph.value().trim(), wabaId: config.wabaId,
+      phoneNumberId: config.phoneNumberId}).catch((error: unknown) => {
+      cachedSupportSender = null;
+      throw error;
+    });
+    cachedSupportSender = {version, sender};
+  }
+  return cachedSupportSender.sender;
+}
+
 const handlers = createCatchReplyHandlers({
   config: () => ({
     enabled: enabled.value(),
@@ -153,6 +198,15 @@ const handlers = createCatchReplyHandlers({
   getUser: (uid) => getAuth().getUser(uid),
   now: Date.now,
   rateLimit: checkRateLimit,
+  supportReply: (request) => sendSupportConversationReply(request, {
+    config: () => ({enabled: enabled.value(), wabaId: waba.value().trim(),
+      phoneNumberId: phone.value().trim()}),
+    db: getFirestore,
+    now: Date.now,
+    rateLimit: checkRateLimit,
+    sender: supportSender,
+    serverTimestamp: () => FieldValue.serverTimestamp(),
+  }),
   authority: () => {
     const projectId = getApp().options.projectId;
     if (!projectId) {
