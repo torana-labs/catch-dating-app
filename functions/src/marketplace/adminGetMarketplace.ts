@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../admin/adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {
   type BigQueryClient,
   defaultBigQueryClient,

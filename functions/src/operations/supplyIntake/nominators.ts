@@ -2,8 +2,8 @@
 import * as admin from "firebase-admin";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {adminRolesFromToken, requireAdminRole} from "../../admin/adminAuth";
-import {setAdminAuditLogInTransaction} from "../../admin/adminAudit";
+import {adminRolesFromToken, requireAdminRole} from "../../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
 import {catchEndpointHash} from "../../catchMessaging/whatsappReply";
 import {hasCurrentPartnerMembership} from "../../partners/service";
 import {appCheckCallableOptions} from "../../shared/callableOptions";

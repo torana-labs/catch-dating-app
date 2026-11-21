@@ -7,7 +7,7 @@ import type {AdminListMyNominationsCallableResponse} from "../../shared/generate
 import {validateAdminListMyNominationsCallablePayload} from "../../shared/generated/validators/adminListMyNominationsInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
-import {requireAdminRole} from "../adminAuth";
+import {requireAdminRole} from "../../platform/adminAuth";
 import {INBOX_ITEMS_COLLECTION, InboxItemDocument} from "./model";
 
 /**

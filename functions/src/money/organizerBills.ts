@@ -3,8 +3,8 @@ import * as logger from "firebase-functions/logger";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {requireAdminRole, type AdminContext} from "../admin/adminAuth";
-import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
+import {requireAdminRole, type AdminContext} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {createRazorpayClient, razorpayKeySecret} from "../payments/razorpay";
 import {razorpayRuntimeProject} from "../payments/razorpayOrderOwnership";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";

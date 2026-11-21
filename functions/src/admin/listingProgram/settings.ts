@@ -11,8 +11,8 @@ import {validateAdminManageListingProgramCallablePayload} from "../../shared/gen
 import {validateAdminManageListingProgramCallableResponse} from "../../shared/generated/validators/adminManageListingProgramOutput";
 import {validateListingProgramSettingsDocument} from "../../shared/generated/validators/listingProgramSettingsDocument";
 import {discoveryFormatsForText} from "../../cityPlans/discoveryFormats";
-import {requireAdminRole, type AdminContext} from "../adminAuth";
-import {setAdminAuditLogInTransaction} from "../adminAudit";
+import {requireAdminRole, type AdminContext} from "../../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
 
 // The programmatic listings pause switch (owner decision 8, 19 Nov 2026: any
 // legal notice, any impersonation claim, or too many removals pauses the

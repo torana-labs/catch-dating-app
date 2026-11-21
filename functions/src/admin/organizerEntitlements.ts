@@ -32,8 +32,8 @@ import {
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {operationContentHash} from "../operations/durableActions";
-import {requireAdminRole} from "./adminAuth";
-import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {organizerEntitlementSkuCatalog} from
   "../shared/generated/catalogs/organizerEntitlementSkuCatalog";
 

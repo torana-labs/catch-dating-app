@@ -4,8 +4,8 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireAdminRole} from "./adminAuth";
-import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import type {AdminCreateMarketingContentDraftCallablePayload} from
   "../shared/generated/adminCreateMarketingContentDraftCallablePayload";
 import type {AdminCreateMarketingContentDraftCallableResponse} from

@@ -2,8 +2,8 @@ import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {requireAdminRole} from "./adminAuth";
-import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {AdminDecideAccessApplicationCallablePayload} from
   "../shared/generated/adminDecideAccessApplicationCallablePayload";

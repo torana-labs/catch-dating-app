@@ -9,8 +9,8 @@ import {validateAdminSearchPeopleCallablePayload} from "../shared/generated/vali
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {marketForIdOrAlias} from "../locations/marketConfig";
-import {writeAdminAuditLog} from "./adminAudit";
-import {requireAdminRole} from "./adminAuth";
+import {writeAdminAuditLog} from "../platform/adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
 
 /**
  * People search for ops: by name, phone or user id. Firestore cannot search

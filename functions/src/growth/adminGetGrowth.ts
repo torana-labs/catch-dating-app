@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import {onCall, HttpsError, type CallableRequest} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../admin/adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {organizerBillsCollection} from "../money/organizerBills";
 import {nominatorCreditsCollection} from "../money/nominatorCredits";
 import {platformCostsCollection} from "../money/platformCosts";

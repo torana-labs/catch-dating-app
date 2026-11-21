@@ -1,6 +1,6 @@
 import {validateCatchWhatsappOperatorSetupAuditDocument} from
   "../shared/generated/validators/catchWhatsappOperatorSetupAuditDocument";
-import {ADMIN_ROLE_CLAIMS} from "../admin/adminAuth";
+import {ADMIN_ROLE_CLAIMS} from "../platform/adminAuth";
 import {createHash} from "node:crypto";
 import type {Auth} from "firebase-admin/auth";
 import type {Firestore, Transaction} from "firebase-admin/firestore";

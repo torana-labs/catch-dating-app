@@ -71,7 +71,7 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {currentSalesEmployee} from "../admin/sales/callables";
-import {adminRolesFromToken} from "../admin/adminAuth";
+import {adminRolesFromToken} from "../platform/adminAuth";
 import type {PartnerActor, PartnerDeps} from "./model";
 import {
   assignPartner,

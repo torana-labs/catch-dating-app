@@ -7,11 +7,11 @@ import {CATCH_ENDPOINT_STOPS} from "../catchMessaging/whatsappEndpointStops";
 import {catchEndpointHash, catchStopId} from
   "../catchMessaging/whatsappReply";
 import {supportReplyState, type SupportReplyState} from "./whatsappReplies";
-import {requireAdminRole} from "../admin/adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {
   setAdminAuditLogInTransaction,
   writeAdminAuditLog,
-} from "../admin/adminAudit";
+} from "../platform/adminAudit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";

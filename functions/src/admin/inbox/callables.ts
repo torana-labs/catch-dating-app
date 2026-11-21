@@ -13,8 +13,8 @@ import {validateAdminGetInboxItemCallablePayload} from "../../shared/generated/v
 import {validateAdminUpdateInboxItemCallablePayload} from "../../shared/generated/validators/adminUpdateInboxItemInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
-import {setAdminAuditLogInTransaction} from "../adminAudit";
-import {requireAdminRole} from "../adminAuth";
+import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
+import {requireAdminRole} from "../../platform/adminAuth";
 import {
   INBOX_ITEMS_COLLECTION,
   INSTANT_DRAFT_REPLY_STATE,

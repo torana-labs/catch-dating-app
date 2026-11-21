@@ -3,8 +3,8 @@ import {CallableRequest, HttpsError, onCall} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {requireAdminRole} from "../admin/adminAuth";
-import {writeAdminAuditLog} from "../admin/adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {writeAdminAuditLog} from "../platform/adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import type {

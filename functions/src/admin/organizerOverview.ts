@@ -22,7 +22,7 @@ import {
   validateAdminGetOrganizerOverviewCallablePayload,
 } from "../shared/generated/validators/adminGetOrganizerOverviewInput";
 import {validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
   CommercialTermsUnavailableError,

@@ -16,8 +16,8 @@ import {
   publicationReceiptId,
 } from "../../admin/externalEventPublicationPolicy";
 import {assertAcceptedExternalEventWaivers} from "../../admin/externalEventBlockerAuthority";
-import {setAdminAuditLogInTransaction} from "../../admin/adminAudit";
-import type {AdminContext} from "../../admin/adminAuth";
+import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
+import type {AdminContext} from "../../platform/adminAuth";
 import {validateOperationWorkItem} from "../validation";
 import {supplyIntakeCollections} from "./worker";
 

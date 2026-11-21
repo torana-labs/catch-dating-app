@@ -6,8 +6,8 @@ import {
   appCheckCallableOptionsWithSecrets,
 } from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {requireAdminRole} from "../admin/adminAuth";
-import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import type {
   OrganizerClaimRequestDocument,
   OrganizerDocument,

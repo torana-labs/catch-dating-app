@@ -34,7 +34,7 @@ import {validateCatchWhatsappReplyOperationDocument} from
   "../shared/generated/validators/catchWhatsappReplyOperationDocument";
 import {validateCatchWhatsappReplyReadinessDocument} from
   "../shared/generated/validators/catchWhatsappReplyReadinessDocument";
-import {adminRolesFromToken} from "../admin/adminAuth";
+import {adminRolesFromToken} from "../platform/adminAuth";
 import {assertCatchIngressAccepted} from "./whatsappIngressStore";
 import {assertCatchAuthorityBinding} from "./whatsappAppAuthority";
 import type {
