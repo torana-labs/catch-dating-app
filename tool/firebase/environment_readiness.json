@@ -16,8 +16,7 @@
       "remoteconfig"
     ],
     "capabilities": [
-      "cross-paths",
-      "host-operator-alerts"
+      "cross-paths"
     ]
   },
   "requirements": [
@@ -691,35 +690,6 @@
       },
       "activationPolicy": "required-by-selected-consumer",
       "rotationCompatibility": "provider-overlap"
-    },
-    {
-      "id": "functions.secret.catch-host-operator-alerts-resend-key",
-      "kind": "secret-version",
-      "name": "CATCH_HOST_OPERATOR_ALERTS_RESEND_KEY",
-      "environments": [
-        "dev",
-        "prod"
-      ],
-      "requiredWhen": {
-        "anyCapability": [
-          "host-operator-alerts"
-        ]
-      },
-      "acceptedStates": [
-        "ENABLED"
-      ],
-      "owner": "host-acquisition",
-      "sourcePaths": [
-        "functions/src/hostAlerts/runtime.ts"
-      ],
-      "credentialClass": "provider-secret",
-      "binding": {
-        "kind": "firebase-secret-param",
-        "exactReference": "observed-numeric-version",
-        "identity": "observed-function-service-account"
-      },
-      "activationPolicy": "required-by-selected-consumer",
-      "rotationCompatibility": "provider-overlap"
     }
   ],
   "directReaders": [
@@ -1188,6 +1158,27 @@
       "consumers": [
         "deliverOrganizerBillNotice",
         "retryOrganizerBillNoticesHourly"
+      ],
+      "binding": {
+        "kind": "record",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "per-record-runtime-authority",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": true
+    },
+    {
+      "id": "functions.reference.operator-alerts",
+      "sourcePaths": [
+        "functions/src/hostAlerts/runtime.ts"
+      ],
+      "owner": "host-acquisition",
+      "credentialClass": "provider-envelope",
+      "consumers": [
+        "alertOperatorOnSupportMessage",
+        "alertOperatorOnSalesLead",
+        "summariseOperatorAlertOverflow"
       ],
       "binding": {
         "kind": "record",
