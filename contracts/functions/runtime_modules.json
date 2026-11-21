@@ -38,6 +38,7 @@
     "AdminGetSafetySettingsCallablePayload",
     "AdminGetDiscoverySettingsCallablePayload",
     "AdminGetSalesDemoPartnerReviewCallablePayload",
+    "AdminGetSalesPartnerAccessCallablePayload",
     "AdminGetSupportConversationCallablePayload",
     "AdminGrantOrganizerEntitlementCallablePayload",
     "AdminLiftAccountSafetyActionCallablePayload",

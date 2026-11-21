@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_revoke_sales_partner_access_response.schema.json",
+  "title": "AdminRevokeSalesPartnerAccessResponse",
+  "description": "The revoked record: one organizer's reservation when organizerId is set, or the partner's whole membership when it is null. A retried request returns the same receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "partnerUid",
+    "revision",
+    "status"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "partnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "const": "revoked"
+    }
+  },
+  "x-callable-aliases": [
+    "adminRevokeSalesPartnerAccess"
+  ]
+}
