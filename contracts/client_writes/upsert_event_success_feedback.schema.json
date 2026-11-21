@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/upsert_event_success_feedback.schema.json",
+  "title": "UpsertEventSuccessFeedbackClientWrite",
+  "description": "Client-owned Firestore set of a checked-in guest's post-event feedback at eventSuccessFeedback/{feedbackId}, whose id derives from the event and the guest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "data"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feedbackId"
+      ],
+      "properties": {
+        "feedbackId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "$ref": "../firestore/event_success_feedback.schema.json"
+    }
+  },
+  "x-firestore-operation": [
+    "create",
+    "update"
+  ],
+  "x-firestore-path": "eventSuccessFeedback/{feedbackId}",
+  "x-owner": "checked-in guest direct feedback"
+}

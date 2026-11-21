@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/delete_push_installation.schema.json",
+  "title": "DeletePushInstallationClientWrite",
+  "description": "Client-owned Firestore delete of one app installation's push address (PushInstallationStore.delete), so no sender targets that device again.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "installationId"
+      ],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "installationId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    }
+  },
+  "x-firestore-operation": "delete",
+  "x-firestore-path": "users/{uid}/pushInstallations/{installationId}",
+  "x-owner": "authenticated owner direct push installation delete"
+}

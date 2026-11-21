@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/update_host_profile.schema.json",
+  "title": "UpdateHostProfileClientWrite",
+  "description": "Client-owned Firestore merge update of hostProfiles/{uid}. saveHostProfile writes displayName, roleTitle, bio and updatedAt; ensureHostProfile on an existing profile rewrites displayName, status, createdAt and updatedAt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "data"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid"
+      ],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "updatedAt"
+      ],
+      "properties": {
+        "displayName": {
+          "$ref": "../firestore/host_profiles.schema.json#/properties/displayName"
+        },
+        "roleTitle": {
+          "$ref": "../firestore/host_profiles.schema.json#/properties/roleTitle"
+        },
+        "bio": {
+          "$ref": "../firestore/host_profiles.schema.json#/properties/bio"
+        },
+        "status": {
+          "$ref": "../firestore/host_profiles.schema.json#/properties/status"
+        },
+        "createdAt": {
+          "$ref": "../firestore/host_profiles.schema.json#/properties/createdAt"
+        },
+        "updatedAt": {
+          "$ref": "../firestore/host_profiles.schema.json#/properties/updatedAt"
+        }
+      }
+    }
+  },
+  "x-firestore-operation": "update",
+  "x-firestore-path": "hostProfiles/{uid}",
+  "x-owner": "authenticated owner direct update"
+}
