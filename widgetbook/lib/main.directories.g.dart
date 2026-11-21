@@ -245,6 +245,8 @@ import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
     as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
 import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart'
     as _widgetbook_workspace_hosts_host_send_intent_use_cases;
+import 'package:widgetbook_workspace/hosts/host_setup_claim_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_setup_claim_use_cases;
 import 'package:widgetbook_workspace/hosts/host_system_parts_use_cases.dart'
     as _widgetbook_workspace_hosts_host_system_parts_use_cases;
 import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
@@ -9629,6 +9631,49 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_live_tools_use_cases
                             .hostLiveToolsScreenUseCase,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Onboarding',
+            children: [
+              _widgetbook.WidgetbookFolder(
+                name: 'Is this you?',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostSetupClaimFormBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Name and role, and a failed send',
+                        builder:
+                            _widgetbook_workspace_hosts_host_setup_claim_use_cases
+                                .hostSetupClaimFormStates,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostSetupClaimSentBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'What the page has and needs',
+                        builder:
+                            _widgetbook_workspace_hosts_host_setup_claim_use_cases
+                                .hostSetupClaimSentStates,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostSetupFoundBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Two pages found, one already claimed',
+                        builder:
+                            _widgetbook_workspace_hosts_host_setup_claim_use_cases
+                                .hostSetupFoundStates,
+                      ),
+                    ],
                   ),
                 ],
               ),
