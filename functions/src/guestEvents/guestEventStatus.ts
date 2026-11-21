@@ -3,14 +3,14 @@ import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {assertUnpartitionedAdmission} from
   "../organizerFormAdmission/admissionEligibility";
 import {eventParticipationId} from "../shared/relationshipDocuments";
-import {validateEventParticipationDocument} from
-  "../shared/generated/validators/eventParticipationDocument";
+import {validateEventBookingDocument} from
+  "../shared/generated/validators/eventBookingDocument";
 import {validateEventAttendeeDocument} from
   "../shared/generated/validators/eventAttendeeDocument";
 import {validateOrganizerApplicationDocument} from
   "../shared/generated/validators/organizerApplicationDocument";
 import type {EventAttendeeDocument, EventDocument,
-  EventParticipationDocument, GuestEventStatusDocument,
+  EventBookingDocument, GuestEventStatusDocument,
   OrganizerApplicationDocument} from "../shared/generated/firestoreAdminTypes";
 import {organizerApplicationAccess} from
   "../organizers/organizerApplicationAccess";
@@ -83,7 +83,7 @@ export async function guestEventStatus(params: {
       tx.get(db.collection("organizerEventOfferRecipients")
         .where("recipientUid", "==", uid).where("eventId", "==", eventId)
         .limit(21)),
-      tx.get(db.collection("eventParticipations")
+      tx.get(db.collection("eventBookings")
         .doc(eventParticipationId(eventId, uid))),
       tx.get(db.collection(GUEST_PAYMENTS)
         .where("purpose", "==", "offer")
@@ -98,9 +98,9 @@ export async function guestEventStatus(params: {
     offerAmbiguous: false, applicationStatus: null,
     participationStatus: null, eventCard: null,
     updatedAtMillis: nowMillis};
-  const participation = native.data() as EventParticipationDocument |
+  const participation = native.data() as EventBookingDocument |
     undefined;
-  if (participation && validateEventParticipationDocument(participation) &&
+  if (participation && validateEventBookingDocument(participation) &&
       participation.eventId === eventId && participation.uid === uid &&
       participation.organizerId === organizerId) {
     if (participation.status !== "deleted") {

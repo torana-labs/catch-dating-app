@@ -111,7 +111,7 @@ test("a Catch booking registers the guest and shows the runtime",
     const h = await publicFixture();
     h.event.runtimeAccess = {enabled: true, publicRuntimeId: "runtime1",
       walkInPolicy: "deny", termsVersion: "v1"};
-    h.store.put(`eventParticipations/${eventParticipationId(eventId, uid)}`, {
+    h.store.put(`eventBookings/${eventParticipationId(eventId, uid)}`, {
       eventId, organizerId: h.event.organizerId, uid, status: "signedUp",
       createdAt: Timestamp.fromMillis(now - 2000),
       updatedAt: Timestamp.fromMillis(now - 1000),
@@ -126,7 +126,7 @@ test("a Catch booking registers the guest and shows the runtime",
 
 function putBooking(h: Awaited<ReturnType<typeof publicFixture>>,
   status: string) {
-  h.store.put(`eventParticipations/${eventParticipationId(eventId, uid)}`, {
+  h.store.put(`eventBookings/${eventParticipationId(eventId, uid)}`, {
     eventId, organizerId: h.event.organizerId, uid, status,
     createdAt: Timestamp.fromMillis(now - 2000),
     updatedAt: Timestamp.fromMillis(now - 1000),

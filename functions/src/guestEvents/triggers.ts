@@ -152,7 +152,7 @@ const versions = (event: Written) =>
 const options = {retry: true, memory: "256MiB" as const};
 
 export const onGuestEventStatusParticipationWritten = onDocumentWritten({
-  ...options, document: "eventParticipations/{documentId}",
+  ...options, document: "eventBookings/{documentId}",
 }, (event) => refreshPairs(guestEventStatusPairs(...versions(event),
   "eventId", "uid", ["status", "organizerId"])));
 

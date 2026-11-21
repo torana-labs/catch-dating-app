@@ -172,7 +172,7 @@ Future<void> _seedParticipation(
 }) async {
   final now = DateTime(2026, 5, 1, 10);
   await firestore
-      .collection('eventParticipations')
+      .collection('eventBookings')
       .doc(eventParticipationId(eventId: eventId, uid: uid))
       .set({
         'eventId': eventId,

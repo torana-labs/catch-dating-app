@@ -3659,6 +3659,20 @@
       ]
     },
     {
+      "collectionGroup": "eventBookings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "hostApprovalStatus",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "providerSyncRuns",
       "queryScope": "COLLECTION",
       "fields": [
@@ -4275,7 +4289,35 @@
       ]
     },
     {
+      "collectionGroup": "eventBookings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "eventParticipations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventBookings",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -4308,6 +4350,24 @@
     },
     {
       "collectionGroup": "eventParticipations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "waitlistedAt",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventBookings",
       "queryScope": "COLLECTION",
       "fields": [
         {
