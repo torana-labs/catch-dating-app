@@ -251,7 +251,6 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
     ref.invalidate(watchEventProvider(intent.eventId));
     ref.invalidate(swipeCandidatesProvider(intent.eventId));
     ref.invalidate(uidProvider);
-    ref.invalidate(eventRecapViewModelProvider(intent.eventId));
   }
 
   void _retryRosterProfiles(Iterable<String> attendeeIds) {

@@ -264,11 +264,10 @@ class _HostResponseOfferScreenState
                         .read(externalLinkControllerProvider)
                         .openExternal(uri),
                     targets: ref.read(hostOfferEventTargetsGatewayProvider),
-                    getResponseDetail: (id) => ref.refresh(
-                      hostFormResponseDetailProvider(
-                        organizerId: widget.organizerId,
-                        responseId: id,
-                      ).future,
+                    // A read-back before a command: always the server's
+                    // current version, never a kept one.
+                    getResponseDetail: ref.read(
+                      hostFormResponseReadBackProvider(widget.organizerId),
                     ),
                     isResponseReviewed: (detail) async {
                       final id = detail.applicationId;

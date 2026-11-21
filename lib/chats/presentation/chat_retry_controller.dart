@@ -10,7 +10,7 @@ class ChatRetryController {
   final WidgetRef ref;
   final String matchId;
 
-  void run(HostChatRetryIntent intent) {
+  void retry(HostChatRetryIntent intent) {
     switch (intent) {
       case HostChatRetryIntent.reloadMatch:
         ref.invalidate(matchStreamProvider(matchId));

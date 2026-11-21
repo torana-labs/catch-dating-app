@@ -158,7 +158,6 @@ class _HostWhatsappSetupSectionState
           organizerId: widget.organizer.id,
           result: result,
         );
-    ref.invalidate(hostMessagingSetupProvider(widget.organizer.id));
   });
 
   Future<void> _syncTemplates(String connectionId) => _run(() async {
@@ -168,7 +167,6 @@ class _HostWhatsappSetupSectionState
           organizerId: widget.organizer.id,
           connectionId: connectionId,
         );
-    ref.invalidate(hostMessagingSetupProvider(widget.organizer.id));
   });
 
   Future<void> _disconnectWhatsapp(String connectionId) => _run(() async {
@@ -178,7 +176,6 @@ class _HostWhatsappSetupSectionState
           organizerId: widget.organizer.id,
           connectionId: connectionId,
         );
-    ref.invalidate(hostMessagingSetupProvider(widget.organizer.id));
   });
 
   Future<void> _sendTest(
@@ -203,7 +200,6 @@ class _HostWhatsappSetupSectionState
           toE164: _testPhoneController.text.trim(),
           templateVariables: variables,
         );
-    ref.invalidate(hostMessagingSetupProvider(widget.organizer.id));
     if (mounted) {
       showCatchNotice(context, context.l10n.hostsHostAudienceTestPending);
     }

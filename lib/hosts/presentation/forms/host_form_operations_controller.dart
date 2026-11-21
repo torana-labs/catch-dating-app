@@ -216,6 +216,18 @@ Future<HostFormResponseDetail> hostFormResponseDetail(
     .read(hostFormsRepositoryProvider)
     .getResponseDetail(organizerId: organizerId, responseId: responseId);
 
+/// A read-back before a command: the server's current version of one of
+/// [organizerId]'s responses, never a kept one.
+@riverpod
+Future<HostFormResponseDetail> Function(String responseId)
+hostFormResponseReadBack(Ref ref, String organizerId) {
+  final repository = ref.watch(hostFormsRepositoryProvider);
+  return (responseId) => repository.getResponseDetail(
+    organizerId: organizerId,
+    responseId: responseId,
+  );
+}
+
 /// Applies the immutable response version's server-side conversion rules.
 @riverpod
 Future<bool> hostFormResponseCanApply(
