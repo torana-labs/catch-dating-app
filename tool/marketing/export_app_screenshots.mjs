@@ -369,9 +369,8 @@ function validateEntryPlacement(capture, entry, catalog) {
 // through by reference (builder, providerOverrides, drive, ...), so the
 // names and numbers it shows are the screen's. Only its identity, device and
 // fragment are its own.
-const fragmentOwnArguments = new Set(["id", "routeIds", "marketingFixtureKeys", "device", "fragment"]);
-
 function validateFragmentEntry(capture, entry, manifest, catalog) {
+  const fragmentOwnArguments = new Set(["id", "routeIds", "marketingFixtureKeys", "device", "fragment"]);
   const screen = (manifest.captures ?? []).find(other => other.id === capture.fragmentOf);
   const screenEntry = screen && !isWebCapture(screen) ? findCatalogEntry(catalog, screen.fixtureKey) : null;
   if (!screenEntry) return [`${capture.id}: fragmentOf must name the app capture it is cut from.`];
