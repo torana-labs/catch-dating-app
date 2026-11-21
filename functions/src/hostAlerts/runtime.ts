@@ -15,7 +15,7 @@ import {
 /**
  * Staff alerts for new support conversations and new leads. Everything is
  * switched off until billingNoticeSettings/platform carries operatorAlerts
- * with enabled true (docs/backend_operation_catalog.md, "Operator alerts"),
+ * with enabled true (docs/data_contracts.md, "Operator alerts"),
  * so deploying these Functions emails nobody. The email credential is the
  * pinned catch.transactional-email-credential/v1 version that settings
  * document already names for bill notices.
