@@ -112,12 +112,15 @@
 .fragment[data-side="start"] { --catch-hero-fragment-nudge: calc(-1 * var(--catch-space-s2)); }
 .fragment[data-side="end"] { --catch-hero-fragment-nudge: var(--catch-space-s2); }
 
+/* The raised shadow, and a faint light rim so a cut-out of a dark screen still lifts off it. */
 .fragmentImage {
   display: block;
   width: 100%;
   height: auto;
   border-radius: var(--catch-radius-lg);
-  box-shadow: var(--catch-website-shadow-chip);
+  box-shadow:
+    0 0 0 var(--catch-stroke-hairline) color-mix(in srgb, var(--catch-palette-white) 18%, transparent),
+    var(--catch-website-shadow-chip);
 }
 
 /*
