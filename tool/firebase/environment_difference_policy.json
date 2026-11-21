@@ -19,8 +19,6 @@
     "ANTHROPIC_ORGANIZATION_ID": {"class": "feature-gate", "note": "The Anthropic organization UUID. One organization serves every environment, so a difference is a misconfiguration; each environment differs only in its PROGRAM_ASSISTANT_FEDERATION_RULE_ID."},
     "APP_ENV": {"class": "identity"},
     "CATCH_HELP_URL": {"class": "feature-gate"},
-    "CATCH_HOST_OPERATOR_ALERTS_ENABLED": {"class": "feature-gate"},
-    "CATCH_HOST_OPERATOR_ALERTS_SINCE": {"class": "feature-gate"},
     "CATCH_INSTAGRAM_ACCOUNT_ID": {"class": "identity"},
     "CATCH_INSTAGRAM_CLAIMS_ENABLED": {"class": "feature-gate"},
     "CATCH_INSTAGRAM_DISCOVERY_CREDENTIAL_VERSION": {"class": "identity"},
@@ -109,6 +107,8 @@
   },
   "retired": {
     "CATCH_EVENT_OFFER_INTEGRATION_READY": {"replacedBy": "always on", "allowedIn": []},
+    "CATCH_HOST_OPERATOR_ALERTS_ENABLED": {"replacedBy": "operatorAlerts.enabled in the billingNoticeSettings/platform document", "allowedIn": []},
+    "CATCH_HOST_OPERATOR_ALERTS_SINCE": {"replacedBy": "operatorAlerts.enabled in the billingNoticeSettings/platform document", "allowedIn": []},
     "CATCH_PRIVATE_EVENT_PRIVACY_READY": {"replacedBy": "always on", "allowedIn": []},
     "CATCH_PRIVATE_EVENT_SEAT_WRITERS_READY": {"replacedBy": "always on", "allowedIn": []},
     "CATCH_WEDDING_PHONE_IMPORT_READY": {"replacedBy": "always on", "allowedIn": []},

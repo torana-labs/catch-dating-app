@@ -6310,6 +6310,32 @@ a bill was issued. Both are server-only. The email links the Razorpay invoice
 and the host billing website for that organizer
 (`/host/billing/?organizerId={organizerId}`); the push carries no link.
 
+Operator alerts. The same settings document can turn on staff emails about new
+support conversations and leads (`functions/src/hostAlerts`). Its optional
+`operatorAlerts` field is `{enabled, recipients, from, hourlyCap}`:
+`recipients` is one to five staff addresses sharing one email, `from` an
+address on the verified sender domain (for example
+`alerts@notify.catchdates.com`) and `hourlyCap` at most 60. While the field is
+absent, `enabled` is false or `email` is null, the triggers read the settings
+document and stop: deploying them emails nobody. To switch alerts on, add the
+field to the existing document with `enabled: true` (Firestore console or an
+owner script); setting `enabled: false` switches them off again. An alert goes
+out within a minute of a new `supportConversations` thread, of an inbound
+message after four hours with none in that thread (staff notes, replies and
+emails staff logged by hand do not count), or of a new `salesInboundIntents`
+row from a Meta lead form or the website (Host applications, the weddings
+pilot and website leads; partner nominations, city-alert sign-ups and internal
+QA rows are skipped). Each email gives what it is, the sender's or business's
+name, the channel, a preview of at most 140 characters, the India time and the
+Admin link (`/support/{conversationId}` or `/inbox/enquiry-{intentId}`); the
+subject never carries a phone number or email address. One
+`hostOperatorAlerts/{alertId}` receipt per source (ids, links and outcome only)
+is written before sending, so a retried trigger never sends twice and an
+uncertain send is never repeated. Each UTC clock hour counts its sends in
+`hostOperatorAlerts/hourly/windows/{yyyyMMddHH}`; past `hourlyCap` alerts are
+held, and `summariseOperatorAlertOverflow` emails one list of their links at
+minute 2 of the next hour.
+
 Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
 owner reads their own through `listOrganizerBills` (the host billing website),
 which leaves out unsent bills and everything only staff need (reminders,
