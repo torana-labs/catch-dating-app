@@ -77,6 +77,8 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
   };
   const seeds = new Map();
   const sources = [];
+  // The native font of the seeds, when any were taken: the font CI renders with.
+  let seedFont = null;
   {
     const repositoryId = (await request(`repos/${repository}`)).id;
     const workflowIds = new Map();
@@ -124,8 +126,28 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
         sources.push({artifactId: artifact.id, runId: producer.id, event: producer.event, sourceSha: producer.head_sha});
       }
     }
+    seedFont = font;
   }
   let renderIds = [...stale()];
+  // A committed PNG can carry another machine's native font: a local render
+  // committed by hand keeps its inputs current, so nothing above calls it
+  // stale. Reused beside seeds from CI's runners it would mix two fonts in one
+  // bundle, which the reuse job refuses ("Reused captures mix native fonts").
+  // Send it to the renderer, which stamps the runner's font. Without seeds,
+  // the font most committed PNGs share is the one the bundle keeps.
+  const committedFonts = new Map();
+  for (const capture of captures) {
+    if (renderIds.includes(capture.id) || seeds.has(capture.id)) continue;
+    try {
+      committedFonts.set(capture.id, readProvenance(fs.readFileSync(path.join(root, capture.sourcePath))).nativeFontSha256);
+    } catch { /* No provenance: stale() already sent it to the renderer. */ }
+  }
+  const counts = new Map();
+  for (const value of committedFonts.values()) counts.set(value, (counts.get(value) ?? 0) + 1);
+  const bundleFont = seedFont ?? [...counts].sort((left, right) => right[1] - left[1])[0]?.[0] ?? null;
+  for (const [id, committedFont] of committedFonts) {
+    if (bundleFont && committedFont !== bundleFont) renderIds.push(id);
+  }
   let nativeChanged = false;
   if (eventName === "schedule") {
     // Linux cannot see the macOS font or image, so the nightly asks the probe.
