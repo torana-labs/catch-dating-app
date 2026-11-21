@@ -48,7 +48,7 @@ const flight = (kind: Travel["kind"], flightNumber: string, from: string, to: st
 });
 
 // The team flies together from Bengaluru and back.
-const teamFlights = [flight("inbound", "AI 1871", "BLR", "GOI", at.friLands), flight("outbound", "AI 1872", "GOI", "BLR", at.sunLeaves)];
+const teamFlights = [flight("inbound", "ZZ 1871", "BLR", "GOI", at.friLands), flight("outbound", "ZZ 1872", "GOI", "BLR", at.sunLeaves)];
 const member = (guestId: string, displayName: string, travel: Travel[]) => ({guestId, displayName, functions: offsiteFunctions, travel});
 
 const offsiteView: View = {
