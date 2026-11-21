@@ -273,6 +273,20 @@ test("a secret named by anything but a literal stops the build", async (t) => {
   await assert.rejects(build(), /lib\/beta\/b\.js calls defineSecret without a literal name/u);
 });
 
+test("a module that loads only the shared Operations runtime gets the shared trees and no workflow", async (t) => {
+  const {root, build} = codebaseFixture(t, {betaSource: "const path = require(\"node:path\");\n" +
+    "const load = (relative) => path.resolve(__dirname, \"../operations/src\", relative);\n" +
+    "exports.b = load(\"platform/engine.mjs\");\nexports.b2 = 2;\n"});
+  const summary = await build();
+  assert.deepEqual(summary.find((entry) => entry.codebase === "two"),
+    {codebase: "two", functions: 2, files: 1, runtime: [], packages: ["ajv", "firebase-admin"]});
+  const two = path.join(root, "build/codebases/two");
+  const files = fs.readdirSync(path.join(two, "lib"), {recursive: true})
+    .filter((file) => fs.statSync(path.join(two, "lib", file)).isFile()).sort();
+  assert.deepEqual(files, ["beta/b.js", "contracts/operations/schema.json", "operations/src/platform/engine.mjs"]
+    .map((file) => file.split("/").join(path.sep)));
+});
+
 test("a module that reads files beside itself must name the workflow it loads", async (t) => {
   const {build} = codebaseFixture(t, {betaSource: "exports.b = require(\"node:path\").join(__dirname, \"x\");\nexports.b2 = 2;\n"});
   await assert.rejects(build(), /lib\/beta\/b\.js reads files beside itself but names no Operations workflow/u);
