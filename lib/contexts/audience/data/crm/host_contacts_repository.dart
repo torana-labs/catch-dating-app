@@ -141,6 +141,13 @@ class HostContactsRepository {
     String contactId,
   ) => _detail.watchSummary(organizerId, contactId);
 
+  /// Up to [ReadLimitPolicy.multiIdChunk] people's directory rows by id,
+  /// while listened to; an id with no row is left out.
+  Stream<Map<String, HostContactSummaryRow>> watchContactSummaries(
+    String organizerId,
+    List<String> contactIds,
+  ) => _detail.watchSummaries(organizerId, contactIds);
+
   /// One person's traits, revenue and newest event rows, while listened to.
   Stream<HostContactDetailFacts> watchContactFacts(
     String organizerId,

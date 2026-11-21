@@ -17,6 +17,7 @@ part of 'organizer_detail_view_model.dart';
 /// route and schedule. Reviews, profile, and membership state are secondary;
 /// they hydrate the detail screen when available without hiding newly-created
 /// events behind the route's placeholder body.
+// provider-graph: high-fan-out:organizerDetailViewModelProvider accepted -- One organizer page read: the organizer, its events, reviews, the viewer's identity, profile and follow, and the screen clock that decides which events are upcoming, so a capture or test can fix the time.
 
 @ProviderFor(organizerDetailViewModel)
 final organizerDetailViewModelProvider = OrganizerDetailViewModelFamily._();
@@ -30,6 +31,7 @@ final organizerDetailViewModelProvider = OrganizerDetailViewModelFamily._();
 /// route and schedule. Reviews, profile, and membership state are secondary;
 /// they hydrate the detail screen when available without hiding newly-created
 /// events behind the route's placeholder body.
+// provider-graph: high-fan-out:organizerDetailViewModelProvider accepted -- One organizer page read: the organizer, its events, reviews, the viewer's identity, profile and follow, and the screen clock that decides which events are upcoming, so a capture or test can fix the time.
 
 final class OrganizerDetailViewModelProvider
     extends
@@ -48,6 +50,7 @@ final class OrganizerDetailViewModelProvider
   /// route and schedule. Reviews, profile, and membership state are secondary;
   /// they hydrate the detail screen when available without hiding newly-created
   /// events behind the route's placeholder body.
+  // provider-graph: high-fan-out:organizerDetailViewModelProvider accepted -- One organizer page read: the organizer, its events, reviews, the viewer's identity, profile and follow, and the screen clock that decides which events are upcoming, so a capture or test can fix the time.
   OrganizerDetailViewModelProvider._({
     required OrganizerDetailViewModelFamily super.from,
     required String super.argument,
@@ -103,7 +106,7 @@ final class OrganizerDetailViewModelProvider
 }
 
 String _$organizerDetailViewModelHash() =>
-    r'e50620be7c7c85516e5cf67a3b69c8cbe9006563';
+    r'9c33c925684ae043757a7fd3c3848bf1dacf15fc';
 
 /// **Pattern D: View-model provider**
 ///
@@ -114,6 +117,7 @@ String _$organizerDetailViewModelHash() =>
 /// route and schedule. Reviews, profile, and membership state are secondary;
 /// they hydrate the detail screen when available without hiding newly-created
 /// events behind the route's placeholder body.
+// provider-graph: high-fan-out:organizerDetailViewModelProvider accepted -- One organizer page read: the organizer, its events, reviews, the viewer's identity, profile and follow, and the screen clock that decides which events are upcoming, so a capture or test can fix the time.
 
 final class OrganizerDetailViewModelFamily extends $Family
     with
@@ -139,6 +143,7 @@ final class OrganizerDetailViewModelFamily extends $Family
   /// route and schedule. Reviews, profile, and membership state are secondary;
   /// they hydrate the detail screen when available without hiding newly-created
   /// events behind the route's placeholder body.
+  // provider-graph: high-fan-out:organizerDetailViewModelProvider accepted -- One organizer page read: the organizer, its events, reviews, the viewer's identity, profile and follow, and the screen clock that decides which events are upcoming, so a capture or test can fix the time.
 
   OrganizerDetailViewModelProvider call(String organizerId) =>
       OrganizerDetailViewModelProvider._(argument: organizerId, from: this);

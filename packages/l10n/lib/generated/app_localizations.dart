@@ -1981,18 +1981,6 @@ abstract class AppLocalizations {
   /// **'Privacy policy'**
   String get authLegalPrivacyLink;
 
-  /// Ad-matching notice where a person gives their phone or email: app sign-up and Catch Host setup. Same words as the website notice (website/src/content/legal.ts); see docs/ads_conversion_spec.md, Ad-matching notice and opt-out.
-  ///
-  /// In en, this message translates to:
-  /// **'We share a coded version of your contact details with Google and Meta to measure our ads and choose who sees them.'**
-  String get adMatchingNotice;
-
-  /// Link under the ad-matching notice that opens the advertising section of the privacy policy.
-  ///
-  /// In en, this message translates to:
-  /// **'How it works and how to opt out'**
-  String get adMatchingNoticeLink;
-
   /// Heading on the one-time-code verification step.
   ///
   /// In en, this message translates to:
@@ -36978,6 +36966,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nobody matches yet.'**
   String get hostPeopleGroupMatchEmpty;
+
+  /// Hand-picked group section title: how many people it holds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person} other{{people} people}}'**
+  String hostPeopleGroupMembers({required int count, required String people});
+
+  /// Hand-picked group with no people.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is in this group yet.'**
+  String get hostPeopleGroupMembersEmpty;
+
+  /// Hand-picked group people read failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t list this group'**
+  String get hostPeopleGroupMembersError;
+
+  /// Hand-picked group: a later page of people failed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t list more people.'**
+  String get hostPeopleGroupMembersMoreError;
+
+  /// Hand-picked group row for a contact that was merged, removed or hidden.
+  ///
+  /// In en, this message translates to:
+  /// **'No longer in your contacts'**
+  String get hostPeopleGroupMemberGone;
+
+  /// Why a hand-picked group row has no person.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged into another contact or removed'**
+  String get hostPeopleGroupMemberGoneBody;
 
   /// Saved group preview failure title.
   ///

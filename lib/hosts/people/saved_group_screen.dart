@@ -12,7 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// A saved group: its rules, who matches now, and Save group or Delete.
+/// A saved group: its rules, who matches now, and Save group or Delete. A
+/// hand-picked group lists its people instead, a page at a time.
 ///
 /// It watches [hostSavedGroupControllerProvider] and keeps the draft (the
 /// At least value, and the name while the group is new). Save runs the
@@ -41,6 +42,9 @@ class _HostSavedGroupScreenState extends ConsumerState<HostSavedGroupScreen> {
   int? _atLeast;
   String? _createRequestId;
 
+  /// Pages of a hand-picked group's people listed so far.
+  int _memberPages = 1;
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +61,11 @@ class _HostSavedGroupScreenState extends ConsumerState<HostSavedGroupScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = ref.watch(
-      hostSavedGroupControllerProvider(widget.organizerId, widget.audienceId),
+      hostSavedGroupControllerProvider(
+        widget.organizerId,
+        widget.audienceId,
+        memberPages: _memberPages,
+      ),
     );
     listenToCatchMutationErrors(
       context,
@@ -111,6 +119,7 @@ class _HostSavedGroupScreenState extends ConsumerState<HostSavedGroupScreen> {
           name: creating ? _name : null,
           busy: busy,
           onAtLeast: (value) => setState(() => _atLeast = value),
+          onMoreMembers: () => setState(() => _memberPages++),
           onOpenPerson: (person) => context.pushNamed(
             Routes.hostCustomerDetailScreen.name,
             pathParameters: {'contactId': person.contactId},

@@ -406,3 +406,24 @@ final savedGroupState = HostSavedGroupState(
     evaluatedAt: DateTime(2026, 10, 27),
   ),
 );
+
+/// A hand-picked group of [count] people, ids p0, p1 and on.
+HostSavedAudience handPickedGroupAudience(int count) => HostSavedAudience(
+  organizerId: peopleOrganizer.id,
+  audienceId: 'picked',
+  name: 'Quiz captains',
+  status: 'active',
+  definition: HostSavedAudienceDefinition(
+    join: HostSavedAudienceJoin.all,
+    predicates: [
+      HostSavedAudienceStaticMembers([for (var i = 0; i < count; i++) 'p$i']),
+    ],
+  ),
+  definitionHash: 'hash',
+  definitionVersion: 1,
+  revision: 2,
+  lastPreviewMatchCount: count,
+  lastPreviewAt: DateTime(2026, 10, 20),
+  createdAt: DateTime(2026, 9),
+  updatedAt: DateTime(2026, 10, 20),
+);

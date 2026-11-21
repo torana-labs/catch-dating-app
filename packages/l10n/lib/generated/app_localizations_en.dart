@@ -1209,13 +1209,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authLegalPrivacyLink => 'Privacy policy';
 
   @override
-  String get adMatchingNotice =>
-      'We share a coded version of your contact details with Google and Meta to measure our ads and choose who sees them.';
-
-  @override
-  String get adMatchingNoticeLink => 'How it works and how to opt out';
-
-  @override
   String get authOtpTitle => 'Enter the code';
 
   @override
@@ -22748,6 +22741,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostPeopleGroupMatchEmpty => 'Nobody matches yet.';
+
+  @override
+  String hostPeopleGroupMembers({required int count, required String people}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$people people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostPeopleGroupMembersEmpty => 'Nobody is in this group yet.';
+
+  @override
+  String get hostPeopleGroupMembersError => 'We couldn’t list this group';
+
+  @override
+  String get hostPeopleGroupMembersMoreError => 'We couldn’t list more people.';
+
+  @override
+  String get hostPeopleGroupMemberGone => 'No longer in your contacts';
+
+  @override
+  String get hostPeopleGroupMemberGoneBody =>
+      'Merged into another contact or removed';
 
   @override
   String get hostPeopleGroupCountError => 'We couldn’t count this group';
