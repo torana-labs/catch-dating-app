@@ -49,7 +49,6 @@
     "export functions/src/transport/flightProviderConfig.ts defaultAlertBaseUrl",
     "export functions/src/transport/programTravel.ts upsertProgramTravelPartyHandler",
     "file functions/src/eventSuccess/operations/contracts.typecheck.ts",
-    "file functions/src/hostAlerts/runtime.ts",
     "file functions/src/operations/index.ts",
     "type functions/src/admin/accessApplications.ts AccessApplicationDecision",
     "type functions/src/catchMessaging/whatsappReadinessEvidence.ts CatchReadinessEvidencePublisher",

@@ -2,64 +2,79 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_operator_alerts.schema.json",
   "title": "HostOperatorAlertDocument",
-  "description": "Private operator notice receipt keyed by the original accepted Host lead. No applicant details or contact data.",
+  "description": "One staff alert receipt per source: a new support conversation, a support message after four quiet hours, or a new lead. Created before any email is sent, so a retried trigger never sends twice. Holds ids, links and the outcome only: no names, contact details or message text.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostOperatorAlerts",
-  "x-firestore-path": "hostOperatorAlerts/{eventId}",
-  "x-document-id-field": "eventId",
-  "x-owner": "onHostApplicationAccepted and dispatchHostApplicationAlerts",
+  "x-firestore-path": "hostOperatorAlerts/{alertId}",
+  "x-document-id-field": "alertId",
+  "x-owner": "Operator alert triggers (functions/src/hostAlerts)",
   "required": [
     "schemaVersion",
-    "classification",
-    "eventId",
-    "intentId",
-    "acceptedAt",
+    "alertId",
+    "kind",
+    "sourcePath",
+    "adminPath",
+    "windowId",
+    "occurredAtMillis",
     "status",
-    "attempts",
-    "attemptId",
-    "providerMessageId"
+    "acceptedCount",
+    "providerMessageId",
+    "createdAtMillis",
+    "updatedAtMillis"
   ],
   "properties": {
     "schemaVersion": {
-      "const": 1
+      "const": 2
     },
-    "classification": {
-      "const": "sales_private"
-    },
-    "eventId": {
+    "alertId": {
       "type": "string",
-      "pattern": "^host_lead_[0-9]{13}_[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$"
+      "pattern": "^(support|lead)_[a-f0-9]{64}$",
+      "description": "lead_<intentId>, or support_ and the SHA-256 of the message path."
     },
-    "intentId": {
+    "kind": {
+      "enum": [
+        "supportConversation",
+        "supportReturn",
+        "metaLead",
+        "websiteHostApplication",
+        "websiteLead"
+      ],
+      "description": "supportConversation: the first message of a new conversation. supportReturn: an inbound message after four hours with none. The rest are new salesInboundIntents by source."
+    },
+    "sourcePath": {
       "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
+      "pattern": "^(salesInboundIntents/[a-f0-9]{64}|supportConversations/(whatsapp|instagram|email)-[a-f0-9]{64}/messages/[A-Za-z0-9_-]{8,160})$"
     },
-    "acceptedAt": {
+    "adminPath": {
+      "type": "string",
+      "pattern": "^/(support/(whatsapp|instagram|email)-[a-f0-9]{64}|inbox/enquiry-[a-f0-9]{64})$",
+      "description": "The Admin route the email links to."
+    },
+    "windowId": {
+      "type": "string",
+      "pattern": "^[0-9]{10}$",
+      "description": "The UTC clock hour (yyyyMMddHH) whose hourly cap this alert counted against."
+    },
+    "occurredAtMillis": {
       "type": "integer",
       "minimum": 1
     },
     "status": {
       "enum": [
-        "pending",
         "sending",
-        "accepted",
+        "sent",
         "failed",
         "unknown",
-        "stopped"
-      ]
+        "overflow"
+      ],
+      "description": "sending: reserved, email in flight (left as is if the run dies, never resent). overflow: over the hourly cap, listed in that hour's summary instead. unknown: the provider may or may not have sent it; never retried."
     },
-    "attempts": {
+    "acceptedCount": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 5
-    },
-    "attemptId": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^[a-f0-9-]{36}$"
+      "maximum": 5,
+      "description": "Recipients on the accepted email (0 until accepted)."
     },
     "providerMessageId": {
       "type": [
@@ -68,33 +83,13 @@
       ],
       "pattern": "^[A-Za-z0-9_-]{1,128}$"
     },
-    "nextAttemptAt": {
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updatedAtMillis": {
       "type": "integer",
       "minimum": 1
     }
-  },
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "status": {
-            "enum": [
-              "pending",
-              "sending"
-            ]
-          }
-        }
-      },
-      "then": {
-        "required": [
-          "nextAttemptAt"
-        ]
-      },
-      "else": {
-        "properties": {
-          "nextAttemptAt": false
-        }
-      }
-    }
-  ]
+  }
 }
