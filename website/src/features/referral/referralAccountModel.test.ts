@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import {liveOwnedOrganizersPage, referralAccount, type ReferralAccountUser} from "./referralAccountModel";
+import {liveOwnedOrganizers, referralAccount, type ReferralAccountUser} from "./referralAccountModel";
 
 const user: ReferralAccountUser = {uid: "uid-asha", phoneNumber: "+919876543210", isAnonymous: false};
 const kestrel = {organizerId: "org-kestrel", name: "Kestrel Supper Club"};
@@ -27,16 +27,13 @@ describe("referralAccount", () => {
   });
 });
 
-describe("liveOwnedOrganizersPage", () => {
-  it("keeps live host pages, leaves out archived and malformed entries, and reads the cursor", () => {
-    expect(liveOwnedOrganizersPage({organizers: [
+describe("liveOwnedOrganizers", () => {
+  it("keeps live host pages, leaves out archived ones, and names unnamed pages by id", () => {
+    expect(liveOwnedOrganizers([
       {organizerId: "org-kestrel", name: "Kestrel Supper Club", archived: false},
       {organizerId: "org-old", name: "Old Club", archived: true},
       {organizerId: "org-unnamed", name: "", archived: false},
-      {name: "No id"}, null, "org-text",
-    ], nextAfterOrganizerId: "org-unnamed"})).toEqual({
-      organizers: [kestrel, {organizerId: "org-unnamed", name: "org-unnamed"}], next: "org-unnamed",
-    });
-    expect(liveOwnedOrganizersPage(null)).toEqual({organizers: [], next: null});
+    ])).toEqual([kestrel, {organizerId: "org-unnamed", name: "org-unnamed"}]);
+    expect(liveOwnedOrganizers([])).toEqual([]);
   });
 });
