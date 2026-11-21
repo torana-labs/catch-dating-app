@@ -6,6 +6,7 @@ import type {CatchTextTone} from "./catchCoreVocabulary";
 import {CatchBandHeader, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchChip} from "./CatchChip";
 import {CatchDateTile, type CatchDateTileProps} from "./CatchDateTile";
+import {catchDeviceFrameVariables} from "./CatchDeviceFrame";
 import {CatchGroundProvider} from "./CatchGroundProvider";
 import {CatchHeroImage} from "./CatchHeroImage";
 import {CatchIcon} from "./CatchIcon";
@@ -36,19 +37,28 @@ export interface CatchHeroSectionAside {
   meta?: string;
 }
 
+/** A cut-out's place on the screen it was cut from: shares (0 to 1) of that screen. */
+export interface CatchHeroSectionFragmentRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 /**
  * A cut-out of one widget from the media's own screen: a capture of the real
  * app, cropped to that widget, so its names and numbers agree with the
- * screen. Never a drawn card.
+ * screen. It is lifted in place, over its own spot on the phone, so nothing
+ * shows twice. Never a drawn card.
  */
 export interface CatchHeroSectionFragment {
   /** The cut-out's image URL. */
   src: string;
   /** Its size in pixels. */
   width: number;
-  /** The width in pixels of the screen it was cut from: the cut-out is drawn at that screen's scale. */
-  screenWidth: number;
   height: number;
+  /** Where it was cut from on the screen. */
+  rect: CatchHeroSectionFragmentRect;
 }
 
 /**
@@ -94,9 +104,10 @@ export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>,
   /** split: the plan chip floating over the media. */
   aside?: CatchHeroSectionAside;
   /**
-   * split: up to three cut-outs of the media's own screen, floating on the
-   * phone's edges on an expanded page and tucked at its sides below it,
-   * where only the first two show. A hero never captions its media.
+   * split: up to three cut-outs of the media's own phone screen, each lifted
+   * in place over its spot (a little larger, raised, nudged toward the
+   * nearer edge); below the expanded width only the first two show. A hero
+   * never captions its media.
    */
   fragments?: readonly CatchHeroSectionFragment[];
   /** split: the band's Website v2 ground; text takes its inks, and ink the dark theme. Defaults to the plain band. */
@@ -107,6 +118,18 @@ export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>,
   image?: string;
   /** photo: the photo's alternative text; without it the photo is decorative. */
   imageAlt?: string;
+}
+
+/** A cut-out's spot on the screen layer, as shares of the screen. */
+function fragmentPlace(rect: CatchHeroSectionFragmentRect): CSSProperties {
+  return {"--catch-hero-fragment-x": rect.x, "--catch-hero-fragment-y": rect.y, "--catch-hero-fragment-width": rect.width} as CSSProperties;
+}
+
+/** The edge a cut-out leans toward: the nearer one, alternating for a full-width row. */
+function fragmentSide(rect: CatchHeroSectionFragmentRect, index: number): "start" | "end" {
+  const centre = rect.x + rect.width / 2;
+  if (Math.abs(centre - 0.5) < 0.04) return index % 2 === 0 ? "start" : "end";
+  return centre < 0.5 ? "start" : "end";
 }
 
 /**
@@ -222,14 +245,15 @@ export function CatchHeroSection({
             {media != null && cutouts.length > 0 ? (
               <div className={styles.stage}>
                 {media}
-                <ul aria-hidden="true" className={styles.fragments}>
-                  {cutouts.map((fragment) => (
-                    <li className={styles.fragment} key={fragment.src}
-                      style={{"--catch-hero-fragment-share": fragment.width / fragment.screenWidth} as CSSProperties}>
-                      <img alt="" className={styles.fragmentImage} decoding="async" height={fragment.height} src={fragment.src} width={fragment.width} />
-                    </li>
-                  ))}
-                </ul>
+                <div aria-hidden="true" className={styles.fragments} style={catchDeviceFrameVariables("phone")}>
+                  <ul className={styles.fragmentScreen}>
+                    {cutouts.map((fragment, index) => (
+                      <li className={styles.fragment} data-side={fragmentSide(fragment.rect, index)} key={fragment.src} style={fragmentPlace(fragment.rect)}>
+                        <img alt="" className={styles.fragmentImage} decoding="async" height={fragment.height} src={fragment.src} width={fragment.width} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             ) : media}
             {aside ? (

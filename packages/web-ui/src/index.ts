@@ -86,6 +86,7 @@ export {CatchHeroSection} from "./components/CatchHeroSection";
 export type {
   CatchHeroSectionAside,
   CatchHeroSectionFragment,
+  CatchHeroSectionFragmentRect,
   CatchHeroSectionLayout,
   CatchHeroSectionNotice,
   CatchHeroSectionProofItem,
@@ -157,7 +158,7 @@ export {CatchSiteFooter} from "./components/CatchSiteFooter";
 export type {CatchSiteFooterColumns, CatchSiteFooterGroup, CatchSiteFooterLink, CatchSiteFooterProps} from "./components/CatchSiteFooter";
 export {CatchSiteDock} from "./components/CatchSiteDock";
 export type {CatchSiteDockAction, CatchSiteDockProps} from "./components/CatchSiteDock";
-export {CatchDeviceFrame} from "./components/CatchDeviceFrame";
+export {CatchDeviceFrame, catchDeviceFrameVariables} from "./components/CatchDeviceFrame";
 export type {CatchDeviceFrameKind, CatchDeviceFrameOrientation, CatchDeviceFrameProps, CatchDeviceFrameTilt, CatchDeviceFrameWindowKind} from "./components/CatchDeviceFrame";
 export {CatchHeroShowcase} from "./components/CatchHeroShowcase";
 export type {CatchHeroShowcaseProps, CatchHeroShowcaseSticker} from "./components/CatchHeroShowcase";

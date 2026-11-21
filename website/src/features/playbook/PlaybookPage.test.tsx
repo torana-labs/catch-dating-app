@@ -47,14 +47,14 @@ describe("playbook page", () => {
     const hero = document.getElementById("top")!;
     expect(hero.querySelector("figcaption")).toBeNull();
     expect(within(hero).queryByText(marketingCaptures["host-formats-pods"].caption)).toBeNull();
-    const cutouts = [...hero.querySelectorAll("ul[aria-hidden='true'] img")].map((image) => image.getAttribute("src"));
-    expect(cutouts).toEqual(["host-formats-pods-chatty", "host-formats-pods-needs-pod", "host-formats-pods-counts"].map((id) => marketingCaptures[id].webPath));
+    const cutouts = [...hero.querySelectorAll("[aria-hidden='true'] li img")].map((image) => image.getAttribute("src"));
+    expect(cutouts).toEqual(["host-formats-pods-chatty", "host-formats-pods-needs-pod"].map((id) => marketingCaptures[id].webPath));
   });
 
   it("draws no cut-out that is not a fragment of the hero's own screen", () => {
     const stray = {...marketingCaptures, "host-formats-pods-chatty": {...marketingCaptures["host-formats-pods-chatty"], fragmentOf: "host-people"}};
     render(<PlaybookPage captures={stray} page={page} />);
-    expect(document.getElementById("top")!.querySelectorAll("ul[aria-hidden='true'] img")).toHaveLength(2);
+    expect(document.getElementById("top")!.querySelectorAll("[aria-hidden='true'] li img")).toHaveLength(1);
   });
 
   it("sends the trial to /host/start/, and WhatsApp to a typed chat in a new tab", () => {

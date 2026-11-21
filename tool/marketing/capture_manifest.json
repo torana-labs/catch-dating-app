@@ -486,28 +486,6 @@
       "pages": []
     },
     {
-      "id": "host-formats-pods-counts",
-      "kind": "app-capture",
-      "audience": "host",
-      "surface": "Catch Host groups by pace, cut out",
-      "status": "active",
-      "device": "fragment-phone",
-      "fragmentOf": "host-formats-pods",
-      "fixtureKey": "hostMarketingIndia.host.formatsPods.podCounts",
-      "scenario": {
-        "world": "host-marketing-india",
-        "event": "event-host-trivia-store-demo",
-        "moment": "planning"
-      },
-      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-pods-counts.png",
-      "websitePath": "website/public/assets/app-screenshots/host-formats-pods-counts.png",
-      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-pods-counts.png",
-      "alt": "12 runners, 3 pods, 2 with no pod yet",
-      "caption": "12 runners, 3 pods, 2 with no pod yet",
-      "walkthroughStep": "Plan",
-      "pages": []
-    },
-    {
       "id": "host-door-in",
       "kind": "app-capture",
       "audience": "host",
@@ -554,28 +532,6 @@
       ]
     },
     {
-      "id": "host-door-arriving-count",
-      "kind": "app-capture",
-      "audience": "host",
-      "surface": "Catch Host door, arrivals, cut out",
-      "status": "active",
-      "device": "fragment-phone",
-      "fragmentOf": "host-door-arriving",
-      "fixtureKey": "hostMarketingIndia.host.doorArriving.arrivalCount",
-      "scenario": {
-        "world": "host-marketing-india",
-        "event": "event-host-trivia-store-demo",
-        "moment": "live"
-      },
-      "sourcePath": "artifacts/marketing/app-screenshots/host-door-arriving-count.png",
-      "websitePath": "website/public/assets/app-screenshots/host-door-arriving-count.png",
-      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-door-arriving-count.png",
-      "alt": "19 of 26 in, 7 still to come",
-      "caption": "19 of 26 in, 7 still to come",
-      "walkthroughStep": "Check in",
-      "pages": []
-    },
-    {
       "id": "host-door-arriving-new-guest",
       "kind": "app-capture",
       "audience": "host",
@@ -598,24 +554,24 @@
       "pages": []
     },
     {
-      "id": "host-door-arriving-check-in",
+      "id": "host-door-arriving-regular",
       "kind": "app-capture",
       "audience": "host",
       "surface": "Catch Host door, arrivals, cut out",
       "status": "active",
       "device": "fragment-phone",
       "fragmentOf": "host-door-arriving",
-      "fixtureKey": "hostMarketingIndia.host.doorArriving.checkIn",
+      "fixtureKey": "hostMarketingIndia.host.doorArriving.regularGuest",
       "scenario": {
         "world": "host-marketing-india",
         "event": "event-host-trivia-store-demo",
         "moment": "live"
       },
-      "sourcePath": "artifacts/marketing/app-screenshots/host-door-arriving-check-in.png",
-      "websitePath": "website/public/assets/app-screenshots/host-door-arriving-check-in.png",
-      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-door-arriving-check-in.png",
-      "alt": "Arjun Kulkarni arriving, with Check in",
-      "caption": "Arjun Kulkarni arriving, with Check in",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-door-arriving-regular.png",
+      "websitePath": "website/public/assets/app-screenshots/host-door-arriving-regular.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-door-arriving-regular.png",
+      "alt": "Rhea Kapoor arriving, 5 nights with you, with Check in",
+      "caption": "Rhea Kapoor arriving, 5 nights with you, with Check in",
       "walkthroughStep": "Check in",
       "pages": []
     },
@@ -800,6 +756,28 @@
       "pages": []
     },
     {
+      "id": "host-live-scores-third-team",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host scores, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-live-scores",
+      "fixtureKey": "hostMarketingIndia.host.liveScores.thirdTeamScore",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-scores-third-team.png",
+      "websitePath": "website/public/assets/app-screenshots/host-live-scores-third-team.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-scores-third-team.png",
+      "alt": "Vada Pav Theory, 35 so far, with the round's score stepper",
+      "caption": "Vada Pav Theory, 35 so far, with the round's score stepper",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
       "id": "host-formats-courts-setup",
       "kind": "app-capture",
       "audience": "host",
@@ -844,28 +822,6 @@
       "pages": [
         "/host/"
       ]
-    },
-    {
-      "id": "host-formats-courts-rotate",
-      "kind": "app-capture",
-      "audience": "host",
-      "surface": "Catch Host courts live, cut out",
-      "status": "active",
-      "device": "fragment-phone",
-      "fragmentOf": "host-formats-courts",
-      "fixtureKey": "hostMarketingIndia.host.formatsCourts.rotateTimer",
-      "scenario": {
-        "world": "host-marketing-india",
-        "event": "event-host-trivia-store-demo",
-        "moment": "live"
-      },
-      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-courts-rotate.png",
-      "websitePath": "website/public/assets/app-screenshots/host-formats-courts-rotate.png",
-      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-courts-rotate.png",
-      "alt": "Round 4 of 8: rotate in 9:40, with a Rotate now button",
-      "caption": "Round 4 of 8: rotate in 9:40, with a Rotate now button",
-      "walkthroughStep": "Run the night",
-      "pages": []
     },
     {
       "id": "host-formats-courts-court",
@@ -958,28 +914,6 @@
       ]
     },
     {
-      "id": "host-formats-crawl-move-next-stop",
-      "kind": "app-capture",
-      "audience": "host",
-      "surface": "Catch Host moving groups between stops, cut out",
-      "status": "active",
-      "device": "fragment-phone",
-      "fragmentOf": "host-formats-crawl-move",
-      "fixtureKey": "hostMarketingIndia.host.formatsCrawlMove.nextStop",
-      "scenario": {
-        "world": "host-marketing-india",
-        "event": "event-host-trivia-store-demo",
-        "moment": "live"
-      },
-      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-crawl-move-next-stop.png",
-      "websitePath": "website/public/assets/app-screenshots/host-formats-crawl-move-next-stop.png",
-      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-crawl-move-next-stop.png",
-      "alt": "Next stop Copperleaf, Kenilworth Mall, leaving in 10 minutes",
-      "caption": "Next stop Copperleaf, Kenilworth Mall, leaving in 10 minutes",
-      "walkthroughStep": "Run the night",
-      "pages": []
-    },
-    {
       "id": "host-formats-crawl-move-message",
       "kind": "app-capture",
       "audience": "host",
@@ -998,6 +932,28 @@
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-crawl-move-message.png",
       "alt": "The message to the group: next stop Copperleaf, leaving in 10 minutes",
       "caption": "The message to the group: next stop Copperleaf, leaving in 10 minutes",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-formats-crawl-move-map",
+      "kind": "app-capture",
+      "audience": "host",
+      "surface": "Catch Host moving groups between stops, cut out",
+      "status": "active",
+      "device": "fragment-phone",
+      "fragmentOf": "host-formats-crawl-move",
+      "fixtureKey": "hostMarketingIndia.host.formatsCrawlMove.routeMap",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/host-formats-crawl-move-map.png",
+      "websitePath": "website/public/assets/app-screenshots/host-formats-crawl-move-map.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-formats-crawl-move-map.png",
+      "alt": "The map from Gearbox Tavern to the next stop, Copperleaf",
+      "caption": "The map from Gearbox Tavern to the next stop, Copperleaf",
       "walkthroughStep": "Run the night",
       "pages": []
     },
@@ -1589,23 +1545,6 @@
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-event-share-links-whatsapp.png",
       "alt": "The Alumni WhatsApp invite link: 64 opened, 7 booked",
       "caption": "The Alumni WhatsApp invite link: 64 opened, 7 booked",
-      "walkthroughStep": "Share",
-      "pages": []
-    },
-    {
-      "id": "host-event-share-links-instagram",
-      "kind": "app-capture",
-      "audience": "host",
-      "surface": "Invite links for an event in Catch Host, cut out",
-      "status": "active",
-      "device": "fragment-phone",
-      "fragmentOf": "host-event-share-links",
-      "fixtureKey": "hostOperations.event.shareLinks.instagramLink",
-      "sourcePath": "artifacts/marketing/app-screenshots/host-event-share-links-instagram.png",
-      "websitePath": "website/public/assets/app-screenshots/host-event-share-links-instagram.png",
-      "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-event-share-links-instagram.png",
-      "alt": "The Instagram bio invite link: 142 opened, 11 booked",
-      "caption": "The Instagram bio invite link: 142 opened, 11 booked",
       "walkthroughStep": "Share",
       "pages": []
     },

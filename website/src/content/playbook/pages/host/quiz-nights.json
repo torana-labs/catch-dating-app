@@ -33,7 +33,7 @@
         "label": "A venue with a weekly quiz, or a quizmaster at several venues? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "fragments": ["host-live-scores-team", "host-live-scores-standings"],
+      "fragments": ["host-live-scores-team", "host-live-scores-third-team", "host-live-scores-standings"],
       "media": {"kind": "capture", "slot": "host-live-scores"}
     },
     {

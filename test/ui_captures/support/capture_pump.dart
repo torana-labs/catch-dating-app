@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -216,7 +217,12 @@ Future<void> _writeBoundaryPng(
   final boundary =
       key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
   var image = await boundary.toImage(pixelRatio: pixelRatio);
-  if (crop != null) image = await _cropImage(image, crop, pixelRatio);
+  if (crop != null) {
+    final screen = Size(image.width.toDouble(), image.height.toDouble());
+    final source = _cropSource(crop, pixelRatio, screen);
+    image = await _cropImage(image, source);
+    await _writeFragmentRect(file, source, screen);
+  }
   final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
   image.dispose();
 
@@ -228,18 +234,16 @@ Future<void> _writeBoundaryPng(
   await file.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
 }
 
-/// Cuts [crop] (in points) out of [image], rounded out to whole pixels.
-Future<ui.Image> _cropImage(
-  ui.Image image,
-  Rect crop,
-  double pixelRatio,
-) async {
-  final source = Rect.fromLTRB(
-    (crop.left * pixelRatio).floorToDouble(),
-    (crop.top * pixelRatio).floorToDouble(),
-    (crop.right * pixelRatio).ceilToDouble().clamp(0, image.width.toDouble()),
-    (crop.bottom * pixelRatio).ceilToDouble().clamp(0, image.height.toDouble()),
-  );
+/// [crop] (in points) in [screen] pixels, rounded out to whole pixels.
+Rect _cropSource(Rect crop, double pixelRatio, Size screen) => Rect.fromLTRB(
+  (crop.left * pixelRatio).floorToDouble(),
+  (crop.top * pixelRatio).floorToDouble(),
+  (crop.right * pixelRatio).ceilToDouble().clamp(0, screen.width),
+  (crop.bottom * pixelRatio).ceilToDouble().clamp(0, screen.height),
+);
+
+/// Cuts [source] (in pixels) out of [image].
+Future<ui.Image> _cropImage(ui.Image image, Rect source) async {
   final recorder = ui.PictureRecorder();
   Canvas(recorder).drawImageRect(
     image,
@@ -255,6 +259,24 @@ Future<ui.Image> _cropImage(
   picture.dispose();
   image.dispose();
   return cropped;
+}
+
+/// Writes where the cut-out sits on its screen, as shares of the screen
+/// (0 to 1), beside the PNG (`light.png` gets `light.fragment.json`). The
+/// exporter records it in the capture's provenance, and the website lays the
+/// cut-out over that spot of the screen.
+Future<void> _writeFragmentRect(File png, Rect source, Size screen) async {
+  double share(double value, double side) =>
+      double.parse((value / side).toStringAsFixed(5));
+  final rect = <String, double>{
+    'x': share(source.left, screen.width),
+    'y': share(source.top, screen.height),
+    'width': share(source.width, screen.width),
+    'height': share(source.height, screen.height),
+  };
+  final file = File(png.path.replaceFirst(RegExp(r'\.png$'), '.fragment.json'));
+  await file.create(recursive: true);
+  await file.writeAsString('${jsonEncode(rect)}\n', flush: true);
 }
 
 Widget _frame({

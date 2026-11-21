@@ -33,7 +33,7 @@
         "label": "Planning a multi-day offsite with travel and rooms? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "fragments": ["host-event-share-links-whatsapp", "host-event-share-links-instagram"],
+      "fragments": ["host-event-share-links-whatsapp"],
       "media": {"kind": "capture", "slot": "host-event-share-links"}
     },
     {

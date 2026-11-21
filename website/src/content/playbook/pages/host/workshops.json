@@ -33,7 +33,7 @@
         "label": "Teaching for a company team? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "fragments": ["host-door-arriving-count", "host-door-arriving-new-guest", "host-door-arriving-check-in"],
+      "fragments": ["host-door-arriving-new-guest", "host-door-arriving-regular"],
       "media": {"kind": "capture", "slot": "host-door-arriving"}
     },
     {

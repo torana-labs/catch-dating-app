@@ -62,16 +62,15 @@
   padding-top: var(--catch-space-s6);
   /* The kit's hero phone: a screen preview here is drawn at this width. */
   --catch-screen-preview-device-width: var(--catch-website-hero-phone-width);
-  /* The cut-outs read the space beside the phone from the column's width (cqi). */
-  container-type: inline-size;
 }
 
 /*
- * The phone and its cut-outs. The cut-out layer is the phone's own box (the
- * hero's phone width, centred), so each cut-out is drawn at the scale of the
- * screen it was cut from (its share of that screen's width), turned
- * slightly, and floats out past the phone's edge by at most the room the
- * column has beside the phone.
+ * The phone and its cut-outs. The cut-out layer is the phone's own frame
+ * (the hero's phone width, centred, with CatchDeviceFrame's geometry set
+ * inline), and its list is the frame's screen box. Each cut-out sits over
+ * the spot it was cut from (its rect, shares of the screen), so the original
+ * is hidden underneath and nothing shows twice; it is a little larger,
+ * raised, and nudged toward the nearer edge, as if lifted out of the phone.
  */
 .stage {
   position: relative;
@@ -80,38 +79,38 @@
 
 .fragments {
   position: absolute;
-  inset-block: 0;
+  inset-block-start: 0;
   inset-inline: 0;
   width: min(100%, var(--catch-screen-preview-device-width));
   margin: 0 auto;
-  padding: 0;
-  list-style: none;
+  aspect-ratio: var(--catch-device-aspect);
   pointer-events: none;
 }
 
+.fragmentScreen {
+  position: absolute;
+  inset: var(--catch-device-inset);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .fragment {
-  /* Set on each cut-out: its width over its screen's width. */
-  --catch-hero-fragment-share: 0;
-  --catch-hero-fragment-scale: 0.9;
-  --catch-hero-fragment-out: min(30%, (100cqi - 100%) / 2);
+  /* Set on each cut-out: its rect on the screen, as shares. */
+  --catch-hero-fragment-x: 0;
+  --catch-hero-fragment-y: 0;
+  --catch-hero-fragment-width: 0;
+  --catch-hero-fragment-nudge: 0px;
 
   position: absolute;
-  width: calc(var(--catch-hero-fragment-share) * var(--catch-hero-fragment-scale) * 100%);
+  left: calc(var(--catch-hero-fragment-x) * 100%);
+  top: calc(var(--catch-hero-fragment-y) * 100%);
+  width: calc(var(--catch-hero-fragment-width) * 100%);
+  transform: translateX(var(--catch-hero-fragment-nudge)) scale(1.1);
 }
 
-.fragment:nth-child(odd) {
-  inset-inline-start: calc(-1 * var(--catch-hero-fragment-out));
-  transform: rotate(-2deg);
-}
-
-.fragment:nth-child(even) {
-  inset-inline-end: calc(-1 * var(--catch-hero-fragment-out));
-  transform: rotate(2deg);
-}
-
-.fragment:nth-child(1) { top: 14%; }
-.fragment:nth-child(2) { top: 40%; }
-.fragment:nth-child(3) { top: 66%; }
+.fragment[data-side="start"] { --catch-hero-fragment-nudge: calc(-1 * var(--catch-space-s2)); }
+.fragment[data-side="end"] { --catch-hero-fragment-nudge: var(--catch-space-s2); }
 
 .fragmentImage {
   display: block;
@@ -199,8 +198,10 @@
 }
 
 @container catch-page (width < 840px) {
+  /* Stacked, the media follows the copy at the band's own stack gap. */
   .split { padding-top: var(--catch-space-s10); }
-  .text { padding-bottom: var(--catch-space-s2); }
+  .split.split[data-gap] { gap: var(--catch-space-s6); }
+  .text { padding-bottom: 0; }
 
   /*
    * The media starts under the copy and its actions and never rises over
@@ -212,7 +213,7 @@
     --catch-screen-preview-device-width: var(--catch-website-hero-compact-phone-width);
 
     align-items: flex-start;
-    padding-top: var(--catch-space-s2);
+    padding-top: 0;
   }
 
   .media[data-floating] {
@@ -221,10 +222,7 @@
     overflow-y: clip;
   }
 
-  /* Two cut-outs at the smaller phone's own scale, tucked at its sides in the part of it that shows. */
-  .fragment { --catch-hero-fragment-scale: 1; }
-  .fragment:nth-child(1) { top: 8%; }
-  .fragment:nth-child(2) { top: 24%; }
+  /* Two cut-outs, over the part of the phone that shows. */
   .fragment:nth-child(n + 3) { display: none; }
 
   .aside {

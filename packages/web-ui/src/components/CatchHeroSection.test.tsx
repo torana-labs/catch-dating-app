@@ -66,11 +66,12 @@ describe("CatchHeroSection", () => {
     expect(container.querySelector("dl")).toBeNull();
   });
 
-  it("floats up to three cut-outs of the media's screen over it, each at that screen's scale", () => {
-    const fragment = (name: string, width: number) => ({src: `/${name}.png`, width, height: 120, screenWidth: 800});
+  it("lifts up to three cut-outs of the media's screen in place, each over the spot it was cut from", () => {
+    const fragment = (name: string, x: number, y: number) => ({src: `/${name}.png`, width: 720, height: 120, rect: {x, y, width: 0.9, height: 0.07}});
     const {container} = render(
       <CatchHeroSection
-        fragments={[fragment("first", 720), fragment("second", 400), fragment("third", 200), fragment("fourth", 100)]}
+        fragments={[fragment("first", 0.05, 0.3), {src: "/second.png", width: 300, height: 100, rect: {x: 0.6, y: 0.5, width: 0.37, height: 0.06}},
+          fragment("third", 0.05, 0.7), fragment("fourth", 0.05, 0.9)]}
         media={<div data-testid="media" />}
         title="Headline"
       />,
@@ -79,9 +80,15 @@ describe("CatchHeroSection", () => {
     expect(media.contains(screen.getByTestId("media"))).toBe(true);
     const items = [...container.querySelectorAll("li")] as HTMLElement[];
     expect(items.map((item) => item.querySelector("img")!.getAttribute("src"))).toEqual(["/first.png", "/second.png", "/third.png"]);
-    expect(items[0].style.getPropertyValue("--catch-hero-fragment-share")).toBe("0.9");
+    expect(items[0].style.getPropertyValue("--catch-hero-fragment-x")).toBe("0.05");
+    expect(items[0].style.getPropertyValue("--catch-hero-fragment-y")).toBe("0.3");
+    expect(items[0].style.getPropertyValue("--catch-hero-fragment-width")).toBe("0.9");
+    // A full-width row leans to alternate edges; a narrower one to the nearer edge.
+    expect(items.map((item) => item.dataset.side)).toEqual(["start", "end", "start"]);
+    // The layer takes the phone frame's geometry, so its list is the screen box.
+    expect((items[0].closest("ul")!.parentElement as HTMLElement).style.getPropertyValue("--catch-device-inset")).not.toBe("");
     // They repeat parts of the screen the media already names, so they are decorative.
-    expect(items[0].closest("ul")!.getAttribute("aria-hidden")).toBe("true");
+    expect(items[0].closest("[aria-hidden='true']")).not.toBeNull();
     expect(items[0].querySelector("img")!.getAttribute("alt")).toBe("");
   });
 
@@ -97,7 +104,7 @@ describe("CatchHeroSection", () => {
   });
 
   it("draws no cut-outs without media to cut them from", () => {
-    const {container} = render(<CatchHeroSection fragments={[{src: "/a.png", width: 400, height: 100, screenWidth: 800}]} title="Headline" />);
+    const {container} = render(<CatchHeroSection fragments={[{src: "/a.png", width: 400, height: 100, rect: {x: 0, y: 0.5, width: 0.5, height: 0.06}}]} title="Headline" />);
     expect(container.querySelector("img")).toBeNull();
     expect(container.querySelector("[data-floating]")).toBeNull();
   });

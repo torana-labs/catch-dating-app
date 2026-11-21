@@ -21,14 +21,14 @@ const media = (
   />
 );
 
-// Cut-outs stand in for crops of the media's own screen: blank rows at a
-// phone screen's scale (the real ones are app captures).
+// Cut-outs stand in for crops of the media's own screen: blank rows with
+// their place on the screen (the real ones are app captures).
 const cutout = (width: number, height: number) =>
   `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="white"/><rect x="24" y="24" width="${width * 0.5}" height="28" rx="14" fill="gainsboro"/></svg>`)}`;
 const fragments = [
-  {src: cutout(724, 232), width: 724, height: 232, screenWidth: 804},
-  {src: cutout(724, 150), width: 724, height: 150, screenWidth: 804},
-  {src: cutout(600, 120), width: 600, height: 120, screenWidth: 804},
+  {src: cutout(724, 232), width: 724, height: 232, rect: {x: 0.05, y: 0.3, width: 0.9, height: 0.133}},
+  {src: cutout(724, 150), width: 724, height: 150, rect: {x: 0.05, y: 0.5, width: 0.9, height: 0.086}},
+  {src: cutout(600, 120), width: 600, height: 120, rect: {x: 0.2, y: 0.75, width: 0.746, height: 0.069}},
 ];
 
 const meta = {
@@ -43,7 +43,7 @@ type Story = StoryObj<typeof meta>;
 /**
  * Every state on an expanded page: the split hero on a coral ground with
  * labels, proof and a footnote mark, a note, a side link, media and three
- * cut-outs floating on the phone's edges; the copy alone on the plain band; the ink ground (dark
+ * cut-outs lifted in place over the phone; the copy alone on the plain band; the ink ground (dark
  * theme); and the photo layout over the no-photo fill.
  */
 export const Contract: Story = {
@@ -66,7 +66,7 @@ export const Contract: Story = {
   ),
 };
 
-/** The phone layout: the media hangs under the copy, two cut-outs tucked at the phone's sides, the band cropping the phone's foot. */
+/** The phone layout: the media hangs under the copy, two cut-outs lifted in place, the band cropping the phone's foot. */
 export const Compact: Story = {
   render: () => (
     <CatchRoot size="compact" theme="day">

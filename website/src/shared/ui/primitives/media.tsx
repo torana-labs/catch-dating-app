@@ -94,8 +94,8 @@ export interface CaptureRecord {
   height: number;
   /** A fragment capture: the capture whose screen it is cut from. */
   fragmentOf?: string;
-  /** A fragment capture: the width in pixels of the screen it is cut from. */
-  screenWidth?: number;
+  /** A fragment capture: where it was cut from on that screen, as shares (0 to 1) of the screen. */
+  screenRect?: {x: number; y: number; width: number; height: number};
   alt: string;
   caption: string;
   walkthroughStep: string;

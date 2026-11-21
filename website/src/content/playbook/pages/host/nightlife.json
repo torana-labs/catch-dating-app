@@ -33,7 +33,7 @@
         "label": "Running nights in several cities or for a brand? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "fragments": ["host-formats-crawl-move-next-stop", "host-formats-crawl-move-message"],
+      "fragments": ["host-formats-crawl-move-map", "host-formats-crawl-move-message"],
       "media": {"kind": "capture", "slot": "host-formats-crawl-move"}
     },
     {

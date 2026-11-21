@@ -1,4 +1,4 @@
-// Marketing capture `host_formats_crawl_move_next_stop_fragment`: one widget cut out of `host_formats_crawl_move_phone`, so its
+// Marketing capture `host_formats_crawl_move_map_fragment`: one widget cut out of `host_formats_crawl_move_phone`, so its
 // names and numbers are that screen's. One file per marketing capture keeps
 // each capture's inputs to its own imports; see
 // docs/marketing_app_media_pipeline.md.
@@ -13,12 +13,12 @@ import '../screen_capture_entry.dart';
 import '../shared/capture_fragments.dart';
 import 'host_formats_crawl_move_phone.dart';
 
-final hostFormatsCrawlMoveNextStopFragmentCapture = ScreenCaptureEntry(
-  id: 'host_formats_crawl_move_next_stop_fragment',
+final hostFormatsCrawlMoveMapFragmentCapture = ScreenCaptureEntry(
+  id: 'host_formats_crawl_move_map_fragment',
   routeIds: const <String>['hostAppEventManageScreen'],
   device: CaptureDevice.fragmentPhone,
   marketingFixtureKeys: const <String>[
-    'hostMarketingIndia.host.formatsCrawlMove.nextStop',
+    'hostMarketingIndia.host.formatsCrawlMove.routeMap',
   ],
   providerOverrides: hostFormatsCrawlMovePhoneCapture.providerOverrides,
   builder: hostFormatsCrawlMovePhoneCapture.builder,
@@ -26,9 +26,9 @@ final hostFormatsCrawlMoveNextStopFragmentCapture = ScreenCaptureEntry(
     find: () => nearestFragment(
       find.descendant(
         of: find.byKey(const ValueKey<String>('formats-crawl-move-sheet')),
-        matching: find.text('Leave'),
+        matching: find.text('Gearbox Tavern'),
       ),
-      CatchSurface,
+      CatchMap,
     ),
     padding: fragmentCardPadding,
   ),

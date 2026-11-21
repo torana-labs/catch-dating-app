@@ -7,6 +7,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 import {framedSize, isCaptureDevice, isFragmentCaptureDevice} from "./lib/capture_devices.mjs";
+import {fragmentRect} from "./lib/capture_provenance.mjs";
 
 const sourceManifestPath = fromRepo("tool/marketing/capture_manifest.json");
 const websitePublicPrefix = "website/public/";
@@ -287,8 +288,9 @@ function scenarioProblems(label, {world, event, moment}) {
 /**
  * The website's capture records. A fragment's size follows its widget, so it
  * is read from the PNG (`readPng` returns a capture's source bytes; the
- * importer passes the artifact's), with the screen width it is drawn against
- * and the capture it is cut from.
+ * importer passes the artifact's), with the capture it is cut from and its
+ * place on that screen (`screenRect`, shares of the screen, from its
+ * provenance), so a page lays it over its own spot.
  */
 export function buildWebsiteManifest(manifest, {readPng = (capture) => fs.readFileSync(fromRepo(capture.sourcePath))} = {}) {
   const captures = manifest.captures
@@ -298,6 +300,7 @@ export function buildWebsiteManifest(manifest, {readPng = (capture) => fs.readFi
       const sourcePath = isActive ? capture.sourcePath : capture.placeholderPath;
       const webPath = toWebPath(isActive ? capture.websitePath : sourcePath);
       const fragment = isFragmentCaptureDevice(capture.device);
+      const png = fragment ? readPng(capture) : null;
       return {
         id: capture.id,
         audience: capture.audience,
@@ -305,8 +308,8 @@ export function buildWebsiteManifest(manifest, {readPng = (capture) => fs.readFi
         device: capture.device,
         webPath,
         // The PNG's size, so pages reserve the image's space before it loads.
-        ...(fragment ? pngSize(readPng(capture)) : framedSize(capture.device)),
-        ...(fragment ? {fragmentOf: capture.fragmentOf, screenWidth: framedSize(capture.device).width} : {}),
+        ...(fragment ? pngSize(png) : framedSize(capture.device)),
+        ...(fragment ? {fragmentOf: capture.fragmentOf, screenRect: fragmentRect(png)} : {}),
         alt: capture.alt,
         caption: capture.caption,
         walkthroughStep: capture.walkthroughStep,

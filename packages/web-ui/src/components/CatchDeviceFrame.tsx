@@ -116,6 +116,15 @@ function catchDeviceFrameGeometry(
   return geometry;
 }
 
+/**
+ * A device's frame geometry as the custom properties CatchDeviceFrame sets
+ * (--catch-device-aspect, --catch-device-inset, ...), for a layer drawn over
+ * the frame's screen, such as the hero's cut-outs.
+ */
+export function catchDeviceFrameVariables(kind: CatchDeviceFrameKind, orientation?: CatchDeviceFrameOrientation): CSSProperties {
+  return frameVariables(catchDeviceFrameGeometry(kind, orientation));
+}
+
 const percent = (share: number) => `${Number((share * 100).toFixed(4))}%`;
 
 /**

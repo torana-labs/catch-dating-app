@@ -36,7 +36,7 @@
         "label": "Running several chapters or a brand-partner series? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "fragments": ["host-formats-pods-chatty", "host-formats-pods-needs-pod", "host-formats-pods-counts"],
+      "fragments": ["host-formats-pods-chatty", "host-formats-pods-needs-pod"],
       "media": {"kind": "capture", "slot": "host-formats-pods"}
     },
     {

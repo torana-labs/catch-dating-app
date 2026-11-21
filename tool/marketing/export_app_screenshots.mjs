@@ -270,10 +270,12 @@ async function updateExports(staleOnly = false) {
     const executedFiles = executedFilesFromLcov(fs.readFileSync(lcovPath, "utf8"));
     const inputPath = path.join(rawOutputDir, entry.id, "light.png");
     fs.rmSync(fromRepo(capture.sourcePath), {force: true});
+    let fragment;
     if (isFragmentCaptureDevice(capture.device)) {
-      // The runner already cut the widget out of its screen; there is no frame to draw.
+      // The runner already cut the widget out of its screen and wrote where it sits; there is no frame to draw.
       fs.mkdirSync(path.dirname(fromRepo(capture.sourcePath)), {recursive: true});
       fs.copyFileSync(fromRepo(inputPath), fromRepo(capture.sourcePath));
+      fragment = JSON.parse(fs.readFileSync(fromRepo(inputPath.replace(/\.png$/u, ".fragment.json")), "utf8"));
     } else {
       result = spawnSync(
         "dart",
@@ -285,7 +287,7 @@ async function updateExports(staleOnly = false) {
     if (staticInputHash(capture) !== inputHash) {
       fail("Capture inputs changed during rendering.", ["Rerun the exporter from a stable source tree."]);
     }
-    stampCapture(capture, entry.id, sfFont, {executedFiles});
+    stampCapture(capture, entry.id, sfFont, {executedFiles, fragment});
   }
 }
 

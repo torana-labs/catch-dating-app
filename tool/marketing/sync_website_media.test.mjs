@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import zlib from "node:zlib";
 import test from "node:test";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {framedSize} from "./lib/capture_devices.mjs";
@@ -10,6 +11,23 @@ const authored = JSON.parse(fs.readFileSync(fromRepo("tool/marketing/capture_man
 // A sample record to vary, held pending so the rules under test don't also
 // need its image on disk.
 const liveConsole = {...authored.captures.find(capture => capture.id === "host-live-console"), status: "pending-fixture"};
+
+// The smallest PNG fragmentRect reads: its header and one caPt provenance chunk.
+function pngWithProvenance(width, height, provenance) {
+  const chunk = (type, data) => {
+    const bytes = Buffer.alloc(data.length + 12);
+    bytes.writeUInt32BE(data.length);
+    bytes.write(type, 4, "ascii");
+    data.copy(bytes, 8);
+    bytes.writeUInt32BE(zlib.crc32(bytes.subarray(4, -4)), bytes.length - 4);
+    return bytes;
+  };
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width);
+  header.writeUInt32BE(height, 4);
+  return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk("IHDR", header),
+    chunk("caPt", Buffer.from(JSON.stringify(provenance))), chunk("IEND", Buffer.alloc(0))]);
+}
 
 function manifestWith(changes) {
   return {...authored, captures: [{...liveConsole, ...changes}]};
@@ -56,13 +74,11 @@ test("a fragment is cut from an active generic-phone app capture and takes its s
   assert.match(validateSourceManifest(of({...screen, status: "pending-fixture"}, fragment)).join("\n"), /needs its screen sample-screen active/);
   assert.match(validateSourceManifest(of(screen, {...fragment, status: "pending-fixture"})).join("\n"), /cannot wait on a placeholder/);
   assert.match(validateSourceManifest(of({...screen, fragmentOf: "sample-fragment"}, fragment)).join("\n"), /only a fragment-phone capture is cut from another/);
-  // A 2x crop's size, read from its own PNG header.
-  const png = Buffer.alloc(24);
-  png.writeUInt32BE(724, 16);
-  png.writeUInt32BE(232, 20);
-  const record = buildWebsiteManifest(of(screen, fragment), {readPng: () => png}).captures[1];
-  assert.deepEqual({width: record.width, height: record.height, fragmentOf: record.fragmentOf, screenWidth: record.screenWidth},
-    {width: 724, height: 232, fragmentOf: "sample-screen", screenWidth: framedSize("generic-phone").width});
+  // A 2x crop's size, from its PNG header, and its place on the screen, from its provenance.
+  const rect = {x: 0.025, y: 0.3, width: 0.9005, height: 0.1327};
+  const record = buildWebsiteManifest(of(screen, fragment), {readPng: () => pngWithProvenance(724, 232, {fragment: rect})}).captures[1];
+  assert.deepEqual({width: record.width, height: record.height, fragmentOf: record.fragmentOf, screenRect: record.screenRect},
+    {width: 724, height: 232, fragmentOf: "sample-screen", screenRect: rect});
   assert.equal("fragmentOf" in buildWebsiteManifest(of(screen)).captures[0], false);
 });
 

@@ -309,26 +309,22 @@ import 'entries/host_create_suppers.dart';
 import 'entries/host_create_teams.dart';
 import 'entries/host_create_venues.dart';
 import 'entries/host_door_arriving.dart';
-import 'entries/host_door_arriving_check_in_fragment.dart';
-import 'entries/host_door_arriving_count_fragment.dart';
 import 'entries/host_door_arriving_new_guest_fragment.dart';
+import 'entries/host_door_arriving_regular_fragment.dart';
 import 'entries/host_door_in.dart';
 import 'entries/host_event_share_links.dart';
-import 'entries/host_event_share_links_instagram_fragment.dart';
 import 'entries/host_event_share_links_whatsapp_fragment.dart';
 import 'entries/host_form_responses_new_fragment.dart';
 import 'entries/host_formats_courts_court_fragment.dart';
 import 'entries/host_formats_courts_phone.dart';
-import 'entries/host_formats_courts_rotate_fragment.dart';
 import 'entries/host_formats_courts_setup_phone.dart';
 import 'entries/host_formats_courts_sitting_out_fragment.dart';
+import 'entries/host_formats_crawl_move_map_fragment.dart';
 import 'entries/host_formats_crawl_move_message_fragment.dart';
-import 'entries/host_formats_crawl_move_next_stop_fragment.dart';
 import 'entries/host_formats_crawl_move_phone.dart';
 import 'entries/host_formats_crawl_phone.dart';
 import 'entries/host_formats_mix_phone.dart';
 import 'entries/host_formats_pods_chatty_fragment.dart';
-import 'entries/host_formats_pods_counts_fragment.dart';
 import 'entries/host_formats_pods_needs_pod_fragment.dart';
 import 'entries/host_formats_pods_phone.dart';
 import 'entries/host_formats_rules_consent_fragment.dart';
@@ -342,6 +338,7 @@ import 'entries/host_live_now_tablet.dart';
 import 'entries/host_live_scores_phone.dart';
 import 'entries/host_live_scores_standings_fragment.dart';
 import 'entries/host_live_scores_team_fragment.dart';
+import 'entries/host_live_scores_third_team_fragment.dart';
 import 'entries/host_live_tablet_colleges.dart';
 import 'entries/host_live_tablet_communities.dart';
 import 'entries/host_live_tablet_creators.dart';
@@ -6872,12 +6869,10 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_staff_departures_phone': () => hostStaffDeparturesPhoneCapture,
   'host_home_dashboard': () => hostHomeDashboardCapture,
   'host_door_arriving': () => hostDoorArrivingCapture,
-  'host_door_arriving_count_fragment': () =>
-      hostDoorArrivingCountFragmentCapture,
   'host_door_arriving_new_guest_fragment': () =>
       hostDoorArrivingNewGuestFragmentCapture,
-  'host_door_arriving_check_in_fragment': () =>
-      hostDoorArrivingCheckInFragmentCapture,
+  'host_door_arriving_regular_fragment': () =>
+      hostDoorArrivingRegularFragmentCapture,
   'host_door_in': () => hostDoorInCapture,
   'host_live_now_tablet': () => hostLiveNowTabletCapture,
   'host_live_needs_phone': () => hostLiveNeedsPhoneCapture,
@@ -6885,10 +6880,10 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_live_scores_team_fragment': () => hostLiveScoresTeamFragmentCapture,
   'host_live_scores_standings_fragment': () =>
       hostLiveScoresStandingsFragmentCapture,
+  'host_live_scores_third_team_fragment': () =>
+      hostLiveScoresThirdTeamFragmentCapture,
   'host_formats_courts_setup_phone': () => hostFormatsCourtsSetupPhoneCapture,
   'host_formats_courts_phone': () => hostFormatsCourtsPhoneCapture,
-  'host_formats_courts_rotate_fragment': () =>
-      hostFormatsCourtsRotateFragmentCapture,
   'host_formats_courts_court_fragment': () =>
       hostFormatsCourtsCourtFragmentCapture,
   'host_formats_courts_sitting_out_fragment': () =>
@@ -6896,17 +6891,15 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_formats_mix_phone': () => hostFormatsMixPhoneCapture,
   'host_formats_crawl_phone': () => hostFormatsCrawlPhoneCapture,
   'host_formats_crawl_move_phone': () => hostFormatsCrawlMovePhoneCapture,
-  'host_formats_crawl_move_next_stop_fragment': () =>
-      hostFormatsCrawlMoveNextStopFragmentCapture,
   'host_formats_crawl_move_message_fragment': () =>
       hostFormatsCrawlMoveMessageFragmentCapture,
+  'host_formats_crawl_move_map_fragment': () =>
+      hostFormatsCrawlMoveMapFragmentCapture,
   'host_formats_pods_phone': () => hostFormatsPodsPhoneCapture,
   'host_formats_pods_chatty_fragment': () =>
       hostFormatsPodsChattyFragmentCapture,
   'host_formats_pods_needs_pod_fragment': () =>
       hostFormatsPodsNeedsPodFragmentCapture,
-  'host_formats_pods_counts_fragment': () =>
-      hostFormatsPodsCountsFragmentCapture,
   'host_formats_rules_phone': () => hostFormatsRulesPhoneCapture,
   'host_formats_rules_consent_fragment': () =>
       hostFormatsRulesConsentFragmentCapture,
@@ -6944,8 +6937,6 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_event_share_links': () => hostEventShareLinksCapture,
   'host_event_share_links_whatsapp_fragment': () =>
       hostEventShareLinksWhatsappFragmentCapture,
-  'host_event_share_links_instagram_fragment': () =>
-      hostEventShareLinksInstagramFragmentCapture,
   'event_success_companion_first_hello_assigned': () =>
       eventSuccessCompanionFirstHelloAssignedCapture,
   'host_organizer_payments_phone': () => hostOrganizerPaymentsPhoneCapture,

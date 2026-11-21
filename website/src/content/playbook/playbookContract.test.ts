@@ -19,9 +19,8 @@ const validateSchema = new Ajv2020({allErrors: true}).compile(schema);
 const context: PlaybookValidationContext = {
   routeIds: new Set(["host", "host_run_clubs", "host_start", "host_walkthrough", "pricing"]),
   captureSlots: new Set(["host-formats-pods", "host-live-tablet-run-clubs", "host-create-run-clubs",
-    "host-formats-pods-chatty", "host-formats-pods-needs-pod", "host-formats-pods-counts"]),
-  captureFragments: new Map([["host-formats-pods-chatty", "host-formats-pods"], ["host-formats-pods-needs-pod", "host-formats-pods"],
-    ["host-formats-pods-counts", "host-formats-pods"]]),
+    "host-formats-pods-chatty", "host-formats-pods-needs-pod"]),
+  captureFragments: new Map([["host-formats-pods-chatty", "host-formats-pods"], ["host-formats-pods-needs-pod", "host-formats-pods"]]),
 };
 
 type Mutable = {[key: string]: unknown};

@@ -30,7 +30,7 @@
         }
       ],
       "aside": {"label": "Run a venue with courts? See {{brand.name}} for venues", "to": {"route": "host_venues"}},
-      "fragments": ["host-formats-courts-rotate", "host-formats-courts-court", "host-formats-courts-sitting-out"],
+      "fragments": ["host-formats-courts-court", "host-formats-courts-sitting-out"],
       "media": {"kind": "capture", "slot": "host-formats-courts"}
     },
     {
