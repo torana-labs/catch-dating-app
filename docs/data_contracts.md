@@ -2986,6 +2986,13 @@ The registry, the rules and the schemas must agree in every direction, and
 So a new collection needs its rules block, its schema and its registry entry in
 the same change.
 
+Retiring or renaming a collection also moves its BigQuery export in the same
+change. `tool/contracts/check_bigquery_export_paths.mjs` fails while any
+`extensions/*.env` `COLLECTION_PATH` names a collection the registry no longer
+has, while an env file and the `firebase.json` extension instances disagree,
+or while `tool/analytics/host_analytics_contract.mjs` pins a path or table the
+env files do not deploy.
+
 It does not own multi-document business behavior, ranking algorithms,
 notification fan-out, dynamic Auth/current-time checks, or full Firestore rules.
 Those stay in Functions, repositories, rules, and domain services, consuming

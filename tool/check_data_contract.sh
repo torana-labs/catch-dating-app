@@ -50,6 +50,9 @@ node tool/contracts/check_firestore_contract.mjs
 echo "==> Checking direct client write contracts against rules"
 node tool/contracts/check_client_write_contracts.mjs
 
+echo "==> Checking BigQuery export paths against the Firestore registry"
+node tool/contracts/check_bigquery_export_paths.mjs
+
 echo "==> Checking Firestore query/index parity"
 node tool/contracts/check_firestore_query_indexes.mjs
 
