@@ -2,16 +2,12 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {checkIpRateLimit, checkRateLimit} from "../shared/rateLimit";
+import {checkRateLimit} from "../shared/rateLimit";
 import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
-import {assertPublicOrganizerPageEligible} from "../shared/publicOrganizerPage";
 import {validateCallableWithAjv} from "../shared/validation";
-import {readOrganizerProfileClassification} from
-  "./organizerProfileClassification";
-import {organizerTrackingEventPolicyReason,
-  organizerTrackingPublicationPolicy} from
-  "./organizerTrackingPublicationPolicy";
+import {organizerTrackingPublicationPolicy,
+  trackingConfigurationEligible} from "./organizerTrackingPublicationPolicy";
 import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import type {OrganizerTrackingSettingsDocument} from
   "../shared/generated/organizerTrackingSettingsDocument";
@@ -19,38 +15,25 @@ import {validateGetOrganizerTrackingSettingsCallablePayload} from
   "../shared/generated/validators/getOrganizerTrackingSettingsInput";
 import {validateSetOrganizerTrackingSettingsCallablePayload} from
   "../shared/generated/validators/setOrganizerTrackingSettingsInput";
-import {validateReadPublicOrganizerTrackingSettingsCallablePayload} from
-  "../shared/generated/validators/readPublicOrganizerTrackingSettingsInput";
 import {validateOrganizerTrackingSettingsDocument} from
   "../shared/generated/validators/organizerTrackingSettingsDocument";
 
 import {validateOrganizerTrackingSettingsCallableResponse} from
   "../shared/generated/validators/organizerTrackingSettingsOutput";
-import {validatePublicOrganizerTrackingSettingsCallableResponse} from
-  "../shared/generated/validators/publicOrganizerTrackingSettingsOutput";
 
 export interface TrackingSettingsDependencies {
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
-  checkIpRateLimit: typeof checkIpRateLimit;
   now: () => number;
 }
 const defaultDeps: TrackingSettingsDependencies = {
-  firestore: () => admin.firestore(), checkRateLimit, checkIpRateLimit,
+  firestore: () => admin.firestore(), checkRateLimit,
   now: () => Date.now(),
 };
 
 // The versioned, code-owned publication policy record. Neither organizer IDs,
 // saved fields nor claim approval lift it.
 const {publicationAllowed} = organizerTrackingPublicationPolicy;
-
-export function trackingConfigurationEligible(organizer: OrganizerDocument) {
-  return !organizer.archived && organizer.status !== "archived" &&
-    organizer.claim?.state !== "suppressed" &&
-    !!organizer.ownerUserId &&
-    (organizer.ownership?.state === "userCreated" ||
-     organizer.claim?.state === "verified");
-}
 
 function projection(organizerId: string, stored: unknown, canEdit = true) {
   if (stored !== undefined && !validateOrganizerTrackingSettingsDocument(
@@ -149,79 +132,7 @@ export async function setOrganizerTrackingSettingsHandler(
   });
 }
 
-/** Classification is canonical eventFormat, never free-text names/answers. */
-export function trackingEventPolicyReason(event: Record<string, unknown>) {
-  return organizerTrackingEventPolicyReason(event);
-}
-
-export async function readPublicOrganizerTrackingSettingsHandler(
-  request: CallableRequest<unknown>, deps = defaultDeps
-) {
-  const {organizerId, eventId} = validateCallableWithAjv(request,
-    validateReadPublicOrganizerTrackingSettingsCallablePayload);
-  const ip = request.rawRequest.ip ||
-    request.rawRequest.socket.remoteAddress || "unknown";
-  if (!deps.checkIpRateLimit(ip, 60, 60 * 1000)) {
-    throw new HttpsError("resource-exhausted",
-      "Too many tracking settings reads.");
-  }
-  const db = deps.firestore();
-  const snapshot = await db.collection("organizers").doc(organizerId).get();
-  if (!snapshot.exists) {
-    throw new HttpsError("not-found",
-      "Organizer not found.");
-  }
-  const organizer = snapshot.data() as OrganizerDocument;
-  assertPublicOrganizerPageEligible(organizer);
-  if (!trackingConfigurationEligible(organizer)) {
-    throw new HttpsError("failed-precondition",
-      "Organizer tracking is unavailable.");
-  }
-  let policyReason: "policyReviewRequired" | "sensitiveEvent" |
-    "eventClassificationUnavailable" =
-    organizerTrackingPublicationPolicy.blockedReason;
-  if (eventId) {
-    const nativeEvent = await db.collection("events").doc(eventId).get();
-    const event = nativeEvent.exists ? nativeEvent :
-      await db.collection("externalEvents").doc(eventId).get();
-    if (!event.exists) throw new HttpsError("not-found", "Event not found.");
-    const value = event.data()!;
-    const ownerId = nativeEvent.exists ?
-      value.organizerId : value.canonicalHostId;
-    if (ownerId !== organizerId ||
-        (nativeEvent.exists && value.organizerId &&
-         value.organizerId !== value.organizerId)) {
-      throw new HttpsError("permission-denied",
-        "Event organizer does not match.");
-    }
-    const published = nativeEvent.exists ?
-      value.publicationState === "published" :
-      value.publicationStatus === "public";
-    if (!published || value.status !== "active") {
-      throw new HttpsError("failed-precondition", "Event is not public.");
-    }
-    // External listings have no reviewed canonical tracking classification.
-    policyReason = nativeEvent.exists ? trackingEventPolicyReason(value) :
-      "eventClassificationUnavailable";
-  }
-  // Catch's own tags on the organiser profile: a yes/no from the server
-  // classification, never which class excluded it (CAT-247, #2063).
-  const profileTagsEligible = eventId ? false :
-    await readOrganizerProfileClassification(db, organizerId) === "eligible";
-  // Never read private settings here while publication is blocked. Public
-  // projection cannot expose IDs, staff audit, private URLs or form values.
-  const result = {organizerId, eventId, enabled: publicationAllowed,
-    metaPixelId: null, googleMeasurementId: null, policyReason,
-    profileTagsEligible};
-  if (!validatePublicOrganizerTrackingSettingsCallableResponse(result)) {
-    throw new HttpsError("internal", "Public tracking settings need review.");
-  }
-  return result;
-}
 export const getOrganizerTrackingSettings = onCall(appCheckCallableOptions,
   (request) => getOrganizerTrackingSettingsHandler(request));
 export const setOrganizerTrackingSettings = onCall(appCheckCallableOptions,
   (request) => setOrganizerTrackingSettingsHandler(request));
-export const readPublicOrganizerTrackingSettings = onCall(
-  appCheckCallableOptions, (request) =>
-    readPublicOrganizerTrackingSettingsHandler(request));

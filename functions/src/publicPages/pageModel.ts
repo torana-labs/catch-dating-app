@@ -18,6 +18,13 @@ import {projectPublicOrganizer, type HostListing} from "./publicOrganizer";
 import {publicEventAuthorized, publicEventListed} from "./publicReadPolicy";
 import {projectPublicReview, type PublicReview} from "./publicReview";
 import {eventWomenLed, organizerWomenLed} from "../organizers/womenLed";
+import {classifyOrganizerProfile} from
+  "../analytics/organizerProfileClassification";
+import {
+  organizerTrackingEventPolicyReason,
+  organizerTrackingPublicationPolicy,
+  trackingConfigurationEligible,
+} from "../analytics/organizerTrackingPublicationPolicy";
 
 /**
  * Assembles the organizer and event public page read models from one
@@ -34,6 +41,7 @@ export type PageEvent = OrganizerPage["upcomingEvents"][number];
 type EventCard = EventPage["moreEvents"][number];
 type ReviewSummary = OrganizerPage["reviewSummary"];
 type CompatListing = OrganizerPage["listing"];
+type PageTracking = NonNullable<OrganizerPage["tracking"]>;
 
 export interface SourceDocument {
   id: string;
@@ -118,6 +126,8 @@ export function buildOrganizerScope(
           eventWomenLed(organizer.data))] : [];
     }),
   ];
+  const catchEventData = new Map(sources.catchEvents.map((doc) =>
+    [doc.id, (doc.data ?? {}) as Record<string, unknown>]));
   // Link-only events keep their event page but stay off every list.
   const unlisted = new Set(sources.catchEvents
     .filter((doc) => !publicEventListed(doc.data)).map((doc) => doc.id));
@@ -141,6 +151,7 @@ export function buildOrganizerScope(
   const reviewSummary = summaryFor(reviewsReadable, sources.reviewCounts);
   const verified = isVerifiedListing(listing);
   const recommendable = isPubliclyReadable(listing) && verified;
+  const tracking = trackingInputs(sources);
 
   const organizerPage: OrganizerPage = {
     schemaVersion: 1,
@@ -182,6 +193,9 @@ export function buildOrganizerScope(
     listing: {...listing, ...(reviewsReadable ?
       {reviewReadState: "ready" as const} : {})},
     womenLed,
+    tracking: pageTracking(tracking,
+      organizerTrackingPublicationPolicy.blockedReason,
+      tracking.profileTagsEligible),
   };
 
   const card = {
@@ -221,9 +235,44 @@ export function buildOrganizerScope(
           reviewReadState: "ready" as const,
           reviews: newestFirst([...organizerReviews, ...eventReviews]),
         } : {})},
+        // External listings have no reviewed canonical classification.
+        tracking: pageTracking(tracking, item.source === "catch" ?
+          organizerTrackingEventPolicyReason(
+            catchEventData.get(item.eventId) ?? {}) :
+          "eventClassificationUnavailable", false),
       };
     });
   return {organizerPage, eventPages};
+}
+
+/**
+ * The pages' advertising-tag projection, as readPublicOrganizerTrackingSettings
+ * answered it (#2063): nothing for an organizer that may not configure tags;
+ * otherwise organiser IDs stay unpublished under the current policy, and
+ * Catch's own tags may cover the organiser page only when the organizer's
+ * published events classify it eligible. The page sources are exactly the
+ * events that classification reads, and a rebuild past their bound fails
+ * rather than truncating.
+ */
+function trackingInputs(sources: OrganizerScopeSources) {
+  const organizer = (sources.organizer?.data ?? {}) as
+    Parameters<typeof trackingConfigurationEligible>[0];
+  const available = trackingConfigurationEligible(organizer);
+  const profileTagsEligible = available && classifyOrganizerProfile({
+    native: sources.catchEvents.map((doc) =>
+      (doc.data ?? {}) as Record<string, unknown>),
+    external: sources.externalEvents.map((doc) =>
+      (doc.data ?? {}) as Record<string, unknown>),
+    truncated: false,
+  }, organizerTrackingPublicationPolicy, sources.now) === "eligible";
+  return {available, profileTagsEligible};
+}
+
+function pageTracking(inputs: {available: boolean},
+  policyReason: PageTracking["policyReason"], profileTagsEligible: boolean
+): PageTracking | null {
+  return inputs.available ? {enabled: false, metaPixelId: null,
+    googleMeasurementId: null, policyReason, profileTagsEligible} : null;
 }
 
 /** A copy of the value without the named keys. */

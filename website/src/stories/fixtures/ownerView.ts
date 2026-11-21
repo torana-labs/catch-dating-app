@@ -1,5 +1,5 @@
 import type {OwnerViewBackends} from "../../features/organizers/owner/ownerViewBackends";
-import type {OwnerCapability, OwnerRole, OwnerViewData} from "../../features/organizers/owner/ownerViewTypes";
+import type {OwnerCapability, OwnerReview, OwnerRole, OwnerViewData} from "../../features/organizers/owner/ownerViewTypes";
 import {claimedOrganizerPage} from "./organizerPages";
 
 /** The owner view's stories read their numbers as of the organiser page fixtures' day. */
@@ -59,6 +59,13 @@ export function ownerViewFixture(role: OwnerRole,
   };
 }
 
+/** The page's published reviews as the owner view lists them, one already answered. */
+export const ownerViewStoryReviews: OwnerReview[] = claimedOrganizerPage.latestReviews.map((review, index) => ({
+  id: review.id ?? `review-${index}`, reviewerName: review.reviewerName, rating: review.rating, comment: review.comment,
+  createdAt: review.createdAt, verificationStatus: review.verificationStatus,
+  ownerResponse: index === 0 ? {message: "See you Sunday, Riya!", hostName: "Kabir"} : null,
+}));
+
 /** Storybook backends: reads answer from the fixture, writes succeed without a server. */
 export function ownerViewStoryBackends(view: OwnerViewData): OwnerViewBackends {
   const tracking = {organizerId: view.organizerId, revision: 3, metaPixelId: "481516234200", googleMeasurementId: "G-LANTERN42",
@@ -72,11 +79,6 @@ export function ownerViewStoryBackends(view: OwnerViewData): OwnerViewBackends {
           whatsapp: command.channels?.includes("whatsapp") ? {status: "collecting", queuedCount: 61, skippedCount: 153,
             sentCount: 0, deliveredCount: 0, failedCount: 0} : null}} : null}),
     saveAbout: async () => undefined,
-    listReviews: async () => claimedOrganizerPage.latestReviews.map((review, index) => ({
-      id: review.id ?? `review-${index}`, reviewerName: review.reviewerName, rating: review.rating, comment: review.comment,
-      createdAt: review.createdAt, verificationStatus: review.verificationStatus,
-      ownerResponse: index === 0 ? {message: "See you Sunday, Riya!", hostName: "Kabir"} : null,
-    })),
     replyToReview: async () => undefined,
     watchTracking: async (_organizerId, onValue) => {
       onValue(tracking);

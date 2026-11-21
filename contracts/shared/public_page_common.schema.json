@@ -595,6 +595,24 @@
           "description": "The organizer's resolved women-led default. Readers treat absence as false."
         }
       }
+    },
+    "publicTracking": {
+      "description": "One page's advertising-tag projection, what readPublicOrganizerTrackingSettings returned for it (#2063). Null when the organizer may not configure tags at all (not first-party or verified, or without an owner). Under publication policy v1 organiser IDs never publish, so enabled is false and both IDs are null. profileTagsEligible says whether Catch's own tags may run on an organiser page, never why not; it is false on an event page.",
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "metaPixelId", "googleMeasurementId", "policyReason", "profileTagsEligible"],
+          "properties": {
+            "enabled": {"type": "boolean", "const": false},
+            "metaPixelId": {"type": "null"},
+            "googleMeasurementId": {"type": "null"},
+            "policyReason": {"type": "string", "enum": ["policyReviewRequired", "sensitiveEvent", "eventClassificationUnavailable"]},
+            "profileTagsEligible": {"type": "boolean"}
+          }
+        }
+      ]
     }
   }
 }

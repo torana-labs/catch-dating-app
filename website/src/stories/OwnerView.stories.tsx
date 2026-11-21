@@ -9,7 +9,7 @@ import {useOwnerViewController, type OwnerTab} from "../features/organizers/owne
 import {organizerPageView} from "../features/organizers/organizerPageView";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
 import {claimedOrganizerPage, organizerPageReadAt, organizerStoryListing} from "./fixtures/organizerPages";
-import {ownerViewFixture, ownerViewStoryBackends} from "./fixtures/ownerView";
+import {ownerViewFixture, ownerViewStoryBackends, ownerViewStoryReviews} from "./fixtures/ownerView";
 
 /** The boards' frames: phone at 390 and desktop at 1280. */
 const viewports = {
@@ -49,7 +49,7 @@ function PageStory({uid, view}: {uid: string | null; view: OwnerViewData}) {
 
 function OpenBar({tab, view}: {tab: OwnerTab; view: OwnerViewData}) {
   const controller = useOwnerViewController({backends: ownerViewStoryBackends(view), claimed: true, initialTab: tab,
-    initialUid: "story-owner", organizerId: page.organizerId});
+    initialUid: "story-owner", organizerId: page.organizerId, replyName: pageView.name ?? "", reviews: ownerViewStoryReviews});
   return (
     <OwnerView controller={controller} displayUrl={pageView.shareUrl.replace(/^https:\/\//u, "").replace(/\/$/u, "")}
       events={pageView.events.rows} name={pageView.name} readAt={organizerPageReadAt} />

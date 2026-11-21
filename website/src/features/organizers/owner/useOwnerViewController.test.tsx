@@ -2,7 +2,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {act, cleanup, renderHook, waitFor} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
-import {ownerViewFixture, ownerViewStoryBackends} from "../../../stories/fixtures/ownerView";
+import {ownerViewFixture, ownerViewStoryBackends, ownerViewStoryReviews} from "../../../stories/fixtures/ownerView";
 import type {OwnerViewBackends} from "./ownerViewBackends";
 import type {OwnerRole} from "./ownerViewTypes";
 import {ownerTabsFor, useOwnerViewController} from "./useOwnerViewController";
@@ -13,7 +13,8 @@ const wrapper = ({children}: PropsWithChildren) => <QueryClientProvider client={
 function render(options: {role?: OwnerRole; uid?: string | null; claimed?: boolean; backends?: OwnerViewBackends} = {}) {
   const backends = options.backends ?? ownerViewStoryBackends(ownerViewFixture(options.role ?? "owner"));
   return renderHook(() => useOwnerViewController({backends, claimed: options.claimed ?? true,
-    initialUid: options.uid === undefined ? "owner-uid" : options.uid, organizerId: "lantern-lane-runners"}), {wrapper});
+    initialUid: options.uid === undefined ? "owner-uid" : options.uid, organizerId: "lantern-lane-runners",
+    replyName: "Lantern Lane Runners", reviews: ownerViewStoryReviews}), {wrapper});
 }
 
 describe("useOwnerViewController", () => {

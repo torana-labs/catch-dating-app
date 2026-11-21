@@ -116,7 +116,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 
 | Function | File | Purpose |
 |----------|------|---------|
-| `getOrganizerTrackingSettings` / `setOrganizerTrackingSettings` / `readPublicOrganizerTrackingSettings` | `src/analytics/organizerTrackingSettings.ts` | Manager-scoped, revision-fenced Meta Pixel and GA4 configuration; bounded public policy lookup returns disabled/null-ID projections until reviewed advertising publication is authorized. |
+| `getOrganizerTrackingSettings` / `setOrganizerTrackingSettings` | `src/analytics/organizerTrackingSettings.ts` | Manager-scoped, revision-fenced Meta Pixel and GA4 configuration. The public, disabled/null-ID projection lives on the page read models (`src/publicPages`). |
 | `createRazorpayHostPaymentAccount` / `refreshRazorpayHostPaymentAccount` | `src/payments/razorpayHostAccounts.ts` | Create or continue a Razorpay Route linked account and refresh its activation state |
 | `createStripeHostOnboardingLink` / `refreshStripeHostPaymentAccount` | `src/payments/stripeHostAccounts.ts` | Create Stripe Connect hosted onboarding and refresh its account state |
 | `createStripeCheckoutSession` | `src/payments/createStripeCheckoutSession.ts` | Create a non-INR Stripe destination checkout for an enabled host account |
@@ -321,7 +321,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `getCrossPathsSuggestions` | `src/crossPaths/` | Resolve bounded, consent-safe pre-event Explore suggestions without exposing rosters or private preferences |
 | `sendCrossPathsInvitation` / `respondCrossPathsInvitation` / `cancelCrossPathsInvitationOrPlan` | `src/crossPaths/` | Send, answer, or cancel event-scoped invitations, companion holds, and accepted plans |
 | `createEventReview` / `updateEventReview` / `deleteEventReview` | `src/reviews/` | Review mutation surface |
-| `createPublicOrganizerReview` / `listPublicOrganizerReviews` | `src/reviews/` | Create or list reviews against canonical organizers |
+| `createPublicOrganizerReview` | `src/reviews/` | Create a review against a canonical organizer; pages show published reviews from their read models |
 | `manageWebsiteAccount` | `src/profiles/websiteAccount.ts` | Read or complete the authenticated minimal account with verified phone, optional birth date, revision fencing, own follow state and event age eligibility; an optional read `sections` list returns the website account page's own plans, follows, reviews and per-organiser message permissions |
 | `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |

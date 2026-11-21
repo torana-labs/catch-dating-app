@@ -1,19 +1,22 @@
 import {websiteCopy} from "@content/generated";
 import {organizerListingCopy} from "@content/organizer";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useMutation} from "@tanstack/react-query";
 import {type FormEvent, useEffect, useMemo, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
-import type {ListPublicOrganizerReviewsResponse} from "../../firebase";
 import {publicReviewsFirebaseConfigured} from "../../firebaseConfig";
 import type {FormStatus} from "../../shared/forms/types";
-import {websiteQueryKeys} from "../../shared/query/queryKeys";
 import {organizerPolicyForListing} from "../organizers/organizerPolicy";
 import {listingReviewPresentationFor} from "../organizers/listingPresentation";
 import type {HostListing, HostListingReview} from "../organizers/types";
 import {buildListingReviewSummary, mergeReviews} from "./reviewModel";
 
+/**
+ * The reviews block on an organiser or event page. The reviews themselves
+ * are the ones the server rendered from the page read model (and refreshed
+ * with the public catalog); a review this visitor just published shows at
+ * once until the next read carries it.
+ */
 export function useListingReviewsController(listing: HostListing) {
-  const queryClient = useQueryClient();
   const policy = organizerPolicyForListing(listing);
   const presentation = listingReviewPresentationFor({
     canReadPublicReviews: policy.canReadPublicReviews,
@@ -29,10 +32,6 @@ export function useListingReviewsController(listing: HostListing) {
   const publicReviewReason = policy.canWritePublicReview && !publicReviewsFirebaseConfigured ?
     organizerListingCopy.reviews.runtimeUnavailable :
     policy.publicReviewReason;
-  const reviewQueryKey = useMemo(
-    () => websiteQueryKeys.reviews.listing(listing.id),
-    [listing.id]
-  );
   const [localReviews, setLocalReviews] = useState<HostListingReview[]>([]);
   const [rating, setRating] = useState(5);
   const [reviewerName, setReviewerName] = useState("");
@@ -44,15 +43,6 @@ export function useListingReviewsController(listing: HostListing) {
     setLocalReviews([]);
     setStatus({message: "", tone: ""});
   }, [listing.id]);
-
-  const reviewsQuery = useQuery({
-    enabled: policy.canReadPublicReviews && publicReviewsFirebaseConfigured,
-    queryFn: async () => {
-      const {listPublicOrganizerReviews} = await import("../../firebase");
-      return listPublicOrganizerReviews({organizerId: listing.id});
-    },
-    queryKey: reviewQueryKey,
-  });
 
   const createReviewMutation = useMutation({
     mutationFn: async (payload: {
@@ -79,19 +69,14 @@ export function useListingReviewsController(listing: HostListing) {
       };
       return {
         moderationStatus: review.moderationStatus ?? "pending",
-        callableReview: review,
         review: organizerReviewForListing(review),
       };
     },
   });
 
-  const remoteReviews = useMemo(
-    () => reviewsQuery.data?.reviews.map(organizerReviewForListing),
-    [reviewsQuery.data?.reviews]
-  );
   const reviews = useMemo(() => policy.canReadPublicReviews ?
-    mergeReviews(localReviews, mergeReviews(remoteReviews ?? [], seedReviews)) :
-    [], [localReviews, policy.canReadPublicReviews, remoteReviews, seedReviews]);
+    mergeReviews(localReviews, seedReviews) : [],
+  [localReviews, policy.canReadPublicReviews, seedReviews]);
 
   const summary = useMemo(
     () => buildListingReviewSummary(listing, reviews),
@@ -147,7 +132,6 @@ export function useListingReviewsController(listing: HostListing) {
       });
 
       if (result.moderationStatus === "pending") {
-        await queryClient.invalidateQueries({queryKey: reviewQueryKey});
         setStatus({
           message: organizerListingCopy.reviews.pendingAcknowledgement,
           tone: "is-success",
@@ -162,23 +146,9 @@ export function useListingReviewsController(listing: HostListing) {
         });
         return;
       }
-      // Keep a published callable response visible while the eventually
-      // consistent list query catches up. mergeReviews deduplicates it once
-      // the backend read returns the same id.
+      // Keep a published review visible until the page's next read carries
+      // it; mergeReviews deduplicates it by id then.
       setLocalReviews((current) => mergeReviews([result.review], current));
-      queryClient.setQueryData<ListPublicOrganizerReviewsResponse>(
-        reviewQueryKey,
-        (current) => {
-          const seen = new Set<string>();
-          const reviews = [result.callableReview, ...(current?.reviews ?? [])].filter((review) => {
-            if (seen.has(review.id)) return false;
-            seen.add(review.id);
-            return true;
-          });
-          return {reviews};
-        }
-      );
-      await queryClient.invalidateQueries({queryKey: reviewQueryKey});
       setStatus({
         message: websiteCopy["uselistingreviewscontroller_0504"],
         tone: "is-success",
@@ -199,13 +169,6 @@ export function useListingReviewsController(listing: HostListing) {
     }
   }
 
-  const resolvedStatus: FormStatus = status.message || !reviewsQuery.isError ?
-    status :
-    {
-      message: readableError(reviewsQuery.error),
-      tone: "is-error" as const,
-    };
-
   return {
     comment,
     isAnonymous,
@@ -223,7 +186,7 @@ export function useListingReviewsController(listing: HostListing) {
     setIsAnonymous,
     setRating,
     setReviewerName,
-    status: resolvedStatus,
+    status,
     submitReview,
     summary,
   };

@@ -26,8 +26,6 @@ import type {PlanNightCallablePayload} from "../../functions/src/shared/generate
 import type {PlanNightCallableResponse} from "../../functions/src/shared/generated/planNightCallableResponse";
 import type {CreateEventRehearsalCallablePayload} from "../../functions/src/shared/generated/createEventRehearsalCallablePayload";
 import type {CreateEventRehearsalCallableResponse} from "../../functions/src/shared/generated/createEventRehearsalCallableResponse";
-import type {ReadPublicOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload";
-import type {PublicOrganizerTrackingSettingsCallableResponse} from "../../functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse";
 import type {ManagePublicEventCheckoutCallablePayload} from "../../functions/src/shared/generated/managePublicEventCheckoutCallablePayload";
 import type {ManagePublicEventCheckoutCallableResponse} from "../../functions/src/shared/generated/managePublicEventCheckoutCallableResponse";
 import type {ManageEventOfferCheckoutCallablePayload} from "../../functions/src/shared/generated/manageEventOfferCheckoutCallablePayload";
@@ -125,8 +123,6 @@ import type {FinalizeOrganizerFormAssetCallablePayload} from "../../functions/sr
 import type {FinalizeOrganizerFormAssetCallableResponse} from "../../functions/src/shared/generated/finalizeOrganizerFormAssetCallableResponse";
 import type {GetEventSuccessConversationGraphCallableResponse} from "../../functions/src/shared/generated/getEventSuccessConversationGraphCallableResponse";
 import type {HeartbeatEventSuccessPresenceCallableResponse} from "../../functions/src/shared/generated/heartbeatEventSuccessPresenceCallableResponse";
-import type {ListPublicOrganizerReviewsCallablePayload} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallablePayload";
-import type {ListPublicOrganizerReviewsCallableResponse} from "../../functions/src/shared/generated/listPublicOrganizerReviewsCallableResponse";
 import type {RecordOrganizerAnalyticsEventCallablePayload} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload";
 import type {RecordOrganizerAnalyticsEventCallableResponse} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse";
 import type {RecordEventInviteLinkOpenCallablePayload} from "../../functions/src/shared/generated/recordEventInviteLinkOpenCallablePayload";
@@ -199,11 +195,6 @@ export type CreatePublicOrganizerReviewPayload =
   CreatePublicOrganizerReviewCallablePayload;
 export type CreatePublicOrganizerReviewResponse =
   CreatePublicOrganizerReviewCallableResponse;
-
-export type ListPublicOrganizerReviewsPayload =
-  ListPublicOrganizerReviewsCallablePayload;
-export type ListPublicOrganizerReviewsResponse =
-  ListPublicOrganizerReviewsCallableResponse;
 
 export type RecordOrganizerAnalyticsEventPayload =
   RecordOrganizerAnalyticsEventCallablePayload;
@@ -1039,14 +1030,6 @@ export async function createPublicOrganizerReview(
     "createPublicOrganizerReview", payload, publicReviewsFirebaseConfigured, "Public review writes");
 }
 
-export async function listPublicOrganizerReviews(
-  payload: ListPublicOrganizerReviewsPayload
-): Promise<ListPublicOrganizerReviewsResponse> {
-  if (!publicReviewsFirebaseConfigured) return {reviews: []};
-  return invokeWebsiteCallable<ListPublicOrganizerReviewsPayload, ListPublicOrganizerReviewsResponse>(
-    "listPublicOrganizerReviews", payload, publicReviewsFirebaseConfigured, "Public reviews");
-}
-
 export async function recordOrganizerAnalyticsEvent(
   payload: RecordOrganizerAnalyticsEventPayload
 ): Promise<RecordOrganizerAnalyticsEventResponse> {
@@ -1651,14 +1634,6 @@ export async function subscribePublicCatchEvents(
 
 }
 
-export async function readPublicOrganizerTrackingSettings(
-  payload: ReadPublicOrganizerTrackingSettingsCallablePayload
-): Promise<PublicOrganizerTrackingSettingsCallableResponse> {
-  return invokeWebsiteCallable("readPublicOrganizerTrackingSettings", payload,
-    publicAnalyticsFirebaseConfigured, "Organizer tracking");
-}
-
-export type {ReadPublicOrganizerTrackingSettingsCallablePayload, PublicOrganizerTrackingSettingsCallableResponse};
 
 /** The raw documents behind a guest's step on an event page; the caller parses them. */
 export interface GuestEventDocuments {

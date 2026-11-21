@@ -462,7 +462,6 @@ export {
   createEventReview,
   createPublicOrganizerReview,
   deleteEventReview,
-  listPublicOrganizerReviews,
   setReviewResponse,
   updateEventReview,
 } from "./reviews/mutateReview";
@@ -1074,8 +1073,7 @@ export {adminReviewSalesPrivacyPolicy, adminRestrictSalesOrganizer,
   adminApplySalesPrivacyBatch, adminGetSalesPrivacyCase} from
   "./admin/salesPrivacy/callables";
 
-export {getOrganizerTrackingSettings, setOrganizerTrackingSettings,
-  readPublicOrganizerTrackingSettings}
+export {getOrganizerTrackingSettings, setOrganizerTrackingSettings}
   from "./analytics/organizerTrackingSettings";
 export {rollupOrganizerInsightsDaily} from
   "./organizerInsights/insightsRollup";
