@@ -363,7 +363,7 @@ void main() {
       expect(find.text('Send code'), findsOneWidget);
     });
 
-    testWidgets('sign-up carries the terms line and the ad-matching notice', (
+    testWidgets('sign-up carries the terms line and no separate ad notice', (
       tester,
     ) async {
       AppConfig.overrideLegalUrlDefinesForTesting(const {
@@ -397,18 +397,8 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(
-        find.text(
-          'We share a coded version of your contact details with Google and '
-          'Meta to measure our ads and choose who sees them.',
-        ),
-        findsOneWidget,
-      );
-      for (final label in [
-        'Terms',
-        'Privacy policy',
-        'How it works and how to opt out',
-      ]) {
+      expect(find.textContaining('Google and Meta'), findsNothing);
+      for (final label in ['Terms', 'Privacy policy']) {
         await tester.ensureVisible(find.text(label));
         await tester.tap(find.text(label));
         await tester.pump();
@@ -416,7 +406,6 @@ void main() {
       expect(opened, [
         Uri.parse('https://catch.example/terms/'),
         Uri.parse('https://catch.example/privacy/'),
-        Uri.parse('https://catch.example/privacy/#ads'),
       ]);
     });
 

@@ -20,7 +20,6 @@ vi.mock("../eventMessaging/EventWhatsappPreferencesPanel", () => ({
 }));
 import {PublicEventRegistration} from "./PublicEventRegistration";
 import {eventDetailCopy} from "../../content/events";
-import {adMatchingNoticeCopy} from "../../content/legal";
 const copy = eventDetailCopy.hero.webRegistration;
 afterEach(cleanup);
 let client: QueryClient;
@@ -82,16 +81,16 @@ it("requires birth date when the current event has an age restriction", async ()
   expect(api.register).not.toHaveBeenCalled();
 });
 
-it("shows the ad-matching notice, linked to the privacy policy, on the account step", async () => {
+it("carries the terms line on the account step and no separate ad notice", async () => {
   api.account.mockResolvedValue({uid: "guest", accountReady: false, displayName: "", phoneNumber: "+919999999999", profileRevision: 0, dateOfBirth: null, eventAge: null});
   render(<PublicEventRegistration eventId="event-1" />, {wrapper});
-  const link = await screen.findByRole("link", {name: adMatchingNoticeCopy.linkLabel});
-  expect(link.getAttribute("href")).toBe("/privacy/#ads");
-  expect(screen.getByText(adMatchingNoticeCopy.text, {exact: false})).toBeTruthy();
+  expect((await screen.findByRole("link", {name: "terms"})).getAttribute("href")).toBe("/terms/");
+  expect(screen.getByRole("link", {name: "privacy policy"}).getAttribute("href")).toBe("/privacy/");
+  expect(screen.queryByText(/Google and Meta/u)).toBeNull();
 });
-it("shows the ad-matching notice by the register button and no longer says booking data is not for advertising", async () => {
+it("shows no ad notice by the register button and no longer says booking data is not for advertising", async () => {
   render(<PublicEventRegistration eventId="event-1" />, {wrapper});
   await screen.findByLabelText(copy.nameLabel);
-  expect(screen.getByRole("link", {name: adMatchingNoticeCopy.linkLabel}).getAttribute("href")).toBe("/privacy/#ads");
+  expect(screen.queryByText(/Google and Meta/u)).toBeNull();
   expect(screen.queryByText(/not permission for advertising/iu)).toBeNull();
 });

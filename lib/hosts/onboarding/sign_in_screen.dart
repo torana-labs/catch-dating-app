@@ -123,7 +123,6 @@ class _HostSignInScreenState extends ConsumerState<HostSignInScreen> {
           onGetCatch: _getCatch,
           onOpenTerms: _opener(AppConfig.termsUrl),
           onOpenPrivacy: _opener(AppConfig.privacyPolicyUrl),
-          onOpenAdMatching: _opener(AppConfig.adMatchingUrl),
         ),
       ),
     );
