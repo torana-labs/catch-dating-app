@@ -8,7 +8,7 @@ const place = {citySlug: "mumbai", cityLabel: "Mumbai", sourcePage: "/mumbai/run
 describe("city alerts lead", () => {
   it("is a city_alerts website lead the join-waitlist contract accepts", () => {
     const form = cityAlertForm(place, "98000 00000", ["runs"]);
-    expect(form).toMatchObject({kind: "city_alerts", phone: "98000 00000", consentVersion: "city-new-plans-whatsapp-v1",
+    expect(form).toMatchObject({kind: "city_alerts", phone: "98000 00000", consentVersion: "city-new-plans-whatsapp-v3",
       sourcePage: "/mumbai/run-clubs/", entry: "cf-wa", answers: {interests: ["runs"]}, city: "Mumbai", countryIsoCode: "IN"});
     expect(form.cityId).toBeTruthy();
     const body = websiteLeadRequest(form, "+919800000000", "a".repeat(32));

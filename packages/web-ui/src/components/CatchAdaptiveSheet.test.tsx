@@ -54,7 +54,7 @@ function Harness({wide = "dropdown", anchored = true, onClose = () => undefined}
       <CatchAdaptiveSheet
         anchor={anchored ? trigger : undefined}
         closeLabel="Close"
-        footer="Signing in does not subscribe you to marketing messages."
+        footer="We reply on WhatsApp."
         onClose={() => {
           onClose();
           setOpen(false);
@@ -203,7 +203,7 @@ describe("CatchAdaptiveSheet", () => {
     expect(dialog.open).toBe(true);
     expect(dialog.dataset.recipe).toBe("content");
     expect(dialog.getAttribute("aria-describedby")).toBe(screen.getByText("One Catch account for your plans.").id);
-    expect(screen.getByText("Signing in does not subscribe you to marketing messages.")).toBeTruthy();
+    expect(screen.getByText("We reply on WhatsApp.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", {name: "Close"}));
     expect(onClose).toHaveBeenCalledOnce();
     fireEvent.click(screen.getByRole("button", {name: "Sign in"}));

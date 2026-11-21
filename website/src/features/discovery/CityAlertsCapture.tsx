@@ -12,9 +12,9 @@ import {activePhoneCountry} from "@content/markets";
 export const cityAlertsAnchor = "notify";
 
 /**
- * The board's form: the number and Notify me on one row (stacked on a
- * phone), then the consent line with the privacy policy across from it, and
- * the sent line once a person will reply.
+ * The board's form: the number and Get plans on one row at every width,
+ * then the consent line with the privacy policy, and the sent line once a
+ * person will reply.
  */
 function CityAlertsForm({alerts, city}: {alerts: CityAlertsController; city: string}) {
   return (
@@ -22,13 +22,13 @@ function CityAlertsForm({alerts, city}: {alerts: CityAlertsController; city: str
       {alerts.sent ? null : (
         <Form noValidate onSubmit={alerts.handleSubmit} pending={alerts.sending}>
           <CatchStack gap={8}>
-            <CatchStack collapseBelow="medium" direction="row" gap={8} railWidth="fit">
+            <CatchStack direction="row" gap={8} railWidth="fit">
               <CatchField copy={phoneFieldCopy} countryCode={activePhoneCountry} errorText={alerts.error}
                 inputMode={alerts.sending ? "inactive" : "editable"} labelMode="hidden" onChanged={alerts.setPhone} recipe="phone" required
                 title={copy.phone} value={alerts.phone} />
               <CatchButton label={copy.action} onPressed={() => undefined} status={alerts.sending ? "loading" : "idle"} type="submit" />
             </CatchStack>
-            <CatchConsentNote href="/privacy/" linkLabel={copy.privacy} text={fill(copy.consent, {city})} />
+            <CatchConsentNote href="/privacy/" linkLabel={copy.privacy} text={copy.consent} />
           </CatchStack>
         </Form>
       )}
