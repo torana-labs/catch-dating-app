@@ -46,7 +46,7 @@ export function verifyCatchWebhookSignature(rawBody: Buffer,
 
 export async function handleCatchWhatsappWebhook(request: CatchWebhookRequest,
   config: CatchWebhookConfig,
-  persist: (events: CatchWebhookEvent[]) => Promise<void>
+  persist: (events: CatchWebhookEvent[]) => Promise<unknown>
 ): Promise<CatchWebhookResponse> {
   if (request.method !== "GET" && request.method !== "POST") {
     return {status: 405, body: "Method not allowed."};
@@ -76,8 +76,11 @@ export async function handleCatchWhatsappWebhook(request: CatchWebhookRequest,
   try {
     events = parseCatchWhatsappWebhook(request.rawBody, config);
   } catch (error) {
-    return {status: error instanceof ScopeError ? 403 : 400,
-      body: "Invalid webhook."};
+    // A scope refusal names which configured id did not match, so the log
+    // can tell a foreign account from a foreign phone number.
+    return error instanceof ScopeError ?
+      {status: 403, body: error.message} :
+      {status: 400, body: "Invalid webhook."};
   }
   try {
     await persist(events);

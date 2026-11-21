@@ -26,8 +26,20 @@ import {
 } from "./whatsappWebhookProtocol";
 
 export const CATCH_INGRESS_EVIDENCE = "catchWhatsappIngressEvidence";
+const RECONCILIATION = "Catch ingress requires reconciliation.";
+/**
+ * The event's denial is already committed: its evidence row says "blocked"
+ * (and a signed STOP has its suppression). A provider retry can only repeat
+ * the same denial, so the webhook acknowledges it instead of asking for one.
+ */
+export class CatchIngressDeniedError extends Error {
+  constructor() {
+    super(RECONCILIATION);
+    this.name = "CatchIngressDeniedError";
+  }
+}
 function blocked(): never {
-  throw new Error("Catch ingress requires reconciliation.");
+  throw new Error(RECONCILIATION);
 }
 function evidenceRecord(event: CatchWebhookEvent, at: number) {
   const evidence = deriveCatchIngressEvidence(event);
@@ -170,5 +182,5 @@ export async function persistCatchVerifiedIngressEvent(
   });
   // Report only after durable denial/STOP commits; throwing inside rolls
   // them back.
-  if (result) blocked();
+  if (result) throw new CatchIngressDeniedError();
 }
