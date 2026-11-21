@@ -115,9 +115,12 @@ update and consent change; it is not injected into the host-only controller.
 
 - **What loads when.** Tags load once, only on a public page (see
   [Payload and attribution](#payload-and-attribution)) of the production site
-  (`brand.web.domain` and its `www` host), under a current version-6 choice.
+  (`brand.web.domain` and its `www` host), under a current version-7 choice.
   The analytics choice loads `gtag.js` (on its own data layer `catchTagLayer`)
-  with GA4 only. The marketing choice adds the Ads tag to it and loads
+  with GA4 only, plus Microsoft Clarity once its project id is set in
+  `catchAdDestinations` (analytics storage granted, ad storage denied, every
+  site form masked with `data-clarity-mask`, paused while a private surface
+  is open). The marketing choice adds the Ads tag to it and loads
   `fbevents.js`. Essential loads nothing, and nothing loads on dev or
   preview hosts. There is no GTM.
 - **Consent.** Before any script runs, Consent Mode defaults deny all four
@@ -133,21 +136,36 @@ update and consent change; it is not injected into the host-only controller.
   marketing choice.
 - **No automatic sends.** Both Google configs set `send_page_view: false`; the
   Pixel has `autoConfig` off and `disablePushState` set, so neither tag reports
-  history changes, clicks or form fields by itself. Every send is an explicit
-  call below, and each call first sets the page location to the fixed Catch
-  origin, the public path and only reviewed campaign labels and Google click
-  ids, with the title fixed to Catch.
+  history changes, clicks or form fields by itself (the GA4 stream's own
+  enhanced measurement also has history, scroll, form and outbound events
+  off, read from the served `gtag.js` on 21 Nov 2026). Every send is an
+  explicit call below, and each call first sets the page location to the
+  fixed Catch origin, the public path, the page's reviewed filter values
+  (the city on the homepage; Explore's city, format, when and show on Explore
+  and city pages, never the search words) and only reviewed campaign labels
+  and Google click ids. The title is the page's own, except event pages and
+  organiser profiles, which report a fixed title for their kind.
 - **Withdrawal.** Withdrawing or downgrading the choice, in this tab or
   another, updates Consent Mode to denied for all four purposes, calls
   `fbq('consent', 'revoke')`, stops every later send, clears the stored click
   context and removes the tags' first-party cookies (`_fbp`, `_fbc`, `_ga*`,
-  `_gcl_*`). Requests already sent cannot be recalled. Entering a private page
+  `_gcl_*`, Clarity's `_clck` and `_clsk`), and Clarity gets `consentv2`
+  denied and `consent(false)`. Requests already sent cannot be recalled. Entering a private page
   leaves loaded tags idle; nothing is sent from it.
 - **Events.** The module sends only the events and parameters in
   [the event map](#version-2-outbound-event-map), each with an `event_id`
   (Meta `eventID`) the server delivery can share:
   - `page_view` / `PageView` on each public page view, and for the current page
     when marketing is first chosen (never earlier pages).
+  - GA4 only, under analytics: the site events `analytics.ts` projects to a
+    closed parameter set (`cta_click`, `store_cta_click`,
+    `store_cta_pending`, `lead_form_*`, `city_alerts_submitted`,
+    `weddings_apply_step`, `explore_filters_applied`, `scroll_depth`,
+    `section_read`), through `adTags.analyticsEvent`.
+  - Member and referral leads (`adTags.siteLead`): GA4 `generate_lead` with
+    `content_category` member or referral; under marketing a custom Meta
+    `MemberLead` or `ReferralLead`, never the standard `Lead` the host
+    campaigns optimise for. No contact data and no Ads conversion.
   - `view_item` / `ViewContent` on a public event page: the event ID, its
     activity kind, the organiser's city and the Catch ticket price in INR when
     the page shows one.
@@ -376,15 +394,16 @@ its own replace semantics, behind its own gate.
 
 ## Consent and lifecycle
 
-The persistent `catch_marketing_consent_v6` receipt records version 6, choice,
+The persistent `catch_marketing_consent_v7` receipt records version 7, choice,
 analytics/marketing booleans, update time and the measurement mode
 (`first_party_tags`). A mode change requires a fresh choice. The banner offers
 essential only, analytics, and explicit analytics plus marketing, with a
-persistent Privacy choices control for withdrawal. Only a version-6 marketing
+persistent Privacy choices control for withdrawal. Only a version-7 marketing
 choice loads the tags. Version 5 shipped with the first-party transport;
 version 6 (owner decision relayed 19 Nov 2026, #2063) shipped when the banner
-began naming organisers' own Meta and Google tags, so every earlier choice,
-version 5 included, loads nothing and asks again.
+began naming organisers' own Meta and Google tags, and version 7 when it began
+naming Microsoft Clarity with site analytics, so every earlier choice,
+version 6 included, loads nothing and asks again.
 Legacy version-1 to version-4 choices, including `accepted`, can retain local
 analytics permission but never authorize the tags or marketing; the banner
 requires a fresh choice, and their stored campaign and click context is cleared.
@@ -492,7 +511,7 @@ everything on loss of analytics) or expiry removes it. Only the closed,
 reviewed source/medium/campaign/content vocabularies in `approvedCampaignLabels`
 persist in the existing HTTP attribution payload; unknown labels and search
 terms are discarded. `catchMeasurement.ts` owns the browser-only identifier
-context under a current version-6 choice. Click identifiers are excluded for
+context under a current version-7 choice. Click identifiers are excluded for
 analytics-only choices and never enter the diagnostic bus or existing lead HTTP
 payload. Storage failures drop the context.
 New campaigns require a reviewed vocabulary change. There is no URL-passthrough
@@ -601,7 +620,7 @@ a recorded receipt.
 | Item | State | Where |
 | --- | --- | --- |
 | Separation | Built: one transport, two isolated sets; iframe retired | `adTags.ts` (#2138, #2193); `adTagsIsolation.test.ts`, `adTagsOrganizer.test.ts` |
-| Consent gate | Built; the banner names organiser tags (#2194) | One v6 marketing receipt (`catch_marketing_consent_v6`), via `adTags.sync` |
+| Consent gate | Built; the banner names organiser tags (#2194) | One v7 marketing receipt (`catch_marketing_consent_v7`), via `adTags.sync` |
 | Eligible routes | Built | `organizerAdPage` (#2102, ad-click keys #2139) plus the set's own scope in `adTags.ts` (#2193) |
 | Event map | Built | `organizerTagEvents.ts` (#2102), sent only by the organiser set (#2193) |
 | Publication policy | Built, disabled | `organizerTrackingPublicationPolicy.ts` (#2097); profile classification (#2192) |
@@ -634,7 +653,7 @@ a recorded receipt.
   - The sandboxed iframe runtime that predated Option A
     (`organizer-tracking-runtime.*`, `trackingProviders.ts`) was removed;
     the first-party transport is the only loader.
-- **Consent.** The only basis is a current version-6 *marketing* choice. An
+- **Consent.** The only basis is a current version-7 *marketing* choice. An
   analytics-only choice loads nothing for organiser destinations. Legacy,
   downgraded and unknown receipts fail closed. Withdrawal revokes and stops
   organiser tags in the same page view, as it does for Catch's. Before
