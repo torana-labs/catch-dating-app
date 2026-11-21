@@ -36979,6 +36979,42 @@ abstract class AppLocalizations {
   /// **'Nobody matches yet.'**
   String get hostPeopleGroupMatchEmpty;
 
+  /// Hand-picked group section title: how many people it holds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person} other{{people} people}}'**
+  String hostPeopleGroupMembers({required int count, required String people});
+
+  /// Hand-picked group with no people.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is in this group yet.'**
+  String get hostPeopleGroupMembersEmpty;
+
+  /// Hand-picked group people read failure title.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t list this group'**
+  String get hostPeopleGroupMembersError;
+
+  /// Hand-picked group: a later page of people failed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t list more people.'**
+  String get hostPeopleGroupMembersMoreError;
+
+  /// Hand-picked group row for a contact that was merged, removed or hidden.
+  ///
+  /// In en, this message translates to:
+  /// **'No longer in your contacts'**
+  String get hostPeopleGroupMemberGone;
+
+  /// Why a hand-picked group row has no person.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged into another contact or removed'**
+  String get hostPeopleGroupMemberGoneBody;
+
   /// Saved group preview failure title.
   ///
   /// In en, this message translates to:

@@ -27,6 +27,7 @@ import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/people/person_controller.dart';
 import 'package:catch_dating_app/hosts/people/person_state.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_controller.dart';
+import 'package:catch_dating_app/hosts/people/saved_group_state.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -524,4 +525,56 @@ void main() {
       expect(predicates.last, isA<HostSavedAudienceLastSeenWithinDays>());
     },
   );
+
+  test('a hand-picked group lists its people a page at a time, with no '
+      'name for a contact that was merged away', () async {
+    final audience = handPickedGroupAudience(32);
+    List<HostSavedGroupMember> page(int from, int to) => [
+      for (var i = from; i < to; i++)
+        (contactId: 'p$i', displayName: i == 3 ? null : 'Guest $i'),
+    ];
+    final container = ProviderContainer.test(
+      overrides: [
+        hostSavedAudienceDetailProvider(
+          _org,
+          'picked',
+        ).overrideWith((ref) => Stream.value(audience)),
+        hostSavedGroupMembersProvider(
+          _org,
+          'picked',
+          0,
+        ).overrideWith((ref) => Stream.value(page(0, 30))),
+        hostSavedGroupMembersProvider(
+          _org,
+          'picked',
+          1,
+        ).overrideWith((ref) => Stream.value(page(30, 32))),
+      ],
+    );
+    container.listen(
+      hostSavedGroupControllerProvider(_org, 'picked'),
+      (_, _) {},
+    );
+    container.listen(
+      hostSavedGroupControllerProvider(_org, 'picked', memberPages: 2),
+      (_, _) {},
+    );
+    await _settle(container);
+
+    final first = container.read(
+      hostSavedGroupControllerProvider(_org, 'picked'),
+    );
+    expect(first.handPicked, isTrue);
+    expect(first.preview, isNull);
+    expect(first.members, hasLength(30));
+    expect(first.members![3].displayName, isNull);
+    expect(first.moreMembers, isTrue);
+
+    final both = container.read(
+      hostSavedGroupControllerProvider(_org, 'picked', memberPages: 2),
+    );
+    expect(both.members!.map((member) => member.contactId).last, 'p31');
+    expect(both.moreMembers, isFalse);
+    expect(both.membersFailed, isFalse);
+  });
 }

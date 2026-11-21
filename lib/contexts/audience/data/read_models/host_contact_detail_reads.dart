@@ -56,6 +56,48 @@ class HostContactDetailReads {
     ),
   );
 
+  /// The directory rows of up to [ReadLimitPolicy.multiIdChunk] contacts,
+  /// by id, while listened to. An id with no row of this organizer (merged
+  /// into another contact, removed or hidden) is left out.
+  Stream<Map<String, HostContactSummaryRow>> watchSummaries(
+    String organizerId,
+    List<String> contactIds,
+  ) {
+    if (contactIds.isEmpty) {
+      return Stream.value(const <String, HostContactSummaryRow>{});
+    }
+    if (contactIds.length > ReadLimitPolicy.multiIdChunk) {
+      throw ArgumentError.value(
+        contactIds.length,
+        'contactIds',
+        'At most ${ReadLimitPolicy.multiIdChunk} contacts per read.',
+      );
+    }
+    return withBackendErrorStream(
+      () => _db
+          .collection(summaries)
+          .where('organizerId', isEqualTo: organizerId)
+          .where(FieldPath.documentId, whereIn: contactIds)
+          .limit(ReadLimitPolicy.multiIdChunk)
+          .snapshots()
+          .map(
+            (snapshot) => {
+              for (final doc in snapshot.docs)
+                if (doc.data()['row'] case final Map<Object?, Object?> row)
+                  doc.id: (
+                    contact: HostAudienceContact.fromMap(row),
+                    linkedAccount: doc.data()['linkedAccount'] == true,
+                  ),
+            },
+          ),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch organizer contacts by id',
+        resource: summaries,
+      ),
+    );
+  }
+
   /// The contact's traits, revenue and newest event rows while listened to.
   /// Until the server writes the view the read reports it missing.
   Stream<HostContactDetailFacts> watchFacts(

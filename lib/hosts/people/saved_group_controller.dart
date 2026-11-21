@@ -1,9 +1,11 @@
+import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_state.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,15 +33,49 @@ Future<HostSavedAudiencePreview> hostSavedGroupPreview(
       );
 }
 
+/// One page of a hand-picked group's people: page [page] of the group's
+/// chosen contact ids, [hostSavedGroupMemberPage] at a time, each with its
+/// `hostContactSummaries` row, or no name when the contact has none (merged
+/// into another contact, removed or hidden).
+@riverpod
+Stream<List<HostSavedGroupMember>> hostSavedGroupMembers(
+  Ref ref,
+  String organizerId,
+  String audienceId,
+  int page,
+) async* {
+  final audience = await ref.watch(
+    hostSavedAudienceDetailProvider(organizerId, audienceId).future,
+  );
+  final ids = audience.definition.selectedContactIds
+      .skip(page * hostSavedGroupMemberPage)
+      .take(hostSavedGroupMemberPage)
+      .toList(growable: false);
+  yield* ref
+      .watch(hostContactsRepositoryProvider)
+      .watchContactSummaries(organizerId, ids)
+      .map(
+        (rows) => [
+          for (final id in ids)
+            (contactId: id, displayName: rows[id]?.contact.displayName),
+        ],
+      );
+}
+
+/// People a hand-picked group lists per page: one by-id read.
+const int hostSavedGroupMemberPage = ReadLimitPolicy.multiIdChunk;
+
 /// A saved group, composed from the group read, its preview and the
 /// organizer's events (for a Went to rule's event). No [audienceId] means
-/// a new group.
+/// a new group. A hand-picked group also lists its first [memberPages]
+/// pages of people.
 @riverpod
 HostSavedGroupState hostSavedGroupController(
   Ref ref,
   String organizerId,
-  String? audienceId,
-) {
+  String? audienceId, {
+  int memberPages = 1,
+}) {
   if (audienceId == null) return const HostSavedGroupState.creating();
   final read = catchAsyncStateFromAsyncValue(
     ref.watch(hostSavedAudienceDetailProvider(organizerId, audienceId)),
@@ -52,6 +88,9 @@ HostSavedGroupState hostSavedGroupController(
             error: read.error,
           )
         : const HostSavedGroupState.loading();
+  }
+  if (audience.definition.isStatic) {
+    return _handPicked(ref, organizerId, audience, memberPages);
   }
   final preview = catchAsyncStateFromAsyncValue(
     ref.watch(hostSavedGroupPreviewProvider(organizerId, audienceId)),
@@ -79,6 +118,43 @@ HostSavedGroupState hostSavedGroupController(
   );
 }
 
+/// A hand-picked group with its people, page by page. It lists the chosen
+/// ids in order and needs no preview: the count is the list's length.
+HostSavedGroupState _handPicked(
+  Ref ref,
+  String organizerId,
+  HostSavedAudience audience,
+  int memberPages,
+) {
+  final total = audience.definition.selectedContactIds.length;
+  final pages = (total / hostSavedGroupMemberPage).ceil();
+  final shown = memberPages.clamp(1, pages < 1 ? 1 : pages);
+  final members = <HostSavedGroupMember>[];
+  var failed = false;
+  var loading = false;
+  for (var page = 0; page < shown && page < pages; page++) {
+    final value = catchAsyncStateFromAsyncValue(
+      ref.watch(
+        hostSavedGroupMembersProvider(organizerId, audience.audienceId, page),
+      ),
+    );
+    final rows = value.value;
+    if (rows == null) {
+      failed = failed || value.hasError;
+      loading = !value.hasError;
+      break;
+    }
+    members.addAll(rows);
+  }
+  return HostSavedGroupState(
+    status: HostSavedGroupStatus.ready,
+    audience: audience,
+    members: members.isEmpty && (loading || failed) ? null : members,
+    membersFailed: failed,
+    moreMembers: !loading && !failed && members.length < total,
+  );
+}
+
 /// Reads a saved group again after a failure. A save needs no reread: the
 /// group's listener delivers the new revision, and its preview follows.
 void refreshHostSavedGroup(
@@ -89,6 +165,7 @@ void refreshHostSavedGroup(
   ref
     ..invalidate(hostSavedAudienceDetailProvider(organizerId, audienceId))
     ..invalidate(hostSavedGroupPreviewProvider(organizerId, audienceId))
+    ..invalidate(hostSavedGroupMembersProvider)
     ..invalidate(hostAllSavedAudienceSummariesProvider(organizerId));
 }
 

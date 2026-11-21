@@ -204,4 +204,43 @@ void main() {
     expect(find.text('once'), findsOneWidget);
     expect(find.textContaining('people match'), findsNothing);
   });
+
+  testWidgets('a hand-picked group lists its people with Show more', (
+    tester,
+  ) async {
+    var more = 0;
+    final opened = <String>[];
+    await pumpPeopleBody(
+      tester,
+      HostSavedGroupBody(
+        state: HostSavedGroupState(
+          status: HostSavedGroupStatus.ready,
+          audience: handPickedGroupAudience(40),
+          members: const [
+            (contactId: 'p0', displayName: 'Aanya Sharma'),
+            (contactId: 'p1', displayName: null),
+          ],
+          moreMembers: true,
+        ),
+        atLeast: 1,
+        onAtLeast: (_) {},
+        onOpenPerson: (person) => opened.add(person.contactId),
+        onRetry: () {},
+        onMoreMembers: () => more++,
+      ),
+    );
+
+    expect(find.text('Picked by hand'), findsOneWidget);
+    expect(find.text('40 people'), findsOneWidget);
+    expect(find.text('No longer in your contacts'), findsOneWidget);
+    expect(find.textContaining('people match'), findsNothing);
+
+    await tester.tap(find.text('Aanya Sharma'));
+    expect(opened, ['p0']);
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('host-group-members-more')),
+    );
+    await tester.tap(find.byKey(const ValueKey('host-group-members-more')));
+    expect(more, 1);
+  });
 }
