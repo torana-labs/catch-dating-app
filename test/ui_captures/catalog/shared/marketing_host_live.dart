@@ -74,13 +74,14 @@ EventSuccessPlan marketingHostPlan(Event event, {bool complete = false}) =>
 List<Object> marketingHostManageOverrides(
   Event event, {
   bool complete = false,
+  List<Review> reviews = const <Review>[],
 }) => [
   uidProvider.overrideWith((ref) => Stream.value(captureViewerUid)),
   watchUserProfileProvider.overrideWith((ref) => Stream.value(captureViewer)),
   watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
   watchReviewsForEventProvider(
     event.id,
-  ).overrideWith((ref) => Stream.value(const <Review>[])),
+  ).overrideWith((ref) => Stream.value(reviews)),
   eventParticipationRepositoryProvider.overrideWithValue(
     marketingHostParticipationRepository,
   ),

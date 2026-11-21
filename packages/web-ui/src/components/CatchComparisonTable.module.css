@@ -93,3 +93,99 @@
 
   .cellLabel { display: block; }
 }
+
+/*
+ * The ledger (compareLabel): chips to pick the other column, then hairline
+ * rows on a white card with no tints. Ours is set in ink with its marks in
+ * mint's deep ink; theirs in the secondary ink, a "no" and an unknown in the
+ * tertiary ink (an unknown in italics). Below 840px each need takes the
+ * whole row and its two answers sit side by side under it.
+ */
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-s2);
+}
+
+.ledger {
+  overflow: hidden;
+  border-radius: var(--catch-radius-xl);
+  background: var(--catch-ground-white-fill);
+  color: var(--catch-ground-white-ink);
+}
+
+.versus {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-align: start;
+}
+
+.versus th,
+.versus td {
+  padding: var(--catch-space-s3) var(--catch-space-s4);
+  border-top: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+  text-align: start;
+  vertical-align: top;
+}
+
+.versus thead th {
+  border-top: 0;
+  vertical-align: bottom;
+}
+
+.versusNeed { width: 36%; }
+
+.answer {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-s2);
+  min-width: 0;
+}
+
+.mark {
+  display: inline-flex;
+  flex: none;
+  padding-top: var(--catch-space-micro2);
+}
+
+.versus td { color: var(--catch-theme-ink2); }
+.versus td[data-featured] { color: var(--catch-theme-ink); }
+.versus td[data-featured] .mark { color: var(--catch-palette-mint-deep); }
+.versus td:not([data-featured])[data-status="no"] { color: var(--catch-theme-ink3); }
+
+.versus td[data-status="unknown"] {
+  color: var(--catch-theme-ink3);
+  font-style: italic;
+}
+
+@container catch-page (width < 840px) {
+  .versus,
+  .versus thead,
+  .versus tbody { display: block; }
+
+  .versusRow {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+  }
+
+  .versus thead .versusRow { border-top: 0; }
+
+  .versus th,
+  .versus td { border-top: 0; }
+
+  .versusNeed {
+    grid-column: 1 / -1;
+    width: auto;
+    padding-bottom: 0;
+  }
+
+  .versus thead .versusNeed { display: none; }
+}

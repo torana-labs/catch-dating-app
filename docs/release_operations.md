@@ -4052,7 +4052,10 @@ both from `main` only:
   code to production as a staged rollout, from whichever testing track holds it
   (a nightly beta can replace the internal-track release while a run waits for
   approval; the lane then stops and names the code the internal track holds
-  now, so start a new run with it). It rebuilds nothing. It uses the
+  now, so start a new run with it). Running it again for a version code
+  already on the production track raises that release's staged rollout to the
+  new fraction instead; `rollout: 1` completes it, as Play Console's "Increase
+  rollout" does. It rebuilds nothing. It uses the
   `prod-mobile-release` environment, which requires a reviewer's approval.
   Choose `platform: both` with `ios_build` and `android_version_code` to
   release both stores in one run: one approval covers every job waiting in

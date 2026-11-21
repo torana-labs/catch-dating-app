@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_ai_fallback_test_call_response.schema.json",
+  "title": "AdminAiFallbackTestCallCallableResponse",
+  "description": "What one live test call did, by step: the federation params (config), the Google identity token (token_mint), the Anthropic token exchange (token_exchange), the Messages call (messages_call), the structured output (schema), or the monthly cap and daily test limit (budget). Never a token, a prompt or a model answer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ok", "dryRun", "failedStep", "refusal", "httpStatus", "modelId", "inputTokens", "outputTokens", "costMicros", "durationMs"],
+  "properties": {
+    "ok": {"type": "boolean"},
+    "dryRun": {"type": "boolean"},
+    "failedStep": {"type": ["string", "null"], "enum": ["config", "token_mint", "token_exchange", "messages_call", "schema", "budget", null]},
+    "refusal": {"type": ["string", "null"], "enum": ["ai_cap_reached", "ai_daily_limit", "ai_unreadable", null], "description": "Why the budget step refused, when failedStep is budget."},
+    "httpStatus": {"type": ["integer", "null"], "minimum": 100, "maximum": 599},
+    "modelId": {"type": "string", "maxLength": 64},
+    "inputTokens": {"type": "integer", "minimum": 0},
+    "outputTokens": {"type": "integer", "minimum": 0},
+    "costMicros": {"type": "integer", "minimum": 0, "description": "What the call settled to against the AI fallback's monthly cap (micro-dollars)."},
+    "durationMs": {"type": "integer", "minimum": 0}
+  }
+}

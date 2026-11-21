@@ -161,7 +161,6 @@
           ],
           "links": [
             {
-              "label": "Your page",
               "to": {
                 "route": "product_your_page"
               }
@@ -178,7 +177,6 @@
           ],
           "links": [
             {
-              "label": "Bookings and memberships",
               "to": {
                 "route": "product_bookings"
               }
@@ -195,7 +193,6 @@
           ],
           "links": [
             {
-              "label": "Messages and growth",
               "to": {
                 "route": "product_messages"
               }
@@ -205,7 +202,7 @@
       ],
       "media": {
         "kind": "capture",
-        "slot": "guest-explore"
+        "slot": "host-event-share-links"
       }
     },
     {
@@ -226,7 +223,6 @@
           ],
           "links": [
             {
-              "label": "The room",
               "to": {
                 "route": "product_room"
               }
@@ -243,7 +239,6 @@
           ],
           "links": [
             {
-              "label": "Running the event",
               "to": {
                 "route": "product_event"
               }
@@ -274,7 +269,6 @@
           ],
           "links": [
             {
-              "label": "Guest records",
               "to": {
                 "route": "product_guests"
               }
@@ -291,7 +285,6 @@
           ],
           "links": [
             {
-              "label": "Reports and payouts",
               "to": {
                 "route": "product_reports"
               }

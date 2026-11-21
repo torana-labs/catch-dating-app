@@ -1,7 +1,10 @@
 import crypto from "node:crypto";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {
+  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets,
+} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {requireAdminRole} from "../admin/adminAuth";
 import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
@@ -37,6 +40,8 @@ import {
   organizerClaimRequestId,
   prepareOrganizerClaimApproval,
 } from "./organizerClaimApproval";
+import {phoneMatchEvidence} from "./phoneLeads/find";
+import {listingSuppressionHmacKey} from "../listingSuppressions/registry";
 
 // Ops recommend a claim (adminRecommendOrganizerClaim); only the owner
 // approves or rejects it.
@@ -46,6 +51,7 @@ interface OrganizerClaimDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   checkRateLimit?: typeof defaultCheckRateLimit;
+  phoneMatch?: typeof phoneMatchEvidence;
 }
 
 const defaultDeps: OrganizerClaimDeps = {
@@ -128,12 +134,18 @@ export async function requestOrganizerClaimHandler(
         "Another organizer claim is already under review."
       );
     }
+    // Shadow profiles: a claimer whose verified phone Catch already holds
+    // for this organizer is marked for staff; it never approves on its own.
+    const phoneMatch = await (deps.phoneMatch ?? phoneMatchEvidence)(tx, db, {
+      phone: request.auth?.token?.phone_number, organizerId: data.organizerId,
+    });
     const stageSalesTransition = await prepareClaimSalesTransition(tx, db, {
       organizerId: data.organizerId, claimRequestId: requestId,
       transitionId, status: "requested", actorUid: requesterUid, recordedAt,
     });
     const timestamp = deps.serverTimestamp();
     tx.set(requestRef, {
+      ...(phoneMatch ? {evidence: phoneMatch} : {}),
       requestId,
       organizerId: data.organizerId,
       requesterUid,
@@ -372,7 +384,7 @@ function uniqueStrings(values: unknown[]): string[] {
 }
 
 export const requestOrganizerClaim = onCall(
-  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey]),
   (request) => requestOrganizerClaimHandler(request)
 );
 export const adminDecideOrganizerClaim = onCall(

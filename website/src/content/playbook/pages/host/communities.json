@@ -41,7 +41,7 @@
           {"label": "First-timers", "value": "5"}
         ]
       },
-      "media": {"kind": "capture", "slot": "host-today"}
+      "media": {"kind": "capture", "slot": "host-people"}
     },
     {
       "type": "tiles",

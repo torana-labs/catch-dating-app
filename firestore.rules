@@ -1053,6 +1053,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Shadow organizer profiles: keyed hashes of phones, server-only.
+    match /organizerPhoneLeads/{leadId} {
+      allow read, write: if false;
+    }
+
     match /aiFallbackResults/{cacheKey} {
       allow read, write: if false;
     }

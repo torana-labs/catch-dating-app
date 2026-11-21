@@ -41,7 +41,7 @@
           {"label": "Came", "value": "48"}
         ]
       },
-      "media": {"kind": "capture", "slot": "host-formats-mix"}
+      "media": {"kind": "capture", "slot": "host-event-share-links"}
     },
     {
       "type": "tiles",

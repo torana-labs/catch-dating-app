@@ -37,6 +37,8 @@ export const homePageCopy = {
     body: "Runs, games, dinners, classes and nights out, run by hosts who bring people together. Come on your own and leave knowing a few more people.",
     busyAction: "See what’s on in {city}",
     thinAction: "See what’s coming up",
+    /** A city with nothing in the next two weeks: the plans band is the WhatsApp sign-up. */
+    emptyAction: "Get new plans on WhatsApp",
     hostAction: "Host an event",
     /** The plan chip over the hero's phone: where the soonest plan meets, and its places when known. */
     chipMeta: "{place} · {availability}",
@@ -151,8 +153,6 @@ export const homePageCopy = {
     action: "See everything in {city}",
     filters: "Filter by format",
     everything: "Everything",
-    /** The row of other open cities under the heading. */
-    cityLink: "Plans in {city}",
     note: "{shown} of {total} plans shown. Hosts set their own prices.",
     /** An open city with nothing this week shows the next two weeks instead, under these lines. */
     upcomingTitle: "Coming up in {city}",
@@ -166,6 +166,15 @@ export const homePageCopy = {
     thinNote: "{shown} of {total} plans in the next two weeks. Hosts set their own prices.",
     /** Nothing in the whole window: point to the organisers below, never a dead end. */
     emptyWindow: "No plans in {city} in the next two weeks yet. Follow the organisers below to hear about their next one first.",
+    /** Nothing in the next two weeks: the band is the WhatsApp sign-up, then a line for hosts. */
+    emptyTitle: "Be first to hear when {city}’s next plans go up.",
+    emptyLead: "Hosts are getting set up. We’ll send new {city} plans on WhatsApp, about once a week.",
+    /** {host} is a link to the host page. */
+    emptyHost: "Run plans in {city}? {host}",
+    emptyHostLink: `Host on ${brand.name}`,
+    /** The link to everything, under the cards: a busy city's count, or a thin city's. */
+    seeAll: "See all {count} plans in {city}",
+    seeAllOne: "See the plan in {city}",
     filteredNote: "Showing {shown} of {total} this week · {format}",
     emptyFormat: "No {format} this week. Try another format.",
     unavailable: "We couldn’t load this week’s plans. Please try again in a moment.",
@@ -252,8 +261,6 @@ export const homePageCopy = {
     eyebrow: "Get the app",
     title: "Your plans, your groups and your hosts, in your pocket.",
     body: "Book in a couple of taps, get reminders and directions, and keep your group chat after the night.",
-    qr: "Scan to get the app",
-    qrLabel: `QR code for the ${appName} app download link`,
     /** Until the app is on a store (guestAppLive), the band is a WhatsApp notice for the launch. */
     soonEyebrow: `The ${appName} app · coming soon`,
     soonTitle: "Be first in the app, and first to new plans.",

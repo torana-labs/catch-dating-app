@@ -639,7 +639,7 @@
                     "links": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/$defs/action"
+                        "$ref": "#/$defs/tileLink"
                       },
                       "minItems": 1,
                       "maxItems": 3
@@ -2011,7 +2011,8 @@
                   "pricingExamples",
                   "pricingCap",
                   "pricingIncluded",
-                  "pricingOrganisations"
+                  "pricingOrganisations",
+                  "hostCompare"
                 ]
               },
               "status": {

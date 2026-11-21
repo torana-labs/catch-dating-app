@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_ai_fallback_test_call_payload.schema.json",
+  "title": "AdminAiFallbackTestCallCallablePayload",
+  "description": "The owner's live test of the try-it AI fallback's federated sign-in (#2062): one fixed, fictional guest-mapping request (headers and shapes only). It takes no other input. dryRun stops after the token exchange and spends nothing.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "dryRun": {"type": "boolean", "description": "True: check the federation params and exchange a token, without calling the model."}
+  },
+  "x-callable-aliases": ["adminAiFallbackTestCall"]
+}

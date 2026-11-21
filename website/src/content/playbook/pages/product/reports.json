@@ -74,7 +74,7 @@
       ],
       "media": {
         "kind": "capture",
-        "slot": "host-post-event-report"
+        "slot": "host-post-event-report-more"
       },
       "status": "built"
     },
@@ -92,7 +92,7 @@
         "Public reviews and private notes, kept apart",
         "What people asked for, summed up across events"
       ],
-      "media": {"kind": "capture", "slot": "host-post-event-report"}
+      "media": {"kind": "capture", "slot": "guest-after-event"}
     },
     {
       "type": "tiles",

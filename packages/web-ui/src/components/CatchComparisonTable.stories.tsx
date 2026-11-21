@@ -49,3 +49,17 @@ export const Compact: Story = {
 
 export const Highlighted: Story = {};
 export const Plain: Story = {args: {highlightColumn: undefined}};
+
+/** The ledger: our option beside one other the reader picks, on a wide page and a phone. */
+export const Ledger: Story = {
+  render: () => (
+    <>
+      <CatchRoot size="expanded" theme="day">
+        <CatchComparisonTable {...sample} compareLabel="Compare our option with" ground="paper" rowHeader="What you need" />
+      </CatchRoot>
+      <CatchRoot size="compact" theme="day">
+        <CatchComparisonTable {...sample} compareLabel="Compare our option with" ground="paper" rowHeader="What you need" title="The ledger on a phone" />
+      </CatchRoot>
+    </>
+  ),
+};
