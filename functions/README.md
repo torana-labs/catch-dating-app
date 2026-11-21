@@ -573,6 +573,9 @@ enter previews.
 | `onGuestEventStatusParticipationWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when their Catch booking status changes |
 | `onGuestEventStatusPaymentWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when a website or offer payment changes |
 | `onHostDirectoryOrganizerCreated` | `src/hostReadModels/directoryActivation.ts` | Activates every Host directory read model (contacts, responses, forms, groups, events) for a new organizer |
+| `onHostEventAttendanceReportAttendeeWritten` | `src/hostReadModels/attendanceReportViewTriggers.ts` | Rebuilds the close-out attendance report view when a guest's check-in or booking changes. |
+| `onHostEventAttendanceReportDispositionWritten` | `src/hostReadModels/attendanceReportViewTriggers.ts` | Rebuilds the close-out attendance report view when a no-show is recorded or cleared. |
+| `onHostEventAttendanceReportEventWritten` | `src/hostReadModels/attendanceReportViewTriggers.ts` | Rebuilds the close-out attendance report view when the event's timing or closure changes. |
 | `onInstantDraftPhoneLeads` | `src/organizers/phoneLeads/sync.ts` | Shadow profiles (off): records the phone an instant-draft submitter verified against the drafted organizer, hashed. |
 | `onOrganizerProgramFunctionChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a function's programme when the function changes |
 | `onOrganizerProgramHotelChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a hotel's programme when the hotel changes |
