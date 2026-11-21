@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "note": "Retargeting audiences, created now so they fill before retargeting ads start (Stage 3). Only visitors who chose analytics and marketing in the cookie banner load the Meta and Google tags, so only they join the website audiences. Create-only: an audience that already exists is left as it is, and nothing here is ever deleted. Never base an audience on gender, orientation, matching or dating interest.",
+  "meta": {
+    "adAccountId": "3245368689001899",
+    "pixelId": "1844810253539672",
+    "pageId": "1379023548628306",
+    "instagramUserId": "17841476918450741",
+    "audiences": [
+      {
+        "name": "Catch | Host page visitors | 180d",
+        "description": "Website visitors who opened a /host page.",
+        "source": "pixel",
+        "retentionDays": 180,
+        "urlContains": "/host"
+      },
+      {
+        "name": "Catch | Website host leads | 180d",
+        "description": "Website visitors who sent a host lead (the Pixel Lead event). Excluded from prospecting.",
+        "source": "pixel",
+        "retentionDays": 180,
+        "event": "Lead"
+      },
+      {
+        "name": "Catch | Lead form opened, not sent | 90d",
+        "description": "People who opened the Meta host lead form and did not send it.",
+        "source": "leadForm",
+        "retentionDays": 90,
+        "event": "lead_generation_opened",
+        "excludeEvent": "lead_generation_submitted"
+      },
+      {
+        "name": "Catch | Lead form sent | 90d",
+        "description": "People who sent the Meta host lead form. Excluded from prospecting.",
+        "source": "leadForm",
+        "retentionDays": 90,
+        "event": "lead_generation_submitted"
+      },
+      {
+        "name": "Catch | Instagram engagers | 365d",
+        "description": "Anyone who engaged with the Catch Instagram account.",
+        "source": "instagram",
+        "retentionDays": 365,
+        "event": "ig_business_profile_all"
+      },
+      {
+        "name": "Catch | Facebook Page engagers | 365d",
+        "description": "Anyone who engaged with the Catch Facebook Page.",
+        "source": "page",
+        "retentionDays": 365,
+        "event": "page_engaged"
+      }
+    ]
+  },
+  "google": {
+    "customerId": "1016806229",
+    "audiences": [
+      {
+        "name": "Catch | Host page visitors | 540d",
+        "description": "Website visitors who opened a /host page.",
+        "membershipDays": 540,
+        "urlContains": "catchdates.com/host"
+      },
+      {
+        "name": "Catch | All site visitors | 30d",
+        "description": "Every website visitor in the last 30 days.",
+        "membershipDays": 30,
+        "urlContains": "catchdates.com"
+      }
+    ],
+    "observeOn": {
+      "campaign": "Catch Host | Search | Organisers",
+      "audiences": ["Catch | Host page visitors | 540d", "Catch | All site visitors | 30d"],
+      "note": "Observation only (bid_only): the lists report how known visitors behave without narrowing who sees the ads."
+    }
+  }
+}

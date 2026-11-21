@@ -1280,6 +1280,24 @@ Runbooks for live-system tools that have no section elsewhere. Each tool's
 command below previews by default unless the section says otherwise; read the
 preview before adding `--apply`.
 
+### Ad audiences
+
+`node tool/ads/apply_ad_audiences.mjs [--apply] [--json]` (`ads:audiences`,
+guard `apply-flag`).
+
+- **What it does:** plans the retargeting audiences in `tool/ads/ad_audiences.json`:
+  Meta custom audiences (website visitors from the Pixel, the host lead form,
+  Instagram and Page engagement) and Google remarketing lists from the Google
+  tag. Only visitors who chose analytics and marketing in the cookie banner load
+  those tags, so only they join the website audiences.
+- **Apply:** `--apply` creates missing audiences, then attaches the Google lists
+  to the host search campaign for observation only (they never narrow who sees
+  the ads). It never changes or deletes an existing audience, so the Functions'
+  "Catch | Active hosts" list is untouched. Meta's prospecting exclusions are
+  named in `tool/ads/meta_campaigns.json` and applied by `ads:meta-campaigns`.
+- **Credentials:** the same as the two campaign scripts. Tokens are never logged.
+- **Check afterwards:** re-run without `--apply`; every audience should show `keep`.
+
 ### Google Ads campaigns
 
 `node tool/ads/apply_google_campaigns.mjs [--apply] [--json]` (`ads:google-campaigns`,
