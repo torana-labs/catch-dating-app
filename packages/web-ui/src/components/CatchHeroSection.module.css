@@ -60,26 +60,30 @@
   justify-content: center;
   min-width: 0;
   padding-top: var(--catch-space-s6);
+  /* The kit's hero phone: a screen preview here is drawn at this width. */
+  --catch-screen-preview-device-width: var(--catch-website-hero-phone-width);
   /* The cut-outs read the space beside the phone from the column's width (cqi). */
   container-type: inline-size;
 }
 
 /*
- * The phone and its cut-outs: the stage is as wide as the phone, so each
- * cut-out is drawn at the scale of the screen it was cut from (its share of
- * that screen's width), turned slightly, and floats out past the phone's edge
- * by at most the room the column has beside the phone.
+ * The phone and its cut-outs. The cut-out layer is the phone's own box (the
+ * hero's phone width, centred), so each cut-out is drawn at the scale of the
+ * screen it was cut from (its share of that screen's width), turned
+ * slightly, and floats out past the phone's edge by at most the room the
+ * column has beside the phone.
  */
 .stage {
   position: relative;
-  width: fit-content;
-  max-width: 100%;
+  width: 100%;
 }
 
 .fragments {
   position: absolute;
-  inset: 0;
-  margin: 0;
+  inset-block: 0;
+  inset-inline: 0;
+  width: min(100%, var(--catch-screen-preview-device-width));
+  margin: 0 auto;
   padding: 0;
   list-style: none;
   pointer-events: none;
@@ -88,7 +92,7 @@
 .fragment {
   /* Set on each cut-out: its width over its screen's width. */
   --catch-hero-fragment-share: 0;
-  --catch-hero-fragment-scale: 1;
+  --catch-hero-fragment-scale: 0.9;
   --catch-hero-fragment-out: min(30%, (100cqi - 100%) / 2);
 
   position: absolute;
@@ -205,6 +209,8 @@
    * crops the rest of the phone; without, the phone keeps its whole height.
    */
   .media {
+    --catch-screen-preview-device-width: var(--catch-website-hero-compact-phone-width);
+
     align-items: flex-start;
     padding-top: var(--catch-space-s2);
   }
@@ -215,8 +221,8 @@
     overflow-y: clip;
   }
 
-  /* Two cut-outs, smaller, tucked at the phone's sides in the part of it that shows. */
-  .fragment { --catch-hero-fragment-scale: 0.62; }
+  /* Two cut-outs at the smaller phone's own scale, tucked at its sides in the part of it that shows. */
+  .fragment { --catch-hero-fragment-scale: 1; }
   .fragment:nth-child(1) { top: 8%; }
   .fragment:nth-child(2) { top: 24%; }
   .fragment:nth-child(n + 3) { display: none; }

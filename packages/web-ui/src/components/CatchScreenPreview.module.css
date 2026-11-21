@@ -271,10 +271,11 @@
 
 .fine { margin-top: var(--catch-space-micro10); }
 
+/* A band that sizes its phone, such as the hero, sets --catch-screen-preview-device-width. */
 .device {
   display: block;
   width: 100%;
-  max-width: 320px;
+  max-width: var(--catch-screen-preview-device-width, 320px);
 }
 
 .device[data-kind="tablet"] { max-width: none; }
