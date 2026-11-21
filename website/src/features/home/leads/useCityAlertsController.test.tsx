@@ -36,7 +36,7 @@ describe("useCityAlertsController", () => {
     expect(post.mock.calls[0][1]?.headers).toMatchObject({"X-Firebase-AppCheck": "app-check-token"});
     expect(body(0)).toEqual({
       requestKind: "city_alerts", city: "Mumbai", cityId: "in-mh-mumbai", countryIsoCode: "IN", citySource: "picked", website: "",
-      lead: {requestId: "request000000000001", phone: "+919876543210", consent: {purpose: "cityNewPlans", version: "city-new-plans-whatsapp-v2"},
+      lead: {requestId: "request000000000001", phone: "+919876543210", consent: {purpose: "cityNewPlans", version: "city-new-plans-whatsapp-v3"},
         sourcePage: "/", entry: "home-thin-week", cityAlerts: {interests: []}},
     });
     expect(result.current).toMatchObject({sent: true, submitting: false, sendProblem: null});

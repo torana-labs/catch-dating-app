@@ -133,7 +133,7 @@ describe("Explore", {timeout: 20_000}, () => {
     show(mumbaiQuietCatalog, "/mumbai/");
     const capture = screen.getByRole("region", {name: "Get new plans in Mumbai on WhatsApp."});
     fireEvent.change(within(capture).getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98000 00000"}});
-    fireEvent.click(within(capture).getByRole("button", {name: "Notify me"}));
+    fireEvent.click(within(capture).getByRole("button", {name: "Get plans"}));
     expect(await within(capture).findByText("Done. We reply on WhatsApp, usually within an hour.")).toBeTruthy();
     const body = JSON.parse(String((fetch.mock.calls[0] as unknown as [string, {body: string}])[1].body));
     expect(body).toMatchObject({requestKind: "city_alerts", city: "Mumbai",

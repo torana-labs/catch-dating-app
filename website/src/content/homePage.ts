@@ -120,13 +120,15 @@ export const homePageCopy = {
   /** A thin week's notify bar under the plans: new plans in the city on WhatsApp (a city alerts lead). */
   alerts: {
     title: "Want to hear first?",
-    body: "New {city} plans on WhatsApp, about once a week.",
+    body: "New {city} plans about once a week.",
     phone: "Your WhatsApp number",
-    action: "Notify me",
+    /** The field's example: a label this long is cut off on a phone beside the button. */
+    phoneHint: "98765 43210",
+    action: "Get plans",
     retry: "Try again",
-    consent: `From ${brand.name}. Stop any time.`,
+    consent: `On WhatsApp, from ${brand.name}.`,
     /** Names this wording on every stored consent; change it whenever the wording changes. */
-    consentVersion: "city-new-plans-whatsapp-v2",
+    consentVersion: "city-new-plans-whatsapp-v3",
     /** Which form on the page, as the lead records it. */
     entry: "home-thin-week",
     privacy: "Privacy",
@@ -166,12 +168,9 @@ export const homePageCopy = {
     thinNote: "{shown} of {total} plans in the next two weeks. Hosts set their own prices.",
     /** Nothing in the whole window: point to the organisers below, never a dead end. */
     emptyWindow: "No plans in {city} in the next two weeks yet. Follow the organisers below to hear about their next one first.",
-    /** Nothing in the next two weeks: the band is the WhatsApp sign-up, then a line for hosts. */
+    /** Nothing in the next two weeks: the band is the WhatsApp sign-up; the page's host band covers hosts. */
     emptyTitle: "Be first to hear when {city}’s next plans go up.",
-    emptyLead: "Hosts are getting set up. We’ll send new {city} plans on WhatsApp, about once a week.",
-    /** {host} is a link to the host page. */
-    emptyHost: "Run plans in {city}? {host}",
-    emptyHostLink: `Host on ${brand.name}`,
+    emptyLead: "Hosts are getting set up. New {city} plans about once a week.",
     /** The link to everything, under the cards: a busy city's count, or a thin city's. */
     seeAll: "See all {count} plans in {city}",
     seeAllOne: "See the plan in {city}",
@@ -196,10 +195,10 @@ export const homePageCopy = {
     phoneHint: "98765 43210",
     marketing: "Also send me news about new hosts and plans in {city}",
     action: "Notify me",
-    consent: "Tapping Notify me means we’ll send that one WhatsApp message. We only send news if you tick the box above.",
+    consent: `On WhatsApp, from ${brand.name}.`,
     /** Names this wording on every stored consent; change it whenever the wording changes. */
-    consentVersion: "city-launch-whatsapp-v1",
-    privacy: "Privacy policy",
+    consentVersion: "city-launch-whatsapp-v2",
+    privacy: "Privacy",
     invalidPhone: "Enter your 10-digit mobile number.",
     failed: "That didn’t go through. Please try again in a moment.",
     joined: `Done. We’ll message you on WhatsApp the day ${brand.name} opens in {city}.`,
