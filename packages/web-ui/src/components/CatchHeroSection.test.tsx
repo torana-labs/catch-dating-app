@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {CatchHeroSection} from "./CatchHeroSection";
@@ -55,18 +58,48 @@ describe("CatchHeroSection", () => {
     expect(screen.getAllByRole("listitem")).toHaveLength(4);
   });
 
-  it("sets the media beside the copy and floats the aside card over it", () => {
-    render(
+  it("sets the media beside the copy with no floating card of its own", () => {
+    const {container} = render(<CatchHeroSection media={<div data-testid="media" />} title="Headline" />);
+    expect(screen.getByTestId("media")).toBeTruthy();
+    expect(screen.getByRole("region").dataset.pad).toBe("none");
+    expect(container.querySelector("[data-floating]")).toBeNull();
+    expect(container.querySelector("dl")).toBeNull();
+  });
+
+  it("floats up to three cut-outs of the media's screen over it, each at that screen's scale", () => {
+    const fragment = (name: string, width: number) => ({src: `/${name}.png`, width, height: 120, screenWidth: 800});
+    const {container} = render(
       <CatchHeroSection
-        aside={{title: "Card title", rows: [{label: "First", value: "12"}, {label: "Second", value: "3"}]}}
+        fragments={[fragment("first", 720), fragment("second", 400), fragment("third", 200), fragment("fourth", 100)]}
         media={<div data-testid="media" />}
         title="Headline"
       />,
     );
-    expect(screen.getByTestId("media")).toBeTruthy();
-    expect(screen.getByText("First").closest("dt")).not.toBeNull();
-    expect(screen.getByText("12").closest("dd")).not.toBeNull();
-    expect(screen.getByRole("region").dataset.pad).toBe("none");
+    const media = container.querySelector("[data-floating]")!;
+    expect(media.contains(screen.getByTestId("media"))).toBe(true);
+    const items = [...container.querySelectorAll("li")] as HTMLElement[];
+    expect(items.map((item) => item.querySelector("img")!.getAttribute("src"))).toEqual(["/first.png", "/second.png", "/third.png"]);
+    expect(items[0].style.getPropertyValue("--catch-hero-fragment-share")).toBe("0.9");
+    // They repeat parts of the screen the media already names, so they are decorative.
+    expect(items[0].closest("ul")!.getAttribute("aria-hidden")).toBe("true");
+    expect(items[0].querySelector("img")!.getAttribute("alt")).toBe("");
+  });
+
+  it("hangs the media under the copy below the expanded width, so the phone never rises over the actions", () => {
+    const css = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "CatchHeroSection.module.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    // The layout steps only at the page's expanded width, never on a viewport media query.
+    expect(css).not.toMatch(/@media[^{]*width/);
+    const compact = css.slice(css.indexOf("@container catch-page (width < 840px)"));
+    expect(compact).toMatch(/\.media\s*\{[^}]*align-items:\s*flex-start/);
+    // A cropped media clips its foot (the band's bottom edge), never its top.
+    expect(compact).toMatch(/\.media\[data-floating\]\s*\{[^}]*overflow-y:\s*clip/);
+    expect(compact).toMatch(/\.fragment:nth-child\(n \+ 3\)\s*\{\s*display:\s*none/);
+  });
+
+  it("draws no cut-outs without media to cut them from", () => {
+    const {container} = render(<CatchHeroSection fragments={[{src: "/a.png", width: 400, height: 100, screenWidth: 800}]} title="Headline" />);
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("[data-floating]")).toBeNull();
   });
 
   it("paints the ground as the band colour and the ink ground in the dark theme", () => {
@@ -120,7 +153,7 @@ describe("CatchHeroSection", () => {
       <CatchHeroSection aside={{title: "Thursday Pub Quiz", meta: "Lantern Lane Tavern · 6 left", date: {weekday: "Thu", day: "20", month: "Nov", ground: "yellow"}}}
         ground="pink" media={<img alt="Phone" src="/p.png" />} title="Plans" />,
     );
-    const chip = container.querySelector("[data-chip]") as HTMLElement;
+    const chip = container.querySelector("[data-floating] [data-block='floating']") as HTMLElement;
     expect(chip).not.toBeNull();
     const date = chip.querySelector("time") as HTMLElement;
     expect(date.dataset).toMatchObject({size: "sm", ground: "yellow"});

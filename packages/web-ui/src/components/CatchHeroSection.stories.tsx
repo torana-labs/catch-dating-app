@@ -14,13 +14,22 @@ const sample = {
 
 const media = (
   <CatchScreenPreview
-    caption="Illustrative screen"
     kind="phonecard"
     rows={[{title: "First row", subtitle: "A note", tag: "Ready", tone: "success"}, {title: "Second row", subtitle: "A note"}]}
     semanticsLabel="A sample screen with two rows"
     title="Sample screen"
   />
 );
+
+// Cut-outs stand in for crops of the media's own screen: blank rows at a
+// phone screen's scale (the real ones are app captures).
+const cutout = (width: number, height: number) =>
+  `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="white"/><rect x="24" y="24" width="${width * 0.5}" height="28" rx="14" fill="gainsboro"/></svg>`)}`;
+const fragments = [
+  {src: cutout(724, 232), width: 724, height: 232, screenWidth: 804},
+  {src: cutout(724, 150), width: 724, height: 150, screenWidth: 804},
+  {src: cutout(600, 120), width: 600, height: 120, screenWidth: 804},
+];
 
 const meta = {
   title: "Web UI/CatchHeroSection",
@@ -33,8 +42,8 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Every state on an expanded page: the split hero on a coral ground with
- * labels, proof and a footnote mark, a note, a side link, media and the
- * floating card; the copy alone on the plain band; the ink ground (dark
+ * labels, proof and a footnote mark, a note, a side link, media and three
+ * cut-outs floating on the phone's edges; the copy alone on the plain band; the ink ground (dark
  * theme); and the photo layout over the no-photo fill.
  */
 export const Contract: Story = {
@@ -42,7 +51,7 @@ export const Contract: Story = {
     <CatchRoot size="expanded" theme="day">
       <CatchHeroSection
         {...sample}
-        aside={{title: "Sample card", rows: [{label: "First", value: "[N]"}, {label: "Second", value: "[N]"}]}}
+        fragments={fragments}
         ground="coral"
         labels={["First label", "Second label"]}
         link={{label: "A side link", href: "#"}}
@@ -57,11 +66,11 @@ export const Contract: Story = {
   ),
 };
 
-/** The phone layout: the media stacks under the copy and the card stops floating. */
+/** The phone layout: the media hangs under the copy, two cut-outs tucked at the phone's sides, the band cropping the phone's foot. */
 export const Compact: Story = {
   render: () => (
     <CatchRoot size="compact" theme="day">
-      <CatchHeroSection {...sample} aside={{title: "Sample card", rows: [{label: "First", value: "[N]"}]}} ground="pink" media={media} />
+      <CatchHeroSection {...sample} fragments={fragments} ground="pink" media={media} />
     </CatchRoot>
   ),
 };

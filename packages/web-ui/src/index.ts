@@ -85,6 +85,7 @@ export type {
 export {CatchHeroSection} from "./components/CatchHeroSection";
 export type {
   CatchHeroSectionAside,
+  CatchHeroSectionFragment,
   CatchHeroSectionLayout,
   CatchHeroSectionNotice,
   CatchHeroSectionProofItem,

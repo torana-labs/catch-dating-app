@@ -3,8 +3,9 @@
  * the media 64px apart on an expanded page, the media on the band's bottom
  * edge, so the band drops its own vertical padding: the columns start 88px
  * down (the panel rhythm; 40px on phones) and the copy keeps 72px under it
- * (8px on phones). On a ground the band is an inset panel. The floating card sits over the media's
- * start edge, turned slightly. Photo: a full-bleed photo at radius xl, at
+ * (8px on phones). On a ground the band is an inset panel. The plan chip or
+ * the cut-outs float over the media, turned slightly. Below 840px the media
+ * hangs under the copy, never over it. Photo: a full-bleed photo at radius xl, at
  * least 620px tall (520 below 840px), the copy at its foot in the dark theme,
  * held to 860px.
  */
@@ -59,14 +60,61 @@
   justify-content: center;
   min-width: 0;
   padding-top: var(--catch-space-s6);
+  /* The cut-outs read the space beside the phone from the column's width (cqi). */
+  container-type: inline-size;
 }
 
-.aside {
+/*
+ * The phone and its cut-outs: the stage is as wide as the phone, so each
+ * cut-out is drawn at the scale of the screen it was cut from (its share of
+ * that screen's width), turned slightly, and floats out past the phone's edge
+ * by at most the room the column has beside the phone.
+ */
+.stage {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.fragments {
   position: absolute;
-  z-index: 1;
-  inset: 30% auto auto 2%;
-  min-width: 210px;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.fragment {
+  /* Set on each cut-out: its width over its screen's width. */
+  --catch-hero-fragment-share: 0;
+  --catch-hero-fragment-scale: 1;
+  --catch-hero-fragment-out: min(30%, (100cqi - 100%) / 2);
+
+  position: absolute;
+  width: calc(var(--catch-hero-fragment-share) * var(--catch-hero-fragment-scale) * 100%);
+}
+
+.fragment:nth-child(odd) {
+  inset-inline-start: calc(-1 * var(--catch-hero-fragment-out));
   transform: rotate(-2deg);
+}
+
+.fragment:nth-child(even) {
+  inset-inline-end: calc(-1 * var(--catch-hero-fragment-out));
+  transform: rotate(2deg);
+}
+
+.fragment:nth-child(1) { top: 14%; }
+.fragment:nth-child(2) { top: 40%; }
+.fragment:nth-child(3) { top: 66%; }
+
+.fragmentImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--catch-radius-lg);
+  box-shadow: var(--catch-website-shadow-chip);
 }
 
 /*
@@ -74,7 +122,9 @@
  * media, a date square beside the title, turned slightly. On phones it sits
  * 24px above the media's foot at its start edge, over the phone.
  */
-.aside.aside[data-chip] {
+.aside {
+  position: absolute;
+  z-index: 1;
   inset: 32% auto auto 4%;
   flex-direction: row;
   align-items: center;
@@ -84,6 +134,7 @@
   border-radius: var(--catch-radius-lg);
   background: var(--catch-palette-white);
   box-shadow: var(--catch-website-shadow-chip);
+  transform: rotate(-2deg);
 }
 
 .asideCopy {
@@ -120,22 +171,6 @@
   margin: var(--catch-space-micro2) 0 var(--catch-space-micro10);
 }
 
-.rows {
-  display: flex;
-  flex-direction: column;
-  gap: var(--catch-space-micro3);
-  margin: var(--catch-space-micro6) 0 0;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--catch-space-micro14);
-}
-
-.row dt,
-.row dd { margin: 0; }
-
 .photo {
   position: relative;
   display: flex;
@@ -159,32 +194,45 @@
   color: var(--catch-theme-ink);
 }
 
-@media (max-width: 599px) {
+@container catch-page (width < 840px) {
   .split { padding-top: var(--catch-space-s10); }
   .text { padding-bottom: var(--catch-space-s2); }
-  .media { max-height: var(--catch-website-hero-compact-media-max); padding-top: var(--catch-space-s2); }
-  /*
-   * A screen with no floating card beside it keeps its whole height, with
-   * its illustrative caption, under the copy rather than rising over the
-   * copy and its actions.
-   */
-  .media:not(:has(> .aside)) { max-height: none; }
 
-  .aside.aside[data-chip] {
+  /*
+   * The media starts under the copy and its actions and never rises over
+   * them: the phone hangs from the media's top. With a chip or cut-outs over
+   * it, the media stops at the compact height and the band's bottom edge
+   * crops the rest of the phone; without, the phone keeps its whole height.
+   */
+  .media {
+    align-items: flex-start;
+    padding-top: var(--catch-space-s2);
+  }
+
+  .media[data-floating] {
+    max-height: var(--catch-website-hero-compact-media-max);
+    overflow-x: visible;
+    overflow-y: clip;
+  }
+
+  /* Two cut-outs, smaller, tucked at the phone's sides in the part of it that shows. */
+  .fragment { --catch-hero-fragment-scale: 0.62; }
+  .fragment:nth-child(1) { top: 8%; }
+  .fragment:nth-child(2) { top: 24%; }
+  .fragment:nth-child(n + 3) { display: none; }
+
+  .aside {
     inset: auto auto var(--catch-space-s6) 0;
     padding: var(--catch-space-s2) var(--catch-space-s3) var(--catch-space-s2) var(--catch-space-s2);
   }
 
-  .aside[data-chip] time[data-size="sm"] {
+  .aside time[data-size="sm"] {
     width: var(--catch-website-date-compact-width);
     height: var(--catch-website-date-compact-height);
   }
 
-  .aside[data-chip] .asideCopy > :first-child { font-size: var(--catch-typography-role-body-meta-size); }
-}
+  .aside .asideCopy > :first-child { font-size: var(--catch-typography-role-body-meta-size); }
 
-@container catch-page (width < 840px) {
-  .aside:not([data-chip]) { position: static; transform: none; }
   .photo { min-height: 520px; }
   .over { padding: var(--catch-space-s7) var(--catch-space-s5); }
 }
