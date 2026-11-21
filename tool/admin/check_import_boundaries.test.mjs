@@ -3,7 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {scanAdminImportBoundaries} from "./check_import_boundaries.mjs";
+import {isFirestoreSdkSpecifier, scanAdminImportBoundaries} from "./check_import_boundaries.mjs";
 
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "admin-import-boundaries-"));
@@ -159,4 +159,50 @@ test("web-ui imports use the package or a subpath it exports, never a deep path"
     specifier: "@catch/web-ui/src/components/CatchField",
     reason: "shared web UI must be imported from @catch/web-ui or a subpath it exports, without deep imports",
   }]);
+});
+
+test("Admin never imports the Firestore SDK, browser or Admin, in any form", (t) => {
+  const files = fixture(t);
+  files.write("admin/src/features/partners/api/repository.ts", [
+    "import {getFirestore} from \"firebase/firestore\";",
+    "import {getDocs} from \"firebase/firestore/lite\";",
+    "import type {Firestore} from \"@firebase/firestore\";",
+    "export {doc} from \"firebase/firestore\";",
+    "const admin = await import(\"firebase-admin/firestore\");",
+    "const compat = require(\"firebase/compat/firestore\");",
+  ].join("\n"));
+  files.write("admin/.storybook/preview.ts", "import \"firebase-admin\";\n");
+
+  const violations = scanAdminImportBoundaries(files.root);
+  assert.deepEqual(violations.map((violation) => violation.specifier).sort(), [
+    "@firebase/firestore",
+    "firebase-admin",
+    "firebase-admin/firestore",
+    "firebase/compat/firestore",
+    "firebase/firestore",
+    "firebase/firestore",
+    "firebase/firestore/lite",
+  ]);
+  assert.ok(violations.every((violation) => /must not use the Firestore SDK/u.test(violation.reason)));
+  assert.ok(violations.some((violation) => violation.source === ".storybook/preview.ts"));
+});
+
+test("other Firebase browser SDK modules stay allowed", (t) => {
+  const files = fixture(t);
+  files.write("admin/src/shared/firebase/client.ts", [
+    "import {initializeApp} from \"firebase/app\";",
+    "import {getAuth} from \"firebase/auth\";",
+    "import {getFunctions} from \"firebase/functions\";",
+    "import {firestoreLabel} from \"./firestoreLabel\";",
+  ].join("\n"));
+  files.write("admin/src/shared/firebase/firestoreLabel.ts");
+
+  assert.deepEqual(scanAdminImportBoundaries(files.root), []);
+});
+
+test("isFirestoreSdkSpecifier matches packages and subpaths, not look-alikes", () => {
+  assert.equal(isFirestoreSdkSpecifier("firebase/firestore"), true);
+  assert.equal(isFirestoreSdkSpecifier("firebase-admin/app"), true);
+  assert.equal(isFirestoreSdkSpecifier("firebase/firestore-helpers"), false);
+  assert.equal(isFirestoreSdkSpecifier("firebase-administration"), false);
 });

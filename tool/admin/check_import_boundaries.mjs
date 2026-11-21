@@ -8,6 +8,20 @@ const defaultRepoRoot = path.resolve(
   "../.."
 );
 const allowedSourceExtensions = new Set([".ts", ".tsx"]);
+/**
+ * Admin reads and writes data only through callables. It must never reach
+ * Firestore directly, with the browser SDK or the Admin SDK, so a page cannot
+ * bypass the callables' role checks, audit logs and validation.
+ */
+const forbiddenFirestoreSdkPackages = [
+  "firebase/firestore",
+  "firebase/compat/firestore",
+  "@firebase/firestore",
+  "@firebase/firestore-compat",
+  "firebase-admin",
+];
+const firestoreSdkReason =
+  "Admin must not use the Firestore SDK (browser or Admin SDK); read and write through callables";
 const browserContractSchemaDirectories = [
   "callables",
   "callable_responses",
@@ -59,15 +73,23 @@ function layerFor(relativePath) {
 function importSpecifiers(source) {
   const staticImports =
     /\bimport\s+(?:type\s+)?(?:[\s\S]*?\s+from\s+)?["']([^"']+)["']/g;
+  const reExports =
+    /\bexport\s+(?:type\s+)?(?:\*(?:\s+as\s+\w+)?|\{[\s\S]*?\})\s*from\s+["']([^"']+)["']/g;
   const dynamicImports = /\bimport\(\s*["']([^"']+)["']\s*\)/g;
+  const requires = /\brequire\(\s*["']([^"']+)["']\s*\)/g;
   const specifiers = [];
-  for (const match of source.matchAll(staticImports)) {
-    specifiers.push(match[1]);
-  }
-  for (const match of source.matchAll(dynamicImports)) {
-    specifiers.push(match[1]);
+  for (const pattern of [staticImports, reExports, dynamicImports, requires]) {
+    for (const match of source.matchAll(pattern)) {
+      specifiers.push(match[1]);
+    }
   }
   return specifiers;
+}
+
+/** True for a Firestore SDK package or any of its subpaths. */
+export function isFirestoreSdkSpecifier(specifier) {
+  return forbiddenFirestoreSdkPackages.some((name) =>
+    specifier === name || specifier.startsWith(`${name}/`));
 }
 
 function isFeatureApiModule(sourceRelativePath) {
@@ -163,9 +185,32 @@ function webUiPackageExports(repoRoot) {
   return JSON.parse(fs.readFileSync(manifest, "utf8")).exports ?? {};
 }
 
+/**
+ * Storybook bundles Admin components too, so the Firestore SDK ban covers its
+ * configuration as well as admin/src.
+ */
+function scanStorybookFirestoreImports(repoRoot) {
+  const storybookRoot = path.join(repoRoot, "admin/.storybook");
+  if (!fs.existsSync(storybookRoot)) return [];
+  const violations = [];
+  for (const file of walkSourceFiles(storybookRoot)) {
+    const source = fs.readFileSync(file, "utf8");
+    for (const specifier of importSpecifiers(source)) {
+      if (isFirestoreSdkSpecifier(specifier)) {
+        violations.push({
+          source: path.relative(path.join(repoRoot, "admin"), file).split(path.sep).join("/"),
+          specifier,
+          reason: firestoreSdkReason,
+        });
+      }
+    }
+  }
+  return violations;
+}
+
 export function scanAdminImportBoundaries(repoRoot = defaultRepoRoot) {
   const adminSrcRoot = path.join(repoRoot, "admin/src");
-  const violations = [];
+  const violations = scanStorybookFirestoreImports(repoRoot);
   const webUiExports = webUiPackageExports(repoRoot);
   for (const file of walkSourceFiles(adminSrcRoot)) {
     const sourceRelativePath = relativeToAdminSource(adminSrcRoot, file);
@@ -173,6 +218,10 @@ export function scanAdminImportBoundaries(repoRoot = defaultRepoRoot) {
     const source = fs.readFileSync(file, "utf8");
 
     for (const specifier of importSpecifiers(source)) {
+      if (isFirestoreSdkSpecifier(specifier)) {
+        violations.push({source: sourceRelativePath, specifier, reason: firestoreSdkReason});
+        continue;
+      }
       if (webUiDeepImport(specifier, webUiExports)) {
         violations.push({
           source: sourceRelativePath,
