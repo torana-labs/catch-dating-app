@@ -454,6 +454,113 @@ final class HostFormResponseDetailFamily extends $Family
   String toString() => r'hostFormResponseDetailProvider';
 }
 
+/// A read-back before a command: the server's current version of one of
+/// [organizerId]'s responses, never a kept one.
+
+@ProviderFor(hostFormResponseReadBack)
+final hostFormResponseReadBackProvider = HostFormResponseReadBackFamily._();
+
+/// A read-back before a command: the server's current version of one of
+/// [organizerId]'s responses, never a kept one.
+
+final class HostFormResponseReadBackProvider
+    extends
+        $FunctionalProvider<
+          Future<HostFormResponseDetail> Function(String responseId),
+          Future<HostFormResponseDetail> Function(String responseId),
+          Future<HostFormResponseDetail> Function(String responseId)
+        >
+    with $Provider<Future<HostFormResponseDetail> Function(String responseId)> {
+  /// A read-back before a command: the server's current version of one of
+  /// [organizerId]'s responses, never a kept one.
+  HostFormResponseReadBackProvider._({
+    required HostFormResponseReadBackFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostFormResponseReadBackProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostFormResponseReadBackHash();
+
+  @override
+  String toString() {
+    return r'hostFormResponseReadBackProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<Future<HostFormResponseDetail> Function(String responseId)>
+  $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+
+  @override
+  Future<HostFormResponseDetail> Function(String responseId) create(Ref ref) {
+    final argument = this.argument as String;
+    return hostFormResponseReadBack(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(
+    Future<HostFormResponseDetail> Function(String responseId) value,
+  ) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<
+            Future<HostFormResponseDetail> Function(String responseId)
+          >(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostFormResponseReadBackProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostFormResponseReadBackHash() =>
+    r'e7b52f8f9b2c61e0ca48871a31ecf38356f7e435';
+
+/// A read-back before a command: the server's current version of one of
+/// [organizerId]'s responses, never a kept one.
+
+final class HostFormResponseReadBackFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Future<HostFormResponseDetail> Function(String responseId),
+          String
+        > {
+  HostFormResponseReadBackFamily._()
+    : super(
+        retry: null,
+        name: r'hostFormResponseReadBackProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// A read-back before a command: the server's current version of one of
+  /// [organizerId]'s responses, never a kept one.
+
+  HostFormResponseReadBackProvider call(String organizerId) =>
+      HostFormResponseReadBackProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostFormResponseReadBackProvider';
+}
+
 /// Applies the immutable response version's server-side conversion rules.
 
 @ProviderFor(hostFormResponseCanApply)

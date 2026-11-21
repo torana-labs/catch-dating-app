@@ -365,7 +365,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       scrollController: _scrollCoordinator.scrollController,
                       onRetry: chatState.messagesRetryIntent == null
                           ? null
-                          : () => _retryController.run(
+                          : () => _retryController.retry(
                               chatState.messagesRetryIntent!,
                             ),
                     )
@@ -379,7 +379,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ),
                       icon: CatchIcons.chat,
                       onRetry: () =>
-                          _retryController.run(routeError.retryIntent),
+                          _retryController.retry(routeError.retryIntent),
                       retryLabel: context
                           .l10n
                           .chatsChatScreenCatcherrorstateReloadMessages,
@@ -391,7 +391,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 pending: routeState.suvbotPending,
                 onAction: _runSuvbotAction,
                 onTextAction: _runSuvbotTextAction,
-                onRetry: () => _retryController.run(
+                onRetry: () => _retryController.retry(
                   chatState.suvbotActionsRetryIntent ??
                       HostChatRetryIntent.reloadSuvbotActions,
                 ),

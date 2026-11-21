@@ -114,10 +114,14 @@ class _HostEventRehearsalStartScreenState
     }
     final event = data.events.firstWhere((event) => event.id == source.eventId);
     setState(() => _loadingSource = true);
+    // Listened, not refreshed: the plan is held while it loads, and a plan
+    // this screen already watches is reused rather than read again.
+    final planRead = ref.listenManual(
+      eventRehearsalSourcePlanProvider(event.id).future,
+      (_, _) {},
+    );
     try {
-      final plan = await ref.refresh(
-        eventRehearsalSourcePlanProvider(event.id).future,
-      );
+      final plan = await planRead.read();
       if (!mounted) return;
       setState(
         () => _configuration = EventRehearsalConfiguration.defaults(
@@ -137,6 +141,7 @@ class _HostEventRehearsalStartScreenState
         );
       }
     } finally {
+      planRead.close();
       if (mounted) setState(() => _loadingSource = false);
     }
   }

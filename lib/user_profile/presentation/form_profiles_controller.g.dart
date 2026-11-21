@@ -34,7 +34,7 @@ final class FormProfilesControllerProvider
 }
 
 String _$formProfilesControllerHash() =>
-    r'26a31fe2cde476461bdb563da3c97bc01279febb';
+    r'4b26bcfb6b9d85db67058e36d3eb804d0099696f';
 
 abstract class _$FormProfilesController
     extends $AsyncNotifier<FormProfilesState> {
@@ -176,7 +176,7 @@ final class FormProfileClaimControllerProvider
 }
 
 String _$formProfileClaimControllerHash() =>
-    r'6f36472f807ec4d0df4bfce31fb41ad452d8acee';
+    r'9b61aae22332e7d8c00d9d495135b5a1d7dc429c';
 
 abstract class _$FormProfileClaimController extends $Notifier<void> {
   void build();
