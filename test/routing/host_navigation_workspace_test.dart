@@ -189,7 +189,7 @@ void main() {
 
     expect((audience.routes.first as GoRoute).path, '/host/audience');
     expect((inbox.routes.first as GoRoute).path, '/host/inbox');
-    expect(destinations(audience), hasLength(36));
+    expect(destinations(audience), hasLength(37));
     expect(
       destinations(inbox).map((route) => route.name),
       unorderedEquals([

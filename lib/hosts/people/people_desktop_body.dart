@@ -1,4 +1,7 @@
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge.dart';
+import 'package:catch_dating_app/hosts/people/duplicates/duplicates_state.dart';
+import 'package:catch_dating_app/hosts/people/parts/people_duplicates_row.dart';
 import 'package:catch_dating_app/hosts/people/people_body.dart';
 import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/people/person_body.dart';
@@ -31,6 +34,10 @@ class HostPeopleDesktopBody extends StatelessWidget {
     required this.onRetry,
     required this.onRetryPerson,
     this.messaging = false,
+    this.undoing = false,
+    this.onUndoMerge,
+    this.duplicates,
+    this.onOpenDuplicates,
   });
 
   final HostPeopleState state;
@@ -48,6 +55,16 @@ class HostPeopleDesktopBody extends StatelessWidget {
   final VoidCallback onRetry;
   final VoidCallback onRetryPerson;
   final bool messaging;
+
+  /// A merge into the selected person is being undone.
+  final bool undoing;
+
+  /// Undo one merge into the selected person.
+  final ValueChanged<HostActiveContactMerge>? onUndoMerge;
+
+  /// The Possible duplicates row; null while the review is read.
+  final HostPeopleDuplicateSummary? duplicates;
+  final VoidCallback? onOpenDuplicates;
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +100,11 @@ class HostPeopleDesktopBody extends StatelessWidget {
               semanticLabel: l10n.hostPeopleSearchLabel,
               onChanged: onSearch,
             ),
+            if ((duplicates, onOpenDuplicates) case (
+              final summary?,
+              final open?,
+            ) when summary.visible)
+              PeopleDuplicatesRow(summary: summary, onTap: open),
             HostPeopleList(
               state: state,
               kicker: state.search.trim().isEmpty
@@ -113,6 +135,8 @@ class HostPeopleDesktopBody extends StatelessWidget {
                 state: selected,
                 pane: true,
                 messaging: messaging,
+                undoing: undoing,
+                onUndoMerge: onUndoMerge,
                 onMessage: onMessagePerson,
                 onAddTag: onAddTag,
                 onRetry: onRetryPerson,

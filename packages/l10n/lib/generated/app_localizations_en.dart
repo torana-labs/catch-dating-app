@@ -22781,6 +22781,186 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostPeopleGroupErrorBody => 'Check your connection and try again.';
 
   @override
+  String get hostPeopleDuplicatesTitle => 'Possible duplicates';
+
+  @override
+  String hostPeopleDuplicatesEntryCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pairs to review',
+      one: '1 pair to review',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostPeopleDuplicatesEntryMore({required String count}) {
+    return '$count+ pairs to review';
+  }
+
+  @override
+  String get hostPeopleDuplicatesEntryNone => 'None to review';
+
+  @override
+  String get hostPeopleDuplicatesIntro =>
+      'Records that share a phone, an email or a Catch account. A name alone never makes a pair.';
+
+  @override
+  String get hostPeopleDuplicatesViewOpen => 'To review';
+
+  @override
+  String get hostPeopleDuplicatesViewDifferent => 'Marked different';
+
+  @override
+  String get hostPeopleDuplicatesTruncated =>
+      'Some records weren’t checked this time, so more pairs may show up later.';
+
+  @override
+  String get hostPeopleDuplicatesEmpty => 'No possible duplicates.';
+
+  @override
+  String get hostPeopleDuplicatesEmptyDifferent =>
+      'Nothing is marked as different people.';
+
+  @override
+  String get hostPeopleDuplicatesErrorTitle =>
+      'We couldn’t load possible duplicates';
+
+  @override
+  String get hostPeopleDuplicatesErrorBody =>
+      'Check your connection and try again.';
+
+  @override
+  String get hostPeopleDuplicatesMoreError => 'We couldn’t load more pairs.';
+
+  @override
+  String get hostPeopleDuplicatesEvidenceAccount => 'Same Catch account';
+
+  @override
+  String get hostPeopleDuplicatesEvidenceVerifiedPhone => 'Same verified phone';
+
+  @override
+  String get hostPeopleDuplicatesEvidenceImportedPhone =>
+      'Same phone from an import';
+
+  @override
+  String get hostPeopleDuplicatesEvidenceEmail => 'Same email';
+
+  @override
+  String hostPeopleDuplicatesSharedNights({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Both on $count nights',
+      one: 'Both on 1 night',
+      zero: 'No nights together',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostPeopleDuplicatesCatchAccount => 'Catch account';
+
+  @override
+  String get hostPeopleDuplicatesNoContact => 'No phone or email';
+
+  @override
+  String get hostPeopleDuplicatesSourceCatchBooking => 'From a Catch booking';
+
+  @override
+  String get hostPeopleDuplicatesSourceImport => 'From a spreadsheet';
+
+  @override
+  String get hostPeopleDuplicatesSourceManual => 'Added by your team';
+
+  @override
+  String get hostPeopleDuplicatesSourceWeb => 'From a web sign-up';
+
+  @override
+  String get hostPeopleDuplicatesSourceProvider => 'From a booking provider';
+
+  @override
+  String get hostPeopleDuplicatesSourceForm => 'From a form';
+
+  @override
+  String get hostPeopleDuplicatesMerge => 'Merge';
+
+  @override
+  String get hostPeopleDuplicatesDifferent => 'Not the same person';
+
+  @override
+  String get hostPeopleDuplicatesReopen => 'Show again';
+
+  @override
+  String get hostPeopleDuplicatesReopenOwnerOnly =>
+      'Only the teammate who marked this can show it again.';
+
+  @override
+  String get hostPeopleDuplicatesMarkedNotice => 'Marked as different people';
+
+  @override
+  String get hostPeopleDuplicatesReopenedNotice =>
+      'Back in possible duplicates';
+
+  @override
+  String get hostPeopleMergeTitle => 'Merge these records?';
+
+  @override
+  String get hostPeopleMergeKeep => 'Keep';
+
+  @override
+  String hostPeopleMergeMoves({
+    required String source,
+    required String survivor,
+  }) {
+    return '$source’s nights, sources and contact details move to $survivor, and $source leaves your People list.';
+  }
+
+  @override
+  String get hostPeopleMergePhoneDiffers =>
+      'Their phone numbers differ. Merge only if they are the same person.';
+
+  @override
+  String get hostPeopleMergeEmailDiffers =>
+      'Their emails differ. Merge only if they are the same person.';
+
+  @override
+  String hostPeopleMergeUndoHint({required String survivor}) {
+    return 'You can undo this from $survivor’s page.';
+  }
+
+  @override
+  String hostPeopleMergedNotice({required String name}) {
+    return 'Merged into $name';
+  }
+
+  @override
+  String get hostPeopleMergeUndoAction => 'Undo';
+
+  @override
+  String get hostPeopleMergedTitle => 'Merged into this record';
+
+  @override
+  String hostPeopleMergedOn({required String date}) {
+    return 'Merged $date';
+  }
+
+  @override
+  String get hostPeopleUndoMerge => 'Undo merge';
+
+  @override
+  String get hostPeopleUndoMergeTitle => 'Undo this merge?';
+
+  @override
+  String hostPeopleUndoMergeBody({required String name}) {
+    return '$name’s nights, sources and contact details go back to their own record.';
+  }
+
+  @override
+  String get hostPeopleUndoneNotice => 'Merge undone';
+
+  @override
   String get hostStaffOutboxTitle => 'Saved on this phone';
 
   @override

@@ -444,6 +444,13 @@
       "screenId": "screen.host.applications"
     },
     {
+      "routeId": "hostPeopleDuplicatesScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.host.customers as the People duplicate review: pairs with their evidence, merge with undo, and pairs marked different.",
+      "screenId": "screen.host.customers"
+    },
+    {
       "routeId": "hostCustomerDetailScreen",
       "status": "contracted",
       "priority": "P1",

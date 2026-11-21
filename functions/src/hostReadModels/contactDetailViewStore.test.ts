@@ -71,7 +71,7 @@ test("the view holds the callable's traits, revenue and event rows",
     assert.deepEqual(db.docs[viewPath], {
       organizerId: "org-1", contactId: "person", traits: detail.traits,
       revenue: detail.revenue, events: detail.events,
-      eventsTruncated: detail.eventsTruncated, version: 1,
+      eventsTruncated: detail.eventsTruncated, activeMerges: [], version: 1,
     });
     const view = db.docs[viewPath] as {
       events: Array<{eventId: string; displayName: string}>;
@@ -100,6 +100,38 @@ test("hidden, merged and deleted contacts lose their view", async () => {
   await reconcileHostContactDetailView(db.asFirestore(), "person");
   assert.equal(db.docs[viewPath], undefined);
 });
+
+test("the view lists active merges into the contact, not reversed ones",
+  async () => {
+    const receipt = (operation: string, millis: number,
+      reversalOfReceiptId: string | null = null) => ({organizerId: "org-1",
+      operation, survivorContactId: "person", sourceContactId: "old-person",
+      evidence: ["sameVerifiedPhone"], conflicts: [], actorUid: "host-1",
+      survivorRevision: 3, sourceRevision: 1, movedEdgeIds: ["e"],
+      movedIdentityEvidenceIds: [], movedClaimIds: [], movedOriginIds: ["o"],
+      movedEdgeCount: 1, movedIdentityEvidenceCount: 0, movedClaimCount: 0,
+      movedOriginCount: 1, idempotencyKey: `key-${millis}`,
+      reversalOfReceiptId, createdAt: at(millis)});
+    const db = world({
+      "organizerContacts/old-person": {organizerId: "org-1",
+        contactId: "old-person", displayName: "Ananya R",
+        displayNameOverride: null, identityState: "merged",
+        mergedIntoContactId: "person"},
+      "organizerContactMergeReceipts/merge-1": receipt("merge", 10),
+    });
+    await reconcileHostContactDetailView(db.asFirestore(), "person");
+    const merges = (db.docs[viewPath] as {activeMerges: Array<{
+      mergeReceiptId: string; sourceDisplayName: string;
+      movedFactCount: number; mergedAtMillis: number}>}).activeMerges;
+    assert.deepEqual(merges.map((merge) => [merge.mergeReceiptId,
+      merge.sourceDisplayName, merge.movedFactCount, merge.mergedAtMillis]),
+    [["merge-1", "Ananya R", 2, 10]]);
+    db.docs["organizerContactMergeReceipts/unmerge-1"] =
+      receipt("unmerge", 20, "merge-1");
+    await reconcileHostContactDetailView(db.asFirestore(), "person");
+    assert.deepEqual((db.docs[viewPath] as {activeMerges: unknown[]})
+      .activeMerges, []);
+  });
 
 test("an unchanged view is not written again", async () => {
   const db = world();

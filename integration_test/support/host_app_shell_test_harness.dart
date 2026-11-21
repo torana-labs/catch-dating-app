@@ -306,6 +306,14 @@ class HostShellBackend {
         ...crmEmptyAudiencePageData(),
         'organizerId': organizerId,
       },
+      // People's Possible duplicates row: the review finds no pairs.
+      'listOrganizerContactMergeCandidates' => {
+        'organizerId': organizerId,
+        'candidates': const <Object?>[],
+        'dismissedCandidates': const <Object?>[],
+        'nextCursor': null,
+        'truncated': false,
+      },
       // People's saved groups and Messages' automations: none yet.
       'listOrganizerSavedAudiences' => {
         'organizerId': organizerId,

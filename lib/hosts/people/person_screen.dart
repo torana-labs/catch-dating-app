@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
+import 'package:catch_dating_app/hosts/people/duplicates/duplicates_controller.dart';
+import 'package:catch_dating_app/hosts/people/duplicates/duplicates_screen.dart';
 import 'package:catch_dating_app/hosts/people/person_body.dart';
 import 'package:catch_dating_app/hosts/people/person_controller.dart';
 import 'package:catch_dating_app/hosts/people/widgets/people_text_sheet.dart';
@@ -20,7 +22,7 @@ import 'package:go_router/go_router.dart';
 ///
 /// It watches [hostPersonControllerProvider] and turns the body's callbacks
 /// and the menu into the existing contact commands: start a conversation,
-/// set the tags and add a note.
+/// set the tags, add a note and undo a merge into the person.
 class HostPersonScreen extends ConsumerWidget {
   const HostPersonScreen({
     super.key,
@@ -49,9 +51,11 @@ class HostPersonScreen extends ConsumerWidget {
         HostPeopleCommands.messageMutation,
         HostPeopleCommands.noteMutation,
         HostPeopleCommands.tagsMutation,
+        HostDuplicateCommands.undoMutation,
       ],
       errorContext: AppErrorContext.organizer,
     );
+    final undoing = ref.watch(HostDuplicateCommands.undoMutation).isPending;
     final detail = state.detail;
     return CatchRoot(
       child: CatchScreen(
@@ -93,6 +97,15 @@ class HostPersonScreen extends ConsumerWidget {
           child: HostPersonBody(
             state: state,
             messaging: messaging,
+            undoing: undoing,
+            onUndoMerge: (merge) => unawaited(
+              confirmUndoHostMerge(
+                context,
+                ref,
+                organizerId: organizerId,
+                merge: merge,
+              ),
+            ),
             onMessage: () => unawaited(
               messageHostPerson(
                 context,

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_contact_detail_views.schema.json",
   "title": "HostContactDetailViewDocument",
-  "description": "Server-maintained manager read view of one shown organizer contact for the Host person page: the traits, revenue and newest 100 event rows exactly as getOrganizerContactDetail returns them. Written by triggers on organizerContacts, organizerContactTraits, organizerContactEventEdges, guestPayments (revenue of the linked verified account) and events (titles and origin); deleted when the contact is deleted, hidden or merged. The contact's name, endpoints, tags and revision come from hostContactSummaries and its notes from organizerContactNotes. Never a linked account id, identity evidence, endpoint, permission receipt or payment id, and never identity, permission or mutation authority.",
+  "description": "Server-maintained manager read view of one shown organizer contact for the Host person page: the traits, revenue, newest 100 event rows and active merges exactly as getOrganizerContactDetail returns them. Written by triggers on organizerContacts, organizerContactTraits, organizerContactEventEdges, guestPayments (revenue of the linked verified account), events (titles and origin) and organizerContactMergeReceipts (merges into the contact and their reversals); deleted when the contact is deleted, hidden or merged. The contact's name, endpoints, tags and revision come from hostContactSummaries and its notes from organizerContactNotes. Never a linked account id, identity evidence, endpoint, permission receipt or payment id, and never identity, permission or mutation authority.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostContactDetailViews",
@@ -45,6 +45,15 @@
     },
     "eventsTruncated": {
       "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
+    "activeMerges": {
+      "description": "The newest 50 receipt-backed merges into this contact that are not reversed, each undoable from the person page. Absent on a view written before merges were projected; the next write of the contact adds it.",
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "../callable_responses/get_organizer_contact_detail_response.schema.json#/definitions/activeMerge"
+      },
       "x-catch-ownership": "server-only"
     },
     "version": {

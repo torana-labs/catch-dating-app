@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   contactDetailContactChanged,
   contactDetailContactsForEdge,
+  contactDetailContactsForMergeReceipt,
   contactDetailEventChanged,
   contactDetailPayersForPayment,
 } from "./contactDetailViewTriggers";
@@ -29,6 +30,16 @@ test("an edge write re-evaluates the contact before and after", () => {
   assert.deepEqual(contactDetailContactsForEdge(edge,
     {...edge, contactId: "c2"}), ["c1", "c2"]);
   assert.deepEqual(contactDetailContactsForEdge(undefined, edge), ["c1"]);
+});
+
+test("a merge receipt re-evaluates the survivor it names", () => {
+  const receipt = {organizerId: "org", operation: "merge",
+    survivorContactId: "c1", sourceContactId: "c2"};
+  assert.deepEqual(contactDetailContactsForMergeReceipt(undefined, receipt),
+    ["c1"]);
+  assert.deepEqual(contactDetailContactsForMergeReceipt(receipt, undefined),
+    ["c1"]);
+  assert.deepEqual(contactDetailContactsForMergeReceipt(undefined, {}), []);
 });
 
 test("a payment re-evaluates its payer only when revenue facts move", () => {

@@ -106,6 +106,73 @@ class HostContactMergeCandidate {
   final bool canReopen;
 }
 
+/// One page of the duplicate review: open pairs, pairs a manager marked as
+/// different people, and the cursor to the next page.
+class HostContactMergeCandidatePage {
+  const HostContactMergeCandidatePage({
+    required this.organizerId,
+    required this.candidates,
+    required this.dismissedCandidates,
+    required this.nextCursor,
+    required this.truncated,
+  });
+
+  factory HostContactMergeCandidatePage.fromCallableData(Object? data) {
+    final map = crmRequiredMap(data, 'contact merge candidates');
+    return HostContactMergeCandidatePage(
+      organizerId: crmRequiredString(map, 'organizerId'),
+      candidates: crmMapList(
+        map['candidates'],
+        'contact merge candidates',
+      ).map(HostContactMergeCandidate.fromMap).toList(growable: false),
+      dismissedCandidates: crmMapList(
+        map['dismissedCandidates'],
+        'dismissed contact merge candidates',
+      ).map(HostContactMergeCandidate.fromMap).toList(growable: false),
+      nextCursor: crmNullableString(map['nextCursor']),
+      truncated: crmRequiredBool(map, 'truncated'),
+    );
+  }
+
+  final String organizerId;
+  final List<HostContactMergeCandidate> candidates;
+  final List<HostContactMergeCandidate> dismissedCandidates;
+  final String? nextCursor;
+
+  /// The review stopped before reading every identity fact.
+  final bool truncated;
+}
+
+/// What a merge or its reversal recorded: the receipt an undo names and
+/// how many facts moved.
+class HostContactMergeReceipt {
+  const HostContactMergeReceipt({
+    required this.receiptId,
+    required this.survivorContactId,
+    required this.sourceContactId,
+    required this.movedFactCount,
+  });
+
+  factory HostContactMergeReceipt.fromCallableData(Object? data) {
+    final map = crmRequiredMap(data, 'contact merge receipt');
+    return HostContactMergeReceipt(
+      receiptId: crmRequiredString(map, 'receiptId'),
+      survivorContactId: crmRequiredString(map, 'survivorContactId'),
+      sourceContactId: crmRequiredString(map, 'sourceContactId'),
+      movedFactCount:
+          crmRequiredInt(map, 'movedEdgeCount') +
+          crmRequiredInt(map, 'movedIdentityEvidenceCount') +
+          crmRequiredInt(map, 'movedClaimCount') +
+          crmRequiredInt(map, 'movedOriginCount'),
+    );
+  }
+
+  final String receiptId;
+  final String survivorContactId;
+  final String sourceContactId;
+  final int movedFactCount;
+}
+
 class HostActiveContactMerge {
   const HostActiveContactMerge({
     required this.mergeReceiptId,

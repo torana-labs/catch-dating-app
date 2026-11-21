@@ -1207,7 +1207,8 @@ export {onHostRequestViewParticipationWritten, onHostRequestViewEventWritten,
 export {onHostContactDetailViewContactWritten,
   onHostContactDetailViewTraitsWritten, onHostContactDetailViewEdgeWritten,
   onHostContactDetailViewPaymentWritten,
-  onHostContactDetailViewEventWritten} from
+  onHostContactDetailViewEventWritten,
+  onHostContactDetailViewMergeReceiptWritten} from
   "./hostReadModels/contactDetailViewTriggers";
 export {onHostApplicationDetailViewApplicationWritten,
   onHostApplicationDetailViewFormResponseWritten,
