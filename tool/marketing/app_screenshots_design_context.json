@@ -152,6 +152,570 @@
     },
     {
       "type": "marketing-app-capture",
+      "id": "host-live-tablet-colleges",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a college film screening",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletColleges",
+      "captureId": "host_live_tablet_colleges",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-colleges.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-colleges.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-colleges.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during a college film screening, the run of show beside the room. Freshers' Film Screening: 271 in of 300 places",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet-communities",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a book club meetup",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletCommunities",
+      "captureId": "host_live_tablet_communities",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-communities.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-communities.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-communities.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during a book club meetup, the run of show beside the room. Monthly Book Club: 19 in at four tables",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet-creators",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a creator's meetup",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletCreators",
+      "captureId": "host_live_tablet_creators",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-creators.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-creators.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-creators.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during a creator's meetup, the run of show beside the room. Sketch and Coffee Meetup: 36 in of 40",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet-facilities",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a pickleball social",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletFacilities",
+      "captureId": "host_live_tablet_facilities",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-facilities.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-facilities.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-facilities.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during a pickleball social, the run of show beside the room. Thursday Pickleball Social: 29 in across eight courts",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet-outdoors",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a sunrise trek",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletOutdoors",
+      "captureId": "host_live_tablet_outdoors",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-outdoors.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-outdoors.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-outdoors.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during a sunrise trek, the run of show beside the room. Sunday Sunrise Trek: 26 walkers in three pace groups",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet-racket-sports",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a padel mixer",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletRacketSports",
+      "captureId": "host_live_tablet_racket_sports",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-racket-sports.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-racket-sports.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-racket-sports.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during a padel mixer, the run of show beside the room. Friday Padel Mixer: 16 players on four courts",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet-run-clubs",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a Sunday social run",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletRunClubs",
+      "captureId": "host_live_tablet_runs",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-run-clubs.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-run-clubs.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-run-clubs.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during a Sunday social run, the run of show beside the room. Sunday 6 AM Social Run: 48 runners in three pace groups",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet-studios",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a sunrise yoga class",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletStudios",
+      "captureId": "host_live_tablet_studios",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-studios.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-studios.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-studios.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during a sunrise yoga class, the run of show beside the room. Saturday Sunrise Yoga: 18 in of 20 mats",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet-supper-clubs",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a supper club dinner",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletSupperClubs",
+      "captureId": "host_live_tablet_suppers",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-supper-clubs.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-supper-clubs.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-supper-clubs.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during a supper club dinner, the run of show beside the room. Supper for Twelve: everyone seated at two tables",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet-teams",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a team social",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletTeams",
+      "captureId": "host_live_tablet_teams",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-teams.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-teams.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-teams.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during a team social, the run of show beside the room. Friday Team Social: 64 colleagues in mixed groups",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet-venues",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during an open mic night",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletVenues",
+      "captureId": "host_live_tablet_venues",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-venues.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-venues.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-venues.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during an open mic night, the run of show beside the room. Thursday Open Mic: 51 in of 60",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-tablet-workshops",
+      "status": "active",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a pottery workshop",
+      "fixtureKey": "hostMarketingIndia.host.liveTabletWorkshops",
+      "captureId": "host_live_tablet_workshops",
+      "routeIds": [
+        "hostAppEventManageScreen"
+      ],
+      "device": {
+        "id": "generic-tablet",
+        "logicalSize": {
+          "width": 1194,
+          "height": 834
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 24,
+          "right": 0,
+          "bottom": 20,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 2388,
+            "height": 1668
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-tablet-workshops.png",
+        "websitePath": "website/public/assets/app-screenshots/host-live-tablet-workshops.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-tablet-workshops.png"
+      },
+      "copy": {
+        "alt": "Catch Host on a tablet during a pottery workshop, the run of show beside the room. Pottery Basics Workshop: 11 at six wheels",
+        "caption": "The live console on a tablet, with the run of show and the room side by side.",
+        "walkthroughStep": "Run the night"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
       "id": "guest-explore",
       "status": "active",
       "audience": "guest",
@@ -1180,6 +1744,429 @@
       },
       "copy": {
         "alt": "Creating an event in Catch Host, step 1 of 4: Saturday Trivia Social as a quiz or trivia night",
+        "caption": "Your first event in Catch Host, one step at a time.",
+        "walkthroughStep": "Create"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-create-colleges",
+      "status": "active",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a college society",
+      "fixtureKey": "hostMarketingIndia.host.createColleges",
+      "captureId": "host_create_colleges",
+      "routeIds": [
+        "hostCreateEventScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-colleges.png",
+        "websitePath": "website/public/assets/app-screenshots/host-create-colleges.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-colleges.png"
+      },
+      "copy": {
+        "alt": "Creating an event in Catch Host, step 1 of 4: Freshers' Film Screening as a film screening",
+        "caption": "Your first event in Catch Host, one step at a time.",
+        "walkthroughStep": "Create"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-create-communities",
+      "status": "active",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a community",
+      "fixtureKey": "hostMarketingIndia.host.createCommunities",
+      "captureId": "host_create_communities",
+      "routeIds": [
+        "hostCreateEventScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-communities.png",
+        "websitePath": "website/public/assets/app-screenshots/host-create-communities.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-communities.png"
+      },
+      "copy": {
+        "alt": "Creating an event in Catch Host, step 1 of 4: Monthly Book Club as a book club meetup",
+        "caption": "Your first event in Catch Host, one step at a time.",
+        "walkthroughStep": "Create"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-create-nightlife",
+      "status": "active",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a nightlife host",
+      "fixtureKey": "hostMarketingIndia.host.createNightlife",
+      "captureId": "host_create_nightlife",
+      "routeIds": [
+        "hostCreateEventScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-nightlife.png",
+        "websitePath": "website/public/assets/app-screenshots/host-create-nightlife.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-nightlife.png"
+      },
+      "copy": {
+        "alt": "Creating an event in Catch Host, step 1 of 4: Friday Bandra Pub Crawl as a bar crawl",
+        "caption": "Your first event in Catch Host, one step at a time.",
+        "walkthroughStep": "Create"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-create-racket-sports",
+      "status": "active",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a racket sports host",
+      "fixtureKey": "hostMarketingIndia.host.createRacketSports",
+      "captureId": "host_create_racket_sports",
+      "routeIds": [
+        "hostCreateEventScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-racket-sports.png",
+        "websitePath": "website/public/assets/app-screenshots/host-create-racket-sports.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-racket-sports.png"
+      },
+      "copy": {
+        "alt": "Creating an event in Catch Host, step 1 of 4: Friday Pickleball Mixer as pickleball",
+        "caption": "Your first event in Catch Host, one step at a time.",
+        "walkthroughStep": "Create"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-create-run-clubs",
+      "status": "active",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a run club",
+      "fixtureKey": "hostMarketingIndia.host.createRunClubs",
+      "captureId": "host_create_runs",
+      "routeIds": [
+        "hostCreateEventScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-run-clubs.png",
+        "websitePath": "website/public/assets/app-screenshots/host-create-run-clubs.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-run-clubs.png"
+      },
+      "copy": {
+        "alt": "Creating an event in Catch Host, step 1 of 4: Sunday 6 AM Social Run as a social run",
+        "caption": "Your first event in Catch Host, one step at a time.",
+        "walkthroughStep": "Create"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-create-studios",
+      "status": "active",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a studio",
+      "fixtureKey": "hostMarketingIndia.host.createStudios",
+      "captureId": "host_create_studios",
+      "routeIds": [
+        "hostCreateEventScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-studios.png",
+        "websitePath": "website/public/assets/app-screenshots/host-create-studios.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-studios.png"
+      },
+      "copy": {
+        "alt": "Creating an event in Catch Host, step 1 of 4: Saturday Sunrise Yoga as yoga",
+        "caption": "Your first event in Catch Host, one step at a time.",
+        "walkthroughStep": "Create"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-create-supper-clubs",
+      "status": "active",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a supper club",
+      "fixtureKey": "hostMarketingIndia.host.createSupperClubs",
+      "captureId": "host_create_suppers",
+      "routeIds": [
+        "hostCreateEventScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-supper-clubs.png",
+        "websitePath": "website/public/assets/app-screenshots/host-create-supper-clubs.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-supper-clubs.png"
+      },
+      "copy": {
+        "alt": "Creating an event in Catch Host, step 1 of 4: Supper for Twelve as a supper",
+        "caption": "Your first event in Catch Host, one step at a time.",
+        "walkthroughStep": "Create"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-create-teams",
+      "status": "active",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a people team",
+      "fixtureKey": "hostMarketingIndia.host.createTeams",
+      "captureId": "host_create_teams",
+      "routeIds": [
+        "hostCreateEventScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-teams.png",
+        "websitePath": "website/public/assets/app-screenshots/host-create-teams.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-teams.png"
+      },
+      "copy": {
+        "alt": "Creating an event in Catch Host, step 1 of 4: Friday Team Social as a team social",
+        "caption": "Your first event in Catch Host, one step at a time.",
+        "walkthroughStep": "Create"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-create-venues",
+      "status": "active",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a venue",
+      "fixtureKey": "hostMarketingIndia.host.createVenues",
+      "captureId": "host_create_venues",
+      "routeIds": [
+        "hostCreateEventScreen"
+      ],
+      "device": {
+        "id": "generic-phone",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 62,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 804,
+            "height": 1748
+          },
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
+          "dynamicIsland": null
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-venues.png",
+        "websitePath": "website/public/assets/app-screenshots/host-create-venues.png",
+        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-venues.png"
+      },
+      "copy": {
+        "alt": "Creating an event in Catch Host, step 1 of 4: Thursday Open Mic as an open mic",
         "caption": "Your first event in Catch Host, one step at a time.",
         "walkthroughStep": "Create"
       }

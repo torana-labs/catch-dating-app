@@ -85,7 +85,7 @@
         {"time": "4:00 PM", "title": "Court time, counted", "body": "You see every player’s minutes on court and on the bench. Anyone sitting out is pointed to the café to mix."},
         {"time": "That evening", "title": "Standings, then the photos", "body": "Reveal the final standings at the end, and the photos follow. Your guest records show which non-members keep coming."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-facilities"}
     },
     {
       "type": "checklist",

@@ -77,7 +77,7 @@
         {"time": "On the day", "title": "A door that’s quick", "body": "Everyone scans in. You see who’s new and who’s been to everything."},
         {"time": "Next morning", "title": "Turn guests into regulars", "body": "Photos, reviews and the next meetup. Regulars who aren’t members get an invitation."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-creators"}
     },
     {
       "type": "checklist",

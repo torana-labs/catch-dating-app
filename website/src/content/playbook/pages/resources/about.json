@@ -51,7 +51,7 @@
       ],
       "media": {
         "kind": "capture",
-        "slot": "guest-join-phone"
+        "slot": "host-live-tablet"
       }
     },
     {
@@ -185,7 +185,7 @@
       ],
       "media": {
         "kind": "capture",
-        "slot": "host-today"
+        "slot": "host-create-first-event"
       }
     }
   ]

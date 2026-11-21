@@ -82,7 +82,7 @@
         {"time": "5:40 PM", "title": "Court time, counted", "body": "You see every player’s minutes on court and on the bench. Anyone sitting out is pointed to the lounge to mix."},
         {"time": "That evening", "title": "Standings, then the photos", "body": "Reveal the final standings at the end, and the photos follow."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-racket-sports"}
     },
     {
       "type": "checklist",
@@ -149,7 +149,7 @@
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
       "leadForm": {"id": "racket_social_setup_guide", "requestKind": "guide", "format": "racket-sports", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "media": {"kind": "capture", "slot": "host-create-racket-sports"}
     }
   ]
 }

@@ -111,7 +111,7 @@
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
         {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
       ],
-      "media": {"kind": "capture", "slot": "host-today"}
+      "media": {"kind": "capture", "slot": "host-create-first-event"}
     }
   ]
 }

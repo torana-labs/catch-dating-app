@@ -296,7 +296,16 @@ import 'entries/guest_group_chat.dart';
 import 'entries/guest_reminder.dart';
 import 'entries/host_application_detail.dart';
 import 'entries/host_automations_phone.dart';
+import 'entries/host_create_colleges.dart';
+import 'entries/host_create_communities.dart';
 import 'entries/host_create_first_event.dart';
+import 'entries/host_create_nightlife.dart';
+import 'entries/host_create_racket_sports.dart';
+import 'entries/host_create_runs.dart';
+import 'entries/host_create_studios.dart';
+import 'entries/host_create_suppers.dart';
+import 'entries/host_create_teams.dart';
+import 'entries/host_create_venues.dart';
 import 'entries/host_door_arriving.dart';
 import 'entries/host_door_in.dart';
 import 'entries/host_event_share_links.dart';
@@ -313,6 +322,18 @@ import 'entries/host_live_console.dart';
 import 'entries/host_live_needs_phone.dart';
 import 'entries/host_live_now_tablet.dart';
 import 'entries/host_live_scores_phone.dart';
+import 'entries/host_live_tablet_colleges.dart';
+import 'entries/host_live_tablet_communities.dart';
+import 'entries/host_live_tablet_creators.dart';
+import 'entries/host_live_tablet_facilities.dart';
+import 'entries/host_live_tablet_outdoors.dart';
+import 'entries/host_live_tablet_racket_sports.dart';
+import 'entries/host_live_tablet_runs.dart';
+import 'entries/host_live_tablet_studios.dart';
+import 'entries/host_live_tablet_suppers.dart';
+import 'entries/host_live_tablet_teams.dart';
+import 'entries/host_live_tablet_venues.dart';
+import 'entries/host_live_tablet_workshops.dart';
 import 'entries/host_organizer_memberships.dart';
 import 'entries/host_organizer_payments_phone.dart';
 import 'entries/host_organizer_team_phone.dart';
@@ -6843,6 +6864,27 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'member_event_discovery': () => memberEventDiscoveryCapture,
   'host_live_console': () => hostLiveConsoleCapture,
   'host_post_event_report': () => hostPostEventReportCapture,
+  'host_live_tablet_colleges': () => hostLiveTabletCollegesCapture,
+  'host_live_tablet_communities': () => hostLiveTabletCommunitiesCapture,
+  'host_live_tablet_creators': () => hostLiveTabletCreatorsCapture,
+  'host_live_tablet_facilities': () => hostLiveTabletFacilitiesCapture,
+  'host_live_tablet_outdoors': () => hostLiveTabletOutdoorsCapture,
+  'host_live_tablet_racket_sports': () => hostLiveTabletRacketSportsCapture,
+  'host_live_tablet_runs': () => hostLiveTabletRunsCapture,
+  'host_live_tablet_studios': () => hostLiveTabletStudiosCapture,
+  'host_live_tablet_suppers': () => hostLiveTabletSuppersCapture,
+  'host_live_tablet_teams': () => hostLiveTabletTeamsCapture,
+  'host_live_tablet_venues': () => hostLiveTabletVenuesCapture,
+  'host_live_tablet_workshops': () => hostLiveTabletWorkshopsCapture,
+  'host_create_colleges': () => hostCreateCollegesCapture,
+  'host_create_communities': () => hostCreateCommunitiesCapture,
+  'host_create_nightlife': () => hostCreateNightlifeCapture,
+  'host_create_racket_sports': () => hostCreateRacketSportsCapture,
+  'host_create_runs': () => hostCreateRunsCapture,
+  'host_create_studios': () => hostCreateStudiosCapture,
+  'host_create_suppers': () => hostCreateSuppersCapture,
+  'host_create_teams': () => hostCreateTeamsCapture,
+  'host_create_venues': () => hostCreateVenuesCapture,
   'host_post_event_report_more': () => hostPostEventReportMoreCapture,
   'guest_after_event': () => guestAfterEventCapture,
   'host_insights_phone': () => hostInsightsPhoneCapture,
@@ -10833,6 +10875,27 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   hostLiveConsoleCapture,
   hostPostEventReportCapture,
+  hostLiveTabletCollegesCapture,
+  hostLiveTabletCommunitiesCapture,
+  hostLiveTabletCreatorsCapture,
+  hostLiveTabletFacilitiesCapture,
+  hostLiveTabletOutdoorsCapture,
+  hostLiveTabletRacketSportsCapture,
+  hostLiveTabletRunsCapture,
+  hostLiveTabletStudiosCapture,
+  hostLiveTabletSuppersCapture,
+  hostLiveTabletTeamsCapture,
+  hostLiveTabletVenuesCapture,
+  hostLiveTabletWorkshopsCapture,
+  hostCreateCollegesCapture,
+  hostCreateCommunitiesCapture,
+  hostCreateNightlifeCapture,
+  hostCreateRacketSportsCapture,
+  hostCreateRunsCapture,
+  hostCreateStudiosCapture,
+  hostCreateSuppersCapture,
+  hostCreateTeamsCapture,
+  hostCreateVenuesCapture,
   hostPostEventReportMoreCapture,
 
   ScreenCaptureEntry(
