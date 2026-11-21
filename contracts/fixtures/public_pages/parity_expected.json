@@ -523,7 +523,121 @@
           "registrationMode": "closed",
           "amountPaise": 0,
           "currency": "INR",
-          "priceLabel": "Free"
+          "priceLabel": ""
+        }
+      },
+      "owner-hidden-price": {
+        "organizerId": "owner-made",
+        "event": {
+          "id": "owner-hidden-price",
+          "role": "Hosted event",
+          "title": "Saturday social",
+          "activityKind": "socialRun",
+          "timeline": "upcoming",
+          "startTime": "2026-05-16T00:00:00.000Z",
+          "endTime": "2026-05-16T01:10:00.000Z",
+          "timezone": "Asia/Kolkata",
+          "date": "16 May 2026, 5:30 – 6:40 am",
+          "location": "Race Course Road gate",
+          "locationDetails": "Meet near the main gate.",
+          "summary": "Easy social 5K with coffee after.",
+          "capacityLimit": 12,
+          "photoUrl": null,
+          "meetingLocation": {
+            "name": "Race Course Road gate",
+            "address": "Race Course Road, Indore",
+            "placeId": "race-course-road-gate",
+            "latitude": 22.7196,
+            "longitude": 75.8577,
+            "notes": "Meet near the main gate."
+          },
+          "itinerary": [
+            {
+              "id": "gather",
+              "kind": "gather",
+              "offsetMinutes": 0,
+              "durationMinutes": 15,
+              "title": "Gather at the main gate"
+            },
+            {
+              "id": "run",
+              "kind": "activity",
+              "offsetMinutes": 15,
+              "title": "Social 5K"
+            }
+          ],
+          "showGuestList": false,
+          "priceHidden": true,
+          "externalBooking": {
+            "provider": "luma",
+            "url": "https://lu.ma/owner-upcoming"
+          },
+          "registrationAccess": "app",
+          "bookedCount": 4,
+          "checkedInCount": 0,
+          "waitlistedCount": 0,
+          "publicRegistrationEnabled": false,
+          "registrationMode": "closed",
+          "amountPaise": 0,
+          "currency": "INR",
+          "priceLabel": ""
+        }
+      },
+      "owner-hidden-price-copy": {
+        "organizerId": "owner-made",
+        "event": {
+          "id": "owner-hidden-price-copy",
+          "role": "Hosted event",
+          "title": "Saturday social",
+          "activityKind": "socialRun",
+          "timeline": "upcoming",
+          "startTime": "2026-05-16T00:00:00.000Z",
+          "endTime": "2026-05-16T01:10:00.000Z",
+          "timezone": "Asia/Kolkata",
+          "date": "16 May 2026, 5:30 – 6:40 am",
+          "location": "Race Course Road gate",
+          "locationDetails": "Meet near the main gate.",
+          "summary": "Easy social 5K with coffee after.",
+          "capacityLimit": 12,
+          "photoUrl": null,
+          "meetingLocation": {
+            "name": "Race Course Road gate",
+            "address": "Race Course Road, Indore",
+            "placeId": "race-course-road-gate",
+            "latitude": 22.7196,
+            "longitude": 75.8577,
+            "notes": "Meet near the main gate."
+          },
+          "itinerary": [
+            {
+              "id": "gather",
+              "kind": "gather",
+              "offsetMinutes": 0,
+              "durationMinutes": 15,
+              "title": "Gather at the main gate"
+            },
+            {
+              "id": "run",
+              "kind": "activity",
+              "offsetMinutes": 15,
+              "title": "Social 5K"
+            }
+          ],
+          "showGuestList": false,
+          "priceHidden": true,
+          "externalBooking": {
+            "provider": "luma",
+            "url": "https://lu.ma/owner-upcoming"
+          },
+          "registrationAccess": "app",
+          "bookedCount": 4,
+          "checkedInCount": 0,
+          "waitlistedCount": 0,
+          "publicRegistrationEnabled": false,
+          "registrationMode": "closed",
+          "amountPaise": 0,
+          "currency": "INR",
+          "priceLabel": ""
         }
       }
     },

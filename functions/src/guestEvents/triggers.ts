@@ -6,6 +6,7 @@ import {
   onDocumentWritten,
 } from "firebase-functions/v2/firestore";
 import {GUEST_PAYMENTS} from "../payments/guestPayments";
+import {reconcilePublicEvent} from "../events/publicEventProjection";
 import {eventGuestEntries, refreshEventGuestEntry} from "./eventGuestEntry";
 import {guestEventStatuses, refreshGuestEventStatus} from
   "./guestEventStatus";
@@ -185,6 +186,8 @@ export const onEventGuestEntryEventWritten = onDocumentWritten({
   ...options, document: "events/{documentId}",
 }, async (event) => {
   const [before, after] = versions(event);
+  // The public copy (#1666) carries live counts, so every write refreshes it.
+  await reconcilePublicEvent(event.params.documentId);
   if (!eventTermsChanged(before, after)) return;
   const db = admin.firestore();
   await refreshEventGuestEntry(db, event.params.documentId);

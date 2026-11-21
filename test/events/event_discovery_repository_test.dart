@@ -135,35 +135,73 @@ void main() {
       },
     );
 
-    test('publication filter precedes decoding and pagination', () async {
+    test(
+      'only listed public copies are read, before decoding and pagination',
+      () async {
+        final firestore = FakeFirebaseFirestore();
+        final repository = EventDiscoveryRepository(firestore);
+        final now = DateTime(2030);
+        final published = buildEvent(
+          id: 'published',
+          startTime: now.add(const Duration(days: 2)),
+        );
+        final legacy = buildEvent(
+          id: 'legacy',
+          startTime: now.add(const Duration(days: 1)),
+        );
+        await _seedDiscoverableEvent(firestore, published);
+        await _seedDiscoverableEvent(firestore, legacy, legacy: true);
+        final privateData =
+            (await firestore.collection('publicEvents').doc(legacy.id).get())
+                .data()!;
+        privateData['publicationState'] = 'private';
+        privateData.remove('endTime');
+        privateData.remove('meetingLocation');
+        await firestore
+            .collection('publicEvents')
+            .doc('private')
+            .set(privateData);
+        final page = await repository.fetchDiscoverableEventsPage(
+          EventDiscoveryQuery.forCity(
+            marketId: 'in-mh-mumbai',
+            startAt: now,
+            limit: 1,
+          ),
+        );
+        expect(page.items.map((event) => event.id), ['published']);
+        expect(page.hasMore, isFalse);
+      },
+    );
+
+    test('asks for listed copies, so link-only events never list', () async {
       final firestore = FakeFirebaseFirestore();
       final repository = EventDiscoveryRepository(firestore);
       final now = DateTime(2030);
-      final published = buildEvent(
-        id: 'published',
-        startTime: now.add(const Duration(days: 2)),
-      );
-      final legacy = buildEvent(
-        id: 'legacy',
+      final listed = buildEvent(
+        id: 'listed',
         startTime: now.add(const Duration(days: 1)),
       );
-      await _seedDiscoverableEvent(firestore, published);
-      await _seedDiscoverableEvent(firestore, legacy, legacy: true);
-      final privateData =
-          (await firestore.collection('events').doc(legacy.id).get()).data()!;
-      privateData['publicationState'] = 'private';
-      privateData.remove('endTime');
-      privateData.remove('meetingLocation');
-      await firestore.collection('events').doc('private').set(privateData);
-      final page = await repository.fetchDiscoverableEventsPage(
-        EventDiscoveryQuery.forCity(
-          marketId: 'in-mh-mumbai',
-          startAt: now,
-          limit: 1,
-        ),
+      final linkOnly = buildEvent(
+        id: 'link-only',
+        startTime: now.add(const Duration(days: 2)),
       );
-      expect(page.items.map((event) => event.id), ['published']);
-      expect(page.hasMore, isFalse);
+      await _seedDiscoverableEvent(firestore, listed);
+      await _seedDiscoverableEvent(firestore, linkOnly);
+      await firestore.collection('publicEvents').doc(linkOnly.id).update({
+        'listing': 'link',
+      });
+
+      final events = await repository.fetchDiscoverableEvents(
+        EventDiscoveryQuery.forCity(marketId: 'in-mh-mumbai', startAt: now),
+      );
+      final hits = await repository
+          .watchSearchHitEvents(
+            ExploreSearchEventsQuery(['listed', 'link-only']),
+          )
+          .first;
+
+      expect(events.map((event) => event.id), ['listed']);
+      expect(hits.map((event) => event.id), ['listed']);
     });
 
     test('returns synthetic events for the feed to gate by booking', () async {
@@ -177,7 +215,7 @@ void main() {
         startTime: now.add(const Duration(days: 1)),
       );
       await _seedDiscoverableEvent(firestore, syntheticEvent);
-      await firestore.collection('events').doc(syntheticEvent.id).update({
+      await firestore.collection('publicEvents').doc(syntheticEvent.id).update({
         'synthetic': true,
         'seedPrefix': 'cross_paths_mumbai_qa',
       });
@@ -412,8 +450,12 @@ Future<void> _seedDiscoverableEvent(
 }) {
   final latitude = event.effectiveStartingPointLat;
   final longitude = event.effectiveStartingPointLng;
-  return firestore.collection('events').doc(event.id).set({
-    ...event.toJson(),
+  // Explore reads the public copies, which always carry listing; a legacy
+  // record without publication or listing is never listed.
+  final json = event.toJson();
+  if (legacy) json.remove('listing');
+  return firestore.collection('publicEvents').doc(event.id).set({
+    ...json,
     if (!legacy) 'publicationState': 'published',
     'discoveryCityName': cityName,
     'discoveryMarketId': marketId,

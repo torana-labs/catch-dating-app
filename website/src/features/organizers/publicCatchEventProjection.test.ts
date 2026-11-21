@@ -147,3 +147,16 @@ it("projects the host's guest settings only when they differ from the defaults",
   expect(open).not.toHaveProperty("priceHidden");
   expect(open).not.toHaveProperty("externalBooking");
 });
+it("never puts a hidden price on the page, from the event or its public copy (#1666)", () => {
+  const hidden = {...base(), priceInPaise: 50000, priceHiddenUntilBookingOpens: true,
+    publicRegistrationEnabled: false, publicRegistrationMode: undefined};
+  const {priceInPaise: _omitted, ...copy} = hidden;
+  for (const raw of [hidden, copy]) {
+    const event = project("event", raw)?.event;
+    expect(event).toMatchObject({priceHidden: true, amountPaise: 0, priceLabel: "", registrationMode: "closed"});
+    expect(JSON.stringify(event)).not.toContain("50000");
+  }
+  // A missing price is still malformed unless the host hid it.
+  const {priceInPaise: _gone, ...unpriced} = base();
+  expect(project("event", unpriced)).toBeNull();
+});

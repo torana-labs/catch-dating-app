@@ -132,7 +132,10 @@ class ExploreSearchEventsQuery {
 class EventDiscoveryRepository {
   const EventDiscoveryRepository(this._db);
 
-  static const _collectionPath = 'events';
+  /// Explore reads the server-written public copies (#1666): `events` is
+  /// read only by the organizer's team, and rules list only listed copies,
+  /// so every query asks for `listing == listed`.
+  static const _collectionPath = 'publicEvents';
 
   final FirebaseFirestore _db;
 
@@ -147,18 +150,18 @@ class EventDiscoveryRepository {
     EventDiscoveryQuery query, {
     PageCursor<Event>? startAfter,
   }) {
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
-    // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,discoveryAvailability:ASCENDING,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
+    // firestore-index: publicEvents (discoveryMarketId:ASCENDING,listing:ASCENDING,status:ASCENDING,discoveryOpenCohorts:CONTAINS,discoveryActivityKind:ASCENDING,discoveryGeoCell:ASCENDING,startTime:ASCENDING)
     return withBackendErrorContext(
       () async {
         if (query.marketId.isEmpty) {
@@ -166,7 +169,7 @@ class EventDiscoveryRepository {
         }
 
         Query<Map<String, dynamic>> firestoreQuery = _eventsRef
-            .where('publicationState', isEqualTo: 'published')
+            .where('listing', isEqualTo: 'listed')
             .where('discoveryMarketId', isEqualTo: query.marketId)
             .where('status', isEqualTo: EventLifecycleStatus.active.name)
             .where(
@@ -223,7 +226,7 @@ class EventDiscoveryRepository {
     if (query.eventIds.isEmpty) return Stream.value(const []);
     return withBackendErrorStream(
       () => _eventsRef
-          .where('publicationState', isEqualTo: 'published')
+          .where('listing', isEqualTo: 'listed')
           .where(FieldPath.documentId, whereIn: query.eventIds)
           .limit(ReadLimitPolicy.multiIdChunk)
           .snapshots()
@@ -301,8 +304,8 @@ bool _matchesPostQueryFilters(Event event, EventDiscoveryQuery query) {
   // Synthetic worlds are internal QA data, kept here so a signed-in synthetic
   // viewer finds their own event in its city. The Explore feed shows a
   // synthetic event only to a viewer booked on it.
-  // Link-only events are for people with the link. Rules cannot leave them
-  // out of the list query without a field on every event, so Explore does.
+  // Link-only events are for people with the link. Rules already keep them
+  // out of every list of public copies; this keeps the filter explicit.
   if (event.listing == EventListing.link) return false;
   if (!event.isUpcomingAt(query.startAt)) return false;
   final endBefore = query.endBefore;
