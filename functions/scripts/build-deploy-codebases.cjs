@@ -206,10 +206,21 @@ function treeFiles(functionsDir, trees) {
     .sort();
 }
 
+// A module may load only the shared Operations runtime (the model runners,
+// budget and price book under platform/) and no workflow. It names the
+// operations/src root and a platform/ path, and gets the shared trees alone.
+const sharedRuntimeLoad = /["'`]\.\.\/(?:\.\.\/)*operations\/src["'`]/u;
+const platformPath = /["'`]platform\//u;
+
+/** Whether a module that reads files beside itself loads the shared Operations runtime only. */
+function loadsSharedRuntimeOnly(code) {
+  return sharedRuntimeLoad.test(code) && platformPath.test(code);
+}
+
 /** The Operations workflows a module that reads files beside itself loads. */
 function workflowsNamed(file, code, workflows) {
   const named = workflows.filter((workflow) => code.includes(workflow));
-  if (!named.length) {
+  if (!named.length && !loadsSharedRuntimeOnly(code)) {
     throw new Error(`${file} reads files beside itself but names no Operations workflow ` +
       `(${workflows.join(", ") || "none"} under ${workflowRuntimeRoot}). Name the workflow ` +
       "directory it loads, or teach functions/scripts/build-deploy-codebases.cjs what it reads.");
@@ -344,6 +355,7 @@ async function buildFunctionCodebases({
     const packages = importedPackages(metafile);
     const texts = files.map((file) => fs.readFileSync(path.join(functionsDir, file), "utf8"));
     const named = new Set();
+    let loadsRuntime = false;
     files.forEach((file, index) => {
       if (computedSecret.test(texts[index])) {
         throw new Error(`${file} calls defineSecret without a literal name; per-Function hashes could not include ` +
@@ -351,9 +363,10 @@ async function buildFunctionCodebases({
       }
       if (texts[index].includes("__dirname")) {
         for (const workflow of workflowsNamed(file, texts[index], workflows)) named.add(workflow);
+        loadsRuntime ||= loadsSharedRuntimeOnly(texts[index]);
       }
     });
-    const runtime = named.size ? await operationsRuntime(named) : {files: [], packages: []};
+    const runtime = named.size || loadsRuntime ? await operationsRuntime(named) : {files: [], packages: []};
     for (const name of runtime.packages) packages.add(name);
     const runtimeCode = runtime.files.filter((file) => /\.(c|m)?js$/u.test(file))
       .map((file) => fs.readFileSync(path.join(functionsDir, file), "utf8"));
@@ -390,14 +403,17 @@ async function buildFunctionCodebases({
       return fs.readFileSync(path.join(functionsDir, file), "utf8");
     };
     const named = new Set();
+    let loadsRuntime = false;
     const code = [setup];
     for (const file of inputs) {
       code.push(copy(file));
       if (code.at(-1).includes("__dirname")) {
         for (const workflow of workflowsNamed(file, code.at(-1), workflows)) named.add(workflow);
+        loadsRuntime ||= loadsSharedRuntimeOnly(code.at(-1));
       }
     }
-    const runtime = named.size ? await operationsRuntime(named) : {workflows: [], files: [], packages: []};
+    const runtime = named.size || loadsRuntime ? await operationsRuntime(named) :
+      {workflows: [], files: [], packages: []};
     for (const file of runtime.files) {
       const text = copy(file);
       if (/\.(c|m)?js$/u.test(file)) code.push(text);
