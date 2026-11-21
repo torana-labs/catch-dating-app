@@ -114,7 +114,7 @@ calls a command yet.
 | AI reads | `commands/aiFallback` (runner, ledger, policy) | Callers: `aiPage.ts`, `formImport/aiForm.ts`, `guestImport/mappingFallback.ts`. Off until switched on. |
 | Guest rows | `guestImport/*` + `events/hostRosterIntakeCore` | Every guest file goes through one review session. |
 | Event drafts | `events/progressiveSetup/service.ts` | Same path the Host app uses. |
-| Unclaimed-organizer match | `organizers/phoneLeads` (`findClaimableOrganizers`) | The only phone-to-organizer read; claims still go through `requestOrganizerClaim`. Off until switched on (`shadow_profiles.md`). |
+| Unclaimed-organizer match | `organizers/phoneLeads` (`findClaimableOrganizers`) | The only phone-to-organizer read; claims still go through `requestOrganizerClaim`. Catch Host setup step one calls both through `OrganizerClaimsRepository`. Off until switched on (`shadow_profiles.md`). |
 
 ## Known duplicates
 

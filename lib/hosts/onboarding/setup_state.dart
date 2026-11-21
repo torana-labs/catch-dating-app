@@ -1,11 +1,13 @@
+import 'package:catch_dating_app/contexts/organizers/data/organizer_claims_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/claimable_organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:flutter/foundation.dart';
 
-/// Where organiser setup is. With no page found for the number there is no
-/// claim step: setup starts the page, checks its details, offers payouts and
-/// ends on Done.
+/// Where organiser setup is: start the page, check its details, offer
+/// payouts and end on Done. When Catch found a page for the number, step one
+/// first asks "Is this you?" (see [HostSetupState.claim]).
 enum HostSetupStep { start, details, payments, done }
 
 /// The five things a page says it runs, in board order, each with the
@@ -26,6 +28,38 @@ enum HostSetupFormat {
 /// Organiser setup as plain values: the step, the create-organizer draft
 /// being filled in, whether a logo was picked and, once the page exists,
 /// its id.
+/// Claiming a page Catch found for the number, inside step one: which page
+/// "This is me" picked, the claimant's name and role, and, once sent, the
+/// claim request's id. "Not me" sets [dismissed] and setup starts a page.
+@immutable
+class HostSetupClaim {
+  const HostSetupClaim({
+    this.organizer,
+    this.claimantName = '',
+    this.role,
+    this.requestId,
+    this.dismissed = false,
+  });
+
+  final ClaimableOrganizer? organizer;
+  final String claimantName;
+  final OrganizerClaimRole? role;
+
+  /// Set once the claim is sent; review comes next.
+  final String? requestId;
+
+  /// The host said none of the pages is theirs.
+  final bool dismissed;
+
+  /// The page was claimed earlier and is already waiting for review.
+  bool get alreadyPending => organizer?.claimPending ?? false;
+
+  bool get sent => requestId != null || alreadyPending;
+
+  bool get canSend =>
+      organizer != null && claimantName.trim().isNotEmpty && role != null;
+}
+
 @immutable
 class HostSetupState {
   const HostSetupState({
@@ -33,7 +67,11 @@ class HostSetupState {
     this.step = HostSetupStep.start,
     this.hasLogo = false,
     this.organizerId,
+    this.claim = const HostSetupClaim(),
   });
+
+  /// "Is this you?" progress, empty until a found page is picked.
+  final HostSetupClaim claim;
 
   final HostSetupStep step;
   final OrganizerDraft draft;
@@ -83,11 +121,13 @@ class HostSetupState {
     OrganizerDraft? draft,
     bool? hasLogo,
     String? organizerId,
+    HostSetupClaim? claim,
   }) => HostSetupState(
     step: step ?? this.step,
     draft: draft ?? this.draft,
     hasLogo: hasLogo ?? this.hasLogo,
     organizerId: organizerId ?? this.organizerId,
+    claim: claim ?? this.claim,
   );
 }
 

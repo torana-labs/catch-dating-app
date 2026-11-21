@@ -534,6 +534,115 @@ class AppLocalizationsEn extends AppLocalizations {
       'Catch has no page of yours yet. Start one here: it is what guests find you on, and you can change all of it later.';
 
   @override
+  String get hostOnboardingFoundTitle => 'Is this you?';
+
+  @override
+  String get hostOnboardingFoundLead =>
+      'Catch found a page that may be yours from your phone number. Claim it to start from what it already has, or start a new page.';
+
+  @override
+  String get hostOnboardingFoundClaim => 'This is me';
+
+  @override
+  String get hostOnboardingFoundNotMe => 'None of these, start a new page';
+
+  @override
+  String get hostOnboardingFoundPending => 'Claim waiting for review';
+
+  @override
+  String get hostOnboardingFoundSourceSelfVerified => 'You sent this page in';
+
+  @override
+  String get hostOnboardingFoundSourceCrm =>
+      'Catch’s team confirmed your number';
+
+  @override
+  String get hostOnboardingFoundSourcePublicPage =>
+      'Your number is on this page';
+
+  @override
+  String get hostOnboardingFoundSourceStaff => 'Catch’s team added your number';
+
+  @override
+  String get hostOnboardingClaimTitle => 'Claim your page';
+
+  @override
+  String get hostOnboardingClaimLead =>
+      'Tell Catch who you are. The team checks each claim before handing a page over.';
+
+  @override
+  String get hostOnboardingClaimName => 'Your name';
+
+  @override
+  String get hostOnboardingClaimNamePlaceholder => 'Riya Kapoor';
+
+  @override
+  String get hostOnboardingClaimRole => 'Your role';
+
+  @override
+  String get hostOnboardingClaimRoleOwner => 'Owner';
+
+  @override
+  String get hostOnboardingClaimRoleFounder => 'Founder';
+
+  @override
+  String get hostOnboardingClaimRoleManager => 'Manager';
+
+  @override
+  String get hostOnboardingClaimRoleMarketer => 'Marketing';
+
+  @override
+  String get hostOnboardingClaimRoleVenueManager => 'Venue manager';
+
+  @override
+  String get hostOnboardingClaimRoleOther => 'Other';
+
+  @override
+  String get hostOnboardingClaimSend => 'Send claim';
+
+  @override
+  String get hostOnboardingClaimSentTitle => 'Claim sent';
+
+  @override
+  String get hostOnboardingClaimHas => 'Already on the page';
+
+  @override
+  String get hostOnboardingClaimNeeds => 'You add once it is yours';
+
+  @override
+  String get hostOnboardingClaimFieldName => 'Name';
+
+  @override
+  String get hostOnboardingClaimFieldDescription => 'A line about your nights';
+
+  @override
+  String get hostOnboardingClaimFieldCity => 'City';
+
+  @override
+  String get hostOnboardingClaimFieldOrganizerType => 'What you run';
+
+  @override
+  String get hostOnboardingClaimFieldPhoto => 'Logo';
+
+  @override
+  String get hostOnboardingClaimFieldInstagram => 'Instagram';
+
+  @override
+  String get hostOnboardingClaimVerify => 'Verify on the website now';
+
+  @override
+  String get hostOnboardingClaimVerifyNote =>
+      'Prove the page is yours with Instagram or Luma on the website and it is handed over straight away.';
+
+  @override
+  String get hostOnboardingClaimDone => 'Done';
+
+  @override
+  String hostOnboardingClaimSentLead({required String name}) {
+    return '$name is waiting for review. Catch’s team checks claims and lets you know once the page is yours.';
+  }
+
+  @override
   String get hostOnboardingStartName => 'Name';
 
   @override
