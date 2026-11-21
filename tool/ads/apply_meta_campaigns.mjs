@@ -363,7 +363,12 @@ async function createCampaign({policy, api, campaign, leadFormId, excludedIds = 
   }
 }
 
-export async function applyMetaCampaigns({policy, plan, api, render = renderFeedImage}) {
+// Meta allows one ad set edit per 30 seconds, and the plan's validate-only
+// check counts as one, so a sync waits out that window first.
+const AD_SET_EDIT_GAP_MS = 31_000;
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export async function applyMetaCampaigns({policy, plan, api, render = renderFeedImage, wait = sleep}) {
   if (plan.blockers.length) throw new Error(`Cannot apply yet: ${plan.blockers.join(" ")}`);
   const auth = await pageToken(api, policy.pageId);
   const formIds = new Map(plan.changes.filter((change) => change.what === "lead form" && change.id)
@@ -384,6 +389,7 @@ export async function applyMetaCampaigns({policy, plan, api, render = renderFeed
   }
   for (const change of plan.changes) {
     if (change.kind !== "sync") continue;
+    await wait(AD_SET_EDIT_GAP_MS);
     await api.post(change.adSetId, {targeting: change.targeting});
     created.push(`targeting synced on ${change.target}`);
   }

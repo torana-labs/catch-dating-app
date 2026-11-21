@@ -164,7 +164,7 @@ test("an existing campaign's cities follow the catalog", async () => {
   assert.deepEqual(sync.targeting.geo_locations.location_types, ["home"]);
   assert.equal(sync.targeting.age_min, 21);
   assert.ok(api.calls.some(([m, r, mode]) => m === "POST" && r === "9" && mode === "validate"));
-  await applyMetaCampaigns({policy, plan: drifted, api, render});
+  await applyMetaCampaigns({policy, plan: drifted, api, render, wait: async () => {}});
   assert.ok(api.calls.some(([m, r, mode]) => m === "POST" && r === "9" && mode !== "validate"));
 });
 
