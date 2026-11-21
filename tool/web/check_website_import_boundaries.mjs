@@ -101,7 +101,7 @@ function layerFor(relativePath) {
   if (parts[0] === "stories") return {name: "story"};
   if (
     relativePath === "analytics.ts" || relativePath.startsWith("analytics/") ||
-    relativePath === "firebase.ts" ||
+    relativePath === "firebase.ts" || relativePath === "firebaseReadModels.ts" ||
     relativePath === "firebaseConfig.ts"
   ) {
     return {name: "service"};
