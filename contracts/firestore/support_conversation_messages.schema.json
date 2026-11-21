@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/support_conversation_messages.schema.json",
   "title": "SupportConversationMessageDocument",
-  "description": "One message in a support conversation: what the person sent, a reply staff recorded, or an internal note only staff see. sourceEventId is the WhatsApp receipt or Instagram message key it came from, which makes inbound recording idempotent.",
+  "description": "One message in a support conversation: what the person sent, a reply staff sent or recorded, an automatic acknowledgement, or an internal note only staff see. sourceEventId is the WhatsApp receipt or Instagram message key it came from, which makes inbound recording idempotent. A photo, voice note, document, location or button reply is kept as a short placeholder such as \"[photo]\"; the media itself is not downloaded. A WhatsApp reply sent from Catch's number keeps its WhatsApp message id; its deliveryState moves from sending to accepted, then to sent, delivered or read as WhatsApp reports, or failed. unknown means WhatsApp may or may not have it, so it is never retried. An outbound message with no author is Catch's automatic acknowledgement.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "supportConversationMessages",
@@ -75,11 +75,45 @@
       "type": "string",
       "enum": [
         "received",
-        "recorded"
+        "recorded",
+        "sending",
+        "accepted",
+        "sent",
+        "delivered",
+        "read",
+        "failed",
+        "unknown"
       ]
     },
     "at": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "providerMessageId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240,
+      "description": "The WhatsApp message id of a reply sent from Catch's number; delivery statuses are matched on it."
+    },
+    "bodyHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of a sent reply's text and saved reply id; a retried request with the same client request id must match it."
+    },
+    "deliveryErrorCode": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 999999999,
+      "description": "WhatsApp's error code when it refused or failed to deliver a reply."
+    },
+    "acknowledge": {
+      "type": "boolean",
+      "description": "On an inbound WhatsApp message: it was the person's first message, or their first after 24 hours of silence, so Catch acknowledges it once."
     }
   }
 }

@@ -47,6 +47,162 @@
       ]
     },
     {
+      "id": "host-live-tablet-colleges",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a college film screening",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-colleges.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during a college film screening, the run of show beside the room. Freshers' Film Screening: 271 in of 300 places",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-communities",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a book club meetup",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-communities.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during a book club meetup, the run of show beside the room. Monthly Book Club: 19 in at four tables",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-creators",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a creator's meetup",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-creators.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during a creator's meetup, the run of show beside the room. Sketch and Coffee Meetup: 36 in of 40",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-facilities",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a pickleball social",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-facilities.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during a pickleball social, the run of show beside the room. Thursday Pickleball Social: 29 in across eight courts",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-outdoors",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a sunrise trek",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-outdoors.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during a sunrise trek, the run of show beside the room. Sunday Sunrise Trek: 26 walkers in three pace groups",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-racket-sports",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a padel mixer",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-racket-sports.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during a padel mixer, the run of show beside the room. Friday Padel Mixer: 16 players on four courts",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-run-clubs",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a Sunday social run",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-run-clubs.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during a Sunday social run, the run of show beside the room. Sunday 6 AM Social Run: 48 runners in three pace groups",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-studios",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a sunrise yoga class",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-studios.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during a sunrise yoga class, the run of show beside the room. Saturday Sunrise Yoga: 18 in of 20 mats",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-supper-clubs",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a supper club dinner",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-supper-clubs.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during a supper club dinner, the run of show beside the room. Supper for Twelve: everyone seated at two tables",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-teams",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a team social",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-teams.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during a team social, the run of show beside the room. Friday Team Social: 64 colleagues in mixed groups",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-venues",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during an open mic night",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-venues.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during an open mic night, the run of show beside the room. Thursday Open Mic: 51 in of 60",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
+      "id": "host-live-tablet-workshops",
+      "audience": "host",
+      "surface": "Catch Host live console on a tablet during a pottery workshop",
+      "device": "generic-tablet",
+      "webPath": "/assets/app-screenshots/host-live-tablet-workshops.png",
+      "width": 2388,
+      "height": 1668,
+      "alt": "Catch Host on a tablet during a pottery workshop, the run of show beside the room. Pottery Basics Workshop: 11 at six wheels",
+      "caption": "The live console on a tablet, with the run of show and the room side by side.",
+      "walkthroughStep": "Run the night",
+      "pages": []
+    },
+    {
       "id": "guest-explore",
       "audience": "guest",
       "surface": "A guest's Explore screen",
@@ -58,8 +214,7 @@
       "caption": "Guests find tonight's plans in the Catch app.",
       "walkthroughStep": "Get found",
       "pages": [
-        "/",
-        "/mumbai/run-clubs/"
+        "/"
       ]
     },
     {
@@ -283,8 +438,7 @@
       "walkthroughStep": "Show up",
       "pages": [
         "/",
-        "/mumbai/run-clubs/",
-        "/new-to-mumbai/"
+        "/mumbai/run-clubs/"
       ]
     },
     {
@@ -366,6 +520,123 @@
       "pages": [
         "/host/"
       ]
+    },
+    {
+      "id": "host-create-colleges",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a college society",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-create-colleges.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Creating an event in Catch Host, step 1 of 4: Freshers' Film Screening as a film screening",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-communities",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a community",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-create-communities.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Creating an event in Catch Host, step 1 of 4: Monthly Book Club as a book club meetup",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-nightlife",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a nightlife host",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-create-nightlife.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Creating an event in Catch Host, step 1 of 4: Friday Bandra Pub Crawl as a bar crawl",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-racket-sports",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a racket sports host",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-create-racket-sports.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Creating an event in Catch Host, step 1 of 4: Friday Pickleball Mixer as pickleball",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-run-clubs",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a run club",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-create-run-clubs.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Creating an event in Catch Host, step 1 of 4: Sunday 6 AM Social Run as a social run",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-studios",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a studio",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-create-studios.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Creating an event in Catch Host, step 1 of 4: Saturday Sunrise Yoga as yoga",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-supper-clubs",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a supper club",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-create-supper-clubs.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Creating an event in Catch Host, step 1 of 4: Supper for Twelve as a supper",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-teams",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a people team",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-create-teams.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Creating an event in Catch Host, step 1 of 4: Friday Team Social as a team social",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
+    },
+    {
+      "id": "host-create-venues",
+      "audience": "host",
+      "surface": "Creating a first event in Catch Host for a venue",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/host-create-venues.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Creating an event in Catch Host, step 1 of 4: Thursday Open Mic as an open mic",
+      "caption": "Your first event in Catch Host, one step at a time.",
+      "walkthroughStep": "Create",
+      "pages": []
     },
     {
       "id": "host-demo-practice",
@@ -565,6 +836,23 @@
       "pages": []
     },
     {
+      "id": "guest-web-whats-on",
+      "audience": "guest",
+      "surface": "A city's What's on page in the browser",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/guest-web-whats-on.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "Mumbai's What's on page open in Safari at catchdates.com: 11 plans, nearest first, with a Thursday pub quiz and a supper at the top",
+      "caption": "The city's plans for the next two weeks, on the website. Nothing to download.",
+      "walkthroughStep": "Get found",
+      "pages": [
+        "/",
+        "/mumbai/run-clubs/",
+        "/new-to-mumbai/"
+      ]
+    },
+    {
       "id": "wedding-rsvp",
       "audience": "guest",
       "surface": "Household reply link in the browser",
@@ -593,6 +881,19 @@
       "pages": [
         "/weddings/"
       ]
+    },
+    {
+      "id": "programme-itinerary",
+      "audience": "guest",
+      "surface": "Guest itinerary link for a company offsite in the browser",
+      "device": "generic-phone",
+      "webPath": "/assets/app-screenshots/programme-itinerary.png",
+      "width": 804,
+      "height": 1748,
+      "alt": "A team's itinerary for a company offsite in Goa in a phone browser: their flight in, the resort and the welcome dinner",
+      "caption": "Each team's own itinerary: flights, rooms and sessions, in one link.",
+      "walkthroughStep": "Invite",
+      "pages": []
     },
     {
       "id": "wedding-whatsapp",

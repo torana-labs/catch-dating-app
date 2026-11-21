@@ -235,8 +235,9 @@ describe("homepage", {timeout: 20_000}, () => {
     // Nothing advertises an empty list: no See-all link, no empty notice, no filters.
     expect(plans.queryByRole("link", {name: "See all upcoming plans"})).toBeNull();
     expect(plans.queryByText(/No plans in Indore/u)).toBeNull();
-    expect(plans.getByRole("button", {name: "Notify me"})).toBeTruthy();
-    expect(plans.getByRole("link", {name: "Host on Catch"}).getAttribute("href")).toBe("/host/");
+    expect(plans.getByRole("button", {name: "Get plans"})).toBeTruthy();
+    // Hosts are the page's host band's job, not a line in the sign-up.
+    expect(plans.queryByRole("link", {name: "Host on Catch"})).toBeNull();
     expect(plans.queryByRole("radiogroup")).toBeNull();
     expect(screen.queryByText(/^0 /u)).toBeNull();
     expect(bandTitles(container)[3]).toBe("Bring people together? Run the whole night from one screen.");
@@ -247,7 +248,7 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(hosts.getByRole("link", {name: "Talk to us on WhatsApp"})).toBeTruthy();
     expect(screen.queryByText(/Here for the plans/u)).toBeNull();
     // The sign-up is the band: its lead says what it sends, the form sits under it.
-    expect(plans.getByText("Hosts are getting set up. We’ll send new Indore plans on WhatsApp, about once a week.")).toBeTruthy();
+    expect(plans.getByText("Hosts are getting set up. New Indore plans about once a week.")).toBeTruthy();
     expect(plans.getByRole("form", {name: "Want to hear first?"})).toBeTruthy();
   });
 
@@ -257,17 +258,17 @@ describe("homepage", {timeout: 20_000}, () => {
     render(<HomePage captures={captures} catalog={mumbaiThinCatalog} loadCatalog={keepCatalog} />);
     const plans = within(screen.getByRole("region", {name: "Coming up in Mumbai"}));
     const bar = within(plans.getByRole("form", {name: "Want to hear first?"}));
-    expect(bar.getByText("From Catch. Stop any time.")).toBeTruthy();
+    expect(bar.getByText("On WhatsApp, from Catch.")).toBeTruthy();
     fireEvent.change(bar.getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98765"}});
-    fireEvent.click(bar.getByRole("button", {name: "Notify me"}));
+    fireEvent.click(bar.getByRole("button", {name: "Get plans"}));
     expect(await bar.findByText("Check your WhatsApp number. Include the country code if it isn’t a local number.")).toBeTruthy();
     expect(leadPost).not.toHaveBeenCalled();
     fireEvent.change(bar.getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98765 43210"}});
-    fireEvent.click(bar.getByRole("button", {name: "Notify me"}));
+    fireEvent.click(bar.getByRole("button", {name: "Get plans"}));
     expect(await plans.findByText("Done. We’ll message you on WhatsApp when new Mumbai plans go up.")).toBeTruthy();
     await waitFor(() => expect(plans.queryByRole("form", {name: "Want to hear first?"})).toBeNull());
     expect(leadBody(0)).toMatchObject({requestKind: "city_alerts", city: "Mumbai", cityId: "in-mh-mumbai",
-      lead: {phone: "+919876543210", consent: {purpose: "cityNewPlans", version: "city-new-plans-whatsapp-v2"}, entry: "home-thin-week", cityAlerts: {interests: []}}});
+      lead: {phone: "+919876543210", consent: {purpose: "cityNewPlans", version: "city-new-plans-whatsapp-v3"}, entry: "home-thin-week", cityAlerts: {interests: []}}});
   });
 
   it("keeps the notify bar to a thin week", () => {

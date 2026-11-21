@@ -80,7 +80,7 @@
         {"time": "9:10 PM", "title": "A new seat for dessert", "body": "{{brand.name}} can re-seat the room so everyone meets a few more people. A quiet table gets a conversation card."},
         {"time": "Next morning", "title": "Hear how it went", "body": "Guests get a feedback prompt, and can say privately who they talked to. You see the totals, never who named whom."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-supper-clubs"}
     },
     {
       "type": "checklist",
@@ -144,7 +144,7 @@
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
       "leadForm": {"id": "supper_club_setup_guide", "requestKind": "guide", "format": "supper-clubs", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "media": {"kind": "capture", "slot": "host-create-supper-clubs"}
     }
   ]
 }

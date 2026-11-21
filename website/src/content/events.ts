@@ -55,7 +55,7 @@ export const eventDetailCopy = {
       alreadyRegistered: "You were already registered. Your roster place is confirmed.",
       waitlisted: "The event is full, so you are now on the organizer's waitlist.",
       privacy:
-        `Your name and verified number are used for this booking and can prefill ${brand.name} if you later continue in the app. This operational data is not permission for advertising.`,
+        `Your name and verified number are used for this booking and can prefill ${brand.name} if you later continue in the app.`,
       whatsappConsent:
         "Send me future event announcements from this organizer on WhatsApp",
       smsConsent:

@@ -46,12 +46,18 @@ void main() {
     );
     expect(AppConfig.termsUrl, Uri.parse('${Brand.webOrigin}/terms/'));
     expect(AppConfig.helpUrl, Uri.parse('${Brand.webOrigin}/help/'));
+    // The ad-matching notice links to the website's /privacy/#ads section.
+    expect(
+      AppConfig.adMatchingUrl,
+      Uri.parse('${Brand.webOrigin}/privacy/#ads'),
+    );
 
     AppConfig.overrideLegalUrlDefinesForTesting(const {
       'CATCH_PRIVACY_POLICY_URL': 'http://${Brand.webDomain}/privacy/',
       'CATCH_TERMS_URL': '',
     });
     expect(AppConfig.privacyPolicyUrl, isNull);
+    expect(AppConfig.adMatchingUrl, isNull);
     expect(AppConfig.termsUrl, isNull);
   });
 }

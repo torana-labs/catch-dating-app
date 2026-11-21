@@ -235,11 +235,13 @@
  * (.pg .fld, .pg .in): its label above the box, 13px semibold in the
  * secondary ink and 6px over it, and a 48px box (a text area 96px; a
  * container may set --catch-field-box-height) 14px
- * inside, whose fill, control line and corners the band sets. A hidden label
+ * inside, whose fill, control line and corners the band sets. Any other
+ * surface opts into the same box with data-fields="boxed", as the sign-in
+ * sheet does, so a website field is never the app's quiet row. A hidden label
  * leaves the box alone, as the canvas's notify fields do. Focus rings the box.
  */
-:global([data-block="band"]:not([data-band="ink"])) .field,
-:global([data-block="band"]:not([data-band="ink"])) .field[data-focused] {
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field,
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field[data-focused] {
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -247,7 +249,7 @@
   box-shadow: none;
 }
 @media (hover: hover) {
-  :global([data-block="band"]:not([data-band="ink"])) .field[data-input-mode="editable"]:hover:not([data-focused]) {
+  :global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field[data-input-mode="editable"]:hover:not([data-focused]) {
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -256,19 +258,19 @@
   }
 }
 
-:global([data-block="band"]:not([data-band="ink"])) .field:has(.control:focus-visible) {
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field:has(.control:focus-visible) {
   outline: none;
 }
 
-:global([data-block="band"]:not([data-band="ink"])) .field .caption {
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field .caption {
   margin-bottom: var(--catch-space-micro6);
   font-size: var(--catch-typography-role-body-meta-size);
   font-weight: var(--catch-typography-role-label-action-weight);
 }
 
-:global([data-block="band"]:not([data-band="ink"])) .field > .control,
-:global([data-block="band"]:not([data-band="ink"])) .field .affixLane,
-:global([data-block="band"]:not([data-band="ink"])) .field .selectLane {
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field > .control,
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field .affixLane,
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field .selectLane {
   display: flex;
   align-items: center;
   box-sizing: border-box;
@@ -280,20 +282,20 @@
   background: var(--catch-field-rest-fill, var(--catch-theme-surface));
 }
 
-:global([data-block="band"]:not([data-band="ink"])) .field > textarea.control {
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field > textarea.control {
   display: block;
   height: auto;
   min-height: calc(2 * var(--catch-size-control-lg));
   padding: var(--catch-space-s3) var(--catch-space-micro14);
 }
 
-:global([data-block="band"]:not([data-band="ink"])) .field .selectLane .control { height: 100%; }
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field .selectLane .control { height: 100%; }
 
-:global([data-block="band"]:not([data-band="ink"])) .field .chevron { right: var(--catch-space-micro14); }
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field .chevron { right: var(--catch-space-micro14); }
 
-:global([data-block="band"]:not([data-band="ink"])) .field > .control:focus-visible,
-:global([data-block="band"]:not([data-band="ink"])) .field .affixLane:has(.control:focus-visible),
-:global([data-block="band"]:not([data-band="ink"])) .field .selectLane:has(.control:focus-visible) {
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field > .control:focus-visible,
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field .affixLane:has(.control:focus-visible),
+:global(:is([data-block="band"]:not([data-band="ink"]), [data-fields="boxed"])) .field .selectLane:has(.control:focus-visible) {
   outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-primary);
   outline-offset: var(--catch-space-micro2);
 }

@@ -85,7 +85,7 @@
         {"time": "Summit", "title": "Count at every regroup", "body": "Leads mark who’s with them. Anyone not marked stays on your list."},
         {"time": "Evening", "title": "Everyone back, then the photos", "body": "Leads mark everyone back at the end. Anyone not marked stays on your list until you close the trek, and the photos follow."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-outdoors"}
     },
     {
       "type": "checklist",

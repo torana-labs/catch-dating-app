@@ -17,7 +17,10 @@ import type {
   SupportView,
 } from "../api/supportInboxRepository";
 import {
+  supportDeliveryLabel,
   supportFromLabel,
+  supportMessageAuthor,
+  supportReplyHelp,
   supportWaitingLabel,
   supportWaitingTone,
 } from "../controllers/supportLabels";
@@ -62,8 +65,9 @@ function row(item: SupportSummary, nowMs: number): SupportRow {
 /**
  * Support (board AdminSupport): guest and organizer conversations from
  * WhatsApp, Instagram and logged email, longest waiting first, with the
- * conversation beside them. A reply is recorded here and sent from the
- * channel; the WhatsApp reply trial stays one link away.
+ * conversation beside them. A WhatsApp reply is sent from Catch's number
+ * inside the 24-hour window when sending is on; any other reply is recorded
+ * here. The WhatsApp reply trial stays one link away.
  */
 export function SupportScreen({
   adMatching,
@@ -181,10 +185,14 @@ function ConversationDetail({
   const name = conversation.displayName ?? conversation.contactLabel;
   const waiting = supportWaitingLabel(conversation.waitingSinceMillis, nowMs);
   const busy = inbox.isSaving;
-  const send = async (kind: "reply" | "note") => {
-    const done = kind === "reply" ?
-      await inbox.reply(text, savedReply?.replyId ?? null) :
-      await inbox.addNote(text);
+  const replyState = conversation.reply ?? null;
+  const sending = replyState?.mode === "send";
+  const canSend = sending && replyState?.canSend === true;
+  const send = async (kind: "send" | "reply" | "note") => {
+    const savedReplyId = savedReply?.replyId ?? null;
+    const done = kind === "send" ? await inbox.sendReply(text, savedReplyId) :
+      kind === "reply" ? await inbox.reply(text, savedReplyId) :
+        await inbox.addNote(text);
     if (done) {
       setText("");
       setSavedReply(null);
@@ -210,17 +218,20 @@ function ConversationDetail({
         </CatchGap>
         <CatchGap size="related">
           <CatchLegacyText as="h2" variant="sectionTitle">Conversation</CatchLegacyText>
-          {detail.messages.map((message) => (
-            <CatchIndexRow
-              key={message.messageId}
-              subtitle={`${message.direction === "inbound" ? name :
-                message.direction === "note" ? "Note for the team" :
-                  "Reply"} · ${timeLabel(message.atMillis)}`}
-              title={message.text}
-              titleMaxLines={6}
-              titleVariant="bodyM"
-            />
-          ))}
+          {detail.messages.map((message) => {
+            const delivery = supportDeliveryLabel(message.deliveryState);
+            return (
+              <CatchIndexRow
+                key={message.messageId}
+                subtitle={[supportMessageAuthor(message, name),
+                  timeLabel(message.atMillis), delivery]
+                  .filter(Boolean).join(" · ")}
+                title={message.text}
+                titleMaxLines={6}
+                titleVariant="bodyM"
+              />
+            );
+          })}
         </CatchGap>
         <CatchGap size="related">
           <CatchLegacyText as="h2" variant="sectionTitle">Reply</CatchLegacyText>
@@ -240,8 +251,8 @@ function ConversationDetail({
             />
           ) : null}
           <CatchField
-            helperText={`Send it from ${channelLabel[conversation.channel]}` +
-              ", then record it here."}
+            helperText={supportReplyHelp(replyState,
+              channelLabel[conversation.channel], timeLabel)}
             maxLength={4000}
             maxLines={5}
             onChanged={setText}
@@ -250,9 +261,15 @@ function ConversationDetail({
             value={text}
           />
           <CatchGap direction="horizontal" size="related" wrap>
-            <CatchButton label="Record reply"
-              onPressed={text.trim() && !busy ? () => void send("reply") :
-                null} size="sm" />
+            {sending ? (
+              <CatchButton label="Send reply"
+                onPressed={canSend && text.trim() && !busy ?
+                  () => void send("send") : null} size="sm" />
+            ) : (
+              <CatchButton label="Record reply"
+                onPressed={text.trim() && !busy ? () => void send("reply") :
+                  null} size="sm" />
+            )}
             <CatchButton label="Add a note"
               onPressed={text.trim() && !busy ? () => void send("note") :
                 null} size="sm" variant="secondary" />

@@ -273,6 +273,26 @@
 
 .siteMenu { display: none; }
 
+/* A link never breaks onto two lines; the row folds to the menu first. */
+.links,
+.contact { white-space: nowrap; }
+
+/*
+ * Below the expanded window size (840px) the wide row does not fit: measured
+ * on the host pages, the wordmark, four links, Talk to us, Sign in and the
+ * trial action need 792px of a 840px window. So the links, the account and
+ * the contact label fold into the menu there, as on phones, while the row
+ * keeps its 68px height until the phone size.
+ */
+@media (max-width: 839px) {
+  .links,
+  .account,
+  .contactLabel,
+  .siteWide { display: none; }
+
+  .siteMenu { display: inline-flex; }
+}
+
 /* The canvas's phone menu (.pg .bar .menu): a 40px round button outlined in ink with three bars. */
 .menuButton {
   display: inline-flex;

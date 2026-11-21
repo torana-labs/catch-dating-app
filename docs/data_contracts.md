@@ -2503,9 +2503,9 @@ reads false), `planVisibleToGuests` (missing reads true) and
 `setEventPublication` carries the first three: sending the current
 `publicationState` with a changed setting saves only the setting and leaves
 registration as it is. Link-only events keep their own event page but are left
-out of Explore (client filter: a list rule cannot exclude them without a
-field on every event), Algolia, the organizer page lists, and the website's
-live readers (server lists, sitemap and the live listing feed). Guests see
+out of Explore, Algolia, the organizer page lists, and the website's live
+readers (server lists, sitemap and the live listing feed); rules enforce it
+on the public copy below. Guests see
 the settings: the app and website event pages hide "Who's going" when
 `showGuestList` is false, show no price while `priceHiddenUntilBookingOpens`
 is set and Catch registration is closed (the public projection carries
@@ -2709,10 +2709,49 @@ The required role-scoped Remote Config build minimum must use the actual
 released build numbers. It is not a privacy barrier: old clients can start
 offline or use bundled nonblocking defaults when the fetch fails. Restrictive
 rules must be live and tested before either private-setup gate is enabled.
-Individual event reads are public only for a published event.
-Direct private event reads require a current organizer manager or active viewRoster
-staff grant; deleted users, foreign tenants and expired/revoked staff grants
-are denied. Consumer bookmarks cannot target private events.
+### Public event copy (#1666)
+
+`events/{eventId}` is read only by the organizer's hosts, owner and active
+team, and by holders of an active staff grant for the event. A list must name
+one organizer the reader manages (`organizerId ==` or a one-value `in`), the
+shape the Host app's own queries already use, so Catch Host 1.0.5 keeps
+working. Direct private event reads require a current organizer manager or
+active viewRoster staff grant; deleted users, foreign tenants and
+expired/revoked staff grants are denied. Consumer bookmarks cannot target
+private events.
+
+Everyone else reads `publicEvents/{eventId}`
+([schema](../contracts/firestore/public_events.schema.json)), which
+`reconcilePublicEvent` (`functions/src/events/publicEventProjection.ts`)
+rewrites from the `onEventGuestEntryEventWritten` trigger on every event
+write. It copies an allowlist of event fields under the same names, so the
+apps decode it with the same `Event` model, and applies the host's settings on
+the server:
+
+- never copied: `genderCounts`, `cohortCounts`, `waitlistedCohortCounts`, the
+  `crossPathsPair*` counts, `adminSearch`, the demo markers (folded into
+  `synthetic: true`), `setupDefaults`, `sourceVenueId`, the provider evidence
+  in `eventOrigin` and `runtimeAccess.publicRuntimeId` (a walk-in join id with
+  `walkInPolicy: autoCreate` reserves a seat, so it must not be readable);
+- while the price is hidden (`priceHiddenUntilBookingOpens` and Catch
+  registration closed) `priceInPaise` is left out and every `eventPolicy`
+  amount is zero; guest event cards carry a null price too;
+- while the guest list is hidden, `checkedInCount` and `waitlistedCount` are
+  left out. `bookedCount` stays, because both apps and the website show places
+  left for every event; hiding it would need those surfaces to show open or
+  full only, which is a product decision;
+- `listing` is always written (`listed` for a missing value). Any copy opens by
+  id, so a link-only event works for people with its link; a list returns only
+  `listing == listed` copies, so link-only events cannot be enumerated.
+
+Only a published event has a copy. The apps try `events` first and fall back to
+the copy on permission-denied (`watchWithPermissionFallback`); Explore, search
+hits, guest organizer lists and followed organizers' events read listed copies
+only, and the website's live listing feed lists them too. Backfill existing
+events with `node functions/scripts/backfill-public-events.cjs --project <id>
+[--apply]` after `npm --prefix functions run build`: before the rules deploy
+(the copies are unreadable until then) and once more after the Functions
+deploy. It writes only `publicEvents`.
 
 The one-off backfill that annotated legacy public events with
 `publicationState` is retired; wipe-and-reseed leaves no legacy events to
@@ -6309,6 +6348,32 @@ Manager version; never the key itself), and a Host app push that says only that
 a bill was issued. Both are server-only. The email links the Razorpay invoice
 and the host billing website for that organizer
 (`/host/billing/?organizerId={organizerId}`); the push carries no link.
+
+Operator alerts. The same settings document can turn on staff emails about new
+support conversations and leads (`functions/src/hostAlerts`). Its optional
+`operatorAlerts` field is `{enabled, recipients, from, hourlyCap}`:
+`recipients` is one to five staff addresses sharing one email, `from` an
+address on the verified sender domain (for example
+`alerts@notify.catchdates.com`) and `hourlyCap` at most 60. While the field is
+absent, `enabled` is false or `email` is null, the triggers read the settings
+document and stop: deploying them emails nobody. To switch alerts on, add the
+field to the existing document with `enabled: true` (Firestore console or an
+owner script); setting `enabled: false` switches them off again. An alert goes
+out within a minute of a new `supportConversations` thread, of an inbound
+message after four hours with none in that thread (staff notes, replies and
+emails staff logged by hand do not count), or of a new `salesInboundIntents`
+row from a Meta lead form or the website (Host applications, the weddings
+pilot and website leads; partner nominations, city-alert sign-ups and internal
+QA rows are skipped). Each email gives what it is, the sender's or business's
+name, the channel, a preview of at most 140 characters, the India time and the
+Admin link (`/support/{conversationId}` or `/inbox/enquiry-{intentId}`); the
+subject never carries a phone number or email address. One
+`hostOperatorAlerts/{alertId}` receipt per source (ids, links and outcome only)
+is written before sending, so a retried trigger never sends twice and an
+uncertain send is never repeated. Each UTC clock hour counts its sends in
+`hostOperatorAlerts/hourly/windows/{yyyyMMddHH}`; past `hourlyCap` alerts are
+held, and `summariseOperatorAlertOverflow` emails one list of their links at
+minute 2 of the next hour.
 
 Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
 owner reads their own through `listOrganizerBills` (the host billing website),

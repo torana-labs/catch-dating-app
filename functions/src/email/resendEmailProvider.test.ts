@@ -110,3 +110,24 @@ test("malformed sender credentials cannot construct a transport", () => {
       /Email sender credential unavailable/);
   }
 });
+
+test("several recipients share one request; bad lists fail before I/O",
+  async () => {
+    let body: Record<string, unknown> | null = null;
+    const provider = new ResendEmailProvider(key, (async (_url, options) => {
+      body = JSON.parse(options!.body as string);
+      return Response.json({id: "email_2"});
+    }) as typeof fetch, () => 1000);
+    const to = ["staff-one@catch.example", "staff-two@catch.example"];
+    assert.deepEqual(await provider.submit({...message, to}),
+      {kind: "accepted", providerMessageId: "email_2"});
+    assert.deepEqual(body?.["to"], to);
+    for (const bad of [[], ["staff-one@catch.example",
+      "staff-one@catch.example"], Array.from({length: 6},
+      (_, i) => `staff-${i}@catch.example`), ["not an address"]]) {
+      body = null;
+      await assert.rejects(provider.submit({...message, to: bad}),
+        /Invalid transactional email/);
+      assert.equal(body, null);
+    }
+  });

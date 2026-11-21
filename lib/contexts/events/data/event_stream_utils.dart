@@ -132,10 +132,20 @@ Stream<List<T>> watchDocumentsOneByOne<T>({
   return withBackendErrorStream(() => controller.stream, context: context);
 }
 
+/// Guests read the public copy at `publicEvents/{id}` (#1666), whose fields
+/// match `events/{id}` except that a price hidden until booking opens is left
+/// out. The apps then show the hidden-price label, so the copy decodes with a
+/// zero price rather than failing.
+Map<String, dynamic> eventJsonForDecode(Map<String, dynamic> data) =>
+    data['priceInPaise'] is! int && data['priceHiddenUntilBookingOpens'] == true
+    ? {...data, 'priceInPaise': 0}
+    : data;
+
 /// Public rich-event reads cannot decode a private first-save event. The
 /// manager's private basics reader uses its own authorized projection.
 Event? publishedRichEvent(DocumentSnapshot<Map<String, dynamic>> snapshot) {
-  final data = snapshot.data();
+  final raw = snapshot.data();
+  final data = raw == null ? null : eventJsonForDecode(raw);
   if (data == null ||
       data['publicationState'] != 'published' ||
       (data['organizerId'] is! String && data['organizerId'] is! String) ||
@@ -155,7 +165,9 @@ Event? publishedRichEvent(DocumentSnapshot<Map<String, dynamic>> snapshot) {
 /// Attach rich decoding only after the public query has been constrained.
 Query<Event> decodePublishedEventQuery(Query<Map<String, dynamic>> query) =>
     query.withConverter<Event>(
-      fromFirestore: (snapshot, _) =>
-          Event.fromJson({...snapshot.data()!, 'id': snapshot.id}),
+      fromFirestore: (snapshot, _) => Event.fromJson({
+        ...eventJsonForDecode(snapshot.data()!),
+        'id': snapshot.id,
+      }),
       toFirestore: (event, _) => event.toJson(),
     );

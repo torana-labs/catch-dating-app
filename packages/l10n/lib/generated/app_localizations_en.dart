@@ -13,7 +13,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAnalyticsPrivacyBody =>
-      'Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days. Advertising measurement stays off. You can turn analytics off here at any time.';
+      'Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days and does not cover ad matching, which the privacy policy explains. You can turn analytics off here at any time.';
 
   @override
   String get hostAnalyticsPrivacyDeny => 'Keep analytics off';
@@ -1197,6 +1197,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authInvalidPhoneNumber => 'Please enter a valid phone number.';
+
+  @override
+  String get authLegalAgreement =>
+      'By continuing you agree to Catch’s terms and privacy policy.';
+
+  @override
+  String get authLegalTermsLink => 'Terms';
+
+  @override
+  String get authLegalPrivacyLink => 'Privacy policy';
+
+  @override
+  String get adMatchingNotice =>
+      'We share a coded version of your contact details with Google and Meta to measure our ads and choose who sees them.';
+
+  @override
+  String get adMatchingNoticeLink => 'How it works and how to opt out';
 
   @override
   String get authOtpTitle => 'Enter the code';

@@ -51,16 +51,30 @@ export function catchAutoReplyId(sourceEventId: string, kind: CatchAutoReplyKind
 }
 
 export async function sendCatchAutoReply(deps: CatchAutoReplyDeps, request: CatchAutoReplyRequest): Promise<CatchAutoReplyOutcome> {
+  return (await sendCatchAutoReplyWithId(deps, request)).outcome;
+}
+
+/** As sendCatchAutoReply, with WhatsApp's message id once it was sent (also on a replay). */
+export async function sendCatchAutoReplyWithId(deps: CatchAutoReplyDeps, request: CatchAutoReplyRequest):
+  Promise<{outcome: CatchAutoReplyOutcome; providerMessageId: string | null}> {
+  const outcome = (value: CatchAutoReplyOutcome, providerMessageId: string | null = null) =>
+    ({outcome: value, providerMessageId});
   const now = deps.nowMillis();
-  if (!/^[1-9][0-9]{6,14}$/u.test(request.participantId) || !request.body.trim()) return "unavailable";
-  if (now - request.inboundAtMillis > REPLY_WINDOW_MS) return "outside_window";
+  if (!/^[1-9][0-9]{6,14}$/u.test(request.participantId) || !request.body.trim()) return outcome("unavailable");
+  if (now - request.inboundAtMillis > REPLY_WINDOW_MS) return outcome("outside_window");
   const endpointHash = catchEndpointHash("+" + request.participantId);
   const replyId = catchAutoReplyId(request.sourceEventId, request.kind, request.discriminator);
   const ref = deps.db.collection(CATCH_AUTO_REPLIES).doc(replyId);
   const stopRef = deps.db.collection(CATCH_ENDPOINT_STOPS).doc(catchStopId(deps.scope, endpointHash));
+  let replayedId: string | null = null;
   const claim = await deps.db.runTransaction(async (tx) => {
     const [existing, stop] = await Promise.all([tx.get(ref), tx.get(stopRef)]);
-    if (existing.exists) return "replayed" as const;
+    if (existing.exists) {
+      const saved = existing.data() as Partial<CatchWhatsappAutoReplyDocument> | undefined;
+      replayedId = saved?.state === "sent" && typeof saved.providerMessageId === "string" ?
+        saved.providerMessageId : null;
+      return "replayed" as const;
+    }
     const state: CatchWhatsappAutoReplyDocument["state"] = stop.exists ? "skipped_stop" : "claimed";
     const expiresAt = Timestamp.fromMillis(now + RECORD_RETENTION_MS);
     const record = {schemaVersion: 1 as const, replyId, kind: request.kind,
@@ -73,7 +87,8 @@ export async function sendCatchAutoReply(deps: CatchAutoReplyDeps, request: Catc
     tx.create(ref, {...record, expiresAt});
     return stop.exists ? "stopped" as const : "claimed" as const;
   });
-  if (claim !== "claimed") return claim;
+  if (claim === "replayed") return outcome("replayed", replayedId);
+  if (claim !== "claimed") return outcome(claim);
   const finish = (state: CatchWhatsappAutoReplyDocument["state"], providerMessageId: string | null) =>
     ref.update({state, providerMessageId, updatedAtMillis: deps.nowMillis()});
   let send: CatchTextSender | null;
@@ -84,16 +99,19 @@ export async function sendCatchAutoReply(deps: CatchAutoReplyDeps, request: Catc
   }
   if (!send) {
     await finish("skipped_unavailable", null);
-    return "unavailable";
+    return outcome("unavailable");
   }
+  let providerMessageId: string;
   try {
-    const providerMessageId = await send("+" + request.participantId, request.body);
-    await finish("sent", providerMessageId);
-    return "sent";
+    providerMessageId = await send("+" + request.participantId, request.body);
   } catch {
     // The provider may have delivered it; never send this reply again.
     await finish("unknown", null).catch(() => undefined);
     logger.warn("Catch auto-reply outcome unknown.", {kind: request.kind});
-    return "unknown";
+    return outcome("unknown");
   }
+  // It was sent; a failed bookkeeping write must not make it look unsent.
+  await finish("sent", providerMessageId).catch(() =>
+    logger.warn("Catch auto-reply record not updated.", {kind: request.kind}));
+  return outcome("sent", providerMessageId);
 }

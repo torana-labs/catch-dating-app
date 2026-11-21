@@ -168,7 +168,7 @@
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
         {"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}, "emphasis": "secondary"}
       ],
-      "media": {"kind": "capture", "slot": "host-today"}
+      "media": {"kind": "capture", "slot": "host-create-first-event"}
     }
   ]
 }

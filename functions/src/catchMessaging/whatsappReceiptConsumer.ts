@@ -1,5 +1,9 @@
-import {defaultSupportInboxDeps, recordWhatsappSupportReceipt} from
-  "../supportInbox/conversations";
+import {
+  defaultSupportInboxDeps,
+  recordWhatsappSupportReceipt,
+  supportConversationId,
+} from "../supportInbox/conversations";
+import type {RecordMessageResult} from "../supportInbox/conversations";
 import {getFirestore} from "firebase-admin/firestore";
 import {defineBoolean, defineString} from "firebase-functions/params";
 import {onDocumentCreated, onDocumentWritten} from
@@ -14,8 +18,14 @@ import {CATCH_RECEIPTS, readCatchReceipt, isCatchStopReceipt,
   persistCatchStopReceipt} from "./whatsappEndpointStops";
 import type {CatchReceipt} from "./whatsappEndpointStops";
 import {routeCatchWhatsappInbound} from "./inboundRouter";
-import {inboundRouterDeps, messageNominationsEnabled} from
-  "./inboundRouterRuntime";
+import type {CatchRouteOutcome} from "./inboundRouter";
+import {
+  catchAutoReplyWithId,
+  inboundRouterDeps,
+  messageNominationsEnabled,
+} from "./inboundRouterRuntime";
+import {acknowledgeSupportSender} from "./supportAcknowledgement";
+import {applySupportWhatsappStatus} from "../supportInbox/whatsappReplies";
 import {listingSuppressionHmacKey} from
   "../listingSuppressions/registry";
 
@@ -61,11 +71,36 @@ export async function processCatchWhatsappReceipt(db: Firestore,
     .where("phoneNumberId", "==", event.phoneNumberId)
     .where("endpointHash", "==", catchEndpointHash("+" + event.participantId))
     .where("providerMessageId", "==", event.messageId).limit(2).get();
-  if (candidates.empty || candidates.docs.length === 0) return "deferred";
+  if (candidates.empty || candidates.docs.length === 0) {
+    return consumeSupportReplyStatus(db, event, nowMillis);
+  }
   if (candidates.docs.length !== 1) {
     throw new Error("Ambiguous Catch status correlation");
   }
   return consumeCatchReplyStatus(db, candidates.docs[0].id, eventId, nowMillis);
+}
+
+/**
+ * A status for a Support reply or acknowledgement sent from Catch's number:
+ * the recipient's conversation holds the message with that WhatsApp id.
+ * Deferred when none does yet; the sender applies early statuses itself
+ * once it saves the id.
+ */
+export async function consumeSupportReplyStatus(db: Firestore,
+  event: CatchReceipt, nowMillis: number):
+  Promise<"applied" | "unchanged" | "deferred"> {
+  if (event.eventKind !== "status" || !event.deliveryStatus ||
+      !/^[1-9][0-9]{6,14}$/u.test(event.participantId) ||
+      (event.deliveryStatus !== "failed" && event.errorCodes.length > 0) ||
+      event.expiresAt.toMillis() <= nowMillis) return "deferred";
+  const outcome = await applySupportWhatsappStatus(db, {
+    conversationId: supportConversationId("whatsapp",
+      "+" + event.participantId),
+    providerMessageId: event.messageId,
+    deliveryStatus: event.deliveryStatus,
+    errorCode: event.errorCodes[0] ?? null,
+  });
+  return outcome === "unmatched" ? "deferred" : outcome;
 }
 
 /**
@@ -191,6 +226,35 @@ export function needsCatchStatusReconciliation(
       before.providerMessageId !== after.providerMessageId);
 }
 
+// The same switch as staff replies from Admin: off, nothing is sent.
+const supportRepliesEnabled = defineBoolean("CATCH_WHATSAPP_REPLIES_ENABLED",
+  {default: false});
+
+/**
+ * Where an inbound message goes. Typed text from a registered nominator can
+ * be a nomination; everything else (any text while nominations are off, and
+ * every photo, voice note, document, location or button reply, which only
+ * ever carry a placeholder) lands in the Support inbox for the team. A
+ * support message that opens a conversation gets the acknowledgement.
+ */
+export function supportInboundRoute(deps: {
+  nominations: boolean;
+  route: (receipt: CatchReceipt) => Promise<CatchRouteOutcome>;
+  record: (receipt: CatchReceipt) => Promise<RecordMessageResult | null>;
+  acknowledge: (receipt: CatchReceipt, recorded: RecordMessageResult | null) =>
+    Promise<unknown>;
+}) {
+  return async (receipt: CatchReceipt): Promise<void> => {
+    const typed = receipt.messageType === "text" && !receipt.textTruncated;
+    const outcome = deps.nominations && typed ?
+      await deps.route(receipt) : "support";
+    if (outcome !== "support" && outcome !== "clarify") return;
+    const recorded = await deps.record(receipt);
+    // A clarifying question was just sent; don't also acknowledge.
+    if (outcome === "support") await deps.acknowledge(receipt, recorded);
+  };
+}
+
 export const onCatchWhatsappWebhookEventCreated = onDocumentCreated({
   document: CATCH_RECEIPTS + "/{eventId}",
   maxInstances: 2, concurrency: 10, retry: true,
@@ -201,16 +265,18 @@ export const onCatchWhatsappWebhookEventCreated = onDocumentCreated({
   if (!scope || !event.data) return;
   const db = getFirestore();
   const nominations = messageNominationsEnabled.value();
-  // Messages that are not nominations (or anything, while nominations are
-  // off) land in the Support inbox for the team.
-  const routeInbound = async (receipt: CatchReceipt) => {
-    const outcome = nominations ?
-      await routeCatchWhatsappInbound(inboundRouterDeps(db, scope), receipt) :
-      "support";
-    if (outcome === "support" || outcome === "clarify") {
-      await recordWhatsappSupportReceipt(defaultSupportInboxDeps, receipt);
-    }
-  };
+  const routeInbound = supportInboundRoute({
+    nominations,
+    route: (receipt) =>
+      routeCatchWhatsappInbound(inboundRouterDeps(db, scope), receipt),
+    record: (receipt) =>
+      recordWhatsappSupportReceipt(defaultSupportInboxDeps, receipt),
+    acknowledge: (receipt, recorded) => acknowledgeSupportSender({
+      enabled: supportRepliesEnabled.value(),
+      support: defaultSupportInboxDeps,
+      reply: catchAutoReplyWithId(db, scope),
+    }, receipt, recorded),
+  });
   await processCatchWhatsappReceipt(db, event.params.eventId, scope,
     Date.now(), routeInbound);
 });

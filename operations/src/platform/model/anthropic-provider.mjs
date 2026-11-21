@@ -14,8 +14,12 @@ import {createProviderRuntime} from "./provider-runtime.mjs";
 export const ANTHROPIC_MODELS = Object.freeze({anthropic: Object.freeze({
   "claude-haiku-4-5-20251001": Object.freeze({capabilities: Object.freeze(["json_schema"]), maxOutputTokens: 8192,
     thinking: "disabled"}),
-  // Priced in price-book.mjs; the try-it import fallback's model (#2062).
+  // Priced in price-book.mjs. The try-it import fallback (#2062) reads with
+  // claude-haiku-5-5 since 21 Nov 2026: it matched claude-opus-5-5 on a
+  // 22-case comparison of the real prompts at about 1/35 of the cost.
   "claude-opus-5-5": Object.freeze({capabilities: Object.freeze(["json_schema"]), maxOutputTokens: 8192,
+    thinking: "adaptive", effort: "low"}),
+  "claude-haiku-5-5": Object.freeze({capabilities: Object.freeze(["json_schema"]), maxOutputTokens: 8192,
     thinking: "adaptive", effort: "low"}),
 })});
 

@@ -450,7 +450,7 @@
       ],
       "media": {
         "kind": "capture",
-        "slot": "host-today"
+        "slot": "host-create-first-event"
       }
     }
   ]

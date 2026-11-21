@@ -397,6 +397,20 @@ on a short notice, linked to the privacy policy, shown where the person gives th
 data: the public checkout, app account creation and Host setup. The privacy
 policy names Google and Meta, what is shared, the hashing, and how to opt out.
 
+The notice reads "We share a coded version of your contact details with Google
+and Meta to measure our ads and choose who sees them.", with the link "How it
+works and how to opt out" to the policy's advertising section at
+`/privacy/#ads` (a fixed `anchor` on that section in
+`website/src/content/legal.json`). The website keeps the words once in
+`adMatchingNoticeCopy` (`website/src/content/legal.ts`) and shows them on the
+account step, free registration and paid checkout, under the pay button. The
+apps keep them in `app_en.arb` (`adMatchingNotice`, `adMatchingNoticeLink`) and
+show them on consumer sign-up and Catch Host sign-in, under the line "By
+continuing you agree to Catch's terms and privacy policy." with Terms and
+Privacy policy links, and on the Host setup step that creates the organizer
+page. `AppConfig.adMatchingUrl` is the privacy policy URL with the `ads`
+fragment. The Host analytics setting says it does not cover ad matching.
+
 The opt-out is one record per identifier in `adMatchingOptOuts`, server-only
 like the queue. Its ID is the SHA-256 of
 `catch-ad-matching-opt-out-v1:{kind}:{digest}`, where the digest is the one the

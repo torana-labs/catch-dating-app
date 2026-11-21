@@ -14,8 +14,6 @@ function assert(condition, message) {
 // unmaterialized param fails the whole Delivery lane. The colocated coverage
 // scanner fails closed when source declarations drift from this list.
 export const materializedNonSecretParams = [
-  "CATCH_HOST_OPERATOR_ALERTS_ENABLED",
-  "CATCH_HOST_OPERATOR_ALERTS_SINCE",
   "ALGOLIA_APPLICATION_ID",
   "RAZORPAY_PUBLIC_KEY_ID",
   "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
@@ -283,9 +281,6 @@ function normalizedProviderParams(environment = process.env, projectId) {
   "ANTHROPIC_ORGANIZATION_ID must be an Anthropic organization UUID");
   assert(programAssistantEnabled === "false" || federationRuleId && anthropicOrganizationId,
     "PROGRAM_ASSISTANT_ENABLED requires PROGRAM_ASSISTANT_FEDERATION_RULE_ID and ANTHROPIC_ORGANIZATION_ID");
-  assert(normalizedBooleanParam(environment, "CATCH_HOST_OPERATOR_ALERTS_ENABLED") === "false" &&
-    !environment.CATCH_HOST_OPERATOR_ALERTS_SINCE?.trim(),
-  "Host operator alerts require a separately reviewed runtime activation");
   // Ad conversions stay off unless an environment names a mode and both
   // credentials (docs/ads_conversion_spec.md, Server delivery).
   const adMode = environment.AD_CONVERSIONS_MODE?.trim() || "off";
@@ -329,8 +324,6 @@ function normalizedProviderParams(environment = process.env, projectId) {
   assert(!leadgenPages || /^[0-9]{5,20}(,[0-9]{5,20})*$/.test(leadgenPages.replace(/\s+/g, "")),
     "META_LEADGEN_PAGE_IDS must be comma-separated Facebook page IDs");
   const params = {
-    CATCH_HOST_OPERATOR_ALERTS_ENABLED: "false",
-    CATCH_HOST_OPERATOR_ALERTS_SINCE: " ",
     // Distinct names coexist with the SecretParams in immutable older packages.
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
     RAZORPAY_PUBLIC_KEY_ID: razorpayPublicKeyId,

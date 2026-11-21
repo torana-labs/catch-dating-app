@@ -1,15 +1,18 @@
 import {invariant} from "../errors.mjs";
 
-// Reviewed 2026-10-24 against the Claude API model table (cached 2026-10-06)
+// Reviewed 2026-11-21 (claude-haiku-5-5 added; 2026-10-24 for the rest) against the Claude API model table (cached 2026-10-06)
 // and server tool pricing: https://platform.claude.com/docs/en/about-claude/pricing
 // Prices are micro-dollars per million tokens. Cache writes use the
 // five-minute TTL rate (1.25x input). Web search is $10 per 1,000 requests.
 // Re-review before changing a model or enabling a new one.
 export const ANTHROPIC_PRICE_BOOK = Object.freeze({
-  reviewedAt: "2026-10-24",
+  reviewedAt: "2026-11-21",
   webSearchMicrosPerRequest: 10_000,
   models: Object.freeze({
     "claude-opus-5-5": rates(4, 20, 0.2, 5),
+    // Prompts up to 100K tokens; the fallback's inputs are capped at 20 KB,
+    // far below that tier (beyond it the rate is $0.50 / $2.50).
+    "claude-haiku-5-5": rates(0.1, 0.5, 0.01, 0.125),
     // Server-side fallback targets for claude-opus-5-5 refusals.
     "claude-opus-5": rates(5, 25, 0.5, 6.25),
     "claude-opus-4-8": rates(5, 25, 0.5, 6.25),

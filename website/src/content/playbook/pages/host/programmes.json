@@ -55,7 +55,7 @@
           "route": "weddings"
         }
       },
-      "media": {"kind": "capture", "slot": "wedding-itinerary"}
+      "media": {"kind": "capture", "slot": "programme-itinerary"}
     },
     {
       "type": "tiles",
@@ -243,7 +243,7 @@
       ],
       "media": {
         "kind": "capture",
-        "slot": "wedding-itinerary"
+        "slot": "programme-itinerary"
       }
     }
   ]

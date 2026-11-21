@@ -1,4 +1,4 @@
-import {CatchButton, CatchCheckboxInput, CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
+import {CatchButton, CatchCheckboxInput, CatchConsentNote, CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
 import {useWebsiteAccountController} from "../account/useWebsiteAccountController";
 import {renderAccountForm} from "../account/accountForm";
 import {useFreeEventRegistrationController} from "./useFreeEventRegistrationController";
@@ -7,6 +7,7 @@ import {EventWhatsappPreferencesPanel} from "../eventMessaging/EventWhatsappPref
 import {EventRcsPreferencesPanel} from "../eventMessaging/EventRcsPreferencesPanel";
 import {EventSmsPreferencePanel} from "../eventMessaging/EventSmsPreferencePanel";
 import {eventDetailCopy} from "../../content/events";
+import {adMatchingNoticeCopy as adNotice} from "../../content/legal";
 import {usePendingRequestNavigationBlocked} from "../../shared/pendingRequest";
 import {Form} from "../../shared/ui/primitives";
 import {eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
@@ -102,6 +103,7 @@ function FreeEventRegistration({
             <EventWhatsappPreferencesPanel {...registeredScope} />
           </> : null}
         <CatchLegacyText as="p" color="ink2" variant="bodyS">{copy.privacy}</CatchLegacyText>
+        {stage !== "success" ? <CatchConsentNote href={adNotice.href} linkLabel={adNotice.linkLabel} text={adNotice.text} /> : null}
       </CatchGap>
     </Form>
   );
