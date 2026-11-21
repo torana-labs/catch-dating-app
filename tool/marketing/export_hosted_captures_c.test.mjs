@@ -145,3 +145,20 @@ for (const [label, edit] of [
     assert.equal(plan.seedIds.length, h.manifest.captures.length - 1);
   });
 }
+
+
+test("a committed PNG stamped with another machine's font goes to the renderer, never into a mixed bundle", async t => {
+  const h = seedHarness(t);
+  const id = "host-today";
+  const capture = h.manifest.captures.find(c => c.id === id);
+  // The bundle's own render of these inputs, committed by hand as if made on a laptop with another font.
+  const committed = path.join(h.root, capture.sourcePath);
+  fs.copyFileSync(path.join(h.options.outputDir, capture.sourcePath), committed);
+  editProvenance(committed, record => ({...record, nativeFontSha256: "f".repeat(64)}));
+  fs.copyFileSync(committed, path.join(h.root, capture.websitePath));
+  preserveAndAdvance(h, "commit a local render");
+  const plan = await h.plan();
+  assert.ok(plan.renderIds.includes(id), "the laptop's font must not be reused beside the runner's seeds");
+  assert.ok(!plan.seedIds.includes(id));
+  assert.equal(plan.render, true);
+});
