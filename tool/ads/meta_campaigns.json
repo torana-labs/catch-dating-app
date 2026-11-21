@@ -40,7 +40,7 @@
     {
       "name": "Catch Host | Leads | Organisers",
       "status": "PAUSED",
-      "dailyBudgetInr": 1000,
+      "dailyBudgetInr": 500,
       "note": "Optimise for leads until Catch reports qualified hosts back as conversion leads (about 15 a month), then switch the ad set to conversion leads in Ads Manager.",
       "leadForm": "Catch Host | Organisers | v2",
       "landingPath": "/host/",
