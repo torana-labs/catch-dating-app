@@ -1,0 +1,443 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/public_events.schema.json",
+  "title": "PublicEventDocument",
+  "description": "Backend-owned public copy of a published event at publicEvents/{eventId} (#1666). reconcilePublicEvent copies an allowlist of events/{eventId} fields from the events trigger, so the host's visibility settings are enforced on the server: gender, cohort and Cross Paths pair counts, admin search, demo markers, setup defaults, the source venue, provider evidence and the runtime join id never leave the canonical document; the price is left out while it is hidden and the checked-in and waitlisted counts while the guest list is hidden. A private or deleted event has no copy. The event id is the document id and is not stored in document data.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "publicEvents",
+  "x-firestore-path": "publicEvents/{eventId}",
+  "x-document-id-field": "id",
+  "x-owner": "reconcilePublicEvent (events trigger)",
+  "x-source": "events/{eventId}",
+  "x-internal-demo-fields": [
+    "synthetic"
+  ],
+  "required": [
+    "organizerId",
+    "startTime",
+    "status",
+    "publicationState",
+    "listing",
+    "name",
+    "eventCityId",
+    "eventMarketId",
+    "eventLocalDate",
+    "eventLocalStartTime",
+    "eventTimezone"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Organizer-authored event name.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "eventOrigin": {
+      "$ref": "../embedded/event_origin.schema.json",
+      "description": "events/{eventId}.eventOrigin without its provider evidence: externalEventId, sourceExternalEventId, adapterVersion, connectedAt and connectedBy are always null.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "runtimeAccess": {
+      "$ref": "../embedded/event_runtime_access.schema.json",
+      "description": "events/{eventId}.runtimeAccess without the join id: publicRuntimeId is always null. A walk-in join id must come from the venue or the guest's own record, never from a document anyone can read.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "startTime": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "endTime": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "meetingPoint": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "meetingLocation": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventMeetingLocation",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "startingPointLat": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/strictLatitude",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "startingPointLng": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/strictLongitude",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "locationDetails": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "itinerary": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/eventItineraryItem"
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "photoUrl": {
+      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "eventPhotos": {
+      "type": "array",
+      "items": {
+        "$ref": "../embedded/uploaded_photo.schema.json"
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "distanceKm": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "eventFormat": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "pace": {
+      "$ref": "../shared/event_common.schema.json#/definitions/paceLevel",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "capacityLimit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 2000,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "priceInPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "x-catch-ownership": "trigger-owned",
+      "description": "Left out while the price is hidden (priceHiddenUntilBookingOpens and Catch registration not open)."
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "bookedCount": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "trigger-owned",
+      "description": "Kept when the guest list is hidden: the apps and website show places left (capacity minus booked) for every event, so the count is already public through them."
+    },
+    "checkedInCount": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "trigger-owned",
+      "description": "Left out when the host hides the guest list (showGuestList false)."
+    },
+    "waitlistedCount": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "trigger-owned",
+      "description": "Left out when the host hides the guest list (showGuestList false)."
+    },
+    "status": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventLifecycleStatus",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "cancelledAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "cancellationReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "publicRegistrationEnabled": {
+      "type": "boolean",
+      "description": "When true, the published marketing event route may register a phone-OTP identity into eventAttendees without creating a Consumer profile.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "constraints": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventConstraints",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "eventPolicy": {
+      "type": "object",
+      "description": "events/{eventId}.eventPolicy. While the price is hidden (priceHiddenUntilBookingOpens and Catch registration not open) every pricing amount is zero and demandPricingRules is empty, so the copy cannot reveal the price.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "crossPathsDiscoveryEnabled": {
+      "type": "boolean",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "womenLed": {
+      "$ref": "../shared/women_led_common.schema.json#/definitions/eventWomenLed",
+      "description": "This event's override of its organizer's women-led default, set by an organizer owner or manager through updateEvent or by an admin through adminUpdateEventDetails. Absent or value null follows the organizer. Informational and filterable only; it never restricts attendance (see constraints and eventPolicy.admission for that).",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryMarketId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/marketId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryCityName": {
+      "$ref": "../shared/event_common.schema.json#/definitions/strictCitySlug",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryActivityKind": {
+      "$ref": "../shared/event_common.schema.json#/definitions/activityKind",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryGeoCell": {
+      "type": "string",
+      "pattern": "^-?\\d+:-?\\d+$",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryHasOpenSpots": {
+      "type": "boolean",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryAvailability": {
+      "type": "string",
+      "enum": [
+        "open",
+        "waitlist",
+        "gated",
+        "full",
+        "cancelled"
+      ],
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryOpenCohorts": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "menInterestedInWomen",
+          "womenInterestedInMen",
+          "queerOrOpen",
+          "nonBinaryOrOther"
+        ]
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryWaitlistCohorts": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "menInterestedInWomen",
+          "womenInterestedInMen",
+          "queerOrOpen",
+          "nonBinaryOrOther"
+        ]
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryInviteRequired": {
+      "type": "boolean",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryMembershipRequired": {
+      "type": "boolean",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryManualApprovalRequired": {
+      "type": "boolean",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryMinAge": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "discoveryMaxAge": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "synthetic": {
+      "type": "boolean",
+      "const": true,
+      "description": "Present only on demo and seed events: true when the event carries any demo marker (synthetic, seedPrefix, scenario or demoOps*). The markers themselves stay on events/{eventId}.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "Server creation time, when the event's creator records it.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "trigger-owned",
+      "description": "Latest backend event mutation timestamp when supplied by its owner, including attendance aggregate updates."
+    },
+    "planChangeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "trigger-owned",
+      "description": "Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero."
+    },
+    "publicationState": {
+      "type": "string",
+      "const": "published",
+      "description": "Only a published event has a public copy.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "setupRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647,
+      "x-catch-ownership": "trigger-owned",
+      "description": "Counts every setup change to the event in either publication state. An event created published starts at 1. Offer settings and admissions use it as the event's source revision."
+    },
+    "eventCityId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "eventMarketId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "eventLocalDate": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "eventLocalStartTime": {
+      "type": "string",
+      "pattern": "^[0-9]{2}:[0-9]{2}$",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "eventTimezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "publicRegistrationMode": {
+      "type": "string",
+      "enum": [
+        "closed",
+        "free",
+        "paid"
+      ],
+      "description": "Explicit registration capability. Older enabled events without this field support free OTP registration only.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "publicRegistrationRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "firstPublishedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "First explicit progressive publication. Retained on unpublish so prior schedule commitments cannot be treated as a new draft.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "catchExperienceActivities": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "introductions",
+          "sharedActivities",
+          "rotations"
+        ]
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "listing": {
+      "type": "string",
+      "enum": [
+        "listed",
+        "link"
+      ],
+      "description": "Where people can find the event, always written (a missing events/{eventId}.listing is copied as listed). listed: on the organizer's page, in Catch Explore and in search; Firestore rules let a list query return only listed copies. link: only people with the event's link; the copy is readable by id but never listed.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "showGuestList": {
+      "type": "boolean",
+      "description": "Whether guests see who else is going: a count, and friends' names in the app. Missing reads as true.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "priceHiddenUntilBookingOpens": {
+      "type": "boolean",
+      "description": "Whether the price stays hidden until booking opens. Missing reads as false.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "planVisibleToGuests": {
+      "type": "boolean",
+      "description": "Whether booked guests see the plan for the night (eventSuccessPlans) on their phones. Missing reads as true, so events from before the choice keep their live guide; false shows it to the event's managers only.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "organizerSummary": {
+      "$ref": "../embedded/event_organizer_summary.schema.json",
+      "description": "The organizer's public name, place, host name, tags, rating and visibility, copied from publicOrganizers/{organizerId} so Explore never looks organizers up by id. Written when the event is created or its organizerId changes, and rewritten for the organizer's events that have not ended when the public projection changes; an ended event keeps the summary it had. Missing means not copied yet; readers treat it as hidden.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "externalBooking": {
+      "$ref": "../embedded/event_external_booking.schema.json",
+      "description": "Where guests book when tickets are sold elsewhere. While set, Catch registration stays closed and publishing does not ask for Catch admission terms. Missing means tickets are sold on Catch.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "bookingQuestionIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+      },
+      "description": "Ids of the questions guests answer when they book, seeded from the organizer's askedAtBooking default when the event is created. Missing means no booking questions.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "followersFirstUntilMs": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 8640000000000000,
+      "description": "While now is before this time (epoch milliseconds), only the organiser's followers can book; then everyone can. Publishing with the followersFirst booking choice sets it to the start less 24 hours; another choice removes it. Missing means anyone can book.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "seriesId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The weekly series this event was created in by createPrivateEventSeries. Missing for a single event.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "seriesIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 8,
+      "description": "The event's place in its series, from 0. The event a series was created from is 0 and the weekly events after it count on from 1. Present with seriesId.",
+      "x-catch-ownership": "trigger-owned"
+    }
+  }
+}
