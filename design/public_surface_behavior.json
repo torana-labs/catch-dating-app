@@ -6115,7 +6115,7 @@
           "path": "website/src/features/reviews/useListingReviewsController.test.tsx",
           "contains": [
             "keeps disabled listing routes read-only",
-            "publishes configured reviews and refreshes the listing review query"
+            "publishes configured reviews and shows them until the page's next read"
           ]
         },
         {
