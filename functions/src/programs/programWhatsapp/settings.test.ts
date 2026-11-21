@@ -10,7 +10,6 @@ import {
   updateProgramAssistantSettingsHandler,
 } from "./assistantSettings";
 import {
-  listProgramWhatsappCannedRepliesHandler,
   upsertProgramWhatsappCannedReplyHandler,
 } from "./cannedReplies";
 import {setProgramWhatsappThreadHandlingHandler} from "./handling";
@@ -57,13 +56,6 @@ test("saved replies are added, replayed, fenced and listed in order",
       label: "Dress code", variants: [variants[0]], sortOrder: 1,
       expectedRevision: 0, requestId: "canned-cmd-4"}, "manager-1"),
     deps(db));
-    const list = await listProgramWhatsappCannedRepliesHandler(request({
-      programId: "program-1"}, "manager-1"), deps(db));
-    assert.deepEqual(list.cannedReplies.map((reply) => reply.cannedReplyId),
-      ["dress-code", "bus-times"]);
-    await assert.rejects(listProgramWhatsappCannedRepliesHandler(request({
-      programId: "program-1"}, "stranger"), deps(db)),
-    code("permission-denied"));
   });
 
 test("assistant settings start from the defaults and keep never-does fixed",

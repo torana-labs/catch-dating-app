@@ -6,14 +6,12 @@ import {FakeFirestore} from "../shared/testing/programFirestore";
 import {createProgramAssetUploadHandler} from "./programAssets";
 import {FakeProgramBucket} from "./programAssetFixture";
 import {
-  listProgramPhotosHandler,
   signProgramPhotoUrlsHandler,
   upsertProgramPhotoHandler,
 } from "./photos";
 import {contractValidator} from "../shared/contractTestValidators";
 
 const validateDocument = contractValidator("ProgramPhotoDocument");
-const validateList = contractValidator("ProgramPhotosCallableResponse");
 const validateUrls = contractValidator("ProgramPhotoUrlsCallableResponse");
 const code = (expected: string) => (err: unknown) =>
   (err as {code?: string}).code === expected;
@@ -50,7 +48,7 @@ async function upload(ctx: ReturnType<typeof setup>, requestId: string,
   return intent;
 }
 
-test("a photo is added to an album, then hidden; albums count it",
+test("a photo is added to an album, then hidden",
   async () => {
     const ctx = setup();
     const intent = await upload(ctx, "photo-request-1");
@@ -63,16 +61,6 @@ test("a photo is added to an album, then hidden; albums count it",
     assert.equal(validateDocument(doc), true,
       JSON.stringify(validateDocument.errors));
 
-    const list = await listProgramPhotosHandler(request({
-      programId: "program-1", functionId: "mehendi"}, "manager-1"),
-    ctx.photoDeps);
-    assert.equal(validateList(list), true,
-      JSON.stringify(validateList.errors));
-    assert.deepEqual(list.albums.map((album) =>
-      [album.name, album.photoCount]), [["Mehendi", 1], ["Sangeet", 0]]);
-    assert.equal(list.photos.length, 1);
-    assert.match(list.coverUrl!, /branding\/cover_/);
-
     const hidden = await upsertProgramPhotoHandler(request({
       programId: "program-1", photoId: intent.assetId, status: "hidden",
       expectedRevision: 1, requestId: "photo-cmd-2"}, "manager-1"),
@@ -83,9 +71,6 @@ test("a photo is added to an album, then hidden; albums count it",
       programId: "program-1", photoId: intent.assetId, status: "visible",
       expectedRevision: 1, requestId: "photo-cmd-3"}, "manager-1"),
     ctx.photoDeps), code("aborted"));
-    const after = await listProgramPhotosHandler(request({
-      programId: "program-1"}, "manager-1"), ctx.photoDeps);
-    assert.equal(after.albums[0].photoCount, 0);
   });
 
 test("the signer returns urls for this programme's own photos only",
@@ -131,9 +116,6 @@ test("photos need an upload, a known function and photo access",
       programId: "program-1", photoId: intent.assetId,
       functionId: "nope", expectedRevision: 0, requestId: "photo-cmd-5"},
     "manager-1"), ctx.photoDeps), code("not-found"));
-    await assert.rejects(listProgramPhotosHandler(request({
-      programId: "program-1"}, "greeter-1"), ctx.photoDeps),
-    code("permission-denied"));
     // A cover upload is signed into the branding folder.
     const cover = await upload(ctx, "cover-request-1", "cover");
     assert.match(cover.storagePath, /^programs\/program-1\/branding\/cover_/);

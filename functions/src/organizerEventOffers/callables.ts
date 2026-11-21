@@ -14,25 +14,16 @@ import {validateCommitEventOffersCallablePayload} from
   "../shared/generated/validators/commitEventOffersInput";
 import {validateMutateEventOfferCallablePayload} from
   "../shared/generated/validators/mutateEventOfferInput";
-import {validateGetEventOfferCallablePayload} from
-  "../shared/generated/validators/getEventOfferInput";
-import {validateListEventOffersCallablePayload} from
-  "../shared/generated/validators/listEventOffersInput";
 import {validateEventOfferPreviewCallableResponse} from
   "../shared/generated/validators/eventOfferPreviewOutput";
 import {validateEventOfferCommitCallableResponse} from
   "../shared/generated/validators/eventOfferCommitOutput";
 import {validateEventOfferMutationCallableResponse} from
   "../shared/generated/validators/eventOfferMutationOutput";
-import {validateEventOfferDetailCallableResponse} from
-  "../shared/generated/validators/eventOfferDetailOutput";
-import {validateEventOfferListCallableResponse} from
-  "../shared/generated/validators/eventOfferListOutput";
 import {FirestoreEventOfferRepository} from "./eventOfferFirestoreRepository";
 import {OfferDomainError} from "./eventOfferDomain";
 import {
-  commitEventOffers as commit, getEventOffer as detail,
-  listEventOffers as list, mutateEventOffer as mutate,
+  commitEventOffers as commit, mutateEventOffer as mutate,
   previewEventOffers as preview, OfferRepository,
   prepareEventOfferHandoff as prepareHandoff,
 } from "./eventOfferService";
@@ -137,40 +128,12 @@ export async function mutateEventOfferHandler(
     validate: validateEventOfferMutationCallableResponse});
 }
 
-export async function getEventOfferHandler(
-  request: CallableRequest<unknown>, deps = defaultDeps
-) {
-  const uid = requireAuth(request);
-  const input = validateCallableWithAjv(request,
-    validateGetEventOfferCallablePayload);
-  return execute({uid, action: "getEventOffer", deps,
-    limit: {maxRequests: 60, windowMs: 60 * 1000},
-    run: (repository) => detail({repository, actor: {uid}, ...input}),
-    validate: validateEventOfferDetailCallableResponse});
-}
-
-export async function listEventOffersHandler(
-  request: CallableRequest<unknown>, deps = defaultDeps
-) {
-  const uid = requireAuth(request);
-  const input = validateCallableWithAjv(request,
-    validateListEventOffersCallablePayload);
-  return execute({uid, action: "listEventOffers", deps,
-    limit: {maxRequests: 30, windowMs: 60 * 1000},
-    run: (repository) => list({repository, actor: {uid}, ...input}),
-    validate: validateEventOfferListCallableResponse});
-}
-
 export const previewEventOffers = onCall(appCheckCallableOptions,
   (request) => previewEventOffersHandler(request));
 export const commitEventOffers = onCall(appCheckCallableOptions,
   (request) => commitEventOffersHandler(request));
 export const mutateEventOffer = onCall(appCheckCallableOptions,
   (request) => mutateEventOfferHandler(request));
-export const getEventOffer = onCall(appCheckCallableOptions,
-  (request) => getEventOfferHandler(request));
-export const listEventOffers = onCall(appCheckCallableOptions,
-  (request) => listEventOffersHandler(request));
 
 /** Prepares editable text only; never sends or records delivery. */
 export async function prepareEventOfferHandoffHandler(

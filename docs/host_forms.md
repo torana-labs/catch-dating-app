@@ -810,7 +810,6 @@ than Firestore collection reads.
 - `createOrganizerFormDraft`
 - `updateOrganizerFormDraft`
 - `getOrganizerFormEditor`
-- `listOrganizerForms`
 - `validateOrganizerFormDraft`
 - `publishOrganizerForm`
 - `setOrganizerFormLifecycle`

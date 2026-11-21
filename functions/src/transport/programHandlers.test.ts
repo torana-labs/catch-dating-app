@@ -8,18 +8,14 @@ import {
 import {
   getProgramWorkAccessHandler,
   grantProgramStaffHandler,
-  listProgramStaffHandler,
 } from "../programs/programStaff";
 import {upsertProgramGuestHandler} from "../programs/programGuests";
 import {
-  getProgramArrivalsRosterHandler,
   getProgramTransportPlanHandler,
   setProgramTravelReadinessHandler,
 } from "./programArrivals";
 import {
   dispatchProgramTripHandler,
-  getProgramHotelInboundHandler,
-  listProgramTripsHandler,
   voidProgramTripHandler,
 } from "./programDispatch";
 
@@ -179,9 +175,6 @@ test("staff grants are duty-scoped, expiring, and station-checked",
       expiresAtMillis: now.toMillis() + 86_400_000,
     }, "manager-1"), deps(firestore));
     assert.equal(receipt.entityId, "new-staff-1");
-    const members = await listProgramStaffHandler(request({
-      programId: "program-1"}, "manager-1"), deps(firestore));
-    assert.equal(members.members.length, 5);
     const grant = firestore.getDoc("programStaffGrants/program-1__new-staff-1");
     assert.equal(grant?.status, "active");
   });
@@ -219,45 +212,6 @@ test("two guests sharing a phone stay distinct people", async () => {
     phoneE164: "+919111111111",
   }, "manager-1"), managerDeps);
   assert.notEqual(first.entityId, second.entityId);
-});
-
-test("arrivals roster is station-scoped and field-redacted", async () => {
-  const firestore = new FakeFirestore(baseSeed());
-  const roster = await getProgramArrivalsRosterHandler(request({
-    programId: "program-1",
-    pickupPointId: null,
-  }, "greeter-1"), deps(firestore));
-  // pp-t3 scope only: leg-1 yes, leg-2 (T1) no.
-  assert.deepEqual(roster.rows.map((row) => row.legId), ["leg-1"]);
-  const row = roster.rows[0];
-  assert.equal(row.guestDisplayName, "Rohan Sharma");
-  assert.equal(row.flightNumber, "AI847");
-  assert.equal(
-    row.curbAtMillis,
-    1_800_000_000_000 + transportSettings.domesticExitLagMillis
-  );
-  assert.equal(row.curbSource, "scheduledLanding");
-  // No contact fields in the operational projection.
-  assert.equal("phoneE164" in row, false);
-  assert.equal("email" in row, false);
-  // A greeter may not pull another station's roster by name.
-  await assert.rejects(
-    getProgramArrivalsRosterHandler(request({
-      programId: "program-1",
-      pickupPointId: "pp-t1",
-    }, "greeter-1"), deps(firestore)),
-    (error: unknown) =>
-      error instanceof HttpsError && error.code === "permission-denied"
-  );
-  // Staff without any airport duty are denied entirely.
-  await assert.rejects(
-    getProgramArrivalsRosterHandler(request({
-      programId: "program-1",
-      pickupPointId: null,
-    }, "hotelier-1"), deps(firestore)),
-    (error: unknown) =>
-      error instanceof HttpsError && error.code === "permission-denied"
-  );
 });
 
 test("claims are exclusive, releasable, and replay-safe", async () => {
@@ -428,7 +382,7 @@ test("dispatch writes trip, assignments and receipt atomically", async () => {
     firestore.getDoc("programTravelLegs/leg-1")?.readiness, "ready");
 });
 
-test("hotel inbound is hotel-scoped and arrival marks the trip", async () => {
+test("hotel staff cannot void a dispatched trip", async () => {
   const firestore = new FakeFirestore(readySeed());
   const dispatchDeps = deps(firestore);
   const dispatched = await dispatchProgramTripHandler(request({
@@ -442,27 +396,7 @@ test("hotel inbound is hotel-scoped and arrival marks the trip", async () => {
     expectedLegRevisions: [{legId: "leg-1", revision: 1}],
     clientOperationId: "op-dispatch-9",
   }, "dispatcher-1"), dispatchDeps);
-  const inbound = await getProgramHotelInboundHandler(request({
-    programId: "program-1",
-    hotelId: "hotel-1",
-  }, "hotelier-1"), dispatchDeps);
-  assert.equal(inbound.trips.length, 1);
-  assert.equal(inbound.trips[0].plateDisplay, "DL-1T-4471");
-  assert.deepEqual(inbound.trips[0].guestNames, ["Rohan Sharma"]);
-  assert.equal(inbound.trips[0].estimatedArriveAtMillis, null);
-  // The T1 leg headed to hotel-1 is visible as "expected".
-  assert.equal(inbound.expectedLegs.length, 1);
-  assert.equal(inbound.expectedLegs[0].guestDisplayName, "Vikram Rao");
-  // Hotel staff cannot open another hotel's view.
-  await assert.rejects(
-    getProgramHotelInboundHandler(request({
-      programId: "program-1",
-      hotelId: "hotel-2",
-    }, "hotelier-1"), dispatchDeps),
-    (error: unknown) =>
-      error instanceof HttpsError && error.code === "permission-denied"
-  );
-  // Marking arrival is hotel-scoped and idempotent.
+  // Hotel staff cannot void a dispatched trip.
   const tripDoc = firestore.getDoc(`transportTrips/${dispatched.tripId}`);
   await assert.rejects(
     voidProgramTripHandler(request({
@@ -499,33 +433,4 @@ test("transport plan groups by station, destination and readiness",
     }, "dispatcher-1"), deps(firestore));
     assert.equal(t1.groups.length, 1);
     assert.deepEqual(t1.groups[0].legIds, ["leg-2"]);
-  });
-
-test("trip ledger is restricted to dispatcher/reconciliation duties",
-  async () => {
-    const firestore = new FakeFirestore(readySeed());
-    await dispatchProgramTripHandler(request({
-      programId: "program-1",
-      pickupPointId: "pp-t3",
-      destinationHotelId: "hotel-1",
-      vehicleClassId: "suv",
-      plateDisplay: "DL-1T-4471",
-      vendorId: "vendor-1",
-      legIds: ["leg-1"],
-      expectedLegRevisions: [{legId: "leg-1", revision: 1}],
-      clientOperationId: "op-dispatch-ledger",
-    }, "dispatcher-1"), deps(firestore));
-    const ledger = await listProgramTripsHandler(request({
-      programId: "program-1",
-    }, "dispatcher-1"), deps(firestore));
-    assert.equal(ledger.trips.length, 1);
-    assert.equal(ledger.trips[0].plateDisplay, "DL-1T-4471");
-    assert.deepEqual(ledger.trips[0].guestNames, ["Rohan Sharma"]);
-    // A greeter is not a reconciliation reader.
-    await assert.rejects(
-      listProgramTripsHandler(request({programId: "program-1"},
-        "greeter-1"), deps(firestore)),
-      (error: unknown) =>
-        error instanceof HttpsError && error.code === "permission-denied"
-    );
   });

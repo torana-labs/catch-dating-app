@@ -54,7 +54,7 @@ test("the built entry loads one Function without loading every Function", () => 
     return JSON.parse(run.stdout);
   };
   const all = load(null);
-  const one = load("listOrganizerForms");
+  const one = load("getOrganizerFormEditor");
   assert.deepEqual(one.regions, [["asia-south1"]]);
   assert.ok(one.modules * 2 < all.modules,
     `one Function loaded ${one.modules} of ${all.modules} modules`);

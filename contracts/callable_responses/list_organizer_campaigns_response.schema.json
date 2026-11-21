@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/list_organizer_campaigns_response.schema.json",
   "title": "ListOrganizerCampaignsCallableResponse",
-  "description": "Reverse-chronological organizer Sends rows mixing WhatsApp campaigns, event announcements, and follower updates.",
+  "description": "Reverse-chronological organizer Sends rows mixing WhatsApp campaigns, event announcements, and follower updates. The listOrganizerCampaigns callable that returned it is retired; the name stays because hostSendSummaries.row stores one of its sends.",
   "type": "object",
   "additionalProperties": false,
   "required": ["organizerId", "sends", "nextCursor"],
