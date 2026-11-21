@@ -4,8 +4,7 @@ import {Timestamp} from "firebase-admin/firestore";
 import {baseSeed, deps, now, request} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
 import {getProgramWorkAccessHandler, grantProgramStaffHandler,
-  revokeProgramStaffHandler, listProgramStaffHandler} from
-  "./programStaff";
+  revokeProgramStaffHandler} from "./programStaff";
 
 const payload = {programId: "program-1", phoneNumber: "+919900001111",
   expiresAtMillis: now.toMillis() + 60_000,
@@ -148,69 +147,6 @@ test("the union of individually bounded assignments cannot truncate bootstrap",
     await assert.rejects(getProgramWorkAccessHandler(
       request({programId: "program-1"}, "greeter-1"), deps(store)),
     code("resource-exhausted"));
-  });
-
-test("staff pages reach older active grants beyond newer history",
-  async () => {
-    const seed = baseSeed();
-    const template = seed["programStaffGrants/program-1__greeter-1"];
-    for (const path of Object.keys(seed)) {
-      if (path.startsWith("programStaffGrants/")) delete seed[path];
-    }
-    const expected = Array.from({length: 123}, (_, i) =>
-      `staff-${String(i).padStart(3, "0")}`);
-    for (const [i, uid] of expected.entries()) {
-      seed[`programStaffGrants/program-1__${uid}`] = {...template, uid,
-        status: i === 122 ? "active" : "revoked",
-        updatedAt: i === 122 ?
-          Timestamp.fromMillis(now.toMillis() - 60_000) : now};
-    }
-    for (let i = 0; i < 130; i++) {
-      const uid = `foreign-${i}`;
-      seed[`programStaffGrants/program-1__${uid}`] = {...template, uid,
-        organizerId: "foreign"};
-    }
-    const db = new FakeFirestore(seed);
-    const seen: string[] = [];
-    let cursor: string | null = null;
-    do {
-      const page = await listProgramStaffHandler(request({
-        programId: "program-1", ...(cursor ? {cursor} : {}),
-      }, "manager-1"), deps(db));
-      assert.ok(page.members.length <= 50);
-      seen.push(...page.members.map((member) => member.uid));
-      cursor = page.nextCursor;
-      assert.ok(seen.length <= expected.length, "cursor must advance");
-      if (!cursor) assert.equal(page.members.at(-1)?.status, "active");
-    } while (cursor);
-    assert.deepEqual(seen, expected);
-  });
-
-test("staff continuations survive revocation and deletion of the anchor",
-  async () => {
-    const db = new FakeFirestore(baseSeed());
-    const read = (cursor?: string) => listProgramStaffHandler(request({
-      programId: "program-1", limit: 1, ...(cursor ? {cursor} : {}),
-    }, "manager-1"), deps(db));
-    const first = await read();
-    assert.equal(first.nextCursor, "dispatcher-1");
-    db.updateDoc("programStaffGrants/program-1__dispatcher-1", {
-      status: "revoked", updatedAt: now,
-    });
-    assert.equal((await read(first.nextCursor!)).members[0].uid, "greeter-1");
-    db.docs.delete("programStaffGrants/program-1__dispatcher-1");
-    assert.equal((await read(first.nextCursor!)).members[0].uid, "greeter-1");
-    db.setDoc("deletedUsers/manager-1", {deletedAt: now});
-    await assert.rejects(read(first.nextCursor!), code("permission-denied"));
-  });
-
-test("staff list rejects damaged identity bindings instead of looping pages",
-  async () => {
-    const db = new FakeFirestore(baseSeed());
-    db.updateDoc("programStaffGrants/program-1__dispatcher-1", {uid: "other"});
-    await assert.rejects(listProgramStaffHandler(request({
-      programId: "program-1", limit: 1,
-    }, "manager-1"), deps(db)), code("failed-precondition"));
   });
 
 for (const action of ["grant", "revoke"]) {
@@ -392,9 +328,6 @@ for (const actor of ["organizer-only", "greeter-1", "dispatcher-1"]) {
       hostUserId: actor, hostUserIds: [actor]});
     await assert.rejects(grantProgramStaffHandler(
       request(payload, actor), deps(db)), code("permission-denied"));
-    await assert.rejects(listProgramStaffHandler(
-      request({programId: "program-1"}, actor), deps(db)),
-    code("permission-denied"));
     assert.equal(db.transactionCommits, 0);
   });
 }
@@ -441,10 +374,6 @@ test("creator reissue replaces legacy duties and preserves creation audit",
     const legacy = {...db.getDoc("programStaffGrants/program-1__greeter-1"),
       uid: "new-staff-1", createdBy: "organizer-only"};
     db.setDoc("programStaffGrants/program-1__new-staff-1", legacy);
-    const page = await listProgramStaffHandler(
-      request({programId: "program-1"}, "manager-1"), deps(db));
-    assert.equal(page.members.find((member) => member.uid === "new-staff-1")
-      ?.status, "approvalRequired");
     await assert.rejects(grantProgramStaffHandler(
       request(payload, "admin-1"), deps(db)), code("permission-denied"));
     await grantProgramStaffHandler(request(payload, "manager-1"), deps(db));

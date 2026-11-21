@@ -4,7 +4,6 @@ import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   createPrivateEventSeriesHandler,
   createPrivateEventSetupHandler,
-  listPrivateEventSetupsHandler, listOfferEventTargetsHandler,
   updatePrivateEventDetailsHandler, setEventPublicationHandler,
   reconcilePrivateEventSeatsHandler,
   SetupCallableDependencies,
@@ -40,7 +39,6 @@ test("callable auth and payload validation precede rate or database access",
       createPrivateEventSeriesHandler,
       updatePrivateEventBasicsHandler,
       updatePrivateEventPreferencesHandler,
-      listPrivateEventSetupsHandler, listOfferEventTargetsHandler,
       updatePrivateEventDetailsHandler, setEventPublicationHandler,
       reconcilePrivateEventSeatsHandler]) {
       await assert.rejects(handler(request({}), deps),

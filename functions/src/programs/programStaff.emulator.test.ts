@@ -5,8 +5,6 @@ import {randomUUID} from "node:crypto";
 import {initializeApp, deleteApp} from "firebase-admin/app";
 import {baseSeed, request, now} from "../shared/testing/programFixtures";
 import {inviteProgramStaffHandler} from "./programStaffInvites";
-import {listProgramStaffHandler, revokeProgramStaffHandler} from
-  "./programStaff";
 
 const enabled = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
 
@@ -53,55 +51,6 @@ test("Firestore serializes same-phone invite issuance, including empty queries",
         .where("programId", "==", programId).get();
       await Promise.all([...invites.docs.map((doc) => doc.ref.delete()),
         organizer.delete(), program.delete()]);
-      await db.terminate();
-      await deleteApp(app);
-    }
-  });
-
-test("Firestore staff pages survive revocation and deletion",
-  {skip: !enabled}, async () => {
-    const id = randomUUID();
-    const app = initializeApp({projectId: "demo-catch-rules"}, id);
-    const db = getEmulatorFirestore(app);
-    const programId = `staff-page-${id}`;
-    const organizerId = `staff-page-org-${id}`;
-    const seed = baseSeed();
-    const deps = {firestore: () => db, checkRateLimit: async () => undefined,
-      now: () => now} as never;
-    const uids = [0, 1, 2].map((i) => `staff-${i}-${id}`);
-    const refs = [db.doc(`organizers/${organizerId}`),
-      db.doc(`organizerPrograms/${programId}`),
-      ...uids.map((uid) =>
-        db.doc(`programStaffGrants/${programId}__${uid}`))];
-    try {
-      const batch = db.batch();
-      batch.set(refs[0], seed["organizers/org-1"]);
-      batch.set(refs[1], {...seed["organizerPrograms/program-1"], organizerId});
-      for (const [index, uid] of uids.entries()) {
-        batch.set(refs[index + 2], {
-          ...seed["programStaffGrants/program-1__greeter-1"],
-          programId, organizerId, uid,
-        });
-      }
-      await batch.commit();
-      const read = (cursor?: string) => listProgramStaffHandler(request({
-        programId, limit: 1, ...(cursor ? {cursor} : {}),
-      }, "manager-1"), deps);
-      const first = await read();
-      assert.equal(first.nextCursor, uids[0]);
-      const revoked = await revokeProgramStaffHandler(request({
-        programId, uid: uids[0], expectedRevision: 1,
-      }, "manager-1"), deps);
-      assert.equal(revoked.entityId, uids[0]);
-      assert.equal((await read(first.nextCursor!)).members[0].uid, uids[1]);
-      await refs[2].delete();
-      const second = await read(first.nextCursor!);
-      assert.equal(second.members[0].uid, uids[1]);
-      const third = await read(second.nextCursor!);
-      assert.equal(third.members[0].uid, uids[2]);
-      assert.equal(third.nextCursor, null);
-    } finally {
-      await Promise.all(refs.map((ref) => ref.delete()));
       await db.terminate();
       await deleteApp(app);
     }

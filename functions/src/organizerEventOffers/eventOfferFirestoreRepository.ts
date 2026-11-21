@@ -3,7 +3,6 @@ import type {EventPaymentTerms} from
   "../events/eventSetupPreferences/types";
 import {eventPaymentTermsHash, validateEventPaymentTerms} from
   "../events/eventSetupPreferences/resolve";
-import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {
   EventDocument, OrganizerApplicationDocument,
@@ -562,17 +561,6 @@ export class FirestoreEventOfferRepository implements OfferRepository {
             nowMillis: this.serverClock()});
           if (lookup.kind !== "replay") return lookup;
           return {kind: "replay", results: storedBatchResults(lookup.result)};
-        },
-        listOffers: async (organizerId, eventId, afterOfferId, limit) => {
-          let query = this.db.collection(collections.offers)
-            .where("organizerId", "==", organizerId)
-            .where("eventId", "==", eventId)
-            .orderBy(admin.firestore.FieldPath.documentId())
-            .limit(limit);
-          if (afterOfferId) query = query.startAfter(afterOfferId);
-          const snapshot = await firestoreTx.get(query);
-          return snapshot.docs.map((doc) =>
-            parseStoredEventOffer(doc.data(), doc.id));
         },
         hasMergedContactOffer: async (organizerId, eventId,
           canonicalContactId) => {

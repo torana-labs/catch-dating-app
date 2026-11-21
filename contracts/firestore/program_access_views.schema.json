@@ -132,7 +132,7 @@
     },
     "tripRoutes": {
       "$ref": "#/definitions/expiryMap",
-      "description": "The transport trips the account's reconciliation viewer, transport dispatcher and coordinator assignments reach, as listProgramTrips resolves them: key pickup|hotel with the same meaning as arrivalRoutes (an id or * on each side; a trip with no hotel is ~ on that side, which only * reaches). Capped at 300 routes per assignment, failing closed."
+      "description": "The transport trips the account's reconciliation viewer, transport dispatcher and coordinator assignments reach, as the retired listProgramTrips callable resolved them: key pickup|hotel with the same meaning as arrivalRoutes (an id or * on each side; a trip with no hotel is ~ on that side, which only * reaches). Capped at 300 routes per assignment, failing closed."
     },
     "assignments": {
       "type": "array",

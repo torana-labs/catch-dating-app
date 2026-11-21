@@ -4,7 +4,6 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {validateCallableWithAjv} from "../shared/validation";
 import {hashRequest} from "../shared/programOperationHash";
-import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {
   requireProgramAccess,
   requireProgramDuty,
@@ -26,18 +25,12 @@ import type {UpsertProgramPhotoCallablePayload} from
   "../shared/generated/upsertProgramPhotoCallablePayload";
 import type {ProgramPhotoCallableResponse} from
   "../shared/generated/programPhotoCallableResponse";
-import type {ListProgramPhotosCallablePayload} from
-  "../shared/generated/listProgramPhotosCallablePayload";
-import type {ProgramPhotosCallableResponse} from
-  "../shared/generated/programPhotosCallableResponse";
 import type {SignProgramPhotoUrlsCallablePayload} from
   "../shared/generated/signProgramPhotoUrlsCallablePayload";
 import type {ProgramPhotoUrlsCallableResponse} from
   "../shared/generated/programPhotoUrlsCallableResponse";
 import {validateUpsertProgramPhotoCallablePayload} from
   "../shared/generated/validators/upsertProgramPhotoInput";
-import {validateListProgramPhotosCallablePayload} from
-  "../shared/generated/validators/listProgramPhotosInput";
 import {validateSignProgramPhotoUrlsCallablePayload} from
   "../shared/generated/validators/signProgramPhotoUrlsInput";
 import {validateProgramPhotoUrlsCallableResponse} from
@@ -47,14 +40,10 @@ import {validateProgramPhotoCallableResponse} from
   "../shared/generated/validators/programPhotoOutput";
 import {validateProgramPhotoDocument} from
   "../shared/generated/validators/programPhotoDocument";
-import {validateProgramPhotosCallableResponse} from
-  "../shared/generated/validators/programPhotosOutput";
 // Programme photos (#1582 item 8): function albums in private Storage,
 // shown to the planner's team through short-lived signed URLs.
 
 export const PROGRAM_PHOTOS_COLLECTION = "programPhotos";
-const PHOTO_LIMIT = 2000;
-const PHOTOS_SHOWN = 60;
 
 export function programPhotoDocId(programId: string, photoId: string):
   string {
@@ -149,83 +138,11 @@ export async function upsertProgramPhotoHandler(
       revision: stored.revision}, "photo result");
 }
 
-/** Albums per function, one album's photos and the guest page cover. */
-export async function listProgramPhotosHandler(
-  request: CallableRequest<unknown>,
-  deps: ProgramAssetDeps = defaultProgramAssetDeps,
-): Promise<ProgramPhotosCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<ListProgramPhotosCallablePayload>(
-    request, validateListProgramPhotosCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listProgramPhotos",
-    {maxRequests: 60, windowMs: 60 * 1000});
-  const access = await requireProgramAccess({db, programId: data.programId,
-    actorUid, now: deps.now()});
-  requirePhotoAccess(access);
-  const organizerId = access.program.organizerId;
-  const [functionSnap, photoSnap] = await Promise.all([
-    db.collection("programFunctions")
-      .where("programId", "==", data.programId).limit(50).get(),
-    db.collection(PROGRAM_PHOTOS_COLLECTION)
-      .where("programId", "==", data.programId).limit(PHOTO_LIMIT).get(),
-  ]);
-  const photos = photoSnap.docs.map((doc) => doc.data() as
-    ProgramPhotoDocument).filter((photo) => photo.organizerId === organizerId)
-    .sort((a, b) => b.createdAtMillis - a.createdAtMillis ||
-      a.photoId.localeCompare(b.photoId));
-  const bucket = deps.storageBucket();
-  const urlsExpireAtMillis = deps.now().toMillis() + READ_URL_MILLIS;
-  const sign = (path: string | null | undefined) =>
-    signedReadUrl(bucket, path, urlsExpireAtMillis);
-  const functions = functionSnap.docs.flatMap((doc) => {
-    const fn = doc.data();
-    return fn.organizerId === organizerId && fn.status !== "cancelled" ?
-      [{functionId: doc.id, name: String(fn.name ?? ""),
-        startsAtMillis: staffTimestampMillis(fn.startsAt)}] : [];
-  }).sort((a, b) => a.startsAtMillis - b.startsAtMillis);
-  const visible = photos.filter((photo) => photo.status === "visible");
-  const albumOf = (functionId: string | null) =>
-    visible.filter((photo) => photo.functionId === functionId);
-  const unfiled = albumOf(null);
-  const albums = await Promise.all([
-    ...functions.map(async (fn) => {
-      const album = albumOf(fn.functionId);
-      return {functionId: fn.functionId, name: fn.name,
-        startsAtMillis: fn.startsAtMillis, photoCount: album.length,
-        coverUrl: await sign(album[0]?.storagePath)};
-    }),
-    ...(unfiled.length > 0 ? [(async () => ({functionId: null, name: null,
-      startsAtMillis: null, photoCount: unfiled.length,
-      coverUrl: await sign(unfiled[0].storagePath)}))()] : []),
-  ]);
-  const shown = (data.functionId ?
-    photos.filter((photo) => photo.functionId === data.functionId) : photos)
-    .slice(0, PHOTOS_SHOWN);
-  const coverPath = access.program.branding?.coverImagePath ?? null;
-  return requireValid(validateProgramPhotosCallableResponse, {
-    programId: data.programId,
-    functionId: data.functionId ?? null,
-    coverUrl: await sign(coverPath),
-    albums,
-    photos: await Promise.all(shown.map(async (photo) => ({
-      photoId: photo.photoId,
-      functionId: photo.functionId,
-      caption: photo.caption,
-      status: photo.status,
-      url: await sign(photo.storagePath),
-      createdAtMillis: photo.createdAtMillis,
-      revision: photo.revision,
-    }))),
-    urlsExpireAtMillis,
-  }, "photos");
-}
-
 /**
  * Signs read URLs for photos the phone already lists from programPhotos
  * (manager and communications rules), and the cover when asked. Metadata is
  * read directly; the URL is the one thing a phone cannot make, so this is the
- * only server step left of listProgramPhotos. The server reads each photo
+ * only server step in reading programme photos. The server reads each photo
  * itself and signs only this programme's own files; it never signs a path the
  * phone names.
  */
@@ -271,10 +188,6 @@ const photoLimits = {timeoutSeconds: 60, maxInstances: 20};
 export const upsertProgramPhoto = onCall(
   appCheckCallableOptionsWithLimits(photoLimits),
   (request) => upsertProgramPhotoHandler(request),
-);
-export const listProgramPhotos = onCall(
-  appCheckCallableOptionsWithLimits(photoLimits),
-  (request) => listProgramPhotosHandler(request),
 );
 export const signProgramPhotoUrls = onCall(
   appCheckCallableOptionsWithLimits(photoLimits),

@@ -19,8 +19,9 @@ export const programStaffViewId = programStaffGrantId;
 
 /**
  * One staff member's row for the administrators' staff list, exactly the
- * member row listProgramStaff returns, with the clock-dependent status
- * replaced by the facts it derives from (see the contract).
+ * member row the retired listProgramStaff callable returned, with the
+ * clock-dependent status replaced by the facts it derives from (see the
+ * contract).
  * @param {OrganizerProgramDocument} program The programme.
  * @param {string} programId The programme document id.
  * @param {ProgramStaffGrantDocument} grant The staff grant.

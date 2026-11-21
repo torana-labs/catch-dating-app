@@ -3,12 +3,10 @@ import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
 import {baseSeed, deps, request} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
-import {getProgramArrivalsRosterHandler, getProgramTransportPlanHandler}
-  from "./programArrivals";
+import {getProgramTransportPlanHandler} from "./programArrivals";
 import {programResourceScopes} from "../shared/programResourceScopes";
 
-for (const handler of [getProgramArrivalsRosterHandler,
-  getProgramTransportPlanHandler]) {
+for (const handler of [getProgramTransportPlanHandler]) {
   test(`${handler.name}: busy foreign station cannot crowd out assigned rows`,
     async () => {
       const seed = baseSeed();
@@ -22,8 +20,7 @@ for (const handler of [getProgramArrivalsRosterHandler,
       seed["programTravelLegs/leg-1"] = visible;
       const result = await handler(request({programId: "program-1"},
         "greeter-1"), deps(new FakeFirestore(seed)));
-      const ids = "rows" in result ? result.rows.map((row) => row.legId) :
-        result.groups.flatMap((group) => group.legIds);
+      const ids = result.groups.flatMap((group) => group.legIds);
       assert.deepEqual(ids, ["leg-1"]);
     });
 
@@ -37,8 +34,7 @@ for (const handler of [getProgramArrivalsRosterHandler,
       }
       const result = await handler(request({programId: "program-1"},
         "greeter-1"), deps(new FakeFirestore(seed)));
-      const ids = "rows" in result ? result.rows.map((row) => row.legId) :
-        result.groups.flatMap((group) => group.legIds);
+      const ids = result.groups.flatMap((group) => group.legIds);
       assert.deepEqual(ids, ["leg-1"]);
     });
 
@@ -56,6 +52,12 @@ for (const handler of [getProgramArrivalsRosterHandler,
     });
 }
 
+const planLegIds = (result: Awaited<
+  ReturnType<typeof getProgramTransportPlanHandler>>): string[] => [
+  ...result.groups.flatMap((group) => group.legIds),
+  ...result.unassigned.map((row) => row.legId),
+].sort();
+
 test("arrivals duty scopes keep pickup AND hotel within the same assignment",
   async () => {
     const seed = baseSeed();
@@ -71,11 +73,10 @@ test("arrivals duty scopes keep pickup AND hotel within the same assignment",
     seed["programTravelLegs/hotel-two"] = {
       ...seed["programTravelLegs/leg-1"], destinationHotelId: "hotel-2",
     };
-    const result = await getProgramArrivalsRosterHandler(
+    const result = await getProgramTransportPlanHandler(
       request({programId: "program-1"}, "dispatcher-1"),
       deps(new FakeFirestore(seed)));
-    assert.deepEqual(result.rows.map((row) => row.legId),
-      ["hotel-two", "leg-2"]);
+    assert.deepEqual(planLegIds(result), ["hotel-two", "leg-2"]);
   });
 
 test("an explicit station request does not inherit another duty's hotel scope",
@@ -90,10 +91,10 @@ test("an explicit station request does not inherit another duty's hotel scope",
       expiresAtMillis: 1_800_086_400_000,
       pickupPointIds: ["pp-t1"], hotelIds: [],
     }];
-    const result = await getProgramArrivalsRosterHandler(request({
+    const result = await getProgramTransportPlanHandler(request({
       programId: "program-1", pickupPointId: "pp-t3",
     }, "dispatcher-1"), deps(new FakeFirestore(seed)));
-    assert.equal(result.rows.length, 0);
+    assert.deepEqual(planLegIds(result), []);
   });
 
 test("resource queries obey the Firestore disjunction limit with readiness IN",

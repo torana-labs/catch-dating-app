@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_whatsapp_thread_views.schema.json",
   "title": "HostWhatsappThreadViewDocument",
-  "description": "Server-maintained manager read view of one retained organizer WhatsApp thread for the Host inbox: exactly the summary listOrganizerWhatsappThreads returns for it, without the time-dependent service-window flag, plus the retention instant so a client hides a thread whose retention has passed before its source is deleted. Written by triggers on organizerWhatsappThreads and organizerContacts. Holds the latest message body and the contact's display name, which are personal data: only the organizer's current managers read it. Never the phone number, its hash, the sender connection or provider evidence, and never identity, permission or mutation authority.",
+  "description": "Server-maintained manager read view of one retained organizer WhatsApp thread for the Host inbox: exactly the summary the retired listOrganizerWhatsappThreads callable returned for it, without the time-dependent service-window flag, plus the retention instant so a client hides a thread whose retention has passed before its source is deleted. Written by triggers on organizerWhatsappThreads and organizerContacts. Holds the latest message body and the contact's display name, which are personal data: only the organizer's current managers read it. Never the phone number, its hash, the sender connection or provider evidence, and never identity, permission or mutation authority.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostWhatsappThreadViews",

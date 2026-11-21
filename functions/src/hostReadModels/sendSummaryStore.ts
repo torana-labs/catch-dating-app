@@ -46,7 +46,7 @@ const nonEmpty = (value: unknown): value is string =>
  * Wraps one Sends row as its view document.
  * @param {string} organizerId The owning organizer.
  * @param {SendSource} source The Send.
- * @param {SendRow} row Exactly the listOrganizerCampaigns row.
+ * @param {SendRow} row Exactly the retired listOrganizerCampaigns row.
  * @return {HostSendSummaryDocument} The view.
  */
 function summary(organizerId: string, source: SendSource,
@@ -75,8 +75,8 @@ async function ownedName(tx: FirebaseFirestore.Transaction,
 /**
  * Reads one Send's view from current sources inside a transaction, without
  * writing, or null when the Send is absent, has no owner, or is a follower
- * update's WhatsApp leg. The row is exactly what listOrganizerCampaigns
- * returns for it.
+ * update's WhatsApp leg. The row is exactly what the retired
+ * listOrganizerCampaigns callable returned for it.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {FirebaseFirestore.Transaction} tx The read transaction.
  * @param {SendSource} source The Send.

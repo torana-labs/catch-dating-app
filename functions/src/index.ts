@@ -79,7 +79,6 @@ export {
 export {onOrganizerContactEventEdgeInviteAttributed} from
   "./events/eventInviteAttributionProjection";
 export {decideEventJoinRequest} from "./events/decideEventJoinRequest";
-export {listOrganizerRequests} from "./events/organizerRequests";
 export {markEventAttendance} from "./events/markEventAttendance";
 export {
   importEventAttendees,
@@ -88,12 +87,7 @@ export {
   setEventAttendeeAttendance,
 } from "./events/eventAttendees";
 export {manageHostRosterIntake} from "./events/hostRosterIntakeApply";
-export {
-  getEventOperatorAccess,
-  grantEventStaff,
-  listEventStaff,
-  revokeEventStaff,
-} from "./events/eventStaff";
+export {grantEventStaff, revokeEventStaff} from "./events/eventStaff";
 export {heartbeatEventStaffPresence} from "./events/eventStaffPresence";
 export {
   getEventTicketCode,
@@ -280,7 +274,6 @@ export {
   deleteOrganizerFormDraft,
   duplicateOrganizerForm,
   getOrganizerFormEditor,
-  listOrganizerForms,
   listOrganizerFormTemplates,
   publishOrganizerForm,
   setOrganizerFormLifecycle,
@@ -354,16 +347,12 @@ export {
   previewOrganizerCampaign,
   upsertOrganizerCampaign,
 } from "./organizers/organizerCampaigns";
-export {listOrganizerCampaigns} from "./organizers/organizerSends";
 export {
   dispatchOrganizerCampaign,
   dispatchScheduledOrganizerCampaigns,
 } from "./organizers/organizerCampaignDispatcher";
-export {
-  getOrganizerWhatsappThread,
-  listOrganizerWhatsappThreads,
-  sendOrganizerWhatsappReply,
-} from "./organizers/organizerWhatsappThreads";
+export {sendOrganizerWhatsappReply} from
+  "./organizers/organizerWhatsappThreads";
 export {
   completeOrganizerWhatsappConnection,
   disconnectOrganizerWhatsappConnection,
@@ -756,7 +745,6 @@ export {
 } from "./programs/programRetention";
 export {
   getProgramWorkAccess,
-  listProgramStaff,
   grantProgramStaff,
   revokeProgramStaff,
 } from "./programs/programStaff";
@@ -843,7 +831,6 @@ export {
   upsertProgramPickupPoint,
   upsertProgramHotel,
   upsertTransportVendor,
-  listTransportVendors,
 } from "./programs/programResources";
 export {
   upsertProgramTravelLeg,
@@ -851,8 +838,6 @@ export {
 } from "./transport/programTravel";
 export {importProgramManifest, importWeddingPhoneContacts} from
   "./programs/programManifestImport";
-export {listProgramStaffAttention} from
-  "./programs/programStaffAttention";
 export {getProgramLiveBoard, resolveProgramAlert} from
   "./programs/programLiveBoard";
 export {
@@ -874,8 +859,7 @@ export {
   getProgramHamperWebView,
   upsertProgramHamper,
 } from "./programs/hampers";
-export {listProgramPhotos, signProgramPhotoUrls, upsertProgramPhoto} from
-  "./programs/photos";
+export {signProgramPhotoUrls, upsertProgramPhoto} from "./programs/photos";
 export {
   addEventHostPhoto,
   deleteEventHostPhoto,
@@ -886,8 +870,6 @@ export {
 } from "./events/eventHostPhotoStagingCleanup";
 export {
   getProgramAssistantSettings,
-  getProgramWhatsappThread,
-  listProgramWhatsappCannedReplies,
   listProgramWhatsappThreads,
   sendProgramWhatsappReply,
   markProgramWhatsappThreadRead,
@@ -906,10 +888,7 @@ export {
 export {onProgramWhatsappInboundMessageCreated} from
   "./programs/programWhatsapp/inboundTrigger";
 export {previewProgramAssistantReply} from "./programs/assistant/preview";
-export {getProgramDeparturesRoster} from
-  "./transport/programDepartures";
 export {
-  getProgramArrivalsRoster,
   getProgramTransportPlan,
   setProgramTravelReadiness,
 } from "./transport/programArrivals";
@@ -917,8 +896,6 @@ export {
   dispatchProgramTrip,
   markProgramTripArrived,
   voidProgramTrip,
-  getProgramHotelInbound,
-  listProgramTrips,
 } from "./transport/programDispatch";
 export {
   getProgramHotelRooms,
@@ -941,8 +918,7 @@ export {getProgramStakeholderCounts} from
 
 export {
   createPrivateEventSetup, createPrivateEventSeries, updatePrivateEventBasics,
-  updatePrivateEventPreferences, listPrivateEventSetups,
-  updatePrivateEventDetails, listOfferEventTargets, setEventPublication,
+  updatePrivateEventPreferences, updatePrivateEventDetails, setEventPublication,
   reconcilePrivateEventSeats,
 } from "./events/progressiveSetup/callables";
 
@@ -953,7 +929,7 @@ export {updateOrganizerEventSetupDefaults}
 
 export {
   previewEventOffers, commitEventOffers, mutateEventOffer,
-  getEventOffer, listEventOffers, prepareEventOfferHandoff,
+  prepareEventOfferHandoff,
   configureEventOfferPreferences, previewEventOfferPreferences,
 } from "./organizerEventOffers/callables";
 
