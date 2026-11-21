@@ -22,11 +22,8 @@ export const eventDetailCopy = {
     externalSupply: "Published by {source}",
     byOrganizer: "Hosted by {organizer}",
     catchActionHeading: "Your event access",
-    catchActionBody:
-      "Continue with your phone to check your application, booking, or next step. No app download is needed.",
     guestAction: "Check event access",
     webPaidHeading: "Your event registration",
-    webPaidBody: "Verify your phone to book or manage your place. No app download is needed.",
     closedHeading: "Registration closed",
     webActionHeading: "Register here with your phone",
     webActionBody:
@@ -54,8 +51,6 @@ export const eventDetailCopy = {
       success: "You are registered. The organizer now has you on the event roster.",
       alreadyRegistered: "You were already registered. Your roster place is confirmed.",
       waitlisted: "The event is full, so you are now on the organizer's waitlist.",
-      privacy:
-        `Your name and verified number are used for this booking and can prefill ${brand.name} if you later continue in the app.`,
       whatsappConsent:
         "Send me future event announcements from this organizer on WhatsApp",
       smsConsent:
@@ -186,7 +181,6 @@ export const guestEventCopy = {
   invalidCode: "Check your verification code and try again.",
   verificationFailed: "Phone verification could not start. Check your number and current account, then try again.",
   unavailable: "Your event status is unavailable. Refresh before continuing.",
-  privacy: "Your verified number identifies your bookings and applications. No app download is required. Marketing preferences are optional.",
   apply: "Apply to attend", offer: "Review your offer", payment: "Manage booking and payment",
   runtime: "Prepare for your event", help: "Get help",
   status: {
