@@ -3,6 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {discoverFunctionExportNames} from "../firebase/function_binding_intent.mjs";
+import {
+  parseRulesMatchBlocks,
+  rulesPathGoverns,
+} from "./lib/firestore_rules_blocks.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -35,6 +39,9 @@ const rules = readText(rulesPath);
 const generatedTypes = readText(generatedTypesPath);
 const functionsIndex = readText(functionsIndexPath);
 const functionExports = new Set(discoverFunctionExportNames(functionsIndex));
+const rulesBlocks = parseRulesMatchBlocks(rules);
+const rulesMatchPaths = new Set(rulesBlocks.map((block) => block.path));
+const firestoreSchemaFiles = loadFirestoreSchemaFiles();
 const schemaByCollectionId = loadFirestoreSchemas();
 
 const errors = [];
@@ -58,8 +65,11 @@ for (const collection of contract.collections ?? []) {
   assertUnique(seenIds, collection.id, `collection id ${collection.id}`);
   assertUnique(seenPaths, collection.path, `collection path ${collection.path}`);
 
-  if (!rules.includes(`match ${collection.rulesMatch}`)) {
+  if (!rulesMatchPaths.has(collection.rulesMatch)) {
     errors.push(`${label}: Firestore rules are missing match ${collection.rulesMatch}`);
+  } else if (typeof collection.path === "string" &&
+      !rulesPathGoverns(collection.rulesMatch, collection.path)) {
+    errors.push(`${label}: rulesMatch ${collection.rulesMatch} does not govern path ${collection.path}`);
   }
 
   if (collection.dartModel) {
@@ -68,7 +78,10 @@ for (const collection of contract.collections ?? []) {
 
   if (collection.rulesTestFile) {
     requireExistingRepoPath(collection.rulesTestFile, `${label}.rulesTestFile`);
+    validateRulesTestMentionsCollection(collection, label);
   }
+
+  validateSchemaContract(collection, label);
 
   validateOwnershipTags(collection, label);
   validateTypeContract(collection, label);
@@ -91,6 +104,8 @@ validateDartCallableRoutes();
 
 validateRulesTestCoverage();
 validateRulesIntentForSchemas();
+validateEveryRulesMatchIsRegistered();
+validateEverySchemaIsRegistered();
 
 if (errors.length > 0) {
   console.error("Firestore contract check failed:");
@@ -259,13 +274,22 @@ function relative(filePath) {
   return path.relative(repoRoot, filePath);
 }
 
+/** Every contracts/firestore schema, in file-name order. */
+function loadFirestoreSchemaFiles() {
+  const firestoreSchemaDir = path.join(contractRoot, "firestore");
+  return fs.readdirSync(firestoreSchemaDir, {withFileTypes: true})
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".schema.json"))
+    .map((entry) => entry.name)
+    .sort()
+    .map((name) => {
+      const filePath = path.join(firestoreSchemaDir, name);
+      return {schema: readJson(filePath), filePath};
+    });
+}
+
 function loadFirestoreSchemas() {
   const schemas = new Map();
-  const firestoreSchemaDir = path.join(contractRoot, "firestore");
-  for (const entry of fs.readdirSync(firestoreSchemaDir, {withFileTypes: true})) {
-    if (!entry.isFile() || !entry.name.endsWith(".schema.json")) continue;
-    const filePath = path.join(firestoreSchemaDir, entry.name);
-    const schema = readJson(filePath);
+  for (const {schema, filePath} of firestoreSchemaFiles) {
     const collectionId = schema["x-firestore-collection"];
     if (typeof collectionId === "string" && collectionId.length > 0) {
       schemas.set(collectionId, {schema, filePath});
@@ -776,24 +800,96 @@ function validateRulesIntentForSchemas() {
 
 /** Collection ids matched directly under the documents block of the rules. */
 function topLevelRulesCollections() {
-  const text = rules.replace(/\/\/[^\n]*/g, "");
-  const marker = text.search(/\/documents\s*\{/);
-  const start = marker === -1 ? 0 : text.indexOf("{", marker) + 1;
   const roots = new Set();
-  let depth = 0;
-  for (let index = start; index < text.length; index += 1) {
-    const char = text[index];
-    if (char === "{") depth += 1;
-    else if (char === "}") {
-      if (depth === 0) break;
-      depth -= 1;
-    } else if (depth === 0 && text.startsWith("match", index) &&
-        /\s/.test(text[index - 1] ?? " ")) {
-      const found = /^match\s+\/([A-Za-z_]\w*)\//.exec(text.slice(index));
-      if (found) roots.add(found[1]);
-    }
+  for (const block of rulesBlocks) {
+    const found = /^\/([A-Za-z_]\w*)\//u.exec(block.path);
+    if (found) roots.add(found[1]);
   }
   return roots;
+}
+
+/**
+ * The reverse of the per-collection check: every match block in
+ * firestore.rules is some registry entry's rulesMatch, so a collection
+ * cannot gain client access, or a server-only lock, without a registry
+ * entry and a schema contract.
+ */
+function validateEveryRulesMatchIsRegistered() {
+  const registered = new Set((contract.collections ?? [])
+    .map((collection) => collection.rulesMatch));
+  for (const block of rulesBlocks) {
+    if (!registered.has(block.path)) {
+      errors.push(
+        `firestore.rules:${block.line}: match ${block.path} has no entry in ` +
+        `tool/contracts/firestore_contract.json; register the collection ` +
+        `(id, path, rulesMatch, owner, read, write) with its schema contract`
+      );
+    }
+  }
+}
+
+/** Every contracts/firestore schema describes a registered collection path. */
+function validateEverySchemaIsRegistered() {
+  const registeredPaths = new Set((contract.collections ?? [])
+    .map((collection) => collection.path));
+  for (const {schema, filePath} of firestoreSchemaFiles) {
+    const documentPath = schema["x-firestore-path"];
+    if (typeof documentPath !== "string" || documentPath.length === 0) continue;
+    if (!registeredPaths.has(documentPath)) {
+      errors.push(
+        `${relative(filePath)}: ${documentPath} has no entry in ` +
+        `tool/contracts/firestore_contract.json`
+      );
+    }
+  }
+}
+
+/**
+ * Every registry entry has a schema contract: a contracts/firestore schema
+ * whose x-firestore-path is exactly the entry's path, or, where the stored
+ * shape is owned elsewhere, an explicit schemaContract file.
+ */
+function validateSchemaContract(collection, label) {
+  if (typeof collection.path !== "string") return;
+  const atPath = firestoreSchemaFiles.filter(({schema}) =>
+    schema["x-firestore-path"] === collection.path);
+  const explicit = collection.schemaContract;
+  if (explicit === undefined) {
+    if (atPath.length === 0) {
+      errors.push(
+        `${label}: no contracts/firestore schema has x-firestore-path ` +
+        `${collection.path}; add one, or name the owning schema in schemaContract`
+      );
+    }
+    return;
+  }
+  if (typeof explicit !== "string" || !/^contracts\/.+\.schema\.json$/u.test(explicit)) {
+    errors.push(`${label}.schemaContract must be a contracts/**/*.schema.json path`);
+    return;
+  }
+  if (atPath.length > 0) {
+    errors.push(
+      `${label}: ${relative(atPath[0].filePath)} already describes ` +
+      `${collection.path}; remove schemaContract`
+    );
+  }
+  requireExistingRepoPath(explicit, `${label}.schemaContract`);
+}
+
+/** A rules test file proves nothing about a collection it never names. */
+function validateRulesTestMentionsCollection(collection, label) {
+  const absolutePath = path.join(repoRoot, collection.rulesTestFile);
+  if (!fs.existsSync(absolutePath) || typeof collection.path !== "string") return;
+  const segments = collection.path.split("/");
+  const name = segments[segments.length - 2] ?? segments[0];
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+  if (!new RegExp(`(?<![\\w$])${escaped}(?![\\w$])`, "u").test(readText(absolutePath))) {
+    errors.push(
+      `${label}: rulesTestFile ${collection.rulesTestFile} never names ` +
+      `"${name}"; point at the test that covers it, or list it in ` +
+      `collectionsWithoutRulesTests`
+    );
+  }
 }
 
 function validateRulesTestCoverage() {

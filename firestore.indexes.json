@@ -145,20 +145,6 @@
       ]
     },
     {
-      "collectionGroup": "hostAcquisitionDeliveries",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "nextAttemptAt",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "catchWhatsappReplyOperations",
       "queryScope": "COLLECTION",
       "fields": [

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/config_public_contact.schema.json",
+  "title": "ConfigPublicContactDocument",
+  "description": "Server-only public contact record stored at config/publicContact. The website reads it through its Firestore viewer identity and renders only supportEmail; a missing, invalid or unreadable document falls back to the source-controlled brand address. website/src/content/publicContact.ts parses exactly this shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "config_public_contact",
+  "x-firestore-path": "config/publicContact",
+  "x-document-id-field": "publicContact",
+  "x-owner": "website public contact operator (bounded operator transaction with Firestore IAM writer authority)",
+  "required": ["schemaVersion", "revision", "supportEmail"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Monotonic revision the operator raises on every change."
+    },
+    "supportEmail": {
+      "type": "string",
+      "maxLength": 254,
+      "pattern": "^[a-z0-9][a-z0-9._+-]*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$",
+      "description": "Lower-case mailbox safe to place in a mailto href. Must not contain two consecutive dots."
+    }
+  }
+}

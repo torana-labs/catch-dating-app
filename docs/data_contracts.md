@@ -2964,6 +2964,28 @@ derived from `x-catch-ownership` and validated by
 collection-level ownership metadata (paths, rules-match strings, operations,
 exported function names, migration notes).
 
+The registry, the rules and the schemas must agree in every direction, and
+`check_firestore_contract.mjs` checks each one:
+
+- Every `match` block in `firestore.rules`, nested ones included, is some
+  entry's `rulesMatch`, and every `rulesMatch` is a whole match path that
+  governs the entry's `path`. Several entries may share one block, such as the
+  `config/*` documents under `/config/{docId}` or subcollections under a
+  `{privateDocument=**}` match.
+- Every entry has a schema contract: a `contracts/firestore` schema whose
+  `x-firestore-path` is exactly the entry's `path`. Where the stored shape is
+  owned elsewhere, the entry names it in `schemaContract` instead, as the
+  operations engine's collections do (`contracts/operations/*.schema.json`)
+  and the `eventParticipations` legacy mirror does (`event_bookings`).
+- Every `contracts/firestore` schema's `x-firestore-path` is a registry entry.
+- A `rulesTestFile` names the collection it covers. A server-only collection
+  joins the list in `functions/test/rules/server_only_collections.rules.test.cjs`;
+  a collection with client access and no test yet goes in
+  `collectionsWithoutRulesTests`.
+
+So a new collection needs its rules block, its schema and its registry entry in
+the same change.
+
 It does not own multi-document business behavior, ranking algorithms,
 notification fan-out, dynamic Auth/current-time checks, or full Firestore rules.
 Those stay in Functions, repositories, rules, and domain services, consuming
