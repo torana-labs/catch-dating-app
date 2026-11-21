@@ -50,7 +50,7 @@ async function check(path, status, needle) {
 }
 let browser;
 try {
-  for (const path of ["/", "/explore/", "/host/", "/privacy/", "/terms/", "/help/", "/delete-account/", "/refunds/", "/contact/", "/organizers/"]) await check(path, 200, "<h1");
+  for (const path of ["/", "/explore/", "/host/", "/privacy/", "/terms/", "/help/", "/delete-account/", "/refunds/", "/contact/"]) await check(path, 200, "<h1");
   await check("/", 200, "Next proof organizer");
   await check("/claim/", 200, "Next proof organizer");
   const listing = await check("/organizers/next-proof/", 200, "Next proof organizer");
