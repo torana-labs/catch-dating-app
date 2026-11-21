@@ -6,7 +6,6 @@ vi.mock("../eventMessaging/EventRcsPreferencesPanel", () => ({EventRcsPreference
 vi.mock("../eventMessaging/EventWhatsappPreferencesPanel", () => ({EventWhatsappPreferencesPanel: () => null}));
 import {PublicPaidRegistrationView} from "./PublicPaidEventRegistration";
 import type {usePublicCheckoutController} from "./usePublicCheckoutController";
-import {adMatchingNoticeCopy} from "../../content/legal";
 
 afterEach(cleanup);
 
@@ -26,16 +25,8 @@ const checkout: ReturnType<typeof usePublicCheckoutController> = {
   startAgain: async () => undefined, pay: async () => undefined, check: async () => undefined, load: async () => undefined,
 };
 
-it("shows the ad-matching notice, linked to the privacy policy, under the pay button", () => {
+it("shows no ad notice under the pay button", () => {
   render(<PublicPaidRegistrationView {...checkout} />);
-  const pay = screen.getByRole("button", {name: /pay/iu});
-  const link = screen.getByRole("link", {name: adMatchingNoticeCopy.linkLabel});
-  expect(link.getAttribute("href")).toBe("/privacy/#ads");
-  expect(link.closest("p")?.textContent).toContain(adMatchingNoticeCopy.text);
-  expect(pay.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-});
-
-it("drops the notice once the place is confirmed", () => {
-  render(<PublicPaidRegistrationView {...checkout} admission={{eventId: "event-1", attendeeId: "guest-1"} as never} />);
-  expect(screen.queryByRole("link", {name: adMatchingNoticeCopy.linkLabel})).toBeNull();
+  expect(screen.getByRole("button", {name: /pay/iu})).toBeTruthy();
+  expect(screen.queryByText(/Google and Meta/u)).toBeNull();
 });
