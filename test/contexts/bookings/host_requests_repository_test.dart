@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/contexts/bookings/data/host_requests_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/host_request.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/cache/app_clock.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -46,7 +47,7 @@ void main() {
     String actor() => 'host';
     repository = HostRequestsRepository(
       db,
-      HostSummaryReader(db, actorId: actor),
+      ScopedReadModelReader(db, family: hostReadModels, actorId: actor),
       actorId: actor,
       clock: const AppClock.custom(_now),
     );
@@ -106,7 +107,7 @@ void main() {
   test('a signed-out reader gets an error, not a list', () async {
     final signedOut = HostRequestsRepository(
       db,
-      HostSummaryReader(db, actorId: () => null),
+      ScopedReadModelReader(db, family: hostReadModels, actorId: () => null),
       actorId: () => null,
     );
     await expectLater(signedOut.watch('org'), emitsError(isStateError));

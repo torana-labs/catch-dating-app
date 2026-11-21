@@ -55,7 +55,7 @@ final class HostCampaignRepositoryProvider
 }
 
 String _$hostCampaignRepositoryHash() =>
-    r'664f96eb691b81f7b93713ea9fa05d8bde65714c';
+    r'1205f508a3322e5602059a7d3d6acb23a6555e56';
 
 /// The organizer's Sends history, a page at a time, every row shown live.
 

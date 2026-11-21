@@ -32,7 +32,11 @@ Map<String, Object?> _idRow(
   'askAgainNote': status == 'askedAgain' ? 'The photo is blurred' : null,
   'hotelViews': [
     if (viewed)
-      {'hotelId': 'haveli', 'hotelName': 'Lakeview Haveli', 'atMillis': _viewed},
+      {
+        'hotelId': 'haveli',
+        'hotelName': 'Lakeview Haveli',
+        'atMillis': _viewed,
+      },
   ],
   'frontUrl': null,
   'backUrl': null,
@@ -140,7 +144,13 @@ final plannerVendorBillData = <String, Object?>{
         2000,
         'amountDiffers',
       ),
-      _billLine(4, 'T-063 · 12 Dec · Station to the Haveli', 2400, null, 'noTrip'),
+      _billLine(
+        4,
+        'T-063 · 12 Dec · Station to the Haveli',
+        2400,
+        null,
+        'noTrip',
+      ),
       _billLine(
         5,
         'T-041 · 11 Dec · Airport to the Haveli',
@@ -148,7 +158,13 @@ final plannerVendorBillData = <String, Object?>{
         null,
         'duplicate',
       ),
-      _billLine(6, 'T-070 · 13 Dec · Haveli to the palace', 1800, 1800, 'matches'),
+      _billLine(
+        6,
+        'T-070 · 13 Dec · Haveli to the palace',
+        1800,
+        1800,
+        'matches',
+      ),
     ],
     'totals': {
       'billedMinor': 1300000,

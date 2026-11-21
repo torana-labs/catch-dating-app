@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_payment_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment_record.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payments_controller.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,7 +61,13 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         hostFormPaymentReadsProvider.overrideWithValue(
-          HostFormPaymentReads(HostSummaryReader(db, actorId: () => 'host')),
+          HostFormPaymentReads(
+            ScopedReadModelReader(
+              db,
+              family: hostReadModels,
+              actorId: () => 'host',
+            ),
+          ),
         ),
       ],
     );

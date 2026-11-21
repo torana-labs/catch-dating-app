@@ -1,10 +1,11 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/form_operation_fields.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_form_automation_reads.g.dart';
@@ -15,7 +16,7 @@ part 'host_form_automation_reads.g.dart';
 /// every read; saves stay on the revision-fenced automation callables.
 class HostFormAutomationReads {
   const HostFormAutomationReads(this.reader);
-  final HostSummaryReader reader;
+  final ScopedReadModelReader reader;
 
   static const ruleViews = 'hostFormAutomationRuleViews';
   static const runViews = 'hostFormAutomationRunViews';
@@ -31,7 +32,7 @@ class HostFormAutomationReads {
   ) => reader
       .watchWindow(
         collection: ruleViews,
-        organizerId: organizerId,
+        scopeId: organizerId,
         orderField: 'ruleId',
         descending: false,
         limit: ReadLimitPolicy.boundedWorkingSet,
@@ -61,7 +62,7 @@ class HostFormAutomationReads {
   }) => reader
       .watchPages(
         collection: runViews,
-        organizerId: organizerId,
+        scopeId: organizerId,
         orderField: 'createdAtMillis',
         descending: true,
         pageSize: pageSize,
@@ -82,8 +83,9 @@ class HostFormAutomationReads {
 HostFormAutomationReads hostFormAutomationReads(Ref ref) {
   ref.watch(authenticatedSessionProvider);
   return HostFormAutomationReads(
-    HostSummaryReader(
+    ScopedReadModelReader(
       ref.watch(firebaseFirestoreProvider),
+      family: hostReadModels,
       actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
     ),
   );

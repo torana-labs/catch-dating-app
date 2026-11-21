@@ -18,7 +18,8 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -62,7 +63,11 @@ HostContactsRepository _contacts(FirebaseFunctions functions) =>
     HostContactsRepository(
       functions,
       summaries: HostContactSummaryReads(
-        HostSummaryReader(FakeFirebaseFirestore(), actorId: () => 'host'),
+        ScopedReadModelReader(
+          FakeFirebaseFirestore(),
+          family: hostReadModels,
+          actorId: () => 'host',
+        ),
       ),
     );
 
@@ -181,8 +186,9 @@ void main() {
     callable.resultData = crmSavedAudienceData();
     final repository = HostSavedAudienceRepository(
       functions,
-      summaries: HostSummaryReader(
+      summaries: ScopedReadModelReader(
         FakeFirebaseFirestore(),
+        family: hostReadModels,
         actorId: () => 'host',
       ),
     );

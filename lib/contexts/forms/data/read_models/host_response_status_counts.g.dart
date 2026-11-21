@@ -76,7 +76,7 @@ final class HostResponseStatusCountsProvider
 }
 
 String _$hostResponseStatusCountsHash() =>
-    r'91f734b9314e17d1bb6c9046cf416dae3173072d';
+    r'9d937efd9507c0e99685725e3517690deab0a246';
 
 /// One form's per-filter counts for Responses; null until the inbox is ready.
 

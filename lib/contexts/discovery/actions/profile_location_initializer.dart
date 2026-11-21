@@ -1,13 +1,15 @@
-import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
-import 'package:catch_platform/cities/city_repository.dart';
+import 'package:catch_dating_app/contexts/discovery/data/city_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/profiles.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'profile_location_initializer.g.dart';
 
-/// Records the device location on a profile that has none. Route lifetime:
-/// the app root watches it for the app's whole life, so it still runs once
-/// per process; it reads account data, so it is never kept alive.
+/// Records the device location, and the nearest configured city, on a profile
+/// that has none. Discovery owns it because it turns a device position into a
+/// city; the profile write goes through the profiles repository. Route
+/// lifetime: the app root watches it for the app's whole life, so it still
+/// runs once per process; it reads account data, so it is never kept alive.
 @riverpod
 class ProfileLocationInitializer extends _$ProfileLocationInitializer {
   bool _collected = false;

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
+import 'package:catch_dating_app/contexts/discovery/data/city_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
@@ -50,7 +51,6 @@ import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/catch_async_state.dart';
-import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_exception.dart';

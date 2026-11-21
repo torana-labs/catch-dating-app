@@ -5,8 +5,9 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_summary.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -23,7 +24,7 @@ class HostSavedAudienceRepository {
   const HostSavedAudienceRepository(this._functions, {required this.summaries});
 
   /// The group directory read model (`hostGroupSummaries`, `hostGroupDetails`).
-  final HostSummaryReader summaries;
+  final ScopedReadModelReader summaries;
   static const groupMarker = 'groupSummaryVersion';
 
   final FirebaseFunctions _functions;
@@ -53,7 +54,7 @@ class HostSavedAudienceRepository {
   }) => summaries
       .watchWindow(
         collection: 'hostGroupSummaries',
-        organizerId: organizerId,
+        scopeId: organizerId,
         orderField: byName ? 'searchName' : 'lastPreviewAtMillis',
         descending: !byName,
         limit: limit,
@@ -79,7 +80,7 @@ class HostSavedAudienceRepository {
   }) => summaries
       .watchDocument(
         collection: 'hostGroupDetails',
-        organizerId: organizerId,
+        scopeId: organizerId,
         id: audienceId,
         marker: groupMarker,
       )
@@ -93,11 +94,11 @@ class HostSavedAudienceRepository {
     required bool Function() isCurrent,
   }) async {
     if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
-    await summaries.activatedDirectory(organizerId, groupMarker);
+    await summaries.activatedReadiness(organizerId, groupMarker);
     if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
     final data = await summaries.document(
       collection: 'hostGroupDetails',
-      organizerId: organizerId,
+      scopeId: organizerId,
       id: audienceId,
     );
     if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
@@ -186,8 +187,9 @@ HostSavedAudienceRepository hostSavedAudienceRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);
   return HostSavedAudienceRepository(
     ref.watch(firebaseFunctionsProvider),
-    summaries: HostSummaryReader(
+    summaries: ScopedReadModelReader(
       ref.watch(firebaseFirestoreProvider),
+      family: hostReadModels,
       actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
     ),
   );

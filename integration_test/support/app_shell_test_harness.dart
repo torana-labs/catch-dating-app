@@ -16,6 +16,8 @@ import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_repos
 import 'package:catch_dating_app/contexts/connections/data/swipe_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/discovery/actions/profile_location_initializer.dart';
+import 'package:catch_dating_app/contexts/discovery/data/city_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/event_discovery_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
@@ -39,7 +41,6 @@ import 'package:catch_dating_app/contexts/payments/data/payment_history_reposito
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/onboarding_draft_repository.dart';
-import 'package:catch_dating_app/contexts/profiles/data/profile_location_initializer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
@@ -57,7 +58,6 @@ import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
-import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/errors/error_logger.dart';
