@@ -6,7 +6,7 @@
     {
       "name": "Catch Host | Search | Organisers",
       "status": "PAUSED",
-      "dailyBudgetInr": 700,
+      "dailyBudgetInr": 500,
       "bidding": {
         "strategy": "MAXIMIZE_CLICKS",
         "maxCpcInr": 40
