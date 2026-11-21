@@ -1136,7 +1136,8 @@ test("access read and revoke receipts satisfy their response contracts",
       "../../../contracts/callable_responses");
     const compile = (name: string) => ajv.compile(JSON.parse(
       readFileSync(path.join(root, name), "utf8")));
-    const access = compile("admin_get_sales_partner_access_response.schema.json");
+    const access = compile(
+      "admin_get_sales_partner_access_response.schema.json");
     const revoke = compile(
       "admin_revoke_sales_partner_access_response.schema.json");
     for (const organizerId of ["organizer-one", "organizer-two"]) {
