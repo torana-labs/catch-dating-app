@@ -6,27 +6,18 @@ import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import {
   eventStaffGrantId,
-  eventOperatorExpiryMillis,
   eventOperatorPermissions,
-  requireEventOperatorPermission,
 } from "../shared/eventOperatorAuthority";
 import type {
   EventDocument,
   EventStaffGrantDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import type {EventOperatorAccessCallablePayload} from
-  "../shared/generated/eventOperatorAccessCallablePayload";
-import type {EventOperatorAccessCallableResponse} from
-  "../shared/generated/eventOperatorAccessCallableResponse";
 import type {EventStaffListCallableResponse} from
   "../shared/generated/eventStaffListCallableResponse";
 import type {GrantEventStaffCallablePayload} from
   "../shared/generated/grantEventStaffCallablePayload";
 import type {RevokeEventStaffCallablePayload} from
   "../shared/generated/revokeEventStaffCallablePayload";
-import {
-  validateEventOperatorAccessCallablePayload,
-} from "../shared/generated/validators/eventOperatorAccessInput";
 import {
   validateGrantEventStaffCallablePayload,
 } from "../shared/generated/validators/grantEventStaffInput";
@@ -40,11 +31,8 @@ import {
   requireEventOrganizer,
 } from "../shared/eventOrganizers";
 import {checkRateLimit} from "../shared/rateLimit";
-import {checkInstanceRateLimit} from "../shared/instanceRateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {normalizeRosterPhone} from "./eventAttendees";
-import {eventTitleLabel} from "../shared/eventLabels";
-import {requireScheduledEvent} from "./configuredEvent";
 
 interface EventStaffDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -65,69 +53,6 @@ const defaultDeps: EventStaffDeps = {
 
 const maxStaff = 50;
 const maxGrantDurationMillis = 14 * 24 * 60 * 60 * 1000;
-
-export async function getEventOperatorAccessHandler(
-  request: CallableRequest<unknown>,
-  deps: EventStaffDeps = defaultDeps
-): Promise<EventOperatorAccessCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<EventOperatorAccessCallablePayload>(
-    request,
-    validateEventOperatorAccessCallablePayload,
-    normalizeEventPayload
-  );
-  const db = deps.firestore();
-  checkInstanceRateLimit(actorUid, "getEventOperatorAccess", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  const eventSnap = await db.collection("events").doc(data.eventId).get();
-  if (!eventSnap.exists) throw new HttpsError("not-found", "Event not found.");
-  const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-  const organizer = requireEventOrganizer(
-    await eventOrganizerRef(db, event).get(), event
-  );
-  const access = await requireEventOperatorPermission({
-    db,
-    organizer,
-    event,
-    eventId: data.eventId,
-    actorUid,
-    permission: "viewRoster",
-    now: deps.now(),
-  });
-  const scheduledEvent = requireScheduledEvent(event);
-  return {
-    eventId: data.eventId,
-    organizerId: event.organizerId,
-    title: eventTitleLabel(scheduledEvent),
-    startAtMillis: scheduledEvent.startTime.toMillis(),
-    endAtMillis: scheduledEvent.endTime.toMillis(),
-    eventStatus: event.status,
-    actorRole: access.role,
-    permissions: access.role === "manager" ?
-      eventOperatorPermissions : access.grant!.permissions,
-    grantExpiresAtMillis: access.grant ?
-      eventOperatorExpiryMillis(access.grant) : null,
-  };
-}
-
-export async function listEventStaffHandler(
-  request: CallableRequest<unknown>,
-  deps: EventStaffDeps = defaultDeps
-): Promise<EventStaffListCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<EventOperatorAccessCallablePayload>(
-    request,
-    validateEventOperatorAccessCallablePayload,
-    normalizeEventPayload
-  );
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listEventStaff", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  await requireEventManager(db, data.eventId, actorUid);
-  return eventStaffList(db, data.eventId, deps.now());
-}
 
 export async function grantEventStaffHandler(
   request: CallableRequest<unknown>,
@@ -386,14 +311,6 @@ function trim(value: unknown): unknown {
 
 const staffCallableLimits = {timeoutSeconds: 60, maxInstances: 20};
 
-export const getEventOperatorAccess = onCall(
-  appCheckCallableOptionsWithLimits(staffCallableLimits),
-  (request) => getEventOperatorAccessHandler(request)
-);
-export const listEventStaff = onCall(
-  appCheckCallableOptionsWithLimits(staffCallableLimits),
-  (request) => listEventStaffHandler(request)
-);
 export const grantEventStaff = onCall(
   appCheckCallableOptionsWithLimits(staffCallableLimits),
   (request) => grantEventStaffHandler(request)

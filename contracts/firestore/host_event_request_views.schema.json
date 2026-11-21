@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_event_request_views.schema.json",
   "title": "HostEventRequestViewDocument",
-  "description": "Server-maintained manager read view of everyone waiting on one coming event: join requests and the offerable waitlist in order, with the rows listOrganizerRequests returns. Written by triggers on the event, its waitlisted participations, the people's public profiles and the organizer's contact summaries. An event with nobody waiting, an event that is not active and an event that has ended have no view. Rows are not filtered by blocks; readers hide anyone with a block either way with them. row.offerExpiresAtMillis is an active offer's expiry even after it passes, so readers compare it with their clock. Never identity, permission or mutation authority.",
+  "description": "Server-maintained manager read view of everyone waiting on one coming event: join requests and the offerable waitlist in order, with the rows the retired listOrganizerRequests callable returned. Written by triggers on the event, its waitlisted participations, the people's public profiles and the organizer's contact summaries. An event with nobody waiting, an event that is not active and an event that has ended have no view. Rows are not filtered by blocks; readers hide anyone with a block either way with them. row.offerExpiresAtMillis is an active offer's expiry even after it passes, so readers compare it with their clock. Never identity, permission or mutation authority.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "hostEventRequestViews",

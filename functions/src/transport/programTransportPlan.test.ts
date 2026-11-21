@@ -4,8 +4,7 @@ import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import {baseSeed, deps, request, now} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
-import {getProgramArrivalsRosterHandler, getProgramTransportPlanHandler}
-  from "./programArrivals";
+import {getProgramTransportPlanHandler} from "./programArrivals";
 import type {ProgramTransportPlanCallableResponse} from
   "../shared/generated/programTransportPlanCallableResponse";
 import {contractValidator} from "../shared/contractTestValidators";
@@ -67,11 +66,6 @@ test("hotel identifiers cannot collide with free-text destination keys",
     "Actual Hotel");
     assert.equal(result.groups.find((group) =>
       group.destinationHotelId === null)!.destinationLabel, "Lobby");
-    const roster = await getProgramArrivalsRosterHandler(request({
-      programId: "program-1",
-    }, "dispatcher-1"), deps(db));
-    assert.equal(roster.rows.find((row) => row.legId === "leg-1")!
-      .destinationLabel, "Actual Hotel");
   });
 
 test("unresolved journeys remain visible for assignment", async () => {
@@ -134,10 +128,6 @@ for (const collection of ["programPickupPoints", "programHotels"]) {
           !group.legIds.includes("leg-1")));
         assert.ok(result.unassigned.some((row) =>
           row.legId === "leg-1" && row.reason === "missingScope"));
-        const roster = await getProgramArrivalsRosterHandler(request({
-          programId: "program-1",
-        }, "dispatcher-1"), deps(db));
-        assert.ok(roster.rows.some((row) => row.legId === "leg-1"));
       });
   }
 }

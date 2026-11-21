@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/list_organizer_requests_response.schema.json",
   "title": "ListOrganizerRequestsCallableResponse",
-  "description": "People waiting across an organizer's coming events, soonest event first and oldest ask first within an event. complete is false when the bounded read left people out. Anyone with a block either way with the caller is left out.",
+  "description": "People waiting across an organizer's coming events, soonest event first and oldest ask first within an event. complete is false when the bounded read left people out. Anyone with a block either way with the caller is left out. The listOrganizerRequests callable that returned it is retired; the name stays because hostEventRequestViews.rows stores its rows.",
   "type": "object",
   "additionalProperties": false,
   "required": ["rows", "complete"],

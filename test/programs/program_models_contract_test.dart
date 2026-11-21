@@ -3,7 +3,7 @@ import 'package:catch_platform/schema_contracts/generated/field_constraints.g.da
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('client enum names match the generated callable contract', () {
+  test('client enum names match the generated contracts', () {
     final contracts = <(List<Enum>, List<String>)>[
       (
         ProgramKind.values,
@@ -36,31 +36,25 @@ void main() {
       (
         TravelLegReadiness.values,
         CatchContractConstraints
-            .programArrivalsRosterCallableResponseRowsItemsReadiness
-            .enumValues!,
-      ),
-      (
-        TravelLegReadiness.values,
-        CatchContractConstraints
-            .programHotelInboundCallableResponseExpectedLegsItemsReadiness
+            .programArrivalViewDocumentReadiness
             .enumValues!,
       ),
       (
         TravelLegFlightStatus.values,
         CatchContractConstraints
-            .programArrivalsRosterCallableResponseRowsItemsFlightStatus
+            .programArrivalViewDocumentFlightStatus
             .enumValues!,
       ),
       (
         CurbSource.values,
         CatchContractConstraints
-            .programArrivalsRosterCallableResponseRowsItemsCurbSource
+            .programArrivalViewDocumentCurbSource
             .enumValues!,
       ),
       (
         TimingUnavailableReason.values,
         CatchContractConstraints
-            .programArrivalsRosterCallableResponseRowsItemsUnavailableReason
+            .programArrivalViewDocumentUnavailableReason
             .enumValues!,
       ),
       (
@@ -77,26 +71,12 @@ void main() {
       ),
       (
         TransportTripStatus.values,
-        CatchContractConstraints
-            .programTripListCallableResponseTripsItemsStatus
-            .enumValues!,
+        CatchContractConstraints.programTripViewDocumentStatus.enumValues!,
       ),
       (
         TransportManifestSource.values,
         CatchContractConstraints
-            .programTripListCallableResponseTripsItemsManifestSource
-            .enumValues!,
-      ),
-      (
-        TransportManifestSource.values,
-        CatchContractConstraints
-            .programHotelInboundCallableResponseTripsItemsManifestSource
-            .enumValues!,
-      ),
-      (
-        ProgramStaffStatus.values,
-        CatchContractConstraints
-            .programStaffListCallableResponseMembersItemsStatus
+            .programTripViewDocumentManifestSource
             .enumValues!,
       ),
     ];

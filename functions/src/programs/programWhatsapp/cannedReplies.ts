@@ -11,20 +11,12 @@ import {assertOutboundContentAllowed} from
 import type {
   ProgramWhatsappCannedReplyDocument,
 } from "../../shared/generated/firestoreAdminTypes";
-import type {ListProgramWhatsappCannedRepliesCallablePayload} from
-  "../../shared/generated/listProgramWhatsappCannedRepliesCallablePayload";
 import type {UpsertProgramWhatsappCannedReplyCallablePayload} from
   "../../shared/generated/upsertProgramWhatsappCannedReplyCallablePayload";
-import type {ProgramWhatsappCannedRepliesCallableResponse} from
-  "../../shared/generated/programWhatsappCannedRepliesCallableResponse";
 import type {ProgramWhatsappCannedReplyCallableResponse} from
   "../../shared/generated/programWhatsappCannedReplyCallableResponse";
-import {validateListProgramWhatsappCannedRepliesCallablePayload} from
-  "../../shared/generated/validators/listProgramWhatsappCannedRepliesInput";
 import {validateUpsertProgramWhatsappCannedReplyCallablePayload} from
   "../../shared/generated/validators/upsertProgramWhatsappCannedReplyInput";
-import {validateProgramWhatsappCannedRepliesCallableResponse} from
-  "../../shared/generated/validators/programWhatsappCannedRepliesOutput";
 import {validateProgramWhatsappCannedReplyCallableResponse} from
   "../../shared/generated/validators/programWhatsappCannedReplyOutput";
 import {validateProgramWhatsappCannedReplyDocument} from
@@ -51,32 +43,6 @@ function item(reply: CannedReply):
   return {cannedReplyId: reply.cannedReplyId, label: reply.label,
     variants: reply.variants, sortOrder: reply.sortOrder,
     archived: reply.archived, revision: reply.revision};
-}
-
-export async function listProgramWhatsappCannedRepliesHandler(
-  request: CallableRequest<unknown>,
-  deps: ProgramInboxDeps = defaultProgramInboxDeps,
-): Promise<ProgramWhatsappCannedRepliesCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<
-    ListProgramWhatsappCannedRepliesCallablePayload>(request,
-      validateListProgramWhatsappCannedRepliesCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listProgramWhatsappCannedReplies",
-    {maxRequests: 60, windowMs: 60 * 1000});
-  const access = await requireProgramAccess({db, programId: data.programId,
-    actorUid, now: deps.now()});
-  requireInboxAccess(access);
-  const snap = await db.collection(PROGRAM_WHATSAPP_CANNED_REPLIES)
-    .where("programId", "==", data.programId).limit(CANNED_LIMIT).get();
-  const replies = snap.docs.map((doc) => doc.data() as CannedReply)
-    .filter((reply) => reply.organizerId === access.program.organizerId &&
-      (data.includeArchived === true || !reply.archived))
-    .sort((a, b) => a.sortOrder - b.sortOrder ||
-      a.label.localeCompare(b.label));
-  return requireValid(validateProgramWhatsappCannedRepliesCallableResponse,
-    {programId: data.programId, cannedReplies: replies.map(item)},
-    "canned replies");
 }
 
 export async function upsertProgramWhatsappCannedReplyHandler(

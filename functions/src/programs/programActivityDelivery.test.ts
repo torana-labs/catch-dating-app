@@ -1,11 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import * as admin from "firebase-admin";
 import type {Firestore} from "firebase-admin/firestore";
-import type {CallableRequest} from "firebase-functions/v2/https";
 import {dispatchMomentRun, runMomentSweep} from "../moments/momentRunner";
 import {buildMomentRunnerDeps} from "../moments/momentWiring";
-import {listProgramStaffAttentionHandler} from "./programStaffAttention";
 import {programActivityIntent, recoverProgramActivityJournals} from
   "./programActivityDelivery";
 import {newProgramDeliveryRecord} from
@@ -130,14 +127,6 @@ test("activity-only attention is suppressed and readable by staff",
     assert.equal(row.actionKind, "staffAttention");
     assert.equal(h.messages.length, 0);
     assert.equal(activityItems(h.db).length, 1);
-    const projection = await listProgramStaffAttentionHandler({
-      auth: {uid: "mgr"}, data: {programId: "prog"},
-    } as CallableRequest, {firestore: () => h.db as unknown as Firestore,
-      checkRateLimit: async () => {},
-      now: () => admin.firestore.Timestamp.fromMillis(ACTIVITY_NOW)});
-    assert.equal(projection.items.length, 1);
-    assert.equal(projection.items[0].title, "Airport staffing gap");
-    assert.equal(projection.items[0].severity, "urgent");
     const run = h.db.getDoc(`organizerMomentRuns/${request.run.runId}`)!;
     assert.equal(run.sent, 0);
     assert.deepEqual(run.suppressed, {noEndpoint: 1});

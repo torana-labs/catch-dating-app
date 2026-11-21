@@ -5,41 +5,25 @@ import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {
-  appCheckCallableOptionsWithLimits,
   appCheckCallableOptionsWithSecrets,
 } from "../shared/callableOptions";
-import type {GetOrganizerWhatsappThreadCallablePayload} from
-  "../shared/generated/getOrganizerWhatsappThreadCallablePayload";
-import type {GetOrganizerWhatsappThreadCallableResponse} from
-  "../shared/generated/getOrganizerWhatsappThreadCallableResponse";
 import type {
   OrganizerCampaignDocument,
   OrganizerCampaignRecipientDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactDocument,
   OrganizerContactEventEdgeDocument,
+  HostWhatsappThreadViewDocument,
   OrganizerMessagingWebhookEventDocument,
   OrganizerSenderConnectionDocument,
   OrganizerWhatsappMessageDocument,
   OrganizerWhatsappReplyOperationDocument,
   OrganizerWhatsappThreadDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import type {ListOrganizerWhatsappThreadsCallablePayload} from
-  "../shared/generated/listOrganizerWhatsappThreadsCallablePayload";
-import type {ListOrganizerWhatsappThreadsCallableResponse} from
-  "../shared/generated/listOrganizerWhatsappThreadsCallableResponse";
 import type {SendOrganizerWhatsappReplyCallablePayload} from
   "../shared/generated/sendOrganizerWhatsappReplyCallablePayload";
 import type {SendOrganizerWhatsappReplyCallableResponse} from
   "../shared/generated/sendOrganizerWhatsappReplyCallableResponse";
-import {
-  validateGetOrganizerWhatsappThreadCallablePayload,
-} from
-  "../shared/generated/validators/getOrganizerWhatsappThreadInput";
-import {
-  validateListOrganizerWhatsappThreadsCallablePayload,
-} from
-  "../shared/generated/validators/listOrganizerWhatsappThreadsInput";
 import {
   validateSendOrganizerWhatsappReplyCallablePayload,
 } from
@@ -67,9 +51,6 @@ import {
 const dayMillis = 24 * 60 * 60 * 1000;
 export const whatsappServiceWindowMillis = dayMillis;
 export const whatsappThreadRetentionMillis = 365 * dayMillis;
-const defaultPageSize = 20;
-const maxPageSize = 50;
-const maxThreadMessages = 200;
 
 interface WhatsappThreadDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -91,12 +72,6 @@ const defaultDeps: WhatsappThreadDeps = {
   }),
   tokenStore: new OrganizerTokenStore(),
 };
-
-interface ThreadCursor {
-  version: 1;
-  lastMessageAtMillis: number;
-  threadId: string;
-}
 
 /** Persists one resolved inbound text body with a rolling 12-month TTL. */
 export async function persistInboundWhatsappMessage(params: {
@@ -198,158 +173,6 @@ export async function persistInboundWhatsappMessage(params: {
     tx.set(threadRef, thread);
     tx.create(messageRef, message);
   });
-}
-
-/** Lists WhatsApp summaries as a channel facet inside the Host Inbox. */
-export async function listOrganizerWhatsappThreadsHandler(
-  request: CallableRequest<unknown>,
-  deps: WhatsappThreadDeps = defaultDeps
-): Promise<ListOrganizerWhatsappThreadsCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<
-    ListOrganizerWhatsappThreadsCallablePayload
-  >(
-    request,
-    validateListOrganizerWhatsappThreadsCallablePayload,
-    normalizePayload
-  );
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerWhatsappThreads", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  const limit = Math.min(data.limit ?? defaultPageSize, maxPageSize);
-  let query: FirebaseFirestore.Query = db
-    .collection("organizerWhatsappThreads")
-    .where("organizerId", "==", data.organizerId)
-    .orderBy("lastMessageAt", "desc")
-    .orderBy(admin.firestore.FieldPath.documentId(), "desc");
-  const cursor = decodeCursor(data.cursor ?? null);
-  if (cursor) {
-    query = query.startAfter(
-      admin.firestore.Timestamp.fromMillis(cursor.lastMessageAtMillis),
-      cursor.threadId
-    );
-  }
-  const nowMillis = deps.now().toMillis();
-  const snapshot = await query.limit(limit + 1).get();
-  const scanned = snapshot.docs.slice(0, limit);
-  const retained = scanned.filter((document) =>
-    (document.data() as OrganizerWhatsappThreadDocument)
-      .expiresAt.toMillis() > nowMillis
-  );
-  const selected = retained.slice(0, limit);
-  const contactSnapshots = selected.length === 0 ? [] : await db.getAll(
-    ...selected.map((document) => {
-      const thread = document.data() as OrganizerWhatsappThreadDocument;
-      return db.collection("organizerContacts").doc(thread.contactId);
-    })
-  );
-  const contacts = new Map(contactSnapshots
-    .filter((contact) => contact.exists)
-    .map((contact) => [
-      contact.id,
-      contact.data() as OrganizerContactDocument,
-    ]));
-  const threads = selected.map((document) => {
-    const thread = document.data() as OrganizerWhatsappThreadDocument;
-    if (thread.organizerId !== data.organizerId) {
-      throw new HttpsError("internal", "WhatsApp thread scope is invalid.");
-    }
-    const summary = whatsappThreadSummary(
-      document.id,
-      thread,
-      contacts.get(thread.contactId),
-    );
-    return {
-      ...summary,
-      serviceWindowOpen: isWhatsappServiceWindowOpen(
-        summary.lastInboundAtMillis,
-        nowMillis
-      ),
-    };
-  });
-  const last = scanned.at(-1);
-  return {
-    organizerId: data.organizerId,
-    threads,
-    nextCursor: snapshot.docs.length > limit && last ? encodeCursor({
-      version: 1,
-      lastMessageAtMillis:
-        (last.data() as OrganizerWhatsappThreadDocument)
-          .lastMessageAt.toMillis(),
-      threadId: last.id,
-    }) : null,
-  };
-}
-
-/** Returns the bounded retained bodies for one manager-authorized thread. */
-export async function getOrganizerWhatsappThreadHandler(
-  request: CallableRequest<unknown>,
-  deps: WhatsappThreadDeps = defaultDeps
-): Promise<GetOrganizerWhatsappThreadCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<
-    GetOrganizerWhatsappThreadCallablePayload
-  >(
-    request,
-    validateGetOrganizerWhatsappThreadCallablePayload,
-    normalizePayload
-  );
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerWhatsappThread", {
-    maxRequests: 60, windowMs: 60 * 1000,
-  });
-  await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
-  const [threadSnapshot, messageSnapshot] = await Promise.all([
-    db.collection("organizerWhatsappThreads").doc(data.threadId).get(),
-    db.collection("organizerWhatsappMessages")
-      .where("organizerId", "==", data.organizerId)
-      .where("threadId", "==", data.threadId)
-      .orderBy("occurredAt", "desc")
-      .orderBy(admin.firestore.FieldPath.documentId(), "desc")
-      .limit(maxThreadMessages + 1).get(),
-  ]);
-  const thread = threadSnapshot.data() as
-    OrganizerWhatsappThreadDocument | undefined;
-  if (!thread || thread.organizerId !== data.organizerId ||
-      thread.expiresAt.toMillis() <= deps.now().toMillis()) {
-    throw new HttpsError("not-found", "WhatsApp thread not found.");
-  }
-  const contactSnapshot = await db.collection("organizerContacts")
-    .doc(thread.contactId).get();
-  const contact = contactSnapshot.data() as OrganizerContactDocument |
-    undefined;
-  const nowMillis = deps.now().toMillis();
-  return {
-    organizerId: data.organizerId,
-    threadId: data.threadId,
-    contactId: thread.contactId,
-    linkedUid: verifiedWhatsappContactUid(contact, data.organizerId),
-    displayName: whatsappContactDisplayName(contact, data.organizerId),
-    lastInboundAtMillis: thread.lastInboundAt.toMillis(),
-    serviceWindowExpiresAtMillis: thread.serviceWindowExpiresAt.toMillis(),
-    serviceWindowOpen: isWhatsappServiceWindowOpen(
-      thread.lastInboundAt.toMillis(),
-      nowMillis
-    ),
-    messages: messageSnapshot.docs
-      .filter((document) =>
-        (document.data() as OrganizerWhatsappMessageDocument)
-          .expiresAt.toMillis() > nowMillis
-      )
-      .slice(0, maxThreadMessages)
-      .map((document) => {
-        const message = document.data() as OrganizerWhatsappMessageDocument;
-        return {
-          messageId: document.id,
-          direction: message.direction,
-          body: message.body,
-          occurredAtMillis: message.occurredAt.toMillis(),
-        };
-      }).reverse(),
-    messagesTruncated: messageSnapshot.size > maxThreadMessages,
-  };
 }
 
 /** Sends a free-form reply only inside the latest inbound 24-hour window. */
@@ -746,26 +569,6 @@ function sha256(value: string): string {
   return createHash("sha256").update(value).digest("hex");
 }
 
-function encodeCursor(cursor: ThreadCursor): string {
-  return Buffer.from(JSON.stringify(cursor)).toString("base64url");
-}
-
-function decodeCursor(value: string | null): ThreadCursor | null {
-  if (!value) return null;
-  try {
-    const parsed = JSON.parse(Buffer.from(value, "base64url").toString()) as
-      Partial<ThreadCursor>;
-    if (parsed.version !== 1 ||
-        !Number.isSafeInteger(parsed.lastMessageAtMillis) ||
-        Number(parsed.lastMessageAtMillis) < 0 ||
-        typeof parsed.threadId !== "string" ||
-        !/^owt_[a-f0-9]{48}$/.test(parsed.threadId)) throw new Error();
-    return parsed as ThreadCursor;
-  } catch {
-    throw new HttpsError("invalid-argument", "WhatsApp cursor is invalid.");
-  }
-}
-
 function normalizePayload(value: unknown): unknown {
   if (!value || typeof value !== "object" || Array.isArray(value)) return value;
   const result = {...value} as Record<string, unknown>;
@@ -776,16 +579,6 @@ function normalizePayload(value: unknown): unknown {
 }
 
 const callableLimits = {timeoutSeconds: 60, maxInstances: 20};
-
-export const listOrganizerWhatsappThreads = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
-  (request) => listOrganizerWhatsappThreadsHandler(request)
-);
-
-export const getOrganizerWhatsappThread = onCall(
-  appCheckCallableOptionsWithLimits(callableLimits),
-  (request) => getOrganizerWhatsappThreadHandler(request)
-);
 
 export const sendOrganizerWhatsappReply = onCall(
   {
@@ -810,8 +603,8 @@ export function whatsappContactDisplayName(
 
 /**
  * One retained thread as a manager sees it in the inbox list, without the
- * time-dependent service-window flag. The list callable and the
- * hostWhatsappThreadViews read model both use it, so they cannot drift.
+ * time-dependent service-window flag, as the hostWhatsappThreadViews read
+ * model stores it.
  * @param {string} threadId The thread document id.
  * @param {OrganizerWhatsappThreadDocument} thread The thread document.
  * @param {OrganizerContactDocument|undefined} contact Its contact, if any.
@@ -821,10 +614,8 @@ export function whatsappThreadSummary(
   threadId: string,
   thread: OrganizerWhatsappThreadDocument,
   contact: OrganizerContactDocument | undefined,
-): Omit<
-  ListOrganizerWhatsappThreadsCallableResponse["threads"][number],
-  "serviceWindowOpen" | "linkedUid"
-> & {linkedUid: string | null} {
+): Omit<HostWhatsappThreadViewDocument,
+  "organizerId" | "expiresAtMillis" | "version"> {
   return {
     threadId,
     contactId: thread.contactId,

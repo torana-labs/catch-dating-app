@@ -67,19 +67,14 @@ Typed handoffs:
 ## Data contracts
 
 - `contracts/callable_responses/create_organizer_post_response.schema.json`
-- `contracts/callable_responses/get_organizer_whatsapp_thread_response.schema.json`
 - `contracts/callable_responses/list_organizer_campaigns_response.schema.json`
-- `contracts/callable_responses/list_organizer_whatsapp_threads_response.schema.json`
 - `contracts/callable_responses/organizer_campaign_response.schema.json`
 - `contracts/callable_responses/organizer_messaging_setup_response.schema.json`
 - `contracts/callable_responses/send_event_broadcast_response.schema.json`
 - `contracts/callable_responses/send_organizer_whatsapp_reply_response.schema.json`
 - `contracts/callables/complete_organizer_whatsapp_connection_payload.schema.json`
 - `contracts/callables/create_organizer_post_payload.schema.json`
-- `contracts/callables/get_organizer_whatsapp_thread_payload.schema.json`
-- `contracts/callables/list_organizer_campaigns_payload.schema.json`
 - `contracts/callables/list_organizer_manual_send_tasks_payload.schema.json`
-- `contracts/callables/list_organizer_whatsapp_threads_payload.schema.json`
 - `contracts/callables/mark_organizer_manual_send_task_payload.schema.json`
 - `contracts/callables/open_organizer_manual_send_task_payload.schema.json`
 - `contracts/callables/organizer_campaign_action_payload.schema.json`
