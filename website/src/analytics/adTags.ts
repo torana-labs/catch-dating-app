@@ -60,11 +60,8 @@ const catchAdDestinations: CatchAdDestinationSet = Object.freeze({
   hostLeadConversion: "AW-18526407471/WgIECMue97odEK-WioJF",
   /** Meta Pixel / dataset. */
   metaPixel: "1844810253539672",
-  /**
-   * Microsoft Clarity: null until the owner creates the project
-   * (clarity.microsoft.com, masking set to Strict) and its ID lands here.
-   */
-  clarityProject: null,
+  /** Microsoft Clarity project "Catch website" (masking set to Strict in the project). */
+  clarityProject: "zh6x16vddo",
 });
 
 /** gtag.js reads its own data layer, never the site's diagnostic `dataLayer`. */
