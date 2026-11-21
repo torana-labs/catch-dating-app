@@ -329,7 +329,7 @@
       ],
       "media": {
         "kind": "capture",
-        "slot": "host-door-in"
+        "slot": "host-create-first-event"
       }
     }
   ]

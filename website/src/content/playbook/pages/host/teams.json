@@ -85,7 +85,7 @@
         {"time": "On the evening", "title": "Check in, then mix", "body": "Colleagues scan in and see their first group. A few rounds later, everyone’s met people outside their team."},
         {"time": "Next morning", "title": "A report for leadership", "body": "Who came, how many new people each person met, and what they thought, in a few lines."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-teams"}
     },
     {
       "type": "checklist",
@@ -149,7 +149,7 @@
         {"label": "Set up a free social", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
       "leadForm": {"id": "team_social_setup_guide", "requestKind": "guide", "format": "teams", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "media": {"kind": "capture", "slot": "host-create-teams"}
     }
   ]
 }

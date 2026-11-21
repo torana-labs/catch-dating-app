@@ -169,7 +169,7 @@
       ],
       "leadForm": {"id": "quiz_night_setup_guide", "requestKind": "guide", "format": "quiz-nights", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
       "storeBadges": "host",
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "media": {"kind": "capture", "slot": "host-create-first-event"}
     }
   ]
 }

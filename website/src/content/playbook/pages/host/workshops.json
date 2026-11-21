@@ -85,7 +85,7 @@
         {"time": "On the day", "title": "Check in", "body": "Guests check in at the door; first-timers are marked so you can say hello."},
         {"time": "Next morning", "title": "Bring them back", "body": "Photos, a thank-you and a review request. Regulars hear about the next date first."}
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {"kind": "capture", "slot": "host-live-tablet-workshops"}
     },
     {
       "type": "checklist",
