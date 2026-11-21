@@ -15,7 +15,7 @@ separate stage counts are not historical cohort conversions.
   read only `host_analytics_events`; GA4 is neither a fallback nor a larger-count
   override. Advertising-provider events do not increase first-party counters.
 - `catch_analytics.*_raw_latest`: Firestore-to-BigQuery export views for
-  `organizers`, `events`, `eventParticipations`, `payments`, `reviews`,
+  `organizers`, `events`, `eventParticipations`, `guestPayments`, `reviews`,
   `savedEvents`, `eventInviteLinks`, and `matches`, one extension instance per
   collection.
 - `catch_marketplace_metrics.event_success_scorecards_raw_latest`: existing

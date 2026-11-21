@@ -20,9 +20,9 @@ export const hostExports = {
     tableId: "event_participations",
     requiredInMart: true,
   },
-  "bq-host-payments": {
-    collectionPath: "payments",
-    tableId: "payments",
+  "bq-host-guest-payments": {
+    collectionPath: "guestPayments",
+    tableId: "guest_payments",
     requiredInMart: true,
   },
   "bq-host-reviews": {
