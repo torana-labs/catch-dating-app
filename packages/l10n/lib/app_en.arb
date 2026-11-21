@@ -1,7 +1,7 @@
 {
   "hostAnalyticsPrivacyTitle": "Host app analytics",
   "@hostAnalyticsPrivacyTitle": {"description": "Host device analytics privacy setting.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
-  "hostAnalyticsPrivacyBody": "Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days. Advertising measurement stays off. You can turn analytics off here at any time.",
+  "hostAnalyticsPrivacyBody": "Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days and does not cover ad matching, which the privacy policy explains. You can turn analytics off here at any time.",
   "@hostAnalyticsPrivacyBody": {"description": "Explicit Host product analytics disclosure before consent.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
   "hostAnalyticsPrivacyDeny": "Keep analytics off",
   "@hostAnalyticsPrivacyDeny": {"description": "Decline or withdraw Host analytics permission.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
@@ -2028,6 +2028,46 @@
     "x-owner": "product",
     "x-surface": "auth.phone.validation",
     "x-max-chars": 64
+  },
+  "authLegalAgreement": "By continuing you agree to Catch’s terms and privacy policy.",
+  "@authLegalAgreement": {
+    "description": "Line under the sign-up phone field: sending the code accepts the Terms and the Privacy policy, both linked under it.",
+    "x-audience": "shared",
+    "x-owner": "legal",
+    "x-surface": "auth.phone.legal",
+    "x-max-chars": 80
+  },
+  "authLegalTermsLink": "Terms",
+  "@authLegalTermsLink": {
+    "description": "Link under the sign-up legal line that opens the public Terms page.",
+    "x-audience": "shared",
+    "x-owner": "legal",
+    "x-surface": "auth.phone.legal",
+    "x-max-chars": 20
+  },
+  "authLegalPrivacyLink": "Privacy policy",
+  "@authLegalPrivacyLink": {
+    "description": "Link under the sign-up legal line that opens the public Privacy policy page.",
+    "x-audience": "shared",
+    "x-owner": "legal",
+    "x-surface": "auth.phone.legal",
+    "x-max-chars": 24
+  },
+  "adMatchingNotice": "We share a coded version of your contact details with Google and Meta to measure our ads and choose who sees them.",
+  "@adMatchingNotice": {
+    "description": "Ad-matching notice where a person gives their phone or email: app sign-up and Catch Host setup. Same words as the website notice (website/src/content/legal.ts); see docs/ads_conversion_spec.md, Ad-matching notice and opt-out.",
+    "x-audience": "shared",
+    "x-owner": "legal",
+    "x-surface": "legal.ad_matching",
+    "x-max-chars": 140
+  },
+  "adMatchingNoticeLink": "How it works and how to opt out",
+  "@adMatchingNoticeLink": {
+    "description": "Link under the ad-matching notice that opens the advertising section of the privacy policy.",
+    "x-audience": "shared",
+    "x-owner": "legal",
+    "x-surface": "legal.ad_matching",
+    "x-max-chars": 40
   },
   "authOtpTitle": "Enter the code",
   "@authOtpTitle": {

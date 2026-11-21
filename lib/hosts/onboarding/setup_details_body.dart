@@ -8,8 +8,9 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// Setup step two: the logo, a line about the nights, what the page runs and
-/// where its link will live.
+/// Setup step two: the logo, a line about the nights, what the page runs,
+/// where its link will live, and the ad-matching notice before the page is
+/// created.
 class HostSetupDetailsBody extends StatelessWidget {
   const HostSetupDetailsBody({
     super.key,
@@ -17,6 +18,7 @@ class HostSetupDetailsBody extends StatelessWidget {
     required this.onPickLogo,
     required this.onDescriptionChanged,
     required this.onToggleFormat,
+    this.onOpenAdMatching,
     this.createError,
   });
 
@@ -26,6 +28,9 @@ class HostSetupDetailsBody extends StatelessWidget {
   final VoidCallback? onPickLogo;
   final ValueChanged<String> onDescriptionChanged;
   final ValueChanged<HostSetupFormat> onToggleFormat;
+
+  /// Opens the privacy policy's advertising section; null leaves the link out.
+  final VoidCallback? onOpenAdMatching;
 
   /// Why creating the page failed.
   final String? createError;
@@ -118,6 +123,25 @@ class HostSetupDetailsBody extends StatelessWidget {
         HostSetupPageLinkTile(
           link: l10n.hostOnboardingDetailsPagePending,
           note: l10n.hostOnboardingDetailsDomainNote,
+        ),
+        CatchStack(
+          key: const ValueKey<String>('host-setup-ad-matching'),
+          gap: CatchStackGap.g4,
+          align: CatchStackAlign.start,
+          children: [
+            CatchText(
+              l10n.adMatchingNotice,
+              variant: CatchTextVariant.bodySmall,
+              tone: CatchTextTone.secondary,
+            ),
+            if (onOpenAdMatching != null)
+              CatchButton(
+                label: l10n.adMatchingNoticeLink,
+                onPressed: onOpenAdMatching,
+                variant: CatchButtonVariant.quiet,
+                size: CatchButtonSize.sm,
+              ),
+          ],
         ),
         if (createError != null)
           CatchNotice.inline(body: createError!, tone: CatchNoticeTone.danger),

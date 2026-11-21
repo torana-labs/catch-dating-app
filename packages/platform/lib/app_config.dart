@@ -256,6 +256,10 @@ class AppConfig {
   static Uri? get termsUrl => _legalUrl('CATCH_TERMS_URL', _termsUrl);
   static Uri? get helpUrl => _legalUrl('CATCH_HELP_URL', _helpUrl);
 
+  /// The privacy policy's advertising section: what the ad-matching notice
+  /// on sign-up and Host setup links to (the website's `/privacy/#ads`).
+  static Uri? get adMatchingUrl => privacyPolicyUrl?.replace(fragment: 'ads');
+
   static Uri? _legalUrl(String name, String compiledValue) =>
       configuredExternalUriFor(
         _legalUrlDefinesOverride?[name] ?? compiledValue,

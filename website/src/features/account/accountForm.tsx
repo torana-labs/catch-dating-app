@@ -1,6 +1,7 @@
-import {CatchButton, CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
+import {CatchButton, CatchConsentNote, CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
 import {optionalAccountFields} from "../../shared/contracts/generated/profileRequirements";
 import {accountCopy} from "../../content/account";
+import {adMatchingNoticeCopy as adNotice} from "../../content/legal";
 import {Form} from "../../shared/ui/primitives";
 import type {WebsiteAccountController} from "./useWebsiteAccountController";
 import {SignInButton} from "./SignInSheet";
@@ -71,6 +72,7 @@ export function renderAccountForm(account: WebsiteAccountController, {askBirthDa
         {account.status.message}
       </CatchLegacyText>
       <CatchLegacyText as="p" color="ink2" variant="bodyS">{accountCopy.privacy}</CatchLegacyText>
+      <CatchConsentNote href={adNotice.href} linkLabel={adNotice.linkLabel} text={adNotice.text} />
     </CatchGap>
   </Form>;
 }
