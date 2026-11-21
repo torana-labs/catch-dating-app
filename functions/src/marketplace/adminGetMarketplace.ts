@@ -75,7 +75,7 @@ bookings AS (
     JSON_VALUE(data, '$.uid') AS uid,
     JSON_VALUE(data, '$.status') AS status,
     COALESCE(${ts("signedUpAt")}, ${ts("createdAt")}) AS booked_at
-  FROM \`${dataset}.event_participations_raw_latest\`
+  FROM \`${dataset}.event_bookings_raw_latest\`
 ),
 scoped AS (
   SELECT ev.*, o.market_id, o.name AS organizer_name

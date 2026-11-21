@@ -61,7 +61,7 @@ function fixture(mart, failure = null) {
   const fixtureSources = {
     organizers_raw_latest: "document_id STRING, data STRING",
     events_raw_latest: "document_id STRING, data STRING",
-    event_participations_raw_latest: "data STRING",
+    event_bookings_raw_latest: "data STRING",
     event_invite_links_raw_latest: "data STRING",
     guest_payments_raw_latest: "data STRING",
     reviews_raw_latest: "data STRING",
@@ -141,7 +141,7 @@ function fixture(mart, failure = null) {
       (CURRENT_DATE('Asia/Kolkata'), 'canonical', NULL, 'linkClick', 'click-2', 'tickets', 'tiktok'),
       (CURRENT_DATE('Asia/Kolkata'), 'canonical', NULL, 'linkClick', 'click-3', NULL, 'direct');`);
   } else {
-    seed.push(`INSERT INTO fixture_event_participations_raw_latest VALUES (
+    seed.push(`INSERT INTO fixture_event_bookings_raw_latest VALUES (
       JSON_SET(JSON '{"uid":"member","status":"signedUp"}', '$.signedUpAt._seconds', UNIX_SECONDS(CURRENT_TIMESTAMP())).to_json_string());`);
   }
   if (failure === "insert") {
