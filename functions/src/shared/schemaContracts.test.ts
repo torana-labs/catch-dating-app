@@ -39,8 +39,8 @@ import type {EventIdCallablePayload} from "./generated/eventIdCallablePayload";
 import type {OrganizerDocument} from "./generated/organizerDocument";
 import type {EventDocument} from "./generated/eventDocument";
 import type {ExternalEventDocument} from "./generated/externalEventDocument";
-import type {EventParticipationDocument} from
-  "./generated/eventParticipationDocument";
+import type {EventBookingDocument} from
+  "./generated/eventBookingDocument";
 import type {EventSuccessPlanDocument} from
   "./generated/eventSuccessPlanDocument";
 import type {SubmitEventSuccessWingmanRequestCallablePayload} from
@@ -161,8 +161,8 @@ const validateOrganizerFollowDocument =
 const validateEventDocument = contractValidator<EventDocument>("EventDocument");
 const validateExternalEventDocument =
   contractValidator<ExternalEventDocument>("ExternalEventDocument");
-const validateEventParticipationDocument =
-  contractValidator<EventParticipationDocument>("EventParticipationDocument");
+const validateEventBookingDocument =
+  contractValidator<EventBookingDocument>("EventBookingDocument");
 const validateEventSafetyReportDocument =
   contractValidator("EventSafetyReportDocument");
 const validateEventSuccessAssignmentDocument =
@@ -342,7 +342,7 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/external_event_doc.json")
   );
   assertValid(
-    validateEventParticipationDocument as Validator,
+    validateEventBookingDocument as Validator,
     readFixture("fixtures/valid/event_participation_doc.json")
   );
   assertValid(

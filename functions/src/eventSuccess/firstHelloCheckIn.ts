@@ -8,7 +8,7 @@ import * as logger from "firebase-functions/logger";
 import type {
   EventDocument,
   EventAttendeeDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   EventRuntimeParticipantDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
@@ -298,7 +298,7 @@ export async function completeEventSuccessFirstHelloMissionHandler(
   const eventRef = db.collection("events").doc(data.eventId);
   const planRef = db.collection("eventSuccessPlans").doc(data.eventId);
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(data.eventId, observerUid));
   const runtimeParticipantRef = db
     .collection("eventRuntimeParticipants")
@@ -383,7 +383,7 @@ export async function completeEventSuccessFirstHelloMissionHandler(
     );
 
     const targetParticipationRef = db
-      .collection("eventParticipations")
+      .collection("eventBookings")
       .doc(eventParticipationId(data.eventId, mission.targetUid));
     const targetRuntimeParticipantRef = db
       .collection("eventRuntimeParticipants")
@@ -702,21 +702,21 @@ function requireFirstHelloPlan(
  * Requires a signed-up or already-attended participant.
  * @param {FirebaseFirestore.DocumentSnapshot} snap Participation snapshot.
  * @param {string} uid Expected uid.
- * @return {EventParticipationDocument} Participation document.
+ * @return {EventBookingDocument} Participation document.
  */
 function requireSignedUpParticipant(
   snap: FirebaseFirestore.DocumentSnapshot,
   uid: string
-): EventParticipationDocument {
+): EventBookingDocument {
   if (!snap.exists) {
     throw new HttpsError(
       "failed-precondition",
       "You must be signed up for this event to use First Hello."
     );
   }
-  const participation = requireDoc<EventParticipationDocument>(
+  const participation = requireDoc<EventBookingDocument>(
     snap,
-    "EventParticipationDocument"
+    "EventBookingDocument"
   );
   if (
     participation.uid !== uid ||
@@ -804,9 +804,9 @@ function requireAttendedTarget(
       "This First Hello partner is no longer available."
     );
   }
-  const participation = requireDoc<EventParticipationDocument>(
+  const participation = requireDoc<EventBookingDocument>(
     snap,
-    "EventParticipationDocument"
+    "EventBookingDocument"
   );
   if (participation.uid !== uid || participation.status !== "attended") {
     throw new HttpsError(

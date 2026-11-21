@@ -65,7 +65,7 @@ function fixture(options: {active?: boolean; occupied?: number;
     }
   }
   if (options.linkedUid) {
-    docs[`eventParticipations/${eventParticipationId(eventId, uid)}`] = {
+    docs[`eventBookings/${eventParticipationId(eventId, uid)}`] = {
       eventId, uid, status: "signedUp"};
   }
   let writesStarted = false;

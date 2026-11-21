@@ -101,7 +101,7 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/event_id_payload.json", "eventIdCallablePayloadSchema"],
   ["valid/event_invite_link_doc.json", "eventInviteLinkDocumentSchema"],
   ["valid/event_live_position_doc.json", "eventLivePositionDocumentSchema"],
-  ["valid/event_participation_doc.json", "eventParticipationDocumentSchema"],
+  ["valid/event_participation_doc.json", "eventBookingDocumentSchema"],
   ["valid/event_private_access_doc.json", "eventPrivateAccessDocumentSchema"],
   ["valid/event_safety_report_doc.json", "eventSafetyReportDocumentSchema"],
   ["valid/event_success_assignment_doc.json", "eventSuccessAssignmentDocumentSchema"],

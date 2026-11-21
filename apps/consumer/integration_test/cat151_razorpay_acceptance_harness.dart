@@ -191,7 +191,7 @@ class _Cat151AcceptanceScreenState
           .doc(signedInUid)
           .get(const GetOptions(source: Source.server)),
       db
-          .collection('eventParticipations')
+          .collection('eventBookings')
           .doc(eventParticipationId(eventId: eventId, uid: signedInUid))
           .get(const GetOptions(source: Source.server)),
       db
@@ -586,7 +586,7 @@ class _Cat151AcceptanceScreenState
           .doc(admittedPaymentId)
           .get(const GetOptions(source: Source.server)),
       db
-          .collection('eventParticipations')
+          .collection('eventBookings')
           .doc(eventParticipationId(eventId: event.id, uid: widget.uid))
           .get(const GetOptions(source: Source.server)),
     ]);

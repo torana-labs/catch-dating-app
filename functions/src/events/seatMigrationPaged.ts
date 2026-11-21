@@ -24,7 +24,7 @@ const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/u;
 const PAGE_SIZE = 25;
 const MAX_SOURCE_ROWS = MAX_LIVE_MIGRATION_SOURCE_ROWS;
 const MAX_OUTPUT_ROWS = 1500;
-const SOURCES = ["eventParticipations", "eventAttendees",
+const SOURCES = ["eventBookings", "eventAttendees",
   "organizerContactOrigins"] as const;
 type Source = typeof SOURCES[number];
 type Phase = "scan" | "plan" | "apply" | "cleanup" | "complete" | "discard";
@@ -118,7 +118,7 @@ function sourceStageId(eventId: string, revision: number,
 
 function sourceProjection(kind: Source,
   raw: FirebaseFirestore.DocumentData): FirebaseFirestore.DocumentData {
-  const keys = kind === "eventParticipations" ?
+  const keys = kind === "eventBookings" ?
     ["eventId", "organizerId", "uid", "status"] :
     kind === "eventAttendees" ?
       ["eventId", "organizerId", "status", "source", "linkedUid",
@@ -469,7 +469,7 @@ async function readPlan(params: {command: PagedSeatBootstrapCommand;
           value: row.value as FirebaseFirestore.DocumentData};
       }), project: sourceProjection});
   }
-  const participations = grouped.get("eventParticipations")!.map((row) =>
+  const participations = grouped.get("eventBookings")!.map((row) =>
     row.value as SeatMigrationParticipation);
   const attendees = grouped.get("eventAttendees")!.map((row) =>
     ({...row.value, id: row.id} as SeatMigrationAttendee));

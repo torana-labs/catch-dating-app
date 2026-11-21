@@ -109,7 +109,7 @@ extension EventX on Event {
 
   /// Returns fresh-viewer eligibility of [user] for this event.
   ///
-  /// User-specific roster state lives in `eventParticipations`, so callers that
+  /// User-specific roster state lives in `eventBookings`, so callers that
   /// know the viewer's participation edge should prefer a view-model seam that
   /// combines the event and participation before rendering action state.
   @Deprecated('Use EventService.eligibilityFor instead')

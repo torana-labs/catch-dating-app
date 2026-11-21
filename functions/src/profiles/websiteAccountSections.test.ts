@@ -33,13 +33,13 @@ function fixture() {
   set("events/done", {name: "Trivia", organizerId: "quiz",
     startTime: at("2026-10-01T14:00:00Z"), endTime: at("2026-10-01T16:00:00Z"),
     status: "active"});
-  set("eventParticipations/soon_guest", {eventId: "soon", organizerId: "run",
+  set("eventBookings/soon_guest", {eventId: "soon", organizerId: "run",
     uid: "guest", status: "signedUp"});
-  set("eventParticipations/done_guest", {eventId: "done", organizerId: "quiz",
+  set("eventBookings/done_guest", {eventId: "done", organizerId: "quiz",
     uid: "guest", status: "attended"});
-  set("eventParticipations/gone_guest", {eventId: "soon", organizerId: "run",
+  set("eventBookings/gone_guest", {eventId: "soon", organizerId: "run",
     uid: "guest", status: "deleted"});
-  set("eventParticipations/soon_other", {eventId: "soon", organizerId: "run",
+  set("eventBookings/soon_other", {eventId: "soon", organizerId: "run",
     uid: "other", status: "signedUp"});
   set("organizerFollows/run_guest", {organizerId: "run", uid: "guest",
     status: "active", followedAt: at("2026-10-02T00:00:00Z")});

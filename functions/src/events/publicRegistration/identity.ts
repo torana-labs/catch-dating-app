@@ -79,7 +79,7 @@ export async function preparePublicGuestIdentity(input: {
     const participation = (
       await tx.get(
         db
-          .collection("eventParticipations")
+          .collection("eventBookings")
           .doc(eventParticipationId(eventId, uid)),
       )
     ).data();

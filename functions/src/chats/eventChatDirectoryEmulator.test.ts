@@ -40,7 +40,7 @@ test("directory rows follow current admission, room and membership",
       }
       for (const key of ["native", "cancelled", "conflict", "closed",
         "inactive"]) {
-        await put("eventParticipations", `${id(key)}_${uid}`, {
+        await put("eventBookings", `${id(key)}_${uid}`, {
           eventId: id(key), organizerId, uid,
           status: ["cancelled", "conflict"].includes(key) ?
             "cancelled" : "signedUp"});
@@ -88,7 +88,7 @@ test("directory rows follow current admission, room and membership",
       assert.equal((await row("closed").get()).data()?.room.status, "closed");
 
       // A cancelled booking removes the row on the next rebuild.
-      await db.collection("eventParticipations").doc(`${id("native")}_${uid}`)
+      await db.collection("eventBookings").doc(`${id("native")}_${uid}`)
         .update({status: "cancelled"});
       assert.equal(await refreshEventChatDirectoryEntry(db, id("native"), uid),
         "removed");

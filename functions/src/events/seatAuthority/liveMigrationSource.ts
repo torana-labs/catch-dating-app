@@ -3,7 +3,7 @@ import {FieldPath} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 
 export const MAX_LIVE_MIGRATION_SOURCE_ROWS = 250;
-export const LIVE_MIGRATION_SOURCES = ["eventParticipations",
+export const LIVE_MIGRATION_SOURCES = ["eventBookings",
   "eventAttendees", "organizerContactOrigins"] as const;
 export type LiveMigrationSource = typeof LIVE_MIGRATION_SOURCES[number];
 

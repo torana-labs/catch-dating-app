@@ -12,7 +12,7 @@ import {eventOrganizerId, eventOrganizerRef, requireEventOrganizer,
   isEventOrganizerManager} from "../shared/eventOrganizers";
 import {requireVerifiedParticipant} from "../profiles/claimFormProfile";
 import type {EventDocument, UserProfileDocument,
-  EventParticipationDocument, EventAttendeeDocument,
+  EventBookingDocument, EventAttendeeDocument,
   EventChatRoomDocument as Room, EventChatMembershipDocument as Membership,
   EventChatProfileShareDocument as ProfileShare} from
   "../shared/generated/firestoreAdminTypes";
@@ -56,7 +56,7 @@ const defaults: Deps = {db: () => admin.firestore(), now: () => Timestamp.now(),
 /** Canonical cancellation or conflicting evidence cannot be bypassed by a
  * stale room membership, runtime identity, or another positive projection. */
 export function hasEventChatAdmission(eventId: string, organizerId: string,
-  uid: string, participation: EventParticipationDocument | null,
+  uid: string, participation: EventBookingDocument | null,
   attendees: EventAttendeeDocument[]): boolean {
   if (attendees.length > 1) return false;
   if (participation && (participation.eventId !== eventId ||
@@ -97,13 +97,13 @@ export async function readEventChatAccess(db: FirebaseFirestore.Firestore,
   const host = isEventOrganizerManager(organizer, event, uid);
   if (!host) {
     const [participationSnap, attendeeRows] = await Promise.all([
-      tx.get(db.collection("eventParticipations").doc(`${eventId}_${uid}`)),
+      tx.get(db.collection("eventBookings").doc(`${eventId}_${uid}`)),
       tx.get(db.collection("eventAttendees").where("eventId", "==", eventId)
         .where("linkedUid", "==", uid).limit(2)),
     ]);
     const participation = participationSnap.exists ?
-      requireDoc<EventParticipationDocument>(participationSnap,
-        "EventParticipationDocument") : null;
+      requireDoc<EventBookingDocument>(participationSnap,
+        "EventBookingDocument") : null;
     if (!hasEventChatAdmission(eventId, organizerId, uid, participation,
       attendeeRows.docs.map((row) => requireDoc<EventAttendeeDocument>(row,
         "EventAttendeeDocument")))) throw unavailable();

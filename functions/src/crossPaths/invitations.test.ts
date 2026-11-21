@@ -165,8 +165,8 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
     "crossPathsShowcaseEligibility/sender": showcase(senderProfile),
     "crossPathsShowcaseEligibility/recipient": showcase(recipientProfile),
     "events/event-1": event(),
-    "eventParticipations/event-1_sender": participation("sender"),
-    "eventParticipations/event-1_recipient": participation("recipient"),
+    "eventBookings/event-1_sender": participation("sender"),
+    "eventBookings/event-1_recipient": participation("recipient"),
     "eventCrossPathsConsents/event-1_sender": consent("sender"),
     "eventCrossPathsConsents/event-1_recipient": consent("recipient"),
     ...overrides,
@@ -285,7 +285,7 @@ test(
   async () => {
     const cases: Record<string, FakeData | undefined>[] = [
       {"eventCrossPathsConsents/event-1_sender": undefined},
-      {"eventParticipations/event-1_recipient": undefined},
+      {"eventBookings/event-1_recipient": undefined},
       {"crossPathsShowcaseEligibility/recipient": undefined},
       {"blocks/sender__recipient": {
         blockerUserId: "sender",
@@ -396,7 +396,7 @@ test("pending invitation cannot be accepted after unpublication", async () => {
 test("accepting an unbooked request reserves a companion spot without booking",
   async () => {
     const h = harness({
-      "eventParticipations/event-1_sender": undefined,
+      "eventBookings/event-1_sender": undefined,
       "eventCrossPathsConsents/event-1_sender": undefined,
     });
     const sent = await sendCrossPathsInvitationHandler(
@@ -424,7 +424,7 @@ test("accepting an unbooked request reserves a companion spot without booking",
       "held"
     );
     assert.equal(
-      h.firestore.read("eventParticipations/event-1_sender"),
+      h.firestore.read("eventBookings/event-1_sender"),
       undefined
     );
   });
@@ -644,7 +644,7 @@ function readyPairHarness() {
   const source = event();
   const policy = deriveEventSeatPolicy(source);
   return harness({
-    "eventParticipations/event-1_sender": undefined,
+    "eventBookings/event-1_sender": undefined,
     "eventCrossPathsConsents/event-1_sender": undefined,
     "eventSeatMigrationFences/event-1": {eventId: "event-1",
       migrationRevision: 1, state: "ready"},

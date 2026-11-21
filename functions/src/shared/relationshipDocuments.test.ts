@@ -3,8 +3,8 @@ import {test} from "node:test";
 import * as admin from "firebase-admin";
 import {eventParticipationPatch, type EventParticipationStatus} from
   "./relationshipDocuments";
-import {validateEventParticipationDocument} from
-  "./generated/validators/eventParticipationDocument";
+import {validateEventBookingDocument} from
+  "./generated/validators/eventBookingDocument";
 
 const statuses: EventParticipationStatus[] = [
   "signedUp", "waitlisted", "attended", "cancelled", "deleted",
@@ -35,8 +35,8 @@ function applyPatch(previous: Record<string, unknown>,
 }
 
 function assertValid(document: Record<string, unknown>) {
-  assert.equal(validateEventParticipationDocument(document), true,
-    JSON.stringify(validateEventParticipationDocument.errors));
+  assert.equal(validateEventBookingDocument(document), true,
+    JSON.stringify(validateEventBookingDocument.errors));
 }
 
 for (const status of statuses) {

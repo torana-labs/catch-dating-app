@@ -149,7 +149,7 @@ test("attendee links default to the external booking destination", async () => {
         externalEventUrl: "https://lu.ma/courtyard",
       },
     },
-    "eventParticipations/event-1_user-1": {
+    "eventBookings/event-1_user-1": {
       eventId: "event-1",
       organizerId: "organizer-1",
       uid: "user-1",

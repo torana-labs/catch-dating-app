@@ -94,7 +94,7 @@
     "plans": {
       "type": "array",
       "maxItems": 50,
-      "description": "Own bookings from eventParticipations, newest start first; deleted rows are left out.",
+      "description": "Own bookings from eventBookings, newest start first; deleted rows are left out.",
       "items": {
         "type": "object",
         "additionalProperties": false,

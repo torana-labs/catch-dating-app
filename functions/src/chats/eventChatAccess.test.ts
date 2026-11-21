@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {hasEventChatAdmission, eventChatMembershipId} from "./eventChatAccess";
-import type {EventParticipationDocument as Participation,
+import type {EventBookingDocument as Participation,
   EventAttendeeDocument as Attendee} from
   "../shared/generated/firestoreAdminTypes";
 

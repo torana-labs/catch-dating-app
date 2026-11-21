@@ -65,7 +65,7 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
         profileClaimedAt: Timestamp.now()});
       await ref("users", person).collection("pushInstallations")
         .doc("synthetic").set({appRole: "consumer", token: "synthetic-token"});
-      await ref("eventParticipations", `${eventId}_${person}`).set({
+      await ref("eventBookings", `${eventId}_${person}`).set({
         eventId, organizerId, uid: person, status: "signedUp"});
       await change(host, "open", 0);
       await change(host, "join", 0);
@@ -139,7 +139,7 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
         ref("eventChatMessages", messageId), member(host), member(person),
         ref("blocks", blockDocId(person, host)),
         ref("blocks", blockDocId(host, person)),
-        ref("eventParticipations", `${eventId}_${person}`)]) {
+        ref("eventBookings", `${eventId}_${person}`)]) {
         batch.delete(path);
       }
       batch.delete(receipt);

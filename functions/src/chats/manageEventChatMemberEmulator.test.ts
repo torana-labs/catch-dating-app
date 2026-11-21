@@ -27,7 +27,7 @@ test("manager moderation fences old access and requires a fresh rejoin",
       .doc(id);
     const memberRef = ref("eventChatMemberships",
       eventChatMembershipId(eventId, person));
-    const participation = ref("eventParticipations", `${eventId}_${person}`);
+    const participation = ref("eventBookings", `${eventId}_${person}`);
     const request = (uid: string, data: object) => ({auth: {uid,
       token: {phone_number: "+919000000001"}}, data: {expectedUid: uid,
       ...data}}) as unknown as CallableRequest<unknown>;

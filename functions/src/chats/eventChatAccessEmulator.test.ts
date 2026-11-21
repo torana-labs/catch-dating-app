@@ -49,7 +49,7 @@ test("Firestore room access follows current authority and explicit choices",
       data: {eventId}}, deps);
     const member = (uid: string) => ref("eventChatMemberships",
       eventChatMembershipId(eventId, uid));
-    const participation = ref("eventParticipations", `${eventId}_${person}`);
+    const participation = ref("eventBookings", `${eventId}_${person}`);
     const attendeeId = `attendee-${suffix}`;
     const duplicateId = `duplicate-${suffix}`;
     const paths = [ref("events", eventId), ref("organizers", organizerId),

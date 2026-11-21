@@ -259,7 +259,7 @@ function baseDocs(overrides: Record<string, FakeData | undefined> = {}) {
       displayName: "Runner",
     },
     "events/event-1": {organizerId: "club-1"},
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-1",
@@ -602,7 +602,7 @@ test("listPublicOrganizerReviewsHandler returns only public published reviews",
 
 test("createEventReviewHandler rejects non-attendees", async () => {
   const h = harness(baseDocs({
-    "eventParticipations/event-1_runner-1": {
+    "eventBookings/event-1_runner-1": {
       eventId: "event-1",
       organizerId: "club-1",
       uid: "runner-1",

@@ -841,7 +841,7 @@
           "payloadSchemaRef": "contracts/callables/delete_event_payload.schema.json",
           "allowedFields": [],
           "preconditions": [
-            "no eventParticipations for eventId",
+            "no eventBookings for eventId",
             "no payments for eventId",
             "no reviews for eventId"
           ]
@@ -2457,10 +2457,10 @@
       ]
     },
     {
-      "id": "eventParticipations",
-      "path": "eventParticipations/{participationId}",
-      "rulesMatch": "/eventParticipations/{participationId}",
-      "typescriptInterface": "EventParticipationDocument",
+      "id": "eventBookings",
+      "path": "eventBookings/{bookingId}",
+      "rulesMatch": "/eventBookings/{bookingId}",
+      "typescriptInterface": "EventBookingDocument",
       "dartModel": "lib/contexts/bookings/domain/event_participation.dart",
       "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
       "owner": "booking, waitlist, attendance, cancellation, and account-deletion callables",
@@ -2486,7 +2486,24 @@
       ],
       "migrationNotes": [
         "Owns signed-up, waitlisted, attended, cancelled, and deleted event roster state; events documents retain only callable-owned aggregate counts.",
-        "As of 2026-08-05, consumer roster enumeration is denied. Post-event candidate identity is resolved by fetchSwipeCandidates after attendance, window, reciprocal-preference, prior-decision, and block checks."
+        "As of 2026-08-05, consumer roster enumeration is denied. Post-event candidate identity is resolved by fetchSwipeCandidates after attendance, window, reciprocal-preference, prior-decision, and block checks.",
+        "Named eventParticipations until Nov 2026. Phase 1 of the rename moved every reader and writer here; the transitional eventParticipations entry below is its read-only legacy mirror for released app builds."
+      ]
+    },
+    {
+      "id": "eventParticipations",
+      "path": "eventParticipations/{participationId}",
+      "rulesMatch": "/eventParticipations/{participationId}",
+      "typescriptInterface": "EventBookingDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "onEventBookingMirroredToLegacy trigger (transitional legacy mirror of eventBookings)",
+      "read": "participant own edge or authorized event host only, exactly as eventBookings",
+      "write": "server only; the mirror trigger is the only writer",
+      "exportedFunctions": [
+        "onEventBookingMirroredToLegacy"
+      ],
+      "migrationNotes": [
+        "TRANSITIONAL. eventBookings was named eventParticipations until Nov 2026. Released Host 1.0.5 and guest beta builds still read this collection directly, so onEventBookingMirroredToLegacy copies every eventBookings write and delete here with the same id and document. Phase 2 deletes the trigger, this entry, its rules and indexes, and its documents once releases built on eventBookings are live and their minimum versions are raised."
       ]
     },
     {
@@ -2646,7 +2663,7 @@
         "expireEventWaitlistOffers"
       ],
       "migrationNotes": [
-        "The offer document is the durable audit object; eventParticipations mirrors the current offer state for cheap roster and attendee CTA reads."
+        "The offer document is the durable audit object; eventBookings mirrors the current offer state for cheap roster and attendee CTA reads."
       ]
     },
     {
@@ -4903,7 +4920,7 @@
       ],
       "owner": "event chat directory triggers",
       "read": "a signed-in, non-deleted person lists or gets only rows whose uid is theirs",
-      "write": "server only; triggers on eventChatMemberships, eventParticipations, eventAttendees, eventChatRooms, events and users rebuild a row from readEventChatAccess and delete it when access ends",
+      "write": "server only; triggers on eventChatMemberships, eventBookings, eventAttendees, eventChatRooms, events and users rebuild a row from readEventChatAccess and delete it when access ends",
       "exportedFunctions": [
         "onEventChatDirectoryMembershipWritten",
         "onEventChatDirectoryParticipationWritten",
@@ -5378,7 +5395,7 @@
       ],
       "owner": "guest event status triggers",
       "read": "a signed-in, non-deleted guest gets their own row by id (a missing row reads as missing) and lists only rows whose uid is theirs",
-      "write": "server only; triggers on eventParticipations, eventAttendees, guestPayments, organizerApplications, organizerEventOfferRecipients and events rebuild a row from the guest's own records and delete it when none remain",
+      "write": "server only; triggers on eventBookings, eventAttendees, guestPayments, organizerApplications, organizerEventOfferRecipients and events rebuild a row from the guest's own records and delete it when none remain",
       "exportedFunctions": [
         "onGuestEventStatusParticipationWritten",
         "onGuestEventStatusAttendeeWritten",

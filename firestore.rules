@@ -79,7 +79,7 @@ service cloud.firestore {
       return blockerUid + '__' + blockedUid;
     }
 
-    function eventParticipationDocId(eventId, uid) {
+    function eventBookingDocId(eventId, uid) {
       return eventId + '_' + uid;
     }
 
@@ -351,15 +351,15 @@ service cloud.firestore {
         && permission in get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.permissions;
     }
 
-    function hasEventParticipationStatus(eventId, uid, statuses) {
-      return exists(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
-        && get(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
+    function hasEventBookingStatus(eventId, uid, statuses) {
+      return exists(/databases/$(database)/documents/eventBookings/$(eventBookingDocId(eventId, uid)))
+        && get(/databases/$(database)/documents/eventBookings/$(eventBookingDocId(eventId, uid)))
         .data.status in statuses;
     }
 
     function hasAttendedEvent(eventId, uid) {
-      return exists(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
-        && get(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
+      return exists(/databases/$(database)/documents/eventBookings/$(eventBookingDocId(eventId, uid)))
+        && get(/databases/$(database)/documents/eventBookings/$(eventBookingDocId(eventId, uid)))
         .data.status == 'attended';
     }
 
@@ -372,7 +372,7 @@ service cloud.firestore {
     }
 
     function hasEventSuccessParticipantAccess(eventId, uid) {
-      return hasEventParticipationStatus(eventId, uid, [
+      return hasEventBookingStatus(eventId, uid, [
           'signedUp', 'attended'
         ])
         || hasReadyEventRuntimeParticipant(eventId, uid);
@@ -408,7 +408,7 @@ service cloud.firestore {
       return isAuthed()
         && (
           isOrganizerHostForEvent(eventId)
-          || hasEventParticipationStatus(eventId, request.auth.uid, [
+          || hasEventBookingStatus(eventId, request.auth.uid, [
             'signedUp', 'waitlisted', 'attended'
           ])
           || hasReadyEventRuntimeParticipant(eventId, request.auth.uid)
@@ -2851,6 +2851,20 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // A guest's one Catch booking (named eventParticipations until Nov 2026).
+    // Server callables own every write.
+    match /eventBookings/{bookingId} {
+      allow read: if isAuthed()
+        && (
+          resource.data.uid == request.auth.uid
+          || isOrganizerHostForEvent(resource.data.eventId)
+        );
+      allow write: if false;
+    }
+
+    // TRANSITIONAL legacy mirror of eventBookings for released app builds,
+    // written only by onEventBookingMirroredToLegacy. Same readers as
+    // eventBookings; phase 2 of the rename removes this block.
     match /eventParticipations/{participationId} {
       allow read: if isAuthed()
         && (

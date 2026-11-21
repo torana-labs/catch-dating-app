@@ -24,7 +24,7 @@ import type {
   CrossPathsShowcaseEligibilityDocument,
   EventCrossPathsConsentDocument,
   EventDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
   PublicProfileDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -339,7 +339,7 @@ async function loadEventContext(params: {
   const {db, eventId, viewerUid, viewer, nowMillis} = params;
   const [eventSnap, viewerParticipationSnap] = await Promise.all([
     db.collection("events").doc(eventId).get(),
-    db.collection("eventParticipations")
+    db.collection("eventBookings")
       .doc(`${eventId}_${viewerUid}`).get(),
   ]);
   if (!eventSnap.exists) return null;
@@ -370,9 +370,9 @@ async function loadEventContext(params: {
   let viewerBookingStatus: EventContext["viewerBookingStatus"];
   let pairHoldAvailable = false;
   const viewerParticipation = viewerParticipationSnap.exists ?
-    requireDoc<EventParticipationDocument>(
+    requireDoc<EventBookingDocument>(
       viewerParticipationSnap,
-      "EventParticipationDocument (Cross Paths viewer)"
+      "EventBookingDocument (Cross Paths viewer)"
     ) : null;
   if (viewerParticipation?.status === "signedUp") {
     viewerBookingStatus = "signedUp";
@@ -436,15 +436,15 @@ async function loadEventContext(params: {
     viewerBookingStatus = "canBookNow";
   }
 
-  const participationSnap = await db.collection("eventParticipations")
+  const participationSnap = await db.collection("eventBookings")
     .where("eventId", "==", eventId)
     .where("status", "==", "signedUp")
     .limit(maximumEventRosterCandidates)
     .get();
   const candidateUids = [...new Set(participationSnap.docs
-    .map((snap) => requireDoc<EventParticipationDocument>(
+    .map((snap) => requireDoc<EventBookingDocument>(
       snap,
-      "EventParticipationDocument (Cross Paths roster)"
+      "EventBookingDocument (Cross Paths roster)"
     ))
     .filter((participation) =>
       participation.eventId === eventId &&

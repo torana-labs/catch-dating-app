@@ -144,11 +144,11 @@ test("catch-booking-roster gives every booking one roster row and links it", asy
   const migration = MIGRATIONS.find((entry) => entry.name === "catch-booking-roster");
   const created = {_seconds: 1786625400, _nanoseconds: 0};
   const db = fakeDb({
-    "eventParticipations/e1_new": {eventId: "e1", organizerId: "o1", uid: "new",
+    "eventBookings/e1_new": {eventId: "e1", organizerId: "o1", uid: "new",
       status: "signedUp", createdAt: created, updatedAt: created, signedUpAt: created,
       waitlistedAt: null, attendedAt: null, cancelledAt: null, deletedAt: null,
       genderAtSignup: "woman", paymentId: "pay_1"},
-    "eventParticipations/e1_linked": {eventId: "e1", organizerId: "o1", uid: "linked",
+    "eventBookings/e1_linked": {eventId: "e1", organizerId: "o1", uid: "linked",
       status: "attended", createdAt: created, updatedAt: created, signedUpAt: created,
       waitlistedAt: null, attendedAt: created, cancelledAt: null, deletedAt: null,
       genderAtSignup: null, paymentId: null, hostApprovalStatus: "approved"},
@@ -156,7 +156,7 @@ test("catch-booking-roster gives every booking one roster row and links it", asy
       source: "catchBooking", linkedUid: "linked", status: "checkedIn"},
     "eventAttendees/att_host": {eventId: "e1", organizerId: "o1",
       source: "hostImport", linkedUid: null, status: "registered"},
-    "eventParticipations/e1_pointed": {eventId: "e1", organizerId: "o1", uid: "pointed",
+    "eventBookings/e1_pointed": {eventId: "e1", organizerId: "o1", uid: "pointed",
       status: "signedUp", createdAt: created, updatedAt: created, signedUpAt: created,
       waitlistedAt: null, attendedAt: null, cancelledAt: null, deletedAt: null,
       genderAtSignup: null, paymentId: null},
@@ -174,13 +174,13 @@ test("catch-booking-roster gives every booking one roster row and links it", asy
   assert.equal(newRow.displayName, "Asha");
   assert.equal(newRow.status, "registered");
   assert.equal(newRow.booking, undefined);
-  assert.equal(db.data["eventParticipations/e1_new"].attendeeId, newPath.split("/")[1]);
+  assert.equal(db.data["eventBookings/e1_new"].attendeeId, newPath.split("/")[1]);
   assert.equal(db.data["eventAttendees/att_existing"].status, "checkedIn");
   assert.equal(db.data["eventAttendees/att_existing"].booking, undefined);
-  assert.equal(db.data["eventParticipations/e1_linked"].attendeeId, "att_existing");
-  assert.equal(db.data["eventParticipations/e1_pointed"].attendeeId, "att_pointed");
+  assert.equal(db.data["eventBookings/e1_linked"].attendeeId, "att_existing");
+  assert.equal(db.data["eventBookings/e1_pointed"].attendeeId, "att_pointed");
   assert.equal(db.data["eventAttendees/att_host"].linkedUid, null);
-  assert.ok(db.data["eventParticipations/e1_new"]);
+  assert.ok(db.data["eventBookings/e1_new"]);
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
@@ -212,9 +212,9 @@ test("event-chat-directory creates each row once from its first source", async (
   const migration = MIGRATIONS.find((entry) => entry.name === "event-chat-directory");
   const db = fakeDb({
     "eventChatMemberships/m1": {eventId: "e1", uid: "a"},
-    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
-    "eventParticipations/e2_a": {eventId: "e2", uid: "a", status: "signedUp"},
-    "eventParticipations/e3_a": {eventId: "e3", uid: "a", status: "cancelled"},
+    "eventBookings/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
+    "eventBookings/e2_a": {eventId: "e2", uid: "a", status: "signedUp"},
+    "eventBookings/e3_a": {eventId: "e3", uid: "a", status: "cancelled"},
     "eventAttendees/r1": {eventId: "e2", linkedUid: "a"},
     "eventAttendees/r2": {eventId: "e4", linkedUid: "b"},
     "eventAttendees/r3": {eventId: "e5", linkedUid: null},
@@ -249,12 +249,42 @@ test("booking-payments copies in-app payments into the ledger once", async () =>
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("event-bookings copies every legacy booking once and replaces none", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "event-bookings");
+  const db = fakeDb({
+    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "signedUp", attendeeId: "e1_a"},
+    "eventParticipations/e1_b": {eventId: "e1", uid: "b", status: "cancelled"},
+    "eventParticipations/e2_c": {eventId: "e2", uid: "c", status: "waitlisted"},
+    "eventBookings/e1_b": {eventId: "e1", uid: "b", status: "cancelled"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 2);
+  assert.equal(plan.totals.alreadyCopied, 1);
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data["eventBookings/e1_a"], db.data["eventParticipations/e1_a"]);
+  assert.deepEqual(db.data["eventBookings/e2_c"], db.data["eventParticipations/e2_c"]);
+  assert.ok(db.data["eventParticipations/e1_a"]);
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
+test("event-bookings refuses to overwrite a booking that moved on", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "event-bookings");
+  const db = fakeDb({
+    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
+    "eventBookings/e1_a": {eventId: "e1", uid: "a", status: "cancelled"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.conflicts, 1);
+  await assert.rejects(applyMigrationPlan(db, plan), /already exist with different data/u);
+  assert.equal(db.data["eventBookings/e1_a"].status, "cancelled");
+});
+
 test("guest-event-read-models creates each entry and row once from its first record", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "guest-event-read-models");
   const db = fakeDb({
     "events/e1": {publicationState: "published"},
     "events/e2": {publicationState: "private"},
-    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
+    "eventBookings/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
     "eventAttendees/r1": {eventId: "e1", linkedUid: "a"},
     "eventAttendees/r2": {eventId: "e1", linkedUid: "b"},
     "eventAttendees/r3": {eventId: "e1", linkedUid: "b"},
@@ -286,7 +316,7 @@ test("guest-event-read-models creates each entry and row once from its first rec
 test("guest-event-cards only fills what is missing and never replaces", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "guest-event-cards");
   const db = fakeDb({
-    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "waitlisted"},
+    "eventBookings/e1_a": {eventId: "e1", uid: "a", status: "waitlisted"},
     "guestEventStatuses/e2_b": {eventId: "e2", uid: "b",
       participationStatus: "signedUp", eventCard: {eventId: "e2"}},
     "savedEvents/c_e3": {uid: "c", eventId: "e3", eventCard: {eventId: "e3"}},
@@ -295,7 +325,7 @@ test("guest-event-cards only fills what is missing and never replaces", async ()
   const [create, statusFill, savedFill] = migration.steps;
   // A waitlisted booking now creates its row, from the booking itself.
   assert.equal(await create.targetId("e1_a",
-    db.data["eventParticipations/e1_a"], db), "e1_a");
+    db.data["eventBookings/e1_a"], db), "e1_a");
   // Complete rows and edges, and edges whose event is gone, are left alone
   // without reading anything else.
   assert.equal(await statusFill.fill(db.data["guestEventStatuses/e2_b"],
@@ -430,10 +460,10 @@ test("host-event-request-views creates each coming event's view once", async () 
     "events/e1": event(),
     "events/e2": event(),
     "events/e3": event({status: "cancelled"}),
-    "eventParticipations/e1_u1": {eventId: "e1", organizerId: "o1", uid: "u1",
+    "eventBookings/e1_u1": {eventId: "e1", organizerId: "o1", uid: "u1",
       status: "waitlisted", waitlistedAt: Timestamp.fromMillis(100),
       createdAt: Timestamp.fromMillis(100)},
-    "eventParticipations/e3_u1": {eventId: "e3", organizerId: "o1", uid: "u1",
+    "eventBookings/e3_u1": {eventId: "e3", organizerId: "o1", uid: "u1",
       status: "waitlisted", waitlistedAt: Timestamp.fromMillis(100),
       createdAt: Timestamp.fromMillis(100)},
     "publicProfiles/u1": {name: "Zoya"},
@@ -448,7 +478,7 @@ test("host-event-request-views creates each coming event's view once", async () 
   assert.deepEqual(view.rows.map((row) => [row.uid, row.kind, row.waitlistPosition, row.name]),
     [["u1", "waitlist", 1, "Zoya"]]);
   // Sources are untouched and a second run is a no-op.
-  assert.equal(store.docs["eventParticipations/e1_u1"].status, "waitlisted");
+  assert.equal(store.docs["eventBookings/e1_u1"].status, "waitlisted");
   const again = await planMigration(db, migration);
   assert.deepEqual(again.totals, {scanned: 3, toCreate: 0, alreadyCopied: 1, conflicts: 0, skipped: 2});
 });

@@ -35,7 +35,7 @@ import {
 import {
   eventParticipationId,
   eventParticipationPatch,
-  eventParticipationsByStatusInTransaction,
+  eventBookingsByStatusInTransaction,
   participantUids,
 } from "../shared/relationshipDocuments";
 import {
@@ -104,7 +104,7 @@ export async function decideEventJoinRequestHandler(
 
   const eventRef = db.collection("events").doc(eventId);
   const participationRef = db
-    .collection("eventParticipations")
+    .collection("eventBookings")
     .doc(eventParticipationId(eventId, userId));
   const requesterRef = db.collection("users").doc(userId);
   const pushNotifications: FcmParams[] = [];
@@ -244,7 +244,7 @@ export async function decideEventJoinRequestHandler(
     }
 
     const activeParticipations =
-      await eventParticipationsByStatusInTransaction(tx, db, eventId, [
+      await eventBookingsByStatusInTransaction(tx, db, eventId, [
         "signedUp",
         "attended",
       ]);

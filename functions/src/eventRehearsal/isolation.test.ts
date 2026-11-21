@@ -5,7 +5,7 @@ import test from "node:test";
 
 const forbiddenLiveCollections = [
   "eventAttendees",
-  "eventParticipations",
+  "eventBookings",
   "payments",
   "organizerContacts",
   "notifications",

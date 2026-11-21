@@ -25,14 +25,14 @@ describe("firestore.rules", () => {
       await seed(["publicProfiles", "runner-2"], {name: "Runner Two"});
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
         }),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({
           uid: "runner-2",
           status: "attended",
@@ -40,7 +40,7 @@ describe("firestore.rules", () => {
         }),
       );
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-1"), "eventParticipations", "event-1_runner-1")),
+        getDoc(doc(authedDb("runner-1"), "eventBookings", "event-1_runner-1")),
       );
 
       await assertSucceeds(
@@ -57,7 +57,7 @@ describe("firestore.rules", () => {
       );
       await seed(["publicProfiles", "runner-2-reaction"], {name: "Runner R"});
       await seed(
-        ["eventParticipations", "event-1_runner-2-reaction"],
+        ["eventBookings", "event-1_runner-2-reaction"],
         eventParticipation({
           uid: "runner-2-reaction",
           status: "attended",
@@ -85,7 +85,7 @@ describe("firestore.rules", () => {
       );
       await seed(["publicProfiles", "runner-2-compatibility"], {name: "Runner C"});
       await seed(
-        ["eventParticipations", "event-1_runner-2-compatibility"],
+        ["eventBookings", "event-1_runner-2-compatibility"],
         eventParticipation({
           uid: "runner-2-compatibility",
           status: "attended",
@@ -116,17 +116,17 @@ describe("firestore.rules", () => {
       await seed(["publicProfiles", "runner-2"], {name: "Runner Two"});
       await seed(["events", "event-1"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
         }),
       );
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-1"), "eventParticipations", "event-1_runner-1")),
+        getDoc(doc(authedDb("runner-1"), "eventBookings", "event-1_runner-1")),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({
           uid: "runner-2",
           status: "attended",
@@ -162,14 +162,14 @@ describe("firestore.rules", () => {
       await seed(["events", "event-1"], event());
       await seed(["events", "event-2"], event());
       await seed(
-        ["eventParticipations", "event-1_runner-1"],
+        ["eventBookings", "event-1_runner-1"],
         eventParticipation({
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
         }),
       );
       await seed(
-        ["eventParticipations", "event-1_runner-2"],
+        ["eventBookings", "event-1_runner-2"],
         eventParticipation({
           uid: "runner-2",
           status: "attended",
@@ -177,7 +177,7 @@ describe("firestore.rules", () => {
         }),
       );
       await seed(
-        ["eventParticipations", "event-2_runner-1"],
+        ["eventBookings", "event-2_runner-1"],
         eventParticipation({
           eventId: "event-2",
           status: "attended",

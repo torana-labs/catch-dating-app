@@ -144,7 +144,7 @@ async function fulfillStripeCheckoutSession({
   };
   try {
     const participationSnap = await db
-      .collection("eventParticipations")
+      .collection("eventBookings")
       .doc(eventParticipationId(eventId, userId))
       .get();
     const hasHostApproval =

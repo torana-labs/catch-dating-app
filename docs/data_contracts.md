@@ -122,7 +122,7 @@ and a profile-revision comparison. Omitted DOB and richer existing fields are
 preserved. Minimal accounts remain absent from public social projections.
 Its optional read `sections` (`plans`, `following`, `reviews`, `messages`)
 serve the website's `/account/` page from existing collections only: own
-`eventParticipations` joined to events, active `organizerFollows`, own
+`eventBookings` joined to events, active `organizerFollows`, own
 `reviews` with their verified state, and `organizerCommunicationPreferences`
 summarized per channel (opted in only with complete evidence). Each section is
 absent unless requested; no new collection or stored field backs the page.
@@ -2546,13 +2546,11 @@ event as index 0 (setup revision untouched) and the new events count on from
 `grossMinor` and `arrivalMessage.ready` (the event-start reminder moment is
 armed).
 
-The progressive wizard uses `createPrivateEventSetup`,
-`updatePrivateEventBasics` and `listPrivateEventSetups` payload contracts, and
-reads each event through its manager setup view (below). The manager inventory defaults to
-upcoming active events and accepts explicit `past` or `cancelled` scopes. History
-is ordered newest first; pages are bounded to 50 and cursors bind the organizer,
-scope, first-page clock and timestamp/document-ID position for at most 24 hours.
-History reopens in a read-only Host view and never expands offer eligibility.
+The progressive wizard uses the `createPrivateEventSetup` and
+`updatePrivateEventBasics` payload contracts, and reads each event through its
+manager setup view (below). The manager inventory is the `hostEventSummaries`
+read model (below); the `listPrivateEventSetups` callable that paged it for
+older builds was retired in Nov 2026. History reopens in a read-only Host view and never expands offer eligibility.
 `updatePrivateEventDetails` adds or clears duration, venue and format on the
 same private event, with setup revision, reviewed defaults hash and durable
 request identity. Duration and saved venue can inherit reviewed organizer
@@ -2603,7 +2601,7 @@ The setup steps (Basics on resume, Details, Preferences, Publication) read
 (`contracts/firestore/host_event_setup_views.schema.json`), written ahead of
 time by the setup view evaluator: triggers on the event, its
 `eventSetupPreferences`, its organizer and the six commitment collections
-(`eventAttendees`, `eventAttendeeImports`, `eventParticipations`,
+(`eventAttendees`, `eventAttendeeImports`, `eventBookings`,
 `eventWaitlistOffers`, `organizerEventOffers`, `guestPayments` of every
 purpose) reread every source in one transaction and write the
 document only when the projection changed. Its `summary` is the manager
@@ -2769,8 +2767,8 @@ exposes no payment settings; picking an event never authorizes an offer.
 The offer workspace reads `organizerEventOffers` directly: current managers of
 the offer's organizer get an offer by its id (an offer not written yet reads as
 missing) and list an event's offers to the selected people
-(`organizerId`, `eventId`, `contactId in`). The stored document is what
-`getEventOffer` returned; an offered offer past `expiresAtMillis` reads as
+(`organizerId`, `eventId`, `contactId in`). The stored document is what the
+retired `getEventOffer` callable returned; an offered offer past `expiresAtMillis` reads as
 expired by the phone's clock. Receipts and audits stay server-only, and every
 offer command rereads the offer and checks its revision and generation.
 The offer settings screen reads the event's `eventSetupPreferences/{eventId}`
@@ -3093,7 +3091,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 |---|---|
 | Organizer owner/manager seat | `organizerTeamMemberships/{organizerId_uid}` |
 | Organizer follow | `organizerFollows/{organizerId_uid}` |
-| Event booking, waitlist, attendance, cancellation | `eventParticipations/{eventId_uid}` |
+| Event booking, waitlist, attendance, cancellation | `eventBookings/{eventId_uid}` |
 | Unified Host operational roster row | `eventAttendees/{attendeeId}` |
 | Roster import audit and idempotency receipt | `eventAttendeeImports/{importId}` |
 | Private no-download Event Success identity | server-owned `eventRuntimeParticipants/{eventId_uid}` |
@@ -3144,7 +3142,29 @@ application shape while its status is editable, increments `submissionCount`,
 and preserves Admin-owned status, cohort, reviewer, and activation fields.
 Multi-document product writes belong in callables or triggers.
 
-Raw `eventParticipations` reads are equally narrow: a participant may read
+#### Booking collection rename (Nov 2026)
+
+`eventBookings/{eventId_uid}` was named `eventParticipations` until Nov 2026.
+The rename ships in two phases. In phase 1 every server reader and writer,
+every trigger, the rules helpers, the data tools and the apps use
+`eventBookings`. Released Host 1.0.5 and guest beta builds still read
+`eventParticipations` directly, so the transitional
+`onEventBookingMirroredToLegacy` trigger copies each booking write, and each
+deletion, to `eventParticipations/{eventId_uid}` with the same id and
+document. It rereads the booking in a transaction, so late or repeated
+deliveries converge on the latest booking. `eventParticipations` keeps its
+read rule (the guest and the event's hosts), its composite indexes and a
+legacy entry in `tool/contracts/firestore_contract.json`; no client writes
+either collection, the mirror is its only writer and no trigger listens to it.
+The `event-bookings` copy-forward migration
+(`tool/data/migrate_firestore_consolidation.mjs`) copies the bookings that
+predate the rename. The `bq-host-event-participations` BigQuery export keeps
+reading the mirror until phase 2. Phase 2, once Host and guest releases built
+on `eventBookings` are live and their minimum versions are raised, deletes the
+mirror trigger, the legacy rules, contract entry and indexes, repoints the
+BigQuery export, and deletes the legacy documents.
+
+Raw `eventBookings` reads are equally narrow: a participant may read
 their own deterministic edge, and an authorized event host may read the roster
 for an event they manage. Consumer discovery surfaces must not query a whole event
 roster. Post-event Catch, Event Recap, and identified post-event avatar
@@ -3176,9 +3196,9 @@ like, and the signal facts and counters derived from them. Its runbook is in
 ### Standalone Host Operational Attendees
 
 `eventAttendees` is the Host operations roster. It complements rather than
-replaces `eventParticipations`:
+replaces `eventBookings`:
 
-- `eventParticipations` requires a real UID and continues to own Consumer
+- `eventBookings` requires a real UID and continues to own Consumer
   booking, waitlist, cancellation, payment linkage and profile/network
   eligibility;
 - `eventAttendees` uses an opaque event-scoped attendee id and accepts
@@ -3252,7 +3272,7 @@ server-owned lookup/registration boundary.
 
 Phone-OTP public registration creates or reuses a private Firebase Auth UID; it
 does not create `users/{uid}`, `publicProfiles/{uid}`, or a Consumer
-`eventParticipations` edge. On first registration, the callable may create a
+`eventBookings` edge. On first registration, the callable may create a
 private `onboarding_drafts/{uid}` seed using only the attendee-supplied display
 name and verified phone. That seed is a continuation convenience for a later,
 intentional Consumer onboarding flow, not a profile or advertising permission.
@@ -3277,7 +3297,7 @@ per-attendee attendance state.
 Firebase phone-auth identity and an event-scoped operational attendee. It owns
 the claim method, optional `eventAttendeeId`, minimum runtime-profile fields,
 explicit terms versions, and readiness state. It does not create or imply a
-Consumer `users/{uid}`, `publicProfiles/{uid}`, `eventParticipations/{eventId_uid}`,
+Consumer `users/{uid}`, `publicProfiles/{uid}`, `eventBookings/{eventId_uid}`,
 dating match, or marketing grant. Clients may get only their own deterministic
 edge; list and direct writes are denied. Event Success modules authorize a
 `ready` runtime edge independently of the Consumer booking/network edge.
@@ -3367,16 +3387,20 @@ its own section: the contact's `hostContactSummaries` row (name, endpoints,
 tags and the revision the tag command fences on), its
 `hostContactDetailViews/{contactId}` document and its newest
 `organizerContactNotes` note (`limit + 1`, so the page knows whether older
-notes exist). The detail view holds exactly the traits, revenue and newest
-100 event rows `getOrganizerContactDetail` returns, rebuilt by the contact
-detail view triggers from the contact, its trait row and event edges (read in
-one transaction), event titles and the linked verified account's Catch
-payments; a deleted, hidden or merged contact has none, and it never holds a
-linked account id, identity evidence, endpoint or payment id. Current managers
+notes exist). The detail view holds exactly the traits, revenue, newest 100
+event rows and active merges `getOrganizerContactDetail` returns, rebuilt by
+the contact detail view triggers from the contact, its trait row and event
+edges (read in one transaction), event titles, the linked verified account's
+Catch payments and the merge receipts that name the contact as survivor; a
+deleted, hidden or merged contact has none, and it never holds a linked
+account id, identity evidence, endpoint or payment id. A view written before
+`activeMerges` existed lacks the field and reads as no merges until its next
+write. Current managers
 get the view by id and list one contact's notes under rules; a view not
 written yet reads as missing, which the page shows as an error to retry, never
-a callable fallback. Permission evidence, provenance, sends, the timeline and
-merge receipts are not read models: the person page does not show them, and
+a callable fallback. The person page lists the active merges with Undo
+merge (`unmergeOrganizerContacts`). Permission evidence, provenance, sends and
+the timeline are not read models: the person page does not show them, and
 `getOrganizerContactDetail` stays deployed for older Host builds. The
 `host-contact-detail-views` copy-forward migration writes views for contacts
 shown before the triggers.
@@ -3385,7 +3409,7 @@ The same read boundary applies to `hostFormSummaries/{formId}` and
 `hostEventSummaries/{eventId}`. Forms contain the existing list DTO, not the
 editable draft definition. A form title search reads every summary that passes
 the status and purpose filters (at most 500) and matches title and description
-as a case-insensitive substring on the device, as `listOrganizerForms` did. Event summaries cover only unpublished inventory;
+as a case-insensitive substring on the device, as the retired `listOrganizerForms` callable did. Event summaries cover only unpublished inventory;
 published Events already use SDK reads. The Events tab listens to the active
 unpublished events starting on or after the start of today, soonest first, as
 its drafts. Unpublished Event rules additionally
@@ -3470,7 +3494,7 @@ The `host-form-version-filters` copy-forward migration in
 published before the trigger. The version scope (active version and published
 version count) is already on the form's `hostFormSummaries` row.
 `hostEventRequestViews/{eventId}` gives Host Requests everyone waiting on one
-coming event without `listOrganizerRequests`: `organizerId`, `eventId`,
+coming event, replacing the retired `listOrganizerRequests` callable: `organizerId`, `eventId`,
 `eventEndMillis`, `complete`, `version` and `rows`, the callable's rows for the
 event (join requests awaiting host approval and the waitlist numbered among the
 people the host can offer a spot, oldest ask first, at most 100). Triggers on the
@@ -3651,9 +3675,12 @@ The manager review boundary lists conflicted verified UID/phone claims plus
 exact proposed phone/email hashes. It derives shared events, source kinds and
 confidence at read time, never proposes name-only matches, and stores a
 `organizerContactMergeReviewDecisions` row when a manager chooses Different
-people. Only that manager may reopen the decision. Contact detail returns the
-newest active merge receipts for the survivor so each receipt can be reversed
-individually.
+people. Only that manager may reopen the decision. Contact detail and the
+contact detail view return the newest active merge receipts for the survivor
+so each receipt can be reversed individually. The Host People Possible
+duplicates page (`HostPeopleDuplicatesScreen`) pages through this review with
+its cursor, merges after the host picks the record to keep, marks pairs as
+different people and reopens them; each command reads the review again.
 
 Account deletion is the only erasure exception to receipt and origin retention:
 it deletes permission receipts carrying the participant UID and redacts that
@@ -3882,7 +3909,7 @@ the bounded inbound body is also copied into
 server-only: its phone hash and sender connection never reach a client. Since
 #1339 the Host inbox reads through listeners. `hostWhatsappThreadViews/{threadId}`
 holds each retained thread's manager summary, exactly what
-`listOrganizerWhatsappThreads` returns without the clock-dependent
+the retired `listOrganizerWhatsappThreads` callable returned, without the clock-dependent
 `serviceWindowOpen` (the client derives it from `lastInboundAtMillis`), plus
 `expiresAtMillis`; the client hides a view past it until the retention delete
 removes the thread and, through the trigger, the view.
@@ -4928,7 +4955,7 @@ restore authority after revoke. Following and form-answer access stay independen
 Native booking/checkout, waitlist, review approval, offers and free promotion
 read the current grant and immutable decision for membership-gated events.
 Membership never waives event review, invitation, capacity, cohort/ratio or
-payment. `eventParticipations.communityMembershipAtSignup` retains the grant
+payment. `eventBookings.communityMembershipAtSignup` retains the grant
 revision/decision used at admission. Revocation fences new bookings; an existing
 signed-up/attended replay and historical paid admission remain intact, with
 cancellation/refund owned separately. Public OTP/form-offer and Cross Paths
@@ -5180,7 +5207,8 @@ null for travel alerts) deletes it, and the retention sweep's delete of the
 resolutions clears the assignee. A function lead reads the alerts stamped for a duty it holds
 (one listener per duty); full reach (coordinators and the owner) reads every
 alert and the counts. The phone computes the schedule's phases from its clock.
-`listProgramStaffAttention` reads the same alerts (source `staffAttention`).
+The staff attention alerts are the alerts with source `staffAttention` (the
+retired `listProgramStaffAttention` callable read the same sends).
 
 `programArrivalViews/{legId}`, `programDepartureViews/{legId}` and
 `programVendorViews/{programId}__{vendorId}` (#1339) are the transport desks'
@@ -5189,7 +5217,7 @@ rows, kept by triggers on `programTravelLegs`, `programTravelParties`,
 programme's transport settings and `transportVendors`, and created for existing
 sources by the `program-arrival-views` copy-forward migration. An arrivals row
 is one expected, ready or disrupted inbound journey with exactly the fields
-`getProgramArrivalsRoster` returns (guest name, party, flight, the curb time
+the retired `getProgramArrivalsRoster` callable returned (guest name, party, flight, the curb time
 resolved from the transport settings, readiness, claimant, destination), the
 claimant's account id in place of the caller's `claimedByMe` flag, and
 `pickupKey` and `hotelKey` (the ids, or `~` when the journey has none). Rules
@@ -5213,7 +5241,7 @@ the transport trips and the hotel desk's expected guests, kept by triggers on
 `transportTrips`, `programTravelLegs`, `programTravelParties`, `programGuests`
 and the programme's transport settings, and created for existing sources by the
 `program-trip-views` copy-forward migration. A trip view is exactly the row
-`listProgramTrips` returns (vehicle, plate, vendor name, status, times,
+the retired `listProgramTrips` callable returned (vehicle, plate, vendor name, status, times,
 passenger count and the manifest's guest names, from the recorded dispatch
 snapshot when there is one) with `pickupKey` and `hotelKey` (`~` for a trip
 with no hotel); the trip's notes, rate, driver and account ids stay in
@@ -5223,8 +5251,8 @@ coordinator assignments (an id or `*` per side, one assignment covering both).
 A hotel desk covering the destination hotel also reads trips still en route to
 it (a query naming `programId`, `hotelKey` and `status`), which is the hotel's
 inbound vehicle list; it therefore also sees a trip's pickup point id, vendor
-id, kind, arrival time and void reason, which `getProgramHotelInbound` did not
-return. A hotel inbound row is the expected-guest row of one expected or ready
+id, kind, arrival time and void reason, which the retired `getProgramHotelInbound` callable did
+not return. A hotel inbound row is the expected-guest row of one expected or ready
 inbound journey (guest, party, passengers, curb time, readiness) and nothing
 about the flight, claimant or pickup point; hotel desk duty covering the hotel
 reads them by a query naming `programId` and `hotelId`. Neither holds a phone
@@ -5273,7 +5301,7 @@ sender stays on the callable.
 `programStaffViews/{programId}__{uid}` (#1339) is the administrators' staff
 list, kept by triggers on `programStaffGrants` and `organizerPrograms` and
 created for existing grants by the `program-staff-views` copy-forward
-migration. A row is exactly the member row `listProgramStaff` returns (display
+migration. A row is exactly the member row the retired `listProgramStaff` callable returned (display
 name, last four phone digits, the duty assignments with scopes and expiries,
 the grant's expiry and revision), with the status the callable computed from
 the clock replaced by the facts it computes from: `revoked`, `ownerApproved`
@@ -5934,8 +5962,8 @@ raw provider receipt. Direct client reads and writes are denied.
 `hostSendSummaries/{sendId}` holds one manager Sends row per campaign
 (`campaign_{campaignId}`), Announcement (`announcement_{broadcastId}`) and
 follower update (`followerUpdate_{postId}`): `organizerId`, `sendId`, `kind`,
-`activityAtMillis`, `version` and `row`, exactly what `listOrganizerCampaigns`
-returns for that Send. A follower update's WhatsApp leg campaign has no row;
+`activityAtMillis`, `version` and `row`, exactly what the retired
+`listOrganizerCampaigns` callable returned for that Send. A follower update's WhatsApp leg campaign has no row;
 its counts sit on the follower update row. Template and saved audience names
 come only from documents of the same organizer. Triggers on each source, and
 on template and saved audience renames, keep the rows current, and the
@@ -5943,12 +5971,12 @@ on template and saved audience renames, keep the rows current, and the
 before them. Current organizer managers list rows under rules: the Sends
 history newest first, the automation message picker by `kind` and
 `row.status`. Rows hold no message body, recipient, contact id or receipt.
-`listOrganizerCampaigns`, the earlier rate-limited pagination boundary, stays
-for older Host builds; `getOrganizerCampaignReport` stays the reviewed read
+`listOrganizerCampaigns`, the earlier rate-limited pagination boundary, was
+retired in Nov 2026; `getOrganizerCampaignReport` stays the reviewed read
 before approve, dispatch and cancel.
 
 The callable verifies current event-host authority and freezes a server-resolved
-audience from `eventParticipations`. Booked means `signedUp` plus `attended`;
+audience from `eventBookings`. Booked means `signedUp` plus `attended`;
 prospective means `waitlisted`. Inquiry threads are never an audience source,
 and the broadcast never creates a match, conversation, or chat message.
 

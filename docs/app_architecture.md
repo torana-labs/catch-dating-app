@@ -3810,7 +3810,7 @@ The Host Inbox contract is:
   event-id sentinel;
 - personal two-party contacted-host inquiry threads, separated by event;
 - Booked and Prospective thread views, with broadcast counts derived from
-  `eventParticipations` rather than conversation count;
+  `eventBookings` rather than conversation count;
 - inquiry-only users may appear as Prospective/Inquiry without becoming a
   broadcast recipient;
 - event broadcasts use a dedicated callable and produce Activity plus

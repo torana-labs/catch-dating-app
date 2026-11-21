@@ -211,7 +211,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         step: 1,
         draftVersion: 2,
       },
-      "eventParticipations/event-1_runner-1": {
+      "eventBookings/event-1_runner-1": {
         eventId: "event-1",
         organizerId: "club-1",
         uid: "runner-1",
@@ -436,7 +436,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   );
   assert.ok(
     harness.setWrites.some((write) =>
-      write.path === "eventParticipations/event-1_runner-1" &&
+      write.path === "eventBookings/event-1_runner-1" &&
       write.data.status === "deleted"
     )
   );
@@ -1020,7 +1020,7 @@ function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
   const policy = deriveEventSeatPolicy(event);
   const seed: Record<string, FakeDocumentData> = {
     "events/event1": event,
-    "eventParticipations/event1_runner1": {eventId: "event1",
+    "eventBookings/event1_runner1": {eventId: "event1",
       organizerId: "org1", uid,
       status: options.status ?? "signedUp", genderAtSignup: "woman"},
     "eventSeatMigrationFences/event1": {eventId: "event1",
@@ -1073,7 +1073,7 @@ test("ready account deletion releases the last seat exactly once", async () => {
     "event1", "uid", "runner1")}`].state, "retired");
   assert.equal(h.rows[`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(
     "event1", "runner1")}`].state, "revoked");
-  assert.equal(h.rows["eventParticipations/event1_runner1"].status,
+  assert.equal(h.rows["eventBookings/event1_runner1"].status,
     "deleted");
   assert.equal(Object.keys(h.rows).filter((path) =>
     path.startsWith("eventSeatRequestReceipts/")).length, 1);
@@ -1105,7 +1105,7 @@ test("deletion retains an independently imported occupied Host seat",
 test("attendee-only Host seat unlinks within the ready transaction",
   async () => {
     const seed = readySeatSeed({host: true});
-    delete seed["eventParticipations/event1_runner1"];
+    delete seed["eventBookings/event1_runner1"];
     const h = createAccountDeletionHarness({seed,
       now: {kind: "serverTimestamp"}});
     const command = {db: h.deps.firestore(), uid: "runner1",
@@ -1195,7 +1195,7 @@ test("locked migration and unresolved UID deny deletion without seat writes",
         db: h.deps.firestore(), uid: "runner1",
         now: admin.firestore.FieldValue.serverTimestamp(),
         nowMillis: 1000}));
-      assert.equal(h.rows["eventParticipations/event1_runner1"].status,
+      assert.equal(h.rows["eventBookings/event1_runner1"].status,
         "signedUp");
       assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
       assert.equal(h.rows[seatReservationPath("canonical_runner1")].active,
@@ -1215,7 +1215,7 @@ test("a linked Host attendee on another canonical seat blocks deletion",
       db: h.deps.firestore(), uid: "runner1",
       now: admin.firestore.FieldValue.serverTimestamp(),
       nowMillis: 1000}), /reconcile identity/u);
-    assert.equal(h.rows["eventParticipations/event1_runner1"].status,
+    assert.equal(h.rows["eventBookings/event1_runner1"].status,
       "signedUp");
     assert.equal(h.rows["eventSeatLedgers/event1"].occupied, 1);
   });
@@ -1225,7 +1225,7 @@ test("a participation changed after query is reread before any release",
     const seed = readySeatSeed();
     const h = createAccountDeletionHarness({seed,
       now: {kind: "serverTimestamp"}, beforeTransaction: () => {
-        seed["eventParticipations/event1_runner1"].status = "deleted";
+        seed["eventBookings/event1_runner1"].status = "deleted";
       }});
     await assert.rejects(deleteAccountEventParticipations({
       db: h.deps.firestore(),
@@ -1264,9 +1264,9 @@ test("account deletion preserves checkout identity before or after deletion",
     for (const status of ["cancelled", "deleted", "noParticipation"]) {
       const seed = readySeatSeed();
       if (status === "noParticipation") {
-        delete seed["eventParticipations/event1_runner1"];
+        delete seed["eventBookings/event1_runner1"];
       } else {
-        seed["eventParticipations/event1_runner1"].status = status;
+        seed["eventBookings/event1_runner1"].status = status;
       }
       seed["eventSeatLedgers/event1"] = {
         ...seed["eventSeatLedgers/event1"], occupied: 0, checkoutHeld: 1};
@@ -1288,7 +1288,7 @@ test("account deletion preserves checkout identity before or after deletion",
 
 test("payment-only identity is revoked after hold release", async () => {
   const seed = readySeatSeed();
-  delete seed["eventParticipations/event1_runner1"];
+  delete seed["eventBookings/event1_runner1"];
   seed["eventSeatLedgers/event1"] = {...seed["eventSeatLedgers/event1"],
     occupied: 0, checkoutHeld: 0};
   seed[seatReservationPath("canonical_runner1")] = {
@@ -1310,7 +1310,7 @@ test("payment-only identity is revoked after hold release", async () => {
 test("full account deletion releases its pair hold before retiring UID proof",
   async () => {
     const seed = readySeatSeed();
-    delete seed["eventParticipations/event1_runner1"];
+    delete seed["eventBookings/event1_runner1"];
     seed["users/runner1"] = {name: "Synthetic Guest", profilePhotos: []};
     seed["events/event1"] = {...seed["events/event1"], bookedCount: 0,
       crossPathsPairHeldCount: 1,

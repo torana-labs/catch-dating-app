@@ -68,5 +68,9 @@ export function readSchemaInventory(schemaDir) {
   }
   // organizerIntakeReviewDecisions is keyed {entityId}, which is the organizer id.
   byId.add("organizerIntakeReviewDecisions");
+  // TRANSITIONAL: eventParticipations has no schema of its own while it is
+  // the legacy mirror of eventBookings (phase 1 of the rename). Scan it too,
+  // so a takedown also finds mirror rows whose booking was never copied.
+  byField.add("eventParticipations");
   return {byField: [...byField].sort(), byId: [...byId].sort()};
 }

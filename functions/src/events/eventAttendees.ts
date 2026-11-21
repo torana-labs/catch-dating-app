@@ -134,7 +134,7 @@ async function prepareAttendanceSeatChange(params: {
       "Guest seat identity requires reconciliation.");
   }
   const participation = params.linkedUid ?
-    (await tx.get(db.collection("eventParticipations")
+    (await tx.get(db.collection("eventBookings")
       .doc(eventParticipationId(eventId, params.linkedUid)))).data() : null;
   if (participation && (participation.eventId !== eventId ||
       participation.uid !== params.linkedUid ||

@@ -693,7 +693,7 @@ concurrency problem.
 ### Attendee identities
 
 `eventAttendees/{attendeeId}` is the canonical Host-facing operational identity.
-`eventParticipations/{eventId_uid}` remains the Consumer booking/membership
+`eventBookings/{eventId_uid}` remains the Consumer booking/membership
 edge. The server projection links them through optional `linkedUid` without
 synthesizing accounts.
 
@@ -2068,7 +2068,7 @@ Flutter:
 Migration:
 
 - project existing Consumer participations into attendees;
-- do not delete `eventParticipations`;
+- do not delete `eventBookings`;
 - preserve old Host report behavior until parity tests pass; and
 - instrument unmatched, ambiguous, merged, unmerged, and corrected identities.
 

@@ -8,15 +8,15 @@ import {
 } from "./eventAttendeeProjection";
 import type {
   EventAttendeeDocument,
-  EventParticipationDocument,
+  EventBookingDocument,
 } from "../shared/generated/firestoreAdminTypes";
 
 const now = admin.firestore.Timestamp.fromMillis(5_000);
 const earlier = admin.firestore.Timestamp.fromMillis(1_000);
 
 function participation(
-  overrides: Partial<EventParticipationDocument> = {}
-): EventParticipationDocument {
+  overrides: Partial<EventBookingDocument> = {}
+): EventBookingDocument {
   return {
     eventId: "event-1",
     organizerId: "organizer-1",
@@ -34,7 +34,7 @@ function participation(
     inviteLinkId: null,
     inviteCapturedAt: null,
     ...overrides,
-  } as EventParticipationDocument;
+  } as EventBookingDocument;
 }
 
 test("participationStatus preserves the operational roster lifecycle", () => {

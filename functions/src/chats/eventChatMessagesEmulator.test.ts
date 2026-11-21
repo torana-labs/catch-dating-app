@@ -59,7 +59,7 @@ test("event messages fence retries, protect replies and expire typing",
       replyToMessageId, requestId: randomUUID()});
     const page = (uid = person, beforeSequence: number | null = null,
       limit = 30) => list(request(uid, {beforeSequence, limit}), deps);
-    const participation = ref("eventParticipations", `${eventId}_${person}`);
+    const participation = ref("eventBookings", `${eventId}_${person}`);
     const block = ref("blocks", blockDocId(person, host));
     const reverseBlock = ref("blocks", blockDocId(host, person));
     const paths = [ref("events", eventId), ref("organizers", organizerId),
