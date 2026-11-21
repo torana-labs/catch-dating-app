@@ -15,7 +15,7 @@ import {
 } from "./stripe";
 import {catchNativeEventOrigin} from "../shared/testUtils";
 import {publishedEventSetup, withStoredEventPolicy} from
-  "../shared/testing/eventSetupFixture";
+  "../domain/events/testing/eventSetupFixture";
 
 test("createStripeCheckoutSessionHandler creates trusted destination checkout",
   async () => {

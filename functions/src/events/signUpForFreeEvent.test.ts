@@ -5,7 +5,7 @@ import {signUpForFreeEventHandler} from "./signUpForFreeEvent";
 import type {HostMembershipContext} from
   "../hostMemberships/entitlementReader";
 import {publishedEventSetup, withStoredEventPolicy} from
-  "../shared/testing/eventSetupFixture";
+  "../domain/events/testing/eventSetupFixture";
 
 test(
   "signUpForFreeEventHandler books a free event through shared signer",

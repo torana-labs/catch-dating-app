@@ -15,7 +15,7 @@ import type {
   OrganizerDocument,
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes.js";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup} from "../domain/events/testing/eventSetupFixture";
 
 /**
  * Builds a minimal Firestore timestamp double for pure record tests.

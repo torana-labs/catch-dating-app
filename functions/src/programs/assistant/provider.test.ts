@@ -2,15 +2,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {FakeFirestore} from "../../shared/testing/programFirestore";
+import {ANTHROPIC_MESSAGES_URL, createAnthropicProvider} from "./provider";
 import {
-  ANTHROPIC_MESSAGES_URL,
   ANTHROPIC_TOKEN_URL,
   GOOGLE_IDENTITY_URL,
   TOKEN_REFRESH_MARGIN_MS,
-  createAnthropicProvider,
   createAnthropicTokenSource,
   parseFederationConfig,
-} from "./provider";
+} from "../../platform/anthropicIdentity";
 import {buildRequestBody} from "./prompt";
 import {completeRun, normalizeDailyTokenBudget, remainingTokens, reserveRun} from "./budget";
 import {assistantRunId, budgetDay, type ProgramAssistantRun} from "./runs";
