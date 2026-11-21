@@ -10,7 +10,9 @@ import {loadPlaybookPage, resolvePlaybookPage} from "./playbookPages";
 import {PlaybookPage} from "./PlaybookPage";
 import {playbookStructuredData} from "./playbookStructuredData";
 import {playbookTryItTool} from "../tryIt/tryItModel";
-import {marketingCaptures} from "../../app/marketingCaptures";
+import fs from "node:fs";
+import path from "node:path";
+import type {CaptureSlots} from "../../shared/media/captureSlot";
 
 vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
 
@@ -21,6 +23,11 @@ afterEach(() => {
 
 const page = (await loadPlaybookPage(resolvePlaybookPage("/host/run-clubs/")!))!;
 const captures = {};
+// The website's capture records, as the app shell bundles them.
+const marketingCaptures: CaptureSlots = Object.fromEntries(
+  (JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../public/assets/app-screenshots/manifest.json"), "utf8")) as
+    {captures: CaptureSlots[string][]}).captures.map((capture) => [capture.id, capture]),
+);
 
 describe("playbook page", () => {
   it("draws the run-clubs page: the host header with its breadcrumb, one h1, each band in order, and the site footer", () => {
