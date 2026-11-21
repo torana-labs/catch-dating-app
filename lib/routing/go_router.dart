@@ -1016,11 +1016,6 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
             arguments.externalBookingMode,
           _ => false,
         },
-        initialRosterImportPlan: switch (extra) {
-          final HostCreateEventRouteArguments arguments =>
-            arguments.initialRosterImportPlan,
-          _ => null,
-        },
         promptForDrafts: extra is HostCreateEventRouteArguments
             ? extra.promptForDrafts
             : true,

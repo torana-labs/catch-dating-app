@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -25,7 +24,6 @@ class HostCreateEventRouteArguments {
     this.initialPrefill,
     this.initialSavedEventId,
     this.externalBookingMode = false,
-    this.initialRosterImportPlan,
     this.promptForDrafts = true,
     this.returnToResponsesOnSave = false,
   }) : assert(
@@ -43,7 +41,6 @@ class HostCreateEventRouteArguments {
   final CreateEventPrefill? initialPrefill;
   final String? initialSavedEventId;
   final bool externalBookingMode;
-  final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
   final bool returnToResponsesOnSave;
 }
@@ -57,7 +54,6 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     this.initialPrefill,
     this.initialSavedEventId,
     this.externalBookingMode = false,
-    this.initialRosterImportPlan,
     this.promptForDrafts = true,
     this.returnToResponsesOnSave = false,
   }) : assert(
@@ -76,7 +72,6 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
   final CreateEventPrefill? initialPrefill;
   final String? initialSavedEventId;
   final bool externalBookingMode;
-  final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
   final bool returnToResponsesOnSave;
 
@@ -133,7 +128,6 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
       initialDraft: initialDraft,
       initialPrefill: initialPrefill,
       initialSavedEventId: initialSavedEventId,
-      initialRosterImportPlan: initialRosterImportPlan,
       externalBookingMode:
           initialDraft?.externalBookingMode ?? externalBookingMode,
       promptForDrafts: promptForDrafts,
@@ -151,7 +145,6 @@ class HostCreateEventRouteBody extends ConsumerWidget {
     this.initialPrefill,
     this.initialSavedEventId,
     this.externalBookingMode = false,
-    this.initialRosterImportPlan,
     this.promptForDrafts = true,
     this.returnToResponsesOnSave = false,
   });
@@ -162,7 +155,6 @@ class HostCreateEventRouteBody extends ConsumerWidget {
   final CreateEventPrefill? initialPrefill;
   final String? initialSavedEventId;
   final bool externalBookingMode;
-  final HostRosterImportPlan? initialRosterImportPlan;
   final bool promptForDrafts;
   final bool returnToResponsesOnSave;
 

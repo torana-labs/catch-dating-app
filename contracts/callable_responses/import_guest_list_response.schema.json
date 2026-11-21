@@ -89,7 +89,22 @@
               "kind": {"type": "string", "enum": ["add", "update", "unchanged", "excluded", "needsReview", "identityConflict"]},
               "issueCode": {"type": ["string", "null"], "maxLength": 80,
                 "description": "Why the row needs a look before apply, e.g. invalid-phone, shared-phone-identity, missing-stable-identity, contact-belongs-to-another-attendee."},
-              "changedFields": {"type": "array", "maxItems": 11, "items": {"type": "string", "maxLength": 40}}
+              "changedFields": {"type": "array", "maxItems": 11, "items": {"type": "string", "maxLength": 40}},
+              "externalReference": {"type": ["string", "null"], "maxLength": 120,
+                "description": "The row's booking or ticket reference, when the source has one. Optional."},
+              "fieldChanges": {"type": "array", "maxItems": 11,
+                "description": "What each changed field is now and would become, for the host's review. Optional.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["field", "currentValue", "proposedValue", "origin"],
+                  "properties": {
+                    "field": {"type": "string", "maxLength": 40},
+                    "currentValue": {"type": ["string", "null"], "maxLength": 300},
+                    "proposedValue": {"type": ["string", "null"], "maxLength": 300},
+                    "origin": {"type": ["string", "null"], "maxLength": 40}
+                  }
+                }}
             }
           }
         },
@@ -126,6 +141,9 @@
           }
         },
         "truncatedCount": {"type": "integer", "minimum": 0, "description": "Data rows beyond the 250-row limit, not read."},
+        "fileName": {"type": "string", "maxLength": 255, "description": "The review session's file name (or the forwarded guest list's). Optional."},
+        "excludedRowIds": {"type": "array", "maxItems": 250, "items": {"type": "string", "minLength": 1, "maxLength": 120},
+          "description": "Rows the host has left out of this review. Optional."},
         "import": {
           "type": ["object", "null"],
           "additionalProperties": false,

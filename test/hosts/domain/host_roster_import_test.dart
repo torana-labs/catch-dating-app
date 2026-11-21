@@ -128,20 +128,6 @@ void main() {
       HostRosterRowIssueType.duplicateIdentity,
       HostRosterRowIssueType.duplicateIdentity,
     ]);
-    final plan = HostRosterImportPlan.fromMappedRows(
-      table: table,
-      mapped: mapped,
-      mapping: table.suggestedMapping,
-    );
-    expect(plan.intakeRows, hasLength(2));
-    expect(plan.intakeRows.first['issues'], ['duplicate-identity']);
-    expect(plan.intakeRows.first['rawCells'], contains('ticket-a'));
-    expect(
-      (plan.intakeRows.first['fields'] as Map<String, Object?>).containsKey(
-        'externalReference',
-      ),
-      isTrue,
-    );
   });
 
   test('unverified provider hint keeps manual mapping available', () {
@@ -291,70 +277,6 @@ void main() {
       mapped.rows.last.revenueSource,
       EventAttendeeRevenueSource.hostEstimate,
     );
-    final plan = HostRosterImportPlan.fromMappedRows(
-      table: table,
-      mapped: mapped,
-      mapping: table.suggestedMapping,
-    );
-    final importedFields = Map<String, Object?>.from(
-      plan.intakeRows.first['fields']! as Map,
-    );
-    expect(importedFields, contains('revenueCurrency'));
-    final amountWithFallbackCurrency = Map<String, Object?>.from(
-      plan.intakeRows[1]['fields']! as Map,
-    );
-    expect(
-      Map<String, Object?>.from(
-        amountWithFallbackCurrency['revenueAmountMinor']! as Map,
-      ),
-      containsPair('origin', 'upload'),
-    );
-    expect(
-      Map<String, Object?>.from(
-        amountWithFallbackCurrency['revenueCurrency']! as Map,
-      ),
-      containsPair('origin', 'hostCorrection'),
-    );
-    expect(
-      Map<String, Object?>.from(
-        amountWithFallbackCurrency['revenueSource']! as Map,
-      ),
-      containsPair('origin', 'upload'),
-    );
-    final fallbackAmountWithUploadedCurrency = Map<String, Object?>.from(
-      plan.intakeRows[2]['fields']! as Map,
-    );
-    expect(
-      Map<String, Object?>.from(
-        fallbackAmountWithUploadedCurrency['revenueAmountMinor']! as Map,
-      ),
-      containsPair('origin', 'hostCorrection'),
-    );
-    expect(
-      Map<String, Object?>.from(
-        fallbackAmountWithUploadedCurrency['revenueCurrency']! as Map,
-      ),
-      containsPair('origin', 'upload'),
-    );
-    expect(
-      Map<String, Object?>.from(
-        fallbackAmountWithUploadedCurrency['revenueSource']! as Map,
-      ),
-      containsPair('origin', 'hostCorrection'),
-    );
-    final fallbackFields = Map<String, Object?>.from(
-      plan.intakeRows.last['fields']! as Map,
-    );
-    for (final field in const [
-      'revenueAmountMinor',
-      'revenueCurrency',
-      'revenueSource',
-    ]) {
-      expect(
-        Map<String, Object?>.from(fallbackFields[field]! as Map),
-        containsPair('origin', 'hostCorrection'),
-      );
-    }
     expect(parseHostRosterRevenueAmountMinor('₹2,500'), 250000);
     expect(parseHostRosterRevenueAmountMinor('-5'), isNull);
   });

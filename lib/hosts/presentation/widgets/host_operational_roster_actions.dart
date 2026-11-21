@@ -185,7 +185,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
       final controller = ref.read(hostOperationalRosterControllerProvider);
       final file = await controller.pickGuestListFile();
       if (file == null || !sameScope() || !mounted) return;
-      final idempotencyKey = _guestListImportKey();
+      final idempotencyKey = newGuestListImportKey();
       Future<GuestListImportPreview> preview({
         Map<HostRosterField, int?>? mapping,
         GuestListFallbackRevenue? fallbackRevenue,
@@ -246,12 +246,6 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
     }
   }
 
-  /// One key per file the host picks, as the command envelope asks.
-  String _guestListImportKey() {
-    final random = Random.secure();
-    return 'guestimport-${List.generate(24, (_) => random.nextInt(16).toRadixString(16)).join()}';
-  }
-
   Future<void> _loadRosterIntakeDraft() async {
     final eventId = widget.eventId;
     final organizerId = widget.organizerId;
@@ -268,10 +262,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
       try {
         sessionId = await ref
             .read(hostOperationalRosterControllerProvider)
-            .latestRosterIntakeInReview(
-              eventId: eventId,
-              organizerId: organizerId,
-            );
+            .latestRosterIntakeInReview(eventId: eventId);
       } on Object {
         // Resume stays hidden; importing a file still works.
         sessionId = null;

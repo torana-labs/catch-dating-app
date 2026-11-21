@@ -16771,36 +16771,6 @@ abstract class AppLocalizations {
   /// **'{count} excluded'**
   String hostsOperationalRosterExcludedCount({required int count});
 
-  /// Warning when provider hint and detected export disagree.
-  ///
-  /// In en, this message translates to:
-  /// **'The selected booking source does not match this spreadsheet. Catch used the columns in the file; review the mapping before importing.'**
-  String get hostsOperationalRosterProviderMismatch;
-
-  /// Warning for legacy encoded CSV files.
-  ///
-  /// In en, this message translates to:
-  /// **'This CSV is not UTF-8. Catch read it using a legacy encoding; check names and symbols carefully.'**
-  String get hostsOperationalRosterLegacyEncoding;
-
-  /// Warning when an XLSX contains multiple worksheets.
-  ///
-  /// In en, this message translates to:
-  /// **'This workbook has {count} worksheets. Catch selected the best-matching guest worksheet; verify the columns before importing.'**
-  String hostsOperationalRosterMultipleWorksheets({required int count});
-
-  /// Continue mapped rows to saved roster review.
-  ///
-  /// In en, this message translates to:
-  /// **'Review {count} ready guests'**
-  String hostsOperationalRosterImportAction({required int count});
-
-  /// Roster callable batch limit guidance.
-  ///
-  /// In en, this message translates to:
-  /// **'This import uses the first 250 guests. Put the remaining {count} guests in another file.'**
-  String hostsOperationalRosterLimit({required int count});
-
   /// Unsupported roster file error.
   ///
   /// In en, this message translates to:

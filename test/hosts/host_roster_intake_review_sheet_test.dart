@@ -146,6 +146,8 @@ HostRosterIntakeReview _review({
   fileName: 'guests.csv',
   state: 'review',
   reviewHash: List.filled(64, 'b').join(),
+  previewHash: List.filled(64, 'c').join(),
+  idempotencyKey: 'guestimport-test',
   eligibleForApply: eligible,
   counts: {
     'add': rows.where((row) => row.kind == 'add').length,
@@ -156,14 +158,5 @@ HostRosterIntakeReview _review({
     'identityConflict': 0,
   },
   rows: rows,
-  evidenceRows: const [
-    {
-      'value': {'rowId': '2', 'displayName': '', 'status': 'registered'},
-      'sourceRowNumber': 2,
-      'fields': <String, Object?>{},
-      'rawCells': <String>['', 'bad'],
-      'issues': <String>['invalid-phone'],
-    },
-  ],
   excludedRowIds: eligible ? const ['2'] : const [],
 );

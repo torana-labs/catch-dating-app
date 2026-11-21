@@ -1,8 +1,5 @@
 import 'package:catch_dating_app/contexts/bookings/bookings.dart';
-import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_kernel/city_catalog.dart';
-
-part 'host_roster_intake_provenance.dart';
 
 enum HostRosterAdapterId {
   genericV1('generic-v1', 'Flexible spreadsheet'),
@@ -383,63 +380,6 @@ class HostRosterMappedRows {
         issue.type == HostRosterRowIssueType.missingNameColumn ||
         issue.type == HostRosterRowIssueType.duplicateMappedColumn,
   );
-}
-
-class HostRosterImportPlan {
-  const HostRosterImportPlan({
-    required this.fileName,
-    required this.fileFingerprint,
-    required this.format,
-    required this.rows,
-    required this.readyCount,
-    required this.needsReviewCount,
-    required this.excludedCount,
-    required this.adapterId,
-    this.headers = const [],
-    this.mapping = const {},
-    this.intakeRows = const [],
-  });
-
-  factory HostRosterImportPlan.fromMappedRows({
-    required HostRosterTable table,
-    required HostRosterMappedRows mapped,
-    required Map<HostRosterField, int?> mapping,
-  }) => HostRosterImportPlan(
-    fileName: table.fileName,
-    fileFingerprint: table.fileFingerprint,
-    format: table.format,
-    rows: List.unmodifiable(mapped.rows),
-    readyCount: mapped.readyCount,
-    needsReviewCount: mapped.needsReviewCount,
-    excludedCount: mapped.excludedCount,
-    adapterId: table.adapter.adapterId,
-    headers: List.unmodifiable(table.headers),
-    mapping: Map.unmodifiable(mapping),
-    intakeRows: List.unmodifiable(
-      _buildIntakeRows(table: table, mapped: mapped, mapping: mapping),
-    ),
-  );
-
-  final String fileName;
-  final String fileFingerprint;
-  final EventAttendeeImportFormat format;
-  final List<EventAttendeeImportRow> rows;
-  final int readyCount;
-  final int needsReviewCount;
-  final int excludedCount;
-  final HostRosterAdapterId adapterId;
-  final List<String> headers;
-  final Map<HostRosterField, int?> mapping;
-  final List<Map<String, Object?>> intakeRows;
-
-  ExternalBookingProvider get bookingProvider => switch (adapterId) {
-    HostRosterAdapterId.lumaV1 => ExternalBookingProvider.luma,
-    HostRosterAdapterId.eventbriteV1 => ExternalBookingProvider.eventbrite,
-    HostRosterAdapterId.partifulV1 => ExternalBookingProvider.partiful,
-    HostRosterAdapterId.poshV1 => ExternalBookingProvider.posh,
-    HostRosterAdapterId.genericV1 ||
-    HostRosterAdapterId.sampleRequired => ExternalBookingProvider.generic,
-  };
 }
 
 List<String> uniqueHostRosterHeaders(List<String> rawHeaders) {

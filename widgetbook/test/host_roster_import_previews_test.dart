@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/hosts/presentation/widgets/host_guest_list_columns_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_intake_review_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_mapping_field.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -13,12 +12,6 @@ void main() {
   for (final scale in [1.0, 2.0]) {
     for (final (name, builder, type, count)
         in <(String, WidgetBuilder, Type, int)>[
-          (
-            'import sheet',
-            hostRosterImportSheetStates,
-            HostRosterImportSheet,
-            2,
-          ),
           (
             'guest list columns sheet',
             hostGuestListColumnsSheetStates,

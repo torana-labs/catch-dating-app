@@ -760,7 +760,6 @@ Layout only, deleted with the screen:
 
 - `parts` ordinary roster pane exposes content and commands at {width}
 
-**`test/hosts/host_roster_import_sheet_test.dart`** — behaviour · subject `lib/hosts/presentation/widgets/host_roster_import_sheet.dart` · decided by rules
 
 - `parts` overflow rows cannot submit a partial import
 - `parts` duplicate buyer emails continue to explicit saved review

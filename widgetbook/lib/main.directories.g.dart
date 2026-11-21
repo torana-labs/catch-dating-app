@@ -9989,17 +9989,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostRosterImportSheet',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Ready and missing name mapping',
-                    builder:
-                        _widgetbook_workspace_hosts_host_roster_import_use_cases
-                            .hostRosterImportSheetStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostRosterInsightRail',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

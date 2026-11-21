@@ -152,7 +152,15 @@ export type ManageHostRosterIntakeResponse = {
   result: EventAttendeeImportResult | null;
 };
 
-/** Authenticated Host entrypoint for the saved review workflow. */
+/**
+ * Legacy Host entrypoint for the saved review workflow. Current Catch Host
+ * builds resume, revise and apply every guest list through the
+ * guests.import-list command (commands/importGuestList.ts: input.sessionId,
+ * or input.eventId alone for the newest waiting list), which shares this
+ * module's session store and applyHostRosterIntake. This callable stays
+ * deployed only for older app builds; it can be removed once they are below
+ * the support floor.
+ */
 export async function manageHostRosterIntakeHandler(
   request: CallableRequest<unknown>,
   deps: HostRosterIntakeManageDeps = defaultHostRosterIntakeApplyDeps()

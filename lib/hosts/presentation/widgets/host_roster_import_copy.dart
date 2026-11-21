@@ -71,3 +71,24 @@ String hostRosterRowIssueCopy(BuildContext context, HostRosterRowIssue issue) =>
           status: issue.value ?? '',
         ),
     };
+
+String hostRosterImportIssueCopy(
+  BuildContext context,
+  HostRosterImportIssue issue,
+) => switch (issue) {
+  HostRosterImportIssue.unsupportedFile =>
+    context.l10n.hostsOperationalRosterIssueUnsupported,
+  HostRosterImportIssue.fileTooLarge =>
+    context.l10n.hostsOperationalRosterIssueFileTooLarge,
+  HostRosterImportIssue.expandedFileTooLarge =>
+    context.l10n.hostsOperationalRosterIssueExpandedFileTooLarge,
+  HostRosterImportIssue.missingRows =>
+    context.l10n.hostsOperationalRosterIssueMissingRows,
+  HostRosterImportIssue.tooManyColumns =>
+    context.l10n.hostsOperationalRosterIssueTooManyColumns,
+  HostRosterImportIssue.malformedCsv =>
+    context.l10n.hostsOperationalRosterIssueMalformedCsv,
+  HostRosterImportIssue.unreadableXlsx ||
+  HostRosterImportIssue.missingWorksheet =>
+    context.l10n.hostsOperationalRosterIssueUnreadableXlsx,
+};

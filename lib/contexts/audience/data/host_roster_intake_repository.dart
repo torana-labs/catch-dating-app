@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/contexts/audience/domain/guest_list_import_preview.dart';
@@ -13,67 +14,53 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_roster_intake_repository.g.dart';
 
-// keepalive: one callable client owns saved review start, resume, revise, and
-// apply operations across the event-scoped intake surface.
+// Every call is the guests.import-list command (contracts/commands/catalog.json):
+// a file preview, or a review session named by id. manageHostRosterIntake stays
+// deployed only for older app builds.
+//
+// keepalive: one callable client owns guest-list preview, resume, revise and
+// apply across the event-scoped intake surface.
 @Riverpod(keepAlive: true)
 HostRosterIntakeRepository hostRosterIntakeRepository(Ref ref) =>
     HostRosterIntakeRepository(ref.watch(firebaseFunctionsProvider));
+
+/// One idempotency key per guest-list review, as the command envelope asks.
+String newGuestListImportKey() {
+  final random = Random.secure();
+  return 'guestimport-${List.generate(24, (_) => random.nextInt(16).toRadixString(16)).join()}';
+}
 
 class HostRosterIntakeRepository {
   const HostRosterIntakeRepository(this._functions);
 
   final FirebaseFunctions _functions;
 
-  Future<HostRosterIntakeReview> start({
-    required String eventId,
-    required String organizerId,
-    required HostRosterImportPlan plan,
-  }) => _call(
-    ManageHostRosterIntakeCallableRequest(
-      action: 'start',
-      organizerId: organizerId,
-      eventId: eventId,
-      fileFingerprint: plan.fileFingerprint,
-      fileName: plan.fileName,
-      format: plan.format.name,
-      headers: plan.headers,
-      mapping: {
-        for (final entry in plan.mapping.entries)
-          if (entry.value != null) entry.key.name: entry.value,
-      },
-      rows: plan.intakeRows,
-    ),
-  );
-
-  /// The newest draft still in review for this event, such as a guest list
+  /// The newest guest list still in review for this event, such as one
   /// forwarded by email or WhatsApp, or null when none is waiting.
-  Future<String?> latestInReviewSessionId({
-    required String eventId,
-    required String organizerId,
-  }) => withBackendErrorContext(
-    () async {
-      try {
-        final result = await _functions
-            .httpsCallable('manageHostRosterIntake')
-            .call<Object?>(
-              ManageHostRosterIntakeCallableRequest(
-                action: 'latest',
-                organizerId: organizerId,
-                eventId: eventId,
-              ).toJson(),
+  Future<String?> latestInReviewSessionId({required String eventId}) =>
+      withBackendErrorContext(
+        () async {
+          try {
+            final data = await _command(
+              mode: 'preview',
+              idempotencyKey: newGuestListImportKey(),
+              input: {'eventId': eventId},
             );
-        return HostRosterIntakeReview.fromCallableData(result.data).sessionId;
-      } on FirebaseFunctionsException catch (error) {
-        if (error.code == 'not-found') return null;
-        rethrow;
-      }
-    },
-    context: const BackendErrorContext(
-      service: BackendService.functions,
-      action: 'find a guest list waiting for review',
-      resource: 'hostRosterIntakeSessions',
-    ),
-  );
+            return HostRosterIntakeReview.fromCommandData(
+              data,
+              idempotencyKey: '',
+            ).sessionId;
+          } on FirebaseFunctionsException catch (error) {
+            if (error.code == 'not-found') return null;
+            rethrow;
+          }
+        },
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'find a guest list waiting for review',
+          resource: 'hostRosterIntakeSessions',
+        ),
+      );
 
   /// Sends the file to guests.import-list, which reads it on the server
   /// and holds its rows in a review session. [mapping] and
@@ -86,35 +73,25 @@ class HostRosterIntakeRepository {
     Map<HostRosterField, int?>? mapping,
     GuestListFallbackRevenue? fallbackRevenue,
   }) => withBackendErrorContext(
-    () async {
-      final result = await _functions
-          .httpsCallable('importGuestList')
-          .call<Object?>(
-            ImportGuestListCallableRequest(
-              mode: 'preview',
-              idempotencyKey: idempotencyKey,
-              surface: 'catch_host',
-              input: {
-                'eventId': eventId,
-                'file': {
-                  'fileName': fileName,
-                  'contentBase64': base64Encode(bytes),
-                },
-                if (mapping != null)
-                  'mapping': {
-                    for (final entry in mapping.entries)
-                      entry.key.name: entry.value,
-                  },
-                if (fallbackRevenue != null)
-                  'fallbackRevenue': {
-                    'amountMinor': fallbackRevenue.amountMinor,
-                    'currency': fallbackRevenue.currency,
-                  },
-              },
-            ).toJson(),
-          );
-      return GuestListImportPreview.fromCallableData(result.data);
-    },
+    () async => GuestListImportPreview.fromCallableData(
+      await _command(
+        mode: 'preview',
+        idempotencyKey: idempotencyKey,
+        input: {
+          'eventId': eventId,
+          'file': {'fileName': fileName, 'contentBase64': base64Encode(bytes)},
+          if (mapping != null)
+            'mapping': {
+              for (final entry in mapping.entries) entry.key.name: entry.value,
+            },
+          if (fallbackRevenue != null)
+            'fallbackRevenue': {
+              'amountMinor': fallbackRevenue.amountMinor,
+              'currency': fallbackRevenue.currency,
+            },
+        },
+      ),
+    ),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'read a guest list',
@@ -122,51 +99,89 @@ class HostRosterIntakeRepository {
     ),
   );
 
-  Future<HostRosterIntakeReview> resume(String sessionId) => _call(
-    ManageHostRosterIntakeCallableRequest(
-      action: 'preview',
-      sessionId: sessionId,
-    ),
-  );
+  /// Opens a review session by id with a fresh command key.
+  Future<HostRosterIntakeReview> resume(String sessionId) {
+    final key = newGuestListImportKey();
+    return _review(
+      mode: 'preview',
+      idempotencyKey: key,
+      input: {'sessionId': sessionId},
+    );
+  }
 
+  /// Previews the session again with [rowIds] left out.
   Future<HostRosterIntakeReview> setExcludedRows(
     HostRosterIntakeReview review,
     Iterable<String> rowIds,
-  ) => _call(
-    ManageHostRosterIntakeCallableRequest(
-      action: 'revise',
-      sessionId: review.sessionId,
-      expectedRevision: review.revision,
-      rows: review.evidenceRows,
-      excludedRowIds: rowIds.toList(growable: false),
-    ),
-  );
-
-  Future<HostRosterIntakeReview> apply(HostRosterIntakeReview review) => _call(
-    ManageHostRosterIntakeCallableRequest(
-      action: 'apply',
-      sessionId: review.sessionId,
-      reviewHash: review.reviewHash,
-    ),
-  );
-
-  Future<HostRosterIntakeReview> _call(
-    ManageHostRosterIntakeCallableRequest request,
-  ) => withBackendErrorContext(
-    () async {
-      final result = await _functions
-          .httpsCallable('manageHostRosterIntake')
-          .call<Object?>(request.toJson());
-      return HostRosterIntakeReview.fromCallableData(result.data);
+  ) => _review(
+    mode: 'preview',
+    idempotencyKey: review.idempotencyKey,
+    input: {
+      'sessionId': review.sessionId,
+      'excludedRowIds': rowIds.toList(growable: false),
     },
+  );
+
+  /// Saves exactly the reviewed preview, confirmed by its hash.
+  Future<HostRosterIntakeReview> apply(HostRosterIntakeReview review) =>
+      _review(
+        mode: 'apply',
+        idempotencyKey: review.idempotencyKey,
+        input: {
+          'sessionId': review.sessionId,
+          'excludedRowIds': review.excludedRowIds,
+        },
+        confirm: {
+          'commandId': 'guests.import-list',
+          'previewHash': review.previewHash,
+        },
+      );
+
+  Future<HostRosterIntakeReview> _review({
+    required String mode,
+    required String idempotencyKey,
+    required Map<String, Object?> input,
+    Map<String, Object?>? confirm,
+  }) => withBackendErrorContext(
+    () async => HostRosterIntakeReview.fromCommandData(
+      await _command(
+        mode: mode,
+        idempotencyKey: idempotencyKey,
+        input: input,
+        confirm: confirm,
+      ),
+      idempotencyKey: idempotencyKey,
+    ),
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'manage reviewed Host roster intake',
+      action: 'review a guest list',
       resource: 'hostRosterIntakeSessions',
     ),
   );
+
+  Future<Object?> _command({
+    required String mode,
+    required String idempotencyKey,
+    required Map<String, Object?> input,
+    Map<String, Object?>? confirm,
+  }) async {
+    final result = await _functions
+        .httpsCallable('importGuestList')
+        .call<Object?>(
+          ImportGuestListCallableRequest(
+            mode: mode,
+            idempotencyKey: idempotencyKey,
+            surface: 'catch_host',
+            input: input,
+            confirm: confirm,
+          ).toJson(),
+        );
+    return result.data;
+  }
 }
 
+/// One guest-list review as guests.import-list answers it. The
+/// [idempotencyKey] and [previewHash] carry the review to its apply.
 class HostRosterIntakeReview {
   const HostRosterIntakeReview({
     required this.sessionId,
@@ -174,46 +189,48 @@ class HostRosterIntakeReview {
     required this.fileName,
     required this.state,
     required this.reviewHash,
+    required this.previewHash,
+    required this.idempotencyKey,
     required this.eligibleForApply,
     required this.counts,
     required this.rows,
-    required this.evidenceRows,
     required this.excludedRowIds,
     this.result,
   });
 
-  factory HostRosterIntakeReview.fromCallableData(Object? value) {
+  factory HostRosterIntakeReview.fromCommandData(
+    Object? value, {
+    required String idempotencyKey,
+  }) {
     final root = _map(value);
-    final draft = _map(root['draft']);
-    final previewValue = root['preview'];
-    final preview = previewValue == null
-        ? const <String, Object?>{}
-        : _map(previewValue);
-    final resultValue = root['result'];
+    final result = _map(root['result']);
+    final sessionId = result['sessionId'];
+    if (sessionId is! String) {
+      throw const FormatException('Guest list review has no session.');
+    }
+    final status = root['status'] as String;
+    final imported = result['import'];
     return HostRosterIntakeReview(
-      sessionId: draft['sessionId'] as String,
-      revision: (draft['revision'] as num).toInt(),
-      fileName: draft['fileName'] as String,
-      state: draft['state'] as String,
-      reviewHash: preview['reviewHash'] as String? ?? '',
-      eligibleForApply: preview['eligibleForApply'] as bool? ?? false,
+      sessionId: sessionId,
+      revision: (result['revision'] as num? ?? 0).toInt(),
+      fileName: result['fileName'] as String? ?? '',
+      state: status == 'applied' || status == 'replayed' ? 'applied' : 'review',
+      reviewHash: result['reviewHash'] as String? ?? '',
+      previewHash: root['previewHash'] as String? ?? '',
+      idempotencyKey: idempotencyKey,
+      eligibleForApply: result['eligibleForApply'] as bool? ?? false,
       counts:
-          (preview['counts'] == null
+          (result['counts'] == null
                   ? const <String, Object?>{}
-                  : _map(preview['counts']))
+                  : _map(result['counts']))
               .map((key, count) => MapEntry(key, (count as num).toInt())),
-      rows: (preview['rows'] as List<Object?>? ?? const [])
+      rows: (result['rows'] as List<Object?>? ?? const [])
           .map((row) => HostRosterIntakePreviewRow.fromJson(_map(row)))
           .toList(growable: false),
-      evidenceRows: (draft['rows'] as List<Object?>)
-          .map(_map)
-          .toList(growable: false),
-      excludedRowIds: (draft['excludedRowIds'] as List<Object?>)
+      excludedRowIds: (result['excludedRowIds'] as List<Object?>? ?? const [])
           .cast<String>()
           .toList(growable: false),
-      result: resultValue == null
-          ? null
-          : EventAttendeeImportResult.fromCallableData(resultValue),
+      result: imported == null ? null : _importResult(_map(imported)),
     );
   }
 
@@ -222,10 +239,11 @@ class HostRosterIntakeReview {
   final String fileName;
   final String state;
   final String reviewHash;
+  final String previewHash;
+  final String idempotencyKey;
   final bool eligibleForApply;
   final Map<String, int> counts;
   final List<HostRosterIntakePreviewRow> rows;
-  final List<Map<String, Object?>> evidenceRows;
   final List<String> excludedRowIds;
   final EventAttendeeImportResult? result;
 
@@ -234,6 +252,22 @@ class HostRosterIntakeReview {
         (row) => row.kind == 'needsReview' || row.kind == 'identityConflict',
       )
       .map((row) => row.rowId);
+}
+
+EventAttendeeImportResult _importResult(Map<String, Object?> imported) {
+  final created = (imported['createdCount'] as num).toInt();
+  final updated = (imported['updatedCount'] as num).toInt();
+  final skipped = (imported['skippedCount'] as num).toInt();
+  return EventAttendeeImportResult(
+    importId: imported['importId'] as String,
+    status: imported['status'] as String,
+    rowCount: created + updated + skipped,
+    createdCount: created,
+    updatedCount: updated,
+    skippedCount: skipped,
+    errors: const [],
+    replayed: false,
+  );
 }
 
 class HostRosterIntakePreviewRow {
@@ -256,7 +290,7 @@ class HostRosterIntakePreviewRow {
         externalReference: json['externalReference'] as String?,
         kind: json['kind'] as String,
         changedFields: (json['changedFields'] as List<Object?>).cast<String>(),
-        fieldChanges: (json['fieldChanges'] as List<Object?>)
+        fieldChanges: (json['fieldChanges'] as List<Object?>? ?? const [])
             .map((value) => HostRosterIntakeFieldChange.fromJson(_map(value)))
             .toList(growable: false),
         issueCode: json['issueCode'] as String?,

@@ -1,9 +1,7 @@
 import 'package:catch_dating_app/contexts/audience/data/host_roster_intake_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/guest_list_import_preview.dart';
 import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
-import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_guest_list_columns_sheet.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_intake_review_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_mapping_field.dart';
 import 'package:flutter/material.dart';
@@ -16,45 +14,6 @@ const _rows = [
   ['Asha Shah', 'asha@example.com', 'General'],
   ['Ravi Rao', 'ravi@example.com', 'VIP'],
 ];
-
-@widgetbook.UseCase(
-  name: 'Ready and missing name mapping',
-  type: HostRosterImportSheet,
-  path: '[P1 product surfaces]/Host/Roster',
-)
-Widget hostRosterImportSheetStates(BuildContext context) =>
-    WidgetbookScrollCatalogFrame(
-      title: 'HostRosterImportSheet',
-      catalogId: 'host.roster_import',
-      children: [
-        for (final mapped in [true, false])
-          WidgetbookPageStateCard(
-            label: mapped ? 'Ready to import' : 'Guest name mapping required',
-            child: WidgetbookViewportFrame.sheet(
-              size: const Size(390, 760),
-              child: HostRosterImportSheet(
-                table: HostRosterTable(
-                  fileName: 'guests.csv',
-                  format: EventAttendeeImportFormat.csv,
-                  headers: _headers,
-                  rows: _rows,
-                  suggestedMapping: {
-                    if (mapped) HostRosterField.displayName: 0,
-                    HostRosterField.email: 1,
-                    HostRosterField.ticketType: 2,
-                  },
-                  adapter: const HostRosterAdapterDetection(
-                    adapterId: HostRosterAdapterId.genericV1,
-                    support: HostRosterAdapterSupport.generic,
-                    confidence: 1,
-                  ),
-                ),
-                suggestedRevenueAmountMinor: 150000,
-              ),
-            ),
-          ),
-      ],
-    );
 
 @widgetbook.UseCase(
   name: 'Adds, updates, and identity conflicts',
@@ -110,6 +69,9 @@ const _intakeReview = HostRosterIntakeReview(
   state: 'review',
   reviewHash:
       'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+  previewHash:
+      'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
+  idempotencyKey: 'guestimport-preview',
   eligibleForApply: false,
   counts: {
     'add': 1,
@@ -187,7 +149,6 @@ const _intakeReview = HostRosterIntakeReview(
       issueCode: null,
     ),
   ],
-  evidenceRows: [],
   excludedRowIds: ['5'],
 );
 
