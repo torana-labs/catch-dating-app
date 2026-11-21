@@ -64,46 +64,20 @@ Future<void> _seedPublicCopy(
   });
 }
 
-FirebaseException _permissionDenied() =>
-    FirebaseException(plugin: 'cloud_firestore', code: 'permission-denied');
-
-/// Firestore as a guest sees it: rules deny every `events` read, so the
-/// repository must fall back to `publicEvents`.
-class _GuestFirestore extends Fake implements FirebaseFirestore {
-  _GuestFirestore(this.inner);
-
-  final FakeFirebaseFirestore inner;
-
+/// Firestore as a guest sees it for reads by id: rules deny every `events`
+/// document, so the repository must fall back to `publicEvents`. (The fake
+/// checks rules only on document reads; list fallbacks share the same helper,
+/// covered in test/organizers/permission_fallback_test.dart, and the rules
+/// suite covers what a guest may list.)
+class _GuestFirestore extends FakeFirebaseFirestore {
   @override
-  CollectionReference<Map<String, dynamic>> collection(String path) =>
-      path == 'events' ? _DeniedCollection() : inner.collection(path);
-}
-
-class _DeniedCollection extends Fake
-    implements CollectionReference<Map<String, dynamic>> {
-  @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      switch (invocation.memberName) {
-        #get => Future<QuerySnapshot<Map<String, dynamic>>>.error(
-          _permissionDenied(),
-        ),
-        #snapshots => Stream<QuerySnapshot<Map<String, dynamic>>>.error(
-          _permissionDenied(),
-        ),
-        #doc => _DeniedDocument(),
-        _ => this,
-      };
-}
-
-class _DeniedDocument extends Fake
-    implements DocumentReference<Map<String, dynamic>> {
-  @override
-  Future<DocumentSnapshot<Map<String, dynamic>>> get([GetOptions? options]) =>
-      Future.error(_permissionDenied());
-
-  @override
-  Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots({
-    bool includeMetadataChanges = false,
-    ListenSource source = ListenSource.defaultSource,
-  }) => Stream.error(_permissionDenied());
+  Future<void> maybeThrowSecurityException(String path, Object method) async {
+    // Seeding writes stay allowed; only reads of an event are denied.
+    if (path.startsWith('events/') && '$method'.endsWith('read')) {
+      throw FirebaseException(
+        plugin: 'cloud_firestore',
+        code: 'permission-denied',
+      );
+    }
+  }
 }

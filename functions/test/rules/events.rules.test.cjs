@@ -127,6 +127,14 @@ describe("firestore.rules", () => {
         where("organizerId", "==", "club-1"), where("publicationState", "==", "published"),
         where("status", "==", "active"), orderBy("startTime"), limit(10))));
       await assertSucceeds(getDocs(published(authedDb("foreign-host"), "club-2")));
+      // Event rehearsal in Catch Host 1.0.5 asks for its own organizer with
+      // an "in" filter; naming another organizer too is denied.
+      await assertSucceeds(getDocs(query(collection(authedDb("host-1"), "events"),
+        where("publicationState", "==", "published"), where("organizerId", "in", ["club-1"]),
+        orderBy("startTime"), limit(10))));
+      await assertFails(getDocs(query(collection(authedDb("host-1"), "events"),
+        where("publicationState", "==", "published"),
+        where("organizerId", "in", ["club-1", "club-2"]))));
     });
 
     it("anyone gets a public event copy by id, and lists only listed ones", async () => {

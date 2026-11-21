@@ -424,6 +424,16 @@ CandidateDisposition _dispositionFor({
     );
   }
 
+  if (path == 'packages/platform/lib/firebase/permission_fallback.dart' &&
+      rule.id == 'raw_firebase_exception_type') {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason:
+          'permission-denied selects the public copy; callers wrap the read '
+          'in their backend error context and every other error passes through',
+    );
+  }
+
   if (rule.id == 'manual_error_logging') {
     return const CandidateDisposition(
       status: CandidateStatus.review,

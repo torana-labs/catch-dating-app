@@ -149,7 +149,8 @@ test("gender, cohort and pair counts, internals and the join id never " +
 });
 
 test("listing is always written; a missing listing reads as listed", () => {
-  const {listing: _unused, ...unlisted} = eventDoc();
+  const unlisted = eventDoc();
+  delete unlisted.listing;
   assert.equal(projectPublicEvent(unlisted).listing, "listed");
   assert.equal(projectPublicEvent({...eventDoc(), listing: "link"}).listing,
     "link");
