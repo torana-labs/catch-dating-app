@@ -30,14 +30,7 @@
         }
       ],
       "aside": {"label": "Hosting for a brand? See {{brand.name}} for brands", "to": {"route": "host_brands"}},
-      "chip": {
-        "title": "Street food walk",
-        "rows": [
-          {"label": "From your bio link", "value": "61%"},
-          {"label": "Booked", "value": "19 of 25"},
-          {"label": "Members", "value": "8"}
-        ]
-      },
+      "fragments": ["guest-follow-host-followers", "guest-follow-host-follow"],
       "media": {"kind": "capture", "slot": "guest-follow-host"}
     },
     {

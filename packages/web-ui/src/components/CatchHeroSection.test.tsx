@@ -153,7 +153,7 @@ describe("CatchHeroSection", () => {
       <CatchHeroSection aside={{title: "Thursday Pub Quiz", meta: "Lantern Lane Tavern · 6 left", date: {weekday: "Thu", day: "20", month: "Nov", ground: "yellow"}}}
         ground="pink" media={<img alt="Phone" src="/p.png" />} title="Plans" />,
     );
-    const chip = container.querySelector("[data-floating] [data-block='floating']") as HTMLElement;
+    const chip = container.querySelector("[data-chip]") as HTMLElement;
     expect(chip).not.toBeNull();
     const date = chip.querySelector("time") as HTMLElement;
     expect(date.dataset).toMatchObject({size: "sm", ground: "yellow"});

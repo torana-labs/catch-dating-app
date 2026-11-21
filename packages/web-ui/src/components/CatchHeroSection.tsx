@@ -233,7 +233,7 @@ export function CatchHeroSection({
               </div>
             ) : media}
             {aside ? (
-              <CatchSurface block="floating" className={styles.aside} padding="none">
+              <CatchSurface block="floating" className={styles.aside} data-chip="" padding="none">
                 {aside.date ? <CatchDateTile {...aside.date} size="sm" /> : null}
                 <div className={styles.asideCopy}>
                   <CatchText as="p" variant="label-button">{aside.title}</CatchText>

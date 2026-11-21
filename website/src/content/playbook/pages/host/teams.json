@@ -33,14 +33,7 @@
         "label": "Planning a multi-day offsite with travel and rooms? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "New-joiner social",
-        "rows": [
-          {"label": "Invited", "value": "60"},
-          {"label": "Said yes", "value": "52"},
-          {"label": "Came", "value": "48"}
-        ]
-      },
+      "fragments": ["host-event-share-links-whatsapp", "host-event-share-links-instagram"],
       "media": {"kind": "capture", "slot": "host-event-share-links"}
     },
     {

@@ -10,6 +10,7 @@ import {loadPlaybookPage, resolvePlaybookPage} from "./playbookPages";
 import {PlaybookPage} from "./PlaybookPage";
 import {playbookStructuredData} from "./playbookStructuredData";
 import {playbookTryItTool} from "../tryIt/tryItModel";
+import {marketingCaptures} from "../../app/marketingCaptures";
 
 vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
 
@@ -32,6 +33,21 @@ describe("playbook page", () => {
     }
     expect(screen.getByRole("navigation", {name: /breadcrumb/iu})).toBeTruthy();
     expect(screen.getByRole("contentinfo")).toBeTruthy();
+  });
+
+  it("floats the hero's real cut-outs over its screen, with no caption under the phone", () => {
+    render(<PlaybookPage captures={marketingCaptures} page={page} />);
+    const hero = document.getElementById("top")!;
+    expect(hero.querySelector("figcaption")).toBeNull();
+    expect(within(hero).queryByText(marketingCaptures["host-formats-pods"].caption)).toBeNull();
+    const cutouts = [...hero.querySelectorAll("ul[aria-hidden='true'] img")].map((image) => image.getAttribute("src"));
+    expect(cutouts).toEqual(["host-formats-pods-chatty", "host-formats-pods-needs-pod", "host-formats-pods-counts"].map((id) => marketingCaptures[id].webPath));
+  });
+
+  it("draws no cut-out that is not a fragment of the hero's own screen", () => {
+    const stray = {...marketingCaptures, "host-formats-pods-chatty": {...marketingCaptures["host-formats-pods-chatty"], fragmentOf: "host-people"}};
+    render(<PlaybookPage captures={stray} page={page} />);
+    expect(document.getElementById("top")!.querySelectorAll("ul[aria-hidden='true'] img")).toHaveLength(2);
   });
 
   it("sends the trial to /host/start/, and WhatsApp to a typed chat in a new tab", () => {

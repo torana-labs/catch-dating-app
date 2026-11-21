@@ -36,14 +36,7 @@
         "label": "Running several chapters or a brand-partner series? Ask for a walkthrough",
         "to": {"route": "host_walkthrough"}
       },
-      "chip": {
-        "title": "Sunday Social Run",
-        "rows": [
-          {"label": "Booked", "value": "34"},
-          {"label": "New this week", "value": "9"},
-          {"label": "In a pod", "value": "32"}
-        ]
-      },
+      "fragments": ["host-formats-pods-chatty", "host-formats-pods-needs-pod", "host-formats-pods-counts"],
       "media": {"kind": "capture", "slot": "host-formats-pods"}
     },
     {
