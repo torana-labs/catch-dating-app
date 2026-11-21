@@ -11,14 +11,14 @@
  */
 export function parseRulesMatchBlocks(rules) {
   const text = stripComments(rules);
+  // Without a documents block (a bare fragment), every match is top level.
   const marker = text.search(/\/documents\s*\{/u);
-  if (marker === -1) return [];
-  let index = text.indexOf("{", marker) + 1;
+  let index = marker === -1 ? 0 : text.indexOf("{", marker) + 1;
   const stack = [{path: null, body: "", line: 0}];
   const blocks = [];
   while (index < text.length) {
     if (text.startsWith("match", index) && /\s/u.test(text[index - 1] ?? " ")) {
-      const found = /^match\s+(\/\S+?)\s*\{/u.exec(text.slice(index));
+      const found = /^match\s+(\/\S+)\s*\{/u.exec(text.slice(index));
       if (found) {
         stack.push({path: found[1], body: "", line: lineAt(text, index)});
         index += found[0].length;
@@ -29,8 +29,8 @@ export function parseRulesMatchBlocks(rules) {
     if (char === "{") {
       stack.push({path: null, body: "{", line: 0});
     } else if (char === "}") {
+      if (stack.length === 1) break;
       const closed = stack.pop();
-      if (stack.length === 0) break;
       if (closed.path !== null) {
         const parentPath = stack.map((entry) => entry.path).filter(Boolean).join("");
         const body = closed.body.replace(/\s+/gu, " ").trim();

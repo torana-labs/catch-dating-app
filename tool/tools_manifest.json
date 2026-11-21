@@ -1780,7 +1780,7 @@
       "command": "node tool/contracts/check_firestore_contract.mjs",
       "surface": "local-read",
       "status": "active",
-      "description": "Checks Firestore contract metadata against rules, schemas, and Functions exports.",
+      "description": "Checks Firestore contract metadata against rules, schemas, and Functions exports, both ways: every rules match block and every Firestore schema has a registry entry, and every entry has a schema contract.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
@@ -1791,12 +1791,17 @@
       "impactPaths": [
         "tool/contracts/check_firestore_contract.test.mjs",
         "tool/contracts/firestore_contract.json",
+        "tool/contracts/lib/firestore_rules_blocks.mjs",
+        "tool/contracts/lib/firestore_rules_blocks.test.mjs",
+        "firestore.rules",
+        "contracts/firestore/**",
         "tool/firebase/function_binding_intent.mjs",
         "tool/lib/repo_paths.mjs",
         "functions/package-lock.json"
       ],
       "checks": [
         "node --check tool/contracts/check_firestore_contract.mjs",
+        "node --test tool/contracts/lib/firestore_rules_blocks.test.mjs",
         "node --test tool/contracts/check_firestore_contract.test.mjs",
         "node tool/contracts/check_firestore_contract.mjs"
       ]

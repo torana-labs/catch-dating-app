@@ -33,7 +33,7 @@ function fixture(t, source, name = "publicName", consumer = "dart", coverage = "
   if (coverage === "listed" || coverage === "both") gap.collections.push({id: "items", reason: "Server only."});
   if (coverage === "tested" || coverage === "both") {
     collection.rulesTestFile = "functions/test/rules/items.rules.test.cjs";
-    write(collection.rulesTestFile, "");
+    write(collection.rulesTestFile, "it('denies items', () => doc(db, \"items\", \"one\"));");
   }
   if (coverage === "unknown") gap.collections.push({id: "items", reason: "x"}, {id: "gone", reason: "x"});
   write("tool/contracts/firestore_contract.json", {
@@ -44,7 +44,9 @@ function fixture(t, source, name = "publicName", consumer = "dart", coverage = "
   // Neither the entrypoint nor its references may execute during discovery.
   write("functions/src/index.ts", `throw new Error('ENTRYPOINT_EXECUTED');\n${source}`);
   write("functions/src/handler.ts", "throw new Error('HANDLER_EXECUTED');");
-  fs.mkdirSync(path.join(root, "contracts/firestore"), {recursive: true});
+  write("contracts/firestore/items.schema.json", {
+    "x-firestore-collection": "items", "x-firestore-path": "items/{id}",
+  });
   if (consumer === "dart") {
     write("lib/caller.dart", `void call() { functions.httpsCallable('${name}'); }`);
     write("contracts/callables/call.schema.json", {
@@ -133,22 +135,130 @@ for (const [kind, source] of Object.entries({
   });
 }
 
+const documents = (body) =>
+  `service cloud.firestore { match /databases/{d}/documents {\n${body}\n} }`;
+
+function editRegistry(root, edit) {
+  const file = path.join(root, "tool/contracts/firestore_contract.json");
+  const registry = JSON.parse(fs.readFileSync(file, "utf8"));
+  edit(registry);
+  fs.writeFileSync(file, JSON.stringify(registry));
+}
+
+function registerOrphans(root, rulesMatch = "/orphans/{privateDocument=**}") {
+  editRegistry(root, (registry) => {
+    registry.collections.push({id: "orphans", path: "orphans/{id}", rulesMatch,
+      owner: "server", read: "server", write: "server"});
+    registry.collectionsWithoutRulesTests.collections.push({id: "orphans", reason: "Server only."});
+  });
+}
+
 test("a schema needs a top-level rules match for its root collection", t => {
   const root = fixture(t, "export const publicName = () => {};");
   fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"), JSON.stringify({
     "x-firestore-collection": "orphans", "x-firestore-path": "orphans/{id}",
   }));
+  registerOrphans(root);
   const rulesFile = path.join(root, "firestore.rules");
   for (const rules of ["match /items/{id} {}", "match /items/{id} { match /orphans/{o} {} }"]) {
-    fs.writeFileSync(rulesFile, rules);
+    fs.writeFileSync(rulesFile, documents(rules));
     const result = check(root);
     assert.equal(result.status, 1, result.stderr);
     assert.match(result.stderr, /no top-level match \/orphans\//);
   }
-  fs.writeFileSync(rulesFile, "service cloud.firestore { match /databases/{d}/documents {\n" +
+  fs.writeFileSync(rulesFile, documents(
     "  // match /orphans/{id} in a comment does not count\n" +
-    "  match /items/{id} {}\n  match /orphans/{privateDocument=**} { allow read, write: if false; }\n} }");
+    "  match /items/{id} {}\n  match /orphans/{privateDocument=**} { allow read, write: if false; }"));
   accepted(check(root));
+});
+
+test("every rules match block needs a registry entry", t => {
+  const root = fixture(t, "export const publicName = () => {};");
+  fs.writeFileSync(path.join(root, "firestore.rules"), documents(
+    "  match /items/{id} {}\n" +
+    "  match /users/{uid} {\n    match /pushInstallations/{installationId} { allow read: if true; }\n  }"));
+  const result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /firestore\.rules:3: match \/users\/\{uid\} has no entry/u);
+  assert.match(result.stderr,
+    /firestore\.rules:4: match \/users\/\{uid\}\/pushInstallations\/\{installationId\} has no entry/u);
+});
+
+test("a registry rulesMatch must be a whole match path that governs the entry path", t => {
+  const root = fixture(t, "export const publicName = () => {};");
+  fs.writeFileSync(path.join(root, "firestore.rules"), documents(
+    "  match /items/{id} {\n    match /orphans/{o} {}\n  }"));
+  fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"), JSON.stringify({
+    "x-firestore-collection": "orphans", "x-firestore-path": "orphans/{id}",
+  }));
+  registerOrphans(root, "/orphans/{o}");
+  let result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /orphans: Firestore rules are missing match \/orphans\/\{o\}/u);
+
+  registerOrphans(root, "/items/{id}/orphans/{o}");
+  editRegistry(root, (registry) => {
+    registry.collections = registry.collections.filter((c) =>
+      c.id !== "orphans" || c.rulesMatch === "/items/{id}/orphans/{o}");
+    registry.collectionsWithoutRulesTests.collections = [
+      {id: "items", reason: "Server only."}, {id: "orphans", reason: "Server only."}];
+  });
+  result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /rulesMatch \/items\/\{id\}\/orphans\/\{o\} does not govern path orphans\/\{id\}/u);
+});
+
+test("every registry entry has a schema contract, at its path or named explicitly", t => {
+  const root = fixture(t, "export const publicName = () => {};");
+  fs.rmSync(path.join(root, "contracts/firestore/items.schema.json"));
+  let result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /items: no contracts\/firestore schema has x-firestore-path items\/\{id\}/u);
+
+  fs.mkdirSync(path.join(root, "contracts/operations"), {recursive: true});
+  fs.writeFileSync(path.join(root, "contracts/operations/item.schema.json"), "{}");
+  editRegistry(root, (registry) => {
+    registry.collections[0].schemaContract = "contracts/operations/item.schema.json";
+  });
+  accepted(check(root));
+
+  editRegistry(root, (registry) => {
+    registry.collections[0].schemaContract = "contracts/operations/missing.schema.json";
+  });
+  result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /schemaContract points at missing file/u);
+
+  fs.writeFileSync(path.join(root, "contracts/firestore/items.schema.json"), JSON.stringify({
+    "x-firestore-collection": "items", "x-firestore-path": "items/{id}",
+  }));
+  result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /already describes items\/\{id\}; remove schemaContract/u);
+});
+
+test("every contracts/firestore schema describes a registered path", t => {
+  const root = fixture(t, "export const publicName = () => {};");
+  fs.writeFileSync(path.join(root, "firestore.rules"), documents(
+    "  match /items/{id} {}\n  match /orphans/{privateDocument=**} { allow read, write: if false; }"));
+  fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"), JSON.stringify({
+    "x-firestore-collection": "orphans", "x-firestore-path": "orphans/{id}/notes/{noteId}",
+  }));
+  registerOrphans(root);
+  const result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr,
+    /contracts\/firestore\/orphan\.schema\.json: orphans\/\{id\}\/notes\/\{noteId\} has no entry/u);
+});
+
+test("a rules test file must name the collection it covers", t => {
+  const root = fixture(t, "export const publicName = () => {};", "publicName", "dart", "tested");
+  accepted(check(root));
+  fs.writeFileSync(path.join(root, "functions/test/rules/items.rules.test.cjs"),
+    "it('denies itemsArchive', () => {});");
+  const result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /rulesTestFile functions\/test\/rules\/items\.rules\.test\.cjs never names "items"/u);
 });
 
 test("a schema without x-firestore-path is rejected", t => {
