@@ -24,3 +24,15 @@ export const legalPageCopy = {
   contactLineHere: "Or email {email}.",
   contactPage: "contact page",
 } as const;
+
+/**
+ * The ad-matching notice (docs/ads_conversion_spec.md, "Ad-matching notice
+ * and opt-out"), shown where a person gives their phone or email: the
+ * website account step, free registration and paid checkout. The Flutter apps
+ * carry the same words in app_en.arb (adMatchingNotice).
+ */
+export const adMatchingNoticeCopy = {
+  text: "We share a coded version of your contact details with Google and Meta to measure our ads and choose who sees them.",
+  linkLabel: "How it works and how to opt out",
+  href: "/privacy/#ads",
+} as const;

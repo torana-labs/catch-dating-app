@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/hosts/onboarding/onboarding_controller.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_details_body.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/create/create_organizer_controller.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -28,6 +32,7 @@ class HostSetupDetailsScreen extends ConsumerWidget {
     final state = ref.watch(hostSetupControllerProvider);
     final setup = ref.read(hostSetupControllerProvider.notifier);
     final submit = ref.watch(CreateOrganizerController.submitMutation);
+    final adMatchingUrl = AppConfig.adMatchingUrl;
     return CatchRoot(
       child: CatchScreen(
         key: const ValueKey<String>('host-setup-details'),
@@ -52,6 +57,13 @@ class HostSetupDetailsScreen extends ConsumerWidget {
           onPickLogo: submit.isPending ? null : onPickLogo,
           onDescriptionChanged: setup.setDescription,
           onToggleFormat: setup.toggleFormat,
+          onOpenAdMatching: adMatchingUrl == null
+              ? null
+              : () => unawaited(
+                  ref
+                      .read(externalLinkControllerProvider)
+                      .openExternal(adMatchingUrl),
+                ),
           createError: submit.hasError
               ? mutationErrorMessage(submit, l10n: l10n)
               : null,

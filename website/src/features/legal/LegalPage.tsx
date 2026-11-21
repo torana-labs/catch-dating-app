@@ -9,8 +9,9 @@ import {LegalDocument, type LegalDocumentSection} from "../../shared/ui/primitiv
 
 const contactPath = "/contact/";
 
-/** A stable anchor for each section: its heading, lowercased, and its place. */
+/** A stable anchor for each section: its fixed anchor when other pages link to it, else its heading, lowercased, and its place. */
 function sectionId(section: PublishedLegalSection, index: number) {
+  if (section.anchor) return section.anchor;
   const slug = section.heading.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/gu, "-").replace(/^-|-$/gu, "");
   return `${slug || "section"}-${index + 1}`;
 }

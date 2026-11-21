@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// Explicit Host product analytics disclosure before consent.
   ///
   /// In en, this message translates to:
-  /// **'Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days. Advertising measurement stays off. You can turn analytics off here at any time.'**
+  /// **'Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days and does not cover ad matching, which the privacy policy explains. You can turn analytics off here at any time.'**
   String get hostAnalyticsPrivacyBody;
 
   /// Decline or withdraw Host analytics permission.
@@ -1962,6 +1962,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter a valid phone number.'**
   String get authInvalidPhoneNumber;
+
+  /// Line under the sign-up phone field: sending the code accepts the Terms and the Privacy policy, both linked under it.
+  ///
+  /// In en, this message translates to:
+  /// **'By continuing you agree to Catch’s terms and privacy policy.'**
+  String get authLegalAgreement;
+
+  /// Link under the sign-up legal line that opens the public Terms page.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get authLegalTermsLink;
+
+  /// Link under the sign-up legal line that opens the public Privacy policy page.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get authLegalPrivacyLink;
+
+  /// Ad-matching notice where a person gives their phone or email: app sign-up and Catch Host setup. Same words as the website notice (website/src/content/legal.ts); see docs/ads_conversion_spec.md, Ad-matching notice and opt-out.
+  ///
+  /// In en, this message translates to:
+  /// **'We share a coded version of your contact details with Google and Meta to measure our ads and choose who sees them.'**
+  String get adMatchingNotice;
+
+  /// Link under the ad-matching notice that opens the advertising section of the privacy policy.
+  ///
+  /// In en, this message translates to:
+  /// **'How it works and how to opt out'**
+  String get adMatchingNoticeLink;
 
   /// Heading on the one-time-code verification step.
   ///

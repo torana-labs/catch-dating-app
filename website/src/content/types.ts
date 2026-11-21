@@ -64,6 +64,8 @@ export type PublishedLegalPath = "/help/" | "/privacy/" | "/terms/" | "/delete-a
 export type PublishedLegalPageKey = "help" | "privacy" | "terms" | "account_deletion" | "refunds" | "contact";
 
 export interface PublishedLegalSection {
+  /** A fixed anchor that other pages link to, such as "ads" for /privacy/#ads. Without one the anchor follows the heading. */
+  readonly anchor?: string;
   readonly heading: string;
   readonly paragraphs: readonly string[];
   readonly bullets?: readonly string[];
