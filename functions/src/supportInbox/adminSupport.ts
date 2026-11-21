@@ -370,7 +370,7 @@ export async function adminRecordSupportMessageHandler(
     after: {direction: payload.direction, messageId: result.messageId},
     serverTimestamp: deps.serverTimestamp,
   });
-  return result;
+  return {conversationId: result.conversationId, messageId: result.messageId};
 }
 
 /**
