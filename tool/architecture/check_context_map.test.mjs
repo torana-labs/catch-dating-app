@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  checkMappedPaths,
   checkSpecTable,
   loadContextMap,
   placePath,
@@ -84,8 +85,36 @@ test("checkSpecTable fails when the spec's context table drifts from the map", (
     ["specOutOfSync"]);
 });
 
+const fixtureFiles = [
+  "lib/contexts/events/data/event_repository.dart",
+  "lib/pages/home.dart",
+  "packages/kernel/lib/kernel.dart",
+  "packages/platform/lib/platform.dart",
+  "lib/core/core.dart",
+  "lib/routing/router.dart",
+  "lib/activity/activity.dart",
+  "lib/events/data/event_repository.dart",
+  "lib/events/domain/event_participation.dart",
+  "lib/tickets/ticket.dart",
+];
+
+test("checkMappedPaths fails on a root or legacy path that places no file", () => {
+  assert.deepEqual(checkMappedPaths({map, files: fixtureFiles}), []);
+  const withoutTickets = fixtureFiles.filter((file) => !file.startsWith("lib/tickets/"));
+  const findings = checkMappedPaths({map, files: withoutTickets});
+  assert.deepEqual(findings.map((finding) => finding.rule), ["mappedPathMissing"]);
+  assert.match(findings[0].reason, /legacy entry lib\/tickets\/ matches no tracked file/u);
+  const withoutPages = fixtureFiles.filter((file) => !file.startsWith("lib/pages/"));
+  assert.match(checkMappedPaths({map, files: withoutPages})[0].reason,
+    /root pages lib\/pages\//u);
+  // A folder entry does not match a sibling that merely shares its prefix.
+  const lookalike = [...withoutTickets, "lib/tickets_archive/old.dart"];
+  assert.equal(checkMappedPaths({map, files: lookalike}).length, 1);
+});
+
 test("scanContextMap reports a spec table that drifts from the map", () => {
   const snapshot = (spec) => ({
+    files: fixtureFiles,
     readTexts: (paths) => new Map([...paths].map((relativePath) => [relativePath,
       relativePath.endsWith(".json") ? fixtureMapSource : spec])),
   });

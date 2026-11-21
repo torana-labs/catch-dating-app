@@ -295,7 +295,8 @@ on which tab shows the data.
 their order and where every current folder belongs. The `catch_arch_*` lints in
 `packages/catch_ui_lints` read it and check every file inside the analyzer;
 `audit:context-map` (`tool/architecture/check_context_map.mjs`) checks that the
-map is well formed and that the table below matches it.
+map is well formed, that every root and legacy path in it still matches a
+tracked file, and that the table below matches it.
 
 ### Target layout
 

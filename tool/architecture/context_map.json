@@ -81,7 +81,6 @@
     {"path": "lib/event_success/", "context": "live"},
 
     {"path": "lib/hosts/audience/phone_import/", "context": "programmes"},
-    {"path": "lib/hosts/work/", "context": "programmes"},
     {"path": "lib/programs/", "context": "programmes"},
 
     {"path": "lib/hosts/create/", "layer": "app"},
