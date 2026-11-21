@@ -1,4 +1,4 @@
-// Marketing capture `host_live_tablet_supper_clubs`. One file per marketing capture keeps each
+// Marketing capture `host_live_tablet_runs`. One file per marketing capture keeps each
 // capture's inputs to its own imports; see docs/marketing_app_media_pipeline.md.
 
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
@@ -9,15 +9,15 @@ import '../shared/host_live_capture.dart';
 import '../shared/host_shell_capture_overrides.dart';
 import '../shared/marketing_vertical_live.dart';
 
-final _night = marketingVerticalNights['supper-clubs']!;
+final _night = marketingVerticalNights['run-clubs']!;
 
-/// The live console on a tablet mid-way through a supper for twelve.
-final hostLiveTabletSupperClubsCapture = ScreenCaptureEntry(
-  id: 'host_live_tablet_supper_clubs',
+/// The live console on a tablet mid-way through a Sunday social run.
+final hostLiveTabletRunsCapture = ScreenCaptureEntry(
+  id: 'host_live_tablet_runs',
   routeIds: const <String>['hostAppEventManageScreen'],
   device: hostLiveTablet,
   marketingFixtureKeys: const <String>[
-    'hostMarketingIndia.host.liveTabletSupperClubs',
+    'hostMarketingIndia.host.liveTabletRunClubs',
   ],
   providerOverrides: [
     ...hostShellCaptureOverrides(HostOperationsFixtures.hostUid),

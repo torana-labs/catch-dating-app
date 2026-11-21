@@ -301,9 +301,9 @@ import 'entries/host_create_communities.dart';
 import 'entries/host_create_first_event.dart';
 import 'entries/host_create_nightlife.dart';
 import 'entries/host_create_racket_sports.dart';
-import 'entries/host_create_run_clubs.dart';
+import 'entries/host_create_runs.dart';
 import 'entries/host_create_studios.dart';
-import 'entries/host_create_supper_clubs.dart';
+import 'entries/host_create_suppers.dart';
 import 'entries/host_create_teams.dart';
 import 'entries/host_create_venues.dart';
 import 'entries/host_door_arriving.dart';
@@ -328,9 +328,9 @@ import 'entries/host_live_tablet_creators.dart';
 import 'entries/host_live_tablet_facilities.dart';
 import 'entries/host_live_tablet_outdoors.dart';
 import 'entries/host_live_tablet_racket_sports.dart';
-import 'entries/host_live_tablet_run_clubs.dart';
+import 'entries/host_live_tablet_runs.dart';
 import 'entries/host_live_tablet_studios.dart';
-import 'entries/host_live_tablet_supper_clubs.dart';
+import 'entries/host_live_tablet_suppers.dart';
 import 'entries/host_live_tablet_teams.dart';
 import 'entries/host_live_tablet_venues.dart';
 import 'entries/host_live_tablet_workshops.dart';
@@ -6870,9 +6870,9 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_live_tablet_facilities': () => hostLiveTabletFacilitiesCapture,
   'host_live_tablet_outdoors': () => hostLiveTabletOutdoorsCapture,
   'host_live_tablet_racket_sports': () => hostLiveTabletRacketSportsCapture,
-  'host_live_tablet_run_clubs': () => hostLiveTabletRunClubsCapture,
+  'host_live_tablet_runs': () => hostLiveTabletRunsCapture,
   'host_live_tablet_studios': () => hostLiveTabletStudiosCapture,
-  'host_live_tablet_supper_clubs': () => hostLiveTabletSupperClubsCapture,
+  'host_live_tablet_suppers': () => hostLiveTabletSuppersCapture,
   'host_live_tablet_teams': () => hostLiveTabletTeamsCapture,
   'host_live_tablet_venues': () => hostLiveTabletVenuesCapture,
   'host_live_tablet_workshops': () => hostLiveTabletWorkshopsCapture,
@@ -6880,9 +6880,9 @@ final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
   'host_create_communities': () => hostCreateCommunitiesCapture,
   'host_create_nightlife': () => hostCreateNightlifeCapture,
   'host_create_racket_sports': () => hostCreateRacketSportsCapture,
-  'host_create_run_clubs': () => hostCreateRunClubsCapture,
+  'host_create_runs': () => hostCreateRunsCapture,
   'host_create_studios': () => hostCreateStudiosCapture,
-  'host_create_supper_clubs': () => hostCreateSupperClubsCapture,
+  'host_create_suppers': () => hostCreateSuppersCapture,
   'host_create_teams': () => hostCreateTeamsCapture,
   'host_create_venues': () => hostCreateVenuesCapture,
   'host_post_event_report_more': () => hostPostEventReportMoreCapture,
@@ -10881,9 +10881,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   hostLiveTabletFacilitiesCapture,
   hostLiveTabletOutdoorsCapture,
   hostLiveTabletRacketSportsCapture,
-  hostLiveTabletRunClubsCapture,
+  hostLiveTabletRunsCapture,
   hostLiveTabletStudiosCapture,
-  hostLiveTabletSupperClubsCapture,
+  hostLiveTabletSuppersCapture,
   hostLiveTabletTeamsCapture,
   hostLiveTabletVenuesCapture,
   hostLiveTabletWorkshopsCapture,
@@ -10891,9 +10891,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   hostCreateCommunitiesCapture,
   hostCreateNightlifeCapture,
   hostCreateRacketSportsCapture,
-  hostCreateRunClubsCapture,
+  hostCreateRunsCapture,
   hostCreateStudiosCapture,
-  hostCreateSupperClubsCapture,
+  hostCreateSuppersCapture,
   hostCreateTeamsCapture,
   hostCreateVenuesCapture,
   hostPostEventReportMoreCapture,

@@ -439,7 +439,7 @@
       "audience": "host",
       "surface": "Catch Host live console on a tablet during a Sunday social run",
       "fixtureKey": "hostMarketingIndia.host.liveTabletRunClubs",
-      "captureId": "host_live_tablet_run_clubs",
+      "captureId": "host_live_tablet_runs",
       "routeIds": [
         "hostAppEventManageScreen"
       ],
@@ -533,7 +533,7 @@
       "audience": "host",
       "surface": "Catch Host live console on a tablet during a supper club dinner",
       "fixtureKey": "hostMarketingIndia.host.liveTabletSupperClubs",
-      "captureId": "host_live_tablet_supper_clubs",
+      "captureId": "host_live_tablet_suppers",
       "routeIds": [
         "hostAppEventManageScreen"
       ],
@@ -1943,7 +1943,7 @@
       "audience": "host",
       "surface": "Creating a first event in Catch Host for a run club",
       "fixtureKey": "hostMarketingIndia.host.createRunClubs",
-      "captureId": "host_create_run_clubs",
+      "captureId": "host_create_runs",
       "routeIds": [
         "hostCreateEventScreen"
       ],
@@ -2037,7 +2037,7 @@
       "audience": "host",
       "surface": "Creating a first event in Catch Host for a supper club",
       "fixtureKey": "hostMarketingIndia.host.createSupperClubs",
-      "captureId": "host_create_supper_clubs",
+      "captureId": "host_create_suppers",
       "routeIds": [
         "hostCreateEventScreen"
       ],
