@@ -75,6 +75,7 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'AD_CONVERSIONS_META_TEST_EVENT_CODE=" "',
     'AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT=" "',
     'AD_AUDIENCES_MODE="off"',
+    'AD_SPEND_IMPORT_MODE="off"',
     'META_LEADGEN_CREDENTIAL_VERSION=" "',
     'META_LEADGEN_PAGE_IDS=" "',
     "",
@@ -141,6 +142,7 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'AD_CONVERSIONS_META_TEST_EVENT_CODE=" "',
     'AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT=" "',
     'AD_AUDIENCES_MODE="off"',
+    'AD_SPEND_IMPORT_MODE="off"',
     'META_LEADGEN_CREDENTIAL_VERSION=" "',
     'META_LEADGEN_PAGE_IDS=" "',
     "",
@@ -862,6 +864,34 @@ test("the host customer list stays off unless live with the Meta token", () => {
   for (const value of ["on", "validate", "LIVE"]) {
     assert.throws(() => materialize({AD_AUDIENCES_MODE: value}),
       /AD_AUDIENCES_MODE must be off or live/);
+  }
+});
+
+test("the ad spend import stays off unless live with both ad credentials", () => {
+  const materialize = (config) => {
+    const functionsDir = fixture();
+    prepareFunctionsParamsForDeploy({functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, ...config}});
+    return fs.readFileSync(path.join(functionsDir, ".env.catchdates-dev"), "utf8");
+  };
+  const token = "projects/catchdates-dev/secrets/CATCH_META_ADS_TOKEN/versions/2";
+  const account = "catch-ads-automation@catchdates-dev.iam.gserviceaccount.com";
+  assert.match(materialize({}), /^AD_SPEND_IMPORT_MODE="off"$/m);
+  assert.match(materialize({AD_SPEND_IMPORT_MODE: " "}), /^AD_SPEND_IMPORT_MODE="off"$/m);
+  // Independent of the conversion queue's mode, which stays off here.
+  const live = materialize({AD_SPEND_IMPORT_MODE: "live",
+    AD_CONVERSIONS_META_TOKEN_VERSION: token,
+    AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT: account});
+  assert.match(live, /^AD_SPEND_IMPORT_MODE="live"$/m);
+  assert.match(live, /^AD_CONVERSIONS_MODE="off"$/m);
+  for (const config of [{}, {AD_CONVERSIONS_META_TOKEN_VERSION: token},
+    {AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT: account}]) {
+    assert.throws(() => materialize({AD_SPEND_IMPORT_MODE: "live", ...config}),
+      /AD_SPEND_IMPORT_MODE live requires AD_CONVERSIONS_META_TOKEN_VERSION and AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT/);
+  }
+  for (const value of ["on", "validate", "LIVE"]) {
+    assert.throws(() => materialize({AD_SPEND_IMPORT_MODE: value}),
+      /AD_SPEND_IMPORT_MODE must be off or live/);
   }
 });
 
