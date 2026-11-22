@@ -141,3 +141,17 @@ test("the grace period is configurable within a day and defaults to 3 hours", ()
 test("malformed markers record nothing", () => {
   assert.deepEqual([...recordsFrom(["<!-- cron-watchdog {bad -->", "<!-- cron-watchdog {\"target\":1} -->", null])], []);
 });
+
+test("a missed shadow read map is reported once, never dispatched", () => {
+  const now = at("2026-11-23T07:00:00Z");
+  const decision = decide({now, graceHours: 3, repository, runs: {"test-read-map": [run("2026-11-22T03:42:00Z")]},
+    records: new Set(), targets: only("test-read-map")});
+  assert.deepEqual(decision.dispatches, []);
+  const report = decision.reports[MISSED_TITLE];
+  assert.match(report, /Test read map \(shadow\).*no run started between 2026-11-23T03:41:00\.000Z/u);
+  assert.match(report, /Report only: not dispatched/u);
+  assert.doesNotMatch(report, /gh workflow run/u);
+  const again = decide({now: now + 60 * 60 * 1000, graceHours: 3, repository,
+    runs: {"test-read-map": [run("2026-11-22T03:42:00Z")]}, records: recordsFrom([report]), targets: only("test-read-map")});
+  assert.deepEqual(again.reports, {});
+});

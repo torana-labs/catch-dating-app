@@ -92,6 +92,7 @@ export const notCalledByCi = {
   ".github/workflows/pr-text-guard.yml": "its own pull_request trigger runs it from the base commit",
   ".github/workflows/release-readiness.yml": "release: dispatch only",
   ".github/workflows/store-listing.yml": "release: dispatch only",
+  ".github/workflows/test-read-map.yml": "maintenance: nightly schedule and dispatch, shadow read map, selects nothing",
   ".github/workflows/ui-capture-render.yml": "maintenance: dispatch only",
   ".github/workflows/website-next-preview.yml": "deploy: dispatch only",
   ".github/workflows/website-next-promote.yml": "deploy: dispatch only",
