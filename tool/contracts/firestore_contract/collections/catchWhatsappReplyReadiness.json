@@ -1,0 +1,18 @@
+{
+  "id": "catchWhatsappReplyReadiness",
+  "path": "catchWhatsappReplyReadiness/{readinessId}",
+  "rulesMatch": "/catchWhatsappReplyReadiness/{readinessId}",
+  "typescriptInterface": "CatchWhatsappReplyReadinessDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Catch support reply service",
+  "writerContext": "messaging",
+  "read": "server only; exact controlled support/adminOwner callable scope",
+  "write": "disconnected readiness transaction adapter; audited external authority fence and complete archive evidence required; no live callable writer",
+  "exportedFunctions": [
+    "adminReviewCatchWhatsappInbound",
+    "adminSendCatchWhatsappReply",
+    "onCatchWhatsappWebhookEventCreated",
+    "onCatchWhatsappReplyOperationWritten"
+  ]
+}

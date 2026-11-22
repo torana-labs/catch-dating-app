@@ -32,7 +32,7 @@ const base = {
     const navRoles = {};
   `,
   apiSource: `httpsCallable(functions, "adminGetOverview")`,
-  functionsIndexSource: `export {adminGetOverview} from "./admin/overview";`,
+  functionExportNames: ["adminGetOverview"],
   featureFiles: [],
 };
 

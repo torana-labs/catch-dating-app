@@ -1,0 +1,22 @@
+{
+  "id": "organizerWhatsappMessages",
+  "path": "organizerWhatsappMessages/{messageId}",
+  "rulesMatch": "/organizerWhatsappMessages/{messageId}",
+  "typescriptInterface": "OrganizerWhatsappMessageDocument",
+  "dartModel": "lib/contexts/audience/domain/crm/host_whatsapp_thread.dart",
+  "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+  "owner": "organizer WhatsApp inbox and reply callables",
+  "writerContext": "organizers",
+  "read": "current organizer managers get and list one thread's messages (organizerId and threadId equality)",
+  "write": "server only",
+  "exportedFunctions": [
+    "sendOrganizerWhatsappReply"
+  ],
+  "migrationNotes": [
+    "Inbound and outbound bodies expire after 12 months; per-thread and per-contact deletion are intentionally out of scope.",
+    "Bodies are personal data. Since #1339 the organizer's current managers read them under rules for the inbox listener; the fields are the ones the callable returned plus contact, sender connection, provider message and replying manager ids, none of them credentials."
+  ],
+  "rulesTestNames": [
+    "lets current managers read WhatsApp thread views and one thread's messages"
+  ]
+}

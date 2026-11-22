@@ -1,0 +1,11 @@
+{
+  "id": "salesIntelligencePolicies",
+  "path": "salesIntelligencePolicies/{policyRecordId}",
+  "rulesMatch": "/salesIntelligencePolicies/{privateDocument=**}",
+  "typescriptInterface": "SalesIntelligencePolicyDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales intelligence policy callable",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

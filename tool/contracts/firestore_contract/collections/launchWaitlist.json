@@ -1,0 +1,11 @@
+{
+  "id": "launchWaitlist",
+  "path": "launchWaitlist/{waitlistId}",
+  "rulesMatch": "/launchWaitlist/{privateDocument=**}",
+  "typescriptInterface": "LaunchWaitlistDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "joinWaitlist",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

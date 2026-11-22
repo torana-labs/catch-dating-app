@@ -1,0 +1,22 @@
+{
+  "id": "eventRehearsalMilestones",
+  "path": "eventRehearsalMilestones/{organizerId}",
+  "rulesMatch": "/eventRehearsalMilestones/{organizerId}",
+  "typescriptInterface": "EventRehearsalMilestoneDocument",
+  "dartModel": "lib/contexts/live/data/event_rehearsal_repository.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers get their rehearsal milestone and nothing else"
+  ],
+  "owner": "event rehearsal completion callable",
+  "writerContext": "live",
+  "read": "current organizer managers get their organizer's document under rules (a missing document is not yet completed); nobody lists the collection",
+  "write": "server only; completion transaction",
+  "exportedFunctions": [
+    "controlEventRehearsal",
+    "completeEventRehearsal"
+  ],
+  "migrationNotes": [
+    "Permanent completion survives session expiry, reset and fork. The phone listens to this document; there is no fallback to completed sessions."
+  ]
+}

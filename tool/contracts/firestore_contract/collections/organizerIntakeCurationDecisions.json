@@ -1,0 +1,11 @@
+{
+  "id": "organizerIntakeCurationDecisions",
+  "path": "organizerIntakeCurationDecisions/{operationId}",
+  "rulesMatch": "/organizerIntakeCurationDecisions/{privateDocument=**}",
+  "typescriptInterface": "OrganizerIntakeCurationDecisionDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "adminApproveOrganizerListing callable (the retired adminRecordOrganizerCuration and adminCreateOrganizerDraftFromCandidate wrote earlier records)",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only"
+}

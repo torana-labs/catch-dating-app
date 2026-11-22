@@ -1,0 +1,18 @@
+{
+  "id": "providerSyncRuns",
+  "path": "providerSyncRuns/{runId}",
+  "rulesMatch": "/providerSyncRuns/{runId}",
+  "typescriptInterface": "ProviderSyncRunDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "external provider roster reconciliation callable",
+  "writerContext": "organizers",
+  "read": "server only; sanitized result is callable-owned",
+  "write": "server only",
+  "exportedFunctions": [
+    "syncOrganizerProviderEvent"
+  ],
+  "migrationNotes": [
+    "Thirty-day TTL receipt prevents duplicate sync operations and records bounded counts without retaining provider payloads."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "eventRuntimeParticipants",
+  "path": "eventRuntimeParticipants/{participantId}",
+  "rulesMatch": "/eventRuntimeParticipants/{participantId}",
+  "typescriptInterface": "EventRuntimeParticipantDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "Event Success runtime claim and minimum-profile callables",
+  "writerContext": "live",
+  "read": "authenticated owner get by deterministic eventId_uid only; no list",
+  "write": "server only",
+  "exportedFunctions": [
+    "claimEventRuntimeAccess",
+    "submitEventRuntimeProfile",
+    "approveEventRuntimeClaim",
+    "onEventRuntimeParticipantWritten"
+  ],
+  "migrationNotes": [
+    "Event-scoped runtime identity only; it does not imply a Consumer profile, event participation, dating match, or marketing grant."
+  ]
+}

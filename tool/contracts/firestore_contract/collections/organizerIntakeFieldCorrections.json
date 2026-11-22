@@ -1,0 +1,11 @@
+{
+  "id": "organizerIntakeFieldCorrections",
+  "path": "organizerIntakeFieldCorrections/{correctionId}",
+  "rulesMatch": "/organizerIntakeFieldCorrections/{privateDocument=**}",
+  "typescriptInterface": "OrganizerIntakeFieldCorrectionDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "adminUpdateOrganizerDetails callable",
+  "writerContext": "admin",
+  "read": "server only",
+  "write": "server only"
+}

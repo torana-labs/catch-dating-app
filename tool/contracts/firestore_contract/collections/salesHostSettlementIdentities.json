@@ -1,0 +1,11 @@
+{
+  "id": "salesHostSettlementIdentities",
+  "path": "salesHostSettlementIdentities/{settlementIdentityHash}",
+  "rulesMatch": "/salesHostSettlementIdentities/{privateDocument=**}",
+  "typescriptInterface": "SalesHostSettlementIdentitiesDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales commercial service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

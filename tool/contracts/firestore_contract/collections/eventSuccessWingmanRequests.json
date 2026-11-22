@@ -1,0 +1,11 @@
+{
+  "id": "eventSuccessWingmanRequests",
+  "path": "eventSuccessWingmanRequests/{requestId}",
+  "rulesMatch": "/eventSuccessWingmanRequests/{requestId}",
+  "typescriptInterface": "EventSuccessWingmanRequestDocument",
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "owner": "attendee direct write after attended event; host read only while active and consented",
+  "writerContext": "live",
+  "read": "the requester by get; the event's hosts get and list active, consented requests",
+  "write": "server only"
+}

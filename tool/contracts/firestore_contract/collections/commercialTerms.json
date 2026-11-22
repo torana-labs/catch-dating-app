@@ -1,0 +1,24 @@
+{
+  "id": "commercialTerms",
+  "path": "commercialTerms/{termsId}",
+  "rulesMatch": "/commercialTerms/{termsId}",
+  "typescriptInterface": "CommercialTermsDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps commercial terms and their history server-only"
+  ],
+  "owner": "Catch operators (Finance, Admin Owner) through manageCommercialTerms; the founding-host offer writes one organizer's trial.days",
+  "writerContext": "payments",
+  "read": "server only; the payment resolver, manageCommercialTerms and the read-only adminListCommercialTerms",
+  "write": "manageCommercialTerms: expected-revision replacement with a reason, an immutable revision record and an admin audit log in one transaction. The founding place grant (onFoundingHostOrganizerWritten, reconcileFoundingHostPlacesDaily) sets an organizer override's trial.days to the founding days, keeping its other keys, as a new revision with an immutable revision record in the transaction that takes the place",
+  "exportedFunctions": [
+    "manageCommercialTerms",
+    "adminListCommercialTerms",
+    "onFoundingHostOrganizerWritten",
+    "reconcileFoundingHostPlacesDaily"
+  ],
+  "migrationNotes": [
+    "New collection. Until commercialTerms/platform exists, platformSplit (Route) payments and memberships fail closed and hostCollected ticket and form payments carry no terms snapshot. Save it once in Admin (Finance, Commercial terms), which writes through manageCommercialTerms, before relying on either; no backfill rewrites recorded payments."
+  ]
+}

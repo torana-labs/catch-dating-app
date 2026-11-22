@@ -1,0 +1,22 @@
+{
+  "id": "hostProviderConnectionViews",
+  "path": "hostProviderConnectionViews/{organizerId}",
+  "rulesMatch": "/hostProviderConnectionViews/{organizerId}",
+  "typescriptInterface": "HostProviderConnectionViewDocument",
+  "dartModel": "lib/contexts/audience/data/host_provider_setup_reads.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers get their door read models and nothing else"
+  ],
+  "owner": "Host provider connection evaluator: hostReadModels provider connection view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get their organizer's document; a view not written yet reads as missing; nobody lists the collection",
+  "write": "server only; written by every evaluation that changes it and deleted with the organizer",
+  "exportedFunctions": [
+    "onHostProviderConnectionViewConnectionChanged",
+    "onHostProviderConnectionViewOrganizerChanged"
+  ],
+  "migrationNotes": [
+    "Rows never carry secretVersionResource, connectedByUid or lastErrorCode. More than 20 connections records overCap with the first 20; an invalid connection records invalidSource and keeps the previous rows. Either means the door must not claim a complete setup."
+  ]
+}

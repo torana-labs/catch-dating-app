@@ -1,0 +1,24 @@
+{
+  "id": "guestMessagingPermissions",
+  "path": "guestMessagingPermissions/{permissionId}",
+  "rulesMatch": "/guestMessagingPermissions/{permissionId}",
+  "typescriptInterface": "GuestMessagingPermissionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "rulesTestNames": [
+    "lets guests read only their own messaging permission rows"
+  ],
+  "owner": "Guest messaging permission projector: messaging guest messaging permission triggers",
+  "writerContext": "messaging",
+  "read": "the guest gets and lists only rows whose uid is theirs, while their account is not deleted; a row not written yet reads as missing",
+  "write": "server only; written from the preference and the receipts it names, deleted when the preference is",
+  "exportedFunctions": [
+    "onGuestMessagingPermissionCatchPreferenceChanged",
+    "onGuestMessagingPermissionOrganizerPreferenceChanged",
+    "onGuestMessagingPermissionCatchReceiptChanged",
+    "onGuestMessagingPermissionOrganizerReceiptChanged"
+  ],
+  "migrationNotes": [
+    "preference is the sender's summary the retired listParticipantMessagingPreferences callable returned (Nov 2026), and the withdrawal response returns the same summary. The guest-messaging-permissions copy-forward migration creates rows for preferences recorded before the triggers."
+  ]
+}

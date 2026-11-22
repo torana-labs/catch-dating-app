@@ -9,26 +9,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_inventory_repository.g.dart';
 
-/// Typed adapters for the Events inventory and recoverable first-save command.
-/// Existing detail, editing and constituent repositories remain their owners.
+/// The recoverable first-save command for a programme. The list reads
+/// `organizerProgramViews` (OrganizerProgramViewsRepository); detail, editing
+/// and constituent repositories remain their owners.
 class ProgramInventoryRepository {
   const ProgramInventoryRepository(this._functions);
   final FirebaseFunctions _functions;
-
-  Future<OrganizerProgramInventoryPage> listPage(
-    String organizerId, {
-    String? cursor,
-    String? programId,
-  }) => _call(
-    name: 'listOrganizerPrograms',
-    payload: ListOrganizerProgramsCallableRequest(
-      organizerId: organizerId,
-      cursor: cursor,
-      programId: programId,
-    ).toJson(),
-    action: 'load your programs',
-    parse: OrganizerProgramInventoryPage.fromCallableData,
-  );
 
   Future<ProgramMutationResult> create({
     required String organizerId,

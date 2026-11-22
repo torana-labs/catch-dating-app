@@ -1,0 +1,21 @@
+{
+  "id": "eventStaffPresence",
+  "path": "eventStaffPresence/{presenceId}",
+  "rulesMatch": "/eventStaffPresence/{presenceId}",
+  "typescriptInterface": "EventStaffPresenceDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "rulesTestNames": [
+    "lets an event's managers and roster staff list who is on the door"
+  ],
+  "owner": "heartbeatEventStaffPresence callable",
+  "writerContext": "events",
+  "read": "authorized event host or active viewRoster event staff, by eventId listener",
+  "write": "server only",
+  "exportedFunctions": [
+    "heartbeatEventStaffPresence"
+  ],
+  "migrationNotes": [
+    "New optional collection; no backfill. Rows are current while expiresAt is in the future and requires a Firestore TTL policy on expiresAt (confirm live before relying on deletion)."
+  ]
+}

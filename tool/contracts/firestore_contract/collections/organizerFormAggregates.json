@@ -1,0 +1,11 @@
+{
+  "id": "organizerFormAggregates",
+  "path": "organizerFormAggregates/{aggregateId}",
+  "rulesMatch": "/organizerFormAggregates/{aggregateId}",
+  "typescriptInterface": "OrganizerFormAggregateDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "organizer form aggregate projection",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

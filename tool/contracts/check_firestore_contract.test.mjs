@@ -5,6 +5,10 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
+import {
+  loadFirestoreContract,
+  writeFirestoreContract,
+} from "./lib/firestore_contract.mjs";
 
 const checker = fileURLToPath(new URL("./check_firestore_contract.mjs", import.meta.url));
 const repository = path.resolve(path.dirname(checker), "../..");
@@ -36,7 +40,7 @@ function fixture(t, source, name = "publicName", consumer = "dart", coverage = "
     write(collection.rulesTestFile, "it('denies items', () => doc(db, \"items\", \"one\"));");
   }
   if (coverage === "unknown") gap.collections.push({id: "items", reason: "x"}, {id: "gone", reason: "x"});
-  write("tool/contracts/firestore_contract.json", {
+  writeFirestoreContract(root, {
     schemaVersion: 2, collectionsWithoutRulesTests: gap, collections: [collection],
   });
   write("firestore.rules", "match /items/{id} {}");
@@ -90,12 +94,6 @@ for (const consumer of ["dart", "alias", "exportedFunctions", "operation"]) {
   });
 }
 
-test("local named exports also expose only their public alias", t => {
-  const source = "const localName = () => {}; export {localName as publicName};";
-  accepted(check(fixture(t, source)));
-  missing(check(fixture(t, source, "localName")), "localName");
-});
-
 for (const [kind, source] of Object.entries({
   "line comment": "// export {publicName} from './handler';",
   "block comment": "/* export {publicName} from './handler'; */",
@@ -111,11 +109,8 @@ for (const [kind, source] of Object.entries({
 }
 
 for (const [kind, source] of Object.entries({
-  "direct const": "export const publicName = () => {};",
-  "direct function": "export function publicName() {}",
-  "direct async function": "export async function publicName() {}",
   "grouped reexports": "export {publicName, another} from './handler';",
-  "local export": "const publicName = () => {}; export {publicName};",
+  "multi-line reexports": "export {\n  another,\n  publicName,\n} from './handler';",
 })) {
   test(`${kind} satisfies the authored export contract without evaluation`, t => {
     accepted(check(fixture(t, source)));
@@ -126,7 +121,14 @@ for (const [kind, source] of Object.entries({
   "wildcard": "export * from './handler';",
   "default": "export default function publicName() {}",
   "malformed": "export {publicName from './handler';",
-  "duplicate": "export {publicName}; export {publicName};",
+  "duplicate": "export {publicName} from './handler'; export {publicName} from './other';",
+  // The entry point only re-exports Functions from their modules
+  // (functions/scripts/functionExports.cjs).
+  "direct const": "export const publicName = () => {};",
+  "direct function": "export function publicName() {}",
+  "direct async function": "export async function publicName() {}",
+  "local export": "const publicName = () => {}; export {publicName};",
+  "local named alias": "const localName = () => {}; export {localName as publicName};",
 })) {
   test(`${kind} export syntax fails closed`, t => {
     const result = check(fixture(t, source));
@@ -139,10 +141,10 @@ const documents = (body) =>
   `service cloud.firestore { match /databases/{d}/documents {\n${body}\n} }`;
 
 function editRegistry(root, edit) {
-  const file = path.join(root, "tool/contracts/firestore_contract.json");
-  const registry = JSON.parse(fs.readFileSync(file, "utf8"));
+  const registry = loadFirestoreContract({root});
   edit(registry);
-  fs.writeFileSync(file, JSON.stringify(registry));
+  fs.rmSync(path.join(root, "tool/contracts/firestore_contract"), {recursive: true});
+  writeFirestoreContract(root, registry);
 }
 
 function registerOrphans(root, rulesMatch = "/orphans/{privateDocument=**}") {
@@ -154,7 +156,7 @@ function registerOrphans(root, rulesMatch = "/orphans/{privateDocument=**}") {
 }
 
 test("a schema needs a top-level rules match for its root collection", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"), JSON.stringify({
     "x-firestore-collection": "orphans", "x-firestore-path": "orphans/{id}",
   }));
@@ -173,7 +175,7 @@ test("a schema needs a top-level rules match for its root collection", t => {
 });
 
 test("every rules match block needs a registry entry", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.writeFileSync(path.join(root, "firestore.rules"), documents(
     "  match /items/{id} {}\n" +
     "  match /users/{uid} {\n    match /pushInstallations/{installationId} { allow read: if true; }\n  }"));
@@ -185,7 +187,7 @@ test("every rules match block needs a registry entry", t => {
 });
 
 test("a registry rulesMatch must be a whole match path that governs the entry path", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.writeFileSync(path.join(root, "firestore.rules"), documents(
     "  match /items/{id} {\n    match /orphans/{o} {}\n  }"));
   fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"), JSON.stringify({
@@ -208,8 +210,46 @@ test("a registry rulesMatch must be a whole match path that governs the entry pa
   assert.match(result.stderr, /rulesMatch \/items\/\{id\}\/orphans\/\{o\} does not govern path orphans\/\{id\}/u);
 });
 
+test("a split contract fails closed on a duplicate collection, an orphan or an unparseable fragment", t => {
+  const root = fixture(t, "export {publicName} from './handler';");
+  const collections = path.join(root, "tool/contracts/firestore_contract/collections");
+  const items = fs.readFileSync(path.join(collections, "items.json"), "utf8");
+  accepted(check(root));
+
+  // The same collection registered again under another file and id.
+  editRegistry(root, (registry) => {
+    registry.collections.push({...registry.collections[0], id: "itemsAgain"});
+    registry.collectionsWithoutRulesTests.collections.push({id: "itemsAgain", reason: "Server only."});
+  });
+  let result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /duplicate collection path items\/\{id\}/u);
+  fs.rmSync(path.join(collections, "itemsAgain.json"));
+  editRegistry(root, (registry) => {
+    registry.collectionsWithoutRulesTests.collections =
+      registry.collectionsWithoutRulesTests.collections.filter(({id}) => id !== "itemsAgain");
+  });
+  accepted(check(root));
+
+  // A collection file left outside collections/.
+  const orphan = path.join(root, "tool/contracts/firestore_contract/items.json");
+  fs.writeFileSync(orphan, items);
+  result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /tool\/contracts\/firestore_contract\/items\.json: not a contract file/u);
+  fs.rmSync(orphan);
+
+  // A fragment that isn't JSON.
+  fs.writeFileSync(path.join(collections, "items.json"), items.slice(0, -3));
+  result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /collections\/items\.json: invalid JSON/u);
+  fs.writeFileSync(path.join(collections, "items.json"), items);
+  accepted(check(root));
+});
+
 test("every registry entry has a schema contract, at its path or named explicitly", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.rmSync(path.join(root, "contracts/firestore/items.schema.json"));
   let result = check(root);
   assert.equal(result.status, 1, result.stderr);
@@ -238,7 +278,7 @@ test("every registry entry has a schema contract, at its path or named explicitl
 });
 
 test("every contracts/firestore schema describes a registered path", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.writeFileSync(path.join(root, "firestore.rules"), documents(
     "  match /items/{id} {}\n  match /orphans/{privateDocument=**} { allow read, write: if false; }"));
   fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"), JSON.stringify({
@@ -252,7 +292,7 @@ test("every contracts/firestore schema describes a registered path", t => {
 });
 
 test("a rules test file must name the collection it covers", t => {
-  const root = fixture(t, "export const publicName = () => {};", "publicName", "dart", "tested");
+  const root = fixture(t, "export {publicName} from './handler';", "publicName", "dart", "tested");
   accepted(check(root));
   fs.writeFileSync(path.join(root, "functions/test/rules/items.rules.test.cjs"),
     "it('denies itemsArchive', () => {});");
@@ -262,7 +302,7 @@ test("a rules test file must name the collection it covers", t => {
 });
 
 test("a schema without x-firestore-path is rejected", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"),
     JSON.stringify({"x-firestore-collection": "orphans"}));
   const result = check(root);
@@ -288,7 +328,7 @@ test("CLI rejects malformed options rather than silently checking another scope"
 });
 
 test("every collection names its rules test or is listed as untested, never both", t => {
-  const source = "export const publicName = () => {};";
+  const source = "export {publicName} from './handler';";
   accepted(check(fixture(t, source, "publicName", "dart", "listed")));
   accepted(check(fixture(t, source, "publicName", "dart", "tested")));
   for (const [coverage, message] of [

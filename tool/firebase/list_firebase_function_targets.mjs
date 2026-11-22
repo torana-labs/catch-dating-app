@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
@@ -42,34 +43,23 @@ export const dormantFirebaseFunctionTargets = Object.freeze([
   "functions:expireEventWaitlistOffers",
 ]);
 
+// functions/scripts/functionExports.cjs is the one reader of the entry
+// point's export list. It needs no installed packages and never executes
+// the source, so historical source roots are read statically too.
+const {FunctionEntryError, functionExports} = createRequire(import.meta.url)(
+  "../../functions/scripts/functionExports.cjs");
+
+/** Deploy targets for every Function a source checkout exports, in source order. */
 export function listFirebaseFunctionExports(sourceRoot = defaultRepoRoot) {
-  const indexPath = path.join(path.resolve(sourceRoot), "functions/src/index.ts");
-  const stat = fs.lstatSync(indexPath);
-  if (!stat.isFile() || stat.isSymbolicLink()) {
-    throw new Error(`Functions export source must be a regular file: ${indexPath}`);
-  }
-  const source = fs.readFileSync(indexPath, "utf8");
-  const names = [];
-
-  for (const match of source.matchAll(/export\s*\{([\s\S]*?)\}\s*from\s*["']/g)) {
-    const exportsBlock = match[1];
-    for (const rawPart of exportsBlock.split(",")) {
-      const part = rawPart.trim();
-      if (!part) continue;
-
-      const aliasMatch = part.match(/\s+as\s+([A-Za-z_$][\w$]*)$/);
-      const name = aliasMatch?.[1] ?? part.match(/^([A-Za-z_$][\w$]*)/)?.[1];
-      if (!name) {
-        throw new Error(`Could not parse exported function target from: ${part}`);
-      }
-      names.push(name);
+  const functionsDir = path.join(path.resolve(sourceRoot), "functions");
+  try {
+    return functionExports({root: functionsDir}).map(({name}) => `functions:${name}`);
+  } catch (error) {
+    if (error instanceof FunctionEntryError && error.rule === "empty") {
+      throw new Error(`No Firebase function exports found in ${path.join(functionsDir, error.file)}`);
     }
+    throw error;
   }
-
-  if (names.length === 0) {
-    throw new Error(`No Firebase function exports found in ${indexPath}`);
-  }
-  return names.map((name) => `functions:${name}`);
 }
 
 // Reads a source checkout's dormant list without evaluating it. Verification

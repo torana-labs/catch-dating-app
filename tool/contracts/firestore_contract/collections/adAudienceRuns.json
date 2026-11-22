@@ -1,0 +1,11 @@
+{
+  "id": "adAudienceRuns",
+  "path": "adAudienceRuns/{audienceKey}",
+  "rulesMatch": "/adAudienceRuns/{privateDocument=**}",
+  "typescriptInterface": "AdAudienceRunDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "ad customer-list job",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only"
+}

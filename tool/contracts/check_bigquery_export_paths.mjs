@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Every Firestore-to-BigQuery export reads a collection that still exists.
 // Each extensions/*.env COLLECTION_PATH must name a collection in the live
-// Firestore registry (tool/contracts/firestore_contract.json), every env file
+// Firestore registry (tool/contracts/firestore_contract/), every env file
 // must be an extension instance in firebase.json and the reverse, and the
 // host analytics contract must pin the same paths the env files deploy.
 // A retired collection's export otherwise keeps deploying and passes its own
@@ -9,6 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
+import {firestoreContractDir, loadFirestoreContract} from "./lib/firestore_contract.mjs";
 import {normalizeFirestorePath} from "./lib/firestore_rules_blocks.mjs";
 
 const EXPORT_EXTENSION = "firebase/firestore-bigquery-export";
@@ -17,8 +18,7 @@ const toolDir = path.dirname(fileURLToPath(import.meta.url));
 /** Problems with the BigQuery export configuration under `repoRoot`. */
 export async function checkBigQueryExportPaths(repoRoot) {
   const errors = [];
-  const registry = JSON.parse(fs.readFileSync(
-    path.join(repoRoot, "tool/contracts/firestore_contract.json"), "utf8"));
+  const registry = loadFirestoreContract({root: repoRoot});
   const registered = new Map();
   for (const entry of registry.collections ?? []) {
     if (typeof entry.path !== "string") continue;
@@ -51,7 +51,7 @@ export async function checkBigQueryExportPaths(repoRoot) {
     if (!registered.has(normalizeFirestorePath(collectionPath))) {
       errors.push(
         `${label}: COLLECTION_PATH=${collectionPath} is not a collection in ` +
-        `tool/contracts/firestore_contract.json; point the export at the live ` +
+        `${firestoreContractDir}; point the export at the live ` +
         `collection or retire the export with its collection`
       );
     }

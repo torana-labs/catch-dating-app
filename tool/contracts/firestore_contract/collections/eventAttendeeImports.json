@@ -1,0 +1,17 @@
+{
+  "id": "eventAttendeeImports",
+  "path": "eventAttendeeImports/{importId}",
+  "rulesMatch": "/eventAttendeeImports/{importId}",
+  "typescriptInterface": "EventAttendeeImportDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "importEventAttendees callable",
+  "writerContext": "bookings",
+  "read": "authorized event host only",
+  "write": "server only",
+  "exportedFunctions": [
+    "importEventAttendees"
+  ],
+  "migrationNotes": [
+    "Stores bounded idempotency and audit metadata, never the uploaded file."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "organizerSpendTotals",
+  "path": "organizerSpendTotals/{organizerId}",
+  "rulesMatch": "/organizerSpendTotals/{organizerId}",
+  "typescriptInterface": "OrganizerSpendTotalsDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers get their door read models and nothing else"
+  ],
+  "owner": "Host organizer spend evaluator: hostReadModels roster insight payment trigger and backfill",
+  "writerContext": "host",
+  "read": "server only; never client-readable",
+  "write": "server only; one transaction per payment change, idempotent by trigger event id",
+  "exportedFunctions": [
+    "onHostRosterInsightBookingPaymentChanged"
+  ],
+  "migrationNotes": [
+    "At most 4,000 accounts keep the document under Firestore's 1 MiB limit; another account, or an uncomputable amount, makes coverage partial until a rebuild."
+  ]
+}

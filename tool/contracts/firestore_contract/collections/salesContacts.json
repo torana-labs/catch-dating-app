@@ -1,0 +1,11 @@
+{
+  "id": "salesContacts",
+  "path": "salesContacts/{contactId}",
+  "rulesMatch": "/salesContacts/{privateDocument=**}",
+  "typescriptInterface": "SalesContactDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales contact service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

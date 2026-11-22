@@ -1,0 +1,30 @@
+{
+  "id": "hostEventAssistanceSettingViews",
+  "path": "hostEventAssistanceSettingViews/{settingId}",
+  "rulesMatch": "/hostEventAssistanceSettingViews/{settingId}",
+  "typescriptInterface": "HostEventAssistanceSettingViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers read live guest and settings views and nothing else"
+  ],
+  "owner": "Live guest and settings view evaluator: hostReadModels guest view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get their own organizer's views by id; nobody lists the collection",
+  "write": "server only; one per configured group (event:whole included) and console workflow kind (late join) of an event with an eventFormat and an endTime, deleted with the group or the event",
+  "exportedFunctions": [
+    "onHostGuestViewEventChanged",
+    "onHostGuestViewPlanChanged",
+    "onHostGuestViewAttendeeChanged",
+    "onHostGuestViewGuestChanged",
+    "onHostGuestViewMembershipChanged",
+    "onHostGuestViewOrganizerChanged",
+    "onHostGuestViewStaffGrantChanged",
+    "onHostGuestViewSettingChanged",
+    "onHostGuestViewRuntimeChanged"
+  ],
+  "migrationNotes": [
+    "A group's view inherits the event:whole setting of the same kind; a change to that setting re-evaluates the event's views.",
+    "The view reads no clock; serverTime is the phone's read instant."
+  ]
+}

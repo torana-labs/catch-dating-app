@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 2,
+  "description": "Canonical Firestore ownership contract for Dart models, Functions TypeScript types, Firestore rules, and client mutation boundaries.",
+  "collectionsWithoutRulesTests": {
+    "issue": "https://github.com/torana-labs/catch-dating-app/issues/1765",
+    "description": "Collections with no Firestore rules test. check_firestore_contract.mjs requires every collection to have a rulesTestFile or an entry here; remove an entry when its test lands.",
+    "collections": [
+      {
+        "id": "config_public_contact",
+        "reason": "Server-only collection read through the website's Firestore viewer identity; no rules test yet."
+      },
+      {
+        "id": "hostProfiles",
+        "reason": "Client access (public) has no rules test yet."
+      },
+      {
+        "id": "organizerContactIdentityLinks",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactEventEdges",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactIdentityClaims",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactTraits",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerAudienceSummaries",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "organizerContactMergeReceipts",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "eventWaitlistOffers",
+        "reason": "Client access (offered attendee or club host) has no rules test yet."
+      },
+      {
+        "id": "eventInviteLinks",
+        "reason": "Client access (club host only) has no rules test yet."
+      },
+      {
+        "id": "moderationFlags",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "rateLimits",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "programFunctionGuests",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "seedEvents",
+        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "demoSelfServiceAccess",
+        "reason": "Client access (owner only) has no rules test yet."
+      },
+      {
+        "id": "organizer_posts",
+        "reason": "Client access (any signed-in user) has no rules test yet."
+      },
+      {
+        "id": "eventPrivateAccess",
+        "reason": "Client access (the event's organizer hosts) has no rules test yet."
+      }
+    ]
+  }
+}

@@ -30,6 +30,8 @@ const readJson = (file) => JSON.parse(fs.readFileSync(path.join(workspaceRoot, f
 export const markdownReaders = {
   "tool/architecture/check_app_architecture_exhibits.mjs": {"docs/app_architecture.md": ["tools"]},
   "tool/audit/check_fn_readme_inventory.mjs": {"functions/README.md": ["functions"]},
+  // A fragment-only change selects lane-tools through toolImpactPaths, and affected-tools runs it.
+  "tool/docs/function_catalog.mjs": {"docs/backend_operation_catalog/functions/*.md": ["tools"]},
   // flutter-ci.yml runs it; the migration note must keep the organizerType marker.
   "tool/check_organizer_nomenclature.mjs": {"docs/migrations/clubs_to_organizers.md": ["flutter"]},
   // A mandatory check: the Tools lane runs it through affected-tools and it scans every tracked document.

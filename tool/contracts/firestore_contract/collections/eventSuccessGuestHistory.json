@@ -1,0 +1,21 @@
+{
+  "id": "eventSuccessGuestHistory",
+  "path": "eventSuccessGuestHistory/{eventId_uid}",
+  "rulesMatch": "/eventSuccessGuestHistory/{historyId}",
+  "typescriptInterface": "EventSuccessGuestHistoryDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps close-out, live receipts and guest history server-written"
+  ],
+  "owner": "onEventSuccessStandingsWritten trigger",
+  "writerContext": "live",
+  "read": "the guest whose uid it carries gets their own eventId_uid document",
+  "write": "server only",
+  "exportedFunctions": [
+    "onEventSuccessStandingsWritten"
+  ],
+  "migrationNotes": [
+    "Projected from eventSuccessStandings on every standings write; nights scored before the trigger deploys have no history until their standings are written again."
+  ]
+}

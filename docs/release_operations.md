@@ -462,12 +462,14 @@ A newer merge never cancels a main push run that has started (owner decision,
 12 Nov 2026). Main runs share one concurrency group without
 `cancel-in-progress`, so GitHub keeps the running run and one pending run, and
 a newer merge replaces only the pending one. A replaced run never starts, so
-the run that replaced it plans from the commit of the newest earlier main push
-run that ran, not from its own `before` commit
-(`tool/ci/main_push_base.mjs`). Every commit on main is then in some finished
-run's committed window. When that earlier run cannot be found, or its commit
-is not an ancestor of the head, the run validates everything in the nightly
-full mode. Pull requests and nightly runs retain their existing validation
+each run plans from the nearest earlier main push run that ran and whose commit
+is an ancestor of the head, nearest by commit history rather than by run order
+(`tool/ci/main_push_base.mjs`). GitHub can create a queue batch's push runs out
+of order, so a run for a later commit may exist before this one; such a run's
+window can start after this commit, so it is never trusted to cover it. Every
+commit on main is then in some finished run's committed window. When no earlier
+run that ran is an ancestor of the head, the run validates everything in the
+nightly full mode. Pull requests and nightly runs retain their existing validation
 flow.
 
 Root Flutter unit/widget tests are selected by
@@ -3566,7 +3568,7 @@ reaction fields, comments) from old app builds. Pick one of these:
   `hasValidSwipeCreate` to the stored `swipes.schema.json` fields. So it
   belongs in a change that also removes `pass` and the reaction fields from
   `contracts/firestore/swipes.schema.json`, the `profileDecisions` operation
-  in `tool/contracts/firestore_contract.json`, the Dart `Swipe` model and the
+  in `tool/contracts/firestore_contract/collections/`, the Dart `Swipe` model and the
   rules tests. Ship it after the prod purge, so stored documents still
   validate until then.
 - **Raise `min_build_*`** in Remote Config to the first released build without
@@ -4039,8 +4041,15 @@ main pushes (owner decision, 15 Nov 2026). In the 30 days before (16 Oct to
 analysis in the same run did not, and a runner cancellation on 2 Nov failed a
 merge-queue group on its own. A nightly smoke failure fails the scheduled run
 like any other nightly job, so the Main CI alert and the nightly issue still
-report it. Goldens and the Headless journeys keep running wherever the lane is
-selected. Pull requests also run the Headless journeys in the Flutter lane
+report it. The macOS goldens are out of the merge queue too (owner decision,
+22 Nov 2026): the 5 hosted macOS runners held queue groups past the 90-minute
+timeout on 18–19 Nov. They run on the nightly and on main pushes whose inputs
+select the visual lane. A main push the queue already validated runs only the
+goldens (`macos_only`), and only when the queue run's own plan for that exact
+source selected the lane. If that plan cannot be read, the goldens run; they
+are never skipped for that reason. A main or nightly golden failure fails the
+run, so the Main CI alert reports it. The Headless journeys keep running
+wherever the lane is selected, the queue included. Pull requests also run the Headless journeys in the Flutter lane
 (`flutter-ci.yml`, Linux), so a broken app-shell journey fails the PR instead
 of ejecting it from the merge queue. Golden pixel comparisons are report
 only: the job summary lists goldens beyond the 0.30% hosted-macOS raster

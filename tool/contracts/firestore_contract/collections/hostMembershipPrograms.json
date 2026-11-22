@@ -1,0 +1,24 @@
+{
+  "id": "hostMembershipPrograms",
+  "path": "hostMembershipPrograms/{organizerId}",
+  "rulesMatch": "/hostMembershipPrograms/{organizerId}",
+  "typescriptInterface": "HostMembershipProgramDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps membership billing state server-only"
+  ],
+  "owner": "host membership program callable and billing-pause schedule",
+  "writerContext": "payments",
+  "read": "server only; managers receive a bounded callable projection",
+  "write": "server only",
+  "exportedFunctions": [
+    "manageHostMembershipProgram",
+    "processHostMembershipBillingPause",
+    "hostMembershipRazorpayWebhook"
+  ],
+  "migrationNotes": [
+    "New in host memberships v1; no backfill. The payment snapshot is taken from the ready Route account when the program is enabled and re-verified for every charge transfer.",
+    "memberCount moves in the membership state-machine transaction; the billing pause advances in bounded pages with a cursor."
+  ]
+}

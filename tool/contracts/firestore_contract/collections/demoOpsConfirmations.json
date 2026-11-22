@@ -1,0 +1,11 @@
+{
+  "id": "demoOpsConfirmations",
+  "path": "demoOpsConfirmations/{confirmationId}",
+  "rulesMatch": "/demoOpsConfirmations/{confirmationId}",
+  "typescriptInterface": "DemoOpsConfirmationDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Suvbot demo operations",
+  "writerContext": "ops",
+  "read": "server only",
+  "write": "server only"
+}

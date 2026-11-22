@@ -1,0 +1,18 @@
+{
+  "id": "eventVenueSessions",
+  "path": "eventVenueSessions/{sessionId}",
+  "rulesMatch": "/eventVenueSessions/{sessionId}",
+  "typescriptInterface": "EventVenueSessionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "createEventVenueSession callable",
+  "writerContext": "events",
+  "read": "server only; signed token is returned by the callable",
+  "write": "server only",
+  "exportedFunctions": [
+    "createEventVenueSession"
+  ],
+  "migrationNotes": [
+    "Short TTL documents back the live Host QR and cannot be used as printable attendance authority."
+  ]
+}

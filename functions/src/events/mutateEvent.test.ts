@@ -1287,6 +1287,34 @@ test("deleteEvent removes an unused published event whatever created it",
     assert.equal(h.firestore.get("events/event-1"), undefined);
   });
 
+test("createEvent starts the event on an empty, ready seat ledger",
+  async () => {
+    const h = harness({"organizers/club-1": organizer()});
+    await createEventHandler(request("host-1", payload()), h.deps);
+    const created = h.firestore.get("events/event-1")!;
+    const policy = deriveEventSeatPolicy(created);
+    assert.deepEqual(h.firestore.get("eventSeatLedgers/event-1"), {
+      eventId: "event-1", capacity: policy.capacity, occupied: 0,
+      checkoutHeld: 0, revision: 1, capacityRevision: 1,
+      policyVersion: policy.policyVersion, policyHash: policy.policyHash,
+      migrationRevision: 1, state: "ready"});
+    const fence = h.firestore.get("eventSeatMigrationFences/event-1")!;
+    assert.equal(fence.state, "ready");
+    assert.equal(fence.organizerId, "club-1");
+  });
+
+test("deleteEvent removes an empty seat ledger with the event",
+  async () => {
+    const h = harness({"organizers/club-1": organizer(),
+      "events/event-1": event(), ...readySeatDocs()});
+    assert.deepEqual(await deleteEventHandler(request("host-1",
+      {eventId: "event-1"}), h.deps), {deleted: true});
+    assert.equal(h.firestore.get("events/event-1"), undefined);
+    assert.equal(h.firestore.get("eventSeatLedgers/event-1"), undefined);
+    assert.equal(h.firestore.get("eventSeatMigrationFences/event-1"),
+      undefined);
+  });
+
 test("deleteEvent removes the event's setup preferences and invite code",
   async () => {
     const h = harness({"organizers/club-1": organizer(),
@@ -2005,7 +2033,9 @@ test("delete preserves imported, offer, admission and migrated seat history",
       {"eventAttendees/guest": {eventId: "event-1", status: "cancelled"}},
       {"organizerEventOffers/offer": {eventId: "event-1"}},
       {"organizerFormAdmissions/admission": {eventId: "event-1"}},
-      readySeatDocs(),
+      readySeatDocs(1),
+      {...readySeatDocs(), "eventSeatReservations/seat": {eventId: "event-1",
+        active: false}},
     ]) {
       const h = harness({"organizers/club-1": organizer(),
         "events/event-1": event(), ...history});

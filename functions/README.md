@@ -68,11 +68,20 @@ evidence and scoped live approvals remain prerequisites for activation.
 
 ## Function inventory
 
-These rows name current `src/index.ts` exports, including exports that remain
+These rows name the current exported Functions, including exports that remain
 dormant pending activation. Historical Function names belong in prose outside
 the inventory. `node tool/audit/check_fn_readme_inventory.mjs --write` keeps the
-rows between the markers in step with `src/index.ts`: it drops removed exports
+rows between the markers in step with the export list: it drops removed exports
 and lists new ones under "Not yet described" for you to move and describe.
+
+Each top-level `src/<area>/` lists the Functions it deploys in
+`src/<area>/functions.ts`, as named re-exports from modules inside that area.
+`src/index.ts` holds the setup (global options, Admin SDK initialization) and
+one `export * from "./<area>/functions";` per area. To add a Function, add its
+re-export to its area's `functions.ts`; a new area also needs its star line in
+`src/index.ts` and a codebase in `deploy-codebases.json`.
+`scripts/functionExports.cjs` is the one reader of this list: it accepts only
+that shape and fails on a name two areas both export.
 
 <!-- fn-inventory:start (generated rows: node tool/audit/check_fn_readme_inventory.mjs --write) -->
 | Function | File | Purpose |
@@ -294,6 +303,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `recordProgramDoorJournal` / `getProgramFunctionDoorView` / `createProgramWalkIn` | `src/doorJournal/` | Durable offline-safe door check-in journal, the function-scoped door roster/counts/journal-tail projection, and least-privilege walk-in creation for program function entry points |
 | `getProgramAttendanceReport` | `src/programs/attendanceReportView.ts` | Program-wide attendance report for reconciliationViewer staff, coordinators, and managers: per-function RSVP/door separation plus sorted exception guest ids; fails closed past the read cap |
 | `archiveProgram` / `unarchiveProgram` / `anonymizeDueProgramsSweep` | `src/programs/programRetention.ts` | Manager-owned archive lifecycle with a grace window: unarchive restores the pre-archive status only while no sweep lease is in flight; the scheduled sweep anonymizes due programs with journaled chunked resume |
+| `reconcileOrganizerProgramCountsSweep` | `src/programs/organizerProgramCountTriggers.ts` | Nightly (03:45 IST) recount of every programme view's guest, replied and flying-in counts from `programGuests` and `programTravelLegs`, the backstop for the delta triggers; `tool/data/recompute_organizer_program_counts.mjs` runs the same recount as a backfill |
 | `getProgramStakeholderCounts` | `src/programs/stakeholderCountsView.ts` | Counts-only program overview for stakeholderViewer staff and managers: guest/household headcounts, per-function RSVP/attendance histograms, and hotel-scoped occupancy; no PII crosses |
 | `getProgramTransportPlan` / `setProgramTravelReadiness` | `src/transport/programArrivals.ts` | Station-scoped deterministic grouping suggestions and claim/ready/disruption writes |
 | `dispatchProgramTrip` / `markProgramTripArrived` / `voidProgramTrip` | `src/transport/programDispatch.ts` | Idempotent dispatch with plate/vendor capture and assignment exclusivity, and the trip lifecycle |
@@ -575,8 +585,10 @@ enter previews.
 | `onHostEventAttendanceReportDispositionWritten` | `src/hostReadModels/attendanceReportViewTriggers.ts` | Rebuilds the close-out attendance report view when a no-show is recorded or cleared. |
 | `onHostEventAttendanceReportEventWritten` | `src/hostReadModels/attendanceReportViewTriggers.ts` | Rebuilds the close-out attendance report view when the event's timing or closure changes. |
 | `onOrganizerProgramFunctionChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a function's programme when the function changes |
+| `onOrganizerProgramGuestCountChanged` | `src/programs/organizerProgramCountTriggers.ts` | Moves a programme view's guest and replied counts by a guest write's delta, once per event and only after the last recount |
 | `onOrganizerProgramHotelChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a hotel's programme when the hotel changes |
 | `onOrganizerProgramPickupPointChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a pickup point's programme when the point changes |
+| `onOrganizerProgramTravelLegCountChanged` | `src/programs/organizerProgramCountTriggers.ts` | Moves a programme view's flying-in count when an inbound journey is added, removed or enters or leaves no-show |
 | `onOrganizerProgramViewChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites a programme's setup view when its settings, dates, status, branding or retention dates change |
 | `onProgramAccessViewGrantChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites that account's programme access view when a staff grant changes |
 | `onProgramAccessViewOrganizerChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites an account's view of every programme of the organizer when it becomes or stops being an organizer manager |
@@ -815,9 +827,10 @@ resilience only; rotation publication never performs synchronous generation.
 The compiled entry point loads each Function's module the first time its
 export is read. Every Function runs as its own Cloud Run service that reads
 only its own export, so a cold start loads that Function's code instead of
-the whole backend. `scripts/lazy-entry.cjs` rewrites `lib/index.js` after
-`tsc` (the `postbuild` step) and fails the build on any re-export shape it
-cannot defer. `src/index.ts` stays an ordinary list of re-exports, and global
+the whole backend. `scripts/lazy-entry.cjs` writes `lib/index.js` after `tsc`
+(the `postbuild` step) from the compiled setup and one lazy getter per
+exported Function, requiring its defining module directly, and fails the
+build on any entry shape `scripts/functionExports.cjs` rejects. Global
 options still run before any Function is defined. Deploy discovery and the
 emulator read every export, so they load everything as before.
 
@@ -864,8 +877,9 @@ file per collection area with shared fixtures and the emulator lifecycle in
 `test/rules/rulesHarness.cjs`; Storage rules tests live at
 `test/storage.rules.test.cjs`. They use the `@firebase/rules-unit-testing`
 emulators. The `.rules.test.cjs` suffix puts a new rules file in the strict list.
-Each collection in `tool/contracts/firestore_contract.json` names its rules
-test as `rulesTestFile`, or is listed in `collectionsWithoutRulesTests` with a
+Each collection's file in `tool/contracts/firestore_contract/collections/` names its rules
+test as `rulesTestFile`, or is listed in `collectionsWithoutRulesTests` (in
+`tool/contracts/firestore_contract/contract.json`) with a
 reason; `tool/contracts/check_firestore_contract.mjs` enforces one or the other. Add test cases for any new rule conditions, especially `diff()`
 checks, `hasOnly`/`hasAll` shape validation, and Storage paths that depend on
 Firestore relationship documents.

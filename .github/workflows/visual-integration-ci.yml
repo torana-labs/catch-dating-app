@@ -2,6 +2,12 @@ name: Flutter Visual & Integration CI
 
 on:
   workflow_call:
+    inputs:
+      macos_only:
+        description: Run only the macOS goldens (a main push the merge queue already validated).
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
 
 permissions:
@@ -10,6 +16,8 @@ permissions:
 jobs:
   headless-journeys:
     name: Headless app journeys
+    # The merge queue already ran these for a main push it validated.
+    if: ${{ !inputs.macos_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -24,6 +32,11 @@ jobs:
 
   goldens:
     name: macOS goldens & Widgetbook determinism
+    # Out of the merge queue (owner decision, 22 Nov 2026): the 5 macOS
+    # runners held queue groups past their timeout. Main pushes whose inputs
+    # select this lane and the nightly run it, and a failure there reports to
+    # the main-red issue. A called workflow sees the caller's event.
+    if: ${{ github.event_name != 'merge_group' }}
     runs-on: macos-26
     timeout-minutes: 60
 
@@ -41,6 +54,12 @@ jobs:
       - run: flutter config --enable-macos-desktop
 
       - run: flutter pub get
+
+      # The sqlite3 build hook downloads its native library during flutter test
+      # with one attempt (main run 43716269314 failed on a DNS error). This
+      # fetches it with retries into the hook's verified cache first.
+      - name: Prefetch the sqlite3 native library
+        run: node tool/ci/prefetch_sqlite3_asset.mjs
 
       - name: Generate matching Flutter source outputs
         id: provider-codegen

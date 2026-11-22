@@ -1,0 +1,11 @@
+{
+  "id": "supplyNominators",
+  "path": "supplyNominators/{nominatorId}",
+  "rulesMatch": "/supplyNominators/{nominatorId}",
+  "typescriptInterface": "SupplyNominatorDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Admin nominator registry callables",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only"
+}

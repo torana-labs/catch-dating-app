@@ -1,0 +1,23 @@
+{
+  "id": "programDoorJournalViews",
+  "path": "programDoorJournalViews/{journalId}",
+  "rulesMatch": "/programDoorJournalViews/{journalId}",
+  "typescriptInterface": "ProgramDoorJournalViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+  "rulesTestNames": [
+    "lists door rows and journal entries for one covered function"
+  ],
+  "owner": "Programme read model projector: programDoorViewTriggers",
+  "writerContext": "programmes",
+  "read": "get and list (query naming programId and functionId) where a door duty covers the function, and the programme owner, while not deleted",
+  "write": "server only; written from programDoorJournal, programGuests and programStaffGrants",
+  "exportedFunctions": [
+    "onProgramDoorJournalChanged",
+    "onProgramDoorGuestChanged",
+    "onProgramDoorStaffLabelChanged"
+  ],
+  "migrationNotes": [
+    "The newest entries are read by an ordered query with a limit of 60. No actor account id and no device id: only the actor's label. An anonymized entry's view drops the name, note and label. The program-door-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+  ]
+}

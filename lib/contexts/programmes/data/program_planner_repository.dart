@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_access_repository.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_message_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -243,11 +242,3 @@ Stream<ProgramPlannedMessages> programPlannedMessages(
 @riverpod
 Future<String?> programMessageSender(Ref ref, String programId) =>
     ref.watch(programPlannerRepositoryProvider).messageSender(programId);
-
-/// The planner home: the organiser's programmes with their overview
-/// numbers, from the first `listOrganizerPrograms` page.
-@riverpod
-Future<OrganizerProgramInventoryPage> programmesOverview(
-  Ref ref,
-  String organizerId,
-) => ref.watch(programInventoryRepositoryProvider).listPage(organizerId);

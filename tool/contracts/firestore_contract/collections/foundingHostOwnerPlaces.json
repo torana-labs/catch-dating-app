@@ -1,0 +1,22 @@
+{
+  "id": "foundingHostOwnerPlaces",
+  "path": "foundingHostOwnerPlaces/{ownerPlaceId}",
+  "rulesMatch": "/foundingHostOwnerPlaces/{ownerPlaceId}",
+  "typescriptInterface": "FoundingHostOwnerPlaceDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/founding_host_offers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps the founding-host offer config, organizer places and owner guards server-only"
+  ],
+  "owner": "the founding place grant (functions/src/foundingHosts)",
+  "writerContext": "payments",
+  "read": "server only; the founding place grant reads it in the transaction that would take a place",
+  "write": "create-only in the same transaction as the foundingHostPlaces record it names; keyed by sha256(JSON.stringify([ownerUserId, marketId])) of the organizer's canonical owner, so one person takes at most one founding place per city across all their organizer pages and concurrent grants for the same owner and city conflict on it",
+  "exportedFunctions": [
+    "onFoundingHostOrganizerWritten",
+    "reconcileFoundingHostPlacesDaily"
+  ],
+  "migrationNotes": [
+    "New collection (owner decision 16 Nov 2026), written with every place; no backfill because no place exists before this branch ships. Never updated or deleted: an ownership transfer leaves the place with its organizer and the guard with the owner who took it."
+  ]
+}

@@ -1565,7 +1565,9 @@ test("headless journeys start independently of macOS rendering and native smoke"
   assert.match(native, /actions\/checkout@[0-9a-f]{40} # v6/u);
   assert.doesNotMatch(goldens, /macos smoke/u);
   assert.doesNotMatch(native, /flutter test.*goldens/u);
-  assert.doesNotMatch(goldens, /^    (?:needs:|if:|continue-on-error:)/mu,
+  // Out of the merge queue only (owner decision, 22 Nov 2026); required wherever else the lane runs.
+  assert.deepEqual(goldens.match(/^    if: .*$/gmu), ["    if: ${{ github.event_name != 'merge_group' }}"]);
+  assert.doesNotMatch(goldens, /^    (?:needs:|continue-on-error:)/mu,
     "goldens must execute independently and remain required wherever the lane runs");
   for (const job of [goldens, native]) {
     assert.doesNotMatch(job, /^    (?:needs:|continue-on-error:)/mu);
@@ -1587,11 +1589,11 @@ test("native app-shell smoke runs only on the nightly schedule and manual dispat
   for (const event of ["schedule", "workflow_dispatch"]) assert.equal(runsOn(event), true, event);
   for (const event of ["merge_group", "pull_request", "push"]) assert.equal(runsOn(event), false, event);
   assert.doesNotMatch(condition, /!=|!|&&/u, "an allowlist of events, not a denylist");
-  // Goldens and the Linux headless journeys keep running wherever the lane does.
-  for (const name of ["headless-journeys", "goldens"]) {
-    const job = source.split(`  ${name}:\n`)[1].split(/\n  [a-z-]+:\n/u)[0];
-    assert.doesNotMatch(job, /^    if:/mu, name);
-  }
+  // The Linux headless journeys run wherever the lane does, except a main push
+  // the queue already proved; the goldens everywhere but the merge queue.
+  const jobIf = (name) => source.split(`  ${name}:\n`)[1].split(/\n  [a-z-]+:\n/u)[0].match(/^    if: (.*)$/gmu);
+  assert.deepEqual(jobIf("headless-journeys"), ["    if: ${{ !inputs.macos_only }}"]);
+  assert.deepEqual(jobIf("goldens"), ["    if: ${{ github.event_name != 'merge_group' }}"]);
   // Both schedule and dispatch still reach the called workflow.
   assert.match(workflow("ci.yml"), /^  schedule:\n/mu);
   assert.match(source, /^  workflow_dispatch:\n/mu);
@@ -1930,4 +1932,67 @@ if (endpoint.includes("/workflows/ci.yml/runs")) {
   assert.equal(runLookup([{...good, event: "pull_request"}], required), "run_id=");
   assert.equal(runLookup([good], [{name: "Required CI", conclusion: "failure"}]), "run_id=");
   assert.equal(runLookup([good], required, true), "run_id=", "API failure keeps the full run");
+});
+
+// Owner decision, 22 Nov 2026: the macOS goldens leave the merge queue and run
+// on main pushes whose inputs select them and on the nightly.
+test("the merge queue never runs the macOS goldens; main runs them by the queue's plan, the nightly always", (t) => {
+  const visual = parseYaml(workflow("visual-integration-ci.yml"));
+  assert.equal(visual.jobs.goldens.if, "${{ github.event_name != 'merge_group' }}", "queue groups skip the goldens");
+  assert.equal(visual.jobs["headless-journeys"].if, "${{ !inputs.macos_only }}");
+  assert.equal(visual.on.workflow_call.inputs.macos_only.default, false);
+  // The nightly's full plan always selects the lane, and its schedule event runs the goldens.
+  assert.ok(planAffected({changedPaths: [], graph, full: true, mode: "nightly"}).operations.ciTargets
+    .includes("visual_integration"));
+
+  const ci = workflow("ci.yml");
+  const caller = parseYaml(ci).jobs["visual-integration"];
+  assert.match(caller.if, /needs\.plan\.outputs\.visual_integration == 'true' && !needs\.plan\.outputs\.queue_verified_run/u,
+    "a run the queue did not prove selects the lane as before");
+  assert.match(caller.if, /\|\| needs\.plan\.outputs\.main_goldens == 'true'/u, "a queue-verified main push runs the goldens");
+  assert.equal(caller.with.macos_only, "${{ needs.plan.outputs.queue_verified_run != '' }}",
+    "it reruns only the goldens: the queue ran the headless journeys");
+  assert.match(parseYaml(ci).jobs.plan.outputs.main_goldens, /steps\.main_macos\.outputs\.goldens/u);
+
+  const step = extractSteps(ci).find((entry) => entry.name === "Select main's macOS goldens from the queue's plan");
+  assert.ok(step?.run, "missing the main goldens selection step");
+  assert.match(step.if, /github\.event_name == 'push' && steps\.queue\.outputs\.run_id != ''/u);
+  const sha = "a".repeat(40);
+  const select = ({artifacts, plan, failArtifacts = false, failZip = false}) => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "main-goldens-"));
+    t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+    const bin = path.join(root, "bin"); fs.mkdirSync(bin);
+    const zip = path.join(root, "plan.zip");
+    if (plan) {
+      fs.writeFileSync(path.join(root, "impact-plan.json"), JSON.stringify(plan));
+      assert.equal(spawnSync("zip", ["-q", "-j", zip, path.join(root, "impact-plan.json")]).status, 0);
+    }
+    fs.writeFileSync(path.join(bin, "gh"), `#!/usr/bin/env node
+const endpoint = process.argv[3];
+if (endpoint.includes("/artifacts?")) {
+  if (${failArtifacts}) process.exit(1);
+  console.log(JSON.stringify({artifacts: ${JSON.stringify(artifacts ?? [])}}));
+} else if (endpoint.endsWith("/zip")) {
+  if (${failZip} || !require("fs").existsSync(${JSON.stringify(zip)})) process.exit(1);
+  process.stdout.write(require("fs").readFileSync(${JSON.stringify(zip)}));
+} else process.exit(1);
+`, {mode: 0o755});
+    const output = path.join(root, "out"); fs.writeFileSync(output, "");
+    const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {...process.env,
+      PATH: `${bin}${path.delimiter}${process.env.PATH}`, GITHUB_REPOSITORY: "owner/repo", QUEUE_RUN: "41",
+      SOURCE_SHA: sha, GITHUB_OUTPUT: output, GITHUB_STEP_SUMMARY: path.join(root, "summary")}});
+    assert.equal(result.status, 0, result.stderr);
+    return fs.readFileSync(output, "utf8").trim();
+  };
+  const listed = [{id: 7, name: `harness-plan-1-41-${sha}-1`, expired: false}, {id: 3, name: "selector-comparison-41-1", expired: false}];
+  const plan = (lanes, sourceSha = sha) => ({sourceSha, operations: {ciTargets: lanes}});
+  assert.equal(select({artifacts: listed, plan: plan(["flutter", "visual_integration"])}), "goldens=true");
+  assert.equal(select({artifacts: listed, plan: plan(["flutter", "tools"])}), "goldens=false", "the queue's plan did not select it");
+  // Every failure to read the queue's plan runs the goldens; none skips them.
+  assert.equal(select({artifacts: listed, plan: plan(["tools"], "b".repeat(40))}), "goldens=true", "a plan for another source");
+  assert.equal(select({failArtifacts: true, plan: plan(["tools"])}), "goldens=true", "the artifact listing failed");
+  assert.equal(select({artifacts: [], plan: plan(["tools"])}), "goldens=true", "no plan artifact");
+  assert.equal(select({artifacts: [{...listed[0], expired: true}], plan: plan(["tools"])}), "goldens=true", "an expired plan");
+  assert.equal(select({artifacts: listed, plan: plan(["tools"]), failZip: true}), "goldens=true", "the download failed");
+  assert.equal(select({artifacts: listed, plan: {sourceSha: sha}}), "goldens=true", "a plan without lanes");
 });

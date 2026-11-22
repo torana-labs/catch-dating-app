@@ -1,0 +1,11 @@
+{
+  "id": "walkthroughBookings",
+  "path": "walkthroughBookings/{bookingId}",
+  "rulesMatch": "/walkthroughBookings/{privateDocument=**}",
+  "typescriptInterface": "WalkthroughBookingDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "bookWalkthrough, manageWalkthroughBooking and adminUpdateWalkthroughBooking",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

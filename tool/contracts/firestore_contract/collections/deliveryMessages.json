@@ -1,0 +1,11 @@
+{
+  "id": "deliveryMessages",
+  "path": "deliveryMessages/{messageId}",
+  "rulesMatch": "/deliveryMessages/{messageId}",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "trusted automation delivery workers; trusted campaign delivery workers; trusted event approval notification services; trusted program delivery workers",
+  "writerContext": "shared",
+  "sharedWriterReason": "The delivery outbox: every context that sends a message enqueues its own deliveryMessages row, and the delivery workers (platform) deliver and update them.",
+  "read": "server only",
+  "write": "server only"
+}

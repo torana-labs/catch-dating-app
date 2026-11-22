@@ -1,0 +1,11 @@
+{
+  "id": "supportSavedReplies",
+  "path": "supportSavedReplies/{replyId}",
+  "rulesMatch": "/supportSavedReplies/{replyId}",
+  "typescriptInterface": "SupportSavedReplyDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Admin support callables",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only"
+}

@@ -10,18 +10,28 @@ transaction. The adapter must map each event ledger, canonical identity
 reservation and request receipt to deterministic, client-denied documents; optimistic transaction retries serialize
 the ledger revision and capacity check. Its `createReceipt` must be create-only.
 
-`deriveEventSeatPolicy` is the shared migration/read projection. The adapter
-reads positive configured event capacity and raw admission policy
-inside the caller transaction. It compares their canonical hash and policy
-version with the migrated ledger; a changed admission policy closes the ledger
-until reconciliation, while an unrelated `bookedCount` update does not. The
-ledger also has an explicit migration-owned capacity revision, which the caller
-must supply as an expected revision. No capacity or revision is inferred.
-The ledger must be marked `ready` with a positive migration revision only after
-all historical Catch participations and Host/imported attendees have been
-reconciled into one occupied count and one reservation per unique person.
-Unknown, missing, revoked or unreconciled ledgers fail closed. The core cannot
-make a basic event free or assign capacity one from missing setup fields.
+`deriveEventSeatPolicy` is the shared read projection. The adapter reads the
+event's capacity (`capacityLimit`, or no limit while the host has set none)
+and raw admission policy inside the caller transaction. It compares their
+canonical hash and policy version with the ledger; a changed admission policy
+closes the ledger until it is updated with the event, while an unrelated
+`bookedCount` update does not. The ledger also has an explicit capacity
+revision, which the caller must supply as an expected revision. No capacity
+or revision is inferred.
+
+Every new event is created with its ledger: `createPrivateEventSetup`,
+`createPrivateEventSeries` and `createEvent` write an empty, ready ledger and
+its writer fence in the transaction that creates the event
+(`eventSeatLedgerBirth.ts`). A ledger with no capacity takes any number of
+places, so a host can add guests before setting admission terms. The first
+terms of an event that had none may then be set while guests hold seats, as
+long as the capacity holds them; a capacity-only edit may run while places are
+reserved, never below them; any other admission policy change needs an event
+with no reserved places. An event whose ledger holds no place can be deleted
+with its ledger, and a try-it draft's ledger and seat records go with it.
+Older events without a ledger are reconciled once by migration into one
+occupied count and one reservation per unique person, after which the same
+rules apply. Unknown, missing, revoked or unreconciled ledgers fail closed.
 
 `resolveIdentity` is an adapter-required in-transaction authority. It must
 resolve all known verified phone, linked UID, imported reference and CRM merge

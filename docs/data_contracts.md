@@ -40,7 +40,7 @@ Read this before changing:
 | Generated Dart callable DTOs, field constraints, and catalogs | `packages/platform/lib/schema_contracts/generated/` |
 | Dart test access to full schemas (read from `contracts/`, never generated) | `test/support/contract_schemas.dart` |
 | Tool-side schema registry and validators | `tool/contracts/generated/` |
-| Firestore operation ownership metadata | `tool/contracts/firestore_contract.json` |
+| Firestore operation ownership metadata (one file per collection) | `tool/contracts/firestore_contract/` |
 | Human operation map | `docs/backend_operation_catalog.md` |
 | Rules a tool enforces | `tool/tools_manifest.json` |
 | Countries and cities Catch serves, with each city's lifecycle and surface flags | `contracts/catalogs/markets.json` (see [Market Catalog](#market-catalog)) |
@@ -2568,12 +2568,19 @@ Description and distance/pace for distance-based activities are explicit details
 Non-distance format selection writes the existing compatibility values (0/easy),
 which readers hide for those formats. Capacity, price/currency and cash-refund
 policy are saved together; credits remain deferred. The update preserves existing
-admission restrictions and never changes offer payment snapshots. An empty,
-ordinary private event receives matching ready seat ledger and fence records in
+admission restrictions and never changes offer payment snapshots. Every event
+created by `createPrivateEventSetup`, `createPrivateEventSeries` or `createEvent`
+starts with an empty, ready `eventSeatLedgers` record and its writer fence; its
+`capacity` is null (no limit) until the host sets a capacity, so guests can be
+added first. The save updates that ledger with the terms. The first terms may be
+set while guests hold seats if the capacity holds them; afterwards a
+capacity-only edit may run while places are reserved, never below them, and
+reserved places or checkout holds block any change to price, currency or
+admission policy. An older empty private event without a ledger receives one in
 that transaction, only after counters and bounded queries show no guest, payment,
 identity, import or migration history. Demo-owned events are excluded because
-seed tooling has legacy seat writers. Existing reserved places or checkout holds
-block changed terms; historical sources require seat reconciliation.
+seed tooling has legacy seat writers; historical sources require seat
+reconciliation.
 `reconcilePrivateEventSeats` accepts the same exact journaled admission-settings
 command with no other detail fields. Each request advances at most three bounded
 pages; current manager, account deletion and event ownership are rechecked in
@@ -2963,10 +2970,25 @@ the callable owning their lifecycle.
 }
 ```
 
-`tool/contracts/firestore_contract.json` deliberately does NOT carry
+The Firestore contract is one file per collection, so PRs that register or
+edit different collections never touch the same file:
+
+- `tool/contracts/firestore_contract/collections/<id>.json` holds one
+  collection's entry. The file name must be its `id`; to register a
+  collection, add its file.
+- `tool/contracts/firestore_contract/contract.json` holds `schemaVersion`, the
+  description and `collectionsWithoutRulesTests`.
+
+Every reader loads it through `tool/contracts/lib/firestore_contract.mjs`,
+which fails closed on a stray, misnamed or malformed file and returns the
+combined view, with `collections` sorted by id. `node
+tool/contracts/lib/firestore_contract.mjs` prints that view; it is never
+committed.
+
+The contract deliberately does NOT carry
 per-collection field-group arrays (`clientWritableFields`, etc.). Those are
 derived from `x-catch-ownership` and validated by
-`tool/contracts/check_firestore_contract.mjs`. The contract file still owns
+`tool/contracts/check_firestore_contract.mjs`. The contract files still own
 collection-level ownership metadata (paths, rules-match strings, operations,
 exported function names, migration notes).
 
@@ -3189,7 +3211,7 @@ deletion, to `eventParticipations/{eventId_uid}` with the same id and
 document. It rereads the booking in a transaction, so late or repeated
 deliveries converge on the latest booking. `eventParticipations` keeps its
 read rule (the guest and the event's hosts), its composite indexes and a
-legacy entry in `tool/contracts/firestore_contract.json`; no client writes
+legacy entry in `tool/contracts/firestore_contract/collections/`; no client writes
 either collection, the mirror is its only writer and no trigger listens to it.
 The `event-bookings` copy-forward migration
 (`tool/data/migrate_firestore_consolidation.mjs`) copies the bookings that

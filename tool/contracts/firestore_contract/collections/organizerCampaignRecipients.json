@@ -1,0 +1,11 @@
+{
+  "id": "organizerCampaignRecipients",
+  "path": "organizerCampaignRecipients/{recipientId}",
+  "rulesMatch": "/organizerCampaignRecipients/{recipientId}",
+  "typescriptInterface": "OrganizerCampaignRecipientDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "campaign approval, dispatcher and provider webhook",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

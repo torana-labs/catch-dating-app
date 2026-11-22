@@ -318,6 +318,7 @@ function executorFixture(t) {
     "tool/firebase/retry_transient.mjs",
     "tool/lib/repo_paths.mjs",
     "tool/lib/firebase_project.mjs",
+    "functions/scripts/functionExports.cjs",
   ]) {
     write(relativePath, fs.readFileSync(path.join(repoRoot, relativePath)), 0o755);
   }

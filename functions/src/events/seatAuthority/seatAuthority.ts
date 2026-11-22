@@ -4,7 +4,8 @@ import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 /** Private server-owned records. No endpoint or path is registered here. */
 export interface SeatLedger {
   eventId: string;
-  capacity: number;
+  /** Place limit; null while the host has set no capacity (no limit). */
+  capacity: SeatCapacity;
   occupied: number;
   /** Missing means zero. Never include held seats in bookedCount. */
   checkoutHeld?: number;
@@ -117,6 +118,22 @@ function hash(value: unknown): string {
 /** Matches the attendee row's partySize ceiling; callers set tighter limits. */
 export const MAX_RESERVATION_PLACES = 20;
 
+/** A ledger's place limit. Null means the host has set no capacity yet, so
+ * the event takes any number of places; a set limit is a positive integer. */
+export type SeatCapacity = number | null;
+
+/** Whether a stored capacity is a valid limit or the no-limit null. */
+export function validSeatCapacity(value: unknown): value is SeatCapacity {
+  return value === null ||
+    typeof value === "number" && Number.isSafeInteger(value) && value >= 1;
+}
+
+/** Whether [places] fit within [capacity]; every count fits no limit. */
+export function fitsSeatCapacity(capacity: SeatCapacity,
+  places: number): boolean {
+  return capacity === null || places <= capacity;
+}
+
 /** Places a reservation holds; a reservation without `places` holds one. */
 export function reservationPlaces(
   reservation: Pick<SeatReservation, "places"> | null | undefined): number {
@@ -138,7 +155,7 @@ export function heldSeatCount(ledger: SeatLedger): number {
   if (!nonnegative(checkout) || !nonnegative(temporary) ||
       !nonnegative(held) || !nonnegative(ledger.occupied) ||
       !Number.isSafeInteger(ledger.occupied + held) ||
-      ledger.occupied + held > ledger.capacity) {
+      !fitsSeatCapacity(ledger.capacity, ledger.occupied + held)) {
     fail("unavailable", "Held seat inventory needs reconciliation.");
   }
   return held;
@@ -161,9 +178,10 @@ export function assertReadySeatState(eventId: string,
     fail("invalid", "A current canonical identity is required.");
   }
   if (!ledger || ledger.eventId !== eventId ||
-      ledger.state !== "ready" || !Number.isSafeInteger(ledger.capacity) ||
-      ledger.capacity < 1 || !nonnegative(ledger.occupied) ||
-      ledger.occupied > ledger.capacity || !nonnegative(ledger.revision) ||
+      ledger.state !== "ready" || !validSeatCapacity(ledger.capacity) ||
+      !nonnegative(ledger.occupied) ||
+      !fitsSeatCapacity(ledger.capacity, ledger.occupied) ||
+      !nonnegative(ledger.revision) ||
       ledger.revision === Number.MAX_SAFE_INTEGER ||
       !nonnegative(ledger.capacityRevision) ||
       ledger.capacityRevision === 0 ||
@@ -292,7 +310,8 @@ export async function prepareSeatCommand<Subject>(params: {
     fail("conflict", "There is no active seat to release.");
   }
   if (command.operation === "reserve" &&
-      ledger.occupied + heldSeatCount(ledger) >= ledger.capacity) {
+      !fitsSeatCapacity(ledger.capacity,
+        ledger.occupied + heldSeatCount(ledger) + 1)) {
     fail("conflict", "This event is full.");
   }
   const active = command.operation === "reserve";

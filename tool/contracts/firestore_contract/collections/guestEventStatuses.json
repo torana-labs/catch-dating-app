@@ -1,0 +1,28 @@
+{
+  "id": "guestEventStatuses",
+  "path": "guestEventStatuses/{statusId}",
+  "rulesMatch": "/guestEventStatuses/{statusId}",
+  "typescriptInterface": "GuestEventStatusDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
+  "rulesTestNames": [
+    "lets a guest get an event's guest entry and only their own status"
+  ],
+  "owner": "guest event status triggers",
+  "writerContext": "discovery",
+  "read": "a signed-in, non-deleted guest gets their own row by id (a missing row reads as missing) and lists only rows whose uid is theirs",
+  "write": "server only; triggers on eventBookings, eventAttendees, guestPayments, organizerApplications, organizerEventOfferRecipients and events rebuild a row from the guest's own records and delete it when none remain",
+  "exportedFunctions": [
+    "onGuestEventStatusParticipationWritten",
+    "onGuestEventStatusAttendeeWritten",
+    "onGuestEventStatusPaymentWritten",
+    "onGuestEventStatusApplicationWritten",
+    "onGuestEventStatusOfferRecipientWritten",
+    "onEventGuestEntryEventWritten",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Replaced the getEventViewerState guest surface for the website event page (#1337); that callable is retired. Backfilled by the guest-event-read-models migration; account deletion removes it.",
+    "Carries participationStatus and the guest event card for the guest's booking lists (#1340); the guest-event-cards migration fills them on older rows."
+  ]
+}

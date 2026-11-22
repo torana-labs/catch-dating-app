@@ -1,0 +1,3 @@
+| Function | Type | Initiator | Writes | Notes |
+|---|---|---|---|---|
+| `generateOrganizerMediaThumbnails` / `generateEventMediaThumbnails` | Firestore triggers after canonical media attachment | Backend | V2 sibling `thumbnail.jpg` Storage objects plus organizer/event `UploadedPhoto` thumbnail fields | Generates bounded-concurrency responsive JPEG thumbnails only after staged originals are attached, rechecks the current document before writing metadata, mirrors organizer thumbnails to the released `clubs` projection, and deletes a generated thumbnail when its source is no longer referenced. |

@@ -1,0 +1,20 @@
+{
+  "id": "participantOrganizerCards",
+  "path": "participantOrganizerCards/{responseId}",
+  "rulesMatch": "/participantOrganizerCards/{responseId}",
+  "typescriptInterface": "ParticipantOrganizerCardDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "participant profile claiming",
+  "writerContext": "profiles",
+  "read": "server only; authenticated participant projection",
+  "write": "server only; explicit participant review",
+  "exportedFunctions": [
+    "claimParticipantFormProfile",
+    "requestAccountDeletion",
+    "onParticipantFormProfileViewCardChanged"
+  ],
+  "migrationNotes": [
+    "Never populated from CRM notes, tags or organizer review data. Profile claiming does not grant event admission or public sharing."
+  ]
+}

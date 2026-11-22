@@ -1,0 +1,11 @@
+{
+  "id": "salesIntelligenceScoreSnapshots",
+  "path": "salesIntelligenceScoreSnapshots/{snapshotId}",
+  "rulesMatch": "/salesIntelligenceScoreSnapshots/{privateDocument=**}",
+  "typescriptInterface": "SalesIntelligenceScoreSnapshotDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales intelligence score callable",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

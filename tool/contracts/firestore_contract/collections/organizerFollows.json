@@ -1,0 +1,11 @@
+{
+  "id": "organizerFollows",
+  "path": "organizerFollows/{followId}",
+  "rulesMatch": "/organizerFollows/{followId}",
+  "typescriptInterface": "OrganizerFollowDocument",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "organizer follow callables; parent followerCount is trigger-owned",
+  "writerContext": "organizers",
+  "read": "the follower only",
+  "write": "server only"
+}

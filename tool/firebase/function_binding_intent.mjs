@@ -87,36 +87,29 @@ const unwrap = (node) => {
   return node;
 };
 
-/** Discover explicit authored exports without executing the source module. */
-export function discoverFunctionExportNames(indexSource) {
+// functions/scripts/functionExports.cjs is the one reader of the entry
+// point's export list; discovery asks it rather than parsing index.ts here.
+let resolver;
+const loadResolver = () => { resolver ??= createFunctionsRequire()("./scripts/functionExports.cjs"); return resolver; };
+
+/**
+ * Sorted exported Function names, without executing the source module: from
+ * an entry source string, or from {sourceRoot}'s functions/src/index.ts.
+ */
+export function discoverFunctionExportNames(input) {
   try {
     loadTypeScript();
-    if (typeof indexSource !== "string" || indexSource.length > 2 * 1024 * 1024) fail("functions/src/index.ts is missing or larger than 2 MiB");
-    const ast = ts.createSourceFile("index.ts", indexSource, ts.ScriptTarget.Latest, true);
-    if (ast.parseDiagnostics.length) fail("source file has syntax errors", ast);
-    const names = [];
-    for (const statement of ast.statements) {
-      if (ts.isExportDeclaration(statement)) {
-        if (statement.isTypeOnly) continue;
-        if (!statement.exportClause || !ts.isNamedExports(statement.exportClause)) fail("functions/src/index.ts must name each export, not use export *", statement);
-        for (const item of statement.exportClause.elements) {
-          if (!item.isTypeOnly) names.push(item.name.text);
-        }
-      } else if (ts.isExportAssignment(statement)) fail("functions/src/index.ts must not use export default or export =", statement);
-      else if (statement.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)) {
-        if (statement.modifiers.some((m) => m.kind === ts.SyntaxKind.DefaultKeyword)) fail("functions/src/index.ts must not use export default", statement);
-        if (ts.isInterfaceDeclaration(statement) || ts.isTypeAliasDeclaration(statement)) continue;
-        if (ts.isFunctionDeclaration(statement) && statement.name) names.push(statement.name.text);
-        else if (ts.isVariableStatement(statement)) {
-          for (const declaration of statement.declarationList.declarations) {
-            if (!ts.isIdentifier(declaration.name)) fail("functions/src/index.ts must not export a destructured name", statement);
-            names.push(declaration.name.text);
-          }
-        } else fail("functions/src/index.ts may export only functions and consts", statement);
-      }
+    const {FunctionEntryError, functionExports, functionExportsFromSource, rules} = loadResolver();
+    try {
+      const list = typeof input === "string" ? functionExportsFromSource(input, {ts}) :
+        functionExports({root: path.join(input?.sourceRoot ?? "", "functions"), ts});
+      return list.map(({name}) => name).sort();
+    } catch (error) {
+      if (!(error instanceof FunctionEntryError)) throw error;
+      if (error.rule === "empty") return [];
+      // The resolver reports a fixed rule and a functions/ path, never source text.
+      fail(`the entry point ${rules[error.rule]}`, `functions/${error.file}${error.line ? `:${error.line}` : ""}`);
     }
-    if (!names.every(validName) || new Set(names).size !== names.length) fail("functions/src/index.ts exports an invalid or duplicate name", ast);
-    return names.sort();
   } catch (error) { throw located(error); }
 }
 
@@ -249,7 +242,12 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         } else if (ts.isExportDeclaration(statement)) {
           if (statement.isTypeOnly) continue;
           if (!statement.exportClause || !ts.isNamedExports(statement.exportClause)) {
-            if (!scanOnly || statement.exportClause || !statement.moduleSpecifier?.text?.startsWith(".")) fail("a module a Function reaches uses export *; name its exports", statement);
+            // The entry point may star exactly its area entries
+            // (functions/scripts/functionExports.cjs owns that grammar).
+            const areaEntry = real === path.join(src, "index.ts") && !statement.exportClause &&
+              /^\.\/[a-z][A-Za-z0-9]*\/functions$/u.test(statement.moduleSpecifier?.text ?? "");
+            if (!areaEntry && (!scanOnly || statement.exportClause ||
+              !statement.moduleSpecifier?.text?.startsWith("."))) fail("a module a Function reaches uses export *; name its exports", statement);
             mod.stars.push(statement.moduleSpecifier.text);
             continue;
           }
@@ -272,6 +270,13 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
     };
     const exported = (name, mod) => enter(`export:${mod.file}:${name}`, () => {
       const entry = mod.exports.get(name);
+      if (!entry && mod.file === path.join(src, "index.ts") && mod.stars.length) {
+        // A name the entry point re-exports through one of its area entries.
+        const holders = mod.stars.map((specifier) => load(path.resolve(src, `${specifier}.ts`), false, mod))
+          .filter((area) => area.exports.has(name));
+        if (holders.length > 1) fail("the same name arrives through more than one export *", mod);
+        if (holders.length === 1) return exported(name, holders[0]);
+      }
       if (!entry) fail("does not export a name its importer asks for", mod);
       return entry.module ? imported(entry, mod) : symbol(entry.name, mod, new Map());
     }, mod);
@@ -741,14 +746,10 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
 
 /** Which Functions bind each secret, read from authored source without executing it. */
 export function collectSecretConsumers({sourceRoot}) {
-  let indexSource;
-  try {
-    indexSource = fs.readFileSync(path.join(sourceRoot, "functions/src/index.ts"), "utf8");
-  } catch (error) { throw located(error); }
   // Secret names do not vary by project, so these only satisfy input validation.
   const {functions} = collectFunctionBindingIntent({sourceRoot, environment: "dev",
     projectId: "source-only", projectNumber: "1", sourceSha: "0".repeat(40),
-    consumers: discoverFunctionExportNames(indexSource)});
+    consumers: discoverFunctionExportNames({sourceRoot})});
   const consumers = new Map();
   for (const {consumer, secretNames} of functions) {
     for (const secret of secretNames) {

@@ -1,0 +1,20 @@
+{
+  "id": "eventAssistanceWithdrawalGrants",
+  "path": "eventAssistanceWithdrawalGrants/{grantId}",
+  "rulesMatch": "/eventAssistanceWithdrawalGrants/{grantId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance messaging services (sms, rcs, whatsapp)",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "getEventRcsWithdrawal",
+    "withdrawEventRcs"
+  ],
+  "migrationNotes": [
+    "One collection for every channel since lane L1 (16 Nov 2026); each document carries channel and every query filters on it first.",
+    "Created atomically with dispatch. Authorizes only withdrawal for the original event, recipient, subject and consent lifetime; retain the referenced guest grant through this lifetime even when instructions expire.",
+    "Private revocation-only binding for the original event, source generations, subject, endpoint and RCS agent. Dispatch preparation stages immutable creation with the caller transaction. Retain the referenced guest grant through this independent withdrawal lifetime.",
+    "Issued with the atomic dispatch claim; revocation only for the original event, subject, recipient and provider sender. Retain the referenced guest grant through this independent consent lifetime."
+  ]
+}

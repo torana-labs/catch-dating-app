@@ -3,12 +3,17 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
+import {
+  firestoreCollectionPath,
+  firestoreContractDir,
+  loadFirestoreContractFromSnapshot,
+} from "../contracts/lib/firestore_contract.mjs";
 import {loadContextMap} from "./check_context_map.mjs";
 import {collectionWrites} from "./lib/functions_collection_writes.mjs";
 
 const functionsMapPath = "tool/architecture/functions_context_map.json";
 const appMapPath = "tool/architecture/context_map.json";
-const registryPath = "tool/contracts/firestore_contract.json";
+const registryPath = firestoreContractDir;
 const sourceRoot = "functions/src/";
 const layers = new Set(["platform", "domain", "surface", "entry"]);
 
@@ -71,7 +76,16 @@ export function loadFunctionsContextMap(source, appMap) {
       throw new Error(`Functions root ${root} must be a folder under ${sourceRoot} ending in /.`);
     }
   }
-  const entries = new Set(map.entry ?? []);
+  // An entry is a path, or a path whose one `*` stands for a single folder
+  // name: the area entries (functions/src/<area>/functions.ts) the entry point stars.
+  const entries = new Set((map.entry ?? []).filter((entry) => !entry.includes("*")));
+  const entryPatterns = (map.entry ?? []).filter((entry) => entry.includes("*")).map((entry) => {
+    if (entry.split("*").length !== 2 || !entry.startsWith(sourceRoot)) {
+      throw new Error(`Functions entry pattern ${entry} must be a path under ${sourceRoot} with one *.`);
+    }
+    const [before, after] = entry.split("*").map((part) => part.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"));
+    return new RegExp(`^${before}[^/]+${after}$`, "u");
+  });
   const legacy = [];
   const seen = new Set();
   for (const entry of map.legacy ?? []) {
@@ -104,14 +118,15 @@ export function loadFunctionsContextMap(source, appMap) {
   if (!Number.isSafeInteger(writeCeiling) || writeCeiling < 0) {
     throw new Error("crossContextWriteCeiling must be a whole number.");
   }
-  return {roots, contextRank, surfaces, entries, legacy,
+  return {roots, contextRank, surfaces, entries, entryPatterns, legacy,
     contextOrderViolationCeiling: ceiling, crossContextWriteCeiling: writeCeiling};
 }
 
 // Where a functions/src file sits: {layer, context?, surface?}. Target roots
 // win; otherwise the longest legacy prefix decides; null when unplaced.
 export function placeFunctionsPath(relativePath, map) {
-  if (map.entries.has(relativePath)) return {layer: "entry"};
+  if (map.entries.has(relativePath) ||
+      (map.entryPatterns ?? []).some((pattern) => pattern.test(relativePath))) return {layer: "entry"};
   const {roots} = map;
   if (relativePath.startsWith(roots.platform)) return {layer: "platform"};
   if (relativePath.startsWith(roots.domain)) {
@@ -236,21 +251,21 @@ export function checkFunctionsContexts({files, map, exists}) {
 // collection as writerContext: a domain context, a surface (for its own read
 // models), "platform", or "shared" for a deliberate shared outbox, which
 // says why in sharedWriterReason.
-export function loadWriterContexts(registrySource, map) {
-  const registry = JSON.parse(registrySource);
+// `registry` is the combined contract from tool/contracts/lib/firestore_contract.mjs.
+export function loadWriterContexts(registry, map) {
   const valid = new Set([...map.contextRank.keys(), ...map.surfaces, "platform", "shared"]);
   const byName = new Map();
   const findings = [];
   for (const collection of registry.collections ?? []) {
     const writer = collection.writerContext;
     if (!valid.has(writer)) {
-      findings.push({rule: "writerContext", path: registryPath, line: 1,
+      findings.push({rule: "writerContext", path: firestoreCollectionPath(collection.id), line: 1,
         reason: `${collection.id} needs a writerContext: a context or surface in ${functionsMapPath}, platform or shared`});
       continue;
     }
     if (writer === "shared" && (typeof collection.sharedWriterReason !== "string" ||
         collection.sharedWriterReason.trim() === "")) {
-      findings.push({rule: "writerContext", path: registryPath, line: 1,
+      findings.push({rule: "writerContext", path: firestoreCollectionPath(collection.id), line: 1,
         reason: `${collection.id} is shared and must say why in sharedWriterReason`});
     }
     const segments = String(collection.path ?? "").split("/");
@@ -299,8 +314,7 @@ export function scanFunctionsContexts({snapshot}) {
   const files = snapshot.readTexts(sourcePaths, {required: true});
   const known = new Set(snapshot.listFiles({prefix: sourceRoot}));
   const result = checkFunctionsContexts({files, map, exists: (file) => known.has(file)});
-  const registry = loadWriterContexts(snapshot.readTexts([registryPath], {required: true})
-    .get(registryPath), map);
+  const registry = loadWriterContexts(loadFirestoreContractFromSnapshot(snapshot), map);
   const foreign = foreignWrites({writes: collectionWrites({files}), writers: registry.byName, map});
   const findings = [...result.findings, ...registry.findings];
   if (foreign.length > map.crossContextWriteCeiling) {

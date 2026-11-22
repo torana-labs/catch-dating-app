@@ -1,0 +1,20 @@
+{
+  "id": "eventWaitlistOffers",
+  "path": "eventWaitlistOffers/{offerId}",
+  "rulesMatch": "/eventWaitlistOffers/{offerId}",
+  "typescriptInterface": "EventWaitlistOfferDocument",
+  "dartModel": null,
+  "owner": "waitlist offer callables and expiry scheduler",
+  "writerContext": "bookings",
+  "read": "offered attendee or club host",
+  "write": "server only",
+  "exportedFunctions": [
+    "createEventWaitlistOffers",
+    "acceptEventWaitlistOffer",
+    "declineEventWaitlistOffer",
+    "expireEventWaitlistOffers"
+  ],
+  "migrationNotes": [
+    "The offer document is the durable audit object; eventBookings mirrors the current offer state for cheap roster and attendee CTA reads."
+  ]
+}

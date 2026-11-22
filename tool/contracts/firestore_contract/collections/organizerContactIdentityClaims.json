@@ -1,0 +1,20 @@
+{
+  "id": "organizerContactIdentityClaims",
+  "path": "organizerContactIdentityClaims/{identityClaimId}",
+  "rulesMatch": "/organizerContactIdentityClaims/{identityClaimId}",
+  "typescriptInterface": "OrganizerContactIdentityClaimDocument",
+  "dartModel": null,
+  "owner": "organizer audience identity resolver and merge operations",
+  "writerContext": "safety",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "onEventAttendeeAudienceProjected",
+    "mergeOrganizerContacts",
+    "unmergeOrganizerContacts"
+  ],
+  "migrationNotes": [
+    "Only person-verified UID and phone identities receive singleton ownership claims.",
+    "Conflicting verified claims stop automatic merging and require a receipt-backed manager decision."
+  ]
+}

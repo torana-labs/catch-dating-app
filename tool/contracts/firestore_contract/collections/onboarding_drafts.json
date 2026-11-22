@@ -1,0 +1,31 @@
+{
+  "id": "onboarding_drafts",
+  "path": "onboarding_drafts/{uid}",
+  "rulesMatch": "/onboarding_drafts/{uid}",
+  "dartModel": "lib/contexts/profiles/domain/onboarding_draft.dart",
+  "rulesTestFile": "functions/test/rules/onboarding_drafts.rules.test.cjs",
+  "owner": "document id must equal Firebase Auth uid",
+  "writerContext": "profiles",
+  "read": "owner only",
+  "write": "owner only; intentionally extensible draft payload",
+  "extensible": true,
+  "requiredFields": [
+    "step"
+  ],
+  "operations": [
+    {
+      "id": "owner_draft_write",
+      "type": "directCreateOrUpdate",
+      "owner": "authenticated owner",
+      "rulesMustContain": [
+        "hasValidOnboardingDraftShape"
+      ],
+      "rulesTestNames": [
+        "allows only the owner to read, write, and delete their draft"
+      ]
+    }
+  ],
+  "migrationNotes": [
+    "The rules intentionally validate only step for owner-private draft routing; the draft payload can evolve without a rules deploy."
+  ]
+}

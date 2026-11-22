@@ -1,0 +1,20 @@
+{
+  "id": "organizerEventOfferAudits",
+  "path": "organizerEventOfferAudits/{documentId}",
+  "rulesMatch": "/organizerEventOfferAudits/{documentId}",
+  "typescriptInterface": "OrganizerEventOfferAuditDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps event offer receipts and audits server-only"
+  ],
+  "owner": "event offer manager operations",
+  "writerContext": "forms",
+  "read": "server only; current manager callable projection",
+  "write": "server only",
+  "exportedFunctions": [
+    "previewEventOffers",
+    "commitEventOffers",
+    "mutateEventOffer"
+  ]
+}

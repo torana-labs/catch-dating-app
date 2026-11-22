@@ -1,0 +1,17 @@
+{
+  "id": "eventAssistanceMessages",
+  "path": "eventAssistanceMessages/{messageId}",
+  "rulesMatch": "/eventAssistanceMessages/{messageId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance workers",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Intent and bounded attempts are private. Provider activation and guest response endpoints are separate integration work."
+  ],
+  "exportedFunctions": [
+    "repairEventAssistanceDelivery",
+    "onHostEventDeliveryViewMessageChanged"
+  ]
+}

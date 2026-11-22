@@ -1,0 +1,26 @@
+{
+  "id": "hostApplicationDetailViews",
+  "path": "hostApplicationDetailViews/{applicationId}",
+  "rulesMatch": "/hostApplicationDetailViews/{applicationId}",
+  "typescriptInterface": "HostApplicationDetailViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+  "rulesTestNames": [
+    "lets current managers get contact, application and attendance report views by id"
+  ],
+  "owner": "Host read model projector: hostReadModels application detail view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get by id while their account is not deleted; a view not written yet reads as missing",
+  "write": "server only; written from the application, its generic-form or imported response, its contact origin and the applicant's community membership, deleted with the application",
+  "exportedFunctions": [
+    "onHostApplicationDetailViewApplicationWritten",
+    "onHostApplicationDetailViewFormResponseWritten",
+    "onHostApplicationDetailViewImportedResponseWritten",
+    "onHostApplicationDetailViewOriginWritten",
+    "onHostApplicationDetailViewMembershipWritten"
+  ],
+  "migrationNotes": [
+    "detail equals what getOrganizerApplicationDetail returns; the callable and the view share one projection. The host-application-detail-views copy-forward migration creates views for applications recorded before the triggers.",
+    "Review and membership decisions stay callables that reread every source in their transactions and check the revisions the phone saw."
+  ]
+}

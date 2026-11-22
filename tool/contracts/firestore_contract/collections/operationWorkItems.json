@@ -1,0 +1,15 @@
+{
+  "id": "operationWorkItems",
+  "path": "operationWorkItems/{workItemId}",
+  "rulesMatch": "/operationWorkItems/{workItemId}",
+  "schemaContract": "contracts/operations/work_item.schema.json",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted operations workers",
+  "writerContext": "platform",
+  "read": "server/admin callable only",
+  "write": "server only",
+  "exportedFunctions": [],
+  "migrationNotes": [
+    "Portable record shape is contracts/operations/work_item.schema.json; primaryStage is exclusive and lifecycle outcomes are separate."
+  ]
+}

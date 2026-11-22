@@ -1,0 +1,21 @@
+{
+  "id": "programVendorViews",
+  "path": "programVendorViews/{programId}__{vendorId}",
+  "rulesMatch": "/programVendorViews/{viewId}",
+  "typescriptInterface": "ProgramVendorViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/program_arrivals.rules.test.cjs",
+  "rulesTestNames": [
+    "gives vendors to dispatchers, with no phone number to read"
+  ],
+  "owner": "Programme read model projector: programArrivalViewTriggers",
+  "writerContext": "programmes",
+  "read": "get and list (query naming programId) by accounts holding the transport dispatcher duty (coordinators included) and the programme owner, while not deleted",
+  "write": "server only; written from transportVendors, one document per bound programme",
+  "exportedFunctions": [
+    "onProgramVendorViewChanged"
+  ],
+  "migrationNotes": [
+    "Exactly the fields listTransportVendors returned: id, name and active. The vendor's phone number stays in transportVendors, so a read model is possible without withholding by role. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+  ]
+}

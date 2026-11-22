@@ -1,0 +1,11 @@
+{
+  "id": "organizerPolicyGapReviewDecisions",
+  "path": "organizerPolicyGapReviewDecisions/{decisionId}",
+  "rulesMatch": "/organizerPolicyGapReviewDecisions/{privateDocument=**}",
+  "typescriptInterface": "OrganizerPolicyGapReviewDecisionDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "adminDecideOrganizerPolicyGap callable",
+  "writerContext": "admin",
+  "read": "server only",
+  "write": "server only"
+}

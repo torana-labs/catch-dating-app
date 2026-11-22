@@ -1,0 +1,11 @@
+{
+  "id": "hostOrganizerActivations",
+  "path": "hostOrganizerActivations/{organizerId}",
+  "rulesMatch": "/hostOrganizerActivations/{privateDocument=**}",
+  "typescriptInterface": "HostOrganizerActivationDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Host acquisition reviewed pilot workflow",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only"
+}

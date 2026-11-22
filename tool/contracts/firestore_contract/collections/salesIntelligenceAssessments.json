@@ -1,0 +1,11 @@
+{
+  "id": "salesIntelligenceAssessments",
+  "path": "salesIntelligenceAssessments/{assessmentId}",
+  "rulesMatch": "/salesIntelligenceAssessments/{privateDocument=**}",
+  "typescriptInterface": "SalesIntelligenceAssessmentDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales intelligence assessment callable",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

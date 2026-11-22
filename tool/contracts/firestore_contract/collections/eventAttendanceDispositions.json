@@ -1,0 +1,23 @@
+{
+  "id": "eventAttendanceDispositions",
+  "path": "eventAttendanceDispositions/{dispositionId}",
+  "rulesMatch": "/eventAttendanceDispositions/{dispositionId}",
+  "typescriptInterface": "EventAttendanceDispositionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps attendance closeout decisions callable-only"
+  ],
+  "owner": "event attendance callables",
+  "writerContext": "live",
+  "read": "server only; current organizer managers receive a source-bound callable view",
+  "write": "server only; explicit closeout decisions and exact operation receipts share one transaction",
+  "exportedFunctions": [
+    "getEventAttendanceDisposition",
+    "recordEventNoShow",
+    "getEventAttendanceReport"
+  ],
+  "migrationNotes": [
+    "No physical attendance or guest intention is inferred or rewritten. Source/identity changes hide old decisions; attendance and closure changes supersede old no-show annotations."
+  ]
+}

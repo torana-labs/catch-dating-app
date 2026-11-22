@@ -34,7 +34,7 @@ function fixtureMap(overrides = {}) {
       surfaces: "functions/src/surfaces/",
       platform: "functions/src/platform/",
     },
-    entry: ["functions/src/index.ts"],
+    entry: ["functions/src/index.ts", "functions/src/*/functions.ts"],
     contexts: ["events", "bookings", {id: "supply", owns: "Listings."}],
     surfaces: [{id: "admin", owns: "Console."}, {id: "host", owns: "Host."}],
     legacy: [
@@ -60,6 +60,9 @@ function check(files, map = fixtureMap(), {keepStale = false} = {}) {
 test("places target roots, the longest legacy path, and the entry point", () => {
   const map = fixtureMap();
   assert.deepEqual(placeFunctionsPath("functions/src/index.ts", map), {layer: "entry"});
+  // Area entries the entry point stars are entry files too, one folder deep only.
+  assert.deepEqual(placeFunctionsPath("functions/src/operations/functions.ts", map), {layer: "entry"});
+  assert.notDeepEqual(placeFunctionsPath("functions/src/operations/nested/functions.ts", map), {layer: "entry"});
   assert.deepEqual(placeFunctionsPath("functions/src/platform/adminAuth.ts", map),
     {layer: "platform"});
   assert.deepEqual(placeFunctionsPath("functions/src/domain/supply/approval.ts", map),
@@ -220,17 +223,20 @@ test("finds inline writes through refs, constants, helpers and transactions", ()
 
 test("reads one writer context per registry collection", () => {
   const map = fixtureMap();
-  const {byName, findings} = loadWriterContexts(JSON.stringify({collections: [
+  const {byName, findings} = loadWriterContexts({collections: [
     {id: "eventBookings", path: "eventBookings/{id}", writerContext: "bookings"},
     {id: "deliveryMessages", path: "deliveryMessages/{id}", writerContext: "shared",
       sharedWriterReason: "One outbox every context enqueues to."},
     {id: "chat_messages", path: "matches/{m}/messages/{id}", writerContext: "events"},
     {id: "orphan", path: "orphan/{id}"},
     {id: "loose", path: "loose/{id}", writerContext: "shared"},
-  ]}), map);
+  ]}, map);
   assert.deepEqual([...byName.keys()],
     ["eventBookings", "deliveryMessages", "messages", "loose"]);
-  assert.deepEqual(findings.map(({reason}) => reason.split(" ")[0]), ["orphan", "loose"]);
+  assert.deepEqual(findings.map(({path, reason}) => `${path} ${reason.split(" ")[0]}`), [
+    "tool/contracts/firestore_contract/collections/orphan.json orphan",
+    "tool/contracts/firestore_contract/collections/loose.json loose",
+  ]);
 });
 
 test("reports writes from outside the owning context, not shared outboxes", () => {

@@ -1,0 +1,23 @@
+{
+  "id": "eventRehearsalActions",
+  "path": "eventRehearsalActions/{actionDocumentId}",
+  "rulesMatch": "/eventRehearsalActions/{actionId}",
+  "typescriptInterface": "EventRehearsalActionDocument",
+  "dartModel": "lib/contexts/live/domain/event_rehearsal.dart",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps all dress rehearsal collections callable-only"
+  ],
+  "owner": "event rehearsal callables",
+  "writerContext": "live",
+  "read": "server only; Host bootstrap and reproduction export return bounded history",
+  "write": "server only with deterministic client-action deduplication",
+  "exportedFunctions": [
+    "controlEventRehearsal",
+    "injectEventRehearsalBehavior",
+    "submitEventRehearsalGuestAction",
+    "completeEventRehearsal",
+    "exportEventRehearsalReproduction",
+    "expireEventRehearsals"
+  ]
+}

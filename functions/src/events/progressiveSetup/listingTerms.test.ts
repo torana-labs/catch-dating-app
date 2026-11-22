@@ -5,6 +5,7 @@ import {Store} from "../../organizerFormAdmission/admissionTestFixture";
 import type {EventDocument} from "../../shared/generated/firestoreAdminTypes";
 import {deriveEventSeatPolicy} from "../seatAuthority/firestoreAdapter";
 import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
+import {newEventSeatLedger} from "../seatAuthority/eventSeatLedgerBirth";
 import {eventListingTermsPatch, preparePrivateListingTerms} from
   "./listingTerms";
 
@@ -82,19 +83,58 @@ test("fresh initialization fences markers and history", async () => {
   }
 });
 
-test("reserved and held places fence policy changes", async () => {
-  for (const reserved of [{occupied: 1}, {checkoutHeld: 1}]) {
+test("reserved and held places keep their price and admission terms",
+  async () => {
+    for (const reserved of [{occupied: 1}, {checkoutHeld: 1}]) {
+      const h = setup();
+      await h.run();
+      Object.assign(h.before, h.after);
+      Object.assign(h.after, eventListingTermsPatch(h.before,
+        {...terms, priceInPaise: 90000}));
+      Object.assign(h.store.get("eventSeatLedgers/event1")!, reserved);
+      const writes = h.store.writes.length;
+      await assert.rejects(h.run(), unavailable);
+      assert.equal(h.store.writes.length, writes);
+    }
+  });
+
+test("capacity alone moves while places are reserved, never below them",
+  async () => {
+    for (const reserved of [{occupied: 3}, {checkoutHeld: 3}]) {
+      const h = setup();
+      await h.run();
+      Object.assign(h.before, h.after);
+      Object.assign(h.store.get("eventSeatLedgers/event1")!, reserved);
+      Object.assign(h.after, eventListingTermsPatch(h.before,
+        {...terms, capacityLimit: 2}));
+      await assert.rejects(h.run(), unavailable);
+      Object.assign(h.after, eventListingTermsPatch(h.before,
+        {...terms, capacityLimit: 30}));
+      await h.run();
+      const ledger = h.store.get("eventSeatLedgers/event1")!;
+      assert.equal(ledger.capacity, 30);
+      assert.equal(ledger.policyHash,
+        deriveEventSeatPolicy(h.after).policyHash);
+    }
+  });
+
+test("an event's first terms are set with imported guests already seated",
+  async () => {
     const h = setup();
-    await h.run();
-    Object.assign(h.before, h.after);
+    const born = newEventSeatLedger("event1", h.before);
+    assert.equal(born.ledger.capacity, null);
+    h.store.put("eventSeatLedgers/event1", {...born.ledger, occupied: 2});
+    h.store.put("eventSeatMigrationFences/event1", {...born.fence});
     Object.assign(h.after, eventListingTermsPatch(h.before,
-      {...terms, capacityLimit: 30}));
-    Object.assign(h.store.get("eventSeatLedgers/event1")!, reserved);
-    const writes = h.store.writes.length;
+      {...terms, capacityLimit: 1}));
     await assert.rejects(h.run(), unavailable);
-    assert.equal(h.store.writes.length, writes);
-  }
-});
+    Object.assign(h.after, eventListingTermsPatch(h.before, terms));
+    await h.run();
+    const ledger = h.store.get("eventSeatLedgers/event1")!;
+    assert.equal(ledger.capacity, 20);
+    assert.equal(ledger.occupied, 2);
+    assert.equal(ledger.policyHash, deriveEventSeatPolicy(h.after).policyHash);
+  });
 
 test("empty ledger changes capacity; no-op preserves revision", async () => {
   const h = setup();

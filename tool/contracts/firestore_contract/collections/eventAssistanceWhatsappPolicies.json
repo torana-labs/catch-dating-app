@@ -1,0 +1,13 @@
+{
+  "id": "eventAssistanceWhatsappPolicies",
+  "path": "eventAssistanceWhatsappPolicies/{senderId}",
+  "rulesMatch": "/eventAssistanceWhatsappPolicies/{senderId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance dispatch",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Reviewed content hashes and bounded quote for one organizer sender. Does not authorize guest consent or provider I/O by itself. No automated policy provisioning or activation."
+  ]
+}

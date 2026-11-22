@@ -1,0 +1,11 @@
+{
+  "id": "salesImportCompensations",
+  "path": "salesImportCompensations/{effectId}",
+  "rulesMatch": "/salesImportCompensations/{privateDocument=**}",
+  "typescriptInterface": "SalesImportCompensationDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales import compensation service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

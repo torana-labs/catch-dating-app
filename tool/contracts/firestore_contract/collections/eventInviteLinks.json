@@ -1,0 +1,30 @@
+{
+  "id": "eventInviteLinks",
+  "path": "eventInviteLinks/{inviteLinkId}",
+  "rulesMatch": "/eventInviteLinks/{inviteLinkId}",
+  "typescriptInterface": "EventInviteLinkDocument",
+  "dartModel": "lib/contexts/events/domain/event_invite_link.dart",
+  "owner": "event invite link callables and event-success scorecard recomputation",
+  "writerContext": "events",
+  "read": "club host only",
+  "write": "server only",
+  "exportedFunctions": [
+    "createEventInviteLink",
+    "createAttendeeInviteLink",
+    "getEventInviteLinkToken",
+    "disableEventInviteLink",
+    "recordEventInviteLinkOpen",
+    "recordEventShareIntent",
+    "onOrganizerContactEventEdgeInviteAttributed",
+    "onEventInviteLinkWritten",
+    "onEventParticipationWritten",
+    "onBookingPaymentWritten",
+    "onEventWaitlistOfferWritten",
+    "onSwipeCreated",
+    "onMessageCreated"
+  ],
+  "migrationNotes": [
+    "Named host, direct-recipient, promoter, partner, and attendee-referrer links carry opaque versioned bearer tokens; secret material is never client-readable.",
+    "Share intent is a Catch-owned button action, not proof that WhatsApp or another destination received a message. Verified registration and check-in attribution is projected from canonical attendee facts and remains reversible."
+  ]
+}

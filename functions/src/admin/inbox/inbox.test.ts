@@ -4,6 +4,7 @@ import test from "node:test";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {FakeFirestore} from "../../operations/testFirestore";
 import {contractValidator} from "../../shared/contractTestValidators";
+import {BRAND} from "../../shared/generated/brand";
 import {schemaErrorMessages} from "../../shared/generated/schemaValidationRuntime";
 import type {AdminListInboxItemsCallableResponse} from "../../shared/generated/adminListInboxItemsCallableResponse";
 import type {AdminGetInboxItemCallableResponse} from "../../shared/generated/adminGetInboxItemCallableResponse";
@@ -133,6 +134,7 @@ function websiteLead(kind: string, overrides: Record<string, unknown> = {}) {
     referral: {referral: {hostName: "Lantern Lane Social", hostLink: "@lanternlane", relationship: "I go to their dinners"},
       referralCredit: {status: "missing_referrer_account", referrerUid: null, referrerRole: null}},
     city_alerts: {cityAlerts: {interests: ["runs", "nights_out"]}},
+    app_link: {appLink: {app: "host"}},
   };
   return {source: "website", status: "needs_identity_review", leadKind: kind, fullName: null, phone: "+919812345678",
     city: "mumbai", createdAt: "2026-10-31T10:00:00.000Z",
@@ -155,6 +157,10 @@ test("a website lead is its own type, says its kind and waits for a WhatsApp rep
   const alerts = projectInboxSource("salesInboundIntent", "lead-3", websiteLead("city_alerts"));
   assert.equal(alerts?.title, "New plans in their city");
   assert.equal(alerts?.subtitle, "WhatsApp +919812345678 · Runs, Nights out");
+  const appLink = projectInboxSource("salesInboundIntent", "lead-4", websiteLead("app_link"));
+  assert.equal(appLink?.title, "App link request");
+  assert.equal(appLink?.subtitle, `WhatsApp +919812345678 · Asked for the ${BRAND.stores.hostAppName} link on WhatsApp`);
+  assert.equal(appLink?.state.code, "reply_on_whatsapp");
   const linked = projectInboxSource("salesInboundIntent", "lead-2", websiteLead("referral", {status: "linked",
     organizerId: "org-1", linkedBy: "dev", linkedAt: "2026-11-01T10:00:00.000Z"}));
   assert.equal(linked?.lifecycle, "closed");

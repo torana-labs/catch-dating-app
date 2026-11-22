@@ -1,0 +1,11 @@
+{
+  "id": "organizerFormResponses",
+  "path": "organizerFormResponses/{responseId}",
+  "rulesMatch": "/organizerFormResponses/{responseId}",
+  "typescriptInterface": "OrganizerFormResponseDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "organizer form submission callable",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

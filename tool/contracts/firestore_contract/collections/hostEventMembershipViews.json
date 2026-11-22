@@ -1,0 +1,30 @@
+{
+  "id": "hostEventMembershipViews",
+  "path": "hostEventMembershipViews/{membershipId}",
+  "rulesMatch": "/hostEventMembershipViews/{membershipId}",
+  "typescriptInterface": "HostEventMembershipViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers read live guest and settings views and nothing else"
+  ],
+  "owner": "Live guest and settings view evaluator: hostReadModels guest view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get their own organizer's views by id; nobody lists the collection",
+  "write": "server only; one per attendee of an event with an eventFormat and an endTime, deleted with the attendee or the event",
+  "exportedFunctions": [
+    "onHostGuestViewEventChanged",
+    "onHostGuestViewPlanChanged",
+    "onHostGuestViewAttendeeChanged",
+    "onHostGuestViewGuestChanged",
+    "onHostGuestViewMembershipChanged",
+    "onHostGuestViewOrganizerChanged",
+    "onHostGuestViewStaffGrantChanged",
+    "onHostGuestViewSettingChanged",
+    "onHostGuestViewRuntimeChanged"
+  ],
+  "migrationNotes": [
+    "ready is evaluated one millisecond before eventEndAtMillis; the phone ANDs it with the app clock, re-derives a pending transfer's state from transfer.expiresAt and the actions for the signed-in manager.",
+    "receivers keep their uncapped authority instants; the phone caps them to the handover review it opens (thirty minutes, at most the event end)."
+  ]
+}

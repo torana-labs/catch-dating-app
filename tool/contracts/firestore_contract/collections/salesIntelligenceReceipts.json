@@ -1,0 +1,11 @@
+{
+  "id": "salesIntelligenceReceipts",
+  "path": "salesIntelligenceReceipts/{receiptId}",
+  "rulesMatch": "/salesIntelligenceReceipts/{privateDocument=**}",
+  "typescriptInterface": "SalesIntelligenceReceiptDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales intelligence mutation service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

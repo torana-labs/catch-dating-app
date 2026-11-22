@@ -1,7 +1,8 @@
 import {createHash} from "crypto";
 import {normalizeRosterPhone} from "./eventAttendees";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
-import {SeatLedger, SeatReservation} from "./seatAuthority/seatAuthority";
+import {fitsSeatCapacity, SeatLedger, SeatReservation} from
+  "./seatAuthority/seatAuthority";
 import {seatIdentityAliasId, SeatIdentityAlias,
   seatIdentityValueHash, SeatVerifiedPhoneProof} from
   "./seatIdentityAuthority";
@@ -311,7 +312,9 @@ export function planEventSeatMigration(input: SeatMigrationInput):
     addAlias("contactOrigin", origin.id, key);
     addAlias("contact", origin.currentContactId, key);
   }
-  if (policy && occupied.size > policy.capacity) block("capacityExceeded");
+  if (policy && !fitsSeatCapacity(policy.capacity, occupied.size)) {
+    block("capacityExceeded");
+  }
   if (blockers.size) return {state: "blocked", blockers: [...blockers].sort()};
   const ledger: SeatLedger = {eventId: input.eventId,
     capacity: policy!.capacity, occupied: occupied.size, revision: 1,

@@ -1,0 +1,11 @@
+{
+  "id": "crossPathsInvitations",
+  "path": "crossPathsInvitations/{invitationId}",
+  "rulesMatch": "/crossPathsInvitations/{invitationId}",
+  "typescriptInterface": "CrossPathsInvitationDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "Cross Paths invitation callables",
+  "writerContext": "connections",
+  "read": "sender or recipient, unless either blocked the other",
+  "write": "server only"
+}

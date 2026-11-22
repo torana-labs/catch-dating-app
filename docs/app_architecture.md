@@ -395,7 +395,7 @@ may read repositories and platform plugins.
    result.
 7. One context writes each Firestore collection and calls each callable,
    matching `docs/backend_operation_catalog.md`. Each collection's
-   `writerContext` in `tool/contracts/firestore_contract.json` names it, and
+   `writerContext` in `tool/contracts/firestore_contract/collections/<id>.json` names it, and
    `check_functions_contexts.mjs` checks the Functions writes against it
    (see Backend contexts). Callables remain manual review.
 8. Context names are product nouns used the same way in Flutter,
@@ -439,7 +439,9 @@ module sits in one of four places, recorded in
   `functions/src/domain/<context>/`.
 - **surfaces:** endpoints and read models built for one client: `admin`,
   `host`, `website` and `ops`. Target root `functions/src/surfaces/<surface>/`.
-- **entry:** `functions/src/index.ts`.
+- **entry:** `functions/src/index.ts` and the area entries it stars,
+  `functions/src/<area>/functions.ts` (named re-exports only; see
+  `functions/README.md`, Function inventory).
 
 Rules, checked by `node tool/architecture/check_functions_contexts.mjs`:
 
@@ -453,7 +455,7 @@ Rules, checked by `node tool/architecture/check_functions_contexts.mjs`:
    down; `--list-context-order` lists the imports. Issue #1350's file splits
    bring it to zero.
 4. A collection is written only from the `writerContext` its entry in
-   `tool/contracts/firestore_contract.json` names: a domain context, a
+   `tool/contracts/firestore_contract/collections/<id>.json` names: a domain context, a
    surface for its own read models, `platform`, or `shared` for a deliberate
    shared outbox (today only `deliveryMessages`, which says why in
    `sharedWriterReason`). Other contexts call the owner's functions inside

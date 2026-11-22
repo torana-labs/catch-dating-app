@@ -1,0 +1,11 @@
+// The Functions this area deploys. src/index.ts re-exports this file
+// (read by functions/scripts/functionExports.cjs).
+
+export {
+  adminGetSupportConversation,
+  adminListSupportConversations,
+  adminListSupportSavedReplies,
+  adminRecordSupportMessage,
+  adminUpdateSupportConversation,
+  adminUpsertSupportSavedReply,
+} from "./adminSupport";

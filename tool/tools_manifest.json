@@ -495,6 +495,30 @@
       "role": "generator"
     },
     {
+      "id": "architecture:dart-blast-radius",
+      "category": "architecture",
+      "path": "tool/architecture/dart_blast_radius.mjs",
+      "command": "node tool/architecture/dart_blast_radius.mjs",
+      "surface": "local-read",
+      "status": "active",
+      "role": "finder",
+      "description": "Report only: from the import, export and part directives of tracked Dart files, how many lib libraries each test's import closure reaches on average, the most-reached libraries, per-file reach (--reach), the effect of cutting named edges (--cut from:to) and chokepoints (--chokepoints: barrels, widely imported files and hubs ranked by the reach removed if every edge into them is cut). Re-measures the test blast radius after each import-graph cut; it approximates, and does not replace, the Flutter test selector.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/architecture/dart_blast_radius.test.mjs"
+      ],
+      "checks": [
+        "node --check tool/architecture/dart_blast_radius.mjs",
+        "node --test tool/architecture/dart_blast_radius.test.mjs"
+      ],
+      "runbook": "tool/README.md#dart-test-blast-radius"
+    },
+    {
       "id": "architecture:organizer-rename",
       "category": "generator",
       "path": "tool/architecture/rename_to_organizer.mjs",
@@ -763,7 +787,8 @@
       ],
       "impactPaths": [
         "tool/audit/check_fn_readme_inventory.test.mjs",
-        "tool/audit/fn_readme_inventory_baseline.json"
+        "tool/audit/fn_readme_inventory_baseline.json",
+        "functions/scripts/functionExports.cjs"
       ],
       "role": "ratchet",
       "rules": [
@@ -822,7 +847,7 @@
       "command": "node tool/architecture/check_functions_contexts.mjs",
       "surface": "local-read",
       "status": "active",
-      "description": "Places every handwritten functions/src module by tool/architecture/functions_context_map.json (issue #1350) and checks its imports: platform imports only platform, domain code never imports a surface, a surface never imports another, domain contexts import only earlier contexts; and every collection is written only from the writerContext tool/contracts/firestore_contract.json names. Context-order imports and cross-context writes are bounded by the map's ceilings, which may only go down.",
+      "description": "Places every handwritten functions/src module by tool/architecture/functions_context_map.json (issue #1350) and checks its imports: platform imports only platform, domain code never imports a surface, a surface never imports another, domain contexts import only earlier contexts; and every collection is written only from the writerContext its tool/contracts/firestore_contract/collections/<id>.json names. Context-order imports and cross-context writes are bounded by the map's ceilings, which may only go down.",
       "checks": [
         "node --check tool/architecture/check_functions_contexts.mjs",
         "node --check tool/architecture/lib/functions_collection_writes.mjs",
@@ -839,7 +864,8 @@
         "tool/architecture/check_functions_contexts.mjs",
         "tool/architecture/check_functions_contexts.test.mjs",
         "tool/architecture/lib/functions_collection_writes.mjs",
-        "tool/contracts/firestore_contract.json"
+        "tool/contracts/firestore_contract/**",
+        "tool/contracts/lib/firestore_contract.mjs"
       ],
       "rules": [
         {
@@ -848,7 +874,7 @@
           "appliesTo": [
             "functions/src/**",
             "tool/architecture/functions_context_map.json",
-            "tool/contracts/firestore_contract.json"
+            "tool/contracts/firestore_contract/**"
           ],
           "instruction": "Place new functions/src modules under functions/src/platform/, functions/src/domain/<context>/ or functions/src/surfaces/<surface>/ (or a legacy placement in the map). Domain code never imports a surface; shared helpers go to the owning domain context or platform. Write a collection only from its registry writerContext; other contexts call the owning context's functions inside their transaction. Never raise a ceiling."
         }
@@ -1580,7 +1606,7 @@
         "tool/ci/main_push_base.mjs",
         "tool/ci/main_push_base.test.mjs"
       ],
-      "description": "Chooses the base a main push CI run plans from: the newest earlier main push run that ran, so the commits of a pending run a newer merge replaced are still validated; validates everything when that run is unknown or off main's history.",
+      "description": "Chooses the base a main push CI run plans from: the nearest earlier main push run that ran and whose commit is an ancestor of the head (by commit graph, not run order), so the commits of a pending run a newer merge replaced are still validated; validates everything when no such run exists.",
       "checks": [
         "node --check tool/ci/main_push_base.mjs",
         "node --test tool/ci/main_push_base.test.mjs"
@@ -1664,6 +1690,59 @@
       "checkSafety": "local-readonly"
     },
     {
+      "id": "ci:prefetch-sqlite3-asset",
+      "category": "ci",
+      "path": "tool/ci/prefetch_sqlite3_asset.mjs",
+      "command": "node tool/ci/prefetch_sqlite3_asset.mjs",
+      "surface": "local-writes-scratch",
+      "status": "active",
+      "role": "operator",
+      "description": "Downloads the locked sqlite3 package's prebuilt native library for this machine from its GitHub release (up to 4 attempts on network errors, 429 or 5xx), checks it against the sha256 the package pins, and writes it under .dart_tool/hooks_runner/shared/sqlite3/build/ where the package's build hook reuses a verified copy; an unexpected layout warns and leaves the download to the hook.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/prefetch_sqlite3_asset.test.mjs",
+        "pubspec.lock",
+        ".github/workflows/visual-integration-ci.yml"
+      ],
+      "checks": [
+        "node --check tool/ci/prefetch_sqlite3_asset.mjs",
+        "node --test tool/ci/prefetch_sqlite3_asset.test.mjs",
+        "node tool/ci/prefetch_sqlite3_asset.mjs --help"
+      ],
+      "runbook": "tool/README.md#ci-network-retries"
+    },
+    {
+      "id": "ci:queue-entry-timings",
+      "category": "ci",
+      "path": "tool/ci/queue_entry_timings.mjs",
+      "command": "node tool/ci/queue_entry_timings.mjs",
+      "surface": "remote-read",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "role": "finder",
+      "description": "Report only: fetches merge_group CI runs, their jobs and each queued PR's timeline through gh api (fetch), then reports per entry the wait before its run existed, the critical-path job, runner waits split macOS and Linux, outcomes, removals with their cause, and queue rebuilds where an entry was regrouped onto a new base (report, offline over the saved file).",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/queue_entry_timings.test.mjs"
+      ],
+      "checks": [
+        "node --check tool/ci/queue_entry_timings.mjs",
+        "node --test tool/ci/queue_entry_timings.test.mjs",
+        "node tool/ci/queue_entry_timings.mjs --help"
+      ],
+      "runbook": "tool/README.md#merge-queue-entry-timings"
+    },
+    {
       "id": "ci:required-ci-floor",
       "category": "ci",
       "path": "tool/ci/required_ci_floor.mjs",
@@ -1681,6 +1760,32 @@
         "node --test tool/ci/required_ci_floor.test.mjs"
       ],
       "role": "gate"
+    },
+    {
+      "id": "ci:retry-on-match",
+      "category": "ci",
+      "path": "tool/ci/retry_on_match.mjs",
+      "command": "node tool/ci/retry_on_match.mjs",
+      "surface": "local-read",
+      "status": "active",
+      "role": "operator",
+      "description": "Runs a CI command and reruns it (up to 3 attempts, 30 s then 90 s apart) only when its output contains failure text the call site names, such as Maven Central's HTTP 429; any other failure exits at once with the command's own code.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/retry_on_match.test.mjs",
+        ".github/workflows/app-build-matrix.yml"
+      ],
+      "checks": [
+        "node --check tool/ci/retry_on_match.mjs",
+        "node --test tool/ci/retry_on_match.test.mjs",
+        "node tool/ci/retry_on_match.mjs --help"
+      ],
+      "runbook": "tool/README.md#ci-network-retries"
     },
     {
       "id": "ci:selection-miss-report",
@@ -1875,7 +1980,8 @@
       "impactPaths": [
         "tool/contracts/check_bigquery_export_paths.test.mjs",
         "tool/contracts/lib/firestore_rules_blocks.mjs",
-        "tool/contracts/firestore_contract.json",
+        "tool/contracts/firestore_contract/**",
+        "tool/contracts/lib/firestore_contract.mjs",
         "tool/analytics/host_analytics_contract.mjs",
         "extensions/**",
         "firebase.json"
@@ -1910,7 +2016,8 @@
       "impactPaths": [
         "tool/contracts/check_client_write_contracts.test.mjs",
         "tool/contracts/lib/firestore_rules_blocks.mjs",
-        "tool/contracts/firestore_contract.json",
+        "tool/contracts/firestore_contract/**",
+        "tool/contracts/lib/firestore_contract.mjs",
         "firestore.rules",
         "contracts/client_writes/**",
         "contracts/firestore/**"
@@ -1938,18 +2045,24 @@
       },
       "impactPaths": [
         "tool/contracts/check_firestore_contract.test.mjs",
-        "tool/contracts/firestore_contract.json",
+        "tool/contracts/firestore_contract/**",
+        "tool/contracts/lib/firestore_contract.mjs",
+        "tool/contracts/lib/firestore_contract.test.mjs",
+        "tool/lib/repository_snapshot.mjs",
         "tool/contracts/lib/firestore_rules_blocks.mjs",
         "tool/contracts/lib/firestore_rules_blocks.test.mjs",
         "firestore.rules",
         "contracts/firestore/**",
         "tool/firebase/function_binding_intent.mjs",
         "tool/lib/repo_paths.mjs",
-        "functions/package-lock.json"
+        "functions/package-lock.json",
+        "functions/scripts/functionExports.cjs"
       ],
       "checks": [
         "node --check tool/contracts/check_firestore_contract.mjs",
         "node --test tool/contracts/lib/firestore_rules_blocks.test.mjs",
+        "node --check tool/contracts/lib/firestore_contract.mjs",
+        "node --test tool/contracts/lib/firestore_contract.test.mjs",
         "node --test tool/contracts/check_firestore_contract.test.mjs",
         "node tool/contracts/check_firestore_contract.mjs"
       ]
@@ -2243,7 +2356,8 @@
         "tool/architecture/rename_to_organizer.mjs",
         "tool/architecture/rename_to_organizer.test.mjs",
         "tool/architecture/rename_wire_to_organizer.mjs",
-        "tool/architecture/rename_wire_to_organizer.test.mjs"
+        "tool/architecture/rename_wire_to_organizer.test.mjs",
+        "functions/scripts/functionExports.cjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -2824,6 +2938,31 @@
       "lastCommit": "b5a30bc69730fa0cb5d8c15d0ee82bd9563063a8"
     },
     {
+      "id": "data:migrate-event-seat-ledgers",
+      "category": "data",
+      "path": "tool/data/migrate_event_seat_ledgers.mjs",
+      "command": "node tool/data/migrate_event_seat_ledgers.mjs --env <dev|prod> [--event <id>] [--apply [--allow-prod]] [--discard <id>]",
+      "surface": "remote-destructive",
+      "guard": "apply-and-prod-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "One-off move of every event without a seat ledger onto it: empty ledgers for cancelled events nobody holds a seat in, the paged migration engine for active events, then bookedCount set to the ledger's occupied seats. Dry run unless --apply; --discard releases the lock a failed run left.",
+      "checks": [
+        "node --check tool/data/migrate_event_seat_ledgers.mjs",
+        "npm --prefix functions run build && node --test tool/data/migrate_event_seat_ledgers.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/migrate_event_seat_ledgers.test.mjs",
+        "functions/src/events/seatMigrationPaged.ts",
+        "functions/src/events/seatMigration.ts",
+        "functions/src/events/seatAuthority/eventSeatLedgerBirth.ts",
+        "functions/src/events/seatAuthority/firestoreAdapter.ts",
+        "functions/src/events/seatAuthority/migrationOutstandingHolds.ts",
+        "functions/src/events/seatAuthority/liveMigrationSource.ts"
+      ],
+      "runbook": "tool/README.md#seat-ledger-backfill"
+    },
+    {
       "id": "data:migrate-firestore-consolidation",
       "category": "data",
       "path": "tool/data/migrate_firestore_consolidation.mjs",
@@ -2996,6 +3135,26 @@
       "impactPaths": [
         "tool/data/recompute_organizer_follower_counts.test.mjs",
         "tool/data/lib/recompute_cli_test_support.mjs"
+      ],
+      "role": "generator",
+      "runbook": "tool/README.md#firestore-projection-repairs"
+    },
+    {
+      "id": "data:repair-organizer-program-counts",
+      "category": "data",
+      "path": "tool/data/recompute_organizer_program_counts.mjs",
+      "command": "node tool/data/recompute_organizer_program_counts.mjs",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
+      "status": "active",
+      "description": "Recounts the planner list counts on organizerProgramViews from programGuests and programTravelLegs with the nightly recount's compiled code; the backfill for the counts.",
+      "checks": [
+        "node --check tool/data/recompute_organizer_program_counts.mjs",
+        "node --test tool/data/recompute_organizer_program_counts.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/recompute_organizer_program_counts.test.mjs",
+        "functions/src/programs/organizerProgramCounts.ts"
       ],
       "role": "generator",
       "runbook": "tool/README.md#firestore-projection-repairs"
@@ -4968,6 +5127,34 @@
       }
     },
     {
+      "id": "docs:function-catalog",
+      "category": "audit",
+      "path": "tool/docs/function_catalog.mjs",
+      "impactPaths": [
+        "tool/docs/function_catalog.test.mjs",
+        "docs/backend_operation_catalog/functions/**",
+        "functions/scripts/functionExports.cjs",
+        "functions/src/index.ts",
+        "functions/src/*/functions.ts"
+      ],
+      "command": "node tool/docs/function_catalog.mjs --check",
+      "surface": "local-read",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "index",
+        "setup": [
+          "node"
+        ]
+      },
+      "description": "Validates the per-area Cloud Functions inventory files under docs/backend_operation_catalog/functions/ (area-style name, exact header, five cells per row, one trailing newline, no repeated row, each row in the area that exports its Function) and prints the combined inventory table, which is never committed.",
+      "checks": [
+        "node --check tool/docs/function_catalog.mjs",
+        "node --test tool/docs/function_catalog.test.mjs",
+        "node tool/docs/function_catalog.mjs --check"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "docs:metadata",
       "category": "audit",
       "path": "tool/docs/check_doc_metadata.mjs",
@@ -5214,7 +5401,8 @@
       ],
       "runbook": "tool/README.md#firebase-deploy-and-client-callable-gates",
       "impactPaths": [
-        "packages/command-client/**"
+        "packages/command-client/**",
+        "functions/scripts/functionExports.cjs"
       ]
     },
     {
@@ -5261,7 +5449,8 @@
       },
       "impactPaths": [
         "tool/firebase/plan_firebase_deploy_targets.test.mjs",
-        "tool/firebase/list_firebase_function_targets.mjs"
+        "tool/firebase/list_firebase_function_targets.mjs",
+        "functions/scripts/functionExports.cjs"
       ],
       "description": "Expands only CI-authorized backend groups and validated exact targets into indexes-first Firebase phases while rejecting all, hosting, Remote Config, Extensions, and arbitrary extras.",
       "checks": [
@@ -5336,7 +5525,8 @@
         "tool/firebase/prepare_functions_params_for_deploy.mjs",
         "tool/firebase/report_environment_parity.test.mjs",
         "tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
-        "tool/firebase/wait_firestore_indexes_ready.mjs"
+        "tool/firebase/wait_firestore_indexes_ready.mjs",
+        "functions/scripts/functionExports.cjs"
       ],
       "description": "Read-only what's-live-where report comparing main with live dev/prod across Functions, params, GitHub variables, indexes, rules, dormant policy, callable gates, Remote Config and build modes; --policy-only requires every environment-conditional switch to be classified and feature-gate differences to carry an owner, ticket and expiry.",
       "checks": [
@@ -5379,7 +5569,8 @@
         "tool/firebase/function_binding_intent.mjs",
         "tool/firebase/function_binding_intent.test.mjs",
         "tool/firebase/prepare_functions_params_for_deploy.mjs",
-        ".github/workflows/_backend-deploy.yml"
+        ".github/workflows/_backend-deploy.yml",
+        "functions/scripts/functionExports.cjs"
       ],
       "runbook": "docs/release_operations.md#firebase-environment-readiness"
     },
@@ -5510,11 +5701,14 @@
         "functions/src/**",
         "functions/package-lock.json",
         "tool/firebase/environment_readiness.json",
-        "tool/firebase/function_binding_intent.test.mjs"
+        "tool/firebase/function_binding_intent.test.mjs",
+        "functions/scripts/functionExports.cjs",
+        "functions/scripts/functionExports.test.cjs"
       ],
       "checks": [
         "node --check tool/firebase/function_binding_intent.mjs",
-        "node --test tool/firebase/function_binding_intent.test.mjs"
+        "node --test tool/firebase/function_binding_intent.test.mjs",
+        "node --test functions/scripts/functionExports.test.cjs"
       ]
     },
     {
@@ -5538,6 +5732,9 @@
       "description": "Checked by firebase:deploy-target-plan. Expands Firebase function deploy target names from Functions exports.",
       "checks": [
         "node --check tool/firebase/list_firebase_function_targets.mjs"
+      ],
+      "impactPaths": [
+        "functions/scripts/functionExports.cjs"
       ]
     },
     {
@@ -6696,6 +6893,7 @@
         "tool/marketing/export_hosted_captures_c.test.mjs",
         "tool/marketing/lib/hosted_capture_support.test.mjs",
         "tool/marketing/lib/capture_seeds.mjs",
+        "tool/marketing/lib/capture_seeds.test.mjs",
         ".github/workflows/marketing-captures.yml",
         ".github/workflows/ci.yml",
         "artifacts/marketing/app-screenshots/**",
@@ -6719,7 +6917,7 @@
       },
       "checks": [
         "node --check tool/marketing/export_hosted_captures.mjs",
-        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs"
+        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs tool/marketing/lib/capture_seeds.test.mjs"
       ]
     },
     {
@@ -7713,7 +7911,10 @@
         "node --test tool/web/check_admin_review_bridge.test.mjs",
         "node tool/web/check_admin_review_bridge.mjs"
       ],
-      "role": "finder"
+      "role": "finder",
+      "impactPaths": [
+        "functions/scripts/functionExports.cjs"
+      ]
     },
     {
       "id": "platform:app-package-graphs",
@@ -8350,7 +8551,10 @@
         "OPERATIONS-PLATFORM-001"
       ],
       "runbook": "docs/web_surface_architecture.md#admin-live-data-source-contract",
-      "checkSafety": "local-readonly"
+      "checkSafety": "local-readonly",
+      "impactPaths": [
+        "functions/scripts/functionExports.cjs"
+      ]
     },
     {
       "id": "web:admin-pending-operations",

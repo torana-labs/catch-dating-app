@@ -1,0 +1,19 @@
+{
+  "id": "organizerPaymentOauthStates",
+  "path": "organizerPaymentOauthStates/{stateHash}",
+  "rulesMatch": "/organizerPaymentOauthStates/{stateId}",
+  "typescriptInterface": "OrganizerPaymentOauthStateDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps guest payment state server-only"
+  ],
+  "owner": "organizer form payment server operations",
+  "writerContext": "payments",
+  "read": "server only; owner and manager callable projections omit credentials",
+  "write": "server only",
+  "exportedFunctions": [
+    "manageOrganizerFormPaymentConnection",
+    "organizerFormPaymentOauthCallback"
+  ]
+}

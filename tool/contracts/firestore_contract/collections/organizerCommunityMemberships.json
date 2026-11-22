@@ -1,0 +1,20 @@
+{
+  "id": "organizerCommunityMemberships",
+  "path": "organizerCommunityMemberships/{membershipId}",
+  "rulesMatch": "/organizerCommunityMemberships/{membershipId}",
+  "typescriptInterface": "OrganizerCommunityMembershipDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
+  "owner": "explicit organizer community membership callable",
+  "writerContext": "payments",
+  "read": "server only; scoped callable projections",
+  "write": "server only",
+  "exportedFunctions": [
+    "decideOrganizerCommunityMembership",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "One current active/revoked organizer/UID grant; follows, contact links, signup and application review alone are not membership.",
+    "Subject account deletion removes grants; revocation does not cancel paid bookings or rewrite attendance."
+  ]
+}

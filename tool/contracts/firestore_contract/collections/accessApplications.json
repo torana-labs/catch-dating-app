@@ -1,0 +1,11 @@
+{
+  "id": "accessApplications",
+  "path": "accessApplications/{uid}",
+  "rulesMatch": "/accessApplications/{uid}",
+  "typescriptInterface": "AccessApplicationDocument",
+  "rulesTestFile": "functions/test/rules/launch_access_applications.rules.test.cjs",
+  "owner": "authenticated applicant owns application fields while editable; admin callables own review, cohort, and activation fields",
+  "writerContext": "admin",
+  "read": "owner only",
+  "write": "owner direct create and revision of editable application fields; review, cohort and activation fields are server only"
+}

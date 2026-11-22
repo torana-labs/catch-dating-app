@@ -1,0 +1,15 @@
+{
+  "id": "eventAssistanceDepartureRosters",
+  "path": "eventAssistanceDepartureRosters/{rosterId}",
+  "rulesMatch": "/eventAssistanceDepartureRosters/{rosterId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "event-assistance immutable departure roster",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "getEventAssistanceDepartureRoster",
+    "confirmEventAssistanceDeparture",
+    "recordEventAssistanceCheckpoint"
+  ]
+}

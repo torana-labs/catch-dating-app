@@ -1,0 +1,15 @@
+{
+  "id": "programWhatsappReplyOperations",
+  "path": "programWhatsappReplyOperations/{programWhatsappReplyOperationId}",
+  "rulesMatch": "/programWhatsappReplyOperations/{programWhatsappReplyOperationId}",
+  "typescriptInterface": "ProgramWhatsappReplyOperationDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "sendProgramWhatsappReply callable and sendProgramServiceReply",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Reservation written before the Meta call; an uncertain outcome stays unknown (fail closed).",
+    "Deleted by the archive retention sweep."
+  ]
+}

@@ -17,22 +17,6 @@ class ProgramSetupRepository {
 
   final FirebaseFunctions _functions;
 
-  Future<List<OrganizerProgramListRow>> listPrograms(String organizerId) =>
-      _call(
-        name: 'listOrganizerPrograms',
-        payload: ListOrganizerProgramsCallableRequest(
-          organizerId: organizerId,
-        ).toJson(),
-        action: 'load your programs',
-        parse: (value) {
-          final map = requiredMap(value, 'organizer programs');
-          return mapList(
-            map['programs'],
-            'programs',
-          ).map(OrganizerProgramListRow.fromMap).toList(growable: false);
-        },
-      );
-
   /// `archiveProgram`: starts the 14-day anonymization grace window; the
   /// program keeps reading but every mutation surface rejects writes.
   Future<ProgramMutationResult> archiveProgram({

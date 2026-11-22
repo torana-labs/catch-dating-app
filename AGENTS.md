@@ -145,7 +145,11 @@ the code. Each was resolved by measuring the thing itself.
 
 A local contribution is ready for handoff when its intended changes are present,
 focused checks pass, compile-critical generated outputs are current, and the
-exact commit is preserved. Shipping, issue status and retirement of the task's
+exact commit is preserved. Open its PR with squash auto-merge already on,
+unless the PR needs the owner's review, is a draft, or is stacked on a PR that
+has not merged; the PR body says which exception applies (see
+[`docs/agent_operating_model.md`](docs/agent_operating_model.md#execution-venue-and-source-handoff)).
+Shipping, issue status and retirement of the task's
 own worktree follow the mandatory checklist in
 [`docs/agent_operating_model.md`](docs/agent_operating_model.md#completion).
 A session that ends while its PR is still in the merge queue leaves its

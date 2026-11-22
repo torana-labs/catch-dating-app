@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
 
@@ -97,7 +98,6 @@ function checkChannel({root, channel, errors, fileCache}) {
   }
 
   const expectations = [
-    [sharedFiles.functionsIndex, channel.callableName, "functions export"],
     [
       sharedFiles.adminApi,
       `function ${channel.adminApiWrapper}`,
@@ -140,6 +140,12 @@ function checkChannel({root, channel, errors, fileCache}) {
       "audit log",
     ],
   ];
+  // The one reader of the Functions entry point's export list.
+  const exported = exportedFunctions({root, fileCache});
+  if (exported === null) errors.push(`${channel.id}:functions export: cannot read ${sharedFiles.functionsIndex}`);
+  else if (!exported.has(channel.callableName)) {
+    errors.push(`${channel.id}:functions export: ${sharedFiles.functionsIndex} does not export ${channel.callableName}`);
+  }
   for (const [file, token, label] of expectations) {
     mustContain({
       root,
@@ -181,6 +187,21 @@ function rejectFile({root, file, errors}) {
   if (fs.existsSync(path.resolve(root, file))) {
     errors.push(`legacy-snapshot: retire ${file}; operational state belongs in Firestore`);
   }
+}
+
+function exportedFunctions({root, fileCache}) {
+  const key = "\0functionExports";
+  if (!fileCache.has(key)) {
+    const {functionExportNames} = createRequire(import.meta.url)("../../functions/scripts/functionExports.cjs");
+    let names = null;
+    try {
+      names = new Set(functionExportNames({root: path.join(root, "functions")}));
+    } catch {
+      names = null;
+    }
+    fileCache.set(key, names);
+  }
+  return fileCache.get(key);
 }
 
 function mustContain({root, file, token, label, errors, fileCache}) {

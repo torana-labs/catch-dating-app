@@ -1,0 +1,11 @@
+{
+  "id": "eventSuccessAssignments",
+  "path": "eventSuccessAssignments/{assignmentId}",
+  "rulesMatch": "/eventSuccessAssignments/{assignmentId}",
+  "typescriptInterface": "EventSuccessAssignmentDocument",
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "owner": "event-success assignment callables",
+  "writerContext": "live",
+  "read": "the event's hosts (get and list) or the assigned participant (get)",
+  "write": "server only"
+}

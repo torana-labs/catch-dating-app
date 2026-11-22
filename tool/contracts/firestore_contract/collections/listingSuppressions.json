@@ -1,0 +1,15 @@
+{
+  "id": "listingSuppressions",
+  "path": "listingSuppressions/{caseId}",
+  "rulesMatch": "/listingSuppressions/{caseId}",
+  "typescriptInterface": "ListingSuppressionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/listingSuppressions.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps the listing suppression registry server-only"
+  ],
+  "owner": "do-not-list registry: organizer takedown tool suppress mode writes cases; Supply Intake, listing approval and organizer creation read them",
+  "writerContext": "supply",
+  "read": "server only; intake, approval and organizer creation look up keyed hashes with the Admin SDK",
+  "write": "server only; the takedown tool writes a case, intake increments blockedIntakeCount and createOrganizer appends reviewFlags"
+}

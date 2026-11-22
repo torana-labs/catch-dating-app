@@ -1,0 +1,15 @@
+{
+  "id": "programVendorBills",
+  "path": "programVendorBills/{programVendorBillId}",
+  "rulesMatch": "/programVendorBills/{programVendorBillId}",
+  "typescriptInterface": "ProgramVendorBillDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "reconcileProgramVendorBill callable",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "One vendor's bill for a programme, checked line by line against recorded trips.",
+    "Commercial record without guest data; the retention sweep clears its notes."
+  ]
+}

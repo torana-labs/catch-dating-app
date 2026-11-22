@@ -1,0 +1,11 @@
+{
+  "id": "publicEventAdmissionReceipts",
+  "path": "publicEventAdmissionReceipts/{receiptId}",
+  "rulesMatch": "/publicEventAdmissionReceipts/{documentId}",
+  "typescriptInterface": "PublicEventAdmissionReceiptDocument",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "public event checkout admission service",
+  "writerContext": "bookings",
+  "read": "server only",
+  "write": "server only"
+}

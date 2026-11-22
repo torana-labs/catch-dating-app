@@ -1,0 +1,11 @@
+{
+  "id": "organizerBillNotices",
+  "path": "organizerBillNotices/{noticeId}",
+  "rulesMatch": "/organizerBillNotices/{noticeId}",
+  "typescriptInterface": "OrganizerBillNoticeDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Functions organizer billing (adminManageOrganizerBills send/remind, bill notice delivery)",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only"
+}

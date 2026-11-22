@@ -1,0 +1,10 @@
+{
+  "id": "salesInboundIntents",
+  "path": "salesInboundIntents/{intentId}",
+  "rulesMatch": "/salesInboundIntents/{privateDocument=**}",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "joinWaitlist (Host applications and website leads), partner nominations and adminLinkSalesInboundIntent",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

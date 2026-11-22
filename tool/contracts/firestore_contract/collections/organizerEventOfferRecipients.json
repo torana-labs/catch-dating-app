@@ -1,0 +1,11 @@
+{
+  "id": "organizerEventOfferRecipients",
+  "path": "organizerEventOfferRecipients/{documentId}",
+  "rulesMatch": "/organizerEventOfferRecipients/{documentId}",
+  "typescriptInterface": "OrganizerEventOfferRecipientDocument",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "event offer callables and the offer payment transactions",
+  "writerContext": "forms",
+  "read": "server only",
+  "write": "server only"
+}

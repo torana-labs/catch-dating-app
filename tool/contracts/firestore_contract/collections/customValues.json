@@ -1,0 +1,11 @@
+{
+  "id": "customValues",
+  "path": "organizerSalesAccounts/{organizerId}/customValues/{fieldId}",
+  "rulesMatch": "/organizerSalesAccounts/{privateDocument=**}",
+  "typescriptInterface": "SalesCustomFieldValueDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales custom-field service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

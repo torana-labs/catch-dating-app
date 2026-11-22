@@ -1,0 +1,22 @@
+{
+  "id": "eventAssistanceBudgets",
+  "path": "eventAssistanceBudgets/{budgetId}",
+  "rulesMatch": "/eventAssistanceBudgets/{budgetId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance messaging services (sms, rcs, whatsapp)",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "adminApplyEventMessagingBudget"
+  ],
+  "migrationNotes": [
+    "One collection for every channel since lane L1 (16 Nov 2026); each document carries channel and every query filters on it first.",
+    "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied.",
+    "The finance apply callable may stage the event and India sender-day ceilings from one current approved decision; both remain paused pending a separate live activation boundary.",
+    "Explicit approved event and UTC sender-day limits. Agent and currency must match the current sender; both worst-case charges commit once with an outbox claim.",
+    "The finance apply callable source-fences the private agent binding and stages both ceilings in paused state without loading an RBM credential or activating dispatch.",
+    "Event and UTC sender-day limits are debited atomically with a claim. Currency-specific identity prevents mixing quote currencies; uncertain sends retain reservations.",
+    "The finance apply callable may stage both ceilings in paused state from one current approved decision without contacting Meta or enabling a worker."
+  ]
+}

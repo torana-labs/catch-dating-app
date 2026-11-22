@@ -1,0 +1,11 @@
+{
+  "id": "hostOperatorAlertWindows",
+  "path": "hostOperatorAlerts/{scopeId}/windows/{windowId}",
+  "rulesMatch": "/hostOperatorAlerts/{privateDocument=**}",
+  "typescriptInterface": "HostOperatorAlertWindowDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Operator alert triggers (functions/src/hostAlerts)",
+  "writerContext": "host",
+  "read": "server only",
+  "write": "server only"
+}

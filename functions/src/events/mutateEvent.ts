@@ -124,6 +124,9 @@ import {stageCancelledEventRefunds} from
 import {validateEventPlanChangeDocument} from
   "../shared/generated/validators/eventPlanChangeDocument";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {createEventSeatLedgerInTransaction,
+  deleteEventSeatLedgerInTransaction, seatLedgerHoldsPlaces} from
+  "./seatAuthority/eventSeatLedgerBirth";
 import {prepareEventMutationLedger} from "./eventPolicyMutation";
 import {EVENT_PLAN_CHANGES, eventPlanChangeFields,
   eventPlanChangeSourceId} from "./planChangeRecords";
@@ -418,6 +421,7 @@ export async function createEventHandler(
       endTimeMillis: data.endTimeMillis,
     });
     tx.create(eventRef, event);
+    createEventSeatLedgerInTransaction(tx, db, eventRef.id, event);
     if (inviteCode) {
       tx.create(privateAccessRef, {
         eventId: eventRef.id,
@@ -857,6 +861,8 @@ export async function deleteEventHandler(
       offerSnap,
       admissionSnap,
       seatMode,
+      ledgerSnap,
+      reservationSnap,
     ] = await Promise.all([
       tx.get(organizerRef),
       tx.get(deletedUserRef),
@@ -876,6 +882,9 @@ export async function deleteEventHandler(
       tx.get(db.collection("organizerFormAdmissions")
         .where("eventId", "==", data.eventId).limit(1)),
       readSeatMigrationWriterFence({db, tx, eventId: data.eventId}),
+      tx.get(db.collection("eventSeatLedgers").doc(data.eventId)),
+      tx.get(db.collection("eventSeatReservations")
+        .where("eventId", "==", data.eventId).limit(1)),
     ]);
     assertCanMutateOrganizerEntity(
       organizerSnap,
@@ -886,7 +895,8 @@ export async function deleteEventHandler(
       !participationSnap.empty ||
       !paymentSnap.empty ||
       !reviewSnap.empty || !attendeeSnap.empty || !offerSnap.empty ||
-      !admissionSnap.empty || seatMode === "ready"
+      !admissionSnap.empty || !reservationSnap.empty ||
+      seatMode === "ready" && seatLedgerHoldsPlaces(ledgerSnap.data())
     ) {
       throw new HttpsError(
         "failed-precondition",
@@ -896,6 +906,7 @@ export async function deleteEventHandler(
     }
 
     tx.delete(eventRef);
+    deleteEventSeatLedgerInTransaction(tx, db, data.eventId);
     // The event's own setup state goes with it. Setup receipts stay: they
     // are keyed by request, not event, and replay protection must survive.
     tx.delete(db.collection("eventSetupPreferences").doc(data.eventId));

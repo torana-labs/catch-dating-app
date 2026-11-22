@@ -1,0 +1,15 @@
+{
+  "id": "programGuestIds",
+  "path": "programGuestIds/{programGuestIdId}",
+  "rulesMatch": "/programGuestIds/{programGuestIdId}",
+  "typescriptInterface": "ProgramGuestIdDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "submitProgramGuestId and decideProgramGuestId callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "One guest's ID for the hotels; images live in private Storage under programs/{programId}/guestIds/.",
+    "Only the last four characters of an ID number are stored; the archive retention sweep deletes the documents and files."
+  ]
+}

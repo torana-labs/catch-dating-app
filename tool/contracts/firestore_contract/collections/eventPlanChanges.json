@@ -1,0 +1,11 @@
+{
+  "id": "eventPlanChanges",
+  "path": "eventPlanChanges/{sourceId}",
+  "rulesMatch": "/eventPlanChanges/{sourceId}",
+  "typescriptInterface": "EventPlanChangeDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "updateEvent callable and trusted Event Assistance workers",
+  "writerContext": "events",
+  "read": "server only",
+  "write": "server only"
+}

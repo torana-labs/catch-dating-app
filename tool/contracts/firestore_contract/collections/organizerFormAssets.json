@@ -1,0 +1,11 @@
+{
+  "id": "organizerFormAssets",
+  "path": "organizerFormAssets/{assetId}",
+  "rulesMatch": "/organizerFormAssets/{assetId}",
+  "typescriptInterface": "OrganizerFormAssetDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "organizer form respondent asset callables",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

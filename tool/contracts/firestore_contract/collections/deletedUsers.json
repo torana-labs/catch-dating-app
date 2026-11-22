@@ -1,0 +1,21 @@
+{
+  "id": "deletedUsers",
+  "path": "deletedUsers/{uid}",
+  "rulesMatch": "/deletedUsers/{uid}",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "requestAccountDeletion callable and account cleanup graph",
+  "writerContext": "safety",
+  "read": "server/admin only",
+  "write": "server only",
+  "exportedFunctions": [
+    "requestAccountDeletion"
+  ],
+  "operations": [
+    {
+      "id": "owner_account_deletion_request",
+      "type": "callable",
+      "owner": "authenticated owner",
+      "function": "requestAccountDeletion"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "eventAssistanceCheckpointReceipts",
+  "path": "eventAssistanceCheckpointReceipts/{receiptId}",
+  "rulesMatch": "/eventAssistanceCheckpointReceipts/{receiptId}",
+  "typescriptInterface": "EventAssistanceCheckpointReceiptDocument",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "event-assistance checkpoint command",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only"
+}

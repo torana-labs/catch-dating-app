@@ -1,0 +1,11 @@
+{
+  "id": "catchWhatsappClarifications",
+  "path": "catchWhatsappClarifications/{endpointHash}",
+  "rulesMatch": "/catchWhatsappClarifications/{privateDocument=**}",
+  "typescriptInterface": "CatchWhatsappClarificationDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Catch WhatsApp inbound router",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only"
+}

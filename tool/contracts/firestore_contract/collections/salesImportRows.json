@@ -1,0 +1,11 @@
+{
+  "id": "salesImportRows",
+  "path": "salesImportRows/{rowKey}",
+  "rulesMatch": "/salesImportRows/{privateDocument=**}",
+  "typescriptInterface": "SalesImportRowDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales import service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

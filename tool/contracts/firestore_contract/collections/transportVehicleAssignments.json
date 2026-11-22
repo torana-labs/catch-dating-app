@@ -1,0 +1,15 @@
+{
+  "id": "transportVehicleAssignments",
+  "path": "transportVehicleAssignments/{assignmentId}",
+  "rulesMatch": "/transportVehicleAssignments/{assignmentId}",
+  "typescriptInterface": "TransportVehicleAssignmentDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program dispatch transaction",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Organizer-wide occupancy keyed by SHA-256 of organizer id and normalized plate.",
+    "Active assignments do not expire; arrival or void releases only the current trip."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "programDoorRows",
+  "path": "programDoorRows/{functionId}__{guestId}",
+  "rulesMatch": "/programDoorRows/{rowId}",
+  "typescriptInterface": "ProgramDoorRowDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+  "rulesTestNames": [
+    "lists door rows and journal entries for one covered function"
+  ],
+  "owner": "Programme read model projector: programDoorViewTriggers",
+  "writerContext": "programmes",
+  "read": "get and list (query naming programId and functionId) where a door duty covers the function, and the programme owner, while not deleted",
+  "write": "server only; written from programFunctionGuests, programGuests, programHouseholds and programFunctions",
+  "exportedFunctions": [
+    "onProgramDoorFunctionChanged",
+    "onProgramDoorJoinChanged",
+    "onProgramDoorGuestChanged",
+    "onProgramDoorHouseholdChanged"
+  ],
+  "migrationNotes": [
+    "Display name, RSVP and attendance state, party size, household label and response note only; never a phone number, email or other contact field. An allGuests function has a row for every programme guest. The program-door-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone.",
+    "Guest and household anonymization reaches the rows through their source triggers."
+  ]
+}

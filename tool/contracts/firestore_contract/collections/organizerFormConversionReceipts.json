@@ -1,0 +1,11 @@
+{
+  "id": "organizerFormConversionReceipts",
+  "path": "organizerFormConversionReceipts/{receiptId}",
+  "rulesMatch": "/organizerFormConversionReceipts/{receiptId}",
+  "typescriptInterface": "OrganizerFormConversionReceiptDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "organizer form reviewed conversion",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

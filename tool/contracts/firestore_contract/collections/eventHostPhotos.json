@@ -1,0 +1,14 @@
+{
+  "id": "eventHostPhotos",
+  "path": "eventHostPhotos/{eventHostPhotoId}",
+  "rulesMatch": "/eventHostPhotos/{eventHostPhotoId}",
+  "typescriptInterface": "EventHostPhotoDocument",
+  "rulesTestFile": "functions/test/rules/event_host_photos.rules.test.cjs",
+  "owner": "addEventHostPhoto and deleteEventHostPhoto callables",
+  "writerContext": "events",
+  "read": "checked-in guests of the event and the organizer's owner and managers",
+  "write": "server only",
+  "migrationNotes": [
+    "One photo the host team shared after the event started; the files live in private Storage under events/{eventId}/hostPhotos/{photoId}/ and leave the server only as short-lived signed URLs."
+  ]
+}

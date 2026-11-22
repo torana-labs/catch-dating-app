@@ -1,0 +1,22 @@
+{
+  "id": "organizerCommunicationPreferences",
+  "path": "organizerCommunicationPreferences/{organizerId_uid}",
+  "rulesMatch": "/organizerCommunicationPreferences/{preferenceId}",
+  "typescriptInterface": "OrganizerCommunicationPreferenceDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "public registration and account-deletion callables",
+  "writerContext": "organizers",
+  "read": "server only; Hosts receive aggregate CRM counts",
+  "write": "server only",
+  "exportedFunctions": [
+    "registerPublicEvent",
+    "requestAccountDeletion",
+    "onGuestMessagingPermissionOrganizerPreferenceChanged"
+  ],
+  "migrationNotes": [
+    "A roster phone number never grants marketing permission. Only an explicit participant-controlled per-channel receipt creates or advances this projection.",
+    "Managed delivery requires evidenceStatus=complete and a currentReceiptId; legacy non-unknown rows without complete evidence fail closed.",
+    "Catch platform marketing consent remains a separate purpose and is not represented here."
+  ]
+}

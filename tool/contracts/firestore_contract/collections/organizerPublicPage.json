@@ -1,0 +1,27 @@
+{
+  "id": "organizerPublicPage",
+  "path": "organizerPublicPage/{organizerId}",
+  "rulesMatch": "/organizerPublicPage/{organizerId}",
+  "typescriptInterface": "OrganizerPublicPageDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps public page read models and build markers server-only"
+  ],
+  "owner": "Public organizer page read model (CAT-250)",
+  "writerContext": "website",
+  "read": "server only; the website server reads one document per organizer page with the Admin SDK",
+  "write": "server only; rebuilt from published organizer, event, imported event and review sources by functions/src/publicPages",
+  "exportedFunctions": [
+    "onPublicPageOrganizerWritten",
+    "onPublicPageEventWritten",
+    "onPublicPageExternalEventWritten",
+    "onPublicPageReviewWritten",
+    "refreshPublicPageFollowers",
+    "reconcilePublicPages"
+  ],
+  "migrationNotes": [
+    "Backfill with functions/scripts/backfill-public-pages.cjs before the website reads organizer routes from this collection.",
+    "A document exists only while the organizer passes the website publication rules; withdrawal deletes it."
+  ]
+}

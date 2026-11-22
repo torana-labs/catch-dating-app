@@ -1,0 +1,16 @@
+{
+  "id": "chat_messages",
+  "path": "matches/{matchId}/messages/{messageId}",
+  "rulesMatch": "/matches/{matchId}/messages/{messageId}",
+  "typescriptInterface": "ChatMessageDocument",
+  "dartModel": "lib/contexts/messaging/domain/chat_message.dart",
+  "rulesTestFile": "functions/test/rules/chat_and_match_writes.rules.test.cjs",
+  "owner": "active match participant creates message; triggers own derived match preview/unread/moderation",
+  "writerContext": "safety",
+  "read": "active match participants",
+  "write": "sender create only",
+  "exportedFunctions": [
+    "onMessageCreated",
+    "moderateChatMessage"
+  ]
+}

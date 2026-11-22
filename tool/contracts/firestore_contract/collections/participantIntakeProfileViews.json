@@ -1,0 +1,22 @@
+{
+  "id": "participantIntakeProfileViews",
+  "path": "participantIntakeProfileViews/{uid}",
+  "rulesMatch": "/participantIntakeProfileViews/{uid}",
+  "typescriptInterface": "ParticipantIntakeProfileViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "rulesTestNames": [
+    "lets guests read only their own form profile review rows"
+  ],
+  "owner": "Participant form profile view projector: profiles form profile view triggers",
+  "writerContext": "profiles",
+  "read": "the guest gets only the document whose id is their uid, while their account is not deleted; nobody lists",
+  "write": "server only; written from participantIntakeProfiles/{uid}",
+  "exportedFunctions": [
+    "onParticipantIntakeProfileViewChanged",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Holds only the intake revision the claim fences a LinkedIn save on and the saved LinkedIn URL. The participant-form-profile-views migration creates views for intake profiles recorded before the trigger."
+  ]
+}

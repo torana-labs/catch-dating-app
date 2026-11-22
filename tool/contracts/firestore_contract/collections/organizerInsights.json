@@ -1,0 +1,19 @@
+{
+  "id": "organizerInsights",
+  "path": "organizerInsights/{insightId}",
+  "rulesMatch": "/organizerInsights/{insightId}",
+  "typescriptInterface": "OrganizerInsightsDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps organizer insights and follower message quotas server-only"
+  ],
+  "owner": "organizer insights roll-up (website owner view)",
+  "writerContext": "insights",
+  "read": "server only; getOrganizerOwnerView projection for the organiser's team",
+  "write": "server only; nightly roll-up and backfill",
+  "exportedFunctions": [
+    "rollupOrganizerInsightsDaily",
+    "getOrganizerOwnerView"
+  ]
+}

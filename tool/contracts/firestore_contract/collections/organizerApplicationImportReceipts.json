@@ -1,0 +1,11 @@
+{
+  "id": "organizerApplicationImportReceipts",
+  "path": "organizerApplicationImportReceipts/{receiptId}",
+  "rulesMatch": "/organizerApplicationImportReceipts/{receiptId}",
+  "typescriptInterface": "OrganizerApplicationImportReceiptDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "organizer application import callable",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

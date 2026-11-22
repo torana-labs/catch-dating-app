@@ -1,0 +1,11 @@
+{
+  "id": "organizerBills",
+  "path": "organizerBills/{billId}",
+  "rulesMatch": "/organizerBills/{billId}",
+  "typescriptInterface": "OrganizerBillDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Functions organizer billing (daily cycle generation, adminManageOrganizerBills, Razorpay payment link webhook)",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only"
+}
