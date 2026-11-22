@@ -11,10 +11,10 @@ import type {
   ControlEventRehearsalCallablePayload,
 } from "../shared/generated/controlEventRehearsalCallablePayload";
 import {operationContentHash as hash} from "../operations/durableActions";
-import {
-  accountabilityResolutionFields,
-  currentAccountabilityResolution,
-} from "../eventSuccess/accountability";
+import {currentAccountabilityResolution} from
+  "../eventSuccess/accountability";
+import {accountabilityResolutionFields} from
+  "../domain/bookings/attendeeAccountability";
 import {requirePracticeHost, practiceIsManager, practiceGroupPermission} from
   "./groupStaff";
 import {practiceMembershipSource} from "./membershipSource";

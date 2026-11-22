@@ -4,7 +4,8 @@ import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
-import {accountabilityResolutionFields} from "../accountability";
+import {accountabilityResolutionFields} from
+  "../../domain/bookings/attendeeAccountability";
 import {operationCollections} from "../../operations/collections";
 import {operationResourceLeaseId} from
   "../../operations/firestoreLeaseRepository";
