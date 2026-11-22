@@ -5,6 +5,8 @@ import type {
   "../shared/generated/firestoreAdminTypes";
 import type {AssignmentConstraintConfig} from "./assignmentConstraints";
 import {HttpsError} from "firebase-functions/v2/https";
+import {organizerEventSuccessLayoutDocumentId} from
+  "../domain/formats/layoutDocumentId";
 
 export type EventSuccessLayoutUnit =
   OrganizerEventSuccessLayoutDocument["units"][number];
@@ -31,14 +33,6 @@ interface SpatialAssignment {
   groupRotationSlots?: Array<{roundIndex: number; unitIndex?: number}>;
   layoutUnitId?: string;
   confirmedLayoutUnitId?: string | null;
-}
-
-/** Returns the deterministic organizer-layout document id. */
-export function organizerEventSuccessLayoutDocumentId(
-  organizerId: string,
-  layoutId: string
-): string {
-  return `${organizerId}_${layoutId}`;
 }
 
 /** Loads the selected organizer asset without copying it onto the event. */

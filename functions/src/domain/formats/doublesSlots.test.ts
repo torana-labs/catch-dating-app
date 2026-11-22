@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {doublesRoundsFromPlannedRounds, isDoublesCourt} from "./doublesSlots";
-import {isHttpsError} from "../shared/testUtils";
+import {isHttpsError} from "../../shared/testUtils";
 
 const p = (uid: string) => ({uid});
 

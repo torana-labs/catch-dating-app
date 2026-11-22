@@ -113,7 +113,7 @@ import {
   ResolvedEventSuccessPrimitives,
 } from "../eventSuccess/formatPrimitives";
 import {organizerEventSuccessLayoutDocumentId} from
-  "../eventSuccess/spatialLayout";
+  "../domain/formats/layoutDocumentId";
 import {
   assertOrganizerEventVenueSource,
   organizerEventVenueDocumentId,

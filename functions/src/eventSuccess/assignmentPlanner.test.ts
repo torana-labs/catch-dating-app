@@ -11,7 +11,7 @@ import {
   optInProfileAttributesForStructureConfig,
   withOptInProfileAttributes,
 } from "./assignmentPrimitiveControls";
-import type {AssignmentTopology} from "./assignmentTopology";
+import type {AssignmentTopology} from "../domain/formats/assignmentTopology";
 import type {
   AssignmentFeatureRule,
   EventAssignmentFeatureSnapshot,

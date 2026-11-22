@@ -99,10 +99,9 @@ import {
   verifyEventVenueSessionToken,
 } from "../events/venueSessions";
 import {eventSuccessPrimitivesFor} from "./formatPrimitives";
-import {
-  organizerEventSuccessLayoutDocumentId,
-  publicEventSuccessLayout,
-} from "./spatialLayout";
+import {organizerEventSuccessLayoutDocumentId} from
+  "../domain/formats/layoutDocumentId";
+import {publicEventSuccessLayout} from "./spatialLayout";
 import {
   completedRuntimeFieldIds,
   optionalRuntimeFieldIds,
