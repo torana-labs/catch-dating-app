@@ -1664,6 +1664,33 @@
       "checkSafety": "local-readonly"
     },
     {
+      "id": "ci:prefetch-sqlite3-asset",
+      "category": "ci",
+      "path": "tool/ci/prefetch_sqlite3_asset.mjs",
+      "command": "node tool/ci/prefetch_sqlite3_asset.mjs",
+      "surface": "local-writes-scratch",
+      "status": "active",
+      "role": "operator",
+      "description": "Downloads the locked sqlite3 package's prebuilt native library for this machine from its GitHub release (up to 4 attempts on network errors, 429 or 5xx), checks it against the sha256 the package pins, and writes it under .dart_tool/hooks_runner/shared/sqlite3/build/ where the package's build hook reuses a verified copy; an unexpected layout warns and leaves the download to the hook.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/prefetch_sqlite3_asset.test.mjs",
+        "pubspec.lock",
+        ".github/workflows/visual-integration-ci.yml"
+      ],
+      "checks": [
+        "node --check tool/ci/prefetch_sqlite3_asset.mjs",
+        "node --test tool/ci/prefetch_sqlite3_asset.test.mjs",
+        "node tool/ci/prefetch_sqlite3_asset.mjs --help"
+      ],
+      "runbook": "tool/README.md#ci-network-retries"
+    },
+    {
       "id": "ci:required-ci-floor",
       "category": "ci",
       "path": "tool/ci/required_ci_floor.mjs",
@@ -1681,6 +1708,32 @@
         "node --test tool/ci/required_ci_floor.test.mjs"
       ],
       "role": "gate"
+    },
+    {
+      "id": "ci:retry-on-match",
+      "category": "ci",
+      "path": "tool/ci/retry_on_match.mjs",
+      "command": "node tool/ci/retry_on_match.mjs",
+      "surface": "local-read",
+      "status": "active",
+      "role": "operator",
+      "description": "Runs a CI command and reruns it (up to 3 attempts, 30 s then 90 s apart) only when its output contains failure text the call site names, such as Maven Central's HTTP 429; any other failure exits at once with the command's own code.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/retry_on_match.test.mjs",
+        ".github/workflows/app-build-matrix.yml"
+      ],
+      "checks": [
+        "node --check tool/ci/retry_on_match.mjs",
+        "node --test tool/ci/retry_on_match.test.mjs",
+        "node tool/ci/retry_on_match.mjs --help"
+      ],
+      "runbook": "tool/README.md#ci-network-retries"
     },
     {
       "id": "ci:selection-miss-report",
@@ -6696,6 +6749,7 @@
         "tool/marketing/export_hosted_captures_c.test.mjs",
         "tool/marketing/lib/hosted_capture_support.test.mjs",
         "tool/marketing/lib/capture_seeds.mjs",
+        "tool/marketing/lib/capture_seeds.test.mjs",
         ".github/workflows/marketing-captures.yml",
         ".github/workflows/ci.yml",
         "artifacts/marketing/app-screenshots/**",
@@ -6719,7 +6773,7 @@
       },
       "checks": [
         "node --check tool/marketing/export_hosted_captures.mjs",
-        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs"
+        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs tool/marketing/lib/capture_seeds.test.mjs"
       ]
     },
     {

@@ -206,11 +206,21 @@ jobs:
 
       - name: Build dev Android debug artifact
         if: ${{ contains(fromJSON(inputs.app_roles), 'consumer') }}
-        run: ./tool/flutter_with_env.sh dev build apk --debug
+        # Maven Central sometimes answers dependency downloads with HTTP 429
+        # (merge-group run 44478789685); only that failure is retried.
+        run: >-
+          node tool/ci/retry_on_match.mjs
+          --match 'Received status code 429 from server'
+          -- ./tool/flutter_with_env.sh dev build apk --debug
 
       - name: Build dev host Android debug artifact
         if: ${{ contains(fromJSON(inputs.app_roles), 'host') }}
-        run: ./tool/flutter_with_env.sh dev --role host build apk --debug
+        # Maven Central sometimes answers dependency downloads with HTTP 429
+        # (merge-group run 44478789685); only that failure is retried.
+        run: >-
+          node tool/ci/retry_on_match.mjs
+          --match 'Received status code 429 from server'
+          -- ./tool/flutter_with_env.sh dev --role host build apk --debug
 
   ios:
     name: iOS ${{ matrix.role }} simulator build

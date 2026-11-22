@@ -42,6 +42,12 @@ jobs:
 
       - run: flutter pub get
 
+      # The sqlite3 build hook downloads its native library during flutter test
+      # with one attempt (main run 43716269314 failed on a DNS error). This
+      # fetches it with retries into the hook's verified cache first.
+      - name: Prefetch the sqlite3 native library
+        run: node tool/ci/prefetch_sqlite3_asset.mjs
+
       - name: Generate matching Flutter source outputs
         id: provider-codegen
         run: |

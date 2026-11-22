@@ -167,11 +167,49 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
     seeds, seedIds: [...seeds.keys()], seedSources: sources};
 }
 
-function githubRequest(endpoint, {binary = false} = {}) {
-  const result = spawnSync("gh", ["api", "-H", "Cache-Control: no-cache", endpoint],
-    {encoding: binary ? null : "utf8", maxBuffer: 256 * 1024 * 1024, timeout: 120_000});
-  assert.equal(result.status, 0, result.stderr?.toString() || "Cannot read capture bundles.");
-  return binary ? result.stdout : JSON.parse(result.stdout);
+export const GH_API_TIMEOUT_MS = 120_000;
+export const GH_API_ATTEMPTS = 3;
+// Waits before the second and third attempts.
+export const GH_API_BACKOFF_MS = Object.freeze([5_000, 20_000]);
+// Failures worth another attempt: rate limits, server errors and network
+// trouble. A 404, a 403 that is not a rate limit, or bad JSON fails at once.
+const transientGhFailure = /\bHTTP (?:429|5\d\d)\b|rate limit|timed? ?out|connection (?:reset|refused)|ECONNRESET|EOF|TLS handshake|could not resolve|no such host|temporary failure in name resolution|network is unreachable/iu;
+
+/**
+ * One `gh api` call, retried on transient failures. A call that hits the
+ * timeout is reported as a timeout, not as a missing exit status.
+ */
+export async function githubRequest(endpoint, {binary = false, spawn = spawnSync,
+  sleep = ms => new Promise(resolve => setTimeout(resolve, ms)), log = message => console.error(message)} = {}) {
+  let failure = "";
+  for (let attempt = 1; ; attempt += 1) {
+    if (attempt > 1) {
+      const wait = GH_API_BACKOFF_MS[attempt - 2];
+      log(`${failure} Retrying in ${wait / 1000} s (attempt ${attempt} of ${GH_API_ATTEMPTS}).`);
+      await sleep(wait);
+    }
+    const result = spawn("gh", ["api", "-H", "Cache-Control: no-cache", endpoint],
+      {encoding: binary ? null : "utf8", maxBuffer: 256 * 1024 * 1024, timeout: GH_API_TIMEOUT_MS});
+    if (result.status === 0 && !result.error) return binary ? result.stdout : JSON.parse(result.stdout);
+    const stderr = result.stderr?.toString().trim() ?? "";
+    let transient;
+    if (result.error?.code === "ETIMEDOUT") {
+      failure = `gh api ${endpoint} timed out after ${GH_API_TIMEOUT_MS / 1000} s.`;
+      transient = true;
+    } else if (result.error) {
+      failure = `gh api ${endpoint} could not run: ${result.error.message}`;
+      transient = false;
+    } else {
+      failure = `gh api ${endpoint} failed (exit ${result.status ?? `signal ${result.signal}`}): ${stderr || "no error output"}`;
+      transient = transientGhFailure.test(stderr);
+    }
+    if (!transient) break;
+    if (attempt === GH_API_ATTEMPTS) {
+      failure += ` Gave up after ${GH_API_ATTEMPTS} attempts.`;
+      break;
+    }
+  }
+  throw new Error(`${failure} Cannot read capture bundles.`);
 }
 
 /**
