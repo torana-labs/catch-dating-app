@@ -82,7 +82,7 @@ Use [docs/release_operations.md](docs/release_operations.md) for exact CI, signi
 
 ## Generated and local-only content
 
-Generated artifacts must have a named source and drift check. The tool manifest at `tool/tools_manifest.json` owns runnable automation. The root manifest at `tool/repository_root_manifest.json` classifies every allowed root entry.
+Generated artifacts must have a named source and drift check. The tool manifest in `tool/manifest/` (one file per tool) owns runnable automation. The root manifest at `tool/repository_root_manifest.json` classifies every allowed root entry.
 
 Common local-only state includes build outputs, package caches, IDE metadata, emulator exports, debug logs, `.env*`, and `.claude/worktrees/`. Inspect or clean regenerable state with `node tool/repository_hygiene.mjs`; never use a broad `git clean` command. Curated visual evidence follows [artifacts/README.md](artifacts/README.md).
 

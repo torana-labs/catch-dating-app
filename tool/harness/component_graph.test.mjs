@@ -565,7 +565,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/lib/tool_platform.mjs",
       "/tool/lib/tools_manifest.mjs",
       "/tool/run.mjs",
-      "/tool/manifest/",
+      "/tool/manifest",
       "/.github/actions/load-toolchain/action.yml",
       "/tool/design/build_host_feature_responsibilities.mjs",
       "/design/features/host_feature_responsibilities.json",

@@ -9,7 +9,7 @@ Optional orientation:
 `node tool/agent/context_pack.mjs --task tooling-automation --paths tool`.
 
 Loop: update the owning implementation and its focused test, register ownership
-and CI requirements in `tool/tools_manifest.json`, then run the exact affected
+and CI requirements in its `tool/manifest/tools/` file, then run the exact affected
 checks plus manifest validation.
 
 Closeout: follow `docs/agent_operating_model.md#completion` while task context is

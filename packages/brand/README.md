@@ -118,7 +118,7 @@ constants, so a contact change in the apps ships with an app release.
 
 ## CI
 
-`meta:brand-literals` is a mandatory check in `tool/tools_manifest.json`, so
+`meta:brand-literals` is a mandatory check in `tool/manifest/manifest.json`, so
 every PR runs the generator check, the package tests and the guard. The website
 and admin typecheck (`check:brand`) and `functions/src/shared/brand.test.ts`
 run them too.
