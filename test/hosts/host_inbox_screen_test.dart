@@ -25,6 +25,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
@@ -37,6 +38,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_list.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -694,6 +696,10 @@ Widget _app({
       ).overrideWithValue(const AsyncData([])),
       if (programRepository != null) ...[
         programSetupRepositoryProvider.overrideWithValue(programRepository),
+        if (programRepository is _PendingProgramRepository)
+          programGuestDirectoryRepositoryProvider.overrideWithValue(
+            _PendingGuests(programRepository),
+          ),
         // The audience reads the programme's own view; it arrives when the
         // pending detail does, so late completions stay contained.
         organizerProgramViewStreamProvider('older-program').overrideWith(
@@ -811,13 +817,26 @@ class _PendingProgramRepository extends Fake implements ProgramSetupRepository {
 
   @override
   Future<OrganizerProgramDetail> getProgram(String programId) => detail.future;
+}
+
+/// The guest directory's pages, served from [programs]' pending page.
+class _PendingGuests extends Fake implements ProgramGuestDirectoryRepository {
+  _PendingGuests(this.programs);
+
+  final _PendingProgramRepository programs;
 
   @override
-  Future<ProgramGuestListPage> listGuests(
+  Future<CursorPage<ProgramGuestRow, String>> guestPage(
     String programId, {
-    int? limit,
+    int limit = ProgramGuestDirectoryRepository.pageSize,
     String? cursor,
-  }) => guestPage.future;
+  }) => programs.guestPage.future.then(
+    (page) => CursorPage(
+      items: page.guests,
+      hasMore: page.nextCursor != null,
+      nextCursor: page.nextCursor,
+    ),
+  );
 }
 
 OrganizerProgramDetail _programDetail() => OrganizerProgramDetail(
