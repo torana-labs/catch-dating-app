@@ -1,7 +1,8 @@
 import {prepareCheckpointCloseout} from "./checkpointManagementDecisions";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
-import {operationCollections} from "../../operations/collections";
+import {stageRunSet} from
+  "../../operations/transactionalWrites";
 import {operationActionId, operationContentHash} from
   "../../operations/durableActions";
 import {FirestoreOperationsRepository} from
@@ -153,8 +154,7 @@ export class CheckpointCloseoutStore {
         const response = checkpointResponse("applied", state,
           closeout.revision);
         prepared.commit();
-        tx.set(this.db.collection(operationCollections.runs).doc(run.runId),
-          run);
+        stageRunSet(this.db, tx, run);
         tx.create(this.db.collection(CHECKPOINT_RECEIPTS).doc(receiptId),
           saved);
         return response;

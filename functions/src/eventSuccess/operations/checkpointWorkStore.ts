@@ -1,5 +1,7 @@
 import {FieldPath, Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
+import {stageRunSet} from
+  "../../operations/transactionalWrites";
 import {operationActionId, operationContentHash} from
   "../../operations/durableActions";
 import {FirestoreOperationsRepository} from
@@ -119,8 +121,7 @@ export class AssistanceCheckpointWorkStore {
         const prepared = await this.operations.prepareWorkItemAction(tx,
           {workItem: item, receipt, lease});
         prepared.commit();
-        tx.set(this.db.collection(operationCollections.runs).doc(run.runId),
-          run);
+        stageRunSet(this.db, tx, run);
         return {kind: "committed" as const, records: next};
       });
     } finally {
