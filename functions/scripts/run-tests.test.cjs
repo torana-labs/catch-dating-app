@@ -113,13 +113,13 @@ test("empty and duplicate selections fail before execution", () => {
   }
 });
 
-test("canonical rules command runs the strict list file, which selects readiness exactly once", () => {
+test("canonical rules command runs the strict list, which selects readiness exactly once", () => {
   const packageJson = JSON.parse(fs.readFileSync(
     path.resolve(__dirname, "../package.json"), "utf8"));
   assert.equal(packageJson.scripts["test:rules"],
     "npm run build && node scripts/run-tests.cjs --require-emulators");
   const {listedStrictTests} = require(runner);
-  const selected = "lib/catchMessaging/whatsappReadinessFirestore.test.js";
+  const selected = "lib/catchMessaging/whatsappReadinessFirestore.emulator.test.js";
   function assertSelected(listed) {
     assert.equal(listed.filter(file => file === selected).length,
       1, "readiness must run exactly once in the canonical strict rules lane");
@@ -131,7 +131,7 @@ test("canonical rules command runs the strict list file, which selects readiness
   }
 });
 
-test("strict mode without explicit files runs the strict list file", () => {
+test("strict mode without explicit files runs the strict list", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-strict-cli-"));
   try {
     const selection = path.join(root, "selection.json");
@@ -151,17 +151,19 @@ test("strict mode without explicit files runs the strict list file", () => {
   }
 });
 
-test("the strict list file must be an array of paths", () => {
-  const {listedStrictTests, strictTestList} = require(runner);
+test("the strict list is derived from emulator and rules test file names", () => {
+  const {listedStrictTests} = require(runner);
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-strict-list-"));
   try {
-    fs.mkdirSync(path.join(root, path.dirname(strictTestList)), {recursive: true});
-    for (const [contents, expected] of [['["lib/a.test.js"]', ["lib/a.test.js"]],
-      ['{"tests": []}', null], ['["lib/a.test.js", 1]', null]]) {
-      fs.writeFileSync(path.join(root, strictTestList), contents);
-      if (expected) assert.deepEqual(listedStrictTests(root), expected);
-      else assert.throws(() => listedStrictTests(root), /must be an array of test paths/u);
+    for (const file of ["src/b/one.emulator.test.ts", "src/a/two.emulator.test.ts", "src/a/unit.test.ts",
+      "src/a/helper.emulator.ts", "test/rules/c.rules.test.cjs", "test/d.emulator.test.cjs", "test/e.test.cjs",
+      "lib/a/stale.emulator.test.js"]) {
+      fs.mkdirSync(path.join(root, path.dirname(file)), {recursive: true});
+      fs.writeFileSync(path.join(root, file), "");
     }
+    // Sources map to the compiled paths the runner executes; stale lib/ output is ignored.
+    assert.deepEqual(listedStrictTests(root), ["lib/a/two.emulator.test.js", "lib/b/one.emulator.test.js",
+      "test/d.emulator.test.cjs", "test/rules/c.rules.test.cjs"]);
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }

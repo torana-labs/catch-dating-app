@@ -7626,11 +7626,11 @@
       "checks": [
         "node --check functions/scripts/operations/review-event-messaging.cjs",
         "npm --prefix functions run build",
-        "(cd functions && node --test lib/eventSuccess/operations/messageSetupReview.test.js)",
+        "(cd functions && node --test lib/eventSuccess/operations/messageSetupReview.emulator.test.js)",
         "node --test functions/test/operations-review-event-messaging.test.cjs"
       ],
       "impactPaths": [
-        "functions/src/eventSuccess/operations/messageSetupReview.test.ts"
+        "functions/src/eventSuccess/operations/messageSetupReview.emulator.test.ts"
       ],
       "runbook": "docs/operations_platform.md#read-only-event-messaging-setup-review"
     },

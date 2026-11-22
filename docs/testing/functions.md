@@ -35,9 +35,11 @@ selector shows why each test was picked. After a failed nightly, the
 pull request selection of every commit since the last green nightly, and opens
 or comments on a "Test selection missed a failing test" issue for any test no
 commit selected (`tool/ci/selection_miss_report.mjs`). The `test:rules` lane runs the
-strict list in `functions/test/emulator-tests.json`: add each new
-emulator-dependent test there, never to `functions/package.json`, whose edits
-redeploy every Function. CI chooses the tests once, in the `Plan emulator shards` job, then splits
+strict list that `functions/scripts/run-tests.cjs` derives from file names:
+`functions/src/**/*.emulator.test.ts`, `functions/test/**/*.emulator.test.cjs`
+and `functions/test/**/*.rules.test.cjs`. Name each new emulator-dependent test
+that way; no shared list is edited. The driver's tests fail when an
+emulator-guarded test is not named so. CI chooses the tests once, in the `Plan emulator shards` job, then splits
 them across emulator jobs with `CATCH_TEST_SHARD=<index>/<total>`: no job when a
 pull request reaches no strict test, one job for up to 15 tests, otherwise
 three. The merge queue, main and nightly always run the whole list in three.

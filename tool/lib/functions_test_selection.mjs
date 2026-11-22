@@ -12,7 +12,6 @@ import {readsPath, sourceReads} from "./functions_test_reads.mjs";
 const fullInputs = [
   /^(?:firestore|storage)\.rules$/u,
   /^functions\/package(?:-lock)?\.json$/u,
-  /^functions\/test\/emulator-tests\.json$/u,
   /^functions\/tsconfig[^/]*\.json$/u,
   /^functions\/scripts\//u,
   /^firebase\.json$/u,
