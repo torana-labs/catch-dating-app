@@ -25,8 +25,9 @@ function row(id: string, phone: string | null = null): BatchImportSeatRow {
     phoneE164: phone, externalReference: null, linkedUid: null};
 }
 function read(rows: BatchImportSeatRow[], occupied = 0,
-  capacity = 3): BatchImportSeatReadSet {
-  const configuredEvent = {...event, capacityLimit: capacity};
+  capacity: number | null = 3): BatchImportSeatReadSet {
+  const configuredEvent = capacity === null ?
+    {organizerId, status: "active"} : {...event, capacityLimit: capacity};
   const p = deriveEventSeatPolicy(configuredEvent);
   const ledger: SeatLedger = {eventId, capacity, occupied,
     revision: 1, capacityRevision: 1, migrationRevision: 1,
@@ -91,6 +92,17 @@ test("two imported guests take the final two seats from one ledger snapshot",
     assert.throws(() => applyBatchImportSeats(writer, plan),
       /not prepared/);
   });
+
+test("an event with no capacity set seats every imported guest", () => {
+  const writer = new Writer();
+  const plan = prepareBatchImportSeats(read([row("a"), row("b"),
+    row("c"), row("d")], 7, null), writer);
+  assert.equal(plan.newSeats, 4);
+  assert.equal(plan.ledger?.occupied, 11);
+  assert.equal(plan.ledger?.capacity, null);
+  applyBatchImportSeats(writer, plan);
+  assert.equal(writer.reservations.size, 4);
+});
 
 test("capacity failure stages zero writes for every row", () => {
   const writer = new Writer();

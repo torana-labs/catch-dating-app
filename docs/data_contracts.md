@@ -2568,12 +2568,19 @@ Description and distance/pace for distance-based activities are explicit details
 Non-distance format selection writes the existing compatibility values (0/easy),
 which readers hide for those formats. Capacity, price/currency and cash-refund
 policy are saved together; credits remain deferred. The update preserves existing
-admission restrictions and never changes offer payment snapshots. An empty,
-ordinary private event receives matching ready seat ledger and fence records in
+admission restrictions and never changes offer payment snapshots. Every event
+created by `createPrivateEventSetup`, `createPrivateEventSeries` or `createEvent`
+starts with an empty, ready `eventSeatLedgers` record and its writer fence; its
+`capacity` is null (no limit) until the host sets a capacity, so guests can be
+added first. The save updates that ledger with the terms. The first terms may be
+set while guests hold seats if the capacity holds them; afterwards a
+capacity-only edit may run while places are reserved, never below them, and
+reserved places or checkout holds block any change to price, currency or
+admission policy. An older empty private event without a ledger receives one in
 that transaction, only after counters and bounded queries show no guest, payment,
 identity, import or migration history. Demo-owned events are excluded because
-seed tooling has legacy seat writers. Existing reserved places or checkout holds
-block changed terms; historical sources require seat reconciliation.
+seed tooling has legacy seat writers; historical sources require seat
+reconciliation.
 `reconcilePrivateEventSeats` accepts the same exact journaled admission-settings
 command with no other detail fields. Each request advances at most three bounded
 pages; current manager, account deletion and event ownership are rechecked in

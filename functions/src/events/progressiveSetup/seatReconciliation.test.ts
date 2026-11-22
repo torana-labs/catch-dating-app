@@ -345,7 +345,8 @@ test("discarding a later unapplied edit preserves the ready ledger",
     const ledger = {...store.rows.get("eventSeatLedgers/event1")};
     const changed = {...command, requestId: "later-discard-1",
       expectedSetupRevision: 2, details: {admissionTerms: {
-        ...command.details.admissionTerms!, capacityLimit: 100}}};
+        ...command.details.admissionTerms!, priceInPaise: 50000,
+        cancellationPolicyId: "standard" as const}}};
     await assert.rejects(reconcilePrivateEventSeats({actorUid: "host1",
       command: changed, deps}), (error) => code(error, "failed-precondition"));
     assert.equal((await reconcilePrivateEventSeats({actorUid: "host1",

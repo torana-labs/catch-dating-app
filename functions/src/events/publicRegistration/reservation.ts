@@ -208,7 +208,8 @@ export async function reservePublicPayment(input: {
       },
       {nowMillis},
     );
-    const placesLeft = ledger.capacity - roster.totalBooked;
+    const placesLeft = ledger.capacity === null ? Number.POSITIVE_INFINITY :
+      ledger.capacity - roster.totalBooked;
     if (placesLeft <= 0) {
       registrationUnavailable("This event is now full.");
     }
