@@ -6,6 +6,7 @@ import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 import {designParityCommands} from "./check_design_parity.mjs";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const script = path.join(repoRoot, "tool/design/build_widget_similarity.mjs");
@@ -101,7 +102,7 @@ function fingerprint(name, marker) {
 
 test("merge parity retains focused similarity and product invariants, with reports opt-in", () => {
   const source = fs.readFileSync(path.join(repoRoot, "tool/design/check_design_parity.mjs"), "utf8");
-  const manifest = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/tools_manifest.json"), "utf8"));
+  const manifest = loadToolsManifest();
   const blocking = designParityCommands(manifest).join("\n");
   assert.match(blocking, /node --test tool\/design\/build_widget_similarity.test.mjs/u);
   assert.match(blocking, /check_widget_dedupe_probes.mjs/u);

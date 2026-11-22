@@ -8,6 +8,7 @@ import {
   matchesScopePath,
   normalizeGlobPath,
 } from "./path_glob.mjs";
+import {loadToolsManifest} from "./tools_manifest.mjs";
 
 test("glob matching is normalized, dot-safe, and supports zero-depth globstars", () => {
   assert.equal(normalizeGlobPath("./tool//"), "tool");
@@ -30,10 +31,7 @@ test("dependency-free bootstrap matching agrees with Picomatch for every active 
     new URL("../harness/component_graph.json", import.meta.url),
     "utf8",
   ));
-  const manifest = JSON.parse(fs.readFileSync(
-    new URL("../tools_manifest.json", import.meta.url),
-    "utf8",
-  ));
+  const manifest = loadToolsManifest();
   const patterns = new Set();
   const addPatterns = (values) => {
     for (const value of values ?? []) {

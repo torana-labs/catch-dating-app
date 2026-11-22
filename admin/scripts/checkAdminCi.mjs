@@ -25,7 +25,8 @@ const setupCommands = new Set(["npm ci"]);
 
 /**
  * Evaluates a GitHub Actions expression. The lane uses only ==, !=, &&, ||, !, parentheses,
- * single-quoted strings and the inputs and github contexts; anything else throws.
+ * single-quoted strings, the inputs and github contexts, and the outputs of steps this event
+ * skips, which are empty as in GitHub Actions; anything else throws.
  */
 export function evaluateExpression(expression, context) {
   const tokens = expression.match(/'[^']*'|==|!=|&&|\|\||!|\(|\)|[A-Za-z_][\w.-]*|\S/gu) ?? [];
@@ -34,6 +35,8 @@ export function evaluateExpression(expression, context) {
     if (name === "true") return true;
     if (name === "false") return false;
     if (Object.hasOwn(context, name)) return context[name];
+    const step = /^steps\.([\w-]+)\.outputs\.[\w-]+$/u.exec(name)?.[1];
+    if (step && context.skippedSteps?.has(step)) return "";
     throw new Error(`Cannot evaluate "${name}" in: ${expression}`);
   };
   const primary = () => {
@@ -82,13 +85,17 @@ export function laneSteps(workflow, {event = "merge_group", surface = "admin"} =
     "inputs.skip_deployable_build": false,
     "github.event_name": event,
     "github.workflow": "Admin Website",
+    skippedSteps: new Set(),
   };
   const steps = [];
   for (const step of workflow.jobs.validate.steps) {
     if (typeof step.run !== "string") continue;
     if (step.if !== undefined) {
       const condition = String(step.if).replace(/^\$\{\{|\}\}$/gu, "");
-      if (!evaluateExpression(condition, context)) continue;
+      if (!evaluateExpression(condition, context)) {
+        if (step.id) context.skippedSteps.add(step.id);
+        continue;
+      }
     }
     if (setupCommands.has(step.run.trim())) continue;
     steps.push({

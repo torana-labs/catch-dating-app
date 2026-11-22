@@ -1615,6 +1615,26 @@
       "runbook": "docs/release_operations.md#required-pr-checks"
     },
     {
+      "id": "ci:main-push-queue-proof",
+      "category": "ci",
+      "path": "tool/ci/main_push_queue_proof.mjs",
+      "command": "node tool/ci/main_push_queue_proof.mjs",
+      "surface": "remote-read",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/ci.yml",
+        "tool/ci/main_push_queue_proof.mjs",
+        "tool/ci/main_push_queue_proof.test.mjs"
+      ],
+      "description": "Finds the merge-queue run whose Required CI job proved a main push's exact commit (merge_group, same head, exactly one Required CI, succeeded, current attempt), so that push re-runs no validation lane; prints nothing, and the push validates in full, when there is no such proof.",
+      "checks": [
+        "node --check tool/ci/main_push_queue_proof.mjs",
+        "node --test tool/ci/main_push_queue_proof.test.mjs"
+      ],
+      "role": "gate",
+      "runbook": "docs/release_operations.md#required-pr-checks"
+    },
+    {
       "id": "ci:main-red-alert",
       "category": "ci",
       "path": "tool/ci/main_red_alert.mjs",
@@ -1629,7 +1649,7 @@
         "tool/ci/main_red_alert.test.mjs",
         "tool/ci/required_ci_floor.mjs"
       ],
-      "description": "Keeps one 'Main CI is red' GitHub issue in step with main's push and nightly CI: opens it on the first failure (naming gating and reporting jobs), comments on further failures, and closes it on the next green run. After a green run it opens one issue once main has been fully green for 7 days, the owner's condition for ending the sprint floor.",
+      "description": "Keeps one 'Main CI is red' GitHub issue in step with main's push and nightly CI: opens it on the first failure (naming gating and reporting jobs), comments on further failures, and closes it on the next green run. After a green run it opens one issue once main has been fully green for 7 days, the owner's condition for ending the sprint floor. After each main push run it also reports, on the same issue, a commit whose push run was replaced before it ran and that no other main push run covers; it triggers nothing.",
       "checks": [
         "node --check tool/ci/main_red_alert.mjs",
         "node --test tool/ci/main_red_alert.test.mjs"
@@ -8284,12 +8304,14 @@
       "description": "Validates the tool manifest, lists and dispatches registered commands, and fail-closed selects checks from explicit or affected paths without creating a second execution-authority layer.",
       "impactPaths": [
         "tool/lib/cli_args.mjs",
-        "tool/lib/cli_args.test.mjs"
+        "tool/lib/cli_args.test.mjs",
+        "tool/lib/tools_manifest.mjs",
+        "tool/lib/tools_manifest.test.mjs"
       ],
       "role": "gate",
       "checks": [
         "node --check tool/run.mjs",
-        "node --test tool/run.test.mjs tool/lib/tool_impact.test.mjs tool/lib/cli_args.test.mjs"
+        "node --test tool/run.test.mjs tool/lib/tool_impact.test.mjs tool/lib/cli_args.test.mjs tool/lib/tools_manifest.test.mjs"
       ]
     },
     {

@@ -2,9 +2,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo, relativeToRepo} from "./lib/repo_paths.mjs";
+import {loadToolsManifest as readToolsManifest, toolsManifestPath} from "./lib/tools_manifest.mjs";
 
 const manifestPath = fromRepo("tool/remote_ops_manifest.json");
-const toolsManifestPath = fromRepo("tool/tools_manifest.json");
 const allowedEntryKinds = new Set([
   "tool-id",
   "workflow",
@@ -182,7 +182,11 @@ function loadManifest() {
 }
 
 function loadToolsManifest() {
-  return readJson(toolsManifestPath);
+  try {
+    return readToolsManifest();
+  } catch (error) {
+    throw new Error(`Could not read ${toolsManifestPath}: ${error.message}`);
+  }
 }
 
 function readJson(filePath) {

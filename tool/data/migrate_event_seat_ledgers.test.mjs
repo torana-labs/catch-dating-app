@@ -178,6 +178,11 @@ test("the dry run reports every class and writes nothing", async () => {
   assert.equal(byId.gone.missingAuthUsers, 1);
   assert.equal(byId.gone.missingAuthUsersWithSeats, 0);
   assert.match(eventLine(byId.gone), /1 booking UID\(s\) have no Auth user, 0 of them holding a seat/u);
+  assert.equal(byId.vanished.class, "active-empty");
+  assert.ok(byId.vanished.engineBlockers.includes("authUserMissing"));
+  assert.ok(byId.vanished.engineBlockers.includes("catchCountMismatch"));
+  assert.deepEqual(byId.vanished.bookedCount, {from: 1, to: 0});
+  assert.match(eventLine(byId.vanished), /nobody holds a seat/u);
   assert.equal(byId.held.class, "blocked");
   assert.deepEqual(byId.held.blockers, ["outstandingHolds:guestPayments"]);
   assert.match(eventLine(byId.drift),
@@ -212,6 +217,11 @@ test("apply moves migratable and empty cancelled events onto the ledger",
     assert.equal(db.paths("eventSeatMigrationStages/").length, 0);
     assert.equal(db.paths("eventSeatReservations/").filter((path) =>
       db.doc(path).eventId === "live").length, 2);
+
+    assert.equal(byId.vanished.result, "created");
+    assert.equal(db.doc("eventSeatLedgers/vanished").occupied, 0);
+    assert.equal(db.doc("eventSeatMigrationFences/vanished").state, "ready");
+    assert.equal(db.doc("events/vanished").bookedCount, 0);
 
     assert.equal(byId.over.result, "created");
     const ledger = db.doc("eventSeatLedgers/over");
@@ -249,7 +259,7 @@ test("apply moves migratable and empty cancelled events onto the ledger",
 
     const again = await runBackfill({db, auth: fakeAuth(), lib,
       nowMillis: NOW + 1});
-    assert.equal(again.summary.classes["on-ledger"], 4);
+    assert.equal(again.summary.classes["on-ledger"], 5);
     assert.equal(again.summary.classes.migratable, 0);
     assert.equal(again.summary.classes["cancelled-empty"], 0);
   });
@@ -381,6 +391,9 @@ function world() {
     "events/gone": activeEvent({bookedCount: 1}),
     ...booking("gone", "runner1"),
     ...booking("gone", "missing2", "deleted"),
+    // Its only guest deleted their account: no seat, a stale bookedCount.
+    "events/vanished": activeEvent({bookedCount: 1}),
+    ...booking("vanished", "missing3", "deleted"),
     "events/held": activeEvent(),
     "guestPayments/pay1": {eventId: "held", purpose: "checkout",
       status: "pending"},

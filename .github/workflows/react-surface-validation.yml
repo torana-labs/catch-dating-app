@@ -17,6 +17,11 @@ on:
         required: false
         type: string
         default: ""
+      capture_result:
+        description: The calling capture-freshness job's result; lets the merge queue prove its macOS render was deferred.
+        required: false
+        type: string
+        default: ""
       skip_deployable_build:
         description: Skip the generic site build when the caller will build one exact production artifact.
         required: false
@@ -58,8 +63,39 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
+      # The merge queue skips the macOS capture render (owner decision, 22 Nov
+      # 2026). The lane builds with the committed captures only when this run's
+      # own jobs prove the render was deferred, never when the capture pipeline
+      # failed: anything else, an API error included, is not deferred and the
+      # import below fails on the missing binding.
+      - id: captures
+        name: Decide whether the capture render was deferred
+        if: ${{ inputs.surface == 'marketing' && github.event_name == 'merge_group' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CAPTURE_RESULT: ${{ inputs.capture_result }}
+          CAPTURE_BINDING: ${{ inputs.capture_binding }}
+        run: |
+          set -uo pipefail
+          deferred=false
+          if [[ "$CAPTURE_RESULT" == success && -z "$CAPTURE_BINDING" ]] &&
+            jobs="$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT/jobs?per_page=100" \
+              --jq '.jobs[] | {name, conclusion}')" &&
+            verdict="$(jq -rs '
+              def only($job): [.[] | select(.name == "capture-freshness / " + $job) | .conclusion] |
+                if length == 1 then .[0] else "missing" end;
+              only("Plan canonical iPhone captures") == "success" and
+                only("Reuse validated canonical iPhone captures") == "skipped" and
+                only("Render and validate canonical iPhone captures") == "skipped"' <<< "$jobs")" &&
+            [[ "$verdict" == true ]]; then
+            deferred=true
+            echo "::notice title=Marketing captures deferred::The merge queue skipped the macOS render; this build uses the committed captures. The main push and the nightly render and verify them."
+          fi
+          echo "deferred=$deferred" >> "$GITHUB_OUTPUT"
+          echo "Marketing capture render deferred to main and the nightly: $deferred" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Import verified exact-source marketing captures
-        if: ${{ inputs.surface == 'marketing' }}
+        if: ${{ inputs.surface == 'marketing' && steps.captures.outputs.deferred != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
           CAPTURE_BINDING: ${{ inputs.capture_binding }}
@@ -137,7 +173,7 @@ jobs:
         run: npm run web:marketing:build
 
       - name: Verify built marketing capture bytes
-        if: ${{ inputs.surface == 'marketing' && !inputs.skip_deployable_build }}
+        if: ${{ inputs.surface == 'marketing' && !inputs.skip_deployable_build && steps.captures.outputs.deferred != 'true' }}
         env:
           CAPTURE_BINDING: ${{ inputs.capture_binding }}
         run: node tool/marketing/import_hosted_captures.mjs --check-dist

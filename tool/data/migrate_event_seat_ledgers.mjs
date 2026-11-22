@@ -45,6 +45,7 @@ export const REPORT_CLASSES = [
   "cancelled-empty",
   "cancelled-with-guests",
   "migratable",
+  "active-empty",
   "blocked",
 ];
 
@@ -606,7 +607,10 @@ export async function planActiveEvent({db, auth, lib, eventId, event,
 // ---------------------------------------------------------------------------
 // Writes (apply only)
 
-async function createCancelledLedger(db, lib, eventId) {
+/** An empty ledger for an event nobody holds a seat on: cancelled, or
+ * active with no active guest (the engine may still refuse it, for example
+ * over a past guest who deleted their account). */
+async function createEmptyLedger(db, lib, eventId, status) {
   return db.runTransaction(async (tx) => {
     const eventRef = db.collection("events").doc(eventId);
     const [eventSnap, ledgerSnap, fenceSnap, runSnap] = await Promise.all([
@@ -619,8 +623,8 @@ async function createCancelledLedger(db, lib, eventId) {
       return {result: "raced", error: "Seat authority appeared meanwhile."};
     }
     const event = eventSnap.data();
-    if (!event || lib.deriveEventSeatPolicy(event).status !== "cancelled") {
-      return {result: "raced", error: "The event is no longer cancelled."};
+    if (!event || lib.deriveEventSeatPolicy(event).status !== status) {
+      return {result: "raced", error: `The event is no longer ${status}.`};
     }
     for (const [kind, active] of [["eventBookings", ACTIVE_BOOKING],
       ["eventAttendees", ACTIVE_ATTENDEE]]) {
@@ -823,6 +827,19 @@ export async function runBackfill({db, auth, lib, eventIds = [],
         row = {eventId, ...classifyEvent(pre, await planActiveEvent({db,
           auth, lib, eventId, event, organizerId: pre.organizerId,
           nowMillis}))};
+        // The engine refuses some events nobody holds a seat on (a past
+        // guest who deleted their account, a stale bookedCount). With no
+        // active guest and no hold, the faithful ledger is empty.
+        if (row.class === "blocked") {
+          const empty = await cancelledSnapshot(db, lib, eventId, event);
+          if (empty.activeBookings === 0 && empty.activeAttendees === 0 &&
+              !empty.holds) {
+            const {blockers, ...rest} = row;
+            row = {...rest, class: "active-empty", engineBlockers: blockers,
+              bookedCount: bookedCountSync({bookedCount: event.bookedCount,
+                occupied: 0})};
+          }
+        }
       }
       if (apply) {
         const outcome = await applyRow({db, auth, lib, row, authority,
@@ -848,9 +865,10 @@ async function applyRow({db, auth, lib, row, authority, nowMillis}) {
       return {result: "failed", error: error.message};
     }
   }
-  if (row.class === "cancelled-empty") {
+  if (row.class === "cancelled-empty" || row.class === "active-empty") {
     try {
-      return await createCancelledLedger(db, lib, row.eventId);
+      return await createEmptyLedger(db, lib, row.eventId,
+        row.class === "cancelled-empty" ? "cancelled" : "active");
     } catch (error) {
       return {result: "failed", error: error.message};
     }
@@ -927,6 +945,10 @@ export function eventLine(row) {
     parts.push(`active bookings ${row.activeBookings}, active attendees ` +
       `${row.activeAttendees}` +
       (row.holds ? `, outstanding holds in ${row.holds.source ?? "?"}` : ""));
+  }
+  if (row.class === "active-empty") {
+    parts.push(`nobody holds a seat; engine blockers ` +
+      `${row.engineBlockers.join(", ")}`);
   }
   if (row.class === "blocked") {
     parts.push(row.blockers.join(", "));
@@ -1017,6 +1039,9 @@ Classes:
                          demo seeders write (ledger, booked guests' identities
                          and reservations); bookedCount follows the ledger.
   demo-blocked           A demo event that cannot be seated faithfully.
+  active-empty           Active, refused by the engine, but nobody holds a seat
+                         and nothing is held: gets an empty ready ledger and
+                         bookedCount 0.
   malformed              No usable organizer, status or capacity policy.
   missing                An --event id with no event document.
   cancelled-empty        Cancelled, nobody active: gets an empty ready ledger.

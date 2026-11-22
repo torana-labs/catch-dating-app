@@ -12,11 +12,12 @@ import {planAffectedToolChecks, toolsOwnDesignChecks, toolsOwnUiLintSmoke} from 
 import {comparedLanes} from "./shadow_plan.mjs";
 import {appRolesOf, applyLanes, chooseLanes, everyLane, mainBuildLanes, nativeBuildInput, nativeBuildLanes, nxChooses,
   nxSelectsAlone, plannerShadow, selectAlone, unionLanes} from "./select_lanes.mjs";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(repoRoot, file), "utf8"));
 const componentGraph = readJson("tool/harness/component_graph.json");
-const manifest = readJson("tool/tools_manifest.json");
+const manifest = loadToolsManifest();
 
 const plan = {mode: "merge_group", full: false,
   operations: {ciTargets: ["flutter", "flutter_build_ios", "tools"],
@@ -189,9 +190,10 @@ test("lane jobs read only the change range, the final lanes, and outputs pinned 
   const pinned = new Set(["app_roles", "tools_owns_ui_lint_smoke", "tools_owns_design_parity", "docs_checkout",
     "preflight_functions_dependencies"]);
   // The change range, and what the merge queue proved for this exact source:
-  // main_goldens is read from the queue run's own Nx plan, not the planner.
+  // main_goldens and main_captures are read from the queue run's own Nx plan,
+  // not the planner.
   const range = new Set(["base_sha", "source_sha", "producer_attempt", "mode", "full", "commit_window", "queue_verified_run",
-    "main_goldens"]);
+    "main_goldens", "main_captures"]);
   const used = new Set();
   for (const job of jobs) {
     for (const match of job.matchAll(/needs\.plan\.outputs\.([a-z_]+)/gu)) used.add(match[1]);

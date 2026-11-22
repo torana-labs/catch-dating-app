@@ -15,16 +15,14 @@ import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {extractSteps} from "./lib/workflow_steps.mjs";
 import {parse as parseYaml} from "yaml";
+import {isToolsManifestPath, loadToolsManifestFromSnapshot} from "../lib/tools_manifest.mjs";
 
 const repositorySnapshot = createRepositorySnapshot();
 const graph = repositorySnapshot.readJson(
   "tool/harness/component_graph.json",
   {required: true},
 );
-const toolsManifest = repositorySnapshot.readJson(
-  "tool/tools_manifest.json",
-  {required: true},
-);
+const toolsManifest = loadToolsManifestFromSnapshot(repositorySnapshot);
 const workflow = (name) => repositorySnapshot.readText(
   `.github/workflows/${name}`,
   {required: true},
@@ -174,7 +172,8 @@ const livePolicyAuthorityPaths = [
   "docs/agent_operating_model.md",
   "docs/app_architecture.md",
   "tool/README.md",
-  "tool/tools_manifest.json",
+  // The tools manifest's text, wherever tool/lib/tools_manifest.mjs keeps it.
+  ...repositorySnapshot.listFiles({prefix: "tool/"}).filter(isToolsManifestPath),
 ];
 const liveReactDependencyGraphAuthorityPaths = [
   ...livePolicyAuthorityPaths,
@@ -1876,7 +1875,7 @@ test("Tools check shells request inventory producer proofs and no capture proof"
 });
 
 
-test("main reuses a successful merge-queue run of the exact source for every validation lane", (t) => {
+test("main reuses the merge-queue run whose Required CI proved the exact source for every validation lane", (t) => {
   const ci = workflow("ci.yml");
   const plan = ci.slice(ci.indexOf("\n  plan:\n"), ci.indexOf("\n  source-preflight:\n"));
   assert.match(plan, /queue_verified_run: \$\{\{ steps\.queue\.outputs\.run_id \}\}/u);
@@ -1911,11 +1910,11 @@ test("main reuses a successful merge-queue run of the exact source for every val
     t.after(() => fs.rmSync(root, {recursive: true, force: true}));
     const bin = path.join(root, "bin"); fs.mkdirSync(bin);
     fs.writeFileSync(path.join(bin, "gh"), `#!/usr/bin/env node
-const endpoint = process.argv[3];
+const endpoint = process.argv.at(-1);
 if (endpoint.includes("/workflows/ci.yml/runs")) {
   if (${failRuns}) process.exit(1);
   console.log(JSON.stringify({workflow_runs: ${JSON.stringify(runs)}}));
-} else console.log(JSON.stringify({jobs: ${JSON.stringify(jobs)}}));
+} else console.log(JSON.stringify({total_count: ${jobs.length}, jobs: ${JSON.stringify(jobs)}}));
 `, {mode: 0o755});
     const output = path.join(root, "out"); fs.writeFileSync(output, "");
     const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {...process.env,
@@ -1924,19 +1923,25 @@ if (endpoint.includes("/workflows/ci.yml/runs")) {
     assert.equal(result.status, 0, result.stderr);
     return fs.readFileSync(output, "utf8").trim();
   };
-  const good = {id: 41, event: "merge_group", head_sha: sha, conclusion: "success", path: ".github/workflows/ci.yml"};
-  const required = [{name: "Required CI", conclusion: "success"}];
+  assert.match(step.run, /node tool\/ci\/main_push_queue_proof\.mjs --sha "\$SOURCE_SHA"/u);
+  assert.match(ci, /^            \/tool\/ci\/main_push_queue_proof\.mjs$/mu, "the plan job's sparse checkout has the script");
+  const good = {id: 41, event: "merge_group", head_sha: sha, status: "completed", conclusion: "success",
+    run_attempt: 1, path: ".github/workflows/ci.yml"};
+  const required = [{name: "Required CI", conclusion: "success", run_attempt: 1}];
   assert.equal(runLookup([good], required), "run_id=41");
-  assert.equal(runLookup([{...good, conclusion: "failure"}], required), "run_id=");
+  // The queue merges on Required CI; reporting lanes may still run (22 Nov 2026).
+  assert.equal(runLookup([{...good, status: "in_progress", conclusion: null}], required), "run_id=41");
   assert.equal(runLookup([{...good, head_sha: "b".repeat(40)}], required), "run_id=");
   assert.equal(runLookup([{...good, event: "pull_request"}], required), "run_id=");
-  assert.equal(runLookup([good], [{name: "Required CI", conclusion: "failure"}]), "run_id=");
+  assert.equal(runLookup([good], [{name: "Required CI", conclusion: "failure", run_attempt: 1}]), "run_id=");
+  assert.equal(runLookup([good], [{name: "Required CI", conclusion: null, run_attempt: 1}]), "run_id=");
+  assert.equal(runLookup([{...good, run_attempt: 2}], required), "run_id=", "an earlier attempt's success");
   assert.equal(runLookup([good], required, true), "run_id=", "API failure keeps the full run");
 });
 
 // Owner decision, 22 Nov 2026: the macOS goldens leave the merge queue and run
 // on main pushes whose inputs select them and on the nightly.
-test("the merge queue never runs the macOS goldens; main runs them by the queue's plan, the nightly always", (t) => {
+test("the merge queue never runs the macOS goldens or capture render; main runs them by the queue's plan, the nightly always", (t) => {
   const visual = parseYaml(workflow("visual-integration-ci.yml"));
   assert.equal(visual.jobs.goldens.if, "${{ github.event_name != 'merge_group' }}", "queue groups skip the goldens");
   assert.equal(visual.jobs["headless-journeys"].if, "${{ !inputs.macos_only }}");
@@ -1953,9 +1958,24 @@ test("the merge queue never runs the macOS goldens; main runs them by the queue'
   assert.equal(caller.with.macos_only, "${{ needs.plan.outputs.queue_verified_run != '' }}",
     "it reruns only the goldens: the queue ran the headless journeys");
   assert.match(parseYaml(ci).jobs.plan.outputs.main_goldens, /steps\.main_macos\.outputs\.goldens/u);
+  assert.match(parseYaml(ci).jobs.plan.outputs.main_captures, /steps\.main_macos\.outputs\.captures/u);
+  // The capture render follows the same rule: a run the queue did not prove
+  // selects it as before; a queue-verified main push renders when the queue's
+  // plan selected capture freshness or marketing.
+  const captureContext = (outputs) => ({github: {run_attempt: 1}, needs: {plan: {result: "success",
+    outputs: {producer_attempt: "1", capture_freshness: "false", marketing: "false", queue_verified_run: "", main_captures: "", ...outputs}}}});
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness", captureContext({marketing: "true"})), true);
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness",
+    captureContext({marketing: "true", queue_verified_run: "41"})), false, "the queue's plan decides on a verified push");
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness",
+    captureContext({queue_verified_run: "41", main_captures: "true"})), true, "a queue-verified main push renders");
+  assert.equal(captureJobCondition("ci.yml", "capture-freshness",
+    captureContext({queue_verified_run: "41", main_captures: "false"})), false);
+  // The marketing lane never runs on a verified push, so these renders feed later reuse, not a consumer.
+  assert.match(parseYaml(ci).jobs.marketing.if, /!needs\.plan\.outputs\.queue_verified_run/u);
 
-  const step = extractSteps(ci).find((entry) => entry.name === "Select main's macOS goldens from the queue's plan");
-  assert.ok(step?.run, "missing the main goldens selection step");
+  const step = extractSteps(ci).find((entry) => entry.name === "Select main's macOS jobs from the queue's plan");
+  assert.ok(step?.run, "missing the main macOS selection step");
   assert.match(step.if, /github\.event_name == 'push' && steps\.queue\.outputs\.run_id != ''/u);
   const sha = "a".repeat(40);
   const select = ({artifacts, plan, failArtifacts = false, failZip = false}) => {
@@ -1986,13 +2006,79 @@ if (endpoint.includes("/artifacts?")) {
   };
   const listed = [{id: 7, name: `harness-plan-1-41-${sha}-1`, expired: false}, {id: 3, name: "selector-comparison-41-1", expired: false}];
   const plan = (lanes, sourceSha = sha) => ({sourceSha, operations: {ciTargets: lanes}});
-  assert.equal(select({artifacts: listed, plan: plan(["flutter", "visual_integration"])}), "goldens=true");
-  assert.equal(select({artifacts: listed, plan: plan(["flutter", "tools"])}), "goldens=false", "the queue's plan did not select it");
-  // Every failure to read the queue's plan runs the goldens; none skips them.
-  assert.equal(select({artifacts: listed, plan: plan(["tools"], "b".repeat(40))}), "goldens=true", "a plan for another source");
-  assert.equal(select({failArtifacts: true, plan: plan(["tools"])}), "goldens=true", "the artifact listing failed");
-  assert.equal(select({artifacts: [], plan: plan(["tools"])}), "goldens=true", "no plan artifact");
-  assert.equal(select({artifacts: [{...listed[0], expired: true}], plan: plan(["tools"])}), "goldens=true", "an expired plan");
-  assert.equal(select({artifacts: listed, plan: plan(["tools"]), failZip: true}), "goldens=true", "the download failed");
-  assert.equal(select({artifacts: listed, plan: {sourceSha: sha}}), "goldens=true", "a plan without lanes");
+  const both = "goldens=true\ncaptures=true";
+  assert.equal(select({artifacts: listed, plan: plan(["flutter", "visual_integration"])}), "goldens=true\ncaptures=false");
+  assert.equal(select({artifacts: listed, plan: plan(["flutter", "tools"])}), "goldens=false\ncaptures=false",
+    "the queue's plan selected neither");
+  assert.equal(select({artifacts: listed, plan: plan(["capture_freshness"])}), "goldens=false\ncaptures=true");
+  assert.equal(select({artifacts: listed, plan: plan(["marketing", "visual_integration"])}), both, "marketing needs fresh captures");
+  // Every failure to read the queue's plan runs both; none skips them.
+  assert.equal(select({artifacts: listed, plan: plan(["tools"], "b".repeat(40))}), both, "a plan for another source");
+  assert.equal(select({failArtifacts: true, plan: plan(["tools"])}), both, "the artifact listing failed");
+  assert.equal(select({artifacts: [], plan: plan(["tools"])}), both, "no plan artifact");
+  assert.equal(select({artifacts: [{...listed[0], expired: true}], plan: plan(["tools"])}), both, "an expired plan");
+  assert.equal(select({artifacts: listed, plan: plan(["tools"]), failZip: true}), both, "the download failed");
+  assert.equal(select({artifacts: listed, plan: {sourceSha: sha}}), both, "a plan without lanes");
+});
+
+test("the merge queue skips the capture render, and marketing builds without it only when the run proves it was deferred", (t) => {
+  // marketing-captures.yml: export alone skips merge_group; plan, Storybook and reuse are unchanged.
+  const captures = parseYaml(workflow("marketing-captures.yml")).jobs;
+  assert.match(captures.export.if, /^\$\{\{ github\.event_name != 'merge_group' && !cancelled\(\) && /u);
+  for (const id of ["plan", "storybook", "reuse"]) assert.doesNotMatch(String(captures[id].if), /merge_group/u, id);
+  assert.equal(captures.export.name, "Render and validate canonical iPhone captures");
+  assert.equal(captures.reuse.name, "Reuse validated canonical iPhone captures");
+  assert.equal(captures.plan.name, "Plan canonical iPhone captures");
+
+  const marketing = parseYaml(workflow("ci.yml")).jobs.marketing;
+  assert.deepEqual(marketing.needs, ["plan", "capture-freshness"]);
+  assert.equal(marketing.with.capture_result, "${{ needs.capture-freshness.result }}");
+
+  const react = workflow("react-surface-validation.yml");
+  assert.equal(parseYaml(react).on.workflow_call.inputs.capture_result.default, "");
+  const steps = extractSteps(react);
+  const decide = steps.find((entry) => entry.name === "Decide whether the capture render was deferred");
+  assert.ok(decide?.run, "missing the capture deferral step");
+  assert.equal(decide.if, "${{ inputs.surface == 'marketing' && github.event_name == 'merge_group' }}");
+  for (const name of ["Import verified exact-source marketing captures", "Verify built marketing capture bytes"]) {
+    assert.match(steps.find((entry) => entry.name === name).if, /&& steps\.captures\.outputs\.deferred != 'true' \}\}$/u, name);
+  }
+  assert.ok(react.indexOf("name: Decide whether the capture render was deferred") <
+    react.indexOf("name: Import verified exact-source marketing captures"));
+
+  const job = (conclusion) => (name) => ({name: `capture-freshness / ${name}`, conclusion});
+  const deferredJobs = [job("success")("Plan canonical iPhone captures"),
+    job("skipped")("Reuse validated canonical iPhone captures"), job("skipped")("Render and validate canonical iPhone captures"),
+    {name: "Plan affected targets", conclusion: "success"}];
+  const decideWith = ({jobs = deferredJobs, result = "success", binding = "", failApi = false}) => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "capture-deferral-"));
+    t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+    const bin = path.join(root, "bin"); fs.mkdirSync(bin);
+    // Stands in for gh api --paginate --jq: one compact JSON object per job.
+    fs.writeFileSync(path.join(bin, "gh"), `#!/usr/bin/env node
+const args = process.argv.slice(2);
+if (${failApi} || args[0] !== "api" || !args.includes("--paginate") ||
+  args[2] !== "repos/owner/repo/actions/runs/9/attempts/2/jobs?per_page=100") process.exit(1);
+for (const job of ${JSON.stringify(jobs)}) console.log(JSON.stringify(job));
+`, {mode: 0o755});
+    const output = path.join(root, "out"); fs.writeFileSync(output, "");
+    const result_ = spawnSync("bash", ["-c", decide.run], {encoding: "utf8", env: {...process.env,
+      PATH: `${bin}${path.delimiter}${process.env.PATH}`, GITHUB_REPOSITORY: "owner/repo", GITHUB_RUN_ID: "9",
+      GITHUB_RUN_ATTEMPT: "2", CAPTURE_RESULT: result, CAPTURE_BINDING: binding, GITHUB_OUTPUT: output,
+      GITHUB_STEP_SUMMARY: path.join(root, "summary")}});
+    assert.equal(result_.status, 0, result_.stderr);
+    return fs.readFileSync(output, "utf8").trim();
+  };
+  const swap = (name, conclusion) => deferredJobs.map((entry) =>
+    entry.name === `capture-freshness / ${name}` ? {...entry, conclusion} : entry);
+  assert.equal(decideWith({}), "deferred=true", "plan succeeded, reuse and render skipped");
+  // Anything else is not deferred, so the import fails on the empty binding and the lane fails.
+  assert.equal(decideWith({result: "failure"}), "deferred=false", "the capture pipeline failed");
+  assert.equal(decideWith({jobs: swap("Plan canonical iPhone captures", "failure")}), "deferred=false", "a plan failure with an empty binding");
+  assert.equal(decideWith({jobs: swap("Reuse validated canonical iPhone captures", "failure")}), "deferred=false", "a reuse failure");
+  assert.equal(decideWith({jobs: swap("Render and validate canonical iPhone captures", "success")}), "deferred=false", "the render ran");
+  assert.equal(decideWith({jobs: deferredJobs.slice(1)}), "deferred=false", "no plan job");
+  assert.equal(decideWith({jobs: [...deferredJobs, deferredJobs[0]]}), "deferred=false", "two plan jobs");
+  assert.equal(decideWith({binding: "{}"}), "deferred=false", "a binding exists: import it");
+  assert.equal(decideWith({failApi: true}), "deferred=false", "the jobs API failed");
 });

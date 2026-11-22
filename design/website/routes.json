@@ -1299,6 +1299,43 @@
       }
     },
     {
+      "id": "walkthrough_manage",
+      "kind": "static",
+      "path": "/start/walkthrough/manage/",
+      "pageKey": "walkthrough_manage",
+      "source": "website/src/features/walkthroughs/WalkthroughManagePage.tsx",
+      "metaKey": "walkthrough_manage",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "A walkthrough booking's manage page, which bookWalkthrough's managePath opens (?booking=wt-…; the confirmation adds the manage token as #t=…, which stays in the fragment). Reads, moves or cancels the booking through manageWalkthroughBooking; without a token the booker confirms the booked number on the phone-code sign-in sheet. Private: noindex, out of the sitemap, no analytics, private shell family start.",
+      "review": {
+        "priority": "p2",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "booked",
+          "confirmed",
+          "cancelled",
+          "sign-in",
+          "not-found"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "booked",
+            "confirmed",
+            "cancelled",
+            "sign-in",
+            "not-found"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
       "id": "event_booking",
       "kind": "clientDynamic",
       "pathPattern": "/booking/:eventId/",
@@ -2377,7 +2414,7 @@
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "Book a walkthrough, menu-free; a request form until the slot backend exists (decision 24).",
+      "notes": "Book a walkthrough, menu-free: the slot picker (features/walkthroughs) books an open India-time slot with getWalkthroughSlots and bookWalkthrough after a phone-code sign-in, and links the booking's manage page (walkthrough_manage); when no slot is open, booking is closed or the slots cannot be read, the request form stands below it (decision 24; D8 in #2304).",
       "review": {
         "priority": "p1",
         "status": "planned",

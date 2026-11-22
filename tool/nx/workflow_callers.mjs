@@ -18,6 +18,7 @@ import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import {createRequire} from "node:module";
 import path from "node:path";
+import {isToolsManifestPath, toolsManifestFrom} from "../lib/tools_manifest.mjs";
 
 // The YAML parser loads on first use, not at import: the website release
 // scripts import this module through select_lanes.mjs and run without npm ci
@@ -33,15 +34,15 @@ export const ciWorkflow = ".github/workflows/ci.yml";
 // the selector entry points import or load, selects every lane.
 export const selectorFiles = [ciWorkflow, "nx.json", "firebase.json", "tool/ci/toolchain.env",
   "tool/harness.mjs", "tool/harness/component_graph.json",
-  "tool/repository_root_manifest.json", "tool/ci/main_push_base.mjs", "tool/ci/required_ci_floor.mjs"];
+  "tool/repository_root_manifest.json", "tool/ci/main_push_base.mjs", "tool/ci/main_push_queue_proof.mjs",
+  "tool/ci/required_ci_floor.mjs"];
 export const selectorPrefixes = ["tool/harness/", "tool/nx/"];
-// tool/tools_manifest.json is data the planner loads, but it selects by
-// semantic diff (manifest_diff.mjs), not every lane.
-export const manifestFile = "tool/tools_manifest.json";
+// The tools manifest (tool/lib/tools_manifest.mjs) is data the planner loads,
+// but it selects by semantic diff (manifest_diff.mjs), not every lane.
 // The scripts the plan job selects with.
 export const selectorEntries = ["tool/harness.mjs", "tool/harness/compare_selectors.mjs",
   "tool/harness/verify_local.mjs", "tool/nx/select_lanes.mjs", "tool/ci/main_push_base.mjs",
-  "tool/ci/required_ci_floor.mjs"];
+  "tool/ci/main_push_queue_proof.mjs", "tool/ci/required_ci_floor.mjs"];
 
 // CI configuration ci.yml never executes or reads, each with the reason. Every
 // tracked .github/** and tool/ci/** file must be a selector, be reached by a
@@ -144,8 +145,7 @@ function createScanner(root, files) {
     .map((file) => [JSON.parse(read(file)).name, path.posix.dirname(file)]));
 
   let tools = null;
-  const manifestTools = () => (tools ??= exists("tool/tools_manifest.json")
-    ? JSON.parse(read("tool/tools_manifest.json")).tools ?? [] : []);
+  const manifestTools = () => (tools ??= toolsManifestFrom({read, exists, fallback: {}}).tools ?? []);
   const unquote = (value) => value?.replace(/^["']|["']$/gu, "").replace(/^\$\{?\w+\}?\//u, "");
   const resolve = (ref, baseDir) => {
     for (const candidate of [path.posix.normalize(path.posix.join(baseDir, ref)), path.posix.normalize(ref)]) {
@@ -377,7 +377,7 @@ export function workflowCallers({root = process.cwd(), lanes: laneNames, files =
 
   const selectorReach = closure(selectorEntries.filter((file) => files.has(file)), (file) => scanner.loadsOf(file));
   const selectors = new Set([...selectorFiles, ...selectorReach.files]);
-  selectors.delete(manifestFile);
+  for (const file of [...selectors]) if (isToolsManifestPath(file)) selectors.delete(file);
   return {lanes, ungated, jobsOf, jobLanes: jobLanesById, idLanes, anyIdLanes, selectors, unresolved};
 }
 
@@ -405,7 +405,7 @@ export function callerLanes(changedFiles, {graph, allLanes, manifestChange}) {
   const selected = new Set();
   for (const file of changedFiles) {
     if (isSelector(file, graph)) return new Set(allLanes);
-    if (file === manifestFile) {
+    if (isToolsManifestPath(file)) {
       const lanes = manifestLanes(manifestChange, {graph, allLanes});
       if (lanes.size === allLanes.length) return lanes;
       for (const lane of lanes) selected.add(lane);

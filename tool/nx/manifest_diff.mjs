@@ -8,7 +8,7 @@
 // that fails to parse, a change outside `tools[]` (bookkeeping `version` and
 // `updated` aside), a duplicate id, or an entry field outside knownEntryFields.
 
-export const manifestFile = "tool/tools_manifest.json";
+import {isToolsManifestPath, touchesToolsManifest} from "../lib/tools_manifest.mjs";
 
 // Entry fields the diff understands. A change to any of them marks the entry
 // changed; a field outside this list selects every lane until it is added here.
@@ -101,8 +101,8 @@ export function manifestChange(baseText, headText, {bookkeeping = bookkeepingKey
  */
 export function manifestPlannerLanes({mode, changedFiles, change, graph, planOthers, allLanes, queueOnly = [],
   isSelector, manifestLanes}) {
-  if (!changedFiles.includes(manifestFile) || !change || change.all) return null;
-  const others = changedFiles.filter((file) => file !== manifestFile);
+  if (!touchesToolsManifest(changedFiles) || !change || change.all) return null;
+  const others = changedFiles.filter((file) => !isToolsManifestPath(file));
   if (others.some((file) => isSelector(file, graph))) return null;
   const lanes = manifestLanes(change, {graph, allLanes});
   if (lanes.size === allLanes.length) return null;

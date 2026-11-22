@@ -17,6 +17,12 @@ test("evaluates the expressions the lane uses", () => {
 test("refuses what it cannot evaluate, rather than skipping the step", () => {
   assert.throws(() => evaluateExpression("always()", context), /Cannot evaluate/u);
   assert.throws(() => evaluateExpression("secrets.TOKEN == 'x'", context), /Cannot evaluate/u);
+  // A step that runs has outputs only GitHub knows; only a skipped step's are known to be empty.
+  assert.throws(() => evaluateExpression("steps.captures.outputs.deferred != 'true'", context), /Cannot evaluate/u);
+  assert.throws(() => evaluateExpression("steps.captures.outputs.deferred != 'true'",
+    {...context, skippedSteps: new Set(["other"])}), /Cannot evaluate/u);
+  assert.equal(evaluateExpression("steps.captures.outputs.deferred != 'true'",
+    {...context, skippedSteps: new Set(["captures"])}), true);
 });
 
 const workflow = YAML.parse(fs.readFileSync(new URL("../../.github/workflows/react-surface-validation.yml", import.meta.url), "utf8"));

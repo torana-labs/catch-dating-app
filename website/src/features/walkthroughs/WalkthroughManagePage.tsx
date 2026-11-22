@@ -7,16 +7,15 @@ import {
   CatchLoadingIndicator,
   CatchPageBody,
   CatchPaneLayout,
+  CatchRoot,
   CatchSection,
   CatchStack,
   CatchText,
-  CatchTopBar,
 } from "@catch/web-ui";
-import type {ReactNode} from "react";
-import {brand} from "@content/brand";
 import {hostWalkthroughHref} from "@content/site";
 import {interpolateContent as fill} from "@content/interpolate";
 import {walkthroughBookingCopy as copy} from "@content/walkthroughBooking";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {Form} from "../../shared/ui/primitives";
 import {SignInSheetView} from "../account/SignInSheet";
 import {useSignInSheetController} from "../account/useSignInSheetController";
@@ -182,26 +181,25 @@ function Body({controller, focus}: {controller: WalkthroughManageController; foc
 }
 
 /**
- * The walkthrough booking's manage page, which the booking's managePath
- * opens (/start/walkthrough/manage?booking=…, with the manage token as
- * #t=… when it comes from the confirmation). It reads the booking, moves it
- * to another open time or cancels it. Pass the URL's search and hash; the
- * token never leaves the fragment except in the call that proves it.
+ * The walkthrough booking's manage page (/start/walkthrough/manage/), which
+ * the booking's managePath opens (?booking=…, with the manage token as #t=…
+ * when it comes from the confirmation). It reads the booking, moves it to
+ * another open time or cancels it. The route passes the URL's search and
+ * hash; the token never leaves the fragment except in the call that proves
+ * it. Private: noindex, out of the sitemap, no analytics.
  */
-function WalkthroughManagePage({search, hash}: {search: string; hash: string}) {
+export function WalkthroughManagePage({search, hash}: {search: string; hash: string}) {
   const controller = useWalkthroughManageController({search, hash});
   const focus = useStepFocus(controller.stage.name);
   return (
-    <>
-      <CatchTopBar homeHref="/" title={brand.name} variant="site" />
-      <CatchPageBody as="main" gutter={false} pt="s4">
-        <CatchPaneLayout main={<CatchGroundCard ground="white" outlined><Body controller={controller} focus={focus} /></CatchGroundCard>} pattern="reading" />
-      </CatchPageBody>
-    </>
+    <CatchRoot theme="day">
+      <PublicSiteHeader variant="minimal" />
+      <WebsitePageMain id="walkthrough-manage">
+        <CatchPageBody gutter={false} pb="s0" pt="s4">
+          <CatchPaneLayout main={<CatchGroundCard ground="white" outlined><Body controller={controller} focus={focus} /></CatchGroundCard>} pattern="reading" />
+        </CatchPageBody>
+      </WebsitePageMain>
+      <PublicSiteFooter variant="minimal" />
+    </CatchRoot>
   );
-}
-
-/** The manage page as a node, for the route that will render it (walkthroughModel.ts walkthroughManagePageLive). */
-export function walkthroughManagePageNode(props: {search: string; hash: string}): ReactNode {
-  return <WalkthroughManagePage {...props} />;
 }

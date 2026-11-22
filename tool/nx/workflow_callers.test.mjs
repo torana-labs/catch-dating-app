@@ -129,7 +129,7 @@ test("every selector file selects every lane in the real repository", () => {
   const named = [".github/workflows/ci.yml", "tool/harness.mjs", "tool/harness/component_graph.json",
     "tool/harness/lib/component_graph.mjs", "tool/harness/verify_local.mjs", "tool/nx/select_lanes.mjs",
     "tool/nx/shadow_plan.mjs", "tool/nx/workflow_callers.mjs", "tool/ci/main_push_base.mjs",
-    "tool/ci/required_ci_floor.mjs", "tool/ci/toolchain.env", "nx.json"];
+    "tool/ci/main_push_queue_proof.mjs", "tool/ci/required_ci_floor.mjs", "tool/ci/toolchain.env", "nx.json"];
   for (const file of [...named, ...realGraph.selectors]) {
     assert.ok(fs.existsSync(path.join(repoRoot, file)), `${file} exists`);
     assert.deepEqual([...workflowLanes([file], realGraph)].sort(), [...comparedLanes].sort(), file);

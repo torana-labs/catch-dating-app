@@ -272,14 +272,18 @@ fails; unaffected lanes are explicit skips, so path scoping never leaves a
 required check permanently pending. Required CI has no mandatory human backend
 source-review job. The merge queue reruns it on the exact combined source of
 each group before `main` moves, so a pull request result never needs to stay
-current with `main`. A `main` push whose exact commit already passed a
-successful merge-queue run re-runs no validation lane, source preflight
-included: it only plans and records the reused run ID in its summary.
+current with `main`. A `main` push whose exact commit the merge queue proved re-runs no
+validation lane, source preflight included: it only plans and records the
+reused run ID in its summary. The proof is the queue run's `Required CI` job
+(`tool/ci/main_push_queue_proof.mjs`): a `merge_group` run of `ci.yml` for
+exactly that commit, with exactly one `Required CI` job, succeeded, in the
+run's current attempt. The run's own conclusion is not required, because the
+queue merges on `Required CI` while reporting lanes may still be running.
 Marketing Website reads the queue run's Marketing and capture evidence,
 validating its own source when the queue run selected neither. App builds then
 run in nightly validation, and signed store builds come from
-[Mobile releases](#mobile-releases). Without a successful queue run of the same
-commit, `main` runs every selected lane.
+[Mobile releases](#mobile-releases). Without that proof for the same commit, `main`
+runs every selected lane.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
@@ -369,7 +373,8 @@ or reads (`load-toolchain`, `setup-flutter`, `generate-contracts`) selects
 every lane, because every lane needs those jobs. Selector files select every
 lane with no narrowing: `ci.yml` and its `Required CI` job, `tool/harness.mjs`
 and `tool/harness/**`, `component_graph.json`, the `tool/nx/**` selection code,
-`tool/ci/main_push_base.mjs`, `tool/ci/required_ci_floor.mjs`, `nx.json`,
+`tool/ci/main_push_base.mjs`, `tool/ci/main_push_queue_proof.mjs`,
+`tool/ci/required_ci_floor.mjs`, `nx.json`,
 `tool/ci/toolchain.env` and every file the planner entry points import or
 load; tests in those directories are not selectors. Outside CI
 configuration, a tool script or module that a lane job executes selects that
@@ -587,7 +592,7 @@ Preserve these contracts when narrowing work:
 | App journeys and rendering; app platform | App source changes select visual/integration obligations | Independent Ubuntu headless journeys; macOS goldens, repeated Widgetbook rendering and native smoke remain separate required jobs | Fix the earliest behavior/render assertion; native dependency retry never retries a product assertion |
 | Generated schema freshness; backend platform | Generated schema bindings and backend package inputs select Contracts, including output-only edits | Contracts installs Functions generator dependencies and executes checked-source freshness commands | Run the named generator, inspect the diff and rerun freshness; a plan's codegen ID alone proves nothing |
 | Component/route/design source integrity; design system | Existing semantic checks and seeded dedupe probes remain blocking | Design parity retains component, route, screen, feature and preview contracts; focused similarity tests exercise reporting code | Repair the named source invariant; metadata checks do not establish live Figma or pixel parity |
-| Capture provenance and website image copies; marketing website | Website, shared React, capture-tool and capture-image inputs select capture freshness and full React validation. App inputs select neither: Marketing Website produces captures for that commit before it publishes | Pinned macOS canonical producer renders or validates exact-source captures; Linux consumers verify immutable artifact identity and import before builds; selected lane must succeed in finalization and Required CI | Repair the source or producer failure; never replace missing artifact proof with stale tracked images or restamped PNGs |
+| Capture provenance and website image copies; marketing website | Website, shared React, capture-tool and capture-image inputs select capture freshness and full React validation. App inputs select neither: Marketing Website produces captures for that commit before it publishes | Pinned macOS canonical producer renders or validates exact-source captures; Linux consumers verify immutable artifact identity and import before builds; selected lane must succeed in finalization and Required CI. The merge queue skips the macOS render; there the marketing lane builds with the tracked images only when the run's own jobs prove the render was deferred, and the main push and nightly render | Repair the source or producer failure; never replace missing artifact proof with stale tracked images or restamped PNGs outside that proven queue deferral |
 | Authored design decisions; design system | Todo decision edits select scoped index validation; counts/gaps derive from source registries | `check_comprehensive_todo_summary.mjs --summary` prints current counts without editing Markdown; P1 decision coverage remains checked | Add or repair the authored decision row; do not copy regenerated counts into prose |
 
 Whole-product widget similarity is advisory and has no product acceptance
@@ -2390,6 +2395,22 @@ none of the last 30 nightly runs was green. Opening the issue notifies repositor
 runs change nothing. Fix forward on main; never close the issue by hand
 while main is still red.
 
+After each main push run, the alert also reports a commit main CI has not
+validated and will not until the next push (22 Nov 2026). GitHub can create a
+queue batch's push runs out of order, so an earlier commit's run can replace a
+later commit's pending run; that later commit's changes are then in no run's
+window. A main push run that was cancelled and whose commit no other main push
+run (finished other than cancelled, running or queued, created no more than 10
+minutes before it) has as an ancestor is reported once on the "Main CI is red"
+issue, with a hidden marker. A commit is reported at most twice across the
+open issue and those closed in the last 3 days: once, and once more if a green
+run of an earlier commit closed the issue before the commit was covered. When
+the issue is not open, it is opened owing
+`Required CI`, so the next green main push, whose run plans from the nearest
+earlier run that ran and so covers the commit, closes it. Runs older than 26
+hours are left to the nightly, and a commit whose ancestry the compare API
+cannot answer is logged, not reported. The report triggers nothing.
+
 ### Scheduled run watchdog
 
 GitHub drops or delays scheduled runs under load: the :30 Deploy backend
@@ -4049,7 +4070,21 @@ goldens (`macos_only`), and only when the queue run's own plan for that exact
 source selected the lane. If that plan cannot be read, the goldens run; they
 are never skipped for that reason. A main or nightly golden failure fails the
 run, so the Main CI alert reports it. The Headless journeys keep running
-wherever the lane is selected, the queue included. Pull requests also run the Headless journeys in the Flutter lane
+wherever the lane is selected, the queue included.
+The macOS capture render (`marketing-captures.yml`, job `export`) leaves the
+merge queue on the same decision; its Linux plan, Storybook build and reuse
+still run there. When a queue group needs a new render, the marketing lane's
+"Decide whether the capture render was deferred" step reads the run's own jobs.
+It builds with the tracked captures, skipping the import and the built-bytes
+check, only when capture freshness succeeded with no capture binding, its plan
+job succeeded, and both reuse and render were skipped. Anything else, an API
+error included, is not deferred, so a broken capture pipeline still fails the
+lane on the missing binding. A main push the queue validated renders the
+captures when the queue's plan selected capture freshness or marketing, read
+the same way as the goldens and run if that plan cannot be read; the nightly
+renders too, and later queue groups reuse those renders. A plan that succeeds
+but emits a render value other than true or false would also read as deferred;
+the plan's own tests pin that value. Pull requests also run the Headless journeys in the Flutter lane
 (`flutter-ci.yml`, Linux), so a broken app-shell journey fails the PR instead
 of ejecting it from the merge queue. Golden pixel comparisons are report
 only: the job summary lists goldens beyond the 0.30% hosted-macOS raster

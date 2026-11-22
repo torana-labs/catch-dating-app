@@ -12,6 +12,7 @@ import {
 } from "./lib/tool_platform.mjs";
 import {changedManifestToolIds, planAffectedToolChecks} from "./lib/tool_impact.mjs";
 import {checkPathArguments} from "./lib/tool_manifest_rules.mjs";
+import {loadToolsManifest, toolsManifestPath, writeToolsManifest} from "./lib/tools_manifest.mjs";
 
 const repositoryRoot = process.cwd();
 const require = createRequire(import.meta.url);
@@ -52,7 +53,7 @@ test("repository manifest is valid and active tools are executable", () => {
   assert.equal(validation.status, 0, validation.stderr);
   assert.equal(validation.stdout, "Tool manifest validation passed.\n");
 
-  const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
+  const manifest = loadToolsManifest();
   const vacuous = manifest.tools
     .filter((tool) => tool.status === "active")
     .filter((tool) =>
@@ -74,7 +75,7 @@ test("list exposes active tools only", () => {
 });
 
 test("direct check selection rejects inactive and unknown ids", () => {
-  const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
+  const manifest = loadToolsManifest();
   const activeId = manifest.tools.find((tool) => tool.status === "active")?.id;
   const inactiveId = manifest.tools.find((tool) => tool.status !== "active")?.id;
   assert.ok(activeId);
@@ -109,7 +110,7 @@ test("platform declarations remain deterministic", () => {
 });
 
 test("affected-tool routing selects owners and mandatory guards", () => {
-  const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
+  const manifest = loadToolsManifest();
   const mandatory = manifest.ciImpact.mandatoryCheckIds;
   const result = run([
     "affected-tools",
@@ -143,7 +144,7 @@ test("shared glob dependency selects every consuming tool", () => {
 });
 
 test("import-derived owners select only the tools that reach a changed file", () => {
-  const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
+  const manifest = loadToolsManifest();
   const componentGraph = JSON.parse(fs.readFileSync("tool/harness/component_graph.json", "utf8"));
   const changedPaths = ["tool/data/lib/new_import_only_helper.mjs", "tool/lib/cli_args.mjs"];
   const plan = (importOwners) => planAffectedToolChecks({changedPaths, manifest, componentGraph, importOwners});
@@ -166,7 +167,7 @@ test("import-derived owners select only the tools that reach a changed file", ()
 });
 
 test("a manifest edit runs the edited tools and the validator unless selection policy changed", () => {
-  const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
+  const manifest = loadToolsManifest();
   const componentGraph = JSON.parse(fs.readFileSync("tool/harness/component_graph.json", "utf8"));
   const edited = structuredClone(manifest);
   const target = edited.tools.find((tool) => tool.id === "docs:metadata");
@@ -176,7 +177,7 @@ test("a manifest edit runs the edited tools and the validator unless selection p
   assert.deepEqual(changedManifestToolIds({baseManifest: manifest, manifest}), {policyChanged: false, toolIds: []});
   assert.deepEqual(changedManifestToolIds({baseManifest: manifest, manifest: edited}),
     {policyChanged: false, toolIds: ["copy:l10n-key-usage-copy", "docs:metadata"]});
-  const changedPaths = ["tool/tools_manifest.json"];
+  const changedPaths = [toolsManifestPath];
   const plan = (baseManifest, head = edited) =>
     planAffectedToolChecks({changedPaths, manifest: head, componentGraph, baseManifest});
   const narrowed = plan(manifest);
@@ -339,7 +340,7 @@ const restoredProofOwners = [
 
 for (const [ownerId, proofPath] of restoredProofOwners) {
   test(`${ownerId} propagates its declared suite's failing sentinel`, context => {
-    const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
+    const manifest = loadToolsManifest({root: repositoryRoot});
     const owner = manifest.tools.find(tool => tool.id === ownerId);
     assert.equal(owner.status, "active");
     // The test runs first, so this isolated fixture never reaches a real
@@ -368,7 +369,7 @@ for (const [ownerId, proofPath] of restoredProofOwners) {
   });
 
   test(`${ownerId} owns isolated helper and regression edits`, () => {
-    const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
+    const manifest = loadToolsManifest({root: repositoryRoot});
     for (const changedPath of [proofPath, proofPath.replace(".test.mjs", ".mjs")]) {
       const result = run(["affected-tools", "--paths", changedPath, "--json"]);
       assert.equal(result.status, 0, result.stderr);
@@ -680,6 +681,7 @@ function createRunnerFixture(context) {
     "tool/lib/tool_impact.mjs",
     "tool/lib/tool_manifest_rules.mjs",
     "tool/lib/tool_platform.mjs",
+    "tool/lib/tools_manifest.mjs",
   ]) {
     const destination = path.join(root, relativePath);
     fs.mkdirSync(path.dirname(destination), {recursive: true});
@@ -689,10 +691,7 @@ function createRunnerFixture(context) {
     path.join(root, "tool/check.mjs"),
     'console.log(process.argv.length > 2 ? JSON.stringify(process.argv.slice(2)) : "fixture-check");\n',
   );
-  fs.writeFileSync(
-    path.join(root, "tool/tools_manifest.json"),
-    `${JSON.stringify(sortedTools(fixtureManifest()), null, 2)}\n`,
-  );
+  writeToolsManifest(root, sortedTools(fixtureManifest()));
   fs.writeFileSync(
     path.join(root, "tool/harness/component_graph.json"),
     `${JSON.stringify({
@@ -772,10 +771,9 @@ function fixtureManifest() {
 }
 
 function mutateFixtureManifest(root, callback) {
-  const manifestPath = path.join(root, "tool/tools_manifest.json");
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  const manifest = loadToolsManifest({root});
   callback(manifest);
-  fs.writeFileSync(manifestPath, `${JSON.stringify(sortedTools(manifest), null, 2)}\n`);
+  writeToolsManifest(root, sortedTools(manifest));
 }
 
 function runGit(cwd, args) {
@@ -869,7 +867,7 @@ const nativeGenerators = [
 
 for (const [id, sourcePath] of nativeGenerators) {
   test(`${id} has exact ownership and platform-bounded parse-only dispatch`, context => {
-    const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
+    const manifest = loadToolsManifest({root: repositoryRoot});
     const owner = manifest.tools.find(tool => tool.id === id);
     assert.ok(owner, id);
     assert.equal(owner.path, sourcePath);
