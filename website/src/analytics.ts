@@ -373,7 +373,7 @@ type WebsiteLeadFormStage = keyof typeof websiteLeadFormEvents;
 type WebsiteLeadFormKind = NonNullable<JoinWaitlistHTTPRequest["requestKind"]>;
 // Exactly the contract's kinds: a kind added to or dropped from the contract fails typecheck here.
 const websiteLeadFormKinds: ReadonlySet<string> = new Set(Object.keys({
-  guide: true, walkthrough: true, demo: true, venue: true, story: true, referral: true, org_contact: true, city_alerts: true,
+  guide: true, walkthrough: true, demo: true, venue: true, story: true, referral: true, org_contact: true, city_alerts: true, app_link: true,
 } satisfies Record<WebsiteLeadFormKind, true>));
 /** Why a lead was not accepted, as the lead client names it; never the server's words. */
 type WebsiteLeadFormProblem = "invalid_phone" | "invalid" | "refresh" | "changed" | "busy" | "failed";

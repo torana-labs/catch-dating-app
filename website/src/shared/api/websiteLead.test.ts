@@ -35,8 +35,9 @@ const forms: {[Kind in WebsiteLeadKind]: WebsiteLeadForm<Kind>} = {
   referral: {...shared, kind: "referral", fullName: "Asha Rao", answers: {hostName: "Lantern Lane", hostLink: "@lanternlanesocial", relationship: "I go every month"}},
   org_contact: {...shared, kind: "org_contact", answers: {orgType: "college", orgName: "St. Xavier’s Music Society"}},
   city_alerts: {...shared, kind: "city_alerts", city: "Mumbai", cityId: "in-mh-mumbai", countryIsoCode: "IN", answers: {interests: ["runs", "dinners"]}},
+  app_link: {...shared, kind: "app_link", answers: {app: "host"}},
 };
-const payloadKeys = ["guide", "walkthrough", "demo", "venue", "story", "referral", "orgContact", "cityAlerts"];
+const payloadKeys = ["guide", "walkthrough", "demo", "venue", "story", "referral", "orgContact", "cityAlerts", "appLink"];
 const messages: WebsiteLeadMessages = Object.fromEntries(websiteLeadProblems.map((problem) => [problem, `copy:${problem}`])) as unknown as WebsiteLeadMessages;
 const requestId = "0b6f4a1e2c3d4e5f8a9b0c1d2e3f4a5b";
 const receipt = (isNew = true) => new Response(JSON.stringify({ok: true, alreadyJoined: !isNew,

@@ -2179,6 +2179,7 @@
             "referral",
             "org_contact",
             "city_alerts",
+            "app_link",
             "tool"
           ]
         },

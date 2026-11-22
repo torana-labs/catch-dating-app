@@ -389,7 +389,8 @@
         "story",
         "referral",
         "org_contact",
-        "city_alerts"
+        "city_alerts",
+        "app_link"
       ],
       "description": "Present on a website lead (joinWaitlist requestKind); absent on Host applications and partner nominations. Staff reply on WhatsApp; nothing is sent automatically."
     },
@@ -803,6 +804,11 @@
                         "required": [
                           "cityAlerts"
                         ]
+                      },
+                      {
+                        "required": [
+                          "appLink"
+                        ]
                       }
                     ]
                   }
@@ -868,6 +874,11 @@
                       {
                         "required": [
                           "cityAlerts"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "appLink"
                         ]
                       }
                     ]
@@ -935,6 +946,11 @@
                         "required": [
                           "cityAlerts"
                         ]
+                      },
+                      {
+                        "required": [
+                          "appLink"
+                        ]
                       }
                     ]
                   }
@@ -1001,6 +1017,11 @@
                         "required": [
                           "cityAlerts"
                         ]
+                      },
+                      {
+                        "required": [
+                          "appLink"
+                        ]
                       }
                     ]
                   }
@@ -1066,6 +1087,11 @@
                       {
                         "required": [
                           "cityAlerts"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "appLink"
                         ]
                       }
                     ]
@@ -1134,6 +1160,11 @@
                         "required": [
                           "cityAlerts"
                         ]
+                      },
+                      {
+                        "required": [
+                          "appLink"
+                        ]
                       }
                     ]
                   }
@@ -1200,6 +1231,11 @@
                         "required": [
                           "cityAlerts"
                         ]
+                      },
+                      {
+                        "required": [
+                          "appLink"
+                        ]
                       }
                     ]
                   }
@@ -1265,6 +1301,82 @@
                       {
                         "required": [
                           "orgContact"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "appLink"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "leadKind": {
+                  "const": "app_link"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "lead": {
+                  "required": [
+                    "appLink"
+                  ],
+                  "properties": {
+                    "consent": {
+                      "properties": {
+                        "purpose": {
+                          "const": "leadFollowUp"
+                        }
+                      }
+                    }
+                  },
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "guide"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "walkthrough"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "demo"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "venue"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "story"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "referral"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "orgContact"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "cityAlerts"
                         ]
                       }
                     ]
@@ -1518,6 +1630,9 @@
         "cityAlerts": {
           "$ref": "#/definitions/leadCityAlerts"
         },
+        "appLink": {
+          "$ref": "#/definitions/leadAppLink"
+        },
         "referralCredit": {
           "$ref": "#/definitions/leadReferralCredit"
         }
@@ -1720,6 +1835,23 @@
               "books"
             ]
           }
+        }
+      }
+    },
+    "leadAppLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "app"
+      ],
+      "description": "A request for an app's download link (Text me the link): staff send it on WhatsApp.",
+      "properties": {
+        "app": {
+          "type": "string",
+          "enum": [
+            "host"
+          ],
+          "description": "Which app's link: host (the host app)."
         }
       }
     },

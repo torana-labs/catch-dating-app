@@ -96,6 +96,13 @@ test("lead routing by source, skipping partner, city alerts, QA and closed",
     assert.equal(venue?.detail, "Space to list");
     assert.equal(venue?.sender, "Sandbar Studio");
     assert.equal(venue?.preview, "Baner · 40 · Pune");
+    const appLink = salesLeadAlert(intentId, {...intent, source: "website",
+      hostApplication: null, fullName: null, city: null, leadKind: "app_link",
+      lead: {sourcePage: "/host/start/", appLink: {app: "host"}}});
+    assert.equal(appLink?.kind, "websiteLead");
+    assert.equal(appLink?.detail, "App link request");
+    assert.equal(appLink?.sender, "No name given");
+    assert.equal(appLink?.preview, "Host app · /host/start/");
     for (const patch of [{source: "partner"}, {status: "dismissed"},
       {status: "linked"}, {source: "website", leadKind: "city_alerts"},
       {submissionId: "internal_qa_delivery"}, {fullName: "[QA] Synthetic"},

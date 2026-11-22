@@ -173,10 +173,12 @@ const leadKindLabels: Record<string, string> = {
   guide: "Setup guide request", walkthrough: "Walkthrough request",
   demo: "Demo request", venue: "Space to list", story: "Story nomination",
   referral: "Host referral", org_contact: "College, team or brand",
+  app_link: "App link request",
 };
 
 const leadPayloadKeys: Record<string, string> = {
   org_contact: "orgContact",
+  app_link: "appLink",
 };
 
 const leadDetailFields: Record<string, string[]> = {
@@ -188,6 +190,9 @@ const leadDetailFields: Record<string, string[]> = {
   referral: ["hostName", "relationship"],
   org_contact: ["orgType", "orgName", "message"],
 };
+
+/** Which app's link a "Text me the link" request asked for. */
+const appLinkApps: Record<string, string> = {host: "Host app"};
 
 function joined(...values: unknown[]): string | null {
   const parts = values.flatMap((value) => Array.isArray(value) ?
@@ -244,8 +249,11 @@ export function salesLeadAlert(intentId: string, value: unknown):
     headline = "Website lead";
     detail = leadKindLabels[leadKind];
     channel = "Website";
-    preview = joined(...(leadDetailFields[leadKind] ?? [])
-      .map((field) => payload[field]), intent.city);
+    // An app link request has nothing to read but the app and the page.
+    preview = leadKind === "app_link" ?
+      joined(appLinkApps[String(payload.app)] ?? payload.app, lead.sourcePage) :
+      joined(...(leadDetailFields[leadKind] ?? [])
+        .map((field) => payload[field]), intent.city);
   } else if (intent.source === "website") {
     const weddings = intent.programme === "weddings";
     kind = "websiteHostApplication";

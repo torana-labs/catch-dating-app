@@ -188,7 +188,7 @@ const media = mediaSpec as OneOfSpec<readonly [
 export const playbookLeadInputs = ["tel", "url", "text", "file"] as const;
 
 /** What a lead form asks for: its request kind and extra fields, as the website enquiry intake takes them. */
-export const playbookLeadRequestKinds = ["guide", "walkthrough", "demo", "venue", "story", "referral", "org_contact", "city_alerts", "tool"] as const;
+export const playbookLeadRequestKinds = ["guide", "walkthrough", "demo", "venue", "story", "referral", "org_contact", "city_alerts", "app_link", "tool"] as const;
 export const playbookLeadFieldNames = [
   "name", "preferredTime", "whatYouHost", "area", "capacity", "nights", "orgType", "orgName", "hostName", "hostLink", "relationship",
 ] as const;

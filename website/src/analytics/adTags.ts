@@ -77,8 +77,8 @@ const clarityDenied = {ad_Storage: "denied", analytics_Storage: "denied"};
 const googleCookieOptions = {cookie_expires: 30 * 24 * 60 * 60, cookie_flags: "SameSite=Lax;Secure"};
 const checkoutsKey = "catch_ad_checkouts_v1";
 
-/** Website lead kinds that are a host enquiry (city alerts and referrals are not). */
-const hostLeadKinds: ReadonlySet<string> = new Set(["guide", "walkthrough", "demo", "venue", "story", "org_contact"]);
+/** Website lead kinds that are a host enquiry, a host app link request among them (city alerts and referrals are not). */
+const hostLeadKinds: ReadonlySet<string> = new Set(["guide", "walkthrough", "demo", "venue", "story", "org_contact", "app_link"]);
 
 const deniedConsent = {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"};
 const analyticsConsent = {ad_storage: "denied", analytics_storage: "granted", ad_user_data: "denied", ad_personalization: "denied"};

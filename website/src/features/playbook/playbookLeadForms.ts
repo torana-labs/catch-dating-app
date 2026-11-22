@@ -41,8 +41,8 @@ function playbookReferralFormNode(props: PlaybookLeadFormProps) {
 
 /**
  * The lead forms that have a backend, by request kind: send me the setup
- * guide, list your space, get a demo link, ask for a walkthrough and refer a
- * host post to the website lead intake (/api/join-waitlist), the referral
+ * guide, list your space, get a demo link, ask for a walkthrough, text me the
+ * app link and refer a host post to the website lead intake (/api/join-waitlist), the referral
  * with the sign-in that credits it above (features/referral); a tool form
  * runs its page's try-it command. Kinds left out keep to the page's
  * WhatsApp actions.
@@ -52,6 +52,7 @@ export const playbookLeadForms: PlaybookLeadFormSlots = {
   venue: playbookLeadFormNode,
   demo: playbookLeadFormNode,
   walkthrough: playbookLeadFormNode,
+  app_link: playbookLeadFormNode,
   tool: playbookToolFormNode,
   referral: playbookReferralFormNode,
 };

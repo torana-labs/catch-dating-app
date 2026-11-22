@@ -20,7 +20,8 @@ import {validMobileNumber} from "../shared/mobileNumber";
 
 /**
  * Website leads: the short forms on the redesigned pages (send me the guide,
- * book a walkthrough, list your space, refer a host and so on). Each one is
+ * book a walkthrough, list your space, refer a host, text me the app link
+ * and so on). Each one is
  * a typed salesInboundIntents row, so it reaches the Admin inbox the way a
  * Host application does. Until Catch's WhatsApp templates are approved staff
  * reply first: nothing here sends a message, and the city new-plans consent
@@ -28,7 +29,7 @@ import {validMobileNumber} from "../shared/mobileNumber";
  */
 
 export const LEAD_KINDS = ["guide", "walkthrough", "demo", "venue", "story",
-  "referral", "org_contact", "city_alerts"] as const;
+  "referral", "org_contact", "city_alerts", "app_link"] as const;
 export type LeadKind = typeof LEAD_KINDS[number];
 
 type LeadRequest = NonNullable<JoinWaitlistHTTPRequest["lead"]>;
@@ -45,6 +46,7 @@ export const LEAD_PAYLOAD_KEYS: Record<LeadKind, LeadPayloadKey> = {
   referral: "referral",
   org_contact: "orgContact",
   city_alerts: "cityAlerts",
+  app_link: "appLink",
 };
 
 /** One hour per number and per network, generous enough for a few forms. */
