@@ -10,6 +10,7 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/live_paged_query.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/streams/dependent_listeners.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -161,7 +162,7 @@ class OrganizerProgramViewsRepository {
               .where('organizerId', isEqualTo: organizerId)
               .where('createdBy', isEqualTo: uid)
               .where('programId', isEqualTo: programId)
-              .limit(1)
+              .limit(ReadLimitPolicy.lookup)
               .snapshots(),
           context: _context,
         ).listen(
