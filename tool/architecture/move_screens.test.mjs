@@ -217,8 +217,8 @@ test("missing package dependencies of moved files are reported", () => {
   });
   const {plan} = planFor(root, "host-today");
   assert.deepEqual(plan.errors.map((error) => error.message), [
-    "apps/host/pubspec.yaml must depend on go_router (imported by 1 moving file(s), e.g. lib/hosts/today/today_screen.dart).",
-    "apps/host/pubspec.yaml must depend on mocktail (imported by 1 moving file(s), e.g. test/hosts/today/today_screen_test.dart).",
+    "apps/host/pubspec.yaml does not declare go_router, which 1 moving file(s) import (e.g. lib/hosts/today/today_screen.dart); add go_router to apps/host/pubspec.yaml in a separate PR first, since a move commit may not edit a pubspec.",
+    "apps/host/pubspec.yaml does not declare mocktail, which 1 moving file(s) import (e.g. test/hosts/today/today_screen_test.dart); add mocktail to apps/host/pubspec.yaml in a separate PR first, since a move commit may not edit a pubspec.",
   ]);
 });
 
@@ -363,6 +363,30 @@ test("path mentions move as repo paths and package URIs, honour the exclusions, 
     texts: new Map([["tool/check_crm.mjs", "const roots = ['lib/hosts/presentation'];\nconst other = 'lib/hosts/presentation_extra';\n"]]),
     folders: ["lib/hosts/presentation/"],
   }), [{file: "tool/check_crm.mjs", line: 1, folder: "lib/hosts/presentation/"}]);
+});
+
+test("workflow paths that change package need a hand edit; same-package ones are rewritten", () => {
+  const root = fixtureRepo({
+    "tool/architecture/context_map.json": mapSource([
+      {path: "lib/hosts/", layer: "app"},
+      {path: "lib/events/", layer: "app"},
+      {path: "lib/hosts/today/", layer: "app", moveTo: "apps/host/lib/today/", group: "wave"},
+      {path: "lib/events/presentation/event_tile.dart", layer: "app", moveTo: "lib/pages/event/event_tile.dart", group: "wave"},
+    ]),
+    "lib/hosts/hosts.dart": "// stays\n",
+    "lib/events/events.dart": "// stays\n",
+    "lib/hosts/today/today_screen.dart": "class TodayScreen {}\n",
+    "lib/events/presentation/event_tile.dart": "class EventTile {}\n",
+    "test/hosts/today/today_screen_test.dart": "import 'package:catch_dating_app/hosts/today/today_screen.dart';\n",
+    ".github/workflows/ci.yml": "steps:\n  - run: flutter test test/hosts/today/today_screen_test.dart\n",
+    ".github/workflows/tiles.yml": "steps:\n  - run: echo lib/events/presentation/event_tile.dart\n",
+  });
+  const {plan} = planFor(root, "wave");
+  // The emptied test/hosts/ folder is still named there too.
+  assert.deepEqual(plan.errors.map((error) => `${error.kind} ${error.file}`),
+    ["workflowPath .github/workflows/ci.yml", "staleFolder .github/workflows/ci.yml"]);
+  assert.equal(plan.writes.has(".github/workflows/ci.yml"), false);
+  assert.equal(plan.writes.get(".github/workflows/tiles.yml"), "steps:\n  - run: echo lib/pages/event/event_tile.dart\n");
 });
 
 test("pruneLegacyEntries drops moveTo and group entries once their files have moved", () => {

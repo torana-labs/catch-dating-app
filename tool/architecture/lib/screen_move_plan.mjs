@@ -263,7 +263,7 @@ export function missingDependencies({moves, read, packages, dependenciesOf}) {
   return [...missing].flatMap(([pubspec, needed]) => [...needed].map(([name, users]) => ({
     kind: "dependency",
     file: pubspec,
-    message: `${pubspec} must depend on ${name} (imported by ${users.length} moving file(s), e.g. ${users[0]}).`,
+    message: `${pubspec} does not declare ${name}, which ${users.length} moving file(s) import (e.g. ${users[0]}); add ${name} to ${pubspec} in a separate PR first, since a move commit may not edit a pubspec.`,
   })));
 }
 

@@ -6,6 +6,7 @@ import path from "node:path";
 import {
   barrelSource,
   git,
+  packageOfPath,
   pathTextExtensions,
   pruneLegacyEntries,
   rewriteDartDirectives,
@@ -138,6 +139,16 @@ export function buildGroupPlan({root, group, graph, files, packages, map, read =
   }
   const mentioned = rewriteMentions({texts, moves, folders: folders.mapped, packages});
   for (const [file, text] of mentioned) {
+    const crossing = file.startsWith(".github/") ? packageCrossingMentions(read(file), moves, packages) : [];
+    if (crossing.length > 0) {
+      // A workflow runs from the repository root; a path that changes package
+      // may also change its working directory or output root.
+      mentioned.delete(file);
+      for (const {line, from} of crossing) {
+        errors.push({kind: "workflowPath", file, message: `${file}:${line} names ${from}, which changes package; edit the workflow by hand in a separate PR first.`});
+      }
+      continue;
+    }
     writes.set(file, text);
     texts.set(file, text);
   }
@@ -165,6 +176,17 @@ export function buildGroupPlan({root, group, graph, files, packages, map, read =
     carried,
     log,
   };
+}
+
+function packageCrossingMentions(source, moves, packages) {
+  const found = [];
+  const crossing = [...moves].filter(([from, to]) =>
+    packageOfPath(from, packages)?.name !== packageOfPath(to, packages)?.name);
+  for (const [index, line] of (source ?? "").split("\n").entries()) {
+    const hit = crossing.find(([from]) => line.includes(from));
+    if (hit != null) found.push({line: index + 1, from: hit[0]});
+  }
+  return found;
 }
 
 // The first README to move into an app package's lib/ needs the host feature
