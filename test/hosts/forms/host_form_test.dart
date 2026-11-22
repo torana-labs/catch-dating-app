@@ -321,11 +321,12 @@ void main() {
   );
 
   test('form share projections retain canonical and attributed URLs', () {
-    final assets = HostFormShareAssets.fromCallableData(const {
-      'canonicalUrl': '${Brand.webOrigin}/f/public_form_1234567890/',
-      'embedUrl': '${Brand.webOrigin}/f/public_form_1234567890/?embed=1',
-      'embedSnippet': '<iframe></iframe>',
-    });
+    final assets = HostFormShareAssets.forPublicForm(
+      site: Uri.parse(Brand.webOrigin),
+      publicFormId: 'public_form_1234567890',
+      title: 'Brunch',
+      embedId: 'embed-1',
+    );
     final link = HostFormShareLink.fromCallableData(const {
       'linkId': 'formlink_123',
       'label': 'Instagram story',
@@ -334,6 +335,7 @@ void main() {
       'url': '${Brand.webOrigin}/f/public_form_1234567890/?source=x',
     });
 
+    expect(assets.canonicalUrl, '${Brand.webOrigin}/f/public_form_1234567890/');
     expect(assets.embedUrl, contains('embed=1'));
     expect(link.source, 'instagram_story');
     expect(link.url, contains('source='));
