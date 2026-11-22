@@ -4,7 +4,7 @@
 // app imports another app's files, and a file moving into lib/pages or
 // lib/contexts imports only the layers below it.
 import path from "node:path";
-import {libPackageOf, packageOfPath} from "./dart_moves.mjs";
+import {packageOfPath} from "./dart_moves.mjs";
 import {placePath} from "../check_context_map.mjs";
 import {
   appWalks,
