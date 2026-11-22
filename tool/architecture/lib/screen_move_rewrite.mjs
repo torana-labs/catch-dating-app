@@ -13,6 +13,7 @@ import {
   pathTextExcluded,
   pathTextExtensions,
   rewriteDartDirectives,
+  resolveUri,
   rewritePathMentions,
 } from "./dart_moves.mjs";
 import {isBarrelImport, isRepoPath} from "./screen_move_graph.mjs";
@@ -131,6 +132,27 @@ function directImports({directive, file, newFile, after, graph, packages}) {
     ].join(""));
   }
   return lines.join("\n");
+}
+
+// The text-only form of the barrel-export rule, for replays without a graph:
+// an export of a file now in another app package than the exporting file is
+// deleted, with its line.
+export function deleteAppExports({file, source, moves, packages}) {
+  const newFile = moves.get(file) ?? file;
+  const newPackage = packageOfPath(newFile, packages)?.name;
+  const deleted = [];
+  const out = source.replace(
+    /^export\s+(['"])([^'"]+)\1[^;]*;[ \t]*(?:\/\/[^\n]*)?\n?/gmu,
+    (line, quote, uri) => {
+      const target = resolveUri(file, uri, packages);
+      if (target == null) return line;
+      const exported = moves.get(target) ?? target;
+      if (appOf(exported) == null || packageOfPath(exported, packages)?.name === newPackage) return line;
+      deleted.push(target);
+      return "";
+    },
+  );
+  return {source: out, deleted};
 }
 
 // Folders that hold tracked files before the move and none after. A folder

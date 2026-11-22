@@ -24,6 +24,7 @@ import {
 import {planTestMoves} from "./screen_move_tests.mjs";
 import {
   carriedScreensPath,
+  deleteAppExports,
   emptiedFolders,
   isMentionText,
   rewriteMentions,
@@ -101,7 +102,8 @@ export function buildGroupPlan({root, group, graph, files, packages, map, read =
   const deletedExports = [];
   let splitBarrels = 0;
   for (const file of files) {
-    if (!file.endsWith(".dart")) continue;
+    // Lint probe fixtures are synthetic legacy-shaped code; they keep it.
+    if (!file.endsWith(".dart") || /^tool\/catch_ui_lints_probe\//u.test(file)) continue;
     const text = read(file);
     if (text == null) continue;
     const result = rewriteScreenDirectives({file, source: text, graph, moves, packages, map, barrelExports});
@@ -173,8 +175,29 @@ function writeFile(root, file, text) {
 // as the codemod's own fixture tests do.
 export function applyGroupPlan({root, plan, cleanupComments = true, external = true}) {
   if (plan.errors.length > 0) throw new Error(`Group ${plan.group} has ${plan.errors.length} plan error(s); run --plan.`);
-  const status = git(["status", "--porcelain"], root).trim();
-  if (status !== "") throw new Error("--apply needs a clean working tree.");
+  // The group's entries are usually added to the map in the same change, so
+  // the map alone may differ from HEAD.
+  const dirty = git(["status", "--porcelain"], root).split("\n").filter(Boolean)
+    .filter((line) => line.slice(3) !== contextMapPath);
+  if (dirty.length > 0) {
+    throw new Error(`--apply needs a clean working tree apart from ${contextMapPath}:\n${dirty.join("\n")}`);
+  }
+  const mapText = fs.readFileSync(path.join(root, contextMapPath), "utf8");
+  try {
+    return applyOnCleanTree({root, plan, cleanupComments, external});
+  } catch (error) {
+    if (git(["log", "-1", "--format=%B"], root).includes(`Screen-Move-Group: ${plan.group}`)) {
+      throw new Error(`The move commit for ${plan.group} is in place, but a step after it failed:\n${error.message}`);
+    }
+    // The tree was clean, so everything here is this run's own work.
+    git(["reset", "-q", "--hard", "HEAD"], root);
+    git(["clean", "-fdq"], root);
+    fs.writeFileSync(path.join(root, contextMapPath), mapText);
+    throw new Error(`--apply failed and was rolled back:\n${error.message}`);
+  }
+}
+
+function applyOnCleanTree({root, plan, cleanupComments, external}) {
   for (const [from, to] of [...plan.moves].sort()) {
     fs.mkdirSync(path.join(root, path.dirname(to)), {recursive: true});
     git(["mv", from, to], root);
@@ -285,14 +308,10 @@ export function replayImports({root, entries, packages, map, external = true}) {
     if (!fs.existsSync(absolute)) continue;
     let text = fs.readFileSync(absolute, "utf8");
     if (current.endsWith(".dart")) {
-      const result = rewriteDartDirectives({
-        file: reverse.get(current) ?? current,
-        source: text,
-        moves,
-        map,
-        packages,
-      });
-      if (result.changed) {
+      const file = reverse.get(current) ?? current;
+      const exports = deleteAppExports({file, source: text, moves, packages});
+      const result = rewriteDartDirectives({file, source: exports.source, moves, map, packages});
+      if (result.changed || exports.deleted.length > 0) {
         text = result.source;
         fs.writeFileSync(absolute, text);
         dartFiles += 1;

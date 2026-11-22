@@ -135,6 +135,19 @@ Future<Map<String, Object?>> buildSymbolImportGraph({
         unit.unit.accept(collector);
       }
       for (final unit in result.units) {
+        // Each conditional configuration names another library; its names
+        // are looked up there.
+        final configured = <Configuration, LibraryElement?>{};
+        for (final directive in unit.unit.directives) {
+          if (directive is! ImportDirective) continue;
+          for (final configuration in directive.configurations) {
+            configured[configuration] = await _libraryAt(
+              session,
+              unit.libraryFragment.source.uri,
+              configuration.uri.stringValue,
+            );
+          }
+        }
         files[relative(unit.path)] = {
           'library': libraryPath,
           'directives': [
@@ -144,6 +157,7 @@ Future<Map<String, Object?>> buildSymbolImportGraph({
                 unit: unit,
                 collector: collector,
                 session: session,
+                configured: configured,
                 relative: relative,
                 libraryId: libraryId,
                 unresolved: unresolved,
@@ -184,6 +198,7 @@ Map<String, Object?>? _describeDirective({
   required ResolvedUnitResult unit,
   required _UseCollector collector,
   required AnalysisSession session,
+  required Map<Configuration, LibraryElement?> configured,
   required String Function(String) relative,
   required String Function(LibraryElement) libraryId,
   required List<String> unresolved,
@@ -236,7 +251,7 @@ Map<String, Object?>? _describeDirective({
               'target': targetOf(configuration.uri.stringValue),
               if (uses != null)
                 'uses': _usesThrough(
-                  configuration.resolvedUri,
+                  configured[configuration],
                   uses,
                   libraryId,
                 ),
@@ -309,21 +324,37 @@ Map<String, List<String>> _sortedUses(Map<String, Set<String>> uses) => {
 // What a conditional configuration's library declares for the names the
 // default import provides: each name is looked up in that library's exports.
 Map<String, List<String>> _usesThrough(
-  DirectiveUri? uri,
+  LibraryElement? library,
   Map<String, Set<String>> uses,
   String Function(LibraryElement) libraryId,
 ) {
-  if (uri is! DirectiveUriWithLibrary) return const {};
+  if (library == null) return const {};
   final result = <String, Set<String>>{};
   for (final names in uses.values) {
     for (final name in names) {
-      final element = uri.library.exportNamespace.get2(name);
+      final element = library.exportNamespace.get2(name);
       final declaring = element?.library;
       if (declaring == null) continue;
       result.putIfAbsent(libraryId(declaring), () => {}).add(name);
     }
   }
   return _sortedUses(result);
+}
+
+Future<LibraryElement?> _libraryAt(
+  AnalysisSession session,
+  Uri base,
+  String? uri,
+) async {
+  if (uri == null) return null;
+  final Uri resolved;
+  try {
+    resolved = base.resolveUri(Uri.parse(uri));
+  } on FormatException {
+    return null;
+  }
+  final result = await session.getLibraryByUri(resolved.toString());
+  return result is LibraryElementResult ? result.element : null;
 }
 
 /// The top-level declaration that holds [element]: a class for a member or
