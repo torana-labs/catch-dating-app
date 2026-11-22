@@ -158,6 +158,12 @@ const classifiedCiFiles = ({changedFiles}) => changedFiles.filter(isCiConfigurat
 const reachedOnlyByTools = (file, graph) => [...((graph ?? callerGraph()).lanes.get(file) ?? [])]
   .every((lane) => ["tools", "policy_docs"].includes(lane));
 
+// The roots whose change makes Admin or Operations read a contract change itself.
+const contractLaneOwnRoots = {
+  admin: ["admin/", "packages/web-ui/", "packages/web-config/"],
+  operations: ["operations/", "packages/command-client/"],
+};
+
 /**
  * Known reasons the planner and Nx disagree on a lane. A disagreement that
  * matches one is explained; anything else is unexplained and counts against
@@ -220,6 +226,31 @@ export const explanationRules = [
   {id: "planner-contracts-source", side: "planner",
     why: "The planner runs nine lanes for any contract file; Nx runs only the consumers of the changed contract family.",
     matches: ({sources}) => sources.length > 0 && sources.every((source) => source.component === "contracts.source")},
+  // Main pushes, 15-22 Nov (the main flip's week of shadow data).
+  {id: "planner-indexes-to-contracts", side: "planner", lanes: ["contracts"],
+    why: "The planner runs Contracts for firestore.indexes.json; the only check that reads it, contracts:firestore-query-indexes, runs in Tools, which reads the file (lane-tools input).",
+    matches: ({sources}) => sources.length > 0 && sources.every((source) => source.component === "backend.firestore-indexes")},
+  {id: "planner-contract-propagation", side: "planner", lanes: ["admin", "operations"],
+    why: "The planner carries any contract change to Admin and Operations through their contract-consumer components; Nx runs them only when the changed contract family is an input of their projects (contracts-http feeds Functions and the website).",
+    matches: ({lane, sources, changedFiles}) => sources.length > 0 &&
+      sources.every((source) => source.component === "contracts.source" || source.relationship === "affected") &&
+      changedFiles.some((file) => file.startsWith("contracts/")) &&
+      !changedFiles.some((file) => contractLaneOwnRoots[lane].some((root) => file.startsWith(root)))},
+  {id: "planner-shared-ui-test-only", side: "planner", lanes: ["marketing", "capture_freshness"],
+    why: "The planner carries a packages/web-ui change to the website; a web-ui test is not a website input, and Admin runs @catch/web-ui:test.",
+    matches: ({sources, changedFiles}) => {
+      const webUi = changedFiles.filter((file) => file.startsWith("packages/web-ui/"));
+      return sources.length > 0 && sources.every((source) => source.relationship === "affected" &&
+        ["web.marketing", "marketing.capture-freshness"].includes(source.component)) &&
+        webUi.length > 0 && webUi.every((file) => /\.test\.[cm]?[jt]sx?$/u.test(file));
+    }},
+  {id: "planner-other-packages-coarse", side: "planner", lanes: ["admin", "marketing", "capture_freshness"],
+    why: "The planner's repo.other-packages runs Admin, Marketing and capture freshness for any package; packages/command-client is read only by Operations (Nx: command-client <- @catch/operations).",
+    matches: ({sources, changedFiles}) => {
+      const packages = changedFiles.filter((file) => file.startsWith("packages/"));
+      return sources.length > 0 && sources.every((source) => source.component === "repo.other-packages") &&
+        packages.length > 0 && packages.every((file) => file.startsWith("packages/command-client/"));
+    }},
   {id: "docs-reads-every-markdown", side: "nx", lanes: ["docs"],
     why: "lane-docs reads every Markdown file; the planner leaves doc-contract files (READMEs it classifies as terminal) out of Docs.",
     matches: ({changedFiles}) => changedFiles.some((file) => file.endsWith(".md"))},
