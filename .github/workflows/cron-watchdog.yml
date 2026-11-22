@@ -4,11 +4,12 @@ name: Scheduled run watchdog
 # 2026: "dev runs automatically, prod asks first"). Each hour it checks the
 # latest daily run of Firestore Data Validation (20:13 UTC), Deploy backend
 # (21:13 UTC) and the nightly CI (02:23 UTC) whose grace period has passed. A
-# missing dev-only or read-only run (Data Validation, the nightly CI, Deploy
-# backend for dev) is dispatched once. A missing prod deploy is never
-# dispatched: the "Main CI is red" issue gets the missing run and the command
-# for the owner. A nightly that never started is reported as unknown, not
-# green. Each missed run is handled at most once, recorded in the issue.
+# missing dev-only run (the nightly CI, Deploy backend for dev) is dispatched
+# once. A run that uses prod (Data Validation, Deploy backend for prod) is
+# never dispatched: the "Scheduled run missed" issue gets the missing run and
+# the command for the owner. A nightly that never started is reported as
+# unknown, not green, on the "Main CI is red" issue. Each missed run is
+# handled at most once, recorded in its issue.
 # Logic and tests: tool/ci/cron_watchdog.mjs. Operator guide:
 # docs/release_operations.md, "Scheduled run watchdog".
 

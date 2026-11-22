@@ -7,14 +7,16 @@
 // Each hour this looks at the latest daily occurrence of each watched cron whose
 // grace period (WATCHDOG_GRACE_HOURS, default 3) has passed. If no run of that
 // workflow started since the occurrence, the run is missing:
-// - a dev-only or read-only run (Data Validation, the nightly CI, and the dev
-//   half of Deploy backend) is dispatched once;
-// - a prod run is never dispatched: the "Main CI is red" issue gets the missing
-//   run and the command for the owner to run it.
+// - a dev-only run (the nightly CI, the dev half of Deploy backend) is
+//   dispatched once;
+// - a run that uses prod is never dispatched, even a read-only one (Data
+//   Validation, the prod half of Deploy backend): the "Scheduled run missed"
+//   issue gets the missing run and the command for the owner to run it.
 // A nightly that has not started by its deadline is reported as unknown, never
-// as green (C5). Every action leaves a marker comment on the issue, and an
-// occurrence that already has a marker is never acted on again, so each
-// expected run is dispatched or reported at most once.
+// as green (C5), on the "Main CI is red" issue, since it is about CI health.
+// Every action leaves a marker comment on its issue, and an occurrence that
+// already has a marker is never acted on again, so each expected run is
+// dispatched or reported at most once.
 //
 // Usage (Scheduled run watchdog workflow): GH_TOKEN and GITHUB_REPOSITORY set.
 // --dry-run prints what it would do and writes nothing. --now <ISO time>
@@ -24,7 +26,10 @@ import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 
-export const ISSUE_TITLE = "Main CI is red";
+export const MISSED_TITLE = "Scheduled run missed";
+export const MAIN_RED_TITLE = "Main CI is red";
+// Records are read from issues updated within this window, closed ones too.
+export const RECORD_LOOKBACK_DAYS = 3;
 export const DEFAULT_GRACE_HOURS = 3;
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
@@ -32,9 +37,10 @@ const MARKER = /<!-- cron-watchdog (\{.*?\}) -->/gu;
 const FOOTER = "\n\n---\n_Posted by the Scheduled run watchdog workflow (tool/ci/cron_watchdog.mjs)._";
 
 /**
- * The watched schedules. `dispatch` is what the watchdog runs itself; `ask`
- * is the prod run it only reports, with the command for the owner. Each cron
- * must match the workflow's own `schedule` (a test checks it).
+ * The watched schedules. `dispatch` is the dev-only run the watchdog starts
+ * itself; `ask` is the prod run it only reports, with the command for the
+ * owner; `issue` is where it reports. Each cron must match the workflow's own
+ * `schedule` (a test checks it).
  */
 export const TARGETS = Object.freeze([
   {
@@ -42,8 +48,9 @@ export const TARGETS = Object.freeze([
     name: "Firestore Data Validation",
     workflow: "data-validation.yml",
     cron: "13 20 * * *",
-    // Read-only: it reads Firestore and writes nothing.
-    dispatch: {environment: "prod", max_docs: "5000", fail_on_warning: "false"},
+    // Read-only, but it uses the prod environment, so the owner runs it.
+    ask: {environment: "prod", max_docs: "5000", fail_on_warning: "false"},
+    issue: MISSED_TITLE,
   },
   {
     id: "deploy-backend",
@@ -52,6 +59,7 @@ export const TARGETS = Object.freeze([
     cron: "13 21 * * *",
     dispatch: {environment: "dev"},
     ask: {environment: "prod"},
+    issue: MISSED_TITLE,
   },
   {
     id: "nightly-ci",
@@ -60,6 +68,7 @@ export const TARGETS = Object.freeze([
     cron: "23 2 * * *",
     dispatch: {full: "true"},
     nightly: true,
+    issue: MAIN_RED_TITLE,
   },
 ]);
 
@@ -116,14 +125,14 @@ function command(repository, workflow, inputs) {
  *   Each target's recent runs on main, by target id.
  * @param {Set<string>} input.records Keys of occurrences already acted on.
  * @param {readonly object[]} [input.targets]
- * @returns {{checks: object[], dispatches: object[], report: string|null}}
+ * @returns {{checks: object[], dispatches: object[], reports: Record<string, string>}}
+ *   `reports` maps an issue title to the comment to post there.
  */
 export function decide({now, graceHours, repository, runs, records, targets = TARGETS}) {
   assert.ok(Number.isFinite(graceHours) && graceHours > 0 && graceHours < 24, "graceHours must be between 0 and 24");
   const checks = [];
   const dispatches = [];
-  const lines = [];
-  const markers = [];
+  const sections = new Map();
   for (const target of targets) {
     const expected = expectedRun(target.cron, now, graceHours);
     const expectedIso = new Date(expected).toISOString();
@@ -132,40 +141,46 @@ export function decide({now, graceHours, repository, runs, records, targets = TA
     const started = (runs[target.id] ?? []).some((run) => ["schedule", "workflow_dispatch"].includes(run.event) &&
       Date.parse(run.created_at) >= expected);
     const key = `${target.id}@${expectedIso}`;
+    const status = started ? "started" : target.nightly ? "unknown" : "missing";
     if (started) {
-      checks.push({target: target.id, expected: expectedIso, status: "started"});
+      checks.push({target: target.id, expected: expectedIso, status});
       continue;
     }
     if (records.has(key)) {
-      checks.push({target: target.id, expected: expectedIso, status: target.nightly ? "unknown" : "missing",
-        action: "already_handled"});
+      checks.push({target: target.id, expected: expectedIso, status, action: "already_handled"});
       continue;
     }
     const actions = [];
     const deadline = new Date(expected + graceHours * HOUR).toISOString();
-    lines.push(`**${target.name}** (\`${target.workflow}\`, cron \`${target.cron}\`): no run started between ` +
-      `${expectedIso} and ${deadline}.` + (target.nightly ? " Its result counts as **unknown**, not green." : ""));
+    const lines = [`**${target.name}** (\`${target.workflow}\`, cron \`${target.cron}\`): no run started between ` +
+      `${expectedIso} and ${deadline}.` + (target.nightly ? " Its result counts as **unknown**, not green." : "")];
     if (target.dispatch) {
       dispatches.push({target: target.id, workflow: target.workflow, inputs: target.dispatch});
       actions.push("dispatched");
-      lines.push(`- Dispatched now (dev-only or read-only): \`${command(repository, target.workflow, target.dispatch)}\``);
+      lines.push(`- Dispatched now (dev-only): \`${command(repository, target.workflow, target.dispatch)}\``);
     }
     if (target.ask) {
       actions.push("asked");
-      lines.push(`- Not dispatched (prod). To run it: \`${command(repository, target.workflow, target.ask)}\``);
+      lines.push(`- Not dispatched (uses prod). To run it: \`${command(repository, target.workflow, target.ask)}\``);
     }
-    markers.push(marker(target.id, expectedIso, actions));
-    checks.push({target: target.id, expected: expectedIso, status: target.nightly ? "unknown" : "missing", actions});
+    const section = sections.get(target.issue) ?? {lines: [], markers: []};
+    section.lines.push(...lines);
+    section.markers.push(marker(target.id, expectedIso, actions));
+    sections.set(target.issue, section);
+    checks.push({target: target.id, expected: expectedIso, status, actions});
   }
-  const report = lines.length === 0 ? null : [
-    "Scheduled runs that did not start within " + `${graceHours} hours of their cron:`,
-    "",
-    ...lines,
-    "",
-    "GitHub drops or delays scheduled runs under load. Each missed run is handled once; " +
-      "this does not change any run's result.",
-  ].join("\n") + markers.join("") + FOOTER;
-  return {checks, dispatches, report};
+  const reports = {};
+  for (const [title, section] of sections) {
+    reports[title] = [
+      `Scheduled runs that did not start within ${graceHours} hours of their cron:`,
+      "",
+      ...section.lines,
+      "",
+      "GitHub drops or delays scheduled runs under load. Each missed run is handled once; " +
+        "this does not change any run's result.",
+    ].join("\n") + section.markers.join("") + FOOTER;
+  }
+  return {checks, dispatches, reports};
 }
 
 function parseArgs(argv) {
@@ -206,11 +221,13 @@ function main() {
       `repos/${repository}/actions/workflows/${target.workflow}/runs?branch=main&created=%3E%3D${from}&per_page=100`]))
       .workflow_runs ?? [];
   }
-  // Records survive the issue closing: read every alert issue updated recently.
-  const since = new Date(args.now - 3 * DAY).toISOString();
+  // Records survive an issue closing: read every watchdog-written issue
+  // updated within the lookback, closed ones too.
+  const since = new Date(args.now - RECORD_LOOKBACK_DAYS * DAY).toISOString();
+  const titles = new Set(TARGETS.map((target) => target.issue));
   const issues = JSON.parse(gh(["api",
     `repos/${repository}/issues?state=all&creator=github-actions%5Bbot%5D&since=${since}&per_page=100`]))
-    .filter((issue) => issue.title === ISSUE_TITLE && !issue.pull_request);
+    .filter((issue) => titles.has(issue.title) && !issue.pull_request);
   const texts = issues.flatMap((issue) => [issue.body, ...JSON.parse(gh(["api", "--paginate", "--slurp",
     `repos/${repository}/issues/${issue.number}/comments?per_page=100`])).flat().map((comment) => comment.body)]);
   const decision = decide({now: args.now, graceHours, repository, runs, records: recordsFrom(texts)});
@@ -222,16 +239,19 @@ function main() {
     for (const dispatch of decision.dispatches) {
       console.log(`Dry run: would dispatch ${dispatch.workflow} with ${JSON.stringify(dispatch.inputs)}`);
     }
-    if (decision.report) console.log(`Dry run: would post to "${ISSUE_TITLE}":\n${decision.report}`);
+    for (const [title, body] of Object.entries(decision.reports)) {
+      console.log(`Dry run: would post to "${title}":\n${body}`);
+    }
     return;
   }
-  if (!decision.report) return;
   // Record first: a failed dispatch is then reported, never retried hourly.
-  const open = issues.find((issue) => issue.state === "open") ?? null;
-  if (open) {
-    gh(["api", "-X", "POST", `repos/${repository}/issues/${open.number}/comments`, "-F", "body=@-"], decision.report);
-  } else {
-    gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${ISSUE_TITLE}`, "-F", "body=@-"], decision.report);
+  for (const [title, body] of Object.entries(decision.reports)) {
+    const open = issues.find((issue) => issue.title === title && issue.state === "open") ?? null;
+    if (open) {
+      gh(["api", "-X", "POST", `repos/${repository}/issues/${open.number}/comments`, "-F", "body=@-"], body);
+    } else {
+      gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${title}`, "-F", "body=@-"], body);
+    }
   }
   for (const dispatch of decision.dispatches) {
     const fields = Object.entries(dispatch.inputs).flatMap(([key, value]) => ["-f", `inputs[${key}]=${value}`]);

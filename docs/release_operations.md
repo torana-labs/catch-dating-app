@@ -2380,22 +2380,28 @@ asks first"). For each watched schedule it takes the latest daily run whose
 grace period has passed (3 hours by default) and checks that a scheduled or
 dispatched run started after its cron time:
 
-| Workflow | Cron (UTC) | If no run started |
-|---|---|---|
-| Firestore Data Validation (`data-validation.yml`) | 20:13 | Dispatched once (read-only) |
-| Deploy backend (`backend-deploy.yml`) | 21:13 | Dispatched once for dev; prod is never dispatched |
-| CI nightly (`ci.yml`) | 02:23 | Dispatched once with `full`, and reported as unknown |
+| Workflow | Cron (UTC) | If no run started | Reported on |
+|---|---|---|---|
+| Firestore Data Validation (`data-validation.yml`) | 20:13 | Not dispatched: it uses prod, though read-only | "Scheduled run missed" |
+| Deploy backend (`backend-deploy.yml`) | 21:13 | Dispatched once for dev; prod is never dispatched | "Scheduled run missed" |
+| CI nightly (`ci.yml`) | 02:23 | Dispatched once with `full`; the night counts as unknown | "Main CI is red" |
 
-Each missed run gets one comment on the "Main CI is red" issue (opened if none
-is open) naming the run, what was dispatched and, for prod, the command to run
-it, for example `gh workflow run backend-deploy.yml --repo <owner>/<repo> --ref main
--f environment=prod`. Run that only after checking the dev deploy succeeded. The
-comment carries a hidden marker, and a run that already has one is never
-dispatched or reported again, so each expected run is handled at most once. A
-nightly that never started counts as **unknown**, never green; a dispatched
-recovery run is a `workflow_dispatch` run, so the Main CI alert and the sprint
-floor's seven-day count still treat that night as missing. The watchdog has
-`actions: write` and `issues: write` and nothing else that writes.
+Each missed run gets one comment on its issue (opened if none is open) naming
+the run, what was dispatched and, for a prod run, the command to run it, for
+example `gh workflow run backend-deploy.yml --repo <owner>/<repo> --ref main -f
+environment=prod`. Run a prod deploy only after checking the dev deploy
+succeeded. The comment carries a hidden marker. The watchdog reads markers from
+both issues, closed ones included, updated in the last 3 days, and never
+dispatches or reports a run that already has one, so each expected run is
+handled at most once.
+
+A nightly that never started counts as **unknown**, never green, and is
+reported on "Main CI is red" because it is about CI health. The recovery run
+the watchdog dispatches is a `workflow_dispatch` run, so the Main CI alert and
+the sprint floor's seven-day count still treat that night as missing. Missed
+deploy and validation runs go to their own issue so they never keep "Main CI is
+red" open. The watchdog has `contents: read`, `actions: write` and
+`issues: write`.
 
 To check it by hand, dispatch the workflow with `dry_run` on (the default): it
 prints what it would dispatch and post, and writes nothing. `assume_missing`

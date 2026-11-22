@@ -3,6 +3,8 @@ import fs from "node:fs";
 import test from "node:test";
 import {
   DEFAULT_GRACE_HOURS,
+  MAIN_RED_TITLE,
+  MISSED_TITLE,
   TARGETS,
   decide,
   expectedRun,
@@ -28,13 +30,15 @@ test("every watched cron matches its workflow's own schedule, and each has workf
   }
 });
 
-test("a prod run is never dispatched; only dev-only or read-only runs are", () => {
-  // Data Validation is the one dispatch that names prod: it only reads Firestore.
-  for (const entry of TARGETS) {
-    assert.ok(entry.dispatch?.environment !== "prod" || entry.id === "data-validation", entry.id);
-  }
+test("nothing that uses prod is dispatched, not even a read-only run", () => {
+  for (const entry of TARGETS) assert.notEqual(entry.dispatch?.environment, "prod", entry.id);
+  assert.equal(target("data-validation").dispatch, undefined);
+  assert.equal(target("data-validation").ask.environment, "prod");
   assert.deepEqual(target("deploy-backend").dispatch, {environment: "dev"});
   assert.deepEqual(target("deploy-backend").ask, {environment: "prod"});
+  // Only the nightly, which is about CI health, reports on the main-red issue.
+  assert.deepEqual(TARGETS.filter((entry) => entry.issue === MAIN_RED_TITLE).map((entry) => entry.id), ["nightly-ci"]);
+  assert.ok(TARGETS.filter((entry) => !entry.nightly).every((entry) => entry.issue === MISSED_TITLE));
 });
 
 test("the expected run is the latest occurrence whose grace period has passed", () => {
@@ -53,25 +57,27 @@ test("a run that started after its occurrence is fine, whether scheduled late or
     const decision = decide({now, graceHours: 3, repository, runs: {"deploy-backend": runs}, records: new Set(),
       targets: only("deploy-backend")});
     assert.deepEqual(decision.dispatches, []);
-    assert.equal(decision.report, null);
+    assert.deepEqual(decision.reports, {});
     assert.equal(decision.checks[0].status, "started");
   }
 });
 
-test("a missing dev or read-only run is dispatched once and recorded", () => {
+test("a missing Data Validation run is reported once for the owner, never dispatched", () => {
   const now = at("2026-11-22T23:30:00Z");
   const decision = decide({now, graceHours: 3, repository, runs: {"data-validation": [run("2026-11-21T20:14:00Z")]},
     records: new Set(), targets: only("data-validation")});
-  assert.deepEqual(decision.dispatches, [{target: "data-validation", workflow: "data-validation.yml",
-    inputs: {environment: "prod", max_docs: "5000", fail_on_warning: "false"}}]);
-  assert.match(decision.report, /no run started between 2026-11-22T20:13:00\.000Z and 2026-11-22T23:13:00\.000Z/u);
-  const records = recordsFrom([decision.report]);
+  assert.deepEqual(decision.dispatches, []);
+  assert.deepEqual(Object.keys(decision.reports), [MISSED_TITLE]);
+  const report = decision.reports[MISSED_TITLE];
+  assert.match(report, /no run started between 2026-11-22T20:13:00\.000Z and 2026-11-22T23:13:00\.000Z/u);
+  assert.match(report, /Not dispatched \(uses prod\)\. To run it: `gh workflow run data-validation\.yml --repo example-org\/example-repo --ref main -f environment=prod -f max_docs=5000 -f fail_on_warning=false`/u);
+  const records = recordsFrom([report]);
   assert.deepEqual([...records], ["data-validation@2026-11-22T20:13:00.000Z"]);
   // The next hourly check finds the record and does nothing more.
   const again = decide({now: now + 60 * 60 * 1000, graceHours: 3, repository,
     runs: {"data-validation": [run("2026-11-21T20:14:00Z")]}, records, targets: only("data-validation")});
   assert.deepEqual(again.dispatches, []);
-  assert.equal(again.report, null);
+  assert.deepEqual(again.reports, {});
   assert.equal(again.checks[0].action, "already_handled");
 });
 
@@ -79,9 +85,11 @@ test("a missing backend deploy dispatches dev only and asks the owner for prod",
   const decision = decide({now: at("2026-11-23T00:30:00Z"), graceHours: 3, repository, runs: {"deploy-backend": []},
     records: new Set(), targets: only("deploy-backend")});
   assert.deepEqual(decision.dispatches.map((entry) => entry.inputs), [{environment: "dev"}]);
-  assert.match(decision.report, /Dispatched now \(dev-only or read-only\): `gh workflow run backend-deploy\.yml --repo example-org\/example-repo --ref main -f environment=dev`/u);
-  assert.match(decision.report, /Not dispatched \(prod\)\. To run it: `gh workflow run backend-deploy\.yml --repo example-org\/example-repo --ref main -f environment=prod`/u);
-  assert.match(decision.report, /"actions":\["dispatched","asked"\]/u);
+  assert.deepEqual(Object.keys(decision.reports), [MISSED_TITLE]);
+  const report = decision.reports[MISSED_TITLE];
+  assert.match(report, /Dispatched now \(dev-only\): `gh workflow run backend-deploy\.yml --repo example-org\/example-repo --ref main -f environment=dev`/u);
+  assert.match(report, /Not dispatched \(uses prod\)\. To run it: `gh workflow run backend-deploy\.yml --repo example-org\/example-repo --ref main -f environment=prod`/u);
+  assert.match(report, /"actions":\["dispatched","asked"\]/u);
 });
 
 test("a nightly that has not started by its deadline counts as unknown, never green (C5)", () => {
@@ -90,13 +98,14 @@ test("a nightly that has not started by its deadline counts as unknown, never gr
   const decision = decide({now: at("2026-11-22T05:30:00Z"), graceHours: 3, repository, runs, records: new Set(),
     targets: only("nightly-ci")});
   assert.equal(decision.checks[0].status, "unknown");
-  assert.match(decision.report, /counts as \*\*unknown\*\*, not green/u);
+  assert.deepEqual(Object.keys(decision.reports), [MAIN_RED_TITLE]);
+  assert.match(decision.reports[MAIN_RED_TITLE], /counts as \*\*unknown\*\*, not green/u);
   assert.deepEqual(decision.dispatches.map((entry) => entry.inputs), [{full: "true"}]);
   // Still unknown after it has been handled, until a run starts.
   const later = decide({now: at("2026-11-22T06:30:00Z"), graceHours: 3, repository, runs,
-    records: recordsFrom([decision.report]), targets: only("nightly-ci")});
+    records: recordsFrom([decision.reports[MAIN_RED_TITLE]]), targets: only("nightly-ci")});
   assert.equal(later.checks[0].status, "unknown");
-  assert.equal(later.report, null);
+  assert.deepEqual(later.reports, {});
 });
 
 test("nothing is owed while an occurrence is inside its grace period", () => {
@@ -104,7 +113,17 @@ test("nothing is owed while an occurrence is inside its grace period", () => {
     runs: {"deploy-backend": [run("2026-11-21T21:15:00Z")]}, records: new Set(), targets: only("deploy-backend")});
   assert.equal(decision.checks[0].expected, "2026-11-21T21:13:00.000Z");
   assert.equal(decision.checks[0].status, "started");
-  assert.equal(decision.report, null);
+  assert.deepEqual(decision.reports, {});
+});
+
+test("missed runs report on their own issues in one check", () => {
+  const decision = decide({now: at("2026-11-23T05:40:00Z"), graceHours: 3, repository,
+    runs: {"data-validation": [], "deploy-backend": [], "nightly-ci": []}, records: new Set()});
+  assert.deepEqual(Object.keys(decision.reports).sort(), [MAIN_RED_TITLE, MISSED_TITLE].sort());
+  assert.match(decision.reports[MISSED_TITLE], /Firestore Data Validation[\s\S]*Deploy backend/u);
+  assert.doesNotMatch(decision.reports[MISSED_TITLE], /CI \(nightly\)/u);
+  assert.doesNotMatch(decision.reports[MAIN_RED_TITLE], /Deploy backend|Data Validation/u);
+  assert.deepEqual(decision.dispatches.map((entry) => entry.target).sort(), ["deploy-backend", "nightly-ci"]);
 });
 
 test("the grace period is configurable within a day and defaults to 3 hours", () => {
