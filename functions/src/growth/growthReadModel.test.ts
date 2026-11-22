@@ -5,6 +5,7 @@ import type {
   NominatorCreditDocument,
   OrganizerBillDocument,
   OrganizerGrowthFactsDocument,
+  PlatformCostDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {monthWindow} from "../money/billComputation";
 import {buildGrowth, median, rangeStart} from "./growthReadModel";
@@ -117,6 +118,28 @@ test("channels, nominators and best organizers", () => {
   assert.deepEqual(growth.best.map((row) => [row.organizerId, row.salesMinor,
     row.earnedMinor, row.payingSinceMonth, row.inTrial]),
   [["moonmoth", 300_000, 10_000, "2026-10", false]]);
+});
+
+test("ad spend reads last month's Meta and Google rows apiece", () => {
+  const cost = (category: PlatformCostDocument["category"], month: string,
+    amountMinor: number, source: PlatformCostDocument["source"]):
+    PlatformCostDocument => ({schemaVersion: 1, costId: `${month}_${category}`,
+    month, category, amountMinor, source, note: null, updatedAtMillis: 1,
+    updatedByUid: null});
+  assert.deepEqual(buildGrowth(input).adSpend, {month: "2026-10",
+    metaMinor: null, googleMinor: null, metaConnected: false,
+    googleConnected: false, adClaims: 0});
+  const growth = buildGrowth({...input, costs: [
+    cost("ads_meta", "2026-10", 482_000, "meta_api"),
+    cost("ads_google", "2026-10", 126_000, "google_ads_api"),
+    cost("ads_google", "2026-09", 99_000, "google_ads_api")]});
+  assert.equal(growth.adSpend.metaMinor, 482_000);
+  assert.equal(growth.adSpend.googleMinor, 126_000);
+  assert.equal(growth.adSpend.googleConnected, true);
+  const googleOnly = buildGrowth({...input, costs: [
+    cost("ads_google", "2026-10", 126_000, "google_ads_api")]});
+  assert.equal(googleOnly.adSpend.metaMinor, null);
+  assert.equal(googleOnly.adSpend.googleMinor, 126_000);
 });
 
 test("setup answers count beside the channels, never in them", () => {

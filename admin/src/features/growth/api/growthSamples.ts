@@ -140,7 +140,7 @@ export function sampleGrowth(payload: AdminGetGrowthCallablePayload): Growth {
     claimsByMonth: [["2026-06", 22], ["2026-07", 19], ["2026-08", 24],
       ["2026-09", 21], ["2026-10", 10], ["2026-11", 2]].map(([month,
       count]) => ({month: String(month), count: Number(count)})),
-    adSpend: {month: "2026-10", metaMinor: rupees(48_200),
+    adSpend: {month: "2026-10", metaMinor: rupees(48_200), googleMinor: null,
       metaConnected: true, googleConnected: false, adClaims: 6},
     nominators, best};
 }

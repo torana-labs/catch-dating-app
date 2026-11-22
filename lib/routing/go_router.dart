@@ -106,6 +106,7 @@ import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_platform/routing/onboarding_completion_location.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_tokens/catch_tokens.dart';

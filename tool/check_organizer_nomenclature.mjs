@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import {execFileSync} from "node:child_process";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -29,12 +30,6 @@ const requiredMarkers = [
   ["admin/src/shared/api/adminApi.ts", "adminGetOrganizerDetails"],
   ["admin/src/shared/api/adminApi.ts", "adminListOrganizerDetails"],
   ["admin/src/shared/api/adminApi.ts", "adminUpdateOrganizerDetails"],
-  ["functions/src/index.ts", "createOrganizer"],
-  ["functions/src/index.ts", "followOrganizer"],
-  ["functions/src/index.ts", "startOrganizerConversation"],
-  ["functions/src/index.ts", "adminGetOrganizerDetails"],
-  ["functions/src/index.ts", "adminGetOrganizerClaimRequestDetails"],
-  ["functions/src/index.ts", "adminSetOrganizerIndexStatus"],
   ["packages/platform/lib/analytics/app_analytics.dart", "static const organizerId = 'organizer_id';"],
   ["docs/migrations/clubs_to_organizers.md", "organizerType"],
 ];
@@ -56,14 +51,28 @@ const forbiddenSourceMarkers = [
   ["lib/organizers/presentation/detail/organizer_follow_controller.dart", "join a club"],
   ["lib/organizers/presentation/detail/organizer_follow_controller.dart", "leave a club"],
   ["lib/organizers/presentation/detail/organizer_follow_controller.dart", "update club notifications"],
-  ["functions/src/index.ts", "createPublicClubReview"],
-  ["functions/src/index.ts", "listPublicClubReviews"],
-  ["functions/src/index.ts", "adminGetClubClaimRequestDetails"],
-  ["functions/src/index.ts", "adminListClubClaimRequests"],
-  ["functions/src/index.ts", "adminSetClubIndexStatus"],
-  ["functions/src/index.ts", "adminGetClubDetails"],
-  ["functions/src/index.ts", "adminListClubDetails"],
-  ["functions/src/index.ts", "adminUpdateClubDetails"],
+];
+
+// Checked against the Functions entry point's export list
+// (functions/scripts/functionExports.cjs), not its text.
+const requiredFunctionExports = [
+  "createOrganizer",
+  "followOrganizer",
+  "startOrganizerConversation",
+  "adminGetOrganizerDetails",
+  "adminGetOrganizerClaimRequestDetails",
+  "adminSetOrganizerIndexStatus",
+];
+
+const forbiddenFunctionExports = [
+  "createPublicClubReview",
+  "listPublicClubReviews",
+  "adminGetClubClaimRequestDetails",
+  "adminListClubClaimRequests",
+  "adminSetClubIndexStatus",
+  "adminGetClubDetails",
+  "adminListClubDetails",
+  "adminUpdateClubDetails",
 ];
 
 const forbiddenClientAuthorityPatterns = [
@@ -124,12 +133,34 @@ export function checkOrganizerNomenclature({root = fromRepo()} = {}) {
       });
     }
   }
+  checkFunctionExports(root, findings);
   checkClientAuthorityPatterns(root, findings);
   checkProductCopy(root, findings);
   checkFlutterNames(root, findings);
   checkWireNames(root, findings);
   checkWarehouseNames(root, findings);
   return {ok: findings.length === 0, findings};
+}
+
+function checkFunctionExports(root, findings) {
+  const relativePath = "functions/src/index.ts";
+  let exported;
+  try {
+    exported = new Set(createRequire(import.meta.url)("../functions/scripts/functionExports.cjs")
+      .functionExportNames({root: path.join(root, "functions")}));
+  } catch (error) {
+    findings.push({rule: "missingCanonicalMarker", path: relativePath,
+      detail: `Cannot read the Functions export list: ${error.message}`});
+    return;
+  }
+  for (const name of requiredFunctionExports) {
+    if (!exported.has(name)) findings.push({rule: "missingCanonicalMarker", path: relativePath,
+      detail: `Missing canonical organizer marker: ${name}`});
+  }
+  for (const name of forbiddenFunctionExports) {
+    if (exported.has(name)) findings.push({rule: "legacyAuthorityMarker", path: relativePath,
+      detail: `Legacy authority marker is not allowed here: ${name}`});
+  }
 }
 
 function checkFlutterNames(root, findings) {

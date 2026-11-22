@@ -763,7 +763,8 @@
       ],
       "impactPaths": [
         "tool/audit/check_fn_readme_inventory.test.mjs",
-        "tool/audit/fn_readme_inventory_baseline.json"
+        "tool/audit/fn_readme_inventory_baseline.json",
+        "functions/scripts/functionExports.cjs"
       ],
       "role": "ratchet",
       "rules": [
@@ -1664,6 +1665,33 @@
       "checkSafety": "local-readonly"
     },
     {
+      "id": "ci:prefetch-sqlite3-asset",
+      "category": "ci",
+      "path": "tool/ci/prefetch_sqlite3_asset.mjs",
+      "command": "node tool/ci/prefetch_sqlite3_asset.mjs",
+      "surface": "local-writes-scratch",
+      "status": "active",
+      "role": "operator",
+      "description": "Downloads the locked sqlite3 package's prebuilt native library for this machine from its GitHub release (up to 4 attempts on network errors, 429 or 5xx), checks it against the sha256 the package pins, and writes it under .dart_tool/hooks_runner/shared/sqlite3/build/ where the package's build hook reuses a verified copy; an unexpected layout warns and leaves the download to the hook.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/prefetch_sqlite3_asset.test.mjs",
+        "pubspec.lock",
+        ".github/workflows/visual-integration-ci.yml"
+      ],
+      "checks": [
+        "node --check tool/ci/prefetch_sqlite3_asset.mjs",
+        "node --test tool/ci/prefetch_sqlite3_asset.test.mjs",
+        "node tool/ci/prefetch_sqlite3_asset.mjs --help"
+      ],
+      "runbook": "tool/README.md#ci-network-retries"
+    },
+    {
       "id": "ci:required-ci-floor",
       "category": "ci",
       "path": "tool/ci/required_ci_floor.mjs",
@@ -1681,6 +1709,32 @@
         "node --test tool/ci/required_ci_floor.test.mjs"
       ],
       "role": "gate"
+    },
+    {
+      "id": "ci:retry-on-match",
+      "category": "ci",
+      "path": "tool/ci/retry_on_match.mjs",
+      "command": "node tool/ci/retry_on_match.mjs",
+      "surface": "local-read",
+      "status": "active",
+      "role": "operator",
+      "description": "Runs a CI command and reruns it (up to 3 attempts, 30 s then 90 s apart) only when its output contains failure text the call site names, such as Maven Central's HTTP 429; any other failure exits at once with the command's own code.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/retry_on_match.test.mjs",
+        ".github/workflows/app-build-matrix.yml"
+      ],
+      "checks": [
+        "node --check tool/ci/retry_on_match.mjs",
+        "node --test tool/ci/retry_on_match.test.mjs",
+        "node tool/ci/retry_on_match.mjs --help"
+      ],
+      "runbook": "tool/README.md#ci-network-retries"
     },
     {
       "id": "ci:selection-miss-report",
@@ -1945,7 +1999,8 @@
         "contracts/firestore/**",
         "tool/firebase/function_binding_intent.mjs",
         "tool/lib/repo_paths.mjs",
-        "functions/package-lock.json"
+        "functions/package-lock.json",
+        "functions/scripts/functionExports.cjs"
       ],
       "checks": [
         "node --check tool/contracts/check_firestore_contract.mjs",
@@ -2243,7 +2298,8 @@
         "tool/architecture/rename_to_organizer.mjs",
         "tool/architecture/rename_to_organizer.test.mjs",
         "tool/architecture/rename_wire_to_organizer.mjs",
-        "tool/architecture/rename_wire_to_organizer.test.mjs"
+        "tool/architecture/rename_wire_to_organizer.test.mjs",
+        "functions/scripts/functionExports.cjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -5214,7 +5270,8 @@
       ],
       "runbook": "tool/README.md#firebase-deploy-and-client-callable-gates",
       "impactPaths": [
-        "packages/command-client/**"
+        "packages/command-client/**",
+        "functions/scripts/functionExports.cjs"
       ]
     },
     {
@@ -5261,7 +5318,8 @@
       },
       "impactPaths": [
         "tool/firebase/plan_firebase_deploy_targets.test.mjs",
-        "tool/firebase/list_firebase_function_targets.mjs"
+        "tool/firebase/list_firebase_function_targets.mjs",
+        "functions/scripts/functionExports.cjs"
       ],
       "description": "Expands only CI-authorized backend groups and validated exact targets into indexes-first Firebase phases while rejecting all, hosting, Remote Config, Extensions, and arbitrary extras.",
       "checks": [
@@ -5336,7 +5394,8 @@
         "tool/firebase/prepare_functions_params_for_deploy.mjs",
         "tool/firebase/report_environment_parity.test.mjs",
         "tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
-        "tool/firebase/wait_firestore_indexes_ready.mjs"
+        "tool/firebase/wait_firestore_indexes_ready.mjs",
+        "functions/scripts/functionExports.cjs"
       ],
       "description": "Read-only what's-live-where report comparing main with live dev/prod across Functions, params, GitHub variables, indexes, rules, dormant policy, callable gates, Remote Config and build modes; --policy-only requires every environment-conditional switch to be classified and feature-gate differences to carry an owner, ticket and expiry.",
       "checks": [
@@ -5379,7 +5438,8 @@
         "tool/firebase/function_binding_intent.mjs",
         "tool/firebase/function_binding_intent.test.mjs",
         "tool/firebase/prepare_functions_params_for_deploy.mjs",
-        ".github/workflows/_backend-deploy.yml"
+        ".github/workflows/_backend-deploy.yml",
+        "functions/scripts/functionExports.cjs"
       ],
       "runbook": "docs/release_operations.md#firebase-environment-readiness"
     },
@@ -5510,11 +5570,14 @@
         "functions/src/**",
         "functions/package-lock.json",
         "tool/firebase/environment_readiness.json",
-        "tool/firebase/function_binding_intent.test.mjs"
+        "tool/firebase/function_binding_intent.test.mjs",
+        "functions/scripts/functionExports.cjs",
+        "functions/scripts/functionExports.test.cjs"
       ],
       "checks": [
         "node --check tool/firebase/function_binding_intent.mjs",
-        "node --test tool/firebase/function_binding_intent.test.mjs"
+        "node --test tool/firebase/function_binding_intent.test.mjs",
+        "node --test functions/scripts/functionExports.test.cjs"
       ]
     },
     {
@@ -5538,6 +5601,9 @@
       "description": "Checked by firebase:deploy-target-plan. Expands Firebase function deploy target names from Functions exports.",
       "checks": [
         "node --check tool/firebase/list_firebase_function_targets.mjs"
+      ],
+      "impactPaths": [
+        "functions/scripts/functionExports.cjs"
       ]
     },
     {
@@ -6696,6 +6762,7 @@
         "tool/marketing/export_hosted_captures_c.test.mjs",
         "tool/marketing/lib/hosted_capture_support.test.mjs",
         "tool/marketing/lib/capture_seeds.mjs",
+        "tool/marketing/lib/capture_seeds.test.mjs",
         ".github/workflows/marketing-captures.yml",
         ".github/workflows/ci.yml",
         "artifacts/marketing/app-screenshots/**",
@@ -6719,7 +6786,7 @@
       },
       "checks": [
         "node --check tool/marketing/export_hosted_captures.mjs",
-        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs"
+        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs tool/marketing/lib/capture_seeds.test.mjs"
       ]
     },
     {
@@ -7713,7 +7780,10 @@
         "node --test tool/web/check_admin_review_bridge.test.mjs",
         "node tool/web/check_admin_review_bridge.mjs"
       ],
-      "role": "finder"
+      "role": "finder",
+      "impactPaths": [
+        "functions/scripts/functionExports.cjs"
+      ]
     },
     {
       "id": "platform:app-package-graphs",
@@ -8350,7 +8420,10 @@
         "OPERATIONS-PLATFORM-001"
       ],
       "runbook": "docs/web_surface_architecture.md#admin-live-data-source-contract",
-      "checkSafety": "local-readonly"
+      "checkSafety": "local-readonly",
+      "impactPaths": [
+        "functions/scripts/functionExports.cjs"
+      ]
     },
     {
       "id": "web:admin-pending-operations",

@@ -23,7 +23,6 @@ const generatedTypesPath = path.join(
   repoRoot,
   "functions/src/shared/generated/firestoreAdminTypes.ts"
 );
-const functionsIndexPath = path.join(repoRoot, "functions/src/index.ts");
 const contractRoot = path.join(repoRoot, "contracts");
 
 const OWNERSHIP_TAGS = new Set([
@@ -37,8 +36,7 @@ const OWNERSHIP_TAGS = new Set([
 const contract = readJson(contractPath);
 const rules = readText(rulesPath);
 const generatedTypes = readText(generatedTypesPath);
-const functionsIndex = readText(functionsIndexPath);
-const functionExports = new Set(discoverFunctionExportNames(functionsIndex));
+const functionExports = new Set(discoverFunctionExportNames({sourceRoot: repoRoot}));
 const rulesBlocks = parseRulesMatchBlocks(rules);
 const rulesMatchPaths = new Set(rulesBlocks.map((block) => block.path));
 const firestoreSchemaFiles = loadFirestoreSchemaFiles();

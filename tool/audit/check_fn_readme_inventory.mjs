@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+
+const {FunctionEntryError, functionExports} = createRequire(import.meta.url)(
+  "../../functions/scripts/functionExports.cjs");
 
 const defaultBaselinePath = fromRepo("tool/audit/fn_readme_inventory_baseline.json");
 // The README rows --write maintains sit between these markers.
@@ -22,15 +26,11 @@ export function scanFunctionReadmeInventory({
   root,
   baseline = emptyBaseline(),
 }) {
-  const indexPath = path.join(root, "functions/src/index.ts");
   const readmePath = path.join(root, "functions/README.md");
-  const indexSource = fs.existsSync(indexPath)
-    ? fs.readFileSync(indexPath, "utf8")
-    : "";
   const readmeSource = fs.existsSync(readmePath)
     ? fs.readFileSync(readmePath, "utf8")
     : "";
-  const exports = extractFunctionExports(indexSource);
+  const exports = [...functionExportModules(root).keys()].sort();
   const documented = extractDocumentedFunctionNames(readmeSource);
   const exportNames = new Set(exports);
   const baselineKeys = new Set(
@@ -83,27 +83,6 @@ export function scanFunctionReadmeInventory({
   };
 }
 
-export function extractFunctionExports(source) {
-  const names = new Set();
-  for (const match of source.matchAll(/export\s+(?:const|function)\s+(\w+)/gu)) {
-    names.add(match[1]);
-  }
-  for (const match of source.matchAll(/export\s*\{([^}]*)\}/gsu)) {
-    for (const rawPart of match[1].split(",")) {
-      const part = rawPart.replace(/\/\/.*$/gmu, "").trim();
-      if (!part) continue;
-      const alias = /\bas\s+(\w+)$/u.exec(part);
-      if (alias) {
-        names.add(alias[1]);
-        continue;
-      }
-      const name = /^(\w+)/u.exec(part)?.[1];
-      if (name) names.add(name);
-    }
-  }
-  return [...names].sort();
-}
-
 export function extractDocumentedFunctionNames(source) {
   const names = new Set();
   const region = inventoryRegion(source);
@@ -141,20 +120,20 @@ function rowFunctionNames(line) {
   return [...firstCell.matchAll(/`([A-Za-z_$][\w$]*)`/gu)].map((match) => match[1]);
 }
 
-/** Maps each re-exported function name to the module index.ts exports it from. */
-export function extractFunctionExportModules(source) {
-  const modules = new Map();
-  for (const match of source.matchAll(/export\s+(?:const|function)\s+(\w+)/gu)) {
-    modules.set(match[1], null);
+/**
+ * Each exported Function's name mapped to the module it comes from ("./area/x"),
+ * from functions/scripts/functionExports.cjs, the one reader of the entry
+ * point's export list. A missing or empty entry point exports nothing.
+ */
+export function functionExportModules(root) {
+  if (!fs.existsSync(path.join(root, "functions/src/index.ts"))) return new Map();
+  try {
+    return new Map(functionExports({root: path.join(root, "functions")})
+      .map(({name, module}) => [name, `./${module}`]));
+  } catch (error) {
+    if (error instanceof FunctionEntryError && error.rule === "empty") return new Map();
+    throw error;
   }
-  for (const match of source.matchAll(/export\s*\{([^}]*)\}\s*from\s*["']([^"']+)["']/gsu)) {
-    for (const rawPart of match[1].split(",")) {
-      const part = rawPart.replace(/\/\/.*$/gmu, "").trim();
-      const name = /\bas\s+(\w+)$/u.exec(part)?.[1] ?? /^(\w+)/u.exec(part)?.[1];
-      if (name) modules.set(name, match[2]);
-    }
-  }
-  return modules;
 }
 
 /**
@@ -166,7 +145,6 @@ export function extractFunctionExportModules(source) {
  */
 export function writeFunctionReadmeInventory({root, baseline = emptyBaseline()}) {
   const readmePath = path.join(root, "functions/README.md");
-  const indexSource = fs.readFileSync(path.join(root, "functions/src/index.ts"), "utf8");
   const readmeSource = fs.readFileSync(readmePath, "utf8");
   const region = inventoryRegion(readmeSource);
   if (!region?.marked) {
@@ -186,7 +164,7 @@ export function writeFunctionReadmeInventory({root, baseline = emptyBaseline()})
     body.slice(headingAt).split(/\r?\n/u).filter((line) => rowFunctionNames(line).length > 0);
 
   const pruned = described.split("\n").flatMap((line) => pruneRow(line, stale)).join("\n");
-  const modules = extractFunctionExportModules(indexSource);
+  const modules = functionExportModules(root);
   const rows = [
     ...undescribedRows.flatMap((line) => pruneRow(line, stale)),
     ...missing.map((name) => `| \`${name}\` | \`${sourceFileFor(root, modules.get(name))}\` | ${UNDESCRIBED_PURPOSE} |`),

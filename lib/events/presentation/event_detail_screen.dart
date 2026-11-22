@@ -29,7 +29,6 @@ import 'package:catch_dating_app/events/shared/event_detail_route_transition.dar
 import 'package:catch_dating_app/events/shared/event_share_card.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_host_contact_controller.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
@@ -45,6 +44,7 @@ import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/riverpod_ui/failed_reads.dart';
+import 'package:catch_platform/routing/onboarding_completion_location.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

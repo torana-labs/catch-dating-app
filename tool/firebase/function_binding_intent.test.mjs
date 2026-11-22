@@ -274,16 +274,26 @@ test("unreviewed SDK semantics cannot establish a source default identity", (t) 
 });
 
 
-test("export discovery includes direct and local exports and refuses unknown forms", () => {
+test("export discovery reads named re-exports only and refuses every other form", () => {
   assert.deepEqual(discoverFunctionExportNames(`export {a, b as renamed} from './x';
-    const local = 1; export {local}; export const inline = 2;
-    export function named() {} export type {Ignored} from './types';
+    export type {Ignored} from './types';
     export interface Shape {} export type Type = string;`),
-  ["a", "inline", "local", "named", "renamed"]);
+  ["a", "renamed"]);
+  // The entry point re-exports Functions from their modules; the deploy
+  // codebase builder already refused declarations and local exports there.
   for (const source of ["export * from './x';", "export default selected;",
     "export * as nested from './x';", "export const {selected} = unknown();",
-    "export class Selected {}"])
+    "export class Selected {}", "const local = 1; export {local};", "export const inline = 2;",
+    "export function named() {}", "export {a} from './x'; export {a} from './y';"])
     assert.throws(() => discoverFunctionExportNames(source), unresolved);
+});
+
+test("export discovery reads a source root's entry point without executing it", (t) => {
+  const sourceRoot = fixture(t, {"index.ts": "export {b, a} from './x';\n"});
+  assert.deepEqual(discoverFunctionExportNames({sourceRoot}), ["a", "b"]);
+  fs.rmSync(path.join(sourceRoot, "functions/src/index.ts"));
+  assert.throws(() => discoverFunctionExportNames({sourceRoot}), (error) =>
+    unresolved(error) && error.message.includes("functions/src/index.ts"));
 });
 
 test("reviewed endpoint wrappers, storage overload and imported selectors resolve", (t) => {
@@ -453,8 +463,7 @@ test("equivalent parenthesized and asserted mutation syntax remains unresolved",
 
 
 test("WhatsApp source separates exactly eight readers from the default connection writers in DEV and PROD", () => {
-  const consumers = discoverFunctionExportNames(fs.readFileSync(
-    path.join(repo, "functions/src/index.ts"), "utf8"));
+  const consumers = discoverFunctionExportNames({sourceRoot: repo});
   for (const [environment, projectId] of [["dev", "catchdates-dev"], ["prod", "catch-dating-app-64e51"]]) {
     const intent = collect(repo, {environment, projectId, consumers});
     const readerAccount = `catch-whatsapp-reader@${projectId}.iam.gserviceaccount.com`;
