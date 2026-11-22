@@ -266,7 +266,7 @@ export const explanationRules = [
         webUi.length > 0 && webUi.every((file) => /\.test\.[cm]?[jt]sx?$/u.test(file));
     }},
   {id: "planner-other-packages-coarse", side: "planner", lanes: ["admin", "marketing", "capture_freshness"],
-    why: "The planner's repo.other-packages runs Admin, Marketing and capture freshness for any package; packages/command-client is read only by Operations (Nx: command-client <- @catch/operations).",
+    why: "The planner's repo.other-packages runs Admin, Marketing and capture freshness for any package; packages/command-client is read only by the Operations project (its only Nx dependent).",
     matches: ({sources, changedFiles}) => {
       const packages = changedFiles.filter((file) => file.startsWith("packages/"));
       return sources.length > 0 && sources.every((source) => source.component === "repo.other-packages") &&

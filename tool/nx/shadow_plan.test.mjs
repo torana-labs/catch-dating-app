@@ -184,7 +184,7 @@ const explanationFixtures = [
     changedFiles: ["packages/catch_ui/lib/src/components/catch_button.dart", "packages/web-ui/src/components/buttonParity.test.ts"]},
   {rule: "planner-other-packages-coarse", commit: "e3bc551dc", lane: "capture_freshness", side: "planner",
     sources: [source("repo.other-packages", "capture_freshness")],
-    changedFiles: ["operations/src/admin/action-catalog.mjs", "packages/command-client/src/index.mjs"]},
+    changedFiles: ["packages/command-client/src/admin-catalog.mjs", "packages/command-client/src/index.mjs"]},
   {rule: "main-native-builds-only", commit: "9cc568a23", lane: "flutter_build_ios", side: "planner", mode: "main",
     sources: [source("app.source", "flutter_build_ios")],
     changedFiles: ["lib/event_rehearsal/presentation/event_rehearsal_assistance_editor.dart", "firestore.rules"]},
