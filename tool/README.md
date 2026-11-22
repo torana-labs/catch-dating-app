@@ -767,6 +767,16 @@ Current call sites: the two Android debug builds in
 capture planner's `gh api` reads retry in
 `tool/marketing/lib/capture_seeds.mjs` itself.
 
+`tool/ci/prefetch_sqlite3_asset.mjs` covers a download no step can retry:
+the `sqlite3` package's build hook fetches its native library from GitHub
+during `flutter test`, and makes only one attempt. The tool downloads the
+locked version's library for the runner, retrying on network errors, 429 and
+5xx. It checks the file against the sha256 the package pins and writes it to
+`.dart_tool/hooks_runner/shared/sqlite3/build/download-<hash8>/`, where the
+hook reuses a verified copy (the package's `doc/hook.md`). Run it after
+`flutter pub get`. If the layout is not what it expects, it warns and the
+hook downloads as before.
+
 ## App Check Debug Tokens
 
 Local simulator App Check debug tokens are registered through a narrow helper

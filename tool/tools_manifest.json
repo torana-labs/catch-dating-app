@@ -1664,6 +1664,32 @@
       "checkSafety": "local-readonly"
     },
     {
+      "id": "ci:prefetch-sqlite3-asset",
+      "category": "ci",
+      "path": "tool/ci/prefetch_sqlite3_asset.mjs",
+      "command": "node tool/ci/prefetch_sqlite3_asset.mjs",
+      "surface": "local-writes-scratch",
+      "status": "active",
+      "role": "operator",
+      "description": "Downloads the locked sqlite3 package's prebuilt native library for this machine from its GitHub release (up to 4 attempts on network errors, 429 or 5xx), checks it against the sha256 the package pins, and writes it under .dart_tool/hooks_runner/shared/sqlite3/build/ where the package's build hook reuses a verified copy; an unexpected layout warns and leaves the download to the hook.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/prefetch_sqlite3_asset.test.mjs",
+        "pubspec.lock"
+      ],
+      "checks": [
+        "node --check tool/ci/prefetch_sqlite3_asset.mjs",
+        "node --test tool/ci/prefetch_sqlite3_asset.test.mjs",
+        "node tool/ci/prefetch_sqlite3_asset.mjs --help"
+      ],
+      "runbook": "tool/README.md#ci-network-retries"
+    },
+    {
       "id": "ci:required-ci-floor",
       "category": "ci",
       "path": "tool/ci/required_ci_floor.mjs",
