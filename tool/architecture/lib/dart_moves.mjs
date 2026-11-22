@@ -305,6 +305,15 @@ export function stripDirectives(source) {
     .replace(/\n{3,}/gu, "\n\n");
 }
 
+// Like stripDirectives, but a comment trailing a directive on its line goes
+// with it, as it does when a move deletes the directive.
+export function stripDirectiveLines(source) {
+  return source
+    .replace(/^(?:import|export|part(?:\s+of)?)\s[^;]*;[ \t]*(?:\/\/[^\n]*)?\n?/gmu, "")
+    .replace(/^\s*\n/u, "")
+    .replace(/\n{3,}/gu, "\n\n");
+}
+
 // A context public API file holds exports and comments only.
 export function holdsOnlyExports(source) {
   return stripDirectives(source).split("\n")
