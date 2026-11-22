@@ -1680,7 +1680,8 @@
       },
       "impactPaths": [
         "tool/ci/prefetch_sqlite3_asset.test.mjs",
-        "pubspec.lock"
+        "pubspec.lock",
+        ".github/workflows/visual-integration-ci.yml"
       ],
       "checks": [
         "node --check tool/ci/prefetch_sqlite3_asset.mjs",
