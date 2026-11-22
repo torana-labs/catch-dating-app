@@ -117,15 +117,7 @@ export function verifyScreenMove({changes, read, regenerated, packages}) {
       continue;
     }
     if (file === carriedScreensPath) {
-      const beforeLines = new Set(before.toString().split("\n"));
-      const afterLines = new Set(after.toString().split("\n"));
-      const touched = [...afterLines].filter((line) => !beforeLines.has(line))
-        .concat([...beforeLines].filter((line) => !afterLines.has(line)));
-      const structural = (line) => /^[\s[\]{},]*$/u.test(line);
-      if (!touched.every((line) => structural(line) ||
-          [...movedPaths].some((moved) => line.includes(`"${moved}"`)))) {
-        problems.push(`${carriedScreensPath} changed beyond entries for moved files`);
-      }
+      problems.push(...carriedChanges({before, after, moves}));
       continue;
     }
     if (!pathTextExtensions.test(file)) {
@@ -153,6 +145,45 @@ export function verifyScreenMove({changes, read, regenerated, packages}) {
     }
     if (!changes.some((change) => change.status === "D" && change.file === from)) {
       problems.push(`logged move left its source: ${from}`);
+    }
+  }
+  return problems;
+}
+
+// The carried list may gain entries for files this move placed, follow a
+// carried file that moved again (keeping its `from`), and lose any entry
+// (stale carries are dropped wherever they are). Nothing else changes.
+function carriedChanges({before, after, moves}) {
+  let older;
+  let newer;
+  try {
+    older = JSON.parse(before.toString());
+    newer = JSON.parse(after.toString());
+  } catch {
+    return [`${carriedScreensPath} is not valid JSON`];
+  }
+  const problems = [];
+  const strip = (json) => ({...json, carried: undefined});
+  if (!isDeepStrictEqual(strip(older), strip(newer))) {
+    problems.push(`${carriedScreensPath} changed beyond its carried entries`);
+  }
+  const targets = new Map([...moves].map(([from, to]) => [to, from]));
+  const oldByPath = new Map((older.carried ?? []).map((entry) => [entry.path, entry]));
+  for (const entry of newer.carried ?? []) {
+    const keys = Object.keys(entry).sort().join(",");
+    const previous = oldByPath.get(entry.path);
+    if (keys !== "from,path") {
+      problems.push(`${carriedScreensPath} entry ${entry.path} must hold exactly path and from`);
+    } else if (previous != null) {
+      if (previous.from !== entry.from) problems.push(`${carriedScreensPath} changed the from of ${entry.path}`);
+    } else if (!targets.has(entry.path)) {
+      problems.push(`${carriedScreensPath} carries ${entry.path}, which this move did not place`);
+    } else {
+      const source = targets.get(entry.path);
+      const followed = oldByPath.get(source);
+      if ((followed?.from ?? source) !== entry.from) {
+        problems.push(`${carriedScreensPath} entry ${entry.path} must come from ${followed?.from ?? source}`);
+      }
     }
   }
   return problems;

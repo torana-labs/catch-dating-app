@@ -293,7 +293,7 @@ export function renderPlan(plan, {markdown, suggestClosure}) {
   heading("Regenerated outputs (written by their generators, never rewritten)");
   list(plan.regenerationSteps.map((step) => `${step.command.join(" ")} (${step.when}): ${step.outputs}`));
   heading("Carried screens");
-  list([`${plan.carried.status}: ${plan.carried.reason}`]);
+  list([`${plan.carried.status}: ${plan.carried.reason}`, ...plan.carried.entries]);
   heading("Errors (the move applies only when this is empty)");
   list(plan.errors.map((error) => `[${error.kind}] ${error.message}`));
   if (suggestClosure) {

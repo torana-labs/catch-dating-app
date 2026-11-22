@@ -41,6 +41,11 @@ import {
   staleIgnoreFindings,
   staleReviewIds,
   updateCarriedScreens,
+  analyzerFindings,
+  carriedAfterMove,
+  dropStaleCarries,
+  newRootMatcher,
+  readCarried,
 } from "./screen_move_outputs.mjs";
 import {formatLog, logEntry, parseLog, replayMoves} from "./screen_move_verify.mjs";
 
@@ -90,6 +95,9 @@ export function buildGroupPlan({root, group, graph, files, packages, map, read =
   errors.push(...closure);
   errors.push(...missingDependencies({moves, read, packages, dependenciesOf: dependencyReader(read)}));
   const suggestion = suggestClosure({graph, moves, errors: closure, map});
+  errors.push(...readmeInputErrors({moves, read}));
+  const carried = carriedPreview({root, moves: source.moves, read});
+  if (carried.status === "invalid") errors.push({kind: "carried", file: carriedScreensPath, message: carried.reason});
   const folders = emptiedFolders({files, moves});
 
   const readAfter = (file) => {
@@ -154,10 +162,45 @@ export function buildGroupPlan({root, group, graph, files, packages, map, read =
     publicApi,
     regenerated: [...regenerated].sort(),
     regenerationSteps: regenerationSteps(),
-    carried: fs.existsSync(path.join(root, carriedScreensPath))
-      ? {status: "required", reason: `${carriedScreensPath} exists; the carry hook must be implemented (lane P2 merged).`}
-      : {status: "skipped", reason: `${carriedScreensPath} is lane P2's file and is not on this branch; no carry entries are written.`},
+    carried,
     log,
+  };
+}
+
+// The first README to move into an app package's lib/ needs the host feature
+// generator's Markdown input to name that folder (tool/nx/markdown_inputs
+// .test.mjs and nx.json); the move PR adds it in its own commit first.
+const markdownInputsPath = "tool/nx/markdown_inputs.test.mjs";
+
+function readmeInputErrors({moves, read}) {
+  const source = read(markdownInputsPath) ?? "";
+  const apps = new Set([...moves.values()]
+    .map((to) => /^apps\/([^/]+)\/lib\/(?:.+\/)?README\.md$/u.exec(to)?.[1])
+    .filter(Boolean));
+  return [...apps].filter((app) => !source.includes(`apps/${app}/lib/**/README.md`)).map((app) => ({
+    kind: "readmeInputs",
+    file: markdownInputsPath,
+    message: `A README moves into apps/${app}/lib; add "apps/${app}/lib/**/README.md" to the build_host_feature_responsibilities.mjs entry of markdownReaders in ${markdownInputsPath} first.`,
+  }));
+}
+
+// What --apply will carry, for the plan; the stale-carry pass runs only then.
+function carriedPreview({root, moves, read}) {
+  let json;
+  try {
+    json = readCarried(root);
+  } catch (error) {
+    return {status: "invalid", reason: `${carriedScreensPath} cannot be read: ${error.message}`, entries: []};
+  }
+  if (json == null) {
+    return {status: "skipped", reason: `${carriedScreensPath} is not on this branch; no carry entries are written.`, entries: []};
+  }
+  const isNewRoot = newRootMatcher(read("packages/catch_ui_lints/lib/src/migration_scope.dart"));
+  const {added} = carriedAfterMove({json, moves, isNewRoot});
+  return {
+    status: "carry",
+    reason: `${added.length} moved file(s) will be carried; --apply then drops every entry catch_arch_stale_carry reports.`,
+    entries: added,
   };
 }
 
@@ -222,17 +265,27 @@ function applyOnCleanTree({root, plan, cleanupComments, external}) {
   if (external) sortDirectives(root, sortedPackageDirs);
   const carried = updateCarriedScreens({root, moves: plan.moves});
   let removedComments = [];
-  if (external && cleanupComments) {
-    const movedDart = [...plan.sourceMoves.values()].filter((file) =>
-      file.endsWith(".dart") && !/\.(?:g|freezed)\.dart$/u.test(file));
-    const read = (file) => (fs.existsSync(path.join(root, file)) ? fs.readFileSync(path.join(root, file), "utf8") : null);
-    removedComments = removeStaleComments({
-      files: movedDart,
-      staleReviewIds: staleReviewIds(root),
-      staleIgnores: staleIgnoreFindings(root, movedDart),
-      read,
-      write: (file, text) => writeFile(root, file, text),
-    });
+  if (external) {
+    // The carried list changes which ignores are legal, so stale carries go
+    // first and the ignores are judged by a second analysis.
+    if (carried.status === "written") {
+      carried.dropped = dropStaleCarries({root, findings: analyzerFindings(root)});
+      written.add(carriedScreensPath);
+    }
+    if (cleanupComments) {
+      const movedDart = [...plan.sourceMoves.values()].filter((file) =>
+        file.endsWith(".dart") && !/\.(?:g|freezed)\.dart$/u.test(file));
+      const read = (file) => (fs.existsSync(path.join(root, file)) ? fs.readFileSync(path.join(root, file), "utf8") : null);
+      removedComments = removeStaleComments({
+        files: movedDart,
+        staleReviewIds: staleReviewIds(root),
+        staleIgnores: staleIgnoreFindings(analyzerFindings(root), movedDart),
+        read,
+        write: (file, text) => writeFile(root, file, text),
+      });
+    }
+  } else if (carried.status === "written") {
+    written.add(carriedScreensPath);
   }
   const regeneratedBefore = external ? runRegeneration(root, "before-commit") : [];
   const resorted = git(["diff", "--name-only", "--", "*.dart"], root).split("\n").filter(Boolean);

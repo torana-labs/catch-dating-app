@@ -23,6 +23,7 @@ import {
 } from "./lib/screen_move_apply.mjs";
 import {rewriteMentions, isMentionText, staleFolderMentions} from "./lib/screen_move_rewrite.mjs";
 import {fixtureReads, goldenNames} from "./lib/screen_move_tests.mjs";
+import {carriedAfterMove, dropStaleCarries, newRootMatcher} from "./lib/screen_move_outputs.mjs";
 import {checkRepository, runCli} from "./move_screens.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -37,6 +38,7 @@ const baseFiles = {
   "lib/contexts/events/data/event_repository.dart": "class EventRepository {}\n",
   "lib/contexts/live/data/live_repository.dart": "class LiveRepository {}\n",
   "lib/pages/frame/frame.dart": "class Frame {}\n",
+  "tool/nx/markdown_inputs.test.mjs": "export const markdownReaders = {\"tool/design/build_host_feature_responsibilities.mjs\": {\"apps/host/lib/**/README.md\": [\"tools\"], \"apps/consumer/lib/**/README.md\": [\"tools\"]}};\n",
 };
 
 function mapSource(legacy) {
@@ -404,23 +406,107 @@ test("--apply writes one commit and a log entry, and --verify accepts it", () =>
   assert.equal(runCli(["--check", "--root", root]), 0);
 });
 
-test("--apply refuses a dirty tree, and the carry hook fails closed once lane P2's file exists", () => {
-  const root = fixtureRepo({
-    "tool/architecture/context_map.json": todayMap,
+const migrationScope = "final _newRoot = RegExp(\n  r'^(?:apps/[^/]+/lib|lib/pages|lib/hosts/(?:today|create|insights|live|onboarding|door|organizer|forms|people|programmes|events(?!/presentation/)))/',\n);\n";
+
+function carriedFixture(carried) {
+  return fixtureRepo({
+    "tool/architecture/context_map.json": mapSource([
+      {path: "lib/hosts/", layer: "app"},
+      {path: "lib/events/", layer: "app"},
+      {path: "lib/hosts/presentation/", layer: "app", moveTo: "apps/host/lib/events/manage/", group: "manage"},
+      {path: "lib/hosts/today/", layer: "app", moveTo: "apps/host/lib/today/", group: "manage"},
+      {path: "lib/events/presentation/event_query.dart", layer: "app", moveTo: "lib/contexts/events/data/event_query.dart", group: "manage"},
+    ]),
+    "packages/catch_ui_lints/lib/src/migration_scope.dart": migrationScope,
+    "tool/architecture/carried_screens.json": carried,
+    "lib/hosts/presentation/host_event_screen.dart": "part 'host_event_screen.g.dart';\n\nclass HostEventScreen {}\n",
+    "lib/hosts/presentation/host_event_screen.g.dart": "part of 'host_event_screen.dart';\n",
+    "lib/hosts/presentation/README.md": "# Manage\n",
     "lib/hosts/today/today_screen.dart": "class TodayScreen {}\n",
-    "tool/architecture/carried_screens.json": "[]\n",
+    "lib/hosts/hosts.dart": "// The host barrel stays.\n",
+    "lib/events/presentation/event_query.dart": "class EventQuery {}\n",
+    "lib/events/events.dart": "// The events barrel stays.\n",
+    "tool/nx/markdown_inputs.test.mjs": "export const markdownReaders = {};\n",
   });
-  const {plan} = planFor(root, "host-today");
-  assert.equal(plan.carried.status, "required");
+}
+
+test("--apply carries moved files from legacy paths, never generated files or context moves, and --verify accepts it", () => {
+  const description = "Files that keep the rules of their legacy path.";
+  const root = carriedFixture(`${JSON.stringify({description, carried: []}, null, 2)}\n`);
+  const {plan} = planFor(root, "manage");
+  assert.deepEqual(plan.errors.map((error) => error.kind), ["readmeInputs"]);
+  assert.deepEqual(plan.carried.entries, ["apps/host/lib/events/manage/host_event_screen.dart"]);
+  fs.mkdirSync(path.join(root, "tool/nx"), {recursive: true});
+  fs.writeFileSync(path.join(root, "tool/nx/markdown_inputs.test.mjs"),
+    "export const markdownReaders = {\"tool/design/build_host_feature_responsibilities.mjs\": {\"apps/host/lib/**/README.md\": [\"tools\"]}};\n");
+  git(root, "add", "-A");
+  git(root, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.com", "commit", "-q", "-m", "readme input");
+  const replanned = planFor(root, "manage").plan;
+  assert.deepEqual(replanned.errors.map((error) => error.message), []);
+  const result = applyGroupPlan({root, plan: replanned, external: false});
+  assert.equal(result.carried.status, "written");
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, "tool/architecture/carried_screens.json"), "utf8")), {
+    description,
+    carried: [{path: "apps/host/lib/events/manage/host_event_screen.dart", from: "lib/hosts/presentation/host_event_screen.dart"}],
+  });
+  assert.equal(runCli(["--verify", "--commit", "HEAD", "--root", root]), 0);
+  // A carried entry for a file this move did not place is a hand edit.
+  const carried = JSON.parse(fs.readFileSync(path.join(root, "tool/architecture/carried_screens.json"), "utf8"));
+  carried.carried.push({path: "apps/host/lib/elsewhere.dart", from: "lib/hosts/elsewhere.dart"});
+  fs.writeFileSync(path.join(root, "tool/architecture/carried_screens.json"), `${JSON.stringify(carried, null, 2)}\n`);
+  git(root, "add", "-A");
+  git(root, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.com", "commit", "-q", "--amend", "--no-edit");
+  const errors = [];
+  const original = console.error;
+  console.error = (line) => errors.push(line);
+  try {
+    assert.equal(runCli(["--verify", "--commit", "HEAD", "--root", root]), 1);
+  } finally {
+    console.error = original;
+  }
+  assert.ok(errors.some((line) => line.includes("carries apps/host/lib/elsewhere.dart, which this move did not place")), errors.join("\n"));
+});
+
+test("a carried file that moves again keeps its from; stale carries are dropped", () => {
+  const isNewRoot = newRootMatcher(migrationScope);
+  const {json, added} = carriedAfterMove({
+    json: {description: "d", carried: [{path: "apps/host/lib/events/manage/x.dart", from: "lib/hosts/presentation/x.dart"}]},
+    moves: new Map([
+      ["apps/host/lib/events/manage/x.dart", "apps/host/lib/events/roster/x.dart"],
+      ["lib/hosts/today/y.dart", "apps/host/lib/today/y.dart"],
+      ["lib/hosts/presentation/z.g.dart", "apps/host/lib/events/manage/z.g.dart"],
+    ]),
+    isNewRoot,
+  });
+  assert.deepEqual(added, []);
+  assert.deepEqual(json.carried, [{path: "apps/host/lib/events/roster/x.dart", from: "lib/hosts/presentation/x.dart"}]);
+  const root = carriedFixture(`${JSON.stringify({description: "d", carried: [
+    {path: "lib/pages/a.dart", from: "lib/pages/a.dart"},
+    {path: "lib/pages/b.dart", from: "lib/old/b.dart"},
+  ]}, null, 2)}\n`);
+  assert.deepEqual(dropStaleCarries({root, findings: [
+    {code: "CATCH_ARCH_STALE_CARRY", file: "lib/pages/b.dart", line: 1, message: "stale"},
+    {code: "CATCH_ARCH_INVALID_IGNORE", file: "lib/pages/a.dart", line: 1, message: "other"},
+  ]}), ["lib/pages/b.dart"]);
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, "tool/architecture/carried_screens.json"), "utf8")).carried,
+    [{path: "lib/pages/a.dart", from: "lib/pages/a.dart"}]);
+});
+
+test("--apply refuses a dirty tree and rolls back its own work when a step fails", () => {
+  const root = carriedFixture("{not json\n");
+  fs.mkdirSync(path.join(root, "tool/nx"), {recursive: true});
+  const {plan} = planFor(root, "manage");
+  assert.ok(plan.errors.some((error) => error.kind === "carried"));
+  const applicable = {...plan, errors: []};
   fs.writeFileSync(path.join(root, "docs.md"), "stray\n");
-  assert.throws(() => applyGroupPlan({root, plan, external: false}), /clean working tree apart from/u);
+  assert.throws(() => applyGroupPlan({root, plan: applicable, external: false}), /clean working tree apart from/u);
   fs.rmSync(path.join(root, "docs.md"));
   const mapEdit = `${fs.readFileSync(path.join(root, "tool/architecture/context_map.json"), "utf8")}\n`;
   fs.writeFileSync(path.join(root, "tool/architecture/context_map.json"), mapEdit);
-  assert.throws(() => applyGroupPlan({root, plan, external: false}), /rolled back:[\s\S]*implement updateCarriedScreens/u);
+  assert.throws(() => applyGroupPlan({root, plan: applicable, external: false}), /rolled back:/u);
   assert.equal(git(root, "status", "--porcelain").trim(), "M tool/architecture/context_map.json");
   assert.equal(fs.readFileSync(path.join(root, "tool/architecture/context_map.json"), "utf8"), mapEdit);
-  assert.ok(fs.existsSync(path.join(root, "lib/hosts/today/today_screen.dart")));
+  assert.ok(fs.existsSync(path.join(root, "lib/hosts/presentation/host_event_screen.dart")));
 });
 
 test("--verify rejects a hand edit in a move commit", () => {
