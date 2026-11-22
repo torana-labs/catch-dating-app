@@ -199,8 +199,9 @@ jobs:
     name: Render and validate canonical iPhone captures
     needs: [plan, storybook]
     # Render only after a successful plan, and accept a skipped Storybook only
-    # when no web capture needs it.
-    if: ${{ !cancelled() && needs.plan.result == 'success' && needs.plan.outputs.render == 'true' && (needs.storybook.result == 'success' || (needs.storybook.result == 'skipped' && needs.plan.outputs.web_render != 'true')) }}
+    # when no web capture needs it. Never in the merge queue (owner decision,
+    # 22 Nov 2026): main pushes and the nightly render instead.
+    if: ${{ github.event_name != 'merge_group' && !cancelled() && needs.plan.result == 'success' && needs.plan.outputs.render == 'true' && (needs.storybook.result == 'success' || (needs.storybook.result == 'skipped' && needs.plan.outputs.web_render != 'true')) }}
     concurrency:
       group: marketing-captures-${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
       cancel-in-progress: false
