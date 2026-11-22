@@ -2369,6 +2369,48 @@ none of the last 30 nightly runs was green. Opening the issue notifies repositor
 runs change nothing. Fix forward on main; never close the issue by hand
 while main is still red.
 
+### Scheduled run watchdog
+
+GitHub drops or delays scheduled runs under load: the :30 Deploy backend
+schedule started 5-7 hours late on 17 and 18 Nov 2026, and a nightly that never
+ran looked the same as a quiet one. `Scheduled run watchdog`
+(`.github/workflows/cron-watchdog.yml`, driven by `tool/ci/cron_watchdog.mjs`)
+runs hourly at :47 (owner decision, 22 Nov 2026: "dev runs automatically, prod
+asks first"). For each watched schedule it takes the latest daily run whose
+grace period has passed (3 hours by default) and checks that a scheduled or
+dispatched run started after its cron time:
+
+| Workflow | Cron (UTC) | If no run started | Reported on |
+|---|---|---|---|
+| Firestore Data Validation (`data-validation.yml`) | 20:13 | Not dispatched: it uses prod, though read-only | "Scheduled run missed" |
+| Deploy backend (`backend-deploy.yml`) | 21:13 | Dispatched once for dev; prod is never dispatched | "Scheduled run missed" |
+| CI nightly (`ci.yml`) | 02:23 | Dispatched once with `full`; the night counts as unknown | "Main CI is red" |
+
+Each missed run gets one comment on its issue (opened if none is open) naming
+the run, what was dispatched and, for a prod run, the command to run it, for
+example `gh workflow run backend-deploy.yml --repo <owner>/<repo> --ref main -f
+environment=prod`. Run a prod deploy only after checking the dev deploy
+succeeded. The comment carries a hidden marker. The watchdog reads markers from
+both issues, closed ones included, updated in the last 3 days, and never
+dispatches or reports a run that already has one, so each expected run is
+handled at most once.
+
+A nightly that never started counts as **unknown**, never green, and is
+reported on "Main CI is red" because it is about CI health. The recovery run
+the watchdog dispatches is a `workflow_dispatch` run, so the Main CI alert and
+the sprint floor's seven-day count still treat that night as missing. Missed
+deploy and validation runs go to their own issue so they never keep "Main CI is
+red" open. The watchdog has `contents: read`, `actions: write` and
+`issues: write`.
+
+To check it by hand, dispatch the workflow with `dry_run` on (the default): it
+prints what it would dispatch and post, and writes nothing. `assume_missing`
+treats one target's runs as absent and `now` evaluates as of a given time, both
+in dry runs only. `grace_hours` changes the grace period for one run; change the
+default in `tool/ci/cron_watchdog.mjs`. To watch another schedule, add it to
+`TARGETS` there; a test requires each entry's cron to match its workflow's own
+`schedule` and its dispatch inputs to exist.
+
 ### Weekly CI metrics
 
 CI efficiency is measured every week instead of reconstructed by hand (owner
