@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
+import {createRequire} from "node:module";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
@@ -38,14 +39,13 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-// test:rules runs functions/test/emulator-tests.json through the strict driver.
+// test:rules runs the strict list the driver derives from *.emulator.test / *.rules.test names.
 function strictEmulatorTests() {
   const packageJson = JSON.parse(fs.readFileSync(
     new URL("../../functions/package.json", import.meta.url), "utf8"));
   assert.equal(packageJson.scripts["test:rules"],
     "npm run build && node scripts/run-tests.cjs --require-emulators");
-  return JSON.parse(fs.readFileSync(
-    new URL("../../functions/test/emulator-tests.json", import.meta.url), "utf8"));
+  return createRequire(import.meta.url)("../../functions/scripts/run-tests.cjs").listedStrictTests();
 }
 
 function adminPendingInputs() {
@@ -183,7 +183,7 @@ const organizerAuthorityEmulatorPaths = [
   "functions/src/organizers/manageOrganizerTeam.ts",
   "functions/src/profiles/syncPublicProfile.ts",
   "functions/src/profiles/syncPublicProfile.test.ts",
-  "functions/src/profiles/syncPublicProfileEmulator.test.ts",
+  "functions/src/profiles/syncPublicProfile.emulator.test.ts",
 ];
 
 function assertOrganizerAuthorityEmulatorSelection(sourceGraph) {
@@ -250,7 +250,7 @@ test("organizer authority routing preserves unrelated and mixed source lanes", (
 
 test("rules emulator command executes the organizer authority regression", () => {
   const listed = strictEmulatorTests();
-  const compiledTest = "lib/profiles/syncPublicProfileEmulator.test.js";
+  const compiledTest = "lib/profiles/syncPublicProfile.emulator.test.js";
   const assertIncluded = (tests) => {
     assert.equal(tests.filter((part) => part === compiledTest).length,
       1, "test:rules must run the organizer authority emulator regression exactly once");
@@ -259,7 +259,7 @@ test("rules emulator command executes the organizer authority regression", () =>
   assert.throws(() => assertIncluded(listed.filter((part) => part !== compiledTest)),
     /must run the organizer authority emulator regression/u);
   assert.ok(fs.existsSync(new URL(
-    "../../functions/src/profiles/syncPublicProfileEmulator.test.ts", import.meta.url)));
+    "../../functions/src/profiles/syncPublicProfile.emulator.test.ts", import.meta.url)));
   const workflow = fs.readFileSync(
     new URL("../../.github/workflows/firestore-rules-ci.yml", import.meta.url), "utf8");
   assert.match(workflow,
@@ -943,9 +943,9 @@ test("generated Flutter bindings validate Flutter without expanding upstream", (
 const formConversionEmulatorPaths = [
   "functions/package.json",
   "functions/src/organizers/organizerFormConversions.ts",
-  "functions/src/organizers/organizerFormConversions.test.ts",
+  "functions/src/organizers/organizerFormConversions.emulator.test.ts",
   "functions/src/events/eventAttendees.ts",
-  "functions/src/events/eventAttendees.test.ts",
+  "functions/src/events/eventAttendees.emulator.test.ts",
 ];
 
 test("form conversion authority selects emulator validation in every CI mode", () => {
@@ -986,8 +986,8 @@ test("backend integration conservatively covers runtime and mixed lanes", () => 
 
 test("rules command executes both form conversion and attendee regressions", () => {
   const listed = strictEmulatorTests();
-  for (const compiled of ["lib/organizers/organizerFormConversions.test.js",
-    "lib/events/eventAttendees.test.js"]) {
+  for (const compiled of ["lib/organizers/organizerFormConversions.emulator.test.js",
+    "lib/events/eventAttendees.emulator.test.js"]) {
     assert.equal(listed.filter((part) => part === compiled).length,
       1, `${compiled} must run exactly once in test:rules`);
   }
@@ -1380,7 +1380,7 @@ test("minimum safety obligations cover source, tests, lockfiles and generated ou
     {paths: ["docs/design_parity/comprehensive_todo.md"], required: ["docs", "tools"]},
     {paths: ["functions/test/rules/users.rules.test.cjs"], required: ["functions", "firestore_rules"]},
     {paths: ["functions/src/chats/eventChatAccess.ts"], required: ["functions", "firestore_rules"]},
-    {paths: ["functions/src/chats/eventChatAccessEmulator.test.ts"], required: ["functions", "firestore_rules"]},
+    {paths: ["functions/src/chats/eventChatAccess.emulator.test.ts"], required: ["functions", "firestore_rules"]},
     {paths: ["functions/package-lock.json"], required: ["functions", "firestore_rules", "contracts"]},
     {paths: ["lib/routing/go_router.dart"], required: ["flutter", "visual_integration"]},
     {paths: ["lib/events/presentation/event_detail_cta.dart"], required: ["flutter", "visual_integration"]},

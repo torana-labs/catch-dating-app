@@ -863,7 +863,7 @@ Firestore rules tests live in `test/rules/`, one `<collection>.rules.test.cjs`
 file per collection area with shared fixtures and the emulator lifecycle in
 `test/rules/rulesHarness.cjs`; Storage rules tests live at
 `test/storage.rules.test.cjs`. They use the `@firebase/rules-unit-testing`
-emulators. Add a new rules file to `test/emulator-tests.json`.
+emulators. The `.rules.test.cjs` suffix puts a new rules file in the strict list.
 Each collection in `tool/contracts/firestore_contract.json` names its rules
 test as `rulesTestFile`, or is listed in `collectionsWithoutRulesTests` with a
 reason; `tool/contracts/check_firestore_contract.mjs` enforces one or the other. Add test cases for any new rule conditions, especially `diff()`
@@ -876,10 +876,11 @@ A direct `npm run test:rules` from this directory only works when those
 emulators are already running; `connect ECONNREFUSED` means the emulator
 workflow is missing, not necessarily that the rules changed incorrectly.
 
-`test:rules` runs every file listed in `test/emulator-tests.json`. Add a new
-emulator-dependent test to that list, not to `package.json`: the backend
-deploy selector treats runtime `package.json` fields as a change to every
-Function.
+`test:rules` runs the strict list that `scripts/run-tests.cjs` derives from
+file names: `src/**/*.emulator.test.ts`, `test/**/*.emulator.test.cjs` and
+`test/**/*.rules.test.cjs`. Name a new emulator-dependent test that way; there
+is no list to edit, and `scripts/run-tests.test.cjs` fails when an
+emulator-guarded test is named otherwise.
 
 ## Commands
 

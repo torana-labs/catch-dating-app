@@ -3,6 +3,7 @@ import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
 import {spawnSync} from "node:child_process";
+import {createRequire} from "node:module";
 import {createHash} from "node:crypto";
 import test from "node:test";
 import vm from "node:vm";
@@ -1602,11 +1603,11 @@ test("backend integration runs strict execution inside both emulators with a bou
   assert.match(source, /firebase emulators:exec[^\n]+--only firestore,storage[^\n]+npm --prefix functions run test:rules/u);
   const pkg = JSON.parse(fs.readFileSync(new URL("../../functions/package.json", import.meta.url), "utf8"));
   assert.equal(pkg.scripts["test:rules"], "npm run build && node scripts/run-tests.cjs --require-emulators");
-  const listed = JSON.parse(fs.readFileSync(new URL("../../functions/test/emulator-tests.json", import.meta.url), "utf8"));
+  const listed = createRequire(import.meta.url)("../../functions/scripts/run-tests.cjs").listedStrictTests();
   assert.ok(listed.includes("test/rules/organizers.rules.test.cjs"));
   // Rules specs are one file per collection so shards balance and selection can narrow.
   assert.equal(listed.includes("test/firestore.rules.test.cjs"), false);
-  assert.ok(listed.includes("lib/chats/eventChatAccessEmulator.test.js"));
+  assert.ok(listed.includes("lib/chats/eventChatAccess.emulator.test.js"));
 });
 
 test("only pull requests narrow the strict emulator list", () => {
