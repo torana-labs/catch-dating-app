@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 
 /// The organizer's contact directory document: everyone's summary and the
 /// per-segment counts the triggers keep.
@@ -42,18 +42,18 @@ class HostContactDirectory {
 /// match on `searchName` and lists its matches by name, whatever the sort.
 class HostContactSummaryReads {
   const HostContactSummaryReads(this.reader);
-  final HostSummaryReader reader;
+  final ScopedReadModelReader reader;
   static const marker = 'contactSummaryVersion';
 
   /// The directory document while it is listened to.
   Stream<HostContactDirectory> watchDirectory(String organizerId) => reader
-      .watchActivatedDirectory(organizerId, marker)
+      .watchActivatedReadiness(organizerId, marker)
       .map(HostContactDirectory.new);
 
   /// The exact count, or null when the directory cannot count this query.
   Future<int?> count(String organizerId, HostAudienceQuery query) async {
     if (!HostContactDirectory.countable(query)) return null;
-    final data = await reader.activatedDirectory(organizerId, marker);
+    final data = await reader.activatedReadiness(organizerId, marker);
     return HostContactDirectory(data).count(query);
   }
 
@@ -68,7 +68,7 @@ class HostContactSummaryReads {
     return reader
         .watchPages(
           collection: 'hostContactSummaries',
-          organizerId: organizerId,
+          scopeId: organizerId,
           orderField: spec.orderField,
           descending: spec.descending,
           pageSize: pageSize,
@@ -100,10 +100,10 @@ class HostContactSummaryReads {
     required int limit,
   }) async {
     final spec = _ContactQuerySpec(query);
-    final directory = await reader.activatedDirectory(organizerId, marker);
+    final directory = await reader.activatedReadiness(organizerId, marker);
     final page = await reader.page(
       collection: 'hostContactSummaries',
-      organizerId: organizerId,
+      scopeId: organizerId,
       orderField: spec.orderField,
       descending: spec.descending,
       queryKey: spec.queryKey,

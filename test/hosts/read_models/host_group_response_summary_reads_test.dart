@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_response_summary_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -40,7 +41,11 @@ void main() {
       });
       final repo = HostSavedAudienceRepository(
         _UnusedFunctions(),
-        summaries: HostSummaryReader(db, actorId: () => 'host'),
+        summaries: ScopedReadModelReader(
+          db,
+          family: hostReadModels,
+          actorId: () => 'host',
+        ),
       );
       final page = await repo.watchGroupSummaries('org', limit: 30).first;
       expect(page.audiences.single.name, 'Members');
@@ -138,7 +143,11 @@ void main() {
     await detail(1, 'active');
     final repo = HostSavedAudienceRepository(
       _UnusedFunctions(),
-      summaries: HostSummaryReader(db, actorId: () => 'host'),
+      summaries: ScopedReadModelReader(
+        db,
+        family: hostReadModels,
+        actorId: () => 'host',
+      ),
     );
     final events = <Object>[];
     final subscription = repo
@@ -199,7 +208,11 @@ void main() {
         },
       });
       final reads = HostResponseSummaryReads(
-        HostSummaryReader(db, actorId: () => 'host'),
+        ScopedReadModelReader(
+          db,
+          family: hostReadModels,
+          actorId: () => 'host',
+        ),
       );
       final page = await reads.list(
         const HostFormResponseListRequest(

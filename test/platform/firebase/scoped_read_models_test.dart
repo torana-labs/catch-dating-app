@@ -1,13 +1,18 @@
 import 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_summary_reads.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('pages have stable ties and never include another organizer', () async {
     final db = FakeFirebaseFirestore();
-    final reader = HostSummaryReader(db, actorId: () => 'host');
+    final reader = ScopedReadModelReader(
+      db,
+      family: hostReadModels,
+      actorId: () => 'host',
+    );
     for (final id in ['a', 'b', 'c']) {
       await db.collection('hostContactSummaries').doc(id).set({
         'organizerId': 'org',
@@ -22,7 +27,7 @@ void main() {
     });
     final first = await reader.page(
       collection: 'hostContactSummaries',
-      organizerId: 'org',
+      scopeId: 'org',
       orderField: 'lastSeenAtMillis',
       descending: true,
       queryKey: 'all',
@@ -33,16 +38,16 @@ void main() {
     // The fake SDK cannot cursor over FieldPath.documentId. The real SDK
     // continuation (including ties) is exercised in firestore.rules.test.cjs.
     expect(
-      HostSummaryCursor.decode(
+      ReadModelCursor.decode(
         first.nextCursor,
-        HostSummaryCursor.scope('host', 'org', 'hostContactSummaries', 'all'),
+        ReadModelCursor.scope('host', 'org', 'hostContactSummaries', 'all'),
       ),
       [10, 'b'],
     );
     await expectLater(
       reader.page(
         collection: 'hostContactSummaries',
-        organizerId: 'other',
+        scopeId: 'other',
         orderField: 'lastSeenAtMillis',
         descending: true,
         queryKey: 'all',
@@ -54,7 +59,7 @@ void main() {
     await expectLater(
       reader.page(
         collection: 'hostContactSummaries',
-        organizerId: 'org',
+        scopeId: 'org',
         orderField: 'lastSeenAtMillis',
         descending: true,
         queryKey: 'new',
@@ -68,8 +73,12 @@ void main() {
   test('a read crossing an account switch never delivers its result', () async {
     final db = FakeFirebaseFirestore();
     var actor = 'first';
-    final reader = HostSummaryReader(db, actorId: () => actor);
-    final pending = reader.directory('org');
+    final reader = ScopedReadModelReader(
+      db,
+      family: hostReadModels,
+      actorId: () => actor,
+    );
+    final pending = reader.readiness('org');
     actor = 'second';
     await expectLater(pending, throwsStateError);
   });
@@ -79,7 +88,11 @@ void main() {
     () async {
       final db = FakeFirebaseFirestore();
       final reads = HostContactSummaryReads(
-        HostSummaryReader(db, actorId: () => 'host'),
+        ScopedReadModelReader(
+          db,
+          family: hostReadModels,
+          actorId: () => 'host',
+        ),
       );
       await expectLater(
         reads.list('org', query: const HostAudienceQuery(), limit: 30),

@@ -55,7 +55,7 @@ final class HostWhatsappRepositoryProvider
 }
 
 String _$hostWhatsappRepositoryHash() =>
-    r'69cc1fc0a9ada8767ef4aead1cd7cfdefac767d3';
+    r'bcdbeca4f97cf2f47e014ce7f5f8b9ea2a4a56d7';
 
 @ProviderFor(hostMessagingSetup)
 final hostMessagingSetupProvider = HostMessagingSetupFamily._();

@@ -59,4 +59,4 @@ final class HostEventSummaryReadsProvider
 }
 
 String _$hostEventSummaryReadsHash() =>
-    r'57b2a5598cca5210abee26ab658aa8d91c1bd209';
+    r'9b25ebd95fa67a803070c1cffdbb60bd63ba0a57';

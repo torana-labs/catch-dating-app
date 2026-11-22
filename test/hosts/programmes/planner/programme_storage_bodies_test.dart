@@ -114,7 +114,10 @@ void main() {
       onRetry: () {},
     );
     await pumpPlannerBody(tester, body(editing: false), size: plannerDesktop);
-    expect(find.text('Lantern Lane Travels · invoice 2026-118'), findsOneWidget);
+    expect(
+      find.text('Lantern Lane Travels · invoice 2026-118'),
+      findsOneWidget,
+    );
     expect(find.text('The 3 trips to question'), findsOneWidget);
     expect(find.text('Send the 3 questions'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('host-bill-approve')));

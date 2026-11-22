@@ -1,9 +1,10 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -28,13 +29,13 @@ class HostResponseStatusCountReads {
   const HostResponseStatusCountReads(this._firestore, this._reader);
 
   final FirebaseFirestore _firestore;
-  final HostSummaryReader _reader;
+  final ScopedReadModelReader _reader;
 
   Future<HostResponseStatusCounts?> count({
     required String organizerId,
     required String formId,
   }) async {
-    final directory = await _reader.directory(organizerId);
+    final directory = await _reader.readiness(organizerId);
     if (directory?['responseSummaryVersion'] != 1) return null;
     final form = _firestore
         .collection('hostResponseSummaries')
@@ -80,8 +81,9 @@ Future<HostResponseStatusCounts?> hostResponseStatusCounts(
   final firestore = ref.watch(firebaseFirestoreProvider);
   return HostResponseStatusCountReads(
     firestore,
-    HostSummaryReader(
+    ScopedReadModelReader(
       firestore,
+      family: hostReadModels,
       actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
     ),
   ).count(organizerId: organizerId, formId: formId);

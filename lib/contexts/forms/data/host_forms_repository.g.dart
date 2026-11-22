@@ -55,7 +55,7 @@ final class HostFormsRepositoryProvider
 }
 
 String _$hostFormsRepositoryHash() =>
-    r'6ad259adaa78706c2c197ccfc1728848d0f3b5cd';
+    r'125ca598810a61076428e61cdf0706bed39c4f73';
 
 @ProviderFor(hostFormTemplates)
 final hostFormTemplatesProvider = HostFormTemplatesFamily._();

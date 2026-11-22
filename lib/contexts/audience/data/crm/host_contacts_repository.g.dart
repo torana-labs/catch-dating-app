@@ -55,7 +55,7 @@ final class HostContactsRepositoryProvider
 }
 
 String _$hostContactsRepositoryHash() =>
-    r'2086cff638353a888e1fdf75f2c06a14aecc6deb';
+    r'0ab3a333453a4c9a4e41140ee357b8d7dc0d099d';
 
 /// The organizer's contact directory document, as a listener.
 

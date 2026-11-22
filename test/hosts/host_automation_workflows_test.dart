@@ -11,8 +11,9 @@ import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summa
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -503,5 +504,9 @@ class _DraftPager implements LivePager<HostCampaignSendSummary> {
   }
 }
 
-HostSummaryReader _reader([FakeFirebaseFirestore? db]) =>
-    HostSummaryReader(db ?? FakeFirebaseFirestore(), actorId: () => 'host');
+ScopedReadModelReader _reader([FakeFirebaseFirestore? db]) =>
+    ScopedReadModelReader(
+      db ?? FakeFirebaseFirestore(),
+      family: hostReadModels,
+      actorId: () => 'host',
+    );

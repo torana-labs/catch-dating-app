@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_automation_reads.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -81,7 +82,7 @@ void main() {
     await runs.doc('run-a').set(_run('run-a', 'f1', 5));
     await runs.doc('run-b').set(_run('run-b', 'f2', 9));
     final reads = HostFormAutomationReads(
-      HostSummaryReader(db, actorId: () => 'host'),
+      ScopedReadModelReader(db, family: hostReadModels, actorId: () => 'host'),
     );
 
     final all = await reads.watchRules('org', null).first;
