@@ -4102,7 +4102,7 @@
         "tool/design/library_shims_baseline.json",
         "tool/lib/flutter_source_roots.mjs",
         "packages/catch_ui/lib/**/*.dart",
-        "packages/catch_ui_lints/lib/src/migration_scope.dart",
+        "tool/architecture/carried_screens.json",
         "apps/**/lib/**/*.dart",
         "lib/pages/**/*.dart"
       ],
@@ -6335,6 +6335,7 @@
       "impactPaths": [
         "tool/scaffold/**",
         "tool/scaffold.test.mjs",
+        "tool/ui_capture/check_route_inventory.mjs",
         "design/components/catch.components.schema.json",
         "packages/platform/lib/riverpod_ui/catch_async_boundary.dart",
         "packages/platform/lib/riverpod_ui/catch_async_boundary_builders.dart",
@@ -6618,6 +6619,7 @@
         "widgetbook/lib/primitives/catalog/feedback.dart",
         "widgetbook/lib/primitives/contracts/feedback.dart",
         "tool/architecture/context_map.json",
+        "tool/architecture/carried_screens.json",
         "tool/check_catch_ui_lints.sh"
       ],
       "ciRequirements": {
