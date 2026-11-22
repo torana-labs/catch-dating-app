@@ -10,6 +10,7 @@
     "AdminApproveOrganizerListingCallablePayload",
     "AdminAssignSafetyTriageItemCallablePayload",
     "AdminAssignSalesPartnerCallablePayload",
+    "AdminAuditLogDocument",
     "AdminCreateMarketingContentDraftCallablePayload",
     "AdminDecideAccessApplicationCallablePayload",
     "AdminDecideEventMessagingBudgetCallablePayload",

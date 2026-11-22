@@ -2,7 +2,7 @@
 import {assertSalesMaterialPrivacyOpen} from "../sales/privacyBoundary";
 import {assertSalesPrivacyOpen, assertSalesPrivacyOpenRead} from "../salesPrivacy/model";
 import {invalidateFitQueueInTransaction} from "../salesFitQueue/service";
-import * as admin from "firebase-admin";
+import {createAdminAuditLogInTransaction} from "../../platform/adminAudit";
 import {hasCurrentDraftContact} from "../sales/suppression";
 import {salesRelationshipId} from "../sales/records";
 import {assertQualifiedByRuntimePolicy} from "../sales/qualificationPolicy";
@@ -110,12 +110,11 @@ async function mutateAuthorized<T extends Record<string, unknown>>(
     tx.create(ref, {schemaVersion: 1, classification: "sales_private",
       receiptId: ref.id, actorUid: principal.uid, action, requestId: request,
       materialHash, result, createdAt: now});
-    tx.create(db.collection("adminAuditLogs").doc(`sales_intelligence_${ref.id}`),
-      {action: `salesIntelligence.${action}`, actorUid: principal.uid,
-        roles: [...principal.roles],
-        targetPath: "salesIntelligenceReceipts/" + ref.id,
-        createdAt: admin.firestore.Timestamp.fromDate(new Date(now)),
-        after: {receiptId: ref.id, materialHash}});
+    createAdminAuditLogInTransaction(tx, db, principal, {
+      action: `salesIntelligence.${action}`,
+      targetPath: "salesIntelligenceReceipts/" + ref.id,
+      after: {receiptId: ref.id, materialHash},
+    }, {docId: `sales_intelligence_${ref.id}`});
     return result;
   });
 }
