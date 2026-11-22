@@ -705,7 +705,7 @@ jobs:
           (github.event_name == 'merge_group' ||
            (github.event_name == 'pull_request' && !github.event.pull_request.draft)) }}
     continue-on-error: true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
       actions: read
@@ -752,7 +752,7 @@ jobs:
       functions, marketing, operations, tools, visual-integration]
     if: ${{ !cancelled() && github.event_name == 'merge_group' && needs.proof-keys.outputs.verdicts != '' }}
     continue-on-error: true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0

@@ -156,7 +156,10 @@ test("the shadow jobs run beside the lanes, never gate, and verify the anchor wi
   const keysJob = ci.jobs["proof-keys"];
   const shadow = ci.jobs["proof-reuse-shadow"];
   assert.equal(keysJob.name, KEYS_JOB);
-  for (const entry of [keysJob, shadow]) assert.equal(entry["continue-on-error"], true);
+  for (const entry of [keysJob, shadow]) {
+    assert.equal(entry["continue-on-error"], true);
+    assert.equal(entry["runs-on"], "ubuntu-24.04", "a pinned image, so an image roll cannot change the shadow week");
+  }
   assert.deepEqual(keysJob.needs, ["plan"]);
   assert.deepEqual(keysJob.permissions, {actions: "read", checks: "read", contents: "read", "pull-requests": "read"});
   assert.equal(shadow.permissions, undefined, "the workflow's read-only token");
