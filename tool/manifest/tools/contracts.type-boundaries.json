@@ -1,0 +1,14 @@
+{
+  "id": "contracts:type-boundaries",
+  "category": "contracts",
+  "path": "tool/contracts/check_schema_type_boundaries.mjs",
+  "command": "node tool/contracts/check_schema_type_boundaries.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks schema/type boundaries, direct generated runtime imports, and explicit erased Admin type imports.",
+  "checks": [
+    "node --check tool/contracts/check_schema_type_boundaries.mjs",
+    "node --test tool/contracts/check_schema_type_boundaries.test.mjs",
+    "node tool/contracts/check_schema_type_boundaries.mjs"
+  ]
+}

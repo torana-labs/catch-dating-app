@@ -1,0 +1,25 @@
+{
+  "id": "meta:nx-lane-coverage",
+  "category": "meta",
+  "path": "tool/nx/lane_coverage.mjs",
+  "command": "node --test tool/nx/lane_coverage.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Every tracked file is an input of some lane task, a selector, or listed in noLaneReads with why no lane reads it, so Nx-only lane selection never selects nothing for a change that matters; knownTopLevel equals the tracked top-level entries. The input resolver is checked against nx affected.",
+  "checks": [
+    "node --check tool/nx/lane_coverage.mjs",
+    "node --test tool/nx/lane_coverage.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/nx/lane_coverage.test.mjs",
+    "nx.json",
+    "tool/nx/catch_projects.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ci:main-push-queue-proof",
+  "category": "ci",
+  "path": "tool/ci/main_push_queue_proof.mjs",
+  "command": "node tool/ci/main_push_queue_proof.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "impactPaths": [
+    ".github/workflows/ci.yml",
+    "tool/ci/main_push_queue_proof.mjs",
+    "tool/ci/main_push_queue_proof.test.mjs"
+  ],
+  "description": "Finds the merge-queue run whose Required CI job proved a main push's exact commit (merge_group, same head, exactly one Required CI, succeeded, current attempt), so that push re-runs no validation lane; prints nothing, and the push validates in full, when there is no such proof.",
+  "checks": [
+    "node --check tool/ci/main_push_queue_proof.mjs",
+    "node --test tool/ci/main_push_queue_proof.test.mjs"
+  ],
+  "role": "gate",
+  "runbook": "docs/release_operations.md#required-pr-checks"
+}

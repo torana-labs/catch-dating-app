@@ -1,0 +1,12 @@
+{
+  "id": "platform:upload-crashlytics-symbols-test",
+  "category": "platform",
+  "path": "tool/platform/test_upload_crashlytics_symbols.py",
+  "command": "python3 tool/platform/test_upload_crashlytics_symbols.py",
+  "surface": "local-read",
+  "status": "support",
+  "description": "Portable stdlib tests for symbol upload bounds, required dSYM coverage, SDK failures and cancellation; never invokes the real SDK or remote services.",
+  "checks": [
+    "python3 tool/platform/test_upload_crashlytics_symbols.py"
+  ]
+}

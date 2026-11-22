@@ -1,0 +1,13 @@
+{
+  "id": "contracts:check-all",
+  "category": "contracts",
+  "path": "tool/check_data_contract.sh",
+  "command": "./tool/check_data_contract.sh",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Runs the full data/schema/rules contract gate.",
+  "checks": [
+    "bash -n tool/check_data_contract.sh"
+  ],
+  "role": "finder"
+}

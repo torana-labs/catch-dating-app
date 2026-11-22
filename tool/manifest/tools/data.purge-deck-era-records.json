@@ -1,0 +1,22 @@
+{
+  "id": "data:purge-deck-era-records",
+  "category": "data",
+  "path": "tool/data/purge_deck_era_records.mjs",
+  "command": "node tool/data/purge_deck_era_records.mjs --env <dev|prod>",
+  "surface": "remote-destructive",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "One-off purge of the retired swipe deck's likes, passes, comments and the chats and signal facts derived from them; dry run by default.",
+  "checks": [
+    "node --check tool/data/purge_deck_era_records.mjs",
+    "npm --prefix functions run build && node --test tool/data/purge_deck_era_records.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/data/purge_deck_era_records.test.mjs",
+    "tool/data/fixtures/deck_era_purge/fake_firestore.mjs",
+    "tool/data/fixtures/deck_era_purge/world.mjs",
+    "functions/src/matching/deckEraDecision.ts"
+  ],
+  "role": "generator",
+  "runbook": "docs/release_operations.md#retired-swipe-deck-purge-one-off"
+}

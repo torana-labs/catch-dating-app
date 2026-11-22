@@ -1,0 +1,20 @@
+{
+  "id": "agent:selector-comparison",
+  "category": "agent",
+  "path": "tool/harness/compare_selectors.mjs",
+  "command": "node tool/harness/compare_selectors.mjs --base origin/main --head HEAD",
+  "surface": "local-read",
+  "status": "active",
+  "role": "gate",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "description": "Compares exact Git base/head selector snapshots and requires conservative full validation for control edits; checks actual CI plan and fanout against the same-source obligations.",
+  "checks": [
+    "node --check tool/harness/compare_selectors.mjs",
+    "node --test tool/harness/compare_selectors.test.mjs"
+  ]
+}

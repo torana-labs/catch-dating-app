@@ -56,7 +56,7 @@ if (command === "help" || command === "--help" || command === "-h") {
 function loadManifest() {
   const manifest = loadToolsManifestFromSnapshot(repositorySnapshot());
   if (!Array.isArray(manifest.tools)) {
-    throw new Error("tools_manifest.json must contain a tools array.");
+    throw new Error("The tools manifest must contain a tools array.");
   }
   return manifest;
 }

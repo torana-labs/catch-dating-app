@@ -2,7 +2,7 @@
 //
 // Most lane inputs negate *.md, so a document reaches a lane only when nx.json
 // names it. Two sources say which documents checks read:
-//   - tools_manifest.json impactPaths: `affected-tools`, which runs in the
+//   - tools manifest impactPaths: `affected-tools`, which runs in the
 //     Tools lane, re-runs an entry when one of them changes;
 //   - a scan of the scripts CI runs for Markdown paths and patterns. Each
 //     script that names one is listed below as a reader, with the lanes that

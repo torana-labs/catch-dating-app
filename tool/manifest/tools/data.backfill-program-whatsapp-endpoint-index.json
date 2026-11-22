@@ -1,0 +1,15 @@
+{
+  "id": "data:backfill-program-whatsapp-endpoint-index",
+  "category": "data",
+  "path": "functions/scripts/backfill-program-whatsapp-endpoint-index.cjs",
+  "command": "npm --prefix functions run build && node functions/scripts/backfill-program-whatsapp-endpoint-index.cjs --project <id> --program <programId> [--apply]",
+  "surface": "remote-write",
+  "guard": "apply-flag",
+  "status": "active",
+  "role": "operator",
+  "description": "Seeds programWhatsappEndpointIndex for one programme's households and guests that predate the endpoint-index trigger. Dry run unless --apply; it only adds or updates index documents.",
+  "checks": [
+    "node --check functions/scripts/backfill-program-whatsapp-endpoint-index.cjs"
+  ],
+  "runbook": "docs/data_contracts.md#programme-whatsapp-threads"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "marketing:website-a11y-debt",
+  "category": "marketing",
+  "path": "website/scripts/checkStorybookA11yDebt.mjs",
+  "command": "node website/scripts/checkStorybookA11yDebt.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Ratchets Storybook accessibility todo annotations against the exact reasoned WEB-A11Y-001 registry.",
+  "checks": [
+    "node --check website/scripts/checkStorybookA11yDebt.mjs",
+    "node website/scripts/checkStorybookA11yDebt.mjs --self-test",
+    "node website/scripts/checkStorybookA11yDebt.mjs"
+  ],
+  "role": "ratchet",
+  "baseline": "design/website/a11y.todo.json"
+}

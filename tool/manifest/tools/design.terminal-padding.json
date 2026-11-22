@@ -1,0 +1,27 @@
+{
+  "id": "design:terminal-padding",
+  "category": "design",
+  "path": "tool/design/check_terminal_padding.mjs",
+  "impactPaths": [
+    "tool/design/check_terminal_padding.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "command": "node tool/design/check_terminal_padding.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Rejects hand-rolled device-bottom padding in product code so scroll owners use the shell-aware terminal-clearance primitives.",
+  "checks": [
+    "node --check tool/design/check_terminal_padding.mjs",
+    "node --test tool/design/check_terminal_padding.test.mjs",
+    "node tool/design/check_terminal_padding.mjs --check"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "ROOT-SCREEN-COMPOSITION-001"
+  ]
+}

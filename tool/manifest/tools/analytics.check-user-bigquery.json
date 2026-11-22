@@ -1,0 +1,25 @@
+{
+  "id": "analytics:check-user-bigquery",
+  "category": "analytics",
+  "path": "tool/analytics/check_user_analytics_bigquery.mjs",
+  "command": "node tool/analytics/check_user_analytics_bigquery.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates user analytics BigQuery SQL, callable wiring, and app copy references.",
+  "checks": [
+    "node --check tool/analytics/check_user_analytics_bigquery.mjs",
+    "node tool/analytics/check_user_analytics_bigquery.mjs",
+    "node --test tool/analytics/mart_refresh.test.mjs"
+  ],
+  "role": "finder",
+  "impactPaths": [
+    "analytics/sql/marts/refresh_mart_user_analytics_daily.sql",
+    "tool/analytics/mart_refresh.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

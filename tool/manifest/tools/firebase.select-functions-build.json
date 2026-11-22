@@ -1,0 +1,26 @@
+{
+  "id": "firebase:select-functions-build",
+  "category": "firebase",
+  "path": "tool/firebase/select_functions_build.mjs",
+  "command": "node tool/firebase/select_functions_build.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/firebase/select_functions_build.test.mjs",
+    "tool/firebase/functions_build_hash.mjs",
+    ".github/workflows/_backend-deploy.yml"
+  ],
+  "description": "Lets Deploy backend ship Functions CI's tested build: finds the functions-build artifact for this commit's input hash, accepts it only from a successful CI run of main or main's merge queue in this repository, verifies every lib file against its digest, and installs it; any doubt exits for a normal compile.",
+  "checks": [
+    "node --check tool/firebase/select_functions_build.mjs",
+    "node --test tool/firebase/select_functions_build.test.mjs"
+  ],
+  "role": "gate",
+  "runbook": "docs/release_operations.md#deploy-backend"
+}

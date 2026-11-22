@@ -18,7 +18,7 @@ import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import {createRequire} from "node:module";
 import path from "node:path";
-import {isToolsManifestPath, toolsManifestFrom} from "../lib/tools_manifest.mjs";
+import {isToolsManifestPath, toolsManifestFrom, toolsManifestToolPath} from "../lib/tools_manifest.mjs";
 
 // The YAML parser loads on first use, not at import: the website release
 // scripts import this module through select_lanes.mjs and run without npm ci
@@ -145,7 +145,7 @@ function createScanner(root, files) {
     .map((file) => [JSON.parse(read(file)).name, path.posix.dirname(file)]));
 
   let tools = null;
-  const manifestTools = () => (tools ??= toolsManifestFrom({read, exists, fallback: {}}).tools ?? []);
+  const manifestTools = () => (tools ??= toolsManifestFrom({read, list: () => [...files], fallback: {}}).tools ?? []);
   const unquote = (value) => value?.replace(/^["']|["']$/gu, "").replace(/^\$\{?\w+\}?\//u, "");
   const resolve = (ref, baseDir) => {
     for (const candidate of [path.posix.normalize(path.posix.join(baseDir, ref)), path.posix.normalize(ref)]) {
@@ -193,7 +193,7 @@ function createScanner(root, files) {
         if (!any && !ids.includes(tool.id)) continue;
         if (tool.path && exists(tool.path)) out.refs.add(tool.path);
         for (const command of [tool.command, ...(tool.checks ?? [])]) {
-          if (typeof command === "string") shellRefs(command, ".", `tool/tools_manifest.json#${tool.id}`, out);
+          if (typeof command === "string") shellRefs(command, ".", `${toolsManifestToolPath(tool.id)}#${tool.id}`, out);
         }
       }
     }
@@ -442,7 +442,7 @@ export const isClassified = (file, graph) => isSelector(file, graph) || graph.la
   || graph.ungated?.has(file) || file in notCalledByCi;
 
 /**
- * The lanes a tools_manifest.json edit selects: Tools and policy, which run
+ * The lanes a tools manifest edit selects: Tools and policy, which run
  * the changed checks and validate the manifest, plus every lane whose jobs run
  * a changed or removed entry by name, or run any entry. A change the diff does
  * not recognise, or a missing diff (history unreadable), selects every lane.

@@ -1,0 +1,32 @@
+{
+  "id": "web:admin-callable-validators",
+  "category": "lint",
+  "path": "admin/scripts/generateCallableValidators.mjs",
+  "command": "node admin/scripts/generateCallableValidators.mjs --self-test",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Proves the admin callable validator generator covers every adminApi callable and keeps every schema rule through compaction. Its output is built on demand by the Admin npm lifecycle and never tracked.",
+  "checks": [
+    "node --test tool/admin/callable_inventory.test.mjs",
+    "node --check admin/scripts/generateCallableValidators.mjs",
+    "node admin/scripts/generateCallableValidators.mjs --self-test"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "WEB-CALLABLE-VALIDATION-001",
+      "title": "Admin callable requests and development responses are schema-validated",
+      "appliesTo": [
+        "admin/src/shared/api/adminApi.ts",
+        "admin/scripts/generateCallableValidators.mjs",
+        "contracts/callables/**",
+        "contracts/callable_responses/**"
+      ],
+      "instruction": "Every callable used by adminApi must have a generated top-level validator; schema-backed requests validate on every live call and schema-backed responses validate in development or when VITE_ADMIN_VALIDATE_RESPONSES is enabled. pretypecheck regenerates the validators from their sources, so they cannot be stale."
+    }
+  ],
+  "impactPaths": [
+    "tool/admin/callable_inventory.test.mjs",
+    "tool/admin/callable_inventory.mjs"
+  ]
+}

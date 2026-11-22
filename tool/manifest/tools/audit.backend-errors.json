@@ -1,0 +1,39 @@
+{
+  "id": "audit:backend-errors",
+  "category": "audit",
+  "path": "tool/audit/backend_error_candidates.dart",
+  "command": "dart tool/audit/backend_error_candidates.dart",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Scans backend error handling migration candidates.",
+  "impactPaths": [
+    "tool/audit/backend_error_candidates.dart",
+    "lib/**/*.dart",
+    "packages/platform/lib/**/*.dart",
+    "test/**/*.dart"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter"
+    ]
+  },
+  "checks": [
+    "dart analyze tool/audit/backend_error_candidates.dart",
+    "dart tool/audit/backend_error_candidates.dart --check"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "ERROR-CATALOG-001",
+      "title": "Keep the app error catalogue current",
+      "appliesTo": [
+        "packages/platform/lib/errors/**",
+        "lib/**/presentation/**",
+        "docs/app_architecture.md"
+      ],
+      "instruction": "When adding, renaming, or removing an AppException subclass, stable error code, error mapper, AppErrorContext, branded error primitive, or repeated app-facing failure category, update the error handling contract and error quick-reference sections in docs/app_architecture.md in the same pass. Add typed exceptions only for stable product/domain errors that need branching, analytics, retry policy, or tests; use mapped copy for one-off message changes."
+    }
+  ]
+}

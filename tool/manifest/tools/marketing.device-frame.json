@@ -1,0 +1,13 @@
+{
+  "id": "marketing:device-frame",
+  "category": "marketing",
+  "path": "tool/marketing/frame_device_capture.dart",
+  "command": "dart run tool/marketing/frame_device_capture.dart",
+  "surface": "local-writes-scratch",
+  "status": "internal",
+  "description": "Wraps a raw app capture in the configured marketing device frame.",
+  "checks": [
+    "dart analyze tool/marketing/frame_device_capture.dart"
+  ],
+  "role": "finder"
+}

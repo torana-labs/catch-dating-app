@@ -129,7 +129,7 @@
         "design/admin/components.json",
         "website/README.md",
         "packages/web-config/README.md",
-        "tool/tools_manifest.json",
+        "tool/manifest/**",
         "design/components/README.md"
       ],
       "required_tools": [

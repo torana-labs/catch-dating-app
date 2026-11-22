@@ -1,0 +1,19 @@
+{
+  "id": "platform:app-package-graphs",
+  "category": "platform",
+  "path": "tool/platform/check_app_package_graph.mjs",
+  "command": "node tool/platform/check_app_package_graph.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Verifies app-role native SDK declarations, one workspace lock, the Flutter-only catch_tokens boundary, and the provider/backend/app-free catch_ui dependency boundary with Skeletonizer pinned to 2.1.3.",
+  "checks": [
+    "node --check tool/platform/check_app_package_graph.mjs",
+    "node --test tool/platform/check_app_package_graph.test.mjs",
+    "node tool/platform/check_app_package_graph.mjs"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "APP-TARGET-IDENTITY-001",
+    "DESIGN-TOKENS-001"
+  ]
+}

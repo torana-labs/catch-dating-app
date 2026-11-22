@@ -1,0 +1,14 @@
+{
+  "id": "data:delete-reviews",
+  "category": "data",
+  "path": "tool/data/delete_firestore_reviews.mjs",
+  "command": "node tool/data/delete_firestore_reviews.mjs",
+  "surface": "remote-destructive",
+  "guard": "apply-flag",
+  "status": "active",
+  "description": "Deletes reviews only with explicit confirmation.",
+  "checks": [
+    "node --check tool/data/delete_firestore_reviews.mjs"
+  ],
+  "runbook": "firebase/README.md#common-commands"
+}

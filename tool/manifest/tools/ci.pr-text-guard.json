@@ -1,0 +1,28 @@
+{
+  "id": "ci:pr-text-guard",
+  "category": "ci",
+  "path": "tool/ci/pr_text_guard.mjs",
+  "command": "node --test tool/ci/pr_text_guard.test.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    ".github/workflows/pr-text-guard.yml",
+    "tool/ci/pr_text_guard.test.mjs",
+    "tool/check_third_party_names.mjs",
+    "tool/third_party_names_allowlist.json"
+  ],
+  "description": "Keeps the PR text guard keyless and read-only on pull_request, running the base commit's guard without the pull request's code, and failing when a title, body or commit message @-mentions a non-collaborator or names a social account outside the fictional allowlist without repeating the matched text.",
+  "checks": [
+    "node --check tool/ci/pr_text_guard.mjs",
+    "node --test tool/ci/pr_text_guard.test.mjs"
+  ],
+  "role": "gate",
+  "runbook": ".github/workflows/pr-text-guard.yml",
+  "checkSafety": "local-readonly"
+}

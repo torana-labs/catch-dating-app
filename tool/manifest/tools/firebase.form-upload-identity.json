@@ -1,0 +1,25 @@
+{
+  "id": "firebase:form-upload-identity",
+  "category": "firebase",
+  "path": "tool/firebase/form_upload_identity.mjs",
+  "command": "node tool/firebase/form_upload_identity.mjs",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "description": "Checks or explicitly provisions the dedicated form upload runtime identity; default is read-only and production apply is separately gated.",
+  "checks": [
+    "node --check tool/firebase/form_upload_identity.mjs",
+    "node --test tool/firebase/form_upload_identity.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/firebase/form_upload_identity.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "runbook": "docs/release_operations.md#dedicated-form-upload-identity"
+}

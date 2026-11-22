@@ -1,0 +1,11 @@
+{
+  "id": "design:loading-composition",
+  "category": "design",
+  "path": "tool/design/check_loading_composition.mjs",
+  "status": "retired",
+  "description": "Rejects removed generic row and collection skeleton recipes in app source and screen-local root title typography overrides.",
+  "role": "gate",
+  "retiredOn": "2026-11-18",
+  "reason": "Covered by ci:flutter-workspace-analysis. It banned CatchSkeleton.rows, mediaRows, iconRows, cards, boxes and chips, and titleStyle on CatchLegacyTopBar.primaryRail. None of these exist in catch_ui any more, so any use is a compile error that analysis with --fatal-infos fails. Its allowances had been zero everywhere.",
+  "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
+}

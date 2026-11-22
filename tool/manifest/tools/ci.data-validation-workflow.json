@@ -1,0 +1,24 @@
+{
+  "id": "ci:data-validation-workflow",
+  "category": "ci",
+  "path": "tool/ci/data_validation_workflow.test.mjs",
+  "command": "node --test tool/ci/data_validation_workflow.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    ".github/workflows/data-validation.yml",
+    "tool/ci/data_validation_workflow.test.mjs"
+  ],
+  "description": "Keeps Firestore validation failures visible while explicitly saving the complete diagnostic report for upload.",
+  "checks": [
+    "node --check tool/ci/data_validation_workflow.test.mjs",
+    "node --test tool/ci/data_validation_workflow.test.mjs"
+  ],
+  "role": "gate"
+}

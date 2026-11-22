@@ -12,7 +12,7 @@ import {planAffectedToolChecks, toolsOwnDesignChecks, toolsOwnUiLintSmoke} from 
 import {comparedLanes} from "./shadow_plan.mjs";
 import {appRolesOf, applyLanes, chooseLanes, everyLane, mainBuildLanes, nativeBuildInput, nativeBuildLanes, nxChooses,
   nxSelectsAlone, plannerShadow, selectAlone, unionLanes} from "./select_lanes.mjs";
-import {loadToolsManifest} from "../lib/tools_manifest.mjs";
+import {loadToolsManifest, toolsManifestPath} from "../lib/tools_manifest.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(repoRoot, file), "utf8"));
@@ -211,11 +211,11 @@ function sparsePlannerCheckout(t) {
   for (const entry of componentGraph.ciCheckout.planner.paths) {
     const file = entry.replace(/^\//u, "");
     fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
-    fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
+    fs.cpSync(path.join(repoRoot, file), path.join(root, file), {recursive: true});
   }
   execFileSync("git", ["init", "-q"], {cwd: root});
   execFileSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "--allow-empty", "-m", "base"], {cwd: root});
-  fs.appendFileSync(path.join(root, "tool/tools_manifest.json"), "\n");
+  fs.appendFileSync(path.join(root, toolsManifestPath), "\n");
   execFileSync("git", ["add", "-A"], {cwd: root});
   execFileSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "head"], {cwd: root});
   const plan = {mode: "main", full: false, commitWindow: true,

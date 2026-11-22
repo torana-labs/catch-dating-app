@@ -1,0 +1,19 @@
+{
+  "id": "data:backfill-public-pages",
+  "category": "data",
+  "path": "functions/scripts/backfill-public-pages.cjs",
+  "command": "npm --prefix functions run build && node functions/scripts/backfill-public-pages.cjs --project <id> [--check|--apply] [--allow-prod]",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "role": "operator",
+  "description": "Rebuilds the public page read models; --check compares without writing, --apply writes, and production needs --allow-prod.",
+  "checks": [
+    "node --check functions/scripts/backfill-public-pages.cjs",
+    "node --test functions/scripts/backfill-public-pages.test.cjs"
+  ],
+  "impactPaths": [
+    "functions/scripts/backfill-public-pages.test.cjs"
+  ],
+  "runbook": "docs/data_contracts.md#public-page-read-models"
+}

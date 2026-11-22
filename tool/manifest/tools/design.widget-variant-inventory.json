@@ -1,0 +1,26 @@
+{
+  "id": "design:widget-variant-inventory",
+  "category": "design",
+  "path": "tool/design/generate_widget_variant_inventory.mjs",
+  "impactPaths": [
+    "tool/design/generate_widget_variant_inventory.test.mjs",
+    "tool/lib/repository_snapshot.mjs",
+    "widgetbook/lib/**"
+  ],
+  "command": "node tool/design/generate_widget_variant_inventory.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "description": "Finds oversized or duplicated Widgetbook variant matrices on demand from the logical repository snapshot without committing derived inventory.",
+  "checks": [
+    "node --check tool/design/generate_widget_variant_inventory.mjs",
+    "node --test tool/design/generate_widget_variant_inventory.test.mjs",
+    "node tool/design/generate_widget_variant_inventory.mjs --check"
+  ],
+  "role": "finder"
+}

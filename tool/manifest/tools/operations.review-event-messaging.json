@@ -1,0 +1,23 @@
+{
+  "id": "operations:review-event-messaging",
+  "category": "operations",
+  "path": "functions/scripts/operations/review-event-messaging.cjs",
+  "command": "npm --prefix functions run operations:review-event-messaging --",
+  "surface": "remote-read",
+  "status": "active",
+  "role": "operator",
+  "alsoEnforces": [
+    "OPERATIONS-PLATFORM-001"
+  ],
+  "description": "Reads one explicit environment, project, event, organizer, channel, sender and purpose through the production setup readers, then prints a schema-validated, credential-free runtime, sender and budget review that grants no dispatch authority.",
+  "checks": [
+    "node --check functions/scripts/operations/review-event-messaging.cjs",
+    "npm --prefix functions run build",
+    "(cd functions && node --test lib/eventSuccess/operations/messageSetupReview.emulator.test.js)",
+    "node --test functions/test/operations-review-event-messaging.test.cjs"
+  ],
+  "impactPaths": [
+    "functions/src/eventSuccess/operations/messageSetupReview.emulator.test.ts"
+  ],
+  "runbook": "docs/operations_platform.md#read-only-event-messaging-setup-review"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "admin:callable-inventory",
+  "category": "lint",
+  "path": "tool/admin/callable_inventory.mjs",
+  "command": "node --test tool/admin/callable_inventory.test.mjs",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Shares bounded callable discovery between the Admin validator generator and action catalog parity check.",
+  "impactPaths": [
+    "tool/admin/callable_inventory.test.mjs"
+  ],
+  "checks": [
+    "node --check tool/admin/callable_inventory.mjs",
+    "node --test tool/admin/callable_inventory.test.mjs"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "meta:nx-lane-key-replay",
+  "category": "meta",
+  "path": "tool/nx/lane_key_replay.mjs",
+  "command": "node tool/nx/lane_key_replay.mjs --pairs <file>",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Offline replay of lane keys (design B): for pull request and queue run commit pairs, the share of each lane's queue runs whose key equals the pull request run's (--pairs), or for a commit list, how often a lane's key equals its parent's (--commits). Read-only; reports hit rates that decide which lane reuses results first.",
+  "checks": [
+    "node --check tool/nx/lane_key_replay.mjs"
+  ],
+  "impactPaths": [
+    "tool/nx/lane_key.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

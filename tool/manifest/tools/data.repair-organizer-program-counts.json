@@ -1,0 +1,20 @@
+{
+  "id": "data:repair-organizer-program-counts",
+  "category": "data",
+  "path": "tool/data/recompute_organizer_program_counts.mjs",
+  "command": "node tool/data/recompute_organizer_program_counts.mjs",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Recounts the planner list counts on organizerProgramViews from programGuests and programTravelLegs with the nightly recount's compiled code; the backfill for the counts.",
+  "checks": [
+    "node --check tool/data/recompute_organizer_program_counts.mjs",
+    "node --test tool/data/recompute_organizer_program_counts.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/data/recompute_organizer_program_counts.test.mjs",
+    "functions/src/programs/organizerProgramCounts.ts"
+  ],
+  "role": "generator",
+  "runbook": "tool/README.md#firestore-projection-repairs"
+}

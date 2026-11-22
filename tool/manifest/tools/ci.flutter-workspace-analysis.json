@@ -1,0 +1,29 @@
+{
+  "id": "ci:flutter-workspace-analysis",
+  "category": "ci",
+  "path": "tool/ci/check_flutter_workspace_analysis.mjs",
+  "command": "node tool/ci/check_flutter_workspace_analysis.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/ci/check_flutter_workspace_analysis.test.mjs",
+    ".github/workflows/flutter-ci.yml",
+    "analysis_options.yaml",
+    "**/analysis_options.yaml",
+    "pubspec.yaml",
+    "**/pubspec.yaml"
+  ],
+  "description": "Discovers every tracked or untracked Dart and Flutter pubspec, resolves standalone packages plus the root workspace, and requires zero analyzer diagnostics across the root app, Consumer, Host, Widgetbook, and nested tooling packages.",
+  "checks": [
+    "node --check tool/ci/check_flutter_workspace_analysis.mjs",
+    "node --test tool/ci/check_flutter_workspace_analysis.test.mjs",
+    "node tool/ci/check_flutter_workspace_analysis.mjs --list"
+  ],
+  "role": "gate"
+}

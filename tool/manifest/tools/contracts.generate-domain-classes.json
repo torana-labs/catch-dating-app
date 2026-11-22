@@ -1,0 +1,14 @@
+{
+  "id": "contracts:generate-domain-classes",
+  "category": "contracts",
+  "path": "tool/contracts/generate_domain_classes.mjs",
+  "command": "node tool/contracts/generate_domain_classes.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Generates schema-derived Dart domain classes from curated contract projection specs.",
+  "checks": [
+    "node --check tool/contracts/generate_domain_classes.mjs",
+    "node tool/contracts/generate_domain_classes.mjs --check"
+  ],
+  "role": "finder"
+}

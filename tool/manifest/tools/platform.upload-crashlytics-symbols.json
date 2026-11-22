@@ -1,0 +1,27 @@
+{
+  "id": "platform:upload-crashlytics-symbols",
+  "category": "platform",
+  "path": "tool/platform/upload_crashlytics_symbols.py",
+  "impactPaths": [
+    "tool/platform/test_upload_crashlytics_symbols.py",
+    "apps/consumer/ios/Runner.xcodeproj/project.pbxproj"
+  ],
+  "command": "python3 tool/platform/upload_crashlytics_symbols.py --help",
+  "surface": "remote-write",
+  "guard": "none",
+  "guardReason": "Uploads symbols to Crashlytics from the Consumer Xcode build phase; no flag gates it.",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "description": "Runs required Consumer Crashlytics validation and dSYM uploads with fail-closed stage deadlines and owned-process cancellation; checks use only fake uploaders.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "checks": [
+    "python3 tool/platform/test_upload_crashlytics_symbols.py"
+  ],
+  "role": "generator",
+  "runbook": "docs/release_operations.md#when-collection-is-on"
+}

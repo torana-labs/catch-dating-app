@@ -1,0 +1,27 @@
+{
+  "id": "analytics:listing-program-report",
+  "category": "analytics",
+  "path": "tool/analytics/listing_program_report.mjs",
+  "command": "node tool/analytics/listing_program_report.mjs --env <dev|prod> [--json] [--no-pilot]",
+  "surface": "remote-read",
+  "status": "active",
+  "role": "operator",
+  "description": "Read-only, counts-only report per listing program cohort (organisers live and suspended, claims by status, takedown requests by type, corrections, removals, re-listing attempts, indexed format pages) that prints PAUSE RECOMMENDED when an owner pause threshold triggers.",
+  "checks": [
+    "node --check tool/analytics/listing_program_report.mjs",
+    "node --test tool/analytics/listing_program_report.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/analytics/listing_program_report.test.mjs",
+    "tool/lib/cli_args.mjs",
+    "tool/lib/firebase_project.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "runbook": "tool/README.md#listing-program-cohort-report",
+  "checkSafety": "local-readonly"
+}

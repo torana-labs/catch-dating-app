@@ -1,0 +1,27 @@
+{
+  "id": "data:repair-public-profiles",
+  "category": "data",
+  "path": "tool/data/recompute_public_profiles.mjs",
+  "command": "node tool/data/recompute_public_profiles.mjs",
+  "surface": "remote-destructive",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Repairs public profile projections from user profiles.",
+  "checks": [
+    "node --check tool/data/recompute_public_profiles.mjs",
+    "node --test tool/data/recompute_public_profiles.test.mjs"
+  ],
+  "impactPaths": [
+    "contracts/**/*.json",
+    "tool/contracts/generate_schema_contracts.mjs"
+  ],
+  "role": "generator",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "runbook": "docs/backend_operation_catalog.md#user-identity-projection-inventory"
+}

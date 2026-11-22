@@ -1,0 +1,30 @@
+{
+  "id": "marketing:app-screenshot-export",
+  "category": "marketing",
+  "path": "tool/marketing/export_app_screenshots.mjs",
+  "command": "node tool/marketing/export_app_screenshots.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Renders active app marketing captures and wraps them in the configured device frame. Tools checks recipes and the design context; the capture producer and the release import check image bytes and provenance.",
+  "checks": [
+    "node --check tool/marketing/export_app_screenshots.mjs",
+    "node --test tool/marketing/capture_pipeline.test.mjs",
+    "dart run tool/marketing/frame_device_capture_test.dart",
+    "node tool/marketing/export_app_screenshots.mjs --check-design-json",
+    "node --test tool/marketing/web_captures.test.mjs"
+  ],
+  "role": "generator",
+  "impactPaths": [
+    "tool/marketing/capture_pipeline.test.mjs",
+    "tool/marketing/frame_device_capture.dart",
+    "tool/marketing/frame_device_capture_test.dart",
+    "artifacts/marketing/app-screenshots/**",
+    "tool/marketing/lib/web_capture_inputs.mjs",
+    "tool/marketing/lib/web_capture_render.mjs",
+    "tool/marketing/lib/web_capture_screen.mjs",
+    "tool/marketing/lib/capture_devices.mjs",
+    "tool/marketing/web_captures.test.mjs",
+    "tool/ui_capture/check_capture_coverage.mjs",
+    "tool/ui_capture/lib/capture_catalog_sources.mjs"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "firebase:functions-source-closure",
+  "category": "firebase",
+  "path": "tool/firebase/check_functions_source_closure.mjs",
+  "command": "node tool/firebase/check_functions_source_closure.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "index",
+    "setup": [
+      "node",
+      "functions-npm"
+    ]
+  },
+  "impactPaths": [
+    "tool/firebase/check_functions_source_closure.test.mjs",
+    "tool/git/pre_commit_generated_artifacts.mjs",
+    "tool/git/pre_commit_generated_artifacts.test.mjs"
+  ],
+  "description": "Fails when any staged Functions TypeScript module, including a test helper, has an unresolved relative import; reads exact index blobs so untracked working-tree files cannot mask an omitted source dependency.",
+  "checks": [
+    "node --check tool/firebase/check_functions_source_closure.mjs",
+    "node --test tool/firebase/check_functions_source_closure.test.mjs tool/git/pre_commit_generated_artifacts.test.mjs",
+    "node tool/firebase/check_functions_source_closure.mjs"
+  ],
+  "role": "gate"
+}

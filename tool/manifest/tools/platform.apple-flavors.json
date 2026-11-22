@@ -1,0 +1,13 @@
+{
+  "id": "platform:apple-flavors",
+  "category": "platform",
+  "path": "tool/platform/configure_apple_flavors.rb",
+  "command": "ruby tool/platform/configure_apple_flavors.rb",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Configures Apple flavor schemes and Firebase copy phases.",
+  "checks": [
+    "ruby -c tool/platform/configure_apple_flavors.rb"
+  ],
+  "role": "generator"
+}

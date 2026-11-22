@@ -1,0 +1,14 @@
+{
+  "id": "design:onboarding-reference-exporter",
+  "category": "design",
+  "path": "tool/design/export_onboarding_references.mjs",
+  "command": "node tool/design/export_onboarding_references.mjs --check",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Regenerates onboarding step reference PNGs from the local Claude handoff and validates generated output dimensions without launching Chrome.",
+  "checks": [
+    "node --check tool/design/export_onboarding_references.mjs",
+    "node tool/design/export_onboarding_references.mjs --check"
+  ],
+  "role": "generator"
+}

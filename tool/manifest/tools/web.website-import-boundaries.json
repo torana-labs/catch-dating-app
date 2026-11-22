@@ -1,0 +1,22 @@
+{
+  "id": "web:website-import-boundaries",
+  "category": "lint",
+  "path": "tool/web/check_website_import_boundaries.mjs",
+  "command": "node tool/web/check_website_import_boundaries.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks React marketing website app, content, feature, shared, generated, and service import boundaries.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "checks": [
+    "node --check tool/web/check_website_import_boundaries.mjs",
+    "node tool/web/check_website_import_boundaries.mjs --self-test",
+    "node tool/web/check_website_import_boundaries.mjs"
+  ],
+  "role": "finder"
+}

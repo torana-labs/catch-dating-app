@@ -1,0 +1,26 @@
+{
+  "id": "data:repair-review-authors",
+  "category": "data",
+  "path": "tool/data/recompute_review_author_profiles.mjs",
+  "command": "node tool/data/recompute_review_author_profiles.mjs",
+  "surface": "remote-write",
+  "guard": "apply-flag",
+  "status": "active",
+  "description": "Repairs denormalized review author names.",
+  "checks": [
+    "node --check tool/data/recompute_review_author_profiles.mjs",
+    "node --test tool/data/recompute_review_author_profiles.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/data/recompute_review_author_profiles.test.mjs",
+    "tool/data/lib/recompute_cli_test_support.mjs"
+  ],
+  "role": "generator",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "runbook": "docs/backend_operation_catalog.md#user-identity-projection-inventory"
+}
