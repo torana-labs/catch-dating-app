@@ -189,7 +189,7 @@ test("missing provenance inputs, private path imports and raw errors stay opaque
 test("current secret consumers and direct readers resolve from current source", () => {
   const consumers = [...new Set([...collectSecretConsumers({sourceRoot: repo}).values()].flat())];
   assert.ok(consumers.length > 0);
-  consumers.push("cancelEvent", "refreshProgramFlightStatuses", "refreshProgramTravelLeg",
+  consumers.push("cancelEvent", "refreshProgramFlightStatuses",
     "eventAssistanceRcsWebhook", "onAssistanceWorkChanged",
     "evaluateDueEventAssistanceWork", "adminSendCatchWhatsappReply");
   const result = collect(repo, {consumers: [...new Set(consumers)]});

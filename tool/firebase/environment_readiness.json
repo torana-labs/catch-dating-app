@@ -701,7 +701,6 @@
       "owner": "program-transport",
       "credentialClass": "provider-envelope",
       "consumers": [
-        "refreshProgramTravelLeg",
         "refreshProgramFlightStatuses",
         "anonymizeDueProgramsSweep"
       ],

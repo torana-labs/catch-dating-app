@@ -175,7 +175,6 @@ test("target and capability filtering selects only relevant prerequisites", () =
   assert.equal(selected("dev", ["functions"]).length, 36);
   for (const environment of ["dev", "prod"]) {
     for (const [target, secrets] of [
-      ["refreshProgramTravelLeg", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
       ["flightAlertWebhook", []],
       ["refreshProgramFlightStatuses", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
       ["startSalesDemo", ["SALES_DEMO_GRANT_KEY"]],
@@ -1530,10 +1529,6 @@ function validateFlightConsumerWitnesses(facts, manifest) {
   const refresh = 'functions/src/transport/programFlightRefresh.ts';
   const retention = 'functions/src/programs/programRetention.ts';
   const witnesses = [
-    ['refreshProgramTravelLeg', refresh, [
-      ['refreshProgramTravelLeg', 'refreshProgramTravelLegHandler'],
-      ['refreshProgramTravelLegHandler', 'loadFlightProviderConfig'],
-    ]],
     ['refreshProgramFlightStatuses', refresh, [
       ['refreshProgramFlightStatuses', 'loadFlightProviderConfig'],
     ]],

@@ -298,7 +298,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `dispatchProgramTrip` / `markProgramTripArrived` / `voidProgramTrip` | `src/transport/programDispatch.ts` | Idempotent dispatch with plate/vendor capture and assignment exclusivity, and the trip lifecycle |
 | `getProgramHotelRooms` / `upsertProgramStay` / `upsertProgramRoomBlock` | `src/programs/programRooms.ts` | Hotel-scoped room board (blocks with live capacity, stays, unplaced routed guests with block suggestions), revision-fenced stay assignment that re-counts block rollups in-transaction, and coordinator-only block inventory writes |
 | `manageProgramLodging` | `src/programs/programLodgingApi.ts` | Coordinator-scoped lodging setup, membership review and immutable proposals; scoped hotel confirmation and receipt-backed publication to canonical stays |
-| `refreshProgramTravelLeg` / `refreshProgramFlightStatuses` | `src/transport/programFlightRefresh.ts` | Manual leg refresh plus a scheduled proximity-tiered sweep that enriches flight legs from AeroDataBox without overwriting observed arrivals |
+| `refreshProgramFlightStatuses` | `src/transport/programFlightRefresh.ts` | A scheduled proximity-tiered sweep that enriches flight legs from AeroDataBox without overwriting observed arrivals |
 | `flightAlertWebhook` | `src/transport/flightAlerts.ts` | Receive AeroDataBox flight-alert pushes against a URL-secret-gated endpoint; applies updates through the same write-back guards as polling and never un-lands a leg |
 | `setEventAttendeeAttendance` | `src/events/eventAttendees.ts` | Perform revision-safe, replay-safe operational attendance changes |
 | `markEventAttendance` | `src/events/` | Host marks attendance |
