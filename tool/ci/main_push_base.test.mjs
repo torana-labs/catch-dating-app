@@ -96,3 +96,10 @@ test("only descendants' runs ran: validate everything; a cancelled ancestor neve
     runs: [run(10, a, "completed", "cancelled"), run(20, d, "completed", "success")]}),
   {baseSha: a, full: true, reason: "earlier_run_not_an_ancestor"});
 });
+
+test("an ancestor run still in progress counts; if it later fails, its own run reports it", () => {
+  const [a, b, h] = ["1", "2", "3"].map(sha);
+  assert.deepEqual(decideOn({commits: [a, b, h], head: h, before: b, runId: 30,
+    runs: [run(10, a, "completed", "success"), run(20, b, "in_progress")]}),
+  {baseSha: b, full: false, reason: "previous_push"});
+});
