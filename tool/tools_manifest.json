@@ -106,6 +106,34 @@
       "role": "finder"
     },
     {
+      "id": "ads:audiences",
+      "category": "marketing",
+      "path": "tool/ads/apply_ad_audiences.mjs",
+      "command": "node tool/ads/apply_ad_audiences.mjs",
+      "surface": "remote-write",
+      "guard": "apply-flag",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "description": "Plans, and with --apply creates, the retargeting audiences in tool/ads/ad_audiences.json: Meta custom audiences on ad account 3245368689001899 and Google remarketing lists on customer 1016806229, attached to the host search campaign for observation only. Create-only; existing audiences are never changed or deleted.",
+      "checks": [
+        "node --check tool/ads/apply_ad_audiences.mjs",
+        "node --test tool/ads/apply_ad_audiences.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/ads/ad_audiences.json",
+        "tool/ads/apply_ad_audiences.test.mjs"
+      ],
+      "role": "operator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
+      "runbook": "tool/README.md#ad-audiences"
+    },
+    {
       "id": "ads:google-campaigns",
       "category": "marketing",
       "path": "tool/ads/apply_google_campaigns.mjs",

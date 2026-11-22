@@ -164,11 +164,16 @@ test("an existing campaign's cities follow the catalog", async () => {
   assert.deepEqual(sync.targeting.geo_locations.location_types, ["home"]);
   assert.equal(sync.targeting.age_min, 21);
   assert.ok(api.calls.some(([m, r, mode]) => m === "POST" && r === "9" && mode === "validate"));
-  await applyMetaCampaigns({policy, plan: drifted, api, render});
+  await applyMetaCampaigns({policy, plan: drifted, api, render, wait: async () => {}});
   assert.ok(api.calls.some(([m, r, mode]) => m === "POST" && r === "9" && mode !== "validate"));
 });
 
 test("the host list is excluded once it exists, keeping exclusions set by hand", async () => {
+  // The retargeting exclusions (tool/ads/ad_audiences.json) follow the same
+  // path; this test follows the host list alone.
+  assert.deepEqual(campaign.targeting.excludeAudiences.slice(0, 1), ["Catch | Active hosts"]);
+  const policy = loadMetaCampaigns();
+  policy.campaigns[0].targeting.excludeAudiences = ["Catch | Active hosts"];
   const pages = [{id: policy.pageId, access_token: "page-token"}];
   const forms = [{id: "555", name: policy.leadForms[0].name, status: "ACTIVE"}];
   const campaigns = [{id: "1", name: campaign.name, status: "PAUSED"}];
@@ -176,7 +181,6 @@ test("the host list is excluded once it exists, keeping exclusions set by hand",
   const adSets = (excluded) => [{id: "9", name: `${campaign.name} | All cities`,
     targeting: {age_min: 21, geo_locations: {cities},
       ...(excluded ? {excluded_custom_audiences: excluded} : {})}}];
-  assert.deepEqual(campaign.targeting.excludeAudiences, ["Catch | Active hosts"]);
   const waiting = await planMetaCampaigns({policy, render, api: fakeApi({pages, forms, campaigns,
     adSets: adSets(null)})});
   assert.deepEqual(waiting.changes.map((c) => c.kind), ["keep", "keep"]);
