@@ -46,6 +46,7 @@
     {"path": "functions/src/operations/", "layer": "platform"},
     {"path": "functions/src/commands/envelope.ts", "layer": "platform"},
     {"path": "functions/src/commands/aiFallback/", "layer": "platform"},
+    {"path": "functions/src/listingSuppressions/", "layer": "platform"},
 
     {"path": "functions/src/profiles/", "context": "profiles"},
 
@@ -145,7 +146,6 @@
     {"path": "functions/src/operations/workflows/supplyIntakePolicy.ts", "context": "supply"},
     {"path": "functions/src/acquisition/", "context": "supply"},
     {"path": "functions/src/instantDrafts/", "context": "supply"},
-    {"path": "functions/src/listingSuppressions/", "context": "supply"},
     {"path": "functions/src/takedownRequests/", "context": "supply"},
 
     {"path": "functions/src/admin/sales/", "context": "sales"},
