@@ -10,7 +10,7 @@ import {publicFixture, now} from "./testFixture";
 import {
   PUBLIC_PAYMENT_COLLECTION,
   parsePublicPayment,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {assertCurrentPublicGuest} from "./authority";
 import {reservePublicPayment} from "./reservation";
 import {projectPublicPayment} from "./projection";

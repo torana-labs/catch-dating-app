@@ -35,7 +35,7 @@ import {
   PUBLIC_ADMISSION_COLLECTION,
   parsePublicPayment,
   publicPaymentLedger,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {readPublicPaidAdmission} from "./admissionProof";
 import {finalizePublicPayment} from "./admission";
 import {projectPublicPayment} from "./projection";

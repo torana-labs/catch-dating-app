@@ -34,6 +34,8 @@ import {formConversionReceiptId} from
 import {OFFER_PAYMENT_COLLECTION, parseOfferPayment} from
   "./offerPaymentReservation";
 import {releaseOfferPaymentHold} from "./offerPaymentExpiry";
+import {markEventPaymentAdmitted, markEventPaymentRefundPending} from
+  "../eventCheckout/eventPaymentState";
 
 import {assertPaidOfferAdmission} from "./offerPaymentAdmissionProof";
 
@@ -87,8 +89,7 @@ export async function finalizeCapturedOfferPayment(params: {
       refundEligible = true;
       if (receiptSnap.exists || ownershipSnap.exists) unavailable();
       if (payment.reservationReleased) {
-        tx.update(paymentRef, {status: "refundPending",
-          updatedAt: Timestamp.fromMillis(nowMillis)});
+        markEventPaymentRefundPending(tx, paymentRef, nowMillis);
         return "refundPending";
       }
       const {grant, source} = await readVerifiedOfferRecipient({db, tx,
@@ -202,14 +203,8 @@ export async function finalizeCapturedOfferPayment(params: {
       }
       tx.create(receiptRef, receipt);
       tx.create(ownershipRef, ownership);
-      tx.update(paymentRef, {status: "admitted", admissionReceiptId: receiptId,
-        admittedAt: now, updatedAt: now, lastErrorCode: null,
-        ...(payment.routing.selection.route === "razorpayRoute" ? {
-          settlement: {state: "waiting", transferId: null,
-            nextAttemptAtMillis: nowMillis, leaseUntilMillis: 0, leaseId: null,
-            authorizedAtMillis: null, completedAtMillis: null,
-            releasedAtMillis: null, settledAtMillis: null},
-        } : {})});
+      markEventPaymentAdmitted(tx, paymentRef, {routing: payment.routing,
+        admissionReceiptId: receiptId, nowMillis});
       return "admitted";
     });
   } catch (error) {

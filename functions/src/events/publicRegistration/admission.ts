@@ -43,9 +43,11 @@ import {
   PUBLIC_ADMISSION_COLLECTION,
   publicAdmissionId,
   publicPaymentPlaces,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {assertPublicPaidAdmission} from "./admissionProof";
 import {prepareCatchBookingAdmission} from "./catchBookingBridge";
+import {markEventPaymentAdmitted, markEventPaymentRefundPending} from
+  "../../payments/eventCheckout/eventPaymentState";
 import {recordPublicMemberBenefitUse} from
   "../../hostMemberships/publicCheckout";
 
@@ -99,10 +101,7 @@ export async function finalizePublicPayment(input: {
       refundEligible = true;
       if (receiptSnap.exists) registrationUnavailable();
       if (p.reservationReleased) {
-        tx.update(paymentRef, {
-          status: "refundPending",
-          updatedAt: Timestamp.fromMillis(nowMillis),
-        });
+        markEventPaymentRefundPending(tx, paymentRef, nowMillis);
         return "refundPending";
       }
       const {eventId, organizerId, recipientUid: uid} = p;
@@ -290,28 +289,8 @@ export async function finalizePublicPayment(input: {
       }
       tx.create(receiptRef, receipt);
       catchBooking?.apply(event);
-      tx.update(paymentRef, {
-        status: "admitted",
-        admissionReceiptId: receiptId,
-        admittedAt: now,
-        updatedAt: now,
-        lastErrorCode: null,
-        ...(p.routing.selection.route === "razorpayRoute" ?
-          {
-            settlement: {
-              state: "waiting",
-              transferId: null,
-              nextAttemptAtMillis: nowMillis,
-              leaseUntilMillis: 0,
-              leaseId: null,
-              authorizedAtMillis: null,
-              completedAtMillis: null,
-              releasedAtMillis: null,
-              settledAtMillis: null,
-            },
-          } :
-          {}),
-      });
+      markEventPaymentAdmitted(tx, paymentRef, {routing: p.routing,
+        admissionReceiptId: receiptId, nowMillis});
       return "admitted";
     });
     if (finalized === "admitted") {

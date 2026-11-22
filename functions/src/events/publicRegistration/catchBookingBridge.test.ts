@@ -10,7 +10,7 @@ import {
   PUBLIC_PAYMENT_COLLECTION,
   parsePublicPayment,
   publicPaymentLedger,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {readPublicPaidAdmission} from "./admissionProof";
 import {isPublicPaymentBooking} from "./catchBookingBridge";
 import {cancelPaidEventAdmission} from

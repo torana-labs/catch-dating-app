@@ -20,7 +20,7 @@ import {
   PUBLIC_PAYMENT_COLLECTION,
   parsePublicPayment,
   publicPaymentPlaces,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 
 /** Read a current, UID-owned view. No merchant IDs, routing secrets, phone or
  * other guest records leave the callable. Ended payment history stays readable.

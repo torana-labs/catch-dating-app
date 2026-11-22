@@ -5,7 +5,7 @@ import {
 import {processVerifiedOfferPaymentOrder} from
   "../offerPayments/offerPaymentWebhook";
 import {publicPaymentLedger} from
-  "../../events/publicRegistration/paymentLedger";
+  "../../domain/payments/publicEventPayments";
 import {publicPaymentExecutionFor} from
   "../../events/publicRegistration/runtime";
 

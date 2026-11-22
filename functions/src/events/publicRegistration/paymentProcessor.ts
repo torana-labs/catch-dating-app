@@ -10,7 +10,7 @@ import {releaseEventPaymentHold} from
   "../../payments/eventCheckout/eventPaymentExpiry";
 import {cancelPaidEventAdmission} from
   "../../payments/eventCheckout/eventPaymentCancellation";
-import {publicPaymentLedger} from "./paymentLedger";
+import {publicPaymentLedger} from "../../domain/payments/publicEventPayments";
 import {readPublicPaidAdmission} from "./admissionProof";
 import {finalizePublicPayment} from "./admission";
 

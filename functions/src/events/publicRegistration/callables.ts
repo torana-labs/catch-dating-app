@@ -52,7 +52,7 @@ import {
   PUBLIC_PAYMENT_COLLECTION,
   parsePublicPayment,
   publicPaymentLedger,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {reservePublicPayment} from "./reservation";
 import {publicPaymentExecutionFor} from "./runtime";
 import {projectPublicPayment} from "./projection";
