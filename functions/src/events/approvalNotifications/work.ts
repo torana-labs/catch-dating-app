@@ -22,6 +22,10 @@ import {
   validateOperationWorkItem,
 } from "../../operations/validation";
 import {
+  stageRunAndWorkItemCreate,
+  stageRunSet,
+} from "../../operations/transactionalWrites";
+import {
   messages,
   newMessage,
   parseMessage,
@@ -216,11 +220,7 @@ export async function enqueueApproval(
         return;
       }
       tx.create(db.collection(messages).doc(message.messageId), message);
-      tx.create(db.collection(collections.runs).doc(run.runId), run);
-      tx.create(
-        db.collection(collections.workItems).doc(item.workItemId),
-        item,
-      );
+      stageRunAndWorkItemCreate(db, tx, {run, item});
     });
     return proposed.map(({message}) => message.messageId);
   });
@@ -409,14 +409,16 @@ export class ApprovalNotificationWork {
       await this.db.runTransaction(async (tx) => {
         const runRef = this.db.collection(collections.runs).doc(item.runId);
         const parsed = validateOperationRun((await tx.get(runRef)).data());
-        if (!parsed.ok) throw new Error("Approval run unavailable");
+        if (!parsed.ok || parsed.value.runId !== item.runId) {
+          throw new Error("Approval run unavailable");
+        }
         const prepared = await this.operations.prepareWorkItemAction(tx, {
           workItem: item,
           receipt,
           lease,
         });
         prepared.commit();
-        tx.set(runRef, {
+        stageRunSet(this.db, tx, {
           ...parsed.value,
           revision: item.revision,
           updatedAt,

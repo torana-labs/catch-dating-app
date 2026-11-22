@@ -3,7 +3,7 @@ import {logger} from "firebase-functions";
 import * as admin from "firebase-admin";
 import {
   externalEventAppVisibilityFor,
-} from "../admin/externalEventPublicationPolicy";
+} from "../domain/supply/externalEventPublicationPolicy";
 
 interface ExternalEventVisibilityDeps {
   firestore: () => FirebaseFirestore.Firestore;

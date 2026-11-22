@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {contractFile} from "../shared/contractFixtures";
+import {contractFile} from "../../shared/contractFixtures";
 import {
   discoveryActivityKinds,
   discoveryFormats,

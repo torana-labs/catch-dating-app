@@ -816,6 +816,52 @@
       "baseline": "tool/audit/frontend_error_candidates_baseline.json"
     },
     {
+      "id": "audit:functions-contexts",
+      "category": "audit",
+      "path": "tool/architecture/check_functions_contexts.mjs",
+      "command": "node tool/architecture/check_functions_contexts.mjs",
+      "surface": "local-read",
+      "status": "active",
+      "description": "Places every handwritten functions/src module by tool/architecture/functions_context_map.json (issue #1350) and checks its imports: platform imports only platform, domain code never imports a surface, a surface never imports another, domain contexts import only earlier contexts; and every collection is written only from the writerContext tool/contracts/firestore_contract.json names. Context-order imports and cross-context writes are bounded by the map's ceilings, which may only go down.",
+      "checks": [
+        "node --check tool/architecture/check_functions_contexts.mjs",
+        "node --check tool/architecture/lib/functions_collection_writes.mjs",
+        "node --test tool/architecture/check_functions_contexts.test.mjs",
+        "node tool/architecture/check_functions_contexts.mjs"
+      ],
+      "role": "gate",
+      "impactPaths": [
+        "functions/src/**/*.ts",
+        "docs/app_architecture.md",
+        "tool/architecture/context_map.json",
+        "tool/architecture/functions_context_map.json",
+        "tool/architecture/check_context_map.mjs",
+        "tool/architecture/check_functions_contexts.mjs",
+        "tool/architecture/check_functions_contexts.test.mjs",
+        "tool/architecture/lib/functions_collection_writes.mjs",
+        "tool/contracts/firestore_contract.json"
+      ],
+      "rules": [
+        {
+          "id": "FN-CONTEXT-001",
+          "title": "Functions code is layered into platform, domain contexts and surfaces, and one context writes each collection",
+          "appliesTo": [
+            "functions/src/**",
+            "tool/architecture/functions_context_map.json",
+            "tool/contracts/firestore_contract.json"
+          ],
+          "instruction": "Place new functions/src modules under functions/src/platform/, functions/src/domain/<context>/ or functions/src/surfaces/<surface>/ (or a legacy placement in the map). Domain code never imports a surface; shared helpers go to the owning domain context or platform. Write a collection only from its registry writerContext; other contexts call the owning context's functions inside their transaction. Never raise a ceiling."
+        }
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      }
+    },
+    {
       "id": "audit:host-crm-boundaries",
       "category": "audit",
       "path": "tool/architecture/check_host_crm_boundaries.mjs",

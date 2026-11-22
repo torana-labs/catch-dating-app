@@ -1,6 +1,8 @@
 import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {FieldPath, Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
+import {stageRunAndWorkItemCreate, stageRunSet} from
+  "../../operations/transactionalWrites";
 import {OperationLeaseProof, operationActionId, operationContentHash} from
   "../../operations/durableActions";
 import {OperationConflictError} from "../../operations/errors";
@@ -86,10 +88,7 @@ export class LiveAssistanceWorkStore {
       if (committedAt < now || committedAt >= payload.expiresAt) {
         throw conflict("work_snapshot_expired");
       }
-      tx.create(this.db.collection(operationCollections.runs).doc(ids.runId),
-        records.run);
-      tx.create(this.db.collection(operationCollections.workItems)
-        .doc(ids.workItemId), records.item);
+      stageRunAndWorkItemCreate(this.db, tx, records);
       return {...records, payload, replayed: false};
     });
   }
@@ -271,8 +270,7 @@ export class LiveAssistanceWorkStore {
       // All reads above; these writes either commit together or do not exist.
       publication?.commit();
       checkpoint.commit();
-      tx.set(this.db.collection(operationCollections.runs).doc(run.runId),
-        nextRun);
+      stageRunSet(this.db, tx, nextRun);
       return {...updated, kind: "committed", receipt};
     });
   }

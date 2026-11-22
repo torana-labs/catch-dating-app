@@ -22,7 +22,7 @@ import {
   discoveryFormatSlugs,
   formatPageIndexingFor,
   type DiscoveryFormat,
-} from "./discoveryFormats";
+} from "../domain/discovery/discoveryFormats";
 
 /**
  * Assembles one city's plans read model. Pure: the caller reads the sources

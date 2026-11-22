@@ -1098,7 +1098,10 @@ holds their WhatsApp dispatch evidence. Every document carries a `source`
 (`automation`, `program`, `campaign` or `approvalNotification`); ids are
 content hashes over the source's own context, so sources never collide. Each
 source keeps its own contract and parser, and the WhatsApp receipt router
-picks the owning store by `source`. Event-day assistance keeps its per-channel
+picks the owning store by `source`. Senders write dispatch evidence only
+through `functions/src/delivery/whatsappDispatches.ts`, which validates each
+document against its source's contract inside the sender's transaction.
+Event-day assistance keeps its per-channel
 collections by owner decision (12 Nov 2026).
 
 

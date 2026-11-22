@@ -1,14 +1,14 @@
 /* eslint-disable max-len */
 import assert from "node:assert/strict";
 import test from "node:test";
-import {nextInboxItem, type InboxProjection} from "../admin/inbox/model";
-import {syncInboxProjection} from "../admin/inbox/store";
-import {contractValidator} from "../shared/contractTestValidators";
-import {adminUpdateWalkthroughBookingHandler} from "./adminCallables";
-import {projectWalkthroughBooking, WALKTHROUGH_INBOX_SOURCE_KIND} from "./inbox";
-import {bookWalkthroughHandler, manageWalkthroughBookingHandler} from "./publicCallables";
-import {walkthroughBookingId} from "./model";
-import {PHONE, TOKEN, TUESDAY_10, bookPayload, harness, staff, verified} from "./testHarness";
+import {nextInboxItem, type InboxProjection} from "./model";
+import {syncInboxProjection} from "./store";
+import {contractValidator} from "../../shared/contractTestValidators";
+import {adminUpdateWalkthroughBookingHandler} from "../../walkthroughs/adminCallables";
+import {projectWalkthroughBooking, WALKTHROUGH_INBOX_SOURCE_KIND} from "./walkthroughBookings";
+import {bookWalkthroughHandler, manageWalkthroughBookingHandler} from "../../walkthroughs/publicCallables";
+import {walkthroughBookingId} from "../../walkthroughs/model";
+import {PHONE, TOKEN, TUESDAY_10, bookPayload, harness, staff, verified} from "../../walkthroughs/testHarness";
 
 const BOOKING_ID = walkthroughBookingId(PHONE, "web-0f3c2a9e-5b1d-4c7e");
 const ITEM_ID = `walkthrough-${BOOKING_ID}`;

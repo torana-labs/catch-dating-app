@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
-import {iso, type InboxProjection, type InboxState, type JourneyStep} from "../admin/inbox/model";
+import {iso, type InboxProjection, type InboxState, type JourneyStep} from "./model";
 import {
   TAKEDOWN_REQUESTS_COLLECTION, isOpenStatus, requestTypeLabels, type RequestType, type RequestStatus,
-} from "./model";
+} from "../../takedownRequests/model";
 
 // A listing request is a staff task in the Admin Inbox (type "takedown"):
 // acknowledge within 24 hours, verify, then action it with a fixed outcome or

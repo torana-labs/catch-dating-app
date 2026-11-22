@@ -1,5 +1,5 @@
 import type {CityPlansDocument} from
-  "../shared/generated/cityPlansDocument";
+  "../../shared/generated/cityPlansDocument";
 
 /**
  * The formats the website's city-by-format pages (/<city>/<format>/) are

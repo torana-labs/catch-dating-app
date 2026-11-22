@@ -4,7 +4,7 @@ import test from "node:test";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {adminGetTakedownRequestHandler, adminUpdateTakedownRequestHandler} from "./admin";
 import {handleListingRequest} from "./intake";
-import {projectTakedownRequest} from "./inbox";
+import {projectTakedownRequest} from "../admin/inbox/takedownRequests";
 import type {RequestType} from "./model";
 import {STAFF_UID, assertContract, harness, validRequests} from "./testHarness";
 

@@ -30,7 +30,7 @@ import {
   requireFirestoreAutoId,
 } from "./organizerIdentity";
 import {reserveOrganizerCanonicalRoute} from
-  "../admin/organizerPublishingGuards";
+  "../domain/organizers/organizerPublishingGuards";
 import {organizerSupplyCapabilitiesFor} from
   "../shared/organizerSupplyCapabilities";
 import {

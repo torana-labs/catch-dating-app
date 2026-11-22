@@ -1,6 +1,8 @@
 import {runAssistanceTransaction as transact} from "./transactionCallback";
 import type {Firestore} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
+import {stageRunAndWorkItemCreate} from
+  "../../operations/transactionalWrites";
 import {operationContentHash} from "../../operations/durableActions";
 import {prepareCurrentGuestEnrollment} from "./currentGuestEnrollment";
 import {invalidWork, liveWorkBasis, liveWorkIds, newLiveWorkRecords,
@@ -68,8 +70,7 @@ export class LiveAssistanceEnrollmentStore {
         throw invalidWork();
       }
       enrollment.commit();
-      tx.create(runRef, records.run);
-      tx.create(itemRef, records.item);
+      stageRunAndWorkItemCreate(this.db, tx, records);
       return {...result, kind: "enrolled"};
     });
   }

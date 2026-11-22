@@ -2,6 +2,8 @@ import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {randomUUID} from "node:crypto";
 import {FieldPath, Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
+import {stageRunAndWorkItemCreate, stageRunSet} from
+  "../../operations/transactionalWrites";
 import {operationActionId, operationContentHash} from
   "../../operations/durableActions";
 import {operationResourceLeaseId} from
@@ -60,8 +62,7 @@ export class AssistanceSourceWorkStore {
           itemRef.id, this.clock());
         return {...existing, replayed: true};
       }
-      tx.create(runRef, proposed.run);
-      tx.create(itemRef, proposed.item);
+      stageRunAndWorkItemCreate(this.db, tx, proposed);
       return {...proposed, replayed: false};
     });
   }
@@ -277,7 +278,7 @@ export class AssistanceSourceWorkStore {
       const prepared = await this.operations.prepareWorkItemAction(tx,
         {workItem: item, receipt, lease});
       prepared.commit();
-      tx.set(this.db.collection(operationCollections.runs).doc(run.runId), run);
+      stageRunSet(this.db, tx, run);
       return next;
     });
   }

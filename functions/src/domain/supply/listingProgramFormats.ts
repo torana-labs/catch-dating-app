@@ -2,7 +2,7 @@ import {
   discoveryFormats,
   discoveryFormatsForText,
   type DiscoveryFormat,
-} from "../../cityPlans/discoveryFormats";
+} from "../discovery/discoveryFormats";
 
 /**
  * The formats staff may give a listing Catch sourced itself (an Admin or
