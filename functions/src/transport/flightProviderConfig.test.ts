@@ -1,9 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type {CallableRequest} from "firebase-functions/v2/https";
 import {readFlightProviderConfig} from "./flightProviderConfig";
-import {refreshProgramFlightStatuses, refreshProgramTravelLegHandler} from
-  "./programFlightRefresh";
+import {refreshProgramFlightStatuses} from "./programFlightRefresh";
 import {flightAlertWebhookHandler, FlightAlertAuthError} from "./flightAlerts";
 
 const projectId = "catchdates-dev";
@@ -64,9 +62,6 @@ test("disabled flight entry points never access Firestore or a provider",
       await refreshProgramFlightStatuses.run({
         scheduleTime: "2026-09-23T00:00:00Z",
       });
-      await assert.rejects(refreshProgramTravelLegHandler({
-        auth: {uid: "test-actor"}, data: {},
-      } as CallableRequest<unknown>), {code: "failed-precondition"});
       await assert.rejects(flightAlertWebhookHandler({key: "guess"}, {}),
         FlightAlertAuthError);
     } finally {
@@ -89,9 +84,6 @@ test("a pinned secret reference alone cannot activate any entry point",
         await refreshProgramFlightStatuses.run({
           scheduleTime: "2026-10-03T00:00:00Z",
         });
-        await assert.rejects(refreshProgramTravelLegHandler({
-          auth: {uid: "test-actor"}, data: {},
-        } as CallableRequest<unknown>), {code: "failed-precondition"});
         await assert.rejects(flightAlertWebhookHandler({key: "guess"}, {}),
           FlightAlertAuthError);
       }

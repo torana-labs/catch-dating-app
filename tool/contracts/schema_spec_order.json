@@ -760,7 +760,6 @@
   "DispatchProgramTripCallablePayload",
   "ProgramTripActionCallablePayload",
   "ImportProgramManifestCallablePayload",
-  "RefreshProgramTravelLegCallablePayload",
   "ProgramStationScopeCallablePayload",
   "GetProgramHotelRoomsCallablePayload",
   "UpsertProgramStayCallablePayload",

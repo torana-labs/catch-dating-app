@@ -617,7 +617,6 @@
     "RecordProgramDoorJournalCallablePayload",
     "RecordProgramFunctionRsvpCallablePayload",
     "RecordSalesPartnerManualSendCallablePayload",
-    "RefreshProgramTravelLegCallablePayload",
     "RefreshRazorpayHostPaymentAccountCallablePayload",
     "RefreshStripeHostPaymentAccountCallablePayload",
     "RegisterPublicEventCallablePayload",

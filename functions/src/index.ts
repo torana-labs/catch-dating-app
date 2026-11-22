@@ -902,10 +902,7 @@ export {
   upsertProgramStay,
   upsertProgramRoomBlock,
 } from "./programs/programRooms";
-export {
-  refreshProgramTravelLeg,
-  refreshProgramFlightStatuses,
-} from "./transport/programFlightRefresh";
+export {refreshProgramFlightStatuses} from "./transport/programFlightRefresh";
 export {flightAlertWebhook} from "./transport/flightAlerts";
 export {recordProgramDoorJournal} from
   "./doorJournal/recordProgramDoorJournal";

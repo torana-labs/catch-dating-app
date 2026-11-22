@@ -89,6 +89,7 @@
   "prepareEventOfferInvitation",
   "readPublicOrganizerTrackingSettings",
   "reconcileRazorpayOrders",
+  "refreshProgramTravelLeg",
   "requestInstantDraft",
   "revokeParticipantOrganizerDataGrant",
   "submitParticipantOrganizerApplication",
