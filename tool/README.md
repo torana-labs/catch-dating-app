@@ -1441,8 +1441,10 @@ guard `apply-flag`).
 - **Dry run:** the default reads only. For active events it rehearses the
   migration engine without its writer lock: the same sources, Admin Auth phone
   evidence, form receipts and CRM records, then the pure planner.
-- **Apply:** `--apply` gives each `cancelled-empty` event an empty ready ledger
-  and fence; gives each `demo` event the seat records the demo seeders write
+- **Apply:** `--apply` gives each `cancelled-empty` event, and each
+  `active-empty` one (active and refused by the engine, for example over a
+  past guest who deleted their account, but with no active guest or hold), an
+  empty ready ledger and fence; gives each `demo` event the seat records the demo seeders write
   (a ledger counting its active bookings, and each booked guest's uid and
   phone aliases, verified phone proof and reservation), since synthetic guests
   have no Auth users for the engine; runs the paged engine for each
