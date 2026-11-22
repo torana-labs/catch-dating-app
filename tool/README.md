@@ -749,6 +749,29 @@ node tool/firebase/report_environment_parity.mjs --surfaces remote-config,functi
 node tool/firebase/report_environment_parity.mjs --policy-only
 ```
 
+## Dart Test Blast Radius
+
+`tool/architecture/dart_blast_radius.mjs` measures how far a change in `lib/`
+reaches into the Flutter tests. It reads the import, export and part directives
+of tracked Dart files (conditional URIs included, `package:` URIs mapped to each
+pubspec's `lib/`), takes each test file's closure, and reports the average
+number of `lib/` libraries a test reaches. Re-run it after each import-graph cut
+to see the effect. It approximates the selector in
+`tool/harness/lib/flutter_test_selection.dart` and does not replace it.
+Untracked generated files are missing, so its counts are lower bounds.
+
+```bash
+node tool/architecture/dart_blast_radius.mjs                       # average and top 20
+node tool/architecture/dart_blast_radius.mjs --reach lib/a.dart     # tests reaching a file
+node tool/architecture/dart_blast_radius.mjs --cut lib/a.dart:lib/b.dart --reach lib/c.dart
+node tool/architecture/dart_blast_radius.mjs --chokepoints          # about 30 s
+```
+
+`--cut` takes `<from>:<to>` and measures the graph with that edge removed, so
+you can price a cut before making it. `--chokepoints` ranks barrels (3+
+exports), widely imported files (25+ importers) and hubs (60+ imports) by the
+share of test-to-library reach lost if every edge into them is cut.
+
 ## CI Network Retries
 
 `tool/ci/retry_on_match.mjs` reruns a CI command only when it failed with
