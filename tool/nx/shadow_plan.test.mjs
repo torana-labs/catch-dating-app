@@ -185,6 +185,9 @@ const explanationFixtures = [
   {rule: "planner-other-packages-coarse", commit: "e3bc551dc", lane: "capture_freshness", side: "planner",
     sources: [source("repo.other-packages", "capture_freshness")],
     changedFiles: ["operations/src/admin/action-catalog.mjs", "packages/command-client/src/index.mjs"]},
+  {rule: "main-native-builds-only", commit: "9cc568a23", lane: "flutter_build_ios", side: "planner", mode: "main",
+    sources: [source("app.source", "flutter_build_ios")],
+    changedFiles: ["lib/event_rehearsal/presentation/event_rehearsal_assistance_editor.dart", "firestore.rules"]},
   {rule: "nx-control-plane", commit: "ce8dda26", lane: "flutter", side: "nx", changedFiles: ["tool/nx/select_lanes.mjs"]},
   {rule: "docs-reads-every-markdown", commit: "32e79379", lane: "docs", side: "nx", changedFiles: ["functions/README.md"]},
   {rule: "contracts-scan-consumers", commit: "0284bd52", lane: "contracts", side: "nx",
@@ -241,6 +244,11 @@ test("a disagreement with no known cause stays unexplained", () => {
   assert.equal(explain({lane: "flutter_build_ios", side: "planner", sources: [source("app.ui", "flutter_build_ios")],
     changedFiles: ["packages/catch_ui/test/a_test.dart"]}), null);
 
+  // A native input builds on main, and the rule is main's alone.
+  assert.equal(explain({lane: "flutter_build_ios", side: "planner", mode: "main", sources: [source("app.source", "flutter_build_ios")],
+    changedFiles: ["lib/main.dart", "apps/consumer/ios/Podfile"]}), null);
+  assert.equal(explain({lane: "flutter_build_android", side: "planner", mode: "merge_group",
+    sources: [source("app.source", "flutter_build_android")], changedFiles: ["lib/main.dart"]}), null);
   // Main-flip rules: each stops at the change that makes the lane read it.
   assert.equal(explain({lane: "contracts", side: "planner",
     sources: [source("backend.firestore-indexes", "contracts"), source("contracts.source", "contracts")],

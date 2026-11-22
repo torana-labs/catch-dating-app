@@ -10,8 +10,8 @@ import {projectPlanOutputs} from "../harness.mjs";
 import {planAffected, queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
 import {planAffectedToolChecks, toolsOwnDesignChecks, toolsOwnUiLintSmoke} from "../lib/tool_impact.mjs";
 import {comparedLanes} from "./shadow_plan.mjs";
-import {appRolesOf, applyLanes, chooseLanes, everyLane, mainBuildUnion, mainPlannerBuildLanes, nxChooses, nxSelectsAlone,
-  plannerShadow, selectAlone, unionLanes} from "./select_lanes.mjs";
+import {appRolesOf, applyLanes, chooseLanes, everyLane, mainBuildLanes, nativeBuildInput, nativeBuildLanes, nxChooses,
+  nxSelectsAlone, plannerShadow, selectAlone, unionLanes} from "./select_lanes.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(repoRoot, file), "utf8"));
@@ -46,16 +46,49 @@ test("nightly and full runs keep the planner's selection; main chooses through N
   assert.equal(nxChooses({mode: "pr", commitWindow: true}), false);
 });
 
-// Until the owner decides how main builds apps (A2), a main push keeps the
-// planner's app build lanes and Nx chooses the rest.
-test("a main push takes its app build lanes from the planner and every other lane from Nx", () => {
-  assert.deepEqual(mainPlannerBuildLanes, ["flutter_build_android", "flutter_build_ios", "flutter_build_web",
-    "flutter_web_smoke"]);
-  assert.deepEqual(mainBuildUnion(["flutter", "flutter_web_smoke", "tools"],
-    ["admin", "flutter", "flutter_build_android", "flutter_build_ios"]),
-  ["flutter", "flutter_build_android", "flutter_build_ios", "tools"], "builds follow the planner; admin stays Nx's call");
-  assert.deepEqual(mainBuildUnion(["docs"], ["docs", "flutter_build_web"]), ["docs", "flutter_build_web"]);
-  assert.deepEqual(mainBuildUnion(["flutter_build_ios", "tools"], ["tools"]), ["tools"], "Nx alone adds no main build");
+// Owner decision A2 (22 Nov 2026): on main the native app builds run only
+// for a native build input; a Dart-only change relies on the queue's web
+// smoke and the nightly full builds.
+test("a Dart-only change builds no app on main", () => {
+  const nx = ["flutter", "flutter_build_android", "flutter_build_web", "flutter_web_smoke", "tools"];
+  for (const changedFiles of [["lib/main.dart"], ["packages/catch_ui/lib/src/a.dart", "apps/host/lib/main.dart"],
+    ["apps/consumer/lib/app.dart", "test/a_test.dart"]]) {
+    assert.deepEqual(mainBuildLanes({lanes: nx, changedFiles}), ["flutter", "tools"], changedFiles.join(" "));
+  }
+});
+
+test("each native build input class builds every native app on main", () => {
+  for (const file of ["apps/consumer/android/app/build.gradle.kts", "apps/host/ios/Runner/AppDelegate.swift",
+    "apps/consumer/android/app/src/main/kotlin/com/example/MainActivity.kt", "apps/consumer/macos/Runner/Info.plist",
+    "pubspec.yaml", "pubspec.lock", "packages/catch_ui/pubspec.yaml", "apps/host/pubspec.lock",
+    "apps/consumer/android/gradle.properties", "apps/consumer/android/gradle/wrapper/gradle-wrapper.properties",
+    "apps/consumer/ios/Podfile", "apps/host/ios/Podfile.lock",
+    "apps/consumer/ios/Runner.xcodeproj/project.pbxproj", "apps/consumer/ios/Runner.xcworkspace/contents.xcworkspacedata",
+    "packages/example_plugin/android/src/main/java/Plugin.java", "packages/example_plugin/ios/Classes/Plugin.m",
+    "firebase/dev/ios/GoogleService-Info.plist"]) {
+    assert.equal(nativeBuildInput(file), true, file);
+    assert.deepEqual(mainBuildLanes({lanes: ["flutter"], changedFiles: ["lib/main.dart", file]}),
+      ["flutter", ...nativeBuildLanes].sort(), file);
+  }
+  for (const file of ["lib/main.dart", "apps/host/ios/README.md", "packages/catch_ui/lib/a.dart", "assets/a.png"]) {
+    assert.equal(nativeBuildInput(file), false, file);
+  }
+});
+
+test("a build lane the CI caller graph selects still runs on main", () => {
+  // app-build-matrix.yml, a script it runs, or a selector reaches the build lanes themselves.
+  assert.deepEqual(mainBuildLanes({lanes: ["flutter_build_ios", "flutter_web_smoke", "tools"],
+    changedFiles: [".github/workflows/app-build-matrix.yml"],
+    workflowSelected: new Set(["flutter_build_ios", "flutter_web_smoke"])}),
+  ["flutter_build_ios", "flutter_web_smoke", "tools"]);
+});
+
+test("nightly and full runs still build every app", () => {
+  for (const plan of [{mode: "nightly", full: true}, {mode: "nightly"}, {mode: "main", full: true, commitWindow: true}]) {
+    assert.equal(nxChooses(plan), false, JSON.stringify(plan));
+  }
+  const full = planAffected({changedPaths: [], graph: componentGraph, mode: "nightly", full: true});
+  for (const lane of [...nativeBuildLanes, "flutter_web_smoke"]) assert.ok(full.operations.ciTargets.includes(lane), lane);
 });
 
 test("pull requests and queue groups run Nx's lanes alone; emptying nxSelectsAlone restores the union", () => {

@@ -10,6 +10,7 @@
 // lanes to the planner's. Whenever Nx cannot answer completely, every lane
 // runs, because running more is safe. A main push the merge queue already
 // validated runs no lane, so it keeps the planner's plan and never runs Nx.
+// On main, native app builds run only for a native build input (mainBuildLanes).
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -17,8 +18,8 @@ import {fileURLToPath} from "node:url";
 
 import {queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
 import {describeChange, manifestFile} from "./manifest_diff.mjs";
-import {callerGraph, compare, comparedLanes, narrowedPlanner, nxAffected, plannerManifestLanes, readManifestChange}
-  from "./shadow_plan.mjs";
+import {callerGraph, compare, comparedLanes, nativeBuildInput, narrowedPlanner, nxAffected, plannerManifestLanes,
+  readManifestChange, workflowLanes} from "./shadow_plan.mjs";
 
 /** The modes in which Nx alone chooses the lanes. Empty it to restore the union everywhere. */
 export const nxSelectsAlone = ["pr", "merge_group", "main"];
@@ -30,19 +31,23 @@ const buildPlatforms = {
   flutter_web_smoke: "-web-smoke",
 };
 
-/**
- * Until the owner decides how main builds apps (A2, 22 Nov), a main push
- * keeps the planner's app build lanes: Nx chooses every other lane. Main's
- * builds are a post-merge compile check nothing downstream consumes, and the
- * nightly full run builds every app.
- */
-export const mainPlannerBuildLanes = Object.keys(buildPlatforms);
+/** The native app build lanes; flutter_web_smoke is the queue's Dart-only check. */
+export const nativeBuildLanes = ["flutter_build_android", "flutter_build_ios", "flutter_build_web"];
+export {nativeBuildInput};
 
-/** Nx's lanes with the app build lanes taken from the planner, for a main push. */
-export function mainBuildUnion(lanes, plannerLanes) {
-  const other = lanes.filter((lane) => !mainPlannerBuildLanes.includes(lane));
-  const builds = plannerLanes.filter((lane) => mainPlannerBuildLanes.includes(lane));
-  return [...new Set([...other, ...builds])].sort();
+/**
+ * A main push's app builds (owner decision A2, 22 Nov 2026). The native builds
+ * run only for a native build input; a Dart-only app change relies on the
+ * queue's web smoke and the nightly full builds, so main runs neither. A lane
+ * the CI caller graph selects (its workflow, a script it runs, a selector)
+ * still runs. Every other lane is Nx's.
+ */
+export function mainBuildLanes({lanes, changedFiles, workflowSelected = new Set()}) {
+  const appBuilds = [...nativeBuildLanes, "flutter_web_smoke"];
+  const native = changedFiles.some(nativeBuildInput);
+  const builds = appBuilds.filter((lane) => workflowSelected.has(lane) ||
+    (native && nativeBuildLanes.includes(lane)));
+  return [...new Set([...lanes.filter((lane) => !appBuilds.includes(lane)), ...builds])].sort();
 }
 
 function run(command, args) {
@@ -218,9 +223,10 @@ async function main(argv) {
   const chosen = chooseLanes({mode: plan.mode, alone, plannerLanes: planner.lanes, result, nxError,
     unknownPaths: changedFiles ? unknownTopLevel(changedFiles) : []});
   const {selection, warning} = chosen;
-  const lanes = plan.mode === "main" && selection === "nx" ? mainBuildUnion(chosen.lanes, planner.lanes) : chosen.lanes;
+  const lanes = plan.mode === "main" && selection === "nx" ? mainBuildLanes({lanes: chosen.lanes, changedFiles,
+    workflowSelected: workflowLanes(changedFiles, undefined, change)}) : chosen.lanes;
   if (warning) console.log(`::warning::${warning}`);
-  // A planner lane the run executes anyway (main's interim app builds) is not a shadow difference.
+  // A planner lane the run executes anyway is not a shadow difference.
   const fullShadow = result ? plannerShadow(result) : {lanes: [], unexplained: 0};
   const shadowLanes = fullShadow.lanes.filter((entry) => !lanes.includes(entry.lane));
   const shadow = {lanes: shadowLanes, unexplained: shadowLanes.filter((entry) => entry.rule === "UNEXPLAINED").length};

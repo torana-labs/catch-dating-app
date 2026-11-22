@@ -310,9 +310,14 @@ before anything else, skips Install Nx when it finds it, and passes
 calling Nx. That path stays on the sparse planner checkout and costs nothing
 extra (about 24 s); a main push without it adds Install Nx (about 30 s) and
 the Nx query (about 10 s) to a run that executes lanes for about 20 minutes.
-Until the owner decides how main builds apps, a main push takes its app build
-lanes (`flutter_build_*`, `flutter_web_smoke`) from the planner and every
-other lane from Nx (`mainBuildUnion`); the nightly full run builds every app.
+On main the native app builds (`flutter_build_android`, `_ios`, `_web`) run
+only for a native build input (owner decision, 22 Nov 2026): native project
+folders, pubspec files and lockfiles, Gradle, CocoaPods and Xcode files, and
+native plugin code (`nativeBuildInputGlobs` in `shadow_plan.mjs`). A Dart-only
+app change relies on the merge queue's web smoke and the nightly full builds,
+so main runs neither; a build lane the CI caller graph selects (its workflow, a
+script it runs, a selector) still runs (`mainBuildLanes`). Main's builds upload
+nothing: release builds come from the mobile beta and production workflows.
 A `workflow_dispatch` with `base_sha` plans exactly like a main push. Nightly
 and full runs keep the planner's selection. Only tasks the change affects
 select a lane (`--excludeTaskDependencies`): the tasks they depend on do not,
