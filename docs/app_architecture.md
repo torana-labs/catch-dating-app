@@ -394,10 +394,13 @@ may read repositories and platform plugins.
    events and hosts folders came to import each other. Rule 2 catches the
    result.
 7. One context writes each Firestore collection and calls each callable,
-   matching `docs/backend_operation_catalog.md`. Manual review: the author of
-   each move PR names the collections and callables the context writes.
+   matching `docs/backend_operation_catalog.md`. Each collection's
+   `writerContext` in `tool/contracts/firestore_contract.json` names it, and
+   `check_functions_contexts.mjs` checks the Functions writes against it
+   (see Backend contexts). Callables remain manual review.
 8. Context names are product nouns used the same way in Flutter,
-   `functions/src` and the website. Manual review when a context is added.
+   `functions/src` and the website. `check_functions_contexts.mjs` holds the
+   Functions map to this order and vocabulary; the website is manual review.
 
 A legacy import that has to break rules 1 or 2 takes a reasoned `// ignore:`
 next to the import; see [Enforcement And Overrides](#enforcement-and-overrides).
@@ -416,6 +419,59 @@ updates a branch that predates the move. A legacy entry may carry a `moveTo`
 target for files no rule places, such as the `lib/core/` sort; the script
 moves them the same verified way, and the entry goes once its files have
 moved.
+
+### Backend contexts
+
+`functions/src` follows the same vocabulary (issue #1350). Every handwritten
+module sits in one of four places, recorded in
+`tool/architecture/functions_context_map.json`:
+
+- **platform:** Firebase seams, delivery providers, the durable operations
+  runtime, admin role checks and audit, the Anthropic identity, shared
+  contracts. Target root `functions/src/platform/`.
+- **domain contexts:** data writes and rules, grouped by who owns the data.
+  They are the contexts above, in the same order, plus two backend-only
+  contexts declared after `insights`: `supply` (external events, listing
+  intake, approval, publication and visibility policy, suppressions and
+  takedowns) and `sales` (Catch's own pipeline, partners, demos and
+  walkthroughs, city interest, the launch waitlist). Target root
+  `functions/src/domain/<context>/`.
+- **surfaces:** endpoints and read models built for one client: `admin`,
+  `host`, `website` and `ops`. Target root `functions/src/surfaces/<surface>/`.
+- **entry:** `functions/src/index.ts`.
+
+Rules, checked by `node tool/architecture/check_functions_contexts.mjs`:
+
+1. Platform imports only platform (`platformImportsUp`).
+2. Domain code never imports a surface (`domainImportsSurface`), and a surface
+   never imports another surface (`surfaceImportsSurface`). Code two clients
+   need belongs in a domain context or platform.
+3. A domain context imports only contexts declared before it
+   (`contextOrder`). Today's folders still mix contexts, so this rule is
+   bounded by the map's `contextOrderViolationCeiling`, which may only go
+   down; `--list-context-order` lists the imports. Issue #1350's file splits
+   bring it to zero.
+4. A collection is written only from the `writerContext` its entry in
+   `tool/contracts/firestore_contract.json` names: a domain context, a
+   surface for its own read models, `platform`, or `shared` for a deliberate
+   shared outbox (today only `deliveryMessages`, which says why in
+   `sharedWriterReason`). Other contexts call the owner's functions inside
+   their own transaction (`foreignWrite`, `writerContext`). The write
+   detector reads the syntax tree and follows references it can see, so it
+   is a lower bound. Existing cross-context writes are bounded by
+   `crossContextWriteCeiling`, which may only go down;
+   `--list-foreign-writes` lists them.
+5. Every module is placed, and every placement still places a file
+   (`unplaced`, `stalePlacement`).
+
+Until the scripted move, the map's `legacy` list places today's folders; the
+longest path wins, and a path that does not end in `/` places one file, so a
+mixed folder can be placed file by file. Code moved before the scripted move
+goes under its target root, and its legacy entry goes with it. Moving a file
+that `index.ts` exports from changes its deploy codebase
+(`functions/deploy-codebases.json` groups exports by top-level folder), so an
+exported endpoint in the wrong folder is placed by a file entry until the
+scripted move handles codebases.
 
 ### Host destinations
 
