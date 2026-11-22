@@ -31,6 +31,7 @@ export type PageKey =
   | "programme_link"
   | "account"
   | "host_billing"
+  | "walkthrough_manage"
   | "public_form"
   | "claim"
   | "listing_requests"
@@ -153,6 +154,7 @@ export function getPageKey(
   if (pathname === "/offer" || pathname === "/offer/") return "event_offer";
   if (pathname === "/account" || pathname === "/account/") return "account";
   if (pathname === "/host/billing" || pathname === "/host/billing/") return "host_billing";
+  if (pathname === "/start/walkthrough/manage" || pathname === "/start/walkthrough/manage/") return "walkthrough_manage";
   if (pathname.startsWith("/event-update/")) return "event_assistance";
   if (pathname.startsWith("/rehearse/")) return "event_rehearsal";
   if (pathname.startsWith("/invite/")) return "event_invite";

@@ -6,6 +6,7 @@ import {playbookTryItTool, websiteReadyTryItCommands} from "../tryIt/tryItModel"
 import {referralSignInNode} from "../referral/ReferralSignIn";
 import {AppLinkCapture} from "../marketing/AppLinkCapture";
 import {tryItToolNode} from "../tryIt/TryItTool";
+import {walkthroughBookingNode} from "../walkthroughs/WalkthroughBooking";
 import {playbookLeadFormNode} from "./PlaybookLeadForm";
 import type {PlaybookLeadFormProps, PlaybookLeadFormSlots} from "./usePlaybookPageController";
 
@@ -51,18 +52,28 @@ function playbookAppLinkFormNode({form, pageId, sectionId}: PlaybookLeadFormProp
 }
 
 /**
+ * The walkthrough page's form: the slot picker (features/walkthroughs), which
+ * books an open time with getWalkthroughSlots and bookWalkthrough. When no
+ * time can be booked (none open, booking closed, or the slots cannot be
+ * read) the page's request form stands below it.
+ */
+function playbookWalkthroughFormNode(props: PlaybookLeadFormProps) {
+  return walkthroughBookingNode({...props, fallback: playbookLeadFormNode(props)});
+}
+
+/**
  * The lead forms that have a backend, by request kind: send me the setup
- * guide, list your space, get a demo link, ask for a walkthrough, text me the
- * app link and refer a host post to the website lead intake (/api/join-waitlist), the referral
- * with the sign-in that credits it above (features/referral); a tool form
- * runs its page's try-it command. Kinds left out keep to the page's
- * WhatsApp actions.
+ * guide, list your space, get a demo link, text me the app link and refer a
+ * host post to the website lead intake (/api/join-waitlist), the referral
+ * with the sign-in that credits it above (features/referral); a walkthrough
+ * books a time with the slot picker; a tool form runs its page's try-it
+ * command. Kinds left out keep to the page's WhatsApp actions.
  */
 export const playbookLeadForms: PlaybookLeadFormSlots = {
   guide: playbookLeadFormNode,
   venue: playbookLeadFormNode,
   demo: playbookLeadFormNode,
-  walkthrough: playbookLeadFormNode,
+  walkthrough: playbookWalkthroughFormNode,
   app_link: playbookAppLinkFormNode,
   tool: playbookToolFormNode,
   referral: playbookReferralFormNode,

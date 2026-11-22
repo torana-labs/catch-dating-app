@@ -269,6 +269,10 @@
           "destination": "/host/billing/index.html"
         },
         {
+          "source": "/start/walkthrough/manage",
+          "destination": "/start/walkthrough/manage/index.html"
+        },
+        {
           "source": "/account/**",
           "destination": "/account/index.html"
         },

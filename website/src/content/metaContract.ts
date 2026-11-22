@@ -19,6 +19,7 @@ export const staticMetaKeys = [
   "programme_link",
   "account",
   "host_billing",
+  "walkthrough_manage",
   "public_form",
   "organizers",
   "claim",

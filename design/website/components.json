@@ -6433,6 +6433,38 @@
       "notes": "/host/billing/: the organiser owner's billing on the web (trial, plan with prices, bills to pay, tools-only buy or cancel); private and noindex; signed out it offers the sign-in sheet. The native Host app shows status only (App Store 3.1.3(f))."
     },
     {
+      "id": "route_walkthrough_manage",
+      "kind": "route",
+      "routeIds": [
+        "walkthrough_manage"
+      ],
+      "owner": "features/walkthroughs",
+      "source": "website/src/features/walkthroughs/WalkthroughManagePage.tsx",
+      "exportName": "WalkthroughManagePage",
+      "css": [
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchChoiceInput.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "booked",
+          "confirmed",
+          "cancelled",
+          "sign-in",
+          "not-found"
+        ]
+      },
+      "notes": "/start/walkthrough/manage/: a walkthrough booking's manage page, opened from the booking's managePath (?booking=…, token in #t=…); read, move to another open India-time slot, or cancel; private and noindex; without a token it offers the sign-in sheet for the booked number."
+    },
+    {
       "id": "host_billing_view",
       "kind": "supporting-component",
       "routeIds": [
