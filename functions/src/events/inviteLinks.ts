@@ -1,4 +1,4 @@
-import {publicRegistrationMode} from "./publicRegistration/policy";
+import {publicRegistrationMode} from "../domain/events/publicRegistrationTerms";
 import {eventTitleLabel} from "../shared/eventLabels";
 import * as crypto from "crypto";
 import * as admin from "firebase-admin";

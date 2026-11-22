@@ -49,7 +49,7 @@ import {
   EventSuccessCompatibilityPolicy,
   EventSuccessMatchingObjective,
   eventSuccessPrimitivesFor,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {
   arrivalGroupPolicyForStructureConfig,
   assignmentConstraintsForStructureConfig,

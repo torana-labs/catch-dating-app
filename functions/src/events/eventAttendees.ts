@@ -1,8 +1,8 @@
 import {assertFollowersFirstAllows} from "./followersFirst";
 import {assertPublicEventAge} from "../profiles/eventProfileRequirements";
 import {publicGuestMembership} from "./publicRegistration/authority";
-import {assertPublicRegistrationPolicy, publicRegistrationMode} from
-  "./publicRegistration/policy";
+import {assertPublicRegistrationPolicy} from "./publicRegistration/policy";
+import {publicRegistrationMode} from "../domain/events/publicRegistrationTerms";
 import {heldSeatCount} from "./seatAuthority/seatAuthority";
 import {requirePublicConfiguredEvent} from "./configuredEvent";
 import {createHash} from "crypto";

@@ -589,8 +589,14 @@ unmerged, dirty, squash-divergent or shared worktrees:
    `--head-sha` and the verified integrating `--accepted-sha`. The guard checks
    current live main, accepted-commit ancestry, all task paths after squash
    (including additions/deletions/modes), exact local recovery tip and live
-   remote preservation of unique commits. Any differing or empty unmerged task
-   delta is retained for integration review, not assumed equivalent. Dirty,
+   remote preservation of unique commits. A squash that also carries other
+   work main gained first is accepted only when replaying the task head onto
+   the accepted commit's parent, with a clean three-way merge, matches the
+   accepted commit on every task path. Each differing line then comes from
+   commits that are ancestors of the accepted commit and not in the task
+   branch; the report lists them as `mainDeltaCommits`. Any other differing
+   or empty unmerged task delta is retained for integration review, not
+   assumed equivalent. Dirty,
    untracked and ignored files, conflicting local claims, changed identity,
    locked worktrees and unavailable evidence block retirement.
 5. The task owner supplies `--by` and current `--clearance` evidence after the

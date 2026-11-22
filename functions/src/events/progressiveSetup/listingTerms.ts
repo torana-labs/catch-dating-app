@@ -11,7 +11,8 @@ import {eventPolicyFromEvent, initialPolicyFromTerms, normalizePolicy} from
   "../eventPolicy";
 import {prepareEventMutationLedger} from "../eventPolicyMutation";
 import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
-import {canonicalJson} from "../eventSetupPreferences/resolve";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 
 export type PrivateAdmissionTerms = NonNullable<
   UpdatePrivateEventDetailsCallablePayload["details"]["admissionTerms"]

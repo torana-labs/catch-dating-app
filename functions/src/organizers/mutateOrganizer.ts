@@ -27,7 +27,8 @@ import {
   deleteMediaStoragePaths,
   removedMediaStoragePaths,
 } from "../shared/mediaStorageLifecycle";
-import {hostOrganizerWomenLed, hostWomenLedRole} from "./womenLed";
+import {hostOrganizerWomenLed, hostWomenLedRole} from
+  "../domain/events/womenLed";
 
 interface OrganizerLifecycleDeps {
   firestore: () => FirebaseFirestore.Firestore;

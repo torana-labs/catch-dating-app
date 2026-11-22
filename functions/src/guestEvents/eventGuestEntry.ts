@@ -6,9 +6,10 @@ import {validateOrganizerFormVersionDocument} from
   "../shared/generated/validators/organizerFormVersionDocument";
 import {eventOrganizerRef} from "../shared/eventOrganizers";
 import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
-import {assertPublicRegistrationPolicy, publicRegistrationMode} from
+import {assertPublicRegistrationPolicy} from
   "../events/publicRegistration/policy";
-import {canonicalJson} from "../events/eventSetupPreferences/resolve";
+import {publicRegistrationMode} from "../domain/events/publicRegistrationTerms";
+import {canonicalJson} from "../domain/formats/eventSetupPreferences/resolve";
 
 /**
  * eventGuestEntries/{eventId}: how a phone-verified guest with no record of

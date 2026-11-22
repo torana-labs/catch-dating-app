@@ -1,9 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
-import {
-  CHECKOUT_HOLD_MILLIS,
-} from "../../events/seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "./checkoutHold";
 import {publicFixture, now} from "../../events/publicRegistration/testFixture";
 import {
   openPublicEventPayment,

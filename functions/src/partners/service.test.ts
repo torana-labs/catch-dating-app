@@ -10,6 +10,7 @@ import {FakeFirestore} from "../operations/testFirestore";
 import {
   assignPartner,
   decideAssignment,
+  getPartnerAccess,
   getPartnerWorkspace,
   nominateOrganizer,
   registerPartner,
@@ -1062,3 +1063,94 @@ test(
     }
   },
 );
+
+test(
+  "access read gives an administrator the revisions a revoke or re-offer " +
+    "names, and nothing private",
+  async () => {
+    const f = fixture();
+    const read = () =>
+      getPartnerAccess(f.deps, employee, {organizerId: "organizer-one"});
+    assert.deepEqual(await read(), {organizerId: "organizer-one",
+      assignment: null, membership: null, evaluatedAt: initial});
+    await assert.rejects(
+      getPartnerAccess(f.deps, partner, {organizerId: "organizer-one"}),
+      {code: "permission-denied"});
+    await assert.rejects(
+      getPartnerAccess(f.deps, employee, {organizerId: "organizer-one",
+        extra: true}),
+      {code: "invalid-argument"});
+    await registerPartner(f.deps, partner, registration);
+    await assignPartner(f.deps, employee, offer);
+    await decideAssignment(f.deps, partner, accept);
+    const accepted = await read();
+    assert.deepEqual(accepted.assignment, {partnerUid: partner.uid,
+      state: "accepted", revision: 2, reviewAt: offer.reviewAt,
+      expiresAt: offer.expiresAt, updatedAt: initial});
+    assert.deepEqual(accepted.membership, {partnerUid: partner.uid,
+      displayName: registration.displayName, state: "active", revision: 1,
+      expiresAt: "2027-01-02T00:00:00.000Z"});
+    assert.doesNotMatch(JSON.stringify(accepted),
+      /Review introduction fit|Reviewed official identity|prior event/u);
+
+    await revokePartnerAccess(f.deps, employee, {
+      requestId: "revoke-assignment-read",
+      organizerId: "organizer-one",
+      partnerUid: partner.uid,
+      expectedRevision: accepted.assignment ?
+        (accepted.assignment as {revision: number}).revision : -1,
+      reason: "Host asked to deal with Catch directly",
+    });
+    assert.equal(
+      ((await read()).assignment as {state: string}).state, "revoked");
+    await revokePartnerAccess(f.deps, employee, {
+      requestId: "revoke-membership-read",
+      organizerId: null,
+      partnerUid: partner.uid,
+      expectedRevision: 1,
+      reason: "Partner left the programme",
+    });
+    assert.deepEqual((await read()).membership, {partnerUid: partner.uid,
+      displayName: registration.displayName, state: "revoked", revision: 2,
+      expiresAt: "2027-01-02T00:00:00.000Z"});
+
+    const g = fixture();
+    await registerPartner(g.deps, partner, registration);
+    await assignPartner(g.deps, employee, offer);
+    g.advance(7 * 86400000);
+    const lapsed = await getPartnerAccess(g.deps, employee,
+      {organizerId: "organizer-one"});
+    assert.equal((lapsed.assignment as {state: string}).state, "expired");
+    assert.equal((lapsed.membership as {state: string}).state, "active");
+  },
+);
+
+test("access read and revoke receipts satisfy their response contracts",
+  async () => {
+    const f = fixture();
+    await registerPartner(f.deps, partner, registration);
+    await assignPartner(f.deps, employee, offer);
+    const ajv = new Ajv({strict: false, allErrors: true});
+    addFormats(ajv);
+    const root = path.resolve(__dirname,
+      "../../../contracts/callable_responses");
+    const compile = (name: string) => ajv.compile(JSON.parse(
+      readFileSync(path.join(root, name), "utf8")));
+    const access = compile(
+      "admin_get_sales_partner_access_response.schema.json");
+    const revoke = compile(
+      "admin_revoke_sales_partner_access_response.schema.json");
+    for (const organizerId of ["organizer-one", "organizer-two"]) {
+      const value = await getPartnerAccess(f.deps, employee, {organizerId});
+      assert.equal(access(value), true, JSON.stringify(access.errors));
+    }
+    for (const input of [
+      {requestId: "schema-revoke-assignment", organizerId: "organizer-one",
+        partnerUid: partner.uid, expectedRevision: 1, reason: "Synthetic"},
+      {requestId: "schema-revoke-membership", organizerId: null,
+        partnerUid: partner.uid, expectedRevision: 1, reason: "Synthetic"},
+    ]) {
+      const value = await revokePartnerAccess(f.deps, employee, input);
+      assert.equal(revoke(value), true, JSON.stringify(revoke.errors));
+    }
+  });

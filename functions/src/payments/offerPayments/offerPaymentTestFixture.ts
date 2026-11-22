@@ -3,8 +3,7 @@ import {fixture, org, eventId, contactId, actorUid, offerId, responseId} from
   "../../organizerFormAdmission/admissionTestFixture";
 import {issueOfferRecipientInvitation, claimOfferRecipientInvitation} from
   "../../organizerEventOfferRecipients/recipientGrant";
-import {CHECKOUT_HOLD_MILLIS} from
-  "../../events/seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {hostPaymentAccountDocumentId} from "../hostPaymentAccounts";
 import type {PaymentRoutingSnapshot} from "../paymentRouting";
 import {reserveOfferPayment, OFFER_PAYMENT_COLLECTION} from

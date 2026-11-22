@@ -5,7 +5,7 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {planNight as buildNightPlan, type NightPlan} from "../eventSuccess/nightPlan";
-import {effectiveInteractionModelFor, eventSuccessPrimitivesFor} from "../eventSuccess/formatPrimitives";
+import {effectiveInteractionModelFor, eventSuccessPrimitivesFor} from "../domain/formats/formatPrimitives";
 import {buildEventSuccessPlanDoc, type EventSuccessPlanDefaults} from "../events/mutateEvent";
 import {stagePlanSetupUpdate, type PlanSetupFields} from "../eventSuccess/planSetup";
 import {updatePrivateEventDetails, type UpdatePrivateEventDetailsCommand} from "../events/progressiveSetup/details";

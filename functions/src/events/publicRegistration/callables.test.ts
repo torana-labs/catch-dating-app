@@ -4,7 +4,7 @@ import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import {managePublicEventCheckoutHandler as handle} from "./callables";
 import {processorFixture} from "./processorTestFixture";
 import {uid, phone, eventId, now} from "./testFixture";
-import {CHECKOUT_HOLD_MILLIS} from "../seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {reconcileVerifiedEventOrder} from
   "../../payments/eventCheckout/eventPaymentWebhook";
 import {publicPaymentLedger} from "../../domain/payments/publicEventPayments";

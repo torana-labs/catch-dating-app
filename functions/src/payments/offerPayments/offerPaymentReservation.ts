@@ -2,7 +2,7 @@ import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {offerCancellationPolicy, assertReviewedCancellationPolicy,
   type OfferCancellationPolicy} from "./offerCancellationPolicy";
 import {assertUnpartitionedAdmission} from
-  "../../organizerFormAdmission/admissionEligibility";
+  "../../domain/events/admissionEligibility";
 import {createHash} from "node:crypto";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -17,8 +17,8 @@ import {prepareCrmOriginSeatIdentity} from
 import {readSeatMigrationWriterFence} from "../../events/seatMigrationPaged";
 import {FirestoreSeatTransaction, assertCurrentReadySeatSnapshot} from
   "../../events/seatAuthority/firestoreAdapter";
-import {CHECKOUT_HOLD_MILLIS, heldSeatCount} from
-  "../../events/seatAuthority/seatAuthority";
+import {heldSeatCount} from "../../events/seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {prepareCheckoutHold, applyCheckoutHold} from
   "../../events/seatAuthority/checkoutSeatHold";
 import {rosterWithReservedWaitlistOffersInTransaction} from

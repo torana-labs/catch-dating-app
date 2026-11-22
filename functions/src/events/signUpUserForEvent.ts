@@ -1,6 +1,5 @@
 import {assertAccountMayBook} from "../safety/accountStanding";
-import {communityMembershipId, requiresCommunityMembership,
-  readCommunityMembership} from
+import {communityMembershipId, readCommunityMembership} from
   "../memberships/communityMembershipAuthority";
 import {prepareNativePaidBooking, NativePaidBooking} from
   "../payments/nativeBooking";
@@ -48,6 +47,7 @@ import {
   hasHostApprovedJoinRequest,
   incrementCount,
   rosterFromEvent,
+  requiresCommunityMembership,
   rosterWithReservedWaitlistOffersInTransaction,
 } from "./eventPolicy";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";

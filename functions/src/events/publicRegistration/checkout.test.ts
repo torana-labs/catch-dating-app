@@ -9,7 +9,7 @@ import {
   phone,
   now,
 } from "./testFixture";
-import {CHECKOUT_HOLD_MILLIS} from "../seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {
   PUBLIC_PAYMENT_COLLECTION,
   PUBLIC_ADMISSION_COLLECTION,

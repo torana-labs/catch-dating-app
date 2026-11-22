@@ -1856,6 +1856,53 @@
       }
     },
     {
+      "actionId": "sales.partners.access.get",
+      "callable": "adminGetSalesPartnerAccess",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_get_sales_partner_access_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_sales_partner_access_response.schema.json",
+      "summary": "Read one organizer's referral partner reservation and that partner's membership, with the revisions a revoke or a new offer must name.",
+      "example": {
+        "organizerId": "example-org"
+      }
+    },
+    {
+      "actionId": "sales.partners.revoke",
+      "callable": "adminRevokeSalesPartnerAccess",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "partnerUid",
+      "requestSchema": "contracts/callables/admin_revoke_sales_partner_access_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_revoke_sales_partner_access_response.schema.json",
+      "summary": "Revoke a referral partner's reservation for one organizer, or with a null organizerId their whole partner membership, at the exact current revision.",
+      "controlPlane": true,
+      "example": {
+        "requestId": "example-partner-revoke",
+        "organizerId": "example-org",
+        "partnerUid": "example-partner",
+        "expectedRevision": 2,
+        "reason": "The host asked to work with Catch directly."
+      }
+    },
+    {
       "actionId": "sales.privacy.batch.apply",
       "callable": "adminApplySalesPrivacyBatch",
       "workflowIds": [

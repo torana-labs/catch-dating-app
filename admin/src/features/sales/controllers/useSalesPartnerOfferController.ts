@@ -1,10 +1,13 @@
 import {useLayoutEffect, useRef, useState} from "react";
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {offerSalesPartner, type PartnerOfferInput} from "../api/salesPartnerAssignment";
 
 type Offer = Pick<PartnerOfferInput, "partnerUid" | "nextAction" | "reviewAt" | "expiresAt" | "reason">;
-export function useSalesPartnerOfferController(actorUid: string, organizerId: string) {
+/** expectedRevision is the host's current reservation revision (0 when none was ever made). */
+export function useSalesPartnerOfferController(actorUid: string, organizerId: string, expectedRevision = 0) {
+  const client = useQueryClient();
   const {beginOperation, endOperation} = useAdminPendingOperationGuard();
   const mutation = useMutation({mutationFn: offerSalesPartner, retry: false, gcTime: 0});
   const epoch = useRef(0); const pending = useRef<PartnerOfferInput | null>(null);
@@ -17,6 +20,13 @@ export function useSalesPartnerOfferController(actorUid: string, organizerId: st
     setTicket(null); setError(null); setOfferedTo(null);
     return () => {epoch.current += 1; pending.current = null;};
   }, [actorUid, organizerId]);
+  // A new revision (an offer landed, or a revoke reopened the host) allows the next offer;
+  // an unconfirmed ticket stays, because its receipt answers a retry whatever the revision.
+  const revision = useRef(expectedRevision);
+  useLayoutEffect(() => {
+    if (revision.current === expectedRevision) return;
+    revision.current = expectedRevision; completed.current = false; setOfferedTo(null);
+  }, [expectedRevision]);
   const run = async (input: PartnerOfferInput) => {
     if (busy.current || completed.current || (pending.current && pending.current !== input)) return false;
     const lease = beginOperation(); if (!lease) return false;
@@ -26,6 +36,7 @@ export function useSalesPartnerOfferController(actorUid: string, organizerId: st
       await mutation.mutateAsync(input);
       if (generation !== epoch.current) return false;
       completed.current = true; pending.current = null; setTicket(null); setOfferedTo(input.partnerUid);
+      void client.invalidateQueries({queryKey: adminQueryKeys.sales.partnerAccess(organizerId)});
       return true;
     } catch (failure) {
       if (generation !== epoch.current) return false;
@@ -33,8 +44,12 @@ export function useSalesPartnerOfferController(actorUid: string, organizerId: st
         String(failure.code).replace(/^functions\//u, "") : "";
       const rejected = ["aborted", "invalid-argument", "permission-denied", "unauthenticated",
         "failed-precondition", "already-exists", "not-found", "resource-exhausted"].includes(code);
-      if (rejected) {pending.current = null; setTicket(null);}
-      setError(rejected ? (failure instanceof Error ? failure.message : "The offer was rejected. Review current access.") :
+      if (rejected) {
+        pending.current = null; setTicket(null);
+        void client.invalidateQueries({queryKey: adminQueryKeys.sales.partnerAccess(organizerId)});
+      }
+      setError(code === "aborted" ? "Someone changed this host's partner reservation while you were offering. Close this, check who has it now, and offer again." :
+        rejected ? (failure instanceof Error ? failure.message : "The offer was rejected. Review current access.") :
         "The offer was not confirmed. Retry the unchanged request before making another offer.");
       return false;
     } finally {
@@ -54,7 +69,7 @@ export function useSalesPartnerOfferController(actorUid: string, organizerId: st
       return Promise.resolve(false);
     }
     return run({...value, partnerUid: value.partnerUid.trim(), nextAction: value.nextAction.trim(),
-      reason: value.reason.trim(), organizerId, expectedRevision: 0, originatorUid: null, requestId: crypto.randomUUID()});
+      reason: value.reason.trim(), organizerId, expectedRevision: revision.current, originatorUid: null, requestId: crypto.randomUUID()});
   };
   return {offer, retry: () => pending.current ? run(pending.current) : Promise.resolve(false),
     ticket, error, offeredTo, busy: mutation.isPending};

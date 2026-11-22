@@ -1,6 +1,9 @@
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
-import type {EventPolicyBundleDocument} from "../events/eventPolicy";
+import {
+  requiresCommunityMembership,
+  type EventPolicyBundleDocument,
+} from "../events/eventPolicy";
 import type {OrganizerCommunityMembershipDocument} from
   "../shared/generated/organizerCommunityMembershipDocument";
 import {validateOrganizerCommunityMembershipDocument} from
@@ -30,15 +33,6 @@ export function communityMembershipDecisionId(
     createHash("sha256")
       .update(JSON.stringify([organizerId, uid, requestId]))
       .digest("hex")
-  );
-}
-
-export function requiresCommunityMembership(
-  policy: Pick<EventPolicyBundleDocument, "admission">
-): boolean {
-  return (
-    policy.admission.membershipRequired === true ||
-    policy.admission.format === "membersOnly"
   );
 }
 

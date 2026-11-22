@@ -5,7 +5,8 @@ import {validateOrganizerFormAdmissionReceiptDocument} from
   "../../shared/generated/validators/organizerFormAdmissionReceiptDocument";
 import {validateOrganizerFormAdmissionDocument} from
   "../../shared/generated/validators/organizerFormAdmissionDocument";
-import {canonicalJson} from "../../events/eventSetupPreferences/resolve";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 import {formAdmissionOwnershipId, formAdmissionReceiptId} from
   "../../organizerFormAdmission/admissionService";
 import {admissionRequestHash} from

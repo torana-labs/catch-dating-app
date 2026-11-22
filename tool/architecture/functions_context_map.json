@@ -35,8 +35,8 @@
     {"id": "website", "owns": "The website's public page and city read models and its try-it commands."},
     {"id": "ops", "owns": "Demo, seed and maintenance callables."}
   ],
-  "contextOrderViolationCeiling": 255,
-  "crossContextWriteCeiling": 100,
+  "contextOrderViolationCeiling": 201,
+  "crossContextWriteCeiling": 83,
   "legacy": [
     {"path": "functions/src/shared/", "layer": "platform"},
     {"path": "functions/src/email/", "layer": "platform"},

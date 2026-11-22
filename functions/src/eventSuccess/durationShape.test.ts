@@ -4,7 +4,7 @@ import test from "node:test";
 import {
   defaultDurationShapeFor,
   eventSuccessPrimitivesFor,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 
 test("duration shape defaults cover the reviewed format vocabulary", () => {
   assert.equal(defaultDurationShapeFor("pacePods"), "segments");

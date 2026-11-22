@@ -2,8 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {applyCheckoutHold, CheckoutHoldCommand,
   prepareCheckoutHold} from "./checkoutSeatHold";
-import {applySeatCommand, CHECKOUT_HOLD_MILLIS, SeatLedger, SeatReceipt,
-  SeatReservation, SeatTransaction} from "./seatAuthority";
+import {
+  applySeatCommand,
+  SeatLedger,
+  SeatReceipt,
+  SeatReservation,
+  SeatTransaction,
+} from "./seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {prepareSeatBatch} from "./seatBatch";
 
 type Identity = {key: string; revision: number};

@@ -2,8 +2,10 @@ import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {isEventPolicyTerms} from "../configuredEvent";
 import {eventPolicyFromEvent, normalizePolicy} from "../eventPolicy";
-import {canonicalJson} from "../eventSetupPreferences/resolve";
-import type {BookingMode} from "../eventSetupPreferences/types";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
+import type {BookingMode} from
+  "../../domain/formats/eventSetupPreferences/types";
 
 /** The admission choices an event's saved preferences carry. Null leaves the
  * event's current policy as it is.

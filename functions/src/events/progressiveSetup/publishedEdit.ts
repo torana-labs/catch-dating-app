@@ -5,7 +5,8 @@ import {isEventPolicyTerms, requireConfiguredEvent} from "../configuredEvent";
 import {eventPolicyFromEvent} from "../eventPolicy";
 import {eventDiscoveryProjection} from "../eventDiscoveryProjection";
 import {followersFirstChoice, followersFirstUntilMs} from "../followersFirst";
-import type {BookingMode} from "../eventSetupPreferences/types";
+import type {BookingMode} from
+  "../../domain/formats/eventSetupPreferences/types";
 import {admissionChoicesPatch} from "./admissionChoices";
 
 /** Private drafts stay on their manager-only editor; published events can use

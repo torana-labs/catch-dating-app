@@ -1,5 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import type {EventDocument} from "../../shared/generated/firestoreAdminTypes";
 
 /** Approval alone cannot substitute for cohort, member or pair eligibility. */
 export function assertUnpartitionedAdmission(event: EventDocument): void {

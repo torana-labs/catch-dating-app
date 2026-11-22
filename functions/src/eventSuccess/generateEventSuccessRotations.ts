@@ -71,7 +71,7 @@ import {
   EventSuccessMatchingObjective,
   eventSuccessPrimitivesFor,
   eventSuccessVariableResolutionFor,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {
   assignmentConstraintsForStructureConfig,
   AssignmentPrimitiveStructureConfig,
