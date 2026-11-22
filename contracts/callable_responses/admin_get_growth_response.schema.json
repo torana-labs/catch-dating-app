@@ -117,10 +117,11 @@
     "adSpend": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["month", "metaMinor", "metaConnected", "googleConnected", "adClaims"],
+      "required": ["month", "metaMinor", "googleMinor", "metaConnected", "googleConnected", "adClaims"],
       "properties": {
         "month": {"$ref": "#/definitions/month"},
         "metaMinor": {"type": ["integer", "null"], "minimum": 0},
+        "googleMinor": {"type": ["integer", "null"], "minimum": 0},
         "metaConnected": {"type": "boolean"},
         "googleConnected": {"type": "boolean"},
         "adClaims": {"$ref": "#/definitions/count"}
