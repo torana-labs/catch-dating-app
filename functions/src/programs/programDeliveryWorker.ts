@@ -1,4 +1,6 @@
-import {WHATSAPP_DISPATCHES} from "../delivery/whatsappDispatches";
+import {
+  WHATSAPP_DISPATCHES, prepareWhatsappDispatch,
+} from "../delivery/whatsappDispatches";
 import * as admin from "firebase-admin";
 import {prepareProgramActivityChannel, type ProgramFcmSender} from
   "./programActivityChannel";
@@ -29,8 +31,8 @@ import {whatsappStatusCorrelation} from
   "../eventSuccess/operations/whatsappDeliveryProtocol";
 import {whatsappEndpointHash} from
   "../eventSuccess/operations/whatsappReplyProtocol";
-import {validateProgramWhatsappDispatchDocument} from
-  "../shared/generated/validators/programWhatsappDispatchDocument";
+import type {ProgramWhatsappDispatchDocument} from
+  "../shared/generated/programWhatsappDispatchDocument";
 
 import {readProgramGuestFields, readProgramHouseholdFields} from
   "../workspaces/workspaceFieldAuthority";
@@ -353,7 +355,7 @@ async function dispatchProgramWhatsapp(
         }
         const payloadHash = operationContentHash([
           metaTemplateFromDocument(tpl), intent.whatsapp!.variables]);
-        const dispatch = {
+        const dispatch: ProgramWhatsappDispatchDocument = {
           schemaVersion: 1, source: "program",
           attemptId: liveAttempt.attemptId,
           messageId: record.messageId, context: intent.context,
@@ -367,16 +369,12 @@ async function dispatchProgramWhatsapp(
           templateDocumentId: intent.whatsapp!.templateId,
           templateHash: operationContentHash(tplSnap.data()),
           payloadHash, createdAt: now};
-        if (!validateProgramWhatsappDispatchDocument(dispatch)) {
-          throw new Error("Invalid program WhatsApp dispatch evidence");
-        }
-        const ref = db.collection(PROGRAM_WHATSAPP_DISPATCHES)
-          .doc(liveAttempt.attemptId);
-        if ((await tx.get(ref)).exists) return {kind: "withheld"};
+        const stageEvidence = await prepareWhatsappDispatch(db, tx, dispatch);
+        if (!stageEvidence) return {kind: "withheld"};
         return {kind: "ready",
           value: {e164: recipient.e164, payloadHash},
           validUntil: Math.min(now + FACT_SNAPSHOT_MS, intent.expiresAt),
-          commit: () => tx.create(ref, dispatch)};
+          commit: stageEvidence};
       });
   if (claim.kind === "withheld") {
     return {kind: "withheld", reason: claim.reason};

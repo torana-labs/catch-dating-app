@@ -1,4 +1,6 @@
-import {WHATSAPP_DISPATCHES} from "../delivery/whatsappDispatches";
+import {
+  WHATSAPP_DISPATCHES, prepareWhatsappDispatch,
+} from "../delivery/whatsappDispatches";
 import {readProgramGuestFields} from
   "../workspaces/workspaceFieldAuthority";
 import * as admin from "firebase-admin";
@@ -36,8 +38,8 @@ import {
 } from "./organizerWhatsappProvider";
 import {whatsappStatusCorrelation} from
   "../eventSuccess/operations/whatsappDeliveryProtocol";
-import {validateCampaignWhatsappDispatchDocument} from
-  "../shared/generated/validators/campaignWhatsappDispatchDocument";
+import type {CampaignWhatsappDispatchDocument} from
+  "../shared/generated/campaignWhatsappDispatchDocument";
 import {
   effectiveOrganizerWhatsappPurposeStatus,
   organizerCommunicationPreferenceId,
@@ -637,7 +639,7 @@ async function dispatchCampaignWhatsapp(
         const endpointHash = recipient.endpointHash;
         const payloadHash = operationContentHash([
           metaTemplateFromDocument(tpl), intent.whatsapp.variables]);
-        const dispatch = {
+        const dispatch: CampaignWhatsappDispatchDocument = {
           schemaVersion: 1, source: "campaign",
           attemptId: liveAttempt.attemptId,
           messageId: liveRecord.messageId, context: intent.context,
@@ -651,12 +653,8 @@ async function dispatchCampaignWhatsapp(
           templateDocumentId: intent.whatsapp.templateId,
           templateHash: operationContentHash(tplSnap.data()),
           payloadHash, createdAt: now};
-        if (!validateCampaignWhatsappDispatchDocument(dispatch)) {
-          throw new Error("Invalid campaign WhatsApp dispatch evidence");
-        }
-        const evidenceRef = db.collection(CAMPAIGN_WHATSAPP_DISPATCHES)
-          .doc(liveAttempt.attemptId);
-        if ((await tx.get(evidenceRef)).exists) return {kind: "withheld"};
+        const stageEvidence = await prepareWhatsappDispatch(db, tx, dispatch);
+        if (!stageEvidence) return {kind: "withheld"};
         const campaignRef = db.collection("organizerCampaigns")
           .doc(intent.context.campaignId);
         const leaseUntil = Math.min(now + RECIPIENT_LEASE_MS,
@@ -665,7 +663,7 @@ async function dispatchCampaignWhatsapp(
           value: {e164: recipient.endpointE164, payloadHash},
           validUntil: Math.min(now + FACT_SNAPSHOT_MS, intent.expiresAt),
           commit: () => {
-            tx.create(evidenceRef, dispatch);
+            stageEvidence();
             // The attempt id IS the lease: exactly one executor can hold
             // the recipient row, and the row always names its executor.
             tx.update(recipientRef, {
