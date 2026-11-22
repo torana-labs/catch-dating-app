@@ -63,6 +63,19 @@ class HostFormSummaryReads {
       search,
     );
   }
+
+  /// One form's summary row, read once; null while the form has none.
+  Future<HostFormSummary?> summary({
+    required String organizerId,
+    required String formId,
+  }) async {
+    final doc = await reader.document(
+      collection: 'hostFormSummaries',
+      scopeId: organizerId,
+      id: formId,
+    );
+    return doc == null ? null : HostFormSummary.fromMap(doc['row'] as Map);
+  }
 }
 
 /// The forms whose title or description contains the search (as the
