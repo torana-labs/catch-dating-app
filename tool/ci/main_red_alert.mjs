@@ -173,6 +173,79 @@ export function nightlyWindow({run, nightlies}) {
     (repository ? ` (${repository}/compare/${green.head_sha}...${run.head_sha})` : "");
 }
 
+// A main push run that a newer merge replaced never starts, and the run that
+// replaced it can be for an earlier commit when GitHub creates a queue batch's
+// runs out of order. The replaced commit is then validated only by the next
+// main push or the nightly. Reported, never triggered (RE decision, 22 Nov 2026).
+const UNCOVERED_MARKER = /<!-- main-push-uncovered ([0-9a-f]{40}) -->/gu;
+const SHA = /^[0-9a-f]{40}$/u;
+const HOUR = 60 * 60 * 1000;
+// Runs for later commits can be created this long before an earlier commit's run.
+const OUT_OF_ORDER_MS = 10 * 60 * 1000;
+const ranOrWill = (run) => run.status !== "completed" || !["cancelled", "skipped"].includes(run.conclusion);
+
+/** The commits already reported uncovered in an issue's texts (body, then comments). */
+export function reportedUncovered(texts) {
+  return new Set(texts.flatMap((text) => [...String(text ?? "").matchAll(UNCOVERED_MARKER)].map((match) => match[1])));
+}
+
+/**
+ * Commits whose main push run was cancelled (replaced while pending) and that
+ * no run that ran, or is still to run, covers. Pure, so every case is testable.
+ *
+ * @param {object} input
+ * @param {Array<object>} input.runs Recent CI runs for push events on main.
+ * @param {number} input.now Milliseconds since the epoch.
+ * @param {(descendant: string, sha: string) => boolean | null} input.contains
+ *   Whether `descendant` is `sha` or a later commit on main; null when unknown.
+ * @returns {{uncovered: Array<{sha:string, runId:number, html_url:string}>, unknown: string[]}}
+ */
+export function uncoveredCommits({runs, now, contains}) {
+  const push = runs.filter((run) => run.event === "push" && run.head_branch === "main" &&
+    run.path === ".github/workflows/ci.yml" && SHA.test(String(run.head_sha ?? "")));
+  const uncovered = [];
+  const unknown = [];
+  const seen = new Set();
+  // The nightly validates everything, so a replaced run older than a day is settled.
+  const replaced = push.filter((run) => run.status === "completed" && run.conclusion === "cancelled" &&
+    now - Date.parse(run.created_at) <= 26 * HOUR).sort((left, right) => Number(right.id) - Number(left.id));
+  for (const run of replaced) {
+    const sha = run.head_sha;
+    if (seen.has(sha)) continue;
+    seen.add(sha);
+    if (push.some((other) => other.head_sha === sha && ranOrWill(other))) continue;
+    const created = Date.parse(run.created_at);
+    const candidates = push.filter((other) => other.head_sha !== sha && ranOrWill(other) &&
+      Date.parse(other.created_at) >= created - OUT_OF_ORDER_MS);
+    const answers = candidates.map((other) => contains(other.head_sha, sha));
+    if (answers.includes(true)) continue;
+    if (answers.includes(null)) unknown.push(sha);
+    else uncovered.push({sha, runId: Number(run.id), html_url: run.html_url});
+  }
+  return {uncovered, unknown};
+}
+
+/**
+ * Reports uncovered commits on the "Main CI is red" issue: opens it, or
+ * comments on the open one, once per commit. Opening owes Required CI, so the
+ * next green main push, whose run plans from the nearest earlier run that ran
+ * and so covers the commit, closes it.
+ */
+export function decideUncovered({uncovered, openIssue, reported = new Set()}) {
+  const fresh = uncovered.filter((commit) => !reported.has(commit.sha));
+  if (!fresh.length) return {action: "none"};
+  const lines = fresh.map((commit) => `- \`${commit.sha.slice(0, 8)}\`: its run ${commit.html_url} was replaced before it ran`);
+  const body = [
+    `Main CI has not validated ${fresh.length === 1 ? "this commit" : "these commits"}, and no later main push run covers ${fresh.length === 1 ? "it" : "them"}:`,
+    ...lines,
+    "", "The next push to main validates them (its run plans from the nearest earlier run that ran), as does the nightly. " +
+      "Nothing was triggered automatically.",
+  ].join("\n") + fresh.map((commit) => `\n<!-- main-push-uncovered ${commit.sha} -->`).join("");
+  return openIssue ?
+    {action: "comment", issue: openIssue.number, body: body + FOOTER} :
+    {action: "open", title: ISSUE_TITLE, body: body + owedMarker([REQUIRED_CI_JOB]) + FOOTER};
+}
+
 function gh(args, input) {
   const result = spawnSync("gh", args, {encoding: "utf8", input, maxBuffer: 32 * 1024 * 1024});
   assert.equal(result.status, 0, result.stderr || `gh ${args.join(" ")} failed`);
@@ -212,6 +285,42 @@ function main() {
   console.log(`Main CI alert: ${decision.action}${decision.reason ? ` (${decision.reason})` : ""} ` +
     `(run ${runId}, ${run.conclusion})`);
   if (run.conclusion === "success") floorExit(repository, issues, openIssue && decision.action !== "close");
+  if (run.event === "push") {
+    try {
+      uncoveredTip(repository);
+    } catch (error) {
+      console.log(`Uncovered main commits: not checked (${error.message.split("\n")[0]})`);
+    }
+  }
+}
+
+function uncoveredTip(repository) {
+  const runs = JSON.parse(gh(["api", "-H", "Cache-Control: no-cache",
+    `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&event=push&per_page=100`])).workflow_runs ?? [];
+  const memo = new Map();
+  const contains = (descendant, sha) => {
+    const key = `${sha}...${descendant}`;
+    if (!memo.has(key)) {
+      const result = spawnSync("gh", ["api", `repos/${repository}/compare/${key}`, "--jq", ".status"], {encoding: "utf8"});
+      const status = result.status === 0 ? result.stdout.trim() : "";
+      memo.set(key, ["ahead", "identical"].includes(status) ? true : ["behind", "diverged"].includes(status) ? false : null);
+    }
+    return memo.get(key);
+  };
+  const {uncovered, unknown} = uncoveredCommits({runs, now: Date.now(), contains});
+  // Read the issue afresh: the alert above may have opened or closed it.
+  const issues = JSON.parse(gh(["api", `repos/${repository}/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100`]));
+  const openIssue = issues.find((issue) => issue.title === ISSUE_TITLE && !issue.pull_request) ?? null;
+  const reported = openIssue ? reportedUncovered([openIssue.body, ...JSON.parse(gh(["api", "--paginate", "--slurp",
+    `repos/${repository}/issues/${openIssue.number}/comments?per_page=100`])).flat().map((comment) => comment.body)]) : new Set();
+  const decision = decideUncovered({uncovered, openIssue, reported});
+  if (decision.action === "open") {
+    gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
+  } else if (decision.action === "comment") {
+    gh(["api", "-X", "POST", `repos/${repository}/issues/${decision.issue}/comments`, "-F", "body=@-"], decision.body);
+  }
+  console.log(`Uncovered main commits: ${decision.action} (${uncovered.length} uncovered` +
+    `${unknown.length ? `, ${unknown.length} unknown` : ""})`);
 }
 
 function floorExit(repository, issues, alertOpen) {
