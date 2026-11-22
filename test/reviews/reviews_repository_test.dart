@@ -1,7 +1,9 @@
+import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class TestFirebaseFunctions extends Fake implements FirebaseFunctions {
@@ -129,6 +131,87 @@ void main() {
     });
 
     test(
+      'organizer and event review lists read only published reviews',
+      () async {
+        await _seedModeratedReviews(firestore);
+
+        await expectLater(
+          repository.watchReviewsForOrganizer('club-1'),
+          emits([isA<Review>().having((r) => r.id, 'id', 'event-1~runner-1')]),
+        );
+        await expectLater(
+          repository.watchReviewsForEvent('event-1'),
+          emits([isA<Review>().having((r) => r.id, 'id', 'event-1~runner-1')]),
+        );
+
+        final organizerPage = await repository.fetchOrganizerReviewsPage(
+          organizerId: 'club-1',
+        );
+        final eventPage = await repository.fetchEventReviewsPage(
+          eventId: 'event-1',
+        );
+        expect(organizerPage.items.map((r) => r.id), ['event-1~runner-1']);
+        expect(eventPage.items.map((r) => r.id), ['event-1~runner-1']);
+      },
+    );
+
+    test('reviewer lists keep the author\'s pending reviews', () async {
+      await _seedModeratedReviews(firestore);
+
+      await expectLater(
+        repository.watchReviewsByUser('runner-2'),
+        emits([
+          isA<Review>()
+              .having((r) => r.id, 'id', 'event-1~runner-2')
+              .having((r) => r.moderationStatus, 'status', 'pending'),
+        ]),
+      );
+      final page = await repository.fetchUserReviewsPage(
+        reviewerUserId: 'runner-2',
+      );
+      expect(page.items.map((r) => r.id), ['event-1~runner-2']);
+    });
+
+    test(
+      'the event list adds the signed-in author\'s own hidden review',
+      () async {
+        await _seedModeratedReviews(firestore);
+        final container = ProviderContainer(
+          overrides: [
+            reviewsRepositoryProvider.overrideWithValue(repository),
+            uidProvider.overrideWith((ref) => Stream.value('runner-2')),
+          ],
+        );
+        addTearDown(container.dispose);
+        final provider = watchReviewsForEventProvider('event-1');
+        final subscription = container.listen(provider, (_, _) {});
+        addTearDown(subscription.close);
+        await container.read(uidProvider.future);
+
+        final reviews = await container.read(provider.future);
+
+        expect(reviews.map((r) => r.id).toSet(), {
+          'event-1~runner-1',
+          'event-1~runner-2',
+        });
+      },
+    );
+
+    test('withOwnEventReview keeps one copy, newest first', () {
+      final older = _review().copyWith(
+        id: 'event-1~runner-1',
+        createdAt: DateTime.utc(2026, 5),
+      );
+      final newer = _review(
+        reviewerUserId: 'runner-2',
+      ).copyWith(id: 'event-1~runner-2', createdAt: DateTime.utc(2026, 6));
+
+      expect(withOwnEventReview([older], null), [older]);
+      expect(withOwnEventReview([older], older), [older]);
+      expect(withOwnEventReview([older], newer), [newer, older]);
+    });
+
+    test(
       'watchUserReviewForEvent emits the deterministic review doc',
       () async {
         await firestore.collection('reviews').doc('event-1~runner-1').set({
@@ -176,6 +259,29 @@ void main() {
       );
     });
   });
+}
+
+/// One published, one pending, one rejected and one unmoderated review of the
+/// same event, each by a different guest.
+Future<void> _seedModeratedReviews(FakeFirebaseFirestore firestore) async {
+  const statuses = <String, String?>{
+    'runner-1': 'published',
+    'runner-2': 'pending',
+    'runner-3': 'rejected',
+    'runner-4': null,
+  };
+  for (final MapEntry(key: uid, value: status) in statuses.entries) {
+    await firestore.collection('reviews').doc('event-1~$uid').set({
+      'organizerId': 'club-1',
+      'eventId': 'event-1',
+      'reviewerUserId': uid,
+      'reviewerName': 'Guest $uid',
+      'rating': 5,
+      'comment': 'Great event.',
+      'moderationStatus': ?status,
+      'createdAt': DateTime.utc(2026, 5),
+    });
+  }
 }
 
 Review _review({

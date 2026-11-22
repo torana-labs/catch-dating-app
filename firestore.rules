@@ -3773,8 +3773,31 @@ service cloud.firestore {
     }
 
     // ── Reviews ───────────────────────────────────────────────────────────────
+    // A published review is readable by any signed-in user. A pending or
+    // rejected one (or one with no moderationStatus) is readable only by its
+    // author, so list queries must filter on moderationStatus == 'published'
+    // or on reviewerUserId == the caller. Catch staff read reviews through
+    // role-gated Admin SDK callables, never through these rules. An author may
+    // also get their own deterministic event review id ({eventId}~{uid})
+    // before it exists, so the app can watch "my review for this event".
+    function isReadableReview(data) {
+      return data.moderationStatus == 'published'
+        || data.reviewerUserId == request.auth.uid;
+    }
+
+    function isOwnEventReviewId(reviewId) {
+      let parts = reviewId.split('~');
+      return parts.size() == 2
+        && parts[0].size() > 0
+        && parts[1] == request.auth.uid;
+    }
+
     match /reviews/{reviewId} {
-      allow read: if isAuthed();
+      allow get: if isAuthed()
+        && (resource == null
+          ? isOwnEventReviewId(reviewId)
+          : isReadableReview(resource.data));
+      allow list: if isAuthed() && isReadableReview(resource.data);
       // Review create/update/delete is callable-owned so attendance checks,
       // public reviewer naming, and aggregate recomputation stay server-side.
       allow write: if false;
