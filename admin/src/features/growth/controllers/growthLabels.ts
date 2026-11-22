@@ -23,6 +23,18 @@ export const channelShortLabels: Record<GrowthChannel, string> = {
   ads: "Ads",
 };
 
+export type GrowthSignupSource = Growth["signupSources"]["rows"][number]["source"];
+
+/** What a host said in Catch Host setup about how they heard of Catch. */
+export const signupSourceLabels: Record<GrowthSignupSource, string> = {
+  metaAd: "Instagram or Facebook ad",
+  googleSearch: "Google search",
+  instagramPost: "Instagram post or reel",
+  friendOrHost: "A friend or another host",
+  teamOutreach: "Someone from Catch reached out",
+  other: "Somewhere else",
+};
+
 export const nominatorRoleLabels: Record<NominatorRow["role"], string> = {
   associate: "Sales associate",
   partner: "Partner",

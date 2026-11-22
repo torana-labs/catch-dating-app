@@ -38,6 +38,14 @@ describe("Growth", () => {
     expect(screen.getByText("Google Ads is not connected")).toBeTruthy();
   });
 
+  it("shows what hosts said in setup in its own table, beside the channels", () => {
+    renderGrowth(controller("channels"));
+    const table = screen.getByRole("table", {name: "Self-reported source"});
+    expect(table.textContent).toContain("Instagram or Facebook ad");
+    expect(table.textContent).toContain("Skipped or not asked");
+    expect(screen.getByRole("table", {name: "By channel"}).textContent).not.toContain("Google search");
+  });
+
   it("approves a nominator's owed credit from the decision bar", () => {
     const value = controller("nominators");
     renderGrowth(value);

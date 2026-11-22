@@ -130,6 +130,13 @@ export function sampleGrowth(payload: AdminGetGrowthCallablePayload): Growth {
       {channel: "ads", listed: 23, claimed: 6, paying: 0, earnedMinor: 0,
         costMinor: rupees(48_200), costKind: "ads",
         detail: "Meta and Google ads"}],
+    signupSources: {rows: [
+      {source: "metaAd", organizers: 9, paying: 1},
+      {source: "googleSearch", organizers: 4, paying: 0},
+      {source: "instagramPost", organizers: 7, paying: 1},
+      {source: "friendOrHost", organizers: 12, paying: 2},
+      {source: "teamOutreach", organizers: 5, paying: 0},
+      {source: "other", organizers: 2, paying: 0}], unanswered: 2},
     claimsByMonth: [["2026-06", 22], ["2026-07", 19], ["2026-08", 24],
       ["2026-09", 21], ["2026-10", 10], ["2026-11", 2]].map(([month,
       count]) => ({month: String(month), count: Number(count)})),

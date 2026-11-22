@@ -24,6 +24,7 @@ import {
   organizerClaimLabel,
   organizerPageLabel,
   paymentsLabel,
+  signupSourceLabel,
   termsLabel,
   type ToneText,
 } from "../controllers/organizerRecordLabels";
@@ -153,6 +154,7 @@ function tabBody(tab: OrganizerPageTab, overview: OrganizerOverview, links: Orga
           fact("Terms", termsLabel(overview.terms)),
           fact("Payments", payments.text, payments.tone),
           fact("Came from", cameFromLabel(overview.growth)),
+          fact("Told us in setup", signupSourceLabel(overview.signupSource)),
           fact("Credit to", creditToLabel(overview.growth)),
           fact("First paid booking", overview.growth?.firstPaidBookingAt ?
             eventWhenLabel(overview.growth.firstPaidBookingAt).split(" · ")[0] : "Not yet"),

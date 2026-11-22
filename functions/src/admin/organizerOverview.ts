@@ -233,6 +233,7 @@ export async function adminGetOrganizerOverviewHandler(
         role: growth.nominator.role} : null,
       firstPaidBookingAt: timestampIso(growth.milestones?.firstPaidBookingAt),
     } : null,
+    signupSource: signupSourceOf(organizer),
     journey: journeyOf({organizer, nomination, claims: claims.map((c) =>
       c.claim), firstEvent, firstPaidBookingAt:
       growth?.milestones?.firstPaidBookingAt ?? null, names}),
@@ -243,6 +244,20 @@ export async function adminGetOrganizerOverviewHandler(
     upcomingEventCount: upcomingCatchCount - cancelledCatch +
       upcomingImported.length,
   };
+}
+
+/**
+ * What the owner said in Catch Host setup about how they heard of Catch.
+ * Self-reported, so it is shown beside the derived channel, never in it.
+ * @param {Partial<OrganizerDocument>} organizer Organizer document.
+ * @return {Response["signupSource"]} The answer, or null when skipped.
+ */
+function signupSourceOf(
+  organizer: Partial<OrganizerDocument>
+): Response["signupSource"] {
+  const answer = organizer.signupSource;
+  if (!answer?.source) return null;
+  return {source: answer.source, answeredAt: timestampIso(answer.answeredAt)};
 }
 
 /**
