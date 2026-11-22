@@ -1370,7 +1370,7 @@ guard `apply-flag`).
 
 - **What it does:** a one-off move of every event that has no
   `eventSeatLedgers` record onto the seat ledger, so the legacy seat path can
-  go. Each such event gets a class: `demo` (skipped), `malformed` (no usable
+  go. Each such event gets a class: `demo` or `demo-blocked`, `malformed` (no usable
   organizer, status or capacity policy), `cancelled-empty`,
   `cancelled-with-guests`, `migratable` or `blocked` (with the migration
   engine's blocker codes). `unfinished-migration` marks a run or a lone ledger
@@ -1379,7 +1379,11 @@ guard `apply-flag`).
   migration engine without its writer lock: the same sources, Admin Auth phone
   evidence, form receipts and CRM records, then the pure planner.
 - **Apply:** `--apply` gives each `cancelled-empty` event an empty ready ledger
-  and fence, runs the paged engine for each `migratable` event and resumes the
+  and fence; gives each `demo` event the seat records the demo seeders write
+  (a ledger counting its active bookings, and each booked guest's uid and
+  phone aliases, verified phone proof and reservation), since synthetic guests
+  have no Auth users for the engine; runs the paged engine for each
+  `migratable` event and resumes the
   tool's own unfinished runs, then sets `events.bookedCount` to the ledger's
   occupied seats where they differ. Production also needs `--allow-prod`.
 - **A failed run:** if the engine stops after the scan began, the event is

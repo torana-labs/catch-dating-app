@@ -7,6 +7,7 @@ import test from "node:test";
 import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 import {
   bookedCountSync,
+  catchUidSeatKey,
   classifyEvent,
   describeUnfinished,
   eventLine,
@@ -15,6 +16,7 @@ import {
   preclassifyEvent,
   runBackfill,
   runDiscards,
+  seatReservationDocId,
 } from "./migrate_event_seat_ledgers.mjs";
 
 const requireFromFunctions = createFunctionsRequire();
@@ -153,6 +155,11 @@ test("the dry run reports every class and writes nothing", async () => {
     [row.eventId, row]));
   assert.equal(report.summary.classes["on-ledger"], 1);
   assert.equal(byId.demo.class, "demo");
+  assert.equal(byId.demo.occupied, 1);
+  assert.deepEqual(byId.demo.bookedCount, {from: 3, to: 1});
+  assert.equal(byId.demo.seated, undefined);
+  assert.equal(byId.demohost.class, "demo-blocked");
+  assert.match(eventLine(byId.demo), /occupied 1/u);
   assert.equal(byId.broken.class, "malformed");
   assert.equal(byId.over.class, "cancelled-empty");
   assert.equal(byId.crowd.class, "cancelled-with-guests");
@@ -203,7 +210,8 @@ test("apply moves migratable and empty cancelled events onto the ledger",
     assert.equal(db.doc("eventSeatMigrationRuns/live").phase, "complete");
     assert.equal(db.doc("events/live").bookedCount, 2);
     assert.equal(db.paths("eventSeatMigrationStages/").length, 0);
-    assert.equal(db.paths("eventSeatReservations/").length, 2);
+    assert.equal(db.paths("eventSeatReservations/").filter((path) =>
+      db.doc(path).eventId === "live").length, 2);
 
     assert.equal(byId.over.result, "created");
     const ledger = db.doc("eventSeatLedgers/over");
@@ -212,7 +220,23 @@ test("apply moves migratable and empty cancelled events onto the ledger",
     assert.equal(db.doc("eventSeatMigrationFences/over").state, "ready");
     assert.equal(db.doc("eventSeatMigrationFences/over").organizerId, "org1");
 
-    for (const id of ["demo", "broken", "crowd", "drift", "ghost", "gone",
+    assert.equal(byId.demo.result, "created");
+    assert.equal(db.doc("eventSeatLedgers/demo").occupied, 1);
+    assert.equal(db.doc("eventSeatMigrationFences/demo").state, "ready");
+    assert.equal(db.doc("events/demo").bookedCount, 1);
+    const key = catchUidSeatKey("demo", "cast1");
+    assert.equal(db.doc(`eventSeatReservations/${seatReservationDocId("demo",
+      key)}`).active, true);
+    assert.equal(db.doc(`eventSeatVerifiedPhones/${
+      lib.seatVerifiedPhoneProofId("demo", "cast1")}`).phoneE164,
+    "+919800000077");
+    assert.equal(db.doc(`eventSeatIdentityAliases/${
+      lib.seatIdentityAliasId("demo", "uid", "cast1")}`).canonicalKey, key);
+    assert.equal(db.doc(`eventSeatIdentityAliases/${
+      lib.seatIdentityAliasId("demo", "phone", "+919800000077")}`)
+      .canonicalKey, key);
+
+    for (const id of ["demohost", "broken", "crowd", "drift", "ghost", "gone",
       "held"]) {
       assert.equal(byId[id].result, undefined, id);
       assert.equal(db.doc(`eventSeatLedgers/${id}`), undefined, id);
@@ -225,7 +249,7 @@ test("apply moves migratable and empty cancelled events onto the ledger",
 
     const again = await runBackfill({db, auth: fakeAuth(), lib,
       nowMillis: NOW + 1});
-    assert.equal(again.summary.classes["on-ledger"], 3);
+    assert.equal(again.summary.classes["on-ledger"], 4);
     assert.equal(again.summary.classes.migratable, 0);
     assert.equal(again.summary.classes["cancelled-empty"], 0);
   });
@@ -329,7 +353,14 @@ function world() {
     "events/done": onLedger,
     "eventSeatLedgers/done": born.ledger,
     "eventSeatMigrationFences/done": born.fence,
-    "events/demo": activeEvent({demoOps: true}),
+    // A demo event: a synthetic guest with no Auth user, booked once.
+    "events/demo": activeEvent({demoOps: true, bookedCount: 3}),
+    ...booking("demo", "cast1"),
+    "users/cast1": {phoneNumber: "+919800000077"},
+    // A demo event with a Host-sourced guest cannot be seated faithfully.
+    "events/demohost": activeEvent({demoOps: true}),
+    "eventAttendees/demohost_row": {eventId: "demohost", organizerId: "org1",
+      source: "hostImport", status: "registered"},
     "events/broken": activeEvent({organizerId: undefined}),
     "events/over": cancelledEvent({bookedCount: 0}),
     ...booking("over", "runner9", "cancelled"),

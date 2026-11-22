@@ -6,6 +6,10 @@
 // Dry run (the default) only reads. --apply creates empty ledgers for
 // cancelled events with no guests, runs the paged migration engine for active
 // events and then sets events.bookedCount to the ledger's occupied seats.
+// Demo events (synthetic guests with no Auth users) get the seat records the
+// demo seeders write: a ledger counting their active bookings and each booked
+// guest's Catch seat identity and reservation.
+import {createHash} from "node:crypto";
 import {isMain, parseCommonArgs} from "../lib/cli_args.mjs";
 import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 import {
@@ -27,11 +31,15 @@ const CANCELLED_TX_ROW_LIMIT = 2000;
 const ACTIVE_BOOKING = new Set(["signedUp", "attended"]);
 const ACTIVE_ATTENDEE = new Set(["registered", "checkedIn"]);
 const DISCARDABLE_PHASES = new Set(["scan", "plan", "discard"]);
+// A demo event's seat records are written in one transaction: a ledger, a
+// fence and up to four documents per booked guest, under Firestore's 500.
+const DEMO_TX_GUEST_LIMIT = 100;
 
 export const REPORT_CLASSES = [
   "on-ledger",
   "unfinished-migration",
   "demo",
+  "demo-blocked",
   "malformed",
   "missing",
   "cancelled-empty",
@@ -176,6 +184,10 @@ export function loadSeatLib(requireFromFunctions = createFunctionsRequire()) {
         .formConversionReceiptId,
     seatVerifiedPhoneProofId: load("./lib/events/seatIdentityAuthority.js")
       .seatVerifiedPhoneProofId,
+    seatIdentityAliasId: load("./lib/events/seatIdentityAuthority.js")
+      .seatIdentityAliasId,
+    seatIdentityValueHash: load("./lib/events/seatIdentityAuthority.js")
+      .seatIdentityValueHash,
     documentId: load("firebase-admin/firestore").FieldPath.documentId,
   };
 }
@@ -632,6 +644,121 @@ async function createCancelledLedger(db, lib, eventId) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Demo events
+
+/** The canonical key a verified Catch account enrolls under; mirrors
+ * functions/src/events/seatIdentityAuthority.ts. */
+export function catchUidSeatKey(eventId, uid) {
+  return "uid_" + createHash("sha256").update([eventId, uid].join("\u001f"))
+    .digest("hex").slice(0, 48);
+}
+
+/** eventSeatReservations/{id} for one key; mirrors firestoreAdapter.ts. */
+export function seatReservationDocId(eventId, key) {
+  return createHash("sha256").update(`${eventId}\u001f${key}`)
+    .digest("hex");
+}
+
+/** Reads a demo event's active guests. Demo rosters come from bookings; a
+ * Host-sourced active row has no seat identity to give it, so it blocks. */
+async function demoSnapshot(db, lib, eventId, event, tx = readOnly) {
+  try {
+    lib.deriveEventSeatPolicy(event);
+  } catch (error) {
+    return {class: "demo-blocked", error: error.message};
+  }
+  const bookings = (await tx.get(db.collection("eventBookings")
+    .where("eventId", "==", eventId).limit(CANCELLED_TX_ROW_LIMIT + 1))).docs;
+  const attendees = (await tx.get(db.collection("eventAttendees")
+    .where("eventId", "==", eventId).limit(CANCELLED_TX_ROW_LIMIT + 1))).docs;
+  if (bookings.length > CANCELLED_TX_ROW_LIMIT ||
+      attendees.length > CANCELLED_TX_ROW_LIMIT) {
+    return {class: "demo-blocked", error: "Too many rows to read at once."};
+  }
+  const seated = bookings.map((doc) => doc.data())
+    .filter((row) => ACTIVE_BOOKING.has(row.status) && ID.test(row.uid));
+  const hostRows = attendees.filter((doc) => {
+    const row = doc.data();
+    return ACTIVE_ATTENDEE.has(row.status) && row.source !== "catchBooking";
+  }).length;
+  if (hostRows > 0) {
+    return {class: "demo-blocked",
+      error: `${hostRows} active Host-sourced guest(s) have no seat identity.`};
+  }
+  if (seated.length > DEMO_TX_GUEST_LIMIT) {
+    return {class: "demo-blocked", error: `${seated.length} booked guests ` +
+      `exceed one transaction (${DEMO_TX_GUEST_LIMIT}).`};
+  }
+  return {class: "demo", occupied: seated.length, seated,
+    bookedCount: bookedCountSync({bookedCount: event.bookedCount,
+      occupied: seated.length})};
+}
+
+/** Writes a demo event's ledger, fence and each booked guest's uid and phone
+ * aliases, verified phone proof and active reservation, as booking does. */
+async function createDemoSeats(db, lib, eventId) {
+  return db.runTransaction(async (tx) => {
+    const eventRef = db.collection("events").doc(eventId);
+    const [eventSnap, ledgerSnap, fenceSnap, runSnap] = await Promise.all([
+      tx.get(eventRef),
+      tx.get(db.collection("eventSeatLedgers").doc(eventId)),
+      tx.get(db.collection("eventSeatMigrationFences").doc(eventId)),
+      tx.get(db.collection("eventSeatMigrationRuns").doc(eventId)),
+    ]);
+    if (ledgerSnap.exists || fenceSnap.exists || runSnap.exists) {
+      return {result: "raced", error: "Seat authority appeared meanwhile."};
+    }
+    const event = eventSnap.data();
+    if (!isDemoEvent(event)) {
+      return {result: "raced", error: "The event is no longer a demo event."};
+    }
+    const snapshot = await demoSnapshot(db, lib, eventId, event, tx);
+    if (snapshot.class !== "demo") {
+      return {result: "failed", error: snapshot.error};
+    }
+    const users = await Promise.all(snapshot.seated.map((row) =>
+      tx.get(db.collection("users").doc(row.uid))));
+    const {ledger, fence} = lib.newEventSeatLedger(eventId, event);
+    tx.create(db.collection("eventSeatLedgers").doc(eventId),
+      {...ledger, occupied: snapshot.seated.length});
+    tx.create(db.collection("eventSeatMigrationFences").doc(eventId), fence);
+    for (const [index, row] of snapshot.seated.entries()) {
+      const key = catchUidSeatKey(eventId, row.uid);
+      const phone = users[index].data()?.phoneNumber;
+      const phoneE164 = typeof phone === "string" && phone ? phone : null;
+      const alias = {eventId, organizerId: fence.organizerId,
+        canonicalKey: key, identityRevision: 1, migrationRevision: 1,
+        state: "ready"};
+      tx.create(db.collection("eventSeatIdentityAliases").doc(
+        lib.seatIdentityAliasId(eventId, "uid", row.uid)), {...alias,
+        kind: "uid", valueHash: lib.seatIdentityValueHash("uid", row.uid)});
+      if (phoneE164) {
+        tx.create(db.collection("eventSeatIdentityAliases").doc(
+          lib.seatIdentityAliasId(eventId, "phone", phoneE164)), {...alias,
+          kind: "phone",
+          valueHash: lib.seatIdentityValueHash("phone", phoneE164)});
+      }
+      tx.create(db.collection("eventSeatVerifiedPhones").doc(
+        lib.seatVerifiedPhoneProofId(eventId, row.uid)), {eventId,
+        organizerId: fence.organizerId, uid: row.uid, phoneE164,
+        migrationRevision: 1, state: "current"});
+      const reservedAt = row.signedUpAt ?? row.createdAt;
+      tx.create(db.collection("eventSeatReservations").doc(
+        seatReservationDocId(eventId, key)), {eventId, canonicalKey: key,
+        identityRevision: 1, active: true, revision: 1,
+        reservedAtMillis: typeof reservedAt?.toMillis === "function" ?
+          reservedAt.toMillis() : 0,
+        releasedAtMillis: null});
+    }
+    if (snapshot.bookedCount) {
+      tx.update(eventRef, {bookedCount: snapshot.bookedCount.to});
+    }
+    return {result: "created", occupied: snapshot.seated.length,
+      bookedCount: snapshot.bookedCount};
+  });
+}
+
 async function syncBookedCount(db, eventId) {
   return db.runTransaction(async (tx) => {
     const eventRef = db.collection("events").doc(eventId);
@@ -683,7 +810,13 @@ export async function runBackfill({db, auth, lib, eventIds = [],
         {ledger: null, fence: null, run: null};
       const pre = preclassifyEvent({event, ...authority}, lib);
       let row = {eventId, ...pre};
-      if (pre.class === "cancelled") {
+      if (pre.class === "demo") {
+        // The report shows the count; apply re-reads the guests in its
+        // own transaction.
+        const {seated, ...demo} = await demoSnapshot(db, lib, eventId, event);
+        void seated;
+        row = {eventId, ...demo};
+      } else if (pre.class === "cancelled") {
         row = {eventId, ...classifyEvent(pre,
           await cancelledSnapshot(db, lib, eventId, event))};
       } else if (pre.class === "active") {
@@ -708,6 +841,13 @@ export async function runBackfill({db, auth, lib, eventIds = [],
 }
 
 async function applyRow({db, auth, lib, row, authority, nowMillis}) {
+  if (row.class === "demo") {
+    try {
+      return await createDemoSeats(db, lib, row.eventId);
+    } catch (error) {
+      return {result: "failed", error: error.message};
+    }
+  }
   if (row.class === "cancelled-empty") {
     try {
       return await createCancelledLedger(db, lib, row.eventId);
@@ -802,7 +942,7 @@ export function eventLine(row) {
   if (!row.result && row.bookedCount) {
     parts.push(`bookedCount ${row.bookedCount.from} -> ${row.bookedCount.to}`);
   }
-  if (row.class === "migratable" && !row.result) {
+  if ((row.class === "migratable" || row.class === "demo") && !row.result) {
     parts.push(`occupied ${row.occupied}`);
   }
   if (row.phase !== undefined || row.owner !== undefined) {
@@ -812,7 +952,10 @@ export function eventLine(row) {
   }
   if (row.result) {
     let result = `=> ${row.result}`;
-    if (row.result === "migrated") result += ` (occupied ${row.occupied})`;
+    if (row.result === "migrated" ||
+        row.result === "created" && row.class === "demo") {
+      result += ` (occupied ${row.occupied})`;
+    }
     if (row.bookedCount) {
       result += `, bookedCount ${row.bookedCount.from} -> ` +
         `${row.bookedCount.to}`;
@@ -870,7 +1013,10 @@ Needs a current Functions build (npm --prefix functions run build).
 Classes:
   on-ledger              Already has a ready ledger and fence (counted only).
   unfinished-migration   A migration run, or a lone ledger or fence, exists.
-  demo                   demoOps, synthetic or seedPrefix: skipped.
+  demo                   demoOps, synthetic or seedPrefix: gets the seat records
+                         demo seeders write (ledger, booked guests' identities
+                         and reservations); bookedCount follows the ledger.
+  demo-blocked           A demo event that cannot be seated faithfully.
   malformed              No usable organizer, status or capacity policy.
   missing                An --event id with no event document.
   cancelled-empty        Cancelled, nobody active: gets an empty ready ledger.
