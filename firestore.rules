@@ -4136,18 +4136,6 @@ service cloud.firestore {
     match /eventSeatLedgers/{privateDocument=**} {
       allow read, write: if false;
     }
-    match /eventSeatMigrationFences/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /eventSeatMigrationPlans/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /eventSeatMigrationRuns/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /eventSeatMigrationStages/{privateDocument=**} {
-      allow read, write: if false;
-    }
     match /eventSeatRequestReceipts/{privateDocument=**} {
       allow read, write: if false;
     }

@@ -33,8 +33,6 @@ function readyStore(event: FakeData): FakeFirestore {
   const policy = deriveEventSeatPolicy(event);
   return new FakeFirestore({
     "events/event-1": event,
-    "eventSeatMigrationFences/event-1": {eventId: "event-1",
-      migrationRevision: 1, state: "ready"},
     "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 2,
       occupied: 0, revision: 1, capacityRevision: 1, migrationRevision: 1,
       policyVersion: policy.policyVersion, policyHash: policy.policyHash,

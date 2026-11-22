@@ -44,8 +44,6 @@ import {organizerContactOriginId} from
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {eventAttendeeId, normalizeRosterPhone} from
   "../events/eventAttendees";
-import {readSeatMigrationWriterFence} from
-  "../events/seatMigrationPaged";
 import {prepareCrmOriginSeatIdentity,
   FirestoreSeatIdentityAuthority, seatIdentityAliasId,
   seatIdentityValueHash} from "../events/seatIdentityAuthority";
@@ -429,9 +427,6 @@ async function executeAdmission(
     // App-free CRM provenance does not establish a cohort or pair-hold right.
     // Keep these policies closed until their shared reservation path is wired.
     assertUnpartitionedAdmission(event);
-    const fence = await readSeatMigrationWriterFence({db, tx,
-      eventId: payload.eventId});
-    if (fence !== "ready") unavailable("Seat migration is not ready.");
     const identity = await prepareCrmOriginSeatIdentity({db, tx,
       eventId: payload.eventId, organizerId: payload.organizerId,
       originId: organizerContactOriginId({organizerId: payload.organizerId,

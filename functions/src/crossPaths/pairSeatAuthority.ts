@@ -1,6 +1,5 @@
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
-import {readSeatMigrationWriterFence} from "../events/seatMigrationPaged";
 import {FirestoreSeatIdentityAuthority, prepareCatchUidSeatIdentity} from
   "../events/seatIdentityAuthority";
 import {assertCurrentReadySeatSnapshot, FirestoreSeatTransaction} from
@@ -26,10 +25,8 @@ export async function preparePairSeatTransition(params: {
   nowMillis: number;
   operation: TemporaryHoldOperation;
   loadCurrentAuthPhone?: (uid: string) => Promise<string | null>;
-}): Promise<{reservedCount: number; apply: () => void} | null> {
+}): Promise<{reservedCount: number; apply: () => void}> {
   const {db, tx, eventId, organizerId, requesterUid, operation} = params;
-  const mode = await readSeatMigrationWriterFence({db, tx, eventId});
-  if (mode === "legacy") return null;
   const releasing = operation === "releaseTemporaryHold";
   if (!releasing && (await tx.get(db.collection("deletedUsers")
     .doc(requesterUid))).exists) {

@@ -62,30 +62,6 @@ class PrivateEventDetailsJournal {
     ),
   );
 
-  /// Preserve the exact settings body; only the explicit discard intent changes.
-  Future<void> setDiscardIntent({
-    required String userId,
-    required PrivateEventDetailsUpdateRequest request,
-    required bool discard,
-  }) => withAppErrorContext<void>(
-    () async {
-      final prefs = await SharedPreferences.getInstance();
-      final key = _key(userId, request.organizerId, request.eventId);
-      if (prefs.getString(key) != jsonEncode(request.toJson())) {
-        throw StateError('Pending admission command changed');
-      }
-      await prefs.setString(
-        key,
-        jsonEncode(request.withDiscard(discard).toJson()),
-      );
-    },
-    context: const AppErrorContext(
-      operation: AppOperation.localPersistence,
-      action: 'persist pending admission discard intent',
-      resource: 'shared_preferences',
-    ),
-  );
-
   Future<void> clear({
     required String userId,
     required PrivateEventDetailsUpdateRequest request,

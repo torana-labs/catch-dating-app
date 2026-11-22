@@ -137,7 +137,7 @@ test("a verified phone joins the row the organizer supplied", async () => {
   assert.equal(slot.attendeeRef.id, phoneRow);
 });
 
-test("under ready seats a Host row is left to the Host and gains the link",
+test("a Host row is left to the Host and gains the link",
   async () => {
     const h = fakeDb({
       "eventAttendees/guest": {eventId: "e1", source: "hostImport",
@@ -145,7 +145,7 @@ test("under ready seats a Host row is left to the Host and gains the link",
     });
     const slot = await readCatchBookingRoster({db: h.db, tx: h.tx,
       eventId: "e1", uid: "u1"});
-    writeCatchBookingRoster({db: h.db, tx: h.tx, slot, now, seatReady: true,
+    writeCatchBookingRoster({db: h.db, tx: h.tx, slot, now,
       booking: booking({status: "cancelled", cancelledAt: now})});
     const row = h.docs.get("eventAttendees/guest") as {status?: string};
     assert.equal(row.status, "registered");

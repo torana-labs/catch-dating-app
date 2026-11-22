@@ -86,7 +86,6 @@ export function enrollRuntimeGuestAttendee(params: {
   displayName: string;
   phone: string;
   walkInPolicy: WalkInPolicy;
-  seatReady: boolean;
   /** The guest already holds an active seat from a Catch booking. */
   seatAlreadyActive: boolean;
   /** Invite link the claim arrived through, when one resolved. */
@@ -98,8 +97,7 @@ export function enrollRuntimeGuestAttendee(params: {
     const attendee = runtimeGuestAttendeeDocument({
       eventId: params.eventId,
       organizerId: params.organizerId,
-      uid: params.seatReady || params.walkInPolicy === "autoCreate" ?
-        params.uid : null,
+      uid: params.uid,
       displayName: params.displayName,
       phone: params.phone,
       source: params.seatAlreadyActive ? "catchBooking" : "webOtp",
@@ -114,7 +112,7 @@ export function enrollRuntimeGuestAttendee(params: {
   tx.update(attendeeRef, {
     linkedUid: params.uid,
     linkedAt: existing.linkedAt ?? now,
-    ...(params.seatReady && params.walkInPolicy === "autoCreate" &&
+    ...(params.walkInPolicy === "autoCreate" &&
       (existing.status === "invited" ||
         existing.status === "waitlisted") ? {
         status: "registered", registeredAt: existing.registeredAt ?? now,
@@ -130,8 +128,8 @@ export function enrollRuntimeGuestAttendee(params: {
 
 /**
  * Links a Host-approved runtime claim to the roster row the Host chose. An
- * invited row (or, under ready seat authority, a waitlisted one) becomes
- * registered; the row keeps its attendance history.
+ * invited or waitlisted row becomes registered; the row keeps its
+ * attendance history.
  * @param {object} params Transaction, the row as read, guest and time.
  */
 export function linkApprovedRuntimeGuest(params: {
@@ -139,7 +137,6 @@ export function linkApprovedRuntimeGuest(params: {
   attendeeRef: FirebaseFirestore.DocumentReference;
   attendee: EventAttendeeDocument;
   uid: string;
-  seatReady: boolean;
   now: FirebaseFirestore.Timestamp;
 }): void {
   const {attendee, now} = params;
@@ -147,8 +144,7 @@ export function linkApprovedRuntimeGuest(params: {
     linkedUid: params.uid,
     linkedAt: attendee.linkedAt ?? now,
     status: attendee.status === "invited" ||
-      params.seatReady && attendee.status === "waitlisted" ?
-      "registered" : attendee.status,
+      attendee.status === "waitlisted" ? "registered" : attendee.status,
     registeredAt: attendee.registeredAt ?? now,
     attendanceRevision: attendee.attendanceRevision ?? 0,
     preCheckInStatus: attendee.preCheckInStatus ?? null,

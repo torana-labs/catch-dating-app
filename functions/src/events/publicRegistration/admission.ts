@@ -18,7 +18,6 @@ import {
   FirestoreSeatTransaction,
   assertCurrentReadySeatSnapshot,
 } from "../seatAuthority/firestoreAdapter";
-import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {
   prepareCheckoutHold,
   applyCheckoutHold,
@@ -124,9 +123,7 @@ export async function finalizePublicPayment(input: {
       if (
         event.organizerId !== organizerId ||
         event.startTime.toMillis() !==
-          p.cancellationPolicy.eventStartsAtMillis ||
-        (await readSeatMigrationWriterFence({db, tx, eventId})) !==
-          "ready"
+          p.cancellationPolicy.eventStartsAtMillis
       ) {
         registrationUnavailable();
       }

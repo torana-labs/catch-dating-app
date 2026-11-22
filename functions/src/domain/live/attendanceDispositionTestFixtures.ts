@@ -10,6 +10,12 @@ import {ProgressFirestore, seedJoiningProgress, progressFixtureManager} from
   "../../eventSuccess/operations/groupProgressTestFixtures";
 import {GuestAssistanceStore} from
   "../../eventSuccess/operations/guestAssistanceStore";
+import {withEventSeatLedgers} from
+  "../../events/seatAuthority/eventSeatLedgerTestSupport";
+import {seatReservationDocId} from
+  "../../events/seatAuthority/firestoreAdapter";
+import {seatIdentityAliasId, seatIdentityValueHash} from
+  "../../events/seatIdentityAuthority";
 
 export const manager = progressFixtureManager;
 export const start = 1_000_000;
@@ -43,6 +49,27 @@ export async function harness(realDb?: Firestore) {
   const eventPath = "events/" + context.eventId;
   await put(attendeePath, attendee);
   await put(planPath, progress.plan);
+  // The registered guest holds a seat on the event's ledger, under the
+  // aliases the seat resolver reads for an imported guest.
+  const event = realDb ? (await realDb.doc(eventPath).get()).data()! :
+    fake.read(eventPath)!;
+  const canonicalKey = "guest_" + scope.attendeeId;
+  await put("eventSeatLedgers/" + context.eventId, {...withEventSeatLedgers(
+    {[eventPath]: event})["eventSeatLedgers/" + context.eventId] as object,
+  occupied: 1});
+  for (const [kind, value] of [["attendee", scope.attendeeId],
+    ["external", String(attendee.externalReference).trim().toLowerCase()],
+    ["uid", attendee.linkedUid]] as const) {
+    await put("eventSeatIdentityAliases/" + seatIdentityAliasId(
+      context.eventId, kind, value), {eventId: context.eventId,
+      organizerId: context.organizerId, kind,
+      valueHash: seatIdentityValueHash(kind, value), canonicalKey,
+      identityRevision: 1, migrationRevision: 1, state: "ready"});
+  }
+  await put("eventSeatReservations/" + seatReservationDocId(context.eventId,
+    canonicalKey), {eventId: context.eventId, canonicalKey,
+    identityRevision: 1, active: true, revision: 1,
+    reservedAtMillis: start - 1000, releasedAtMillis: null});
   const clock = {now: start};
   const store = new EventAttendanceDispositionStore(db, () => clock.now);
   const finish = async () => {

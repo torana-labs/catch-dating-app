@@ -52,8 +52,6 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {eventAttendeeId, normalizeRosterPhone} from
   "../events/eventAttendees";
-import {readSeatMigrationWriterFence} from
-  "../events/seatMigrationPaged";
 import {prepareProviderSeatChanges} from "./organizerProviderSeats";
 import {organizerProviderCatalog} from "./organizerProviderCatalog";
 import {
@@ -632,8 +630,6 @@ export async function reconcileLumaGuests(params: {
       throw new HttpsError("failed-precondition",
         "The current provider sync authority changed.");
     }
-    const seatMode = await readSeatMigrationWriterFence({db: params.db,
-      tx, eventId});
     const existingSnap = await tx.get(params.db.collection("eventAttendees")
       .where("eventId", "==", eventId).limit(501));
     if (existingSnap.docs.length > 500) {
@@ -659,8 +655,6 @@ export async function reconcileLumaGuests(params: {
         "Provider guest identity needs reconciliation.");
     }
     const byPhone = uniqueIndex(existing, (row) => row.data.phoneE164);
-    const byEmail = uniqueIndex(existing,
-      (row) => row.data.email?.toLowerCase());
     const usedIds = new Set<string>();
     const writes: Array<{
     id: string;
@@ -676,8 +670,7 @@ export async function reconcileLumaGuests(params: {
       const phone = phoneResult.issue ? null : phoneResult.value;
       const email = guest.email?.toLowerCase() ?? null;
       const matched = byGuestId.get(guest.id) ??
-      (phone ? byPhone.get(phone) : undefined) ??
-      (seatMode === "legacy" && email ? byEmail.get(email) : undefined);
+        (phone ? byPhone.get(phone) : undefined);
       const id = matched?.id ?? eventAttendeeId(eventId, `luma:${guest.id}`);
       if (usedIds.has(id)) {
         skippedCount += 1;
@@ -701,10 +694,9 @@ export async function reconcileLumaGuests(params: {
       });
     }
 
-    const seatResult = seatMode === "ready" ?
-      await prepareProviderSeatChanges({db: params.db, tx, event,
-        eventId, organizerId: params.run.organizerId,
-        runId: runRef.id, nowMillis: params.now.toMillis(), writes}) : null;
+    const seatResult = await prepareProviderSeatChanges({db: params.db, tx,
+      event, eventId, organizerId: params.run.organizerId,
+      runId: runRef.id, nowMillis: params.now.toMillis(), writes});
     for (const write of writes) {
       tx.set(params.db.collection("eventAttendees").doc(write.id),
         write.document);
@@ -712,16 +704,13 @@ export async function reconcileLumaGuests(params: {
     const checkedInDelta = writes.reduce((sum, write) =>
       sum + (!write.wasCheckedIn && write.document.status === "checkedIn" ?
         1 : 0), 0);
-    if (checkedInDelta > 0 || seatResult !== null &&
-      seatResult.seatDelta !== 0) {
+    if (checkedInDelta > 0 || seatResult.seatDelta !== 0) {
       const eventPatch: EventBookingCountersPatch = {};
       if (checkedInDelta > 0) {
         eventPatch.checkedInCount = admin.firestore.FieldValue.increment(
           checkedInDelta);
       }
-      if (seatResult) {
-        eventPatch.bookedCount = seatResult.occupiedAfter;
-      }
+      eventPatch.bookedCount = seatResult.occupiedAfter;
       updateEventBookingCounters(tx, params.db.collection("events")
         .doc(eventId), eventPatch);
     }

@@ -90,19 +90,6 @@ test("cancellation preserves an in-flight settlement lease", async () => {
   assert.equal(h.payment().status, "refundPending");
 });
 
-test("temporary migration lock retries cancellation after the fence unlocks",
-  async () => {
-    const h = await fixture();
-    const fence = h.store.get(`eventSeatMigrationFences/${eventId}`)!;
-    fence.state = "locked";
-    await assert.rejects(h.cancel(), {code: "unavailable"});
-    assert.equal(h.payment().status, "admitted");
-    assert.equal(h.store.get(`eventSeatLedgers/${eventId}`)!.occupied, 1);
-    fence.state = "ready";
-    assert.equal(await h.cancel(), true);
-    assert.equal(h.payment().status, "refundPending");
-  });
-
 for (const amount of [0, 10000]) {
   test(`guest cancellation of ${amount} paise replays once`, async () => {
     const h = await fixture();

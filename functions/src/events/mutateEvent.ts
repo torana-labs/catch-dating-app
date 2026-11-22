@@ -123,10 +123,9 @@ import {stageCancelledEventRefunds} from
   "../payments/legacyRefunds/recovery";
 import {validateEventPlanChangeDocument} from
   "../shared/generated/validators/eventPlanChangeDocument";
-import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
 import {createEventSeatLedgerInTransaction,
   deleteEventSeatLedgerInTransaction, seatLedgerHoldsPlaces} from
-  "./seatAuthority/eventSeatLedgerBirth";
+  "./seatAuthority/eventSeatLedgers";
 import {prepareEventMutationLedger} from "./eventPolicyMutation";
 import {EVENT_PLAN_CHANGES, eventPlanChangeFields,
   eventPlanChangeSourceId} from "./planChangeRecords";
@@ -522,7 +521,6 @@ export async function updateEventHandler(
       privateAccessSnap,
       attendeeSnap,
       offerSnap,
-      seatMode,
     ] =
       await Promise.all([
         tx.get(organizerRef),
@@ -536,7 +534,6 @@ export async function updateEventHandler(
           .where("eventId", "==", data.eventId).limit(1)),
         tx.get(db.collection("organizerEventOffers")
           .where("eventId", "==", data.eventId).limit(1)),
-        readSeatMigrationWriterFence({db, tx, eventId: data.eventId}),
       ]);
     const organizer = assertCanMutateOrganizerEntity(
       organizerSnap,
@@ -587,10 +584,9 @@ export async function updateEventHandler(
       }),
     };
     const nextEvent = {...event, ...patch};
-    const seatState = seatMode === "ready" ?
-      await prepareEventMutationLedger(db, tx, data.eventId, event,
-        nextEvent) : null;
-    if (seatState && seatState.reserved > 0 &&
+    const seatState = await prepareEventMutationLedger(db, tx, data.eventId,
+      event, nextEvent);
+    if (seatState.reserved > 0 &&
         (scheduleChanged || policyChanged)) {
       throw new HttpsError("failed-precondition",
         "Events with reserved seats cannot change schedule or policy.");
@@ -647,7 +643,7 @@ export async function updateEventHandler(
       tx.create(db.collection(EVENT_PLAN_CHANGES)
         .doc(planChange.sourceId), planChange);
     }
-    if (seatState?.update) {
+    if (seatState.update) {
       tx.set(db.collection("eventSeatLedgers").doc(data.eventId),
         seatState.update);
     }
@@ -748,8 +744,6 @@ export async function cancelEventHandler(
       deletedUserSnap,
       hostUserId
     );
-
-    await readSeatMigrationWriterFence({db, tx, eventId: data.eventId});
 
     if (event.status === "cancelled") {
       return {event, organizerId, notifyParticipants: false};
@@ -860,7 +854,6 @@ export async function deleteEventHandler(
       attendeeSnap,
       offerSnap,
       admissionSnap,
-      seatMode,
       ledgerSnap,
       reservationSnap,
     ] = await Promise.all([
@@ -881,7 +874,6 @@ export async function deleteEventHandler(
         .where("eventId", "==", data.eventId).limit(1)),
       tx.get(db.collection("organizerFormAdmissions")
         .where("eventId", "==", data.eventId).limit(1)),
-      readSeatMigrationWriterFence({db, tx, eventId: data.eventId}),
       tx.get(db.collection("eventSeatLedgers").doc(data.eventId)),
       tx.get(db.collection("eventSeatReservations")
         .where("eventId", "==", data.eventId).limit(1)),
@@ -896,7 +888,7 @@ export async function deleteEventHandler(
       !paymentSnap.empty ||
       !reviewSnap.empty || !attendeeSnap.empty || !offerSnap.empty ||
       !admissionSnap.empty || !reservationSnap.empty ||
-      seatMode === "ready" && seatLedgerHoldsPlaces(ledgerSnap.data())
+      seatLedgerHoldsPlaces(ledgerSnap.data())
     ) {
       throw new HttpsError(
         "failed-precondition",

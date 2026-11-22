@@ -140,7 +140,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `signUpForFreeEvent` | `src/events/` | Book a free event |
 | `cancelEventSignUp` | `src/events/` | Cancel booking (refunds paid events) |
 | `configureEventRegistration` / `managePublicEventCheckout` | `src/events/publicRegistration/callables.ts` | Explicit manager registration settings and phone-authorized public paid checkout, the only INR paid-seat sale path (organizer's own Razorpay via `razorpayOAuth`; Catch's account only when routing explicitly selects `razorpayRoute`); frozen terms, seat holds, admission, cancellation and recovery |
-| `setEventPublication` / `reconcilePrivateEventSeats` | `src/events/progressiveSetup/callables.ts` | Manager-only revision-fenced publish/unpublish and bounded reviewed seat reconciliation with exact-command retry/discard |
+| `setEventPublication` / `reconcilePrivateEventSeats` | `src/events/progressiveSetup/callables.ts` | Manager-only revision-fenced publish/unpublish; `reconcilePrivateEventSeats` is a passthrough to the details save kept for installed Host builds |
 | `joinEventWaitlist` / `leaveEventWaitlist` | `src/events/` | Join or leave a full event's waitlist |
 | `placeDetails` / `placesAutocomplete` | `src/places/` | Google Places lookup seam for event locations |
 | `createOrganizer` | `src/organizers/` | Create a canonical organizer and follow it as owner |

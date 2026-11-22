@@ -141,7 +141,6 @@ test("a draft's seat ledger and seat records go with it", async () => {
   const {db} = harness();
   seedDraft(db, "draft-1", 2);
   db.write("eventSeatLedgers/draft-1", {eventId: "draft-1", capacity: null, occupied: 2, checkoutHeld: 0});
-  db.write("eventSeatMigrationFences/draft-1", {eventId: "draft-1", state: "ready"});
   for (const collection of ["eventSeatReservations", "eventSeatRequestReceipts", "eventSeatIdentityAliases", "eventSeatVerifiedPhones"]) {
     db.write(`${collection}/draft-1-guest`, {eventId: "draft-1"});
     db.write(`${collection}/other-guest`, {eventId: "other-event"});
@@ -150,7 +149,6 @@ test("a draft's seat ledger and seat records go with it", async () => {
   assert.equal(result.incomplete, false);
   assert.equal(db.read("events/draft-1"), undefined);
   assert.equal(db.read("eventSeatLedgers/draft-1"), undefined);
-  assert.equal(db.read("eventSeatMigrationFences/draft-1"), undefined);
   for (const collection of ["eventSeatReservations", "eventSeatRequestReceipts", "eventSeatIdentityAliases", "eventSeatVerifiedPhones"]) {
     assert.equal(db.read(`${collection}/draft-1-guest`), undefined, collection);
     assert.ok(db.read(`${collection}/other-guest`), collection);

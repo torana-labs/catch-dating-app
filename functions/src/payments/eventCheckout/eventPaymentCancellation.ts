@@ -13,7 +13,6 @@ import {validateEventAttendeeDocument} from
 import {eventParticipationId} from "../../shared/relationshipDocuments";
 import {FirestoreSeatIdentityAuthority, SeatIdentityAuthorityError} from
   "../../events/seatIdentityAuthority";
-import {readSeatMigrationWriterFence} from "../../events/seatMigrationPaged";
 import {FirestoreSeatTransaction, assertCurrentReadySeatSnapshot} from
   "../../events/seatAuthority/firestoreAdapter";
 import {prepareSeatCommand, applySeatPlan, reservationPlaces,
@@ -107,20 +106,6 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
         attendee.revenueAmountMinor !== payment.amountPaise) {
       unavailable();
     }
-    const fenceMode = await readSeatMigrationWriterFence({db, tx, eventId})
-      .catch(async (error) => {
-        if (error instanceof HttpsError &&
-            error.code === "failed-precondition") {
-          const fence = (await tx.get(db.collection("eventSeatMigrationFences")
-            .doc(eventId))).data();
-          if (fence?.eventId === eventId && fence.state === "locked") {
-            throw new HttpsError("unavailable",
-              "Paid cancellation is waiting for seat migration.");
-          }
-        }
-        throw error;
-      });
-    if (fenceMode !== "ready") unavailable();
     const identity = await new FirestoreSeatIdentityAuthority().resolve({
       db, tx, eventId, organizerId,
       subject: {kind: "importAttendee", attendeeId: receipt.attendeeId}});

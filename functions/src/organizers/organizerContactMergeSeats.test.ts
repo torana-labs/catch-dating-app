@@ -116,8 +116,6 @@ function seed(sourceKey: string, survivorKey: string | null,
   store.put(`organizerContactOrigins/${originId}`, {...origin});
   store.put(`eventSeatLedgers/${eventId}`, {eventId,
     state: "ready", revision: 2, migrationRevision: 1});
-  store.put(`eventSeatMigrationFences/${eventId}`, {eventId,
-    organizerId: org, state: "ready", migrationRevision: 1});
   const alias = (kind: "contact" | "contactOrigin", value: string,
     key: string) => store.put(`eventSeatIdentityAliases/${aliasId(
     kind, value)}`, {eventId, organizerId: org, kind,

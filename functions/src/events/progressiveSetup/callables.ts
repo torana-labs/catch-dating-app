@@ -1,6 +1,3 @@
-import {reconcilePrivateEventSeats as reconcileSeats} from
-  "./seatReconciliation";
-import type {PagedSeatBootstrapDeps} from "../seatMigrationPaged";
 import {validateReconcilePrivateEventSeatsCallablePayload} from
   "../../shared/generated/validators/reconcilePrivateEventSeatsInput";
 import {validatePrivateSeatReconciliationCallableResponse} from
@@ -45,7 +42,6 @@ import {validateEventPublicationCallableResponse} from
   "../../shared/generated/validators/eventPublicationOutput";
 
 export interface SetupCallableDependencies {
-  seatAuth?: PagedSeatBootstrapDeps["auth"];
   nowMillis?: () => number;
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
@@ -185,8 +181,12 @@ export const setEventPublication = onCall(appCheckCallableOptions,
   (request) => setEventPublicationHandler(request));
 
 
-/** Admission settings remain in the current flow while existing guests are
- * reconciled in bounded pages. The client retains the exact command on retry.
+/**
+ * Kept for installed Host builds that send admission-terms saves here; the
+ * current app calls updatePrivateEventDetails. Every event has its seat
+ * ledger, so there is nothing to reconcile: a save is the ordinary details
+ * save, and a discard applies nothing. Retire under D1 with the older-build
+ * callables (#2174).
  */
 export async function reconcilePrivateEventSeatsHandler(
   request: CallableRequest<unknown>, deps = defaultDeps
@@ -199,11 +199,13 @@ export async function reconcilePrivateEventSeatsHandler(
     maxRequests: 30, windowMs: 60 * 1000,
   });
   const {discard, ...settings} = command;
-  const result = await reconcileSeats({actorUid, command: settings, discard,
-    deps: {...deps.service(db), auth: deps.seatAuth ?? admin.auth(),
-      nowMillis: deps.nowMillis ?? Date.now}});
+  const result = discard ?
+    {kind: "discarded" as const, eventId: settings.eventId,
+      requestId: settings.requestId} :
+    {kind: "complete" as const, receipt: await updateDetails({actorUid,
+      command: settings, deps: deps.service(db)})};
   if (!validatePrivateSeatReconciliationCallableResponse(result)) {
-    throw new HttpsError("internal", "Invalid guest reconciliation result.");
+    throw new HttpsError("internal", "Invalid admission settings result.");
   }
   return result;
 }
