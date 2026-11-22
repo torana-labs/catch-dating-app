@@ -2395,6 +2395,19 @@ none of the last 30 nightly runs was green. Opening the issue notifies repositor
 runs change nothing. Fix forward on main; never close the issue by hand
 while main is still red.
 
+After each main push run, the alert also reports a commit main CI has not
+validated and will not until the next push (22 Nov 2026). GitHub can create a
+queue batch's push runs out of order, so an earlier commit's run can replace a
+later commit's pending run; that later commit's changes are then in no run's
+window. A main push run that was cancelled and whose commit no other main push
+run (finished other than cancelled, running or queued, created no more than 10
+minutes before it) has as an ancestor is reported once on the "Main CI is red"
+issue, with a hidden marker. When the issue is not open, it is opened owing
+`Required CI`, so the next green main push, whose run plans from the nearest
+earlier run that ran and so covers the commit, closes it. Runs older than 26
+hours are left to the nightly, and a commit whose ancestry the compare API
+cannot answer is logged, not reported. The report triggers nothing.
+
 ### Scheduled run watchdog
 
 GitHub drops or delays scheduled runs under load: the :30 Deploy backend
