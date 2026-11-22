@@ -8,4 +8,5 @@ export 'package:catch_kernel/format_utils.dart';
 export 'package:catch_kernel/labelled.dart';
 export 'package:catch_kernel/location_coordinate.dart';
 export 'package:catch_kernel/organizer_supply_capabilities.dart';
+export 'package:catch_kernel/read_model_family.dart';
 export 'package:catch_kernel/sentinels.dart';

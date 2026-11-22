@@ -133,6 +133,30 @@ test("only shown or hosted organizers are eligible", () => {
     hostUserId: "host-1"}), true);
   assert.equal(publicOrganizerEligible({...base, status: "archived",
     hostUserId: "host-1"}), true);
+  const scraped = {...base, hostUserId: null, ownerUserId: null,
+    hostUserIds: [], appVisibility: "hidden"};
+  assert.equal(publicOrganizerEligible({...scraped, publicPage: {
+    publishStatus: "published", canonicalPath: "/organizers/indore/lane/"}}),
+  true);
+  assert.equal(publicOrganizerEligible({...scraped, publicPage: {
+    publishStatus: "draft", canonicalPath: "/organizers/indore/lane/"}}),
+  false);
+});
+
+test("publicPagePath carries only a published page's canonical path", () => {
+  const page = (publishStatus: string, canonicalPath: unknown) =>
+    projectPublicOrganizer({...organizerDoc(),
+      publicPage: {publishStatus, canonicalPath, robots: "index, follow"}});
+  const published = page("published", "/organizers/brindle-run-club/");
+  assert.equal(published.publicPagePath, "/organizers/brindle-run-club/");
+  assert.equal(validatePublicOrganizerDocument(published), true,
+    JSON.stringify(validatePublicOrganizerDocument.errors));
+  assert.equal("publicPage" in published, false);
+  for (const [status, path] of [["draft", "/organizers/brindle-run-club/"],
+    ["suppressed", "/organizers/brindle-run-club/"],
+    ["published", "https://evil.test/"], ["published", null]]) {
+    assert.equal(page(status as string, path).publicPagePath, null);
+  }
 });
 
 test("reconcile writes, skips unchanged, removes and refuses invalid",

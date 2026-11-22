@@ -55,7 +55,7 @@ final class HostRequestsRepositoryProvider
 }
 
 String _$hostRequestsRepositoryHash() =>
-    r'e92a15288b4b6734fa8f8ceba2bf156e120d4be2';
+    r'c4101337d30f724a05f38711586695c9399cd8d4';
 
 /// The organizer's requests read owner. It is a set of Firestore listeners:
 /// it declares no cache tags or lifetime, and writes never invalidate it; a

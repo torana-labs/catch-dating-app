@@ -322,7 +322,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `sendCrossPathsInvitation` / `respondCrossPathsInvitation` / `cancelCrossPathsInvitationOrPlan` | `src/crossPaths/` | Send, answer, or cancel event-scoped invitations, companion holds, and accepted plans |
 | `createEventReview` / `updateEventReview` / `deleteEventReview` | `src/reviews/` | Review mutation surface |
 | `createPublicOrganizerReview` / `listPublicOrganizerReviews` | `src/reviews/` | Create or list reviews against canonical organizers |
-| `manageWebsiteAccount` | `src/profiles/websiteAccount.ts` | Read or complete the authenticated minimal account with verified phone, optional birth date, revision fencing, own follow state and event age eligibility; an optional read `sections` list returns the website account page's own plans, follows, reviews and per-organiser message permissions |
+| `manageWebsiteAccount` | `src/profiles/websiteAccount.ts` | Read or complete the authenticated minimal account with verified phone, optional birth date, revision fencing, own follow state and event age eligibility; an optional read `sections: ["messages"]` returns the website account page's per-organiser message permissions (the page listens to its own plans, follows and reviews) |
 | `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |
 | `requestAccountDeletion` | `src/safety/` | Anonymize + delete user data |

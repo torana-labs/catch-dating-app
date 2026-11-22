@@ -112,7 +112,8 @@ class OrganizerProgramViewsRepository {
       .orderBy(FieldPath.documentId, descending: true);
 }
 
-// keepalive: a stateless repository over account-free SDK singletons.
+// keepalive: account-free: a stateless repository over account-free SDK
+// singletons.
 @Riverpod(keepAlive: true)
 OrganizerProgramViewsRepository organizerProgramViewsRepository(Ref ref) =>
     OrganizerProgramViewsRepository(

@@ -319,7 +319,8 @@ class CrossPathsRepository {
   );
 }
 
-// keepalive: Shared by event-detail consent listeners and mutation calls.
+// keepalive: account-free: Shared by event-detail consent listeners and
+// mutation calls.
 @Riverpod(keepAlive: true)
 CrossPathsRepository crossPathsRepository(Ref ref) => CrossPathsRepository(
   ref.watch(firebaseFirestoreProvider),

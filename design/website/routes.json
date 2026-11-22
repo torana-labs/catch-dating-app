@@ -1208,7 +1208,7 @@
       "staticOutput": "postbuild",
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "The signed-in guest's account (no board; drawn from the system): Plans with passes (getEventTicketCode), Following, Reviews with verified state, Details, per-organiser Messages permissions and Privacy and data, read in one manageWebsiteAccount read with sections. Signed out it offers the sign-in sheet (phone code, Google, email link). Private shell: noindex, out of the sitemap, no analytics.",
+      "notes": "The signed-in guest's account (no board; drawn from the system): Plans with passes (getEventTicketCode), Following, Reviews with verified state, Details, per-organiser Messages permissions and Privacy and data, the plans, follows and reviews from listeners on the guest's own rows (guestEventStatuses, organizerFollows, reviews) named from publicOrganizers, and the messages from one manageWebsiteAccount read. Signed out it offers the sign-in sheet (phone code, Google, email link). Private shell: noindex, out of the sitemap, no analytics.",
       "review": {
         "priority": "p1",
         "status": "ready",

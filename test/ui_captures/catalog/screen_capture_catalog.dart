@@ -38,6 +38,7 @@ import 'package:catch_dating_app/contexts/connections/data/match_repository.dart
 import 'package:catch_dating_app/contexts/connections/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/discovery/data/city_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
@@ -231,7 +232,6 @@ import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
-import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/device/external_links.dart';

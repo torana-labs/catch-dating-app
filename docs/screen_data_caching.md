@@ -56,10 +56,28 @@ paused, so the retain window starts only when a listener is removed. A return
 or a hidden tab becoming visible refetches once in the background when the
 data is older than `staleAfter`.
 
-`@Riverpod(keepAlive: true)` stays reserved for account-free infrastructure:
-SDK singletons, stateless repositories, platform facades, routers and durable
-stores keyed inside by account. A kept-alive read owner names its account-free
-decision in its `// keepalive:` marker.
+Per-account state that is not a read, such as a search box, the selected
+organizer, a flow's draft or a set of pending references, also takes the
+session lifetime: its `build` calls `ref.retainForCurrentSession()`
+(`lib/contexts/account/data/authenticated_session.dart`). The provider stays
+while the signed-in account stays the same, and a sign-out, an account change
+or an auth failure rebuilds it from scratch, so nothing one account entered
+reaches the next and nothing has to be reset by hand at sign-out. A guest's
+state is kept the same way while signed out, and a first sign-in keeps it,
+because it belongs to no account.
+
+`@Riverpod(keepAlive: true)` stays reserved for two scopes, and its
+`// keepalive:` marker names one of them first:
+
+- `account-free:` holds nothing that belongs to one account: SDK singletons,
+  stateless repositories, platform facades, routers, app-wide UI state, public
+  configuration and durable stores keyed inside by account.
+- `session-root:` is the signed-in identity, or follows it, and kept-alive
+  infrastructure reads it: the auth stream, `uid`, the authenticated session
+  and the signed-in account's own profile, which the router reads. Riverpod
+  forbids a kept-alive provider reading an auto-dispose one, so the router's
+  inputs stay kept alive; each follows the uid and reads null while signed
+  out.
 
 ## The owner's freshness table
 
@@ -219,13 +237,14 @@ it fixes, so the list only shrinks.
 
 | Rule | Fails when | Listed at landing |
 |---|---|---|
-| CACHE-LIFETIME-001 | A read owner declares more than one lifetime, or is `keepAlive: true` without an account-free `// keepalive:` decision | 3 |
+| CACHE-LIFETIME-001 | A read owner declares more than one lifetime, or is `keepAlive: true` without an `account-free:` or `session-root:` decision | 3 |
 | CACHE-POLICY-001 | A lifetime gets anything but a `CachePolicies` member, or a `CachePolicy` is built outside the table | 0 |
 | CACHE-ACCOUNT-001 | A timed or session read owner of account data has no `AuthenticatedSession` in its key | 0 |
 | CACHE-KEY-001 | A timed or session read owner's key holds a raw `DateTime` | 0 |
 | CACHE-INVALIDATE-001 | Presentation code invalidates or refreshes a read owner outside a retry or pull-to-refresh, or a retry targets a composition instead of the read owner | 120 |
 | CACHE-LISTENER-001 | A write invalidates a Firestore listener provider, or a listener declares tags | 9 |
 | KEEPALIVE-MANUAL-001 | A handwritten provider without `.autoDispose` lacks a `// keepalive:` marker | 5 |
+| KEEPALIVE-SCOPE-001 | A kept-alive provider's marker names no scope; a `session-root:` reads no identity (`uid`, the session, the auth stream or repository, `currentUser`); or an `account-free:` notifier reads the signed-in account, which makes it per-account state that needs the session lifetime | added 22 November 2026 with every marker scoped |
 
 ```sh
 dart run tool/architecture/provider_graph.dart --check
@@ -252,14 +271,18 @@ findings instead of failing on them.
 
 Code that survives the redesign is on the contract: the listener and
 keep-alive findings are gone, and so are the invalidations outside legacy
-screens. One lifetime finding stays: `watchUserProfileProvider` holds account
-data but is kept alive, because the kept-alive onboarding controller reads it
-(Riverpod forbids a kept-alive provider reading an auto-dispose one), and a
-session key would change its 27 callers. It moves when onboarding is redrawn
-(P6 onboarding) or with a session-keyed profile read. Everything else the
-baseline lists is `CACHE-INVALIDATE-001` in screens the redesign deletes, so
-each screen PR deletes its entries with the screen. When the baseline is
-empty, the rules gate with no list.
+screens. On 22 November 2026 every kept-alive provider was classified: about
+110 are `account-free:` infrastructure, four are `session-root:` (the auth
+stream, `uid`, the authenticated session and `watchUserProfileProvider`, which
+the router reads), and fourteen that held per-account state moved to the
+session lifetime: the Chats and Explore search and filter state, the selected
+Explore city and its guard, the Host organizer selection, the five pending
+rehearsal and assistance reference sets, the foreground notification
+controller, the companion launch registry and the onboarding controller.
+Sign-out no longer resets Explore by hand. Everything else the baseline lists
+is `CACHE-INVALIDATE-001` in screens the redesign deletes, so each screen PR
+deletes its entries with the screen. When the baseline is empty, the rules
+gate with no list.
 
 | Legacy code | Entries | Call sites | Deleted by |
 |---|---|---|---|

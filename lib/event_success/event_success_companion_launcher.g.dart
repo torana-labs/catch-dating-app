@@ -8,10 +8,17 @@ part of 'event_success_companion_launcher.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Session lifetime: the launch de-dupe state survives app-shell listener
+/// rebuilds, so an attendance transition never relaunches the same companion
+/// route, and the next account starts with none.
 
 @ProviderFor(eventSuccessCompanionLaunchRegistry)
 final eventSuccessCompanionLaunchRegistryProvider =
     EventSuccessCompanionLaunchRegistryProvider._();
+
+/// Session lifetime: the launch de-dupe state survives app-shell listener
+/// rebuilds, so an attendance transition never relaunches the same companion
+/// route, and the next account starts with none.
 
 final class EventSuccessCompanionLaunchRegistryProvider
     extends
@@ -21,13 +28,16 @@ final class EventSuccessCompanionLaunchRegistryProvider
           EventSuccessCompanionLaunchRegistry
         >
     with $Provider<EventSuccessCompanionLaunchRegistry> {
+  /// Session lifetime: the launch de-dupe state survives app-shell listener
+  /// rebuilds, so an attendance transition never relaunches the same companion
+  /// route, and the next account starts with none.
   EventSuccessCompanionLaunchRegistryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'eventSuccessCompanionLaunchRegistryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -59,4 +69,4 @@ final class EventSuccessCompanionLaunchRegistryProvider
 }
 
 String _$eventSuccessCompanionLaunchRegistryHash() =>
-    r'5aa328c6afcfd9727644f1f47f04f5f4c2097515';
+    r'45d14736c8ba753eaa3484b1b5934355e618665e';

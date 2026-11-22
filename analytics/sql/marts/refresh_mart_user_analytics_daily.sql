@@ -113,7 +113,7 @@ participation_events AS (
     ), "Asia/Kolkata") AS date,
     1 AS events_booked_count,
     0 AS events_attended_count
-  FROM `%s.%s.event_participations_raw_latest`
+  FROM `%s.%s.event_bookings_raw_latest`
   WHERE JSON_VALUE(data, '$.uid') IS NOT NULL
     AND JSON_VALUE(data, '$.status') IN ('signedUp', 'attended')
 
@@ -127,7 +127,7 @@ participation_events AS (
     ), "Asia/Kolkata") AS date,
     0 AS events_booked_count,
     1 AS events_attended_count
-  FROM `%s.%s.event_participations_raw_latest`
+  FROM `%s.%s.event_bookings_raw_latest`
   WHERE JSON_VALUE(data, '$.uid') IS NOT NULL
     AND JSON_VALUE(data, '$.status') = 'attended'
     AND JSON_VALUE(data, '$.attendedAt._seconds') IS NOT NULL

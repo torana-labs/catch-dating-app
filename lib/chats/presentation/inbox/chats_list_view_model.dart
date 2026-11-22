@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
@@ -69,22 +70,14 @@ class ChatThreadPreview {
   String? get latestEventId => eventIds.isEmpty ? null : eventIds.last;
 }
 
-// keepalive: preserve inbox search text across tab switches and route re-entry.
-@Riverpod(keepAlive: true)
+/// Session lifetime: consumer Chats and the Host inbox share this text across
+/// tab switches and route re-entry, and the next account starts from an empty
+/// search.
+@riverpod
 class ChatSearchQuery extends _$ChatSearchQuery {
-  var _accountResolved = false;
-  String? _account;
-
   @override
   String build() {
-    // Consumer Chats and the Host inbox share this text; a different signed-in
-    // account (or none) must start from an empty search, not the last one's.
-    ref.listen(uidProvider, (_, next) {
-      if (next is! AsyncData<String?>) return;
-      if (_accountResolved && next.value != _account) state = '';
-      _accountResolved = true;
-      _account = next.value;
-    }, fireImmediately: true);
+    ref.retainForCurrentSession();
     return '';
   }
 

@@ -159,7 +159,7 @@ participations AS (
     COUNTIF(JSON_VALUE(data, '$.status') = 'attended') AS checked_in_count,
     COUNTIF(JSON_VALUE(data, '$.status') = 'waitlisted') AS waitlisted_count,
     COUNTIF(JSON_VALUE(data, '$.status') IN ('signedUp', 'attended', 'waitlisted')) AS demand_count
-  FROM `%s.%s.event_participations_raw_latest`
+  FROM `%s.%s.event_bookings_raw_latest`
   WHERE JSON_VALUE(data, '$.eventId') IS NOT NULL
   GROUP BY event_id
 ),

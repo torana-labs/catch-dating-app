@@ -14,8 +14,8 @@ part 'command_journal_provider.g.dart';
 /// connection afterwards.
 typedef CommandJournalStorageOpener = Future<CommandJournalStorage> Function();
 
-// keepalive: one database connection per Host app process; domain adapters
-// share it and key their entries by account inside.
+// keepalive: account-free: one database connection per Host app process; domain
+// adapters share it and key their entries by account inside.
 @Riverpod(keepAlive: true)
 CommandJournalStorageOpener commandJournalStorage(Ref ref) {
   Future<CommandJournalStorage>? opening;

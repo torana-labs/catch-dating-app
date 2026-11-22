@@ -92,20 +92,20 @@ class AuthRepository {
   );
 }
 
-// keepalive: auth repository wraps the FirebaseAuth singleton used by every
-// auth-dependent route and provider.
+// keepalive: account-free: auth repository wraps the FirebaseAuth singleton
+// used by every auth-dependent route and provider.
 @Riverpod(keepAlive: true)
 AuthRepository authRepository(Ref ref) =>
     AuthRepository(ref.watch(firebaseAuthProvider));
 
-// keepalive: auth state is the root session stream and should not restart on
-// tab or route switches.
+// keepalive: session-root: the signed-in identity itself: the root auth stream
+// that uid, the session and the router follow.
 @Riverpod(keepAlive: true)
 Stream<User?> authStateChanges(Ref ref) =>
     ref.watch(authRepositoryProvider).authStateChanges();
 
-// keepalive: uid is the app-wide identity primitive consumed by route gates,
-// repositories, and feature view models.
+// keepalive: session-root: the signed-in identity itself, which route gates,
+// the session and repositories follow; it changes with the account.
 @Riverpod(keepAlive: true)
 Stream<String?> uid(Ref ref) =>
     ref.watch(authRepositoryProvider).authStateChanges().map((u) => u?.uid);

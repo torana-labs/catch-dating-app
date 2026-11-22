@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/cache/cache_policies.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -10,28 +11,26 @@ import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 
-/// How long a directory listener may wait for its first snapshot.
+/// How long a read model listener may wait for its first snapshot.
 final _listenerFirstValue = CachePolicies.listener.firstLoad;
 
 /// Scoped cursors never authorize access; current Firestore rules do.
-class HostSummaryCursor {
+class ReadModelCursor {
   static const prefix = 'hs1.';
   static String scope(
     String actor,
-    String organizerId,
+    String scopeId,
     String collection,
     String queryKey,
   ) => sha256
-      .convert(
-        utf8.encode(jsonEncode([actor, organizerId, collection, queryKey])),
-      )
+      .convert(utf8.encode(jsonEncode([actor, scopeId, collection, queryKey])))
       .toString();
   static String encode(String scope, Object value, String id) =>
       '$prefix${base64Url.encode(utf8.encode(jsonEncode([scope, value, id])))}';
   static List<Object?>? decode(String? cursor, String scope) {
     if (cursor == null) return null;
     if (!cursor.startsWith(prefix)) {
-      throw const FormatException('The directory changed; refresh this list.');
+      throw const FormatException('The list changed; refresh it.');
     }
     final Object? data = jsonDecode(
       utf8.decode(base64Url.decode(cursor.substring(prefix.length))),
@@ -47,37 +46,40 @@ class HostSummaryCursor {
   }
 }
 
-class HostSummaryPage {
-  const HostSummaryPage(this.documents, this.nextCursor);
+class ReadModelPage {
+  const ReadModelPage(this.documents, this.nextCursor);
   final List<Map<String, dynamic>> documents;
   final String? nextCursor;
 }
 
-/// The first rows of one live directory query, and whether more follow.
-class HostSummaryWindow {
-  const HostSummaryWindow(this.documents, {required this.hasMore});
+/// The first rows of one live read model query, and whether more follow.
+class ReadModelWindow {
+  const ReadModelWindow(this.documents, {required this.hasMore});
   final List<Map<String, dynamic>> documents;
   final bool hasMore;
 }
 
-/// Reads the Host directory read models. Rules reauthorize every server
-/// read; offline, a read falls back to what this device last read, so the
-/// lists still open. Only concurrent directory reads are shared, scoped to
-/// the current account; no repository PII cache.
-class HostSummaryReader {
-  HostSummaryReader(
+/// Reads one [ReadModelFamily]: rows scoped to an owner and the owner's
+/// readiness document. Rules reauthorize every server read; offline, a read
+/// falls back to what this device last read, so the lists still open. Only
+/// concurrent readiness reads are shared, scoped to the current account; no
+/// repository PII cache.
+class ScopedReadModelReader {
+  ScopedReadModelReader(
     this._firestore, {
+    required this.family,
     required this.actorId,
     this.clock = const AppClock(),
   });
   final FirebaseFirestore _firestore;
+  final ReadModelFamily family;
   final String? Function() actorId;
   final AppClock clock;
-  final _directories = <String, Future<Map<String, dynamic>?>>{};
+  final _readiness = <String, Future<Map<String, dynamic>?>>{};
 
   String _actor() {
     final actor = actorId();
-    if (actor == null) throw StateError('Sign in to load this directory.');
+    if (actor == null) throw StateError('Sign in to load this list.');
     return actor;
   }
 
@@ -87,65 +89,66 @@ class HostSummaryReader {
     }
   }
 
-  Future<Map<String, dynamic>?> directory(String organizerId) async {
+  /// The owner's readiness document, or null when it has none.
+  Future<Map<String, dynamic>?> readiness(String scopeId) async {
     final actor = _actor();
-    final key = '$actor/$organizerId';
-    var pending = _directories[key];
+    final key = '$actor/$scopeId';
+    var pending = _readiness[key];
     if (pending == null) {
-      pending = _loadDirectory(organizerId, actor);
-      _directories[key] = pending;
+      pending = _loadReadiness(scopeId, actor);
+      _readiness[key] = pending;
     }
     try {
       final data = await pending;
       _checkActor(actor);
       return data;
     } finally {
-      _directories.removeWhere(
+      _readiness.removeWhere(
         (entryKey, value) => entryKey == key && identical(value, pending),
       );
     }
   }
 
-  /// The organizer's directory once the read model behind [marker] is
-  /// active. Every organizer starts active, so a missing marker is a server
-  /// fault to retry, not a reason to read through a Function.
-  Future<Map<String, dynamic>> activatedDirectory(
-    String organizerId,
+  /// The owner's readiness document once the read model behind [marker] is
+  /// active. Every owner starts active, so a missing marker is a server fault
+  /// to retry, not a reason to read through a Function.
+  Future<Map<String, dynamic>> activatedReadiness(
+    String scopeId,
     String marker,
   ) async {
-    final data = await directory(organizerId);
+    final data = await readiness(scopeId);
     if (data == null || data[marker] != 1) {
       throw StateError('This list is not ready yet. Try again shortly.');
     }
     return data;
   }
 
-  /// The organizer's directory document while it is listened to, once the
-  /// read model behind [marker] is active. A missing marker is a server
-  /// fault to retry. A document the device has not cached yet does not read
-  /// as missing offline: after the listener's first-value deadline the
-  /// stream reports [listenerNothingSaved] and stays open.
-  Stream<Map<String, dynamic>> watchActivatedDirectory(
-    String organizerId,
+  /// The owner's readiness document while it is listened to, once the read
+  /// model behind [marker] is active. A missing marker is a server fault to
+  /// retry. A document the device has not cached yet does not read as
+  /// missing offline: after the listener's first-value deadline the stream
+  /// reports [listenerNothingSaved] and stays open.
+  Stream<Map<String, dynamic>> watchActivatedReadiness(
+    String scopeId,
     String marker,
   ) {
     _actor();
     return withBackendErrorStream(
       () => _firestore
-          .collection('hostDirectorySummaries')
-          .doc(organizerId)
+          .collection(family.readinessCollection)
+          .doc(scopeId)
           .snapshots()
           .where((doc) => doc.exists || !doc.metadata.isFromCache)
           .firstValueWithin(_listenerFirstValue, clock: clock),
-      context: const BackendErrorContext(
+      context: BackendErrorContext(
         service: BackendService.firestore,
-        action: 'watch Host directory readiness',
-        resource: 'hostDirectorySummaries',
+        action: 'watch read model readiness',
+        resource: family.readinessCollection,
       ),
     ).map((doc) {
       final data = doc.data();
-      if (data != null && data['organizerId'] != organizerId) {
-        throw const FormatException('Directory owner does not match.');
+      if (data != null && data[family.scopeField] != scopeId) {
+        throw const FormatException('Readiness owner does not match.');
       }
       if (data == null || data[marker] != 1) {
         throw StateError('This list is not ready yet. Try again shortly.');
@@ -154,18 +157,18 @@ class HostSummaryReader {
     });
   }
 
-  /// The most rows one directory window listens to: the largest exhaustive
-  /// directory read (every saved group) fits in one window.
+  /// The most rows one window listens to: the largest exhaustive read (every
+  /// saved group) fits in one window.
   static const maxWindow = 2500;
 
-  /// The first [limit] rows of one directory query while it is listened to:
-  /// the same filters and order as [page], as a listener that follows every
-  /// change. Showing more means listening to a larger window. With a
-  /// [marker], the window opens once the organizer's directory says that
-  /// read model is active; a missing marker is a server fault to retry.
-  Stream<HostSummaryWindow> watchWindow({
+  /// The first [limit] rows of one query while it is listened to: the same
+  /// filters and order as [page], as a listener that follows every change.
+  /// Showing more means listening to a larger window. With a [marker], the
+  /// window opens once the owner's readiness document says that read model is
+  /// active; a missing marker is a server fault to retry.
+  Stream<ReadModelWindow> watchWindow({
     required String collection,
-    required String organizerId,
+    required String scopeId,
     required String orderField,
     required bool descending,
     required int limit,
@@ -182,7 +185,7 @@ class HostSummaryReader {
     final boundedLimit = limit.clamp(1, maxWindow);
     final query = _ordered(
       collection: collection,
-      organizerId: organizerId,
+      scopeId: scopeId,
       orderField: orderField,
       descending: descending,
       equalities: equalities,
@@ -193,37 +196,36 @@ class HostSummaryReader {
       arrayValues: arrayValues,
       prefix: prefix,
     ).limit(boundedLimit + 1);
-    Stream<HostSummaryWindow> rows() => query.snapshots().map((snapshot) {
+    Stream<ReadModelWindow> rows() => query.snapshots().map((snapshot) {
       final docs = snapshot.docs.take(boundedLimit);
-      return HostSummaryWindow([
+      return ReadModelWindow([
         for (final doc in docs)
-          if (doc.data() case final value
-              when value['organizerId'] == organizerId && value['version'] == 1)
+          if (doc.data() case final value when _isRow(value, scopeId))
             value
           else
-            throw const FormatException('Unsupported directory summary.'),
+            throw const FormatException('Unsupported read model row.'),
       ], hasMore: snapshot.docs.length > boundedLimit);
     });
     final window = withBackendErrorStream(
       rows,
       context: BackendErrorContext(
         service: BackendService.firestore,
-        action: 'watch Host list summaries',
+        action: 'watch read model rows',
         resource: collection,
       ),
     );
-    return _afterActivation(organizerId, marker, window);
+    return _afterActivation(scopeId, marker, window);
   }
 
-  /// One directory query read [pageSize] rows at a time, every row shown
-  /// kept live: the same filters and order as [page]. Each page is its own
-  /// listener (see [LivePagedQuery]), so asking for more reads only the new
-  /// page, up to [maxWindow] rows. With a [marker], the first page opens once
-  /// the organizer's directory says that read model is active; a missing
-  /// marker is a server fault to retry.
+  /// One query read [pageSize] rows at a time, every row shown kept live: the
+  /// same filters and order as [page]. Each page is its own listener (see
+  /// [LivePagedQuery]), so asking for more reads only the new page, up to
+  /// [maxWindow] rows. With a [marker], the first page opens once the owner's
+  /// readiness document says that read model is active; a missing marker is
+  /// a server fault to retry.
   LivePager<Map<String, dynamic>> watchPages({
     required String collection,
-    required String organizerId,
+    required String scopeId,
     required String orderField,
     required bool descending,
     required int pageSize,
@@ -239,7 +241,7 @@ class HostSummaryReader {
     _actor();
     final query = _ordered(
       collection: collection,
-      organizerId: organizerId,
+      scopeId: scopeId,
       orderField: orderField,
       descending: descending,
       equalities: equalities,
@@ -256,16 +258,14 @@ class HostSummaryReader {
       maxRows: maxWindow,
       beforeOpen: marker == null
           ? null
-          : () => activatedDirectory(organizerId, marker),
+          : () => activatedReadiness(scopeId, marker),
       convert: (doc) => switch (doc.data()) {
-        final value
-            when value['organizerId'] == organizerId && value['version'] == 1 =>
-          value,
-        _ => throw const FormatException('Unsupported directory summary.'),
+        final value when _isRow(value, scopeId) => value,
+        _ => throw const FormatException('Unsupported read model row.'),
       },
       errorContext: BackendErrorContext(
         service: BackendService.firestore,
-        action: 'watch Host list summaries',
+        action: 'watch read model rows',
         resource: collection,
       ),
     );
@@ -273,7 +273,7 @@ class HostSummaryReader {
 
   Query<Map<String, dynamic>> _ordered({
     required String collection,
-    required String organizerId,
+    required String scopeId,
     required String orderField,
     required bool descending,
     required Map<String, Object> equalities,
@@ -286,7 +286,7 @@ class HostSummaryReader {
   }) {
     Query<Map<String, dynamic>> query = _firestore
         .collection(collection)
-        .where('organizerId', isEqualTo: organizerId);
+        .where(family.scopeField, isEqualTo: scopeId);
     for (final entry in equalities.entries) {
       query = query.where(entry.key, isEqualTo: entry.value);
     }
@@ -312,13 +312,13 @@ class HostSummaryReader {
         .orderBy(FieldPath.documentId, descending: descending);
   }
 
-  /// One directory record while it is listened to; null while it does not
+  /// One record while it is listened to; null while it does not
   /// exist. A record the device has not cached yet does not read as missing
   /// offline: after the listener's first-value deadline the stream reports
   /// [listenerNothingSaved] and stays open.
   Stream<Map<String, dynamic>?> watchDocument({
     required String collection,
-    required String organizerId,
+    required String scopeId,
     required String id,
     String? marker,
   }) {
@@ -331,8 +331,7 @@ class HostSummaryReader {
         .firstValueWithin(_listenerFirstValue, clock: clock)
         .map((doc) {
           final data = doc.data();
-          if (data != null &&
-              (data['organizerId'] != organizerId || data['version'] != 1)) {
+          if (data != null && !_isRow(data, scopeId)) {
             throw const FormatException(
               'Selected record owner or version changed.',
             );
@@ -343,51 +342,53 @@ class HostSummaryReader {
       record,
       context: BackendErrorContext(
         service: BackendService.firestore,
-        action: 'watch selected Host record',
+        action: 'watch selected read model record',
         resource: collection,
       ),
     );
-    return _afterActivation(organizerId, marker, watched);
+    return _afterActivation(scopeId, marker, watched);
   }
 
   /// [stream] once the read model behind [marker] is active, or at once
-  /// without one. An inactive marker fails as [activatedDirectory] does.
+  /// without one. An inactive marker fails as [activatedReadiness] does.
   Stream<T> _afterActivation<T>(
-    String organizerId,
+    String scopeId,
     String? marker,
     Stream<T> stream,
   ) => marker == null
       ? stream
       : Stream.fromFuture(
-          activatedDirectory(organizerId, marker),
+          activatedReadiness(scopeId, marker),
         ).asyncExpand((_) => stream);
 
-  Future<Map<String, dynamic>?> _loadDirectory(
-    String organizerId,
+  Future<Map<String, dynamic>?> _loadReadiness(
+    String scopeId,
     String actor,
   ) async {
     final snapshot = await withBackendErrorContext(
-      () => _firestore
-          .collection('hostDirectorySummaries')
-          .doc(organizerId)
-          .get(),
-      context: const BackendErrorContext(
+      () =>
+          _firestore.collection(family.readinessCollection).doc(scopeId).get(),
+      context: BackendErrorContext(
         service: BackendService.firestore,
-        action: 'load Host directory readiness',
-        resource: 'hostDirectorySummaries',
+        action: 'load read model readiness',
+        resource: family.readinessCollection,
       ),
     );
     _checkActor(actor);
     final data = snapshot.data();
-    if (data != null && data['organizerId'] != organizerId) {
-      throw const FormatException('Directory owner does not match.');
+    if (data != null && data[family.scopeField] != scopeId) {
+      throw const FormatException('Readiness owner does not match.');
     }
     return data;
   }
 
+  /// Whether [value] is a row of this family that belongs to [scopeId].
+  bool _isRow(Map<String, dynamic> value, String scopeId) =>
+      value[family.scopeField] == scopeId && value['version'] == family.version;
+
   Future<Map<String, dynamic>?> document({
     required String collection,
-    required String organizerId,
+    required String scopeId,
     required String id,
   }) async {
     final actor = _actor();
@@ -395,22 +396,21 @@ class HostSummaryReader {
       () => _firestore.collection(collection).doc(id).get(),
       context: BackendErrorContext(
         service: BackendService.firestore,
-        action: 'load selected Host record',
+        action: 'load selected read model record',
         resource: collection,
       ),
     );
     _checkActor(actor);
     final data = snapshot.data();
-    if (data != null &&
-        (data['organizerId'] != organizerId || data['version'] != 1)) {
+    if (data != null && !_isRow(data, scopeId)) {
       throw const FormatException('Selected record owner or version changed.');
     }
     return data;
   }
 
-  Future<HostSummaryPage> page({
+  Future<ReadModelPage> page({
     required String collection,
-    required String organizerId,
+    required String scopeId,
     required String orderField,
     required bool descending,
     required String queryKey,
@@ -425,17 +425,12 @@ class HostSummaryReader {
     String? cursor,
   }) async {
     final actor = _actor();
-    final scope = HostSummaryCursor.scope(
-      actor,
-      organizerId,
-      collection,
-      queryKey,
-    );
-    final position = HostSummaryCursor.decode(cursor, scope);
+    final scope = ReadModelCursor.scope(actor, scopeId, collection, queryKey);
+    final position = ReadModelCursor.decode(cursor, scope);
     final boundedLimit = limit.clamp(1, 100);
     var query = _ordered(
       collection: collection,
-      organizerId: organizerId,
+      scopeId: scopeId,
       orderField: orderField,
       descending: descending,
       equalities: equalities,
@@ -451,7 +446,7 @@ class HostSummaryReader {
       () => query.limit(boundedLimit + 1).get(),
       context: BackendErrorContext(
         service: BackendService.firestore,
-        action: 'load Host list summaries',
+        action: 'load read model rows',
         resource: collection,
       ),
     );
@@ -460,17 +455,17 @@ class HostSummaryReader {
     final data = docs
         .map((doc) {
           final value = doc.data();
-          if (value['organizerId'] != organizerId || value['version'] != 1) {
-            throw const FormatException('Unsupported directory summary.');
+          if (!_isRow(value, scopeId)) {
+            throw const FormatException('Unsupported read model row.');
           }
           return value;
         })
         .toList(growable: false);
     final last = docs.isEmpty ? null : docs.last;
-    return HostSummaryPage(
+    return ReadModelPage(
       data,
       snapshot.docs.length > boundedLimit && last != null
-          ? HostSummaryCursor.encode(scope, last.get(orderField), last.id)
+          ? ReadModelCursor.encode(scope, last.get(orderField), last.id)
           : null,
     );
   }

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/public_organizers.schema.json",
   "title": "PublicOrganizerDocument",
-  "description": "Backend-owned public organizer projection stored at publicOrganizers/{organizerId}. syncPublicOrganizer copies an allowlist of public fields from organizers/{organizerId}; contact details, host defaults, provenance, intake, admin search, ownership, claim and source evidence never leave the canonical document. The organizer id is the document id and is not stored in document data.",
+  "description": "Backend-owned public organizer projection stored at publicOrganizers/{organizerId}. syncPublicOrganizer copies an allowlist of public fields from organizers/{organizerId}; contact details, host defaults, provenance, intake, admin search, ownership, claim and source evidence never leave the canonical document. Organizers the app shows, organizers with a host, and organizers whose website page is published have a projection. The organizer id is the document id and is not stored in document data.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "publicOrganizers",
@@ -279,6 +279,13 @@
     "organizerType": {
       "$ref": "../shared/event_common.schema.json#/definitions/organizerType",
       "description": "Canonical organizer subtype. Legacy documents without this field normalize to club until backfill is complete.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "publicPagePath": {
+      "type": ["string", "null"],
+      "maxLength": 240,
+      "pattern": "^/organizers/(?:[a-z0-9-]+/){1,2}$",
+      "description": "The canonical path of the organizer's published website page, or null while it is not published. Derived from organizers/{organizerId}.publicPage; the rest of that page configuration stays on the canonical document. A published page also makes the organizer eligible for this projection. Projections written before this field existed omit it; readers treat absence as null.",
       "x-catch-ownership": "trigger-owned"
     },
     "womenLed": {

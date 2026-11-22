@@ -2,6 +2,7 @@
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_kernel/labelled.dart';
+import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_kernel/market_catalog.dart';
 
 class CityOption implements Labelled {
@@ -155,6 +156,34 @@ String currencyCodeForCityName(String? cityName) =>
 
 String dialCodeForCityName(String? cityName) =>
     marketForCityName(cityName).dialCode;
+
+/// The cities a `config/cities` document lists that a profile or Explore can
+/// show, or null when it lists none, so the caller falls back to the
+/// launched defaults.
+List<CityData>? configuredCityData(Map<String, dynamic>? config) {
+  final list = config?['cities'] as List<dynamic>?;
+  if (list == null || list.isEmpty) return null;
+  return list
+      .map((entry) => CityData.fromJson(entry as Map<String, dynamic>))
+      .where((city) => city.profileSelectable || city.exploreVisible)
+      .toList(growable: false);
+}
+
+/// The city in [cities] closest to [point], or null when there is none.
+CityData? nearestCityData(LocationCoordinate point, Iterable<CityData> cities) {
+  CityData? nearest;
+  var nearestMeters = double.infinity;
+  for (final city in cities) {
+    final meters = point.distanceTo(
+      LocationCoordinate(city.latitude, city.longitude),
+    );
+    if (meters < nearestMeters) {
+      nearestMeters = meters;
+      nearest = city;
+    }
+  }
+  return nearest;
+}
 
 String _normalizeCityKey(String value) => value
     .trim()

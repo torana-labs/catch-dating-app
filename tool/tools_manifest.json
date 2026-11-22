@@ -1761,6 +1761,28 @@
       "runbook": "docs/release_operations.md#cloudflare-edge-for-catchdatescom"
     },
     {
+      "id": "contracts:bigquery-export-paths",
+      "category": "contracts",
+      "path": "tool/contracts/check_bigquery_export_paths.mjs",
+      "command": "node tool/contracts/check_bigquery_export_paths.mjs",
+      "surface": "local-read",
+      "status": "active",
+      "description": "Checks that every extensions/*.env BigQuery export reads a collection in the live Firestore registry, that env files and firebase.json extension instances match, and that the host analytics contract pins what the env files deploy.",
+      "impactPaths": [
+        "tool/contracts/check_bigquery_export_paths.test.mjs",
+        "tool/contracts/lib/firestore_rules_blocks.mjs",
+        "tool/contracts/firestore_contract.json",
+        "tool/analytics/host_analytics_contract.mjs",
+        "extensions/**",
+        "firebase.json"
+      ],
+      "checks": [
+        "node --check tool/contracts/check_bigquery_export_paths.mjs",
+        "node --test tool/contracts/check_bigquery_export_paths.test.mjs",
+        "node tool/contracts/check_bigquery_export_paths.mjs"
+      ]
+    },
+    {
       "id": "contracts:check-all",
       "category": "contracts",
       "path": "tool/check_data_contract.sh",
@@ -1772,6 +1794,28 @@
         "bash -n tool/check_data_contract.sh"
       ],
       "role": "finder"
+    },
+    {
+      "id": "contracts:client-write-contracts",
+      "category": "contracts",
+      "path": "tool/contracts/check_client_write_contracts.mjs",
+      "command": "node tool/contracts/check_client_write_contracts.mjs",
+      "surface": "local-read",
+      "status": "active",
+      "description": "Checks that every direct client create, update or delete firestore.rules allows has a contracts/client_writes schema, and that every such schema still matches an allowed write, a registered path and its document schema.",
+      "impactPaths": [
+        "tool/contracts/check_client_write_contracts.test.mjs",
+        "tool/contracts/lib/firestore_rules_blocks.mjs",
+        "tool/contracts/firestore_contract.json",
+        "firestore.rules",
+        "contracts/client_writes/**",
+        "contracts/firestore/**"
+      ],
+      "checks": [
+        "node --check tool/contracts/check_client_write_contracts.mjs",
+        "node --test tool/contracts/check_client_write_contracts.test.mjs",
+        "node tool/contracts/check_client_write_contracts.mjs"
+      ]
     },
     {
       "id": "contracts:firestore-contract",

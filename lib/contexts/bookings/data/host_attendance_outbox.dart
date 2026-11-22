@@ -202,7 +202,8 @@ class HostAttendanceOutbox {
   }
 }
 
-// keepalive: shared durable command policy across Host work surfaces.
+// keepalive: account-free: a durable command journal shared by Host work
+// surfaces; it keys entries by the signed-in account inside.
 @Riverpod(keepAlive: true)
 HostAttendanceOutboxStore hostAttendanceOutboxStore(Ref ref) {
   final auth = ref.watch(firebaseAuthProvider);
@@ -216,7 +217,8 @@ HostAttendanceOutboxStore hostAttendanceOutboxStore(Ref ref) {
   );
 }
 
-// keepalive: commands survive navigation between event work surfaces.
+// keepalive: account-free: commands survive navigation between event work
+// surfaces.
 @Riverpod(keepAlive: true)
 HostAttendanceOutbox hostAttendanceOutbox(Ref ref) => HostAttendanceOutbox(
   ref.watch(hostAttendanceOutboxStoreProvider),

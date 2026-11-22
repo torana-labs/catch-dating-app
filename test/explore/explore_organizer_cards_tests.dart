@@ -536,7 +536,9 @@ void _registerExploreOrganizerCardsTests() {
       ActivityKind.socialRun,
       ActivityKind.socialRun,
     ];
-    final container = ProviderContainer();
+    final container = ProviderContainer(
+      overrides: [firebaseAuthProvider.overrideWithValue(MockFirebaseAuth())],
+    );
     addTearDown(container.dispose);
     final items = [
       for (var index = 0; index < activityKinds.length; index += 1)
@@ -642,7 +644,9 @@ void _registerExploreOrganizerCardsTests() {
   testWidgets('ExploreEventsSection empty state can broaden time filter', (
     tester,
   ) async {
-    final container = ProviderContainer();
+    final container = ProviderContainer(
+      overrides: [firebaseAuthProvider.overrideWithValue(MockFirebaseAuth())],
+    );
     addTearDown(container.dispose);
     container
         .read(exploreFiltersProvider.notifier)
@@ -682,6 +686,7 @@ void _registerExploreOrganizerCardsTests() {
     (tester) async {
       final container = ProviderContainer(
         overrides: [
+          firebaseAuthProvider.overrideWithValue(MockFirebaseAuth()),
           exploreFeedViewModelProvider.overrideWithValue(
             const AsyncData(ExploreFeedViewModel(items: [])),
           ),

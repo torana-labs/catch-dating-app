@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inventory.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_event_summary_reads.g.dart';
@@ -18,7 +19,7 @@ class HostEventDraftWindow {
 /// listener. Published events are read from `events` directly.
 class HostEventSummaryReads {
   const HostEventSummaryReads(this.reader);
-  final HostSummaryReader reader;
+  final ScopedReadModelReader reader;
   static const marker = 'eventSummaryVersion';
 
   /// The first [limit] active unpublished events starting at or after
@@ -31,7 +32,7 @@ class HostEventSummaryReads {
   }) => reader
       .watchWindow(
         collection: 'hostEventSummaries',
-        organizerId: organizerId,
+        scopeId: organizerId,
         orderField: 'startTimeMillis',
         descending: false,
         limit: limit,
@@ -53,8 +54,9 @@ class HostEventSummaryReads {
 /// The signed-in manager's `hostEventSummaries` listener.
 @riverpod
 HostEventSummaryReads hostEventSummaryReads(Ref ref) => HostEventSummaryReads(
-  HostSummaryReader(
+  ScopedReadModelReader(
     ref.watch(firebaseFirestoreProvider),
+    family: hostReadModels,
     actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
   ),
 );

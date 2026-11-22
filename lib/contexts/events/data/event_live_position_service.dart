@@ -109,14 +109,15 @@ class GeolocatorEventLivePositionStreamGateway
   ).map(EventLivePositionSample.fromPosition);
 }
 
-// keepalive: this platform facade coordinates explicit foreground location
-// sharing across Event Success and Host event management routes.
+// keepalive: account-free: this platform facade coordinates explicit foreground
+// location sharing across Event Success and Host event management routes.
 @Riverpod(keepAlive: true)
 EventLivePositionPublisher eventLivePositionPublisher(Ref ref) =>
     FirebaseEventLivePositionPublisher(ref.watch(firebaseFunctionsProvider));
 
-// keepalive: the location stream is owned by an explicit sharing controller,
-// which starts and stops collection as the user changes sharing state.
+// keepalive: account-free: the location stream is owned by an explicit sharing
+// controller, which starts and stops collection as the user changes sharing
+// state.
 @Riverpod(keepAlive: true)
 EventLivePositionStreamGateway eventLivePositionStreamGateway(Ref ref) =>
     const GeolocatorEventLivePositionStreamGateway();

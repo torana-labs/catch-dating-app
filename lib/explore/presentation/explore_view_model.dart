@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/discovery/data/explore_search_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
@@ -283,19 +284,22 @@ abstract class ExploreViewModel with _$ExploreViewModel {
   }
 }
 
-/// **KeepAlive notifier with internal flag**
-///
 /// Holds the currently selected city for club browsing. Uses an
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
-/// manual user pick. [keepAlive] is true so the city survives tab switches.
-// keepalive: selected city is user browse-session state shared by Explore list,
-// map, and city controllers across tab switches.
-@Riverpod(keepAlive: true)
+/// manual user pick.
+///
+/// Session lifetime: the city is browse state shared by the Explore list, map
+/// and city controllers across tab switches, and the next account starts from
+/// the market default.
+@riverpod
 class SelectedExploreCity extends _$SelectedExploreCity {
   bool _userSelected = false;
 
   @override
-  CityData build() => defaultCityDataForMarket();
+  CityData build() {
+    ref.retainForCurrentSession();
+    return defaultCityDataForMarket();
+  }
 
   void setCity(CityData city) {
     _userSelected = true;
@@ -325,27 +329,31 @@ class SelectedExploreCity extends _$SelectedExploreCity {
   }
 }
 
-// keepalive: user-selected flag protects manual city choice from later
-// auto-detection while browsing.
-@Riverpod(keepAlive: true)
+/// Session lifetime: whether the city was picked by hand, which protects that
+/// choice from later auto-detection while browsing.
+@riverpod
 class SelectedExploreCityWasUserSelected
     extends _$SelectedExploreCityWasUserSelected {
   @override
-  bool build() => false;
+  bool build() {
+    ref.retainForCurrentSession();
+    return false;
+  }
 
   void markSelected() => state = true;
 }
 
-/// **KeepAlive notifier — simple string state**
+/// Holds the current search query text.
 ///
-/// Holds the current search query text. [keepAlive] ensures the query
-/// survives tab switches so the user's search isn't lost while browsing.
-// keepalive: query text is browse-session state and should survive Explore
-// route/chrome rebuilds.
-@Riverpod(keepAlive: true)
+/// Session lifetime: the query survives tab switches and Explore route and
+/// chrome rebuilds, and the next account starts from an empty search.
+@riverpod
 class ExploreSearchQuery extends _$ExploreSearchQuery {
   @override
-  String build() => '';
+  String build() {
+    ref.retainForCurrentSession();
+    return '';
+  }
 
   void setQuery(String query) {
     final normalizedQuery = query.trimLeft();
@@ -382,12 +390,15 @@ Future<String> debouncedExploreSearchQuery(Ref ref) async {
   return query;
 }
 
-// keepalive: filters are browse-session state shared by Explore list, map, and
-// feed view models.
-@Riverpod(keepAlive: true)
+/// Session lifetime: filters are browse state shared by the Explore list, map
+/// and feed view models, and the next account starts from the defaults.
+@riverpod
 class ExploreFilters extends _$ExploreFilters {
   @override
-  ExploreFilterSelection build() => const ExploreFilterSelection();
+  ExploreFilterSelection build() {
+    ref.retainForCurrentSession();
+    return const ExploreFilterSelection();
+  }
 
   void setTimeFilter(ExploreTimeFilter filter) {
     state = state.copyWith(timeFilter: filter);

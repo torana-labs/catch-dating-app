@@ -14,12 +14,13 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.d
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:catch_platform/persistence/command_journal_storage.dart';
 import 'package:catch_platform/persistence/local_command_journal.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
@@ -630,21 +631,24 @@ class JournalHostResponseExportGateway implements HostResponseExportGateway {
   }
 }
 
-// keepalive: one stateless callable facade is shared by every Forms route.
+// keepalive: account-free: one stateless callable facade is shared by every
+// Forms route.
 @Riverpod(keepAlive: true)
 HostFormsRepository hostFormsRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);
   return HostFormsRepository(
     ref.watch(firebaseFunctionsProvider),
     responses: HostResponseSummaryReads(
-      HostSummaryReader(
+      ScopedReadModelReader(
         ref.watch(firebaseFirestoreProvider),
+        family: hostReadModels,
         actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
       ),
     ),
     summaries: HostFormSummaryReads(
-      HostSummaryReader(
+      ScopedReadModelReader(
         ref.watch(firebaseFirestoreProvider),
+        family: hostReadModels,
         actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
       ),
     ),

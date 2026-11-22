@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
-import 'package:catch_dating_app/contexts/profiles/data/profile_location_initializer.dart';
+import 'package:catch_dating_app/contexts/discovery/actions/profile_location_initializer.dart';
 import 'package:catch_dating_app/force_update/presentation/force_update_diagnostics.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_listener.dart';
@@ -33,8 +33,8 @@ typedef ForceUpdateRefresh =
       bool Function()? shouldInvalidate,
     });
 
-// keepalive: force-update refresh is the app-wide gate hook used by the app
-// shell and test harness across startup route rebuilds.
+// keepalive: account-free: force-update refresh is the app-wide gate hook used
+// by the app shell and test harness across startup route rebuilds.
 @visibleForTesting
 @Riverpod(keepAlive: true)
 ForceUpdateRefresh forceUpdateRefresh(Ref ref) => _refreshForceUpdateGate;

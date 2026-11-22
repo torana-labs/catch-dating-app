@@ -222,7 +222,8 @@ class ProgramInboxViewsRepository {
   }
 }
 
-// keepalive: a stateless repository over account-free SDK singletons.
+// keepalive: account-free: a stateless repository over account-free SDK
+// singletons.
 @Riverpod(keepAlive: true)
 ProgramInboxViewsRepository programInboxViewsRepository(Ref ref) =>
     ProgramInboxViewsRepository(

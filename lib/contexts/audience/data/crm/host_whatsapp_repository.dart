@@ -2,13 +2,14 @@ import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_crm_callable.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_platform/streams/clocked_listener.dart';
 import 'package:catch_platform/streams/combine_latest.dart';
@@ -35,7 +36,7 @@ class HostWhatsappRepository {
 
   final FirebaseFunctions _functions;
   final FirebaseFirestore _firestore;
-  final HostSummaryReader _summaries;
+  final ScopedReadModelReader _summaries;
   final AppClock _clock;
 
   Future<HostMessagingSetup> getMessagingSetup(
@@ -60,7 +61,7 @@ class HostWhatsappRepository {
   }) => _summaries
       .watchPages(
         collection: threadViews,
-        organizerId: organizerId,
+        scopeId: organizerId,
         orderField: 'lastMessageAtMillis',
         descending: true,
         pageSize: pageSize,
@@ -76,7 +77,7 @@ class HostWhatsappRepository {
   }) {
     final view = _summaries.watchDocument(
       collection: threadViews,
-      organizerId: organizerId,
+      scopeId: organizerId,
       id: threadId,
     );
     return clockedListener<
@@ -259,15 +260,17 @@ class HostWhatsappRepository {
   );
 }
 
-// keepalive: Reuse the callable client for the whatsapp subdomain.
+// keepalive: account-free: Reuse the callable client for the whatsapp
+// subdomain.
 @Riverpod(keepAlive: true)
 HostWhatsappRepository hostWhatsappRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);
   return HostWhatsappRepository(
     ref.watch(firebaseFunctionsProvider),
     firestore: ref.watch(firebaseFirestoreProvider),
-    summaries: HostSummaryReader(
+    summaries: ScopedReadModelReader(
       ref.watch(firebaseFirestoreProvider),
+      family: hostReadModels,
       actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
     ),
     clock: ref.watch(appClockProvider),

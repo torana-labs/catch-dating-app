@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 
 /// The form list from `hostFormSummaries`, title searches included, as a
 /// listener: a form the server adds, changes or removes shows at once.
 class HostFormSummaryReads {
   const HostFormSummaryReads(this.reader);
-  final HostSummaryReader reader;
+  final ScopedReadModelReader reader;
   static const marker = 'formSummaryVersion';
 
   /// The most forms a search reads before it asks for narrower filters.
@@ -41,7 +41,7 @@ class HostFormSummaryReads {
       return reader
           .watchPages(
             collection: 'hostFormSummaries',
-            organizerId: request.organizerId,
+            scopeId: request.organizerId,
             orderField: 'updatedAtMillis',
             descending: true,
             pageSize: pageSize,
@@ -53,7 +53,7 @@ class HostFormSummaryReads {
     return _SearchedForms(
       reader.watchWindow(
         collection: 'hostFormSummaries',
-        organizerId: request.organizerId,
+        scopeId: request.organizerId,
         orderField: 'updatedAtMillis',
         descending: true,
         limit: maxSearchedForms,
@@ -70,7 +70,7 @@ class HostFormSummaryReads {
 class _SearchedForms implements LivePager<HostFormSummary> {
   _SearchedForms(this._window, this._search);
 
-  final Stream<HostSummaryWindow> _window;
+  final Stream<ReadModelWindow> _window;
   final String _search;
 
   @override

@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_campaign_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/cache/app_clock.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -106,12 +107,16 @@ Future<LivePages<T>> _next<T>(StreamIterator<LivePages<T>> pages) async {
 
 void main() {
   late FakeFirebaseFirestore firestore;
-  late HostSummaryReader summaries;
+  late ScopedReadModelReader summaries;
   const clock = AppClock.custom(_clockNow);
 
   setUp(() {
     firestore = FakeFirebaseFirestore();
-    summaries = HostSummaryReader(firestore, actorId: () => 'host-1');
+    summaries = ScopedReadModelReader(
+      firestore,
+      family: hostReadModels,
+      actorId: () => 'host-1',
+    );
   });
 
   HostWhatsappRepository whatsapp() => HostWhatsappRepository(

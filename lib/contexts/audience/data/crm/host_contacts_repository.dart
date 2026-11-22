@@ -11,10 +11,11 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memory.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
+import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -400,15 +401,17 @@ class HostContactsRepository {
   );
 }
 
-// keepalive: Reuse the callable client for the contacts subdomain.
+// keepalive: account-free: Reuse the callable client for the contacts
+// subdomain.
 @Riverpod(keepAlive: true)
 HostContactsRepository hostContactsRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);
   return HostContactsRepository(
     ref.watch(firebaseFunctionsProvider),
     summaries: HostContactSummaryReads(
-      HostSummaryReader(
+      ScopedReadModelReader(
         ref.watch(firebaseFirestoreProvider),
+        family: hostReadModels,
         actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
       ),
     ),

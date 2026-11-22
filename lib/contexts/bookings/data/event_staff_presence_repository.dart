@@ -120,7 +120,8 @@ class EventStaffPresenceRepository {
   );
 }
 
-// keepalive: One Firebase-backed repository instance serves every event.
+// keepalive: account-free: One Firebase-backed repository instance serves every
+// event.
 @Riverpod(keepAlive: true)
 EventStaffPresenceRepository eventStaffPresenceRepository(Ref ref) =>
     EventStaffPresenceRepository(

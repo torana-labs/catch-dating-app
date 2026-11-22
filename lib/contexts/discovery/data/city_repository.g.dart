@@ -8,29 +8,13 @@ part of 'city_repository.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// List of supported cities, fetched once and cached for the app lifetime.
-///
-/// Returns the Firestore-backed list or the 9 hardcoded defaults.
-// keepalive: city repository backs global city selection and should remain a
-// single cached Firestore facade.
 
 @ProviderFor(cityRepository)
 final cityRepositoryProvider = CityRepositoryProvider._();
 
-/// List of supported cities, fetched once and cached for the app lifetime.
-///
-/// Returns the Firestore-backed list or the 9 hardcoded defaults.
-// keepalive: city repository backs global city selection and should remain a
-// single cached Firestore facade.
-
 final class CityRepositoryProvider
     extends $FunctionalProvider<CityRepository, CityRepository, CityRepository>
     with $Provider<CityRepository> {
-  /// List of supported cities, fetched once and cached for the app lifetime.
-  ///
-  /// Returns the Firestore-backed list or the 9 hardcoded defaults.
-  // keepalive: city repository backs global city selection and should remain a
-  // single cached Firestore facade.
   CityRepositoryProvider._()
     : super(
         from: null,
@@ -66,8 +50,20 @@ final class CityRepositoryProvider
 
 String _$cityRepositoryHash() => r'74aa633053874ad70768d83e4c917fe835b6a308';
 
+/// List of supported cities, fetched once and cached for the app lifetime.
+///
+/// Returns the Firestore-backed list or the launched defaults.
+// keepalive: account-free: the city list is app-wide discovery configuration
+// reused by Explore, onboarding and profile flows.
+
 @ProviderFor(cityList)
 final cityListProvider = CityListProvider._();
+
+/// List of supported cities, fetched once and cached for the app lifetime.
+///
+/// Returns the Firestore-backed list or the launched defaults.
+// keepalive: account-free: the city list is app-wide discovery configuration
+// reused by Explore, onboarding and profile flows.
 
 final class CityListProvider
     extends
@@ -77,6 +73,11 @@ final class CityListProvider
           FutureOr<List<CityData>>
         >
     with $FutureModifier<List<CityData>>, $FutureProvider<List<CityData>> {
+  /// List of supported cities, fetched once and cached for the app lifetime.
+  ///
+  /// Returns the Firestore-backed list or the launched defaults.
+  // keepalive: account-free: the city list is app-wide discovery configuration
+  // reused by Explore, onboarding and profile flows.
   CityListProvider._()
     : super(
         from: null,

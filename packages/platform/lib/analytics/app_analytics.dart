@@ -85,8 +85,8 @@ final class NoOpAnalyticsReporter implements AnalyticsReporter {
   Future<void> setUserId(String? userId) async {}
 }
 
-// keepalive: analytics facade keeps user/session attribution stable across
-// navigation and background event emission.
+// keepalive: account-free: analytics facade keeps user/session attribution
+// stable across navigation and background event emission.
 @Riverpod(keepAlive: true)
 AppAnalytics appAnalytics(Ref ref) => AppAnalytics();
 

@@ -104,8 +104,7 @@ void main() {
               'hostGoal': edited.hostGoal,
               'wingmanRequestsEnabled': edited.wingmanRequestsEnabled,
               'contextualOpenersEnabled': edited.contextualOpenersEnabled,
-              'compatibilityAffectsRanking':
-                  edited.compatibilityAffectsRanking,
+              'compatibilityAffectsRanking': edited.compatibilityAffectsRanking,
               'questionnaireConfig': edited.questionnaireConfig.toJson(),
               'conversationGraphConsentMode': 'optOut',
               'attendeePrompt': edited.attendeePrompt,

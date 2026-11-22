@@ -15,7 +15,7 @@ separate stage counts are not historical cohort conversions.
   read only `host_analytics_events`; GA4 is neither a fallback nor a larger-count
   override. Advertising-provider events do not increase first-party counters.
 - `catch_analytics.*_raw_latest`: Firestore-to-BigQuery export views for
-  `organizers`, `events`, `eventParticipations`, `guestPayments`, `reviews`,
+  `organizers`, `events`, `eventBookings`, `guestPayments`, `reviews`,
   `savedEvents`, `eventInviteLinks`, and `matches`, one extension instance per
   collection.
 - `catch_marketplace_metrics.event_success_scorecards_raw_latest`: existing
@@ -218,7 +218,7 @@ The replay reads up to 10,000 records per source and logs when it reaches that.
 - `catch_marketplace_metrics.participant_signal_facts_raw_latest`: existing
   signal facts for likes, private interest, matches, chats, attendance, and
   feedback.
-- `catch_analytics.event_participations_raw_latest`: roster edges for booked
+- `catch_analytics.event_bookings_raw_latest`: roster edges for booked
   and attended event counts.
 - `catch_user_analytics.user_profile_exposure_events`: aggregate-safe profile
   impression, dwell, and photo performance events. This table is the long-term

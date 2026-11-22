@@ -77,7 +77,7 @@ final class HostFormNewResponseCountProvider
 }
 
 String _$hostFormNewResponseCountHash() =>
-    r'7114c2dc4154741f38358c98bf4e5a67cf119f1d';
+    r'4d8abe73fe4d38a619c1d7a8c6d3a05f7d66ba1f';
 
 /// How many of one form's answers wait for the host's first look: the
 /// applications still `submitted`. Answers with no application (feedback,

@@ -87,8 +87,8 @@ class SavedEventRepository {
       );
 }
 
-// keepalive: saved-event repository is shared by calendar, saved list, and
-// event detail save state.
+// keepalive: account-free: saved-event repository is shared by calendar, saved
+// list, and event detail save state.
 @Riverpod(keepAlive: true)
 SavedEventRepository savedEventRepository(Ref ref) =>
     SavedEventRepository(ref.watch(firebaseFirestoreProvider));

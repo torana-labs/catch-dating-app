@@ -61,7 +61,7 @@ for (const column of expectedMartColumns) {
 requireText(ddlMart, "Internal scoring columns");
 
 requireText(refresh, "participant_signal_facts_raw_latest");
-requireText(refresh, "event_participations_raw_latest");
+requireText(refresh, "event_bookings_raw_latest");
 requireText(refresh, "user_profile_exposure_events");
 requireText(refresh, "mart_user_analytics_daily");
 requireText(refresh, "profile_pull_score");

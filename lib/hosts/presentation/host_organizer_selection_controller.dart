@@ -1,14 +1,20 @@
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_organizer_selection_controller.g.dart';
 
-// keepalive: organizer identity is Host-shell state and must survive branch
-// changes while remaining isolated to the authenticated user.
-@Riverpod(keepAlive: true)
+/// The organizer the Host shell has selected for [uid].
+///
+/// Session lifetime: the selection survives branch changes while [uid] is
+/// signed in, and starts over at sign-out or an account change.
+@riverpod
 class HostOrganizerSelection extends _$HostOrganizerSelection {
   @override
-  String? build(String uid) => null;
+  String? build(String uid) {
+    ref.retainForCurrentSession();
+    return null;
+  }
 
   void select(String organizerId) {
     final normalized = organizerId.trim();

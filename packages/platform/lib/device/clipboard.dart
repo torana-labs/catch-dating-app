@@ -7,11 +7,11 @@ part 'clipboard.g.dart';
 
 typedef ClipboardSetter = Future<void> Function(ClipboardData data);
 
-// keepalive: a stateless platform facade with no account state.
+// keepalive: account-free: a stateless platform facade with no account state.
 @Riverpod(keepAlive: true)
 ClipboardSetter clipboardSetter(Ref ref) => Clipboard.setData;
 
-// keepalive: a stateless platform facade with no account state.
+// keepalive: account-free: a stateless platform facade with no account state.
 @Riverpod(keepAlive: true)
 ClipboardController clipboardController(Ref ref) =>
     ClipboardController(ref.watch(clipboardSetterProvider));

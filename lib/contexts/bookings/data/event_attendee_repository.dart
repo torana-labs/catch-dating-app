@@ -162,7 +162,8 @@ class EventAttendeeRepository {
   );
 }
 
-// keepalive: One Firebase-backed repository instance serves every Host event.
+// keepalive: account-free: One Firebase-backed repository instance serves every
+// Host event.
 @Riverpod(keepAlive: true)
 EventAttendeeRepository eventAttendeeRepository(Ref ref) =>
     EventAttendeeRepository(
