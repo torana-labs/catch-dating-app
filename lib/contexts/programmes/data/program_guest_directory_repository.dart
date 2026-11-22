@@ -61,9 +61,13 @@ class ProgramGuestDirectoryRepository {
       );
 
   Stream<ProgramGuestListPage> _firstPage(String programId) {
-    final guests = _snapshots(_guests(programId).limit(pageSize + 1));
-    final households = _snapshots(_kind(programId, 'household'));
-    final groups = _snapshots(_kind(programId, 'group'));
+    // One more guest than the page says whether more follow.
+    final guests = _snapshots(_guests(programId), limit: pageSize + 1);
+    final households = _snapshots(
+      _kind(programId, 'household'),
+      limit: maxJoinRows,
+    );
+    final groups = _snapshots(_kind(programId, 'group'), limit: maxJoinRows);
     return combineLatest(
       guests,
       combineLatest(households, groups, (h, g) => (households: h, groups: g)),
@@ -133,13 +137,14 @@ class ProgramGuestDirectoryRepository {
   Query<Map<String, dynamic>> _kind(String programId, String kind) => _firestore
       .collection(collection)
       .where('programId', isEqualTo: programId)
-      .where('kind', isEqualTo: kind)
-      .limit(maxJoinRows);
+      .where('kind', isEqualTo: kind);
 
+  /// [rows] live, at most [limit] of them.
   Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> _snapshots(
-    Query<Map<String, dynamic>> query,
-  ) => withBackendErrorStream(
-    () => query.snapshots().map((snapshot) => snapshot.docs),
+    Query<Map<String, dynamic>> rows, {
+    required int limit,
+  }) => withBackendErrorStream(
+    () => rows.limit(limit).snapshots().map((snapshot) => snapshot.docs),
     context: _context,
   );
 }
