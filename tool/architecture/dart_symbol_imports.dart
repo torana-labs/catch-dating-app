@@ -92,7 +92,9 @@ Future<void> main(List<String> args) async {
   if (out == null) {
     stdout.writeln(json);
   } else {
-    File(out).writeAsStringSync('$json\n');
+    File(out)
+      ..parent.createSync(recursive: true)
+      ..writeAsStringSync('$json\n');
   }
 }
 
