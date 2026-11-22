@@ -974,54 +974,37 @@ int eventViewModel(Ref ref) => ref.watch(watchEventProvider).value ?? 0;
     );
   });
 
-  test('the cache baseline only shrinks', () async {
+  test('every cache finding fails the check', () async {
     final root = await _fixtureRoot('''
 final journalProvider = Provider<int>((ref) => 1);
 ''');
     addTearDown(() => root.delete(recursive: true));
-    final unlisted = await buildProviderGraph(root);
+    final failing = await buildProviderGraph(root);
     expect(
       providerGraphCheckFailures(
-        unlisted,
-      ).where((failure) => failure.startsWith('unlisted')).single,
+        failing,
+      ).where((failure) => failure.startsWith('cache finding')).single,
       startsWith(
-        'unlisted cache finding KEEPALIVE-MANUAL-001 '
+        'cache finding KEEPALIVE-MANUAL-001 '
         'lib/sample/data/fixture.dart#journalProvider no-keepalive-marker',
       ),
     );
-
-    await File(
-      '${root.path}/$cacheBaselinePath',
-    ).parent.create(recursive: true);
-    await writeCacheBaseline(root, unlisted.cacheFindings);
-    final listed = await buildProviderGraph(root);
-    expect(listed.unlistedCacheFindings, isEmpty);
-    expect(
-      providerGraphCheckFailures(listed),
-      isNot(contains(startsWith('unlisted'))),
-    );
-
-    await _writeFixture(root, 'lib/sample/data/fixture.dart', '''
-final journalProvider = Provider<int>((ref) => 1);
-final anotherProvider = Provider<int>((ref) => 1);
-''');
-    final grown = await buildProviderGraph(root);
-    expect(grown.unlistedCacheFindings.single.symbol, 'anotherProvider');
+    expect(failing.isHealthy, isFalse);
 
     await _writeFixture(root, 'lib/sample/data/fixture.dart', '''
 // keepalive: account-free: one journal per process.
 final journalProvider = Provider<int>((ref) => 1);
 ''');
     final fixed = await buildProviderGraph(root);
-    expect(fixed.unlistedCacheFindings, isEmpty);
-    expect(fixed.staleCacheBaselineEntries.single.symbol, 'journalProvider');
-    expect(fixed.health['unlistedCacheFindings'], isEmpty);
+    expect(fixed.cacheFindings, isEmpty);
+    expect(fixed.health['cacheFindings'], isEmpty);
   });
 
-  test('the CLI writes a reviewed cache baseline on request', () {
-    final options = parseProviderGraphCliOptions(['--write-cache-baseline']);
-    expect(options.writeCacheBaseline, isTrue);
-    expect(options.check, isFalse);
+  test('the CLI has no baseline to write', () {
+    expect(
+      () => parseProviderGraphCliOptions(['--write-cache-baseline']),
+      throwsFormatException,
+    );
   });
 }
 
