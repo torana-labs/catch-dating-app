@@ -56,6 +56,12 @@
       "audience": "consumer",
       "owner": "product"
     },
+    "eventFeedback": {
+      "title": "How was {eventName}?",
+      "body": "Tap to rate it and leave a note for {hostName}.",
+      "audience": "consumer",
+      "owner": "product"
+    },
     "eventCompanionReady": {
       "title": "Your event companion is ready",
       "body": "Open the live guide for your {eventLabel} from {locationName}.",

@@ -56,7 +56,8 @@ test("provisions an armed system-default reminder for upcoming events",
     });
     const summary = await ensureEventDefaultMoments(deps(db));
     assert.equal(summary.scanned, 1);
-    assert.equal(summary.created, 1);
+    // The start reminder and the feedback request.
+    assert.equal(summary.created, 2);
     const doc = db.getDoc(
       "organizerMoments/e1_event_start_reminder");
     assert.ok(doc !== undefined);
@@ -106,7 +107,8 @@ test("does not clobber an existing paused moment", async () => {
     },
   });
   const summary = await ensureEventDefaultMoments(deps(db));
-  assert.equal(summary.created, 0);
+  // Only the feedback request is new; the paused reminder stays as is.
+  assert.equal(summary.created, 1);
   const doc = db.getDoc("organizerMoments/e1_event_start_reminder")!;
   assert.equal(doc.status, "paused");
   assert.equal((doc.approval as {approvedByUid: string}).approvedByUid,
@@ -206,7 +208,7 @@ test("private and unconfigured events are never provisioned", async () => {
       eventOrigin: catchBooking, publicRegistrationEnabled: false},
   });
   const summary = await ensureEventDefaultMoments(deps(db));
-  assert.equal(summary.created, 3);
+  assert.equal(summary.created, 6);
   assert.equal(db.getDoc(
     "organizerMoments/priv_event_start_reminder"), undefined);
   assert.equal(db.getDoc(
@@ -256,7 +258,7 @@ test("a 06:30 event's start reminder goes at 06:15 despite quiet hours",
       nowMillis: () => DAWN_DUE - 60 * 60_000,
       timestampFromMillis: (millis: number) => millis,
     });
-    assert.equal(provision.created, 1);
+    assert.equal(provision.created, 2);
     const pushed: string[] = [];
     const summary = await runMomentSweep(dawnRunner(db, pushed));
     assert.equal(summary.runsFired, 1);

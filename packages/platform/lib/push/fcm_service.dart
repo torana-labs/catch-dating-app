@@ -103,6 +103,8 @@ String? eventCompanionRouteFromMessageData(Map<String, Object?> data) {
   return '/organizers/$organizerId/events/$eventId/companion';
 }
 
+/// Event pushes open the event page. A feedback request lands there too:
+/// the page holds the guest's write-a-review action.
 String? eventDetailRouteFromMessageData(Map<String, Object?> data) {
   if (AppConfig.appRole.isHost) return null;
   const eventActivityTypes = {
@@ -114,6 +116,7 @@ String? eventDetailRouteFromMessageData(Map<String, Object?> data) {
     'waitlistOfferExpired',
     'eventCancelled',
     'eventUpdated',
+    'eventFeedback',
   };
   if (!eventActivityTypes.contains(data['type'])) return null;
   final organizerId = data['organizerId'];

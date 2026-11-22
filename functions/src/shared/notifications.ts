@@ -288,6 +288,22 @@ export function eventActivityNotificationCopy(
 }
 
 /**
+ * Builds the post-event feedback request: names the event and its host.
+ * @param {EventDocument} event Event the guest attended.
+ * @param {string | null} hostName Organizer display name, when known.
+ * @return {object} Title and body copy.
+ */
+export function eventFeedbackNotificationCopy(
+  event: EventDocument,
+  hostName: string | null
+): {title: string; body: string} {
+  return notificationCopy("eventFeedback", {
+    eventName: eventTitleLabel(event),
+    hostName: hostName?.trim() || "the host",
+  });
+}
+
+/**
  * Builds user-facing copy for the companion-ready push notification.
  * @param {EventDocument} event Event whose live companion is ready.
  * @return {object} Title and body copy.
