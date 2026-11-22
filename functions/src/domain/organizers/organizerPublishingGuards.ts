@@ -1,6 +1,6 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import type {PublicRouteReservationDocument} from
-  "../shared/generated/firestoreAdminTypes";
+  "../../shared/generated/firestoreAdminTypes";
 
 const organizerPathPattern =
   /^\/organizers\/([a-z0-9-]+)(?:\/([a-z0-9-]+))?\/$/;

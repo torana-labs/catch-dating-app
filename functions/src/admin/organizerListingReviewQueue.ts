@@ -12,6 +12,7 @@ import {marketForIdOrAlias} from "../locations/marketConfig";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAdminRole} from "../platform/adminAuth";
 import {listingApprovalRoles} from "./organizerListingApproval";
+import {publicSlugFor} from "../organizers/organizerIdentity";
 
 // Anyone who reviews organizer intake can read the queue; approving it is
 // narrower (see adminApproveOrganizerListing).
@@ -131,13 +132,6 @@ function duplicateCheckRow(value: unknown): Row["duplicateCheck"] {
         rationale: typeof candidate.rationale === "string" ? candidate.rationale.slice(0, 2000) : ""}];
     }).slice(0, 12),
   };
-}
-
-/** A route-safe slug the reviewer can accept or edit. */
-export function publicSlugFor(value: string): string {
-  const slug = value.normalize("NFKD").toLowerCase().replace(/[^a-z0-9]+/gu, "-")
-    .replace(/^-+|-+$/gu, "").slice(0, 64).replace(/-+$/u, "");
-  return slug.length >= 3 ? slug : `organizer-${slug || "listing"}`.slice(0, 64);
 }
 
 function recordValue(value: unknown): Record<string, unknown> | null {

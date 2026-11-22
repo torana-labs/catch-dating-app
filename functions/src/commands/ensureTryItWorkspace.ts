@@ -5,7 +5,7 @@ import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {listingSuppressionHmacKey} from "../listingSuppressions/registry";
-import {clientAddress, limiterKey} from "./requestLimits";
+import {clientAddress, limiterKey} from "../platform/requestLimits";
 import type {EnsureTryItWorkspaceCallablePayload} from
   "../shared/generated/ensureTryItWorkspaceCallablePayload";
 import type {EnsureTryItWorkspaceCallableResponse} from

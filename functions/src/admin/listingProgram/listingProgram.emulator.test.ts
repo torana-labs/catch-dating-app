@@ -14,7 +14,7 @@ import {acceptPageFetch, notFoundTransport} from "../../operations/supplyIntake/
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "../../operations/supplyIntake/worker";
 import {adminNominateOrganizerHandler} from "../../operations/supplyIntake/nominations";
 import {adminApproveOrganizerListingHandler} from "../organizerListingApproval";
-import {discoveryFormatsForText} from "../../cityPlans/discoveryFormats";
+import {discoveryFormatsForText} from "../../domain/discovery/discoveryFormats";
 import {adminManageListingProgramHandler} from "./settings";
 
 // The programmatic listings approval path against the real Firestore

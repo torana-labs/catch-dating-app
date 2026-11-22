@@ -32,7 +32,7 @@ import {
 } from "./envelope";
 import {readTryItWorkspace, stageTryItWorkspace, type WorkspaceLookup} from "./workspace";
 import {linksSuppressed, registryLinkSuppression, spendTryItReadBudget, withPageSource, type LinkSuppressionCheck,
-  type TryItReadBudget} from "./pageRead";
+  type TryItReadBudget} from "../domain/supply/pageRead";
 
 // Command form.import-from-link (contracts/commands/catalog.json; #2062 C8).
 // A phone-verified visitor with a try-it workspace sends one public Google

@@ -6,8 +6,8 @@ import {
   openMarket,
   type ListingApprovalDeps,
   type ListingDecisionChecklist,
-} from "../../admin/organizerListingApproval";
-import {publicSlugFor} from "../../admin/organizerListingReviewQueue";
+} from "../../domain/supply/listingApproval";
+import {publicSlugFor} from "../../organizers/organizerIdentity";
 import {CATCH_RECEIPTS} from "../../catchMessaging/whatsappEndpointStops";
 import {catchEndpointHash} from "../../catchMessaging/whatsappReply";
 import {validateOperationWorkItem} from "../validation";

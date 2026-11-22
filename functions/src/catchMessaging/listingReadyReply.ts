@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import {getFirestore, type Firestore} from "firebase-admin/firestore";
 import {onDocumentUpdated} from "firebase-functions/v2/firestore";
-import {defaultListingApprovalDeps} from "../admin/organizerListingApproval";
+import {defaultListingApprovalDeps} from "../domain/supply/listingApproval";
 import {autoPublishNominatedListing, type AutoPublishOutcome} from "../operations/supplyIntake/autoPublish";
 import type {CatchAutoReplyOutcome, CatchAutoReplyRequest} from "./autoReply";
 import {nominationLabel, replyCopy} from "./inboundRouter";

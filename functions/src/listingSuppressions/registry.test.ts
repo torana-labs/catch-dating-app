@@ -25,7 +25,7 @@ import * as instagramWebhookModule from "../organizers/instagramClaimWebhook";
 import * as approvalModule from "../admin/organizerListingApproval";
 import * as createOrganizerModule from "../organizers/createOrganizer";
 import * as formImportModule from "../commands/importFormFromLink";
-import * as pageReadModule from "../commands/pageRead";
+import * as pageReadModule from "../domain/supply/pageRead";
 import * as eventImportModule from "../commands/importEventFromLink";
 import * as organizerImportModule from "../commands/importOrganizerFromLink";
 
