@@ -18,6 +18,8 @@ import {
 } from "./suvbotDocValidation";
 import {suvbotSeedPrefix} from "./suvbotWorld";
 import type {SuvbotWorldPlan} from "./suvbotWorld";
+import {eventSeatRecordCollections} from
+  "../events/seatAuthority/eventSeatLedgers";
 
 export const SUVBOT_UID = "suvbot";
 export const SUVBOT_ACCESS_COLLECTION = "demoSelfServiceAccess";
@@ -126,8 +128,12 @@ export async function buildResetPlan(
     for (const eventId of worldEventIds) {
       if (keep.has(`events/${eventId}`)) continue;
       paths.add(`eventSuccessScorecards/${eventId}`);
-      await collectQuery(db.collection("eventAttendees")
-        .where("eventId", "==", eventId), (doc) => paths.add(doc.ref.path));
+      paths.add(`eventSeatLedgers/${eventId}`);
+      for (const collection of ["eventAttendees",
+        ...eventSeatRecordCollections]) {
+        await collectQuery(db.collection(collection)
+          .where("eventId", "==", eventId), (doc) => paths.add(doc.ref.path));
+      }
       await collectQuery(db.collection("eventBookings")
         .where("eventId", "==", eventId), collect);
     }

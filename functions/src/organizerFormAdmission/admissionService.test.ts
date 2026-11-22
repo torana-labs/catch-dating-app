@@ -6,7 +6,8 @@ import {eventParticipationId} from "../shared/relationshipDocuments";
 import {eventAttendeeId} from "../events/eventAttendees";
 
 import {SeatAuthorityError} from "../events/seatAuthority/seatAuthority";
-import {FirestoreSeatIdentityAuthority} from "../events/seatIdentityAuthority";
+import {FirestoreSeatIdentityAuthority, SeatIdentityAuthorityError} from
+  "../events/seatIdentityAuthority";
 
 import {formConversionReceiptId} from
   "../organizers/organizerFormAdmissionIdentity";
@@ -21,6 +22,7 @@ import {fixture, Store, org, eventId, responseId, contactId, requestId,
 
 function denied(error: unknown) {
   return error instanceof SeatAuthorityError ||
+    error instanceof SeatIdentityAuthorityError ||
     error instanceof HttpsError && error.code === "failed-precondition" ||
     error instanceof AdmissionPolicyError &&
       ["unavailable", "conflict", "stale", "denied"].includes(error.code);
@@ -106,8 +108,8 @@ store.get(`organizerContacts/${contactId}`)!
   .mergedIntoContactId = "other";
       },
       (store) => {
-store.get(`eventSeatMigrationFences/${eventId}`)!
-  .state = "locked";
+store.get(`eventSeatLedgers/${eventId}`)!
+  .state = "revoked";
       },
     ];
     for (const mutate of scenarios) {
@@ -386,7 +388,7 @@ test("preview rejects full, locked, unpaid and revoked sources without writes",
         store.get(`eventSeatLedgers/${eventId}`)!.occupied = 2;
       },
       (store: Store) => {
-        store.get(`eventSeatMigrationFences/${eventId}`)!.state = "locked";
+        store.get(`eventSeatLedgers/${eventId}`)!.state = "revoked";
       },
       (store: Store) => {
         const offer = store.get(`organizerEventOffers/${offerId}`)!;

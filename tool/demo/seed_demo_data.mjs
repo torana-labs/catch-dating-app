@@ -66,6 +66,16 @@ const {
   publishedEventBasics,
 } = requireFromFunctions("./lib/events/progressiveSetup/basics.js");
 const {eventTitleLabel} = requireFromFunctions("./lib/shared/eventLabels.js");
+const {newEventSeatLedger} = requireFromFunctions(
+  "./lib/events/seatAuthority/eventSeatLedgers.js");
+const {seatReservationDocId} = requireFromFunctions(
+  "./lib/events/seatAuthority/firestoreAdapter.js");
+const {
+  catchUidSeatKey,
+  seatIdentityAliasId,
+  seatIdentityValueHash,
+  seatVerifiedPhoneProofId,
+} = requireFromFunctions("./lib/events/seatIdentityAuthority.js");
 
 const DEFAULT_SEED_PREFIX = "demo_beta_2026";
 const DEFAULT_MAX_BATCH_WRITES = 450;
@@ -938,6 +948,7 @@ function buildSeed({
     ...memberships.map((membership) => ({path: `${membership.collection}/${membership.id}`, data: membership.doc})),
     ...events.map((event) => ({path: `events/${event.id}`, data: event.doc})),
     ...participations.map((participation) => ({path: `eventBookings/${participation.id}`, data: participation.doc})),
+    ...seatDocsForEvents({events, participations, users}),
     ...eventSuccessPlans.map((plan) => ({path: `eventSuccessPlans/${plan.id}`, data: plan.doc})),
     ...eventSuccessPreferences.map((preference) => ({path: `eventSuccessPreferences/${preference.id}`, data: preference.doc})),
     ...eventSuccessCompatibilityResponses.map((response) => ({path: `eventSuccessCompatibilityResponses/${response.id}`, data: response.doc})),
@@ -1680,6 +1691,49 @@ function buildRoster({event, runIndex, organizerMembers, anchorProfiles}) {
     roster.push({person: members[signedCount], status: "cancelled"});
   }
   return roster;
+}
+
+/**
+ * Every event's seat records, as booking writes them: the ledger counting
+ * each signed-up or attended guest, and for each of them the uid and phone
+ * aliases, verified phone proof and active reservation of their seat.
+ */
+function seatDocsForEvents({events, participations, users}) {
+  const phoneByUid = new Map(users.map((user) =>
+    [user.uid, user.userDoc.phoneNumber ?? null]));
+  const docs = [];
+  for (const event of events) {
+    const organizerId = event.doc.organizerId;
+    const seated = participations.filter((participation) =>
+      participation.doc.eventId === event.id &&
+      ["signedUp", "attended"].includes(participation.doc.status));
+    docs.push({path: `eventSeatLedgers/${event.id}`,
+      data: {...newEventSeatLedger(event.id, event.doc),
+        occupied: seated.length}});
+    for (const participation of seated) {
+      const uid = participation.doc.uid;
+      const key = catchUidSeatKey(event.id, uid);
+      const phone = phoneByUid.get(uid) ?? null;
+      const alias = {eventId: event.id, organizerId, canonicalKey: key,
+        identityRevision: 1, migrationRevision: 1, state: "ready"};
+      docs.push({path: `eventSeatIdentityAliases/${seatIdentityAliasId(
+        event.id, "uid", uid)}`, data: {...alias, kind: "uid",
+        valueHash: seatIdentityValueHash("uid", uid)}});
+      if (phone) {
+        docs.push({path: `eventSeatIdentityAliases/${seatIdentityAliasId(
+          event.id, "phone", phone)}`, data: {...alias, kind: "phone",
+          valueHash: seatIdentityValueHash("phone", phone)}});
+      }
+      docs.push({path: `eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(
+        event.id, uid)}`, data: {eventId: event.id, organizerId, uid,
+        phoneE164: phone, migrationRevision: 1, state: "current"}});
+      docs.push({path: `eventSeatReservations/${seatReservationDocId(
+        event.id, key)}`, data: {eventId: event.id, canonicalKey: key,
+        identityRevision: 1, active: true, revision: 1,
+        reservedAtMillis: 0, releasedAtMillis: null}});
+    }
+  }
+  return docs;
 }
 
 function applyRosterAggregates(event, roster) {

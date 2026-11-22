@@ -115,7 +115,6 @@ export function writeCatchBookingRoster(params: {
   slot: CatchBookingRosterSlot;
   booking: EventBookingDocument;
   now: FirebaseFirestore.Timestamp;
-  seatReady?: boolean;
   /** The caller writes the row itself in this transaction. */
   factsOnly?: boolean;
 }): void {
@@ -126,8 +125,7 @@ export function writeCatchBookingRoster(params: {
     return;
   }
   const hostOwned = params.factsOnly === true ||
-    params.seatReady === true && slot.existing !== undefined &&
-    slot.existing.source !== "catchBooking";
+    slot.existing !== undefined && slot.existing.source !== "catchBooking";
   if (!hostOwned) {
     tx.set(slot.attendeeRef, catchBookingAttendeeDocument({source: booking,
       sourceExists: true, existing: slot.existing,

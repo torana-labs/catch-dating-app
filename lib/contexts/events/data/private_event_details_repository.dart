@@ -8,9 +8,7 @@ import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/schema_contracts/field_value_validation.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart'
-    show
-        UpdatePrivateEventDetailsCallableRequest,
-        ReconcilePrivateEventSeatsCallableRequest;
+    show UpdatePrivateEventDetailsCallableRequest;
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
@@ -410,7 +408,6 @@ class PrivateEventDetailsUpdateRequest {
     required this.expectedSetupRevision,
     required this.reviewedDefaultsHash,
     required this.details,
-    this.discard = false,
   });
 
   final String organizerId;
@@ -419,17 +416,6 @@ class PrivateEventDetailsUpdateRequest {
   final int expectedSetupRevision;
   final String reviewedDefaultsHash;
   final PrivateEventDetailsPatch details;
-  final bool discard;
-  PrivateEventDetailsUpdateRequest withDiscard(bool value) =>
-      PrivateEventDetailsUpdateRequest(
-        organizerId: organizerId,
-        eventId: eventId,
-        requestId: requestId,
-        expectedSetupRevision: expectedSetupRevision,
-        reviewedDefaultsHash: reviewedDefaultsHash,
-        details: details,
-        discard: value,
-      );
 
   bool get isValid =>
       _validDetailId(organizerId) &&
@@ -445,28 +431,16 @@ class PrivateEventDetailsUpdateRequest {
             .updatePrivateEventDetailsCallablePayloadReviewedDefaultsHash,
         reviewedDefaultsHash,
       ) &&
-      details.isValid &&
-      (!discard ||
-          (details.admissionTerms != null && details.toJson().length == 1));
+      details.isValid;
 
-  Map<String, Object?> toJson() => discard
-      ? ReconcilePrivateEventSeatsCallableRequest(
-          organizerId: organizerId,
-          eventId: eventId,
-          requestId: requestId,
-          expectedSetupRevision: expectedSetupRevision,
-          reviewedDefaultsHash: reviewedDefaultsHash,
-          details: details.toJson(),
-          discard: true,
-        ).toJson()
-      : UpdatePrivateEventDetailsCallableRequest(
-          organizerId: organizerId,
-          eventId: eventId,
-          requestId: requestId,
-          expectedSetupRevision: expectedSetupRevision,
-          reviewedDefaultsHash: reviewedDefaultsHash,
-          details: details.toJson(),
-        ).toJson();
+  Map<String, Object?> toJson() => UpdatePrivateEventDetailsCallableRequest(
+    organizerId: organizerId,
+    eventId: eventId,
+    requestId: requestId,
+    expectedSetupRevision: expectedSetupRevision,
+    reviewedDefaultsHash: reviewedDefaultsHash,
+    details: details.toJson(),
+  ).toJson();
 
   factory PrivateEventDetailsUpdateRequest.fromJson(Map<String, dynamic> json) {
     if (json.keys.toSet().difference({
@@ -476,10 +450,8 @@ class PrivateEventDetailsUpdateRequest {
           'expectedSetupRevision',
           'reviewedDefaultsHash',
           'details',
-          'discard',
         }).isNotEmpty ||
-        (json.length != 6 && json.length != 7) ||
-        (json.containsKey('discard') && json['discard'] != true) ||
+        json.length != 6 ||
         json['details'] is! Map) {
       throw const FormatException('Invalid details command');
     }
@@ -489,7 +461,6 @@ class PrivateEventDetailsUpdateRequest {
       requestId: json['requestId'] as String,
       expectedSetupRevision: json['expectedSetupRevision'] as int,
       reviewedDefaultsHash: json['reviewedDefaultsHash'] as String,
-      discard: json['discard'] == true,
       details: PrivateEventDetailsPatch.fromJson(
         Map<String, Object?>.from(json['details'] as Map),
       ),
@@ -505,38 +476,6 @@ class PrivateEventDetailsRepository {
   const PrivateEventDetailsRepository(this._functions);
 
   final FirebaseFunctions _functions;
-
-  Future<PrivateSeatReconciliationResult> reconcile(
-    PrivateEventDetailsUpdateRequest request,
-  ) {
-    if (!request.isValid ||
-        request.details.admissionTerms == null ||
-        request.details.toJson().length != 1) {
-      throw ArgumentError.value(request, 'request');
-    }
-    return withBackendErrorContext(
-      () async {
-        final response = await _functions
-            .httpsCallable('reconcilePrivateEventSeats')
-            .call<Object?>(request.toJson());
-        final result = PrivateSeatReconciliationResult.fromResponse(
-          response.data,
-        );
-        if ((result.receipt?.eventId ??
-                result.progress?.eventId ??
-                result.discardedEventId) !=
-            request.eventId) {
-          throw const FormatException('Guest reconciliation changed identity');
-        }
-        return result;
-      },
-      context: const BackendErrorContext(
-        service: BackendService.functions,
-        action: 'save admission settings and reconcile guests',
-        resource: 'reconcilePrivateEventSeats',
-      ),
-    );
-  }
 
   Future<PrivateEventCreateReceipt> update(
     PrivateEventDetailsUpdateRequest request,
@@ -563,95 +502,6 @@ class PrivateEventDetailsRepository {
   }
 }
 
-class PrivateSeatReconciliationProgress {
-  const PrivateSeatReconciliationProgress({
-    required this.eventId,
-    required this.phase,
-    required this.scannedRows,
-  });
-  final String eventId;
-  final String phase;
-  final int scannedRows;
-}
-
-class PrivateSeatReconciliationResult {
-  const PrivateSeatReconciliationResult.complete(
-    PrivateEventCreateReceipt value,
-  ) : receipt = value,
-      progress = null,
-      discardedEventId = null,
-      discardedRequestId = null;
-  const PrivateSeatReconciliationResult.pending(
-    PrivateSeatReconciliationProgress value,
-  ) : progress = value,
-      receipt = null,
-      discardedEventId = null,
-      discardedRequestId = null;
-  const PrivateSeatReconciliationResult.discarded(
-    this.discardedEventId,
-    this.discardedRequestId,
-  ) : receipt = null,
-      progress = null;
-  final String? discardedEventId;
-  final String? discardedRequestId;
-  final PrivateEventCreateReceipt? receipt;
-  final PrivateSeatReconciliationProgress? progress;
-  factory PrivateSeatReconciliationResult.fromResponse(Object? raw) {
-    if (raw is Map &&
-        raw.length == 3 &&
-        raw['kind'] == 'discarded' &&
-        raw['eventId'] is String &&
-        _validDetailId(raw['eventId'] as String) &&
-        raw['requestId'] is String &&
-        _detailRequestPattern.hasMatch(raw['requestId'] as String)) {
-      return PrivateSeatReconciliationResult.discarded(
-        raw['eventId'] as String,
-        raw['requestId'] as String,
-      );
-    }
-    if (raw is! Map || raw.length != 2) {
-      throw const FormatException('Invalid guest reconciliation result');
-    }
-    if (raw['kind'] == 'complete' && raw.containsKey('receipt')) {
-      return PrivateSeatReconciliationResult.complete(
-        PrivateEventCreateReceipt.fromResponse(raw['receipt']),
-      );
-    }
-    final progress = raw['progress'];
-    bool count(Object? value, int max) =>
-        value is int && value >= 0 && value <= max;
-    if (raw['kind'] != 'progress' ||
-        progress is! Map ||
-        progress.length != 7 ||
-        progress['eventId'] is! String ||
-        !_validDetailId(progress['eventId'] as String) ||
-        !const {
-          'scan',
-          'plan',
-          'apply',
-          'cleanup',
-          'discard',
-        }.contains(progress['phase']) ||
-        !count(progress['migrationRevision'], 1000000000) ||
-        progress['migrationRevision'] == 0 ||
-        !count(progress['scannedRows'], 750) ||
-        !count(progress['appliedRows'], 1500) ||
-        !count(progress['outputRows'], 1500) ||
-        (progress['appliedRows'] as int) > (progress['outputRows'] as int) ||
-        !progress.containsKey('occupied') ||
-        progress['occupied'] != null) {
-      throw const FormatException('Invalid guest reconciliation progress');
-    }
-    return PrivateSeatReconciliationResult.pending(
-      PrivateSeatReconciliationProgress(
-        eventId: progress['eventId'] as String,
-        phase: progress['phase'] as String,
-        scannedRows: progress['scannedRows'] as int,
-      ),
-    );
-  }
-}
-
 /// Only the exact server rejection after receipt/run checks can release an
 /// uncertain command. Connectivity and later permission errors cannot.
 bool isDefinitiveDetailsRejection(
@@ -660,13 +510,6 @@ bool isDefinitiveDetailsRejection(
 ) => _matchesDetailsOutcome(error, request, 'aborted', {
   'event-details-review-stale',
   'event-details-discarded',
-});
-
-bool isDiscardUnavailable(
-  Object error,
-  PrivateEventDetailsUpdateRequest request,
-) => _matchesDetailsOutcome(error, request, 'failed-precondition', {
-  'seat-reconciliation-discard-unavailable',
 });
 
 bool _matchesDetailsOutcome(

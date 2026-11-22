@@ -68,13 +68,14 @@ test("preview returns a blocker with no commit revisions but preserves denial",
     const {deps} = fixture();
     deps.preview = async () => {
       throw new AdmissionPolicyError("unavailable",
-        "Seat migration is not ready.");
+        "Event seat ledger is not ready.");
     };
     assert.deepEqual(await handle(request(), deps), {...payload,
       canCommit: false, expectedOfferRevision: null,
       expectedOfferGeneration: null, expectedLedgerRevision: null,
       seatAlreadyOccupied: null, paymentAuthority: null,
-      blocker: {code: "unavailable", message: "Seat migration is not ready."}});
+      blocker: {code: "unavailable",
+        message: "Event seat ledger is not ready."}});
     deps.preview = async () => {
       throw new AdmissionPolicyError("denied", "Manager revoked.");
     };

@@ -20,7 +20,6 @@ import {
   writeCommandReceipt,
 } from "../../shared/commandReceipts";
 import {readRegistrationManager} from "./authority";
-import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {assertPublicRegistrationAvailability} from "./policy";
 import {registrationUnavailable} from
   "../../domain/events/publicRegistrationTerms";
@@ -97,18 +96,6 @@ export async function configureEventRegistration(input: {
     const now = nowMillis();
     if (command.mode !== "closed") {
       assertPublicRegistrationAvailability(event, organizer, command.mode, now);
-      if (
-        command.mode === "paid" &&
-        (await readSeatMigrationWriterFence({
-          db,
-          tx,
-          eventId: command.eventId,
-        })) !== "ready"
-      ) {
-        registrationUnavailable(
-          "Reconcile event seats before opening checkout.",
-        );
-      }
     }
     if (command.mode === "paid") {
       if (!input.routing) {

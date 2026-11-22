@@ -145,8 +145,6 @@ export function fixture() {
     archived: false, status: "active"});
   store.put(`users/${actorUid}`, {deleted: false, deletedAt: null});
   store.put(`events/${eventId}`, event);
-  store.put(`eventSeatMigrationFences/${eventId}`,
-    {eventId, state: "ready", migrationRevision: 1});
   store.put(`eventSeatLedgers/${eventId}`, {eventId, capacity: 2,
     occupied: 0, revision: 3, capacityRevision: 1,
     policyVersion: policy.policyVersion, policyHash: policy.policyHash,

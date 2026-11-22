@@ -790,7 +790,11 @@
     "ImportFormFromLinkCallablePayload",
     "PlanNightCallablePayload",
     "ImportPastSalesCallablePayload",
-    "SaveEventSuccessPlanSetupCallablePayload"
+    "SaveEventSuccessPlanSetupCallablePayload",
+    "EventSeatIdentityAliasDocument",
+    "EventSeatLedgerDocument",
+    "EventSeatReservationDocument",
+    "EventSeatVerifiedPhoneDocument"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",
