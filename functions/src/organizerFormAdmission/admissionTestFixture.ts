@@ -17,7 +17,7 @@ import {genericFormApplicationId} from
   "../organizers/organizerApplicationAccess";
 
 import {commitOrganizerFormAdmission} from "./admissionService";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup} from "../domain/events/testing/eventSetupFixture";
 
 export type Row = Record<string, unknown>;
 export const org = "org1";

@@ -1,5 +1,6 @@
-import type {EventDocument} from "../generated/firestoreAdminTypes";
-import {initialPolicyFromTerms} from "../../events/eventPolicy";
+import type {EventDocument} from
+  "../../../shared/generated/firestoreAdminTypes";
+import {initialPolicyFromTerms} from "../../../events/eventPolicy";
 
 export type EventSetupFields = Pick<EventDocument, "publicationState" |
   "setupRevision" | "name" | "eventCityId" | "eventMarketId" |

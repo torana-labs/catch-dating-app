@@ -6,7 +6,7 @@ import {genericFormApplicationId, organizerApplicationAccess,
 import type {HostResponseSummaryDocument, OrganizerApplicationDocument,
   OrganizerFormResponseDocument, OrganizerFormDocument,
   OrganizerFormVersionDocument} from "../shared/generated/firestoreAdminTypes";
-import {responseSummaryId} from "./responseIds";
+import {responseSummaryId} from "../domain/forms/responseSummaryIds";
 import {emptyDirectory} from "./contactStore";
 
 type Kind = "response" | "application";

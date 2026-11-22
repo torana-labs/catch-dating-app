@@ -1,5 +1,5 @@
-import {redactResponseSummary} from "../hostReadModels/responseRedaction";
-import {responseSummaryId} from "../hostReadModels/responseIds";
+import {redactResponseSummary} from "../domain/forms/responseSummaryRedaction";
+import {responseSummaryId} from "../domain/forms/responseSummaryIds";
 import {readParticipantFormResponseProof} from
   "../profiles/participantFormActivitySource";
 import {organizerFormEventTargetAvailable, requireOrganizerFormEventTarget} from

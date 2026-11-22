@@ -6,7 +6,8 @@ import {
   FirestoreEvent,
   onDocumentWritten,
 } from "firebase-functions/v2/firestore";
-import {catchEventTitle, timestampMillis} from "../admin/recordsDirectory";
+import {timestampMillis} from "../shared/dates";
+import {catchEventTitle} from "../shared/eventLabels";
 import type {
   EventDocument,
   OrganizerDocument,

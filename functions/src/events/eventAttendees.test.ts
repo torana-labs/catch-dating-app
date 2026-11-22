@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import {withStoredEventPolicy} from "../shared/testing/eventSetupFixture";
+import {withStoredEventPolicy} from
+  "../domain/events/testing/eventSetupFixture";
 import test from "node:test";
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";

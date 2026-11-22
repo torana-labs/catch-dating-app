@@ -18,7 +18,7 @@ import {EVENT_PLAN_CHANGES, eventPlanChangeSourceId} from
 import {requireCatchBookingAuthority} from "./eventOrigin";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {publishedEventSetup, withStoredEventPolicy} from
-  "../shared/testing/eventSetupFixture";
+  "../domain/events/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 

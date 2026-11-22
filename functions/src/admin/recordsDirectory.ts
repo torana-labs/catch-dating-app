@@ -4,7 +4,6 @@ import type {
   ExternalEventDocument,
   OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {eventTitleLabel} from "../shared/eventLabels";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 
 /**
@@ -124,40 +123,6 @@ export function importedEventStatus(
       event.publicationStatus === "archived") return "removed";
   if (event.publicationStatus === "draft") return "needsCheck";
   return "live";
-}
-
-/** A Catch event's title; partial reads fall back to its format. */
-export function catchEventTitle(event: Partial<EventDocument>): string {
-  return event.name?.trim() || (event.eventFormat ?
-    eventTitleLabel(event as EventDocument) :
-    "Event");
-}
-
-/** Serializes Firestore timestamps for admin UI transport. */
-export function timestampIso(value: unknown): string | null {
-  const millis = timestampMillis(value);
-  return millis === null ? null : new Date(millis).toISOString();
-}
-
-/** Milliseconds of a Firestore timestamp, Date or ISO string. */
-export function timestampMillis(value: unknown): number | null {
-  if (!value) return null;
-  if (value instanceof Date) return value.getTime();
-  if (typeof value === "string") {
-    const parsed = Date.parse(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  const timestamp = value as {
-    toMillis?: () => number;
-    _seconds?: number;
-    _nanoseconds?: number;
-  };
-  if (typeof timestamp.toMillis === "function") return timestamp.toMillis();
-  if (typeof timestamp._seconds === "number") {
-    return timestamp._seconds * 1000 +
-      Math.floor((timestamp._nanoseconds ?? 0) / 1e6);
-  }
-  return null;
 }
 
 /** Lowercased query text, trimmed. */

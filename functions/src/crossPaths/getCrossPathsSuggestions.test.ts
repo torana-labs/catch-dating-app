@@ -7,7 +7,7 @@ import {
 } from "./getCrossPathsSuggestions";
 import {crossPathsProfileFingerprint} from "./showcaseEligibility";
 import {publishedEventSetup, withStoredEventPolicy} from
-  "../shared/testing/eventSetupFixture";
+  "../domain/events/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 

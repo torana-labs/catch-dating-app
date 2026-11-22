@@ -1,4 +1,5 @@
-import {withStoredEventPolicy} from "../shared/testing/eventSetupFixture";
+import {withStoredEventPolicy} from
+  "../domain/events/testing/eventSetupFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";

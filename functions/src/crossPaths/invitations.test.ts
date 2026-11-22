@@ -12,7 +12,7 @@ import {
   sendCrossPathsInvitationHandler,
 } from "./invitations";
 import {crossPathsProfileFingerprint} from "./showcaseEligibility";
-import {publishedEventSetup} from "../shared/testing/eventSetupFixture";
+import {publishedEventSetup} from "../domain/events/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 type Filter = {field: string; op: string; value: unknown};

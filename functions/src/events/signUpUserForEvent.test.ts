@@ -11,7 +11,7 @@ import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
 import {publishedEventSetup, withStoredEventPolicy} from
-  "../shared/testing/eventSetupFixture";
+  "../domain/events/testing/eventSetupFixture";
 
 type FakeData = Record<string, unknown>;
 

@@ -51,3 +51,10 @@ export function eventDistanceLabel(event: EventDocument): string | null {
   return Number.isInteger(distance) ?
     `${distance} km` : `${distance.toFixed(1)} km`;
 }
+
+/** A Catch event's title; partial reads fall back to its format. */
+export function catchEventTitle(event: Partial<EventDocument>): string {
+  return event.name?.trim() || (event.eventFormat ?
+    eventTitleLabel(event as EventDocument) :
+    "Event");
+}

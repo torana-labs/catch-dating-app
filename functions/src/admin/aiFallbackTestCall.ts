@@ -11,7 +11,7 @@ import {
   readAiFallbackOverride,
 } from "../commands/aiFallback/policy";
 import {anthropicFederationConfig, tokenSourceFor} from
-  "../programs/assistant/provider";
+  "../platform/anthropicIdentity";
 import {guestMappingTestRequest} from "../guestImport/mappingFallback";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import type {AdminAiFallbackTestCallCallablePayload} from

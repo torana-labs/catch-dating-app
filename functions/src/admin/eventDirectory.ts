@@ -19,7 +19,6 @@ import {requireAdminRole} from "../platform/adminAuth";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
   catchEventStatus,
-  catchEventTitle,
   cityOf,
   clampPageLimit,
   countFacets,
@@ -29,9 +28,9 @@ import {
   normalizeQueryText,
   pageOf,
   recordsReaderRoles,
-  timestampIso,
-  timestampMillis,
 } from "./recordsDirectory";
+import {timestampIso, timestampMillis} from "../shared/dates";
+import {catchEventTitle} from "../shared/eventLabels";
 
 /** The most events of one source a directory read covers. */
 export const eventDirectoryScanLimit = 3000;

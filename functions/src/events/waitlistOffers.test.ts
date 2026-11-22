@@ -1,4 +1,5 @@
-import {withStoredEventPolicy} from "../shared/testing/eventSetupFixture";
+import {withStoredEventPolicy} from
+  "../domain/events/testing/eventSetupFixture";
 import {communityMembershipRows} from
   "../memberships/communityMembershipFixture";
 import assert from "node:assert/strict";
