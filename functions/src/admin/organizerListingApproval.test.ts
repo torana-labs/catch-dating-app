@@ -10,7 +10,8 @@ import type {ProjectionImportWriter} from "../operations/projectionImporter";
 import {FakeFirestore} from "../operations/testFirestore";
 import {acceptPageFetch, notFoundTransport} from "../operations/supplyIntake/testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "../operations/supplyIntake/worker";
-import {adminApproveOrganizerListingHandler, listingApprovalId} from "./organizerListingApproval";
+import {adminApproveOrganizerListingHandler} from "./organizerListingApproval";
+import {listingApprovalId} from "../domain/supply/listingApproval";
 import type {AdminApproveOrganizerListingCallableResponse} from
   "../shared/generated/adminApproveOrganizerListingCallableResponse";
 import type {OrganizerDocument} from "../shared/generated/organizerDocument";
@@ -19,7 +20,7 @@ import type {OrganizerIntakeCurationDecisionDocument} from
 import type {OrganizerIntakeReviewDecisionDocument} from
   "../shared/generated/organizerIntakeReviewDecisionDocument";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
-import {discoveryFormatsForText} from "../cityPlans/discoveryFormats";
+import {discoveryFormatsForText} from "../domain/discovery/discoveryFormats";
 import {contractValidator} from "../shared/contractTestValidators";
 
 const validateAdminApproveOrganizerListingCallableResponse =

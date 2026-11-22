@@ -14,11 +14,11 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import {
   reserveOrganizerCanonicalRoute,
-} from "./organizerPublishingGuards";
+} from "../domain/organizers/organizerPublishingGuards";
 import {
   buildOrganizerAdminSearchProjection,
   organizerWithPublicPageForSearch,
-} from "./organizerAdminSearch";
+} from "../domain/organizers/organizerAdminSearch";
 import {assertOrganizerPublicContent} from
   "../organizers/organizerPublicContent";
 

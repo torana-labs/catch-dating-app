@@ -6,8 +6,9 @@ import test from "node:test";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {FakeFirestore} from "../../operations/testFirestore";
 import {contractValidator} from "../../shared/contractTestValidators";
-import {discoveryFormats, discoveryFormatsForText} from "../../cityPlans/discoveryFormats";
-import {adminManageListingProgramHandler, defaultListingCohortId} from "./settings";
+import {discoveryFormats, discoveryFormatsForText} from "../../domain/discovery/discoveryFormats";
+import {adminManageListingProgramHandler} from "./settings";
+import {defaultListingCohortId} from "../../domain/supply/listingProgramState";
 import {
   categoriesForFormats,
   excludedProgrammaticFormats,
@@ -15,7 +16,7 @@ import {
   labelsForFormats,
   programmaticListingFormatOrder,
   programmaticListingFormats,
-} from "./formats";
+} from "../../domain/supply/listingProgramFormats";
 
 // lib/admin/listingProgram and src/admin/listingProgram both sit four levels below the repository root.
 const contract = (file: string) => JSON.parse(readFileSync(path.join(__dirname, "../../../../contracts", file), "utf8"));

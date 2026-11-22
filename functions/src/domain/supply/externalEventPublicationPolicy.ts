@@ -1,13 +1,13 @@
 import crypto from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {ExternalEventDocument} from
-  "../shared/generated/externalEventDocument";
+  "../../shared/generated/externalEventDocument";
 import type {ExternalEventPublicationReceiptDocument} from
-  "../shared/generated/externalEventPublicationReceiptDocument";
-import {marketForIdOrAlias} from "../locations/marketConfig";
+  "../../shared/generated/externalEventPublicationReceiptDocument";
+import {marketForIdOrAlias} from "../../locations/marketConfig";
 import {
   verifiedOrganizerSupplyCapabilities,
-} from "../shared/organizerSupplyCapabilities";
+} from "../../shared/organizerSupplyCapabilities";
 
 export type ExternalEventPublicationAction =
   ExternalEventPublicationReceiptDocument["action"];

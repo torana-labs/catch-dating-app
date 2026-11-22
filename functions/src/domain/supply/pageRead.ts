@@ -1,11 +1,11 @@
 /* eslint-disable max-len */
 import {logger} from "firebase-functions";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
-import type {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {clientAddress, limiterKey} from "./requestLimits";
-import {blockedIntakePatch, checkListingSuppression, suppressionModule} from "../listingSuppressions/registry";
-import {packagedIntake, type IntakePageSource} from "../operations/supplyIntake/runtime";
-import {pageSourceFor, type PageAllowance} from "../operations/supplyIntake/worker";
+import type {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
+import {clientAddress, limiterKey} from "../../platform/requestLimits";
+import {blockedIntakePatch, checkListingSuppression, suppressionModule} from "../../listingSuppressions/registry";
+import {packagedIntake, type IntakePageSource} from "../../operations/supplyIntake/runtime";
+import {pageSourceFor, type PageAllowance} from "../../operations/supplyIntake/worker";
 
 // The pieces every read of a public page shares, wherever it starts (#2058):
 //

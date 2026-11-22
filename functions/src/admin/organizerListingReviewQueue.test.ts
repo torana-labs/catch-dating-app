@@ -10,7 +10,8 @@ import type {ProjectionImportWriter} from "../operations/projectionImporter";
 import {FakeFirestore} from "../operations/testFirestore";
 import {acceptPageFetch, notFoundTransport} from "../operations/supplyIntake/testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "../operations/supplyIntake/worker";
-import {adminGetOrganizerListingReviewHandler, publicSlugFor} from "./organizerListingReviewQueue";
+import {adminGetOrganizerListingReviewHandler} from "./organizerListingReviewQueue";
+import {publicSlugFor} from "../organizers/organizerIdentity";
 import type {AdminGetOrganizerListingReviewCallableResponse} from
   "../shared/generated/adminGetOrganizerListingReviewCallableResponse";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";

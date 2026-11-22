@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import {marketForIdOrAlias} from "../../locations/marketConfig";
-import {projectWalkthroughBooking} from "../../walkthroughs/inbox";
-import {projectTakedownRequest} from "../../takedownRequests/inbox";
+import {projectWalkthroughBooking} from "./walkthroughBookings";
+import {projectTakedownRequest} from "./takedownRequests";
 
 /**
  * The Admin inbox: one list of everything waiting on a person. Each source

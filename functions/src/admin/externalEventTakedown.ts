@@ -18,7 +18,7 @@ import {
   assertMatchingPublicationReceipt,
   publicationInputHash,
   publicationReceiptId,
-} from "./externalEventPublicationPolicy";
+} from "../domain/supply/externalEventPublicationPolicy";
 
 const takedownRoles = ["admin", "adminOwner", "support"] as const;
 

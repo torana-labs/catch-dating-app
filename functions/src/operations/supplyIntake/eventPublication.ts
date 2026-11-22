@@ -14,8 +14,8 @@ import {
   assertMatchingPublicationReceipt,
   publicationInputHash,
   publicationReceiptId,
-} from "../../admin/externalEventPublicationPolicy";
-import {assertAcceptedExternalEventWaivers} from "../../admin/externalEventBlockerAuthority";
+} from "../../domain/supply/externalEventPublicationPolicy";
+import {assertAcceptedExternalEventWaivers} from "../../domain/supply/externalEventBlockerAuthority";
 import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
 import type {AdminContext} from "../../platform/adminAuth";
 import {validateOperationWorkItem} from "../validation";

@@ -1,6 +1,6 @@
 import type {
   OrganizerDocument,
-} from "../shared/generated/firestoreAdminTypes";
+} from "../../shared/generated/firestoreAdminTypes";
 
 const maxAdminSearchTokens = 120;
 const maxQueryTokens = 30;
