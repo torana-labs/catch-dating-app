@@ -48,6 +48,7 @@ function model(selectedItemId: string | null, canDecideClaim = false, eventSheet
     publishEvent: done, isPublishingEvent: false,
     fillInByHand: done, isFillingIn: false,
     updateItem: done, recommendClaim: done, decideClaim: done, decideAccess: done, linkEnquiry: done,
+    sendFollowUp: done, isSendingFollowUp: false,
     hostQuery: selectedItemId === "enquiry-harbor" ? "Harbor" : "", setHostQuery: noop,
     hostMatches: selectedItemId === "enquiry-harbor" ? [{organizerId: "quayside-supper", name: "Quayside Supper Club", city: "Mumbai"}] : [],
     isWorking: false,

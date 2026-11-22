@@ -33,6 +33,7 @@ import type {AdminGetOrganizerListingReviewCallableResponse} from
 import {dataMode} from "../../../shared/api/dataMode";
 import {functions} from "../../../shared/api/firebaseFunctions";
 import type {AdminOrganizerClaimRequestDetails} from "../../../shared/types/adminTypes";
+import type {CatchReplyCommand, CatchReplyResult} from "../../../shared/contracts/catchWhatsappReplyContracts";
 import {sampleClaimEvidence, sampleEventReviews, sampleInboxItems as sampleItems, sampleInboxJourneys as sampleJourneys, sampleNow} from "./inboxSampleData";
 
 export type InboxPage = AdminListInboxItemsCallableResponse;
@@ -52,6 +53,7 @@ export type ListingEventReview = AdminGetListingEventReviewCallableResponse;
 export type ListingEventRef = NonNullable<InboxItem["listingEvent"]>;
 export type ListingEventPublishInput = AdminPublishListingEventsCallablePayload;
 export type NominationInput = AdminNominateOrganizerCallablePayload;
+export type LeadFollowUpInput = Omit<Extract<CatchReplyCommand, {purpose: "hostLeadFollowUp"}>, "purpose">;
 
 // The validators load on first call, not in the inbox chunk.
 async function call<Request extends object, Response>(name: string, payload: Request): Promise<Response> {
@@ -203,6 +205,28 @@ export async function linkEnquiry(input: {intentId: string; organizerId: string}
   if (!intent) throw new Error("This enquiry is no longer waiting to be linked. Reload the inbox.");
   await call("adminLinkSalesInboundIntent", {intentId: input.intentId, organizerId: input.organizerId,
     requestId: crypto.randomUUID(), expectedRevision: intent.revision});
+}
+
+/**
+ * Sends the approved follow-up template to a host lead from Catch's WhatsApp number. The server
+ * allows it only when they have not written in 24 hours and no follow-up went to the number in 7
+ * days; the same clientRequestId returns the first outcome rather than sending twice.
+ */
+export async function sendLeadFollowUp(input: LeadFollowUpInput): Promise<CatchReplyResult> {
+  if (dataMode() !== "sample") {
+    return call<CatchReplyCommand, CatchReplyResult>("adminSendCatchWhatsappReply", {purpose: "hostLeadFollowUp", ...input});
+  }
+  // Sample data has no WhatsApp: the send shows as a step on the lead.
+  const item = [...sampleState.values()].find((entry) => entry.sourceKind === "salesInboundIntent" &&
+    entry.sourceId === input.intentId);
+  if (item) {
+    sampleUpdates.set(item.itemId, [...(sampleUpdates.get(item.itemId) ?? []), {stepId: `whatsapp-${input.clientRequestId}`,
+      occurredAt: new Date().toISOString(), title: "Sent the follow-up on WhatsApp",
+      detail: "From Catch's number; replies land in Support", actorUid: "sample-owner", tone: "success"}]);
+  }
+  const operationId = `cwfollowup_${"0".repeat(64)}`;
+  return {operationId, providerMessageId: "sample", deliveryStatus: "accepted", replayed: false,
+    conversationId: `whatsapp-${"0".repeat(64)}`, messageId: operationId};
 }
 
 const sampleApprovals = new Map<string, AdminApproveOrganizerListingCallableResponse>();
