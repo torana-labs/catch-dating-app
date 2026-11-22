@@ -4125,9 +4125,14 @@ report it. The macOS goldens are out of the merge queue too (owner decision,
 22 Nov 2026): the 5 hosted macOS runners held queue groups past the 90-minute
 timeout on 18–19 Nov. They run on the nightly and on main pushes whose inputs
 select the visual lane. A main push the queue already validated runs only the
-goldens (`macos_only`), and only when the queue run's own plan for that exact
-source selected the lane. If that plan cannot be read, the goldens run; they
-are never skipped for that reason. A main or nightly golden failure fails the
+goldens (`macos_only`), and only when a queue plan selected the lane: its own
+commit's, or that of any commit whose own push run was replaced before it ran.
+`tool/ci/main_macos_selection.mjs` takes the range from the same base the plan
+step uses (`main_push_base.mjs`) and reads each commit's own queue run plan
+(`main_push_queue_proof.mjs`), up to 30 commits (22 Nov 2026: 4d66cf5e6's run
+was replaced, and the next run read only its own plan). If any plan in the
+range cannot be read, the base is unknown, or the range is empty or longer,
+the goldens run; they are never skipped for that reason. A main or nightly golden failure fails the
 run, so the Main CI alert reports it. The Headless journeys keep running
 wherever the lane is selected, the queue included.
 The macOS capture render (`marketing-captures.yml`, job `export`) leaves the
@@ -4139,8 +4144,8 @@ check, only when capture freshness succeeded with no capture binding, its plan
 job succeeded, and both reuse and render were skipped. Anything else, an API
 error included, is not deferred, so a broken capture pipeline still fails the
 lane on the missing binding. A main push the queue validated renders the
-captures when the queue's plan selected capture freshness or marketing, read
-the same way as the goldens and run if that plan cannot be read; the nightly
+captures when a queue plan in that same range selected capture freshness or
+marketing, read the same way as the goldens and run if one cannot be read; the nightly
 renders too, and later queue groups reuse those renders. A plan that succeeds
 but emits a render value other than true or false would also read as deferred;
 the plan's own tests pin that value. Pull requests also run the Headless journeys in the Flutter lane

@@ -1,0 +1,22 @@
+{
+  "id": "ci:main-macos-selection",
+  "category": "ci",
+  "path": "tool/ci/main_macos_selection.mjs",
+  "command": "node tool/ci/main_macos_selection.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "impactPaths": [
+    ".github/workflows/ci.yml",
+    "tool/ci/main_macos_selection.mjs",
+    "tool/ci/main_macos_selection.test.mjs",
+    "tool/ci/main_push_base.mjs",
+    "tool/ci/main_push_queue_proof.mjs"
+  ],
+  "description": "Decides which macOS jobs (goldens, capture render) a main push the merge queue validated still runs: ORs each over every commit from the plan step's base to HEAD, so a commit whose own push run was replaced is covered, each read from that commit's own queue plan. Anything it cannot read runs both.",
+  "checks": [
+    "node --check tool/ci/main_macos_selection.mjs",
+    "node --test tool/ci/main_macos_selection.test.mjs"
+  ],
+  "role": "gate",
+  "runbook": "docs/release_operations.md#required-pr-checks"
+}
