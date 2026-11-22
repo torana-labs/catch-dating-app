@@ -137,11 +137,11 @@
       "ground": "mint",
       "kicker": "Your next trail",
       "title": "Everyone out. Everyone back.",
-      "lead": "Start the free trial, or leave your number and we’ll send the outdoor group setup guide on WhatsApp.",
+      "lead": "Start the free trial, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "outdoor_group_setup_guide", "requestKind": "guide", "format": "outdoors", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."}
+      "leadForm": {"id": "outdoor_group_setup_guide", "requestKind": "guide", "format": "outdoors", "label": "Your WhatsApp number", "submitLabel": "Message me"}
     }
   ]
 }

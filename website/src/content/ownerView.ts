@@ -118,7 +118,7 @@ export const ownerViewCopy = {
   },
   followers: {
     title: "Message followers",
-    note: `A short note to everyone who follows you, in their ${brand.name} feed and notifications. Twice a month at most.`,
+    note: `A short note to everyone who follows you, in their ${brand.name} feed and notifications. Up to three a week.`,
     field: "Your message",
     hint: "New date: Lantern Supper, Sat 14 Nov. Followers book first.",
     send: "Send to followers",

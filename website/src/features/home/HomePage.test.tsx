@@ -248,7 +248,7 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(hosts.getByRole("link", {name: "Talk to us on WhatsApp"})).toBeTruthy();
     expect(screen.queryByText(/Here for the plans/u)).toBeNull();
     // The sign-up is the band: its lead says what it sends, the form sits under it.
-    expect(plans.getByText("Hosts are getting set up. New Indore plans about once a week.")).toBeTruthy();
+    expect(plans.getByText("Hosts are getting set up. We’ll let you know on WhatsApp when new plans open in Indore.")).toBeTruthy();
     expect(plans.getByRole("form", {name: "Want to hear first?"})).toBeTruthy();
   });
 
@@ -374,11 +374,11 @@ describe("homepage", {timeout: 20_000}, () => {
     const hero = within(screen.getByRole("region", {name: "Find something worth showing up for."}));
     expect(hero.getByText("The Catch app is on its way")).toBeTruthy();
     expect(hero.getByRole("textbox", {name: /WhatsApp number/})).toBeTruthy();
-    expect((hero.getByRole("checkbox", {name: "Also send me new plans in Mumbai on WhatsApp, about once a week"}) as HTMLInputElement).checked).toBe(false);
+    expect((hero.getByRole("checkbox", {name: "Also tell me on WhatsApp when new plans open in Mumbai"}) as HTMLInputElement).checked).toBe(false);
     const app = within(screen.getByRole("region", {name: "Be first in the app, and first to new plans."}));
     expect(app.getByText("The Catch app · coming soon")).toBeTruthy();
     expect(app.getByRole("textbox", {name: /WhatsApp number/})).toBeTruthy();
-    expect((app.getByRole("checkbox", {name: "Also send me new plans in Mumbai on WhatsApp, about once a week"}) as HTMLInputElement).checked).toBe(false);
+    expect((app.getByRole("checkbox", {name: "Also tell me on WhatsApp when new plans open in Mumbai"}) as HTMLInputElement).checked).toBe(false);
     expect(app.getByRole("button", {name: "Notify me"}).getAttribute("type")).toBe("submit");
     expect(screen.queryByRole("img", {name: /QR code/})).toBeNull();
     expect(screen.getByText(/^Not yet\. You can browse and book on the website\./u)).toBeTruthy();
