@@ -5,8 +5,8 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
-import {THIN_BELOW, analyzeRun, baseOf, formatReport, parseArgs, prNumberOf, queueEvents, queueRebuilds, report,
-  runnerKind, stats} from "./queue_entry_timings.mjs";
+import {THIN_BELOW, analyzeRun, baseOf, fetchDataset, formatReport, parseArgs, prNumberOf, queueEvents, queueRebuilds,
+  report, runnerKind, stats} from "./queue_entry_timings.mjs";
 
 const script = fileURLToPath(new URL("./queue_entry_timings.mjs", import.meta.url));
 const branch = (pr, base) => `gh-readonly-queue/main/pr-${pr}-${base.padEnd(40, "0")}`;
@@ -111,6 +111,7 @@ test("arguments are checked", () => {
   assert.throws(() => parseArgs(["report", "--data", "x", "--split", "soon"]), /ISO/u);
   assert.throws(() => parseArgs(["bogus"]), /Usage/u);
   assert.equal(parseArgs(["report", "--data", "x", "--json"]).json, true);
+  assert.equal(parseArgs(["fetch", "--since", "2026-11-15", "--out", "q.json", "--fresh"]).fresh, true);
 });
 
 test("end to end: report from a saved dataset", () => {
@@ -124,4 +125,31 @@ test("end to end: report from a saved dataset", () => {
   } finally {
     fs.rmSync(dir, {recursive: true, force: true});
   }
+});
+
+test("fetch resumes: completed runs and settled timelines are reused, unfinished ones refetched", () => {
+  const listed = [run(1, 10, "aaa", at(0), at(20)), {...run(2, 11, "bbb", at(5), at(9)), status: "in_progress"}];
+  const calls = [];
+  const api = (endpoint) => {
+    calls.push(endpoint);
+    if (endpoint.includes("/workflows/")) return [{workflow_runs: listed}];
+    if (endpoint.includes("/jobs")) return [{jobs: [{...jobs[0], extra: "dropped"}]}];
+    return [[{event: "added_to_merge_queue", created_at: at(0), actor: {login: "example-dev", id: 1}}, {event: "labeled"}]];
+  };
+  const saves = [];
+  const first = fetchDataset({repo: "example-org/example-repo", workflow: "ci.yml", since: "2026-11-20", api,
+    save: (value) => saves.push(Object.keys(value.jobs).length), saveEvery: 2});
+  assert.equal(first.calls, 5, "runs list, two job lists, two timelines");
+  assert.deepEqual(first.dataset.timelines[10], [{event: "added_to_merge_queue", created_at: at(0), reason: null,
+    actor: {login: "example-dev"}}]);
+  assert.equal(first.dataset.jobs[1][0].extra, undefined, "only the fields the report reads are kept");
+  assert.ok(saves.length >= 2 && saves.at(-1) === 2, "progress is saved during and after the fetch");
+  calls.length = 0;
+  const second = fetchDataset({repo: "example-org/example-repo", workflow: "ci.yml", since: "2026-11-20", api,
+    previous: first.dataset});
+  // Run 1 and PR 10 are settled; run 2 is still in progress, so its jobs and PR 11's timeline are fetched again.
+  assert.deepEqual(calls.map((endpoint) => endpoint.split("?")[0]), ["repos/example-org/example-repo/actions/workflows/ci.yml/runs",
+    "repos/example-org/example-repo/actions/runs/2/jobs", "repos/example-org/example-repo/issues/11/timeline"]);
+  assert.equal(second.calls, 3);
+  assert.deepEqual(second.dataset.jobs[1], first.dataset.jobs[1]);
 });

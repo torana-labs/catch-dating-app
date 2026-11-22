@@ -214,42 +214,74 @@ function gh(endpoint, {paginate = false} = {}) {
   return JSON.parse(execFileSync("gh", args, {encoding: "utf8", maxBuffer: 1 << 30}));
 }
 
-/** Runs, their jobs and the queued PRs' timelines from `gh api`. */
-export function fetchDataset({repo, workflow, since, limit = Infinity}) {
-  const pages = gh(`repos/${repo}/actions/workflows/${workflow}/runs?event=merge_group&per_page=100&created=>=${since}`,
+const QUEUE_EVENTS = ["added_to_merge_queue", "removed_from_merge_queue", "merged"];
+
+/**
+ * Runs, their jobs and the queued PRs' timelines from `gh api`. Resumable:
+ * with `previous` (the file an earlier fetch wrote), a completed run's jobs
+ * and a PR's timeline are reused unless that PR still has a run in progress,
+ * so a rerun fetches only what is new or unfinished. `save` receives the
+ * dataset every `saveEvery` API calls, so an interrupted fetch keeps its work.
+ */
+export function fetchDataset({repo, workflow, since, limit = Infinity, previous = null, api = gh,
+  save = () => {}, saveEvery = 25}) {
+  const pages = api(`repos/${repo}/actions/workflows/${workflow}/runs?event=merge_group&per_page=100&created=>=${since}`,
     {paginate: true});
   const runs = pages.flatMap((page) => page.workflow_runs).slice(0, limit)
     .map(({id, created_at, run_started_at, updated_at, status, conclusion, run_attempt, head_branch, head_sha}) =>
       ({id, created_at, run_started_at, updated_at, status, conclusion, run_attempt, head_branch, head_sha}));
-  const jobs = {};
-  const timelines = {};
+  const before = new Map((previous?.runs ?? []).map((run) => [run.id, run]));
+  const unfinished = new Set(runs.filter((run) => run.status !== "completed").map((run) => prNumberOf(run.head_branch)));
+  const dataset = {repo, workflow, since, fetchedAt: new Date().toISOString(), runs, jobs: {}, timelines: {}};
+  let calls = 1;
+  const tick = () => {
+    calls += 1;
+    if (calls % saveEvery === 0) save(dataset);
+  };
   for (const run of runs) {
-    jobs[run.id] = gh(`repos/${repo}/actions/runs/${run.id}/jobs?filter=all&per_page=100`, {paginate: true})
-      .flatMap((page) => page.jobs)
-      .map(({name, status, conclusion, labels, runner_id, runner_name, created_at, started_at, completed_at}) =>
-        ({name, status, conclusion, labels, runner_id, runner_name, created_at, started_at, completed_at}));
+    const old = before.get(run.id);
+    const reusable = old?.status === "completed" && old.run_attempt === run.run_attempt && previous?.jobs?.[run.id];
+    dataset.jobs[run.id] = reusable ? previous.jobs[run.id] :
+      api(`repos/${repo}/actions/runs/${run.id}/jobs?filter=all&per_page=100`, {paginate: true})
+        .flatMap((page) => page.jobs)
+        .map(({name, status, conclusion, labels, runner_id, runner_name, created_at, started_at, completed_at}) =>
+          ({name, status, conclusion, labels, runner_id, runner_name, created_at, started_at, completed_at}));
+    if (!reusable) tick();
     const pr = prNumberOf(run.head_branch);
-    if (pr && !timelines[pr]) {
-      timelines[pr] = gh(`repos/${repo}/issues/${pr}/timeline?per_page=100`, {paginate: true}).flat()
-        .filter((event) => ["added_to_merge_queue", "removed_from_merge_queue", "merged"].includes(event.event))
-        .map(({event, created_at, reason, actor}) => ({event, created_at, reason: reason ?? null,
-          actor: actor ? {login: actor.login} : null}));
+    if (!pr || dataset.timelines[pr]) continue;
+    if (previous?.timelines?.[pr] && !unfinished.has(pr)) {
+      dataset.timelines[pr] = previous.timelines[pr];
+      continue;
     }
+    dataset.timelines[pr] = api(`repos/${repo}/issues/${pr}/timeline?per_page=100`, {paginate: true}).flat()
+      .filter((event) => QUEUE_EVENTS.includes(event.event))
+      .map(({event, created_at, reason, actor}) => ({event, created_at, reason: reason ?? null,
+        actor: actor ? {login: actor.login} : null}));
+    tick();
   }
-  return {repo, workflow, since, fetchedAt: new Date().toISOString(), runs, jobs, timelines};
+  save(dataset);
+  return {dataset, calls};
+}
+
+/** Writes JSON through a temporary file, so an interrupted write never leaves half a dataset. */
+export function writeJson(file, value) {
+  fs.writeFileSync(`${file}.tmp`, `${JSON.stringify(value)}\n`);
+  fs.renameSync(`${file}.tmp`, file);
 }
 
 const usage = "Usage: node tool/ci/queue_entry_timings.mjs fetch --since <ISO date> --out <file> " +
-  "[--repo owner/name] [--workflow ci.yml] [--limit <n>]\n" +
+  "[--repo owner/name] [--workflow ci.yml] [--limit <n>] [--fresh]\n" +
   "       node tool/ci/queue_entry_timings.mjs report --data <file> [--split <ISO time>] [--json]";
 
 export function parseArgs(argv) {
   const [command, ...rest] = argv;
   if (!["fetch", "report"].includes(command)) throw new Error(usage);
-  const options = {command, repo: "torana-labs/catch-dating-app", workflow: "ci.yml", json: false, limit: Infinity};
+  const options = {command, repo: "torana-labs/catch-dating-app", workflow: "ci.yml", json: false, fresh: false,
+    limit: Infinity};
   for (let index = 0; index < rest.length; index += 1) {
     const flag = rest[index];
     if (flag === "--json") { options.json = true; continue; }
+    if (flag === "--fresh") { options.fresh = true; continue; }
     const value = rest[++index];
     if (value === undefined) throw new Error(`${flag} needs a value.\n${usage}`);
     const key = {"--since": "since", "--out": "out", "--repo": "repo", "--workflow": "workflow", "--data": "data",
@@ -272,8 +304,10 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     try {
       const options = parseArgs(process.argv.slice(2));
       if (options.command === "fetch") {
-        fs.writeFileSync(options.out, `${JSON.stringify(fetchDataset(options))}\n`);
-        console.log(`Wrote ${options.out}.`);
+        const previous = !options.fresh && fs.existsSync(options.out) ? JSON.parse(fs.readFileSync(options.out, "utf8")) : null;
+        const {dataset, calls} = fetchDataset({...options, previous, save: (value) => writeJson(options.out, value)});
+        console.log(`Wrote ${options.out}: ${dataset.runs.length} runs, ${calls} API calls` +
+          (previous ? " (resumed; completed runs and settled timelines reused)." : "."));
       } else {
         const result = report(JSON.parse(fs.readFileSync(options.data, "utf8")), {split: options.split ?? null});
         console.log(options.json ? JSON.stringify(result, null, 2) : formatReport(result));

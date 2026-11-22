@@ -787,6 +787,9 @@ node tool/ci/queue_entry_timings.mjs report --data build/ci/queue.json --split 2
 jobs (`filter=all`), and each queued PR's timeline events
 (`added_to_merge_queue`, `removed_from_merge_queue`, `merged`). That is one API
 call per run and per PR, so a week of queue history takes a few minutes.
+`fetch` saves its progress every 25 calls and resumes from `--out` when the
+file exists. A completed run's jobs and a settled PR's timeline are reused, so a
+rerun fetches only new or unfinished entries. `--fresh` ignores the old file.
 
 For each run, `report` gives:
 
@@ -795,7 +798,8 @@ For each run, `report` gives:
 - the longest runner wait, macOS and Linux apart;
 - the outcome, and any removal with its reason and actor.
 
-`--split` compares before and after a change, and a period with fewer than
+`--split` compares before and after a change; give it the change's `merged_at`,
+not its commit date, which a squash merge keeps from authoring. A period with fewer than
 10 runs is marked thin. Queue rebuilds come from the runs alone: a run is
 superseded when its PR gets a new run on another base before the old one
 finished. A dataset without timelines reports everything except the enqueue
