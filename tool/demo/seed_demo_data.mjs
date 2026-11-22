@@ -2281,6 +2281,11 @@ function buildReviews({seedPrefix, seedMarker, organizer, event, roster, now}) {
           reviewerName: entry.person.name || entry.person.displayName || "Runner",
           rating: 4 + (index % 2),
           comment: "Well organized demo event with clear pacing and a friendly group.",
+          // Attended-event reviews as createEventReview writes them; rules
+          // show other people only published reviews.
+          verificationStatus: "verified",
+          source: "catchEvent",
+          moderationStatus: "published",
           createdAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {days: -2, minutes: index})),
           updatedAt: null,
         },
