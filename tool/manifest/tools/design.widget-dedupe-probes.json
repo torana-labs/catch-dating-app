@@ -1,0 +1,14 @@
+{
+  "id": "design:widget-dedupe-probes",
+  "category": "design",
+  "path": "tool/design/check_widget_dedupe_probes.mjs",
+  "command": "node tool/design/check_widget_dedupe_probes.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "role": "gate",
+  "description": "Runs seeded structural, concept-primary, member-parent, composition-identity, and deterministic collision probes for widget consolidation.",
+  "checks": [
+    "node --check tool/design/check_widget_dedupe_probes.mjs",
+    "node tool/design/check_widget_dedupe_probes.mjs"
+  ]
+}

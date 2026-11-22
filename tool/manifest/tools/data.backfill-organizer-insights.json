@@ -1,0 +1,15 @@
+{
+  "id": "data:backfill-organizer-insights",
+  "category": "data",
+  "path": "functions/scripts/backfill-organizer-insights.cjs",
+  "command": "npm --prefix functions run build && node functions/scripts/backfill-organizer-insights.cjs --project <id> [--days 30] [--apply]",
+  "surface": "remote-write",
+  "guard": "apply-flag",
+  "status": "active",
+  "role": "operator",
+  "description": "Rolls up the last N complete UTC days of organizerInsights from the host analytics marts and organizerFollows. Dry run unless --apply; each day's documents are replaced, so reruns are safe.",
+  "checks": [
+    "node --check functions/scripts/backfill-organizer-insights.cjs"
+  ],
+  "runbook": "docs/backend_operation_catalog.md#organizer-owner-view-1109"
+}

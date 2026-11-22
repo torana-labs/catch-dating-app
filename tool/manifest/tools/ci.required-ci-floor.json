@@ -1,0 +1,19 @@
+{
+  "id": "ci:required-ci-floor",
+  "category": "ci",
+  "path": "tool/ci/required_ci_floor.mjs",
+  "command": "node --test tool/ci/required_ci_floor.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "impactPaths": [
+    ".github/workflows/ci.yml",
+    "tool/ci/required_ci_floor.mjs",
+    "tool/ci/required_ci_floor.test.mjs"
+  ],
+  "description": "Decides when a source CI run passes the website release gate: the whole run succeeded, or (sprint floor, owner decision 11 Nov 2026) its Required CI job succeeded and only the reporting-only lanes failed. Pins the reporting lanes to ci.yml's Required CI.",
+  "checks": [
+    "node --check tool/ci/required_ci_floor.mjs",
+    "node --test tool/ci/required_ci_floor.test.mjs"
+  ],
+  "role": "gate"
+}

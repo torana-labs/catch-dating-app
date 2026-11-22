@@ -1,0 +1,30 @@
+{
+  "id": "design:website-playbook-tokens",
+  "category": "design",
+  "path": "tool/design/playbook/import_kit_tokens.mjs",
+  "impactPaths": [
+    "design/source_packs/website-playbook/kit/playbook-kit.css",
+    "design/source_packs/website-playbook/kit/playbook-panels.css",
+    "design/tokens/catch.tokens.json",
+    "tool/design/playbook/import_kit_tokens.test.mjs",
+    "tool/design/playbook/lib/kit_token_map.mjs",
+    "design/source_packs/website-playbook/README.md",
+    "design/source_packs/website-playbook/source-pack.json"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "command": "node tool/design/playbook/import_kit_tokens.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Imports the website playbook kit's values (the design canvas is the source of truth) into design/tokens/catch.tokens.json and rewrites the mapping table in the source pack README. --check fails when a kit hex has no mapping, a mapping is stale, a token or role alias differs from the kit, or the table is stale, so canvas drift fails CI.",
+  "checks": [
+    "node --check tool/design/playbook/import_kit_tokens.mjs",
+    "node --test tool/design/playbook/import_kit_tokens.test.mjs",
+    "node tool/design/playbook/import_kit_tokens.mjs --check"
+  ],
+  "role": "gate"
+}

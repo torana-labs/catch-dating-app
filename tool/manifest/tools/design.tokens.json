@@ -1,0 +1,19 @@
+{
+  "id": "design:tokens",
+  "category": "design",
+  "path": "tool/design_tokens.mjs",
+  "impactPaths": [
+    "tool/design_tokens/**"
+  ],
+  "command": "node tool/design_tokens.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Generates shared web CSS, synced web fonts, and Flutter Dart constants from canonical design-token JSON with Style Dictionary.",
+  "checks": [
+    "node --check tool/design_tokens.mjs",
+    "node --test tool/design_tokens/design_tokens.test.mjs",
+    "dart analyze packages/catch_tokens/lib/generated/catch_design_tokens.g.dart",
+    "node tool/design_tokens.mjs --check"
+  ],
+  "role": "finder"
+}

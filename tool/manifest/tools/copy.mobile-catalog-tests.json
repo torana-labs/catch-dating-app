@@ -1,0 +1,13 @@
+{
+  "id": "copy:mobile-catalog-tests",
+  "category": "test",
+  "path": "tool/copy/check_mobile_copy_catalog_test.mjs",
+  "command": "node tool/copy/check_mobile_copy_catalog_test.mjs",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Runs seeded metadata validation probes for the Flutter ARB copy catalog.",
+  "checks": [
+    "node tool/copy/check_mobile_copy_catalog_test.mjs"
+  ],
+  "role": "gate"
+}

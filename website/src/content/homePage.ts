@@ -120,7 +120,7 @@ export const homePageCopy = {
   /** A thin week's notify bar under the plans: new plans in the city on WhatsApp (a city alerts lead). */
   alerts: {
     title: "Want to hear first?",
-    body: "New {city} plans about once a week.",
+    body: "We’ll let you know on WhatsApp when new plans open in {city}.",
     phone: "Your WhatsApp number",
     /** The field's example: a label this long is cut off on a phone beside the button. */
     phoneHint: "98765 43210",
@@ -170,7 +170,7 @@ export const homePageCopy = {
     emptyWindow: "No plans in {city} in the next two weeks yet. Follow the organisers below to hear about their next one first.",
     /** Nothing in the next two weeks: the band is the WhatsApp sign-up; the page's host band covers hosts. */
     emptyTitle: "Be first to hear when {city}’s next plans go up.",
-    emptyLead: "Hosts are getting set up. New {city} plans about once a week.",
+    emptyLead: "Hosts are getting set up. We’ll let you know on WhatsApp when new plans open in {city}.",
     /** The link to everything, under the cards: a busy city's count, or a thin city's. */
     seeAll: "See all {count} plans in {city}",
     seeAllOne: "See the plan in {city}",
@@ -266,7 +266,7 @@ export const homePageCopy = {
     /** The bento tiles around the app band's notice: what the app does, each line checkable in it. */
     tiles: {
       book: {tag: "Book", body: "Book in a couple of taps."},
-      reminders: {tag: "Reminders", body: "Where to meet, and a nudge the day before."},
+      reminders: {tag: "Reminders", body: "Where to meet, and a reminder 15 minutes before the start."},
       chat: {tag: "Group chat", body: "Your group chat stays open after the night."},
       follow: {tag: "Follow", body: "The hosts you like, and their next plan first."},
       solo: {tag: "On your own?", body: "Hosts plan a group, a game or a first hello."},
@@ -277,11 +277,11 @@ export const homePageCopy = {
     notify: {
       phone: "WhatsApp number",
       phoneHint: "98765 43210",
-      newPlans: "Also send me new plans in {city} on WhatsApp, about once a week",
+      newPlans: "Also tell me on WhatsApp when new plans open in {city}",
       action: "Notify me",
       consent: `One WhatsApp message from ${brand.name} when the app launches.`,
       /** Names this wording on every stored consent; change it whenever the wording changes. */
-      consentVersion: "app-launch-whatsapp-v2",
+      consentVersion: "app-launch-whatsapp-v3",
       privacy: "Privacy",
       invalidPhone: "Enter your 10-digit mobile number.",
       failed: "That didn’t go through. Please try again in a moment.",

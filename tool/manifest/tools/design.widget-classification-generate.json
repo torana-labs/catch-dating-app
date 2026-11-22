@@ -1,0 +1,15 @@
+{
+  "id": "design:widget-classification-generate",
+  "category": "design",
+  "path": "tool/design/generate_widget_classification.mjs",
+  "command": "node tool/design/generate_widget_classification.mjs --check",
+  "surface": "local-writes-scratch",
+  "status": "internal",
+  "role": "generator",
+  "description": "Checked by design:widget-classification-check. Builds the exhaustive widget role, ownership, catalog, and consolidation classification from current Dart source, component contracts, and Widgetbook; explicit generation writes only an ignored build report.",
+  "checks": [
+    "node --check tool/design/generate_widget_classification.mjs",
+    "node --test tool/design/check_widget_classification.test.mjs",
+    "node tool/design/generate_widget_classification.mjs --check"
+  ]
+}

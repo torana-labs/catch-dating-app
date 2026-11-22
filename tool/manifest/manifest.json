@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "updated": "2026-10-25",
+  "ciImpact": {
+    "mandatoryCheckIds": [
+      "docs:metadata",
+      "meta:tool-manifest",
+      "meta:brand-literals",
+      "meta:third-party-names",
+      "meta:repository-root-hygiene",
+      "operations:boundaries",
+      "contracts:market-lists"
+    ],
+    "additionalFullPaths": [
+      "functions/package.json",
+      "functions/package-lock.json",
+      "package.json",
+      "package-lock.json",
+      "pubspec.yaml",
+      "pubspec.lock",
+      "tool/impact/**",
+      "tool/lib/tool_import_graph.mjs",
+      "tool/run.test.mjs"
+    ],
+    "importGraphPaths": [
+      "tool/lib/**"
+    ],
+    "importOwnerCheckIds": [
+      "tool:runner"
+    ],
+    "manifestCheckIds": [
+      "meta:ci-tool-category-coverage",
+      "tool:runner"
+    ]
+  }
+}

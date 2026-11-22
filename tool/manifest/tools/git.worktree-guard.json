@@ -1,0 +1,44 @@
+{
+  "id": "git:worktree-guard",
+  "category": "git",
+  "path": "tool/git/worktree_guard.mjs",
+  "command": "node tool/git/worktree_guard.mjs help",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/git/worktree_guard.test.mjs"
+  ],
+  "description": "Thin ordinary-Git task safety: exact bases, disjoint claims, protected handoff/abandonment, and dry-run guarded retirement with accepted-source equivalence, preserved recovery, manual owner clearance and non-forced worktree removal. Never installs, validates, pushes, deletes refs or authorizes cleanup.",
+  "checks": [
+    "node --check tool/git/worktree_guard.mjs",
+    "node --test tool/git/worktree_guard.test.mjs",
+    "node tool/git/worktree_guard.mjs help"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "AGENT-DELEGATION-001",
+      "title": "Keep parallel agent work parent-integrated and worktree-isolated",
+      "appliesTo": [
+        "AGENTS.md",
+        "docs/agent_operating_model.md",
+        "docs/agent_skills/**",
+        "tool/agent/**",
+        "tool/git/worktree_guard.mjs",
+        "tool/harness.mjs",
+        "tool/harness/**",
+        "tool/manifest/**",
+        "lib/**",
+        "packages/platform/lib/**",
+        "test/**"
+      ],
+      "instruction": "Use an exact-base Git worktree for parallel tasks, declare disjoint claimed paths, reject overlap with active local tasks, review commits before integration, refuse ordinary handoff while unique work is uncommitted or unpushed, and run final verification in the integration branch. Reject stale launcher lifecycle files; plain finish must not release a claim. Explicit retained handoff preserves the original claim and states its next action. Keep the task claim through acceptance, then use the existing dry-run retire and normally admitted non-forced apply path. Prove accepted-source equivalence and exact recovery, preserve dirty/untracked/ignored files and active ownership, and report retirement or its exact accountable retention reason and next action. External acceptance, cross-clone ownership/runtime clearance and deletion authority are named manual completion checks. A deliberately superseded claim may be abandoned only from a clean worktree with an attributable local reason record. Keep coordination state local and disposable; do not write delegation metrics or tracked receipts."
+    }
+  ]
+}

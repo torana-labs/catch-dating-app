@@ -1,0 +1,162 @@
+{
+  "id": "lint:catch-ui-plugin-smoke",
+  "category": "lint",
+  "path": "tool/check_catch_ui_lints.sh",
+  "command": "bash tool/check_catch_ui_lints.sh",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Verifies all Catch UI violation and clean-allowance fixtures with one analyzer invocation and independent per-file assertions.",
+  "impactPaths": [
+    "tool/lib/lint_probe_batch.mjs",
+    "tool/lib/lint_probe_batch.test.mjs",
+    "tool/design/generated/enforcement_expectations.json",
+    "widgetbook/lib/primitives/catalog/feedback.dart",
+    "widgetbook/lib/primitives/contracts/feedback.dart",
+    "tool/architecture/context_map.json",
+    "tool/check_catch_ui_lints.sh"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter",
+      "flutter-pub"
+    ]
+  },
+  "checks": [
+    "bash -n tool/check_catch_ui_lints.sh",
+    "node tool/design/build_lint_enforcement_tables.mjs --check",
+    "bash tool/check_catch_ui_lints.sh",
+    "node --check tool/lib/lint_probe_batch.mjs",
+    "node --test tool/lib/lint_probe_batch.test.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "UI-LINT-001",
+      "title": "Codify audited UI invariants as analyzer plugin rules",
+      "appliesTo": [
+        "analysis_options.yaml",
+        "packages/catch_ui_lints/**",
+        "tool/check_catch_ui_lints.sh",
+        "tool/check_catch_ui_lint_drift.sh",
+        "tool/design/build_lint_enforcement_tables.mjs",
+        "tool/design/check_component_enforcement_coverage.mjs",
+        "tool/architecture/check_ui_composition_contracts.dart",
+        "tool/check_riverpod_lint.sh",
+        ".github/workflows/**",
+        "lib/**",
+        "packages/platform/lib/**",
+        "lib/contexts/*/parts/**",
+        "lib/pages/**",
+        "apps/consumer/lib/**",
+        "apps/host/lib/**"
+      ],
+      "instruction": "When a UI surface invariant is deterministic, move it into packages/catch_ui_lints as an analysis_server_plugin diagnostic that runs across handwritten lib/** by default. Verify Catch diagnostics with the seeded harness or repository-root dart analyze, never flutter analyze or a targeted subdirectory analysis. Generate steering tables from component contracts, use the resolved checker for cross-file composition, exempt only semantic source-of-truth folders or generated code, and keep broad scanners only for triage and migration discovery."
+    },
+    {
+      "id": "ASYNC-LOADING-PRESENTATION-001",
+      "title": "Async loading states render credible data before blocking skeletons and always recover",
+      "appliesTo": [
+        "lib/**/presentation/**",
+        "lib/contexts/*/parts/**",
+        "lib/pages/**",
+        "test/**"
+      ],
+      "instruction": "When credible initial or fallback data is available (route extra, cached value, optimistic snapshot), render it ahead of blocking loading states. Known layouts use CatchSkeleton.content or the matching CatchSection loading constructor and real CatchFieldLayout. When fetched data determines the page structure, preserve its known chrome and center progress in CatchStateViewport.loading or .sliverLoading; unresolved sheet and inline sections use a bounded CatchLoadingIndicator. Initial provider loads must reach an actionable error state after the shared presentation deadline, and CatchAsyncBoundary and its sliver constructor call sites must supply onRetry that restarts the failing provider boundary."
+    },
+    {
+      "id": "ERROR-UI-002",
+      "title": "Data-load errors must use a Catch primitive and blocking states must expose recovery",
+      "appliesTo": [
+        "lib/**/presentation/**",
+        "lib/contexts/*/parts/**",
+        "lib/pages/**"
+      ],
+      "instruction": "AsyncValue/stream error branches must render CatchLocalizedErrorState (including inline/compact modes) or CatchLocalizedSliverErrorState with mapped copy. Provider failures use onRetry that invalidates the failing provider; terminal full-screen and sliver route errors use a truthful secondary action such as CatchErrorBackButton. Reserve CatchEmptyState for genuinely-empty success states; never route an error into an empty-state or a hand-rolled card that discards the error object."
+    },
+    {
+      "id": "IMAGE-NETWORK-PRIMITIVE-001",
+      "title": "Network images go through a shared caching/decode-sized primitive",
+      "appliesTo": [
+        "lib/**/presentation/**",
+        "lib/contexts/*/parts/**",
+        "lib/pages/**"
+      ],
+      "instruction": "Remote images must render through a shared CatchNetworkImage primitive providing caching, cacheWidth/cacheHeight decode sizing, a branded errorBuilder, and a loading placeholder. Raw Image.network in feature code is forbidden."
+    },
+    {
+      "id": "CONTEXT-MAP-001",
+      "title": "Code lives in a declared bounded context and depends only downward",
+      "appliesTo": [
+        "lib/**",
+        "packages/platform/lib/**",
+        "tool/architecture/context_map.json",
+        "tool/architecture/check_context_map.mjs",
+        "packages/catch_ui_lints/lib/src/architecture_context_map.dart"
+      ],
+      "instruction": "Every handwritten lib Dart file is placed by tool/architecture/context_map.json in one of the declared bounded contexts or in the kernel, platform, pages or app layer. Layers import only downward (kernel, platform, contexts, pages, app), and a context imports only contexts declared before it. Code under lib/contexts/ crosses into another context only through that context's public API file lib/contexts/<name>/<name>.dart. A new top-level folder must be declared in the map before it holds code. When a screen needs two contexts, its view model combines them; one context never learns about another to save a screen work. These are catch_arch_* analyzer lints that read the map; audit:context-map keeps what one file cannot show, that the map is well formed and the spec's context table matches it. Files under the target roots take no exceptions. Since the phase 3 move, domain and data code lives under lib/contexts/ and a legacy feature folder keeps only its screens and barrel; any other file there fails catch_arch_legacy_context_file."
+    },
+    {
+      "id": "MANUAL-PROVIDER-001",
+      "title": "Providers are declared only with @riverpod code generation",
+      "appliesTo": [
+        "lib/**",
+        "apps/*/lib/**",
+        "packages/kernel/lib/**",
+        "packages/platform/lib/**"
+      ],
+      "instruction": "Declare providers only with @riverpod or @Riverpod. catch_arch_manual_provider_declaration reports any handwritten Riverpod builder call (Provider(, FutureProvider.autoDispose.family<A, B>(, a prefixed StateProvider( and so on) as an error that takes no // ignore; a type annotation such as Provider<int> is not a call and passes."
+    },
+    {
+      "id": "FIRESTORE-DATA-LAYER-001",
+      "title": "Firestore stays in the data layer",
+      "appliesTo": [
+        "lib/**",
+        "apps/*/lib/**",
+        "packages/platform/lib/**"
+      ],
+      "instruction": "Only lib/contexts/*/data/** and packages/platform/lib/firebase/** import cloud_firestore or hold its types; packages/platform/lib/errors/** may also read FirebaseException to translate it. catch_arch_firestore_outside_data reports the import, any declaration or expression whose resolved type is built from a Firestore type, and FirebaseException elsewhere, as an error that takes no // ignore. Paging cursors cross the boundary as the opaque PageCursor; domain serialisation uses firestoreTimestampFromDateTime and the other firestore_converters helpers."
+    },
+    {
+      "id": "CONTROLLER-BOUNDARY-001",
+      "title": "Keep product behavior out of presentation widgets",
+      "appliesTo": [
+        "lib/**/presentation/**"
+      ],
+      "instruction": "Widgets may own focus, scroll, animations, navigation, temporary input state, and rendering. Move repository writes, repository-provider reads, validation decisions, mutation orchestration, product side effects, and WidgetRef-threaded provider access into controllers, view-model providers, or repositories. Business loaded data, cursors, pending/error/retry and completion identity remain controller responsibilities even when an injected callback or generated action performs the write. Consumer widgets and controller filenames do not exempt these responsibilities. Keep genuine mechanical feedback distinct; preserve domain currentness, cancellation, snapshot and idempotency fences when moving ownership."
+    },
+    {
+      "id": "DEPENDENCY-DIRECTION-001",
+      "title": "Layer imports follow dependency direction",
+      "appliesTo": [
+        "lib/**",
+        "packages/platform/lib/**",
+        "apps/*/lib/**"
+      ],
+      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and new domain code must not add direct imports. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals — when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead. The same rules apply by placement to the bounded-context roots: lib/contexts/<context>/domain/** and packages/kernel/** are domain, lib/contexts/<context>/data/** is data, actions/ are controllers, parts/ stay provider-free, and lib/pages/** and apps/<app>/lib/<destination>/** are screens; findings under these roots take no exceptions. These are catch_arch_* analyzer lints. Findings under lib/contexts/, lib/pages/, packages/kernel/lib/, packages/platform/lib/ and the app destinations take no // ignore at all (catch_arch_invalid_ignore rejects it), and handwritten providers and Firestore outside the data layer take none anywhere: fix the code. Only a legacy feature folder may carry a reasoned // ignore: catch_ui_lints/<code> -- <reason> next to the code, which the lints reject when it is file-wide, unreasoned or stale. A provider-free file (a *_state.dart adapter, a context parts/ widget, or a file marked // architecture: provider-free) uses no Riverpod, routing, data-layer or repository API."
+    },
+    {
+      "id": "INJECTED-CLOCK-001",
+      "title": "Time-dependent domain getters take an injected clock, not DateTime.now()",
+      "appliesTo": [
+        "lib/**/domain/**",
+        "lib/**/data/**"
+      ],
+      "instruction": "Domain getters/predicates with time semantics must accept an injected DateTime/referenceNow when any caller threads one, instead of calling DateTime.now() internally — otherwise adjacent branches disagree and tests cannot pin time."
+    },
+    {
+      "id": "STREAM-LIFECYCLE-001",
+      "title": "Do not idle-timeout realtime Firestore listeners",
+      "appliesTo": [
+        "lib/**/data/**",
+        "lib/**/presentation/**",
+        "test/**/*.dart"
+      ],
+      "instruction": "Do not wrap Firestore snapshot streams in Stream.timeout to detect stalled loads; realtime streams may legitimately stay silent after initial data. Prefer Riverpod autoDispose, screen-active gating, explicit refresh/retry UI, and focused tests that advance fake time past prior timeout thresholds. Every keepAlive provider must carry a // keepalive: rationale marker within the three lines above the annotation or declaration."
+    }
+  ],
+  "alsoEnforces": [
+    "EXTERNAL-SIDE-EFFECT-001"
+  ]
+}

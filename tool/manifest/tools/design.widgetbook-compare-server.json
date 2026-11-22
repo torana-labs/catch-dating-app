@@ -1,0 +1,26 @@
+{
+  "id": "design:widgetbook-compare-server",
+  "category": "design",
+  "path": "tool/design/widgetbook_compare_server.mjs",
+  "impactPaths": [
+    "tool/design/generate_widget_classification.mjs",
+    "tool/design/generate_widget_variant_inventory.mjs",
+    "tool/design/widgetbook_compare_server.test.mjs",
+    "widgetbook/lib/**"
+  ],
+  "command": "node tool/design/widgetbook_compare_server.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "description": "Serves the interactive Widgetbook comparison and canonical decision logging UI from current Widgetbook, classification, and on-demand source-derived similarity data, with pattern-family review first and dedupe evidence as a secondary queue.",
+  "checks": [
+    "node --check tool/design/widgetbook_compare_server.mjs",
+    "node --test tool/design/widgetbook_compare_server.test.mjs"
+  ],
+  "role": "finder"
+}

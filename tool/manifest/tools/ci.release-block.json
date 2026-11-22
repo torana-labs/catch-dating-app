@@ -1,0 +1,20 @@
+{
+  "id": "ci:release-block",
+  "category": "ci",
+  "path": "tool/ci/release_block.mjs",
+  "command": "node tool/ci/release_block.mjs --check mobile",
+  "surface": "remote-read",
+  "status": "active",
+  "impactPaths": [
+    ".github/workflows/release-readiness.yml",
+    "tool/ci/release_block.mjs",
+    "tool/ci/release_block.test.mjs"
+  ],
+  "description": "Release Readiness's first check: fails, naming each issue, while an open issue carries release-block:mobile (opened by tool/ci/golden_policy.mjs), and fails closed when the issue list cannot be read.",
+  "checks": [
+    "node --check tool/ci/release_block.mjs",
+    "node --test tool/ci/release_block.test.mjs"
+  ],
+  "role": "gate",
+  "runbook": "docs/release_operations.md#main-ci-alert"
+}

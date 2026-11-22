@@ -1,0 +1,15 @@
+{
+  "id": "marketing:website-meta-contract",
+  "category": "marketing",
+  "path": "tool/marketing/website_meta_contract.mjs",
+  "command": "node --test tool/marketing/website_meta_contract.test.mjs",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Validates the shared static website metadata content used by client and postbuild readers.",
+  "checks": [
+    "node --check tool/marketing/website_meta_contract.mjs",
+    "node --check website/src/content/metaContract.ts",
+    "node --test tool/marketing/website_meta_contract.test.mjs"
+  ],
+  "role": "gate"
+}

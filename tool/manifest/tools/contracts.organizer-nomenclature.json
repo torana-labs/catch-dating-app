@@ -1,0 +1,63 @@
+{
+  "id": "contracts:organizer-nomenclature",
+  "category": "contracts",
+  "path": "tool/check_organizer_nomenclature.mjs",
+  "command": "node tool/check_organizer_nomenclature.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype. Flutter Dart file names, identifiers and localization keys must say organizer: what tool/architecture/rename_to_organizer.mjs would still rename fails, apart from the club subtype and names the generated schema contracts declare. Contract names, TypeScript identifiers and file names must say organizer too: what tool/architecture/rename_wire_to_organizer.mjs would still rename fails, apart from the club subtype and BigQuery columns.",
+  "impactPaths": [
+    "docs/migrations/clubs_to_organizers.md",
+    "firebase.json",
+    "lib/**/*.dart",
+    "test/**/*.dart",
+    "integration_test/**/*.dart",
+    "apps/**/*.dart",
+    "packages/**/*.dart",
+    "functions/src/**/*.ts",
+    "contracts/**/*.json",
+    "tool/architecture/move_to_contexts.mjs",
+    "tool/architecture/move_to_contexts.test.mjs",
+    "tool/architecture/check_context_map.mjs",
+    "tool/architecture/context_map.json",
+    "tool/architecture/rename_to_organizer.mjs",
+    "tool/architecture/rename_to_organizer.test.mjs",
+    "tool/architecture/rename_wire_to_organizer.mjs",
+    "tool/architecture/rename_wire_to_organizer.test.mjs",
+    "functions/scripts/functionExports.cjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "checks": [
+    "node --check tool/check_organizer_nomenclature.mjs",
+    "node --test tool/check_organizer_nomenclature.test.mjs",
+    "node --test tool/architecture/rename_wire_to_organizer.test.mjs",
+    "node --test tool/architecture/rename_to_organizer.test.mjs",
+    "node --test tool/architecture/move_to_contexts.test.mjs",
+    "node tool/check_organizer_nomenclature.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "ORGANIZER-AUTHORITY-001",
+      "title": "Organizer is the canonical entity and club is a subtype",
+      "appliesTo": [
+        "contracts/**",
+        "functions/src/**",
+        "lib/**",
+        "packages/platform/lib/**",
+        "website/src/**",
+        "admin/src/**",
+        "firestore.rules",
+        "storage.rules",
+        "firestore.indexes.json"
+      ],
+      "instruction": "Use organizers, organizerId, organizer relationships, organizer callables, organizer media paths, and organizer product copy as the canonical authority. Club is allowed as organizerType club, real-world content, or an explicitly documented released-client compatibility projection only."
+    }
+  ]
+}

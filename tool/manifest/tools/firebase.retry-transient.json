@@ -1,0 +1,27 @@
+{
+  "id": "firebase:retry-transient",
+  "category": "firebase",
+  "path": "tool/firebase/retry_transient.mjs",
+  "command": "node tool/firebase/retry_transient.mjs",
+  "surface": "remote-deploy",
+  "guard": "none",
+  "guardReason": "Retries the deploy command it is given; the guard is the caller's (_backend-deploy.yml).",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/firebase/retry_transient.test.mjs",
+    "tool/deploy_firebase_targets.sh"
+  ],
+  "description": "Runs a Firebase indexes or rules deploy and retries it up to three times only on a temporary Google API error (HTTP 429, 500, 502, 503, 504 or a dropped connection), never on validation, compilation, deletion-refusal or readiness failures.",
+  "checks": [
+    "node --check tool/firebase/retry_transient.mjs",
+    "node --test tool/firebase/retry_transient.test.mjs"
+  ],
+  "role": "gate",
+  "runbook": "docs/release_operations.md#deploy-backend"
+}

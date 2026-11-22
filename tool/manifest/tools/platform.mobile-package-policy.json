@@ -1,0 +1,17 @@
+{
+  "id": "platform:mobile-package-policy",
+  "category": "platform",
+  "path": "tool/platform/check_mobile_package.mjs",
+  "command": "node tool/platform/check_mobile_package.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Produces mobile package size/payload receipts, validates signed-artifact-calibrated budget headroom, and rejects forbidden-asset, forbidden-plugin, or cross-role identity regressions.",
+  "checks": [
+    "node --check tool/platform/check_mobile_package.mjs",
+    "node --test tool/platform/check_mobile_package.test.mjs"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "APP-TARGET-IDENTITY-001"
+  ]
+}

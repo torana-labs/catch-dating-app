@@ -192,7 +192,7 @@ export const hostLandingCopy = {
         {brand: brand.name, rate: facts.rate, cap: facts.cap},
       )},
       {title: "Do I need to talk to anyone to start?", body: `No. Download ${brand.stores.hostAppName}, set up your page and publish when you are ready. If you would like a person, WhatsApp us or book a 15-minute walkthrough.`},
-      {title: "Do my guests need to download an app?", body: "No. Guests book on your page and join live moments in their phone’s browser."},
+      {title: "Do my guests need to download an app?", body: `No. Guests book on your page and join live moments in their phone’s browser. Booking updates, your messages and the feedback request reach guests who use the ${brand.name} app.`},
       {title: "Do guests get a reminder before the event?", body: `Guests who use the ${brand.name} app get a push notification 15 minutes before the start. To remind guests on WhatsApp, connect your own WhatsApp sender.`},
       {title: "Can I bring my guest list from another tool?", body: "Yes. Import it from any tool. Nothing changes for your guests until the doors open."},
     ],
@@ -243,7 +243,7 @@ export const hostNightFormats: readonly HostNightFormat[] = [
       {time: "6:20 AM", property: "phones", title: "Check in, then pocket the phone", slot: "host-door-in", body: `Runners check in at the meeting point and see their pod once. While the run is on, ${brand.name} sends them nothing.`},
       {time: "6:30 AM", property: "groups", title: "A first hello at the start line", slot: "host-formats-mix", body: "Each pod gets one question to answer together before they set off, so the first kilometre already has a conversation in it."},
       {time: "7:15 AM", property: "tracks", title: "Nobody left on the road", slot: "host-live-console", body: "At the finish, you or your sweep mark each runner back. Anyone not marked stays on your list until you close the run."},
-      {time: "Sunday evening", property: "ends", title: "The next run, already easier", slot: "host-post-event-report", body: "Finishers get the photos and a feedback prompt, and your report shows who came for the first time and who came back."},
+      {time: "Sunday evening", property: "ends", title: "The next run, already easier", slot: "host-post-event-report", body: `Finishers get the photos and, on the ${brand.name} app, a feedback prompt. Your report shows who came for the first time and who came back.`},
     ],
   },
   {
@@ -271,7 +271,7 @@ export const hostNightFormats: readonly HostNightFormat[] = [
       {time: "8:00 PM", property: "phones", title: "One look at the phone, then dinner", slot: "host-door-in", body: "Guests check in and see their seat once. After that, nothing at dinner needs a phone."},
       {time: "8:20 PM", property: "tracks", title: "The whole room at a glance", slot: "host-live-console", body: "The seating map shows who’s where. Seat a late arrival or move someone with a tap, and table sizes and anyone you’ve kept apart still hold."},
       {time: "9:10 PM", property: "rhythm", title: "A new seat for dessert", slot: "host-formats-mix", body: `Between courses, ${brand.name} can re-seat the room so everyone meets a few more people. Conversation cards are there if you want them.`},
-      {time: "Next morning", property: "ends", title: "Hear how it went", slot: "host-post-event-report", body: "Guests get a feedback prompt, and can say privately who they talked to. You see the totals, never who named whom."},
+      {time: "Next morning", property: "ends", title: "Hear how it went", slot: "host-post-event-report", body: `Guests on the ${brand.name} app get a feedback prompt, and can say privately who they talked to. You see the totals, never who named whom.`},
     ],
   },
   {

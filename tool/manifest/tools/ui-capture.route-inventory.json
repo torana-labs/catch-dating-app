@@ -1,0 +1,27 @@
+{
+  "id": "ui-capture:route-inventory",
+  "category": "ui-capture",
+  "path": "tool/ui_capture/check_route_inventory.mjs",
+  "impactPaths": [
+    "tool/ui_capture/check_route_inventory_test.mjs",
+    "tool/ui_capture/route_inventory.json",
+    "lib/routing/go_router.dart",
+    "packages/platform/lib/routing/route_contract.dart"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "command": "node tool/ui_capture/check_route_inventory.mjs --check",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Generates and checks the named route inventory against route_contract.dart identities and go_router.dart runtime wiring, including semantic nested paths, normalized builder/pageBuilder presentation targets, locally declared block- and arrow-bodied route helpers, direct MaterialPageRoute sites, and a redirect-only exception for retired raw legacy paths. Imported or prebuilt route collections, constructor typedefs, and unsupported full-screen PageRoute forms fail closed through the resolved composition gate.",
+  "checks": [
+    "node --check tool/ui_capture/check_route_inventory.mjs",
+    "node --test tool/ui_capture/check_route_inventory_test.mjs",
+    "node tool/ui_capture/check_route_inventory.mjs --check"
+  ],
+  "role": "finder"
+}

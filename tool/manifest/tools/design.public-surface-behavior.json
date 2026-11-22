@@ -1,0 +1,52 @@
+{
+  "id": "design:public-surface-behavior",
+  "category": "design",
+  "path": "tool/design/check_public_surface_behavior.mjs",
+  "impactPaths": [
+    "tool/design/check_public_surface_behavior.test.mjs",
+    "design/public_surface_behavior.json",
+    "design/public_surface_behavior.schema.json"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "command": "node tool/design/check_public_surface_behavior.mjs --strict",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Enforces the cross-surface viewer, listing-authority, route-ownership, capability, and action behavior matrix.",
+  "checks": [
+    "node --check tool/design/check_public_surface_behavior.mjs",
+    "node --test tool/design/check_public_surface_behavior.test.mjs",
+    "node tool/design/check_public_surface_behavior.mjs --strict"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "PUBLIC-SURFACE-BEHAVIOR-001",
+      "title": "Keep public viewer and listing authority behavior explicit across app and web",
+      "appliesTo": [
+        "design/public_surface_behavior.json",
+        "design/public_surface_behavior.schema.json",
+        "design/screens/catch.screens.json",
+        "contracts/firestore/organizers.schema.json",
+        "contracts/public/website_host_listing_projection.schema.json",
+        "lib/routing/**",
+        "lib/explore/**",
+        "lib/organizers/**",
+        "lib/events/**",
+        "lib/organizers/**",
+        "website/src/features/claims/**",
+        "website/src/features/organizers/**",
+        "website/src/features/reviews/**",
+        "website/scripts/**",
+        "test/design/**",
+        "tool/design/check_public_surface_behavior.mjs"
+      ],
+      "instruction": "Treat design/public_surface_behavior.json as the executable decision table for public app and marketing surfaces. Keep viewer-session resolution, app role, profile readiness, viewer relationship, app and web publication, organizer ownership/claim/verification, host/contact identity, event supply/lifecycle/availability/payment, location, independent claim/review capabilities, and their runtimes explicit. Every consumer route must have exactly one matrix owner, every configuration must be verified by the declared app or website harness, and excluded dimension values require a rationale. Public actions fail closed when relationship or runtime authority is unresolved."
+    }
+  ]
+}

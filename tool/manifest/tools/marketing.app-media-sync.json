@@ -1,0 +1,22 @@
+{
+  "id": "marketing:app-media-sync",
+  "category": "marketing",
+  "path": "tool/marketing/sync_website_media.mjs",
+  "command": "node tool/marketing/sync_website_media.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Syncs app-derived marketing capture slots into website assets. Tools checks the authored manifest; the capture producer and the release import check image bytes and provenance.",
+  "checks": [
+    "node --check tool/marketing/sync_website_media.mjs",
+    "node --test tool/marketing/capture_pipeline.test.mjs",
+    "node --test tool/marketing/sync_website_media.test.mjs"
+  ],
+  "role": "finder",
+  "impactPaths": [
+    "tool/marketing/capture_pipeline.test.mjs",
+    "tool/marketing/sync_website_media.test.mjs",
+    "tool/marketing/capture_manifest.json",
+    "tool/demo/demo_seed/scenarios/host-marketing-india.json",
+    "artifacts/marketing/app-screenshots/**"
+  ]
+}

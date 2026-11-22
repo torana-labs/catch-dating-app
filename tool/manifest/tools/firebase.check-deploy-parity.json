@@ -1,0 +1,27 @@
+{
+  "id": "firebase:check-deploy-parity",
+  "category": "firebase",
+  "path": "tool/firebase/check_deploy_parity.mjs",
+  "command": "node tool/firebase/check_deploy_parity.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/firebase/check_deploy_parity.test.mjs",
+    "tool/deploy_firebase_targets.sh",
+    "functions/src/index.ts",
+    "functions/src/**/*.ts"
+  ],
+  "description": "Fails after a Functions deploy when a repository export is absent from the selected Firebase environment or a literal defineSecret name is absent from its project, while ignoring extension-owned extras.",
+  "checks": [
+    "node --check tool/firebase/check_deploy_parity.mjs",
+    "node --test tool/firebase/check_deploy_parity.test.mjs"
+  ],
+  "role": "gate",
+  "runbook": "docs/release_operations.md#firebase-functions-deployment-parity"
+}

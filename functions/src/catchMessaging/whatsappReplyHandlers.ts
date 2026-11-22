@@ -19,7 +19,9 @@ import {validateAdminSendCatchWhatsappReplyCallableResponse} from
   "../shared/generated/validators/adminSendCatchWhatsappReplyOutput";
 import type {AdminSendCatchWhatsappReplyCallableResponse} from
   "../shared/generated/adminSendCatchWhatsappReplyCallableResponse";
-import {catchTextSender} from "./catchSender";
+import {catchReplyTemplateSender, catchTextSender} from "./catchSender";
+import {isHostLeadFollowUp, sendHostLeadFollowUp} from "./hostLeadFollowUp";
+import {defaultSupportInboxDeps} from "../supportInbox/conversations";
 import type {CatchTextSender} from "./autoReply";
 import {
   isSupportConversationReply,
@@ -59,6 +61,9 @@ export function createCatchReplyHandlers(deps: {
   /** Staff replies to a Support conversation (purpose supportConversation). */
   supportReply?: (request: CallableRequest<unknown>) =>
     Promise<AdminSendCatchWhatsappReplyCallableResponse>;
+  /** Staff follow-up template to a host lead (purpose hostLeadFollowUp). */
+  leadFollowUp?: (request: CallableRequest<unknown>) =>
+    Promise<AdminSendCatchWhatsappReplyCallableResponse>;
 }) {
   async function authorize(request: CallableRequest<unknown>) {
     const config = {...deps.config()};
@@ -96,6 +101,17 @@ export function createCatchReplyHandlers(deps: {
       return result;
     },
     send: async (request: CallableRequest<unknown>) => {
+      if (isHostLeadFollowUp(request.data)) {
+        if (!deps.leadFollowUp) {
+          throw new HttpsError("failed-precondition",
+            "Lead follow-ups are unavailable.");
+        }
+        const result = await deps.leadFollowUp(request);
+        if (!validateAdminSendCatchWhatsappReplyCallableResponse(result)) {
+          throw new HttpsError("internal", "Invalid follow-up result.");
+        }
+        return result;
+      }
       if (isSupportConversationReply(request.data)) {
         if (!deps.supportReply) {
           throw new HttpsError("failed-precondition",
@@ -205,6 +221,16 @@ const handlers = createCatchReplyHandlers({
     now: Date.now,
     rateLimit: checkRateLimit,
     sender: supportSender,
+    serverTimestamp: () => FieldValue.serverTimestamp(),
+  }),
+  leadFollowUp: (request) => sendHostLeadFollowUp(request, {
+    config: () => ({enabled: enabled.value(), wabaId: waba.value().trim(),
+      phoneNumberId: phone.value().trim()}),
+    db: getFirestore,
+    now: Date.now,
+    rateLimit: checkRateLimit,
+    sender: catchReplyTemplateSender,
+    findUidByPhone: defaultSupportInboxDeps.findUidByPhone,
     serverTimestamp: () => FieldValue.serverTimestamp(),
   }),
   authority: () => {

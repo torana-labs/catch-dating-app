@@ -1,4 +1,4 @@
-// What a tools_manifest.json edit changes, by entry, so pull requests and
+// What a tools manifest (tool/manifest/) edit changes, by entry, so pull requests and
 // queue groups select the lanes that run those entries instead of every lane
 // (release-engineering design, 14 Nov). The logic that decides selection
 // (tool_impact.mjs, the planner, tool/nx/**, ci.yml) stays a selector; only

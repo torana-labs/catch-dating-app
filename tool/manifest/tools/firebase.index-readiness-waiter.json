@@ -1,0 +1,26 @@
+{
+  "id": "firebase:index-readiness-waiter",
+  "category": "firebase",
+  "path": "tool/firebase/wait_firestore_indexes_ready.mjs",
+  "command": "node tool/firebase/wait_firestore_indexes_ready.mjs --self-test",
+  "surface": "remote-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    ".github/workflows/_backend-deploy.yml",
+    "tool/firebase/wait_firestore_indexes_ready.test.mjs"
+  ],
+  "description": "Polls project-bound Firestore composite-index metadata until every desired packaged index is READY, failing closed on terminal states or timeout before dependent backend stages continue.",
+  "checks": [
+    "node --check tool/firebase/wait_firestore_indexes_ready.mjs",
+    "node --test tool/firebase/wait_firestore_indexes_ready.test.mjs",
+    "node tool/firebase/wait_firestore_indexes_ready.mjs --self-test"
+  ],
+  "role": "operator",
+  "runbook": "docs/release_operations.md#deploy-backend"
+}

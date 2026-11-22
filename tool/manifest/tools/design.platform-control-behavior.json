@@ -1,0 +1,36 @@
+{
+  "id": "design:platform-control-behavior",
+  "category": "design",
+  "path": "test/core/widgets/platform_control_targets_test.dart",
+  "impactPaths": [
+    "design/tokens/**",
+    "packages/platform/lib/theme/**",
+    "packages/catch_tokens/lib/**",
+    "packages/catch_ui/**",
+    "lib/contexts/*/parts/**",
+    "packages/platform/lib/media/**",
+    "lib/pages/startup/**",
+    "test/core/widgets/platform_control_targets_test.dart",
+    "test/core/platform_typography_test.dart",
+    "test/core/widgets/catch_tab_bar_test.dart"
+  ],
+  "command": "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart packages/catch_ui/test/foundations_test.dart",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Measures platform targets, disjoint edge taps, keyboard and disabled semantics, text reflow, scaled ancestors and pinned floating-navigation typography using production widgets.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter",
+      "flutter-pub"
+    ]
+  },
+  "checks": [
+    "flutter test --concurrency=1 test/core/widgets/platform_control_targets_test.dart test/core/platform_typography_test.dart test/core/widgets/catch_tab_bar_test.dart packages/catch_ui/test/foundations_test.dart"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "UI-LINT-001"
+  ]
+}

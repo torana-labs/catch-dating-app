@@ -1,0 +1,29 @@
+{
+  "id": "operations:admin-action-catalog",
+  "category": "operations",
+  "path": "operations/scripts/check-admin-action-catalog.mjs",
+  "command": "node operations/scripts/check-admin-action-catalog.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "role": "ratchet",
+  "alsoEnforces": [
+    "OPERATIONS-PLATFORM-001"
+  ],
+  "description": "Keeps every admin API callable aligned with one strict catalog action, Functions export, workflow membership, role set, schema-valid example, and explicit mutation confirmation policy.",
+  "checks": [
+    "node --check operations/scripts/check-admin-action-catalog.mjs",
+    "node --test operations/test/admin-action-catalog.test.mjs",
+    "node operations/scripts/check-admin-action-catalog.mjs"
+  ],
+  "impactPaths": [
+    "operations/test/admin-action-catalog.test.mjs",
+    "operations/src/**"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

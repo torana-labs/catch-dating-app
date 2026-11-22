@@ -1,0 +1,26 @@
+{
+  "id": "design:widget-dedupe-fingerprint-tests",
+  "category": "design",
+  "path": "tool/widget_dedupe/test/fingerprint_extractor_test.dart",
+  "impactPaths": [
+    "tool/widget_dedupe/lib/src/fingerprint_extractor.dart",
+    "tool/widget_dedupe/fixtures/**",
+    "tool/widget_dedupe/pubspec.yaml"
+  ],
+  "command": "dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json test:test tool/widget_dedupe/test/fingerprint_extractor_test.dart",
+  "surface": "local-read",
+  "status": "internal",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter",
+      "flutter-pub"
+    ]
+  },
+  "role": "gate",
+  "description": "Runs fingerprint extractor regression tests for seeded widget dedupe fixtures and state-class folding.",
+  "checks": [
+    "dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json test:test tool/widget_dedupe/test/fingerprint_extractor_test.dart"
+  ]
+}

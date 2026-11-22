@@ -1,0 +1,23 @@
+{
+  "id": "firebase:client-callable-dependencies",
+  "category": "firebase",
+  "path": "tool/firebase/check_client_callable_dependencies.mjs",
+  "command": "node tool/firebase/check_client_callable_dependencies.mjs --role host --environment prod",
+  "surface": "remote-read",
+  "status": "active",
+  "description": "Checks target-specific client callable flags and exports, then optionally proves live callable/IAM reachability before release.",
+  "checks": [
+    "node --check tool/firebase/check_client_callable_dependencies.mjs",
+    "node --test tool/firebase/check_client_callable_dependencies.test.mjs",
+    "node tool/firebase/check_client_callable_dependencies.mjs --role host --environment prod"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "APP-TARGET-IDENTITY-001"
+  ],
+  "runbook": "tool/README.md#firebase-deploy-and-client-callable-gates",
+  "impactPaths": [
+    "packages/command-client/**",
+    "functions/scripts/functionExports.cjs"
+  ]
+}

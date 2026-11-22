@@ -1,0 +1,28 @@
+{
+  "id": "ads:google-campaigns",
+  "category": "marketing",
+  "path": "tool/ads/apply_google_campaigns.mjs",
+  "command": "node tool/ads/apply_google_campaigns.mjs",
+  "surface": "remote-write",
+  "guard": "apply-flag",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "description": "Plans, and with --apply creates, the Google Ads campaigns in tool/ads/google_campaigns.json for customer 1016806229. Every campaign is created PAUSED for the owner to enable; existing campaigns are left unchanged. The plan asks Google to validate the create request without making anything.",
+  "checks": [
+    "node --check tool/ads/apply_google_campaigns.mjs",
+    "node --test tool/ads/apply_google_campaigns.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/ads/google_campaigns.json",
+    "tool/ads/apply_google_campaigns.test.mjs"
+  ],
+  "role": "operator",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "runbook": "tool/README.md#google-ads-campaigns"
+}

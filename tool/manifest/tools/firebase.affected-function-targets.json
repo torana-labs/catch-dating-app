@@ -1,0 +1,11 @@
+{
+  "id": "firebase:affected-function-targets",
+  "category": "firebase",
+  "path": "tool/firebase/affected_function_targets.mjs",
+  "status": "retired",
+  "description": "Selects the authorized Functions affected by exact committed module dependencies and the npm packages they load, with full snapshot and conservative fallback behavior.",
+  "role": "gate",
+  "retiredOn": "2026-11-18",
+  "reason": "Superseded: #1311 (6dc5e6135) rebuilt _backend-deploy.yml without it, and nothing calls or imports it since. Deploy target selection is planned by firebase:deploy-target-plan and firebase:plan-function-deploy.",
+  "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
+}

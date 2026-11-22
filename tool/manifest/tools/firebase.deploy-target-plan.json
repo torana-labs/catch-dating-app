@@ -1,0 +1,26 @@
+{
+  "id": "firebase:deploy-target-plan",
+  "category": "firebase",
+  "path": "tool/firebase/plan_firebase_deploy_targets.mjs",
+  "command": "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/firebase/plan_firebase_deploy_targets.test.mjs",
+    "tool/firebase/list_firebase_function_targets.mjs",
+    "functions/scripts/functionExports.cjs"
+  ],
+  "description": "Expands only CI-authorized backend groups and validated exact targets into indexes-first Firebase phases while rejecting all, hosting, Remote Config, Extensions, and arbitrary extras.",
+  "checks": [
+    "node --check tool/firebase/plan_firebase_deploy_targets.mjs",
+    "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs",
+    "node --check tool/firebase/list_firebase_function_targets.mjs"
+  ],
+  "role": "finder"
+}

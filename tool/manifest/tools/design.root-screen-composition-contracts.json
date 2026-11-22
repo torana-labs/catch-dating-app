@@ -1,0 +1,39 @@
+{
+  "id": "design:root-screen-composition-contracts",
+  "category": "design",
+  "path": "tool/design/check_root_screen_composition_contracts.mjs",
+  "command": "node tool/design/check_root_screen_composition_contracts.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Registers every consumer and host StatefulShellBranch, verifies adaptive shell adoption, rejects superseded root APIs, and rejects raw empty/error sliver composition. Analyzer-backed UI composition contracts separately own route layout roles and terminal geometry.",
+  "checks": [
+    "node --check tool/design/check_root_screen_composition_contracts.mjs",
+    "node --test tool/design/check_root_screen_composition_contracts.test.mjs",
+    "node tool/design/check_root_screen_composition_contracts.mjs --check"
+  ],
+  "impactPaths": [
+    "tool/design/check_root_screen_composition_contracts.test.mjs",
+    "tool/design/root_screen_composition_contracts.json"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "ROOT-SCREEN-COMPOSITION-001",
+      "title": "Root screens declare semantic composition and clear adaptive shell chrome",
+      "appliesTo": [
+        "lib/routing/go_router.dart",
+        "apps/*/lib/**",
+        "lib/**/presentation/**",
+        "lib/routing/shell/**",
+        "packages/catch_ui/lib/src/components/catch_section.dart"
+      ],
+      "instruction": "Every direct consumer and host StatefulShellBranch must be registered in tool/design/root_screen_composition_contracts.json. Exact route-to-layout ownership belongs in design/screens/catch.screens.json and is enforced by the analyzer-backed UI composition gate. Ordinary roots select CatchRootScreenScaffold.standard, .sections, or .fullBleed, or the matching CatchRootScreenScrollView constructor. Section roots use .sections for full-width rows with the canonical title-to-body rhythm. Roots with pinned peer navigation use .withPrimaryRail plus one of CatchRootScreenPageScrollView.standard, .fullBleed, or .embeddedViewport. These semantic constructors centralize SafeArea(bottom: false), title-to-body rhythm, gutters, responsive content width, field obstruction, refresh, and terminal clearance. Box-layout terminal empty/error branches use CatchStateViewport; presentation slivers use CatchStateViewport.sliver, CatchSliverEmptyState, or CatchSliverErrorState rather than composing SliverFillRemaining directly, so the same shell obstruction controls their optical center."
+    }
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

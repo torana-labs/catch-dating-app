@@ -1,0 +1,37 @@
+{
+  "id": "meta:repository-root-hygiene",
+  "category": "meta",
+  "path": "tool/check_repository_root_hygiene.mjs",
+  "command": "node tool/check_repository_root_hygiene.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/lib/path_glob.mjs",
+    "tool/lib/path_glob.test.mjs"
+  ],
+  "role": "gate",
+  "description": "Enforces manifest-backed root ownership, retired duplicate-impact-authority absence, Git expectations, protected cleanup boundaries, audit policies, and portable Markdown links. Every *_baseline.json names its owning document and a target-zero phase heading.",
+  "checks": [
+    "node --test tool/check_repository_root_hygiene.test.mjs",
+    "node tool/check_repository_root_hygiene.mjs"
+  ],
+  "rules": [
+    {
+      "id": "REPO-ROOT-HYGIENE-001",
+      "title": "Repository-root entries have explicit owners and safe cleanup contracts",
+      "appliesTo": [
+        "*",
+        "tool/repository_root_manifest.json",
+        "tool/repository_hygiene.mjs",
+        "docs/**/*.md"
+      ],
+      "instruction": "Every root entry must match exactly one manifest classification. Cleanup is dry-run first and mutates only an explicit allowlisted scope; tracked files, protected paths, worktrees, symlinks, path escapes, and machine-local Markdown links are rejected."
+    }
+  ]
+}

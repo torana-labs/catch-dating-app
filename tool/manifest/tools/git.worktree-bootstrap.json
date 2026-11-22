@@ -1,0 +1,29 @@
+{
+  "id": "git:worktree-bootstrap",
+  "category": "git",
+  "path": "tool/git/bootstrap_worktree.sh",
+  "command": "bash tool/git/bootstrap_worktree.sh",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "package-lock.json",
+    "functions/package-lock.json",
+    "pubspec.yaml",
+    "tool/git/bootstrap_worktree.test.mjs",
+    "docs/agent_operating_model.md"
+  ],
+  "description": "Bootstraps a fresh Git worktree with only its selected isolated root npm, Functions npm, or Flutter dependencies from committed lockfiles; defaults to all three.",
+  "checks": [
+    "bash -n tool/git/bootstrap_worktree.sh",
+    "node --test tool/git/bootstrap_worktree.test.mjs",
+    "bash tool/git/bootstrap_worktree.sh --help"
+  ],
+  "role": "operator",
+  "runbook": "docs/agent_operating_model.md#parallel-worktrees"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "design:comprehensive-todo-summary",
+  "category": "design",
+  "path": "tool/design/check_comprehensive_todo_summary.mjs",
+  "command": "node tool/design/check_comprehensive_todo_summary.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates authored design decisions and P1 screen coverage; derives current gap and migration summaries without duplicated Markdown counts.",
+  "checks": [
+    "node --check tool/design/check_comprehensive_todo_summary.mjs",
+    "node --test tool/design/check_comprehensive_todo_summary.test.mjs",
+    "node tool/design/check_comprehensive_todo_summary.mjs --check"
+  ],
+  "role": "finder",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "docs/design_parity/comprehensive_todo.md",
+    "design/screens/catch.screens.json"
+  ]
+}

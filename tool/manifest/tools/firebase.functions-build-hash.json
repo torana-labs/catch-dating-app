@@ -1,0 +1,24 @@
+{
+  "id": "firebase:functions-build-hash",
+  "category": "firebase",
+  "path": "tool/firebase/functions_build_hash.mjs",
+  "command": "node tool/firebase/functions_build_hash.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/firebase/functions_build_hash.test.mjs",
+    ".github/workflows/functions-ci.yml"
+  ],
+  "description": "Describes Functions CI's tested build: an input hash over functions/src (generated contracts included), the package files, tsconfigs and Node and TypeScript versions, plus a per-file digest of functions/lib. Main and its merge queue publish the build under that hash so the backend deploy can ship exactly what CI tested.",
+  "checks": [
+    "node --check tool/firebase/functions_build_hash.mjs",
+    "node --test tool/firebase/functions_build_hash.test.mjs"
+  ],
+  "role": "finder"
+}

@@ -1,0 +1,28 @@
+{
+  "id": "firebase:platform-availability",
+  "category": "firebase",
+  "path": "tool/firebase/check_platform_availability.mjs",
+  "command": "node tool/firebase/check_platform_availability.mjs --project catchdates-dev --callable adminListEventDirectory",
+  "surface": "remote-read",
+  "status": "active",
+  "description": "Says whether the Firebase/GCP platform behind an environment is serving (an unauthenticated callable probe and a metadata-only gcloud listing) so deploy and release runs defer with a warning, and record nothing, while a closed billing account stops Cloud Run instead of failing on the commit.",
+  "checks": [
+    "node --check tool/firebase/check_platform_availability.mjs",
+    "node --test tool/firebase/check_platform_availability.test.mjs"
+  ],
+  "role": "gate",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/firebase/check_platform_availability.test.mjs",
+    ".github/workflows/_backend-deploy.yml",
+    ".github/workflows/_web-hosting-build.yml",
+    ".github/workflows/website-next-preview.yml",
+    "packages/command-client/**"
+  ],
+  "runbook": "docs/release_operations.md#platform-unavailable-deploys-and-releases-defer"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "demo:rsvp-import-ui",
+  "category": "demo",
+  "path": "tool/demo/rsvp_escape/import_main.dart",
+  "status": "retired",
+  "description": "Renders the production spreadsheet parser and mapping sheet for a local synthetic XLSX fixture.",
+  "retiredOn": "2026-11-18",
+  "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+  "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
+}

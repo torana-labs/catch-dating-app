@@ -9,6 +9,7 @@ import {compare, comparedLanes, workflowLanes} from "./shadow_plan.mjs";
 import {ALL, callerLanes, declaredTargets, isCiConfiguration, isExecutedCode, isSelector, notCalledByCi, selectorEntries,
   selectorFiles, trackedFiles, unclassifiedCiFiles, workflowCallers} from "./workflow_callers.mjs";
 import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
+import {splitToolsManifest} from "../lib/tools_manifest.mjs";
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
 const realGraph = workflowCallers({root: repoRoot, lanes: comparedLanes});
@@ -74,7 +75,7 @@ runs:
   "tool/harness.mjs": `import {g} from "./harness/lib/graph.mjs";\n`,
   "tool/harness/lib/graph.mjs": `fs.readFileSync(new URL("../graph.json", import.meta.url));\n`,
   "tool/harness/graph.json": "{}\n",
-  "tool/tools_manifest.json": JSON.stringify({tools: []}),
+  ...Object.fromEntries(splitToolsManifest({tools: []})),
 };
 const lanesOf = (graph, file) => [...(graph.lanes.get(file) ?? [])].sort();
 
@@ -172,7 +173,7 @@ test("the shared check runner and every module it imports select every lane whos
     }
   }
   // #1831's own change selects every lane that runs the runner.
-  const lanes = workflowLanes(["tool/lib/sort_tools_manifest.mjs", "tool/lib/tool_manifest_rules.mjs",
+  const lanes = workflowLanes(["tool/lib/tools_manifest.mjs", "tool/lib/tool_manifest_rules.mjs",
     "tool/lib/tool_manifest_rules.test.mjs", "tool/run.mjs", "tool/run.test.mjs"], realGraph);
   for (const lane of runnerLanes) if (lane !== ALL) assert.ok(lanes.has(lane), `#1831 selects ${lane}`);
 });

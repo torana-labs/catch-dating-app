@@ -1,0 +1,16 @@
+{
+  "id": "branding:catch-icon",
+  "category": "branding",
+  "path": "tool/branding/generate_catch_icon.swift",
+  "command": "swift tool/branding/generate_catch_icon.swift",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "platforms": [
+    "darwin"
+  ],
+  "description": "Generates Catch app icon and splash PNG assets using AppKit and the bundled Archivo font; checks parse syntax only.",
+  "checks": [
+    "swiftc -parse tool/branding/generate_catch_icon.swift"
+  ],
+  "role": "generator"
+}

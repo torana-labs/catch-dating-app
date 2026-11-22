@@ -1,0 +1,14 @@
+{
+  "id": "design:screen-contract-hygiene",
+  "category": "design",
+  "path": "tool/design/check_screen_contract_hygiene.mjs",
+  "command": "node tool/design/check_screen_contract_hygiene.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Reports advisory raw Material controls and hand-rolled visual values in contracted screen implementation files.",
+  "checks": [
+    "node --check tool/design/check_screen_contract_hygiene.mjs",
+    "node tool/design/check_screen_contract_hygiene.mjs --summary"
+  ],
+  "role": "finder"
+}
