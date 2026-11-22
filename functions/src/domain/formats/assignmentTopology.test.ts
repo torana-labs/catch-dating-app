@@ -7,7 +7,7 @@ import {
   unitLabel,
   unitSubtitle,
 } from "./assignmentTopology";
-import {isHttpsError} from "../shared/testUtils";
+import {isHttpsError} from "../../shared/testUtils";
 
 test("resolves group topology from unit size and clamps group count", () => {
   const topology = resolveAssignmentTopology(

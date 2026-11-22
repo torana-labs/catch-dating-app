@@ -245,8 +245,11 @@ jobs:
         run: |
           set -euo pipefail
           node "$GITHUB_WORKSPACE/website/scripts/next/previewRelease.mjs" authorize
+          # Previews never sign anyone in, so the channel URL is not added to
+          # Firebase Auth's authorized domains (the deploy identity has no Auth
+          # config permission, and each attempt logged a denied UpdateConfig).
           firebase hosting:channel:deploy next-candidate --expires 3d --project catch-dating-app-64e51 \
-            --only marketing --config firebase.json --non-interactive --json > ../hosting-preview.json
+            --only marketing --config firebase.json --no-authorized-domains --non-interactive --json > ../hosting-preview.json
       - name: Verify the actual Hosting channel and public request path
         if: ${{ steps.platform.outputs.available != 'false' }}
         run: |

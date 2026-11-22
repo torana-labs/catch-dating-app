@@ -1,23 +1,24 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import type {DocumentSnapshot} from "firebase-admin/firestore";
-import {operationContentHash as hash} from "../operations/durableActions";
-import {isOrganizerManager} from "../shared/organizerHosts";
-import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
+import {operationContentHash as hash} from "../../operations/durableActions";
+import {isOrganizerManager} from "../../shared/organizerHosts";
+import type {OrganizerDocument} from
+  "../../shared/generated/firestoreAdminTypes";
 import type {GetEventAttendanceDispositionCallablePayload as Scope} from
-  "../shared/generated/getEventAttendanceDispositionCallablePayload";
+  "../../shared/generated/getEventAttendanceDispositionCallablePayload";
 import {validateEventDocument} from
-  "../shared/generated/validators/eventDocument";
+  "../../shared/generated/validators/eventDocument";
 import {validateEventAttendeeDocument} from
-  "../shared/generated/validators/eventAttendeeDocument";
+  "../../shared/generated/validators/eventAttendeeDocument";
 import {validateOrganizerDocument} from
-  "../shared/generated/validators/organizerDocument";
+  "../../shared/generated/validators/organizerDocument";
 import {validateEventSuccessPlanDocument} from
-  "../shared/generated/validators/eventSuccessPlanDocument";
+  "../../shared/generated/validators/eventSuccessPlanDocument";
 import {validateEventAttendanceDispositionDocument} from
-  "../shared/generated/validators/eventAttendanceDispositionDocument";
+  "../../shared/generated/validators/eventAttendanceDispositionDocument";
 import {guestIdentity, parseGuest, guestSourceFactsFromSnapshots} from
-  "../eventSuccess/operations/guestRecords";
-import {invalidSource} from "../eventSuccess/operations/groupProgressSource";
+  "../../eventSuccess/operations/guestRecords";
+import {invalidSource} from "../../eventSuccess/operations/groupProgressSource";
 import {DispositionSource, dispositionIdentity} from
   "./attendanceDispositionPolicy";
 

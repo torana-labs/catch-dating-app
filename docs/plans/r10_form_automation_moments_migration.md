@@ -45,7 +45,7 @@ shared journal.
 | Anchored offsets are contract-limited to ±43,200 minutes (30 days) (`contracts/shared/moment_common.schema.json`); absolute scheduled dates go further but do not follow a changed event date; the `rsvpDeadline` anchor exists in the model while the fact loader always supplies `null` (`momentDocuments.ts`). | Weeks-or-months horizons need explicit contract work and real domain anchors. |
 | Reproduced defect: a quiet-hours-deferred scheduled run is superseded once its *nominal* due passes the five-minute planning grace (`momentPlanning.ts` — `nominalDue < nowMillis - DEFAULT_GRACE_MILLIS` → `dueInPast`). | Scheduling recovery must be part of this integration's acceptance criteria. |
 | The sweep takes the first 500 armed Moments and separately loads all planned runs. | Discovery needs an indexed, paginated strategy before horizons lengthen. |
-| Communication routes already distinguish transport, sender identity, purpose, and capabilities (`communications/communicationRoutes.ts`). | Channel support shares execution while preserving per-route authority — Organizer WhatsApp, Catch WhatsApp, and personal handoff do not inherit each other's permissions. |
+| Communication routes already distinguish transport, sender identity, purpose, and capabilities (`platform/delivery/communicationRoutes.ts`). | Channel support shares execution while preserving per-route authority — Organizer WhatsApp, Catch WhatsApp, and personal handoff do not inherit each other's permissions. |
 
 ## Target architecture — one owner per responsibility
 

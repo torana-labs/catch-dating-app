@@ -54,6 +54,7 @@ import {
 } from "./eventPayloadNormalization";
 import {signUpUserForEvent} from "./signUpUserForEvent";
 import {requireEventTimeRange} from "./configuredEvent";
+import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
 
 interface DecideEventJoinRequestDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -199,7 +200,7 @@ export async function decideEventJoinRequestHandler(
 
     if (decision === "decline") {
       const currentWaitlistedCount = event.waitlistedCount ?? 1;
-      tx.update(eventRef, {
+      updateEventBookingCounters(tx, eventRef, {
         waitlistedCount: Math.max(0, currentWaitlistedCount - 1),
         waitlistedCohortCounts: decrementCount(
           event.waitlistedCohortCounts ?? {},

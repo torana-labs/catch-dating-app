@@ -15,7 +15,7 @@ import type {EventAssistanceSmsConfig} from
 import type {EventWhatsappPolicyDocument} from
   "../../shared/generated/eventWhatsappPolicyDocument";
 import type {communicationRoutes} from
-  "../../communications/communicationRoutes";
+  "../../platform/delivery/communicationRoutes";
 
 type LateJoin = Extract<EventAssistancePolicy, {kind: "lateJoin"}>;
 type JoinIntentPayload = Extract<

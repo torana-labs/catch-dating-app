@@ -2,7 +2,7 @@ import type {
   EventFormatSnapshot,
   EventSuccessFormatPrimitives,
 } from "../shared/generated/firestoreAdminTypes";
-import type {EventSuccessTopology} from "./assignmentTopology";
+import type {EventSuccessTopology} from "../domain/formats/assignmentTopology";
 
 export type EventSuccessAssignmentAlgorithm = NonNullable<
   EventSuccessFormatPrimitives["assignmentAlgorithm"]

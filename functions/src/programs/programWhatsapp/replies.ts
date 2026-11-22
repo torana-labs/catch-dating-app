@@ -27,7 +27,7 @@ import {
 } from "../../organizers/organizerMessagingSetup";
 import {programStaffGrantId} from "../../shared/programAuthority";
 import {whatsappStatusCorrelation} from
-  "../../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../../platform/delivery/whatsappDeliveryProtocol";
 import {whatsappEndpointHash} from
   "../../eventSuccess/operations/whatsappReplyProtocol";
 import {

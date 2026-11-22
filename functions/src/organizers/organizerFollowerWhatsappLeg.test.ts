@@ -10,7 +10,7 @@ import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
 import {whatsappStopId} from "../shared/organizerWhatsappStops";
 import {organizerRelationshipId} from "../shared/relationshipDocuments";
-import {hashEndpoint} from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {followerWhatsappGrant} from "./organizerFollowerWhatsapp";
 import {
   findFollowerWhatsappSender,

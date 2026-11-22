@@ -123,9 +123,11 @@ jobs:
           # Pinning the runtime sometimes fails with "Failed to replace Run
           # service" just after the deploy above; the same deploy then succeeds.
           # --json sends the reason to the file, so print it before retrying.
+          # --no-authorized-domains: the candidate channel never signs anyone in,
+          # and the deploy identity has no Firebase Auth config permission.
           for attempt in 1 2 3; do
             if firebase hosting:channel:deploy next-release --expires 3d --project catch-dating-app-64e51 \
-              --only marketing --config firebase.production.json --non-interactive --json > ../../next-promote/candidate.json; then
+              --only marketing --config firebase.production.json --no-authorized-domains --non-interactive --json > ../../next-promote/candidate.json; then
               break
             fi
             cat ../../next-promote/candidate.json

@@ -65,9 +65,9 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
   hashCanonical,
-  hashEndpoint,
   organizerContactChannelStateId,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 
 const manualTaskTtlMillis = 30 * 24 * 60 * 60 * 1000;
 

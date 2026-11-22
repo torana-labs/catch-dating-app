@@ -399,8 +399,8 @@ them today:
 | `eventAssistanceHostGuestsProvider` | `getEventAssistanceHostGuests` | `functions/src/eventSuccess/operations/hostGuestsStore.ts` | Named by #1327 as a group |
 | `eventAssistanceParticipationReviewProvider` | `getEventAssistanceParticipation` | `functions/src/eventSuccess/operations/participationStore.ts` | Named by #1327 as a group |
 | `eventAssistanceGroupStaffProvider` | `getEventAssistanceGroupStaff` | `functions/src/eventSuccess/operations/groupStaffStore.ts` | Named by #1327 as a group |
-| `EventAttendanceDisposition` provider | `getEventAttendanceDisposition` | `functions/src/events/attendanceDispositionStore.ts` | Named by #1327 |
-| `EventAttendanceReport` provider | `getEventAttendanceReport` | `functions/src/events/attendanceReport.ts` | Named by #1327 |
+| `EventAttendanceDisposition` provider | `getEventAttendanceDisposition` | `functions/src/domain/live/attendanceDispositionStore.ts` | Named by #1327 |
+| `EventAttendanceReport` provider | `getEventAttendanceReport` | `functions/src/domain/live/attendanceReport.ts` | Named by #1327 |
 
 **Formats runtime, out of scope by the brief.** The console section still subscribes
 to these while a host is on it, and their loading state can hold the section, so a

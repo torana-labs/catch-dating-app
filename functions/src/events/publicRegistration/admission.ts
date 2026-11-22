@@ -50,6 +50,8 @@ import {markEventPaymentAdmitted, markEventPaymentRefundPending} from
   "../../payments/eventCheckout/eventPaymentState";
 import {recordPublicMemberBenefitUse} from
   "../../hostMemberships/publicCheckout";
+import {updateEventBookingCounters} from
+  "../../domain/events/eventDocumentWrites";
 
 type Result = "admitted" | "refundPending" | "unchanged";
 /** Only the provider processor may establish captured state. Its current,
@@ -277,7 +279,7 @@ export async function finalizePublicPayment(input: {
       guest.createAttendeeAlias(ledger.migrationRevision);
       applyCheckoutHold(seats, confirm);
       tx.set(guest.attendeeRef, attendee);
-      tx.update(db.collection("events").doc(eventId), {
+      updateEventBookingCounters(tx, db.collection("events").doc(eventId), {
         bookedCount: ledger.occupied + placeCount,
         ...catchBooking?.eventCounts(event),
       });

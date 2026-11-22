@@ -29,7 +29,7 @@ import {
 } from "../../shared/organizerWhatsappStops";
 import {organizerCommunicationPreferenceId} from
   "../../shared/organizerCommunicationPreferences";
-import {hashEndpoint} from "../../organizers/organizerCampaignModel";
+import {hashEndpoint} from "../../platform/delivery/endpointHash";
 import {preferences, receipts, settings} from "./preferences";
 import {readApplication, type LoadIdentity} from "./source";
 import {

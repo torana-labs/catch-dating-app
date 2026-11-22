@@ -4830,7 +4830,7 @@
         "keeps attendance closeout decisions callable-only"
       ],
       "owner": "event attendance callables",
-      "writerContext": "bookings",
+      "writerContext": "live",
       "read": "server only; current organizer managers receive a source-bound callable view",
       "write": "server only; explicit closeout decisions and exact operation receipts share one transaction",
       "exportedFunctions": [
@@ -4853,7 +4853,7 @@
         "keeps attendance closeout decisions callable-only"
       ],
       "owner": "event attendance callables",
-      "writerContext": "bookings",
+      "writerContext": "live",
       "read": "server only; current organizer managers receive a source-bound callable view",
       "write": "server only; explicit closeout decisions and exact operation receipts share one transaction",
       "exportedFunctions": [

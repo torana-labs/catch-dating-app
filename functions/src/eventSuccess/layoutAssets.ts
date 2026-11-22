@@ -46,10 +46,9 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {assignmentConstraintPairKey} from "./assignmentConstraints";
-import {
-  organizerEventSuccessLayoutDocumentId,
-  publicEventSuccessLayout,
-} from "./spatialLayout";
+import {organizerEventSuccessLayoutDocumentId} from
+  "../domain/formats/layoutDocumentId";
+import {publicEventSuccessLayout} from "./spatialLayout";
 import {
   confirmedSpatialUnitId,
   destinationPeerUid,

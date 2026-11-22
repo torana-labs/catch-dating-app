@@ -3,7 +3,7 @@ import {
   DOUBLES_BENCH_NOTE,
   doublesRoundsFromPlannedRounds,
   isDoublesCourt,
-} from "./doublesSlots";
+} from "../domain/formats/doublesSlots";
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
@@ -58,7 +58,7 @@ import {
   resolveRotationIntervalMinutes,
   resolveSequenceConcurrentUnits,
   rotationRoundCountForDuration,
-} from "./assignmentTopology";
+} from "../domain/formats/assignmentTopology";
 import {
   CompatibilitySignal,
   QuestionnaireScoringMode,

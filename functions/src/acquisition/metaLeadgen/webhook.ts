@@ -6,7 +6,7 @@ import {onRequest} from "firebase-functions/v2/https";
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {timingSafeEqual} from "node:crypto";
 import {verifyCatchWebhookSignature} from
-  "../../catchMessaging/whatsappWebhookProtocol";
+  "../../platform/delivery/webhookSignature";
 import {type LeadgenChange, leadgenChanges} from "./protocol";
 
 export const META_LEADGEN_EVENTS = "metaLeadgenEvents";

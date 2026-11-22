@@ -229,11 +229,9 @@ counting fake, as `test/platform/cache/cache_lifetime_test.dart` does.
 ## Enforcement
 
 `tool/architecture/provider_graph.dart` (`audit:provider-graph`) holds the
-rules. They run in report-only mode: the findings that existed when the rules
-landed are listed by exact rule, path, symbol and detail in
-`tool/architecture/provider_graph_baseline.json`, and the check fails only
-when a finding is not listed. Each context's migration PR deletes the entries
-it fixes, so the list only shrinks.
+rules, and they gate: every finding fails the check, and there is no
+baseline. The last column records what each rule found when it landed in
+report-only mode.
 
 | Rule | Fails when | Listed at landing |
 |---|---|---|
@@ -249,7 +247,6 @@ it fixes, so the list only shrinks.
 ```sh
 dart run tool/architecture/provider_graph.dart --check
 dart run tool/architecture/provider_graph.dart --json   # readOwner, readKinds, lifetime per provider
-dart run tool/architecture/provider_graph.dart --write-cache-baseline   # reviewed reset only
 ```
 
 The pass reads parsed source, not resolved types. It follows a repository
@@ -264,32 +261,31 @@ or `uid` parameter. A retry is a closure passed as `onRetry`, `onRefresh` or
 
 ### Phase 1: foundations, report-only
 
-The pieces above land with no read owner migrated, and the rules list today's
-findings instead of failing on them.
+The pieces above landed with no read owner migrated, and the rules listed the
+findings of the time in a baseline instead of failing on them.
 
-### Phase 2: context migrations empty the baseline
+### Phase 2: context migrations emptied the baseline
 
-Code that survives the redesign is on the contract: the listener and
-keep-alive findings are gone, and so are the invalidations outside legacy
-screens. On 22 November 2026 every kept-alive provider was classified: about
-110 are `account-free:` infrastructure, four are `session-root:` (the auth
-stream, `uid`, the authenticated session and `watchUserProfileProvider`, which
-the router reads), and fourteen that held per-account state moved to the
-session lifetime: the Chats and Explore search and filter state, the selected
-Explore city and its guard, the Host organizer selection, the five pending
-rehearsal and assistance reference sets, the foreground notification
-controller, the companion launch registry and the onboarding controller.
-Sign-out no longer resets Explore by hand.
+Code that survives the redesign moved onto the contract context by context,
+and on 22 November 2026 the rest followed:
 
-The legacy invalidations are fixed too:
-- Retries reach read owners rather than compositions.
-- The WhatsApp setup and form profile claim writes declare `AudienceTags` and
-  `ProfileTags`.
-- Read-backs before a command never refresh a kept read.
+- Every kept-alive provider was classified: about 110 are `account-free:`
+  infrastructure, and four are `session-root:` (the auth stream, `uid`, the
+  authenticated session and `watchUserProfileProvider`, which the router
+  reads).
+- Fourteen that held per-account state moved to the session lifetime: the
+  Chats and Explore search and filter state, the selected Explore city and its
+  guard, the Host organizer selection, the five pending rehearsal and
+  assistance reference sets, the foreground notification controller, the
+  companion launch registry and the onboarding controller. Sign-out no longer
+  resets Explore by hand.
+- The last legacy invalidations were fixed. Retries now reach read owners
+  rather than compositions. The WhatsApp setup and form profile claim writes
+  declare `AudienceTags` and `ProfileTags`. Read-backs before a command read
+  the repository and never refresh a kept read.
 
-The baseline holds one entry, the kept-alive marker of
-`eventRehearsalRepositoryProvider`, which names no scope yet. When that entry
-goes, the rules gate with no list.
+The baseline file and `--write-cache-baseline` are gone, and the rules gate
+with no list.
 
 ## Code map
 

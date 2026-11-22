@@ -5,7 +5,7 @@ import {deleteApp, initializeApp} from "firebase-admin/app";
 import type {Firestore} from "firebase-admin/firestore";
 import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import {harness, command, manager, end} from
-  "../events/attendanceDispositionTestFixtures";
+  "../domain/live/attendanceDispositionTestFixtures";
 import {hostEventAttendanceReportsCollection,
   reconcileHostEventAttendanceReport, HostEventAttendanceReportView} from
   "./attendanceReportView";

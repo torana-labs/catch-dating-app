@@ -83,6 +83,7 @@ import {applyFirestoreSeat, prepareFirestoreSeat, deriveEventSeatPolicy,
 import {assertAccountMayBook} from "../safety/accountStanding";
 import {applyBatchImportSeats, prepareFirestoreBatchSeatImport} from
   "./seatAuthority/batchSeatImport";
+import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
 
 type ImportRow = ImportEventAttendeesCallablePayload["rows"][number];
 type ImportError = EventAttendeeImportDocument["errors"][number];
@@ -442,7 +443,7 @@ export async function importEventAttendeesForHost(
           seatImport.plan);
       }
       // The ledger was read and validated above.
-      tx.update(eventRef, {bookedCount:
+      updateEventBookingCounters(tx, eventRef, {bookedCount:
         readyLedgerOccupied +
         (seatImport?.plan.newSeats ?? 0)});
     }
@@ -775,7 +776,7 @@ export async function setEventAttendeeAttendanceHandler(
         preCheckInStatus: payload.desiredCheckedIn ? attendee.status : null,
         updatedAt: now,
       });
-      tx.update(eventRef, {
+      updateEventBookingCounters(tx, eventRef, {
         checkedInCount: admin.firestore.FieldValue.increment(
           payload.desiredCheckedIn ? 1 : -1
         ),

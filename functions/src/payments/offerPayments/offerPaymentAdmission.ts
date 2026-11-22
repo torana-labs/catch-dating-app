@@ -1,5 +1,7 @@
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
+import {updateEventBookingCounters} from
+  "../../domain/events/eventDocumentWrites";
 import type {OrganizerFormAdmissionReceiptDocument as Receipt} from
   "../../shared/generated/organizerFormAdmissionReceiptDocument";
 import {validateOrganizerFormAdmissionReceiptDocument} from
@@ -191,7 +193,7 @@ export async function finalizeCapturedOfferPayment(params: {
       }
       identity.apply();
       applyCheckoutHold(seatTx, confirm);
-      tx.update(db.collection("events").doc(eventId),
+      updateEventBookingCounters(tx, db.collection("events").doc(eventId),
         {bookedCount: ledger.occupied + 1});
       tx.create(attendeeRef, attendee);
       for (const alias of aliases) {

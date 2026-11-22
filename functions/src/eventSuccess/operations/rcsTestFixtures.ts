@@ -1,8 +1,9 @@
 import type {EventAssistanceMessageIntent as Intent} from
   "../../shared/generated/eventAssistanceMessageIntent";
 import {Grant, guestIdentity, threadIdentity} from "./guestRecords";
-import {grantSecret, guestSecretHash, GuestLinkSigningKeys} from
-  "./guestLinkTokens";
+import {grantSecret, guestSecretHash} from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import {RcsConfig, RcsContentInput} from "./rcsProtocol";
 
 export const rcsTestNow = Date.parse("2026-09-08T10:00:00Z");

@@ -419,7 +419,8 @@ final class EventRehearsalOperationCommands {
       _repository.applyOperation(change);
 }
 
-// keepalive: One client owns the isolated rehearsal domain.
+// keepalive: account-free: one stateless client (Firebase handles only) owns
+// the isolated rehearsal domain; it holds no per-account data.
 @Riverpod(keepAlive: true)
 EventRehearsalRepository eventRehearsalRepository(Ref ref) =>
     EventRehearsalRepository(

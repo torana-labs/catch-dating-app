@@ -20,6 +20,15 @@ describe("Finance", () => {
     expect(screen.getByText("Not registered yet, so bills carry none. Settings → Payments")).toBeTruthy();
   });
 
+  it("shows imported Meta and Google spend side by side, not editable", () => {
+    render(<FinanceScreen controller={controller()} latestMonth="2026-10" onExport={vi.fn()} onOpenBills={vi.fn()} />);
+    expect(screen.getByText("Ads · Meta")).toBeTruthy();
+    expect(screen.getByText("From Meta each morning · 4 campaigns")).toBeTruthy();
+    expect(screen.getByText("Ads · Google")).toBeTruthy();
+    expect(screen.getByText("From Google Ads each morning · 2 campaigns")).toBeTruthy();
+    expect(screen.getByText("₹60,800 of it ads")).toBeTruthy();
+  });
+
   it("enters a cost by hand in rupees", () => {
     const value = controller();
     render(<FinanceScreen controller={value} latestMonth="2026-10" onExport={vi.fn()} onOpenBills={vi.fn()} />);

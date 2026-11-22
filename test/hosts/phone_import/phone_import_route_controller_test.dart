@@ -234,6 +234,12 @@ class _Fixture {
           'nextCursor': null,
         }),
       ),
+      programGuestGroupListProvider(
+        _programId,
+      ).overrideWith((ref) async => const []),
+      programHouseholdListProvider(
+        _programId,
+      ).overrideWith((ref) async => const []),
     ],
   );
   late final lease = container.listen(

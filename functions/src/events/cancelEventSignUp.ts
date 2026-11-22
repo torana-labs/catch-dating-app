@@ -81,6 +81,7 @@ import {processLegacyCancellationRefund} from
   "../payments/legacyRefunds/processor";
 import {NativeCancellationRefundProvider} from
   "../payments/legacyRefunds/provider";
+import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
 
 interface PromotionPush {
   token: string;
@@ -537,7 +538,7 @@ export async function cancelEventSignUpHandler(
     if (seatPreparation) applyFirestoreSeatBatch(seatPreparation);
     for (const applyIdentity of applySeatIdentities) applyIdentity();
     promotedScheduleClaim?.apply();
-    tx.update(eventRef, {
+    updateEventBookingCounters(tx, eventRef, {
       bookedCount: nextBookedCount,
       waitlistedCount: nextWaitlistedCount,
       genderCounts: newGenderCounts,
