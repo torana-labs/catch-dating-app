@@ -7250,6 +7250,29 @@
       "notes": "How a wide page offers an app (CatchCtaSection's storesWide, from 840px): a QR code that opens the page's download band on the phone, where the store button for that phone is, and a text link to have the app's link sent on WhatsApp. The host start band, the homepage app band and every playbook band with store badges use it, so the action reads the same everywhere (website cleanup, 21 Nov 2026). Its words live in content/appDownload.ts."
     },
     {
+      "id": "app_link_capture",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "host_start",
+        "tools_event_page_from_link"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/AppLinkCapture.tsx",
+      "exportName": "AppLinkCapture",
+      "css": [],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "idle",
+          "invalid-number",
+          "sent",
+          "failed"
+        ]
+      },
+      "notes": "Text me the link beside the host store badges: the phone field (India by default, with the country picker) beside an outlined button, stacking on phones, and the one short consent line with the privacy policy linked. It files an app_link website lead, a host lead for analytics and the Google Ads conversion. Once sent, the thanks takes the form's place and the band's badges or QR code right below are the link; staff send it on WhatsApp from the lead alert. The host landing's start band and every playbook band whose form is an app link request use it. Its words live in content/appDownload.ts (appLinkCopy)."
+    },
+    {
       "id": "host_compare_section",
       "kind": "supporting-component",
       "routeIds": [

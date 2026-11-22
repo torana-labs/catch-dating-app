@@ -2,6 +2,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {HostPage} from "../features/host/HostPage";
+import {appLinkCopy} from "@content/appDownload";
 import {hostLandingCopy} from "@content/hostLanding";
 import {marketingCaptures} from "./marketingCaptures";
 import {retiredMarketingDestination} from "./retiredMarketingRoutes";
@@ -22,7 +23,9 @@ describe("consolidated public sitemap", () => {
   it("provides every replacement section and sends hosts to the self-serve start band", () => {
     const {container} = renderPage(<HostPage captures={marketingCaptures} />);
     for (const id of ["features", "how-it-works", "use-cases", "existing-tools", "pricing", "apply", "start"]) expect(container.querySelector(`#${id}`)).toBeTruthy();
-    expect(container.querySelector("form")).toBeNull();
+    // The retired pilot application stays gone: the page's one form is "Text me the link" in the start band.
+    expect([...container.querySelectorAll("form")].map((form) => [form.closest("#start") !== null, form.getAttribute("aria-label")]))
+      .toEqual([[true, appLinkCopy.submit]]);
     const starts = screen.getAllByRole("link", {name: hostLandingCopy.sections.start});
     expect(starts.length).toBeGreaterThan(0);
     // The page's own buttons stay on the page; the host footer's link opens the start page.

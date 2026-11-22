@@ -3,15 +3,15 @@ import type {ReactNode} from "react";
 import {playbookCopy} from "../../content/playbook/playbookCopy";
 import type {PlaybookLeadForm as PlaybookLeadFormContent} from "../../content/playbook/playbookContract";
 import {Form} from "../../shared/ui/primitives";
-import {playbookLeadConsent, playbookSendableLeadKind, type PlaybookLeadField, type PlaybookSendableLeadKind} from "./playbookLeadModel";
+import {playbookSendableLeadKind, type PlaybookLeadField, type PlaybookSendableLeadKind} from "./playbookLeadModel";
 import {usePlaybookLeadFormController} from "./usePlaybookLeadFormController";
 import type {PlaybookLeadFormProps} from "./usePlaybookPageController";
 import {phoneFieldCopy} from "@content/phoneField";
 import {activePhoneCountry} from "@content/markets";
 
-/** The one line under the button: how the reply comes (its kind's words), with the privacy policy linked at its end. */
-function ConsentLine({kind}: {kind: PlaybookSendableLeadKind}) {
-  return <CatchConsentNote href="/privacy/" linkLabel={playbookCopy.leadForm.privacy} text={playbookLeadConsent(kind).consent} />;
+/** The one line under the button: how the reply comes, with the privacy policy linked at its end. */
+function ConsentLine() {
+  return <CatchConsentNote href="/privacy/" linkLabel={playbookCopy.leadForm.privacy} text={playbookCopy.leadForm.consent} />;
 }
 
 /**
@@ -20,9 +20,7 @@ function ConsentLine({kind}: {kind: PlaybookSendableLeadKind}) {
  * number beside an outlined button, under the band's own actions. A form
  * with more fields (list your space, get a demo link) is a white card of
  * labelled fields with the number last and a filled button. Under either sit
- * the page's note and the consent line. An app link request (Text me the
- * link) is the capture row beside the band's store badges, and its thanks
- * points at them: they are the link. Once sent, the thanks takes the
+ * the page's note and the consent line. Once sent, the thanks takes the
  * form's place; after a failed send its words show and the button offers to
  * try again with the same request. A `leadIn` (the referral form's sign-in)
  * sits above the form element, not inside it, until the form is sent.
@@ -44,7 +42,7 @@ function PlaybookLeadForm({form, kind, leadIn}: {form: PlaybookLeadFormContent; 
   const footer = (
     <>
       {form.note ? <CatchText tone="secondary" variant="body-meta">{form.note}</CatchText> : null}
-      <ConsentLine kind={kind} />
+      <ConsentLine />
     </>
   );
   const body: ReactNode = card ? (

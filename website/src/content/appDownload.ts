@@ -20,3 +20,24 @@ export const appDownloadCopy = {
     whatsappMessage: `Hi ${brand.name}, please send me the ${brand.name} app link.`,
   },
 } as const;
+
+/**
+ * "Text me the link" beside the host app's store badges (AppLinkCapture): the
+ * number field and button, the one short line under them with the privacy
+ * policy linked, and the thanks that points at the badges and QR code right
+ * below it. Staff send the link on WhatsApp from the lead alert, so the
+ * thanks promises no instant message. `consentVersion` names the line's
+ * wording on every stored consent; change it whenever the line changes.
+ * Every page that shows the capture (the host landing's start band, the
+ * playbook bands whose form is an app link request) uses these words.
+ */
+export const appLinkCopy = {
+  formId: "host_app_link",
+  label: "Your WhatsApp number",
+  submit: "Text me the link",
+  consent: `On WhatsApp, from ${brand.name}.`,
+  consentVersion: "app-link-whatsapp-v1",
+  privacy: "Privacy policy",
+  retry: "Try again",
+  sent: "Here’s the link. We’ll also send it to you on WhatsApp.",
+} as const;
