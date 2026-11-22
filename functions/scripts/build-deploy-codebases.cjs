@@ -23,7 +23,7 @@ const {isBuiltin} = require("node:module");
 const {pathToFileURL} = require("node:url");
 const {parseArgs} = require("node:util");
 const esbuild = require("esbuild");
-const ts = require("typescript");
+const {functionExports, setupSource} = require("./functionExports.cjs");
 
 const functionsRoot = path.resolve(__dirname, "..");
 const repoRoot = path.resolve(functionsRoot, "..");
@@ -44,25 +44,21 @@ async function dormantFunctionNames() {
   return new Set(dormantFirebaseFunctionTargets.map((target) => target.slice("functions:".length)));
 }
 
-/** Exported Function names per top-level source area, from src/index.ts. */
-function functionExportsByArea(indexSource, dormant) {
-  const source = ts.createSourceFile("index.ts", indexSource, ts.ScriptTarget.Latest, true);
+/**
+ * Exported Function names per top-level source area, from the resolved export
+ * list (functions/scripts/functionExports.cjs). Consecutive names from one
+ * module stay one entry, as the re-export statement that named them was.
+ */
+function functionExportsByArea(functionExportList, dormant) {
   const areas = new Map();
-  for (const statement of source.statements) {
-    if (!ts.isExportDeclaration(statement) || statement.isTypeOnly) continue;
-    if (!statement.moduleSpecifier || !statement.exportClause ||
-        !ts.isNamedExports(statement.exportClause)) {
-      throw new Error("src/index.ts may only re-export named Functions from modules.");
-    }
-    const module = statement.moduleSpecifier.text;
-    if (!module.startsWith("./")) throw new Error(`Unexpected export source: ${module}`);
-    const area = module.slice(2).split("/")[0];
-    const names = statement.exportClause.elements.filter((element) => !element.isTypeOnly)
-      .map((element) => ({name: element.name.text, symbol: (element.propertyName ?? element.name).text}))
-      .filter(({name}) => !dormant.has(name));
-    if (!names.length) continue;
+  for (const {name, symbol, module} of functionExportList) {
+    if (dormant.has(name)) continue;
+    const area = module.split("/")[0];
     if (!areas.has(area)) areas.set(area, []);
-    areas.get(area).push({module: module.slice(2), names});
+    const modules = areas.get(area);
+    const last = modules.at(-1);
+    if (last?.module === module) last.names.push({name, symbol});
+    else modules.push({module, names: [{name, symbol}]});
   }
   return areas;
 }
@@ -92,25 +88,6 @@ function assignCodebases(areas, config) {
     codebases.get(codebase).push(...modules);
   }
   return new Map([...codebases].sort(([a], [b]) => a.localeCompare(b)));
-}
-
-/**
- * The statements of src/index.ts that are not exports, compiled to CommonJS:
- * the setup every Function needs before it is defined. src/index.ts stays the
- * one place global options are set (tool/firebase/function_binding_intent.mjs
- * reads them there).
- */
-function setupSource(indexSource) {
-  const source = ts.createSourceFile("index.ts", indexSource, ts.ScriptTarget.Latest, true);
-  const setup = source.statements.filter((statement) => !ts.isExportDeclaration(statement));
-  for (const statement of setup) {
-    if (ts.isImportDeclaration(statement) && statement.moduleSpecifier.text.startsWith(".")) {
-      throw new Error("src/index.ts setup may import packages only, not Functions source.");
-    }
-  }
-  const text = setup.map((statement) => statement.getFullText(source)).join("");
-  return ts.transpileModule(text, {compilerOptions: {module: ts.ModuleKind.CommonJS,
-    target: ts.ScriptTarget.ES2022, esModuleInterop: true}}).outputText;
 }
 
 /** npm package names a bundle's inputs import, from an esbuild metafile. */
@@ -298,8 +275,10 @@ async function buildFunctionCodebases({
   if (!fs.existsSync(path.join(functionsDir, "lib/index.js"))) {
     throw new Error("Build Functions first: lib/index.js is missing.");
   }
+  // src/index.ts keeps the setup (global options, Admin SDK initialization);
+  // tool/firebase/function_binding_intent.mjs reads the global options there.
   const indexSource = fs.readFileSync(path.join(functionsDir, "src/index.ts"), "utf8");
-  const areas = functionExportsByArea(indexSource, await dormantFunctionNames());
+  const areas = functionExportsByArea(functionExports({root: functionsDir}), await dormantFunctionNames());
   const setup = setupSource(indexSource);
   const codebases = assignCodebases(areas, JSON.parse(fs.readFileSync(configPath, "utf8")));
   const manifest = JSON.parse(fs.readFileSync(path.join(functionsDir, "package.json"), "utf8"));

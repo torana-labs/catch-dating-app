@@ -12,18 +12,19 @@ const {
   prunedManifestAndLock,
   setupSource,
 } = require("./build-deploy-codebases.cjs");
+const {functionExports, functionExportsFromSource} = require("./functionExports.cjs");
 
 const functionsRoot = path.resolve(__dirname, "..");
 
 test("exports group by source area and dormant Functions stay out", () => {
-  const areas = functionExportsByArea([
+  const areas = functionExportsByArea(functionExportsFromSource([
     "import * as admin from \"firebase-admin\";",
     "admin.initializeApp();",
     "export {a, b as renamed} from \"./alpha/one\";",
     "export {c} from \"./beta/two\";",
     "export type {T} from \"./alpha/types\";",
     "export {anonymizeDueProgramsSweep} from \"./programs/anonymize\";",
-  ].join("\n"), new Set(["anonymizeDueProgramsSweep"]));
+  ].join("\n")), new Set(["anonymizeDueProgramsSweep"]));
   assert.deepEqual([...areas.keys()], ["alpha", "beta"]);
   assert.deepEqual(areas.get("alpha"), [{module: "alpha/one",
     names: [{name: "a", symbol: "a"}, {name: "renamed", symbol: "b"}]}]);
@@ -67,8 +68,7 @@ test("setup is every non-export statement of index.ts, compiled", () => {
 });
 
 test("the checked-in codebase map covers today's Functions", () => {
-  const areas = functionExportsByArea(
-    fs.readFileSync(path.join(functionsRoot, "src/index.ts"), "utf8"), new Set());
+  const areas = functionExportsByArea(functionExports({root: functionsRoot}), new Set());
   const config = JSON.parse(fs.readFileSync(path.join(functionsRoot, "deploy-codebases.json"), "utf8"));
   assert.ok(assignCodebases(areas, config).size >= 2);
 });
