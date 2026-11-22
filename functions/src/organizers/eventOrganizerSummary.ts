@@ -3,6 +3,8 @@ import * as admin from "firebase-admin";
 import type {
   EventOrganizerSummary,
 } from "../shared/generated/eventOrganizerSummary";
+import {updateEventOrganizerSummary} from
+  "../domain/events/eventDocumentWrites";
 
 /**
  * The organizer summary on each event (#1340).
@@ -144,7 +146,7 @@ export async function reconcileEventOrganizerSummary(
     if (isDeepStrictEqual(eventSnap.get("organizerSummary"), summary)) {
       return "unchanged" as const;
     }
-    tx.update(eventRef, {organizerSummary: summary});
+    updateEventOrganizerSummary(tx, eventRef, summary);
     return "written" as const;
   });
 }
