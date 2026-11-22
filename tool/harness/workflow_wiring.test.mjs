@@ -15,16 +15,14 @@ import {planAffected} from "./lib/component_graph.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {extractSteps} from "./lib/workflow_steps.mjs";
 import {parse as parseYaml} from "yaml";
+import {isToolsManifestPath, loadToolsManifestFromSnapshot} from "../lib/tools_manifest.mjs";
 
 const repositorySnapshot = createRepositorySnapshot();
 const graph = repositorySnapshot.readJson(
   "tool/harness/component_graph.json",
   {required: true},
 );
-const toolsManifest = repositorySnapshot.readJson(
-  "tool/tools_manifest.json",
-  {required: true},
-);
+const toolsManifest = loadToolsManifestFromSnapshot(repositorySnapshot);
 const workflow = (name) => repositorySnapshot.readText(
   `.github/workflows/${name}`,
   {required: true},
@@ -174,7 +172,8 @@ const livePolicyAuthorityPaths = [
   "docs/agent_operating_model.md",
   "docs/app_architecture.md",
   "tool/README.md",
-  "tool/tools_manifest.json",
+  // The tools manifest's text, wherever tool/lib/tools_manifest.mjs keeps it.
+  ...repositorySnapshot.listFiles({prefix: "tool/"}).filter(isToolsManifestPath),
 ];
 const liveReactDependencyGraphAuthorityPaths = [
   ...livePolicyAuthorityPaths,

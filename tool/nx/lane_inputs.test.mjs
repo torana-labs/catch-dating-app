@@ -9,6 +9,7 @@ import test from "node:test";
 import {fileURLToPath} from "node:url";
 
 import {compare, targets} from "./shadow_plan.mjs";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(workspaceRoot, file), "utf8"));
@@ -20,7 +21,7 @@ const laneInputs = (name) => project(name).targets.lane.inputs;
 // operations scanner reads, as the planner's admin-pending-input profile does.
 // A feature-controllers glob ran it on every Admin controller PR (421f9dc2).
 test("only the pending-operations scanner's Admin inputs select the Tools lane", () => {
-  const scanner = readJson("tool/tools_manifest.json").tools.find((tool) => tool.id === "web:admin-pending-operations");
+  const scanner = loadToolsManifest().tools.find((tool) => tool.id === "web:admin-pending-operations");
   const adminInputs = laneInputs("lane-tools").filter((input) => input.startsWith("{workspaceRoot}/admin/"));
   assert.deepEqual(adminInputs.map((input) => input.replace("{workspaceRoot}/", "")).sort(),
     [...scanner.impactPaths].filter((file) => file.startsWith("admin/")).sort());

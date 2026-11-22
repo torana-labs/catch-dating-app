@@ -16,6 +16,7 @@ import {collectLocalReadonlyCheckIds, planAffectedToolChecks, supportedToolSetup
   from "../lib/tool_impact.mjs";
 import {planPreCommitActions} from "../git/pre_commit_generated_artifacts.mjs";
 import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
@@ -27,9 +28,7 @@ const everyTarget = (mode, paths) => [...graph.targets].sort().filter((target) =
 const graphSchema = JSON.parse(
   fs.readFileSync(new URL("./component_graph.schema.json", import.meta.url), "utf8"),
 );
-const toolsManifest = JSON.parse(
-  fs.readFileSync(new URL("../tools_manifest.json", import.meta.url), "utf8"),
-);
+const toolsManifest = loadToolsManifest();
 
 function plan(path, mode = "pr", sourceGraph = graph) {
   return planAffected({changedPaths: [path], graph: sourceGraph, mode});
@@ -564,6 +563,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/lib/tool_impact.mjs",
       "/tool/lib/tool_manifest_rules.mjs",
       "/tool/lib/tool_platform.mjs",
+      "/tool/lib/tools_manifest.mjs",
       "/tool/run.mjs",
       "/tool/tools_manifest.json",
       "/.github/actions/load-toolchain/action.yml",

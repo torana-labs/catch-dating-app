@@ -1,4 +1,5 @@
 import {matchesGlob, planAffected} from "../harness/lib/component_graph.mjs";
+import {isToolsManifestPath} from "./tools_manifest.mjs";
 
 export const supportedToolSetupRequirements = Object.freeze([
   "node",
@@ -60,7 +61,7 @@ export function planAffectedToolChecks({
     });
     // Terminal classifications override broad Harness globs. Use the resolved
     // graph ownership instead of independently classifying the same path again.
-    const narrowedManifest = changedPath === toolsManifestPath && manifestOwners !== null;
+    const narrowedManifest = isToolsManifestPath(changedPath) && manifestOwners !== null;
     if ((pathPlan.selectedComponents.includes("repo.harness") && !narrowedManifest) ||
         additionalFullPaths.some((pattern) => matchesGlob(changedPath, pattern)) ||
         (!(importOwners?.get(changedPath)?.size > 0) &&
@@ -118,7 +119,7 @@ export function planAffectedToolChecks({
       (outsideLane && (tool.rules ?? []).some((rule) =>
         (rule.appliesTo ?? []).some((pattern) => matchesGlob(changedPath, pattern))))
     ).map((tool) => tool.id));
-    if (changedPath === toolsManifestPath && manifestOwners !== null) {
+    if (isToolsManifestPath(changedPath) && manifestOwners !== null) {
       for (const id of manifestOwners) owners.add(id);
     }
     // A tool owns every file its checks reach through static imports.
@@ -201,7 +202,6 @@ export function planAffectedToolChecks({
   };
 }
 
-const toolsManifestPath = "tool/tools_manifest.json";
 // Admin and website changes run their own React lint and build lanes.
 const reactLaneScannerRoots = ["admin/", "website/"];
 

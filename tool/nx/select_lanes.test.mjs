@@ -12,11 +12,12 @@ import {planAffectedToolChecks, toolsOwnDesignChecks, toolsOwnUiLintSmoke} from 
 import {comparedLanes} from "./shadow_plan.mjs";
 import {appRolesOf, applyLanes, chooseLanes, everyLane, mainBuildLanes, nativeBuildInput, nativeBuildLanes, nxChooses,
   nxSelectsAlone, plannerShadow, selectAlone, unionLanes} from "./select_lanes.mjs";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(repoRoot, file), "utf8"));
 const componentGraph = readJson("tool/harness/component_graph.json");
-const manifest = readJson("tool/tools_manifest.json");
+const manifest = loadToolsManifest();
 
 const plan = {mode: "merge_group", full: false,
   operations: {ciTargets: ["flutter", "flutter_build_ios", "tools"],

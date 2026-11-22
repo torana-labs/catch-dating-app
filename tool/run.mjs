@@ -4,6 +4,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {repoRoot} from "./lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
+import {loadToolsManifestFromSnapshot, toolsManifestAt} from "./lib/tools_manifest.mjs";
 import {changedPathsSince} from "./harness/lib/git_changes.mjs";
 import {
   toolSupportsPlatform,
@@ -29,7 +30,6 @@ import {
   validateRemoteOpsEntrypoints,
 } from "./lib/tool_manifest_rules.mjs";
 
-const manifestPath = "tool/tools_manifest.json";
 const componentGraphPath = "tool/harness/component_graph.json";
 const remoteOpsManifestPath = "tool/remote_ops_manifest.json";
 let capturedRepositorySnapshot = null;
@@ -54,7 +54,7 @@ if (command === "help" || command === "--help" || command === "-h") {
 }
 
 function loadManifest() {
-  const manifest = repositorySnapshot().readJson(manifestPath, {required: true});
+  const manifest = loadToolsManifestFromSnapshot(repositorySnapshot());
   if (!Array.isArray(manifest.tools)) {
     throw new Error("tools_manifest.json must contain a tools array.");
   }
@@ -555,9 +555,7 @@ function validateManifest(manifest, componentGraph) {
 }
 
 function manifestAt(ref) {
-  const result = spawnSync("git", ["show", `${ref}:tool/tools_manifest.json`],
-    {cwd: repoRoot, encoding: "utf8", maxBuffer: 16 * 1024 * 1024});
-  return result.status === 0 ? JSON.parse(result.stdout) : null;
+  return toolsManifestAt(ref, {cwd: repoRoot});
 }
 
 function loadComponentGraph() {

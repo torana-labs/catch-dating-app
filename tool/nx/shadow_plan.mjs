@@ -12,7 +12,8 @@ import {fileURLToPath} from "node:url";
 import {planAffected, queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
 import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
 import {matchesGlobPath} from "../lib/path_glob.mjs";
-import {describeChange, manifestChange, manifestFile, manifestPlannerLanes} from "./manifest_diff.mjs";
+import {describeChange, manifestChange, manifestPlannerLanes} from "./manifest_diff.mjs";
+import {isToolsManifestPath, toolsManifestTextAt, touchesToolsManifest} from "../lib/tools_manifest.mjs";
 import {callerLanes, isCiConfiguration, isClassified, isSelector, manifestLanes, notCalledByCi, workflowCallers}
   from "./workflow_callers.mjs";
 
@@ -82,7 +83,8 @@ export const workflowLanes = (changedFiles, graph, manifestChange) => changedFil
   : callerLanes(changedFiles, {graph: graph ?? callerGraph(), allLanes: comparedLanes, manifestChange});
 
 /** The manifest diff between two commits, or null (every lane) when either version cannot be read. */
-export function readManifestChange(base, head, show = (rev) => run("git", ["show", `${rev}:${manifestFile}`])) {
+export function readManifestChange(base, head,
+  show = (rev) => toolsManifestTextAt(rev, {show: (file) => run("git", ["show", `${rev}:${file}`])})) {
   try {
     return manifestChange(show(base), show(head));
   } catch {
@@ -108,7 +110,7 @@ export function plannerManifestLanes({mode, changedFiles, change, graph = caller
  */
 export function narrowedPlanner({plannerLanes, changedFiles, mode,
   componentGraph = JSON.parse(fs.readFileSync(new URL("../harness/component_graph.json", import.meta.url), "utf8"))}) {
-  const others = changedFiles.filter((file) => file !== manifestFile);
+  const others = changedFiles.filter((file) => !isToolsManifestPath(file));
   const plan = others.length > 0 ? planAffected({changedPaths: others, graph: componentGraph, mode}) : null;
   const sources = [...(plan?.operationSources?.ciTargets ?? []).filter((source) => plannerLanes.includes(source.value))];
   for (const lane of plannerLanes) {
@@ -428,11 +430,11 @@ function main(argv) {
   const plan = JSON.parse(run(process.execPath, ["tool/harness.mjs", "plan", "--base", args.base, "--head", args.head,
     "--mode", args.mode, "--json"]));
   const changedFiles = run("git", ["diff", "--name-only", args.base, args.head]).trim().split("\n");
-  const manifest = changedFiles.includes(manifestFile) ? readManifestChange(args.base, args.head) : null;
+  const manifest = touchesToolsManifest(changedFiles) ? readManifestChange(args.base, args.head) : null;
   // What the manifest diff rule selects on the planner side. Pull requests and
   // the queue run that selection (select_lanes.mjs), so compare with it; on
   // main it is report-only until the cut-over: main still runs every lane.
-  const plannerLanes = changedFiles.includes(manifestFile)
+  const plannerLanes = touchesToolsManifest(changedFiles)
     ? plannerManifestLanes({mode: args.mode, changedFiles, change: manifest}) : null;
   const narrowed = plannerLanes && args.mode !== "main"
     ? narrowedPlanner({plannerLanes, changedFiles, mode: args.mode}) : null;
@@ -440,7 +442,7 @@ function main(argv) {
     plannerFull: !narrowed && plan.full === true, ...nxAffected(args), mode: args.mode, changedFiles,
     plannerSources: narrowed?.sources ?? plan.operationSources?.ciTargets ?? [], manifestChange: manifest});
   const report = {base: args.base, head: args.head, mode: args.mode, ...result};
-  if (changedFiles.includes(manifestFile)) {
+  if (touchesToolsManifest(changedFiles)) {
     report.manifestDiff = {reason: describeChange(manifest), all: !manifest || manifest.all,
       ids: manifest?.ids ?? [], removed: manifest?.removed ?? [],
       plannerWouldSelect: plannerLanes ?? [...comparedLanes], reportOnly: args.mode === "main"};

@@ -5,13 +5,14 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {planAffected} from "../harness/lib/component_graph.mjs";
-import {canonical, manifestChange, manifestFile} from "./manifest_diff.mjs";
+import {canonical, manifestChange} from "./manifest_diff.mjs";
 import {callerGraph, compare, comparedLanes, plannerManifestLanes} from "./shadow_plan.mjs";
 import {mainShadowReport} from "./select_lanes.mjs";
 import {manifestLanes, workflowCallers} from "./workflow_callers.mjs";
+import {toolsManifestPath as manifestFile, toolsManifestTextFrom} from "../lib/tools_manifest.mjs";
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
-const baseText = fs.readFileSync(path.join(repoRoot, manifestFile), "utf8");
+const baseText = toolsManifestTextFrom({read: (file) => fs.readFileSync(path.join(repoRoot, file), "utf8")});
 const graph = callerGraph();
 const allLanes = comparedLanes;
 const edit = (mutate) => {

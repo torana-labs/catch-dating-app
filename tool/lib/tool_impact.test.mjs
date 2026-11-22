@@ -16,13 +16,12 @@ import {
   validateToolCheckSafety,
   validateToolCiRequirements,
 } from "./tool_impact.mjs";
+import {loadToolsManifest} from "./tools_manifest.mjs";
 
 const productionGraph = JSON.parse(
   fs.readFileSync(new URL("../harness/component_graph.json", import.meta.url), "utf8"),
 );
-const productionManifest = JSON.parse(
-  fs.readFileSync(new URL("../tools_manifest.json", import.meta.url), "utf8"),
-);
+const productionManifest = loadToolsManifest();
 
 function componentGraph() {
   return productionGraph;

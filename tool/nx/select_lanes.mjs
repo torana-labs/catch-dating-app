@@ -17,7 +17,8 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
-import {describeChange, manifestFile} from "./manifest_diff.mjs";
+import {describeChange} from "./manifest_diff.mjs";
+import {touchesToolsManifest} from "../lib/tools_manifest.mjs";
 import {callerGraph, compare, comparedLanes, nativeBuildInput, narrowedPlanner, nxAffected, plannerManifestLanes,
   readManifestChange, workflowLanes} from "./shadow_plan.mjs";
 
@@ -57,7 +58,7 @@ function run(command, args) {
 /** The lanes Nx selects between two commits. */
 export function nxLanes({base, head, mode, controlPlane = true, changedFiles, change}) {
   const files = changedFiles ?? (controlPlane ? run("git", ["diff", "--name-only", base, head]).trim().split("\n") : []);
-  const manifest = change !== undefined ? change : files.includes(manifestFile) ? readManifestChange(base, head) : null;
+  const manifest = change !== undefined ? change : touchesToolsManifest(files) ? readManifestChange(base, head) : null;
   return compare({plannerLanes: [], ...nxAffected({base, head}), mode, changedFiles: files, manifestChange: manifest}).nxLanes;
 }
 
@@ -190,9 +191,9 @@ async function main(argv) {
   } catch (error) {
     historyError = `the history could not be read (${error.message.split("\n")[0]})`;
   }
-  const change = changedFiles?.includes(manifestFile) ? readManifestChange(args.base, args.head) : null;
+  const change = (changedFiles && touchesToolsManifest(changedFiles)) ? readManifestChange(args.base, args.head) : null;
   if (!nxChooses(plan, {queueVerified: Boolean(args["queue-verified"])})) {
-    if (plan.mode === "main" && changedFiles?.includes(manifestFile)) {
+    if (plan.mode === "main" && (changedFiles && touchesToolsManifest(changedFiles))) {
       reportMainShadow({plan, changedFiles, change});
     }
     return;
@@ -201,7 +202,7 @@ async function main(argv) {
   // The planner's lanes under the manifest diff rule (#1818), with provenance.
   const manifestPlanner = changedFiles
     ? plannerManifestLanes({mode: plan.mode, changedFiles, change, componentGraph: readComponentGraph()}) : null;
-  if (changedFiles?.includes(manifestFile)) {
+  if ((changedFiles && touchesToolsManifest(changedFiles))) {
     console.log(`Manifest diff: ${describeChange(change)}; planner lanes ${manifestPlanner
       ? manifestPlanner.join(", ") : "unchanged (every lane)"}.`);
   }
