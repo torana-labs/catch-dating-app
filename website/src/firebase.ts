@@ -229,3 +229,16 @@ export type {
 export {
   invokeSalesDemoCallable,
 } from "./services/firebase/salesDemo";
+export {
+  getWalkthroughSlots,
+  bookWalkthrough,
+  manageWalkthroughBooking,
+  readWalkthroughCaller,
+} from "./services/firebase/walkthroughs";
+export type {
+  BookWalkthroughCallablePayload,
+  BookWalkthroughCallableResponse,
+  GetWalkthroughSlotsCallableResponse,
+  ManageWalkthroughBookingCallablePayload,
+  ManageWalkthroughBookingCallableResponse,
+} from "./services/firebase/walkthroughs";
