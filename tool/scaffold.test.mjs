@@ -75,6 +75,17 @@ const dryRuns = [
     ],
   },
   {
+    args: ["screen", "--app", "host", "--name", "audience_probe", "--destination", "people/audience_probe"],
+    files: [
+      "apps/host/lib/people/audience_probe/audience_probe_screen.dart",
+      "apps/host/lib/people/audience_probe/audience_probe_body.dart",
+      "apps/host/lib/people/audience_probe/audience_probe_view_model.dart",
+      "apps/host/lib/people/audience_probe/audience_probe_view_model.g.dart",
+      "apps/host/lib/people/audience_probe/widgets/.gitkeep",
+      "apps/host/test/people/audience_probe/audience_probe_body_test.dart",
+    ],
+  },
+  {
     args: ["screen", "--page", "page_probe"],
     files: [
       "lib/pages/page_probe/page_probe_screen.dart",
@@ -124,8 +135,15 @@ describe("dry runs", () => {
     assert.match(stdout, /part 'page_probe_view_model\.g\.dart';/u);
   });
 
+  test("a nested destination imports its files by their package path", () => {
+    const {stdout} = scaffoldIn(repoRoot, "screen", "--app", "host", "--name", "audience_probe",
+      "--destination", "people/audience_probe", "--dry-run");
+    assert.match(stdout, /import 'package:catch_host_app\/people\/audience_probe\/audience_probe_body\.dart';/u);
+  });
+
   test("a screen prints the ids its route and capture coverage need", () => {
     const host = scaffoldIn(repoRoot, "screen", "--app", "host", "--name", "today_probe", "--dry-run").stdout;
+    assert.match(host, /the router that mounts it \(lib\/routing\/go_router\.dart\)/u);
     assert.match(host, /"id": "hostTodayProbeScreen"/u);
     assert.match(host, /"routeId": "hostTodayProbeScreen"/u);
     const consumer = scaffoldIn(repoRoot, "screen", "--page", "page_probe", "--dry-run").stdout;
@@ -157,6 +175,9 @@ describe("arguments and names", () => {
     [["screen", "--name", "today"], 64, /--app requires a value/u],
     [["screen", "--app", "admin", "--name", "today"], 64, /--app must be host or consumer/u],
     [["screen", "--page", "today", "--app", "host"], 64, /--page takes the place of/u],
+    [["screen", "--app", "host", "--name", "x", "--destination", "people/"], 64, /--destination must be lower_snake_case folders/u],
+    [["screen", "--app", "host", "--name", "x", "--destination", "../lib"], 64, /--destination must be lower_snake_case folders/u],
+    [["screen", "--app", "host", "--name", "x", "--destination", "People/audience"], 64, /--destination must be lower_snake_case folders/u],
     [["nope"], 64, /Unknown command: nope/u],
     [[], 64, /A command is required/u],
   ];
@@ -247,6 +268,8 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     // Long enough that the formatter must move line breaks in every file.
     ["screen", "--app", "host", "--name", "event_setup_review_probe", "--destination", "discover_probe"],
     ["screen", "--app", "consumer", "--name", "wallet_probe"],
+    // A nested destination, as the Phase 4 moves write them.
+    ["screen", "--app", "host", "--name", "audience_probe", "--destination", "people/audience_probe"],
     ["screen", "--page", "page_probe"],
     ["component", "--name", "VenueProbeRow", "--tier", "T2"],
     ["component", "--name", "ProbeBadge", "--tier", "T4"],
@@ -345,6 +368,7 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     const probes = [
       "apps/host/lib/today_probe/widgets/probe_body.dart",
       "apps/consumer/lib/wallet_probe/widgets/probe_body.dart",
+      "apps/host/lib/people/audience_probe/widgets/probe_body.dart",
       "packages/contexts/zebras/lib/src/parts/probe_body.dart",
       "lib/pages/page_probe/widgets/probe_body.dart",
     ];

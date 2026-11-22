@@ -15,6 +15,7 @@ import {
   parseHostDocumentationArgs,
   readDocumentationComparison,
   HostFeatureResponsibilityError,
+  hostFeatureTargetRoots,
   parseDartRoutes,
   renderHostFeatureReadme,
   validateAndResolveHostFeatureResponsibilities,
@@ -129,6 +130,52 @@ test("rejects route ownership, action-owner, and symbol drift", () => {
       error.errors.some((message) => message.includes("missing_owner")) &&
       error.errors.some((message) => message.includes("symbol")),
   );
+});
+
+test("a destination's folder in the host app package is a target root too", () => {
+  const input = fixture();
+  const exists = input.pathExists;
+  const moved = new Set();
+  for (const [index, feature] of input.contract.features.entries()) {
+    feature.targetRoot = hostFeatureTargetRoots(feature.id)[1];
+    if (index < 2) {
+      feature.currentRoots = [feature.targetRoot];
+      moved.add(feature.targetRoot);
+    }
+  }
+  input.pathExists = (repoPath) => moved.has(repoPath) || exists(repoPath);
+  const resolved = validateAndResolveHostFeatureResponsibilities(input);
+  assert.deepEqual(resolved.map((feature) => feature.targetRoot), [
+    "apps/host/lib/today",
+    "apps/host/lib/events",
+    "apps/host/lib/people/audience",
+    "apps/host/lib/people/inbox",
+    "apps/host/lib/organizer",
+  ]);
+  assert.match(
+    renderHostFeatureReadme({contract: input.contract, feature: resolved[2]}),
+    /Target root: `apps\/host\/lib\/people\/audience`/u,
+  );
+
+  input.contract.features[2].targetRoot = "apps/host/lib/audience";
+  assert.throws(
+    () => validateAndResolveHostFeatureResponsibilities(input),
+    (error) => error.errors.some((message) =>
+      message.includes("targetRoot must be lib/hosts/audience or apps/host/lib/people/audience")),
+  );
+});
+
+test("the schema accepts exactly the target roots the generator does", () => {
+  const schema = JSON.parse(fs.readFileSync(
+    new URL("../../design/features/host_feature_responsibilities.schema.json", import.meta.url), "utf8"));
+  const feature = schema.$defs.feature.properties;
+  const pattern = new RegExp(feature.targetRoot.pattern, "u");
+  for (const id of feature.id.enum) {
+    for (const root of hostFeatureTargetRoots(id)) assert.match(root, pattern);
+  }
+  for (const root of ["apps/host/lib/audience", "apps/consumer/lib/today", "lib/hosts/people", "apps/host/lib/today/x"]) {
+    assert.doesNotMatch(root, pattern);
+  }
 });
 
 test("detects stale generated responsibility docs", () => {

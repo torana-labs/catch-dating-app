@@ -405,7 +405,8 @@ may read repositories and platform plugins.
 A legacy import that has to break rules 1 or 2 takes a reasoned `// ignore:`
 next to the import; see [Enforcement And Overrides](#enforcement-and-overrides).
 Files under `lib/contexts/`, `lib/pages/`, `packages/kernel/lib/` and `packages/platform/lib/`
-take no exceptions, and rules 3 to 5 take none anywhere.
+take no exceptions, except a [carried screen](#carried-screens), and rules 3 to 5
+take none anywhere.
 
 ### Placing legacy folders
 
@@ -485,10 +486,11 @@ data because two tabs show it. Regrouping tabs, such as the proposed merge of
 Audience and Inbox into People, moves app folders only.
 
 `design/features/host_feature_responsibilities.json` keeps generating the
-product guide and route-owner `README.md` for each current host root until
-that destination's screens move. It does not make a destination a context.
-Edit the machine-readable source and regenerate; do not hand-maintain the
-summaries.
+product guide and route-owner `README.md` for each host destination. Its
+`targetRoot` is the legacy `lib/hosts/<id>` until the destination moves, then
+`apps/host/lib/<id>`, with Audience and Inbox under `apps/host/lib/people/`. It
+does not make a destination a context. Edit the machine-readable source and
+regenerate; do not hand-maintain the summaries.
 
 ### Migration by phase
 
@@ -504,7 +506,9 @@ The `catch_arch_*` lints place each file by layer rather than matching
 the clock rule,
 `actions/` the controller exemptions, `parts/` the provider-free rule, and
 `lib/pages/` and `apps/<app>/lib/<destination>/` the screen rules. Findings
-under these roots take no exceptions, so moved code arrives clean.
+under these roots take no exceptions, so moved code arrives clean; the one
+exception is a [carried screen](#carried-screens), which a Phase 4 move brings
+in under the rules of the legacy path it left.
 
 The app packages include the root `analysis_options.yaml` and stay in the root
 analysis, so the Catch UI and Riverpod plugins reach them from the root analysis
@@ -539,35 +543,103 @@ PRs:
 
 The baseline is empty when this phase ends.
 
-#### Phase 4: move screens when they are redrawn
+#### Phase 4: move every legacy screen into its app
 
-Each redrawn screen is written in `apps/<app>/lib/<destination>/`, or
-`lib/pages/` when both apps show it, and the old screen is deleted in the same
-PR (Migration Protocol v2). Destinations are disjoint folders, so these PRs can
-run in parallel. Riverpod code generation already runs inside both app packages:
-`dart run build_runner build` from `apps/<app>`, using that package's `build.yaml`.
-The first screen PR proves tests inside an app package with one host destination;
-if that proves too costly, screens go to `lib/apps/<app>/` instead, placed as the
-app layer in the map.
+Issue #2373 holds the plan and its PRs; this section holds the contract. The
+owner asked on 23 November 2026 to finish the move now rather than one redraw at
+a time, so every legacy screen moves as it is, with no behavior change:
+
+- **Where a file goes.** A file only the Host app reaches goes to
+  `apps/host/lib/<destination>/`; one only the consumer app reaches goes to
+  `apps/consumer/lib/<destination>/`; one both reach, or one a shared page
+  (event, organizer, chat, sign-in, start, the app frame) reaches, goes to
+  `lib/pages/<page>/`. A mutation controller or query provider that more than
+  one of those uses, and whose imports keep context order, goes to
+  `lib/contexts/<context>/actions/` or `data/`. A destination may nest, such as
+  `apps/host/lib/people/audience/`. Nothing moves mechanically into
+  `lib/pages/startup/` or a context's `parts/`, which Widgetbook reads as its
+  corpus.
+- **Why app packages.** Screens go in the app packages, not `lib/apps/`: the
+  package boundary makes the compiler hold that `lib/` never imports a screen
+  and that the consumer app never mounts a Host screen, during `flutter build`
+  as well as in the analyzer. Riverpod and Freezed code generation run inside
+  each app package (`dart run build_runner build` from `apps/<app>`).
+- **Routers.** The two routers leave `lib/`: `apps/host/lib/routing/` holds the
+  Host route graph and `apps/consumer/lib/routing/` the consumer one, each with
+  its shell; what both apps draw around them (the app root, bootstraps, router
+  refresh and redirect, shell chrome) goes to `lib/pages/frame/`, and
+  `app_deep_links.dart` to `packages/platform/lib/routing/`. The role-selected
+  `goRouterProvider` goes, so `lib/` cannot build either router. Each router
+  declares its own `GoRoute`s for the pages both apps mount.
+  `tool/ui_capture/check_route_inventory.mjs` reads every file in its
+  `canonicalRouterFiles`, each as its own graph, and
+  `test/routing/router_topology_test.dart` holds both routers' routes against
+  committed snapshots, which the split must leave unchanged.
+- **The codemod.** `tool/architecture/move_screens.mjs` makes every move from
+  the `moveTo` and `group` fields of the map's legacy entries. A library moves
+  with its parts and generated parts, tests follow the files they import into
+  the app package, path mentions outside Dart are rewritten, generated outputs
+  are regenerated rather than edited, and files that move from code not drawn
+  to the new-root rules are [carried](#carried-screens). Each move appends to
+  `tool/architecture/screen_move_log.json`, so `--verify` and `--imports-only`
+  work after a squash merge. A move PR's diff is renames plus directive and
+  path lines; a conflict is resolved by rerunning the codemod on the latest
+  main, never by hand.
+- **Order.** Infrastructure first (the codemod; lint and tool readiness; app
+  test shards and coverage; app-package dependencies; shared test support in
+  `packages/catch_test_support`; captures split per app), then the actions and
+  data sweep per context, the router split (hand-written, inside `lib/routing`,
+  then moved), the shared pages, and the Host and consumer waves, which run in
+  parallel within a wave.
+- **Host journeys.** Host integration journeys run from an `apps/host/macos`
+  runner instead of through the consumer app's `integration_test/`.
 
 #### Phase 5: delete empty legacy folders
 
 Delete a legacy folder and its map entries once it is empty. The rule sunsets
-when the legacy list is empty.
+when the legacy list is empty, and `lib/` then holds only `contexts/`, `pages/`
+and its README. The carried list sunsets on its own, when redraws empty it.
 
 ### Screen state files
 
-Files under `lib/**/presentation/**` ending in `_state.dart` are provider-free
-display adapters by naming convention. They may depend on domain/core/value
-types and `CatchAsyncState`, but they must not import Riverpod, declare
-providers, or call `ref.watch/read/listen`; provider-owned composition belongs
-in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
+Files ending in `_state.dart` under `lib/**/presentation/**`, `apps/*/lib/**`
+and `lib/pages/**` are provider-free display adapters by naming convention
+(`catch_arch_state_file_provider_coupling`; under `apps/*/lib` and `lib/pages`,
+`catch_arch_provider_free_boundary` holds them too). They may depend on
+domain/core/value types and `CatchAsyncState`, but they must not import
+Riverpod, declare providers, or call `ref.watch/read/listen`; provider-owned
+composition belongs in a neighboring `_view_model.dart`, `_controller.dart`, or
+route screen. A [carried](#carried-screens) `_state.dart` keeps the rule of the
+path it moved from.
 When a route edge translates Riverpod `AsyncValue` into `CatchAsyncState`, it
 must use `catchAsyncStateFromAsyncValue` from
 `packages/platform/lib/riverpod_ui/catch_async_value_adapter.dart`. That adapter preserves
 the exhaustive presentation phase: initial loading, retrying, data,
 refreshing data, stale data with an error, or terminal error. A loading retry
 without credible data always renders loading, never its previous error.
+
+### Carried screens
+
+`tool/architecture/carried_screens.json` lists `{path, from}` for files under
+`apps/*/lib` and `lib/pages` that keep the rules of a legacy path until their
+redraw. The Phase 4 codemod adds an entry for each file it moves whose old path
+is not under a new root, so a move changes no finding: the Catch lints evaluate
+the file as its `from` path. `placeSource` places it there, so its layer rules
+and reasoned `// ignore:`s stand; the screen rules read their folder-shaped
+flags (feature presentation, presentation, the UI-system scan) from it; and
+zero drawing, the new-root debt rule and the path-made provider-free promise
+stay off. Placement in the context map and the Firestore boundary still read
+the real path, and the codemod's closure checks hold the imports.
+
+`catch_arch_stale_carry` runs the screen and architecture rules again in shadow,
+as if the library were not carried, and reports each carried unit of a library
+that would then be clean. The codemod drops every entry it reports, and an
+entry cannot be ignored, so the list only shrinks between moves. A library and
+its parts share one verdict, because the screen rules read the library's path.
+`tool/design/check_library_shims.mjs` skips carried files and fails when one is
+gone. The two screens that predate D24 (`splash_screen.dart`,
+`celebration_screen.dart`) are carried as their own path until their P6
+redraw; no other entry may carry itself.
 
 ### Event Dress Rehearsal Boundary
 
@@ -798,6 +870,10 @@ provider exceptions, so moving a file moves its reviews:
 ```dart
 // provider-graph: cross-feature-presentation:lookupProvider->otherProvider planned CAT156 -- why this edge still exists
 ```
+
+A provider under `apps/*/lib` or `lib/pages` raises no cross-feature-presentation
+candidate: composing several features is a screen's job, so a moved screen
+brings no new review with it. A move removes the reviews this makes stale.
 
 The check rejects dangling or duplicate provider nodes,
 unresolved internal references, reactive cycles, unreviewed candidates, and
@@ -3020,7 +3096,8 @@ concept under different names.
 
 Ratified 2026-11-02 (blueprint D24 and D25). This section binds every file under
 `apps/host/lib/`, `apps/consumer/lib/` and `lib/pages/` from the first redesigned
-screen, with no baseline and no exceptions. Legacy `presentation/` folders follow
+screen, with no baseline and no exceptions but the
+[carried screens](#carried-screens) a Phase 4 move brings in until their redraw. Legacy `presentation/` folders follow
 the rest of this document until they are redrawn. "PR 1.4" and the like use the
 numbering of the
 [redesign programme plan](https://github.com/torana-labs/catch-knowledge/blob/main/plans/redesign-implementation-programme.md).
@@ -3094,7 +3171,8 @@ counts the classes in a file.
 These hold from PR 1.4, with seeded probes in `tool/check_catch_ui_lints.sh`, one
 of them a real file under `apps/host/lib`. `newRootPath` in
 `packages/catch_ui_lints/lib/src/migration_scope.dart` names the roots, and every
-screen rule runs there whatever the folder is called. `catch_no_raw_surface_shell`
+screen rule runs there whatever the folder is called, except in a
+[carried screen](#carried-screens). `catch_no_raw_surface_shell`
 also rejects `Theme.of` and a raw `Icon` here; `catch_text_requires_style` any raw
 `Text`, `RichText` or `SelectableText`; `catch_no_raw_ui_spacing` any number in
 `SizedBox` or `EdgeInsets`, and a non-zero one in a spacing argument of any widget;
@@ -3124,9 +3202,9 @@ a progressive-setup command (create, basics update, details, preferences,
 publication) through the setup controllers, which follow their listeners.
 The draft poster and the plan step row live in the events `parts/`. The
 folders move into `apps/host` unchanged with the router. Two
-files under `lib/pages` predate D24 and are listed shrink-only in `migration_scope.dart`
-until their P6 redraw (`splash_screen.dart`, `celebration_screen.dart`); the list
-cannot grow, and `apps/*/lib` stays at zero with no list.
+files under `lib/pages` predate D24 and are carried until their P6 redraw
+(`splash_screen.dart`, `celebration_screen.dart`); see
+[Carried screens](#carried-screens).
 
 #### Phase library shims reach zero
 
@@ -4080,7 +4158,11 @@ the resolver rather than reproduce suffix or role formulas.
 
 ## Routing And Navigation
 
-Routing remains centralized in `lib/routing/go_router.dart`.
+Routing remains centralized in `lib/routing/go_router.dart` until the Phase 4
+split moves each app's router into its package. The route inventory reads the
+files `canonicalRouterFiles` in `tool/ui_capture/check_route_inventory.mjs`
+lists, and `test/routing/router_topology_test.dart` snapshots both routers'
+routes, so a route change is always a reviewed snapshot change.
 
 Rules:
 

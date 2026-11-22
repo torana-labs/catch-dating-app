@@ -40,6 +40,10 @@ abstract final class ArchitectureCodes {
   static const firestoreOutsideData = 'catch_arch_firestore_outside_data';
   static const invalidIgnore = 'catch_arch_invalid_ignore';
 
+  /// Reported by `CatchStaleCarryRule`, not by `CatchArchitectureRules`, so it
+  /// is a hard gate without being one of [all].
+  static const staleCarry = 'catch_arch_stale_carry';
+
   static const all = <String>[
     domainFrameworkImport,
     dataDomainPresentationImport,
@@ -78,6 +82,7 @@ abstract final class ArchitectureCodes {
     manualProviderDeclaration,
     firestoreOutsideData,
     invalidIgnore,
+    staleCarry,
   };
 
   /// Reported as errors rather than warnings: the owner's layer rules.
@@ -184,7 +189,18 @@ String? architectureRelativePath(String absolutePath) {
 // packages/platform/lib/, lib/pages/<page>/ and apps/<app>/lib/<destination>/ (held to
 // screen rules). packages/kernel/lib/ is its own layer: its pubspec holds its
 // imports, and the clock rule, which no dependency can hold, still reads it.
-({String root, String owner, String layer})? placeSource(String relativePath) {
+// A carried file (migration_scope.dart, carriedFrom) is placed as the legacy
+// path it moved from, so it keeps that path's rules and reasoned exceptions.
+({String root, String owner, String layer})? placeSource(
+  String relativePath, {
+  String? carriedFrom,
+}) {
+  if (carriedFrom != null) {
+    final from = placeSource(carriedFrom);
+    return from == null
+        ? null
+        : (root: 'legacy', owner: from.owner, layer: from.layer);
+  }
   var match = RegExp(
     r'^lib/contexts/([^/]+)/(domain|data|actions|parts)/.+\.dart$',
   ).firstMatch(relativePath);
@@ -220,11 +236,11 @@ String? architectureRelativePath(String absolutePath) {
   return null;
 }
 
-bool _isPresentationLayer(String relativePath) => const {
-  'presentation',
-  'actions',
-  'parts',
-}.contains(placeSource(relativePath)?.layer);
+bool _isPresentationLayer(String relativePath) =>
+    _isPresentation(placeSource(relativePath)?.layer);
+
+bool _isPresentation(String? layer) =>
+    const {'presentation', 'actions', 'parts'}.contains(layer);
 
 bool isFeatureRootBarrel(String relativePath) {
   final match = RegExp(r'^lib/([^/]+)/([^/]+)\.dart$').firstMatch(relativePath);
@@ -288,11 +304,13 @@ Iterable<Token> _codeTokens(CompilationUnit unit) sync* {
 bool _isMemberAccess(Token token) =>
     const {'.', '?.', '..', '?..'}.contains(token.lexeme);
 
-/// The dependency-direction rules. [source] supplies the marker comments.
+/// The dependency-direction rules. [source] supplies the marker comments, and
+/// [carriedFrom] places a carried file as the legacy path it moved from.
 List<ArchitectureFinding> dependencyDirectionFindings({
   required String relativePath,
   required String source,
   required CompilationUnit unit,
+  String? carriedFrom,
 }) {
   final findings = <ArchitectureFinding>[];
   void add(String code, int offset, int length, String reason) =>
@@ -310,9 +328,9 @@ List<ArchitectureFinding> dependencyDirectionFindings({
         index >= 0 && index < lines.length && marker.hasMatch(lines[index]),
   );
 
-  final place = placeSource(relativePath);
+  final place = placeSource(relativePath, carriedFrom: carriedFrom);
   final layer = place?.layer;
-  final isPresentation = _isPresentationLayer(relativePath);
+  final isPresentation = _isPresentation(layer);
   final isActions = layer == 'actions';
   final fileName = relativePath.split('/').last;
   final isControllerOrService = RegExp(

@@ -34,7 +34,7 @@ export const baselinePath = "tool/design/library_shims_baseline.json";
 export const registryPath = "design/components/catch.components.json";
 const barrelPath = "packages/catch_ui/lib/catch_ui.dart";
 const libraryRoot = "packages/catch_ui/lib";
-const migrationScopePath = "packages/catch_ui_lints/lib/src/migration_scope.dart";
+const carriedScreensPath = "tool/architecture/carried_screens.json";
 // lib/hosts/today, insights and live are host destinations redrawn in place
 // (migration_scope.dart).
 const newRootFolders = [
@@ -334,11 +334,19 @@ export function newRootFindings(source, deprecated, legacy = []) {
   return findings;
 }
 
-/** The repository paths on newRootLegacyFiles, read from the one place they are listed. */
-export function legacyFiles(migrationScopeSource) {
-  const list = /newRootLegacyFiles\s*=\s*<String>\{([^}]*)\}/u.exec(migrationScopeSource);
-  if (!list) throw new Error(`${migrationScopePath}: newRootLegacyFiles not found.`);
-  return new Set([...list[1].matchAll(/'([^']+)'/gu)].map((match) => match[1]));
+/**
+ * The carried files: new-root paths that keep a legacy path's rules until
+ * their redraw, read from the one place they are listed.
+ */
+export function carriedFiles(carriedScreensSource) {
+  let json;
+  try {
+    json = JSON.parse(carriedScreensSource);
+  } catch (error) {
+    throw new Error(`${carriedScreensPath}: ${error.message}`);
+  }
+  if (!Array.isArray(json?.carried)) throw new Error(`${carriedScreensPath}: no carried list.`);
+  return new Set(json.carried.map((entry) => entry.path));
 }
 
 function dartFilesUnder(root, relative) {
@@ -351,11 +359,11 @@ function dartFilesUnder(root, relative) {
   });
 }
 
-/** Every file D24 holds, skipping what predates it. */
-export function newRootFiles(root, legacy) {
+/** Every file D24 holds, skipping the carried ones. */
+export function newRootFiles(root, carried) {
   return [...appPackageSourceRoots(root), ...newRootFolders]
     .flatMap((relative) => dartFilesUnder(root, relative))
-    .filter((file) => !legacy.has(file))
+    .filter((file) => !carried.has(file))
     .sort();
 }
 
@@ -365,10 +373,10 @@ export function scanRepository(root) {
   const registry = fs.existsSync(path.join(root, registryPath)) ?
     JSON.parse(readText(registryPath)) : null;
   const {deprecated, legacy, shims} = scanLibrary(readText, registryLegacyMembers(registry));
-  const listed = legacyFiles(readText(migrationScopePath));
+  const listed = carriedFiles(readText(carriedScreensPath));
   const violations = newRootFiles(root, listed).flatMap((file) =>
     newRootFindings(readText(file), deprecated, legacy).map((finding) => ({file, ...finding})));
-  // A redraw that deletes a listed screen does not select the Dart test of the list.
+  // A redraw that deletes a carried screen does not select the Dart test of the list.
   const staleLegacy = [...listed].filter((file) => !fs.existsSync(path.join(root, file)));
   const unexportedLegacy = legacy.filter((member) => !member.exported);
   return {deprecated, legacy, shims, violations, staleLegacy, unexportedLegacy};
@@ -399,7 +407,7 @@ function runCli(argv) {
     process.exit(1);
   }
   if (staleLegacy.length) {
-    console.error(`These files are gone, so their entries leave newRootLegacyFiles in ${migrationScopePath}:`);
+    console.error(`These files are gone, so their entries leave ${carriedScreensPath}:`);
     for (const file of staleLegacy) console.error(`- ${file}`);
     process.exit(1);
   }

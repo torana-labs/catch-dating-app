@@ -245,15 +245,17 @@ final _archCode = RegExp(r'\bcatch_ui_lints/(catch_arch_[a-z_]+)');
 /// Reasoned `// ignore:` comments replace the old path-keyed baselines, and
 /// keep what those baselines refused: file-wide exceptions, exceptions without
 /// a reason, exceptions on hard-gate rules or under the bounded-context roots,
-/// and exceptions that no longer match a live finding.
+/// and exceptions that no longer match a live finding. A carried file
+/// ([carriedFrom]) is placed as its legacy path, so its exceptions stand.
 List<ArchitectureFinding> ignorePolicyFindings({
   required String relativePath,
   required String source,
   required CompilationUnit unit,
   required List<ArchitectureFinding> findings,
+  String? carriedFrom,
 }) {
   final results = <ArchitectureFinding>[];
-  final place = placeSource(relativePath);
+  final place = placeSource(relativePath, carriedFrom: carriedFrom);
   final inCleanRoot = place != null && place.root != 'legacy';
   for (final match in _ignoreComment.allMatches(source)) {
     final body = match[2]!;
