@@ -1,0 +1,127 @@
+import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import test from "node:test";
+import {fileURLToPath} from "node:url";
+import {THIN_BELOW, analyzeRun, baseOf, formatReport, parseArgs, prNumberOf, queueEvents, queueRebuilds, report,
+  runnerKind, stats} from "./queue_entry_timings.mjs";
+
+const script = fileURLToPath(new URL("./queue_entry_timings.mjs", import.meta.url));
+const branch = (pr, base) => `gh-readonly-queue/main/pr-${pr}-${base.padEnd(40, "0")}`;
+const at = (minute, second = 0) => `2026-11-20T10:${String(minute).padStart(2, "0")}:${String(second).padStart(2, "0")}Z`;
+const run = (id, pr, base, created, updated, extra = {}) =>
+  ({id, head_branch: branch(pr, base), created_at: created, run_started_at: created, updated_at: updated, status: "completed", ...extra});
+const job = (name, created, started, completed, {labels = ["ubuntu-latest"], conclusion = "success", ran = true} = {}) =>
+  ({name, labels, conclusion, created_at: created, started_at: ran ? started : created, completed_at: completed,
+    ...(ran ? {runner_id: 1, runner_name: "GitHub Actions 1"} : {})});
+
+const jobs = [
+  job("Plan affected targets", at(0, 0), at(0, 2), at(1, 0)),
+  job("flutter / Analyze & test", at(1, 0), at(1, 30), at(12, 0)),
+  // macOS waits 9 minutes for a runner, then finishes last: the critical path.
+  job("visual-integration / macOS goldens", at(1, 0), at(10, 0), at(20, 0), {labels: ["macos-26"]}),
+  job("app-builds", at(1, 0), at(1, 0), at(1, 0), {conclusion: "skipped", ran: false, labels: ["macos-26"]}),
+  job("Required CI", at(20, 5), at(20, 7), at(20, 10)),
+];
+
+test("branch names give the PR and the group's base", () => {
+  assert.equal(prNumberOf("gh-readonly-queue/main/pr-2332-7c7f1fb8db5aa38ff9584c00d4e62fc387c2f00a"), 2332);
+  assert.equal(baseOf("gh-readonly-queue/main/pr-2332-7c7f1fb8db5aa38ff9584c00d4e62fc387c2f00a"), "7c7f1fb8db5aa38ff9584c00d4e62fc387c2f00a");
+  assert.equal(prNumberOf("main"), null);
+  assert.equal(runnerKind(["macos-26"]), "macos");
+  assert.equal(runnerKind(["ubuntu-24.04"]), "linux");
+});
+
+test("a run's critical path, runner waits split by OS, and outcome from Required CI", () => {
+  const entry = analyzeRun(run(1, 10, "aaa", at(0), at(20, 10)), jobs);
+  assert.deepEqual(entry.criticalPath, {name: "visual-integration / macOS goldens", runner: "macos", finishedAfter: 1200, jobDuration: 600});
+  assert.deepEqual(entry.runnerWait.macos, {jobs: 1, total: 540, max: 540}, "the skipped macOS job never waited");
+  assert.deepEqual(entry.runnerWait.linux, {jobs: 3, total: 34, max: 30});
+  assert.equal(entry.runDuration, 1210);
+  assert.equal(entry.outcome, "passed");
+  assert.equal(entry.queueWaitBeforeRun, null, "no timeline: not measured, never zero");
+});
+
+test("the timeline gives the enqueue wait and the removal cause", () => {
+  const timeline = [
+    {event: "added_to_merge_queue", created_at: "2026-11-20T09:40:00Z", actor: {login: "example-dev"}},
+    {event: "commented", created_at: "2026-11-20T09:45:00Z"},
+    {event: "removed_from_merge_queue", created_at: at(15), reason: "A CI check failed", actor: {login: "github-merge-queue"}},
+  ];
+  assert.deepEqual(queueEvents(timeline).map((event) => event.event), ["added_to_merge_queue", "removed_from_merge_queue"]);
+  const failing = jobs.map((item) => item.name === "flutter / Analyze & test" ? {...item, conclusion: "failure"} :
+    item.name === "visual-integration / macOS goldens" ? {...item, conclusion: "cancelled"} : item);
+  const entry = analyzeRun(run(2, 11, "bbb", at(0), at(15)), failing, timeline);
+  assert.equal(entry.queueWaitBeforeRun, 20 * 60);
+  assert.equal(entry.outcome, "removed");
+  assert.deepEqual(entry.removal, {at: at(15), reason: "A CI check failed", actor: "github-merge-queue"});
+  assert.deepEqual(entry.failedJobs, ["flutter / Analyze & test"]);
+  assert.deepEqual(entry.cancelledJobs, ["visual-integration / macOS goldens"]);
+});
+
+test("a merged entry, and a run with no Required CI yet", () => {
+  const merged = analyzeRun(run(3, 12, "ccc", at(0), at(21)), jobs,
+    [{event: "added_to_merge_queue", created_at: at(0)}, {event: "merged", created_at: at(21)}]);
+  assert.equal(merged.outcome, "merged");
+  assert.equal(merged.queueWaitBeforeRun, 0);
+  assert.equal(analyzeRun({...run(4, 13, "ddd", at(0), at(1)), status: "in_progress"}, jobs.slice(0, 2)).outcome, "incomplete");
+});
+
+test("queue rebuilds: a new run of the same PR on a new base while the old one ran", () => {
+  const runs = [
+    run(10, 20, "aaa", at(0), at(30)),
+    run(11, 20, "bbb", at(29), at(50)), // superseded run 10 before it finished
+    run(12, 21, "aaa", at(2), at(20)),
+    run(13, 21, "aaa", at(40), at(55)), // same base: a re-run, not a rebuild
+    run(14, 22, "ccc", at(4), at(10)),
+    run(15, 22, "ddd", at(31), at(45)), // 21 minutes later: a re-queue, not a rebuild
+    run(16, 23, "bbb", at(29, 5), at(50)),
+    run(17, 24, "bbb", at(29, 9), at(50)),
+  ];
+  const result = queueRebuilds(runs);
+  assert.deepEqual(result.superseded.map((item) => [item.pr, item.runId, item.replacedBy]), [[20, 10, 11]]);
+  assert.equal(result.prsWithSeveralRuns, 3);
+  assert.deepEqual(result.bursts, [{at: "2026-11-20T10:29:00.000Z", runs: 3}]);
+});
+
+test("stats use nearest rank and ignore missing values", () => {
+  assert.deepEqual(stats([5, null, 1, 3, 2, 4]), {n: 5, median: 3, p90: 5, max: 5});
+  assert.deepEqual(stats([null]), {n: 0, median: null, p90: null, max: null});
+});
+
+test("the report splits before and after, marks a thin period and lists failures", () => {
+  const dataset = {runs: [run(1, 10, "aaa", at(0), at(20, 10)), run(2, 11, "bbb", at(30), at(50))],
+    jobs: {1: jobs, 2: jobs.map((item) => item.name === "Required CI" ? {...item, conclusion: "failure"} : item)}};
+  const result = report(dataset, {split: at(25)});
+  assert.equal(result.periods.before.runs, 1);
+  assert.equal(result.periods.after.runs, 1);
+  assert.ok(result.periods.after.thin && THIN_BELOW > 1);
+  assert.deepEqual(result.flagged.map((flag) => [flag.runId, flag.outcome]), [[2, "failed"]]);
+  const text = formatReport(result);
+  assert.match(text, /No PR timelines: enqueue wait and removal reasons are not measured\./u);
+  assert.match(text, /thin: fewer than 10; do not extrapolate/u);
+  assert.match(text, /critical-path jobs: visual-integration \/ macOS goldens ×1/u);
+});
+
+test("arguments are checked", () => {
+  assert.throws(() => parseArgs(["fetch", "--since", "2026-11-15"]), /needs --since and --out/u);
+  assert.throws(() => parseArgs(["report"]), /needs --data/u);
+  assert.throws(() => parseArgs(["report", "--data", "x", "--split", "soon"]), /ISO/u);
+  assert.throws(() => parseArgs(["bogus"]), /Usage/u);
+  assert.equal(parseArgs(["report", "--data", "x", "--json"]).json, true);
+});
+
+test("end to end: report from a saved dataset", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "queue-timings-"));
+  try {
+    const file = path.join(dir, "data.json");
+    fs.writeFileSync(file, JSON.stringify({runs: [run(1, 10, "aaa", at(0), at(20, 10))], jobs: {1: jobs}}));
+    const result = spawnSync(process.execPath, [script, "report", "--data", file, "--json"], {encoding: "utf8"});
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(JSON.parse(result.stdout).periods.all.criticalPathJobs[0][0], "visual-integration / macOS goldens");
+  } finally {
+    fs.rmSync(dir, {recursive: true, force: true});
+  }
+});
