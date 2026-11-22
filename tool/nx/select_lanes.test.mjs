@@ -189,9 +189,10 @@ test("lane jobs read only the change range, the final lanes, and outputs pinned 
   const pinned = new Set(["app_roles", "tools_owns_ui_lint_smoke", "tools_owns_design_parity", "docs_checkout",
     "preflight_functions_dependencies"]);
   // The change range, and what the merge queue proved for this exact source:
-  // main_goldens is read from the queue run's own Nx plan, not the planner.
+  // main_goldens and main_captures are read from the queue run's own Nx plan,
+  // not the planner.
   const range = new Set(["base_sha", "source_sha", "producer_attempt", "mode", "full", "commit_window", "queue_verified_run",
-    "main_goldens"]);
+    "main_goldens", "main_captures"]);
   const used = new Set();
   for (const job of jobs) {
     for (const match of job.matchAll(/needs\.plan\.outputs\.([a-z_]+)/gu)) used.add(match[1]);

@@ -84,6 +84,7 @@ jobs:
       tools_owns_design_parity: ${{ steps.plan.outputs.tools_owns_design_parity }}
       queue_verified_run: ${{ steps.queue.outputs.run_id }}
       main_goldens: ${{ steps.main_macos.outputs.goldens }}
+      main_captures: ${{ steps.main_macos.outputs.captures }}
 
     steps:
       - name: Checkout planner closure
@@ -153,7 +154,7 @@ jobs:
           echo "Merge-queue validation reused: ${run_id:-none}" >> "$GITHUB_STEP_SUMMARY"
 
       - id: main_macos
-        name: Select main's macOS goldens from the queue's plan
+        name: Select main's macOS jobs from the queue's plan
         if: ${{ github.event_name == 'push' && steps.queue.outputs.run_id != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
@@ -161,11 +162,13 @@ jobs:
           SOURCE_SHA: ${{ github.sha }}
         run: |
           set -uo pipefail
-          # The merge queue no longer runs the macOS goldens (owner decision,
-          # 22 Nov 2026), so a main push it validated runs them when the queue's
-          # own Nx plan for this exact source selected visual integration. Any
-          # failure to read that plan runs them; it never skips them.
+          # The merge queue no longer runs the macOS goldens or the capture
+          # render (owner decision, 22 Nov 2026), so a main push it validated
+          # runs them when the queue's own Nx plan for this exact source
+          # selected visual integration, or capture freshness or marketing.
+          # Any failure to read that plan runs both; it never skips them.
           goldens=true
+          captures=true
           dir="$(mktemp -d)"
           if artifacts="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$QUEUE_RUN/artifacts?per_page=100")" &&
             artifact="$(jq -er '[.artifacts[]? | select((.name | startswith("harness-plan-")) and (.expired | not))] |
@@ -174,12 +177,16 @@ jobs:
             gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact/zip" > "$dir/plan.zip" &&
             unzip -q -o "$dir/plan.zip" impact-plan.json -d "$dir" &&
             selected="$(jq -r --arg sha "$SOURCE_SHA" 'select(.sourceSha == $sha) |
-              .operations.ciTargets | arrays | index("visual_integration") != null' "$dir/impact-plan.json")" &&
-            [[ "$selected" == true || "$selected" == false ]]; then
-            goldens="$selected"
+              .operations.ciTargets | arrays |
+              "\(index("visual_integration") != null) \(index("capture_freshness") != null or index("marketing") != null)"' \
+              "$dir/impact-plan.json")" &&
+            [[ "$selected" =~ ^(true|false)\ (true|false)$ ]]; then
+            goldens="${selected% *}"
+            captures="${selected#* }"
           fi
           echo "goldens=$goldens" >> "$GITHUB_OUTPUT"
-          echo "macOS goldens on this main push (queue run $QUEUE_RUN): $goldens" >> "$GITHUB_STEP_SUMMARY"
+          echo "captures=$captures" >> "$GITHUB_OUTPUT"
+          echo "macOS jobs on this main push (queue run $QUEUE_RUN): goldens $goldens, captures $captures" >> "$GITHUB_STEP_SUMMARY"
 
       # Nx chooses the lanes for pull requests, queue groups and main pushes,
       # and reads the whole tree to do it. A main push the merge queue already
@@ -518,10 +525,13 @@ jobs:
     with:
       surface: marketing
       capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
+      capture_result: ${{ needs.capture-freshness.result }}
 
+  # A main push the merge queue validated renders the captures the queue no
+  # longer renders, when the queue's plan selected capture freshness or marketing.
   capture-freshness:
     needs: [plan]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && (needs.plan.outputs.capture_freshness == 'true' || needs.plan.outputs.marketing == 'true') && !needs.plan.outputs.queue_verified_run }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && (((needs.plan.outputs.capture_freshness == 'true' || needs.plan.outputs.marketing == 'true') && !needs.plan.outputs.queue_verified_run) || needs.plan.outputs.main_captures == 'true') }}
     uses: ./.github/workflows/marketing-captures.yml
     with:
       automatic_source_sha: ${{ needs.plan.outputs.source_sha }}
