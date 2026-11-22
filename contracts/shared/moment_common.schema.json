@@ -171,8 +171,8 @@
           "type": ["array", "null"],
           "maxItems": 4,
           "uniqueItems": true,
-          "items": {"type": "string", "enum": ["signedUp"]},
-          "description": "eventParticipants: participation statuses included."
+          "items": {"type": "string", "enum": ["signedUp", "attended"]},
+          "description": "eventParticipants: booking statuses included. signedUp is booked and not checked in; attended is checked in."
         },
         "functionId": {
           "type": ["string", "null"],

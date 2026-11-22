@@ -81,9 +81,10 @@ export type MomentAudience = {
   /** The subject of the triggering fact; legal only with `triggered`. */
   kind: "subject";
 } | {
-  /** Booked participants of a Catch event. */
+  /** Booked participants of a Catch event, by booking status: signedUp
+   *  is booked and not checked in, attended is checked in. */
   kind: "eventParticipants";
-  statuses: ReadonlyArray<"signedUp">;
+  statuses: ReadonlyArray<"signedUp" | "attended">;
 } | {
   kind: "functionGuests";
   functionId: string;

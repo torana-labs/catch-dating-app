@@ -8,6 +8,8 @@ import {
   thankYouMomentId,
   thankYouSendAtMillis,
 } from "./closeOut";
+import {momentToDocument} from "../moments/momentDocuments";
+import {eventFeedbackPrompt} from "../moments/momentTemplates";
 
 // 2026-11-14 22:30 Asia/Kolkata.
 const END = Date.UTC(2026, 10, 14, 17, 0);
@@ -81,4 +83,41 @@ test("setEventCloseOut arms, pauses and replays", async () => {
   await assert.rejects(setEventCloseOutHandler({auth: {uid: "guest-1"},
     data: {...data, requestId: "close-out-0004"}} as never, deps as never),
   code("permission-denied"));
+});
+
+test("a close-out choice pauses the default feedback request", async () => {
+  const stamp = {_seconds: 1, _nanoseconds: 0};
+  const store = new AudienceTestStore({
+    "events/event-1": {organizerId: "org-1",
+      endTime: {toMillis: () => END}},
+    "organizers/org-1": {hostUserId: "host-1", hostUserIds: [],
+      hostProfiles: []},
+    "organizerMoments/event-1_event_feedback_prompt": momentToDocument(
+      eventFeedbackPrompt({eventId: "event-1"},
+        {armedBy: {approvedByUid: "system", approvedAtMillis: 1}}), 1, true),
+  });
+  const replans: Array<{id: string; status: string}> = [];
+  const deps = {firestore: () => store.asFirestore(), nowMillis: () => END,
+    timestampFromMillis: () => stamp, checkRateLimit: async () => {},
+    replan: async (_db: unknown,
+      moment: {momentId: string; status: string}) => {
+      replans.push({id: moment.momentId, status: moment.status});
+    }};
+  await setEventCloseOutHandler({auth: {uid: "host-1"}, data: {
+    organizerId: "org-1", eventId: "event-1", requestId: "close-out-0101",
+    expectedRevision: 0, thankYou: {sendAtLocal: "10:00"},
+    openStayInTouchPicks: false, noShowNote: false,
+  }} as never, deps as never);
+  assert.equal(
+    store.docs["organizerMoments/event-1_event_feedback_prompt"].status,
+    "paused");
+  const thankYou = store.docs[`organizerMoments/${
+    thankYouMomentId("event-1")}`];
+  assert.equal(thankYou.status, "armed");
+  assert.deepEqual(thankYou.audience,
+    {kind: "eventParticipants", statuses: ["attended"]});
+  assert.deepEqual(replans, [
+    {id: thankYouMomentId("event-1"), status: "armed"},
+    {id: "event-1_event_feedback_prompt", status: "paused"},
+  ]);
 });

@@ -391,9 +391,14 @@ function departureVariables(
 
 // --- Event-scope system defaults ------------------------------------------
 // These replace the bespoke sendEventReminders cron: a Catch event gets a
-// T-15m push reminder (and an optional post-event feedback prompt) as an
-// armed system default. Booked participants are the audience; push actions
-// gate on the user's own notification preferences at send time.
+// T-15m push reminder for booked guests and, two hours after it ends, a
+// feedback request for checked-in guests, both as armed system defaults.
+// Push actions gate on the user's own notification preferences at send time.
+
+/** The host's close-out thank-you moment for an event (eventSuccess). */
+export function closeOutThankYouMomentId(eventId: string): string {
+  return `${eventId}_close_out_thank_you`;
+}
 
 /** Event descriptor for system-default moments. */
 export interface EventTemplateInput {
@@ -440,6 +445,9 @@ export function eventStartReminder(
   };
 }
 
+/** Asks checked-in guests to rate the event. Only checked-in guests may
+ *  review an event (createEventReview), so booked guests who were never
+ *  checked in get no prompt they could not act on. */
 export function eventFeedbackPrompt(
   event: EventTemplateInput,
   opts: EventDefaultOptions = {},
@@ -459,7 +467,7 @@ export function eventFeedbackPrompt(
       offsetMinutes,
     },
     sense: "individual",
-    audience: {kind: "eventParticipants", statuses: ["signedUp"]},
+    audience: {kind: "eventParticipants", statuses: ["attended"]},
     action: {
       kind: "push",
       notificationType: "eventFeedback",

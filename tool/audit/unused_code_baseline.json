@@ -23,7 +23,6 @@
     "export functions/src/locations/marketConfig.ts requireKnownMarket",
     "export functions/src/moments/momentDocuments.ts requireMillis",
     "export functions/src/moments/momentDocuments.ts sameScope",
-    "export functions/src/moments/momentTemplates.ts eventFeedbackPrompt",
     "export functions/src/operations/projectionImporter.ts FirestoreShadowProjectionWriter",
     "export functions/src/organizerResponseQuery/firestoreAdapter.ts validateFirestoreResponseExport",
     "export functions/src/organizers/organizerAudienceModel.ts organizerIdentityHashVersion",
