@@ -38,6 +38,7 @@ import {dormantFirebaseFunctionTargets} from "./list_firebase_function_targets.m
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, "../..");
+const functionExportResolver = createRequire(import.meta.url)("../../functions/scripts/functionExports.cjs");
 const authoredManifest = JSON.parse(fs.readFileSync(
   path.join(testDir, "environment_readiness.json"),
   "utf8",
@@ -1170,8 +1171,8 @@ test("Deploy backend retires exactly the listed Functions that are live", (t) =>
 test("A retired Function is not exported from the Functions source", () => {
   const retired = JSON.parse(fs.readFileSync(path.join(repoRoot, "functions/retired-functions.json"), "utf8"));
   assert.ok(Array.isArray(retired) && retired.every((name) => typeof name === "string"));
-  const source = fs.readFileSync(path.join(repoRoot, "functions/src/index.ts"), "utf8");
-  assert.deepEqual(retired.filter((name) => new RegExp(`\\b${name}\\b`, "u").test(source)), []);
+  const exported = new Set(functionExportResolver.functionExportNames({root: path.join(repoRoot, "functions")}));
+  assert.deepEqual(retired.filter((name) => exported.has(name)), []);
 });
 
 test("Deploy backend turns named Functions into exact codebase targets", (t) => {
@@ -1433,18 +1434,13 @@ function sourceConsumerFacts(ts, sources) {
       if (!statement.moduleSpecifier || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
       const target = resolve(name, statement.moduleSpecifier.text);
       if (target) deps.add(target);
-      if (name === 'functions/src/index.ts' && ts.isExportDeclaration(statement)) {
-        if (!target || !statement.exportClause || !ts.isNamedExports(statement.exportClause)) {
-          throw new Error('Unsupported Functions export shape');
-        }
-        for (const element of statement.exportClause.elements) {
-          if (!element.isTypeOnly) exports.set(element.name.text, {
-            source: target, symbol: (element.propertyName ?? element.name).text,
-          });
-        }
-      }
     }
     dependencies.set(name, deps);
+  }
+  // The entry point's exports come from the one resolver of its grammar.
+  for (const {name, symbol, module} of functionExportResolver.functionExports({ts,
+    readText: (file) => sources.get(`functions/${file}`)})) {
+    exports.set(name, {source: resolve("functions/src/index.ts", `./${module}`), symbol});
   }
   function moduleMayReach(from, target, seen = new Set()) {
     if (from === target) return true;

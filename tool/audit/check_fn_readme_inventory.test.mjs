@@ -9,28 +9,27 @@ import {
   INVENTORY_END_MARKER,
   INVENTORY_START_MARKER,
   extractDocumentedFunctionNames,
-  extractFunctionExportModules,
-  extractFunctionExports,
+  functionExportModules,
   scanFunctionReadmeInventory,
   writeFunctionReadmeInventory,
 } from "./check_fn_readme_inventory.mjs";
 
-test("extractFunctionExports reads direct and re-exported names", () => {
-  const exports = extractFunctionExports(`
-    export const directCallable = onCall(() => {});
-    export function httpEndpoint() {}
-    export {
-      createEvent,
-      updateEvent as updateEventCallable,
-    } from "./events/mutateEvent";
-  `);
-
-  assert.deepEqual(exports, [
-    "createEvent",
-    "directCallable",
-    "httpEndpoint",
-    "updateEventCallable",
+test("functionExportModules reads the entry point's named re-exports and refuses declarations", (t) => {
+  const root = createFixture({
+    "functions/src/index.ts": `
+      export {
+        createEvent,
+        updateEvent as updateEventCallable,
+      } from "./events/mutateEvent";
+    `,
+  });
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  assert.deepEqual([...functionExportModules(root)], [
+    ["createEvent", "./events/mutateEvent"],
+    ["updateEventCallable", "./events/mutateEvent"],
   ]);
+  fs.writeFileSync(path.join(root, "functions/src/index.ts"), "export const directCallable = onCall(() => {});\n");
+  assert.throws(() => functionExportModules(root), /must not declare/u);
 });
 
 test("extractDocumentedFunctionNames reads current inventory rows only", () => {
@@ -166,19 +165,6 @@ test("README baseline cleanup rejects resolved, removed and reintroduced omissio
 const markedReadme = (rows) => "# Functions\n## Function inventory\nIntro prose.\n\n" +
   `${INVENTORY_START_MARKER}\n### Callable\n\n| Function | File | Purpose |\n|---|---|---|\n${rows}` +
   `\nA paragraph between tables stays.\n${INVENTORY_END_MARKER}\n\n## Shared modules\n| \`notAFunction\` | x |\n`;
-
-test("extractFunctionExportModules maps each export to its module", () => {
-  const modules = extractFunctionExportModules(`
-    export {createEvent,
-      updateEvent as updateEventCallable} from "./events/mutateEvent";
-    export const local = onCall(() => {});
-  `);
-  assert.deepEqual([...modules], [
-    ["local", null],
-    ["createEvent", "./events/mutateEvent"],
-    ["updateEventCallable", "./events/mutateEvent"],
-  ]);
-});
 
 test("writeFunctionReadmeInventory changes only missing and removed rows", (t) => {
   const root = createFixture({

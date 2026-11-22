@@ -30,7 +30,7 @@ test("catalog checker rejects GUI callable and workflow membership drift",
     const result = await checkAdminActionCatalog({
       catalog,
       adminApiSource,
-      functionsIndexSource: "export {adminUnknownAction};",
+      functionExportNames: ["adminUnknownAction"],
       validatorSource: '"strictRequests": ["adminUnknownAction"]',
     });
     assert.equal(result.ok, false);
@@ -56,7 +56,7 @@ test("catalog checker rejects mutations without explicit confirmation",
       catalog,
       adminApiSource: callables.map((callable) =>
         `(functions, "${callable}")`).join("\n"),
-      functionsIndexSource: callables.join("\n"),
+      functionExportNames: callables,
       validatorSource: `"strictRequests": ${JSON.stringify(callables)}`,
     });
     assert.equal(result.ok, false);

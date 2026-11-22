@@ -1,65 +1,44 @@
 "use strict";
 
-// Rewrites the compiled entry point so each Function's module is loaded the
-// first time its export is read, instead of every module at startup. Cloud Run
-// hosts one Function per service and reads only its FUNCTION_TARGET export, so
-// a cold instance loads that Function's code rather than every Function's.
-// Deploy discovery and the emulator enumerate every export, which still loads
-// everything, exactly as before.
+// Writes the compiled entry point lib/index.js so each Function's module is
+// loaded the first time its export is read, instead of every module at
+// startup. Cloud Run hosts one Function per service and reads only its
+// FUNCTION_TARGET export, so a cold instance loads that Function's code rather
+// than every Function's. Deploy discovery and the emulator enumerate every
+// export, which still loads everything, exactly as before.
 //
-// src/index.ts stays the source of truth: global options and admin
-// initialization are unchanged and run first; only the relative re-export
-// requires that tsc emits are deferred into their export getters. Any other
-// shape fails the build rather than shipping a partially lazy entry point.
+// src/index.ts stays the source of truth. Its setup (global options, admin
+// initialization) is compiled and runs first; then each export the resolver
+// (functions/scripts/functionExports.cjs) lists gets a getter that requires
+// its module on first read, in source order. The entry is written from the
+// resolved export list rather than by patching tsc's output, so any entry
+// shape the resolver rejects fails the build instead of shipping a partially
+// lazy entry point.
 
 const fs = require("node:fs");
 const path = require("node:path");
+const {functionExportsFromSource, setupSource} = require("./functionExports.cjs");
 
-const entry = path.resolve(__dirname, "..", "lib", "index.js");
-const relativeRequire = /^var (\w+) = require\("(\.\.?\/[^"]+)"\);$/;
-const reexportGetter =
-  /^Object\.defineProperty\(exports, "(\w+)", \{ enumerable: true, get: function \(\) \{ return (\w+)\.(\w+); \} \}\);$/;
+const functionsRoot = path.resolve(__dirname, "..");
 
-function makeEntryLazy(source) {
-  const lines = source.split("\n");
-  const bindings = new Map();
-  lines.forEach((line, index) => {
-    const match = relativeRequire.exec(line);
-    if (!match) return;
-    if (bindings.has(match[1])) throw new Error(`Duplicate module binding ${match[1]}.`);
-    bindings.set(match[1], {specifier: match[2], line: index, reads: 0});
-  });
-  if (bindings.size === 0) throw new Error("No relative re-exports found; is the entry already lazy?");
-
-  const bindingUse = new RegExp(`\\b(${[...bindings.keys()].join("|")})\\b`);
-  let exportsRewritten = 0;
-  const output = lines.map((line, index) => {
-    const required = relativeRequire.exec(line);
-    // Keep the line so the entry's source map still lines up.
-    if (required) return `// Loaded on first read: ${required[2]}`;
-    const getter = reexportGetter.exec(line);
-    if (getter) {
-      const binding = bindings.get(getter[2]);
-      if (!binding) throw new Error(`Export ${getter[1]} reads unknown binding ${getter[2]}.`);
-      if (binding.line > index) throw new Error(`Export ${getter[1]} precedes its module.`);
-      binding.reads += 1;
-      exportsRewritten += 1;
-      return `Object.defineProperty(exports, "${getter[1]}", { enumerable: true, ` +
-        `get: function () { return require("${binding.specifier}").${getter[3]}; } });`;
-    }
-    const stray = bindingUse.exec(line);
-    if (stray) throw new Error(`Line ${index + 1} uses ${stray[1]} outside an export getter.`);
-    return line;
-  });
-  for (const [name, binding] of bindings) {
-    if (binding.reads === 0) throw new Error(`Module ${binding.specifier} (${name}) exports nothing.`);
-  }
-  return {source: output.join("\n"), modules: bindings.size, exports: exportsRewritten};
+/** The lazy CommonJS entry for an entry source: compiled setup, then one getter per export. */
+function lazyEntrySource(indexSource, {ts} = {}) {
+  const list = functionExportsFromSource(indexSource, {ts});
+  const getters = list.map(({name, symbol, module}) =>
+    `Object.defineProperty(exports, ${JSON.stringify(name)}, { enumerable: true, ` +
+    `get: function () { return require(${JSON.stringify(`./${module}`)}).${symbol}; } });`);
+  const modules = new Set(list.map(({module}) => module));
+  const setup = setupSource(indexSource, {ts}).replace(/\n*$/u, "\n");
+  return {source: `${setup}${getters.join("\n")}\n`, modules: modules.size, exports: getters.length};
 }
 
-function main() {
-  const result = makeEntryLazy(fs.readFileSync(entry, "utf8"));
+function main(root = functionsRoot) {
+  const entry = path.join(root, "lib", "index.js");
+  if (!fs.existsSync(entry)) throw new Error("Build Functions first: lib/index.js is missing.");
+  const result = lazyEntrySource(fs.readFileSync(path.join(root, "src", "index.ts"), "utf8"));
   fs.writeFileSync(entry, result.source);
+  // tsc's map describes the entry it emitted, which this replaces.
+  fs.rmSync(`${entry}.map`, {force: true});
   process.stdout.write(
     `Lazy entry: ${result.exports} exports from ${result.modules} modules load on first read.\n`);
 }
@@ -73,4 +52,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = {makeEntryLazy};
+module.exports = {lazyEntrySource, main};

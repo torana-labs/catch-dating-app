@@ -43,6 +43,25 @@ test("contract files select the tests that read them as data", () => {
   assert.deepEqual(select(["contracts/firestore/events.schema.json"]).tests, ["lib/c/schema.test.js"]);
 });
 
+test("the entry point selects the tests that read its export list, though nothing imports it", () => {
+  const entryListed = ["scripts/functionExports.test.cjs", "lib/commands/catalog.test.js", "lib/b/other.test.js"];
+  const entryModules = [
+    {source: "scripts/functionExports.test.cjs", dependencies: [dependency("scripts/functionExports.cjs")]},
+    {source: "scripts/functionExports.cjs", dependencies: []},
+    {source: "src/commands/catalog.test.ts", dependencies: []},
+    {source: "src/b/other.test.ts", dependencies: [dependency("src/b/other.ts")]},
+    {source: "src/b/other.ts", dependencies: []},
+  ];
+  const entrySources = {
+    "scripts/functionExports.test.cjs": "require(\"./functionExports.cjs\");",
+    "src/commands/catalog.test.ts": "path.join(repo, \"functions/scripts/functionExports.cjs\")",
+  };
+  const result = selectEmulatorTests({changedPaths: ["functions/src/index.ts"], listed: entryListed,
+    modules: entryModules, readSource: (file) => entrySources[file] ?? ""});
+  assert.deepEqual(result, {mode: "selected", reasons: [],
+    tests: ["scripts/functionExports.test.cjs", "lib/commands/catalog.test.js"]});
+});
+
 test("the action catalog contract selects the tests that reach its generated module", () => {
   const importer = {source: "src/b/other.ts", dependencies: [
     {module: "../shared/generated/adminActionCatalog", couldNotResolve: true, coreModule: false}]};

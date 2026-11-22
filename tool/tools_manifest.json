@@ -763,7 +763,8 @@
       ],
       "impactPaths": [
         "tool/audit/check_fn_readme_inventory.test.mjs",
-        "tool/audit/fn_readme_inventory_baseline.json"
+        "tool/audit/fn_readme_inventory_baseline.json",
+        "functions/scripts/functionExports.cjs"
       ],
       "role": "ratchet",
       "rules": [
@@ -1998,7 +1999,8 @@
         "contracts/firestore/**",
         "tool/firebase/function_binding_intent.mjs",
         "tool/lib/repo_paths.mjs",
-        "functions/package-lock.json"
+        "functions/package-lock.json",
+        "functions/scripts/functionExports.cjs"
       ],
       "checks": [
         "node --check tool/contracts/check_firestore_contract.mjs",
@@ -2296,7 +2298,8 @@
         "tool/architecture/rename_to_organizer.mjs",
         "tool/architecture/rename_to_organizer.test.mjs",
         "tool/architecture/rename_wire_to_organizer.mjs",
-        "tool/architecture/rename_wire_to_organizer.test.mjs"
+        "tool/architecture/rename_wire_to_organizer.test.mjs",
+        "functions/scripts/functionExports.cjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -5267,7 +5270,8 @@
       ],
       "runbook": "tool/README.md#firebase-deploy-and-client-callable-gates",
       "impactPaths": [
-        "packages/command-client/**"
+        "packages/command-client/**",
+        "functions/scripts/functionExports.cjs"
       ]
     },
     {
@@ -5314,7 +5318,8 @@
       },
       "impactPaths": [
         "tool/firebase/plan_firebase_deploy_targets.test.mjs",
-        "tool/firebase/list_firebase_function_targets.mjs"
+        "tool/firebase/list_firebase_function_targets.mjs",
+        "functions/scripts/functionExports.cjs"
       ],
       "description": "Expands only CI-authorized backend groups and validated exact targets into indexes-first Firebase phases while rejecting all, hosting, Remote Config, Extensions, and arbitrary extras.",
       "checks": [
@@ -5389,7 +5394,8 @@
         "tool/firebase/prepare_functions_params_for_deploy.mjs",
         "tool/firebase/report_environment_parity.test.mjs",
         "tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
-        "tool/firebase/wait_firestore_indexes_ready.mjs"
+        "tool/firebase/wait_firestore_indexes_ready.mjs",
+        "functions/scripts/functionExports.cjs"
       ],
       "description": "Read-only what's-live-where report comparing main with live dev/prod across Functions, params, GitHub variables, indexes, rules, dormant policy, callable gates, Remote Config and build modes; --policy-only requires every environment-conditional switch to be classified and feature-gate differences to carry an owner, ticket and expiry.",
       "checks": [
@@ -5432,7 +5438,8 @@
         "tool/firebase/function_binding_intent.mjs",
         "tool/firebase/function_binding_intent.test.mjs",
         "tool/firebase/prepare_functions_params_for_deploy.mjs",
-        ".github/workflows/_backend-deploy.yml"
+        ".github/workflows/_backend-deploy.yml",
+        "functions/scripts/functionExports.cjs"
       ],
       "runbook": "docs/release_operations.md#firebase-environment-readiness"
     },
@@ -5563,11 +5570,14 @@
         "functions/src/**",
         "functions/package-lock.json",
         "tool/firebase/environment_readiness.json",
-        "tool/firebase/function_binding_intent.test.mjs"
+        "tool/firebase/function_binding_intent.test.mjs",
+        "functions/scripts/functionExports.cjs",
+        "functions/scripts/functionExports.test.cjs"
       ],
       "checks": [
         "node --check tool/firebase/function_binding_intent.mjs",
-        "node --test tool/firebase/function_binding_intent.test.mjs"
+        "node --test tool/firebase/function_binding_intent.test.mjs",
+        "node --test functions/scripts/functionExports.test.cjs"
       ]
     },
     {
@@ -5591,6 +5601,9 @@
       "description": "Checked by firebase:deploy-target-plan. Expands Firebase function deploy target names from Functions exports.",
       "checks": [
         "node --check tool/firebase/list_firebase_function_targets.mjs"
+      ],
+      "impactPaths": [
+        "functions/scripts/functionExports.cjs"
       ]
     },
     {
@@ -7767,7 +7780,10 @@
         "node --test tool/web/check_admin_review_bridge.test.mjs",
         "node tool/web/check_admin_review_bridge.mjs"
       ],
-      "role": "finder"
+      "role": "finder",
+      "impactPaths": [
+        "functions/scripts/functionExports.cjs"
+      ]
     },
     {
       "id": "platform:app-package-graphs",
@@ -8404,7 +8420,10 @@
         "OPERATIONS-PLATFORM-001"
       ],
       "runbook": "docs/web_surface_architecture.md#admin-live-data-source-contract",
-      "checkSafety": "local-readonly"
+      "checkSafety": "local-readonly",
+      "impactPaths": [
+        "functions/scripts/functionExports.cjs"
+      ]
     },
     {
       "id": "web:admin-pending-operations",
