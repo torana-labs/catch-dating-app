@@ -65,6 +65,10 @@ function fixtureRepo(files) {
     fs.writeFileSync(path.join(root, file), text);
   }
   git(root, "init", "-q");
+  // The codemod commits with the ambient identity, which CI runners lack.
+  git(root, "config", "user.name", "Fixture");
+  git(root, "config", "user.email", "fixture@example.com");
+  git(root, "config", "commit.gpgsign", "false");
   git(root, "add", "-A");
   git(root, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.com", "commit", "-q", "-m", "fixture");
   return root;
