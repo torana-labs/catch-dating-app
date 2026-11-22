@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit, decideUncovered, nightlyWindow, owedFromIssue,
-  reportedUncovered, uncoveredCommits}
+  reportedUncovered, uncoveredCommits, uncoveredReportCounts}
   from "./main_red_alert.mjs";
 
 const run = (conclusion, extra = {}) => ({id: 7, html_url: "https://example.test/run/7", head_sha: "a".repeat(40),
@@ -250,4 +250,17 @@ test("an uncovered commit opens the red issue owing Required CI, or comments onc
   assert.deepEqual([comment.action, comment.issue], ["comment", 9]);
   assert.equal(owedFromIssue([comment.body]), null, "a comment leaves the issue's owed jobs as they were");
   assert.deepEqual(decideUncovered({uncovered: [], openIssue: null}), {action: "none"});
+});
+
+test("a commit reported before an early close is reported once more at most, never in a loop", () => {
+  const uncovered = [{sha: "d".repeat(40), runId: 20, html_url: "https://example.test/run/20"}];
+  const first = decideUncovered({uncovered, openIssue: null});
+  // A green run of an earlier commit closed the issue before the commit was covered.
+  const again = decideUncovered({uncovered, openIssue: null, counts: uncoveredReportCounts([first.body])});
+  assert.equal(again.action, "open");
+  // Closed a second time the same way: the commit has had its two reports.
+  assert.deepEqual(decideUncovered({uncovered, openIssue: null, counts: uncoveredReportCounts([first.body, again.body])}),
+    {action: "none"});
+  assert.deepEqual(decideUncovered({uncovered, openIssue: {number: 4},
+    counts: uncoveredReportCounts([first.body, again.body])}), {action: "none"});
 });

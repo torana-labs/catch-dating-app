@@ -2402,7 +2402,10 @@ later commit's pending run; that later commit's changes are then in no run's
 window. A main push run that was cancelled and whose commit no other main push
 run (finished other than cancelled, running or queued, created no more than 10
 minutes before it) has as an ancestor is reported once on the "Main CI is red"
-issue, with a hidden marker. When the issue is not open, it is opened owing
+issue, with a hidden marker. A commit is reported at most twice across the
+open issue and those closed in the last 3 days: once, and once more if a green
+run of an earlier commit closed the issue before the commit was covered. When
+the issue is not open, it is opened owing
 `Required CI`, so the next green main push, whose run plans from the nearest
 earlier run that ran and so covers the commit, closes it. Runs older than 26
 hours are left to the nightly, and a commit whose ancestry the compare API

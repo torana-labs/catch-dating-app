@@ -189,6 +189,20 @@ export function reportedUncovered(texts) {
   return new Set(texts.flatMap((text) => [...String(text ?? "").matchAll(UNCOVERED_MARKER)].map((match) => match[1])));
 }
 
+// A commit is reported at most this often across the open and recently closed
+// alert issues: once, and once more if a green run of an earlier commit closed
+// the issue before the commit was covered. Never a loop.
+export const UNCOVERED_REPORT_LIMIT = 2;
+
+/** How often each commit has been reported, across every issue's texts. */
+export function uncoveredReportCounts(texts) {
+  const counts = new Map();
+  for (const text of texts) {
+    for (const match of String(text ?? "").matchAll(UNCOVERED_MARKER)) counts.set(match[1], (counts.get(match[1]) ?? 0) + 1);
+  }
+  return counts;
+}
+
 /**
  * Commits whose main push run was cancelled (replaced while pending) and that
  * no run that ran, or is still to run, covers. Pure, so every case is testable.
@@ -227,12 +241,14 @@ export function uncoveredCommits({runs, now, contains}) {
 
 /**
  * Reports uncovered commits on the "Main CI is red" issue: opens it, or
- * comments on the open one, once per commit. Opening owes Required CI, so the
+ * comments on the open one: once per commit while the issue stays open, and at
+ * most UNCOVERED_REPORT_LIMIT times overall (`counts`). Opening owes Required CI, so the
  * next green main push, whose run plans from the nearest earlier run that ran
  * and so covers the commit, closes it.
  */
-export function decideUncovered({uncovered, openIssue, reported = new Set()}) {
-  const fresh = uncovered.filter((commit) => !reported.has(commit.sha));
+export function decideUncovered({uncovered, openIssue, reported = new Set(), counts = new Map()}) {
+  const fresh = uncovered.filter((commit) => !reported.has(commit.sha) &&
+    (counts.get(commit.sha) ?? 0) < UNCOVERED_REPORT_LIMIT);
   if (!fresh.length) return {action: "none"};
   const lines = fresh.map((commit) => `- \`${commit.sha.slice(0, 8)}\`: its run ${commit.html_url} was replaced before it ran`);
   const body = [
@@ -311,9 +327,16 @@ function uncoveredTip(repository) {
   // Read the issue afresh: the alert above may have opened or closed it.
   const issues = JSON.parse(gh(["api", `repos/${repository}/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100`]));
   const openIssue = issues.find((issue) => issue.title === ISSUE_TITLE && !issue.pull_request) ?? null;
-  const reported = openIssue ? reportedUncovered([openIssue.body, ...JSON.parse(gh(["api", "--paginate", "--slurp",
-    `repos/${repository}/issues/${openIssue.number}/comments?per_page=100`])).flat().map((comment) => comment.body)]) : new Set();
-  const decision = decideUncovered({uncovered, openIssue, reported});
+  const texts = (issue) => [issue.body, ...JSON.parse(gh(["api", "--paginate", "--slurp",
+    `repos/${repository}/issues/${issue.number}/comments?per_page=100`])).flat().map((comment) => comment.body)];
+  const reported = openIssue ? reportedUncovered(texts(openIssue)) : new Set();
+  // Alert issues closed in the last 3 days, so a commit reported before an early close is counted.
+  const since = new Date(Date.now() - 3 * 24 * HOUR).toISOString();
+  const closed = JSON.parse(gh(["api",
+    `repos/${repository}/issues?state=closed&creator=github-actions%5Bbot%5D&since=${since}&per_page=100`]))
+    .filter((issue) => issue.title === ISSUE_TITLE && !issue.pull_request);
+  const counts = uncoveredReportCounts([...(openIssue ? texts(openIssue) : []), ...closed.flatMap(texts)]);
+  const decision = decideUncovered({uncovered, openIssue, reported, counts});
   if (decision.action === "open") {
     gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
   } else if (decision.action === "comment") {
