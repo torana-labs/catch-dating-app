@@ -1262,6 +1262,7 @@ export {onFoundingHostOrganizerWritten, reconcileFoundingHostPlacesDaily} from
   "./foundingHosts/foundingHostTriggers";
 export {adminManageNominatorCredits} from "./money/nominatorCredits";
 export {adminManagePlatformCosts} from "./money/platformCosts";
+export {importAdSpendDaily} from "./money/adSpendImport";
 export {adminExportMoneyLedger} from "./money/moneyLedgerExport";
 export {adminGetFinanceMonth} from "./money/financeMonth";
 export {adminManagePaymentIssues} from "./money/paymentIssues";

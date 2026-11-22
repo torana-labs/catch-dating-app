@@ -1,93 +1,64 @@
-import type {PlatformCostDocument} from
-  "../shared/generated/firestoreAdminTypes";
-import {monthWindow} from "./billComputation";
-import {platformCostsCollection} from "./platformCosts";
+import {AdSpendError, spendDays, type AdSpendRow} from "./adSpend";
 
 /**
  * Meta ad spend for Finance and Growth, read from the Marketing API's ad
- * account insights. Nothing schedules this yet: it needs a Marketing API
- * token Catch does not hold, and adding a secret to a deployed Function
- * needs the owner's grant first. Once the token is granted, a daily
- * schedule binds it and calls syncMetaAdSpend for the current month.
+ * account insights at campaign level. `importAdSpendDaily`
+ * (`adSpendImport.ts`) calls it each morning with the CatchAds system-user
+ * token the conversion queue pins.
  */
-const graphVersion = "v21.0";
-
-export interface MetaAdSpendRow {
-  campaignName: string;
-  spendMinor: number;
-}
+const graphVersion = "v26.0";
 
 /**
  * The month's spend per campaign, in minor units of the ad account's
- * currency (Catch's account bills in INR).
- * @param {object} input Token, account, month and fetch.
- * @return {Promise<MetaAdSpendRow[]>} Spend per campaign.
+ * currency, which must be INR. A running month is read up to today.
+ * @param {object} input Token, account, month, now and fetch.
+ * @return {Promise<AdSpendRow[]>} Spend per campaign.
  */
 export async function fetchMetaAdSpend(input: {
-  accessToken: string; adAccountId: string; month: string;
+  accessToken: string; adAccountId: string; month: string; nowMillis: number;
   fetchImpl?: typeof fetch;
-}): Promise<MetaAdSpendRow[]> {
+}): Promise<AdSpendRow[]> {
   if (!/^act_[0-9]{1,30}$/u.test(input.adAccountId)) {
-    throw new Error("Meta ad account id must look like act_123.");
+    throw new AdSpendError("meta_account_invalid");
   }
-  const {startMillis, endMillis} = monthWindow(input.month);
-  const day = (millis: number) =>
-    new Date(millis + 330 * 60 * 1000).toISOString().slice(0, 10);
+  if (!input.accessToken || /[\r\n]/u.test(input.accessToken)) {
+    throw new AdSpendError("meta_credential_unavailable");
+  }
+  const days = spendDays(input.month, input.nowMillis);
+  if (!days) return [];
   const params = new URLSearchParams({level: "campaign",
-    fields: "campaign_name,spend", limit: "500",
-    time_range: JSON.stringify({since: day(startMillis),
-      until: day(endMillis - 1)})});
-  const response = await (input.fetchImpl ?? fetch)(
-    `https://graph.facebook.com/${graphVersion}/${input.adAccountId}` +
-    `/insights?${params}`, {headers: {
-      Authorization: `Bearer ${input.accessToken}`}, redirect: "error",
-    signal: AbortSignal.timeout(20_000)});
+    fields: "campaign_name,spend,account_currency", limit: "500",
+    time_range: JSON.stringify(days)});
+  let response: Response;
+  try {
+    response = await (input.fetchImpl ?? fetch)(
+      `https://graph.facebook.com/${graphVersion}/${input.adAccountId}` +
+      `/insights?${params}`, {headers: {
+        Authorization: `Bearer ${input.accessToken}`}, redirect: "error",
+      signal: AbortSignal.timeout(20_000)});
+  } catch {
+    throw new AdSpendError("meta_transport");
+  }
   if (!response.ok) {
     await response.body?.cancel().catch(() => undefined);
-    throw new Error(`Meta insights request failed (${response.status}).`);
+    throw new AdSpendError(`meta_http_${response.status}`);
   }
-  const body = await response.json() as {data?: unknown};
-  if (!Array.isArray(body.data)) throw new Error("Meta insights malformed.");
+  const body = await response.json().catch(() => null) as
+    {data?: unknown; paging?: {next?: unknown}} | null;
+  if (!Array.isArray(body?.data)) throw new AdSpendError("meta_malformed");
+  // 500 campaigns with delivery in one month is far beyond Catch's account;
+  // a second page means the total would be short, so refuse it.
+  if (body.paging?.next) throw new AdSpendError("meta_too_many_campaigns");
   return body.data.map((raw) => {
     const row = raw as Record<string, unknown>;
+    if (row.account_currency !== undefined && row.account_currency !== "INR") {
+      throw new AdSpendError("meta_currency_not_inr");
+    }
     const spend = Number(row.spend);
     if (!Number.isFinite(spend) || spend < 0) {
-      throw new Error("Meta insights spend malformed.");
+      throw new AdSpendError("meta_malformed");
     }
     return {campaignName: String(row.campaign_name ?? "Campaign")
       .slice(0, 120), spendMinor: Math.round(spend * 100)};
   });
-}
-
-/**
- * Stores a month's Meta spend as its ads_meta cost.
- * @param {FirebaseFirestore.Firestore} db Firestore.
- * @param {string} month YYYY-MM.
- * @param {MetaAdSpendRow[]} rows Spend per campaign.
- * @param {number} nowMillis Now.
- * @return {Promise<PlatformCostDocument>} The stored cost.
- */
-export async function recordMetaAdSpend(db: FirebaseFirestore.Firestore,
-  month: string, rows: MetaAdSpendRow[], nowMillis: number):
-  Promise<PlatformCostDocument> {
-  const cost: PlatformCostDocument = {schemaVersion: 1,
-    costId: `${month}_ads_meta`, month, category: "ads_meta",
-    amountMinor: rows.reduce((sum, row) => sum + row.spendMinor, 0),
-    source: "meta_api", note: `${rows.length} campaigns`.slice(0, 500),
-    updatedAtMillis: nowMillis, updatedByUid: null};
-  await db.collection(platformCostsCollection).doc(cost.costId).set(cost);
-  return cost;
-}
-
-/**
- * Reads and stores a month's Meta spend.
- * @param {object} input Firestore, token, account, month and time.
- * @return {Promise<PlatformCostDocument>} The stored cost.
- */
-export async function syncMetaAdSpend(input: {
-  db: FirebaseFirestore.Firestore; accessToken: string; adAccountId: string;
-  month: string; nowMillis: number; fetchImpl?: typeof fetch;
-}): Promise<PlatformCostDocument> {
-  const rows = await fetchMetaAdSpend(input);
-  return recordMetaAdSpend(input.db, input.month, rows, input.nowMillis);
 }

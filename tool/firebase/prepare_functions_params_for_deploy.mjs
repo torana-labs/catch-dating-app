@@ -58,6 +58,7 @@ export const materializedNonSecretParams = [
   "AD_CONVERSIONS_META_TEST_EVENT_CODE",
   "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT",
   "AD_AUDIENCES_MODE",
+  "AD_SPEND_IMPORT_MODE",
   "META_LEADGEN_CREDENTIAL_VERSION",
   "META_LEADGEN_PAGE_IDS",
 ];
@@ -326,6 +327,14 @@ function normalizedProviderParams(environment = process.env, projectId) {
     "AD_AUDIENCES_MODE must be off or live");
   assert(audiencesMode === "off" || adTokenVersion,
     "AD_AUDIENCES_MODE live requires AD_CONVERSIONS_META_TOKEN_VERSION");
+  // The daily ad spend import stays off unless an environment turns it on;
+  // it reads Meta with the same pinned CatchAds token and Google Ads as the
+  // same ads service account (functions/src/money/adSpendImport.ts).
+  const spendImportMode = environment.AD_SPEND_IMPORT_MODE?.trim() || "off";
+  assert(["off", "live"].includes(spendImportMode),
+    "AD_SPEND_IMPORT_MODE must be off or live");
+  assert(spendImportMode === "off" || adTokenVersion && adServiceAccount,
+    "AD_SPEND_IMPORT_MODE live requires AD_CONVERSIONS_META_TOKEN_VERSION and AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT");
   // Meta host lead forms: one pinned webhook credential and numeric page IDs.
   const leadgenCredential = environment.META_LEADGEN_CREDENTIAL_VERSION?.trim() || "";
   const leadgenPages = environment.META_LEADGEN_PAGE_IDS?.trim() || "";
@@ -391,6 +400,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     AD_CONVERSIONS_META_TEST_EVENT_CODE: adTestCode || " ",
     AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT: adServiceAccount || " ",
     AD_AUDIENCES_MODE: audiencesMode,
+    AD_SPEND_IMPORT_MODE: spendImportMode,
     META_LEADGEN_CREDENTIAL_VERSION: leadgenCredential || " ",
     META_LEADGEN_PAGE_IDS: leadgenPages.replace(/\s+/g, "") || " ",
   };

@@ -1058,14 +1058,16 @@
       "id": "functions.reference.ad-conversions-meta",
       "sourcePaths": [
         "functions/src/acquisition/adConversions/worker.ts",
-        "functions/src/acquisition/metaLeadgen/processing.ts"
+        "functions/src/acquisition/metaLeadgen/processing.ts",
+        "functions/src/money/adSpendImport.ts"
       ],
       "owner": "host-acquisition",
       "credentialClass": "provider-token",
       "consumers": [
         "sendAdConversions",
         "onMetaLeadgenEventCreated",
-        "syncMetaHostAudience"
+        "syncMetaHostAudience",
+        "importAdSpendDaily"
       ],
       "binding": {
         "kind": "parameter",
