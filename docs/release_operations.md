@@ -272,14 +272,18 @@ fails; unaffected lanes are explicit skips, so path scoping never leaves a
 required check permanently pending. Required CI has no mandatory human backend
 source-review job. The merge queue reruns it on the exact combined source of
 each group before `main` moves, so a pull request result never needs to stay
-current with `main`. A `main` push whose exact commit already passed a
-successful merge-queue run re-runs no validation lane, source preflight
-included: it only plans and records the reused run ID in its summary.
+current with `main`. A `main` push whose exact commit the merge queue proved re-runs no
+validation lane, source preflight included: it only plans and records the
+reused run ID in its summary. The proof is the queue run's `Required CI` job
+(`tool/ci/main_push_queue_proof.mjs`): a `merge_group` run of `ci.yml` for
+exactly that commit, with exactly one `Required CI` job, succeeded, in the
+run's current attempt. The run's own conclusion is not required, because the
+queue merges on `Required CI` while reporting lanes may still be running.
 Marketing Website reads the queue run's Marketing and capture evidence,
 validating its own source when the queue run selected neither. App builds then
 run in nightly validation, and signed store builds come from
-[Mobile releases](#mobile-releases). Without a successful queue run of the same
-commit, `main` runs every selected lane.
+[Mobile releases](#mobile-releases). Without that proof for the same commit, `main`
+runs every selected lane.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
@@ -369,7 +373,8 @@ or reads (`load-toolchain`, `setup-flutter`, `generate-contracts`) selects
 every lane, because every lane needs those jobs. Selector files select every
 lane with no narrowing: `ci.yml` and its `Required CI` job, `tool/harness.mjs`
 and `tool/harness/**`, `component_graph.json`, the `tool/nx/**` selection code,
-`tool/ci/main_push_base.mjs`, `tool/ci/required_ci_floor.mjs`, `nx.json`,
+`tool/ci/main_push_base.mjs`, `tool/ci/main_push_queue_proof.mjs`,
+`tool/ci/required_ci_floor.mjs`, `nx.json`,
 `tool/ci/toolchain.env` and every file the planner entry points import or
 load; tests in those directories are not selectors. Outside CI
 configuration, a tool script or module that a lane job executes selects that
