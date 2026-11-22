@@ -2,7 +2,8 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {Timestamp} from "firebase-admin/firestore";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
-import {accountabilityResolutionFields} from "../accountability";
+import {prepareAttendeeAccountabilityResolution} from
+  "../../domain/bookings/attendeeAccountability";
 import type {EventAssistanceAccountabilityCallableResponse as Response} from
   "../../shared/generated/eventAssistanceAccountabilityCallableResponse";
 import {validateResolveEventAssistanceAccountabilityCallablePayload} from
@@ -120,9 +121,11 @@ export class EventAccountabilityStore {
           payload.episodeId !== accountabilityEpisodeId(state.member)) {
         throw conflict();
       }
-      const fields = accountabilityResolutionFields(state.member.attendee,
-        payload.disposition, actorUid, Timestamp.fromMillis(now));
-      const attendee = {...state.member.attendee, ...fields};
+      const resolution = prepareAttendeeAccountabilityResolution({
+        db: this.db, attendeeId: scope.attendeeId,
+        attendee: state.member.attendee, resolution: payload.disposition,
+        actorUid, now: Timestamp.fromMillis(now)});
+      const {fields, attendee} = resolution;
       if (!validateEventAttendeeDocument(attendee)) throw invalidSource();
       const saved: AccountabilityReceipt = {
         sourceGeneration: state.member.source.sourceGeneration,
@@ -134,8 +137,7 @@ export class EventAccountabilityStore {
       if (!validReceipt(saved)) throw invalidSource();
       const result = response("applied", {...state,
         member: {...state.member, attendee}}, saved.revision);
-      tx.set(this.db.collection("eventAttendees").doc(scope.attendeeId),
-        attendee);
+      resolution.apply(tx);
       writeAssistanceReceipt(tx, receiptRef, {
         command: ACCOUNTABILITY_RECEIPT_COMMAND, requestHash, nowMillis: now,
         result: saved});

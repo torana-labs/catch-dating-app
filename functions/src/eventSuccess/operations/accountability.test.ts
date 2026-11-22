@@ -8,7 +8,8 @@ import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import type {EventAssistanceAccountabilityCallableResponse as Response} from
   "../../shared/generated/eventAssistanceAccountabilityCallableResponse";
-import {accountabilityResolutionFields} from "../accountability";
+import {accountabilityResolutionFields} from
+  "../../domain/bookings/attendeeAccountability";
 import {validateEventAssistanceCommand} from
   "../../shared/generated/validators/eventAssistanceCommand";
 import {EventAccountabilityStore, ACCOUNTABILITY_RECEIPT_COMMAND} from

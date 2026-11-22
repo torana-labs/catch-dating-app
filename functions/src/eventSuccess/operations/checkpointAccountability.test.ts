@@ -11,7 +11,8 @@ import {operationContentHash} from "../../operations/durableActions";
 import {EventCheckpointStore} from "./checkpointStore";
 import {departureRosterHarness} from "./departureRosterTestFixtures";
 import {progressFixtureManager as manager} from "./groupProgressTestFixtures";
-import {accountabilityResolutionFields} from "../accountability";
+import {accountabilityResolutionFields} from
+  "../../domain/bookings/attendeeAccountability";
 import type {EventAssistanceAccountabilityCallableResponse as Response} from
   "../../shared/generated/eventAssistanceAccountabilityCallableResponse";
 import type {Decision} from "./membershipTransitions";
