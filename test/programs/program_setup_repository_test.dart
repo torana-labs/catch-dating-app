@@ -69,6 +69,88 @@ void main() {
     );
   }
 
+  group('guest pickers', () {
+    test(
+      'listGuestGroups returns every group, empty ones too, in server order',
+      () async {
+        final functions = _Functions()
+          ..response = {
+            'programId': 'program',
+            'groups': [
+              {
+                'groupId': 'group-b',
+                'label': 'Bride side',
+                'dimension': 'side',
+                'sortOrder': 0,
+                'memberCount': 0,
+                'hotelId': null,
+                'revision': 1,
+              },
+              {
+                'groupId': 'group-a',
+                'label': 'Alumni',
+                'dimension': 'table',
+                'sortOrder': 2,
+                'memberCount': 12,
+                'hotelId': 'hotel-1',
+                'revision': 3,
+              },
+            ],
+          };
+        final groups = await ProgramSetupRepository(
+          functions,
+        ).listGuestGroups('program');
+        expect(functions.calls, ['listProgramGuestGroups']);
+        expect(functions.payload, {'programId': 'program'});
+        expect(
+          [for (final group in groups) group.groupId],
+          ['group-b', 'group-a'],
+        );
+        expect(groups.first.memberCount, 0);
+        expect(groups.first.hotelId, isNull);
+        expect(groups.last.hotelId, 'hotel-1');
+      },
+    );
+
+    test(
+      'listHouseholds returns every household, empty ones too, by label',
+      () async {
+        final functions = _Functions()
+          ..response = {
+            'programId': 'program',
+            'guests': <Object?>[],
+            'functionGuests': <Object?>[],
+            'groups': <Object?>[],
+            'households': [
+              {
+                'householdId': 'household-2',
+                'label': 'Verma family',
+                'memberGuestIds': ['guest-1'],
+                'revision': 2,
+              },
+              {
+                'householdId': 'household-1',
+                'label': 'Kapoor family',
+                'memberGuestIds': <String>[],
+                'revision': 1,
+              },
+            ],
+            'nextCursor': null,
+          };
+        final households = await ProgramSetupRepository(
+          functions,
+        ).listHouseholds('program');
+        expect(functions.calls, ['listProgramHouseholds']);
+        expect(functions.payload, {'programId': 'program'});
+        expect(
+          [for (final household in households) household.label],
+          ['Kapoor family', 'Verma family'],
+        );
+        expect(households.first.memberGuestIds, isEmpty);
+      },
+    );
+  });
+
   group('program lifecycle', () {
     test(
       'listPrograms parses lifecycle fields for the archive affordance',

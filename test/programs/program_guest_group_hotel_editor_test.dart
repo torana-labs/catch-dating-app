@@ -13,6 +13,17 @@ class _Repository extends Fake implements ProgramSetupRepository {
   final saved =
       <({String? groupId, int? revision, String? hotelId, bool clear})>[];
 
+  /// The server's group inventory; a save adds the group with no members.
+  final groups = <ProgramGuestGroupRow>[];
+
+  @override
+  Future<List<ProgramGuestGroupRow>> listGuestGroups(String programId) async =>
+      List.of(groups);
+
+  @override
+  Future<List<ProgramHouseholdRow>> listHouseholds(String programId) async =>
+      const [];
+
   @override
   Future<ProgramMutationResult> upsertGuestGroup({
     required String programId,
@@ -30,6 +41,18 @@ class _Repository extends Fake implements ProgramSetupRepository {
       hotelId: hotelId,
       clear: clearHotel,
     ));
+    if (groupId == null) {
+      groups.add(
+        ProgramGuestGroupRow(
+          groupId: 'new-group',
+          label: label,
+          dimension: dimension,
+          memberCount: 0,
+          revision: 1,
+          hotelId: hotelId,
+        ),
+      );
+    }
     return ProgramMutationResult(
       entityId: groupId ?? 'new-group',
       revision: (expectedRevision ?? 0) + 1,
@@ -47,6 +70,7 @@ ProgramGuestListPage _page({List<ProgramGuestGroupRow> groups = const []}) =>
       groups: groups,
     );
 
+/// [groups] are the guest page's; `repository.groups` is the full inventory.
 Widget _app(
   _Repository repository, {
   List<ProgramGuestGroupRow> groups = const [],
@@ -98,27 +122,25 @@ void main() {
     expect(repository.saved.single.hotelId, 'hotel-1');
     expect(repository.saved.single.clear, isFalse);
     expect(repository.saved.single.groupId, isNull);
+    // The new group has no members, so no guest page names it; the full
+    // group list read again after the save shows it at once.
+    expect(find.text('Bride side'), findsOneWidget);
+    expect(find.text('Staying at Lakeview'), findsOneWidget);
   });
 
   testWidgets('editing a group clears its hotel with revision fence', (
     tester,
   ) async {
-    final repository = _Repository();
-    await tester.pumpWidget(
-      _app(
-        repository,
-        groups: const [
-          ProgramGuestGroupRow(
-            groupId: 'group-1',
-            label: 'Bride side',
-            dimension: 'side',
-            memberCount: 4,
-            revision: 7,
-            hotelId: 'hotel-1',
-          ),
-        ],
-      ),
+    const group = ProgramGuestGroupRow(
+      groupId: 'group-1',
+      label: 'Bride side',
+      dimension: 'side',
+      memberCount: 4,
+      revision: 7,
+      hotelId: 'hotel-1',
     );
+    final repository = _Repository()..groups.add(group);
+    await tester.pumpWidget(_app(repository, groups: const [group]));
     await pumpFeatureUi(tester);
     expect(find.text('Staying at Lakeview'), findsOneWidget);
     await tester.tap(find.byTooltip('Edit group'));
