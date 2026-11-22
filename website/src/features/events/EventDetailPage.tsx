@@ -27,7 +27,8 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
   const view = useMemo(() => buildEventPageView(page), [page]);
   const {eventId} = view;
   useEffect(() => observeOrganizerPageView(listing, "eventView", "event_detail", eventId), [listing, eventId]);
-  useEffect(() => observeOrganizerProviders(listing, eventId), [listing, eventId]);
+  const tracking = page.tracking ?? null;
+  useEffect(() => observeOrganizerProviders(listing, eventId, {tracking}), [listing, eventId, tracking]);
   const inviteToken = eventInviteTokenFromLocation();
   useEffect(() => {
     if (!inviteToken) return;

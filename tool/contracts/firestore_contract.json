@@ -5151,8 +5151,7 @@
       "write": "server only; setOrganizerTrackingSettings",
       "exportedFunctions": [
         "getOrganizerTrackingSettings",
-        "setOrganizerTrackingSettings",
-        "readPublicOrganizerTrackingSettings"
+        "setOrganizerTrackingSettings"
       ],
       "migrationNotes": [
         "Pixel and GA4 ids are configuration, not credentials. The Host app derives canEdit from the organizer it already listens to, as trackingConfigurationEligible does on the server."

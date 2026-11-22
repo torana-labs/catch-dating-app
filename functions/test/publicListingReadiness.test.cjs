@@ -6,8 +6,8 @@ const test = require("node:test");
 const {pathToFileURL} = require("node:url");
 const {requestOrganizerClaimHandler, adminDecideOrganizerClaimHandler} =
   require("../lib/organizers/organizerClaims");
-const {createPublicOrganizerReviewHandler, listPublicOrganizerReviewsHandler,
-  createEventReviewHandler} = require("../lib/reviews/mutateReview");
+const {createPublicOrganizerReviewHandler, createEventReviewHandler} =
+  require("../lib/reviews/mutateReview");
 const {enforceAppCheckForRuntime} = require("../lib/shared/callableOptions");
 
 const root = path.resolve(__dirname, "../..");
@@ -104,7 +104,7 @@ test("canonical projection -> authenticated claim -> pending review, with approv
   assert.equal(h.rates.some(({action}) => action === "requestOrganizerClaim"), true);
 });
 
-test("enabled canonical review target -> moderated submission -> public list, without attendance verification", async () => {
+test("enabled canonical review target -> moderated submission, without attendance verification", async () => {
   const data = organizer(true);
   const h = harness(data);
   const listing = await project(data);
@@ -119,8 +119,8 @@ test("enabled canonical review target -> moderated submission -> public list, wi
   const held = await createPublicOrganizerReviewHandler(request({...payload,
     comment: "just kill yourself please"}), h.deps);
   assert.equal(held.review.moderationStatus, "pending");
-  const listed = await listPublicOrganizerReviewsHandler(request({organizerId: listing.id}), h.deps);
-  assert.deepEqual(listed.reviews.map(({id}) => id), [published.reviewId]);
+  // The page read model lists only published reviews (functions/src/publicPages/projections.test.ts).
+  assert.equal(published.review.moderationStatus, "published");
   await assert.rejects(createPublicOrganizerReviewHandler(request({...payload,
     submittedFromPath: "/organizers/other-host/"}), h.deps), {code: "invalid-argument"});
   h.docs.set("users/synthetic-user", {name: "Synthetic User"});
@@ -136,8 +136,9 @@ test("legacy clubs-only document cannot satisfy current canonical callables", as
   h.docs.delete("organizers/synthetic-auto-id");
   await assert.rejects(requestOrganizerClaimHandler(request({organizerId: "synthetic-auto-id",
     requesterName: "Synthetic Owner", requesterRole: "owner"}), h.deps), {code: "not-found"});
-  await assert.rejects(listPublicOrganizerReviewsHandler(request({organizerId: "synthetic-auto-id"}),
-    h.deps), {code: "not-found"});
+  await assert.rejects(createPublicOrganizerReviewHandler(request({organizerId: "synthetic-auto-id",
+    rating: 4, reviewerName: "Synthetic reviewer", isAnonymous: false, comment: "Still here?",
+    submittedFromPath: "/organizers/synthetic-auto-id/"}), h.deps), {code: "not-found"});
 });
 
 test("source changes do not relax live App Check enforcement", () => {

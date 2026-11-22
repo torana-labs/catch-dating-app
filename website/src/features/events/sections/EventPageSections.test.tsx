@@ -144,7 +144,8 @@ describe("EventDetailPage", () => {
   it("observes the organiser's analytics for the event and cleans up", () => {
     const {unmount} = render(<EventDetailPage listing={listing} page={importedEventPage} />);
     expect(observeOrganizerPageView).toHaveBeenCalledWith(listing, "eventView", "event_detail", importedEventPage.eventId);
-    expect(observeOrganizerProviders).toHaveBeenCalledWith(listing, importedEventPage.eventId);
+    expect(observeOrganizerProviders).toHaveBeenCalledWith(listing, importedEventPage.eventId,
+      {tracking: importedEventPage.tracking ?? null});
     const stopView = observeOrganizerPageView.mock.results[0].value;
     const stopProviders = observeOrganizerProviders.mock.results[0].value;
     unmount();

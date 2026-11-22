@@ -3,8 +3,10 @@ import {admitCatchOrganizerProfile, getMarketingConsent, marketingConsentChanged
   trackOrganizerPageViewed} from "../../analytics";
 import {organizerPolicyForListing} from "./organizerPolicy";
 import {isPublicApiEnabled} from "./selectors";
-import {readOrganizerProviderSettings} from "./trackingProvidersRepository";
-import type {HostListing} from "./types";
+import type {HostListing, OrganizerPublicPageDocument} from "./types";
+
+/** A page read model's tracking projection (#2063); null keeps every tag off. */
+export type PageTracking = NonNullable<OrganizerPublicPageDocument["tracking"]> | null;
 
 /** The public tracking projection for one organiser page or event page. */
 export interface OrganizerTrackingSettings {
@@ -18,7 +20,17 @@ export interface OrganizerTrackingSettings {
 }
 
 interface ProviderObserverDependencies {
+  /** The tracking projection the server rendered with the page. */
+  tracking?: PageTracking;
   readSettings?: (payload: {organizerId: string; eventId: string | null}) => Promise<OrganizerTrackingSettings>;
+}
+
+/** The page's own projection as settings; a page without one has no tags. */
+function pageSettings(tracking: PageTracking) {
+  return async (scope: {organizerId: string; eventId: string | null}): Promise<OrganizerTrackingSettings> => {
+    if (!tracking) throw new Error("This page has no tracking projection.");
+    return {...scope, ...tracking};
+  };
 }
 
 const choice = () => {
@@ -29,7 +41,8 @@ const choice = () => {
 
 /**
  * Advertising tags on a public organiser page or event page (#2063, Option A),
- * from one read of the public tracking projection:
+ * from the public tracking projection the page read model carries (no read
+ * of its own):
  *
  * - Catch's own tags cover the organiser profile only when the server
  *   classified it eligible (`profileTagsEligible`), under a current analytics
@@ -69,7 +82,8 @@ export function observeOrganizerProviders(
       return;
     }
     try {
-      const settings = await (dependencies.readSettings ?? readOrganizerProviderSettings)({organizerId: listing.id, eventId});
+      const settings = await (dependencies.readSettings ?? pageSettings(dependencies.tracking ?? null))(
+        {organizerId: listing.id, eventId});
       const now = choice();
       if (stopped || generation !== epoch || window.location.pathname !== publicPath || now === "none") return;
       if (settings.organizerId !== listing.id || settings.eventId !== eventId) return;

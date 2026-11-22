@@ -102,6 +102,10 @@
     "listing": {
       "description": "Today's organizer listing for this event, with this event's own published reviews, so the current event page renders unchanged. The event is attached at read time.",
       "$ref": "../shared/public_page_common.schema.json#/definitions/listing"
+    },
+    "tracking": {
+      "$ref": "../shared/public_page_common.schema.json#/definitions/publicTracking",
+      "description": "The event page's advertising-tag projection, from the organizer and this event's canonical format; an imported event reads eventClassificationUnavailable. Pages built before it shipped omit it; readers treat absence as null, so no tags load."
     }
   }
 }

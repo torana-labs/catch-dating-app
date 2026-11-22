@@ -121,3 +121,19 @@ export function organizerTrackingEventPolicyReason(
   }
   return policy.blockedReason;
 }
+
+/**
+ * Whether an organizer may configure advertising tags at all: first-party
+ * (user-created) or verified-claimed, with an owner, and neither archived
+ * nor suppressed. Public pages carry no tag projection otherwise.
+ */
+export function trackingConfigurationEligible(organizer: {
+  archived?: unknown; status?: unknown; ownerUserId?: unknown;
+  claim?: {state?: unknown} | null; ownership?: {state?: unknown} | null;
+}): boolean {
+  return !organizer.archived && organizer.status !== "archived" &&
+    organizer.claim?.state !== "suppressed" &&
+    !!organizer.ownerUserId &&
+    (organizer.ownership?.state === "userCreated" ||
+     organizer.claim?.state === "verified");
+}

@@ -1,5 +1,5 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {act, renderHook, waitFor} from "@testing-library/react";
+import {act, renderHook} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {hostListings} from "../organizers/data";
@@ -8,13 +8,11 @@ import type {HostListing} from "../organizers/types";
 
 const reviewConfig = vi.hoisted(() => ({enabled: false}));
 const createPublicOrganizerReview = vi.hoisted(() => vi.fn());
-const listPublicOrganizerReviews = vi.hoisted(() => vi.fn());
 const trackMarketingEvent = vi.hoisted(() => vi.fn());
 
 vi.mock("../../analytics", () => ({trackMarketingEvent}));
 vi.mock("../../firebase", () => ({
   createPublicOrganizerReview,
-  listPublicOrganizerReviews,
 }));
 vi.mock("../../firebaseConfig", () => ({
   get publicReviewsFirebaseConfigured() {
@@ -80,7 +78,6 @@ describe("useListingReviewsController", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     reviewConfig.enabled = false;
-    listPublicOrganizerReviews.mockResolvedValue({reviews: []});
   });
 
   it("keeps disabled listing routes read-only", async () => {
@@ -112,18 +109,14 @@ describe("useListingReviewsController", () => {
     expect(createPublicOrganizerReview).not.toHaveBeenCalled();
   });
 
-  it("surfaces listing-review query failures without hiding seeded content", async () => {
+  it("shows the reviews the page rendered and reads none of its own", async () => {
     reviewConfig.enabled = true;
-    listPublicOrganizerReviews.mockRejectedValue(new Error("Reviews are temporarily unavailable."));
     const listing = enabledListing();
     const {wrapper} = queryHarness();
     const {result} = renderHook(() => useListingReviewsController(listing), {wrapper});
 
-    await waitFor(() => expect(result.current.status).toEqual({
-      message: "Reviews are temporarily unavailable.",
-      tone: "is-error",
-    }));
     expect(result.current.reviews).toEqual(listing.reviews);
+    expect(result.current.status).toEqual({message: "", tone: ""});
   });
 
   it("validates review identity before creating a mutation", async () => {
@@ -200,7 +193,7 @@ describe("useListingReviewsController", () => {
     expect(trackMarketingEvent).not.toHaveBeenCalled();
   });
 
-  it("publishes configured reviews and refreshes the listing review query", async () => {
+  it("publishes configured reviews and shows them until the page's next read", async () => {
     reviewConfig.enabled = true;
     const listing = enabledListing();
     const remoteReview = {
@@ -218,11 +211,9 @@ describe("useListingReviewsController", () => {
       reviewId: remoteReview.id,
       review: {...remoteReview, moderationStatus: "published"},
     });
-    const {client, wrapper} = queryHarness();
-    const invalidateQueries = vi.spyOn(client, "invalidateQueries");
+    const {wrapper} = queryHarness();
     const {result} = renderHook(() => useListingReviewsController(listing), {wrapper});
 
-    await waitFor(() => expect(listPublicOrganizerReviews).toHaveBeenCalledWith({organizerId: listing.id}));
     act(() => {
       result.current.setComment("Would attend again.");
       result.current.setReviewerName("Guest");
@@ -237,9 +228,6 @@ describe("useListingReviewsController", () => {
       reviewerName: "Guest",
       submittedFromPath: listing.path,
     }));
-    expect(invalidateQueries).toHaveBeenCalledWith({
-      queryKey: ["website", "reviews", "listing", listing.id],
-    });
     expect(result.current.status).toEqual({
       message: "Review published as an unverified public review.",
       tone: "is-success",
@@ -268,7 +256,6 @@ describe("useListingReviewsController", () => {
     const {wrapper} = queryHarness();
     const {result} = renderHook(() => useListingReviewsController(listing), {wrapper});
 
-    await waitFor(() => expect(listPublicOrganizerReviews).toHaveBeenCalled());
     act(() => {
       result.current.setComment("Needs moderation.");
       result.current.setReviewerName("Guest");

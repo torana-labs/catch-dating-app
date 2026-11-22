@@ -1,7 +1,6 @@
 import {ownerViewCopy} from "../../../content/ownerView";
 import {
   getOrganizerOwnerView,
-  listPublicOrganizerReviews,
   manageOrganizerOwnerPage,
   setOrganizerTrackingSettings,
   setReviewResponse,
@@ -12,7 +11,6 @@ import {
   isOwnerViewData,
   type OwnerPageCommand,
   type OwnerPageResult,
-  type OwnerReview,
   ownerTrackingSettings,
   type OwnerTrackingSettings,
   type OwnerViewData,
@@ -30,7 +28,6 @@ export interface OwnerViewBackends {
   getView: (organizerId: string) => Promise<OwnerViewData>;
   manage: (command: OwnerPageCommand) => Promise<OwnerPageResult>;
   saveAbout: (organizerId: string, description: string) => Promise<void>;
-  listReviews: (organizerId: string) => Promise<OwnerReview[]>;
   replyToReview: (reviewId: string, message: string) => Promise<void>;
   /** Listens to the tracking settings until the returned stop runs. */
   watchTracking: (organizerId: string, onValue: (settings: OwnerTrackingSettings) => void,
@@ -48,11 +45,6 @@ export const ownerViewBackends: OwnerViewBackends = {
   },
   manage: (command) => manageOrganizerOwnerPage(command),
   saveAbout: (organizerId, description) => updateOrganizerDescription(organizerId, description),
-  listReviews: async (organizerId) => (await listPublicOrganizerReviews({organizerId})).reviews.map((review) => ({
-    id: review.id, reviewerName: review.reviewerName, rating: review.rating, comment: review.comment,
-    createdAt: review.createdAt, verificationStatus: review.verificationStatus,
-    ownerResponse: review.ownerResponse ? {message: review.ownerResponse.message, hostName: review.ownerResponse.hostName} : null,
-  })),
   replyToReview: (reviewId, message) => setReviewResponse({reviewId, message}),
   watchTracking: async (organizerId, onValue, onError) => {
     const {watchOrganizerTrackingSettings} = await import("../../../firebaseReadModels");

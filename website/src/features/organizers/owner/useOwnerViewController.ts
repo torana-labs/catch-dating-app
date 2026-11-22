@@ -2,7 +2,8 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useMemo, useState} from "react";
 import {ownerViewBackends, type OwnerViewBackends} from "./ownerViewBackends";
 import {useLiveRead} from "../../../shared/query/useLiveRead";
-import type {OwnerCapability, OwnerFollowerMessages, OwnerLink, OwnerTrackingSettings, OwnerViewData} from "./ownerViewTypes";
+import type {OwnerCapability, OwnerFollowerMessages, OwnerLink, OwnerReview, OwnerTrackingSettings, OwnerViewData} from
+  "./ownerViewTypes";
 
 /** The owner view's five tabs, each shown only when the role has one of its capabilities. */
 export type OwnerTab = "insights" | "links" | "page" | "audience" | "settings";
@@ -41,9 +42,14 @@ function permissionDenied(error: unknown) {
  * view re-reads after each one; the public page catches up within its
  * 60-second cache.
  */
-export function useOwnerViewController({backends = ownerViewBackends, claimed, initialTab, initialUid, organizerId}: {
+export function useOwnerViewController({backends = ownerViewBackends, claimed, initialTab, initialUid, organizerId,
+  replyName, reviews: pageReviews}: {
   backends?: OwnerViewBackends;
   claimed: boolean;
+  /** The page's published reviews, as the server rendered them from the read model. */
+  reviews: readonly OwnerReview[];
+  /** Who a reply shows as until the page's next read carries it. */
+  replyName: string;
   /** Opens the bar on this tab (stories and tests). */
   initialTab?: OwnerTab;
   /** Stories start signed in or out without a Firebase runtime. */
@@ -88,9 +94,12 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
   const photosMutation = useMutation({retry: false, gcTime: 0,
     mutationFn: (photoIds: string[]) => backends.manage({organizerId, requestId: requestId(), action: "setPhotoOrder", photoIds})});
 
-  // Reviews and replies.
-  const reviews = useQuery({queryKey: ["ownerReviews", organizerId], queryFn: () => backends.listReviews(organizerId),
-    enabled: open && tab === "audience" && can("reviews"), retry: false});
+  // Reviews and replies: the page's own reviews, with replies sent here shown
+  // at once until the page's next read carries them.
+  const [replies, setReplies] = useState<Record<string, string>>({});
+  const reviewItems = useMemo(() => pageReviews.map((review) => replies[review.id] === undefined ? review :
+    {...review, ownerResponse: {message: replies[review.id], hostName: review.ownerResponse?.hostName ?? replyName}}),
+  [pageReviews, replies, replyName]);
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const replyMutation = useMutation({retry: false, gcTime: 0,
@@ -189,8 +198,8 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
         () => photosMutation.mutateAsync([id, ...photoIds.filter((photoId) => photoId !== id)])),
     },
     reviews: {
-      items: reviews.data ?? [],
-      ready: reviews.isSuccess,
+      items: reviewItems,
+      ready: true,
       replyTo,
       replyText,
       start: (reviewId: string, current: string) => {setReplyTo(reviewId); setReplyText(current); setNotice(null);},
@@ -199,8 +208,10 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
       busy: replyMutation.isPending,
       send: () => {
         if (!replyTo || !replyText.trim()) return;
-        void run("audience", "reply", () => replyMutation.mutateAsync({reviewId: replyTo, message: replyText.trim()}),
-          () => {setReplyTo(null); setReplyText(""); void reviews.refetch();});
+        const reviewId = replyTo;
+        const message = replyText.trim();
+        void run("audience", "reply", () => replyMutation.mutateAsync({reviewId, message}),
+          () => {setReplies((current) => ({...current, [reviewId]: message})); setReplyTo(null); setReplyText("");});
       },
     },
     followers: {

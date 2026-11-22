@@ -26,10 +26,6 @@ import type {CreatePublicOrganizerReviewCallableResponse} from
   "../shared/generated/createPublicOrganizerReviewCallableResponse";
 import type {DeleteEventReviewCallablePayload} from
   "../shared/generated/deleteEventReviewCallablePayload";
-import type {ListPublicOrganizerReviewsCallablePayload} from
-  "../shared/generated/listPublicOrganizerReviewsCallablePayload";
-import type {ListPublicOrganizerReviewsCallableResponse} from
-  "../shared/generated/listPublicOrganizerReviewsCallableResponse";
 import {
   validateCreateEventReviewCallablePayload,
 } from "../shared/generated/validators/createEventReviewInput";
@@ -40,10 +36,6 @@ import {
 import {
   validateDeleteEventReviewCallablePayload,
 } from "../shared/generated/validators/deleteEventReviewInput";
-import {
-  validateListPublicOrganizerReviewsCallablePayload,
-} from
-  "../shared/generated/validators/listPublicOrganizerReviewsInput";
 import {
   validateSetReviewResponseCallablePayload,
 } from "../shared/generated/validators/setReviewResponseInput";
@@ -275,46 +267,6 @@ async function createPublicOrganizerReviewFromData(
       ownerResponse: null,
     },
   };
-}
-
-export async function listPublicOrganizerReviewsHandler(
-  request: CallableRequest<unknown>,
-  deps: ReviewMutationDeps = defaultDeps
-): Promise<ListPublicOrganizerReviewsCallableResponse> {
-  const data =
-    validateCallableWithAjv<ListPublicOrganizerReviewsCallablePayload>(
-      request,
-      validateListPublicOrganizerReviewsCallablePayload,
-      normalizeSingleIdPayload("organizerId")
-    );
-  return listPublicOrganizerReviewsFromData(data, deps);
-}
-
-async function listPublicOrganizerReviewsFromData(
-  data: ListPublicOrganizerReviewsCallablePayload,
-  deps: ReviewMutationDeps
-): Promise<ListPublicOrganizerReviewsCallableResponse> {
-  const db = deps.firestore();
-  const [organizerSnap, reviewsSnap] =
-    await Promise.all([
-      db.collection("organizers").doc(data.organizerId).get(),
-      db
-        .collection("reviews")
-        .where("organizerId", "==", data.organizerId)
-        .orderBy("createdAt", "desc")
-        .limit(50)
-        .get(),
-    ]);
-  assertCanReceivePublicReview(organizerSnap, null);
-
-  const reviews = reviewsSnap.docs
-    .sort((a, b) => timestampMillis(b.data().createdAt) -
-      timestampMillis(a.data().createdAt))
-    .slice(0, 50)
-    .map((doc) => toPublicOrganizerReview(doc.id, doc.data() as ReviewDocument))
-    .filter((review): review is PublicOrganizerReview => review !== null);
-
-  return {reviews};
 }
 
 export async function updateEventReviewHandler(
@@ -647,61 +599,6 @@ function requesterIp(request: CallableRequest<unknown>): string {
   return rawRequest?.ip ?? forwardedIp?.split(",")[0]?.trim() ?? "unknown";
 }
 
-function toPublicOrganizerReview(
-  id: string,
-  review: ReviewDocument
-): PublicOrganizerReview | null {
-  if (review.moderationStatus && review.moderationStatus !== "published") {
-    return null;
-  }
-  const createdAt = timestampIso(review.createdAt);
-  if (!createdAt) return null;
-  const ownerResponse = review.ownerResponse;
-  return {
-    id,
-    reviewerName: review.reviewerName,
-    rating: review.rating,
-    comment: review.comment,
-    createdAt,
-    verificationStatus:
-      review.verificationStatus ?? (review.eventId ? "verified" : "unverified"),
-    source: review.source ?? (review.eventId ? "catchEvent" : "publicListing"),
-    moderationStatus: "published",
-    isAnonymous: review.isAnonymous ?? false,
-    ownerResponse: ownerResponse ? {
-      hostName: ownerResponse.hostName,
-      hostAvatarUrl: ownerResponse.hostAvatarUrl,
-      message: ownerResponse.message,
-      updatedAt: timestampIso(ownerResponse.updatedAt) ?? createdAt,
-    } : null,
-  };
-}
-
-function timestampIso(value: unknown): string | null {
-  if (
-    value &&
-    typeof value === "object" &&
-    "toDate" in value &&
-    typeof (value as {toDate?: unknown}).toDate === "function"
-  ) {
-    return (value as {toDate: () => Date}).toDate().toISOString();
-  }
-  if (
-    value &&
-    typeof value === "object" &&
-    typeof (value as {_seconds?: unknown})._seconds === "number"
-  ) {
-    return new Date((value as {_seconds: number})._seconds * 1000)
-      .toISOString();
-  }
-  return null;
-}
-
-function timestampMillis(value: unknown): number {
-  const iso = timestampIso(value);
-  return iso ? Date.parse(iso) : 0;
-}
-
 export const createEventReview = onCall(
   appCheckCallableOptions,
   (request) => createEventReviewHandler(request)
@@ -710,11 +607,6 @@ export const createEventReview = onCall(
 export const createPublicOrganizerReview = onCall(
   appCheckCallableOptions,
   (request) => createPublicOrganizerReviewHandler(request)
-);
-
-export const listPublicOrganizerReviews = onCall(
-  appCheckCallableOptions,
-  (request) => listPublicOrganizerReviewsHandler(request)
 );
 
 export const updateEventReview = onCall(
