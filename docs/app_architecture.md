@@ -431,10 +431,11 @@ module sits in one of four places, recorded in
   contracts. Target root `functions/src/platform/`.
 - **domain contexts:** data writes and rules, grouped by who owns the data.
   They are the contexts above, in the same order, plus two backend-only
-  contexts declared after `insights`: `supply` (external events, listing
-  intake, approval, publication and visibility policy, suppressions and
-  takedowns) and `sales` (Catch's own pipeline, partners, demos and
-  walkthroughs, city interest, the launch waitlist). Target root
+  contexts declared after `insights`: `sales` (Catch's own pipeline,
+  partners, demos and walkthroughs, city interest, the launch waitlist) and
+  then `supply` (external events, listing intake, approval, publication and
+  visibility policy, suppressions and takedowns), which calls into sales but
+  never the reverse. Target root
   `functions/src/domain/<context>/`.
 - **surfaces:** endpoints and read models built for one client: `admin`,
   `host`, `website` and `ops`. Target root `functions/src/surfaces/<surface>/`.

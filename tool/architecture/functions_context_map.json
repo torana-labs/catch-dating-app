@@ -26,8 +26,8 @@
     "live",
     "programmes",
     "insights",
-    {"id": "supply", "owns": "External events, listing intake and nominations, listing approval, publication and visibility policy, suppressions and takedowns."},
-    {"id": "sales", "owns": "Catch's own sales pipeline: leads, partners, demos and walkthroughs, the sales assistant, city interest and the launch waitlist."}
+    {"id": "sales", "owns": "Catch's own sales pipeline: leads, partners, demos and walkthroughs, the sales assistant, city interest and the launch waitlist."},
+    {"id": "supply", "owns": "External events, listing intake and nominations, listing approval, publication and visibility policy, suppressions and takedowns."}
   ],
   "surfaces": [
     {"id": "admin", "owns": "The Admin console's endpoints and read models, including the staff inbox."},
