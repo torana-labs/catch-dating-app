@@ -9,10 +9,10 @@ import type {CallableRequest} from "firebase-functions/v2/https";
 import type {EventAttendanceReportCallableResponse as Response} from
   "../shared/generated/eventAttendanceReportCallableResponse";
 import {EventAttendanceReportStore, classifyAttendance} from
-  "./attendanceReport";
+  "../domain/live/attendanceReport";
 import {getEventAttendanceReportHandler} from "./attendanceReportHandlers";
 import {harness, command, decline, manager, start, end} from
-  "./attendanceDispositionTestFixtures";
+  "../domain/live/attendanceDispositionTestFixtures";
 import {setEventAttendeeAttendanceHandler} from "./eventAttendees";
 
 test("classifications follow reviewed evidence and preserve uncertainty",

@@ -2,8 +2,9 @@ import {HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import type {Firestore} from "firebase-admin/firestore";
 import {buildEventAttendanceReport, Report} from
-  "../events/attendanceReport";
-import {attendanceEventSource} from "../events/attendanceDispositionReader";
+  "../domain/live/attendanceReport";
+import {attendanceEventSource} from
+  "../domain/live/attendanceDispositionReader";
 
 export const hostEventAttendanceReportsCollection =
   "hostEventAttendanceReports";

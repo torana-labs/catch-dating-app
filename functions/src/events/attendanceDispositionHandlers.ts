@@ -3,7 +3,8 @@ import {CallableRequest, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {EventAttendanceDispositionStore} from "./attendanceDispositionStore";
+import {EventAttendanceDispositionStore} from
+  "../domain/live/attendanceDispositionStore";
 
 interface Dependencies {
   db: typeof getFirestore;
