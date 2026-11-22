@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit, nightlyWindow, owedFromIssue}
+import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit, decideUncovered, nightlyWindow, owedFromIssue,
+  reportedUncovered, uncoveredCommits, uncoveredReportCounts}
   from "./main_red_alert.mjs";
 
 const run = (conclusion, extra = {}) => ({id: 7, html_url: "https://example.test/run/7", head_sha: "a".repeat(40),
@@ -186,4 +187,80 @@ test("cancelled runs, other events, short history and missing nightlies never en
   assert.deepEqual(decideFloorExit({runs: greenWeek().filter((run) => run.event === "push" ||
     Date.parse(run.created_at) < NOW - 5 * 864e5), now: NOW, openIssue: null}), {action: "none", reason: "too_few_nightlies"});
   assert.deepEqual(decideFloorExit({runs: greenWeek(), now: NOW, openIssue: null, reportingLanes: []}), {action: "none"});
+});
+
+// Uncovered main commits: a replaced push run that no other run covers.
+const GAP_NOW = Date.parse("2026-11-22T16:00:00Z");
+const at = (minutes) => new Date(GAP_NOW - minutes * 60 * 1000).toISOString();
+const pushRun = (id, digit, status, conclusion, minutesAgo) => ({id, head_sha: digit.repeat(40), status, conclusion,
+  event: "push", head_branch: "main", path: ".github/workflows/ci.yml", created_at: at(minutesAgo),
+  html_url: `https://example.test/run/${id}`});
+// Main's history is A < H < D < E.
+const order = ["a", "h", "d", "e"].map((digit) => digit.repeat(40));
+const linear = (descendant, sha) => order.indexOf(sha) <= order.indexOf(descendant);
+
+test("a later commit's pending run replaced by an earlier commit's run leaves that commit uncovered", () => {
+  // D's run was pending; H's run, created after it, replaced it and ran.
+  const runs = [pushRun(10, "a", "completed", "success", 60), pushRun(20, "d", "completed", "cancelled", 30),
+    pushRun(21, "h", "completed", "success", 29)];
+  assert.deepEqual(uncoveredCommits({runs, now: GAP_NOW, contains: linear}),
+    {uncovered: [{sha: "d".repeat(40), runId: 20, html_url: "https://example.test/run/20"}], unknown: []});
+});
+
+test("a replaced run is covered by any later commit's run that ran or is still to run", () => {
+  for (const [status, conclusion] of [["completed", "success"], ["completed", "failure"], ["in_progress", null], ["queued", null]]) {
+    const runs = [pushRun(20, "d", "completed", "cancelled", 30), pushRun(21, "h", "completed", "success", 29),
+      pushRun(22, "e", status, conclusion, 5)];
+    assert.deepEqual(uncoveredCommits({runs, now: GAP_NOW, contains: linear}).uncovered, [], `${status} ${conclusion}`);
+  }
+  // A later commit's run that was itself replaced covers nothing.
+  const runs = [pushRun(20, "d", "completed", "cancelled", 30), pushRun(22, "e", "completed", "cancelled", 5),
+    pushRun(23, "h", "completed", "success", 4)];
+  assert.deepEqual(uncoveredCommits({runs, now: GAP_NOW, contains: linear}).uncovered.map((commit) => commit.runId), [22, 20]);
+});
+
+test("an ordinary replaced intermediate run is covered; out-of-order creation within ten minutes still counts", () => {
+  // E's run was created two minutes before D's replaced one and ran.
+  const runs = [pushRun(20, "e", "completed", "success", 32), pushRun(21, "d", "completed", "cancelled", 30)];
+  assert.deepEqual(uncoveredCommits({runs, now: GAP_NOW, contains: linear}).uncovered, []);
+});
+
+test("unknown ancestry is not reported as uncovered; runs older than the nightly window are settled", () => {
+  const runs = [pushRun(20, "d", "completed", "cancelled", 30), pushRun(21, "e", "completed", "success", 20)];
+  assert.deepEqual(uncoveredCommits({runs, now: GAP_NOW, contains: () => null}), {uncovered: [], unknown: ["d".repeat(40)]});
+  assert.deepEqual(uncoveredCommits({runs: [pushRun(20, "d", "completed", "cancelled", 27 * 60)], now: GAP_NOW, contains: linear}),
+    {uncovered: [], unknown: []});
+});
+
+test("an uncovered commit opens the red issue owing Required CI, or comments once on the open one", () => {
+  const uncovered = [{sha: "d".repeat(40), runId: 20, html_url: "https://example.test/run/20"}];
+  const opened = decideUncovered({uncovered, openIssue: null});
+  assert.equal(opened.action, "open");
+  assert.equal(opened.title, ISSUE_TITLE);
+  assert.match(opened.body, /`dddddddd`: its run https:\/\/example\.test\/run\/20 was replaced before it ran/u);
+  assert.match(opened.body, /Nothing was triggered automatically/u);
+  // The next green main push passes Required CI and closes it.
+  assert.deepEqual(owedFromIssue([opened.body]), {jobs: ["Required CI"], pending: false, unknown: false});
+  assert.equal(decideAlert({run: run("success"), openIssue: {number: 3}, owed: owedFromIssue([opened.body]),
+    jobs: [job("Required CI", "success")]}).action, "close");
+  // Once reported, the same commit is not reported again.
+  assert.deepEqual(decideUncovered({uncovered, openIssue: {number: 3}, reported: reportedUncovered([opened.body])}),
+    {action: "none"});
+  const comment = decideUncovered({uncovered, openIssue: {number: 9}});
+  assert.deepEqual([comment.action, comment.issue], ["comment", 9]);
+  assert.equal(owedFromIssue([comment.body]), null, "a comment leaves the issue's owed jobs as they were");
+  assert.deepEqual(decideUncovered({uncovered: [], openIssue: null}), {action: "none"});
+});
+
+test("a commit reported before an early close is reported once more at most, never in a loop", () => {
+  const uncovered = [{sha: "d".repeat(40), runId: 20, html_url: "https://example.test/run/20"}];
+  const first = decideUncovered({uncovered, openIssue: null});
+  // A green run of an earlier commit closed the issue before the commit was covered.
+  const again = decideUncovered({uncovered, openIssue: null, counts: uncoveredReportCounts([first.body])});
+  assert.equal(again.action, "open");
+  // Closed a second time the same way: the commit has had its two reports.
+  assert.deepEqual(decideUncovered({uncovered, openIssue: null, counts: uncoveredReportCounts([first.body, again.body])}),
+    {action: "none"});
+  assert.deepEqual(decideUncovered({uncovered, openIssue: {number: 4},
+    counts: uncoveredReportCounts([first.body, again.body])}), {action: "none"});
 });

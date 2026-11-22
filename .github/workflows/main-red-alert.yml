@@ -11,6 +11,9 @@ name: Main CI alert
 # request selection of every commit since the last green nightly, and opens or
 # comments on one "Test selection missed a failing test" issue for any test no
 # commit selected; it is report-only and never changes the nightly's result.
+# After each main push run, the alert job also reports, on the "Main CI is red"
+# issue, a commit whose push run was replaced before it ran and that no other
+# main push run covers; it triggers nothing (22 Nov 2026).
 # It reads only main's own runs and checks out main's code.
 # Logic and tests: tool/ci/main_red_alert.mjs and
 # tool/ci/selection_miss_report.mjs. Operator guide:
