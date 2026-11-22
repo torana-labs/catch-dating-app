@@ -102,6 +102,7 @@ jobs:
             /tool/nx/manifest_diff.mjs
             /tool/ci/toolchain.env
             /tool/ci/main_push_base.mjs
+            /tool/ci/main_push_queue_proof.mjs
             /tool/ci/ios_build_inputs.mjs
             /tool/harness/component_graph.json
             /tool/harness/lib/component_graph.mjs
@@ -135,19 +136,10 @@ jobs:
         run: |
           set -uo pipefail
           # The merge queue validated this exact commit before main moved to
-          # it, so main re-runs no validation lane: it only plans. Any lookup
-          # failure keeps the full run.
-          run_id=""
-          if runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?event=merge_group&head_sha=$SOURCE_SHA&per_page=20")"; then
-            run_id="$(jq -r --arg sha "$SOURCE_SHA" '[.workflow_runs[]? | select(.event == "merge_group" and
-              .head_sha == $sha and .conclusion == "success" and .path == ".github/workflows/ci.yml")] |
-              max_by(.id) | .id // empty' <<< "$runs" || true)"
-          fi
-          if [[ -n "$run_id" ]]; then
-            jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" || echo '{}')"
-            jq -e '[.jobs[]? | select(.name == "Required CI" and .conclusion == "success")] | length == 1' \
-              <<< "$jobs" > /dev/null || run_id=""
-          fi
+          # it, so main re-runs no validation lane: it only plans. The proof is
+          # the queue run's Required CI job, not the run's conclusion, which
+          # waits on reporting lanes. Any lookup failure keeps the full run.
+          run_id="$(node tool/ci/main_push_queue_proof.mjs --sha "$SOURCE_SHA")" || run_id=""
           [[ -z "$run_id" || "$run_id" =~ ^[1-9][0-9]*$ ]] || run_id=""
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
           echo "Merge-queue validation reused: ${run_id:-none}" >> "$GITHUB_STEP_SUMMARY"

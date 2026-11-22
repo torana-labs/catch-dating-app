@@ -1876,7 +1876,7 @@ test("Tools check shells request inventory producer proofs and no capture proof"
 });
 
 
-test("main reuses a successful merge-queue run of the exact source for every validation lane", (t) => {
+test("main reuses the merge-queue run whose Required CI proved the exact source for every validation lane", (t) => {
   const ci = workflow("ci.yml");
   const plan = ci.slice(ci.indexOf("\n  plan:\n"), ci.indexOf("\n  source-preflight:\n"));
   assert.match(plan, /queue_verified_run: \$\{\{ steps\.queue\.outputs\.run_id \}\}/u);
@@ -1911,11 +1911,11 @@ test("main reuses a successful merge-queue run of the exact source for every val
     t.after(() => fs.rmSync(root, {recursive: true, force: true}));
     const bin = path.join(root, "bin"); fs.mkdirSync(bin);
     fs.writeFileSync(path.join(bin, "gh"), `#!/usr/bin/env node
-const endpoint = process.argv[3];
+const endpoint = process.argv.at(-1);
 if (endpoint.includes("/workflows/ci.yml/runs")) {
   if (${failRuns}) process.exit(1);
   console.log(JSON.stringify({workflow_runs: ${JSON.stringify(runs)}}));
-} else console.log(JSON.stringify({jobs: ${JSON.stringify(jobs)}}));
+} else console.log(JSON.stringify({total_count: ${jobs.length}, jobs: ${JSON.stringify(jobs)}}));
 `, {mode: 0o755});
     const output = path.join(root, "out"); fs.writeFileSync(output, "");
     const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {...process.env,
@@ -1924,13 +1924,19 @@ if (endpoint.includes("/workflows/ci.yml/runs")) {
     assert.equal(result.status, 0, result.stderr);
     return fs.readFileSync(output, "utf8").trim();
   };
-  const good = {id: 41, event: "merge_group", head_sha: sha, conclusion: "success", path: ".github/workflows/ci.yml"};
-  const required = [{name: "Required CI", conclusion: "success"}];
+  assert.match(step.run, /node tool\/ci\/main_push_queue_proof\.mjs --sha "\$SOURCE_SHA"/u);
+  assert.match(ci, /^            \/tool\/ci\/main_push_queue_proof\.mjs$/mu, "the plan job's sparse checkout has the script");
+  const good = {id: 41, event: "merge_group", head_sha: sha, status: "completed", conclusion: "success",
+    run_attempt: 1, path: ".github/workflows/ci.yml"};
+  const required = [{name: "Required CI", conclusion: "success", run_attempt: 1}];
   assert.equal(runLookup([good], required), "run_id=41");
-  assert.equal(runLookup([{...good, conclusion: "failure"}], required), "run_id=");
+  // The queue merges on Required CI; reporting lanes may still run (22 Nov 2026).
+  assert.equal(runLookup([{...good, status: "in_progress", conclusion: null}], required), "run_id=41");
   assert.equal(runLookup([{...good, head_sha: "b".repeat(40)}], required), "run_id=");
   assert.equal(runLookup([{...good, event: "pull_request"}], required), "run_id=");
-  assert.equal(runLookup([good], [{name: "Required CI", conclusion: "failure"}]), "run_id=");
+  assert.equal(runLookup([good], [{name: "Required CI", conclusion: "failure", run_attempt: 1}]), "run_id=");
+  assert.equal(runLookup([good], [{name: "Required CI", conclusion: null, run_attempt: 1}]), "run_id=");
+  assert.equal(runLookup([{...good, run_attempt: 2}], required), "run_id=", "an earlier attempt's success");
   assert.equal(runLookup([good], required, true), "run_id=", "API failure keeps the full run");
 });
 

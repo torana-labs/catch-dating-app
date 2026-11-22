@@ -33,7 +33,8 @@ export const ciWorkflow = ".github/workflows/ci.yml";
 // the selector entry points import or load, selects every lane.
 export const selectorFiles = [ciWorkflow, "nx.json", "firebase.json", "tool/ci/toolchain.env",
   "tool/harness.mjs", "tool/harness/component_graph.json",
-  "tool/repository_root_manifest.json", "tool/ci/main_push_base.mjs", "tool/ci/required_ci_floor.mjs"];
+  "tool/repository_root_manifest.json", "tool/ci/main_push_base.mjs", "tool/ci/main_push_queue_proof.mjs",
+  "tool/ci/required_ci_floor.mjs"];
 export const selectorPrefixes = ["tool/harness/", "tool/nx/"];
 // tool/tools_manifest.json is data the planner loads, but it selects by
 // semantic diff (manifest_diff.mjs), not every lane.
@@ -41,7 +42,7 @@ export const manifestFile = "tool/tools_manifest.json";
 // The scripts the plan job selects with.
 export const selectorEntries = ["tool/harness.mjs", "tool/harness/compare_selectors.mjs",
   "tool/harness/verify_local.mjs", "tool/nx/select_lanes.mjs", "tool/ci/main_push_base.mjs",
-  "tool/ci/required_ci_floor.mjs"];
+  "tool/ci/main_push_queue_proof.mjs", "tool/ci/required_ci_floor.mjs"];
 
 // CI configuration ci.yml never executes or reads, each with the reason. Every
 // tracked .github/** and tool/ci/** file must be a selector, be reached by a
