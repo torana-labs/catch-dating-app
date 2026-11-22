@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
@@ -808,9 +809,14 @@ void main() {
               area: 'Bandra',
               description: 'Easy social club',
               organizerType: OrganizerType.eventProducer,
+              signupSource: OrganizerSignupSource.googleSearch,
             );
 
         expect(fakeRepository.lastCreateCall, isNotNull);
+        expect(
+          fakeRepository.lastCreateCall!.signupSource,
+          OrganizerSignupSource.googleSearch,
+        );
         expect(
           fakeRepository.lastCreateCall!.organizerId,
           fakeRepository.generatedId,

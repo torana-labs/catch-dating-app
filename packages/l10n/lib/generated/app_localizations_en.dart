@@ -591,6 +591,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostOnboardingFormatNightsOut => 'Parties';
 
   @override
+  String get hostOnboardingSignupSourceTitle => 'How did you hear about Catch?';
+
+  @override
+  String get hostOnboardingSignupSourceNote =>
+      'Optional. One tap helps us know what works.';
+
+  @override
+  String get hostOnboardingSignupSourceMetaAd => 'Instagram or Facebook ad';
+
+  @override
+  String get hostOnboardingSignupSourceGoogleSearch => 'Google search';
+
+  @override
+  String get hostOnboardingSignupSourceInstagramPost =>
+      'Instagram post or reel';
+
+  @override
+  String get hostOnboardingSignupSourceFriendOrHost =>
+      'A friend or another host';
+
+  @override
+  String get hostOnboardingSignupSourceTeamOutreach =>
+      'Someone from Catch reached out';
+
+  @override
+  String get hostOnboardingSignupSourceOther => 'Somewhere else';
+
+  @override
+  String get hostOnboardingSignupSourceSkip => 'Skip';
+
+  @override
   String get hostOnboardingPageKicker => 'Your page';
 
   @override

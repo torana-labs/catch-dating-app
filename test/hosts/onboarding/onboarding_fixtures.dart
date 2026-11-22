@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -15,6 +16,7 @@ HostSetupState onboardingState({
   bool withDetails = true,
   String? organizerId,
   bool hasLogo = false,
+  OrganizerSignupSource? signupSource,
 }) => HostSetupState(
   step: step,
   hasLogo: hasLogo,
@@ -31,6 +33,7 @@ HostSetupState onboardingState({
             HostSetupFormat.dinner,
           })
         : const OrganizerHostDefaults(),
+    signupSource: signupSource,
   ),
 );
 

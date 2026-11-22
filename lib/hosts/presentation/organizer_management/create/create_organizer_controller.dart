@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dar
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
@@ -111,6 +112,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
     String? email,
     OrganizerHostDefaults hostDefaults = const OrganizerHostDefaults(),
     XFile? profileImage,
+    OrganizerSignupSource? signupSource,
   }) {
     final existingRequest = _submitInFlight;
     if (existingRequest != null) return existingRequest;
@@ -129,6 +131,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
           email: email,
           hostDefaults: hostDefaults,
           profileImage: profileImage,
+          signupSource: signupSource,
         ).whenComplete(() {
           if (identical(_submitInFlight, trackedRequest)) {
             _submitInFlight = null;
@@ -150,6 +153,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
     required String? email,
     required OrganizerHostDefaults hostDefaults,
     required XFile? profileImage,
+    required OrganizerSignupSource? signupSource,
   }) async {
     final uid = requireSignedInUid(ref, action: 'create an organizer');
 
@@ -174,6 +178,7 @@ class CreateOrganizerController extends _$CreateOrganizerController {
       phoneNumber: phoneNumber,
       email: email,
       hostDefaults: hostDefaults,
+      signupSource: signupSource,
     );
 
     reportCreated();

@@ -1093,6 +1093,60 @@ abstract class AppLocalizations {
   /// **'Parties'**
   String get hostOnboardingFormatNightsOut;
 
+  /// Organiser setup label over the optional how-did-you-hear chips.
+  ///
+  /// In en, this message translates to:
+  /// **'How did you hear about Catch?'**
+  String get hostOnboardingSignupSourceTitle;
+
+  /// Organiser setup note under the how-did-you-hear label; the question can be skipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. One tap helps us know what works.'**
+  String get hostOnboardingSignupSourceNote;
+
+  /// Organiser setup how-did-you-hear chip: a paid ad on Instagram or Facebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram or Facebook ad'**
+  String get hostOnboardingSignupSourceMetaAd;
+
+  /// Organiser setup how-did-you-hear chip: a Google search.
+  ///
+  /// In en, this message translates to:
+  /// **'Google search'**
+  String get hostOnboardingSignupSourceGoogleSearch;
+
+  /// Organiser setup how-did-you-hear chip: an unpaid Instagram post or reel.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram post or reel'**
+  String get hostOnboardingSignupSourceInstagramPost;
+
+  /// Organiser setup how-did-you-hear chip: word of mouth.
+  ///
+  /// In en, this message translates to:
+  /// **'A friend or another host'**
+  String get hostOnboardingSignupSourceFriendOrHost;
+
+  /// Organiser setup how-did-you-hear chip: the Catch team contacted them.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone from Catch reached out'**
+  String get hostOnboardingSignupSourceTeamOutreach;
+
+  /// Organiser setup how-did-you-hear chip: any other source.
+  ///
+  /// In en, this message translates to:
+  /// **'Somewhere else'**
+  String get hostOnboardingSignupSourceOther;
+
+  /// Organiser setup how-did-you-hear chip that leaves the question unanswered; selected until an answer is picked.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get hostOnboardingSignupSourceSkip;
+
   /// Organiser setup kicker over the page link tile.
   ///
   /// In en, this message translates to:

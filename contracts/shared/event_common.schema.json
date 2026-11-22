@@ -718,6 +718,18 @@
       ],
       "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
     },
+    "organizerSignupSource": {
+      "type": "string",
+      "enum": [
+        "metaAd",
+        "googleSearch",
+        "instagramPost",
+        "friendOrHost",
+        "teamOutreach",
+        "other"
+      ],
+      "description": "What a host said when Catch Host setup asked how they heard about Catch: an Instagram or Facebook ad, a Google search, an Instagram post or reel, a friend or another host, someone from Catch reaching out, or somewhere else. Self-reported and optional; it never replaces the acquisition channel Catch derives from ads and nominations."
+    },
     "organizerHostRole": {
       "type": "string",
       "enum": ["owner", "host"]
