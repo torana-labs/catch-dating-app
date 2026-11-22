@@ -152,57 +152,6 @@ void main() {
   });
 
   group('program lifecycle', () {
-    test(
-      'listPrograms parses lifecycle fields for the archive affordance',
-      () async {
-        final functions = _Functions()
-          ..response = {
-            'programs': [
-              {
-                'programId': 'program-active',
-                'kind': 'wedding',
-                'title': 'Mehta–Shah wedding',
-                'status': 'active',
-                'timezone': 'Asia/Kolkata',
-                'startsAtMillis': 1735689600000,
-                'endsAtMillis': 1736035200000,
-                'capabilities': ['functions'],
-                'archivedAtMillis': null,
-                'anonymizeAtMillis': null,
-                'anonymizedAtMillis': null,
-                'revision': 3,
-              },
-              {
-                'programId': 'program-archived',
-                'kind': 'corporate',
-                'title': 'Aisle Summit',
-                'status': 'archived',
-                'timezone': 'Asia/Kolkata',
-                'startsAtMillis': 1735689600000,
-                'endsAtMillis': 1736035200000,
-                'capabilities': ['functions'],
-                'archivedAtMillis': 1737000000000,
-                'anonymizeAtMillis': 1738209600000,
-                'anonymizedAtMillis': null,
-                'revision': 9,
-              },
-            ],
-          };
-        final rows = await ProgramSetupRepository(
-          functions,
-        ).listPrograms('org-1');
-        expect(functions.calls, ['listOrganizerPrograms']);
-        expect(rows, hasLength(2));
-        expect(rows[0].revision, 3);
-        expect(rows[0].archivedAt, isNull);
-        expect(rows[1].status, 'archived');
-        expect(
-          rows[1].anonymizeAt,
-          DateTime.fromMillisecondsSinceEpoch(1738209600000),
-        );
-      },
-    );
-
     test('archiveProgram and unarchiveProgram fence on revision', () async {
       final functions = _Functions()
         ..response = {

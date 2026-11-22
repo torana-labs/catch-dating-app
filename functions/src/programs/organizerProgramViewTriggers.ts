@@ -1,9 +1,25 @@
 import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {isDeepStrictEqual} from "node:util";
-import {reconcileOrganizerProgramView} from "./organizerProgramViews";
+import {recountOrganizerProgram} from "./organizerProgramCounts";
+import {reconcileOrganizerProgramView as rewriteView} from
+  "./organizerProgramViews";
 
 const options = {retry: true};
+
+/**
+ * Rewrites a programme's setup view and, when the view has no list counts
+ * yet (it was just created, or predates them), recounts it.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {string} programId The programme.
+ * @return {Promise<void>} Resolves once the view matches its sources.
+ */
+async function reconcileOrganizerProgramView(
+  db: FirebaseFirestore.Firestore, programId: string): Promise<void> {
+  if (await rewriteView(db, programId)) {
+    await recountOrganizerProgram(db, programId);
+  }
+}
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 

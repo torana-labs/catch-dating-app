@@ -177,6 +177,13 @@ void main() {
     tester,
   ) async {
     final backend = HostShellBackend(uid: _hostUid);
+    for (final organizer in [_neemwoodRunClub, _lodhiSocials]) {
+      await backend.seedManagedProgramme(
+        organizerId: organizer.id,
+        programId: 'programme-${organizer.id}',
+        title: '${organizer.name} weekend',
+      );
+    }
     await _pumpHost(
       tester,
       backend,
@@ -205,11 +212,28 @@ void main() {
     final before = backend.functions.calls.length;
     await openHostTab(tester, 'Events');
     await pumpAppShellFrames(tester, frames: 20);
-    final eventReads = backend.functions.calls.skip(before).toList();
-    expect(eventReads, isNotEmpty);
+    // Events reads its programmes from Firestore listeners scoped to the
+    // selected organizer: its programme shows and the other one's does not.
+    final previous = selected == _neemwoodRunClub.id
+        ? _neemwoodRunClub
+        : _lodhiSocials;
     expect(
-      eventReads.map((call) => (call.input! as Map)['organizerId']).toSet(),
-      {other.id},
+      find.text('${other.name} weekend', skipOffstage: false),
+      findsOneWidget,
+    );
+    expect(
+      find.text('${previous.name} weekend', skipOffstage: false),
+      findsNothing,
+    );
+    // Any callable Events still makes reads the selected organizer.
+    final eventCalls = backend.functions.calls.skip(before);
+    expect(
+      eventCalls
+          .map((call) => (call.input as Map?)?['organizerId'])
+          .whereType<String>()
+          .toSet()
+          .difference({other.id}),
+      isEmpty,
     );
     expectHostSurfaceLoaded(tester, backend, surface: 'switched Events');
     await unmountHostAppShell(tester);

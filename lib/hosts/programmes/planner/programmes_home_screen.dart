@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/organizers/data/organizer_entitlement_repository.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programmes_home_body.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_navigation.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -12,8 +12,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// The planner home (RbProgHome) for one organiser, from
-/// `listOrganizerPrograms` with its overview numbers. A row opens the
+/// The planner home (RbProgHome) for one organiser, live from
+/// `organizerProgramViews` with its overview numbers. A row opens the
 /// programme; New programme opens create.
 class HostProgrammesHomeScreen extends ConsumerWidget {
   const HostProgrammesHomeScreen({super.key, required this.organizerId});
@@ -34,7 +34,7 @@ class HostProgrammesHomeScreen extends ConsumerWidget {
           false,
     );
     final page = catchAsyncStateFromAsyncValue(
-      ref.watch(programmesOverviewProvider(organizerId)),
+      ref.watch(organizerProgramRowsStreamProvider(organizerId)),
     );
     void create() => context.pushNamed(
       Routes.hostCreateProgramScreen.name,
@@ -69,7 +69,7 @@ class HostProgrammesHomeScreen extends ConsumerWidget {
               : page.hasData
               ? HostProgrammesHomeStatus.ready
               : HostProgrammesHomeStatus.loading,
-          programmes: page.value?.programs ?? const [],
+          programmes: page.value ?? const [],
           now: ref.watch(appClockProvider).now(),
           onOpen: (row) => context.pushNamed(
             Routes.hostProgramWorkspaceScreen.name,
@@ -77,7 +77,7 @@ class HostProgrammesHomeScreen extends ConsumerWidget {
           ),
           onNew: create,
           onRetry: () =>
-              ref.invalidate(programmesOverviewProvider(organizerId)),
+              ref.invalidate(organizerProgramRowsStreamProvider(organizerId)),
         ),
       ),
     );

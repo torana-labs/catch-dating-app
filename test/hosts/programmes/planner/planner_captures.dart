@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
@@ -87,9 +88,9 @@ List<Override> plannerCaptureOverrides() => [
     plannerProgramId,
     null,
   ).overrideWithValue(AsyncData(plannerTravel.roster!)),
-  programmesOverviewProvider(
+  organizerProgramRowsStreamProvider(
     plannerOrganizerId,
-  ).overrideWith((ref) async => plannerOverview),
+  ).overrideWith((ref) => Stream.value(plannerOverview.programs)),
   programLiveBoardViewProvider(plannerProgramId).overrideWith(
     (ref) async =>
         (value: staffLiveBoard(), snapshotAt: null, snapshotExpiresAt: null),

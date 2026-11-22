@@ -1364,17 +1364,18 @@ guard `apply-flag`).
 
 ### Firestore projection repairs
 
-These three recompute a denormalised projection from its source documents.
+These four recompute a denormalised projection from its source documents.
 Each takes `--env <dev|prod>` (or `--project <id>`), `--emulator` or
 `--emulator-host <host>`, `--json`, and writes only with `--apply` (guard
-`apply-flag`; none of them has a separate production flag, so name the
-environment explicitly).
+`apply-flag`; apart from the programme counts, none of them has a separate
+production flag, so name the environment explicitly).
 
 | Tool | Command | Recomputes |
 |---|---|---|
 | `data:repair-club-hosts` | `node tool/data/recompute_organizer_host_profiles.mjs` | Club host fields (`ownerUserId`, `hostUserIds`, `hostProfiles`, `profileImageUrl`) from `hostProfiles/{uid}`, keeping a club's existing host snapshot when no host profile exists yet. |
 | `data:repair-event-aggregates` | `node tool/data/recompute_event_aggregate_counts.mjs` | `events/{eventId}` counts from `eventBookings`: `bookedCount` and `genderCounts` (signed up plus attended), `checkedInCount` (attended), `waitlistedCount`. |
 | `data:repair-organizer-follower-counts` | `node tool/data/recompute_organizer_follower_counts.mjs` | `organizers/{organizerId}.followerCount` from active `organizerFollows` edges. |
+| `data:repair-organizer-program-counts` | `node tool/data/recompute_organizer_program_counts.mjs` | `organizerProgramViews/{programId}` list counts (`guestCount`, `repliedGuestCount`, `flyingInCount` and their fences) from `programGuests` and `programTravelLegs`, with the nightly recount's compiled code (build Functions first). It is the counts' backfill, and the one tool here that also needs `--allow-prod` to write prod (guard `apply-and-prod-flag`). |
 
 - **Run order:** emulator or dev first, then the target environment without
   `--apply`. Read the summary of documents that would change, then re-run with

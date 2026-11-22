@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_create_journal.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/organizer_program_views.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
@@ -344,6 +346,7 @@ class ProgramCreate extends _$ProgramCreate {
   Future<ProgramCreateView> build(ProgramEventsScope scope) async {
     final repository = ref.watch(programSetupRepositoryProvider);
     final inventoryRepository = ref.watch(programInventoryRepositoryProvider);
+    final programViews = ref.watch(organizerProgramViewsRepositoryProvider);
     final journal = ref.watch(programCreateJournalProvider);
     bool isCurrent() {
       final selected = ref.read(
@@ -425,14 +428,18 @@ class ProgramCreate extends _$ProgramCreate {
       readSaved: (id) async => (await repository.getProgram(id)).program,
       refreshPrograms: (id) async {
         if (!isCurrent()) throw const ProgramActorChangedException();
-        // Confirmation is one authoritative inventory row, even when its
-        // start precedes every row in the ordinary first page.
-        final page = await inventoryRepository.listPage(
-          scope.organizerId,
+        // Confirmation is the new programme's own list row, once its view
+        // is written, even when its start precedes every row of the list.
+        final view = await programViews.createdProgramme(
+          organizerId: scope.organizerId,
+          uid: scope.accountId,
           programId: id,
         );
         if (!isCurrent()) throw const ProgramActorChangedException();
-        return page.programs;
+        return [
+          if (view != null)
+            organizerProgramListRowFromView(view, scope.accountId),
+        ];
       },
     );
     ref.listen(uidProvider, (_, _) {
