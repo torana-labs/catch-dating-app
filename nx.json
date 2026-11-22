@@ -27,6 +27,7 @@
       "{workspaceRoot}/apps/**/*.dart",
       "{workspaceRoot}/apps/consumer/build.yaml",
       "{workspaceRoot}/apps/host/build.yaml",
+      "{workspaceRoot}/docs/backend_operation_catalog/functions/*.md",
       "{workspaceRoot}/docs/migrations/clubs_to_organizers.md",
       "{workspaceRoot}/extensions/**/*",
       "{workspaceRoot}/firebase.json",

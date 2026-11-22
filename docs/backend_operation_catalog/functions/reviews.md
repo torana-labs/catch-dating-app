@@ -1,0 +1,9 @@
+| Function | Type | Initiator | Writes | Notes |
+|---|---|---|---|---|
+| `createPublicOrganizerReview` | Callable | Public website listing | `reviews/{reviewId}` with `organizerId` and compatibility `organizerId` | Public review scope is bound to a published canonical organizer route. |
+| `listPublicOrganizerReviews` | Retired callable (Nov 2026) | None | None | The website renders a page's published reviews from its `organizerPublicPage` / `eventPublicPage` read model (`latestReviews`, rebuilt on every review write), and the owner view replies to those. No app called it. Listed in `functions/retired-functions.json`. |
+| `setReviewResponse` | Callable | Claimed organizer review UI | `reviews/{reviewId}.ownerResponse` | Server-owned owner response on public review documents. Only managers for the owning organizer can write responses; app and website render the canonical review snapshot. |
+| `createEventReview` | Callable | `ReviewsRepository.addReview` | `reviews/{eventId~uid}` | Attended-event review create. Server verifies the `eventBookings/{eventId_uid}` edge, derives public reviewer name with the shared profile projection helper, and writes the deterministic review doc. |
+| `updateEventReview` | Callable | `ReviewsRepository.updateReview` | `reviews/{reviewId}.rating/comment/updatedAt` | Author-only review edit. |
+| `deleteEventReview` | Callable | `ReviewsRepository.deleteReview` | `reviews/{reviewId}` delete | Author-only review delete. `syncOrganizerReviewStats` recomputes aggregate rating/count after deletion. |
+| `syncOrganizerReviewStats` | Firestore trigger on `reviews/{reviewId}` write | Backend | `organizers/{organizerId}.rating/reviewCount/verifiedReviewCount` plus legacy shadow | Compatibility-named trigger that queries `reviews.organizerId`; duplicate delivery is safe. |

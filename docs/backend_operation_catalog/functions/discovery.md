@@ -1,0 +1,3 @@
+| Function | Type | Initiator | Writes | Notes |
+|---|---|---|---|---|
+| `adminGetDiscoverySettings` / `adminUpdateDiscoverySettings` | Callable | Admin Settings → Discovery | `discoverySettings/current`, `adminAuditLogs/{id}` | Where organisers on Catch (claimed, verified) and not on Catch yet (unclaimed, claimPending) appear to guests: the homepage organisers band, city pages and Explore's organisers tab, their plans, and city and format totals; plus the homepage band minimum (1–24) and the claim-your-page button. Absent means the defaults in code (only organisers on Catch; minimum 1; no button). Read returns the settings and the defaults; update is owner-only, rate limited, and writes the document with an audit entry in one transaction. The rules only hide. |
