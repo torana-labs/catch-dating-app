@@ -6245,6 +6245,27 @@ captured checkouts and records any that were missed. The same job creates the
 table if it is missing and sends whatever BigQuery lacks, including form payments
 under their own event names (`analytics/sql/README.md`).
 
+### Self-Reported Signup Source
+
+Catch Host setup asks one optional question on its details step, "How did you
+hear about Catch?", with one-tap answers and a Skip chip that is selected until
+an answer is picked. The answer rides in the setup draft and goes out with
+`createOrganizer` as `signupSource`, one of `organizerSignupSource` in
+`contracts/shared/event_common.schema.json`: `metaAd`, `googleSearch`,
+`instagramPost`, `friendOrHost`, `teamOutreach` or `other`. Skip sends nothing.
+`createOrganizer` stores it once on the organizer as
+`signupSource: {source, answeredAt}`, where `answeredAt` is the server's time.
+It is server-only: `updateOrganizer` cannot set it, and `syncPublicOrganizer`
+never copies it. It never asks about gender, dating or matching.
+
+The answer is self-reported and never changes the derived channel above.
+`adminGetOrganizerOverview` returns it as `signupSource`, which Admin shows as
+"Told us in setup" beside "Came from". `adminGetGrowth` reads it for organizers
+that set themselves up (`channelSource.originKind == "userCreated"`) and returns
+`signupSources`: organizers and paying organizers per answer, plus
+`unanswered`. Admin's Growth screen shows it as its own table, next to the
+channel table and never merged into it.
+
 Captured payments store `providerFees` (`feePaise`, Razorpay's whole fee
 including tax, and `taxPaise`, the GST within it) from the provider's payment
 entity on booking and checkout `guestPayments`. It is written once, when the capture is first observed
