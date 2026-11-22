@@ -21,7 +21,10 @@ export default mergeConfig(
               VITE_ADMIN_DATA_MODE: "sample",
             },
             include: ["src/**/*.test.{ts,tsx}", ".storybook/preview.test.ts"],
-            setupFiles: ["src/testing/phoneLane.tsx"],
+            setupFiles: [
+              "src/testing/unmountAfterEachTest.ts",
+              "src/testing/phoneLane.tsx",
+            ],
             mockReset: true,
             restoreMocks: true,
           },
