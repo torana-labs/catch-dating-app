@@ -40,6 +40,10 @@ import {
   isCheckedInAt,
 } from "./demoWorld";
 import type {DemoDocWrite} from "./suvbotDocValidation";
+import {newEventSeatLedger} from "../events/seatAuthority/eventSeatLedgers";
+import {seatReservationDocId} from "../events/seatAuthority/firestoreAdapter";
+import {catchUidSeatKey, seatIdentityAliasId, seatIdentityValueHash,
+  seatVerifiedPhoneProofId} from "../events/seatIdentityAuthority";
 import {suvbotWorldBundle} from "./generated/suvbotDemoWorlds";
 
 export const SUVBOT_DEMO_MOMENTS = [
@@ -348,6 +352,8 @@ export function buildSuvbotWorldPlan(
       participations, firstMoment, now, marker, ts,
     });
     docs.push({path: `events/${eventDocId}`, data: eventDoc});
+    docs.push(...demoEventSeatDocs({eventId: eventDocId,
+      organizerId: ids.organizer, event: eventDoc, participations}));
     if (isPrimary) {
       summaryCounts = {
         booked: eventDoc.bookedCount as number,
@@ -482,6 +488,53 @@ interface CastMember {
   uid: string;
   persona: DemoWorldPersona;
   user: FirebaseFirestore.DocumentData;
+}
+
+/**
+ * The seat records a demo event holds, as booking writes them: the event's
+ * ledger counting every signed-up or attended guest, and for each of them
+ * the uid alias, phone alias and verified phone proof of their Catch seat
+ * identity and its active reservation.
+ * @param {object} params The event, its organizer and its bookings.
+ * @return {DemoDocWrite[]} The seat writes.
+ */
+function demoEventSeatDocs(params: {
+  eventId: string;
+  organizerId: string;
+  event: FirebaseFirestore.DocumentData;
+  participations: ParticipationRow[];
+}): DemoDocWrite[] {
+  const {eventId, organizerId} = params;
+  const seated = params.participations.filter((row) =>
+    row.doc.status === "signedUp" || row.doc.status === "attended");
+  const docs: DemoDocWrite[] = [{path: `eventSeatLedgers/${eventId}`,
+    data: {...newEventSeatLedger(eventId, params.event),
+      occupied: seated.length}}];
+  for (const row of seated) {
+    const key = catchUidSeatKey(eventId, row.uid);
+    const phone = typeof row.user.phoneNumber === "string" ?
+      row.user.phoneNumber : null;
+    const alias = {eventId, organizerId, canonicalKey: key,
+      identityRevision: 1, migrationRevision: 1, state: "ready"};
+    docs.push({path: `eventSeatIdentityAliases/${seatIdentityAliasId(
+      eventId, "uid", row.uid)}`, data: {...alias, kind: "uid",
+      valueHash: seatIdentityValueHash("uid", row.uid)}});
+    if (phone) {
+      docs.push({path: `eventSeatIdentityAliases/${seatIdentityAliasId(
+        eventId, "phone", phone)}`, data: {...alias, kind: "phone",
+        valueHash: seatIdentityValueHash("phone", phone)}});
+    }
+    docs.push({path: `eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(
+      eventId, row.uid)}`, data: {eventId, organizerId, uid: row.uid,
+      phoneE164: phone, migrationRevision: 1, state: "current"}});
+    const reservedAt = (row.doc.signedUpAt ?? row.doc.createdAt) as
+      FirebaseFirestore.Timestamp;
+    docs.push({path: `eventSeatReservations/${seatReservationDocId(eventId,
+      key)}`, data: {eventId, canonicalKey: key, identityRevision: 1,
+      active: true, revision: 1, reservedAtMillis: reservedAt.toMillis(),
+      releasedAtMillis: null}});
+  }
+  return docs;
 }
 
 interface ParticipationRow {

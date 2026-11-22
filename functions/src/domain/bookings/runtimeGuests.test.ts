@@ -93,7 +93,7 @@ test("an auto-created walk-in gets a registered, linked row", async () => {
       attendeeRef: db.collection("eventAttendees").doc("row-1"),
       existing: null, eventId: "event-1", organizerId: "organizer-1",
       uid: "runner-1", displayName: "Walk In", phone: "+919876543210",
-      walkInPolicy: "autoCreate", seatReady: false, seatAlreadyActive: false,
+      walkInPolicy: "autoCreate", seatAlreadyActive: false,
       inviteLinkId: "invite-1", now});
   });
   const row = firestore.get(rowPath)!;
@@ -107,7 +107,7 @@ test("an auto-created walk-in gets a registered, linked row", async () => {
   assert.ok(now.isEqual(row.inviteCapturedAt as Timestamp));
 });
 
-test("a Host-approval walk-in waits invited and unlinked before seats",
+test("a Host-approval walk-in waits invited, linked to the claimer",
   async () => {
     const firestore = store();
     await write(firestore, (tx, db) => {
@@ -115,13 +115,12 @@ test("a Host-approval walk-in waits invited and unlinked before seats",
         attendeeRef: db.collection("eventAttendees").doc("row-1"),
         existing: null, eventId: "event-1", organizerId: "organizer-1",
         uid: "runner-1", displayName: "Walk In", phone: "+919876543210",
-        walkInPolicy: "hostApproval", seatReady: false,
+        walkInPolicy: "hostApproval",
         seatAlreadyActive: false, inviteLinkId: null, now});
     });
     const row = firestore.get(rowPath)!;
     assert.equal(row.status, "invited");
-    assert.equal(row.linkedUid, null);
-    assert.equal(row.linkedAt, null);
+    assert.equal(row.linkedUid, "runner-1");
     assert.equal(row.registeredAt, null);
   });
 
@@ -132,7 +131,7 @@ test("a guest holding a Catch seat gets a booking-sourced row", async () => {
       attendeeRef: db.collection("eventAttendees").doc("row-1"),
       existing: null, eventId: "event-1", organizerId: "organizer-1",
       uid: "runner-1", displayName: "Catch Guest", phone: "+919876543210",
-      walkInPolicy: "deny", seatReady: true, seatAlreadyActive: true,
+      walkInPolicy: "deny", seatAlreadyActive: true,
       inviteLinkId: null, now});
   });
   const row = firestore.get(rowPath)!;
@@ -142,7 +141,7 @@ test("a guest holding a Catch seat gets a booking-sourced row", async () => {
   assert.equal(row.linkedUid, "runner-1");
 });
 
-test("claiming a Host row links it and registers it under ready seats",
+test("an auto-create claim links a Host row and registers it",
   async () => {
     const existing = hostRow({status: "waitlisted"});
     const firestore = store(existing);
@@ -152,7 +151,7 @@ test("claiming a Host row links it and registers it under ready seats",
         attendeeRef: db.collection("eventAttendees").doc("row-1"),
         existing, eventId: "event-1", organizerId: "organizer-1",
         uid: "runner-1", displayName: "Ignored", phone: "+919876543210",
-        walkInPolicy: "autoCreate", seatReady: true,
+        walkInPolicy: "autoCreate",
         seatAlreadyActive: false, inviteLinkId: "invite-1", now});
     });
     const row = firestore.get(rowPath)!;
@@ -167,7 +166,7 @@ test("claiming a Host row links it and registers it under ready seats",
     assert.equal(result?.linkedUid, "runner-1");
   });
 
-test("claiming a Host row keeps its status, link time and invite",
+test("a Host-approval claim keeps the row's status, link time and invite",
   async () => {
     const existing = hostRow({status: "invited", linkedAt: earlier,
       inviteLinkId: "invite-original", inviteCapturedAt: earlier});
@@ -177,7 +176,7 @@ test("claiming a Host row keeps its status, link time and invite",
         attendeeRef: db.collection("eventAttendees").doc("row-1"),
         existing, eventId: "event-1", organizerId: "organizer-1",
         uid: "runner-1", displayName: "Ignored", phone: "+919876543210",
-        walkInPolicy: "autoCreate", seatReady: false,
+        walkInPolicy: "hostApproval",
         seatAlreadyActive: false, inviteLinkId: "invite-2", now});
     });
     const row = firestore.get(rowPath)!;
@@ -193,7 +192,7 @@ test("Host approval registers an invited row and keeps its history",
     const firestore = store(attendee);
     await write(firestore, (tx, db) => linkApprovedRuntimeGuest({tx,
       attendeeRef: db.collection("eventAttendees").doc("row-1"), attendee,
-      uid: "runner-1", seatReady: false, now}));
+      uid: "runner-1", now}));
     const row = firestore.get(rowPath)!;
     assert.equal(row.status, "registered");
     assert.equal(row.linkedUid, "runner-1");
@@ -201,15 +200,11 @@ test("Host approval registers an invited row and keeps its history",
     assert.equal(row.preCheckInStatus, "registered");
   });
 
-test("Host approval registers a waitlisted row only under ready seats",
-  async () => {
-    const attendee = hostRow({status: "waitlisted"});
-    for (const [seatReady, status] of [[false, "waitlisted"],
-      [true, "registered"]] as const) {
-      const firestore = store(attendee);
-      await write(firestore, (tx, db) => linkApprovedRuntimeGuest({tx,
-        attendeeRef: db.collection("eventAttendees").doc("row-1"), attendee,
-        uid: "runner-1", seatReady, now}));
-      assert.equal(firestore.get(rowPath)?.status, status);
-    }
-  });
+test("Host approval registers a waitlisted row", async () => {
+  const attendee = hostRow({status: "waitlisted"});
+  const firestore = store(attendee);
+  await write(firestore, (tx, db) => linkApprovedRuntimeGuest({tx,
+    attendeeRef: db.collection("eventAttendees").doc("row-1"), attendee,
+    uid: "runner-1", now}));
+  assert.equal(firestore.get(rowPath)?.status, "registered");
+});

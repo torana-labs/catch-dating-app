@@ -67,8 +67,8 @@ test("changed routing, source, quotas or unavailable seats never reserve",
         h.store.get(`events/${eventId}`)!.constraints = {maxMen: 1};
       },
       (h) => {
-        h.store.get(`eventSeatMigrationFences/${eventId}`)!
-          .state = "locked";
+        h.store.get(`eventSeatLedgers/${eventId}`)!
+          .state = "revoked";
       },
       (h) => {
         h.store.put(`deletedUsers/${uid}`, {status: "processing"});

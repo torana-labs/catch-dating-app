@@ -173,7 +173,7 @@ test("ready provider roster cap fails before any transaction write",
     assert.equal(h.pendingCount, 0);
   });
 
-function reconcileFixture(options: {locked?: boolean; ready?: boolean;
+function reconcileFixture(options: {revoked?: boolean; ready?: boolean;
   changedMapping?: boolean; checkedInBeforeTx?: boolean;
   uncertainCommit?: boolean; withoutRun?: boolean} = {}) {
   const runId = providerSyncRunId(eventId, "host1", operationId);
@@ -206,18 +206,14 @@ function reconcileFixture(options: {locked?: boolean; ready?: boolean;
   };
   if (options.ready) {
     const policy = deriveEventSeatPolicy(event);
-    docs[`eventSeatMigrationFences/${eventId}`] = {eventId,
-      migrationRevision: 1, state: "ready"};
     docs[`eventSeatLedgers/${eventId}`] = {eventId, capacity: 2,
       occupied: 0, revision: 1, capacityRevision: 1, migrationRevision: 1,
       state: "ready", policyHash: policy.policyHash,
       policyVersion: policy.policyVersion};
   }
-  if (options.locked) {
-    docs[`eventSeatMigrationFences/${eventId}`] = {eventId,
-      migrationRevision: 1, state: "locked"};
+  if (options.revoked) {
     docs[`eventSeatLedgers/${eventId}`] = {eventId,
-      migrationRevision: 1, state: "ready"};
+      migrationRevision: 1, state: "revoked"};
   }
   const query = (name: string, predicates: Array<[string, unknown]> = [],
     max = Infinity) => ({
@@ -295,20 +291,9 @@ async function reconcileFixtureRun(h: ReturnType<typeof reconcileFixture>) {
     pageCount: 1, truncated: false, now, run: h.run});
 }
 
-test("legacy provider sync rereads a concurrent check-in in its writer TX",
+test("a revoked ledger or changed provider mapping rejects all roster writes",
   async () => {
-    const h = reconcileFixture({checkedInBeforeTx: true});
-    const receipt = await reconcileFixtureRun(h);
-    assert.equal(receipt.status, "completed");
-    assert.equal(h.docs[`eventAttendees/${attendeeId}`].status, "checkedIn");
-    assert.equal(h.docs[`events/${eventId}`].checkedInCount, 1);
-    assert.equal(h.docs[`providerSyncRuns/${providerSyncRunId(eventId,
-      "host1", operationId)}`].status, "completed");
-  });
-
-test("migration lock or changed provider mapping rejects all roster writes",
-  async () => {
-    for (const option of [{locked: true}, {changedMapping: true}]) {
+    for (const option of [{revoked: true}, {changedMapping: true}]) {
       const h = reconcileFixture(option);
       await assert.rejects(reconcileFixtureRun(h));
       assert.equal(h.docs[`eventAttendees/${attendeeId}`], h.old);

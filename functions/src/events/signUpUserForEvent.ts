@@ -32,7 +32,7 @@ import {
 } from "../shared/notifications";
 import {prepareUserEventScheduleClaimInTransaction} from
   "./scheduleConflicts";
-import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {requireEventSeatLedger} from "./seatAuthority/eventSeatLedgers";
 import {prepareCatchUidSeatIdentity,
   prepareVerifiedUidGuestSeatLink, seatIdentityAliasId} from
   "./seatIdentityAuthority";
@@ -156,7 +156,6 @@ export async function signUpUserForEvent(
       "EventDocument"
 
     );
-    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
     const pairHoldSnap = pairHoldRef ? await tx.get(pairHoldRef) : null;
     const pairHold = pairHoldSnap?.exists ?
       requireDoc<CrossPathsPairHoldDocument>(
@@ -308,64 +307,54 @@ export async function signUpUserForEvent(
     const gender = user.gender;
     const policy = eventPolicyFromEvent(event);
     const cohortId = cohortIdForUser(user);
-    const signedUpCount = activeParticipations
-      .filter((participation) => participation.data.status === "signedUp")
-      .length;
-    const seatTransaction = seatMode === "ready" ?
-      new FirestoreSeatTransaction(db, tx) : null;
-    const seatLedger = seatTransaction ?
-      await seatTransaction.ledger(eventId) : null;
+    const seatTransaction = new FirestoreSeatTransaction(db, tx);
+    const seatLedger = await requireEventSeatLedger({db, tx, eventId});
     let currentAuthPhone: string | null = null;
     let guestLink: Awaited<ReturnType<
       typeof prepareVerifiedUidGuestSeatLink>> | null = null;
     let guestLinkAttendeeId: string | null = null;
-    if (seatMode === "ready") {
-      currentAuthPhone = options.loadCurrentAuthPhone ?
-        await options.loadCurrentAuthPhone(userId) :
-        (await admin.auth().getUser(userId)).phoneNumber ?? null;
-      if (currentAuthPhone) {
-        const uidAliasRef = db.collection("eventSeatIdentityAliases")
-          .doc(seatIdentityAliasId(eventId, "uid", userId));
-        const phoneAliasRef = db.collection("eventSeatIdentityAliases")
-          .doc(seatIdentityAliasId(eventId, "phone", currentAuthPhone));
-        const [uidAliasSnap, phoneAliasSnap] = await Promise.all([
-          tx.get(uidAliasRef), tx.get(phoneAliasRef),
-        ]);
-        if (phoneAliasSnap.exists && (!uidAliasSnap.exists ||
-            String(phoneAliasSnap.data()?.canonicalKey)
-              .startsWith("guest_"))) {
-          if (pairHold) {
-            throw new HttpsError("failed-precondition",
-              "A guest seat cannot consume a separate pair hold.");
-          }
-          const matchingAttendees = await tx.get(db
-            .collection("eventAttendees")
-            .where("eventId", "==", eventId)
-            .where("phoneE164", "==", currentAuthPhone).limit(2));
-          if (matchingAttendees.docs.length !== 1) {
-            throw new HttpsError("failed-precondition",
-              "Guest seat identity needs reconciliation.");
-          }
-          guestLinkAttendeeId = matchingAttendees.docs[0].id;
-          guestLink = await prepareVerifiedUidGuestSeatLink({db, tx,
-            eventId, organizerId: event.organizerId,
-            attendeeId: guestLinkAttendeeId,
-            uid: userId, authTokenPhoneNumber: currentAuthPhone,
-            now: admin.firestore.Timestamp.now()});
+    currentAuthPhone = options.loadCurrentAuthPhone ?
+      await options.loadCurrentAuthPhone(userId) :
+      (await admin.auth().getUser(userId)).phoneNumber ?? null;
+    if (currentAuthPhone) {
+      const uidAliasRef = db.collection("eventSeatIdentityAliases")
+        .doc(seatIdentityAliasId(eventId, "uid", userId));
+      const phoneAliasRef = db.collection("eventSeatIdentityAliases")
+        .doc(seatIdentityAliasId(eventId, "phone", currentAuthPhone));
+      const [uidAliasSnap, phoneAliasSnap] = await Promise.all([
+        tx.get(uidAliasRef), tx.get(phoneAliasRef),
+      ]);
+      if (phoneAliasSnap.exists && (!uidAliasSnap.exists ||
+          String(phoneAliasSnap.data()?.canonicalKey)
+            .startsWith("guest_"))) {
+        if (pairHold) {
+          throw new HttpsError("failed-precondition",
+            "A guest seat cannot consume a separate pair hold.");
         }
+        const matchingAttendees = await tx.get(db
+          .collection("eventAttendees")
+          .where("eventId", "==", eventId)
+          .where("phoneE164", "==", currentAuthPhone).limit(2));
+        if (matchingAttendees.docs.length !== 1) {
+          throw new HttpsError("failed-precondition",
+            "Guest seat identity needs reconciliation.");
+        }
+        guestLinkAttendeeId = matchingAttendees.docs[0].id;
+        guestLink = await prepareVerifiedUidGuestSeatLink({db, tx,
+          eventId, organizerId: event.organizerId,
+          attendeeId: guestLinkAttendeeId,
+          uid: userId, authTokenPhoneNumber: currentAuthPhone,
+          now: admin.firestore.Timestamp.now()});
       }
     }
     const rosterSlot = await readCatchBookingRoster({db, tx, eventId,
       uid: userId, attendeeId: guestLink ? guestLinkAttendeeId : null,
       verifiedPhone: async () => currentAuthPhone ??
         await loadVerifiedRosterPhone(userId, options.loadCurrentAuthPhone)});
-    const currentBookedCount = seatLedger?.occupied ??
-      event.bookedCount ?? signedUpCount;
+    const currentBookedCount = seatLedger.occupied;
     const baseRoster = {
       ...rosterFromEvent(event),
-      totalBooked: currentBookedCount +
-        (seatLedger ? heldSeatCount(seatLedger) :
-          Math.max(0, event.crossPathsPairHeldCount ?? 0)),
+      totalBooked: currentBookedCount + heldSeatCount(seatLedger),
     };
     const reservedRoster = await rosterWithReservedWaitlistOffersInTransaction(
       tx,
@@ -423,11 +412,7 @@ export async function signUpUserForEvent(
       expiresAtMillis: pairHold.expiresAt.toMillis(), nowMillis: Date.now(),
       operation: "confirmTemporaryHold",
       loadCurrentAuthPhone: async () => currentAuthPhone}) : null;
-    if (seatMode === "ready" && !guestLink && !pairHold) {
-      if (!seatLedger || !seatTransaction) {
-        throw new HttpsError("failed-precondition",
-          "Event seat authority is unavailable.");
-      }
+    if (!guestLink && !pairHold) {
       const subject = {kind: "verifiedUid" as const, uid: userId};
       const preparedIdentity = await prepareCatchUidSeatIdentity({db, tx,
         eventId, organizerId: event.organizerId,
@@ -456,8 +441,7 @@ export async function signUpUserForEvent(
     const notificationCopy =
       eventActivityNotificationCopy(notificationType, event);
     const eventUpdate: EventBookingCountersPatch = {
-      bookedCount: seatMode === "ready" ? nextBookedCount :
-        admin.firestore.FieldValue.increment(1),
+      bookedCount: nextBookedCount,
       ...(gender ? {
         [`genderCounts.${gender}`]: admin.firestore.FieldValue.increment(1),
       } : {}),
@@ -521,8 +505,7 @@ export async function signUpUserForEvent(
     tx.set(participationRef, participationWrite, {merge: true});
     writeCatchBookingRoster({db, tx, slot: rosterSlot,
       booking: participationAfterPatch(participationSnap.data(),
-        participationWrite), now: admin.firestore.Timestamp.now(),
-      seatReady: seatMode === "ready"});
+        participationWrite), now: admin.firestore.Timestamp.now()});
     incrementInviteLinkCounterInTransaction({
       tx,
       db,

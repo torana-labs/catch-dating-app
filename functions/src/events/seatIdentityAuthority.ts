@@ -66,6 +66,11 @@ function hash(parts: string[]): string {
   return createHash("sha256").update(parts.join("\u001f")).digest("hex");
 }
 
+/** The canonical seat key a verified Catch account enrolls under. */
+export function catchUidSeatKey(eventId: string, uid: string): string {
+  return "uid_" + hash([eventId, uid]).slice(0, 48);
+}
+
 /** Hash persisted alias values exactly as the transaction resolver expects. */
 export function seatIdentityValueHash(kind: AliasKind,
   value: string): string {
@@ -120,7 +125,7 @@ export class FirestoreSeatIdentityAuthority {
     if (!ledger || ledger.eventId !== eventId ||
         ledger.state !== "ready" ||
         !Number.isSafeInteger(ledger.migrationRevision) ||
-        ledger.migrationRevision < 1) fail("Seat migration is not ready.");
+        ledger.migrationRevision < 1) fail("Event seat ledger is not ready.");
     const revision = ledger.migrationRevision as number;
     const aliases: Array<[AliasKind, string]> = [];
     if (subject.kind === "verifiedUid") {
@@ -256,7 +261,7 @@ export async function prepareCatchUidSeatIdentity(params: {
   const ledger = ledgerSnap.data();
   if (!ledger || ledger.eventId !== eventId || ledger.state !== "ready" ||
       !Number.isSafeInteger(ledger.migrationRevision) ||
-      ledger.migrationRevision < 1) fail("Seat migration is not ready.");
+      ledger.migrationRevision < 1) fail("Event seat ledger is not ready.");
   const uidAliasRef = db.collection("eventSeatIdentityAliases")
     .doc(seatIdentityAliasId(eventId, "uid", uid));
   const proofRef = db.collection("eventSeatVerifiedPhones")
@@ -287,7 +292,7 @@ export async function prepareCatchUidSeatIdentity(params: {
   if (phoneAlias) {
     fail("This phone already has a guest seat; link it before reserving.");
   }
-  const key = "uid_" + hash([eventId, uid]).slice(0, 48);
+  const key = catchUidSeatKey(eventId, uid);
   const aliasBase = {eventId, organizerId, canonicalKey: key,
     identityRevision: 1, migrationRevision: ledger.migrationRevision,
     state: "ready"};

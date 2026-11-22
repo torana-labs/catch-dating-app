@@ -157,15 +157,13 @@ function reservationCore(value: FirebaseFirestore.DocumentData | undefined,
   return {canonicalKey: key, identityRevision: revision,
     revision: value.revision, active: value.active};
 }
+/** The event's ready ledger. Every alias the merge moves was already checked
+ * against the merging organizer. */
 function requireLedger(ledger: FirebaseFirestore.DocumentData | undefined,
-  fence: FirebaseFirestore.DocumentData | undefined, eventId: string,
-  organizerId: string): {revision: number; migrationRevision: number} {
+  eventId: string): {revision: number; migrationRevision: number} {
   if (!ledger || ledger.eventId !== eventId || ledger.state !== "ready" ||
-      !positive(ledger.revision) || !positive(ledger.migrationRevision) ||
-      !fence || fence.eventId !== eventId ||
-      fence.organizerId !== organizerId || fence.state !== "ready" ||
-      fence.migrationRevision !== ledger.migrationRevision) {
-    fail("Event seat migration is not ready for contact merge.");
+      !positive(ledger.revision) || !positive(ledger.migrationRevision)) {
+    fail("Event seats are not available for contact merge.");
   }
   return {revision: ledger!.revision as number,
     migrationRevision: ledger!.migrationRevision as number};
@@ -233,10 +231,7 @@ export async function prepareContactMergeSeats(params: {
     if (!source && !survivor) fail("Orphan contact origin seat alias.");
     const ledgerSnap = await tx.get(db.collection("eventSeatLedgers")
       .doc(eventId));
-    const fenceSnap = await tx.get(db.collection("eventSeatMigrationFences")
-      .doc(eventId));
-    const ledger = requireLedger(ledgerSnap.data(), fenceSnap.data(), eventId,
-      organizerId);
+    const ledger = requireLedger(ledgerSnap.data(), eventId);
     for (const {value} of aliases.values()) {
       if (value.migrationRevision !== ledger.migrationRevision ||
           (value.kind === "contactOrigin" &&
@@ -451,9 +446,7 @@ export async function prepareContactUnmergeSeats(params: {
   for (const guard of evidence.seatEventGuards) {
     const ledger = (await tx.get(db.collection("eventSeatLedgers")
       .doc(guard.eventId))).data();
-    const fence = (await tx.get(db.collection("eventSeatMigrationFences")
-      .doc(guard.eventId))).data();
-    const current = requireLedger(ledger, fence, guard.eventId, organizerId);
+    const current = requireLedger(ledger, guard.eventId);
     if (current.revision !== guard.ledgerRevision ||
         current.migrationRevision !== guard.migrationRevision) {
       stale("Event seats changed since merge.");

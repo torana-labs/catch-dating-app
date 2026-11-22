@@ -15,6 +15,8 @@ import {
   requestAccountDeletionHandler,
   storagePathFromDownloadUrl,
 } from "./accountDeletion";
+import {withEventSeatLedgers} from
+  "../events/seatAuthority/eventSeatLedgerTestSupport";
 
 test(
   "storagePathFromDownloadUrl extracts Firebase Storage object paths",
@@ -47,7 +49,8 @@ test("Host-only deletion removes identity and preserves shared business data",
           {uid: "host2", displayName: "Other host"},
         ], name: "Shared organizer", email: "business@example.com",
         status: "active"},
-      "events/retained": {organizerId: "shared", title: "Shared event"},
+      "events/retained": {organizerId: "shared", title: "Shared event",
+        status: "active"},
     };
     const harness = createAccountDeletionHarness({seed, now: "now"});
     await requestAccountDeletionHandler({auth: {uid: "host1"}} as
@@ -218,13 +221,16 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         status: "signedUp",
         genderAtSignup: "woman",
       },
-      "events/event-1": {organizerId: "club-1", bookedCount: 1},
+      "events/event-1": {organizerId: "club-1", bookedCount: 1,
+        genderCounts: {woman: 1}, status: "active"},
       "eventAttendees/attendee-1": {
         eventId: "event-1",
         organizerId: "club-1",
         linkedUid: "runner-1",
         phoneE164: "+919876543210",
       },
+      ...seatedBooking("event-1", "club-1", "runner-1",
+        {attendee: "attendee-1", phone: "+919876543210"}),
       "organizerContacts/contact-1": {
         organizerId: "club-1",
         linkedUid: "runner-1",
@@ -825,7 +831,8 @@ function createAccountDeletionHarness(params: {
   const deletedAuthUsers: string[] = [];
   const deletedStorageFiles: string[] = [];
   let commits = 0;
-  const seed = params.seed;
+  // Every event has its seat ledger. Tests change the seed in place.
+  const seed = Object.assign(params.seed, withEventSeatLedgers(params.seed));
 
   const docFor = (
     collectionPath: string,
@@ -1009,6 +1016,32 @@ function seatReservationPath(key: string): string {
   return `eventSeatReservations/${id}`;
 }
 
+/** The seat records a signed-up guest holds: their uid alias, verified
+ * phone proof and active reservation, plus the aliases of a linked roster
+ * row, all to one key. */
+function seatedBooking(eventId: string, organizerId: string, uid: string,
+  linked: {attendee?: string; phone?: string} = {}
+): Record<string, FakeDocumentData> {
+  const key = `canonical_${uid}`;
+  const alias = (kind: "uid" | "attendee" | "phone", value: string) => ({
+    [`eventSeatIdentityAliases/${seatIdentityAliasId(eventId, kind,
+      value)}`]: {eventId, organizerId, kind,
+      valueHash: seatIdentityValueHash(kind, value), canonicalKey: key,
+      identityRevision: 1, migrationRevision: 1, state: "ready"}});
+  return {
+    ...alias("uid", uid),
+    ...(linked.attendee ? alias("attendee", linked.attendee) : {}),
+    ...(linked.phone ? alias("phone", linked.phone) : {}),
+    [`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId(eventId, uid)}`]: {
+      eventId, organizerId, uid, phoneE164: linked.phone ?? null,
+      migrationRevision: 1, state: "current"},
+    ["eventSeatReservations/" + createHash("sha256")
+      .update(`${eventId}\u001f${key}`).digest("hex")]: {eventId,
+      canonicalKey: key, identityRevision: 1, active: true, revision: 1,
+      reservedAtMillis: 100, releasedAtMillis: null},
+  };
+}
+
 function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
   status?: "signedUp" | "attended"} = {}): Record<string, FakeDocumentData> {
   const uid = "runner1";
@@ -1023,8 +1056,6 @@ function readySeatSeed(options: {host?: boolean; catchMirror?: boolean;
     "eventBookings/event1_runner1": {eventId: "event1",
       organizerId: "org1", uid,
       status: options.status ?? "signedUp", genderAtSignup: "woman"},
-    "eventSeatMigrationFences/event1": {eventId: "event1",
-      migrationRevision: 1, state: "ready"},
     "eventSeatLedgers/event1": {eventId: "event1", capacity: 5,
       occupied: 1, revision: 1, capacityRevision: 1,
       policyVersion: policy.policyVersion, policyHash: policy.policyHash,
@@ -1179,12 +1210,12 @@ test("deletion releases only the Catch seat beside an imported guest",
       false);
   });
 
-test("locked migration and unresolved UID deny deletion without seat writes",
+test("a revoked ledger or unresolved UID denies deletion without seat writes",
   async () => {
-    for (const broken of ["locked", "missingAlias"]) {
+    for (const broken of ["revoked", "missingAlias"]) {
       const seed = readySeatSeed();
-      if (broken === "locked") {
-        seed["eventSeatMigrationFences/event1"].state = "locked";
+      if (broken === "revoked") {
+        seed["eventSeatLedgers/event1"].state = "revoked";
       } else {
         delete seed[`eventSeatIdentityAliases/${seatIdentityAliasId(
           "event1", "uid", "runner1")}`];

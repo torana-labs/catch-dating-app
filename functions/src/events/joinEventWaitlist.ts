@@ -35,7 +35,7 @@ import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {requireCatchBookingAuthority} from "./eventOrigin";
 import {requirePublicConfiguredEvent, requireEventTimeRange} from
   "./configuredEvent";
-import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {requireEventSeatLedger} from "./seatAuthority/eventSeatLedgers";
 import {loadVerifiedRosterPhone, participationAfterPatch,
   readCatchBookingRoster, writeCatchBookingRoster} from "./catchBookingRoster";
 import {
@@ -132,7 +132,7 @@ export async function joinEventWaitlistHandler(
     }
     await assertAccountMayBook(tx, db, userId,
       eventSnap.data()?.organizerId ?? null, Date.now());
-    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
+    await requireEventSeatLedger({db, tx, eventId});
 
     const event = eventSnap.data() as EventDocument;
     const user = userSnap.data() as UserProfileDocument;
@@ -256,7 +256,7 @@ export async function joinEventWaitlistHandler(
     writeCatchBookingRoster({db, tx, slot: rosterSlot,
       booking: participationAfterPatch(participationAfterPatch(
         participationSnap.data(), waitlisting), requestState),
-      now: admin.firestore.Timestamp.now(), seatReady: seatMode === "ready"});
+      now: admin.firestore.Timestamp.now()});
   });
 
   return {waitlisted: true};
@@ -313,7 +313,7 @@ export async function leaveEventWaitlistHandler(
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
     }
-    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
+    await requireEventSeatLedger({db, tx, eventId});
 
     const event = eventSnap.data() as EventDocument;
     const existingParticipation = participationSnap.exists ?
@@ -360,7 +360,7 @@ export async function leaveEventWaitlistHandler(
     tx.set(participationRef, leaving, {merge: true});
     writeCatchBookingRoster({db, tx, slot: rosterSlot,
       booking: participationAfterPatch(participationSnap.data(), leaving),
-      now: admin.firestore.Timestamp.now(), seatReady: seatMode === "ready"});
+      now: admin.firestore.Timestamp.now()});
     const offerStatus = offerSnap.data()?.status;
     if (offerStatus === "active" || offerStatus === "accepted") {
       tx.set(offerRef, {

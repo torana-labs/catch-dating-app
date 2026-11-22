@@ -1400,12 +1400,23 @@ guard `apply-flag`).
 - **What it does:** plans the campaigns in `tool/ads/google_campaigns.json`.
   Locations come from the city catalog (`contracts/catalogs/markets.json`, each
   city's `ads` block). The default run reads the account and asks Google to
-  validate every create request without making anything.
-- **Apply:** `--apply` creates missing campaigns, always paused, and brings an
-  existing campaign's locations and negative keywords in line. It never changes
-  an existing campaign's ads, budget or bidding, and only touches names under
-  the policy's managed prefix. Enabling a campaign and any budget change after
-  launch are the owner's call in the Google Ads console.
+  validate every create and change request without making anything.
+- **Config:** each ad gets the campaign's `sharedHeadlines` plus its ad group's
+  `headlines` (15 at most, 30 characters each) and the `descriptions`.
+  `sitelinks` (link text up to 25 characters, `description1` and
+  `description2` up to 35, and a site `path`) and `callouts` (up to 25
+  characters) are campaign-level assets. Sitelink and ad URLs are the brand
+  package's web origin plus the path; the campaign's `finalUrlSuffix` adds the
+  UTM tags to all of them.
+- **Apply:** `--apply` creates missing campaigns, always paused, with their
+  sitelinks and callouts. For an existing campaign it brings locations and
+  negative keywords in line, sets each responsive search ad's headlines to the
+  file's, and creates and links any sitelink or callout the campaign lacks,
+  matched by its text, so a re-run adds nothing. It never changes an existing
+  campaign's status, budget or bidding, never edits or unlinks an asset already
+  on it, and only touches names under the policy's managed prefix. Enabling a
+  campaign and any budget change after launch are the owner's call in the
+  Google Ads console.
 - **Credentials:** `GOOGLE_ADS_ACCESS_TOKEN`, or gcloud impersonating the ads
   service account the script names. The token is never logged.
 - **Check afterwards:** re-run without `--apply`; every campaign should show
@@ -1427,44 +1438,6 @@ guard `apply-flag`).
 - **Before applying in production:** run the dry run for prod, save its
   `--json` output with the change record, and apply to dev first.
   The delete step cannot be undone from this tool.
-
-### Seat ledger backfill
-
-`node tool/data/migrate_event_seat_ledgers.mjs --env <dev|prod> [--event <id>] [--apply [--allow-prod]] [--json]`
-(`data:migrate-event-seat-ledgers`, guard `apply-and-prod-flag`, surface
-`remote-destructive`).
-
-- **What it does:** a one-off move of every event that has no
-  `eventSeatLedgers` record onto the seat ledger, so the legacy seat path can
-  go. Each such event gets a class: `demo` or `demo-blocked`, `malformed` (no usable
-  organizer, status or capacity policy), `cancelled-empty`,
-  `cancelled-with-guests`, `migratable` or `blocked` (with the migration
-  engine's blocker codes). `unfinished-migration` marks a run or a lone ledger
-  or fence already there; `on-ledger` events are counted, not listed.
-- **Dry run:** the default reads only. For active events it rehearses the
-  migration engine without its writer lock: the same sources, Admin Auth phone
-  evidence, form receipts and CRM records, then the pure planner.
-- **Apply:** `--apply` gives each `cancelled-empty` event, and each
-  `active-empty` one (active and refused by the engine, for example over a
-  past guest who deleted their account, but with no active guest or hold), an
-  empty ready ledger and fence; gives each `demo` event the seat records the demo seeders write
-  (a ledger counting its active bookings, and each booked guest's uid and
-  phone aliases, verified phone proof and reservation), since synthetic guests
-  have no Auth users for the engine; runs the paged engine for each
-  `migratable` event and resumes the
-  tool's own unfinished runs, then sets `events.bookedCount` to the ledger's
-  occupied seats where they differ. Production also needs `--allow-prod`.
-- **A failed run:** if the engine stops after the scan began, the event is
-  left locked: its seat writers refuse until the run finishes or is released.
-  The report says `LEFT LOCKED` with the next step. `--discard <id> --apply`
-  releases a run that has not begun activation; re-running `--apply` resumes
-  one that has. Runs started by a host's own guest reconciliation are never
-  touched.
-- **Run order:** Functions build (`npm --prefix functions run build`), dev dry
-  run, dev apply, then the same for prod. Fix `blocked` events at the source
-  (for `catchCountMismatch`, `data:repair-event-aggregates`) and re-run.
-- **Check afterwards:** a second dry run lists only `demo`, `malformed`,
-  `cancelled-with-guests` and `blocked` events.
 
 ### Firestore projection repairs
 
