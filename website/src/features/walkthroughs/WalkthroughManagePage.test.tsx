@@ -81,7 +81,7 @@ describe("walkthrough manage page", () => {
       () => calls.manage.at(-1)?.action === "cancel" ? walkthroughManagedFor({status: "cancelled", canChange: false, changed: true}) : walkthroughManagedFor()]});
     render({client, timeZone: "Asia/Kolkata"});
     fireEvent.click(await screen.findByRole("button", {name: words.cancel}));
-    fireEvent.change(await screen.findByRole("textbox", {name: new RegExp(words.cancelReason.replace(/[()?]/gu, "\\$&"), "u")}),
+    fireEvent.change(await screen.findByRole("textbox", {name: new RegExp(words.cancelReason.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"), "u")}),
       {target: {value: "Found another time with the team"}});
     fireEvent.click(screen.getByRole("button", {name: words.cancelConfirm}));
     expect(await screen.findByText(words.cancelled)).toBeTruthy();
