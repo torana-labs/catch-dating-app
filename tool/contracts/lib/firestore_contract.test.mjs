@@ -87,8 +87,20 @@ test("fails closed on every malformed layout, naming each file", () => {
     ["bad name", (files) => files.set(
       "tool/contracts/firestore_contract/collections/my-items.json", "{}"),
     /my-items\.json: not a contract file/u],
-    ["invalid JSON", (files) => files.set(firestoreCollectionPath("items"), "{"),
+    // A second file can't smuggle in a duplicate id: every id is its file name.
+    ["duplicate collection", (files) => files.set(firestoreCollectionPath("events_copy"),
+      JSON.stringify({id: "events", path: "events/{eventId}"})),
+    /collections\/events_copy\.json: id must be "events_copy"/u],
+    // A collection file left beside contract.json instead of in collections/.
+    ["orphan fragment", (files) => files.set("tool/contracts/firestore_contract/events.json",
+      files.get(firestoreCollectionPath("events"))),
+    /firestore_contract\/events\.json: not a contract file/u],
+    ["unparseable fragment", (files) => files.set(firestoreCollectionPath("items"), "{"),
       /collections\/items\.json: invalid JSON/u],
+    ["empty fragment", (files) => files.set(firestoreCollectionPath("items"), ""),
+      /collections\/items\.json: invalid JSON/u],
+    ["unparseable header", (files) => files.set(firestoreContractHeaderPath, "{\"schemaVersion\": 2,"),
+      /contract\.json: invalid JSON/u],
     ["not an object", (files) => files.set(firestoreCollectionPath("items"), "[]"),
       /collections\/items\.json: must hold a JSON object/u],
     ["id differs from file name", (files) => files.set(firestoreCollectionPath("items"),
@@ -102,6 +114,13 @@ test("fails closed on every malformed layout, naming each file", () => {
     edit(files);
     assert.throws(() => fromMap(files), pattern, name);
   }
+  // Every problem is reported at once, each naming its file.
+  const several = new Map(good);
+  several.set(firestoreCollectionPath("items"), "{");
+  several.set(firestoreCollectionPath("events"), JSON.stringify({id: "items"}));
+  assert.throws(() => fromMap(several), (error) =>
+    /items\.json: invalid JSON/u.test(error.message) &&
+    /events\.json: id must be "events"/u.test(error.message));
   assert.deepEqual(firestoreContractLayoutProblems(good.keys()), []);
   // Paths outside the contract directory are ignored.
   const withOthers = new Map([...good, ["tool/contracts/other.json", "{"]]);

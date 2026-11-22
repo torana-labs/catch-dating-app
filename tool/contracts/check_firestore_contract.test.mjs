@@ -210,6 +210,44 @@ test("a registry rulesMatch must be a whole match path that governs the entry pa
   assert.match(result.stderr, /rulesMatch \/items\/\{id\}\/orphans\/\{o\} does not govern path orphans\/\{id\}/u);
 });
 
+test("a split contract fails closed on a duplicate collection, an orphan or an unparseable fragment", t => {
+  const root = fixture(t, "export {publicName} from './handler';");
+  const collections = path.join(root, "tool/contracts/firestore_contract/collections");
+  const items = fs.readFileSync(path.join(collections, "items.json"), "utf8");
+  accepted(check(root));
+
+  // The same collection registered again under another file and id.
+  editRegistry(root, (registry) => {
+    registry.collections.push({...registry.collections[0], id: "itemsAgain"});
+    registry.collectionsWithoutRulesTests.collections.push({id: "itemsAgain", reason: "Server only."});
+  });
+  let result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /duplicate collection path items\/\{id\}/u);
+  fs.rmSync(path.join(collections, "itemsAgain.json"));
+  editRegistry(root, (registry) => {
+    registry.collectionsWithoutRulesTests.collections =
+      registry.collectionsWithoutRulesTests.collections.filter(({id}) => id !== "itemsAgain");
+  });
+  accepted(check(root));
+
+  // A collection file left outside collections/.
+  const orphan = path.join(root, "tool/contracts/firestore_contract/items.json");
+  fs.writeFileSync(orphan, items);
+  result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /tool\/contracts\/firestore_contract\/items\.json: not a contract file/u);
+  fs.rmSync(orphan);
+
+  // A fragment that isn't JSON.
+  fs.writeFileSync(path.join(collections, "items.json"), items.slice(0, -3));
+  result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /collections\/items\.json: invalid JSON/u);
+  fs.writeFileSync(path.join(collections, "items.json"), items);
+  accepted(check(root));
+});
+
 test("every registry entry has a schema contract, at its path or named explicitly", t => {
   const root = fixture(t, "export {publicName} from './handler';");
   fs.rmSync(path.join(root, "contracts/firestore/items.schema.json"));
