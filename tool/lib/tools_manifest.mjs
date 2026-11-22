@@ -22,12 +22,12 @@ import {fileURLToPath} from "node:url";
 import {repoRoot} from "./repo_paths.mjs";
 
 export const toolsManifestDir = "tool/manifest";
-export const toolsManifestHeaderPath = `${toolsManifestDir}/manifest.json`;
+// The header: version, updated and ciImpact. It marks a manifest.
+export const toolsManifestPath = `${toolsManifestDir}/manifest.json`;
+const toolsManifestHeaderPath = toolsManifestPath;
 export const toolsManifestToolsDir = `${toolsManifestDir}/tools`;
 // The single file the manifest was before the split. It must not come back.
 export const legacyToolsManifestPath = "tool/tools_manifest.json";
-// The file that marks a manifest: its header.
-export const toolsManifestPath = toolsManifestHeaderPath;
 
 // Repository-relative globs covering every file the manifest is read from.
 // Sparse checkouts, Nx inputs and selectors list these.

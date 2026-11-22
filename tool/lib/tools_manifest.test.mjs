@@ -18,8 +18,8 @@ import {
   toolsManifestAt,
   toolsManifestFrom,
   toolsManifestFromFiles,
-  toolsManifestHeaderPath,
   toolsManifestLayoutProblems,
+  toolsManifestPath,
   toolsManifestPatterns,
   toolsManifestTextAt,
   toolsManifestTextFrom,
@@ -57,7 +57,7 @@ test("one file per tool plus a header, loaded back with tools sorted by id", (t)
     "tool/manifest/tools/a.one.json",
     "tool/manifest/tools/a_b.x-1.json",
   ]);
-  assert.equal(JSON.parse(files.get(toolsManifestHeaderPath)).tools, undefined);
+  assert.equal(JSON.parse(files.get(toolsManifestPath)).tools, undefined);
   assert.equal(files.get(toolsManifestToolPath("a:one")), formatToolsManifest(fixtureManifest.tools[1]));
   const root = fixture(t);
   writeToolsManifest(root, fixtureManifest);
@@ -95,10 +95,10 @@ test("file names map to ids reversibly, and only manifest paths count", () => {
 test("fails closed on every malformed layout, naming each file", () => {
   const good = splitToolsManifest(fixtureManifest);
   const cases = [
-    ["missing header", (files) => files.delete(toolsManifestHeaderPath), /manifest\.json: missing/u],
-    ["header holding tools", (files) => files.set(toolsManifestHeaderPath, JSON.stringify({version: 1, tools: []})),
+    ["missing header", (files) => files.delete(toolsManifestPath), /manifest\.json: missing/u],
+    ["header holding tools", (files) => files.set(toolsManifestPath, JSON.stringify({version: 1, tools: []})),
       /manifest\.json: tools live in tool\/manifest\/tools\//u],
-    ["unparseable header", (files) => files.set(toolsManifestHeaderPath, "{\"version\": 1,"),
+    ["unparseable header", (files) => files.set(toolsManifestPath, "{\"version\": 1,"),
       /manifest\.json: invalid JSON/u],
     // A second file can't smuggle in a duplicate id: every id is its file's name.
     ["duplicate id", (files) => files.set("tool/manifest/tools/a.copy.json", JSON.stringify({id: "a:one"})),
