@@ -52,3 +52,54 @@ test("inputs are validated", () => {
   assert.throws(() => chooseMainPushBase({runs: [], runId: 1, head: "main", before: BEFORE, isAncestor: () => true}));
   assert.throws(() => chooseMainPushBase({runs: [], runId: 0, head: HEAD, before: BEFORE, isAncestor: () => true}));
 });
+
+// A linear main history: each commit is an ancestor of every later one.
+function chain(...commits) {
+  return (target, of) => commits.indexOf(target) >= 0 && commits.indexOf(target) < commits.indexOf(of);
+}
+const decideOn = ({commits, head, before, runId, runs}) => {
+  const order = chain(...commits);
+  return chooseMainPushBase({runs, runId, head, before, isAncestor: (target, of = head) => order(target, of)});
+};
+
+test("22 Nov: queue merges' push runs created out of order plan from the nearest ancestor, not full", () => {
+  // Main moved 7c7f → ae14 → fffb → 7db7 → 59a4 in one queue batch. GitHub
+  // created 59a4's and 7db7's runs before ae14's; fffb got none.
+  const [c7c7f, ae14, fffb, c7db7, c59a4] = ["7", "a", "b", "c", "d"].map(sha);
+  const decision = decideOn({commits: [c7c7f, ae14, fffb, c7db7, c59a4], head: ae14, before: c7c7f, runId: 45037686600,
+    runs: [run(45034976249, c7c7f, "completed", "success"), run(45037597778, c59a4, "completed", "success"),
+      run(45037603434, c7db7, "completed", "success")]});
+  assert.deepEqual(decision, {baseSha: c7c7f, full: false, reason: "previous_push", skippedDescendantRuns: 2});
+});
+
+test("a descendant's run is never trusted to cover this commit; a replaced ancestor run is still covered", () => {
+  // A < B < H < D. B's run was replaced (never started), D's run ran. H must
+  // plan from A so B's change is in its window; D's window may start after H.
+  const [a, b, h, d] = ["1", "2", "3", "4"].map(sha);
+  const decision = decideOn({commits: [a, b, h, d], head: h, before: b, runId: 40,
+    runs: [run(10, a, "completed", "success"), run(20, b, "completed", "cancelled"), run(30, d, "in_progress")]});
+  assert.deepEqual(decision, {baseSha: a, full: false, reason: "covers_replaced_runs", previousRunId: 10,
+    skippedDescendantRuns: 1});
+});
+
+test("the nearest ancestor wins over the newest run id", () => {
+  // A < B < H; A's run was created after B's.
+  const [a, b, h] = ["1", "2", "3"].map(sha);
+  const decision = decideOn({commits: [a, b, h], head: h, before: b, runId: 30,
+    runs: [run(10, b, "completed", "success"), run(20, a, "completed", "success")]});
+  assert.deepEqual(decision, {baseSha: b, full: false, reason: "previous_push"});
+});
+
+test("only descendants' runs ran: validate everything; a cancelled ancestor never counts", () => {
+  const [a, h, d] = ["1", "2", "3"].map(sha);
+  assert.deepEqual(decideOn({commits: [a, h, d], head: h, before: a, runId: 30,
+    runs: [run(10, a, "completed", "cancelled"), run(20, d, "completed", "success")]}),
+  {baseSha: a, full: true, reason: "earlier_run_not_an_ancestor"});
+});
+
+test("an ancestor run still in progress counts; if it later fails, its own run reports it", () => {
+  const [a, b, h] = ["1", "2", "3"].map(sha);
+  assert.deepEqual(decideOn({commits: [a, b, h], head: h, before: b, runId: 30,
+    runs: [run(10, a, "completed", "success"), run(20, b, "in_progress")]}),
+  {baseSha: b, full: false, reason: "previous_push"});
+});
