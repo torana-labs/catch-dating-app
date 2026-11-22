@@ -13,10 +13,12 @@ import {adProgrammes, adTargetingFromCatalog, readMarketCatalog} from "../lib/ma
 // The default run reads the account and asks Google to validate the create
 // request without making anything. Locations come from the city catalog
 // (contracts/catalogs/markets.json, each city's `ads` block), never from this
-// file. A campaign that already exists keeps its ads, budget and bidding; only
-// its locations and negative keywords are brought in line with the catalog and
-// this file, shown in the plan and changed with --apply. Only names under the
-// managed prefix are considered.
+// file. A campaign that already exists keeps its budget and bidding; its
+// locations and negative keywords are brought in line with the catalog and
+// this file, each responsive search ad's headlines are set to this file's, and
+// any sitelink or callout this file lists that the campaign lacks (matched by
+// its text) is created and linked. All of it is shown in the plan and changed
+// with --apply. Only names under the managed prefix are considered.
 // The access token comes from GOOGLE_ADS_ACCESS_TOKEN or from gcloud
 // impersonating the ads service account; it is never logged.
 
@@ -26,7 +28,11 @@ const POLICY_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)),
 const SERVICE_ACCOUNT =
   "catch-ads-automation@catch-dating-app-64e51.iam.gserviceaccount.com";
 const MATCH_TYPES = new Set(["EXACT", "PHRASE", "BROAD"]);
+const SITE_PATH = /^\/[a-z0-9/-]*$/;
 const micros = (inr) => String(Math.round(inr * 1_000_000));
+/** A marketing-site URL: the brand package's web origin plus a site path. */
+export const siteUrl = (sitePath) => new URL(sitePath, brand.web.origin).href;
+const textKey = (text) => text.trim().toLowerCase();
 
 export function loadGoogleCampaigns(file = POLICY_PATH, catalog = readMarketCatalog()) {
   const policy = JSON.parse(fs.readFileSync(file, "utf8"));
@@ -70,6 +76,30 @@ export function loadGoogleCampaigns(file = POLICY_PATH, catalog = readMarketCata
     if ((campaign.descriptions ?? []).length < 2 || campaign.descriptions.length > 4) {
       throw new Error(`${where} needs 2 to 4 descriptions.`);
     }
+    const sitelinks = campaign.sitelinks ?? [];
+    if (sitelinks.length > 20) throw new Error(`${where} has more than 20 sitelinks.`);
+    for (const sitelink of sitelinks) {
+      if (!sitelink.linkText || sitelink.linkText.length > 25) {
+        throw new Error(`${where} sitelink text must be 1 to 25 characters: ${sitelink.linkText}`);
+      }
+      for (const line of [sitelink.description1, sitelink.description2]) {
+        if (!line || line.length > 35) {
+          throw new Error(`${where} sitelink "${sitelink.linkText}" needs two description lines of 1 to 35 characters.`);
+        }
+      }
+      if (!SITE_PATH.test(sitelink.path ?? "")) {
+        throw new Error(`${where} sitelink "${sitelink.linkText}" needs a site path such as /pricing/.`);
+      }
+    }
+    if (new Set(sitelinks.map((sitelink) => textKey(sitelink.linkText))).size !== sitelinks.length) {
+      throw new Error(`${where} repeats a sitelink.`);
+    }
+    const callouts = campaign.callouts ?? [];
+    if (callouts.length > 20) throw new Error(`${where} has more than 20 callouts.`);
+    for (const callout of callouts) {
+      if (!callout || callout.length > 25) throw new Error(`${where} callout must be 1 to 25 characters: ${callout}`);
+    }
+    if (new Set(callouts.map(textKey)).size !== callouts.length) throw new Error(`${where} repeats a callout.`);
     for (const group of campaign.adGroups ?? []) {
       const headlines = [...campaign.sharedHeadlines, ...group.headlines];
       if (headlines.length < 3 || headlines.length > 15) {
@@ -81,7 +111,7 @@ export function loadGoogleCampaigns(file = POLICY_PATH, catalog = readMarketCata
       for (const headline of headlines) {
         if (headline.length > 30) throw new Error(`${where} headline over 30 characters: ${headline}`);
       }
-      if (!/^\/[a-z0-9/-]*$/.test(group.landingPath ?? "")) {
+      if (!SITE_PATH.test(group.landingPath ?? "")) {
         throw new Error(`${where} ad group "${group.name}" needs a site landing path such as /host/.`);
       }
       if (!group.keywords?.length) throw new Error(`${where} ad group "${group.name}" has no keywords.`);
@@ -91,6 +121,25 @@ export function loadGoogleCampaigns(file = POLICY_PATH, catalog = readMarketCata
     }
   }
   return policy;
+}
+
+/**
+ * Creates each sitelink and callout as an asset and links it to the campaign.
+ * `temp` names a new resource with a temporary negative ID.
+ */
+function campaignAssetOperations(campaignResource, temp, {sitelinks = [], callouts = []}) {
+  const ops = [];
+  const link = (create, fieldType) => {
+    const asset = temp("assets");
+    ops.push({assetOperation: {create: {resourceName: asset, ...create}}},
+      {campaignAssetOperation: {create: {campaign: campaignResource, asset, fieldType}}});
+  };
+  for (const sitelink of sitelinks) {
+    link({finalUrls: [siteUrl(sitelink.path)], sitelinkAsset: {linkText: sitelink.linkText,
+      description1: sitelink.description1, description2: sitelink.description2}}, "SITELINK");
+  }
+  for (const calloutText of callouts) link({calloutAsset: {calloutText}}, "CALLOUT");
+  return ops;
 }
 
 /**
@@ -126,6 +175,7 @@ export function createCampaignOperations(customerId, campaign) {
       campaign: campaignName, language: {languageConstant: `languageConstants/${id}`}}}})),
     ...(campaign.negativeKeywords ?? []).map((text) => ({campaignCriterionOperation: {create: {
       campaign: campaignName, negative: true, keyword: {text, matchType: "BROAD"}}}})),
+    ...campaignAssetOperations(campaignName, temp, campaign),
   ];
   for (const group of campaign.adGroups) {
     const adGroup = temp("adGroups");
@@ -137,7 +187,7 @@ export function createCampaignOperations(customerId, campaign) {
         keyword: {text: keyword.text, matchType: keyword.match}}}});
     }
     ops.push({adGroupAdOperation: {create: {adGroup, status: "ENABLED", ad: {
-      finalUrls: [new URL(group.landingPath, brand.web.origin).href],
+      finalUrls: [siteUrl(group.landingPath)],
       responsiveSearchAd: {
         headlines: [...campaign.sharedHeadlines, ...group.headlines].map((text) => ({text})),
         descriptions: campaign.descriptions.map((text) => ({text})),
@@ -194,6 +244,56 @@ export function targetingSyncOperations(customerId, campaign, campaignId, criter
   return {operations, addLocations, removeLocations, addNegatives};
 }
 
+/**
+ * Sets each live responsive search ad's headlines to this file's shared and
+ * ad group headlines when they differ. Ad groups are matched by name; a
+ * configured ad group the campaign lacks is reported, not created.
+ */
+export function headlineSyncOperations(campaign, ads) {
+  const operations = [];
+  const updates = [];
+  const live = new Set(ads.map((row) => row.adGroup.name));
+  for (const group of campaign.adGroups) {
+    const want = [...campaign.sharedHeadlines, ...group.headlines];
+    for (const row of ads.filter((ad) => ad.adGroup.name === group.name)) {
+      const ad = row.adGroupAd.ad;
+      const have = (ad.responsiveSearchAd?.headlines ?? []).map((headline) => headline.text);
+      const add = want.filter((text) => !have.includes(text));
+      const remove = have.filter((text) => !want.includes(text));
+      if (!add.length && !remove.length) continue;
+      operations.push({adOperation: {update: {resourceName: ad.resourceName,
+        responsiveSearchAd: {headlines: want.map((text) => ({text}))}},
+      updateMask: "responsiveSearchAd.headlines"}});
+      updates.push({adGroup: group.name, add, remove, headlines: want.length});
+    }
+  }
+  const missingAdGroups = campaign.adGroups.map((group) => group.name).filter((name) => !live.has(name));
+  return {operations, updates, missingAdGroups};
+}
+
+/**
+ * Creates and links the sitelinks and callouts the campaign lacks, matched by
+ * link text or callout text, so a re-run adds nothing. It never edits or
+ * unlinks an asset already on the campaign.
+ */
+export function assetSyncOperations(customerId, campaign, campaignId, campaignAssets) {
+  const resource = `customers/${customerId}/campaigns/${campaignId}`;
+  const haveSitelinks = new Set();
+  const haveCallouts = new Set();
+  for (const row of campaignAssets) {
+    const sitelink = row.asset?.sitelinkAsset?.linkText;
+    const callout = row.asset?.calloutAsset?.calloutText;
+    if (row.campaignAsset?.fieldType === "SITELINK" && sitelink) haveSitelinks.add(textKey(sitelink));
+    if (row.campaignAsset?.fieldType === "CALLOUT" && callout) haveCallouts.add(textKey(callout));
+  }
+  const sitelinks = (campaign.sitelinks ?? []).filter((sitelink) => !haveSitelinks.has(textKey(sitelink.linkText)));
+  const callouts = (campaign.callouts ?? []).filter((text) => !haveCallouts.has(textKey(text)));
+  let next = -1;
+  const temp = (kind) => `customers/${customerId}/${kind}/${next--}`;
+  const operations = campaignAssetOperations(resource, temp, {sitelinks, callouts});
+  return {operations, addSitelinks: sitelinks.map((sitelink) => sitelink.linkText), addCallouts: callouts};
+}
+
 /** Reads existing campaigns and validates every create and sync. Never writes. */
 export async function planGoogleCampaigns({policy, api}) {
   const rows = await api.search("SELECT campaign.id, campaign.name, campaign.status FROM campaign " +
@@ -213,15 +313,29 @@ export async function planGoogleCampaigns({policy, api}) {
       const criteria = await api.search("SELECT campaign_criterion.resource_name, " +
         "campaign_criterion.negative, campaign_criterion.location.geo_target_constant, " +
         `campaign_criterion.keyword.text FROM campaign_criterion WHERE campaign.id = ${row.id}`);
+      const ads = await api.search("SELECT campaign.id, ad_group.name, ad_group_ad.ad.resource_name, " +
+        "ad_group_ad.ad.responsive_search_ad.headlines FROM ad_group_ad " +
+        `WHERE campaign.id = ${row.id} AND ad_group_ad.status != 'REMOVED' ` +
+        "AND ad_group.status != 'REMOVED' AND ad_group_ad.ad.type = 'RESPONSIVE_SEARCH_AD'");
+      const campaignAssets = await api.search("SELECT campaign.id, campaign_asset.field_type, " +
+        "asset.sitelink_asset.link_text, asset.callout_asset.callout_text FROM campaign_asset " +
+        `WHERE campaign.id = ${row.id} AND campaign_asset.status != 'REMOVED' ` +
+        "AND campaign_asset.field_type IN ('SITELINK', 'CALLOUT')");
       const sync = targetingSyncOperations(policy.customerId, campaign, row.id, criteria);
-      if (!sync.operations.length) {
-        changes.push({kind: "keep", target: campaign.name, status: row.status});
+      const headlines = headlineSyncOperations(campaign, ads);
+      const assets = assetSyncOperations(policy.customerId, campaign, row.id, campaignAssets);
+      const operations = [...sync.operations, ...headlines.operations, ...assets.operations];
+      const missingAdGroups = headlines.missingAdGroups;
+      if (!operations.length) {
+        changes.push({kind: "keep", target: campaign.name, status: row.status, missingAdGroups});
         continue;
       }
-      await api.mutate(sync.operations, true);
-      changes.push({kind: "sync", target: campaign.name, status: row.status, operations: sync.operations,
+      await api.mutate(operations, true);
+      changes.push({kind: "sync", target: campaign.name, status: row.status, operations,
         addLocations: sync.addLocations.map((id) => placeNames.get(id) ?? String(id)),
-        removeLocations: sync.removeLocations.map(String), addNegatives: sync.addNegatives});
+        removeLocations: sync.removeLocations.map(String), addNegatives: sync.addNegatives,
+        headlineUpdates: headlines.updates, addSitelinks: assets.addSitelinks,
+        addCallouts: assets.addCallouts, missingAdGroups});
       continue;
     }
     const operations = createCampaignOperations(policy.customerId, campaign);
@@ -273,10 +387,18 @@ async function main() {
           change.addLocations.length ? `add ${change.addLocations.join(", ")}` : "",
           change.removeLocations.length ? `remove locations ${change.removeLocations.join(", ")}` : "",
           change.addNegatives.length ? `add negatives ${change.addNegatives.join(", ")}` : "",
+          ...change.headlineUpdates.map((update) => `ad group ${update.adGroup}: ${update.headlines} headlines` +
+            (update.add.length ? `, add ${update.add.join(" / ")}` : "") +
+            (update.remove.length ? `, remove ${update.remove.join(" / ")}` : "")),
+          change.addSitelinks.length ? `add sitelinks ${change.addSitelinks.join(" / ")}` : "",
+          change.addCallouts.length ? `add callouts ${change.addCallouts.join(" / ")}` : "",
         ].filter(Boolean);
         console.log(`- sync ${change.target} (exists, ${change.status}; validated): ${parts.join("; ")}`);
       } else {
-        console.log(`- keep ${change.target} (exists, ${change.status}; matches the catalog)`);
+        console.log(`- keep ${change.target} (exists, ${change.status}; matches the catalog and this file)`);
+      }
+      if (change.missingAdGroups?.length) {
+        console.log(`  ad groups in the file but not in the campaign (not created): ${change.missingAdGroups.join(", ")}`);
       }
     }
   }
