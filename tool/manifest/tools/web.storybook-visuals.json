@@ -1,0 +1,43 @@
+{
+  "id": "web:storybook-visuals",
+  "category": "design",
+  "path": "tool/web/check_storybook_visuals.mjs",
+  "command": "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm",
+      "playwright"
+    ]
+  },
+  "description": "Builds the marketing Storybook, then captures current-platform desktop/mobile screenshots for registry-ready website and shared web-ui stories and reports pixel changes against committed baselines without failing; stories that cannot render still fail.",
+  "checks": [
+    "node --check tool/web/check_storybook_visuals.mjs",
+    "node tool/web/check_storybook_visuals.mjs --self-test",
+    "npm --workspace catch-marketing run check:storybook-config",
+    "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report"
+  ],
+  "impactPaths": [
+    "design/visual_baselines/website/**"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "WEB-VISUAL-001",
+      "title": "Registry-ready React stories have deterministic visual baselines",
+      "appliesTo": [
+        "website/**",
+        "admin/**",
+        "packages/web-ui/**",
+        "design/visual_baselines/**",
+        "tool/web/check_storybook_visuals.mjs",
+        ".github/workflows/admin-website.yml",
+        ".github/workflows/marketing-website.yml"
+      ],
+      "instruction": "Every Storybook registry entry marked ready must resolve to a built story that renders with reduced motion and loaded fonts; a story that cannot render fails. Each desktop and mobile capture is compared with committed baselines for the current operating system at the configured pixel tolerance, and CI reports changed, missing or stale baselines in the job summary and diagnostics artifact without failing while the product is still changing visually. Never compare Darwin-authored system-ui pixels against Linux; CI uses reviewed Ubuntu 24.04 baselines."
+    }
+  ]
+}

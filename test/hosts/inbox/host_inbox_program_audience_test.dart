@@ -1,25 +1,28 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_program_audience_controller.dart';
+import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
-class _Repository extends Fake implements ProgramSetupRepository {
+typedef _GuestPage = CursorPage<ProgramGuestRow, String>;
+
+class _Repository extends Fake implements ProgramGuestDirectoryRepository {
   final requestedCursors = <String?>[];
-  final guestPages = <Completer<ProgramGuestListPage>>[];
+  final guestPages = <Completer<_GuestPage>>[];
 
   @override
-  Future<ProgramGuestListPage> listGuests(
+  Future<_GuestPage> guestPage(
     String programId, {
-    int? limit,
+    int limit = ProgramGuestDirectoryRepository.pageSize,
     String? cursor,
   }) {
     requestedCursors.add(cursor);
-    final page = Completer<ProgramGuestListPage>();
+    final page = Completer<_GuestPage>();
     guestPages.add(page);
     return page.future;
   }
@@ -40,7 +43,7 @@ List<Override> _overrides(
   _Repository repository,
   Stream<Map<Object?, Object?>> views,
 ) => [
-  programSetupRepositoryProvider.overrideWithValue(repository),
+  programGuestDirectoryRepositoryProvider.overrideWithValue(repository),
   organizerProgramViewStreamProvider(
     'older-program',
   ).overrideWith((ref) => views),
@@ -56,17 +59,12 @@ ProgramGuestRow _guest(int index, {String? contactId}) => ProgramGuestRow(
   revision: 1,
 );
 
-ProgramGuestListPage _page(
-  List<ProgramGuestRow> guests, {
-  String? nextCursor,
-}) => ProgramGuestListPage(
-  programId: 'older-program',
-  guests: guests,
-  households: const [],
-  functionGuests: const [],
-  groups: const [],
-  nextCursor: nextCursor,
-);
+_GuestPage _page(List<ProgramGuestRow> guests, {String? nextCursor}) =>
+    CursorPage(
+      items: guests,
+      hasMore: nextCursor != null,
+      nextCursor: nextCursor,
+    );
 
 void main() {
   test(

@@ -1,0 +1,28 @@
+{
+  "id": "ui-capture:coverage",
+  "category": "ui-capture",
+  "path": "tool/ui_capture/check_capture_coverage.mjs",
+  "impactPaths": [
+    "tool/ui_capture/route_inventory.json",
+    "tool/ui_capture/capture_coverage.json",
+    "test/ui_captures/catalog/screen_capture_catalog.dart",
+    "test/ui_captures/catalog/entries/**",
+    "tool/marketing/capture_manifest.json",
+    "tool/ui_capture/lib/capture_catalog_sources.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "command": "node tool/ui_capture/check_capture_coverage.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks every routed screen is captured, aliased, planned, or explicitly excluded for UI captures.",
+  "checks": [
+    "node --check tool/ui_capture/check_capture_coverage.mjs",
+    "node tool/ui_capture/check_capture_coverage.mjs --check"
+  ],
+  "role": "finder"
+}

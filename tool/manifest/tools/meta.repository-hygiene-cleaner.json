@@ -1,0 +1,16 @@
+{
+  "id": "meta:repository-hygiene-cleaner",
+  "category": "meta",
+  "path": "tool/repository_hygiene.mjs",
+  "command": "node tool/repository_hygiene.mjs --json",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "role": "operator",
+  "description": "Reports regenerable repository state and deletes only manifest-allowlisted paths after explicit apply and scope flags.",
+  "checks": [
+    "node --check tool/repository_hygiene.mjs",
+    "node --test tool/repository_hygiene.test.mjs",
+    "node tool/repository_hygiene.mjs --json"
+  ],
+  "runbook": "tool/README.md#repository-hygiene"
+}

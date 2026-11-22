@@ -1,0 +1,32 @@
+{
+  "id": "design:consolidation-gates",
+  "category": "design",
+  "path": "tool/design/consolidation_gates.mjs",
+  "command": "node tool/design/consolidation_gates.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Reports every UI consolidation done-gate in design/components/consolidation_gates.json (tokens, component library, screens) against its zero target; never fails on the measured values.",
+  "checks": [
+    "node --check tool/design/consolidation_gates.mjs",
+    "node --test tool/design/consolidation_gates.test.mjs"
+  ],
+  "role": "finder",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "impactPaths": [
+    "tool/design/consolidation_gates.test.mjs",
+    "design/components/consolidation_gates.json",
+    "design/components/catch.components.json",
+    "tool/design/check_widgetbook_contract_refs.mjs",
+    "tool/web/check_shared_web_ui_adoption.mjs",
+    "tool/audit/unused_code_baseline.json",
+    "website/stylelint.config.mjs",
+    "website/stylelint-suppressions.json",
+    "admin/stylelint-suppressions.json"
+  ]
+}

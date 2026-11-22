@@ -207,7 +207,8 @@ function timeline(item: InboxItem, journey: readonly JourneyStep[]): CatchSectio
  * launch access is decided here; listings and events open a sheet to review
  * and publish; stuck intake still opens the old review. Events and stuck intake
  * can be dismissed, with a reason, and come back. A website lead is answered on
- * WhatsApp and closed with what was said. A host enquiry is linked to its host,
+ * WhatsApp and closed with what was said; once their 24-hour window has closed, a
+ * host lead or enquiry can be sent the approved follow-up template. A host enquiry is linked to its host,
  * or closed with why it is junk, a test or not a fit; it comes back the same
  * way. Every type can be picked up or snoozed for a day.
  */
@@ -289,14 +290,14 @@ function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
         note={{label: "Note for the record", placeholder: "Why it's not a fit. Required to close.", value: note, onChanged: setNote}}
         next={`Linking opens their Sales work; it doesn't approve a claim · ${next.toLowerCase()}`} />;
     } else if (item.type === "lead") {
-      // Nothing is sent automatically yet: staff reply first, then close it.
+      // Staff reply first (or send the follow-up template), then close it.
       dock = <CatchDock recipe="pane"
         primary={{label: "Close", isLoading: busy, onPressed: noteText ? () => void controller.updateItem({itemId: item.itemId,
           action: "dismiss", assigneeUid: null, snoozedUntil: null, note: noteText},
         "Closed. It stays in Done if you need it back.") : null}}
         secondary={holdIt}
         note={{label: "What you replied", placeholder: "Sent the guide on WhatsApp", value: note, onChanged: setNote, required: true}}
-        next={`Reply on WhatsApp first; nothing is sent for you · ${next.toLowerCase()}`} />;
+        next={`Reply on WhatsApp first · ${next.toLowerCase()}`} />;
     } else if (item.type === "takedown") {
       // A listing request takes its own fixed steps in the panel below; here it can be picked up or snoozed.
       dock = <CatchDock recipe="pane" primary={holdIt} next={`Reply by email; nothing is sent for you · ${next.toLowerCase()}`} />;
@@ -343,6 +344,19 @@ function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
         <Fragment key={item.sourceId}>{controller.takedownPanel?.({requestId: item.sourceId, onChanged: controller.refreshItem ?? noReport}) ?? null}</Fragment>
       ) : null}
       <CatchSection title="How it got here" timeline={timeline(item, journey)} dividers="none" />
+      {canWork && item.sourceKind === "salesInboundIntent" && (item.type === "lead" || item.type === "enquiry") ? (
+        <CatchGap size="related">
+          <CatchSection title="WhatsApp follow-up" dividers="none">
+            <CatchIndexRow titleVariant="bodyM" titleMaxLines={4}
+              title="Sends the approved follow-up template from Catch's WhatsApp number: hi by first name, sorry we missed you, would a 15-minute walkthrough help."
+              subtitle="Only once they haven't written for 24 hours, and at most once a week to a number. It shows in their Support thread." />
+          </CatchSection>
+          <CatchGap direction="horizontal" size="related" wrap>
+            <CatchButton label={controller.isSendingFollowUp ? "Sending" : "Send follow-up"} size="sm" variant="secondary"
+              onPressed={busy ? null : () => void controller.sendFollowUp(item.sourceId)} />
+          </CatchGap>
+        </CatchGap>
+      ) : null}
       {controller.listingReviewFailed || controller.eventReviewFailed ? <CatchEmptyState title="The review could not be opened" message="It may have been decided already. Try again." /> : null}
       {dock}
       {controller.listingReview && controller.listingReview.review.requestId === item.sourceId ? (

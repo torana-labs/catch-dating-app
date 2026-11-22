@@ -1,0 +1,39 @@
+{
+  "id": "design:screen-gutters",
+  "category": "design",
+  "path": "tool/design/check_screen_gutters.mjs",
+  "impactPaths": [
+    "tool/design/check_screen_gutters.test.mjs",
+    "tool/design/fixtures/screen_gutters/bad_presentation_widget.dart"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "command": "node tool/design/check_screen_gutters.mjs --summary",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Reports advisory EdgeInsets inventory and likely hand-rolled screen gutter candidates across presentation and contracted screen implementation files.",
+  "checks": [
+    "node --check tool/design/check_screen_gutters.mjs",
+    "node --test tool/design/check_screen_gutters.test.mjs",
+    "node tool/design/check_screen_gutters.mjs --summary --max 25"
+  ],
+  "role": "finder",
+  "rules": [
+    {
+      "id": "SCREEN-GUTTER-001",
+      "title": "Screen gutters use semantic body and section ownership",
+      "appliesTo": [
+        "lib/**/presentation/**",
+        "apps/*/lib/**",
+        "design/screens/**",
+        "docs/design_parity/**",
+        "tool/design/check_screen_gutters.mjs"
+      ],
+      "instruction": "Screen, page, and body horizontal gutters should be owned by CatchInsets roles, CatchPageBody.screen, CatchSectionList.inset, CatchSection, CatchSectionList.sliver, or another documented layout primitive. Raw EdgeInsets rebuilt from CatchSpacing.screenPx/s5 in presentation code is a review candidate unless it is clearly component-local geometry."
+    }
+  ]
+}

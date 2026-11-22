@@ -1,0 +1,39 @@
+{
+  "id": "test:flutter-test-size",
+  "category": "test",
+  "path": "tool/test/check_flutter_test_size.mjs",
+  "command": "node tool/test/check_flutter_test_size.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Keeps Flutter test specs within 1,200 lines unless the spec states a reason in a size-exemption comment near its top; no spec may pass 2,500 lines. No baseline file.",
+  "checks": [
+    "node --check tool/test/check_flutter_test_size.mjs",
+    "node --test tool/test/check_flutter_test_size.test.mjs",
+    "node tool/test/check_flutter_test_size.mjs --check"
+  ],
+  "impactPaths": [
+    "tool/test/check_flutter_test_size.test.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "FLUTTER-TEST-MAINTAINABILITY-001",
+      "title": "Keep Flutter test specs bounded while coverage remains honest evidence",
+      "appliesTo": [
+        "test/**/*_test.dart",
+        "test/**/*_tests.dart",
+        "integration_test/**/*_test.dart",
+        "integration_test/**/*_tests.dart",
+        "tool/test/**",
+        ".github/workflows/flutter-ci.yml"
+      ],
+      "instruction": "Keep Flutter test specs at or below 1,200 lines; a larger spec states its reason in a `// size-exemption: <reason>` comment in its first 20 lines, and no spec passes 2,500 lines. Use feature-level LCOV as visibility rather than an unsupported aggregate percentage threshold."
+    }
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

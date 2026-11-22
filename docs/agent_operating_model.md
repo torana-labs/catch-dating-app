@@ -34,7 +34,7 @@ deployment history. Catch adds only three repository-specific layers:
    through ordinary non-forced Git after verified acceptance.
 
 None of these layers schedules agents, runs a hidden command pipeline, owns
-product state, or replaces Git and CI. `tool/tools_manifest.json` gives existing
+product state, or replaces Git and CI. the tools manifest (`tool/manifest/`) gives existing
 commands stable ids and `node tool/run.mjs check <id...>` runs them; it is a
 command runner, not a second test framework. Exact-artifact delivery is owned by
 [`release_operations.md`](release_operations.md#exact-artifact-promotion-and-resume).
@@ -131,7 +131,7 @@ elapsed time, a stale status label, or an unverified command assumption.
 
 ## Enforcement Integrity
 
-A rule a tool enforces is written on that tool in `tool/tools_manifest.json`,
+A rule a tool enforces is written on that tool in its `tool/manifest/tools/` file,
 and the tool's tests prove it can fail. A rule no tool checks is a sentence in
 the document that owns its subject. Do not add a prose-only rule that claims
 deterministic enforcement.
@@ -414,7 +414,7 @@ Every pull request targets `main` and can merge on its own.
   force-push a branch that has a PR.
 - The integration owner sequences PRs that touch hot files (for example
   `nx.json`, `tool/nx/shadow_plan.mjs`, `tool/harness/component_graph.*` and
-  `tool/tools_manifest.json`), queueing one at a time. Merge `main` into such a
+  `tool/manifest/manifest.json`), queueing one at a time. Merge `main` into such a
   branch when the integration owner asks or right before it is enqueued.
 
 ### Ownership Rules

@@ -1,0 +1,11 @@
+{
+  "id": "data:migrate-event-seat-ledgers",
+  "category": "data",
+  "path": "tool/data/migrate_event_seat_ledgers.mjs",
+  "status": "retired",
+  "role": "operator",
+  "description": "One-off move of every event without a seat ledger onto it: empty ledgers for cancelled or empty active events, demo seat records for synthetic bookings, and the paged migration engine for active events, then bookedCount set to the ledger occupied seats.",
+  "retiredOn": "2026-11-23",
+  "reason": "Nothing left to migrate. On 22 Nov 2026 the owner applied it to catch-dating-app-64e51 and it was applied to catchdates-dev; a final dry run in each project reported every event on-ledger (28 prod, 147 dev). Events are born with a ledger since PR #2342, and the one-seat-path change removes the migration engine the tool drove, so it can no longer run.",
+  "lastCommit": "af4377393582d51886142771beec154657901125"
+}

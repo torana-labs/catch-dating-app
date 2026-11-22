@@ -1,0 +1,16 @@
+{
+  "id": "firebase:functions-environment-wrapper",
+  "category": "firebase",
+  "path": "tool/firebase_functions.mjs",
+  "command": "node tool/firebase_functions.mjs deploy dev --print",
+  "surface": "remote-deploy",
+  "guard": "none",
+  "guardReason": "Builds and runs firebase deploy --only functions for the named environment; --print shows the command without running it.",
+  "status": "active",
+  "role": "operator",
+  "description": "Requires an explicit Firebase environment for Functions deploy and log commands.",
+  "checks": [
+    "node --test tool/firebase_functions.test.mjs"
+  ],
+  "runbook": "tool/README.md#functions-deploy-wrapper"
+}

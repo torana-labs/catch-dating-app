@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/admin_send_catch_whatsapp_reply_response.schema.json",
   "title": "AdminSendCatchWhatsappReplyCallableResponse",
-  "description": "The accepted send. operationId is cwsupport_ for a Support conversation reply (with the conversation and message it was appended to) and cwreply_ for the controlled reply trial. replayed is true when the same request had already been sent.",
+  "description": "The accepted send. operationId is cwsupport_ for a Support conversation reply and cwfollowup_ for a host lead follow-up template (each with the conversation and message it was appended to), and cwreply_ for the controlled reply trial. replayed is true when the same request had already been sent.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -15,8 +15,8 @@
     "operationId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 74,
-      "pattern": "^(cwreply|cwsupport)_[a-f0-9]{64}$"
+      "maxLength": 75,
+      "pattern": "^(cwreply|cwsupport|cwfollowup)_[a-f0-9]{64}$"
     },
     "providerMessageId": {
       "type": "string",

@@ -1,0 +1,19 @@
+{
+  "id": "firebase:synthetic-backend-probe",
+  "category": "firebase",
+  "path": "tool/firebase/synthetic_backend_probe.mjs",
+  "command": "node tool/firebase/synthetic_backend_probe.mjs --help",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Signs in as a synthetic Host that manages a synthetic organizer and runs the Host app's rules-checked Firestore reads and read callables against one deployed environment. Dry-run by default; production runs Firestore reads only unless --allow-prod-callables.",
+  "checks": [
+    "node --check tool/firebase/synthetic_backend_probe.mjs",
+    "node --test tool/firebase/synthetic_backend_probe.test.mjs"
+  ],
+  "role": "operator",
+  "runbook": "tool/README.md",
+  "impactPaths": [
+    "packages/command-client/**"
+  ]
+}

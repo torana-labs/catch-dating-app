@@ -137,11 +137,11 @@
       "ground": "yellow",
       "kicker": "Your next team social",
       "title": "Get people talking to someone new.",
-      "lead": "Set up a free social, or leave your number and we’ll send the team social guide on WhatsApp.",
+      "lead": "Set up a free social, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Set up a free social", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "team_social_setup_guide", "requestKind": "guide", "format": "teams", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "leadForm": {"id": "team_social_setup_guide", "requestKind": "guide", "format": "teams", "label": "Your WhatsApp number", "submitLabel": "Message me"},
       "media": {"kind": "capture", "slot": "host-create-teams"}
     }
   ]

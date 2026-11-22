@@ -1,0 +1,20 @@
+{
+  "id": "ci:main-push-base",
+  "category": "ci",
+  "path": "tool/ci/main_push_base.mjs",
+  "command": "node tool/ci/main_push_base.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "impactPaths": [
+    ".github/workflows/ci.yml",
+    "tool/ci/main_push_base.mjs",
+    "tool/ci/main_push_base.test.mjs"
+  ],
+  "description": "Chooses the base a main push CI run plans from: the nearest earlier main push run that ran and whose commit is an ancestor of the head (by commit graph, not run order), so the commits of a pending run a newer merge replaced are still validated; validates everything when no such run exists.",
+  "checks": [
+    "node --check tool/ci/main_push_base.mjs",
+    "node --test tool/ci/main_push_base.test.mjs"
+  ],
+  "role": "gate",
+  "runbook": "docs/release_operations.md#required-pr-checks"
+}

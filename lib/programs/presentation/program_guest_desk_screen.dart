@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
@@ -86,7 +87,8 @@ class ProgramGuestDeskScreen extends ConsumerWidget {
         return CatchAsyncBoundary<ProgramGuestListPage>(
           retainDataOn: const {},
           value: guestsAsync,
-          onRetry: () => ref.invalidate(programGuestListProvider(programId)),
+          onRetry: () =>
+              ref.invalidate(programGuestDirectoryStreamProvider(programId)),
           loadingBuilder: (_) => CatchRouteScaffold(
             topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
               title: access.title,

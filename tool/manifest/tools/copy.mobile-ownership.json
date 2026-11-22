@@ -1,0 +1,20 @@
+{
+  "id": "copy:mobile-ownership",
+  "category": "lint",
+  "path": "tool/copy/check_mobile_copy_ownership.dart",
+  "command": "dart run tool/copy/check_mobile_copy_ownership.dart",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Blocks unmanaged Flutter product copy in widget arguments, copy-shaped defaults and initializers, presentation-state members, validator/share/status helpers, and Event Success display enums; the checked baseline must remain empty.",
+  "checks": [
+    "dart run tool/copy/check_mobile_copy_ownership.dart --self-test",
+    "dart run tool/copy/check_mobile_copy_ownership.dart"
+  ],
+  "impactPaths": [
+    "tool/copy/mobile_copy_allowlist.json"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "APP-COPY-001"
+  ]
+}

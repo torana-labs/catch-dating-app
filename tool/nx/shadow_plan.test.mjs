@@ -8,6 +8,7 @@ import {pathToFileURL} from "node:url";
 import {planAffected} from "../harness/lib/component_graph.mjs";
 import {compare, comparedLanes, contractsConsumerScanPrefixes, explain, explanationRules, isControlPlane, isQueueCaptureInput, laneForTask,
   narrowedPlanner, shadowExitCode, summary} from "./shadow_plan.mjs";
+import {toolsManifestPath} from "../lib/tools_manifest.mjs";
 
 const dart = {catch_dating_app: ["lang:dart"], catch_ui: ["lang:dart"], widget_dedupe: ["lang:dart"]};
 
@@ -32,12 +33,12 @@ test("a selector file selects every lane; a workflow selects the lanes that run 
   assert.equal(isControlPlane(".github/workflows/ci.yml"), true);
   assert.equal(isControlPlane("tool/nx/catch_projects.mjs"), true);
   // The manifest selects by semantic diff; without a readable diff it selects every lane.
-  assert.equal(isControlPlane("tool/tools_manifest.json"), false);
+  assert.equal(isControlPlane(toolsManifestPath), false);
   // Every lane but iOS: the queue (compare's default mode) builds iOS only for
   // a native or build input, and the manifest is not one.
-  assert.deepEqual(compare({plannerLanes: [], nxTasks: [], changedFiles: ["tool/tools_manifest.json"]}).nxLanes,
+  assert.deepEqual(compare({plannerLanes: [], nxTasks: [], changedFiles: [toolsManifestPath]}).nxLanes,
     comparedLanes.filter((lane) => lane !== "flutter_build_ios"));
-  assert.equal(compare({plannerLanes: [], nxTasks: [], changedFiles: ["tool/tools_manifest.json"], mode: "main"})
+  assert.equal(compare({plannerLanes: [], nxTasks: [], changedFiles: [toolsManifestPath], mode: "main"})
     .nxLanes.length, comparedLanes.length);
   assert.equal(isControlPlane(".github/workflows/flutter-ci.yml"), false);
   // A selector file selects every lane; in the queue (compare's default mode)
@@ -57,7 +58,7 @@ test("a selector file selects every lane; a workflow selects the lanes that run 
 // 229-commit replay were manifest edits the diff already narrows.
 test("a narrowed manifest edit compares with the planner's narrowed lanes and provenance", () => {
   const {lanes, sources} = narrowedPlanner({plannerLanes: ["docs", "policy_docs", "tools"], mode: "merge_group",
-    changedFiles: ["tool/tools_manifest.json", "docs/data_contracts.md"]});
+    changedFiles: [toolsManifestPath, "docs/data_contracts.md"]});
   assert.deepEqual(lanes, ["docs", "policy_docs", "tools"]);
   assert.ok(sources.some((entry) => entry.value === "docs" && entry.component !== "tools.manifest-diff"),
     "the other files keep the planner's own provenance");
@@ -126,7 +127,7 @@ const explanationFixtures = [
   {rule: "harness-script-outside-pr-ci", commit: "9180bc5f", lane: "flutter", side: "planner",
     sources: [source("repo.harness", "flutter")],
     changedFiles: [".github/workflows/main-red-alert.yml", ".github/zizmor.yml", "docs/release_operations.md",
-      "tool/ci/main_red_alert.mjs", "tool/ci/main_red_alert.test.mjs", "tool/tools_manifest.json"]},
+      "tool/ci/main_red_alert.mjs", "tool/ci/main_red_alert.test.mjs", toolsManifestPath]},
   {rule: "caller-closure-narrower", commit: "06b715db", lane: "functions", side: "planner",
     sources: [source("repo.harness", "functions")],
     changedFiles: ["TESTS.md", "docs/release_operations.md", "tool/ci/flutter_package_scope.mjs",
@@ -139,7 +140,7 @@ const explanationFixtures = [
     changedFiles: ["design/screens/catch.screens.json", "functions/test/rules/clubs.rules.test.cjs"]},
   {rule: "planner-app-design-coarse", commit: "c20f2462", lane: "flutter", side: "planner",
     sources: [source("app.design", "flutter")],
-    changedFiles: ["design/source_packs/host-v2/source-pack.json", "tool/tools_manifest.json"]},
+    changedFiles: ["design/source_packs/host-v2/source-pack.json", toolsManifestPath]},
   {rule: "planner-app-design-coarse", commit: "b438618a", lane: "flutter", side: "planner",
     sources: [source("app.design", "flutter"), source("marketing.capture-artifacts", "flutter")],
     changedFiles: ["artifacts/marketing/app-screenshots/host-live-console.png",
@@ -150,7 +151,7 @@ const explanationFixtures = [
     changedFiles: [".github/workflows/functions-ci.yml", ".github/workflows/main-red-alert.yml", "TESTS.md",
       "docs/release_operations.md", "functions/scripts/run-tests.cjs", "functions/scripts/run-tests.test.cjs",
       "tool/README.md", "tool/ci/selection_miss_report.mjs", "tool/ci/selection_miss_report.test.mjs",
-      "tool/tools_manifest.json"]},
+      toolsManifestPath]},
   {rule: "nx-contracts-app-consumers", commit: "2fec192d", lane: "flutter_web_smoke", side: "nx",
     nxTasks: ["lane-web-smoke:lane"], changedFiles: ["contracts/firestore/event_seat_ledgers.schema.json"]},
   {rule: "nx-root-lockfile", commit: "c2ae163a", lane: "flutter_build_ios", side: "nx",

@@ -1,0 +1,13 @@
+{
+  "id": "analytics:user-bigquery-live-status",
+  "category": "analytics",
+  "path": "tool/analytics/user_analytics_live_status.mjs",
+  "command": "node tool/analytics/user_analytics_live_status.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "description": "Checks live Firebase and BigQuery user analytics deployment status.",
+  "checks": [
+    "node --check tool/analytics/user_analytics_live_status.mjs"
+  ],
+  "runbook": "tool/README.md#user-analytics-bigquery"
+}

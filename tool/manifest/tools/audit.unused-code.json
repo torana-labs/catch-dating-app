@@ -1,0 +1,28 @@
+{
+  "id": "audit:unused-code",
+  "category": "audit",
+  "path": "tool/audit/check_unused_code.mjs",
+  "command": "node tool/audit/check_unused_code.mjs --check --workspace . --workspace admin --workspace website --workspace packages/web-ui --workspace packages/web-config",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Shrink-only Knip ratchet over unused files, exports, types and dependencies, and imports of undeclared packages. The Admin and Marketing lanes check their app plus packages/web-ui and packages/web-config on every change. This entry checks every JavaScript workspace except Functions when the Knip config, baseline or ratchet changes, and in full Tools runs (root package changes, nightly). Root tool/ and operations/ files are Knip entry points, so they can only add undeclared or broken imports and duplicate exports; full runs catch those. Functions joins once its lane runs the check.",
+  "checks": [
+    "node --check tool/audit/check_unused_code.mjs",
+    "node --test tool/audit/check_unused_code.test.mjs",
+    "node tool/audit/check_unused_code.mjs --check --workspace . --workspace admin --workspace website --workspace packages/web-ui --workspace packages/web-config"
+  ],
+  "impactPaths": [
+    "tool/audit/knip.jsonc",
+    "tool/audit/unused_code_baseline.json",
+    "tool/audit/check_unused_code.test.mjs"
+  ],
+  "role": "ratchet",
+  "baseline": "tool/audit/unused_code_baseline.json",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

@@ -8407,6 +8407,28 @@
       ]
     },
     {
+      "collectionGroup": "programGuestDirectoryViews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "kind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "guest.displayName",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sourceId",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "programDoorRows",
       "queryScope": "COLLECTION",
       "fields": [

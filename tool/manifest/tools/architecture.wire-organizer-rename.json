@@ -1,0 +1,14 @@
+{
+  "id": "architecture:wire-organizer-rename",
+  "category": "generator",
+  "path": "tool/architecture/rename_wire_to_organizer.mjs",
+  "command": "node tool/architecture/rename_wire_to_organizer.mjs --plan",
+  "surface": "local-writes-repo",
+  "status": "internal",
+  "description": "Library: contracts:organizer-nomenclature imports wireNameFindings and fails on anything this rename would still change. The Club-to-Organizer rename on the wire is finished. Renames the club names the contracts declare (fields, enum values, collections, titles) across contracts, TypeScript, rules, indexes, fixtures and Dart strings, and TypeScript identifiers and file names. A club field beside its organizer twin collapses into the twin. The club subtype, BigQuery columns, copy and URLs stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
+  "checks": [
+    "node --test tool/architecture/rename_wire_to_organizer.test.mjs",
+    "node --check tool/architecture/rename_wire_to_organizer.mjs"
+  ],
+  "role": "generator"
+}

@@ -4,7 +4,7 @@
   "route": "product_messages",
   "meta": {
     "title": "Messages and growth | {{brand.name}} for hosts",
-    "description": "Event messages for every booking, a push reminder before the start, announcements, follower updates and WhatsApp campaigns, plus tracked links and guest invite links that show what fills your events.",
+    "description": "Event messages and a push reminder for guests on the app, announcements, follower updates and WhatsApp campaigns, plus tracked links and guest invite links that show what fills your events.",
     "socialDescription": "Fill the next one from the last one. Messages and growth on {{brand.name}}.",
     "noindex": false
   },
@@ -63,19 +63,19 @@
       "items": [
         {
           "title": "Event messages",
-          "body": "Confirmations, changes, cancellations and a feedback request for every booking, and a push reminder 15 minutes before the start for guests on the {{brand.name}} app.",
+          "body": "Guests on the {{brand.name}} app get confirmations, changes, cancellations, a push reminder 15 minutes before the start and a feedback request afterwards.",
           "then": "To: the people booked",
           "ground": "yellow"
         },
         {
           "title": "Announcements",
-          "body": "“Meet at the north gate, it’s raining.” One notification to everyone booked, or everyone interested, up to 500 people.",
+          "body": "“Meet at the north gate, it’s raining.” One notification to everyone booked or interested who uses the {{brand.name}} app, up to 500 people.",
           "then": "To: one event’s guests",
           "ground": "coral"
         },
         {
           "title": "Follower updates",
-          "body": "Send your followers an update about your next event, up to twice a month.",
+          "body": "Send your followers an update about your next event, up to three a week.",
           "then": "To: your followers",
           "ground": "indigo"
         },
@@ -155,7 +155,7 @@
       "status": "built",
       "kicker": "Automations",
       "title": "The messages you’d forget to send, sent.",
-      "lead": "Confirmations, changes, cancellations and a feedback request go out for every booking, and guests on the app get a push reminder before the start, so guests always know where to be.",
+      "lead": "Guests on the {{brand.name}} app get confirmations, changes, cancellations, a push reminder before the start and a feedback request afterwards, so they always know where to be.",
       "media": {"kind": "capture", "slot": "host-automations"}
     },
     {
@@ -242,7 +242,7 @@
         },
         {
           "question": "Do I need a WhatsApp Business number?",
-          "answer": "Only for WhatsApp campaigns. Event messages, the push reminder, announcements, follower updates and invite links work without one."
+          "answer": "Only for WhatsApp campaigns. Event messages, the push reminder, announcements and follower updates reach guests on the {{brand.name}} app without one, and invite links work anywhere."
         },
         {
           "question": "Who pays for WhatsApp messages?",

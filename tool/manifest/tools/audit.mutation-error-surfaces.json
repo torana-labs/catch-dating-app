@@ -1,0 +1,36 @@
+{
+  "id": "audit:mutation-error-surfaces",
+  "category": "audit",
+  "path": "tool/architecture/check_mutation_error_surfaces.mjs",
+  "command": "node tool/architecture/check_mutation_error_surfaces.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks production Dart build methods that read Mutation isPending state also expose mutation error feedback.",
+  "checks": [
+    "node --test tool/architecture/check_mutation_error_surfaces.test.mjs",
+    "node --check tool/architecture/check_mutation_error_surfaces.mjs",
+    "node tool/architecture/check_mutation_error_surfaces.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "MUTATION-ERROR-SURFACE-001",
+      "title": "A watched Mutation consumed for isPending must also surface hasError",
+      "appliesTo": [
+        "lib/**/presentation/**",
+        "apps/*/lib/**"
+      ],
+      "instruction": "Any UI that watches a Mutation to drive a spinner (isPending) must also handle hasError — via an inline ErrorBanner.fromError, a screen-level listenToCatchMutationErrors, or try/catch + showCatchNoticeError around .run(). Silent failure (spinner clears, no feedback) is forbidden, especially for destructive/security actions."
+    }
+  ],
+  "impactPaths": [
+    "tool/architecture/check_mutation_error_surfaces.test.mjs",
+    "tool/architecture/check_mutation_error_surfaces.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

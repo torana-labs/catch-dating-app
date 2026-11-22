@@ -1,0 +1,14 @@
+{
+  "id": "marketing:website-owner-gated-content",
+  "category": "marketing",
+  "path": "website/scripts/ownerGatedContent.test.mjs",
+  "command": "node --experimental-strip-types --test website/scripts/ownerGatedContent.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Proves privacy, terms, help, and contact content contracts remain null, unregistered, and unlinked until owner-supplied content exists.",
+  "checks": [
+    "node --check website/scripts/ownerGatedContent.test.mjs",
+    "node --experimental-strip-types --test website/scripts/ownerGatedContent.test.mjs"
+  ],
+  "role": "gate"
+}

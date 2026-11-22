@@ -1,0 +1,14 @@
+{
+  "id": "data:backfill-algolia-explore-search",
+  "category": "data",
+  "path": "tool/data/backfill_algolia_explore_search.mjs",
+  "command": "node tool/data/backfill_algolia_explore_search.mjs",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Backfills Algolia Explore search records from club and event projections.",
+  "checks": [
+    "node --check tool/data/backfill_algolia_explore_search.mjs"
+  ],
+  "runbook": "docs/release_operations.md#public-provider-ids-and-server-side-search-secrets"
+}

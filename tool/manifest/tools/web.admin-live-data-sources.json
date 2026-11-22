@@ -1,0 +1,23 @@
+{
+  "id": "web:admin-live-data-sources",
+  "category": "lint",
+  "path": "tool/web/check_admin_live_data_sources.mjs",
+  "command": "node tool/web/check_admin_live_data_sources.mjs --check",
+  "surface": "remote-read",
+  "status": "active",
+  "description": "Requires every Admin navigation and Intake workspace to declare callable-backed live reads, rejects retained operational JSON snapshots and generated operational imports, and can verify every declared callable against a deployed Firebase environment.",
+  "checks": [
+    "node --check tool/web/check_admin_live_data_sources.mjs",
+    "node --test tool/web/check_admin_live_data_sources.test.mjs",
+    "node tool/web/check_admin_live_data_sources.mjs --check --summary"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "OPERATIONS-PLATFORM-001"
+  ],
+  "runbook": "docs/web_surface_architecture.md#admin-live-data-source-contract",
+  "checkSafety": "local-readonly",
+  "impactPaths": [
+    "functions/scripts/functionExports.cjs"
+  ]
+}

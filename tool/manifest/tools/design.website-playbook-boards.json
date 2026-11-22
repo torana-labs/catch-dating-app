@@ -1,0 +1,14 @@
+{
+  "id": "design:website-playbook-boards",
+  "category": "design",
+  "path": "tool/design/playbook/build_boards.mjs",
+  "command": "node tool/design/playbook/build_boards.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Regenerates the website playbook canvas boards and their 390px phone wrappers from the source pack into build/design/playbook-boards, ready to publish to the design canvas.",
+  "checks": [
+    "node --check tool/design/playbook/build_boards.mjs",
+    "node tool/design/playbook/build_boards.mjs --help"
+  ],
+  "role": "generator"
+}

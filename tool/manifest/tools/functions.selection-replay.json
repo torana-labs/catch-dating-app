@@ -1,0 +1,19 @@
+{
+  "id": "functions:selection-replay",
+  "category": "ci",
+  "path": "tool/impact/selection_replay.mjs",
+  "command": "node tool/impact/selection_replay.mjs --baseline <old functions_test_selection.mjs> --commits 100",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Replays the Functions test selection over recent main commits through two copies of the selector and lists every test the newer one drops, with the reads that show it cannot read the change, plus median and p90 selected counts for the unit and emulator lists.",
+  "impactPaths": [
+    "tool/impact/selection_replay.mjs",
+    "tool/lib/functions_test_selection.mjs",
+    "tool/lib/functions_test_reads.mjs",
+    "tool/lib/functions_module_graph.mjs"
+  ],
+  "checks": [
+    "node --check tool/impact/selection_replay.mjs"
+  ],
+  "role": "finder"
+}

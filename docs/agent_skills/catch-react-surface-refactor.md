@@ -16,7 +16,7 @@ Read: `AGENTS.md`, `docs/agent_operating_model.md`,
 `design/website/routes.json`, `design/website/components.json`,
 `design/admin/components/`,
 `website/README.md`, `admin/README.md` when present,
-`packages/web-config/README.md`, and `tool/tools_manifest.json`.
+`packages/web-config/README.md`, and the tools manifest (`tool/manifest/`).
 
 Loop:
 

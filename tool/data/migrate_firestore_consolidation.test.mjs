@@ -1095,6 +1095,63 @@ test("program-door-views creates headers, roster rows and journal views once, wi
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("program-guest-directory-views creates each row once, contacts only from assertions", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-guest-directory-views");
+  const {seedWorkspaceFieldAssertions} = createFunctionsRequire()(
+    "./lib/workspaces/workspaceFieldFixture.js");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const guest = (name, overrides = {}) => ({programId: "p1", organizerId: "o1",
+    displayName: name, householdId: null, contactId: null, phoneE164: "+919900000000",
+    email: null, externalReference: null, groupIds: [], invitationStatus: "invited",
+    rsvpStatus: "pending", source: "manual", revision: 2, ...overrides});
+  const db = fakeDb({
+    ...seedWorkspaceFieldAssertions({
+      "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active"},
+      "programGuests/g1": guest("Rohan", {householdId: "hh1", groupIds: ["grp1"]}),
+      "programHouseholds/hh1": {programId: "p1", organizerId: "o1", label: "Sharma",
+        primaryContactName: "Household contact", primaryPhoneE164: "+919911111111",
+        primaryEmail: null, memberGuestIds: ["g1"], deliveryPreference: "none", revision: 3},
+    }),
+    // No assertion backs this guest's name, so the callable never showed it.
+    "programGuests/g2": guest("Unbacked"),
+    "programGuestGroups/grp1": {programId: "p1", organizerId: "o1", label: "Bride side",
+      dimension: "side", sortOrder: 1, memberCount: 1, hotelId: null, revision: 4},
+    "programFunctionGuests/f1_g1": {programId: "p1", organizerId: "o1", functionId: "f1",
+      guestId: "g1", invited: true, rsvpStatus: "attending", attendanceStatus: "expected",
+      partySize: 2, responseNote: "private-note-marker"},
+    "programStaffGrants/p1__desk-1": {organizerId: "o1", programId: "p1", uid: "desk-1",
+      displayName: "Arjun", phoneLastFour: "0001", status: "active", createdBy: "owner-1",
+      duties: [{duty: "guestRelations", pickupPointIds: [], hotelIds: [], expiresAtMillis: later}],
+      expiresAt: at(later), revokedBy: null, revokedAt: null, revision: 2},
+  });
+  // A view written before programAll existed.
+  db.data["programAccessViews/p1__desk-1"] = {programId: "p1", uid: "desk-1", stale: true};
+  const plan = await planMigration(db, migration);
+  // g1, hh1 and grp1 get rows; g2 none; the stale access view is rewritten.
+  assert.equal(plan.totals.toCreate, 3 + 1);
+  await applyMigrationPlan(db, plan);
+  const row = db.data["programGuestDirectoryViews/guest__g1"];
+  assert.equal(row.guest.displayName, "Rohan");
+  assert.equal(row.guest.phoneE164, "+919900000000");
+  assert.deepEqual(row.guest.functions, [{functionId: "f1", invited: true,
+    rsvpStatus: "attending", attendanceStatus: "expected", partySize: 2}]);
+  assert.equal(db.data["programGuestDirectoryViews/guest__g2"], undefined);
+  assert.deepEqual(db.data["programGuestDirectoryViews/household__hh1"].household,
+    {label: "Sharma", memberGuestIds: ["g1"], revision: 3});
+  assert.equal(db.data["programGuestDirectoryViews/group__grp1"].group.memberCount, 1);
+  assert.deepEqual(db.data["programAccessViews/p1__desk-1"].programAll,
+    {guestRelations: later});
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
+    ([key]) => key.startsWith("programGuestDirectoryViews/"))));
+  for (const secret of ["9911111111", "Household contact", "private-note-marker", "wfa_"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-setting-views creates each programme's sender and settings views once, nothing secret", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-setting-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});

@@ -23,9 +23,10 @@ import {validMobileNumber} from "../shared/mobileNumber";
  * book a walkthrough, list your space, refer a host, text me the app link
  * and so on). Each one is
  * a typed salesInboundIntents row, so it reaches the Admin inbox the way a
- * Host application does. Until Catch's WhatsApp templates are approved staff
- * reply first: nothing here sends a message, and the city new-plans consent
- * is recorded only.
+ * Host application does. Nothing here sends a message: staff reply first,
+ * except that an app_link lead gets the approved Host app link template from
+ * the row's create trigger (hostAppLink.ts). The city
+ * new-plans consent is recorded only.
  */
 
 export const LEAD_KINDS = ["guide", "walkthrough", "demo", "venue", "story",

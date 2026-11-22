@@ -565,7 +565,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/lib/tool_platform.mjs",
       "/tool/lib/tools_manifest.mjs",
       "/tool/run.mjs",
-      "/tool/tools_manifest.json",
+      "/tool/manifest",
       "/.github/actions/load-toolchain/action.yml",
       "/tool/design/build_host_feature_responsibilities.mjs",
       "/design/features/host_feature_responsibilities.json",
@@ -1406,7 +1406,7 @@ test("minimum safety obligations cover source, tests, lockfiles and generated ou
 
 test("every selector control input routes to full validation before comparison", () => {
   for (const file of ["tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs",
-    "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/tools_manifest.json",
+    "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/manifest/manifest.json",
     "tool/harness.mjs", "tool/harness/compare_selectors.mjs"]) {
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const result = plan(file, mode);

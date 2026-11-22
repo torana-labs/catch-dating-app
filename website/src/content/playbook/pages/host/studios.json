@@ -140,11 +140,11 @@
       "ground": "magenta",
       "kicker": "Your next workshop",
       "title": "Bring them in once. Keep them for years.",
-      "lead": "Start the free trial, or leave your number and we’ll send the studio setup guide on WhatsApp.",
+      "lead": "Start the free trial, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "studio_setup_guide", "requestKind": "guide", "format": "studios", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "leadForm": {"id": "studio_setup_guide", "requestKind": "guide", "format": "studios", "label": "Your WhatsApp number", "submitLabel": "Message me"},
       "media": {"kind": "capture", "slot": "host-create-studios"}
     }
   ]

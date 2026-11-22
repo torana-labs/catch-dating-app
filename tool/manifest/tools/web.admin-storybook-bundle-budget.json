@@ -1,0 +1,15 @@
+{
+  "id": "web:admin-storybook-bundle-budget",
+  "category": "test",
+  "path": "admin/scripts/checkStorybookBundleBudget.mjs",
+  "command": "node admin/scripts/checkStorybookBundleBudget.mjs --check",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Checked by web:admin-storybook. Ratchets Catch-authored admin Storybook route and feature chunks while excluding framework and accessibility-vendor runtime chunks.",
+  "checks": [
+    "node --check admin/scripts/checkStorybookBundleBudget.mjs",
+    "node admin/scripts/checkStorybookBundleBudget.mjs --self-test",
+    "node admin/scripts/checkStorybookBundleBudget.mjs --check"
+  ],
+  "role": "ratchet"
+}

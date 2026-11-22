@@ -1,0 +1,26 @@
+{
+  "id": "marketing:capture-drift",
+  "category": "marketing",
+  "path": "tool/marketing/compare_capture_drift.mjs",
+  "impactPaths": [
+    "tool/marketing/compare_capture_drift.test.mjs",
+    ".github/workflows/marketing-captures-drift.yml",
+    "tool/marketing/lib/capture_seeds.mjs",
+    "tool/marketing/lib/capture_provenance.mjs"
+  ],
+  "command": "node tool/marketing/compare_capture_drift.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "role": "gate",
+  "description": "Weekly compare-only render: finds the app capture PNGs main would reuse, renders them afresh on macOS and fails, naming the captures, when any image bytes differ. Never republishes.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "checks": [
+    "node --check tool/marketing/compare_capture_drift.mjs",
+    "node --test tool/marketing/compare_capture_drift.test.mjs"
+  ]
+}

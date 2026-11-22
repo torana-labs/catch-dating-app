@@ -201,6 +201,21 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "8.12.6"
+  carp_serializable:
+    dependency: transitive
+    description:
+      name: carp_serializable
+      sha256: efeac6afbc85c3763fac382647cec6395368cf4c3ecfea4d2d10f95d99c03705
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.2"
+  catch_consumer_app:
+    dependency: "direct main"
+    description:
+      path: "../apps/consumer"
+      relative: true
+    source: path
+    version: "1.0.2+3"
   catch_dating_app:
     dependency: "direct main"
     description:
@@ -208,6 +223,13 @@ packages:
       relative: true
     source: path
     version: "1.0.1+3"
+  catch_host_app:
+    dependency: "direct main"
+    description:
+      path: "../apps/host"
+      relative: true
+    source: path
+    version: "1.0.5+7"
   catch_kernel:
     dependency: "direct main"
     description:
@@ -442,6 +464,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.0"
+  device_info_plus:
+    dependency: transitive
+    description:
+      name: device_info_plus
+      sha256: ade1c36f8355d6284c98e4a47992ea263887ed3d1acb281e37635dd45f04c4aa
+      url: "https://pub.dev"
+    source: hosted
+    version: "13.3.0"
+  device_info_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: device_info_plus_platform_interface
+      sha256: "04b173a92e2d9161dfead145667037c8d834db725ce2e7b942bfe18fd2f45a46"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.1.0"
   diacritic:
     dependency: transitive
     description:
@@ -466,6 +504,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  eventify:
+    dependency: transitive
+    description:
+      name: eventify
+      sha256: b829429f08586cc2001c628e7499e3e3c2493a1d895fd73b00ecb23351aa5a66
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -990,6 +1036,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.8"
+  health:
+    dependency: transitive
+    description:
+      name: health
+      sha256: "8dd9625c9c26379a5753ad24c33af1d3dc5ce1f36f19c03e17c676c2f8fdbb80"
+      url: "https://pub.dev"
+    source: hosted
+    version: "13.3.2"
   hooks:
     dependency: transitive
     description:
@@ -1454,6 +1508,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
+  razorpay_flutter:
+    dependency: transitive
+    description:
+      name: razorpay_flutter
+      sha256: f0ffd4e162f0c4c8d72e512deaece22d2179e653e470fd794865283c28ff9079
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.7"
   record_use:
     dependency: transitive
     description:
@@ -1923,6 +1985,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.4.0"
+  win32_registry:
+    dependency: transitive
+    description:
+      name: win32_registry
+      sha256: "73b1d78920a9d6e03f8b4e43e612b87bf3152a0e5c5e5150267762b7c4116904"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.3"
   windows_file_picker:
     dependency: transitive
     description:

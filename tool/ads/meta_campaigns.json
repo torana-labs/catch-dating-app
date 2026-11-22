@@ -70,7 +70,7 @@
         {
           "name": "Regulars",
           "image": "fastlane/metadata/host/ios_screenshots/en-US/05_iphone_regulars.png",
-          "primaryText": "Message everyone booked in one tap and keep your regulars coming back. Free for 30 days, then 5% of ticket sales, capped every month.",
+          "primaryText": "Message your guests in one tap and keep your regulars coming back. Free for 30 days, then 5% of ticket sales, capped every month.",
           "headline": "Bring your regulars back",
           "description": "Free for 30 days",
           "callToAction": "SIGN_UP"

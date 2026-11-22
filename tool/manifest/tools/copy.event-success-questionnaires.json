@@ -1,0 +1,14 @@
+{
+  "id": "copy:event-success-questionnaires",
+  "category": "generator",
+  "path": "tool/copy/sync_event_success_questionnaires.mjs",
+  "command": "node tool/copy/sync_event_success_questionnaires.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Validates marketing-owned Event Success questionnaire copy and keeps the typed Dart domain catalog generated from locale JSON.",
+  "checks": [
+    "node --check tool/copy/sync_event_success_questionnaires.mjs",
+    "node tool/copy/sync_event_success_questionnaires.mjs"
+  ],
+  "role": "generator"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "firebase:index-deploy-sanitizer",
+  "category": "firebase",
+  "path": "tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
+  "command": "node --test tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "firestore.indexes.json",
+    "tool/contracts/check_firestore_query_indexes.mjs",
+    "tool/contracts/check_firestore_query_indexes.test.mjs",
+    "tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs"
+  ],
+  "description": "Normalizes only the verified Firebase deploy copy: removes obsolete collection-scoped non-vector one-field declarations after retirement and field-override checks, and removes repeated identical complete index definitions while preserving their first occurrence.",
+  "checks": [
+    "node --check tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
+    "node --test tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs"
+  ],
+  "role": "operator",
+  "runbook": "docs/release_operations.md#deploy-backend"
+}

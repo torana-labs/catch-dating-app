@@ -39,6 +39,7 @@ class ProgramAccessView {
     this.hotelScoped = const {},
     this.functionAll = const {},
     this.functionScoped = const {},
+    this.programAll = const {},
     this.workPickup = const {},
     this.workHotel = const {},
     this.workFunction = const {},
@@ -85,6 +86,8 @@ class ProgramAccessView {
       hotelScoped: instants('hotelScoped'),
       functionAll: instants('functionAll'),
       functionScoped: instants('functionScoped'),
+      // Views written before the guest directory carry no programAll.
+      programAll: instants('programAll', optional: true),
       workPickup: instants('workPickup'),
       workHotel: instants('workHotel'),
       workFunction: instants('workFunction'),
@@ -125,6 +128,10 @@ class ProgramAccessView {
   final Map<String, DateTime> hotelScoped;
   final Map<String, DateTime> functionAll;
   final Map<String, DateTime> functionScoped;
+
+  /// Duty name to the latest expiry of one assignment that covers every
+  /// pickup point, hotel and function at once.
+  final Map<String, DateTime> programAll;
   final Map<String, DateTime> workPickup;
   final Map<String, DateTime> workHotel;
   final Map<String, DateTime> workFunction;
@@ -208,6 +215,15 @@ class ProgramAccessView {
           _live(functionAll[duty.name], now) ||
           _live(functionScoped['${duty.name}__$id'], now));
 
+  /// Whether the programme guest directory is open at [now], as
+  /// `requireProgramGuestDirectoryAccess` and the rules admit it: the owner,
+  /// or a guest relations duty (a coordinator holds it) from one assignment
+  /// that covers the whole programme.
+  bool holdsGuestDirectory(DateTime now) =>
+      isLiveAt(now) &&
+      (isManager ||
+          _live(programAll[ProgramStaffDuty.guestRelations.name], now));
+
   /// Whether the work shell lists this pickup point, hotel or function.
   bool listsPickup(String id, DateTime now) =>
       isLiveAt(now) &&
@@ -234,6 +250,7 @@ class ProgramAccessView {
       hotelScoped,
       functionAll,
       functionScoped,
+      programAll,
       workPickup,
       workHotel,
       workFunction,
@@ -326,6 +343,7 @@ class ProgramAccessView {
         'hotel': hotelScoped,
         'functionAll': functionAll,
         'function': functionScoped,
+        'programAll': programAll,
         'workPickup': workPickup,
         'workHotel': workHotel,
         'workFunction': workFunction,

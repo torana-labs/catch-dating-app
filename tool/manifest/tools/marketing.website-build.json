@@ -1,0 +1,17 @@
+{
+  "id": "marketing:website-build",
+  "category": "marketing",
+  "path": "website/package.json",
+  "command": "npm --prefix website run build",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Builds the Vite React marketing website and route-specific static metadata.",
+  "checks": [
+    "node --check website/scripts/checkOrganizerBuildOutputs.mjs",
+    "node --check website/scripts/postbuild.mjs",
+    "node --test website/scripts/checkOrganizerBuildOutputs.test.mjs",
+    "node --test website/scripts/postbuild.test.mjs",
+    "npm --prefix website run build"
+  ],
+  "role": "generator"
+}

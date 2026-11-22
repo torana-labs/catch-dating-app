@@ -1676,7 +1676,7 @@ Before another workflow adopts this platform:
    the platform authority ceiling;
 5. project the canonical backend state through the owning admin feature rather
    than creating a parallel dashboard source of truth;
-6. register only stable entrypoints in `tool/tools_manifest.json`; keep the
+6. register only stable entrypoints in the tools manifest (`tool/manifest/tools/`); keep the
    implementation inside `operations/`.
 
 ## Activation Checklist

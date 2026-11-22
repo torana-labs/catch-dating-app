@@ -13,6 +13,7 @@ import {
   scopedCondition,
   workflowForTarget,
 } from "./lib/workflow_steps.mjs";
+import {loadToolsManifest, toolsManifestToolPath, writeToolsManifest} from "../lib/tools_manifest.mjs";
 
 const WORKFLOWS = ".github/workflows";
 
@@ -305,7 +306,6 @@ test("structural preflight runs from the declared sparse closure and fails close
   };
   const sourceRoot = process.cwd();
   const graphPath = "tool/harness/component_graph.json";
-  const manifestPath = "tool/tools_manifest.json";
   const run = (allowDeferred = true) => spawnSync(process.execPath, [
     "tool/harness/verify_local.mjs", "--preflight", ...(allowDeferred ? ["--allow-deferred"] : []), "--base", "HEAD",
     "--head", "HEAD", "--mode", "pr", "--json",
@@ -404,16 +404,18 @@ test("structural preflight runs from the declared sparse closure and fails close
     assert.match(run().stderr, /complete, unambiguous Harness plan/u);
     fs.unlinkSync(unknownPath);
 
-    const originalManifest = fs.readFileSync(path.join(root, manifestPath), "utf8");
-    const manifest = JSON.parse(originalManifest);
+    const originalManifest = loadToolsManifest({root});
+    const manifest = structuredClone(originalManifest);
     manifest.tools[0].path = "tool/missing-preflight-script.mjs";
-    fs.writeFileSync(path.join(root, manifestPath), JSON.stringify(manifest));
+    writeToolsManifest(root, manifest);
     assert.match(run().stderr, /missing path tool\/missing-preflight-script\.mjs/u);
-    manifest.tools[0].path = JSON.parse(originalManifest).tools[0].path;
-    manifest.tools.push({...manifest.tools.at(-1)});
-    fs.writeFileSync(path.join(root, manifestPath), JSON.stringify(manifest));
-    assert.match(run().stderr, /Duplicate tool id/u);
-    fs.writeFileSync(path.join(root, manifestPath), originalManifest);
+    // Each id is its file's name, so a second copy of a tool cannot load:
+    // a file that holds another tool's id fails closed before any plan.
+    writeToolsManifest(root, originalManifest);
+    const [first, second] = originalManifest.tools;
+    fs.writeFileSync(path.join(root, toolsManifestToolPath(first.id)), JSON.stringify({...first, id: second.id}));
+    assert.match(run().stderr, new RegExp(`id must be "${first.id}"`, "u"));
+    writeToolsManifest(root, originalManifest);
 
     graph.classifications.push(...["first", "second"].map((id) => ({
       id: `preflight-ambiguous-${id}`,

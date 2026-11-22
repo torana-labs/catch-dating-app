@@ -71,10 +71,10 @@ describe("playbook page", () => {
 
   it("shows no lead form while its kind's slot is empty, and the slot's form once filled", () => {
     const {unmount} = render(<PlaybookPage captures={captures} leadForms={{}} page={page} />);
-    expect(screen.queryByText("Send the guide")).toBeNull();
+    expect(screen.queryByText("Send me the guide")).toBeNull();
     unmount();
     render(<PlaybookPage captures={captures} leadForms={{guide: ({form}) => <span>{form.submitLabel}</span>}} page={page} />);
-    expect(screen.getByText("Send the guide")).toBeTruthy();
+    expect(screen.getByText("Send me the guide")).toBeTruthy();
   });
 
   it("sends the run club setup guide request from the closing band, beside the trial, and retries the same request", async () => {
@@ -89,22 +89,22 @@ describe("playbook page", () => {
     }));
     render(<PlaybookPage captures={captures} page={page} />);
     const band = within(document.getElementById("start")!);
-    expect(band.getByText("Start the free trial, or leave your number and we’ll send the run club setup guide on WhatsApp.")).toBeTruthy();
+    expect(band.getByText("Start the free trial and read the run club guide. Or leave your number, and a person from our team will send it to you on WhatsApp.")).toBeTruthy();
     expect(band.getByRole("link", {name: "Start free trial"})).toBeTruthy();
-    const form = within(band.getByRole("form", {name: "Send the guide"}));
+    expect(band.getByRole("link", {name: "Read the run club guide"}).getAttribute("href")).toBe("/playbooks/run-club/");
+    const form = within(band.getByRole("form", {name: "Send me the guide"}));
     expect(form.getByText(playbookCopy.leadForm.consent)).toBeTruthy();
-    expect(form.getByText("We’ll message you on WhatsApp with the guide.")).toBeTruthy();
 
-    fireEvent.click(form.getByRole("button", {name: "Send the guide"}));
+    fireEvent.click(form.getByRole("button", {name: "Send me the guide"}));
     expect(await form.findByText(websiteLeadCopy.problems.invalid_phone)).toBeTruthy();
     expect(posts).toHaveLength(0);
 
     fireEvent.change(form.getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98765 43210"}});
-    fireEvent.click(form.getByRole("button", {name: "Send the guide"}));
+    fireEvent.click(form.getByRole("button", {name: "Send me the guide"}));
     expect(await band.findByText(websiteLeadCopy.problems.failed)).toBeTruthy();
     fireEvent.click(form.getByRole("button", {name: playbookCopy.leadForm.retry}));
     expect(await band.findByText(playbookCopy.leadForm.sent.guide)).toBeTruthy();
-    expect(band.queryByRole("form", {name: "Send the guide"})).toBeNull();
+    expect(band.queryByRole("form", {name: "Send me the guide"})).toBeNull();
 
     expect(posts).toHaveLength(2);
     expect(posts[1].lead.requestId).toBe(posts[0].lead.requestId);
@@ -115,7 +115,7 @@ describe("playbook page", () => {
   it("draws a band whose form renders without a duplicate WhatsApp action: the venues list-your-space split and closing band", async () => {
     const venues = (await loadPlaybookPage(resolvePlaybookPage("/host/venues/")!))!;
     render(<PlaybookPage captures={captures} page={venues} />);
-    for (const [id, submit] of [["list-your-space", "List my space"], ["start", "Send the guide"]]) {
+    for (const [id, submit] of [["list-your-space", "List my space"], ["start", "Message me"]]) {
       const band = within(document.getElementById(id)!);
       expect(band.getByRole("form", {name: submit})).toBeTruthy();
       const chats = band.queryAllByRole("link").filter((link) => /^https:\/\/wa\.me\//u.test(link.getAttribute("href") ?? ""));

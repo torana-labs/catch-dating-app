@@ -1,0 +1,35 @@
+{
+  "id": "copy:mobile-catalog",
+  "category": "lint",
+  "path": "tool/copy/check_mobile_copy_catalog.mjs",
+  "command": "node tool/copy/check_mobile_copy_catalog.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Validates typed Flutter ARB copy metadata, rejects generated visibleCopy-style identifier keys unless explicitly allowlisted, and can export a marketing review CSV.",
+  "checks": [
+    "node --check tool/copy/check_mobile_copy_catalog.mjs",
+    "node tool/copy/check_mobile_copy_catalog_test.mjs",
+    "node tool/copy/check_mobile_copy_catalog.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "APP-COPY-001",
+      "title": "Product copy is owned by typed, reviewable locale catalogs",
+      "appliesTo": [
+        "lib/**",
+        "packages/platform/lib/**",
+        "copy/**",
+        "functions/src/**",
+        "apps/*/ios/Runner/**"
+      ],
+      "instruction": "Handwritten user-facing Flutter copy belongs in packages/l10n/lib/app_en.arb with description, audience, owner, and surface metadata and is consumed through generated AppLocalizations. Domain and controller layers carry semantic ids, codes, and placeholder data rather than localized prose. Native permission copy belongs in copy/native_en.json and notification templates belong in copy/notifications_en.json; generated consumers must stay in sync. Inline technical identifiers, test fixtures, and user-authored content require narrow documented exemptions rather than broad folders."
+    }
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

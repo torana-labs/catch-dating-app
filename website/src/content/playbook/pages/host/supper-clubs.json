@@ -71,7 +71,7 @@
         {"time": "8:00 PM", "title": "One look at the phone, then dinner", "body": "Guests check in and see their seat once. After that nothing at dinner needs a phone."},
         {"time": "8:20 PM", "title": "The whole room at a glance", "body": "Seat a late arrival or move someone with a tap; table sizes and anyone you’ve kept apart still hold."},
         {"time": "9:10 PM", "title": "A new seat for dessert", "body": "{{brand.name}} can re-seat the room so everyone meets a few more people. A quiet table gets a conversation card."},
-        {"time": "Next morning", "title": "Hear how it went", "body": "Guests get a feedback prompt, and can say privately who they talked to. You see the totals, never who named whom."}
+        {"time": "Next morning", "title": "Hear how it went", "body": "Guests on the {{brand.name}} app get a feedback prompt, and can say privately who they talked to. You see the totals, never who named whom."}
       ],
       "media": {"kind": "capture", "slot": "host-live-tablet-supper-clubs"}
     },
@@ -132,11 +132,12 @@
       "ground": "pink",
       "kicker": "Your next dinner",
       "title": "Fill the table with the right people.",
-      "lead": "Start the free trial, or leave your number and we’ll send the supper club setup guide on WhatsApp.",
+      "lead": "Start the free trial and read the supper club guide. Or leave your number, and a person from our team will send it to you on WhatsApp.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "Read the supper club guide", "to": {"page": "playbook_guide/supper-club"}, "emphasis": "secondary"}
       ],
-      "leadForm": {"id": "supper_club_setup_guide", "requestKind": "guide", "format": "supper-clubs", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "leadForm": {"id": "supper_club_setup_guide", "requestKind": "guide", "format": "supper-clubs", "label": "Your WhatsApp number", "submitLabel": "Send me the guide"},
       "media": {"kind": "capture", "slot": "host-create-supper-clubs"}
     }
   ]

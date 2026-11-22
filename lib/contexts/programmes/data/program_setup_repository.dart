@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/organizer_program_views.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -202,23 +203,6 @@ class ProgramSetupRepository {
     payload: ProgramIdCallableRequest(programId: programId).toJson(),
     action: 'load the program',
     parse: OrganizerProgramDetail.fromCallableData,
-  );
-
-  /// `listProgramGuests`: one page of guests plus the household, function and
-  /// group projections the RSVP grid renders.
-  Future<ProgramGuestListPage> listGuests(
-    String programId, {
-    int? limit,
-    String? cursor,
-  }) => _call(
-    name: 'listProgramGuests',
-    payload: ListProgramGuestsCallableRequest(
-      programId: programId,
-      limit: limit,
-      cursor: cursor,
-    ).toJson(),
-    action: 'load program guests',
-    parse: ProgramGuestListPage.fromCallableData,
   );
 
   /// `listProgramGuestGroups`: every group in the programme, including those
@@ -662,9 +646,13 @@ Future<OrganizerProgramDetail> organizerProgramDetail(
   return organizerProgramDetailFromView(view, counts);
 }
 
+/// The programme's first guest page with its households, function rows and
+/// groups, from the trigger-kept guest directory (#2306) rather than the
+/// `listProgramGuests` callable. It follows the live rows, so a guest or RSVP
+/// write shows once its trigger rewrites the row.
 @riverpod
 Future<ProgramGuestListPage> programGuestList(Ref ref, String programId) =>
-    ref.watch(programSetupRepositoryProvider).listGuests(programId);
+    ref.watch(programGuestDirectoryStreamProvider(programId).future);
 
 /// Every guest group in the programme, empty ones included, for the guest
 /// editor's picker and the groups section. Coordinator-only on the server

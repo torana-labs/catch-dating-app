@@ -1,0 +1,15 @@
+{
+  "id": "platform:flutter-target-wrapper",
+  "category": "platform",
+  "path": "tool/flutter_with_env.test.sh",
+  "command": "bash tool/flutter_with_env.test.sh",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Checked by platform:app-targets. Regression-checks canonical Flutter app-target arguments and narrowly bounded CI-only retries for verified CocoaPods Git TLS and Gradle-wrapper download failures.",
+  "checks": [
+    "bash -n tool/flutter_with_env.sh",
+    "bash -n tool/flutter_with_env.test.sh",
+    "bash tool/flutter_with_env.test.sh"
+  ],
+  "role": "gate"
+}

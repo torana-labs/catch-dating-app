@@ -1,0 +1,22 @@
+{
+  "id": "ci:functions-drift-report",
+  "category": "ci",
+  "path": "tool/ci/functions_drift_report.mjs",
+  "command": "node tool/ci/functions_drift_report.mjs",
+  "surface": "remote-write",
+  "guard": "none",
+  "guardReason": "Posts the weekly drift comment with gh; meant to run only from functions-drift.yml with its workflow token.",
+  "status": "active",
+  "impactPaths": [
+    ".github/workflows/functions-drift.yml",
+    "tool/ci/functions_drift_report.mjs",
+    "tool/ci/functions_drift_report.test.mjs"
+  ],
+  "description": "Weekly, report-only: compares dev's live Functions with the newest delivered deploy:backend-functions record and keeps one 'Dev Functions drift from the deploy record' issue in step, naming recorded Functions missing on dev or updated after the record.",
+  "checks": [
+    "node --check tool/ci/functions_drift_report.mjs",
+    "node --test tool/ci/functions_drift_report.test.mjs"
+  ],
+  "role": "finder",
+  "runbook": "docs/release_operations.md#deploy-backend"
+}

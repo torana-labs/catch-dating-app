@@ -1,0 +1,36 @@
+{
+  "id": "web:react-query-state",
+  "category": "lint",
+  "path": "tool/web/check_react_query_state.mjs",
+  "command": "node tool/web/check_react_query_state.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "role": "gate",
+  "rules": [
+    {
+      "id": "WEB-QUERY-STATE-001",
+      "title": "React server-state pending state must ratchet toward TanStack Query",
+      "appliesTo": [
+        "website/src/features/**",
+        "admin/src/features/**",
+        "tool/web/check_react_query_state.mjs",
+        "package.json",
+        "website/package.json",
+        "admin/package.json"
+      ],
+      "instruction": "React feature controllers and feature use* hooks should not add new manual loading, saving, submitting, pending, or in-flight state for server reads or mutations. Use TanStack Query query/mutation state and explicit query-key invalidation for server state; keep only view-local form, filter, selection, and client-only rendering state in React state. Run node tool/run.mjs check web:react-query-state before handoff."
+    }
+  ],
+  "description": "Fails on React feature controller and use-hook manual async/loading state so new server-state work moves to TanStack Query instead of local loading flags.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "checks": [
+    "node --check tool/web/check_react_query_state.mjs",
+    "node tool/web/check_react_query_state.mjs --self-test",
+    "node tool/web/check_react_query_state.mjs --check"
+  ]
+}

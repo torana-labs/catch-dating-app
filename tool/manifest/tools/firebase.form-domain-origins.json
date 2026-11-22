@@ -1,0 +1,25 @@
+{
+  "id": "firebase:form-domain-origins",
+  "category": "firebase",
+  "path": "tool/firebase/form_domain_origins.mjs",
+  "command": "node --test tool/firebase/form_domain_origins.test.mjs",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Reconciles exact custom form origins across Auth, App Check Enterprise keys and upload CORS while preserving unrelated grants.",
+  "checks": [
+    "node --check tool/firebase/form_domain_origins.mjs",
+    "node --test tool/firebase/form_domain_origins.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/firebase/form_domain_origins.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "runbook": "docs/release_operations.md#custom-form-domain-onboarding",
+  "checkSafety": "local-readonly"
+}

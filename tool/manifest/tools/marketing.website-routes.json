@@ -1,0 +1,34 @@
+{
+  "id": "marketing:website-routes",
+  "category": "marketing",
+  "path": "tool/marketing/check_website_routes.mjs",
+  "command": "node tool/marketing/check_website_routes.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates marketing website route contracts against React routes, validated metadata content, postbuild, generated organizer-listing sources, active-market eligibility, and Firebase Hosting 404 behavior.",
+  "checks": [
+    "node --check tool/marketing/check_website_routes.mjs",
+    "node --check tool/marketing/website_meta_contract.mjs",
+    "node --check website/src/content/metaContract.ts",
+    "node --check website/scripts/verifyHosting404.mjs",
+    "node --test tool/marketing/website_meta_contract.test.mjs",
+    "node tool/marketing/check_website_routes.mjs --self-test",
+    "node tool/marketing/check_website_routes.mjs --check"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "WEB-ROUTE-001",
+      "title": "Keep marketing website route contracts ahead of visual review",
+      "appliesTo": [
+        "website/**",
+        "packages/web-config/**",
+        "design/website/**",
+        "tool/marketing/**",
+        "tool/web/check_react_architecture_boundaries.mjs",
+        ".github/workflows/marketing-website.yml"
+      ],
+      "instruction": "Before changing public marketing routes, generated organizer route families, SEO metadata, static postbuild output, robots/sitemap behavior, review states, route Storybook evidence, or route-owned URL state, update design/website/routes.json when the public contract changes and pass node tool/run.mjs check marketing:website-routes plus node tool/run.mjs check web:react-architecture-boundaries when React route boundaries are touched. The route gate validates runtime/static metadata, rejects deployable organizer listings outside live active-market cities, and validates matching Storybook parameters.catchRoute declarations for Storybook-backed review states. Start component-first review only after the route contract is current."
+    }
+  ]
+}

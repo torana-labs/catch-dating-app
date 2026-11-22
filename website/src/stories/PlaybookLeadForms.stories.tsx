@@ -101,7 +101,7 @@ async function sendGuide(canvasElement: HTMLElement) {
   await userEvent.click(form.getByRole("button", {name: guideForm.submitLabel}));
 }
 
-/** The run-clubs closing band at rest: the trial, the WhatsApp action, then the number and Send the guide. */
+/** The run-clubs closing band at rest: the trial, the WhatsApp action, then the number and Send me the guide. */
 export const GuideIdle1280: Story = {
   name: "/host/run-clubs/ setup guide form · 1280",
   render: () => <PlaybookAt width={1280} />,

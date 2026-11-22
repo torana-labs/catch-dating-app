@@ -303,6 +303,17 @@ service cloud.firestore {
       return hasProgramDuty(programId, 'programCoordinator');
     }
 
+    // The programme guest directory, as requireProgramGuestDirectoryAccess
+    // admits it: the owner, or a guest relations duty (coordinators hold it)
+    // from one assignment covering the whole programme. A view written before
+    // programAll existed holds none.
+    function programGuestDirectory(programId) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && programView(programId).get('programAll', {})
+            .get('guestRelations', 0) > request.time.toMillis());
+    }
+
     // An arrivals journey: one airport greeter, dispatcher or coordinator
     // assignment covers its pickup point and hotel together. Each side of a
     // route is an id or '*'; a journey with no pickup point or hotel is '~',
@@ -2739,6 +2750,16 @@ service cloud.firestore {
     match /programStaffViews/{viewId} {
       allow get, list: if hasProgramDuty(resource.data.programId,
         'programAdmin');
+      allow write: if false;
+    }
+
+    // The programme guest directory (#2306): one row per guest (its fields
+    // and function rows), household and group, listed by a query naming the
+    // programme and the kind. The trigger resolves names, phones and emails
+    // from the workspace field assertions, which stay server-only, and a
+    // guest whose name is not disclosable has no row.
+    match /programGuestDirectoryViews/{viewId} {
+      allow get, list: if programGuestDirectory(resource.data.programId);
       allow write: if false;
     }
 

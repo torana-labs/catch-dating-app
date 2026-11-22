@@ -1,0 +1,38 @@
+{
+  "id": "audit:fn-readme-inventory",
+  "category": "audit",
+  "path": "tool/audit/check_fn_readme_inventory.mjs",
+  "command": "node tool/audit/check_fn_readme_inventory.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Diffs current functions/README.md inventory rows and functions/src/index.ts exports in both directions while ratcheting existing omissions.",
+  "checks": [
+    "node --check tool/audit/check_fn_readme_inventory.mjs",
+    "node --test tool/audit/check_fn_readme_inventory.test.mjs",
+    "node tool/audit/check_fn_readme_inventory.mjs"
+  ],
+  "impactPaths": [
+    "tool/audit/check_fn_readme_inventory.test.mjs",
+    "tool/audit/fn_readme_inventory_baseline.json",
+    "functions/scripts/functionExports.cjs"
+  ],
+  "role": "ratchet",
+  "rules": [
+    {
+      "id": "FN-DOC-001",
+      "title": "functions/README.md inventory is CI-diffed against src/index.ts exports",
+      "appliesTo": [
+        "functions/README.md",
+        "functions/src/index.ts"
+      ],
+      "instruction": "The canonical functions/README.md function inventory must stay in sync with the actual exports in src/index.ts. Add a CI check that diffs the documented inventory against exports."
+    }
+  ],
+  "baseline": "tool/audit/fn_readme_inventory_baseline.json",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

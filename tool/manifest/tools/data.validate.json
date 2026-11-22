@@ -1,0 +1,27 @@
+{
+  "id": "data:validate",
+  "category": "data",
+  "path": "tool/data/validate_firestore_data.mjs",
+  "command": "node tool/data/validate_firestore_data.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "description": "Validates live or emulator Firestore data invariants; checks use offline fixtures only.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "functions-npm"
+    ]
+  },
+  "impactPaths": [
+    "tool/data/validate_firestore_data.mjs",
+    "tool/data/validate_firestore_data.test.mjs",
+    "contracts/**/*.json",
+    "tool/contracts/generate_schema_contracts.mjs"
+  ],
+  "checks": [
+    "node --check tool/data/validate_firestore_data.mjs",
+    "node --test tool/data/validate_firestore_data.test.mjs"
+  ],
+  "runbook": "firebase/README.md#common-commands"
+}

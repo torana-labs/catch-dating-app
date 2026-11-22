@@ -1,0 +1,25 @@
+{
+  "id": "operations:cli",
+  "category": "operations",
+  "path": "operations/src/cli/main.mjs",
+  "command": "node operations/src/cli/main.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "role": "operator",
+  "description": "Runs durable business workflows with shadow-safe defaults and stable JSON output.",
+  "checks": [
+    "node --check operations/src/cli/main.mjs",
+    "node operations/src/cli/main.mjs help"
+  ],
+  "impactPaths": [
+    "operations/src/**"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "runbook": "docs/operations_platform.md"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "ci:retry-on-match",
+  "category": "ci",
+  "path": "tool/ci/retry_on_match.mjs",
+  "command": "node tool/ci/retry_on_match.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "role": "operator",
+  "description": "Runs a CI command and reruns it (up to 3 attempts, 30 s then 90 s apart) only when its output contains failure text the call site names, such as Maven Central's HTTP 429; any other failure exits at once with the command's own code.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/ci/retry_on_match.test.mjs",
+    ".github/workflows/app-build-matrix.yml"
+  ],
+  "checks": [
+    "node --check tool/ci/retry_on_match.mjs",
+    "node --test tool/ci/retry_on_match.test.mjs",
+    "node tool/ci/retry_on_match.mjs --help"
+  ],
+  "runbook": "tool/README.md#ci-network-retries"
+}

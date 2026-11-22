@@ -1,0 +1,18 @@
+{
+  "id": "marketing:website-components",
+  "category": "marketing",
+  "path": "tool/marketing/check_website_components.mjs",
+  "command": "node tool/marketing/check_website_components.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates marketing website component ownership contracts against React source files, exported feature components, route ids, CSS ownership, and bidirectional Storybook catchComponent coverage.",
+  "checks": [
+    "node --check tool/marketing/check_website_components.mjs",
+    "node tool/marketing/check_website_components.mjs --self-test",
+    "node tool/marketing/check_website_components.mjs --check"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "WEB-UI-COMPONENT-001"
+  ]
+}
