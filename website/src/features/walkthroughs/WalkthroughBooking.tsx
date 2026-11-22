@@ -61,7 +61,7 @@ function slotWhen(dayLabel: string, startAt: string): string {
 }
 
 function Heading({text, focus}: {text: string; focus: string}) {
-  return <CatchText as="h3" id={focus} tabIndex={-1} variant="title-bar">{text}</CatchText>;
+  return <CatchText as="h2" id={focus} tabIndex={-1} variant="title-bar">{text}</CatchText>;
 }
 
 function PickStep({controller, focus}: {controller: WalkthroughBookingController; focus: string}) {
