@@ -17,13 +17,16 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const {functionExportsFromSource, setupSource} = require("./functionExports.cjs");
+const {functionExportsFromSource, readEntryText, setupSource} = require("./functionExports.cjs");
 
 const functionsRoot = path.resolve(__dirname, "..");
 
-/** The lazy CommonJS entry for an entry source: compiled setup, then one getter per export. */
-function lazyEntrySource(indexSource, {ts} = {}) {
-  const list = functionExportsFromSource(indexSource, {ts});
+/**
+ * The lazy CommonJS entry for an entry source: compiled setup, then one getter
+ * per export. readText(file) supplies the area entries the source stars.
+ */
+function lazyEntrySource(indexSource, {ts, readText} = {}) {
+  const list = functionExportsFromSource(indexSource, {readText});
   const getters = list.map(({name, symbol, module}) =>
     `Object.defineProperty(exports, ${JSON.stringify(name)}, { enumerable: true, ` +
     `get: function () { return require(${JSON.stringify(`./${module}`)}).${symbol}; } });`);
@@ -35,7 +38,8 @@ function lazyEntrySource(indexSource, {ts} = {}) {
 function main(root = functionsRoot) {
   const entry = path.join(root, "lib", "index.js");
   if (!fs.existsSync(entry)) throw new Error("Build Functions first: lib/index.js is missing.");
-  const result = lazyEntrySource(fs.readFileSync(path.join(root, "src", "index.ts"), "utf8"));
+  const result = lazyEntrySource(fs.readFileSync(path.join(root, "src", "index.ts"), "utf8"),
+    {readText: (file) => readEntryText(root, file)});
   fs.writeFileSync(entry, result.source);
   // tsc's map describes the entry it emitted, which this replaces.
   fs.rmSync(`${entry}.map`, {force: true});

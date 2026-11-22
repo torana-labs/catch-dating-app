@@ -56,10 +56,12 @@ test("the entry point selects the tests that read its export list, though nothin
     "scripts/functionExports.test.cjs": "require(\"./functionExports.cjs\");",
     "src/commands/catalog.test.ts": "path.join(repo, \"functions/scripts/functionExports.cjs\")",
   };
-  const result = selectEmulatorTests({changedPaths: ["functions/src/index.ts"], listed: entryListed,
-    modules: entryModules, readSource: (file) => entrySources[file] ?? ""});
-  assert.deepEqual(result, {mode: "selected", reasons: [],
-    tests: ["scripts/functionExports.test.cjs", "lib/commands/catalog.test.js"]});
+  for (const changed of ["functions/src/index.ts", "functions/src/chats/functions.ts"]) {
+    const result = selectEmulatorTests({changedPaths: [changed], listed: entryListed,
+      modules: entryModules, readSource: (file) => entrySources[file] ?? ""});
+    assert.deepEqual(result, {mode: "selected", reasons: [],
+      tests: ["scripts/functionExports.test.cjs", "lib/commands/catalog.test.js"]}, changed);
+  }
 });
 
 test("the action catalog contract selects the tests that reach its generated module", () => {

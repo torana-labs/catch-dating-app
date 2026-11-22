@@ -8,7 +8,7 @@
     "surfaces": "functions/src/surfaces/",
     "platform": "functions/src/platform/"
   },
-  "entry": ["functions/src/index.ts"],
+  "entry": ["functions/src/index.ts", "functions/src/*/functions.ts"],
   "contexts": [
     "profiles",
     "safety",

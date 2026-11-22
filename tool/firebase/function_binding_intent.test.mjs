@@ -74,6 +74,30 @@ test("literal options, aliases, imports and spreads yield only binding names", (
     assert.equal(output.includes(forbidden), false);
 });
 
+test("a consumer resolves through the entry point's area entry, and only that star form is accepted", (t) => {
+  const files = {
+    "index.ts": `import {setGlobalOptions} from "firebase-functions";
+      setGlobalOptions({serviceAccount: "global-runner@"});
+      export * from "./sales/functions";`,
+    "sales/functions.ts": `export {selected} from "./consumer";`,
+    "sales/consumer.ts": `${imports}
+      const apiKey = secret("AREA_SECRET");
+      export const selected = request({secrets: [apiKey], serviceAccount: "area-runner@test-project.iam.gserviceaccount.com"}, () => {});`,
+  };
+  const sourceRoot = fixture(t, files);
+  assert.deepEqual(discoverFunctionExportNames({sourceRoot}), ["selected"]);
+  assert.deepEqual(collect(sourceRoot).functions, [{consumer: "selected", platform: "gcfv2",
+    serviceAccount: "area-runner@test-project.iam.gserviceaccount.com", secretNames: ["AREA_SECRET"]}]);
+  // Any other star in the entry point is refused, as is a star inside an area entry.
+  for (const [file, source] of [
+    ["index.ts", files["index.ts"].replace("./sales/functions", "./sales/consumer")],
+    ["sales/functions.ts", `export * from "./consumer";`],
+  ]) {
+    const root = fixture(t, {...files, [file]: source});
+    assert.throws(() => collect(root), unresolved, `${file}: ${source}`);
+  }
+});
+
 test("known helper bodies and form identity shorthand are inspected, not assumed", (t) => {
   const sourceRoot = fixture(t, {
     "index.ts": `export {selected} from "./consumer";`,

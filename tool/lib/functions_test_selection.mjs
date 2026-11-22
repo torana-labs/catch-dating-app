@@ -19,10 +19,12 @@ const fullInputs = [
 ];
 const dataInputs = [
   {pattern: /^firestore\.indexes\.json$/u, mentions: ["firestore.indexes"]},
-  // Nothing imports the entry point, so its import graph reaches no test. The
-  // tests that read its export list (functions/scripts/functionExports.cjs) or
-  // its text run instead, including the resolver's TypeScript cross-check.
-  {pattern: /^functions\/src\/index\.ts$/u,
+  // Nothing imports the entry point but itself, and only the entry point
+  // imports an area entry (src/<area>/functions.ts), so their import graphs
+  // reach no test. The tests that read the export list
+  // (functions/scripts/functionExports.cjs) or the entry text run instead,
+  // including the resolver's TypeScript cross-check.
+  {pattern: /^functions\/src\/(?:index|[a-z][A-Za-z0-9]*\/functions)\.ts$/u,
     mentions: ["functionExports", "functions/scripts/functionExports.cjs", "src/index.ts"]},
 ];
 // A contract change selects the tests that read that file (tool/lib/contract_reads.mjs),

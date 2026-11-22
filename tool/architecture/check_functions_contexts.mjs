@@ -71,7 +71,16 @@ export function loadFunctionsContextMap(source, appMap) {
       throw new Error(`Functions root ${root} must be a folder under ${sourceRoot} ending in /.`);
     }
   }
-  const entries = new Set(map.entry ?? []);
+  // An entry is a path, or a path whose one `*` stands for a single folder
+  // name: the area entries (functions/src/<area>/functions.ts) the entry point stars.
+  const entries = new Set((map.entry ?? []).filter((entry) => !entry.includes("*")));
+  const entryPatterns = (map.entry ?? []).filter((entry) => entry.includes("*")).map((entry) => {
+    if (entry.split("*").length !== 2 || !entry.startsWith(sourceRoot)) {
+      throw new Error(`Functions entry pattern ${entry} must be a path under ${sourceRoot} with one *.`);
+    }
+    const [before, after] = entry.split("*").map((part) => part.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"));
+    return new RegExp(`^${before}[^/]+${after}$`, "u");
+  });
   const legacy = [];
   const seen = new Set();
   for (const entry of map.legacy ?? []) {
@@ -104,14 +113,15 @@ export function loadFunctionsContextMap(source, appMap) {
   if (!Number.isSafeInteger(writeCeiling) || writeCeiling < 0) {
     throw new Error("crossContextWriteCeiling must be a whole number.");
   }
-  return {roots, contextRank, surfaces, entries, legacy,
+  return {roots, contextRank, surfaces, entries, entryPatterns, legacy,
     contextOrderViolationCeiling: ceiling, crossContextWriteCeiling: writeCeiling};
 }
 
 // Where a functions/src file sits: {layer, context?, surface?}. Target roots
 // win; otherwise the longest legacy prefix decides; null when unplaced.
 export function placeFunctionsPath(relativePath, map) {
-  if (map.entries.has(relativePath)) return {layer: "entry"};
+  if (map.entries.has(relativePath) ||
+      (map.entryPatterns ?? []).some((pattern) => pattern.test(relativePath))) return {layer: "entry"};
   const {roots} = map;
   if (relativePath.startsWith(roots.platform)) return {layer: "platform"};
   if (relativePath.startsWith(roots.domain)) {

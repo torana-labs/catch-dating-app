@@ -28,8 +28,8 @@ test("lists each exported Function with its module and symbol, in source order",
 
 test("rejects every other entry shape with the rule and line, never the source text", () => {
   const cases = [
-    ["export * from \"./gamma\";", "unnamed"],
-    ["export * as all from \"./gamma\";", "unnamed"],
+    ["export * from \"./gamma\";", "star"],
+    ["export * as all from \"./gamma\";", "star"],
     ["const x = 1;\nexport {x};", "local"],
     ["export {x} from \"firebase-functions\";", "local"],
     ["export {x} from \"../outside\";", "local"],
@@ -84,14 +84,69 @@ test("the tokenizer reads setup and comments without losing or inventing an expo
   ]) assert.throws(() => functionExportsFromSource(bad), (error) => error.rule === rule, bad);
 });
 
-test("the tokenizer agrees with the TypeScript AST on today's entry point", () => {
+test("the tokenizer agrees with the TypeScript AST on today's entry point and area entries", () => {
   const ts = require("typescript");
-  const source = fs.readFileSync(path.resolve(__dirname, "../src/index.ts"), "utf8");
-  const ast = ts.createSourceFile("index.ts", source, ts.ScriptTarget.Latest, true);
-  const viaAst = ast.statements.filter((s) => ts.isExportDeclaration(s) && !s.isTypeOnly)
-    .flatMap((s) => s.exportClause.elements.filter((e) => !e.isTypeOnly).map((e) => ({name: e.name.text,
-      symbol: (e.propertyName ?? e.name).text, module: s.moduleSpecifier.text.slice(2)})));
-  assert.deepEqual(functionExportsFromSource(source), viaAst);
+  const functionsDir = path.resolve(__dirname, "..");
+  const named = (file, prefix) => {
+    const ast = ts.createSourceFile(file, fs.readFileSync(path.join(functionsDir, file), "utf8"),
+      ts.ScriptTarget.Latest, true);
+    return ast.statements.filter((s) => ts.isExportDeclaration(s) && !s.isTypeOnly).flatMap((s) => {
+      if (!s.exportClause) { // export * from "./<area>/functions"
+        const area = s.moduleSpecifier.text.slice(2, -"/functions".length);
+        return named(`src/${area}/functions.ts`, `${area}/`);
+      }
+      return s.exportClause.elements.filter((e) => !e.isTypeOnly).map((e) => ({name: e.name.text,
+        symbol: (e.propertyName ?? e.name).text, module: `${prefix}${s.moduleSpecifier.text.slice(2)}`}));
+    });
+  };
+  assert.deepEqual(functionExports({root: functionsDir}), named("src/index.ts", ""));
+});
+
+test("the entry point stars each area entry exactly, in place", () => {
+  const files = {
+    "src/alpha/functions.ts": "// Alpha.\nexport {a, b as renamed} from \"./one\";\nexport {c} from \"./nested/two\";\n",
+    "src/beta/functions.ts": "export {d} from './three';\n",
+  };
+  const readText = (file) => files[file];
+  const source = "import \"firebase-admin\";\nexport * from \"./alpha/functions\";\n" +
+    "export {z} from \"./gamma/z\";\nexport * from './beta/functions'\n";
+  assert.deepEqual(functionExportsFromSource(source, {readText}), [
+    {name: "a", symbol: "a", module: "alpha/one"},
+    {name: "renamed", symbol: "b", module: "alpha/one"},
+    {name: "c", symbol: "c", module: "alpha/nested/two"},
+    {name: "z", symbol: "z", module: "gamma/z"},
+    {name: "d", symbol: "d", module: "beta/three"},
+  ]);
+  const fails = (entrySource, areaFiles, rule, file, line) => assert.throws(
+    () => functionExportsFromSource(entrySource, {readText: (name) => areaFiles[name]}), (error) => {
+      assert.equal(error.rule, rule, entrySource);
+      assert.equal(error.file, file, entrySource);
+      if (line) assert.equal(error.line, line, entrySource);
+      return true;
+    });
+  const star = "export * from \"./alpha/functions\";\n";
+  // Any other star shape.
+  for (const other of ["export * from \"./alpha/one\";", "export * from \"./alpha/functions/x\";",
+    "export * from \"../alpha/functions\";", "export * from \"./Alpha/functions\";",
+    "export * as alpha from \"./alpha/functions\";", `${star}${star}`]) {
+    fails(other, files, "star", "src/index.ts");
+  }
+  // A re-export from outside the area, or from the area entry itself.
+  for (const outside of ["export {a} from \"../beta/three\";", "export {a} from \"firebase-functions\";",
+    "export {a} from \"./functions\";"]) {
+    fails(star, {"src/alpha/functions.ts": outside}, "areaLocal", "src/alpha/functions.ts", 1);
+  }
+  // A name two areas (or an area and the entry point) both export fails at the second one.
+  fails(`${star}export * from "./beta/functions";`, {...files, "src/beta/functions.ts": "\nexport {a} from \"./x\";"},
+    "duplicate", "src/beta/functions.ts", 2);
+  fails(`export {renamed} from "./gamma/g";\n${star}`, files, "duplicate", "src/alpha/functions.ts", 2);
+  // An area entry holds named re-exports only, and exists.
+  fails(star, {"src/alpha/functions.ts": "const x = 1;\nexport {a} from \"./one\";"}, "areaSetup",
+    "src/alpha/functions.ts", 1);
+  fails(star, {"src/alpha/functions.ts": "export * from \"./one\";"}, "areaStar", "src/alpha/functions.ts", 1);
+  fails(star, {"src/alpha/functions.ts": "// nothing yet\n"}, "empty", "src/alpha/functions.ts");
+  fails(star, {}, "unreadable", "src/alpha/functions.ts");
+  fails(star, {"src/alpha/functions.ts": "export const a = 1;"}, "declaration", "src/alpha/functions.ts", 1);
 });
 
 test("reads src/index.ts under a functions root, refusing links and missing files", (t) => {

@@ -1,0 +1,131 @@
+// The Functions this area deploys. src/index.ts re-exports this file
+// (read by functions/scripts/functionExports.cjs).
+
+// Private programs (weddings/corporate offsites) and arrivals transport.
+export {
+  createOrganizerProgram,
+  updateOrganizerProgram,
+  listOrganizerPrograms,
+  getOrganizerProgram,
+} from "./programs";
+export {
+  archiveProgram,
+  unarchiveProgram,
+  anonymizeDueProgramsSweep,
+} from "./programRetention";
+export {
+  getProgramWorkAccess,
+  grantProgramStaff,
+  revokeProgramStaff,
+} from "./programStaff";
+export {onProgramAccessViewGrantChanged,
+  onProgramAccessViewProgramChanged, onProgramAccessViewOrganizerChanged} from
+  "./programAccessViewTriggers";
+export {onProgramWorkSummaryChanged, onProgramPickupPointViewChanged,
+  onProgramHotelViewChanged, onProgramFunctionViewChanged} from
+  "./programWorkViewTriggers";
+export {onProgramDoorFunctionChanged, onProgramDoorJoinChanged,
+  onProgramDoorGuestChanged, onProgramDoorHouseholdChanged,
+  onProgramDoorJournalChanged, onProgramDoorStaffLabelChanged} from
+  "./programDoorViewTriggers";
+export {onProgramAlertSendChanged, onProgramAlertLegChanged,
+  onProgramAlertResolutionChanged} from
+  "./programLiveBoardViewTriggers";
+export {onProgramArrivalLegChanged, onProgramArrivalPartyChanged,
+  onProgramArrivalGuestChanged, onProgramArrivalHotelChanged,
+  onProgramArrivalStaffLabelChanged, onProgramDepartureStayChanged,
+  onProgramArrivalSettingsChanged, onProgramVendorViewChanged} from
+  "./programArrivalViewTriggers";
+export {onProgramTripViewChanged, onProgramHotelInboundLegChanged,
+  onProgramHotelInboundPartyChanged, onProgramTripGuestChanged,
+  onProgramHotelInboundSettingsChanged} from
+  "./programTripViewTriggers";
+export {onOrganizerProgramViewChanged, onOrganizerProgramFunctionChanged,
+  onOrganizerProgramPickupPointChanged, onOrganizerProgramHotelChanged} from
+  "./organizerProgramViewTriggers";
+export {onOrganizerProgramGuestCountChanged,
+  onOrganizerProgramTravelLegCountChanged,
+  reconcileOrganizerProgramCountsSweep} from
+  "./organizerProgramCountTriggers";
+export {onProgramStaffViewGrantChanged, onProgramStaffViewProgramChanged} from
+  "./programStaffViewTriggers";
+export {onProgramHotelRoomStayChanged, onProgramHotelRoomBlockChanged,
+  onProgramHotelRoomHotelChanged, onProgramHotelRoomLegChanged,
+  onProgramHotelRoomGuestChanged, onProgramHotelRoomProgramChanged} from
+  "./programHotelRoomViewTriggers";
+export {
+  inviteProgramStaff,
+  claimProgramStaffInvite,
+  revokeProgramStaffInvite,
+} from "./programStaffInvites";
+export {
+  upsertProgramGuest,
+  listProgramGuests,
+  upsertProgramHousehold,
+  listProgramHouseholds,
+} from "./programGuests";
+export {
+  upsertProgramGuestGroup,
+  listProgramGuestGroups,
+  deleteProgramGuestGroup,
+} from "./programGuestGroups";
+export {
+  upsertProgramFunction,
+  upsertProgramPickupPoint,
+  upsertProgramHotel,
+  upsertTransportVendor,
+} from "./programResources";
+export {importProgramManifest, importWeddingPhoneContacts} from
+  "./programManifestImport";
+export {getProgramLiveBoard, resolveProgramAlert} from
+  "./programLiveBoard";
+export {
+  getProgramDriverTrip,
+  getProgramVendorRunSheet,
+  issueProgramWebLink,
+} from "./programWebLinks";
+export {getProgramFamilyView} from "./familyView";
+export {createProgramAssetUpload} from "./programAssets";
+export {
+  decideProgramGuestId,
+  getProgramGuestIdStatus,
+  getProgramHotelHandover,
+  listProgramIdTracker,
+  submitProgramGuestId,
+} from "./guestIds";
+export {reconcileProgramVendorBill} from "./vendorBills";
+export {
+  getProgramHamperWebView,
+  upsertProgramHamper,
+} from "./hampers";
+export {signProgramPhotoUrls, upsertProgramPhoto} from "./photos";
+export {
+  getProgramAssistantSettings,
+  listProgramWhatsappThreads,
+  sendProgramWhatsappReply,
+  markProgramWhatsappThreadRead,
+  setProgramWhatsappThreadHandling,
+  updateProgramAssistantSettings,
+  upsertProgramWhatsappCannedReply,
+} from "./programWhatsapp/callables";
+export {onProgramWhatsappThreadViewThreadChanged,
+  onProgramWhatsappThreadViewHouseholdChanged,
+  onProgramWhatsappThreadViewProgramChanged} from
+  "./programWhatsapp/threadViewTriggers";
+export {
+  onProgramGuestWhatsappEndpointWritten,
+  onProgramHouseholdWhatsappEndpointWritten,
+} from "./programWhatsapp/endpointIndex";
+export {onProgramWhatsappInboundMessageCreated} from
+  "./programWhatsapp/inboundTrigger";
+export {previewProgramAssistantReply} from "./assistant/preview";
+export {
+  getProgramHotelRooms,
+  upsertProgramStay,
+  upsertProgramRoomBlock,
+} from "./programRooms";
+export {getProgramAttendanceReport} from
+  "./attendanceReportView";
+export {getProgramStakeholderCounts} from
+  "./stakeholderCountsView";
+export {manageProgramLodging} from "./programLodgingApi";
