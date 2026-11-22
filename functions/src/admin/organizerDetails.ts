@@ -32,12 +32,12 @@ import {
   requireValidOrganizerCanonicalPath,
   reserveOrganizerCanonicalRoute,
   type OrganizerRouteReservationStatus,
-} from "./organizerPublishingGuards";
+} from "../domain/organizers/organizerPublishingGuards";
 import {
   buildOrganizerAdminSearchProjection,
   organizerWithAdminFieldsForSearch,
   organizerAdminSearchQueryTokens,
-} from "./organizerAdminSearch";
+} from "../domain/organizers/organizerAdminSearch";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {assertOrganizerPublicContent} from
   "../organizers/organizerPublicContent";

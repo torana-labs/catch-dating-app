@@ -19,7 +19,6 @@
     "setProgramTravelReadiness",
     "markProgramTripArrived",
     "voidProgramTrip",
-    "refreshProgramTravelLeg",
     "grantProgramStaff",
     "revokeProgramStaff"
   ],

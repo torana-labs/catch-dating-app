@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
-import type {InboxProjection, InboxState, JourneyStep} from "../admin/inbox/model";
-import {marketForIdOrAlias} from "../locations/marketConfig";
-import type {WalkthroughBookingDocument} from "../shared/generated/firestoreAdminTypes";
-import {slotLabel} from "./calendar";
-import {WALKTHROUGH_COLLECTIONS} from "./model";
-import {isConfirmed, walkthroughInboxItemId} from "./store";
+import type {InboxProjection, InboxState, JourneyStep} from "./model";
+import {marketForIdOrAlias} from "../../locations/marketConfig";
+import type {WalkthroughBookingDocument} from "../../shared/generated/firestoreAdminTypes";
+import {slotLabel} from "../../walkthroughs/calendar";
+import {WALKTHROUGH_COLLECTIONS} from "../../walkthroughs/model";
+import {isConfirmed, walkthroughInboxItemId} from "../../walkthroughs/store";
 
 // A walkthrough booking is a staff task in the Admin Inbox: reply on WhatsApp
 // to confirm the slot (decision 28: nothing is sent automatically), then

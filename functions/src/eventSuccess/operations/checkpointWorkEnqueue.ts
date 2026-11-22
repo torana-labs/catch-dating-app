@@ -1,6 +1,8 @@
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {operationContentHash} from "../../operations/durableActions";
+import {stageRunAndWorkItemCreate} from
+  "../../operations/transactionalWrites";
 import type {Roster} from "./checkpointRecords";
 import {invalidWork} from "./liveWorkRecords";
 import {newCheckpointWorkRecords, readCheckpointWorkRecords,
@@ -26,7 +28,6 @@ export async function prepareCheckpointWorkEnqueue(db: Firestore,
     return {commit: () => undefined};
   }
   return {commit: () => {
-    tx.create(runRef, proposed.run);
-    tx.create(itemRef, proposed.item);
+    stageRunAndWorkItemCreate(db, tx, proposed);
   }};
 }

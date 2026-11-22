@@ -1,6 +1,5 @@
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {HttpsError} from "firebase-functions/v2/https";
 
 import type {ProgramTravelLegDocument} from
   "../shared/generated/firestoreAdminTypes";
@@ -239,21 +238,4 @@ export async function refreshDueFlightLegs(
     else skipped++;
   }
   return {updated, skipped, failed};
-}
-
-export async function refreshTravelLegForRequest(
-  db: FirebaseFirestore.Firestore,
-  programId: string,
-  legId: string,
-  deps: FlightRefreshDeps,
-): Promise<RefreshOutcome> {
-  const legSnap = await db.collection("programTravelLegs").doc(legId).get();
-  const leg = legSnap.data() as ProgramTravelLegDocument | undefined;
-  if (!leg || leg.programId !== programId) {
-    throw new HttpsError("not-found", "Leg not found in this program.");
-  }
-  if (deps.allowsLeg?.(programId, legId) === false) {
-    throw new HttpsError("failed-precondition", "Flight pilot is inactive.");
-  }
-  return refreshTravelLeg(db, legId, deps);
 }

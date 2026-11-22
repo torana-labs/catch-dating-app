@@ -19,7 +19,7 @@ import {
 } from "../shared/uploadedPhotoNormalization";
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {reserveOrganizerCanonicalRoute} from
-  "../admin/organizerPublishingGuards";
+  "../domain/organizers/organizerPublishingGuards";
 import {defaultOrganizerPublicSlug} from "./organizerIdentity";
 import {normalizeUpdateOrganizerPayload} from
   "./organizerPayloadNormalization";

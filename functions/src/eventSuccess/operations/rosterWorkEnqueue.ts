@@ -1,6 +1,8 @@
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {operationContentHash} from "../../operations/durableActions";
+import {stageRunAndWorkItemCreate} from
+  "../../operations/transactionalWrites";
 import {invalidWork} from "./liveWorkRecords";
 import type {RuntimeConfig} from "./runtimeConfigRecords";
 import {newRosterWorkRecords, readRosterWorkRecords, rosterWorkBasis,
@@ -35,7 +37,6 @@ export async function prepareRosterWorkEnqueue(db: Firestore, tx: Transaction,
     return {records: existing, replayed: true, commit: () => undefined};
   }
   return {records: proposed, replayed: false, commit: () => {
-    tx.create(runRef, proposed.run);
-    tx.create(itemRef, proposed.item);
+    stageRunAndWorkItemCreate(db, tx, proposed);
   }};
 }

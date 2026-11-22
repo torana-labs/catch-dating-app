@@ -3,7 +3,7 @@ import {logger} from "firebase-functions";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {organizerRouteReservationId} from
-  "../admin/organizerPublishingGuards";
+  "../domain/organizers/organizerPublishingGuards";
 import {growthFactsCollection} from "../growth/organizerGrowthFacts";
 import {organizerRelationshipId} from "../shared/relationshipDocuments";
 import {

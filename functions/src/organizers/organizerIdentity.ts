@@ -69,3 +69,17 @@ export function normalizeOrganizerPublicSlug(value: string): string {
   }
   return normalized;
 }
+
+/**
+ * A route-safe slug suggested from a name, which a reviewer can accept or
+ * edit: lowercase letters, numbers and hyphens, 3-64 long.
+ */
+export function publicSlugFor(value: string): string {
+  const slug = value.normalize("NFKD").toLowerCase()
+    .replace(/[^a-z0-9]+/gu, "-")
+    .replace(/^-+|-+$/gu, "")
+    .slice(0, 64)
+    .replace(/-+$/u, "");
+  return slug.length >= 3 ? slug :
+    `organizer-${slug || "listing"}`.slice(0, 64);
+}
