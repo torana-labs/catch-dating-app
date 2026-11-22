@@ -251,8 +251,18 @@ final class OrganizerProgramDetailFamily extends $Family
   String toString() => r'organizerProgramDetailProvider';
 }
 
+/// The programme's first guest page with its households, function rows and
+/// groups, from the trigger-kept guest directory (#2306) rather than the
+/// `listProgramGuests` callable. It follows the live rows, so a guest or RSVP
+/// write shows once its trigger rewrites the row.
+
 @ProviderFor(programGuestList)
 final programGuestListProvider = ProgramGuestListFamily._();
+
+/// The programme's first guest page with its households, function rows and
+/// groups, from the trigger-kept guest directory (#2306) rather than the
+/// `listProgramGuests` callable. It follows the live rows, so a guest or RSVP
+/// write shows once its trigger rewrites the row.
 
 final class ProgramGuestListProvider
     extends
@@ -264,6 +274,10 @@ final class ProgramGuestListProvider
     with
         $FutureModifier<ProgramGuestListPage>,
         $FutureProvider<ProgramGuestListPage> {
+  /// The programme's first guest page with its households, function rows and
+  /// groups, from the trigger-kept guest directory (#2306) rather than the
+  /// `listProgramGuests` callable. It follows the live rows, so a guest or RSVP
+  /// write shows once its trigger rewrites the row.
   ProgramGuestListProvider._({
     required ProgramGuestListFamily super.from,
     required String super.argument,
@@ -308,7 +322,12 @@ final class ProgramGuestListProvider
   }
 }
 
-String _$programGuestListHash() => r'e78101ad7602350a62cf6efde62411ab0fdd6cb9';
+String _$programGuestListHash() => r'e9d14bc8ae09d991b52c4aefb28de914c2d97738';
+
+/// The programme's first guest page with its households, function rows and
+/// groups, from the trigger-kept guest directory (#2306) rather than the
+/// `listProgramGuests` callable. It follows the live rows, so a guest or RSVP
+/// write shows once its trigger rewrites the row.
 
 final class ProgramGuestListFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ProgramGuestListPage>, String> {
@@ -320,6 +339,11 @@ final class ProgramGuestListFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The programme's first guest page with its households, function rows and
+  /// groups, from the trigger-kept guest directory (#2306) rather than the
+  /// `listProgramGuests` callable. It follows the live rows, so a guest or RSVP
+  /// write shows once its trigger rewrites the row.
 
   ProgramGuestListProvider call(String programId) =>
       ProgramGuestListProvider._(argument: programId, from: this);

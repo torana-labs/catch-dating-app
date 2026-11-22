@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/organizer_program_views.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -19,6 +19,8 @@ class HostInboxProgramAudiencePageState {
 
   final OrganizerProgramSummary program;
   final Map<String, String?> guestContactsById;
+
+  /// Where the next guest page starts; null once every page is loaded.
   final String? nextCursor;
   final bool loadingMore;
   final Object? error;
@@ -39,7 +41,7 @@ class HostInboxProgramAudiencePages extends _$HostInboxProgramAudiencePages {
     String programId,
   ) async {
     _generation++;
-    final repository = ref.watch(programSetupRepositoryProvider);
+    final repository = ref.watch(programGuestDirectoryRepositoryProvider);
     // The latest-50 program menu is a navigation convenience, not authority.
     // Read this exact programme's view (rules admit only its setup readers)
     // before requesting or displaying any guest page. Only its identity and
@@ -67,21 +69,16 @@ class HostInboxProgramAudiencePages extends _$HostInboxProgramAudiencePages {
       'status': identity.status,
       'revision': identity.revision,
     });
-    final page = await repository.listGuests(programId);
-    _checkPage(page);
+    // The guest directory query names this programme, so every row it
+    // returns belongs to it.
+    final page = await repository.guestPage(programId);
     return HostInboxProgramAudiencePageState(
       program: program,
       guestContactsById: Map.unmodifiable({
-        for (final guest in page.guests) guest.guestId: guest.contactId,
+        for (final guest in page.items) guest.guestId: guest.contactId,
       }),
       nextCursor: page.nextCursor,
     );
-  }
-
-  void _checkPage(ProgramGuestListPage page) {
-    if (page.programId != programId) {
-      throw StateError('Guest page belongs to another program.');
-    }
   }
 
   Future<void> loadMore() async {
@@ -100,11 +97,10 @@ class HostInboxProgramAudiencePages extends _$HostInboxProgramAudiencePages {
     );
     try {
       final page = await ref
-          .read(programSetupRepositoryProvider)
-          .listGuests(programId, cursor: current.nextCursor);
+          .read(programGuestDirectoryRepositoryProvider)
+          .guestPage(programId, cursor: current.nextCursor);
       if (!ref.mounted || generation != _generation) return;
-      _checkPage(page);
-      if (page.nextCursor == current.nextCursor) {
+      if (page.nextCursor != null && page.nextCursor == current.nextCursor) {
         throw StateError('Program guest cursor did not advance.');
       }
       state = AsyncData(
@@ -112,7 +108,7 @@ class HostInboxProgramAudiencePages extends _$HostInboxProgramAudiencePages {
           program: current.program,
           guestContactsById: Map.unmodifiable({
             ...current.guestContactsById,
-            for (final guest in page.guests) guest.guestId: guest.contactId,
+            for (final guest in page.items) guest.guestId: guest.contactId,
           }),
           nextCursor: page.nextCursor,
         ),
