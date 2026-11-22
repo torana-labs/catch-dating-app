@@ -7158,7 +7158,7 @@
       "command": "node --test tool/nx/select_lanes.test.mjs",
       "surface": "local-writes-scratch",
       "status": "active",
-      "description": "Nx alone chooses which CI lanes run for pull requests and queue groups (nxSelectsAlone; emptying it restores the union with the planner). Every lane runs when the history or Nx fails, a task maps to no lane, or a path is under an unknown top-level entry. Main, nightly and full runs keep the planner's selection. A lane only Nx selects gets complete inputs (build targets for both apps).",
+      "description": "Nx alone chooses which CI lanes run for pull requests, queue groups and main pushes (nxSelectsAlone; emptying it restores the union with the planner). Every lane runs when the history or Nx fails, a task maps to no lane, or a path is under an unknown top-level entry. A main push the merge queue validated (--queue-verified) never calls Nx; other main pushes keep the planner's app build lanes until the owner decides main's builds. Nightly and full runs keep the planner's selection. A lane only Nx selects gets complete inputs (build targets for both apps).",
       "checks": [
         "node --check tool/nx/select_lanes.mjs",
         "node --test tool/nx/select_lanes.test.mjs"
