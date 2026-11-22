@@ -319,7 +319,10 @@ so main runs neither; a build lane the CI caller graph selects (its workflow, a
 script it runs, a selector) still runs (`mainBuildLanes`). Main's builds upload
 nothing: release builds come from the mobile beta and production workflows.
 A `workflow_dispatch` with `base_sha` plans exactly like a main push. Nightly
-and full runs keep the planner's selection. Only tasks the change affects
+and full runs keep the planner's selection.
+Retry a `ci.yml` run with **Re-run all jobs**: every lane job requires the
+plan of its own attempt (`producer_attempt`), so **Re-run failed jobs** re-executes
+nothing and Required CI exits 64. Only tasks the change affects
 select a lane (`--excludeTaskDependencies`): the tasks they depend on do not,
 so a website-only change does not run Admin because the website builds
 `@catch/web-ui`. Nx inputs name what each task reads. Markdown is not an
