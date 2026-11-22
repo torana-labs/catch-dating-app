@@ -277,6 +277,32 @@ void main() {
       await pumpGuests(tester, guestsReady(), HostEventGuestList.cancelled);
       expect(find.text('Nobody here yet.'), findsOneWidget);
     });
+
+    testWidgets('Blocked from your events shows only with a callback and '
+        'opens the list', (tester) async {
+      await pumpGuests(tester, guestsReady(), HostEventGuestList.booked);
+      expect(find.text('Blocked from your events'), findsNothing);
+
+      var opened = 0;
+      await _pump(
+        tester,
+        HostEventGuestsBody(
+          state: guestsReady(),
+          list: HostEventGuestList.booked,
+          onView: (_) {},
+          onList: (_) {},
+          onLetIn: (_) {},
+          onOffer: (_) {},
+          onMessageAll: () {},
+          onDownload: () {},
+          onRetry: () {},
+          onBlocked: () => opened++,
+        ),
+      );
+      await tester.ensureVisible(find.text('Blocked from your events'));
+      await tester.tap(find.text('Blocked from your events'));
+      expect(opened, 1);
+    });
   });
 
   group('Close out', () {
