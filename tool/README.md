@@ -749,6 +749,24 @@ node tool/firebase/report_environment_parity.mjs --surfaces remote-config,functi
 node tool/firebase/report_environment_parity.mjs --policy-only
 ```
 
+## CI Network Retries
+
+`tool/ci/retry_on_match.mjs` reruns a CI command only when it failed with
+error text the call site names. It never retries on a non-zero exit alone,
+so a real compile or test failure fails at once. Each `--match` quotes a
+failure seen in a run, recorded next to the step. It makes up to 3 attempts,
+30 s and then 90 s apart, and keeps the command's own exit code.
+
+```bash
+node tool/ci/retry_on_match.mjs --match 'Received status code 429 from server' \
+  -- ./tool/flutter_with_env.sh dev build apk --debug
+```
+
+Current call sites: the two Android debug builds in
+`.github/workflows/app-build-matrix.yml` (Maven Central HTTP 429). The
+capture planner's `gh api` reads retry in
+`tool/marketing/lib/capture_seeds.mjs` itself.
+
 ## App Check Debug Tokens
 
 Local simulator App Check debug tokens are registered through a narrow helper
