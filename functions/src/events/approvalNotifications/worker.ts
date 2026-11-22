@@ -1,10 +1,14 @@
-import {WHATSAPP_DISPATCHES} from "../../delivery/whatsappDispatches";
+import {
+  WHATSAPP_DISPATCHES,
+  prepareWhatsappDispatch,
+  whatsappDispatchExists,
+} from "../../delivery/whatsappDispatches";
 import type {Firestore} from "firebase-admin/firestore";
 import {FirestoreDeliveryOutbox} from "../../delivery/firestoreDeliveryOutbox";
 import {operationContentHash as hash} from "../../operations/durableActions";
 import {hashEndpoint} from "../../organizers/organizerCampaignModel";
-import {validateEventApprovalNotificationDispatchDocument as validDispatch} from
-  "../../shared/generated/validators/eventApprovalNotificationDispatchDocument";
+import type {EventApprovalNotificationDispatchDocument} from
+  "../../shared/generated/eventApprovalNotificationDispatchDocument";
 import {
   adapter,
   messages,
@@ -187,12 +191,14 @@ export class ApprovalNotificationWorker {
         endpoint,
         eventUrl(record.intent.context.eventId),
       ]);
-      const evidenceRef = this.db
-        .collection(dispatches)
-        .doc(live.attemptId);
-      if ((await tx.get(evidenceRef)).exists) return {kind: "withheld"};
-      const whatsappProof =
-        route === "approvalWhatsapp" ?
+      const wabaId = current.connection?.wabaId;
+      const phoneNumberId = current.connection?.phoneNumberId;
+      if (route === "approvalWhatsapp" && (!wabaId || !phoneNumberId)) {
+        // Readiness requires both provider ids; never record evidence without.
+        throw new Error("Approval WhatsApp sender is not ready");
+      }
+      const whatsappProof: EventApprovalNotificationDispatchDocument | null =
+        route === "approvalWhatsapp" && wabaId && phoneNumberId ?
           {
             schemaVersion: 1,
             source: "approvalNotification",
@@ -201,8 +207,8 @@ export class ApprovalNotificationWorker {
             context: record.intent.context,
             senderId: live.binding.senderId,
             bindingRevision: live.binding.bindingRevision,
-            providerAccountId: current.connection!.wabaId,
-            providerPhoneNumberId: current.connection!.phoneNumberId,
+            providerAccountId: wabaId,
+            providerPhoneNumberId: phoneNumberId,
             senderHash: frozen,
             recipientEndpointId: live.binding.recipientEndpointId,
             endpointHash: hashEndpoint(endpoint),
@@ -212,8 +218,13 @@ export class ApprovalNotificationWorker {
             createdAt: at,
           } :
           null;
-      if (whatsappProof && !validDispatch(whatsappProof)) {
-        throw new Error("Invalid approval dispatch proof");
+      // Every route checks the attempt's evidence row; only WhatsApp writes it.
+      let stageProof: (() => void) | null = null;
+      if (whatsappProof) {
+        stageProof = await prepareWhatsappDispatch(this.db, tx, whatsappProof);
+        if (!stageProof) return {kind: "withheld"};
+      } else if (await whatsappDispatchExists(this.db, tx, live.attemptId)) {
+        return {kind: "withheld"};
       }
       return {
         kind: "ready",
@@ -221,7 +232,7 @@ export class ApprovalNotificationWorker {
         validUntil: Math.min(at + 30_000, record.intent.expiresAt),
         commit: () => {
           debit();
-          if (whatsappProof) tx.create(evidenceRef, whatsappProof);
+          stageProof?.();
         },
       };
     });
