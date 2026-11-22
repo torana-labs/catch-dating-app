@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_seat_ledgers.schema.json",
   "title": "EventSeatLedgerDocument",
-  "description": "Server-only seat count for one private event: capacity, occupied seats, checkout and temporary holds, and the revisions and policy hash that every seat change is checked against. Held seats are never counted in bookedCount.",
+  "description": "Server-only seat count for one event, created with the event: capacity, occupied seats, checkout and temporary holds, and the revisions and policy hash that every seat change is checked against. Held seats are never counted in bookedCount.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventSeatLedgers",
@@ -27,8 +27,9 @@
       "x-catch-ownership": "server-only"
     },
     "capacity": {
-      "type": "integer",
-      "minimum": 0,
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "description": "The event's capacityLimit, or null while the host has set none (no limit).",
       "x-catch-ownership": "server-only"
     },
     "occupied": {

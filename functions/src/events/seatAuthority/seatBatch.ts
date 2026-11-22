@@ -2,7 +2,8 @@ import {createHash} from "crypto";
 import {
   assertReadySeatState, heldSeatCount, CanonicalSeatIdentity,
   reservationPlaces, SeatAuthorityError, SeatLedger, SeatOperation,
-  SeatReceipt, SeatReservation, SeatTransaction,
+  SeatReceipt, SeatReservation, SeatTransaction, fitsSeatCapacity,
+  validSeatCapacity,
 } from "./seatAuthority";
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/u;
@@ -88,9 +89,10 @@ export async function prepareSeatBatch<Subject>(params: {
   }
   const ledger = await tx.ledger(command.eventId);
   if (!ledger || ledger.eventId !== command.eventId ||
-      ledger.state !== "ready" || !safe(ledger.capacity) ||
-      ledger.capacity < 1 || !safe(ledger.occupied) ||
-      ledger.occupied > ledger.capacity || !safe(ledger.revision) ||
+      ledger.state !== "ready" || !validSeatCapacity(ledger.capacity) ||
+      !safe(ledger.occupied) ||
+      !fitsSeatCapacity(ledger.capacity, ledger.occupied) ||
+      !safe(ledger.revision) ||
       ledger.revision === Number.MAX_SAFE_INTEGER ||
       !safe(ledger.capacityRevision) || ledger.capacityRevision < 1 ||
       !safe(ledger.migrationRevision) || ledger.migrationRevision < 1 ||
@@ -183,7 +185,8 @@ export async function prepareSeatBatch<Subject>(params: {
     fail("conflict", "Seat capacity or migration changed; review again.");
   }
   if (replayCount === 0 && (ledger.occupied + delta < 0 ||
-      ledger.occupied + heldSeatCount(ledger) + delta > ledger.capacity ||
+      !fitsSeatCapacity(ledger.capacity,
+        ledger.occupied + heldSeatCount(ledger) + delta) ||
       releaseCount > ledger.occupied)) {
     fail("conflict", "This event has insufficient seats.");
   }

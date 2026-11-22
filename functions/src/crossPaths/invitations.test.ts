@@ -649,7 +649,7 @@ function readyPairHarness() {
     "eventSeatMigrationFences/event-1": {eventId: "event-1",
       migrationRevision: 1, state: "ready"},
     "eventSeatLedgers/event-1": {eventId: "event-1", capacity: policy.capacity,
-      occupied: policy.capacity - 1, revision: 1, capacityRevision: 1,
+      occupied: (policy.capacity ?? 1) - 1, revision: 1, capacityRevision: 1,
       migrationRevision: 1, state: "ready", policyHash: policy.policyHash,
       policyVersion: policy.policyVersion},
   });

@@ -5,7 +5,7 @@ import {seatIdentityAliasId, SeatIdentityAlias,
 import {deriveEventSeatPolicy} from "./firestoreAdapter";
 import {assertReadySeatState, heldSeatCount,
   SeatAuthorityError, SeatLedger, SeatReceipt,
-  SeatReservation} from "./seatAuthority";
+  SeatReservation, fitsSeatCapacity} from "./seatAuthority";
 
 type AliasKind = "attendee" | "phone" | "external";
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/u;
@@ -199,7 +199,7 @@ export function prepareBatchImportSeats(read: BatchImportSeatReadSet,
       ledger.policyHash !== policy.policyHash ||
       ledger.policyVersion !== policy.policyVersion ||
       !Number.isSafeInteger(ledger.occupied) || ledger.occupied < 0 ||
-      ledger.occupied > ledger.capacity ||
+      !fitsSeatCapacity(ledger.capacity, ledger.occupied) ||
       !Number.isSafeInteger(ledger.revision) || ledger.revision < 1 ||
       ledger.revision === Number.MAX_SAFE_INTEGER ||
       !Number.isSafeInteger(ledger.capacityRevision) ||
@@ -316,8 +316,8 @@ export function prepareBatchImportSeats(read: BatchImportSeatReadSet,
             (existing?.revision ?? 0) + 1}});
     }
   }
-  if (ledger.occupied + heldSeatCount(ledger) + newSeats >
-      ledger.capacity) {
+  if (!fitsSeatCapacity(ledger.capacity,
+    ledger.occupied + heldSeatCount(ledger) + newSeats)) {
     fail("Import exceeds the event seat capacity.");
   }
   const nextLedger = newSeats > 0 ? {...ledger,

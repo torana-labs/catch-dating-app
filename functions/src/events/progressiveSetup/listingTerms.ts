@@ -1,7 +1,8 @@
 import {GUEST_PAYMENTS} from "../../payments/guestPayments";
-import {randomUUID} from "crypto";
 import {SeatLedger} from "../seatAuthority/seatAuthority";
 import {deriveEventSeatPolicy} from "../seatAuthority/firestoreAdapter";
+import {EventSeatFence, newEventSeatLedger} from
+  "../seatAuthority/eventSeatLedgerBirth";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
@@ -53,7 +54,7 @@ export async function preparePrivateListingTerms(params: {
   before: EventDocument;
   after: EventDocument;
 }): Promise<{ledger: SeatLedger | null;
-  fence?: Record<string, unknown>} | null> {
+  fence?: EventSeatFence} | null> {
   const {db, tx, eventId, before, after} = params;
   const unchanged = canonicalJson([before.capacityLimit, before.priceInPaise,
     before.currency, before.eventPolicy, before.constraints]) ===
@@ -64,7 +65,11 @@ export async function preparePrivateListingTerms(params: {
     if (unchanged) return null;
     const state = await prepareEventMutationLedger(db, tx, eventId,
       before, after);
-    if (state.reserved > 0) {
+    // Reserved places keep their price and terms: only the capacity may
+    // move, or the event's first terms be set.
+    if (state.reserved > 0 &&
+        deriveEventSeatPolicy(before).termsConfigured &&
+        termsWithoutCapacity(before) !== termsWithoutCapacity(after)) {
       throw new HttpsError("failed-precondition",
         "Admission terms cannot change while places are reserved.");
     }
@@ -105,11 +110,14 @@ export async function preparePrivateListingTerms(params: {
         "Reconcile existing guest and payment records first.");
     }
   }
-  const policy = deriveEventSeatPolicy(after);
-  const ledger: SeatLedger = {eventId, capacity: policy.capacity,
-    occupied: 0, checkoutHeld: 0, revision: 1, capacityRevision: 1,
-    policyVersion: policy.policyVersion, policyHash: policy.policyHash,
-    migrationRevision: 1, state: "ready"};
-  return {ledger, fence: {eventId, organizerId: policy.organizerId,
-    migrationRevision: 1, token: randomUUID(), state: "ready"}};
+  return newEventSeatLedger(eventId, after);
+}
+
+/** The listing terms an existing booking relies on, capacity left out. */
+function termsWithoutCapacity(event: EventDocument): string {
+  const policy = event.eventPolicy;
+  return canonicalJson([event.priceInPaise, event.currency,
+    policy ? {...policy, admission: {...policy.admission,
+      capacityLimit: undefined}} : null,
+    event.constraints]);
 }
