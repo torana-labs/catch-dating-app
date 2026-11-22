@@ -14,7 +14,6 @@ import type {
  */
 export type WalkthroughSlots = GetWalkthroughSlotsCallableResponse;
 export type WalkthroughDay = WalkthroughSlots["days"][number];
-export type WalkthroughSlot = WalkthroughDay["slots"][number];
 export type WalkthroughBookingPayload = BookWalkthroughCallablePayload;
 export type WalkthroughBooking = BookWalkthroughCallableResponse;
 export type WalkthroughManagePayload = ManageWalkthroughBookingCallablePayload;
