@@ -1,0 +1,19 @@
+{
+  "id": "catchWhatsappOperatorSetupOperations",
+  "path": "catchWhatsappOperatorSetupOperations/{operationId}",
+  "rulesMatch": "/catchWhatsappOperatorSetupOperations/{operationId}",
+  "typescriptInterface": "CatchWhatsappOperatorSetupOperationDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps catchWhatsappOperatorSetupOperations permanently server-only"
+  ],
+  "owner": "Catch support operator setup",
+  "writerContext": "messaging",
+  "read": "server only; exact protected reviewed plan and permanent project slot",
+  "write": "disconnected internal setup transaction only; no default activation or deployed export",
+  "exportedFunctions": [],
+  "migrationNotes": [
+    "New private no-TTL collection; no live bootstrap or migration authorized. Never delete, reset or recycle the permanent project slot or its create-only receipts. Auth observations and Firestore effects are not atomic."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "organizerEventSuccessLayouts",
+  "path": "organizerEventSuccessLayouts/{layoutDocumentId}",
+  "rulesMatch": "/organizerEventSuccessLayouts/{layoutDocumentId}",
+  "typescriptInterface": "OrganizerEventSuccessLayoutDocument",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "organizer manager through upsertEventSuccessLayout",
+  "writerContext": "live",
+  "read": "the organizer's hosts",
+  "write": "server only"
+}

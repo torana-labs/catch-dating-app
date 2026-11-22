@@ -1,0 +1,22 @@
+{
+  "id": "supplyIntakeRequests",
+  "path": "supplyIntakeRequests/{requestId}",
+  "rulesMatch": "/supplyIntakeRequests/{requestId}",
+  "typescriptInterface": "SupplyIntakeRequestsDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps durable operations records server-owned"
+  ],
+  "owner": "trusted Supply Intake worker",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "onSupplyIntakeRequestCreated",
+    "recoverSupplyIntakeRequests"
+  ],
+  "migrationNotes": [
+    "Portable request shape is contracts/operations/supply_intake_request.schema.json; front doors create requests through callables."
+  ]
+}

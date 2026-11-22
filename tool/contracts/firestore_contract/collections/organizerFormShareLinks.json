@@ -1,0 +1,11 @@
+{
+  "id": "organizerFormShareLinks",
+  "path": "organizerFormShareLinks/{linkId}",
+  "rulesMatch": "/organizerFormShareLinks/{linkId}",
+  "typescriptInterface": "OrganizerFormShareLinkDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "organizer form distribution callables",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

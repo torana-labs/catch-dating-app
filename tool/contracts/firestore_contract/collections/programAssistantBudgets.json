@@ -1,0 +1,15 @@
+{
+  "id": "programAssistantBudgets",
+  "path": "programAssistantBudgets/{budgetId}",
+  "rulesMatch": "/programAssistantBudgets/{budgetId}",
+  "typescriptInterface": "ProgramAssistantBudgetDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "wedding assistant budget ledger",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "One programme's daily token ledger, id {programId}_{YYYY-MM-DD} in the programme's time zone.",
+    "Counts only: the cap, tokens reserved by runs in flight, tokens consumed and the run count."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "salesSettings",
+  "path": "salesSettings/{settingId}",
+  "rulesMatch": "/salesSettings/{privateDocument=**}",
+  "typescriptInterface": "SalesSettingDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales runtime settings",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "salesProviderBudgets",
+  "path": "salesProviderBudgets/{bucketId}",
+  "rulesMatch": "/salesProviderBudgets/{privateDocument=**}",
+  "typescriptInterface": "SalesProviderBudgetDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "disabled internal Sales writing preparation accounting",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "programDoorFunctions",
+  "path": "programDoorFunctions/{functionId}",
+  "rulesMatch": "/programDoorFunctions/{functionId}",
+  "typescriptInterface": "ProgramDoorFunctionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+  "rulesTestNames": [
+    "reads a function's door only where a door duty covers it"
+  ],
+  "owner": "Programme read model projector: programDoorViewTriggers",
+  "writerContext": "programmes",
+  "read": "get by id where the account's function check-in or function lead duty covers the function (programAccessViews), and the programme owner, while not deleted; never listed",
+  "write": "server only; written from programFunctions",
+  "exportedFunctions": [
+    "onProgramDoorFunctionChanged"
+  ],
+  "migrationNotes": [
+    "Exactly the function fields getProgramFunctionDoorView returned, venue notes, dress code and instructions included, for door duty holders only. The program-door-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "hostFormAutomationRunViews",
+  "path": "hostFormAutomationRunViews/{runId}",
+  "rulesMatch": "/hostFormAutomationRunViews/{runId}",
+  "typescriptInterface": "HostFormAutomationRunViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_form_operation_reads.rules.test.cjs",
+  "rulesTestNames": [
+    "lets current managers list automation rule and run views and nothing else"
+  ],
+  "owner": "Host read model projector: hostReadModels form automation view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get and list (organizerId equality, optionally formId) while their account is not deleted",
+  "write": "server only; rewritten from each organizerFormAutomationRuns document with its rule's name, on rule renames, and deleted with the run",
+  "exportedFunctions": [
+    "onHostFormAutomationRunChanged",
+    "onHostFormAutomationRuleChanged"
+  ],
+  "migrationNotes": [
+    "row equals the run row listOrganizerFormAutomationRuns returns; leases, error codes and source occurrence times never appear. The host-form-automation-views copy-forward migration creates views for runs recorded before the trigger."
+  ]
+}

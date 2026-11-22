@@ -1,0 +1,11 @@
+{
+  "id": "salesEvidence",
+  "path": "salesEvidence/{evidenceId}",
+  "rulesMatch": "/salesEvidence/{privateDocument=**}",
+  "typescriptInterface": "SalesEvidenceDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales evidence service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "eventRehearsalRouteDecisions",
+  "path": "eventRehearsalRouteDecisions/{decisionDocumentId}",
+  "rulesMatch": "/eventRehearsalRouteDecisions/{decisionDocumentId}",
+  "typescriptInterface": "EventRehearsalRouteDecisionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps all dress rehearsal collections callable-only"
+  ],
+  "owner": "event rehearsal callables",
+  "writerContext": "live",
+  "read": "server only; current managers receive the active route decision in the bounded movement review",
+  "write": "server only; immutable source-fenced route decisions",
+  "exportedFunctions": [
+    "controlEventRehearsal",
+    "getEventRehearsalMovement",
+    "resetEventRehearsal",
+    "expireEventRehearsals"
+  ],
+  "migrationNotes": [
+    "A route decision overlays a recorded departure and advances shared synthetic progress without manufacturing another physical departure."
+  ]
+}

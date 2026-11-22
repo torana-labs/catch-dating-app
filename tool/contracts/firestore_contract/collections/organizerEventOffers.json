@@ -1,0 +1,20 @@
+{
+  "id": "organizerEventOffers",
+  "path": "organizerEventOffers/{documentId}",
+  "rulesMatch": "/organizerEventOffers/{documentId}",
+  "typescriptInterface": "OrganizerEventOfferDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets current managers read their organizer's event offers only"
+  ],
+  "owner": "event offer manager operations",
+  "writerContext": "forms",
+  "read": "current organizer managers get an offer by id (missing reads as missing) and list an event's offers by organizerId, eventId and contactId",
+  "write": "server only",
+  "exportedFunctions": [
+    "previewEventOffers",
+    "commitEventOffers",
+    "mutateEventOffer"
+  ]
+}

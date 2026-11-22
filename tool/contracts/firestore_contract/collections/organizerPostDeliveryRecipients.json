@@ -1,0 +1,32 @@
+{
+  "id": "organizerPostDeliveryRecipients",
+  "path": "organizerPostDeliveryRecipients/{receiptId}",
+  "rulesMatch": "/organizerPostDeliveryRecipients/{receiptId}",
+  "typescriptInterface": "OrganizerPostDeliveryRecipientDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "createOrganizerPost callable and dispatchPendingOrganizerFollowerUpdates scheduler",
+  "writerContext": "organizers",
+  "read": "server/admin only; recipient identifiers are hashed and clients receive aggregate counts only",
+  "write": "server only",
+  "exportedFunctions": [
+    "createOrganizerPost",
+    "dispatchPendingOrganizerFollowerUpdates"
+  ],
+  "operations": [
+    {
+      "id": "organizer_follower_delivery_receipt",
+      "type": "scheduled",
+      "owner": "backend dispatcher",
+      "function": "dispatchPendingOrganizerFollowerUpdates",
+      "rulesTestNames": [
+        "keeps organizer follower delivery receipts server-only"
+      ]
+    }
+  ],
+  "migrationNotes": [
+    "A deterministic post-scoped recipient hash prevents duplicate Activity or push attempts across cursor replay without correlating one recipient across posts.",
+    "Requires a Firestore TTL policy on expiresAt; de-identified per-recipient evidence expires after 90 days while aggregate history remains on the operation.",
+    "Receipts contain no raw recipient UID; Activity remains the user-owned durable delivery surface."
+  ]
+}

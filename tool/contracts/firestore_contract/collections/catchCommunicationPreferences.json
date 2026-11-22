@@ -1,0 +1,22 @@
+{
+  "id": "catchCommunicationPreferences",
+  "path": "catchCommunicationPreferences/{uid}",
+  "rulesMatch": "/catchCommunicationPreferences/{uid}",
+  "typescriptInterface": "CatchCommunicationPreferenceDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "participant form consent and account deletion",
+  "writerContext": "organizers",
+  "read": "server only; never organizer-visible",
+  "write": "server only",
+  "exportedFunctions": [
+    "submitOrganizerFormResponse",
+    "getOrganizerFormPayment",
+    "requestAccountDeletion",
+    "onGuestMessagingPermissionCatchPreferenceChanged"
+  ],
+  "migrationNotes": [
+    "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",
+    "Delayed finalization cannot overwrite a newer withdrawal."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "eventAttendees",
+  "path": "eventAttendees/{attendeeId}",
+  "rulesMatch": "/eventAttendees/{attendeeId}",
+  "typescriptInterface": "EventAttendeeDocument",
+  "dartModel": "lib/contexts/bookings/domain/event_attendee.dart",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "standalone Host roster, Catch-booking projection, public registration, and attendance callables",
+  "writerContext": "bookings",
+  "read": "authorized event host only; attendee-facing state is callable-owned",
+  "write": "server only",
+  "exportedFunctions": [
+    "importEventAttendees",
+    "markEventAttendeeAttendance",
+    "setEventAttendeeAttendance",
+    "setEventSuccessAccountabilityResolution",
+    "registerPublicEvent",
+    "onOrganizerContactEventEdgeInviteAttributed",
+    "resolveEventAssistanceAccountability"
+  ],
+  "migrationNotes": [
+    "Private event-scoped operational roster across Catch bookings, Host imports/manual rows, and web OTP registration; linkedUid is optional and never synthetic.",
+    "Accountability resolution is valid only for the exact checkedInAt timestamp recorded alongside it, so a later check-in reopens the sweep without deleting audit context first."
+  ]
+}

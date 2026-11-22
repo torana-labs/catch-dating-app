@@ -1,0 +1,14 @@
+{
+  "id": "transportActiveAssignments",
+  "path": "transportActiveAssignments/{assignmentId}",
+  "rulesMatch": "/transportActiveAssignments/{assignmentId}",
+  "typescriptInterface": "TransportActiveAssignmentDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program dispatch transaction",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Unique leg-to-active-trip binding written inside the dispatch transaction."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "operationRuns",
+  "path": "operationRuns/{runId}",
+  "rulesMatch": "/operationRuns/{runId}",
+  "schemaContract": "contracts/operations/run.schema.json",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted operations workers",
+  "writerContext": "platform",
+  "read": "server/admin callable only",
+  "write": "server only",
+  "exportedFunctions": [],
+  "migrationNotes": [
+    "Portable record shape is contracts/operations/run.schema.json; browser reads use a role-gated projection."
+  ]
+}

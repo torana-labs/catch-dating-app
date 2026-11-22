@@ -1,0 +1,11 @@
+{
+  "id": "moneyIssueResolutions",
+  "path": "moneyIssueResolutions/{resolutionId}",
+  "rulesMatch": "/moneyIssueResolutions/{resolutionId}",
+  "typescriptInterface": "MoneyIssueResolutionDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "adminManagePaymentIssues",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only"
+}

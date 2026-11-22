@@ -1,0 +1,17 @@
+{
+  "id": "eventMessagingBudgetApplicationReceipts",
+  "path": "eventMessagingBudgetApplicationReceipts/{receiptId}",
+  "rulesMatch": "/eventMessagingBudgetApplicationReceipts/{receiptId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "adminApplyEventMessagingBudget callable",
+  "writerContext": "admin",
+  "read": "server/admin callable only",
+  "write": "server only",
+  "exportedFunctions": [
+    "adminApplyEventMessagingBudget"
+  ],
+  "migrationNotes": [
+    "Immutable request-hash receipt binds one still-current approved decision to both replacement channel ceilings.",
+    "The receipt records that both ceilings remain paused and that spending authority, dispatch authority, provider contact and worker activation all remained false."
+  ]
+}

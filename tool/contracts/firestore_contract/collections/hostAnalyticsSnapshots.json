@@ -1,0 +1,24 @@
+{
+  "id": "hostAnalyticsSnapshots",
+  "path": "hostAnalyticsSnapshots/{snapshotId}",
+  "rulesMatch": "/hostAnalyticsSnapshots/{snapshotId}",
+  "typescriptInterface": "HostAnalyticsSnapshotDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps host analytics snapshots server-only"
+  ],
+  "owner": "getHostAnalytics callable",
+  "writerContext": "insights",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "getHostAnalytics",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Stores a host-authorized callable response for at most 15 minutes; cache identity includes the uid, current authorized club ids, absolute range, granularity, preset, and IANA timezone.",
+    "Requires a Firestore TTL policy on expiresAt.",
+    "Account deletion removes snapshots owned by the deleted uid."
+  ]
+}

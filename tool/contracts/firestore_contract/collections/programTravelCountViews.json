@@ -1,0 +1,21 @@
+{
+  "id": "programTravelCountViews",
+  "path": "programTravelCountViews/{programId}",
+  "rulesMatch": "/programTravelCountViews/{programId}",
+  "typescriptInterface": "ProgramTravelCountViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+  "rulesTestNames": [
+    "gives travel counts to full reach only"
+  ],
+  "owner": "Programme read model projector: programLiveBoardViewTriggers",
+  "writerContext": "programmes",
+  "read": "get by id by full reach (coordinators and the owner) while not deleted; never listed",
+  "write": "server only; written from programTravelLegs",
+  "exportedFunctions": [
+    "onProgramAlertLegChanged"
+  ],
+  "migrationNotes": [
+    "Readiness counts of inbound journeys. The program-live-board-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+  ]
+}

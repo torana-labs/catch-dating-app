@@ -1,0 +1,16 @@
+{
+  "id": "crossPathsShowcaseEligibility",
+  "path": "crossPathsShowcaseEligibility/{uid}",
+  "rulesMatch": "/crossPathsShowcaseEligibility/{uid}",
+  "typescriptInterface": "CrossPathsShowcaseEligibilityDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "retired adminSetCrossPathsShowcaseEligibility callable; records kept read-only, removed by account deletion",
+  "writerContext": "safety",
+  "read": "server only",
+  "write": "server only; account deletion removes a user's record",
+  "exportedFunctions": [],
+  "operations": [],
+  "migrationNotes": [
+    "Eligibility is activity-neutral and score-free. A reviewed approval is bound to the current public profile fingerprint and is revalidated by server suggestion logic."
+  ]
+}

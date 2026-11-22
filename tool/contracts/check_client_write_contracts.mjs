@@ -11,6 +11,7 @@ import {
   parseRulesMatchBlocks,
   rulesPathGoverns,
 } from "./lib/firestore_rules_blocks.mjs";
+import {firestoreContractDir, loadFirestoreContract} from "./lib/firestore_contract.mjs";
 
 const WRITE_METHODS = ["create", "update", "delete"];
 
@@ -20,7 +21,7 @@ const toolDir = path.dirname(fileURLToPath(import.meta.url));
 export function checkClientWriteContracts(repoRoot) {
   const errors = [];
   const rules = fs.readFileSync(path.join(repoRoot, "firestore.rules"), "utf8");
-  const registry = readJson(path.join(repoRoot, "tool/contracts/firestore_contract.json"));
+  const registry = loadFirestoreContract({root: repoRoot});
   const registeredPaths = new Set((registry.collections ?? []).map((entry) => entry.path));
   const documentSchemas = loadDocumentSchemas(repoRoot);
   const contracts = loadClientWriteContracts(repoRoot, errors);
@@ -59,7 +60,7 @@ export function checkClientWriteContracts(repoRoot) {
     if (!registeredPaths.has(contract.firestorePath)) {
       errors.push(
         `${contract.label}: ${contract.firestorePath} is not a collection path in ` +
-        `tool/contracts/firestore_contract.json`
+        firestoreContractDir
       );
     }
     validateDataShape(contract, documentSchemas, errors);

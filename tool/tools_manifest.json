@@ -847,7 +847,7 @@
       "command": "node tool/architecture/check_functions_contexts.mjs",
       "surface": "local-read",
       "status": "active",
-      "description": "Places every handwritten functions/src module by tool/architecture/functions_context_map.json (issue #1350) and checks its imports: platform imports only platform, domain code never imports a surface, a surface never imports another, domain contexts import only earlier contexts; and every collection is written only from the writerContext tool/contracts/firestore_contract.json names. Context-order imports and cross-context writes are bounded by the map's ceilings, which may only go down.",
+      "description": "Places every handwritten functions/src module by tool/architecture/functions_context_map.json (issue #1350) and checks its imports: platform imports only platform, domain code never imports a surface, a surface never imports another, domain contexts import only earlier contexts; and every collection is written only from the writerContext its tool/contracts/firestore_contract/collections/<id>.json names. Context-order imports and cross-context writes are bounded by the map's ceilings, which may only go down.",
       "checks": [
         "node --check tool/architecture/check_functions_contexts.mjs",
         "node --check tool/architecture/lib/functions_collection_writes.mjs",
@@ -864,7 +864,8 @@
         "tool/architecture/check_functions_contexts.mjs",
         "tool/architecture/check_functions_contexts.test.mjs",
         "tool/architecture/lib/functions_collection_writes.mjs",
-        "tool/contracts/firestore_contract.json"
+        "tool/contracts/firestore_contract/**",
+        "tool/contracts/lib/firestore_contract.mjs"
       ],
       "rules": [
         {
@@ -873,7 +874,7 @@
           "appliesTo": [
             "functions/src/**",
             "tool/architecture/functions_context_map.json",
-            "tool/contracts/firestore_contract.json"
+            "tool/contracts/firestore_contract/**"
           ],
           "instruction": "Place new functions/src modules under functions/src/platform/, functions/src/domain/<context>/ or functions/src/surfaces/<surface>/ (or a legacy placement in the map). Domain code never imports a surface; shared helpers go to the owning domain context or platform. Write a collection only from its registry writerContext; other contexts call the owning context's functions inside their transaction. Never raise a ceiling."
         }
@@ -1979,7 +1980,8 @@
       "impactPaths": [
         "tool/contracts/check_bigquery_export_paths.test.mjs",
         "tool/contracts/lib/firestore_rules_blocks.mjs",
-        "tool/contracts/firestore_contract.json",
+        "tool/contracts/firestore_contract/**",
+        "tool/contracts/lib/firestore_contract.mjs",
         "tool/analytics/host_analytics_contract.mjs",
         "extensions/**",
         "firebase.json"
@@ -2014,7 +2016,8 @@
       "impactPaths": [
         "tool/contracts/check_client_write_contracts.test.mjs",
         "tool/contracts/lib/firestore_rules_blocks.mjs",
-        "tool/contracts/firestore_contract.json",
+        "tool/contracts/firestore_contract/**",
+        "tool/contracts/lib/firestore_contract.mjs",
         "firestore.rules",
         "contracts/client_writes/**",
         "contracts/firestore/**"
@@ -2042,7 +2045,10 @@
       },
       "impactPaths": [
         "tool/contracts/check_firestore_contract.test.mjs",
-        "tool/contracts/firestore_contract.json",
+        "tool/contracts/firestore_contract/**",
+        "tool/contracts/lib/firestore_contract.mjs",
+        "tool/contracts/lib/firestore_contract.test.mjs",
+        "tool/lib/repository_snapshot.mjs",
         "tool/contracts/lib/firestore_rules_blocks.mjs",
         "tool/contracts/lib/firestore_rules_blocks.test.mjs",
         "firestore.rules",
@@ -2055,6 +2061,8 @@
       "checks": [
         "node --check tool/contracts/check_firestore_contract.mjs",
         "node --test tool/contracts/lib/firestore_rules_blocks.test.mjs",
+        "node --check tool/contracts/lib/firestore_contract.mjs",
+        "node --test tool/contracts/lib/firestore_contract.test.mjs",
         "node --test tool/contracts/check_firestore_contract.test.mjs",
         "node tool/contracts/check_firestore_contract.mjs"
       ]

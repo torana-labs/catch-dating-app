@@ -1,0 +1,15 @@
+{
+  "id": "organizerPrograms",
+  "path": "organizerPrograms/{programId}",
+  "rulesMatch": "/organizerPrograms/{programId}",
+  "typescriptInterface": "OrganizerProgramDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program management callables",
+  "writerContext": "programmes",
+  "read": "server only; managers and scoped staff receive callable projections",
+  "write": "server only",
+  "migrationNotes": [
+    "Private wedding/corporate program root; deliberately separate from publicly readable events documents.",
+    "transportSettings owns per-program band window and ready-wait tuning used by grouping suggestions."
+  ]
+}

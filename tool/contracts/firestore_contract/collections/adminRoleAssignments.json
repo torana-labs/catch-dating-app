@@ -1,0 +1,11 @@
+{
+  "id": "adminRoleAssignments",
+  "path": "adminRoleAssignments/{uid}",
+  "rulesMatch": "/adminRoleAssignments/{privateDocument=**}",
+  "typescriptInterface": "AdminRoleAssignmentDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "adminSetAdminUserRoles",
+  "writerContext": "admin",
+  "read": "server only",
+  "write": "server only"
+}

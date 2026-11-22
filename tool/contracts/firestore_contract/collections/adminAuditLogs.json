@@ -1,0 +1,11 @@
+{
+  "id": "adminAuditLogs",
+  "path": "adminAuditLogs/{logId}",
+  "rulesMatch": "/adminAuditLogs/{privateDocument=**}",
+  "typescriptInterface": "AdminAuditLogDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Admin callables (writeAdminAuditLog)",
+  "writerContext": "platform",
+  "read": "server only",
+  "write": "server only"
+}

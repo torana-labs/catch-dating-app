@@ -1,0 +1,10 @@
+{
+  "id": "assistantClients",
+  "path": "assistantClients/{clientId}",
+  "rulesMatch": "/assistantClients/{privateDocument=**}",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "sales assistant gateway server-only management",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

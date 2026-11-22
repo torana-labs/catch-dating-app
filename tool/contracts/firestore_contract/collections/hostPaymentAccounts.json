@@ -1,0 +1,11 @@
+{
+  "id": "hostPaymentAccounts",
+  "path": "hostPaymentAccounts/{accountId}",
+  "rulesMatch": "/hostPaymentAccounts/{accountId}",
+  "typescriptInterface": "HostPaymentAccountDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "Stripe Connect and Razorpay Route onboarding, refresh, and webhook callables",
+  "writerContext": "payments",
+  "read": "the account owner",
+  "write": "server only"
+}

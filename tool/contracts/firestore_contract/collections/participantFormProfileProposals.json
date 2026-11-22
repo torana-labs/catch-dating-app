@@ -1,0 +1,24 @@
+{
+  "id": "participantFormProfileProposals",
+  "path": "participantFormProfileProposals/{responseId}",
+  "rulesMatch": "/participantFormProfileProposals/{responseId}",
+  "typescriptInterface": "ParticipantFormProfileProposalDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "verified form submission and participant profile claiming",
+  "writerContext": "profiles",
+  "read": "server only; participant claim review requires exact response ownership",
+  "write": "server only; never populated from CRM",
+  "exportedFunctions": [
+    "submitOrganizerFormResponse",
+    "getOrganizerFormPayment",
+    "requestAccountDeletion",
+    "getParticipantFormPhoto",
+    "claimParticipantFormProfile",
+    "onParticipantFormProfileViewProposalChanged"
+  ],
+  "migrationNotes": [
+    "Only explicit Catch profile and organizer-card questions create private pointers after verified submission. Existing canonical CRM mappings remain organizer-only.",
+    "A proposal is not a profile claim, public projection or room membership. Dereferencing requires current response ownership and status."
+  ]
+}

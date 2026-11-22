@@ -1,0 +1,13 @@
+{
+  "id": "eventAssistanceRcsCallbackIdentities",
+  "path": "eventAssistanceRcsCallbackIdentities/{receiptKey}",
+  "rulesMatch": "/eventAssistanceRcsCallbackIdentities/{receiptKey}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "event-assistance authenticated RCS ingress",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Authenticated normalized callback evidence and conflict identities. No direct client access, provider activation or automatic retention deletion."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "eventSuccessScorecards",
+  "path": "eventSuccessScorecards/{eventId}",
+  "rulesMatch": "/eventSuccessScorecards/{eventId}",
+  "typescriptInterface": "EventSuccessScorecardDocument",
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "owner": "event success feedback and matching triggers",
+  "writerContext": "insights",
+  "read": "the event's hosts",
+  "write": "server only"
+}

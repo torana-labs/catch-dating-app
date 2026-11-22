@@ -1,0 +1,11 @@
+{
+  "id": "scheduleLocks",
+  "path": "scheduleLocks/{lockId}",
+  "rulesMatch": "/scheduleLocks/{lockId}",
+  "typescriptInterface": "ScheduleLockDocument",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "event publication, schedule edit, signup and waitlist callables",
+  "writerContext": "events",
+  "read": "server only",
+  "write": "server only"
+}

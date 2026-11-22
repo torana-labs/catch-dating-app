@@ -1,0 +1,22 @@
+{
+  "id": "eventSetupReceipts",
+  "path": "eventSetupReceipts/{receiptId}",
+  "rulesMatch": "/eventSetupReceipts/{receiptId}",
+  "typescriptInterface": "EventSetupReceiptDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps private event setup receipts server-only"
+  ],
+  "owner": "private event setup operations",
+  "writerContext": "events",
+  "read": "server only; manager callable operation result",
+  "write": "server only",
+  "exportedFunctions": [
+    "createPrivateEventSeries",
+    "createPrivateEventSetup",
+    "updatePrivateEventBasics",
+    "updatePrivateEventDetails",
+    "updatePrivateEventPreferences"
+  ]
+}

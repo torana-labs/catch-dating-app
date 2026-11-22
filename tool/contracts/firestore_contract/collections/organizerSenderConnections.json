@@ -1,0 +1,11 @@
+{
+  "id": "organizerSenderConnections",
+  "path": "organizerSenderConnections/{connectionId}",
+  "rulesMatch": "/organizerSenderConnections/{connectionId}",
+  "typescriptInterface": "OrganizerSenderConnectionDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "organizer messaging sender onboarding and provider health sync",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

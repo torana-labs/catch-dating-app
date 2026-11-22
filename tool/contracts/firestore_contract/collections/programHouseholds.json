@@ -1,0 +1,14 @@
+{
+  "id": "programHouseholds",
+  "path": "programHouseholds/{householdId}",
+  "rulesMatch": "/programHouseholds/{householdId}",
+  "typescriptInterface": "ProgramHouseholdDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program guest management callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "deliveryPreference is a delivery hint only and never implies messaging consent."
+  ]
+}

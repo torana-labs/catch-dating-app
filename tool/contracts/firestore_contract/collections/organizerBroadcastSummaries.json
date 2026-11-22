@@ -1,0 +1,35 @@
+{
+  "id": "organizerBroadcastSummaries",
+  "path": "organizerBroadcastSummaries/{broadcastId}",
+  "rulesMatch": "/organizerBroadcastSummaries/{broadcastId}",
+  "typescriptInterface": "OrganizerBroadcastSummaryDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "sendEventBroadcast projection",
+  "writerContext": "events",
+  "read": "server only; organizer managers read Sends rows from hostSendSummaries and contact-history rows through callables",
+  "write": "server only",
+  "exportedFunctions": [
+    "sendEventBroadcast",
+    "getOrganizerContactDetail",
+    "onHostSendAnnouncementChanged"
+  ],
+  "operations": [
+    {
+      "id": "organizer_broadcast_summary_projection",
+      "type": "callableProjection",
+      "owner": "sendEventBroadcast",
+      "function": "sendEventBroadcast",
+      "rulesMustContain": [
+        "allow read, write: if false"
+      ],
+      "rulesTestNames": [
+        "keeps event broadcast receipts and organizer summaries server-only"
+      ]
+    }
+  ],
+  "migrationNotes": [
+    "The projection contains bounded organizer contact ids and delivery availability, never message bodies or raw provider receipts.",
+    "Per-contact history is a manager-authorized callable read and clients never query the collection directly; the Sends history reads hostSendSummaries."
+  ]
+}

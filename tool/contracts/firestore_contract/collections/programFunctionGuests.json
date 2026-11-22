@@ -1,0 +1,14 @@
+{
+  "id": "programFunctionGuests",
+  "path": "programFunctionGuests/{functionGuestId}",
+  "rulesMatch": "/programFunctionGuests/{functionGuestId}",
+  "typescriptInterface": "ProgramFunctionGuestDocument",
+  "owner": "program guest management, RSVP conversion, and function check-in callables",
+  "writerContext": "programmes",
+  "read": "server only; duty-scoped callables return field-redacted projections",
+  "write": "server only",
+  "migrationNotes": [
+    "One document per (functionId, guestId) pair; document id is the deterministic join key `${functionId}_${guestId}` so invites and responses upsert idempotently.",
+    "Per-function RSVP and door attendance truth lives here; programGuests.rsvpStatus is a server-maintained rollup only."
+  ]
+}

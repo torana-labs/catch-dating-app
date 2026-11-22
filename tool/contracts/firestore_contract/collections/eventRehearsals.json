@@ -1,0 +1,34 @@
+{
+  "id": "eventRehearsals",
+  "path": "eventRehearsals/{sessionId}",
+  "rulesMatch": "/eventRehearsals/{sessionId}",
+  "typescriptInterface": "EventRehearsalDocument",
+  "dartModel": "lib/contexts/live/domain/event_rehearsal.dart",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps all dress rehearsal collections callable-only"
+  ],
+  "owner": "event rehearsal callables and hourly expiry",
+  "writerContext": "live",
+  "read": "server only; organizer managers and public guest slots receive bounded callable projections",
+  "write": "server only",
+  "exportedFunctions": [
+    "createEventRehearsal",
+    "getEventRehearsalBootstrap",
+    "updateEventRehearsalSetup",
+    "controlEventRehearsal",
+    "injectEventRehearsalBehavior",
+    "resetEventRehearsal",
+    "rotateEventRehearsalGuestLink",
+    "getEventRehearsalGuestBootstrap",
+    "submitEventRehearsalGuestAction",
+    "completeEventRehearsal",
+    "exportEventRehearsalReproduction",
+    "expireEventRehearsals",
+    "getEventRehearsalMovement"
+  ],
+  "migrationNotes": [
+    "A real event is a bounded read-only source at creation; every later mutation remains inside the rehearsal domain.",
+    "Sessions expire after 24 hours and are capped at five active sessions per owner, 50 actors, and 500 actions."
+  ]
+}

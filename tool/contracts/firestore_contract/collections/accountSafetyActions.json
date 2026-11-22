@@ -1,0 +1,11 @@
+{
+  "id": "accountSafetyActions",
+  "path": "accountSafetyActions/{actionId}",
+  "rulesMatch": "/accountSafetyActions/{actionId}",
+  "typescriptInterface": "AccountSafetyActionDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Admin account safety callables and the severe-report restriction",
+  "writerContext": "safety",
+  "read": "server only",
+  "write": "server only"
+}

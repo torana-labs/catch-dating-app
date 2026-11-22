@@ -1,0 +1,11 @@
+{
+  "id": "adConversionContexts",
+  "path": "adConversionContexts/{subjectId}",
+  "rulesMatch": "/adConversionContexts/{privateDocument=**}",
+  "typescriptInterface": "AdConversionContextDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "public event checkout service",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only"
+}

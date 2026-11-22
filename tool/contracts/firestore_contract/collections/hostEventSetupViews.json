@@ -1,0 +1,31 @@
+{
+  "id": "hostEventSetupViews",
+  "path": "hostEventSetupViews/{eventId}",
+  "rulesMatch": "/hostEventSetupViews/{eventId}",
+  "typescriptInterface": "HostEventSetupViewDocument",
+  "dartModel": "lib/contexts/events/data/private_event_setup_view.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets active managers get their event setup views and nothing else"
+  ],
+  "owner": "Host event setup view evaluator: hostReadModels event setup view triggers",
+  "writerContext": "host",
+  "read": "current managers of an active organizer get their event's document; a view not written yet reads as missing; nobody lists the collection",
+  "write": "server only; written by every evaluation that changes it and deleted with the event or its setupRevision",
+  "exportedFunctions": [
+    "onHostEventSetupViewEventChanged",
+    "onHostEventSetupViewPreferencesChanged",
+    "onHostEventSetupViewOrganizerChanged",
+    "onHostEventSetupViewAttendeeChanged",
+    "onHostEventSetupViewAttendeeImportChanged",
+    "onHostEventSetupViewParticipationChanged",
+    "onHostEventSetupViewWaitlistOfferChanged",
+    "onHostEventSetupViewEventOfferChanged",
+    "onHostEventSetupViewGuestPaymentChanged",
+    "onHostEventSetupViewMomentChanged"
+  ],
+  "migrationNotes": [
+    "Publication readiness checks every requirement as if the event started one millisecond from now; the phone applies the clock, so the view needs no sweep.",
+    "sourceCoverage invalidSource with its incompleteSource keeps the previous summary and means the step must not show it."
+  ]
+}

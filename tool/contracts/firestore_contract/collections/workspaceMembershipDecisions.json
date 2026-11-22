@@ -1,0 +1,22 @@
+{
+  "id": "workspaceMembershipDecisions",
+  "path": "workspaceMembershipDecisions/{decisionId}",
+  "rulesMatch": "/workspaceMembershipDecisions/{decisionId}",
+  "typescriptInterface": "WorkspaceMembershipDecisionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
+  "rulesTestNames": [
+    "denies direct access for guests, managers and unauthenticated viewers"
+  ],
+  "owner": "private program lodging server operations",
+  "writerContext": "programmes",
+  "read": "server only; scoped operational projections",
+  "write": "server only",
+  "exportedFunctions": [
+    "anonymizeDueProgramsSweep"
+  ],
+  "migrationNotes": [
+    "Dormant source adapter; no lodging callable exported in this slice. Canonical source/publication integration remains required.",
+    "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing."
+  ]
+}

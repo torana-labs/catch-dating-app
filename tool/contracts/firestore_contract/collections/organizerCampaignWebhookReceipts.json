@@ -1,0 +1,11 @@
+{
+  "id": "organizerCampaignWebhookReceipts",
+  "path": "organizerCampaignWebhookReceipts/{receiptId}",
+  "rulesMatch": "/organizerCampaignWebhookReceipts/{receiptId}",
+  "typescriptInterface": "OrganizerCampaignWebhookReceiptDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "WhatsApp provider webhook",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

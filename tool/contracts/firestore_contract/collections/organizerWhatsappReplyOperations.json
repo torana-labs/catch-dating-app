@@ -1,0 +1,11 @@
+{
+  "id": "organizerWhatsappReplyOperations",
+  "path": "organizerWhatsappReplyOperations/{operationId}",
+  "rulesMatch": "/organizerWhatsappReplyOperations/{operationId}",
+  "typescriptInterface": "OrganizerWhatsappReplyOperationDocument",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "sendOrganizerWhatsappReply callable",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "hostFormPaymentViews",
+  "path": "hostFormPaymentViews/{paymentId}",
+  "rulesMatch": "/hostFormPaymentViews/{paymentId}",
+  "typescriptInterface": "HostFormPaymentViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_form_operation_reads.rules.test.cjs",
+  "rulesTestNames": [
+    "lets current managers list form payment views and nothing else"
+  ],
+  "owner": "Host read model projector: hostReadModels form payment view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get and list (organizerId and formId equality, optionally status) while their account is not deleted",
+  "write": "server only; rewritten from each guestPayments document whose purpose is form, and deleted with it",
+  "exportedFunctions": [
+    "onHostFormPaymentViewPaymentChanged"
+  ],
+  "migrationNotes": [
+    "row equals the ledger row listOrganizerFormPayments returns; answers, respondent identity and contact, the connection, the account and hashes never appear. The host-form-payment-views copy-forward migration creates views for form fees recorded before the trigger.",
+    "Payment lookups and refunds stay on their reviewed callables."
+  ]
+}

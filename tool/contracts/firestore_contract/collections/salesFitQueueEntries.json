@@ -1,0 +1,11 @@
+{
+  "id": "salesFitQueueEntries",
+  "path": "salesFitQueueEntries/{organizerId}",
+  "rulesMatch": "/salesFitQueueEntries/{privateDocument=**}",
+  "typescriptInterface": "SalesFitQueueEntryDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales fit queue callables and source mutation invalidation hooks",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

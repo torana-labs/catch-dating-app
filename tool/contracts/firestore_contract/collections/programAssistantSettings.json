@@ -1,0 +1,15 @@
+{
+  "id": "programAssistantSettings",
+  "path": "programAssistantSettings/{programId}",
+  "rulesMatch": "/programAssistantSettings/{programId}",
+  "typescriptInterface": "ProgramAssistantSettingsDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "updateProgramAssistantSettings callable",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "How the programme's WhatsApp assistant behaves; absent means the defaults. Read by the assistant (lane W2).",
+    "Deleted by the archive retention sweep."
+  ]
+}

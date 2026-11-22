@@ -1,0 +1,30 @@
+{
+  "id": "hostEventRuntimeViews",
+  "path": "hostEventRuntimeViews/{runtimeId}",
+  "rulesMatch": "/hostEventRuntimeViews/{runtimeId}",
+  "typescriptInterface": "HostEventRuntimeViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers read live guest and settings views and nothing else"
+  ],
+  "owner": "Live guest and settings view evaluator: hostReadModels guest view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get their own organizer's views by id; nobody lists the collection",
+  "write": "server only; one per event with an eventFormat and an endTime, deleted with the event",
+  "exportedFunctions": [
+    "onHostGuestViewEventChanged",
+    "onHostGuestViewPlanChanged",
+    "onHostGuestViewAttendeeChanged",
+    "onHostGuestViewGuestChanged",
+    "onHostGuestViewMembershipChanged",
+    "onHostGuestViewOrganizerChanged",
+    "onHostGuestViewStaffGrantChanged",
+    "onHostGuestViewSettingChanged",
+    "onHostGuestViewRuntimeChanged"
+  ],
+  "migrationNotes": [
+    "status and canConfigure are evaluated one millisecond before eventEndAtMillis and closed is the event's own closure; the phone closes the automation at the end and expires a configured window by the app clock.",
+    "The sender picker stays on getEventAssistanceRuntimeConfig with senderCursors; the view carries no senderSetup."
+  ]
+}

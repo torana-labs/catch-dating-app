@@ -1,0 +1,11 @@
+{
+  "id": "eventAssignmentFeatureConsents",
+  "path": "eventAssignmentFeatureConsents/{consentId}",
+  "rulesMatch": "/eventAssignmentFeatureConsents/{consentId}",
+  "typescriptInterface": "EventAssignmentFeatureConsentDocument",
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "owner": "participant consent callable; private server read",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only"
+}

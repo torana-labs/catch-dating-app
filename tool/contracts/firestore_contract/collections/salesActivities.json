@@ -1,0 +1,11 @@
+{
+  "id": "salesActivities",
+  "path": "salesActivities/{activityId}",
+  "rulesMatch": "/salesActivities/{privateDocument=**}",
+  "typescriptInterface": "SalesActivityDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales service, canonical claim projection and confirmed demo projection",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

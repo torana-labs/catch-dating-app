@@ -1,0 +1,11 @@
+{
+  "id": "safetySettings",
+  "path": "safetySettings/{settingsId}",
+  "rulesMatch": "/safetySettings/{settingsId}",
+  "typescriptInterface": "SafetySettingsDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Admin safety settings callables",
+  "writerContext": "safety",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "organizerBillingCycles",
+  "path": "organizerBillingCycles/{organizerId}",
+  "rulesMatch": "/organizerBillingCycles/{organizerId}",
+  "typescriptInterface": "OrganizerBillingCycleDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Functions organizer billing (daily cycle generation)",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only"
+}

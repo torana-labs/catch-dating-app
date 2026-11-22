@@ -1,0 +1,10 @@
+{
+  "id": "salesDemoBlueprints",
+  "path": "salesDemoBlueprints/{blueprintId}",
+  "rulesMatch": "/salesDemoBlueprints/{privateDocument=**}",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "sales demo admin callable",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

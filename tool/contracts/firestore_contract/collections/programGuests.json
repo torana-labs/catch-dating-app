@@ -1,0 +1,18 @@
+{
+  "id": "programGuests",
+  "path": "programGuests/{guestId}",
+  "rulesMatch": "/programGuests/{guestId}",
+  "typescriptInterface": "ProgramGuestDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program guest management and reviewed conversion callables",
+  "writerContext": "programmes",
+  "read": "server only; duty-scoped callables return field-redacted projections",
+  "write": "server only",
+  "migrationNotes": [
+    "One document per invited person; householdId links party membership and contactId optionally links a CRM contact.",
+    "A shared phone or email never merges two guest records."
+  ],
+  "exportedFunctions": [
+    "manageProgramLodging"
+  ]
+}

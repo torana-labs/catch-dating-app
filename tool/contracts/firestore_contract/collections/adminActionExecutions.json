@@ -1,0 +1,18 @@
+{
+  "id": "adminActionExecutions",
+  "path": "adminActionExecutions/{executionId}",
+  "rulesMatch": "/adminActionExecutions/{executionId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "admin action execution callables",
+  "writerContext": "admin",
+  "read": "server/admin callable only",
+  "write": "server only",
+  "exportedFunctions": [
+    "adminListActionExecutions",
+    "adminRecordActionExecution"
+  ],
+  "migrationNotes": [
+    "Stores only action identity, actor, timestamps, target label, hashes, terminal status, and bounded error metadata; request and response bodies are never persisted.",
+    "One started receipt advances exactly once to succeeded or failed; terminal evidence is immutable and exact replay is idempotent."
+  ]
+}

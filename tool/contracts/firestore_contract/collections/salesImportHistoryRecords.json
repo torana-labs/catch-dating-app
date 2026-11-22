@@ -1,0 +1,11 @@
+{
+  "id": "salesImportHistoryRecords",
+  "path": "salesImportHistoryRecords/{recordId}",
+  "rulesMatch": "/salesImportHistoryRecords/{privateDocument=**}",
+  "typescriptInterface": "SalesImportHistoryRecordDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales import history service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

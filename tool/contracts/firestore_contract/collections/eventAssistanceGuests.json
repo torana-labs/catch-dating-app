@@ -1,0 +1,18 @@
+{
+  "id": "eventAssistanceGuests",
+  "path": "eventAssistanceGuests/{guestId}",
+  "rulesMatch": "/eventAssistanceGuests/{guestId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance guest boundary",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "getEventAssistanceGuestView",
+    "getEventAssistanceParticipation",
+    "setEventAssistanceParticipation",
+    "submitEventAssistanceGuestChoice",
+    "resolveEventAssistanceAccountability",
+    "getEventAssistanceHostGuests"
+  ]
+}

@@ -3566,7 +3566,7 @@ reaction fields, comments) from old app builds. Pick one of these:
   `hasValidSwipeCreate` to the stored `swipes.schema.json` fields. So it
   belongs in a change that also removes `pass` and the reaction fields from
   `contracts/firestore/swipes.schema.json`, the `profileDecisions` operation
-  in `tool/contracts/firestore_contract.json`, the Dart `Swipe` model and the
+  in `tool/contracts/firestore_contract/collections/`, the Dart `Swipe` model and the
   rules tests. Ship it after the prod purge, so stored documents still
   validate until then.
 - **Raise `min_build_*`** in Remote Config to the first released build without

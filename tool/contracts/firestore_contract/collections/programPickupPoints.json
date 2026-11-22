@@ -1,0 +1,14 @@
+{
+  "id": "programPickupPoints",
+  "path": "programPickupPoints/{pickupPointId}",
+  "rulesMatch": "/programPickupPoints/{pickupPointId}",
+  "typescriptInterface": "ProgramPickupPointDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program resource setup callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Airport/railway/venue pickup stations that scope greeter duties and grouping."
+  ]
+}

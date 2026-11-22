@@ -1,0 +1,24 @@
+{
+  "id": "organizerFormVersions",
+  "path": "organizerFormVersions/{versionId}",
+  "rulesMatch": "/organizerFormVersions/{versionId}",
+  "typescriptInterface": "OrganizerFormVersionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps organizer form state server-only"
+  ],
+  "owner": "publishOrganizerForm callable",
+  "writerContext": "organizers",
+  "read": "server only; public and manager surfaces receive purpose-built projections",
+  "write": "immutable server-created version only",
+  "exportedFunctions": [
+    "publishOrganizerForm",
+    "listParticipantActivity",
+    "onHostFormVersionFilterSourceChanged"
+  ],
+  "migrationNotes": [
+    "sourceDraftRevision makes publish retries idempotent and every historical definition immutable.",
+    "Own-account activity reads only immutable version metadata after exact respondent, notice and source proof; no profile claim or event admission is implied."
+  ]
+}

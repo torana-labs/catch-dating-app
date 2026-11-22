@@ -1,0 +1,11 @@
+{
+  "id": "supportConversations",
+  "path": "supportConversations/{conversationId}",
+  "rulesMatch": "/supportConversations/{privateDocument=**}",
+  "typescriptInterface": "SupportConversationDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Support inbox service and Admin support callables",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only"
+}

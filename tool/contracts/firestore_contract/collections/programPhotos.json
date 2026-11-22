@@ -1,0 +1,18 @@
+{
+  "id": "programPhotos",
+  "path": "programPhotos/{programPhotoId}",
+  "rulesMatch": "/programPhotos/{programPhotoId}",
+  "typescriptInterface": "ProgramPhotoDocument",
+  "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
+  "owner": "upsertProgramPhoto callable",
+  "writerContext": "programmes",
+  "read": "get and list (query naming programId) for the programme owner and the communications duty (programAccessViews), while not deleted; the file itself leaves only as a signed URL from signProgramPhotoUrls",
+  "write": "server only",
+  "migrationNotes": [
+    "One function photo; the file lives in private Storage under programs/{programId}/photos/.",
+    "Deleted by the archive retention sweep."
+  ],
+  "rulesTestNames": [
+    "reads saved replies and photo records by the same duty"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "demoSelfServiceAccess",
+  "path": "demoSelfServiceAccess/{uid}",
+  "rulesMatch": "/demoSelfServiceAccess/{uid}",
+  "typescriptInterface": "DemoSelfServiceAccessDocument",
+  "owner": "Demo tooling; read by Suvbot",
+  "writerContext": "ops",
+  "read": "owner only",
+  "write": "server only"
+}

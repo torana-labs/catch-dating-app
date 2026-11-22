@@ -1,0 +1,13 @@
+{
+  "id": "eventAssistanceSettings",
+  "path": "eventAssistanceSettings/{settingId}",
+  "rulesMatch": "/eventAssistanceSettings/{settingId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "event-assistance policy configuration",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "setEventAssistanceSetting"
+  ]
+}

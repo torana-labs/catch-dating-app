@@ -1,0 +1,11 @@
+{
+  "id": "platformCosts",
+  "path": "platformCosts/{costId}",
+  "rulesMatch": "/platformCosts/{costId}",
+  "typescriptInterface": "PlatformCostDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "adminManagePlatformCosts and ad spend imports",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "walkthroughSlotHolds",
+  "path": "walkthroughSlotHolds/{holdId}",
+  "rulesMatch": "/walkthroughSlotHolds/{privateDocument=**}",
+  "typescriptInterface": "WalkthroughSlotHoldDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "bookWalkthrough, manageWalkthroughBooking and adminUpdateWalkthroughBooking",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

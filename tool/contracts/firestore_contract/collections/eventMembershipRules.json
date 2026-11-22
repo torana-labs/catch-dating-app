@@ -1,0 +1,23 @@
+{
+  "id": "eventMembershipRules",
+  "path": "eventMembershipRules/{eventId}",
+  "rulesMatch": "/eventMembershipRules/{eventId}",
+  "typescriptInterface": "EventMembershipRulesDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets signed-in guests get a published event's membership rules"
+  ],
+  "owner": "event membership rules callable",
+  "writerContext": "payments",
+  "read": "any signed-in person gets the rules of a published event (the Consumer event screen shows member prices, early access and members-only from them); nobody lists the collection; private events stay server only",
+  "write": "server only; manageEventMembershipRules",
+  "exportedFunctions": [
+    "manageEventMembershipRules",
+    "signUpForFreeEvent",
+    "managePublicEventCheckout"
+  ],
+  "migrationNotes": [
+    "Kept outside eventPolicy so member pricing never changes the seat policy hash or trips the policy lock."
+  ]
+}

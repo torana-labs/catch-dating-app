@@ -1,0 +1,40 @@
+{
+  "id": "organizerEventVenues",
+  "path": "organizerEventVenues/{venueDocumentId}",
+  "rulesMatch": "/organizerEventVenues/{venueDocumentId}",
+  "typescriptInterface": "OrganizerEventVenueDocument",
+  "dartModel": "lib/contexts/events/domain/organizer_event_venue.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "organizer managers through upsertOrganizerEventVenue",
+  "writerContext": "events",
+  "read": "organizer managers only",
+  "write": "server only; all mutations are callable-owned",
+  "exportedFunctions": [
+    "upsertOrganizerEventVenue"
+  ],
+  "operations": [
+    {
+      "id": "manager_upsert",
+      "type": "callable",
+      "owner": "organizer manager",
+      "function": "upsertOrganizerEventVenue",
+      "payloadSchemaRef": "contracts/callables/upsert_organizer_event_venue_payload.schema.json",
+      "allowedFields": [
+        "organizerId",
+        "venueId",
+        "label",
+        "meetingLocation",
+        "defaultEventCapacity",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "rulesTestNames": [
+        "limits saved event venues to organizer managers"
+      ]
+    }
+  ],
+  "migrationNotes": [
+    "Events retain meetingLocation, capacityLimit, and optional sourceVenueId snapshots; venue edits and archival never rewrite existing events."
+  ]
+}

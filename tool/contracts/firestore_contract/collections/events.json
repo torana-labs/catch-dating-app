@@ -1,0 +1,164 @@
+{
+  "id": "events",
+  "path": "events/{eventId}",
+  "rulesMatch": "/events/{eventId}",
+  "typescriptInterface": "EventDocument",
+  "dartModel": "lib/contexts/events/domain/event.dart",
+  "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
+  "owner": "host creates and edits events through callables; booking, attendance, waitlist joins, and gender counts are backend-owned",
+  "writerContext": "events",
+  "read": "published and legacy public events; private events require current organizer manager or active viewRoster staff grant; public lists constrain publicationState",
+  "write": "all event writes are callable-owned; direct client writes are denied",
+  "exportedFunctions": [
+    "createEvent",
+    "updateEvent",
+    "cancelEvent",
+    "deleteEvent",
+    "signUpForFreeEvent",
+    "cancelEventSignUp",
+    "joinEventWaitlist",
+    "leaveEventWaitlist",
+    "markEventAttendance",
+    "selfCheckInAttendance",
+    "onHostRequestViewParticipationWritten",
+    "onHostRequestViewEventWritten",
+    "onHostRequestViewProfileWritten",
+    "onHostRequestViewContactSummaryWritten",
+    "onHostRequestViewContactWritten"
+  ],
+  "operations": [
+    {
+      "id": "host_create",
+      "type": "callable",
+      "owner": "club host",
+      "function": "createEvent",
+      "payloadSchemaRef": "contracts/callables/create_event_payload.schema.json",
+      "allowedFields": [
+        "organizerId",
+        "sourceVenueId",
+        "startTime",
+        "endTime",
+        "meetingPoint",
+        "meetingLocation",
+        "startingPointLat",
+        "startingPointLng",
+        "locationDetails",
+        "photoUrl",
+        "distanceKm",
+        "pace",
+        "capacityLimit",
+        "description",
+        "priceInPaise",
+        "bookedCount",
+        "checkedInCount",
+        "waitlistedCount",
+        "status",
+        "cancelledAt",
+        "cancellationReason",
+        "constraints",
+        "genderCounts"
+      ]
+    },
+    {
+      "id": "host_detail_update",
+      "type": "callable",
+      "owner": "club host",
+      "function": "updateEvent",
+      "payloadSchemaRef": "contracts/callables/update_event_payload.schema.json",
+      "allowedFields": [
+        "startTime",
+        "endTime",
+        "meetingPoint",
+        "meetingLocation",
+        "startingPointLat",
+        "startingPointLng",
+        "locationDetails",
+        "photoUrl",
+        "distanceKm",
+        "pace",
+        "description"
+      ],
+      "deniedFields": [
+        "organizerId",
+        "capacityLimit",
+        "priceInPaise",
+        "constraints",
+        "bookedCount",
+        "checkedInCount",
+        "waitlistedCount",
+        "genderCounts",
+        "status",
+        "cancelledAt",
+        "cancellationReason"
+      ],
+      "rulesTestNames": [
+        "denies direct event creates because creation is callable-owned",
+        "denies direct host event detail edits because updates are callable-owned",
+        "denies hosts changing booking-sensitive or ownership event fields"
+      ]
+    },
+    {
+      "id": "host_cancel",
+      "type": "callable",
+      "owner": "club host",
+      "function": "cancelEvent",
+      "payloadSchemaRef": "contracts/callables/cancel_event_payload.schema.json",
+      "allowedFields": [
+        "status",
+        "cancelledAt",
+        "cancellationReason"
+      ]
+    },
+    {
+      "id": "host_delete_unused",
+      "type": "callable",
+      "owner": "club host",
+      "function": "deleteEvent",
+      "payloadSchemaRef": "contracts/callables/delete_event_payload.schema.json",
+      "allowedFields": [],
+      "preconditions": [
+        "no eventBookings for eventId",
+        "no payments for eventId",
+        "no reviews for eventId"
+      ]
+    },
+    {
+      "id": "waitlist_self_leave",
+      "type": "callable",
+      "owner": "waitlisted authenticated user",
+      "function": "leaveEventWaitlist",
+      "payloadSchemaRef": "contracts/callables/event_id_payload.schema.json",
+      "allowedFields": [
+        "waitlistedCount"
+      ],
+      "rulesTestNames": [
+        "denies direct event aggregate rewrites because roster actions are callable-owned"
+      ]
+    },
+    {
+      "id": "booking_workflows",
+      "type": "callable",
+      "owner": "authenticated user or host depending on callable",
+      "allowedFields": [
+        "bookedCount",
+        "checkedInCount",
+        "waitlistedCount",
+        "genderCounts"
+      ]
+    }
+  ],
+  "embeddedTypes": [
+    {
+      "typescriptInterface": "EventConstraints",
+      "propertyPath": "constraints"
+    }
+  ],
+  "migrationNotes": [
+    "cancelEvent handles events with history.",
+    "deleteEvent hard-deletes only unused hosted events with no participations, payments, or reviews."
+  ],
+  "rulesTestNames": [
+    "protects private event reads by manager and active staff authority",
+    "publication queries cannot include private or unlabelled setup records"
+  ]
+}

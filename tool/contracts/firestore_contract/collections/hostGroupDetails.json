@@ -1,0 +1,11 @@
+{
+  "id": "hostGroupDetails",
+  "path": "hostGroupDetails/{audienceId}",
+  "rulesMatch": "/hostGroupDetails/{audienceId}",
+  "typescriptInterface": "HostGroupDetailDocument",
+  "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+  "owner": "Host read model projector",
+  "writerContext": "host",
+  "read": "the organizer's summary managers, get only",
+  "write": "server only"
+}

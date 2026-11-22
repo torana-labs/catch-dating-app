@@ -1,0 +1,11 @@
+{
+  "id": "salesFitQueueMeta",
+  "path": "salesFitQueueMeta/{metaId}",
+  "rulesMatch": "/salesFitQueueMeta/{privateDocument=**}",
+  "typescriptInterface": "SalesFitQueueMetaDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales fit queue service and source mutation hooks",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

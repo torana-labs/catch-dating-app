@@ -1,0 +1,18 @@
+{
+  "id": "aiFallbackUsage",
+  "path": "aiFallbackUsage/{usageKey}",
+  "rulesMatch": "/aiFallbackUsage/{usageKey}",
+  "typescriptInterface": "AiFallbackUsageDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps durable operations records server-owned"
+  ],
+  "owner": "trusted try-it import callables",
+  "writerContext": "platform",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "importGuestList"
+  ]
+}

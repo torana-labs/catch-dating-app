@@ -1,0 +1,29 @@
+{
+  "id": "organizerForms",
+  "path": "organizerForms/{formId}",
+  "rulesMatch": "/organizerForms/{formId}",
+  "typescriptInterface": "OrganizerFormDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps organizer form state server-only"
+  ],
+  "owner": "manager-only organizer form lifecycle callables",
+  "writerContext": "organizers",
+  "read": "server only; managers receive bounded callable projections",
+  "write": "server only",
+  "exportedFunctions": [
+    "createOrganizerForm",
+    "updateOrganizerFormDraft",
+    "getOrganizerFormEditor",
+    "validateOrganizerFormDraft",
+    "publishOrganizerForm",
+    "setOrganizerFormLifecycle",
+    "duplicateOrganizerForm",
+    "deleteOrganizerFormDraft"
+  ],
+  "migrationNotes": [
+    "The publicFormId is opaque and resolves only through a separate public projection; it is not a Firestore read capability.",
+    "publishedVersion is monotonic while draftRevision changes only when editable content changes."
+  ]
+}

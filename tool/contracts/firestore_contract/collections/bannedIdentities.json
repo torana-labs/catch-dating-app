@@ -1,0 +1,11 @@
+{
+  "id": "bannedIdentities",
+  "path": "bannedIdentities/{identityId}",
+  "rulesMatch": "/bannedIdentities/{identityId}",
+  "typescriptInterface": "BannedIdentityDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Account safety action service",
+  "writerContext": "safety",
+  "read": "server only",
+  "write": "server only"
+}

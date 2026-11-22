@@ -1,0 +1,21 @@
+{
+  "id": "salesPartnerMemberships",
+  "path": "salesPartnerMemberships/{id}",
+  "rulesMatch": "/salesPartnerMemberships/{privateDocument=**}",
+  "typescriptInterface": "SalesPartnerMembershipDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "rulesTestNames": [
+    "sales records stay private behind server operations"
+  ],
+  "owner": "partner Sales scoped services",
+  "writerContext": "sales",
+  "read": "server only; partner scoped projection",
+  "write": "server only",
+  "exportedFunctions": [
+    "getSalesPartnerWorkspace",
+    "registerSalesPartner",
+    "adminAssignSalesPartner",
+    "adminRevokeSalesPartnerAccess"
+  ]
+}

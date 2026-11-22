@@ -1,0 +1,36 @@
+{
+  "id": "hostProfiles",
+  "path": "hostProfiles/{uid}",
+  "rulesMatch": "/hostProfiles/{uid}",
+  "typescriptInterface": "HostProfileDocument",
+  "dartModel": "lib/contexts/organizers/domain/host_profile.dart",
+  "owner": "professional host identity owned by the authenticated host; seeded and projected by organizer/profile functions",
+  "writerContext": "organizers",
+  "read": "public",
+  "write": "authenticated owner direct create/update; server functions may seed and project host display data",
+  "exportedFunctions": [
+    "syncHostProfile",
+    "requestAccountDeletion"
+  ],
+  "operations": [
+    {
+      "id": "owner_profile_write",
+      "type": "directCreateOrUpdate",
+      "owner": "authenticated owner",
+      "rulesMustContain": [
+        "isValidHostProfile"
+      ]
+    },
+    {
+      "id": "host_profile_projection",
+      "type": "triggerProjection",
+      "owner": "syncHostProfile trigger",
+      "function": "syncHostProfile"
+    }
+  ],
+  "migrationNotes": [
+    "Host professional identity is intentionally separate from users/{uid} dating profile data and publicProfiles/{uid}.",
+    "Organizer creation and team-management callables may seed missing hostProfiles/{uid} documents from professional host snapshots.",
+    "Account deletion removes the professional profile, owned avatar and personal organizer host projections. Shared organizer, event and guest records remain."
+  ]
+}

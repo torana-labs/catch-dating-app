@@ -1,0 +1,18 @@
+{
+  "id": "eventSuccessPresence",
+  "path": "eventSuccessPresence/{presenceId}",
+  "rulesMatch": "/eventSuccessPresence/{presenceId}",
+  "typescriptInterface": "EventSuccessPresenceDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "Event Success attendee heartbeat callable",
+  "writerContext": "live",
+  "read": "current organizer managers get or list an event's heartbeats (organizerId and eventId); attendees never read them",
+  "write": "server only",
+  "exportedFunctions": [
+    "heartbeatEventSuccessPresence"
+  ],
+  "migrationNotes": [
+    "Presence state is derived from heartbeatAt and a clock with the windows in contracts/catalogs/event_success_presence_policy.json, on the server for rotations and late placement and on the manager's phone for the live console; it is never persisted as a stale enum."
+  ]
+}

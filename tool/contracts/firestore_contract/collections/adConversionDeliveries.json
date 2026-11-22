@@ -1,0 +1,11 @@
+{
+  "id": "adConversionDeliveries",
+  "path": "adConversionDeliveries/{deliveryId}",
+  "rulesMatch": "/adConversionDeliveries/{privateDocument=**}",
+  "typescriptInterface": "AdConversionDeliveryDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "ad conversion delivery worker",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only"
+}

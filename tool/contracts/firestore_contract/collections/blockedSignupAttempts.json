@@ -1,0 +1,11 @@
+{
+  "id": "blockedSignupAttempts",
+  "path": "blockedSignupAttempts/{attemptId}",
+  "rulesMatch": "/blockedSignupAttempts/{attemptId}",
+  "typescriptInterface": "BlockedSignupAttemptDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Banned identity screening triggers",
+  "writerContext": "safety",
+  "read": "server only",
+  "write": "server only"
+}

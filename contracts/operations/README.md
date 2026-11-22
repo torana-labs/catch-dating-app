@@ -8,7 +8,7 @@ types without changing their semantics.
 The Firestore adapter (`functions/src/operations/firestoreRepository.ts`)
 stores runs, work items, action receipts and leases exactly in these shapes, in
 `operationRuns`, `operationWorkItems`, `operationActionReceipts` and
-`operationLeases`. Their entries in `tool/contracts/firestore_contract.json`
+`operationLeases`. Their entries in `tool/contracts/firestore_contract/collections/`
 name `run`, `work_item`, `action_receipt` and `lease` as their
 `schemaContract`, so these files are the Firestore contract for those
 collections. Decisions, publication plans and rule proposals and evaluations

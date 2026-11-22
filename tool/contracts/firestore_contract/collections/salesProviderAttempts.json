@@ -1,0 +1,11 @@
+{
+  "id": "salesProviderAttempts",
+  "path": "salesProviderAttempts/{attemptId}",
+  "rulesMatch": "/salesProviderAttempts/{privateDocument=**}",
+  "typescriptInterface": "SalesProviderAttemptDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "disabled internal Sales writing preparation worker",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

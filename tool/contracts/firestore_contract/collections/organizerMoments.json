@@ -1,0 +1,11 @@
+{
+  "id": "organizerMoments",
+  "path": "organizerMoments/{momentId}",
+  "rulesMatch": "/organizerMoments/{momentId}",
+  "typescriptInterface": "OrganizerMomentDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "organizer moment callables + moment sweep",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only"
+}

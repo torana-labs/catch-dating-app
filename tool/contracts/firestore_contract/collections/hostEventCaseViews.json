@@ -1,0 +1,26 @@
+{
+  "id": "hostEventCaseViews",
+  "path": "hostEventCaseViews/{caseId}",
+  "rulesMatch": "/hostEventCaseViews/{caseId}",
+  "typescriptInterface": "HostEventCaseViewDocument",
+  "dartModel": "lib/contexts/live/domain/event_assistance_cases_page.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers list an event's help-request and delivery views"
+  ],
+  "owner": "Host event case view evaluator: hostReadModels event case view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers list an event's views for one status (organizerId, eventId and status, ordered by document id); authority comes from the organizer document",
+  "write": "server only; one view per live case owned by the event lead, deleted when the case is missing, safety-owned or rehearsal, or its organizer or event is gone",
+  "exportedFunctions": [
+    "onHostEventCaseViewCaseChanged",
+    "onHostEventCaseViewAttendeeChanged",
+    "onHostEventCaseViewEventChanged",
+    "onHostEventCaseViewOrganizerChanged",
+    "resolveEventAssistanceCase"
+  ],
+  "migrationNotes": [
+    "view is the row the retired listEventAssistanceCases callable returned; the handoff choices are built on the phone from the organizer document.",
+    "sourceCoverage invalidSource keeps the previous view and names incompleteSource; the phone fails the page rather than hiding a request."
+  ]
+}

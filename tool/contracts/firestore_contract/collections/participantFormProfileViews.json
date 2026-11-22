@@ -1,0 +1,24 @@
+{
+  "id": "participantFormProfileViews",
+  "path": "participantFormProfileViews/{responseId}",
+  "rulesMatch": "/participantFormProfileViews/{responseId}",
+  "typescriptInterface": "ParticipantFormProfileViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "rulesTestNames": [
+    "lets guests read only their own form profile review rows"
+  ],
+  "owner": "Participant form profile view projector: profiles form profile view triggers",
+  "writerContext": "profiles",
+  "read": "the guest gets and lists only rows whose uid is theirs, while their account is not deleted; a row not written yet reads as missing",
+  "write": "server only; written from the proposal, its response and version, and the organizer card, deleted once the proposal is unavailable to its owner",
+  "exportedFunctions": [
+    "onParticipantFormProfileViewProposalChanged",
+    "onParticipantFormProfileViewResponseChanged",
+    "onParticipantFormProfileViewCardChanged",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Each row holds the proposal and card parts the retired getParticipantFormProfile and listParticipantFormProfiles callables returned (Nov 2026), without organizer names. The participant-form-profile-views copy-forward migration creates rows for proposals recorded before the triggers."
+  ]
+}

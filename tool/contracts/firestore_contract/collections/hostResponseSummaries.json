@@ -1,0 +1,11 @@
+{
+  "id": "hostResponseSummaries",
+  "path": "hostResponseSummaries/{summaryId}",
+  "rulesMatch": "/hostResponseSummaries/{summaryId}",
+  "typescriptInterface": "HostResponseSummaryDocument",
+  "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+  "owner": "Host read model projector",
+  "writerContext": "host",
+  "read": "the organizer's summary managers",
+  "write": "server only"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "eventAssistanceWhatsappDispatches",
+  "path": "eventAssistanceWhatsappDispatches/{attemptId}",
+  "rulesMatch": "/eventAssistanceWhatsappDispatches/{attemptId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-service WhatsApp dispatch",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Immutable reviewed material, consent and debit identity; native reply bindings share the transaction. No provider credentials, plaintext recipient or guest bearer secret. Retain through reconciliation."
+  ]
+}

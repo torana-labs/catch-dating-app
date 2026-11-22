@@ -1,0 +1,11 @@
+{
+  "id": "accountSafetyStates",
+  "path": "accountSafetyStates/{uid}",
+  "rulesMatch": "/accountSafetyStates/{uid}",
+  "typescriptInterface": "AccountSafetyStateDocument",
+  "rulesTestFile": "functions/test/rules/chat_and_match_writes.rules.test.cjs",
+  "owner": "Account safety action service",
+  "writerContext": "safety",
+  "read": "owner get only; no list",
+  "write": "server only"
+}

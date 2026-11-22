@@ -1,0 +1,11 @@
+{
+  "id": "organizers",
+  "path": "organizers/{organizerId}",
+  "rulesMatch": "/organizers/{organizerId}",
+  "typescriptInterface": "OrganizerDocument",
+  "rulesTestFile": "functions/test/rules/event_host_photos.rules.test.cjs",
+  "owner": "organizer callables; aggregate projections are trigger-owned",
+  "writerContext": "organizers",
+  "read": "signed-in hosts and active team members of the organizer; hosts list their own organizers",
+  "write": "server only"
+}

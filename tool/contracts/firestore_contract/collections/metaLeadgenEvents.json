@@ -1,0 +1,11 @@
+{
+  "id": "metaLeadgenEvents",
+  "path": "metaLeadgenEvents/{leadgenId}",
+  "rulesMatch": "/metaLeadgenEvents/{privateDocument=**}",
+  "typescriptInterface": "MetaLeadgenEventDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Meta lead-form intake",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only"
+}

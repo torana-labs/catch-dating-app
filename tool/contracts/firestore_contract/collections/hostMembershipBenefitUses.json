@@ -1,0 +1,26 @@
+{
+  "id": "hostMembershipBenefitUses",
+  "path": "hostMembershipBenefitUses/{benefitUseId}",
+  "rulesMatch": "/hostMembershipBenefitUses/{benefitUseId}",
+  "typescriptInterface": "HostMembershipBenefitUseDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets members read only their own paid membership records"
+  ],
+  "owner": "member-priced booking paths",
+  "writerContext": "payments",
+  "read": "owner (uid) only",
+  "write": "server only",
+  "exportedFunctions": [
+    "signUpForFreeEvent",
+    "managePublicEventCheckout",
+    "cancelEventSignUp",
+    "onHostMembershipBenefitUseWritten",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Keyed {eventId}_{uid}; onHostMembershipBenefitUseWritten keeps the member's savings totals on hostMemberships, and the upcoming member-priced booking cap reads booked uses bounded by the cap.",
+    "The host-membership-savings migration fills savedInPaise and memberPricedBookings on memberships that predate the trigger."
+  ]
+}

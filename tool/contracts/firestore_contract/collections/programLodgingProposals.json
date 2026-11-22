@@ -1,0 +1,23 @@
+{
+  "id": "programLodgingProposals",
+  "path": "programLodgingProposals/{proposalId}",
+  "rulesMatch": "/programLodgingProposals/{proposalId}",
+  "typescriptInterface": "ProgramLodgingProposalDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
+  "rulesTestNames": [
+    "denies direct access for guests, managers and unauthenticated viewers"
+  ],
+  "owner": "private program lodging server operations",
+  "writerContext": "programmes",
+  "read": "server only; scoped operational projections",
+  "write": "server only",
+  "exportedFunctions": [
+    "anonymizeDueProgramsSweep",
+    "manageProgramLodging"
+  ],
+  "migrationNotes": [
+    "Private records are deleted by exact program scope in the existing archive retention sweep; no cross-event catalog or guest data sharing.",
+    "Authenticated lodging callable uses canonical program authority, complete native source, transactional revisions and idempotent lifecycle receipts. No provider booking or deployment is activated by source export."
+  ]
+}

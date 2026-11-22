@@ -1,0 +1,16 @@
+{
+  "id": "blocks",
+  "path": "blocks/{blockId}",
+  "rulesMatch": "/blocks/{blockId}",
+  "typescriptInterface": "BlockDocument",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "safety callables and block trigger",
+  "writerContext": "safety",
+  "read": "users involved in the block edge",
+  "write": "server only",
+  "exportedFunctions": [
+    "blockUser",
+    "unblockUser",
+    "onBlockCreated"
+  ]
+}

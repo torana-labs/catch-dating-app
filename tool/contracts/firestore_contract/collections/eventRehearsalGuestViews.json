@@ -1,0 +1,22 @@
+{
+  "id": "eventRehearsalGuestViews",
+  "path": "eventRehearsalGuestViews/{viewId}",
+  "rulesMatch": "/eventRehearsalGuestViews/{viewId}",
+  "typescriptInterface": "EventRehearsalGuestViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps all dress rehearsal collections callable-only"
+  ],
+  "owner": "public event rehearsal guest callables",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only; hashed slot tokens bind one browser instance to one synthetic actor",
+  "exportedFunctions": [
+    "getEventRehearsalGuestBootstrap",
+    "submitEventRehearsalGuestAction",
+    "rotateEventRehearsalGuestLink",
+    "resetEventRehearsal",
+    "expireEventRehearsals"
+  ]
+}

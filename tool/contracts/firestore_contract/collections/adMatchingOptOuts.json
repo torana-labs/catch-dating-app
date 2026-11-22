@@ -1,0 +1,11 @@
+{
+  "id": "adMatchingOptOuts",
+  "path": "adMatchingOptOuts/{optOutId}",
+  "rulesMatch": "/adMatchingOptOuts/{privateDocument=**}",
+  "typescriptInterface": "AdMatchingOptOutDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "ad-matching opt-out",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only"
+}

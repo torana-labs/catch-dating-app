@@ -1,0 +1,18 @@
+{
+  "id": "adminPeopleIndex",
+  "path": "adminPeopleIndex/{uid}",
+  "rulesMatch": "/adminPeopleIndex/{uid}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "people search trigger and callable",
+  "writerContext": "admin",
+  "read": "server/admin callable only",
+  "write": "server only",
+  "exportedFunctions": [
+    "adminSearchPeople",
+    "onUserWrittenIndexPeople",
+    "reconcileAdminInboxNightly"
+  ],
+  "migrationNotes": [
+    "Rebuildable from users/{uid}: name prefixes, phone digit tokens, a masked phone, city and the deleted flag; deleted with the profile."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "organizerWhatsappThreads",
+  "path": "organizerWhatsappThreads/{threadId}",
+  "rulesMatch": "/organizerWhatsappThreads/{threadId}",
+  "typescriptInterface": "OrganizerWhatsappThreadDocument",
+  "dartModel": "lib/contexts/audience/domain/crm/host_whatsapp_thread.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "organizer WhatsApp inbox and reply callables",
+  "writerContext": "organizers",
+  "read": "server only; managers read hostWhatsappThreadViews",
+  "write": "server only",
+  "exportedFunctions": [
+    "sendOrganizerWhatsappReply",
+    "onHostWhatsappThreadViewThreadChanged"
+  ],
+  "migrationNotes": [
+    "Thread summaries use a rolling 12-month TTL and are never directly readable by clients; hostWhatsappThreadViews carries the manager summary."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "salesPrivacyPlans",
+  "path": "salesPrivacyPlans/{id}",
+  "rulesMatch": "/salesPrivacyPlans/{privateDocument=**}",
+  "typescriptInterface": "SalesPrivacyPlan",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "Private Sales privacy lifecycle",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

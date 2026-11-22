@@ -1,0 +1,18 @@
+{
+  "id": "eventInviteTouches",
+  "path": "eventInviteTouches/{touchId}",
+  "rulesMatch": "/eventInviteTouches/{touchId}",
+  "typescriptInterface": "EventInviteTouchDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "recordEventInviteLinkOpen",
+  "writerContext": "events",
+  "read": "server only; Hosts receive aggregate link counts",
+  "write": "server only",
+  "exportedFunctions": [
+    "recordEventInviteLinkOpen"
+  ],
+  "migrationNotes": [
+    "Short-lived deduplication evidence expires by TTL; no recipient identity is inferred from an open."
+  ]
+}

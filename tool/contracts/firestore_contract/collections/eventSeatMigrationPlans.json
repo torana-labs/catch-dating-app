@@ -1,0 +1,11 @@
+{
+  "id": "eventSeatMigrationPlans",
+  "path": "eventSeatMigrationPlans/{eventId}",
+  "rulesMatch": "/eventSeatMigrationPlans/{privateDocument=**}",
+  "typescriptInterface": "EventSeatMigrationPlanDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Seat migration bootstrap (functions/src/events/seatMigrationPaged.ts)",
+  "writerContext": "bookings",
+  "read": "server only",
+  "write": "server only"
+}

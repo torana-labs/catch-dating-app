@@ -1,0 +1,22 @@
+{
+  "id": "guestBookingFacts",
+  "path": "guestBookingFacts/{uid}",
+  "rulesMatch": "/guestBookingFacts/{uid}",
+  "typescriptInterface": "GuestBookingFactsDocument",
+  "dartModel": "lib/contexts/bookings/data/guest_booking_facts_repository.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets a guest get only their own booking facts"
+  ],
+  "owner": "decideOrganizerCommunityMembership callable",
+  "writerContext": "payments",
+  "read": "the guest gets their own document only; nobody lists the collection",
+  "write": "server only; decideOrganizerCommunityMembership merges the organizer's community membership state in its decision transaction",
+  "exportedFunctions": [
+    "decideOrganizerCommunityMembership",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Lets the Consumer event screen show booking state from listeners instead of the retired getEventViewerState callable (#1337 wave 2). Backfilled from organizerCommunityMemberships by the guestBookingFactsCommunityMemberships migration; account deletion removes it."
+  ]
+}

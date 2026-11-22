@@ -1,0 +1,15 @@
+{
+  "id": "programAlerts",
+  "path": "programAlerts/{programAlertId}",
+  "rulesMatch": "/programAlerts/{programAlertId}",
+  "typescriptInterface": "ProgramAlertDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "resolveProgramAlert callable",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Resolution of a derived live board alert; exists only once someone takes, finishes or reopens one.",
+    "Holds staff uids and display names, never guest data."
+  ]
+}

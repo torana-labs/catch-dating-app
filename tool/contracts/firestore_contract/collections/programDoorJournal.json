@@ -1,0 +1,11 @@
+{
+  "id": "programDoorJournal",
+  "path": "programDoorJournal/{journalId}",
+  "rulesMatch": "/programDoorJournal/{journalId}",
+  "typescriptInterface": "ProgramDoorJournalDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "program door journal callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only"
+}

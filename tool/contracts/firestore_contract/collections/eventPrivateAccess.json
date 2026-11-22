@@ -1,0 +1,10 @@
+{
+  "id": "eventPrivateAccess",
+  "path": "eventPrivateAccess/{eventId}",
+  "rulesMatch": "/eventPrivateAccess/{eventId}",
+  "typescriptInterface": "EventPrivateAccessDocument",
+  "owner": "createEvent callable; readable only by the host of the linked event",
+  "writerContext": "events",
+  "read": "the event's organizer hosts",
+  "write": "server only"
+}

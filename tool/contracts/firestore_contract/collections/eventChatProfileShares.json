@@ -1,0 +1,18 @@
+{
+  "id": "eventChatProfileShares",
+  "path": "eventChatProfileShares/{shareId}",
+  "rulesMatch": "/eventChatProfileShares/{shareId}",
+  "typescriptInterface": "EventChatProfileShareDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "event participant profile sharing",
+  "writerContext": "messaging",
+  "read": "server only; current joined participants after scoped selection",
+  "write": "server only; verified participant choice or own revocation",
+  "exportedFunctions": [
+    "getEventChatProfileSharing",
+    "updateEventChatProfileSharing",
+    "getEventChatProfile",
+    "requestAccountDeletion"
+  ]
+}

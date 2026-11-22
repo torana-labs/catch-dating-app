@@ -1,0 +1,11 @@
+{
+  "id": "eventSuccessStandings",
+  "path": "eventSuccessStandings/{eventId}",
+  "rulesMatch": "/eventSuccessStandings/{eventId}",
+  "typescriptInterface": "EventSuccessStandingsDocument",
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "owner": "recordEventSuccessUnitOutcomes callable",
+  "writerContext": "live",
+  "read": "the event's hosts and participants, by get",
+  "write": "server only"
+}

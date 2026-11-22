@@ -1,0 +1,11 @@
+{
+  "id": "eventChatPresence",
+  "path": "eventChatPresence/{id}",
+  "rulesMatch": "/eventChatPresence/{id}",
+  "typescriptInterface": "EventChatPresenceDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "event chat callables",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "hostMembershipCharges",
+  "path": "hostMembershipCharges/{chargeId}",
+  "rulesMatch": "/hostMembershipCharges/{chargeId}",
+  "typescriptInterface": "HostMembershipChargeDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps membership billing state server-only"
+  ],
+  "owner": "host membership webhook and charge reconciler",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "hostMembershipRazorpayWebhook",
+    "reconcileHostMembershipCharges"
+  ],
+  "migrationNotes": [
+    "Keyed by the provider payment id. hostCollected charges (no fee, no transfer) and platformSplit charges (Route transfer behind a lease) both freeze commercialTerms; charges recorded before terms carry no snapshot and are reviewed by the commission statement."
+  ]
+}

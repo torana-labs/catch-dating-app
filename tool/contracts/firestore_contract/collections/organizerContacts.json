@@ -1,0 +1,32 @@
+{
+  "id": "organizerContacts",
+  "path": "organizerContacts/{contactId}",
+  "rulesMatch": "/organizerContacts/{contactId}",
+  "typescriptInterface": "OrganizerContactDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+  "owner": "organizer audience projection and manager-only CRM callables",
+  "writerContext": "organizers",
+  "read": "server only; manager access is through safe paginated callables",
+  "write": "server only",
+  "exportedFunctions": [
+    "onEventAttendeeAudienceProjected",
+    "onOrganizerCommunicationPreferenceAudienceProjected",
+    "onOrganizerContactEventEdgeInviteAttributed",
+    "listOrganizerContacts",
+    "getOrganizerContactDetail",
+    "mergeOrganizerContacts",
+    "unmergeOrganizerContacts",
+    "onHostRequestViewParticipationWritten",
+    "onHostRequestViewEventWritten",
+    "onHostRequestViewProfileWritten",
+    "onHostRequestViewContactSummaryWritten",
+    "onHostRequestViewContactWritten",
+    "onHostWhatsappThreadViewContactChanged"
+  ],
+  "migrationNotes": [
+    "Contacts are organizer-scoped operational records, never Consumer profiles.",
+    "Imported phone and email values are duplicate candidates rather than verified merge evidence.",
+    "manualTagIds is a bounded organizer-authored namespace and never aliases computed segmentIds. Legacy documents may omit it and read as an empty assignment."
+  ]
+}

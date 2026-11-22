@@ -1,0 +1,22 @@
+{
+  "id": "organizerProviderConnections",
+  "path": "organizerProviderConnections/{connectionId}",
+  "rulesMatch": "/organizerProviderConnections/{connectionId}",
+  "typescriptInterface": "OrganizerProviderConnectionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "organizer booking-provider connection callables",
+  "writerContext": "organizers",
+  "read": "server only; managers read the manager-safe projection in hostProviderConnectionViews",
+  "write": "server only; credentials remain in Secret Manager",
+  "exportedFunctions": [
+    "connectOrganizerLumaProvider",
+    "disconnectOrganizerProvider",
+    "listOrganizerLumaEvents",
+    "syncOrganizerProviderEvent",
+    "onHostProviderConnectionViewConnectionChanged"
+  ],
+  "migrationNotes": [
+    "Provider capability coverage is field-scoped; a connection never implies universal booking, payment, refund, referral, or webhook authority."
+  ]
+}
