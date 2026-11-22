@@ -15,7 +15,8 @@ import {ProgressFirestore, seedJoiningProgress} from
   "./groupProgressTestFixtures";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
 import {Guest, guestCollections, parseGuest} from "./guestRecords";
-import {GuestLinkSigningKeys} from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import {assistanceMessageId, parseMessageRecord} from "./messageOutbox";
 import {EVENT_ASSISTANCE_MESSAGES, FirestoreMessageOutbox} from
   "./firestoreMessageOutbox";

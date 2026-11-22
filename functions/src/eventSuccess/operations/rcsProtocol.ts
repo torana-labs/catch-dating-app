@@ -7,8 +7,9 @@ import {operationContentHash} from "../../operations/durableActions";
 import type {MessageRecord} from "./messageOutbox";
 import {parseMessageIntent} from "./messageProtocol";
 import {Grant, guestIdentity, parseGrant, threadIdentity} from "./guestRecords";
-import {grantSecret, GuestLinkSigningKeys, matchesGuestSecret} from
-  "./guestLinkTokens";
+import {grantSecret, matchesGuestSecret} from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import {sameMessageContext} from "./messagingPolicy";
 import {GoogleRbmSuggestion, rbmSendBody, rbmTime} from "./googleRbmProtocol";
 import {rcsNativeReplyId} from "./rcsWebhookProtocol";

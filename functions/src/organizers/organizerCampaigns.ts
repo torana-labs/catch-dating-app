@@ -48,20 +48,20 @@ import {checkRateLimit, RateLimitConfig} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {eventInviteToken, inviteLinkTokenHash} from "../events/inviteLinks";
 import {organizerWhatsappCampaignRoute} from
-  "../communications/communicationRoutes";
+  "../platform/delivery/communicationRoutes";
 import {assertOutboundContentAllowed} from
   "../communications/outboundContentPolicy";
 import {
   emptyCampaignAudienceCounts,
   emptyCampaignDeliveryCounts,
   hashCanonical,
-  hashEndpoint,
   organizerCampaignAudienceLimit,
   organizerCampaignFrequencyCapMillis,
   organizerCampaignId,
   organizerCampaignRecipientId,
   organizerContactChannelStateId,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {
   effectiveOrganizerAudienceCoverage,
   resolveOrganizerAudienceCoverage,

@@ -11,14 +11,11 @@ import {FirestoreMessageOutbox} from "./firestoreMessageOutbox";
 import {sameMessageContext} from "./messagingPolicy";
 import {WHATSAPP_DISPATCHES} from "./whatsappSpend";
 import {whatsappAttemptFromStatus, whatsappStatusCorrelation} from
-  "./whatsappDeliveryProtocol";
-import {normalizeWhatsappDeliveryStatus} from "./whatsappDeliveryStatus";
-
-export type WhatsappDeliveryResult =
-  | {kind: "ignored" | "rejected"}
-  | {kind: "unconfirmed"; messageId: string}
-  | {kind: "recorded"; messageId: string;
-      disposition: "applied" | "duplicateOrOlder" | "conflictingEvidence"};
+  "../../platform/delivery/whatsappDeliveryProtocol";
+import {
+  normalizeWhatsappDeliveryStatus,
+  type WhatsappDeliveryResult,
+} from "../../platform/delivery/whatsappDeliveryStatus";
 
 /** Private signed ingress only; no send or guest-action authority. */
 export class WhatsappDeliveryStore {

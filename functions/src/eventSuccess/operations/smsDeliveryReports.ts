@@ -9,7 +9,7 @@ import type {VerifiedDeliveryReceipt} from "./deliveryReceipts";
 import {smsCollections} from "./smsPermissionRecords";
 import {smsEndpointId} from "./smsProtocol";
 import {smsAttemptFromCorrelation, smsReportTokenMatches} from
-  "./smsReportCredentials";
+  "../../platform/delivery/smsReportCredentials";
 
 interface Report {
   attemptId: string;

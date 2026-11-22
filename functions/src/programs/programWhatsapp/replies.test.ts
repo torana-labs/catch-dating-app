@@ -8,7 +8,7 @@ import {now} from "../../shared/testing/programFixtures";
 import {contractValidator} from "../../shared/contractTestValidators";
 import {MetaProviderError} from "../../organizers/organizerWhatsappProvider";
 import {whatsappStatusCorrelation} from
-  "../../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../../platform/delivery/whatsappDeliveryProtocol";
 import type {ProgramWhatsappDispatchDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {ProgramWhatsappDeliveryStore} from "../programWhatsappDeliveryStore";

@@ -9,8 +9,10 @@ import {formConversionReceiptId} from
   "../organizers/organizerFormAdmissionIdentity";
 import {organizerContactOriginId} from
   "../shared/organizerContactOrigins";
-import {organizerContactChannelStateId, hashEndpoint} from
-  "../organizers/organizerCampaignModel";
+import {
+  organizerContactChannelStateId,
+} from "../organizers/organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {whatsappStopId} from "../shared/organizerWhatsappStops";
 import {FirestoreEventOfferRepository, offerBatchReceiptRef,
   offerBatchReceiptResult} from "./eventOfferFirestoreRepository";

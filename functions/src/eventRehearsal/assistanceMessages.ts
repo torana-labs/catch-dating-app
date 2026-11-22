@@ -2,8 +2,10 @@ import type {EventAssistanceLateJoinInput as LateJoinInput} from
   "../shared/generated/eventAssistanceLateJoinInput";
 import {operationContentHash} from "../operations/durableActions";
 import {evaluateLateJoin} from "../eventSuccess/operations/lateJoin";
-import {mergeConfirmedDeliveryState, ConfirmedDeliveryState} from
+import {mergeConfirmedDeliveryState} from
   "../eventSuccess/operations/deliveryReceiptState";
+import type {ConfirmedDeliveryState} from
+  "../platform/delivery/confirmedDeliveryState";
 import {evaluateOutbox, MessageRecord, newMessageRecord, OutboxFacts,
   parseMessageRecord} from "../eventSuccess/operations/messageOutbox";
 import {buildRehearsalJoiningInstruction, GuestChoiceSubmission,

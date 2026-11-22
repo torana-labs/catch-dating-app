@@ -1333,7 +1333,7 @@ delivery or replies. It must never use one undifferentiated “Message” action
 
 The source registries are
 `lib/contexts/messaging/domain/communication_route.dart` and
-`functions/src/communications/communicationRoutes.ts`. `adapterKey` selects the
+`functions/src/platform/delivery/communicationRoutes.ts`. `adapterKey` selects the
 provider implementation. A future LINE, WeChat, KakaoTalk, SMS, or regional
 adapter adds a new route or replaces an adapter behind the same exact contract;
 it does not inherit WhatsApp permission merely because the delivery mode is

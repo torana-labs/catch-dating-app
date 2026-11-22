@@ -12,14 +12,16 @@ import {
   FirestoreMessageOutbox, PrepareDispatchResource,
 } from "./firestoreMessageOutbox";
 import {readEventAssistanceMessageGate} from "./guestMessageGate";
-import type {GuestLinkSigningKeys} from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import {
   Grant, guestCollections, parseGrant,
   requireDocumentId,
 } from "./guestRecords";
 import type {MessageRecord, OutboxFacts} from "./messageOutbox";
 import type {RouteReadiness} from "./messagingPolicy";
-import {newSmsReportCredential} from "./smsReportCredentials";
+import {newSmsReportCredential} from
+  "../../platform/delivery/smsReportCredentials";
 import {
   parseSmsConfig, renderEventSms, RenderedSms, SmsConfig,
 } from "./smsProtocol";

@@ -22,12 +22,12 @@ import {
   "../shared/organizerCommunicationPreferences";
 import {
   classifyMetaError,
-  hashEndpoint,
   isWhatsappStopCommand,
   nextCampaignRecipientStatus,
   organizerContactChannelStateId,
   verifyMetaWebhookSignature,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {metaWhatsappAppSecret} from "./organizerMessagingSetup";
 import {persistInboundWhatsappMessage} from "./organizerWhatsappThreads";
 import {prepareWhatsappStop} from "../shared/organizerWhatsappStops";

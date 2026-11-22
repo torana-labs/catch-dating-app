@@ -1,15 +1,21 @@
 import type {OrganizerMessagingWebhookEventDocument as QueuedEvent} from
   "../../shared/generated/organizerMessagingWebhookEventDocument";
-import type {VerifiedDeliveryReceipt} from "./deliveryReceipts";
+import type {ConfirmedDeliveryState} from "./confirmedDeliveryState";
 
 type StatusEvidence = Pick<QueuedEvent, "deliveryStatus" |
   "providerErrorCode" | "providerErrorEvidence" | "providerMessageId">;
-type Failure = Extract<VerifiedDeliveryReceipt["state"], {kind: "failed"}>;
+type Failure = Extract<ConfirmedDeliveryState, {kind: "failed"}>;
+
+export type WhatsappDeliveryResult =
+  | {kind: "ignored" | "rejected"}
+  | {kind: "unconfirmed"; messageId: string}
+  | {kind: "recorded"; messageId: string;
+      disposition: "applied" | "duplicateOrOlder" | "conflictingEvidence"};
 
 /** Only after signed ingress and immutable dispatch correlation succeed. */
 export function normalizeWhatsappDeliveryStatus(
   event: StatusEvidence, receivedAt: number, evidenceId: string
-): VerifiedDeliveryReceipt["state"] | null {
+): ConfirmedDeliveryState | null {
   const errors = event.providerErrorEvidence;
   if (!event.providerMessageId || !errors || errors.kind === "unusable") {
     return null;

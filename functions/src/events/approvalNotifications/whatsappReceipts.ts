@@ -1,14 +1,14 @@
 import {readVerifiedWhatsappStatus} from
-  "../../messaging/verifiedWhatsappStatus";
+  "../../platform/delivery/verifiedWhatsappStatus";
 import type {Firestore} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {validateEventApprovalNotificationDispatchDocument} from
   "../../shared/generated/validators/eventApprovalNotificationDispatchDocument";
 import {FirestoreDeliveryOutbox} from "../../delivery/firestoreDeliveryOutbox";
-import type {WhatsappDeliveryResult} from
-  "../../eventSuccess/operations/whatsappDeliveryStore";
-import {normalizeWhatsappDeliveryStatus} from
-  "../../eventSuccess/operations/whatsappDeliveryStatus";
+import {
+  normalizeWhatsappDeliveryStatus,
+  type WhatsappDeliveryResult,
+} from "../../platform/delivery/whatsappDeliveryStatus";
 import {adapter} from "./model";
 import {dispatches} from "./worker";
 import type {Outbox} from "./worker";

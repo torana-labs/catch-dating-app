@@ -1,9 +1,8 @@
 import type {EventAssistanceDeliveryAttempt as DeliveryAttempt} from
   "../../shared/generated/eventAssistanceDeliveryAttempt";
+import type {ConfirmedDeliveryState} from
+  "../../platform/delivery/confirmedDeliveryState";
 import {parseDeliveryAttempt} from "./messageProtocol";
-
-export type ConfirmedDeliveryState = Exclude<DeliveryAttempt["state"],
-  {kind: "reserved" | "unknown" | "notDispatched"}>;
 
 /** Pure evidence ordering, shared by verified live receipts and simulation. */
 export function mergeConfirmedDeliveryState(

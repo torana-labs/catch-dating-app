@@ -17,21 +17,22 @@ import {ProgressFirestore, seedJoiningProgress} from
   "./groupProgressTestFixtures";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
 import {guestCollections, parseGrant} from "./guestRecords";
-import {GuestLinkSigningKeys} from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import {assistanceMessageId} from "./messageOutbox";
 import {
   SmsDispatchStore, smsCollections, smsBudgetScopes, smsBudgetId,
   smsPermissionId, Budget, parseSmsBudget, parseSmsPermission,
 } from "./smsDispatchStore";
-import {parseSmsConfig, renderEventSms, smsSegments, SmsConfig} from
-  "./smsProtocol";
+import {parseSmsConfig, renderEventSms, SmsConfig} from "./smsProtocol";
+import {smsSegments} from "../../platform/delivery/smsSegments";
 import {
   GupshupSmsProvider, parseGupshupSubmission, parseSmsCredentials,
   SmsCredentials,
 } from "./gupshupSmsProvider";
 import {EventSmsWorker} from "./smsWorker";
 import {smsProviderCorrelation, smsReportTokenMatches} from
-  "./smsReportCredentials";
+  "../../platform/delivery/smsReportCredentials";
 import {SmsPreferenceStore} from "./smsPreferenceStore";
 import {SmsDeliveryReportStore} from "./smsDeliveryReports";
 import {eventAssistanceSmsDeliveryWebhookHandler} from "./smsDeliveryWebhook";

@@ -1,6 +1,6 @@
 import {createHash, timingSafeEqual} from "node:crypto";
 import {verifyCatchWebhookSignature} from
-  "../catchMessaging/whatsappWebhookProtocol";
+  "../platform/delivery/webhookSignature";
 
 export const MAX_INSTAGRAM_WEBHOOK_BYTES = 1024 * 1024;
 export const MAX_INSTAGRAM_WEBHOOK_MESSAGES = 100;

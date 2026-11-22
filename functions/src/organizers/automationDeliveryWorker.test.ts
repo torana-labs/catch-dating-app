@@ -19,13 +19,12 @@ import {
 import type {OrganizerAutomationEvent} from "./organizerAutomationSource";
 import {deliverAutomationMessage} from "./automationMomentDelivery";
 import {whatsappStatusCorrelation} from
-  "../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../platform/delivery/whatsappDeliveryProtocol";
 import {whatsappEndpointHash} from
   "../eventSuccess/operations/whatsappReplyProtocol";
 import {MetaProviderError} from "./organizerWhatsappProvider";
-import {
-  hashEndpoint, organizerContactChannelStateId,
-} from "./organizerCampaignModel";
+import {organizerContactChannelStateId} from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
