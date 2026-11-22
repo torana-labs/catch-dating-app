@@ -798,6 +798,13 @@ For each run, `report` gives:
 - the longest runner wait, macOS and Linux apart;
 - the outcome, and any removal with its reason and actor.
 
+Outcomes come from the PR timeline. GitHub writes `removed_from_merge_queue`
+about a second before `merged` on every successful queue merge, so a removal
+followed by `merged` within 60 s counts as merged. A run whose PR got a later
+run on a new base, with no queue event in between, is `superseded`, because the
+queue regrouped it. Removal causes are counted by failing job; Required CI is
+left out, since it only aggregates the lanes.
+
 `--split` compares before and after a change; give it the change's `merged_at`,
 not its commit date, which a squash merge keeps from authoring. A period with fewer than
 10 runs is marked thin. Queue rebuilds come from the runs alone: a run is

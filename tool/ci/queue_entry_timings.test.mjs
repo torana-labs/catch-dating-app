@@ -153,3 +153,54 @@ test("fetch resumes: completed runs and settled timelines are reused, unfinished
   assert.equal(second.calls, 3);
   assert.deepEqual(second.dataset.jobs[1], first.dataset.jobs[1]);
 });
+
+test("a removal one second before the merge is a merge, not a removal", () => {
+  const timeline = [
+    {event: "added_to_merge_queue", created_at: at(0)},
+    {event: "removed_from_merge_queue", created_at: at(21, 0), reason: "Merged", actor: {login: "github-merge-queue"}},
+    {event: "merged", created_at: at(21, 1)},
+  ];
+  const entry = analyzeRun(run(5, 14, "eee", at(0), at(21)), jobs, timeline);
+  assert.equal(entry.outcome, "merged");
+  assert.equal(entry.removal, null);
+  // Control: a removal well before a later merge is still a removal.
+  const late = analyzeRun(run(6, 15, "fff", at(0), at(21)), jobs, [
+    {event: "added_to_merge_queue", created_at: at(0)},
+    {event: "removed_from_merge_queue", created_at: at(10), reason: "A CI check failed"},
+    {event: "merged", created_at: at(40)},
+  ]);
+  assert.equal(late.outcome, "removed");
+  assert.equal(late.removal.reason, "A CI check failed");
+});
+
+test("an earlier run regrouped onto a new base is superseded; the PR's events go to its later run", () => {
+  const timeline = [
+    {event: "added_to_merge_queue", created_at: at(0)},
+    {event: "removed_from_merge_queue", created_at: at(50, 0)},
+    {event: "merged", created_at: at(50, 1)},
+  ];
+  const dataset = {runs: [run(7, 16, "aaa", at(1), at(30)), run(8, 16, "bbb", at(29), at(50))],
+    jobs: {7: jobs, 8: jobs}, timelines: {16: timeline}};
+  const result = report(dataset);
+  assert.deepEqual(result.entries.map((entry) => [entry.runId, entry.outcome]), [[7, "superseded"], [8, "merged"]]);
+  assert.deepEqual(result.periods.all.outcomes, {superseded: 1, merged: 1});
+  assert.equal(result.flagged.length, 0);
+  // Control: a later run on the same base (a re-run) does not supersede.
+  const rerun = report({runs: [run(9, 17, "ccc", at(1), at(30)), run(10, 17, "ccc", at(31), at(50))], jobs: {9: jobs, 10: jobs}});
+  assert.equal(rerun.entries[0].outcome, "passed");
+});
+
+test("removal causes name the failing lane, never Required CI, and count removals with no failure", () => {
+  const failing = (name) => jobs.map((item) => item.name === name || item.name === "Required CI" ? {...item, conclusion: "failure"} : item);
+  const removedAt = (minute) => [{event: "added_to_merge_queue", created_at: at(0)},
+    {event: "removed_from_merge_queue", created_at: at(minute), reason: "A CI check failed"}];
+  const dataset = {
+    runs: [run(11, 20, "a1", at(0), at(20)), run(12, 21, "a2", at(1), at(20)), run(13, 22, "a3", at(2), at(20))],
+    jobs: {11: failing("flutter / Analyze & test"), 12: failing("flutter / Analyze & test"), 13: jobs},
+    timelines: {20: removedAt(20), 21: removedAt(21), 22: removedAt(22)},
+  };
+  const causes = report(dataset).periods.all.removalCauses;
+  assert.deepEqual(causes, {removed: 3, withFailingJob: 2, withoutFailingJob: 1,
+    topFailingJobs: [["flutter / Analyze & test", 2]]});
+  assert.match(formatReport(report(dataset)), /removals: 3 \(2 with a failing job, 1 without\)\n  top failing jobs in removals: flutter \/ Analyze & test ×2/u);
+});
