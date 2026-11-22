@@ -1986,48 +1986,30 @@ test("the merge queue never runs the macOS goldens or capture render; main runs 
   const step = extractSteps(ci).find((entry) => entry.name === "Select main's macOS jobs from the queue's plan");
   assert.ok(step?.run, "missing the main macOS selection step");
   assert.match(step.if, /github\.event_name == 'push' && steps\.queue\.outputs\.run_id != ''/u);
-  const sha = "a".repeat(40);
-  const select = ({artifacts, plan, failArtifacts = false, failZip = false}) => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "main-goldens-"));
+  // tool/ci/main_macos_selection.mjs reads the queue plans (its own tests cover
+  // every case); the step passes this run's range and fails safe around it.
+  assert.match(step.run, /node tool\/ci\/main_macos_selection\.mjs --head "\$SOURCE_SHA" --before "\$BEFORE_SHA" \\\n\s+--run-id "\$GITHUB_RUN_ID" --queue-run "\$QUEUE_RUN"/u);
+  assert.equal(parseYaml(ci).jobs.plan.steps.find((entry) => entry.id === "main_macos").env.BEFORE_SHA,
+    "${{ github.event.before }}");
+  assert.match(ci, /^            \/tool\/ci\/main_macos_selection\.mjs$/mu, "the plan job's sparse checkout has the script");
+  const select = (script) => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "main-macos-step-"));
     t.after(() => fs.rmSync(root, {recursive: true, force: true}));
-    const bin = path.join(root, "bin"); fs.mkdirSync(bin);
-    const zip = path.join(root, "plan.zip");
-    if (plan) {
-      fs.writeFileSync(path.join(root, "impact-plan.json"), JSON.stringify(plan));
-      assert.equal(spawnSync("zip", ["-q", "-j", zip, path.join(root, "impact-plan.json")]).status, 0);
-    }
-    fs.writeFileSync(path.join(bin, "gh"), `#!/usr/bin/env node
-const endpoint = process.argv[3];
-if (endpoint.includes("/artifacts?")) {
-  if (${failArtifacts}) process.exit(1);
-  console.log(JSON.stringify({artifacts: ${JSON.stringify(artifacts ?? [])}}));
-} else if (endpoint.endsWith("/zip")) {
-  if (${failZip} || !require("fs").existsSync(${JSON.stringify(zip)})) process.exit(1);
-  process.stdout.write(require("fs").readFileSync(${JSON.stringify(zip)}));
-} else process.exit(1);
-`, {mode: 0o755});
+    fs.mkdirSync(path.join(root, "tool/ci"), {recursive: true});
+    fs.writeFileSync(path.join(root, "tool/ci/main_macos_selection.mjs"), script);
     const output = path.join(root, "out"); fs.writeFileSync(output, "");
-    const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {...process.env,
-      PATH: `${bin}${path.delimiter}${process.env.PATH}`, GITHUB_REPOSITORY: "owner/repo", QUEUE_RUN: "41",
-      SOURCE_SHA: sha, GITHUB_OUTPUT: output, GITHUB_STEP_SUMMARY: path.join(root, "summary")}});
+    const result = spawnSync("bash", ["-c", step.run], {cwd: root, encoding: "utf8", env: {...process.env,
+      GITHUB_REPOSITORY: "owner/repo", GITHUB_RUN_ID: "9", QUEUE_RUN: "41", SOURCE_SHA: "a".repeat(40),
+      BEFORE_SHA: "b".repeat(40), GITHUB_OUTPUT: output, GITHUB_STEP_SUMMARY: path.join(root, "summary")}});
     assert.equal(result.status, 0, result.stderr);
     return fs.readFileSync(output, "utf8").trim();
   };
-  const listed = [{id: 7, name: `harness-plan-1-41-${sha}-1`, expired: false}, {id: 3, name: "selector-comparison-41-1", expired: false}];
-  const plan = (lanes, sourceSha = sha) => ({sourceSha, operations: {ciTargets: lanes}});
   const both = "goldens=true\ncaptures=true";
-  assert.equal(select({artifacts: listed, plan: plan(["flutter", "visual_integration"])}), "goldens=true\ncaptures=false");
-  assert.equal(select({artifacts: listed, plan: plan(["flutter", "tools"])}), "goldens=false\ncaptures=false",
-    "the queue's plan selected neither");
-  assert.equal(select({artifacts: listed, plan: plan(["capture_freshness"])}), "goldens=false\ncaptures=true");
-  assert.equal(select({artifacts: listed, plan: plan(["marketing", "visual_integration"])}), both, "marketing needs fresh captures");
-  // Every failure to read the queue's plan runs both; none skips them.
-  assert.equal(select({artifacts: listed, plan: plan(["tools"], "b".repeat(40))}), both, "a plan for another source");
-  assert.equal(select({failArtifacts: true, plan: plan(["tools"])}), both, "the artifact listing failed");
-  assert.equal(select({artifacts: [], plan: plan(["tools"])}), both, "no plan artifact");
-  assert.equal(select({artifacts: [{...listed[0], expired: true}], plan: plan(["tools"])}), both, "an expired plan");
-  assert.equal(select({artifacts: listed, plan: plan(["tools"]), failZip: true}), both, "the download failed");
-  assert.equal(select({artifacts: listed, plan: {sourceSha: sha}}), both, "a plan without lanes");
+  assert.equal(select(`process.stdout.write("goldens=false\\ncaptures=true\\ncommits=3\\nreason=covers_replaced_runs\\n")`),
+    "goldens=false\ncaptures=true", "the script's answer, and nothing else, becomes the outputs");
+  assert.equal(select("process.exit(1)"), both, "the script failed");
+  assert.equal(select(`process.stdout.write("goldens=maybe\\ncaptures=false\\n")`), both, "an answer it cannot read");
+  assert.equal(select(`process.stdout.write("captures=false\\n")`), both, "a missing answer");
 });
 
 test("the merge queue skips the capture render, and marketing builds without it only when the run proves it was deferred", (t) => {

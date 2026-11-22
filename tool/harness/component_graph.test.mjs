@@ -552,6 +552,7 @@ test("CI checkout requirements keep planner and docs narrow with a full fallback
       "/tool/ci/toolchain.env",
       "/tool/ci/main_push_base.mjs",
       "/tool/ci/main_push_queue_proof.mjs",
+      "/tool/ci/main_macos_selection.mjs",
       "/tool/ci/ios_build_inputs.mjs",
       "/tool/harness/component_graph.json",
       "/tool/harness/lib/component_graph.mjs",
