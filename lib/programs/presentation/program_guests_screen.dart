@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/data/program_guest_directory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
@@ -84,7 +85,8 @@ class ProgramGuestsScreen extends ConsumerWidget {
       builder: (context, detail) => CatchAsyncBoundary<ProgramGuestListPage>(
         retainDataOn: const {},
         value: guestsAsync,
-        onRetry: () => ref.invalidate(programGuestListProvider(programId)),
+        onRetry: () =>
+            ref.invalidate(programGuestDirectoryStreamProvider(programId)),
         loadingBuilder: (_) => CatchRouteScaffold(
           topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
             title: detail.program.title,
@@ -256,11 +258,11 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
     return index;
   }
 
-  /// Reads the guest page again after a write. A guest or group write also
+  /// Reads the programme detail again after a write; the guest page is a live
+  /// listener and follows the write on its own. A guest or group write also
   /// reads the full group and household lists again, so a new empty group
   /// shows at once and member counts follow the write.
   void _refresh({bool inventory = false}) {
-    ref.invalidate(programGuestListProvider(widget.programId));
     if (widget.canManageGuests) {
       ref.invalidate(organizerProgramDetailProvider(widget.programId));
       if (inventory) {

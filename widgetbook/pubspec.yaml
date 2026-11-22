@@ -23,6 +23,11 @@ dependencies:
     sdk: flutter
   catch_dating_app:
     path: ../
+  # Screens moving into the app packages keep their Widgetbook use cases (#2373).
+  catch_consumer_app:
+    path: ../apps/consumer
+  catch_host_app:
+    path: ../apps/host
   firebase_auth: ^6.7.1
   firebase_messaging: ^16.7.1
   # One Riverpod minor; see the root pubspec.

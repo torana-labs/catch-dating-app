@@ -1,0 +1,27 @@
+{
+  "id": "programGuestDirectoryViews",
+  "path": "programGuestDirectoryViews/{viewId}",
+  "rulesMatch": "/programGuestDirectoryViews/{viewId}",
+  "typescriptInterface": "ProgramGuestDirectoryViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/program_guest_directory_views.rules.test.cjs",
+  "rulesTestNames": [
+    "admits the owner and a whole-programme guest relations duty only",
+    "lists one programme's rows by a query naming it, and denies writes"
+  ],
+  "owner": "Programme read model projector: programGuestDirectoryViewTriggers",
+  "writerContext": "programmes",
+  "read": "get and list (a query naming programId, and the kind) for the programme owner and a live guest relations duty covering the whole programme, from the account's programAccessViews programAll map; never while deleted",
+  "write": "server only; written from programGuests (with their workspace field assertions), programFunctionGuests, programHouseholds and programGuestGroups",
+  "exportedFunctions": [
+    "onProgramGuestDirectoryGuestChanged",
+    "onProgramGuestDirectoryFunctionGuestChanged",
+    "onProgramGuestDirectoryHouseholdChanged",
+    "onProgramGuestDirectoryGroupChanged"
+  ],
+  "migrationNotes": [
+    "Replaces listProgramGuests for the Host app (#2306): the guest list, the guest desk and the programme inbox audience read these rows through Firestore. The callable stays deployed for released Host builds and retires under #2174. The program-guest-directory-views copy-forward migration creates rows for guests, households and groups that predate the triggers and refreshes programAccessViews so staff views carry programAll.",
+    "The Nov 2026 server-trust decision (#1339) kept this read a callable because the phone numbers and emails come from the workspace field assertions. The trigger now does that resolution, so the assertions and the field authority stay server-only and the row holds only the values the callable returned. No client read the field authority.",
+    "Personal data (guest names, phone numbers and emails): archive anonymization and guest deletion rewrite or delete the rows through the source triggers; nothing else to scrub."
+  ]
+}
