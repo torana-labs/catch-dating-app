@@ -1,0 +1,37 @@
+{
+  "id": "ci:web-hosting-delivery-workflow",
+  "category": "ci",
+  "path": "tool/ci/web_hosting_workflow.test.mjs",
+  "command": "node --test tool/ci/web_hosting_workflow.test.mjs website/scripts/marketingDeployWorkflow.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    ".github/actions/find-queue-validation/**",
+    ".github/workflows/_web-hosting-build.yml",
+    ".github/workflows/_web-hosting-promote.yml",
+    ".github/workflows/admin-website.yml",
+    ".github/workflows/host-website.yml",
+    ".github/workflows/marketing-website.yml",
+    ".github/workflows/react-surface-validation.yml",
+    "tool/ci/web_hosting_workflow.test.mjs",
+    "tool/ci/web_hosting_freshness.mjs",
+    "website/scripts/marketingDeployWorkflow.test.mjs",
+    "tool/ci/marketing_capture_package.test.mjs",
+    "tool/marketing/export_hosted_captures.mjs",
+    "tool/marketing/capture_manifest.json"
+  ],
+  "description": "Guards the exact Admin, standalone Host, and Marketing Hosting path: runtime-complete triggers, one production build, immutable artifact-id and digest promotion, no deploy-time rebuild, current-main freshness, and terminal source-bound recovery.",
+  "checks": [
+    "node --check tool/ci/web_hosting_workflow.test.mjs",
+    "node --check tool/ci/web_hosting_freshness.mjs",
+    "node --test tool/ci/web_hosting_workflow.test.mjs website/scripts/marketingDeployWorkflow.test.mjs",
+    "node --test tool/ci/web_hosting_workflow.test.mjs"
+  ],
+  "role": "gate"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "firebase:maps-config",
+  "category": "firebase",
+  "path": "tool/firebase/validate_google_maps_config.mjs",
+  "command": "node tool/firebase/validate_google_maps_config.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "description": "Validates native/web Google Maps config and optional Places secret wiring.",
+  "checks": [
+    "node --check tool/firebase/validate_google_maps_config.mjs"
+  ],
+  "runbook": "docs/location_stack_plan.md#google-cloud-setup-required",
+  "checkSafety": "local-readonly"
+}

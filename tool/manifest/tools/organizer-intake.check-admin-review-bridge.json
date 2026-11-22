@@ -1,0 +1,24 @@
+{
+  "id": "organizer-intake:check-admin-review-bridge",
+  "category": "organizer-intake",
+  "path": "tool/web/check_admin_review_bridge.mjs",
+  "command": "node tool/web/check_admin_review_bridge.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates Organizer Intake reads completed Supply Intake runs from Firestore, every review channel writes through an audited callable-backed Firestore collection, and retired Admin operational JSON snapshots are not reintroduced.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "checks": [
+    "node --check tool/web/check_admin_review_bridge.mjs",
+    "node --test tool/web/check_admin_review_bridge.test.mjs",
+    "node tool/web/check_admin_review_bridge.mjs"
+  ],
+  "role": "finder",
+  "impactPaths": [
+    "functions/scripts/functionExports.cjs"
+  ]
+}

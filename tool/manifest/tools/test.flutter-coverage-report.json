@@ -1,0 +1,14 @@
+{
+  "id": "test:flutter-coverage-report",
+  "category": "test",
+  "path": "tool/test/flutter_coverage_report.mjs",
+  "command": "node tool/test/flutter_coverage_report.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Turns Flutter LCOV into a visibility-only handwritten-code and feature-level report without imposing an aggregate percentage threshold.",
+  "checks": [
+    "node --check tool/test/flutter_coverage_report.mjs",
+    "node --test tool/test/flutter_coverage_report.test.mjs"
+  ],
+  "role": "generator"
+}

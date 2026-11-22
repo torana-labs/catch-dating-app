@@ -1,0 +1,42 @@
+{
+  "id": "design:widget-classification-check",
+  "category": "design",
+  "path": "tool/design/check_widget_classification.mjs",
+  "impactPaths": [
+    "tool/design/generate_widget_classification.mjs",
+    "tool/design/check_widget_classification.test.mjs",
+    "tool/design/component_concepts.mjs",
+    "tool/design/component_concepts.test.mjs",
+    "tool/design/lib/new_widget_inventory_declarations.mjs",
+    "tool/design/lib/production_widget_roots.mjs",
+    "tool/design/lib/component_naming.mjs",
+    "tool/design/component_naming.test.mjs",
+    "design/components/catch.components.json",
+    "packages/catch_ui/lib/**",
+    "packages/platform/lib/riverpod_ui/**",
+    "widgetbook/lib/main.directories.g.dart",
+    "tool/design/check_widget_classification.mjs"
+  ],
+  "command": "node tool/design/check_widget_classification.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates source-derived Widget ownership and identity across production roots. Shared Widgets must match reviewed ladder levels, role nouns, use-case comparisons, primary files and canonical names; new registry IDs cannot bypass collisions. No tracked inventory snapshot is trusted.",
+  "checks": [
+    "node --check tool/design/check_widget_classification.mjs",
+    "node --test tool/design/check_widget_classification.test.mjs",
+    "node --test tool/design/component_concepts.test.mjs",
+    "node tool/design/check_widget_classification.mjs",
+    "node --check tool/design/generate_widget_classification.mjs",
+    "node tool/design/generate_widget_classification.mjs --check"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "WIDGET-CATALOG-001"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

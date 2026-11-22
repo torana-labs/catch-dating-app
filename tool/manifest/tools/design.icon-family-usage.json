@@ -1,0 +1,42 @@
+{
+  "id": "design:icon-family-usage",
+  "category": "design",
+  "path": "tool/design/check_icon_family_usage.mjs",
+  "command": "node tool/design/check_icon_family_usage.mjs --check",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Ratchets Flutter and React icon-family bypasses and legacy CatchIcons aliases downward; rejects growth and unrecorded reductions.",
+  "checks": [
+    "node --check tool/design/check_icon_family_usage.mjs",
+    "node --test tool/design/check_icon_family_usage.test.mjs",
+    "node tool/design/check_icon_family_usage.mjs --check"
+  ],
+  "impactPaths": [
+    "tool/design/check_icon_family_usage.test.mjs",
+    "tool/design/icon_family_usage_baseline.json",
+    "design/tokens/catch.icons.legacy_flutter.json",
+    "lib/**/*.dart",
+    "apps/**/*.dart",
+    "packages/catch_ui/**/*.dart",
+    "widgetbook/**/*.dart",
+    "test/**/*.dart",
+    "integration_test/**/*.dart",
+    "website/**/*.ts",
+    "website/**/*.tsx",
+    "admin/**/*.ts",
+    "admin/**/*.tsx",
+    "packages/web-ui/**/*.ts",
+    "packages/web-ui/**/*.tsx"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "role": "ratchet",
+  "alsoEnforces": [
+    "ICON-ROLES-001"
+  ],
+  "baseline": "tool/design/icon_family_usage_baseline.json"
+}

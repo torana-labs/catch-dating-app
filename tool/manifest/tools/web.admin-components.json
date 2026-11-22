@@ -1,0 +1,24 @@
+{
+  "id": "web:admin-components",
+  "category": "lint",
+  "path": "tool/web/check_admin_components.mjs",
+  "command": "node tool/web/check_admin_components.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates design/admin/components/ against admin route/workspace exports, shared admin UI primitives, feedback providers, and ready Storybook catchComponent coverage.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "checks": [
+    "node --check tool/web/check_admin_components.mjs",
+    "node tool/web/check_admin_components.mjs --self-test",
+    "node tool/web/check_admin_components.mjs --check"
+  ],
+  "role": "gate",
+  "alsoEnforces": [
+    "WEB-UI-COMPONENT-001"
+  ]
+}

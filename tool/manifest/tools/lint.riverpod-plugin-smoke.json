@@ -1,0 +1,13 @@
+{
+  "id": "lint:riverpod-plugin-smoke",
+  "category": "lint",
+  "path": "tool/check_riverpod_lint.sh",
+  "command": "bash tool/check_riverpod_lint.sh",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Verifies Riverpod's analysis_server_plugin diagnostics are active in dart analyze.",
+  "checks": [
+    "bash -n tool/check_riverpod_lint.sh"
+  ],
+  "role": "finder"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "design:website-playbook",
+  "category": "design",
+  "path": "tool/design/playbook/check_playbook.mjs",
+  "impactPaths": [
+    "design/source_packs/website-playbook/**",
+    "tool/design/playbook/**"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "command": "node tool/design/playbook/check_playbook.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates the website playbook source pack: page specs against their schema, every kit component, page section and generated board renders with no unresolved template hole, and source-pack.json hashes are current.",
+  "checks": [
+    "node --check tool/design/playbook/lib/compose.mjs",
+    "node --check tool/design/playbook/check_playbook.mjs",
+    "node tool/design/playbook/check_playbook.mjs"
+  ],
+  "role": "gate"
+}

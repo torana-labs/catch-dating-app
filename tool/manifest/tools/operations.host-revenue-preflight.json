@@ -1,0 +1,25 @@
+{
+  "id": "operations:host-revenue-preflight",
+  "category": "operations",
+  "path": "operations/src/domains/host-revenue/preflight-cli.mjs",
+  "command": "npm --prefix operations run revenue:preflight -- <normalized-import.json>",
+  "surface": "local-read",
+  "status": "active",
+  "role": "operator",
+  "description": "Read-only preflight of one normalized host revenue import: validates and summarises it without writing anything.",
+  "checks": [
+    "node --check operations/src/domains/host-revenue/preflight-cli.mjs",
+    "node --test operations/test/host-revenue-foundation.test.mjs"
+  ],
+  "impactPaths": [
+    "operations/test/host-revenue-foundation.test.mjs"
+  ],
+  "runbook": "docs/operations_platform.md#private-sales-qualification-and-outreach-drafts",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

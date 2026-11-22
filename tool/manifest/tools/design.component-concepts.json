@@ -1,0 +1,14 @@
+{
+  "id": "design:component-concepts",
+  "category": "design",
+  "path": "tool/design/component_concepts.mjs",
+  "command": "node --test tool/design/component_concepts.test.mjs",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Provides deterministic component-concept identity, collision-key, topology, and metric helpers.",
+  "checks": [
+    "node --check tool/design/component_concepts.mjs",
+    "node --test tool/design/component_concepts.test.mjs"
+  ],
+  "role": "gate"
+}

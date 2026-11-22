@@ -1,0 +1,26 @@
+{
+  "id": "ci:delivery-core",
+  "category": "ci",
+  "path": "tool/ci/delivery_core.mjs",
+  "command": "node tool/ci/delivery_core.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "index",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/ci/delivery_core.test.mjs"
+  ],
+  "alsoCheckIds": [
+    "ci:web-hosting-delivery-package"
+  ],
+  "description": "Creates and verifies ephemeral exact-SHA, source-run, and SHA-256 artifact provenance plus ordered idempotent deployment checkpoints for CI/CD promotion and resume.",
+  "checks": [
+    "node --check tool/ci/delivery_core.mjs",
+    "node --test tool/ci/delivery_core.test.mjs"
+  ],
+  "role": "gate"
+}

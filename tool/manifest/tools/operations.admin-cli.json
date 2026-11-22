@@ -1,0 +1,32 @@
+{
+  "id": "operations:admin-cli",
+  "category": "operations",
+  "path": "operations/src/admin-cli/main.mjs",
+  "command": "node operations/src/admin-cli/main.mjs",
+  "surface": "remote-write",
+  "guard": "apply-flag",
+  "status": "active",
+  "role": "operator",
+  "alsoEnforces": [
+    "OPERATIONS-PLATFORM-001"
+  ],
+  "description": "Invokes catalogued admin callables with strict requests, dry-run mutation defaults, exact action/target confirmations, App Check, and local plus remote hash-only receipts.",
+  "checks": [
+    "node --check operations/src/admin-cli/main.mjs",
+    "node operations/src/admin-cli/main.mjs loop --all",
+    "node --test operations/test/admin-cli.test.mjs"
+  ],
+  "impactPaths": [
+    "packages/command-client/**",
+    "operations/test/admin-cli.test.mjs",
+    "operations/src/**"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "runbook": "docs/operations_platform.md"
+}

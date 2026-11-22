@@ -156,7 +156,7 @@ test("harness test edits are not selector-control changes", t => {
 });
 
 for (const file of ["tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs",
-  "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/tools_manifest.json"]) {
+  "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/manifest/manifest.json"]) {
   test(`selector comparison and graph agree for ${file}`, t => {
     const f = fixture(t);
     const existing = fs.existsSync(path.join(f.cwd, file)) ? fs.readFileSync(path.join(f.cwd, file), "utf8") : "";

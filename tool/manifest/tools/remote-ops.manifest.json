@@ -1,0 +1,23 @@
+{
+  "id": "remote-ops:manifest",
+  "category": "remote-ops",
+  "path": "tool/check_remote_ops_manifest.mjs",
+  "command": "node tool/check_remote_ops_manifest.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates the consolidated remote operations inventory.",
+  "checks": [
+    "node --check tool/check_remote_ops_manifest.mjs",
+    "node tool/check_remote_ops_manifest.mjs --check"
+  ],
+  "impactPaths": [
+    "tool/remote_ops_manifest.json"
+  ],
+  "role": "finder",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

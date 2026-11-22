@@ -1,0 +1,26 @@
+{
+  "id": "contracts:migration-contracts",
+  "category": "contracts",
+  "path": "tool/contracts/check_migration_contracts.mjs",
+  "command": "node tool/contracts/check_migration_contracts.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates staged migration contract phase metadata and live-apply evidence.",
+  "checks": [
+    "node --check tool/contracts/check_migration_contracts.mjs",
+    "node --test tool/contracts/check_migration_contracts.test.mjs",
+    "node tool/contracts/check_migration_contracts.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "MIGRATION-CONTRACT-001",
+      "title": "Migration contracts keep phase evidence machine-checkable",
+      "appliesTo": [
+        "contracts/migrations/*.json",
+        "tool/contracts/check_migration_contracts.mjs"
+      ],
+      "instruction": "Every migration contract must declare schemaVersion, logicalName, currentPhase, reason, unique phases with known statuses, operational evidence such as guards or known consumers, and liveApply evidence when any phase is complete_remote."
+    }
+  ]
+}

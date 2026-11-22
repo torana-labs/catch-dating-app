@@ -1,0 +1,16 @@
+{
+  "id": "marketing:catch-host-store-screenshots",
+  "category": "marketing",
+  "path": "tool/store/generate_catch_host_app_store_screenshots.swift",
+  "command": "swift tool/store/generate_catch_host_app_store_screenshots.swift",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "platforms": [
+    "darwin"
+  ],
+  "description": "Generates the five-image Catch Host App Store draft source set from existing captures; checks parse syntax, not rendering or submission approval.",
+  "checks": [
+    "swiftc -parse tool/store/generate_catch_host_app_store_screenshots.swift"
+  ],
+  "role": "generator"
+}

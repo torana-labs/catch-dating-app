@@ -402,7 +402,7 @@ test("layout siblings, shared controls and explicit full cannot borrow narrow ow
   for (const path of [
     "tool/design/unknown_companion.test.mjs",
     "tool/design/fixtures/screen_gutters/unreviewed.dart",
-    "tool/lib/repo_paths.mjs", "tool/lib/tool_impact.mjs", "tool/tools_manifest.json",
+    "tool/lib/repo_paths.mjs", "tool/lib/tool_impact.mjs", "tool/manifest/manifest.json",
     "tool/harness/component_graph.json", ".github/workflows/ci.yml",
   ]) {
     const plan = layoutPlan([...layoutPaths, path]);
@@ -887,6 +887,7 @@ test("canonical harness full paths come only from the component graph", () => {
     "tool/harness/**",
     "tool/harness.mjs",
     "tool/repository_root_manifest.json",
+    "tool/manifest/**",
     "tool/tools_manifest.json",
     "tool/lib/path_glob.mjs",
     "tool/lib/tool_impact.mjs",

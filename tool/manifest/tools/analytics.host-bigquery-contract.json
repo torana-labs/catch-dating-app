@@ -1,0 +1,14 @@
+{
+  "id": "analytics:host-bigquery-contract",
+  "category": "analytics",
+  "path": "tool/analytics/host_analytics_contract.mjs",
+  "command": "node --test tool/analytics/host_analytics_contract.test.mjs",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Checked by analytics:check-host-bigquery. Checks canonical host export expectations and source/live schedule consistency while retaining historical dimensions.",
+  "role": "gate",
+  "checks": [
+    "node --check tool/analytics/host_analytics_contract.mjs",
+    "node --test tool/analytics/host_analytics_contract.test.mjs"
+  ]
+}

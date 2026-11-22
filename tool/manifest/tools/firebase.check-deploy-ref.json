@@ -1,0 +1,14 @@
+{
+  "id": "firebase:check-deploy-ref",
+  "category": "firebase",
+  "path": "tool/firebase/check_deploy_ref.mjs",
+  "command": "node tool/firebase/check_deploy_ref.mjs",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Checked by firebase:deploy-targets. Refuses a Firebase deploy whose working ref is provably behind its remote, so a stale checkout cannot publish an older configuration than the remote records.",
+  "checks": [
+    "node --check tool/firebase/check_deploy_ref.mjs",
+    "node --test tool/firebase/check_deploy_ref.test.mjs"
+  ],
+  "role": "gate"
+}

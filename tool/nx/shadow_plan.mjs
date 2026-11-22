@@ -84,7 +84,7 @@ export const workflowLanes = (changedFiles, graph, manifestChange) => changedFil
 
 /** The manifest diff between two commits, or null (every lane) when either version cannot be read. */
 export function readManifestChange(base, head,
-  show = (rev) => toolsManifestTextAt(rev, {show: (file) => run("git", ["show", `${rev}:${file}`])})) {
+  show = (rev) => toolsManifestTextAt(rev, {strict: true})) {
   try {
     return manifestChange(show(base), show(head));
   } catch {

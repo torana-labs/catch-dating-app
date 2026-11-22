@@ -1,0 +1,31 @@
+{
+  "id": "ci:cron-watchdog",
+  "category": "ci",
+  "path": "tool/ci/cron_watchdog.mjs",
+  "command": "node tool/ci/cron_watchdog.mjs --dry-run",
+  "surface": "remote-write",
+  "guard": "dispatch-workflow",
+  "guardWorkflow": ".github/workflows/cron-watchdog.yml",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "description": "Hourly check that Data Validation, Deploy backend and the nightly CI started within 3 hours of their cron. Dispatches a missed dev-only run once (the nightly, the dev deploy), reports a missed prod run with its command for the owner, and reports a nightly that never started as unknown, never green. Each missed run is handled once, recorded by a marker comment.",
+  "checks": [
+    "node --check tool/ci/cron_watchdog.mjs",
+    "node --test tool/ci/cron_watchdog.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/ci/cron_watchdog.test.mjs",
+    ".github/workflows/cron-watchdog.yml",
+    ".github/workflows/data-validation.yml",
+    ".github/workflows/backend-deploy.yml",
+    ".github/workflows/ci.yml"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "role": "finder",
+  "runbook": "docs/release_operations.md#scheduled-run-watchdog"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "firebase:form-domain-hosting",
+  "category": "firebase",
+  "path": "tool/firebase/form_domain_hosting.mjs",
+  "command": "node --test tool/firebase/form_domain_hosting.test.mjs",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Reads exact Firebase Hosting custom-domain readiness and provisions only a missing resource with a current binding guard.",
+  "checks": [
+    "node --check tool/firebase/form_domain_hosting.mjs",
+    "node --test tool/firebase/form_domain_hosting.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/firebase/form_domain_hosting.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "runbook": "docs/release_operations.md#custom-form-domain-onboarding",
+  "checkSafety": "local-readonly"
+}

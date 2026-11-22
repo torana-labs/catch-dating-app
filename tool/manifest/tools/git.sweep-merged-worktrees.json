@@ -1,0 +1,25 @@
+{
+  "id": "git:sweep-merged-worktrees",
+  "category": "git",
+  "path": "tool/git/sweep_merged_worktrees.mjs",
+  "command": "node tool/git/sweep_merged_worktrees.mjs --help",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/git/sweep_merged_worktrees.test.mjs"
+  ],
+  "description": "Reports, and with --apply removes, finished local worktrees: clean, idle, not in use, no open PR, and HEAD already in origin/main or the exact head of a merged PR. Releases a guard claim with finish --abandon, then runs non-forced git worktree remove; branches, refs and stashes stay.",
+  "checks": [
+    "node --check tool/git/sweep_merged_worktrees.mjs",
+    "node --test tool/git/sweep_merged_worktrees.test.mjs",
+    "node tool/git/sweep_merged_worktrees.mjs --help"
+  ],
+  "role": "operator",
+  "runbook": "docs/agent_operating_model.md#parallel-worktrees"
+}

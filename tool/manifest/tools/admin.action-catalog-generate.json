@@ -1,0 +1,19 @@
+{
+  "id": "admin:action-catalog-generate",
+  "category": "operations",
+  "path": "tool/admin/generate_admin_action_catalog.mjs",
+  "command": "node tool/admin/generate_admin_action_catalog.mjs",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "role": "generator",
+  "alsoEnforces": [
+    "OPERATIONS-PLATFORM-001"
+  ],
+  "description": "Generates the typed admin-browser and Functions action-catalog views from contracts/admin/actions/ on demand through the Admin and Functions npm lifecycles. --validate checks the catalog's own links; the views are never tracked.",
+  "checks": [
+    "node --check tool/admin/generate_admin_action_catalog.mjs",
+    "node tool/admin/generate_admin_action_catalog.mjs --validate",
+    "node tool/admin/generate_admin_action_catalog.mjs --self-test",
+    "node --test tool/admin/generate_admin_action_catalog.test.mjs"
+  ]
+}

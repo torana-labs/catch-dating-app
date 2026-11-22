@@ -12,7 +12,7 @@ import {
 } from "./lib/tool_platform.mjs";
 import {changedManifestToolIds, planAffectedToolChecks} from "./lib/tool_impact.mjs";
 import {checkPathArguments} from "./lib/tool_manifest_rules.mjs";
-import {loadToolsManifest, toolsManifestPath, writeToolsManifest} from "./lib/tools_manifest.mjs";
+import {loadToolsManifest, toolsManifestPath, toolsManifestToolPath, writeToolsManifest} from "./lib/tools_manifest.mjs";
 
 const repositoryRoot = process.cwd();
 const require = createRequire(import.meta.url);
@@ -564,16 +564,20 @@ test("manifest validation rejects unknown guard ids", (context) => {
   assert.match(result.stderr, /references inactive or unknown id: fixture:not-real/u);
 });
 
-test("manifest validation rejects unregistered scripts and duplicate ids", (context) => {
+test("manifest validation rejects unregistered scripts and a second file holding an id", (context) => {
   const fixture = createRunnerFixture(context);
   fs.writeFileSync(path.join(fixture, "tool/unregistered.mjs"), "export {};\n");
-  mutateFixtureManifest(fixture, (manifest) => {
-    manifest.tools.push({...fixtureCheck(manifest)});
-  });
-  const result = run(["check", "--manifest-only"], {cwd: fixture});
+  let result = run(["check", "--manifest-only"], {cwd: fixture});
   assert.equal(result.status, 1);
-  assert.match(result.stderr, /Duplicate tool id: fixture:check/u);
   assert.match(result.stderr, /Unmanaged tool script: tool\/unregistered\.mjs/u);
+  // Each id is its file's name, so a duplicate can only be a second file
+  // claiming an id it does not name; the loader refuses it before validation.
+  const original = loadToolsManifest({root: fixture});
+  fs.writeFileSync(path.join(fixture, toolsManifestToolPath("fixture:copy")),
+    JSON.stringify(fixtureCheck(original)));
+  result = run(["check", "--manifest-only"], {cwd: fixture});
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /tools\/fixture\.copy\.json: id must be "fixture:copy"/u);
 });
 
 test("a retired tool stays listed with its reason, never runs, and needs no file", (context) => {

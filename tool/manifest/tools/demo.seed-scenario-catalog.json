@@ -1,0 +1,18 @@
+{
+  "id": "demo:seed-scenario-catalog",
+  "category": "demo",
+  "path": "tool/demo/demo_seed_scenario_catalog.mjs",
+  "command": "node --test tool/demo/demo_seed_scenario_catalog.test.mjs",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Loads and validates reusable demo seed scenario metadata.",
+  "impactPaths": [
+    "tool/demo/demo_seed_scenario_catalog.mjs",
+    "tool/demo/demo_seed_scenario_catalog.test.mjs",
+    "tool/demo/demo_seed/scenarios/**"
+  ],
+  "checks": [
+    "node --check tool/demo/demo_seed_scenario_catalog.mjs",
+    "node --test tool/demo/demo_seed_scenario_catalog.test.mjs"
+  ]
+}

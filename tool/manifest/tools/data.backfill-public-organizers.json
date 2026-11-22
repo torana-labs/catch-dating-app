@@ -1,0 +1,15 @@
+{
+  "id": "data:backfill-public-organizers",
+  "category": "data",
+  "path": "functions/scripts/backfill-public-organizers.cjs",
+  "command": "npm --prefix functions run build && node functions/scripts/backfill-public-organizers.cjs --project <id> [--apply]",
+  "surface": "remote-write",
+  "guard": "apply-flag",
+  "status": "active",
+  "role": "operator",
+  "description": "Creates or refreshes publicOrganizers/{id} for every organizer from the current organizer record. Dry run unless --apply; writes only publicOrganizers documents.",
+  "checks": [
+    "node --check functions/scripts/backfill-public-organizers.cjs"
+  ],
+  "runbook": "docs/backend_operation_catalog.md#cloud-functions-inventory"
+}

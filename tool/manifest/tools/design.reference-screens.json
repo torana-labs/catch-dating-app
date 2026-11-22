@@ -1,0 +1,21 @@
+{
+  "id": "design:reference-screens",
+  "category": "design",
+  "path": "tool/design/check_reference_screens.mjs",
+  "command": "node tool/design/check_reference_screens.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates exported design reference PNG metadata and supports advisory pixel comparison against UI capture artifacts.",
+  "checks": [
+    "node --test tool/design/check_reference_screens.test.mjs",
+    "node --check tool/design/check_reference_screens.mjs",
+    "node tool/design/check_reference_screens.mjs --check --summary"
+  ],
+  "role": "finder",
+  "impactPaths": [
+    "tool/design/check_reference_screens.test.mjs",
+    "tool/design/check_reference_screens.mjs",
+    "design/reference_screens/**",
+    "design/source_packs/**"
+  ]
+}

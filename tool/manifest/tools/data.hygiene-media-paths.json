@@ -1,0 +1,14 @@
+{
+  "id": "data:hygiene-media-paths",
+  "category": "data",
+  "path": "tool/data/hygiene_media_paths.mjs",
+  "command": "node tool/data/hygiene_media_paths.mjs",
+  "surface": "remote-destructive",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Audits and repairs hosted media paths against Firestore and Storage contracts.",
+  "checks": [
+    "node --check tool/data/hygiene_media_paths.mjs"
+  ],
+  "runbook": "tool/README.md#storage-media-path-hygiene"
+}

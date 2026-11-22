@@ -1,0 +1,45 @@
+{
+  "id": "operations:boundaries",
+  "category": "operations",
+  "path": "operations/scripts/check-boundaries.mjs",
+  "command": "node operations/scripts/check-boundaries.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "role": "ratchet",
+  "rules": [
+    {
+      "id": "OPERATIONS-PLATFORM-001",
+      "title": "Durable business workflows stay outside repository tooling",
+      "appliesTo": [
+        "operations/**",
+        "contracts/admin/**",
+        "contracts/operations/**",
+        "functions/src/operations/**",
+        "functions/scripts/operations/**",
+        "functions/src/admin/**",
+        "admin/src/features/system/**",
+        "tool/host_discovery/**",
+        "tool/manifest/**",
+        "tool/remote_ops_manifest.json"
+      ],
+      "instruction": "Resumable runs, work items, leases, budgets, decisions, receipts, and learning state belong in operations/. Legacy tool folders remain compatibility producers. Every workflow manifest stays bound to its executable commands, ordered states, sources, capabilities, and capacity. Ordinary admin actions share one catalog across GUI and CLI; strict schemas, role-gated callables, dry-run mutation defaults, confirmations, and hash-only receipts must not drift. Shadow mode fails closed. The admin projection crosses into Firestore only through the dry-run-first trusted importer, and publication requires separately authorized execution."
+    }
+  ],
+  "baseline": "operations/governance/legacy_tool_baseline.json",
+  "description": "Keeps durable business workflows under operations/ by scanning every tool code root for runtime imports or orchestration markers, while ratcheting known legacy artifact producers.",
+  "checks": [
+    "node --check operations/scripts/check-boundaries.mjs",
+    "node --test operations/test/boundaries.test.mjs",
+    "node operations/scripts/check-boundaries.mjs"
+  ],
+  "impactPaths": [
+    "operations/test/boundaries.test.mjs",
+    "operations/test/helpers.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

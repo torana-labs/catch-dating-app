@@ -1,0 +1,42 @@
+{
+  "id": "git:pre-commit-generated-artifacts",
+  "category": "git",
+  "path": "tool/git/pre_commit_generated_artifacts.mjs",
+  "command": "node --test tool/git/pre_commit_generated_artifacts.test.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "docs/agent_operating_model.md",
+    "tool/git/hooks/pre-commit",
+    "tool/git/pre_commit_generated_artifacts.test.mjs",
+    "tool/harness/component_graph.json"
+  ],
+  "description": "Keeps staged Dart formatting and every catalogued committed compile-codegen output synchronized without running broad analysis.",
+  "checks": [
+    "node --check tool/git/pre_commit_generated_artifacts.mjs",
+    "bash -n tool/git/hooks/pre-commit",
+    "node --test tool/git/pre_commit_generated_artifacts.test.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "GENERATED-ARTIFACT-DRIFT-001",
+      "title": "Keep committed generated artifacts synchronized before review",
+      "appliesTo": [
+        "contracts/**",
+        "copy/**",
+        "packages/l10n/**",
+        "tool/git/hooks/**",
+        "tool/git/pre_commit_generated_artifacts.mjs",
+        "tool/harness/component_graph.json"
+      ],
+      "instruction": "Install the repository-local pre-commit hook. Regenerate localization inputs, format staged Dart without absorbing partial work, and run the source-owned freshness check for every triggered committed compile-codegen output before review. The schema contract outputs aren't committed: the hook regenerates them when their inputs are staged, and stages nothing."
+    }
+  ]
+}

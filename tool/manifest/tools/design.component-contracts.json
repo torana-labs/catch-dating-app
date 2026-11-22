@@ -1,0 +1,29 @@
+{
+  "id": "design:component-contracts",
+  "category": "design",
+  "path": "tool/design/check_component_contracts.mjs",
+  "command": "node tool/design/check_component_contracts.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates the Catch component contract registry used by Figma, Claude Design, and Code Connect handoffs.",
+  "checks": [
+    "node --check tool/design/component_concepts.mjs",
+    "node --test tool/design/component_concepts.test.mjs",
+    "node --check tool/design/check_component_contracts.mjs",
+    "node --test tool/design/check_component_contracts.test.mjs",
+    "node --test test/tool/host_section_composition_test.mjs",
+    "node tool/design/check_component_contracts.mjs"
+  ],
+  "role": "finder",
+  "impactPaths": [
+    "tool/design/check_component_contracts.test.mjs",
+    "design/components/README.md",
+    "tool/design/lib/system_components.mjs",
+    "design/components/system/**",
+    "tool/design/check_host_section_composition.mjs",
+    "test/tool/host_section_composition_test.mjs",
+    "lib/programs/presentation/program_guests_screen.dart",
+    "lib/event_success/presentation/event_assistance_help_entry_section.dart",
+    "lib/event_success/presentation/event_assistance_delivery_entry_section.dart"
+  ]
+}

@@ -20,14 +20,18 @@ const roleExemptPaths = [
   /^tool\/migrations\//u,
 ];
 
-/** Tools sorted by id, so parallel additions land at different places. */
+/**
+ * Tools sorted by id with no id twice. tool/lib/tools_manifest.mjs sorts the
+ * files it loads, and each id is a file name, so this holds for the loaded
+ * manifest; it guards readers that build a manifest some other way.
+ */
 export function validateToolOrder(tools) {
   for (let index = 1; index < tools.length; index++) {
     const previous = tools[index - 1].id;
     const current = tools[index].id;
     if (!(previous < current)) {
       return [`${current}: tools must be sorted by id, but it follows ${previous}; ` +
-        "run node tool/lib/sort_tools_manifest.mjs."];
+        "load the manifest through tool/lib/tools_manifest.mjs."];
     }
   }
   return [];
@@ -371,7 +375,7 @@ export function validateRemoteOpsEntrypoints(tools, remoteOps) {
     for (const ref of refs) {
       const tool = byId.get(ref);
       if (!tool || closedToolStatuses.includes(tool.status)) {
-        errors.push(`remote_ops_manifest ${operation.id}: entrypoint ${ref} is not an open tool in tools_manifest.json.`);
+        errors.push(`remote_ops_manifest ${operation.id}: entrypoint ${ref} is not an open tool in the tools manifest.`);
         continue;
       }
       if (typeof tool.surface !== "string" || !tool.surface.startsWith("remote-")) continue;

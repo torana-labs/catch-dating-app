@@ -1,0 +1,56 @@
+{
+  "id": "design:component-lexicon",
+  "category": "design",
+  "path": "tool/design/check_component_lexicon.mjs",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter",
+      "flutter-pub"
+    ]
+  },
+  "impactPaths": [
+    "tool/design/check_component_lexicon.test.mjs",
+    "tool/design/lib/component_naming.mjs",
+    "tool/design/component_naming.test.mjs",
+    "tool/design/lib/component_api.dart",
+    "tool/design/lib/component_api.mjs",
+    "tool/design/component_api.test.mjs",
+    "design/components/catch.components.schema.json",
+    "docs/app_architecture.md",
+    "packages/catch_ui/lib/**",
+    "packages/platform/lib/riverpod_ui/**",
+    "design/components/catch.components.json"
+  ],
+  "command": "node tool/design/check_component_lexicon.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Binds declared cross-stack component symbols and enforces every public shared Widget constructor against the binding boolean, slot, callback, builder and enum-axis grammar using the syntax-only Dart collector.",
+  "checks": [
+    "node --check tool/design/check_component_lexicon.mjs",
+    "node --check tool/design/lib/component_naming.mjs",
+    "node --test tool/design/component_naming.test.mjs",
+    "node --check tool/design/lib/component_api.mjs",
+    "node --test tool/design/component_api.test.mjs",
+    "node --test tool/design/check_component_lexicon.test.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "DESIGN-LEXICON-001",
+      "title": "Cross-stack design-system implementations map to one checked component lexicon",
+      "appliesTo": [
+        "design/components/**",
+        "design/admin/**",
+        "design/website/**",
+        "lib/**",
+        "packages/platform/lib/**",
+        "admin/src/shared/ui/**",
+        "website/src/shared/ui/**",
+        "packages/web-ui/**"
+      ],
+      "instruction": "Every declared component surface symbol must exist in its implementation owner. Surface registry entries marked lexicon=true must reference a real catch.components id and exactly match that contract's surface symbol. Adopted cross-stack form primitives must declare a valid Flutter-owned interaction mode, while each stack retains its native implementation."
+    }
+  ]
+}

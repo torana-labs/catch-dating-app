@@ -1,0 +1,14 @@
+{
+  "id": "ci:web-hosting-freshness",
+  "category": "ci",
+  "path": "tool/ci/web_hosting_freshness.mjs",
+  "command": "node --test tool/ci/web_hosting_workflow.test.mjs",
+  "surface": "remote-read",
+  "status": "internal",
+  "description": "Checked by ci:web-hosting-delivery-workflow. Evaluates sanitized expected and observed source/run evidence at the final website-promotion freshness gate and refuses any mismatch after at most one no-cache reread.",
+  "checks": [
+    "node --check tool/ci/web_hosting_freshness.mjs",
+    "node --test tool/ci/web_hosting_workflow.test.mjs"
+  ],
+  "role": "gate"
+}

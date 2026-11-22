@@ -1,0 +1,26 @@
+{
+  "id": "design:screen-coverage",
+  "category": "design",
+  "path": "tool/design/check_screen_coverage.mjs",
+  "impactPaths": [
+    "design/screens/screen_coverage.json",
+    "tool/ui_capture/route_inventory.json",
+    "design/screens/catch.screens.json",
+    "tool/ui_capture/capture_coverage.json"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "command": "node tool/design/check_screen_coverage.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates the exhaustive route-to-screen design parity coverage ledger.",
+  "checks": [
+    "node --check tool/design/check_screen_coverage.mjs",
+    "node tool/design/check_screen_coverage.mjs --check"
+  ],
+  "role": "finder"
+}
