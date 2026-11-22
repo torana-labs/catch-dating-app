@@ -767,15 +767,15 @@
       "paths": {"include": [
         "functions/package.json",
         "functions/src/organizers/organizerFormConversions.ts",
-        "functions/src/organizers/organizerFormConversions.test.ts",
+        "functions/src/organizers/organizerFormConversions.emulator.test.ts",
         "functions/src/events/eventAttendees.ts",
-        "functions/src/events/eventAttendees.test.ts",
+        "functions/src/events/eventAttendees.emulator.test.ts",
         "functions/src/shared/organizerHosts.ts",
         "functions/src/shared/organizerHosts.test.ts",
         "functions/src/organizers/manageOrganizerTeam.ts",
         "functions/src/profiles/syncPublicProfile.ts",
         "functions/src/profiles/syncPublicProfile.test.ts",
-        "functions/src/profiles/syncPublicProfileEmulator.test.ts"
+        "functions/src/profiles/syncPublicProfile.emulator.test.ts"
       ]},
       "components": ["backend.organizer-authority"],
       "terminal": true

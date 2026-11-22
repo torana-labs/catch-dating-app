@@ -58,7 +58,6 @@ test("the action catalog contract selects the tests that reach its generated mod
 
 test("shared inputs and unexplained functions files run every listed test", () => {
   for (const changed of ["firestore.rules", "storage.rules", "functions/package.json", "functions/package-lock.json", "functions/tsconfig.json",
-    "functions/test/emulator-tests.json",
     "functions/scripts/run-tests.cjs", "firebase.json"]) {
     const result = select([changed]);
     assert.equal(result.mode, "full", changed);

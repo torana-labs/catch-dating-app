@@ -348,7 +348,7 @@
       "rulesMatch": "/catchWhatsappReadinessApprovals/{approvalId}",
       "typescriptInterface": "CatchWhatsappReadinessApprovalDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.test.ts",
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.emulator.test.ts",
       "rulesTestNames": [
         "readiness control documents deny every SDK client including staff"
       ],
@@ -364,7 +364,7 @@
       "rulesMatch": "/catchWhatsappReadinessIngress/{ingressId}",
       "typescriptInterface": "CatchWhatsappReadinessIngressDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.test.ts",
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.emulator.test.ts",
       "rulesTestNames": [
         "readiness control documents deny every SDK client including staff"
       ],
@@ -380,7 +380,7 @@
       "rulesMatch": "/catchWhatsappReadinessAudits/{auditId}",
       "typescriptInterface": "CatchWhatsappReadinessAuditDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.test.ts",
+      "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.emulator.test.ts",
       "rulesTestNames": [
         "readiness control documents deny every SDK client including staff"
       ],

@@ -1673,6 +1673,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardActivityScreenTitleActivity => 'Activity';
 
   @override
+  String get dashboardActivityFromCatch => 'From Catch';
+
+  @override
+  String get dashboardActivityAppeal => 'Appeal';
+
+  @override
+  String get dashboardActivityAppealTitle => 'Appeal this decision';
+
+  @override
+  String get dashboardActivityAppealField =>
+      'Tell us why this decision is wrong';
+
+  @override
+  String get dashboardActivityAppealSend => 'Send appeal';
+
+  @override
+  String get dashboardActivityAppealSent =>
+      'Appeal sent. Someone who didn’t make the decision will review it.';
+
+  @override
+  String get dashboardActivityAppealClosed =>
+      'This decision can only be appealed once, or is no longer in force.';
+
+  @override
   String get dashboardDashboardScreenTooltipCalendar => 'Calendar';
 
   @override
@@ -27959,6 +27983,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventsGuestsDecline => 'Decline';
+
+  @override
+  String get hostEventsGuestsGuestBody =>
+      'See their profile, report them to Catch, or stop them booking your events.';
+
+  @override
+  String get hostEventsGuestsReport => 'Report';
+
+  @override
+  String get hostEventsGuestsBlock => 'Block from your events';
+
+  @override
+  String hostEventsGuestsReportTitle({required String name}) {
+    return 'Why are you reporting $name?';
+  }
+
+  @override
+  String get hostEventsGuestsReportBody =>
+      'Pick the closest reason. Catch’s team reads every report.';
+
+  @override
+  String get hostEventsGuestsReportUnsafe => 'Made people feel unsafe';
+
+  @override
+  String get hostEventsGuestsReportHarassment => 'Harassed someone';
+
+  @override
+  String get hostEventsGuestsReportOther => 'Something else';
+
+  @override
+  String get hostEventsGuestsReported =>
+      'Thanks. Catch’s team will look into it.';
+
+  @override
+  String hostEventsGuestsBlockTitle({required String name}) {
+    return 'Block $name from your events?';
+  }
+
+  @override
+  String get hostEventsGuestsBlockBody =>
+      'They won’t be able to book your events. Bookings they already have stay, so cancel those from the guest list.';
+
+  @override
+  String get hostEventsGuestsBlockConfirm => 'Block';
+
+  @override
+  String hostEventsGuestsBlockedNotice({required String name}) {
+    return '$name can’t book your events now';
+  }
+
+  @override
+  String get hostEventsGuestsBlockedLink => 'Blocked from your events';
+
+  @override
+  String get hostEventsGuestsBlockedEmpty =>
+      'Nobody is blocked from your events.';
+
+  @override
+  String get hostEventsGuestsBlockedNoName => 'Someone without a name';
+
+  @override
+  String hostEventsGuestsBlockedOn({required String date}) {
+    return 'Blocked $date';
+  }
+
+  @override
+  String get hostEventsGuestsBlockedErrorTitle => 'The list could not load';
+
+  @override
+  String get hostEventsGuestsLetBack => 'Let them back';
+
+  @override
+  String get hostEventsGuestsLetBackDone => 'They can book your events again';
 
   @override
   String get hostEventsPlanEmptyAction => 'Edit the event';
