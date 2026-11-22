@@ -772,6 +772,39 @@ you can price a cut before making it. `--chokepoints` ranks barrels (3+
 exports), widely imported files (25+ importers) and hubs (60+ imports) by the
 share of test-to-library reach lost if every edge into them is cut.
 
+## Merge-Queue Entry Timings
+
+`tool/ci/queue_entry_timings.mjs` measures where a merge-queue entry's time
+goes. It is report only: `fetch` reads GitHub with `gh api` and saves one JSON
+file, and `report` analyses that file offline.
+
+```bash
+node tool/ci/queue_entry_timings.mjs fetch --since 2026-11-15 --out build/ci/queue.json
+node tool/ci/queue_entry_timings.mjs report --data build/ci/queue.json --split 2026-11-22T15:41:00Z
+```
+
+`fetch` saves every `merge_group` run of `ci.yml` since the date, each run's
+jobs (`filter=all`), and each queued PR's timeline events
+(`added_to_merge_queue`, `removed_from_merge_queue`, `merged`). That is one API
+call per run and per PR, so a week of queue history takes a few minutes.
+`fetch` saves its progress every 25 calls and resumes from `--out` when the
+file exists. A completed run's jobs and a settled PR's timeline are reused, so a
+rerun fetches only new or unfinished entries. `--fresh` ignores the old file.
+
+For each run, `report` gives:
+
+- the wait from enqueue to the run existing;
+- the critical-path job, meaning the last executed job before Required CI;
+- the longest runner wait, macOS and Linux apart;
+- the outcome, and any removal with its reason and actor.
+
+`--split` compares before and after a change; give it the change's `merged_at`,
+not its commit date, which a squash merge keeps from authoring. A period with fewer than
+10 runs is marked thin. Queue rebuilds come from the runs alone: a run is
+superseded when its PR gets a new run on another base before the old one
+finished. A dataset without timelines reports everything except the enqueue
+wait and removal causes, which show as "not measured", never as zero.
+
 ## CI Network Retries
 
 `tool/ci/retry_on_match.mjs` reruns a CI command only when it failed with

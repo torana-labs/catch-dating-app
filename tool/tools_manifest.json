@@ -1716,6 +1716,32 @@
       "runbook": "tool/README.md#ci-network-retries"
     },
     {
+      "id": "ci:queue-entry-timings",
+      "category": "ci",
+      "path": "tool/ci/queue_entry_timings.mjs",
+      "command": "node tool/ci/queue_entry_timings.mjs",
+      "surface": "remote-read",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "role": "finder",
+      "description": "Report only: fetches merge_group CI runs, their jobs and each queued PR's timeline through gh api (fetch), then reports per entry the wait before its run existed, the critical-path job, runner waits split macOS and Linux, outcomes, removals with their cause, and queue rebuilds where an entry was regrouped onto a new base (report, offline over the saved file).",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/queue_entry_timings.test.mjs"
+      ],
+      "checks": [
+        "node --check tool/ci/queue_entry_timings.mjs",
+        "node --test tool/ci/queue_entry_timings.test.mjs",
+        "node tool/ci/queue_entry_timings.mjs --help"
+      ],
+      "runbook": "tool/README.md#merge-queue-entry-timings"
+    },
+    {
       "id": "ci:required-ci-floor",
       "category": "ci",
       "path": "tool/ci/required_ci_floor.mjs",
