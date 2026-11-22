@@ -335,27 +335,44 @@ jobs:
           CATCH_MESSAGING_CAPTURE_DIR: /tmp/catch-messaging-permissions-review
           CATCH_CHAT_SAFETY_CAPTURE_DIR: /tmp/catch-chat-safety-review
         run: |
+          plan=build/ci/flutter-test-plan.json
           jq -er --arg sha "$GITHUB_SHA" --argjson index "$SHARD_INDEX" \
-            '.sourceSha == $sha and (.shards[$index].files | length > 0)' \
-            build/ci/flutter-test-plan.json > /dev/null
-          jq -r --argjson index "$SHARD_INDEX" '.shards[$index].files[]' \
-            build/ci/flutter-test-plan.json > /tmp/flutter_test_files.txt
+            '.sourceSha == $sha and (.shards[$index].groups | length > 0) and
+              all(.shards[$index].groups[]; .files | length > 0)' "$plan" > /dev/null
 
-          count="$(wc -l < /tmp/flutter_test_files.txt | tr -d '[:space:]')"
+          count="$(jq -r --argjson index "$SHARD_INDEX" '[.shards[$index].groups[].files[]] | length' "$plan")"
           echo "Running ${count} test files in shard ${SHARD_INDEX}/${SHARD_TOTAL}."
           if [[ "${count}" == "0" ]]; then
             echo "No test files were selected for shard ${SHARD_INDEX}/${SHARD_TOTAL}." >&2
             exit 1
           fi
 
-          mapfile -t files < /tmp/flutter_test_files.txt
+          # Each group runs from its package directory (the root, or
+          # apps/<app>), where its pubspec, dart_test.yaml and relative paths
+          # apply. A failed group doesn't skip the next; any failure fails the step.
+          mapfile -t packages < <(jq -r --argjson index "$SHARD_INDEX" '.shards[$index].groups[].package' "$plan")
+          status=0
+          coverage=()
+          for package in "${packages[@]}"; do
+            mapfile -t files < <(jq -r --argjson index "$SHARD_INDEX" --arg package "$package" \
+              '.shards[$index].groups[] | select(.package == $package) | .files[]' "$plan")
+            echo "Running ${#files[@]} test files from ${package}."
+            # Exact PNG goldens are generated against the local desktop renderer and
+            # are intentionally tagged out of Ubuntu CI to avoid cross-platform font
+            # antialiasing noise. Run them locally with `flutter test test/goldens`.
+            # Two file workers use the hosted runner without unbounded compiler
+            # processes; each group's coverage comes from its single invocation.
+            if ! (cd "$package" && flutter test --concurrency=2 --exclude-tags=golden --coverage \
+              --coverage-package '^catch_(dating_app|platform|host_app|consumer_app)$' "${files[@]}"); then
+              status=1
+            fi
+            coverage+=(--package-lcov "$package")
+          done
 
-          # Exact PNG goldens are generated against the local desktop renderer and
-          # are intentionally tagged out of Ubuntu CI to avoid cross-platform font
-          # antialiasing noise. Run them locally with `flutter test test/goldens`.
-          # Two file workers use the hosted runner without unbounded compiler
-          # processes; shard coverage is still owned by this single invocation.
-          flutter test --concurrency=2 --exclude-tags=golden --coverage --coverage-package '^catch_(dating_app|platform)$' "${files[@]}"
+          # Flutter writes each group's paths relative to its package; the shard's
+          # LCOV uses repository paths, so an app's lib/ stays apart from the root's.
+          node tool/test/flutter_coverage_report.mjs "${coverage[@]}" --output coverage/lcov.info
+          exit "$status"
 
       - name: Label synthetic RSVP widget captures
         if: always()
@@ -499,9 +516,9 @@ jobs:
           retention-days: 14
 
   app-package-tests:
-    # Also builds Widgetbook. Keep this job name: host-website.yml's queue
-    # validation looks it up.
-    name: Catch UI, Consumer & Host package tests
+    # Also builds Widgetbook. The Consumer and Host package tests run in the
+    # test shards, which the selector plans from both app packages.
+    name: Kernel, Catch UI & Widgetbook package tests
     runs-on: ubuntu-latest
     # The package suites' 15 minutes plus Widgetbook's 20.
     timeout-minutes: 35
@@ -531,8 +548,7 @@ jobs:
           node tool/ci/flutter_package_scope.mjs
           --base "$BASE_SHA" --head "$GITHUB_SHA" --event "$EVENT_NAME"
           --full "$FULL" --commit-window "$COMMIT_WINDOW"
-          --package packages/kernel --package packages/catch_ui
-          --package apps/consumer --package apps/host --package widgetbook
+          --package packages/kernel --package packages/catch_ui --package widgetbook
           --github-output "$GITHUB_OUTPUT" --summary "$GITHUB_STEP_SUMMARY"
 
       - uses: ./.github/actions/generate-contracts
@@ -565,18 +581,6 @@ jobs:
         working-directory: packages/catch_ui
         run: flutter test --concurrency=1 --exclude-tags=golden
 
-      - name: Consumer package tests
-        id: consumer
-        if: ${{ !cancelled() && steps.pub.outcome == 'success' && steps.scope.outputs.consumer == 'true' }}
-        working-directory: apps/consumer
-        run: flutter test --concurrency=1
-
-      - name: Host package tests
-        id: host
-        if: ${{ !cancelled() && steps.pub.outcome == 'success' && steps.scope.outputs.host == 'true' }}
-        working-directory: apps/host
-        run: flutter test --concurrency=1
-
       - name: Resolve Widgetbook dependencies
         id: widgetbook_pub
         if: ${{ !cancelled() && steps.pub.outcome == 'success' && steps.scope.outputs.widgetbook == 'true' }}
@@ -604,13 +608,9 @@ jobs:
         env:
           SCOPE_KERNEL: ${{ steps.scope.outputs.kernel }}
           SCOPE_CATCH_UI: ${{ steps.scope.outputs.catch_ui }}
-          SCOPE_CONSUMER: ${{ steps.scope.outputs.consumer }}
-          SCOPE_HOST: ${{ steps.scope.outputs.host }}
           SCOPE_WIDGETBOOK: ${{ steps.scope.outputs.widgetbook }}
           KERNEL: ${{ steps.kernel.outcome }}
           CATCH_UI: ${{ steps.catch_ui.outcome }}
-          CONSUMER: ${{ steps.consumer.outcome }}
-          HOST: ${{ steps.host.outcome }}
           WIDGETBOOK_PUB: ${{ steps.widgetbook_pub.outcome }}
           WIDGETBOOK_INVENTORY: ${{ steps.widgetbook_inventory.outcome }}
           WIDGETBOOK_BUILD: ${{ steps.widgetbook_build.outcome }}
@@ -627,8 +627,6 @@ jobs:
             echo "|---|---|"
             echo "| Kernel package tests | $(outcome "$SCOPE_KERNEL" "$KERNEL") |"
             echo "| Catch UI package tests | $(outcome "$SCOPE_CATCH_UI" "$CATCH_UI") |"
-            echo "| Consumer package tests | $(outcome "$SCOPE_CONSUMER" "$CONSUMER") |"
-            echo "| Host package tests | $(outcome "$SCOPE_HOST" "$HOST") |"
             echo "| Resolve Widgetbook dependencies | $(outcome "$SCOPE_WIDGETBOOK" "$WIDGETBOOK_PUB") |"
             echo "| Check the Widgetbook golden inventory | $(outcome "$SCOPE_WIDGETBOOK" "$WIDGETBOOK_INVENTORY") |"
             echo "| Build Widgetbook web app | $(outcome "$SCOPE_WIDGETBOOK" "$WIDGETBOOK_BUILD") |"

@@ -195,8 +195,10 @@ test("standalone Host web uses the same immutable build and promotion authority"
   assert.match(source, /uses: \.\/\.github\/workflows\/_web-hosting-build\.yml/u);
   assert.match(source, /uses: \.\/\.github\/workflows\/_web-hosting-promote\.yml/u);
   assert.match(source, /surface: host/u);
-  assert.match(source, /flutter analyze --no-fatal-infos apps\/host lib\/hosts lib\/events/u);
-  assert.match(source, /flutter test --concurrency=1 test\/hosts/u);
+  // Path rules that keep their meaning as host screens move into apps/host.
+  assert.match(source, /flutter analyze --no-fatal-infos apps\/host lib\n/u);
+  assert.match(source, /working-directory: apps\/host\n\s+run: flutter test --concurrency=1 --exclude-tags=golden\n/u);
+  assert.doesNotMatch(source, /lib\/hosts|lib\/events|test\/hosts/u);
   assert.match(source,
     /artifact_digest: \$\{\{ needs\.package\.outputs\.artifact_digest \}\}/u);
   assert.match(source,
@@ -1169,7 +1171,7 @@ test("Admin and Host releases validate for themselves unless the queue passed th
   const host = caller("host");
   const ci = workflow("flutter-ci.yml");
   const lookup = host.split("\n  queue-validation:\n")[1].split("\n  validate:")[0];
-  for (const job of ["Flutter analysis and gates", "Catch UI, Consumer & Host package tests"]) {
+  for (const job of ["Flutter analysis and gates", "Analyze & test"]) {
     assert.ok(lookup.includes(`flutter / ${job}`), job);
     assert.ok(ci.includes(`name: ${job}`), `${job} no longer names a queue job`);
   }

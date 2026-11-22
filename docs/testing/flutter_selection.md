@@ -9,7 +9,8 @@ status: active
 Part of the testing guide: [TESTS.md](../../TESTS.md) holds the standard suites,
 the shared habits and the index of area guides.
 
-Flutter CI runs only the root unit and widget tests a change can reach;
+Flutter CI runs only the root and app-package unit and widget tests a change
+can reach;
 `docs/release_operations.md` owns the selection rules. To see the selection
 for a change locally, install the contract generator's dependencies once with
 `npm --prefix functions ci --ignore-scripts`, then run
@@ -30,6 +31,9 @@ the top of the file:
 // test-selection-reads: contracts/, packages/catch_ui/assets/fonts/
 ```
 
+In an app package (`apps/<app>/test/`), tests run from the package directory,
+so literal paths and declared roots there are relative to it: write
+`File('test/fixtures/case.json')` for `apps/<app>/test/fixtures/case.json`.
 Keep the comment current when you change what the file reads. The selector
 keeps the file a probe that always runs when it uses `Process`,
 `Directory.current` or `Platform.script`, when a literal or constant-prefixed
