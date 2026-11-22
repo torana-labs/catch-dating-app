@@ -77,7 +77,7 @@ describe("a website lead in the inbox", () => {
     const inbox = {...model(), items: [lead], detail: {item: lead, journey: [], canWork: true, canDecideClaim: false}} as
       unknown as InboxScreenModel;
     render(<InboxScreen canFillIn={false} model={inbox} onSelect={vi.fn()} selectedItemId={lead.itemId} uid="uid-1" />);
-    expect(screen.getByText(/nothing is sent for you/u)).toBeTruthy();
+    expect(screen.getByText(/Reply on WhatsApp first/u)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", {name: "Close"}));
     expect(inbox.updateItem).not.toHaveBeenCalled();
     fireEvent.change(screen.getByRole("textbox", {name: /What you replied/u}), {target: {value: "Sent the venue guide"}});
@@ -108,12 +108,23 @@ describe("a host enquiry in the inbox", () => {
     expect(inbox.linkEnquiry).not.toHaveBeenCalled();
   });
 
+  it("sends the WhatsApp follow-up template for the lead it is", () => {
+    const sendFollowUp = vi.fn(async () => true);
+    const inbox = {...model(), items: [enquiry], sendFollowUp, isSendingFollowUp: false,
+      detail: {item: enquiry, journey: [], canWork: true, canDecideClaim: false}} as unknown as InboxScreenModel;
+    render(<InboxScreen canFillIn={false} model={inbox} onSelect={vi.fn()} selectedItemId={enquiry.itemId} uid="uid-1" />);
+    expect(screen.getByText(/at most once a week to a number/u)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", {name: "Send follow-up"}));
+    expect(sendFollowUp).toHaveBeenCalledWith("meta-1");
+  });
+
   it("comes back to the inbox once closed", () => {
     const closed = {...enquiry, status: "done", state: {code: "dismissed", label: "Dismissed", tone: "neutral"}};
     const inbox = {...model(), items: [closed],
       detail: {item: closed, journey: [], canWork: false, canDecideClaim: false}} as unknown as InboxScreenModel;
     render(<InboxScreen canFillIn={false} model={inbox} onSelect={vi.fn()} selectedItemId={closed.itemId} uid="uid-1" />);
     expect(screen.queryByRole("button", {name: "Close"})).toBeNull();
+    expect(screen.queryByRole("button", {name: "Send follow-up"})).toBeNull();
     fireEvent.click(screen.getByRole("button", {name: "Back in the inbox"}));
     expect(inbox.updateItem).toHaveBeenCalledWith({itemId: closed.itemId, action: "reopen", assigneeUid: null,
       snoozedUntil: null, note: null}, "It's back in the inbox.");

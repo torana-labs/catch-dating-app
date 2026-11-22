@@ -78,8 +78,9 @@ export async function claimSupportWhatsappTemplate(
   const conversationId = supportConversationId("whatsapp", address);
   const conversationRef = db.collection(SUPPORT_CONVERSATIONS)
     .doc(conversationId);
-  const messageRef = conversationRef.collection("messages")
-    .doc(claim.messageId);
+  const messages = db.collection(
+    `${SUPPORT_CONVERSATIONS}/${conversationId}/messages`);
+  const messageRef = messages.doc(claim.messageId);
   const existing = await conversationRef.get();
   const account = existing.exists ? null :
     await accountFor(deps, "whatsapp", address);
@@ -108,8 +109,7 @@ export async function claimSupportWhatsappTemplate(
     }
     const now = deps.now();
     const current = conversationSnap.data() as Conversation | undefined;
-    const recent = current ? (await tx.get(conversationRef
-      .collection("messages")
+    const recent = current ? (await tx.get(messages
       .where("at", ">=", Timestamp.fromMillis(context.recentSinceMillis))
       .limit(TEMPLATE_RECENT_SCAN_LIMIT))).docs
       .map((doc) => doc.data() as Message) : [];

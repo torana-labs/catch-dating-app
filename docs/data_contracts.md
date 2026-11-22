@@ -3639,11 +3639,27 @@ stores the referred host as its `hostApplication`, the shape partner
 nominations use, so it seeds a Supply Intake listing, and records
 `lead.referralCredit` naming the signed-in referrer, or
 `missing_referrer_account` when there is none. The Admin Inbox projects each
-lead as a `lead` item that staff close with a note. Nothing is sent: an
-`app_link` lead ("Text me the link" beside the host store badges, payload
-`appLink: {app: "host"}`) shows the badges and QR code at once, and staff send
-the link on WhatsApp from the lead alert until an approved utility template
-sends it.
+lead as a `lead` item that staff close with a note. An `app_link` lead ("Text
+me the link" beside the host store badges, payload `appLink: {app: "host"}`,
+consent version `app-link-whatsapp-v1`) shows the badges and QR code at once,
+and Catch's WhatsApp number sends it the approved `host_app_link` template
+once, from the lead's create trigger, while `CATCH_WHATSAPP_HOST_APP_LINK_ENABLED`
+(default off; needs `CATCH_WHATSAPP_REPLIES_ENABLED`) is on. Internal test
+leads, leads older than six hours and numbers that sent STOP get nothing. The
+attempt is claimed before WhatsApp is called and recorded on the lead as
+`appLinkWhatsapp` (state, WhatsApp message id or error code, the Support
+message it is) and as Catch's automatic message in the person's Support
+thread; a refused or unconfirmed send is logged and shown in the lead's Inbox
+journey, never retried. From an open host lead (any website lead but
+`referral` and `city_alerts`, or a Meta lead-form lead) staff can send the
+approved `host_lead_follow_up` template ("Hi {{1}}", the first word of the
+name or "there") through `adminSendCatchWhatsappReply` with
+`purpose: "hostLeadFollowUp"`: only when the person has not written in the
+last 24 hours, never after STOP, and at most once per WhatsApp number in any
+7 days (every attempt WhatsApp did not refuse counts). It is recorded in their
+Support thread and as the lead's `followUpWhatsapp`. A reply to either
+template, a quick-reply button included, lands in the Support thread like any
+inbound message.
 
 Each WhatsApp launch notice with a city counts its person once per city:
 `cityInterestMarkers/{sha256(phone|cityKey)}` is created in the same
