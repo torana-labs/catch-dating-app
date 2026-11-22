@@ -1,17 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 
 import 'flutter_test_reads.dart';
+import 'flutter_test_shards.dart';
 
-bool _testFile(String name) =>
-    name.startsWith('test/') &&
-    name.endsWith('_test.dart') &&
-    !name.startsWith('test/goldens/') &&
-    !name.startsWith('test/integration/');
+export 'flutter_test_shards.dart';
+
+bool _testFile(String name) => testPackage(name) != null;
 
 const _componentGraph = 'tool/harness/component_graph.json';
 
@@ -62,19 +60,9 @@ bool needsUiLintSmoke({
   }
 }
 
-/// Test files per shard. Measured on hosted runners: a shard's test step takes
-/// about 35 s plus 2.4 s per file, and each shard also pays about 85 s of setup
-/// and its own runner-queue wait, so 110 files keep the step near five minutes
-/// without paying for idle shards.
-const filesPerShard = 110;
-
-/// How many shards [files] selected test files run in: one per
-/// [filesPerShard] files, at least one when any test is selected, at most four.
-int shardCount(int files) =>
-    files <= 0 ? 0 : math.min(4, (files + filesPerShard - 1) ~/ filesPerShard);
-
-/// Only narrows root unit/widget tests. Native, package, golden, integration,
-/// analysis and contract gates retain their independent owners.
+/// Only narrows the root and app-package unit and widget tests the shards run
+/// ([testPackage]). Native, other package, golden, integration, analysis and
+/// contract gates retain their independent owners.
 ///
 /// [generatedBefore] and [generatedAfter] hold the untracked Dart the schema
 /// contract generator emits at base and head. With both, a contract or
@@ -105,7 +93,7 @@ Map<String, Object> selectFlutterTests({
     after = {...after, ...generatedAfter};
   }
   final all = after.keys.where(_testFile).toList()..sort();
-  if (all.isEmpty) throw StateError('No root Flutter tests exist.');
+  if (all.isEmpty) throw StateError('No shard Flutter tests exist.');
   Map<String, Object> result(List<String> files, String reason) => {
     'mode': files.length == all.length ? 'full' : 'affected',
     'reason': reason,
@@ -173,7 +161,11 @@ Map<String, Object> selectFlutterTests({
           : <String>{};
       // A dart:io file with bounded reads selects the tests that reach it
       // only when a changed path is one it can read.
-      final reads = {...newGraph.reads(current), ...oldGraph.reads(previous)};
+      final package = testPackage(test)!;
+      final reads = {
+        ...newGraph.reads(current, package),
+        ...oldGraph.reads(previous, package),
+      };
       final impactedChanges = {
         ...{
           ...current,
@@ -185,7 +177,9 @@ Map<String, Object> selectFlutterTests({
       final impacted = !before.containsKey(test) || impactedChanges.isNotEmpty;
       if (impacted ||
           current.contains(_Imports.fileSystemProbe) ||
-          previous.contains(_Imports.fileSystemProbe)) {
+          previous.contains(_Imports.fileSystemProbe) ||
+          newGraph.readsElsewhere(current, package) ||
+          oldGraph.readsElsewhere(previous, package)) {
         selected.add(test);
       }
     }
@@ -255,17 +249,17 @@ bool _globalTestInput(String name) =>
     _globalInputPaths.contains(name) ||
     _globalInputDirectories.any(name.startsWith);
 
-// Surfaces outside the root package: backend, web, design, docs, tooling,
-// infrastructure and CI sources, the JavaScript-only packages, other Flutter
-// packages and apps, and golden/integration suites with their own gates. A root test reaches a Dart file here through the
-// import graph, or reads a file here from disk as a filesystem probe. Any
-// other path, including test fixtures, assets, native folders and new
-// top-level roots, still needs import proof or keeps the full suite.
+// Surfaces outside the packages the shards test: backend, web, design, docs,
+// tooling, infrastructure and CI sources, the JavaScript-only packages, other
+// Flutter packages, and golden/integration suites with their own gates. A
+// shard test reaches a Dart file here through the import graph, or reads a
+// file here from disk as a filesystem probe. Any other path, including test
+// fixtures, assets, native folders and new top-level roots, still needs
+// import proof or keeps the full suite.
 const _probeOnlyDirectories = [
   '.github/',
   'admin/',
   'analytics/',
-  'apps/',
   'artifacts/',
   'contracts/',
   'copy/',
@@ -279,7 +273,7 @@ const _probeOnlyDirectories = [
   'integration_test/',
   'operations/',
   'packages/brand/',
-  // The package job ("Catch UI, Consumer & Host package tests") owns these
+  // The package job ("Kernel, Catch UI & Widgetbook package tests") owns these
   // suites, and the macOS goldens lane owns packages/catch_ui/test/goldens.
   // A root test that imports one still reaches it through the import graph.
   'packages/catch_ui/test/',
@@ -311,7 +305,18 @@ bool _probeOnlyInput(String name) =>
     (name.endsWith('.md') &&
         !RegExp(r'(^|/)(assets|test|integration_test)/').hasMatch(name)) ||
     _probeOnlyFiles.contains(name) ||
-    _probeOnlyDirectories.any(name.startsWith);
+    _probeOnlyDirectories.any(name.startsWith) ||
+    _appProbeOnly(name);
+
+// An app package's lib/ and test/ are sources the shards test, so they need
+// import proof like the root package's. Its native folders, integration
+// suites and goldens have their own gates.
+bool _appProbeOnly(String name) {
+  final rest = RegExp(r'^apps/[^/]+/(.*)$').firstMatch(name)?.group(1);
+  return rest != null &&
+      (rest.startsWith('test/goldens/') ||
+          !(rest.startsWith('lib/') || rest.startsWith('test/')));
+}
 
 /// Whether any manifest's top-level `flutter:` section may bundle [name] as
 /// an asset, font or shader. This scans tokens conservatively rather than
@@ -397,13 +402,27 @@ class _Imports {
   /// Every tracked path, against which declared reads must resolve.
   final Set<String> paths;
 
-  /// The bounded reads of each `dart:io` file reached so far.
+  /// The bounded reads of each `dart:io` file reached so far, as repository
+  /// paths.
   final readsOf = <String, Set<String>>{};
 
-  /// The paths the `dart:io` files in [closure] can read.
-  Set<String> reads(Set<String> closure) => {
-    for (final name in closure) ...?readsOf[name],
+  /// The working directory of the test run whose file reads each of
+  /// [readsOf] was bounded for: its package directory ([readsPackage]).
+  final readsPackageOf = <String, String>{};
+
+  /// The paths the `dart:io` files in [closure] can read when [package]'s
+  /// tests run them.
+  Set<String> reads(Set<String> closure, String package) => {
+    for (final name in closure)
+      if (readsPackageOf[name] == package) ...?readsOf[name],
   };
+
+  /// Whether a `dart:io` file in [closure] had its relative reads bounded for
+  /// another package's working directory, so [package]'s tests would read
+  /// other paths: such a test is a filesystem probe.
+  bool readsElsewhere(Set<String> closure, String package) => closure.any(
+    (name) => readsOf.containsKey(name) && readsPackageOf[name] != package,
+  );
 
   Set<String> closure(String start) {
     final visited = <String>{};
@@ -419,16 +438,19 @@ class _Imports {
   }
 
   /// `flutter test` wraps a test in a `flutter_test_config.dart` from its
-  /// directory or an ancestor. Every ancestor config counts as an import.
+  /// directory or an ancestor up to its package directory. Every such config
+  /// counts as an import.
   Set<String> testClosure(String test) {
     final result = closure(test);
+    final package = testPackage(test);
+    final root = package == null || package == '.' ? '' : '$package/';
     var directory = test;
-    while (directory.contains('/')) {
+    while (directory.length > root.length && directory.contains('/')) {
       directory = directory.substring(0, directory.lastIndexOf('/'));
       final config = '$directory/flutter_test_config.dart';
       if (files.containsKey(config)) result.addAll(closure(config));
     }
-    if (files.containsKey('flutter_test_config.dart')) {
+    if (root.isEmpty && files.containsKey('flutter_test_config.dart')) {
       result.addAll(closure('flutter_test_config.dart'));
     }
     return result;
@@ -451,18 +473,25 @@ class _Imports {
       if (value == null) throw StateError('Nonliteral Dart URI in $name');
       final uri = Uri.parse(value);
       if (uri.scheme == 'dart') {
-        if (value == 'dart:io' &&
-            (name.startsWith('test/') || name.startsWith('tool/'))) {
+        final package = readsPackage(name);
+        if (value == 'dart:io' && package != null) {
+          // Relative paths resolve against the test run's working directory,
+          // its package directory.
+          final prefix = package == '.' ? '' : '$package/';
           final bounded = fileReads(
             name: name,
             source: source,
             unit: parsed.unit,
-            paths: paths,
+            paths: {
+              for (final path in paths)
+                if (path.startsWith(prefix)) path.substring(prefix.length),
+            },
           );
           if (bounded == null) {
             dependencies.add(fileSystemProbe);
           } else {
-            readsOf[name] = bounded;
+            readsOf[name] = {for (final read in bounded) '$prefix$read'};
+            readsPackageOf[name] = package;
           }
         }
         return;
@@ -740,16 +769,9 @@ Future<void> main(List<String> arguments) async {
   plan['ordinaryDocuments'] = ordinaryDocuments.toList()..sort();
   plan['commitWindow'] = commitWindow;
   final files = plan['files']! as List<String>;
-  final count = shardCount(files.length);
-  final shards = List.generate(
-    count,
-    (index) => {
-      'shard_index': index,
-      'shard_label': index + 1,
-      'shard_total': count,
-      'files': [for (var i = index; i < files.length; i += count) files[i]],
-    },
-  );
+  final shards = planShards(files);
+  final count = shards.length;
+  plan['selectedByPackage'] = packageCounts(files);
   final output = args['--output'];
   if (output == null) throw ArgumentError('--output is required');
   File(output).parent.createSync(recursive: true);
