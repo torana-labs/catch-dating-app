@@ -43,10 +43,15 @@ export async function main(argv = process.argv.slice(2)) {
 }
 
 export async function buildEventAggregateRepairPlan(firestore) {
-  const [eventsSnap, participationsSnap] = await Promise.all([
+  const [eventsSnap, participationsSnap, ledgersSnap] = await Promise.all([
     firestore.collection("events").get(),
     firestore.collection("eventBookings").get(),
+    firestore.collection("eventSeatLedgers").get(),
   ]);
+  // bookedCount mirrors the event's seat ledger: every occupied place, from
+  // Catch bookings, imports, walk-ins and admissions alike.
+  const occupiedByEvent = new Map(ledgersSnap.docs.map((doc) =>
+    [doc.id, doc.data().occupied]));
 
   const eventIds = new Set(eventsSnap.docs.map((doc) => doc.id));
   const aggregates = new Map();
@@ -82,6 +87,13 @@ export async function buildEventAggregateRepairPlan(firestore) {
   for (const eventDoc of eventsSnap.docs) {
     const data = eventDoc.data();
     const expected = aggregateForEvent(aggregates, eventDoc.id);
+    const occupied = occupiedByEvent.get(eventDoc.id);
+    if (Number.isSafeInteger(occupied)) {
+      expected.bookedCount = occupied;
+    } else {
+      warnings.push(`events/${eventDoc.id} has no seat ledger; bookedCount ` +
+        "is counted from eventBookings.");
+    }
     const current = {
       bookedCount: data.bookedCount,
       checkedInCount: data.checkedInCount,
@@ -156,9 +168,10 @@ function normalizeObject(value) {
 function printHelp() {
   console.log(`Usage: node tool/data/recompute_event_aggregate_counts.mjs [options]
 
-Recomputes events/{eventId} aggregate projections from eventBookings edges.
-bookedCount counts signedUp + attended, checkedInCount counts attended,
-waitlistedCount counts waitlisted, and genderCounts counts signedUp + attended.
+Recomputes events/{eventId} aggregate projections. bookedCount is the event's
+seat ledger occupied count (every source); checkedInCount counts attended,
+waitlistedCount counts waitlisted, and genderCounts counts signedUp + attended
+eventBookings edges.
 
 Options:
   --apply                 Write repairs. Default is dry-run.

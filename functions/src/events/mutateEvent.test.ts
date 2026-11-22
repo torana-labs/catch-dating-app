@@ -19,6 +19,7 @@ import {requireCatchBookingAuthority} from "./eventOrigin";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import {publishedEventSetup, withStoredEventPolicy} from
   "../domain/events/testing/eventSetupFixture";
+import {withEventSeatLedgers} from "./seatAuthority/eventSeatLedgerTestSupport";
 
 type FakeData = Record<string, unknown>;
 
@@ -230,7 +231,7 @@ class FakeTransaction {
 }
 
 function harness(initialDocs: Record<string, FakeData | undefined>) {
-  const firestore = new FakeFirestore(initialDocs);
+  const firestore = new FakeFirestore(withEventSeatLedgers(initialDocs));
   const rateLimitCalls: string[] = [];
   const notifications: FcmParams[] = [];
   const deletedStoragePaths: string[] = [];
@@ -1298,9 +1299,6 @@ test("createEvent starts the event on an empty, ready seat ledger",
       checkoutHeld: 0, revision: 1, capacityRevision: 1,
       policyVersion: policy.policyVersion, policyHash: policy.policyHash,
       migrationRevision: 1, state: "ready"});
-    const fence = h.firestore.get("eventSeatMigrationFences/event-1")!;
-    assert.equal(fence.state, "ready");
-    assert.equal(fence.organizerId, "club-1");
   });
 
 test("deleteEvent removes an empty seat ledger with the event",
@@ -1311,8 +1309,6 @@ test("deleteEvent removes an empty seat ledger with the event",
       {eventId: "event-1"}), h.deps), {deleted: true});
     assert.equal(h.firestore.get("events/event-1"), undefined);
     assert.equal(h.firestore.get("eventSeatLedgers/event-1"), undefined);
-    assert.equal(h.firestore.get("eventSeatMigrationFences/event-1"),
-      undefined);
   });
 
 test("deleteEvent removes the event's setup preferences and invite code",
@@ -1918,8 +1914,6 @@ test("updateEventHandler rejects cancelled events", async () => {
 function readySeatDocs(occupied = 0): Record<string, FakeData> {
   const policy = deriveEventSeatPolicy(event());
   return {
-    "eventSeatMigrationFences/event-1": {eventId: "event-1",
-      migrationRevision: 1, state: "ready"},
     "eventSeatLedgers/event-1": {eventId: "event-1", capacity: 20,
       occupied, revision: 3, capacityRevision: 1, migrationRevision: 1,
       policyHash: policy.policyHash, policyVersion: policy.policyVersion,
@@ -1941,28 +1935,6 @@ test("Host roster and event offers prevent legacy policy or schedule edits",
         (error) => assertHttpsCode(error, "failed-precondition"));
         assert.deepEqual(h.firestore.get("events/event-1"), event());
         assert.deepEqual(h.notifications, []);
-      }
-    }
-  });
-
-test("migration fence stops update, cancel and delete before any effects",
-  async () => {
-    for (const state of ["locked", "missing-ledger"]) {
-      for (const handler of [updateEventHandler, cancelEventHandler,
-        deleteEventHandler]) {
-        const h = harness({"organizers/club-1": organizer(),
-          "events/event-1": event(),
-          "eventSeatMigrationFences/event-1": {eventId: "event-1",
-            migrationRevision: 1, state}});
-        await assert.rejects(handler(request("host-1", {
-          eventId: "event-1",
-          ...(handler === updateEventHandler ?
-            {fields: {description: "Changed"}} : {}),
-        }), h.deps), (error) => assertHttpsCode(error,
-          "failed-precondition"));
-        assert.deepEqual(h.firestore.get("events/event-1"), event());
-        assert.deepEqual(h.notifications, []);
-        assert.deepEqual(h.deletedStoragePaths, []);
       }
     }
   });

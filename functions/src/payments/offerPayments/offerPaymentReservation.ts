@@ -14,7 +14,6 @@ import {readVerifiedOfferRecipient, type LoadRecipientAuth} from
   "../../organizerEventOfferRecipients/recipientGrant";
 import {prepareCrmOriginSeatIdentity} from
   "../../events/seatIdentityAuthority";
-import {readSeatMigrationWriterFence} from "../../events/seatMigrationPaged";
 import {FirestoreSeatTransaction, assertCurrentReadySeatSnapshot} from
   "../../events/seatAuthority/firestoreAdapter";
 import {fitsSeatCapacity, heldSeatCount} from
@@ -135,9 +134,6 @@ export async function reserveOfferPayment(params: {
         formConversionReceiptId(responseId, "eventAttendeeProposal", eventId))),
     ]);
     if (ownership.exists || legacyAdmission.exists) unavailable();
-    if (await readSeatMigrationWriterFence({db, tx, eventId}) !== "ready") {
-      unavailable();
-    }
     const identity = await prepareCrmOriginSeatIdentity({db, tx, eventId,
       organizerId, originId, responseId,
       verifiedOfferRecipient: {grantId, uid,

@@ -2570,35 +2570,18 @@ which readers hide for those formats. Capacity, price/currency and cash-refund
 policy are saved together; credits remain deferred. The update preserves existing
 admission restrictions and never changes offer payment snapshots. Every event
 created by `createPrivateEventSetup`, `createPrivateEventSeries` or `createEvent`
-starts with an empty, ready `eventSeatLedgers` record and its writer fence; its
-`capacity` is null (no limit) until the host sets a capacity, so guests can be
-added first. The save updates that ledger with the terms. The first terms may be
-set while guests hold seats if the capacity holds them; afterwards a
-capacity-only edit may run while places are reserved, never below them, and
-reserved places or checkout holds block any change to price, currency or
-admission policy. An older empty private event without a ledger receives one in
-that transaction, only after counters and bounded queries show no guest, payment,
-identity, import or migration history. Demo-owned events are excluded because
-seed tooling has legacy seat writers; historical sources require seat
-reconciliation.
-`reconcilePrivateEventSeats` accepts the same exact journaled admission-settings
-command with no other detail fields. Each request advances at most three bounded
-pages; current manager, account deletion and event ownership are rechecked in
-all transactions. Explicit missing terms remain staged until the verified roster,
-ready ledger/fence and ordinary details receipt commit together. Configured terms,
-guests and issued offers remain unchanged. Cleanup resumes even after the final
-receipt exists. Setup edits and publication wait while the migration fence is
-locked. An initial stale review can release the client journal only with the exact
-server no-commit marker; interrupted or started runs retain the original command.
-The Host automatically advances a bounded number of requests and then offers
-Continue checking guests. An explicit discard is journaled before sending and
-bounded-cleans only scan/plan sources with no frozen plan or applied output. A
-`details` receipt with `outcome: discarded` and `expectedSetupRevision` (never an
-`appliedRevision`) commits before the lock is released; delayed original saves
-cannot revive it. If output application already began, the exact typed denial
-restores the original save intent. A previously committed change returns its
-saved receipt and finishes cleanup. No existing guest or offer is removed.
-Reopening retains the command. Both privacy and seat-writer production gates stay closed pending rollout and Cross Paths integration.
+starts with an empty, ready `eventSeatLedgers` record; its `capacity` is null (no
+limit) until the host sets a capacity, so guests can be added first. The save
+updates that ledger with the terms. The first terms may be set while guests hold
+seats if the capacity holds them; afterwards a capacity-only edit may run while
+places are reserved, never below them, and reserved places or checkout holds block
+any change to price, currency or admission policy. The ledger is the only seat
+path: every seat writer reads it in its transaction, and an event without a ready
+ledger takes no seat change. `events.bookedCount` mirrors the ledger's occupied
+places from every source (Catch bookings, imports, walk-ins, admissions).
+`reconcilePrivateEventSeats` remains only for installed Host builds that send
+admission-settings saves to it: a save is the ordinary details save and a discard
+applies nothing. It retires with the older-build callables.
 The manager read includes `eventDetails` for reopening those actual values;
 event preferences remain separate recommendations. Hosts can add or edit venue
 and duration after creating offers or importing a roster. Changing format still
@@ -2896,7 +2879,7 @@ requires publication-ready scheduling and admission values at creation.
 | `itinerary` | Optional ordered run of show | Shared editor in both flows; empty list clears. Detail omits empty itinerary and conditionally shows item metadata. |
 | `eventFormat` | Required before publication; preset with optional customization | Activity/interaction choices; optional custom label and route editor. Detail shows actual format and applicable route expectations. |
 | `distanceKm`, `pace` | Required for distance formats; compatibility defaults otherwise | Distance/pace controls only for distance activities. Non-distance compatibility `0/easy` must never become a skill/intensity/energy claim. |
-| `capacityLimit`, `priceInPaise`, `currency` | Required admission terms; currency contextual default | Capacity/price controls and market currency; detail shows availability and price. Private terms save together under seat reconciliation. |
+| `capacityLimit`, `priceInPaise`, `currency` | Required admission terms; currency contextual default | Capacity/price controls and market currency; detail shows availability and price. Private terms save together with the event's seat ledger. |
 | `constraints`, `eventPolicy` | Policy defaults with optional overrides | Existing admission, waitlist, pricing, eligibility and cancellation controls/presets; detail explains effective policy. Advanced preset-managed values are not arbitrary free-form inputs. |
 | `eventOrigin`, `runtimeAccess` | Origin/access decision and derived runtime rules | Catch/external origin and external roster/source controls in full flow; private flow preserves its gated lifecycle. Source URL/ID are operational provenance, not guest marketing links. |
 | `status`, `cancelledAt`, `cancellationReason` | Lifecycle command; optional nullable reason/time | Cancellation flow, not create form. Cancellation reason appears only on a cancelled event when nonblank. |

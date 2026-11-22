@@ -69,8 +69,6 @@ import {
   onboardingDraftSeed,
 } from "../events/eventAttendees";
 import {resolveInviteAttributionToken} from "../events/inviteLinks";
-import {readSeatMigrationWriterFence} from
-  "../events/seatMigrationPaged";
 import {FirestoreSeatIdentityAuthority, prepareCatchUidSeatIdentity} from
   "../events/seatIdentityAuthority";
 import {FirestoreSeatTransaction} from
@@ -297,17 +295,15 @@ export async function claimEventRuntimeAccessHandler(
         "Event runtime access changed.");
     }
     requireRuntimeTerms(currentEvent, payload.runtimeTermsVersion);
-    const seatMode = await readSeatMigrationWriterFence({db, tx,
-      eventId: resolved.eventId});
-    const phoneMatches = seatMode === "ready" ? await tx.get(db
+    const phoneMatches = await tx.get(db
       .collection("eventAttendees")
       .where("eventId", "==", resolved.eventId)
-      .where("phoneE164", "==", phone).limit(2)) : null;
-    if (phoneMatches && phoneMatches.size > 1) {
+      .where("phoneE164", "==", phone).limit(2));
+    if (phoneMatches.size > 1) {
       throw new HttpsError("failed-precondition",
         "Verified phone matches multiple guest records.");
     }
-    const selectedAttendeeRef = phoneMatches?.docs[0]?.ref ?? attendeeRef;
+    const selectedAttendeeRef = phoneMatches.docs[0]?.ref ?? attendeeRef;
     const attendeeSnap = await tx.get(selectedAttendeeRef);
     if (participantSnap.exists) {
       const participant = requireRuntimeParticipant(
@@ -316,8 +312,7 @@ export async function claimEventRuntimeAccessHandler(
         uid
       );
       if (participant.accessStatus !== "revoked") {
-        if (seatMode === "ready" &&
-            participant.accessStatus !== "pendingApproval") {
+        if (participant.accessStatus !== "pendingApproval") {
           if (!participant.eventAttendeeId) {
             throw new HttpsError("failed-precondition",
               "Runtime guest seat is unavailable.");
@@ -379,10 +374,10 @@ export async function claimEventRuntimeAccessHandler(
 
     const walkInPolicy = currentEvent.runtimeAccess!.walkInPolicy;
     if (!attendee && walkInPolicy === "deny") {
-      const currentParticipation = seatMode === "ready" ? await tx.get(db
+      const currentParticipation = await tx.get(db
         .collection("eventBookings")
-        .doc(eventParticipationId(resolved.eventId, uid))) : null;
-      const current = currentParticipation?.data();
+        .doc(eventParticipationId(resolved.eventId, uid)));
+      const current = currentParticipation.data();
       const organizerId = currentEvent.organizerId;
       if (!current || current.eventId !== resolved.eventId ||
           current.uid !== uid ||
@@ -400,24 +395,22 @@ export async function claimEventRuntimeAccessHandler(
       }
     }
 
-    const seatEnrollment = seatMode === "ready" ?
-      await prepareRuntimeGuestSeatEnrollment({db, tx, event: currentEvent,
-        eventId: resolved.eventId, uid, phone, attendee,
-        attendeeId: selectedAttendeeRef.id, phoneAttendeeId: exactAttendeeId,
-        walkInPolicy, now}) : null;
-    const seatAlreadyActive = seatEnrollment?.seatAlreadyActive === true;
-    seatEnrollment?.apply();
+    const seatEnrollment = await prepareRuntimeGuestSeatEnrollment({db, tx,
+      event: currentEvent, eventId: resolved.eventId, uid, phone, attendee,
+      attendeeId: selectedAttendeeRef.id, phoneAttendeeId: exactAttendeeId,
+      walkInPolicy, now});
+    const seatAlreadyActive = seatEnrollment.seatAlreadyActive === true;
+    seatEnrollment.apply();
     attendee = enrollRuntimeGuestAttendee({tx,
       attendeeRef: selectedAttendeeRef, existing: attendee,
       eventId: resolved.eventId, organizerId: currentEvent.organizerId, uid,
       displayName: payload.displayName, phone, walkInPolicy,
-      seatReady: seatMode === "ready", seatAlreadyActive,
+      seatAlreadyActive,
       inviteLinkId: inviteAttribution?.inviteLinkId ?? null, now});
 
     const needsApproval = walkInPolicy === "hostApproval" &&
       !seatAlreadyActive && (!attendeeSnap.exists ||
-        seatMode === "ready" && (attendee.status === "invited" ||
-          attendee.status === "waitlisted"));
+        attendee.status === "invited" || attendee.status === "waitlisted");
     const profile = emptyRuntimeProfile(payload.displayName);
     const completedFieldIds = completedRuntimeFieldIds(profile);
     const accessStatus = needsApproval ? "pendingApproval" :
@@ -641,8 +634,6 @@ export async function checkInEventRuntimeHandler(
     }
     const event = requireRuntimeVenueEvent(
       requireDoc<EventDocument>(eventSnap, "EventDocument"));
-    const seatMode = await readSeatMigrationWriterFence({db, tx,
-      eventId: resolved.eventId});
     const participant = requireRuntimeParticipant(
       participantSnap,
       resolved.eventId,
@@ -675,28 +666,26 @@ export async function checkInEventRuntimeHandler(
         "This guest-list entry cannot be checked in."
       );
     }
-    if (seatMode === "ready") {
-      const identity = await new FirestoreSeatIdentityAuthority().resolve({
-        db, tx, eventId: resolved.eventId,
-        organizerId: event.organizerId,
-        subject: attendee.source === "catchBooking" ?
-          {kind: "verifiedUid", uid} :
-          {kind: "importAttendee",
-            attendeeId: participant.eventAttendeeId},
-      });
-      if (!identity) {
-        throw new HttpsError("failed-precondition",
-          "Guest check-in has no current reserved seat.");
-      }
-      const seats = new FirestoreSeatTransaction(db, tx);
-      const [ledger, reservation] = await Promise.all([
-        seats.ledger(resolved.eventId),
-        seats.reservation(resolved.eventId, identity.key),
-      ]);
-      requireRuntimeGuestSeatSnapshot({event, eventId: resolved.eventId,
-        organizerId: event.organizerId, identity,
-        ledger, reservation, expectedActive: true});
+    const identity = await new FirestoreSeatIdentityAuthority().resolve({
+      db, tx, eventId: resolved.eventId,
+      organizerId: event.organizerId,
+      subject: attendee.source === "catchBooking" ?
+        {kind: "verifiedUid", uid} :
+        {kind: "importAttendee",
+          attendeeId: participant.eventAttendeeId},
+    });
+    if (!identity) {
+      throw new HttpsError("failed-precondition",
+        "Guest check-in has no current reserved seat.");
     }
+    const seats = new FirestoreSeatTransaction(db, tx);
+    const [ledger, reservation] = await Promise.all([
+      seats.ledger(resolved.eventId),
+      seats.reservation(resolved.eventId, identity.key),
+    ]);
+    requireRuntimeGuestSeatSnapshot({event, eventId: resolved.eventId,
+      organizerId: event.organizerId, identity,
+      ledger, reservation, expectedActive: true});
     rejectVenueSessionReplay(redemptionSnap);
     if (attendee.status === "checkedIn") {
       return {status: "checkedIn", alreadyCheckedIn: true};
@@ -782,8 +771,6 @@ export async function approveEventRuntimeClaimHandler(
         "This runtime claim has already been reviewed."
       );
     }
-    const seatMode = await readSeatMigrationWriterFence({db, tx,
-      eventId: payload.eventId});
     const now = deps.timestamp();
     if (payload.decision === "reject") {
       tx.update(claimRef, {
@@ -829,13 +816,11 @@ export async function approveEventRuntimeClaimHandler(
       participant.requiredFieldIds,
       participant.completedFieldIds
     );
-    const seat = seatMode === "ready" ?
-      await prepareApprovedRuntimeGuestSeat({db, tx, event,
-        eventId: payload.eventId, uid: payload.uid, attendeeId, attendee,
-        now}) : null;
-    seat?.apply();
+    const seat = await prepareApprovedRuntimeGuestSeat({db, tx, event,
+      eventId: payload.eventId, uid: payload.uid, attendeeId, attendee, now});
+    seat.apply();
     linkApprovedRuntimeGuest({tx, attendeeRef, attendee, uid: payload.uid,
-      seatReady: seatMode === "ready", now});
+      now});
     tx.update(participantRef, {
       eventAttendeeId: attendeeId,
       claimMethod: "hostApproval",

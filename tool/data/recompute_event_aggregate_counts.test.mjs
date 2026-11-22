@@ -6,12 +6,14 @@ import {
   buildEventAggregateRepairPlan,
 } from "./recompute_event_aggregate_counts.mjs";
 
-test("buildEventAggregateRepairPlan counts active event participation edges", async () => {
+test("buildEventAggregateRepairPlan takes bookedCount from the seat ledger", async () => {
   const firestore = fakeFirestore({
     events: {
       "event-1": {bookedCount: 0, checkedInCount: 0, waitlistedCount: 0},
       "event-2": {bookedCount: 9, checkedInCount: 9, waitlistedCount: 9},
     },
+    // event-1's ledger also counts an imported guest; event-2 has none.
+    eventSeatLedgers: {"event-1": {occupied: 3}},
     eventBookings: {
       "event-1_a": {
         eventId: "event-1",
@@ -42,7 +44,7 @@ test("buildEventAggregateRepairPlan counts active event participation edges", as
         genderCounts: {},
       },
       expected: {
-        bookedCount: 2,
+        bookedCount: 3,
         checkedInCount: 1,
         waitlistedCount: 1,
         genderCounts: {man: 1, woman: 1},
@@ -67,6 +69,8 @@ test("buildEventAggregateRepairPlan counts active event participation edges", as
   ]);
   assert.deepEqual(plan.summary.warnings, [
     "eventBookings/missing_a references missing events/missing.",
+    "events/event-2 has no seat ledger; bookedCount is counted from " +
+      "eventBookings.",
   ]);
 });
 
@@ -146,5 +150,5 @@ function docSnapshot(collectionName, id, value) {
 }
 
 test("CLI shared helpers preserve project precedence and dry-run policy", (t) => {
-  verifyRecomputeCli(t, new URL("./recompute_event_aggregate_counts.mjs", import.meta.url), {events: {event: {bookedCount: 7, checkedInCount: 0, waitlistedCount: 0}}, eventBookings: {}});
+  verifyRecomputeCli(t, new URL("./recompute_event_aggregate_counts.mjs", import.meta.url), {events: {event: {bookedCount: 7, checkedInCount: 0, waitlistedCount: 0}}, eventBookings: {}, eventSeatLedgers: {}}, {reads: 3});
 });

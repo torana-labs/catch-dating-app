@@ -1,6 +1,6 @@
 import {getEmulatorFirestore} from "../shared/testing/emulatorFirestore";
 import assert from "node:assert/strict";
-import {randomBytes} from "node:crypto";
+import {createHash, randomBytes} from "node:crypto";
 import test from "node:test";
 import {initializeApp, deleteApp} from "firebase-admin/app";
 import {Timestamp} from "firebase-admin/firestore";
@@ -12,6 +12,8 @@ import {communityMembershipId} from "./communityMembershipAuthority";
 import {signUpUserForEvent} from "../events/signUpUserForEvent";
 import {catchNativeEventOrigin} from "../shared/testUtils";
 import {org, actorUid} from "../organizerFormAdmission/admissionTestFixture";
+import {withEventSeatLedgers} from
+  "../events/seatAuthority/eventSeatLedgerTestSupport";
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 
@@ -19,6 +21,13 @@ const emulator = process.env.FIRESTORE_EMULATOR_HOST;
  * @param {string} projectId Namespace, reused only by the negative control.
  * @return {Promise<void>} Resolves after both scenarios and client teardown.
  */
+/** Each guest's current Auth phone (no Auth emulator), distinct per uid. */
+function phoneOf(uid: string) {
+  const digits = createHash("sha256").update(uid).digest("hex")
+    .replace(/[a-f]/gu, "").padEnd(6, "0").slice(0, 6);
+  return {loadCurrentAuthPhone: async () => `+91990${digits}0`};
+}
+
 async function runMembershipRace(
   projectId = `demo-cm-${randomBytes(10).toString("hex")}`
 ): Promise<void> {
@@ -57,6 +66,9 @@ async function runMembershipRace(
       batch.set(db.doc(path), value);
     }
     batch.set(db.doc("events/event1"), event);
+    // Every event has its seat ledger.
+    batch.set(db.doc("eventSeatLedgers/event1"), withEventSeatLedgers(
+      {"events/event1": event})["eventSeatLedgers/event1"]);
     batch.set(db.doc(`users/${h.uid}`), user);
     await batch.commit();
     const decide = (data: Record<string, unknown>) =>
@@ -69,7 +81,7 @@ async function runMembershipRace(
       h.membershipId}`).get()).data()?.state, "active",
     "Fresh grant must create active membership before the race.");
     const [booking, revocation] = await Promise.allSettled([
-      signUpUserForEvent(db, "event1", h.uid),
+      signUpUserForEvent(db, "event1", h.uid, undefined, phoneOf(h.uid)),
       decide({...h.payload, action: "revoke", requestId: "revoke-race",
         expectedRevision: 1, applicationId: null,
         expectedApplicationRevision: null, reason: "Synthetic race"}),
@@ -83,7 +95,8 @@ async function runMembershipRace(
     if (booking.status === "rejected") {
       assert.match(String(booking.reason), /Approved community membership/);
     } else {
-      await signUpUserForEvent(db, "event1", h.uid);
+      await signUpUserForEvent(db, "event1", h.uid, undefined,
+        phoneOf(h.uid));
       const replayedCount = (await db.doc("events/event1").get())
         .data()?.bookedCount;
       assert.equal(replayedCount, 1);
@@ -94,6 +107,8 @@ async function runMembershipRace(
     // A different event exercises the existing atomic last-seat owner.
     const setup = db.batch();
     setup.set(db.doc("events/capacityEvent"), event);
+    setup.set(db.doc("eventSeatLedgers/capacityEvent"), withEventSeatLedgers(
+      {"events/capacityEvent": event})["eventSeatLedgers/capacityEvent"]);
     for (const uid of ["capacity1", "capacity2"]) {
       setup.set(db.doc(`users/${uid}`), user);
       for (const [path, value] of Object.entries(
@@ -101,7 +116,8 @@ async function runMembershipRace(
     }
     await setup.commit();
     const raced = await Promise.allSettled(["capacity1", "capacity2"].map(
-      (uid) => signUpUserForEvent(db, "capacityEvent", uid)));
+      (uid) => signUpUserForEvent(db, "capacityEvent", uid, undefined,
+        phoneOf(uid))));
     assert.equal(raced.filter((r) => r.status === "fulfilled").length, 1,
       raced.map((r) => r.status === "rejected" ? String(r.reason) : r.status)
         .join("; "));

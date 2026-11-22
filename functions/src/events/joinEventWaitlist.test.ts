@@ -6,13 +6,11 @@ import {assertEventTakesWaitlist, joinEventWaitlistHandler,
 
 type Row = Record<string, unknown>;
 
-function lockedHarness() {
+function unavailableLedgerHarness() {
   const docs = new Map<string, Row>([
     ["events/event-1", {status: "active"}],
     ["users/runner-1", {name: "Runner"}],
     ["eventBookings/event-1_runner-1", {status: "waitlisted"}],
-    ["eventSeatMigrationFences/event-1", {eventId: "event-1",
-      migrationRevision: 1, state: "locked"}],
     ["eventSeatLedgers/event-1", {eventId: "event-1",
       migrationRevision: 1, state: "unreconciled"}],
   ]);
@@ -53,9 +51,9 @@ function request(): CallableRequest<unknown> {
     acceptsStreaming: false};
 }
 
-test("locked migration denies join and leave before waitlist source writes",
+test("an unavailable seat ledger denies join and leave before any write",
   async () => {
-    const h = lockedHarness();
+    const h = unavailableLedgerHarness();
     await assert.rejects(() => joinEventWaitlistHandler(request(), h.deps));
     await assert.rejects(() => leaveEventWaitlistHandler(request(), h.deps));
     assert.equal(h.writes(), 0);

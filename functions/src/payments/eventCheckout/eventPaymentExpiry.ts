@@ -4,7 +4,6 @@ import {FirestoreSeatTransaction} from
   "../../events/seatAuthority/firestoreAdapter";
 import {prepareCheckoutHold, applyCheckoutHold} from
   "../../events/seatAuthority/checkoutSeatHold";
-import {readSeatMigrationWriterFence} from "../../events/seatMigrationPaged";
 import type {EventPaymentLedger, EventSeatPaymentState} from
   "./eventPaymentState";
 
@@ -34,8 +33,6 @@ export async function releaseEventPaymentHold<P extends EventSeatPaymentState>(
     if (reason === "fulfillmentFailed" &&
         (payment.status !== "captured" || !payment.capturedAt ||
           !payment.providerPaymentId)) unavailable();
-    if (await readSeatMigrationWriterFence({db, tx,
-      eventId: payment.eventId}) !== "ready") unavailable();
     const seatTx = new FirestoreSeatTransaction(db, tx);
     const [ledger, reservation] = await Promise.all([
       seatTx.ledger(payment.eventId),

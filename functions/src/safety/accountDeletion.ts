@@ -242,7 +242,7 @@ async function queueRelationshipCleanup(params: {
   const {db, uid, now, writer} = params;
   // Release pair holds while their persisted UID identity proof is current.
   await queueCrossPathsPairHoldCleanup(db, uid, writer);
-  // The migration fence, participation and linked attendee identity update
+  // The seat ledger, participation and linked attendee identity update
   // share one transaction, including attendee-only imported seats.
   await deleteAccountEventParticipations({db, uid, now,
     nowMillis: Date.now()});

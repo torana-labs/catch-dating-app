@@ -1,4 +1,3 @@
-import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {createHash} from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {OrganizerDocument} from
@@ -15,7 +14,7 @@ import {
   PrivateEventBasicsInput,
 } from "./basics";
 import {createEventSeatLedgerInTransaction} from
-  "../seatAuthority/eventSeatLedgerBirth";
+  "../seatAuthority/eventSeatLedgers";
 import {OrganizerSetupDefaults} from "./defaults";
 import {projectManagerEventSetupDefaults} from
   "../../organizers/eventSetupDefaults/service";
@@ -197,7 +196,6 @@ export async function updatePrivateEventBasics(params: {
       return {eventId: command.eventId,
         setupRevision: receipt.appliedRevision as number, replayed: true};
     }
-    await readSeatMigrationWriterFence({db, tx, eventId: command.eventId});
     if (event.publicationState !== "private" ||
         event.status !== "active") {
       throw new HttpsError("failed-precondition",

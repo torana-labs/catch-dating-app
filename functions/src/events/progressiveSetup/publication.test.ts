@@ -4,7 +4,7 @@ import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
-import {Store} from "../../organizerFormAdmission/admissionTestFixture";
+import {Row, Store} from "../../organizerFormAdmission/admissionTestFixture";
 import {projectPrivateEventSetupSummary} from "./readModel";
 import {privateEventBasicsShapeEditable} from "./commitments";
 import {createPrivateEventSetup} from "./service";
@@ -17,6 +17,8 @@ import {setEventPublication} from "./publication";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
 import {contractValidator} from "../../shared/contractTestValidators";
+import {withEventSeatLedgers} from
+  "../seatAuthority/eventSeatLedgerTestSupport";
 
 const validateEventSetupReceiptDocument =
   contractValidator("EventSetupReceiptDocument");
@@ -38,6 +40,10 @@ function setup() {
   timezone: {value: "Asia/Kolkata", source: "event"},
   organizerDefaultsRevision: null, organizerDefaultsHash: "a".repeat(64)}};
   store.put("events/event1", event);
+  // A private event about to publish holds no seat yet.
+  store.put("eventSeatLedgers/event1", withEventSeatLedgers({
+    "events/event1": {...event, bookedCount: 0}})["eventSeatLedgers/event1"] as
+    Row);
   store.put("organizers/org1", {ownerUserId: "host1", hostUserId: "host1",
     hostUserIds: [], hostProfiles: [], status: "active", archived: false,
     appVisibility: "discoverable"});

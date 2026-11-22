@@ -2981,26 +2981,12 @@
       "id": "data:migrate-event-seat-ledgers",
       "category": "data",
       "path": "tool/data/migrate_event_seat_ledgers.mjs",
-      "command": "node tool/data/migrate_event_seat_ledgers.mjs --env <dev|prod> [--event <id>] [--apply [--allow-prod]] [--discard <id>]",
-      "surface": "remote-destructive",
-      "guard": "apply-and-prod-flag",
-      "status": "active",
+      "status": "retired",
       "role": "operator",
-      "description": "One-off move of every event without a seat ledger onto it: empty ledgers for cancelled events nobody holds a seat in, the paged migration engine for active events, then bookedCount set to the ledger's occupied seats. Dry run unless --apply; --discard releases the lock a failed run left.",
-      "checks": [
-        "node --check tool/data/migrate_event_seat_ledgers.mjs",
-        "npm --prefix functions run build && node --test tool/data/migrate_event_seat_ledgers.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/data/migrate_event_seat_ledgers.test.mjs",
-        "functions/src/events/seatMigrationPaged.ts",
-        "functions/src/events/seatMigration.ts",
-        "functions/src/events/seatAuthority/eventSeatLedgerBirth.ts",
-        "functions/src/events/seatAuthority/firestoreAdapter.ts",
-        "functions/src/events/seatAuthority/migrationOutstandingHolds.ts",
-        "functions/src/events/seatAuthority/liveMigrationSource.ts"
-      ],
-      "runbook": "tool/README.md#seat-ledger-backfill"
+      "description": "One-off move of every event without a seat ledger onto it: empty ledgers for cancelled or empty active events, demo seat records for synthetic bookings, and the paged migration engine for active events, then bookedCount set to the ledger occupied seats.",
+      "retiredOn": "2026-11-23",
+      "reason": "Nothing left to migrate. On 22 Nov 2026 the owner applied it to catch-dating-app-64e51 and it was applied to catchdates-dev; a final dry run in each project reported every event on-ledger (28 prod, 147 dev). Events are born with a ledger since PR #2342, and the one-seat-path change removes the migration engine the tool drove, so it can no longer run.",
+      "lastCommit": "af4377393582d51886142771beec154657901125"
     },
     {
       "id": "data:migrate-firestore-consolidation",

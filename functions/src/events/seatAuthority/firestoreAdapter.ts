@@ -18,6 +18,11 @@ function id(eventId: string, key: string): string {
     .digest("hex");
 }
 
+/** The `eventSeatReservations` document id of one canonical identity. */
+export function seatReservationDocId(eventId: string, key: string): string {
+  return id(eventId, key);
+}
+
 function object(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" &&
     !Array.isArray(value);

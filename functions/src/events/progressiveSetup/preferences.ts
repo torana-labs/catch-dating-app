@@ -1,4 +1,3 @@
-import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {UpdatePrivateEventPreferencesCallablePayload} from
   "../../shared/generated/updatePrivateEventPreferencesCallablePayload";
@@ -70,7 +69,6 @@ export async function updatePrivateEventPreferences(params: {
       return {eventId: command.eventId,
         setupRevision: receiptSnap.data()!.appliedRevision, replayed: true};
     }
-    await readSeatMigrationWriterFence({db, tx, eventId: command.eventId});
     if (event.publicationState !== "private" || event.status !== "active") {
       throw new HttpsError("failed-precondition",
         "Only active private event preferences can be edited here.");
