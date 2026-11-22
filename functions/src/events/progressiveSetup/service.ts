@@ -14,6 +14,8 @@ import {
   normalizePrivateEventBasics,
   PrivateEventBasicsInput,
 } from "./basics";
+import {createEventSeatLedgerInTransaction} from
+  "../seatAuthority/eventSeatLedgerBirth";
 import {OrganizerSetupDefaults} from "./defaults";
 import {projectManagerEventSetupDefaults} from
   "../../organizers/eventSetupDefaults/service";
@@ -130,6 +132,7 @@ export async function createPrivateEventSetup(params: {
       ...defaultBookingQuestions(defaultsSnap.data()),
     };
     tx.create(eventRef, event);
+    createEventSeatLedgerInTransaction(tx, db, eventRef.id, event);
     tx.create(receiptRef, {
       operation: "create",
       actorUid,

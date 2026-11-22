@@ -3,7 +3,8 @@ import {readVerifiedOfferRecipient} from
 import {assertUnpartitionedAdmission} from
   "../domain/events/admissionEligibility";
 import {newFormAttendee} from "./admissionRoster";
-import {heldSeatCount} from "../events/seatAuthority/seatAuthority";
+import {fitsSeatCapacity, heldSeatCount} from
+  "../events/seatAuthority/seatAuthority";
 import {createHash} from "node:crypto";
 import {rosterWithReservedWaitlistOffersInTransaction} from
   "../events/eventPolicy";
@@ -586,7 +587,7 @@ async function executeAdmission(
           waitlistedCountsByCohort: {},
           totalBooked: ledger.occupied + heldSeatCount(ledger)},
         {nowMillis: now});
-      if (withOffers.totalBooked >= ledger.capacity) {
+      if (!fitsSeatCapacity(ledger.capacity, withOffers.totalBooked + 1)) {
         unavailable("Available seats are reserved by current waitlist offers.");
       }
     }

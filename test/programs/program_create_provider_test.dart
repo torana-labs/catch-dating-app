@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_create_journal.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
@@ -62,6 +63,8 @@ class _Inventory extends Fake implements ProgramInventoryRepository {
 
 class _Setup extends Fake implements ProgramSetupRepository {}
 
+class _Views extends Fake implements OrganizerProgramViewsRepository {}
+
 class _RejectedPreferences extends Fake implements SharedPreferences {
   @override
   String? getString(String key) => null;
@@ -120,6 +123,7 @@ Future<(ProviderContainer, _Session, _Inventory)> _load({
     overrides: [
       uidProvider.overrideWithValue(const AsyncData('account')),
       programInventoryRepositoryProvider.overrideWithValue(inventory),
+      organizerProgramViewsRepositoryProvider.overrideWithValue(_Views()),
       programSetupRepositoryProvider.overrideWithValue(_Setup()),
       programCreateJournalProvider.overrideWithValue(
         ProgramCreateJournal(preferences: preferences),

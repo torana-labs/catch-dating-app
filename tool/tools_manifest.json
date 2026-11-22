@@ -495,6 +495,30 @@
       "role": "generator"
     },
     {
+      "id": "architecture:dart-blast-radius",
+      "category": "architecture",
+      "path": "tool/architecture/dart_blast_radius.mjs",
+      "command": "node tool/architecture/dart_blast_radius.mjs",
+      "surface": "local-read",
+      "status": "active",
+      "role": "finder",
+      "description": "Report only: from the import, export and part directives of tracked Dart files, how many lib libraries each test's import closure reaches on average, the most-reached libraries, per-file reach (--reach), the effect of cutting named edges (--cut from:to) and chokepoints (--chokepoints: barrels, widely imported files and hubs ranked by the reach removed if every edge into them is cut). Re-measures the test blast radius after each import-graph cut; it approximates, and does not replace, the Flutter test selector.",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/architecture/dart_blast_radius.test.mjs"
+      ],
+      "checks": [
+        "node --check tool/architecture/dart_blast_radius.mjs",
+        "node --test tool/architecture/dart_blast_radius.test.mjs"
+      ],
+      "runbook": "tool/README.md#dart-test-blast-radius"
+    },
+    {
       "id": "architecture:organizer-rename",
       "category": "generator",
       "path": "tool/architecture/rename_to_organizer.mjs",
@@ -2880,6 +2904,31 @@
       "lastCommit": "b5a30bc69730fa0cb5d8c15d0ee82bd9563063a8"
     },
     {
+      "id": "data:migrate-event-seat-ledgers",
+      "category": "data",
+      "path": "tool/data/migrate_event_seat_ledgers.mjs",
+      "command": "node tool/data/migrate_event_seat_ledgers.mjs --env <dev|prod> [--event <id>] [--apply [--allow-prod]] [--discard <id>]",
+      "surface": "remote-destructive",
+      "guard": "apply-and-prod-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "One-off move of every event without a seat ledger onto it: empty ledgers for cancelled events nobody holds a seat in, the paged migration engine for active events, then bookedCount set to the ledger's occupied seats. Dry run unless --apply; --discard releases the lock a failed run left.",
+      "checks": [
+        "node --check tool/data/migrate_event_seat_ledgers.mjs",
+        "npm --prefix functions run build && node --test tool/data/migrate_event_seat_ledgers.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/migrate_event_seat_ledgers.test.mjs",
+        "functions/src/events/seatMigrationPaged.ts",
+        "functions/src/events/seatMigration.ts",
+        "functions/src/events/seatAuthority/eventSeatLedgerBirth.ts",
+        "functions/src/events/seatAuthority/firestoreAdapter.ts",
+        "functions/src/events/seatAuthority/migrationOutstandingHolds.ts",
+        "functions/src/events/seatAuthority/liveMigrationSource.ts"
+      ],
+      "runbook": "tool/README.md#seat-ledger-backfill"
+    },
+    {
       "id": "data:migrate-firestore-consolidation",
       "category": "data",
       "path": "tool/data/migrate_firestore_consolidation.mjs",
@@ -3052,6 +3101,26 @@
       "impactPaths": [
         "tool/data/recompute_organizer_follower_counts.test.mjs",
         "tool/data/lib/recompute_cli_test_support.mjs"
+      ],
+      "role": "generator",
+      "runbook": "tool/README.md#firestore-projection-repairs"
+    },
+    {
+      "id": "data:repair-organizer-program-counts",
+      "category": "data",
+      "path": "tool/data/recompute_organizer_program_counts.mjs",
+      "command": "node tool/data/recompute_organizer_program_counts.mjs",
+      "surface": "remote-write",
+      "guard": "apply-and-prod-flag",
+      "status": "active",
+      "description": "Recounts the planner list counts on organizerProgramViews from programGuests and programTravelLegs with the nightly recount's compiled code; the backfill for the counts.",
+      "checks": [
+        "node --check tool/data/recompute_organizer_program_counts.mjs",
+        "node --test tool/data/recompute_organizer_program_counts.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/recompute_organizer_program_counts.test.mjs",
+        "functions/src/programs/organizerProgramCounts.ts"
       ],
       "role": "generator",
       "runbook": "tool/README.md#firestore-projection-repairs"

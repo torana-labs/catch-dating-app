@@ -3,7 +3,7 @@ import {assertPublicEventAge} from "../profiles/eventProfileRequirements";
 import {publicGuestMembership} from "./publicRegistration/authority";
 import {assertPublicRegistrationPolicy} from "./publicRegistration/policy";
 import {publicRegistrationMode} from "../domain/events/publicRegistrationTerms";
-import {heldSeatCount} from "./seatAuthority/seatAuthority";
+import {fitsSeatCapacity, heldSeatCount} from "./seatAuthority/seatAuthority";
 import {requirePublicConfiguredEvent} from "./configuredEvent";
 import {createHash} from "crypto";
 import * as admin from "firebase-admin";
@@ -935,7 +935,7 @@ export async function registerPublicEventHandler(
       const seats = new FirestoreSeatTransaction(db, tx);
       const ledger = await seats.ledger(payload.eventId);
       if (!ledger || ledger.state !== "ready" ||
-          ledger.capacity !== policy.admission.capacityLimit) {
+          ledger.capacity !== (policy.admission.capacityLimit ?? null)) {
         throw new HttpsError("failed-precondition",
           "Event seat authority needs reconciliation.");
       }
@@ -986,7 +986,7 @@ export async function registerPublicEventHandler(
         throw new HttpsError("failed-precondition",
           "Guest roster and seat authority disagree.");
       }
-      if (!isActive && readyCount < ledger.capacity) {
+      if (!isActive && fitsSeatCapacity(ledger.capacity, readyCount + 1)) {
         const prepared = await prepareFirestoreSeat({db, tx,
           identityAuthority: {resolve: async () => identity},
           command: {eventId: payload.eventId,

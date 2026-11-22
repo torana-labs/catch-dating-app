@@ -17,7 +17,8 @@ import {prepareCrmOriginSeatIdentity} from
 import {readSeatMigrationWriterFence} from "../../events/seatMigrationPaged";
 import {FirestoreSeatTransaction, assertCurrentReadySeatSnapshot} from
   "../../events/seatAuthority/firestoreAdapter";
-import {heldSeatCount} from "../../events/seatAuthority/seatAuthority";
+import {fitsSeatCapacity, heldSeatCount} from
+  "../../events/seatAuthority/seatAuthority";
 import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {prepareCheckoutHold, applyCheckoutHold} from
   "../../events/seatAuthority/checkoutSeatHold";
@@ -156,7 +157,9 @@ export async function reserveOfferPayment(params: {
       tx, db, eventId, {bookedCountsByCohort: {},
         waitlistedCountsByCohort: {},
         totalBooked: ledger.occupied + heldSeatCount(ledger)}, {nowMillis});
-    if (withOffers.totalBooked >= ledger.capacity) unavailable();
+    if (!fitsSeatCapacity(ledger.capacity, withOffers.totalBooked + 1)) {
+      unavailable();
+    }
     const hold = await prepareCheckoutHold({tx: seatTx,
       command: {eventId, subject: identity.identity,
         operation: "checkoutHold", paymentId, requestId: `hold_${paymentId}`,

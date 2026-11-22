@@ -43,6 +43,10 @@ export {onProgramTripViewChanged, onProgramHotelInboundLegChanged,
 export {onOrganizerProgramViewChanged, onOrganizerProgramFunctionChanged,
   onOrganizerProgramPickupPointChanged, onOrganizerProgramHotelChanged} from
   "./organizerProgramViewTriggers";
+export {onOrganizerProgramGuestCountChanged,
+  onOrganizerProgramTravelLegCountChanged,
+  reconcileOrganizerProgramCountsSweep} from
+  "./organizerProgramCountTriggers";
 export {onProgramStaffViewGrantChanged, onProgramStaffViewProgramChanged} from
   "./programStaffViewTriggers";
 export {onProgramHotelRoomStayChanged, onProgramHotelRoomBlockChanged,

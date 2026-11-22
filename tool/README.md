@@ -749,6 +749,29 @@ node tool/firebase/report_environment_parity.mjs --surfaces remote-config,functi
 node tool/firebase/report_environment_parity.mjs --policy-only
 ```
 
+## Dart Test Blast Radius
+
+`tool/architecture/dart_blast_radius.mjs` measures how far a change in `lib/`
+reaches into the Flutter tests. It reads the import, export and part directives
+of tracked Dart files (conditional URIs included, `package:` URIs mapped to each
+pubspec's `lib/`), takes each test file's closure, and reports the average
+number of `lib/` libraries a test reaches. Re-run it after each import-graph cut
+to see the effect. It approximates the selector in
+`tool/harness/lib/flutter_test_selection.dart` and does not replace it.
+Untracked generated files are missing, so its counts are lower bounds.
+
+```bash
+node tool/architecture/dart_blast_radius.mjs                       # average and top 20
+node tool/architecture/dart_blast_radius.mjs --reach lib/a.dart     # tests reaching a file
+node tool/architecture/dart_blast_radius.mjs --cut lib/a.dart:lib/b.dart --reach lib/c.dart
+node tool/architecture/dart_blast_radius.mjs --chokepoints          # about 30 s
+```
+
+`--cut` takes `<from>:<to>` and measures the graph with that edge removed, so
+you can price a cut before making it. `--chokepoints` ranks barrels (3+
+exports), widely imported files (25+ importers) and hubs (60+ imports) by the
+share of test-to-library reach lost if every edge into them is cut.
+
 ## CI Network Retries
 
 `tool/ci/retry_on_match.mjs` reruns a CI command only when it failed with
@@ -1362,19 +1385,56 @@ guard `apply-flag`).
   `--json` output with the change record, and apply to dev first.
   The delete step cannot be undone from this tool.
 
+### Seat ledger backfill
+
+`node tool/data/migrate_event_seat_ledgers.mjs --env <dev|prod> [--event <id>] [--apply [--allow-prod]] [--json]`
+(`data:migrate-event-seat-ledgers`, guard `apply-and-prod-flag`, surface
+`remote-destructive`).
+
+- **What it does:** a one-off move of every event that has no
+  `eventSeatLedgers` record onto the seat ledger, so the legacy seat path can
+  go. Each such event gets a class: `demo` or `demo-blocked`, `malformed` (no usable
+  organizer, status or capacity policy), `cancelled-empty`,
+  `cancelled-with-guests`, `migratable` or `blocked` (with the migration
+  engine's blocker codes). `unfinished-migration` marks a run or a lone ledger
+  or fence already there; `on-ledger` events are counted, not listed.
+- **Dry run:** the default reads only. For active events it rehearses the
+  migration engine without its writer lock: the same sources, Admin Auth phone
+  evidence, form receipts and CRM records, then the pure planner.
+- **Apply:** `--apply` gives each `cancelled-empty` event an empty ready ledger
+  and fence; gives each `demo` event the seat records the demo seeders write
+  (a ledger counting its active bookings, and each booked guest's uid and
+  phone aliases, verified phone proof and reservation), since synthetic guests
+  have no Auth users for the engine; runs the paged engine for each
+  `migratable` event and resumes the
+  tool's own unfinished runs, then sets `events.bookedCount` to the ledger's
+  occupied seats where they differ. Production also needs `--allow-prod`.
+- **A failed run:** if the engine stops after the scan began, the event is
+  left locked: its seat writers refuse until the run finishes or is released.
+  The report says `LEFT LOCKED` with the next step. `--discard <id> --apply`
+  releases a run that has not begun activation; re-running `--apply` resumes
+  one that has. Runs started by a host's own guest reconciliation are never
+  touched.
+- **Run order:** Functions build (`npm --prefix functions run build`), dev dry
+  run, dev apply, then the same for prod. Fix `blocked` events at the source
+  (for `catchCountMismatch`, `data:repair-event-aggregates`) and re-run.
+- **Check afterwards:** a second dry run lists only `demo`, `malformed`,
+  `cancelled-with-guests` and `blocked` events.
+
 ### Firestore projection repairs
 
-These three recompute a denormalised projection from its source documents.
+These four recompute a denormalised projection from its source documents.
 Each takes `--env <dev|prod>` (or `--project <id>`), `--emulator` or
 `--emulator-host <host>`, `--json`, and writes only with `--apply` (guard
-`apply-flag`; none of them has a separate production flag, so name the
-environment explicitly).
+`apply-flag`; apart from the programme counts, none of them has a separate
+production flag, so name the environment explicitly).
 
 | Tool | Command | Recomputes |
 |---|---|---|
 | `data:repair-club-hosts` | `node tool/data/recompute_organizer_host_profiles.mjs` | Club host fields (`ownerUserId`, `hostUserIds`, `hostProfiles`, `profileImageUrl`) from `hostProfiles/{uid}`, keeping a club's existing host snapshot when no host profile exists yet. |
 | `data:repair-event-aggregates` | `node tool/data/recompute_event_aggregate_counts.mjs` | `events/{eventId}` counts from `eventBookings`: `bookedCount` and `genderCounts` (signed up plus attended), `checkedInCount` (attended), `waitlistedCount`. |
 | `data:repair-organizer-follower-counts` | `node tool/data/recompute_organizer_follower_counts.mjs` | `organizers/{organizerId}.followerCount` from active `organizerFollows` edges. |
+| `data:repair-organizer-program-counts` | `node tool/data/recompute_organizer_program_counts.mjs` | `organizerProgramViews/{programId}` list counts (`guestCount`, `repliedGuestCount`, `flyingInCount` and their fences) from `programGuests` and `programTravelLegs`, with the nightly recount's compiled code (build Functions first). It is the counts' backfill, and the one tool here that also needs `--allow-prod` to write prod (guard `apply-and-prod-flag`). |
 
 - **Run order:** emulator or dev first, then the target environment without
   `--apply`. Read the summary of documents that would change, then re-run with

@@ -83,6 +83,7 @@ jobs:
       tools_owns_ui_lint_smoke: ${{ steps.plan.outputs.tools_owns_ui_lint_smoke }}
       tools_owns_design_parity: ${{ steps.plan.outputs.tools_owns_design_parity }}
       queue_verified_run: ${{ steps.queue.outputs.run_id }}
+      main_goldens: ${{ steps.main_macos.outputs.goldens }}
 
     steps:
       - name: Checkout planner closure
@@ -150,6 +151,35 @@ jobs:
           [[ -z "$run_id" || "$run_id" =~ ^[1-9][0-9]*$ ]] || run_id=""
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
           echo "Merge-queue validation reused: ${run_id:-none}" >> "$GITHUB_STEP_SUMMARY"
+
+      - id: main_macos
+        name: Select main's macOS goldens from the queue's plan
+        if: ${{ github.event_name == 'push' && steps.queue.outputs.run_id != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          QUEUE_RUN: ${{ steps.queue.outputs.run_id }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -uo pipefail
+          # The merge queue no longer runs the macOS goldens (owner decision,
+          # 22 Nov 2026), so a main push it validated runs them when the queue's
+          # own Nx plan for this exact source selected visual integration. Any
+          # failure to read that plan runs them; it never skips them.
+          goldens=true
+          dir="$(mktemp -d)"
+          if artifacts="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$QUEUE_RUN/artifacts?per_page=100")" &&
+            artifact="$(jq -er '[.artifacts[]? | select((.name | startswith("harness-plan-")) and (.expired | not))] |
+              max_by(.id) | .id' <<< "$artifacts")" &&
+            [[ "$artifact" =~ ^[1-9][0-9]*$ ]] &&
+            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact/zip" > "$dir/plan.zip" &&
+            unzip -q -o "$dir/plan.zip" impact-plan.json -d "$dir" &&
+            selected="$(jq -r --arg sha "$SOURCE_SHA" 'select(.sourceSha == $sha) |
+              .operations.ciTargets | arrays | index("visual_integration") != null' "$dir/impact-plan.json")" &&
+            [[ "$selected" == true || "$selected" == false ]]; then
+            goldens="$selected"
+          fi
+          echo "goldens=$goldens" >> "$GITHUB_OUTPUT"
+          echo "macOS goldens on this main push (queue run $QUEUE_RUN): $goldens" >> "$GITHUB_STEP_SUMMARY"
 
       # Nx chooses the lanes for pull requests, queue groups and main pushes,
       # and reads the whole tree to do it. A main push the merge queue already
@@ -465,10 +495,14 @@ jobs:
       ui_lint_smoke_in_tools: ${{ needs.plan.outputs.tools_owns_ui_lint_smoke == 'true' }}
       design_parity_in_tools: ${{ needs.plan.outputs.tools_owns_design_parity == 'true' }}
 
+  # A main push the merge queue validated still runs the macOS goldens the
+  # queue no longer runs, when the queue's plan selected this lane.
   visual-integration:
     needs: [plan]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.visual_integration == 'true' && !needs.plan.outputs.queue_verified_run }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && ((needs.plan.outputs.visual_integration == 'true' && !needs.plan.outputs.queue_verified_run) || needs.plan.outputs.main_goldens == 'true') }}
     uses: ./.github/workflows/visual-integration-ci.yml
+    with:
+      macos_only: ${{ needs.plan.outputs.queue_verified_run != '' }}
 
   admin:
     needs: [plan]

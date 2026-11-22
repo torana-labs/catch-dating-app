@@ -188,7 +188,10 @@ test("lane jobs read only the change range, the final lanes, and outputs pinned 
   assert.ok(jobs.length > 10, "the job split found the lane jobs");
   const pinned = new Set(["app_roles", "tools_owns_ui_lint_smoke", "tools_owns_design_parity", "docs_checkout",
     "preflight_functions_dependencies"]);
-  const range = new Set(["base_sha", "source_sha", "producer_attempt", "mode", "full", "commit_window", "queue_verified_run"]);
+  // The change range, and what the merge queue proved for this exact source:
+  // main_goldens is read from the queue run's own Nx plan, not the planner.
+  const range = new Set(["base_sha", "source_sha", "producer_attempt", "mode", "full", "commit_window", "queue_verified_run",
+    "main_goldens"]);
   const used = new Set();
   for (const job of jobs) {
     for (const match of job.matchAll(/needs\.plan\.outputs\.([a-z_]+)/gu)) used.add(match[1]);
