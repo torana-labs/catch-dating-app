@@ -659,6 +659,131 @@ test("retire preserves dirty, untracked, ignored files and common stashes", (con
   assert.equal(gitText(fixture.root, ["rev-parse", "refs/stash"]), stash);
 });
 
+// A squash that lands after other work reached main carries that work too.
+// These fixtures replay the 18-19 Nov cases: the task's manifest edit, plus a
+// concurrent change another PR made to the same file before the squash.
+// Each entry spans four lines, like a manifest entry's fields, so edits to
+// different fields of nearby entries stay in separate merge hunks.
+const manifestLines = Array.from({length: 24}, (_, index) => [`entry-${index}: original`,
+  `entry-${index} description`, `entry-${index} checks`, `entry-${index} impact`]).flat();
+
+function concurrentSquashFixture(context, taskId, {taskEdit, mainEdit, squashEdit}) {
+  const fixture = createRepository(context);
+  fs.writeFileSync(path.join(fixture.root, "owned/manifest.txt"), `${manifestLines.join("\n")}\n`);
+  fs.writeFileSync(path.join(fixture.root, "owned/runner.txt"), "runner: original\none\ntwo\nthree\nhelper: original\n");
+  commitAll(fixture.root, "seed manifest");
+  git(fixture.root, ["push", "origin", "main"]);
+  fixture.baseSha = gitText(fixture.root, ["rev-parse", "HEAD"]);
+  const task = start(fixture, taskId, ["owned"]);
+  const worktree = task.result.worktreePath;
+  taskEdit(worktree);
+  commitAll(worktree, "task work");
+  git(worktree, ["push", "--set-upstream", "origin", task.result.branch]);
+  const head = gitText(worktree, ["rev-parse", "HEAD"]);
+  mainEdit(fixture.root);
+  commitAll(fixture.root, "concurrent pull request");
+  const concurrent = gitText(fixture.root, ["rev-parse", "HEAD"]);
+  git(fixture.root, ["merge", "--squash", task.result.branch]);
+  squashEdit?.(fixture.root);
+  commitAll(fixture.root, "squash of the task");
+  git(fixture.root, ["push", "origin", "main"]);
+  return {fixture, task, worktree, head, concurrent, accepted: gitText(fixture.root, ["rev-parse", "HEAD"])};
+}
+
+function editLines(root, file, edit) {
+  const target = path.join(root, file);
+  const lines = fs.readFileSync(target, "utf8").trimEnd().split("\n");
+  fs.writeFileSync(target, `${edit(lines).join("\n")}\n`);
+}
+
+const concurrentCases = [
+  // #2123 rewrote every manifest entry's safety field; #2099 had already
+  // changed one other entry's checks and impactPaths.
+  ["a broad task rewrite plus another PR's edit to one entry (#2123 with #2099)", {
+    taskEdit: (root) => editLines(root, "owned/manifest.txt",
+      (lines) => lines.map((line) => line.replace("original", "surface"))),
+    mainEdit: (root) => editLines(root, "owned/manifest.txt", (lines) => {
+      lines.splice(4 * 20 + 2, 1, "entry-20 checks: catalog", "entry-20 impact: catalog test");
+      return lines;
+    }),
+  }],
+  // #2151 removed lines from three entries; the command-client PR had added
+  // two impactPaths elsewhere in the same file.
+  ["task deletions plus another PR's additions (#2151 with the command-client move)", {
+    taskEdit: (root) => editLines(root, "owned/manifest.txt",
+      (lines) => lines.filter((line) => !["entry-2: original", "entry-9: original", "entry-15: original"].includes(line))),
+    mainEdit: (root) => editLines(root, "owned/manifest.txt", (lines) => {
+      lines.splice(4 * 21 + 3, 0, "entry-21 impact: package path");
+      lines.splice(4 * 4 + 3, 0, "entry-4 impact: package path");
+      return lines;
+    }),
+  }],
+  // C6 (#2057) touched a second task file and a file outside the task's paths.
+  ["another PR's edits to two task files and an outside file (C6, #2057)", {
+    taskEdit: (root) => {
+      editLines(root, "owned/manifest.txt", (lines) => lines.map((line) => (line === "entry-3: original" ? "entry-3: task" : line)));
+      editLines(root, "owned/runner.txt", (lines) => lines.map((line) => line.replace("runner: original", "runner: task")));
+    },
+    mainEdit: (root) => {
+      editLines(root, "owned/manifest.txt", (lines) => lines.map((line) => (line === "entry-17 checks" ? "entry-17 checks: every check" : line)));
+      editLines(root, "owned/runner.txt", (lines) => lines.map((line) => line.replace("helper: original", "helper: report every failure")));
+      fs.appendFileSync(path.join(root, "outside.txt"), "ci requirements\n");
+    },
+  }],
+];
+
+for (const [name, edits] of concurrentCases) {
+  test(`retire accepts a squash that also carries main's changes: ${name}`, (context) => {
+    const {fixture, task, head, concurrent, accepted} = concurrentSquashFixture(context, "retire-main-delta", edits);
+    // The plain comparison fails: the accepted commit also holds main's lines.
+    assert.equal(gitResult(fixture.root, ["diff", "--quiet", head, accepted, "--", "owned"]).status, 1);
+    const applied = guard(fixture.root, [...retirementArgs(task, head, accepted), "--apply"]);
+    assert.equal(applied.status, 0, JSON.stringify(applied.result));
+    assert.equal(applied.result.equivalence, "task_paths_plus_main");
+    assert.deepEqual(applied.result.mainDeltaCommits, [concurrent]);
+    assert.equal(applied.result.retired, true);
+    assert.equal(gitText(fixture.remote, ["rev-parse", `refs/heads/${task.result.branch}`]), head);
+  });
+}
+
+const concurrentMainEdit = (root) => editLines(root, "owned/manifest.txt",
+  (lines) => lines.map((line) => (line === "entry-20 checks" ? "entry-20 checks: other pull request" : line)));
+
+test("retire keeps the worktree when the squash drops a unique task line, despite main's changes", (context) => {
+  const {fixture, task, head, worktree, accepted} = concurrentSquashFixture(context, "retire-main-delta-dropped", {
+    taskEdit: (root) => editLines(root, "owned/manifest.txt", (lines) => [...lines, "entry-24: task", "entry-25: unique task"]),
+    mainEdit: concurrentMainEdit,
+    squashEdit: (root) => editLines(root, "owned/manifest.txt", (lines) => lines.filter((line) => line !== "entry-25: unique task")),
+  });
+  assertRetained(fixture, task, retirementArgs(task, head, accepted), "accepted_source_not_equivalent");
+  assert.match(fs.readFileSync(path.join(worktree, "owned/manifest.txt"), "utf8"), /entry-25: unique task/u);
+});
+
+test("retire keeps the worktree when the squash carries a line from a commit that never reached main", (context) => {
+  const {fixture, task, head, accepted} = concurrentSquashFixture(context, "retire-main-delta-unmerged", {
+    taskEdit: (root) => editLines(root, "owned/manifest.txt", (lines) => [...lines, "entry-24: task"]),
+    mainEdit: concurrentMainEdit,
+    // An unmerged branch's line, typed into the squash: not in the task head
+    // and not in any ancestor of the accepted commit.
+    squashEdit: (root) => editLines(root, "owned/manifest.txt", (lines) => [...lines, "entry-26: unmerged branch"]),
+  });
+  assertRetained(fixture, task, retirementArgs(task, head, accepted), "accepted_source_not_equivalent");
+});
+
+test("retire keeps the worktree when the squash restores a line the task deleted", (context) => {
+  const {fixture, task, head, accepted} = concurrentSquashFixture(context, "retire-main-delta-restored", {
+    taskEdit: (root) => editLines(root, "owned/manifest.txt", (lines) => lines
+      .filter((line) => line !== "entry-8: original")
+      .map((line) => (line === "entry-2: original" ? "entry-2: task" : line))),
+    mainEdit: concurrentMainEdit,
+    squashEdit: (root) => editLines(root, "owned/manifest.txt", (lines) => {
+      lines.splice(lines.indexOf("entry-8 description"), 0, "entry-8: original");
+      return lines;
+    }),
+  });
+  assertRetained(fixture, task, retirementArgs(task, head, accepted), "accepted_source_not_equivalent");
+});
+
 test("retire treats pattern-bearing task filenames literally during squash verification", (context) => {
   const fixture = createRepository(context);
   const task = start(fixture, "retire-literal-paths", ["owned"]);
