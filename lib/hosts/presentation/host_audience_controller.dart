@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_communication_r
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/audience_tags.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign.dart';
@@ -11,6 +12,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_set
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_audience_controller.g.dart';
@@ -23,6 +25,7 @@ HostAudienceController hostAudienceController(Ref ref) =>
       ref.watch(hostSavedAudienceRepositoryProvider),
       ref.watch(hostWhatsappRepositoryProvider),
       ref.watch(hostCampaignRepositoryProvider),
+      ref.watch(cacheTagsProvider),
     );
 
 class HostAudienceController {
@@ -32,6 +35,7 @@ class HostAudienceController {
     this._savedAudiences,
     this._whatsapp,
     this._campaign,
+    this._tags,
   );
 
   final HostContactsRepository _contacts;
@@ -39,6 +43,17 @@ class HostAudienceController {
   final HostSavedAudienceRepository _savedAudiences;
   final HostWhatsappRepository _whatsapp;
   final HostCampaignRepository _campaign;
+  final CacheTagRegistry _tags;
+
+  /// Every WhatsApp setup command changes the organizer's messaging setup.
+  Future<T> _changingMessagingSetup<T>(
+    String organizerId,
+    Future<T> Function() command,
+  ) async {
+    final result = await command();
+    _tags.invalidate({AudienceTags.messagingSetup(organizerId)});
+    return result;
+  }
 
   Future<void> mutateContact({
     required String organizerId,
@@ -66,17 +81,26 @@ class HostAudienceController {
   Future<HostMessagingSetup> completeWhatsappConnection({
     required String organizerId,
     required HostWhatsappSignupResult result,
-  }) => _whatsapp.completeWhatsappConnection(organizerId, result);
+  }) => _changingMessagingSetup(
+    organizerId,
+    () => _whatsapp.completeWhatsappConnection(organizerId, result),
+  );
 
   Future<HostMessagingSetup> syncWhatsappTemplates({
     required String organizerId,
     required String connectionId,
-  }) => _whatsapp.syncWhatsappTemplates(organizerId, connectionId);
+  }) => _changingMessagingSetup(
+    organizerId,
+    () => _whatsapp.syncWhatsappTemplates(organizerId, connectionId),
+  );
 
   Future<HostMessagingSetup> disconnectWhatsapp({
     required String organizerId,
     required String connectionId,
-  }) => _whatsapp.disconnectWhatsapp(organizerId, connectionId);
+  }) => _changingMessagingSetup(
+    organizerId,
+    () => _whatsapp.disconnectWhatsapp(organizerId, connectionId),
+  );
 
   Future<HostMessagingSetup> sendWhatsappTest({
     required String organizerId,
@@ -84,12 +108,15 @@ class HostAudienceController {
     required String templateId,
     required String toE164,
     required Map<String, String> templateVariables,
-  }) => _whatsapp.sendWhatsappTest(
-    organizerId: organizerId,
-    connectionId: connectionId,
-    templateId: templateId,
-    toE164: toE164,
-    templateVariables: templateVariables,
+  }) => _changingMessagingSetup(
+    organizerId,
+    () => _whatsapp.sendWhatsappTest(
+      organizerId: organizerId,
+      connectionId: connectionId,
+      templateId: templateId,
+      toE164: toE164,
+      templateVariables: templateVariables,
+    ),
   );
 
   Future<HostSavedAudience> saveAudience({

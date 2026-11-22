@@ -1,9 +1,11 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_crm_callable.dart';
+import 'package:catch_dating_app/contexts/audience/domain/audience_tags.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_kernel/read_model_family.dart';
 import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -278,8 +280,12 @@ HostWhatsappRepository hostWhatsappRepository(Ref ref) {
 }
 
 @riverpod
-Future<HostMessagingSetup> hostMessagingSetup(Ref ref, String organizerId) =>
-    ref.watch(hostWhatsappRepositoryProvider).getMessagingSetup(organizerId);
+Future<HostMessagingSetup> hostMessagingSetup(Ref ref, String organizerId) {
+  ref.providesTags({AudienceTags.messagingSetup(organizerId)});
+  return ref
+      .watch(hostWhatsappRepositoryProvider)
+      .getMessagingSetup(organizerId);
+}
 
 /// The organizer's WhatsApp threads, a page at a time, every row shown
 /// live. Threads past their retention are left out.

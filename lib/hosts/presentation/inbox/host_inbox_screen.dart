@@ -10,9 +10,11 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -320,8 +322,11 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
   void _retry(String? organizerId) {
     final uid = catchAsyncStateFromAsyncValue(ref.read(uidProvider)).value;
     ref.invalidate(uidProvider);
-    ref.invalidate(chatsListViewModelProvider);
+    // The chat list's read owners; the list rebuilds from them.
+    ref.invalidate(watchOrganizersForMessagingByIdsProvider);
+    ref.invalidate(publicProfilesByIdsProvider);
     if (uid != null) {
+      ref.invalidate(watchMatchesForUserProvider(uid));
       hostOperableOrganizerReads(uid).forEach(ref.invalidate);
       ref.invalidate(hostInboxCatchPagesProvider(uid));
     }

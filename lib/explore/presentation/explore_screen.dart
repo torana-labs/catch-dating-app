@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/city_repository.dart';
+import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
+import 'package:catch_dating_app/contexts/discovery/data/explore_search_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -191,13 +193,13 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
           );
         case ExploreScreenRetryTarget.explore:
         case null:
+          // The read owners; the organizer and feed compositions rebuild
+          // from them.
           ref.invalidate(
             watchOrganizersByLocationProvider(city.effectiveMarketId),
           );
-          ref.invalidate(exploreOrganizersViewModelProvider);
-          ref.invalidate(exploreSourceOrganizersProvider);
+          ref.invalidate(exploreServerSearchProvider);
           ref.invalidate(exploreDiscoveryWindowProvider);
-          ref.invalidate(exploreFeedViewModelProvider);
       }
     }
 
@@ -701,10 +703,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     ref.invalidate(exploreDiscoveryReferenceNowProvider);
     ref.invalidate(exploreDiscoveryWindowProvider);
     ref.invalidate(watchOrganizersByLocationProvider);
-    ref.invalidate(exploreSourceOrganizersProvider);
-    ref.invalidate(exploreOrganizersViewModelProvider);
-    ref.invalidate(exploreFeedViewModelProvider);
-    ref.invalidate(exploreRecommendationsProvider);
+    // The one-shot reads under the organizer, feed and recommendation
+    // compositions; the compositions rebuild from them.
+    ref.invalidate(exploreServerSearchProvider);
+    ref.invalidate(exploreRecommendedEventsProvider);
 
     // The feed is a synchronous composition with no `.future`: wait for the
     // recomposed feed to leave loading, at most the refresh deadline.

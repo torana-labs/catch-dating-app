@@ -75,6 +75,9 @@ void main() {
             organizerId: 'org',
             responseId: 'response-one',
           ).overrideWith((ref) async => _detail('contact-one')),
+          hostFormResponseReadBackProvider(
+            'org',
+          ).overrideWithValue((_) async => _detail('contact-one')),
         ],
         child: MaterialApp(
           theme: AppTheme.light,

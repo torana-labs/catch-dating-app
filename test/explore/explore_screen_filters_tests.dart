@@ -550,7 +550,13 @@ void _registerExploreScreenFiltersTests() {
               ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
             ),
           ),
+          // Each read is new, so the feed that composes it rebuilds.
+          exploreDiscoveryReferenceNowProvider.overrideWith(
+            (ref) => DateTime.now(),
+          ),
+          // Like the real feed, it composes a read that a refresh renews.
           exploreFeedViewModelProvider.overrideWith((ref) {
+            ref.watch(exploreDiscoveryReferenceNowProvider);
             feedBuilds += 1;
             return const AsyncData(ExploreFeedViewModel(items: []));
           }),
@@ -599,7 +605,13 @@ void _registerExploreScreenFiltersTests() {
               ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
             ),
           ),
+          // Each read is new, so the feed that composes it rebuilds.
+          exploreDiscoveryReferenceNowProvider.overrideWith(
+            (ref) => DateTime.now(),
+          ),
+          // Like the real feed, it composes a read that a refresh renews.
           exploreFeedViewModelProvider.overrideWith((ref) {
+            ref.watch(exploreDiscoveryReferenceNowProvider);
             feedBuilds += 1;
             return const AsyncData(ExploreFeedViewModel(items: []));
           }),

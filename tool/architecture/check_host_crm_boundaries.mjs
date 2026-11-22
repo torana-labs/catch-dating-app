@@ -27,6 +27,9 @@ const permissionCollectionReviewers = new Set([
   // Projects the guest's own permission rows read-only, with the same reads
   // and summary as participantMessagingPreferences (#1896).
   "functions/src/messaging/guestMessagingPermissionStore.ts",
+  // Lists the signed-in guest's own permission rows read-only for the website
+  // account page, filtered by uid and capped (#2292).
+  "functions/src/profiles/websiteAccountSections.ts",
   "functions/src/moments/momentWiring.ts",
   "functions/src/organizers/automationDeliveryWorker.ts",
   "functions/src/organizers/organizerFormMessagingConsent.ts",

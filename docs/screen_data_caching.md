@@ -279,25 +279,17 @@ session lifetime: the Chats and Explore search and filter state, the selected
 Explore city and its guard, the Host organizer selection, the five pending
 rehearsal and assistance reference sets, the foreground notification
 controller, the companion launch registry and the onboarding controller.
-Sign-out no longer resets Explore by hand. Everything else the baseline lists
-is `CACHE-INVALIDATE-001` in screens the redesign deletes, so each screen PR
-deletes its entries with the screen. When the baseline is empty, the rules
-gate with no list.
+Sign-out no longer resets Explore by hand.
 
-| Legacy code | Entries | Call sites | Deleted by |
-|---|---|---|---|
-| `lib/hosts/today/personalization` | 2 | 2 | P3.1 Today |
-| `lib/event_success/presentation` (departure controller, attendance disposition editor) | 3 | 3 | P3.4 Live |
-| `lib/event_rehearsal/presentation` (start screen source refresh) | 1 | 1 | P5 events workspace |
-| `lib/hosts/presentation/customers` | 22 | 23 | P5 people |
-| `lib/hosts/presentation/inbox` | 10 | 10 | P5 people |
-| `lib/hosts/presentation/forms` | 12 | 14 | P5 forms |
-| `lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart`, `host_tracking_settings_section.dart` | 5 | 5 | P5 organizer |
-| `lib/programs/presentation` | 11 | 12 | P5 programmes |
-| `lib/explore/presentation` | 7 | 7 | P6 explore |
-| `lib/chats/presentation/chat_retry_controller.dart`, `lib/swipes/presentation` | 5 | 5 | P6 after and chats |
-| `lib/user_profile/presentation` | 2 | 2 | P6 you |
-| Total | 81 | 85 | |
+The legacy invalidations are fixed too:
+- Retries reach read owners rather than compositions.
+- The WhatsApp setup and form profile claim writes declare `AudienceTags` and
+  `ProfileTags`.
+- Read-backs before a command never refresh a kept read.
+
+The baseline holds one entry, the kept-alive marker of
+`eventRehearsalRepositoryProvider`, which names no scope yet. When that entry
+goes, the rules gate with no list.
 
 ## Code map
 

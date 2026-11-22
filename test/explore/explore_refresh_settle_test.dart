@@ -42,7 +42,15 @@ Future<void> _pump(
             ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
           ),
         ),
-        exploreFeedViewModelProvider.overrideWith((ref) => feed(++builds)),
+        // Each read is new, so the feed that composes it rebuilds.
+        exploreDiscoveryReferenceNowProvider.overrideWith(
+          (ref) => DateTime.now(),
+        ),
+        // Like the real feed, it composes a read that a refresh renews.
+        exploreFeedViewModelProvider.overrideWith((ref) {
+          ref.watch(exploreDiscoveryReferenceNowProvider);
+          return feed(++builds);
+        }),
       ],
       child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
     ),

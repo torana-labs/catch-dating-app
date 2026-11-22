@@ -115,7 +115,7 @@ final class HostMessagingSetupProvider
 }
 
 String _$hostMessagingSetupHash() =>
-    r'6337a62f3d9af92c945ef4f8daddbb924356c721';
+    r'e047395211c32a056031e933e9813ba5574df8bd';
 
 final class HostMessagingSetupFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<HostMessagingSetup>, String> {

@@ -86,6 +86,8 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
     });
   }
 
+  void _retryProfile() => ref.invalidate(watchUserProfileProvider);
+
   @override
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(watchUserProfileProvider);
@@ -171,7 +173,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
             error: (error, _) => CatchLocalizedErrorState(
               error,
               context: AppErrorContext.profile,
-              onRetry: () => ref.invalidate(watchUserProfileProvider),
+              onRetry: _retryProfile,
             ),
             data: (user) {
               if (user == null) {
@@ -188,8 +190,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                     actions: [
                       CatchButton(
                         label: context.l10n.sharedActionTryAgain,
-                        onPressed: () =>
-                            ref.invalidate(watchUserProfileProvider),
+                        onPressed: _retryProfile,
                         leading: Icon(CatchIcons.refresh),
                       ),
                     ],
