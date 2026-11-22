@@ -24965,6 +24965,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get hostProgrammeImportDetach => 'Detach from party';
+
+  @override
+  String get hostProgrammeImportDetachTitle => 'Detach from their party?';
+
+  @override
+  String get hostProgrammeImportDetachBody =>
+      'The rest of the party still rides together. We check the list again after.';
+
+  @override
+  String get hostProgrammeImportDetachConfirm => 'Detach';
+
+  @override
+  String get hostProgrammeImportDetachKeep => 'Keep in party';
+
+  @override
   String get hostFormatsBackToEvent => 'Back to the event';
 
   @override

@@ -556,6 +556,11 @@ class ProgramManifestImportResult {
             (entry) => (
               index: requiredInt(entry, 'index'),
               message: requiredString(entry, 'message'),
+              partyJourney: entry['partyJourney'] == null
+                  ? null
+                  : ProgramManifestPartyJourney.fromMap(
+                      requiredMap(entry['partyJourney'], 'partyJourney'),
+                    ),
             ),
           )
           .toList(growable: false),
@@ -572,8 +577,37 @@ class ProgramManifestImportResult {
   final int householdsCreated;
   final int partiesCreated;
   final int groupsCreated;
-  final List<({int index, String message})> rowErrors;
+
+  /// Rows the server refused. [ProgramManifestRowError.partyJourney] is set
+  /// when detaching that journey from its party would clear the row.
+  final List<ProgramManifestRowError> rowErrors;
   final bool alreadyApplied;
+}
+
+/// One refused manifest row: its index, the reason, and the journey to
+/// detach when the row is blocked by that journey's travel party.
+typedef ProgramManifestRowError = ({
+  int index,
+  String message,
+  ProgramManifestPartyJourney? partyJourney,
+});
+
+/// An existing journey whose ride-together party blocks a manifest row,
+/// with the revision `detachProgramTravelLeg` expects.
+class ProgramManifestPartyJourney {
+  const ProgramManifestPartyJourney({
+    required this.legId,
+    required this.revision,
+  });
+
+  factory ProgramManifestPartyJourney.fromMap(Map<Object?, Object?> map) =>
+      ProgramManifestPartyJourney(
+        legId: requiredString(map, 'legId'),
+        revision: requiredInt(map, 'revision'),
+      );
+
+  final String legId;
+  final int revision;
 }
 
 /// The guest pages' accent colours.
