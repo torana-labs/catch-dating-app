@@ -5,7 +5,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {createReport, loadCollections, validateAll} from "./validate_firestore_data.mjs";
+import {chatMessagesOnly, createReport, loadCollections, validateAll} from "./validate_firestore_data.mjs";
 
 const requireFromFunctions = createRequire(new URL("../../functions/package.json", import.meta.url));
 const {Timestamp} = requireFromFunctions("firebase-admin/firestore");
@@ -176,6 +176,18 @@ test("collection loader stays read-only and bounded and includes canonical organ
   assert.ok(queries.some((item) => item.kind === "group" && item.name === "outgoing"));
   assert.ok(queries.every((item) => item.value === 17));
   assert.deepEqual(result.scheduleLocks, []);
+});
+
+test("only match and legacy chat messages are checked as chat messages", async () => {
+  const paths = ["matches/m1/messages/a", "chats/m1/messages/b",
+    "supportConversations/whatsapp-1/messages/c", "matches/m1/messages/a/extra/d"];
+  assert.deepEqual(chatMessagesOnly(paths.map((p) => ({path: p}))).map((d) => d.path),
+    ["matches/m1/messages/a", "chats/m1/messages/b"]);
+  const docs = paths.slice(0, 3).map((p) => ({id: p.split("/").at(-1), ref: {path: p}, data: () => ({})}));
+  const query = (kind) => ({limit: () => ({get: async () => ({docs: kind === "group" ? docs : []})})});
+  const result = await loadCollections({collection: () => query("collection"),
+    collectionGroup: () => query("group")}, 10);
+  assert.deepEqual(result.messages.map((d) => d.path), ["matches/m1/messages/a", "chats/m1/messages/b"]);
 });
 
 function runOffline(rows, args, {blockOutput = false} = {}) {

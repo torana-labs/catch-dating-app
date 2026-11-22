@@ -183,11 +183,18 @@ export async function loadCollections(firestore, maxDocs, {includeScheduleLocks 
     firestore.collectionGroup("outgoing"),
     maxDocs
   );
-  result.messages = await readQuery(
+  result.messages = chatMessagesOnly(await readQuery(
     firestore.collectionGroup("messages"),
     maxDocs
-  );
+  ));
   return result;
+}
+
+// The "messages" collection group also holds support conversations
+// (supportConversations/{id}/messages), which have their own shape; only
+// match chat messages (and legacy chats/{id}/messages) are checked here.
+export function chatMessagesOnly(docs) {
+  return docs.filter((doc) => /^(?:matches|chats)\/[^/]+\/messages\/[^/]+$/.test(doc.path));
 }
 
 async function readQuery(query, maxDocs) {
