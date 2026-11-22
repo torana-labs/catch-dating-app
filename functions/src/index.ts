@@ -836,6 +836,7 @@ export {
   upsertProgramTravelLeg,
   upsertProgramTravelParty,
 } from "./transport/programTravel";
+export {detachProgramTravelLeg} from "./transport/programTravelPartyDetach";
 export {importProgramManifest, importWeddingPhoneContacts} from
   "./programs/programManifestImport";
 export {getProgramLiveBoard, resolveProgramAlert} from

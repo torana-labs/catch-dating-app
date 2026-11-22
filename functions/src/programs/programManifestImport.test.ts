@@ -15,6 +15,8 @@ import {importProgramManifestHandler, importWeddingPhoneContactsHandler} from
   "./programManifestImport";
 import {ProgramTravelLegDocument} from
   "../shared/generated/firestoreAdminTypes";
+import {detachProgramTravelLegHandler} from
+  "../transport/programTravelPartyDetach";
 
 import {seed, request, deps, row, ts, NOW} from "./programManifestFixture";
 import {FakeFirestore as MiniFirestore} from
@@ -644,13 +646,65 @@ for (const partyLabel of [undefined, row.partyLabel]) {
         rows: [changed],
       }), deps(store));
       assert.equal(result.legsUpdated, 0);
-      assert.ok(result.rowErrors.some((issue) => /before changing route/
-        .test(issue.message)));
+      const [legPath, leg] = [...store.docs.entries()].find(([path]) =>
+        path.startsWith("programTravelLegs/"))!;
+      const blocked = result.rowErrors.find((issue) =>
+        /before changing route/.test(issue.message));
+      assert.deepEqual(blocked?.partyJourney,
+        {legId: legPath.split("/")[1], revision: leg.revision});
     }
     assert.equal([...store.docs.entries()].find(([path]) =>
       path.startsWith("programTravelLegs/"))![1].destinationHotelId, "hotel-1");
   });
 }
+
+test("a party move names the journey to detach, and detaching clears it",
+  async () => {
+    const fixture = seed();
+    fixture["organizerPrograms/program-1"].status = "active";
+    const store = new MiniFirestore(fixture);
+    await importProgramManifestHandler(request({programId: "program-1",
+      mode: "commit", clientOperationId: "seed-party", rows: [row],
+    }), deps(store));
+    const moved = {...row, partyLabel: "Another group"};
+    let attempt = 0;
+    const preview = () => importProgramManifestHandler(request({
+      programId: "program-1", mode: "preview",
+      clientOperationId: `move-party-${attempt++}`, rows: [moved],
+    }), deps(store));
+    const blocked = (await preview()).rowErrors;
+    assert.equal(blocked.length, 1);
+    assert.match(blocked[0].message, /old party before moving it/);
+    const [legPath, leg] = [...store.docs.entries()].find(([path]) =>
+      path.startsWith("programTravelLegs/"))!;
+    const legId = legPath.split("/")[1];
+    assert.deepEqual(blocked[0].partyJourney,
+      {legId, revision: leg.revision});
+    await detachProgramTravelLegHandler(request({programId: "program-1",
+      legId, expectedRevision: blocked[0].partyJourney!.revision,
+    }), deps(store));
+    assert.deepEqual((await preview()).rowErrors, []);
+  });
+
+test("a departed journey's party block offers nothing to detach",
+  async () => {
+    const store = new MiniFirestore(seed());
+    await importProgramManifestHandler(request({programId: "program-1",
+      mode: "commit", clientOperationId: "seed-party", rows: [row],
+    }), deps(store));
+    const legPath = [...store.docs.keys()].find((path) =>
+      path.startsWith("programTravelLegs/"))!;
+    store.updateDoc(legPath, {readiness: "dispatched"});
+    const result = await importProgramManifestHandler(request({
+      programId: "program-1", mode: "preview",
+      clientOperationId: "move-departed", rows: [
+        {...row, partyLabel: "Another group"}],
+    }), deps(store));
+    assert.ok(result.rowErrors.some((issue) =>
+      /old party before moving it/.test(issue.message)));
+    assert.ok(result.rowErrors.every((issue) =>
+      issue.partyJourney === undefined));
+  });
 
 test("party-only imports create explicit unresolved journeys", async () => {
   const store = new MiniFirestore(seed());
