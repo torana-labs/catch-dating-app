@@ -3,6 +3,7 @@ import {validateCatchWhatsappOperatorSetupOperationDocument} from
 import {validateCatchWhatsappOperatorSetupAuditDocument} from
   "../shared/generated/validators/catchWhatsappOperatorSetupAuditDocument";
 import {Timestamp} from "firebase-admin/firestore";
+import {createAdminAuditLogInTransaction} from "../platform/adminAudit";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {authorizeCatchAppCapability, denyCatchAppAuthority,
   readCatchAppAuthority} from "./whatsappAppAuthority";
@@ -268,15 +269,14 @@ export class FirestoreOperatorSetupJournal implements OperatorSetupJournal {
           status: "active", updatedAt: Timestamp.fromMillis(at),
           updatedByUid: plan.scope.actorUid});
       }
-      tx.create(this.db.collection("adminAuditLogs")
-        .doc(`catch_operator_bootstrap_${plan.scope.projectId}`), {
-        actorUid: plan.scope.actorUid, actorRoles: ["adminOwner"],
-        action: "catchWhatsappOperatorBootstrap",
-        targetPath: assignmentRef.path, createdAt: Timestamp.fromMillis(at),
-        before: {claimsSha256: plan.beforeClaimsSha256},
-        after: {claimsSha256: plan.desiredClaimsSha256},
-        note: "Exact reviewed one-time operator setup; source receipt bound.",
-      });
+      createAdminAuditLogInTransaction(tx, this.db,
+        {uid: plan.scope.actorUid, roles: ["adminOwner"]}, {
+          action: "catchWhatsappOperatorBootstrap",
+          targetPath: assignmentRef.path,
+          before: {claimsSha256: plan.beforeClaimsSha256},
+          after: {claimsSha256: plan.desiredClaimsSha256},
+          note: "Exact reviewed one-time operator setup; source receipt bound.",
+        }, {docId: `catch_operator_bootstrap_${plan.scope.projectId}`});
       this.write(tx, plan, before, this.next(before, "seeded"), setupHash([
         seed(plan.scope.actorUid), seed(plan.scope.recipientUid)]));
     });
