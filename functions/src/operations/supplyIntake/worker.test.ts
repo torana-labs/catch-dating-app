@@ -162,14 +162,14 @@ test("the accepted page fetch policy reads the nominated page and books it again
   assert.equal((db.read(`${supplyIntakeCollections.usage}/2026-10`) as {networkRequests: number}).networkRequests, 2);
 });
 
-test("a website instant draft reads from the tool's own monthly allowance, never the one nominations share", async () => {
+test("a try-it import reads from the website tools' own monthly allowance, never the one nominations share", async () => {
   const html = "<html><head><title>Moonmoth</title><meta property=\"og:title\" content=\"Moonmoth\"></head><body></body></html>";
   const draftRequest = request({requestId: "nom-moonmoth-1", kind: "self_submission",
-    submittedBy: {role: "organizer", uid: null, partnerId: null}, origin: {kind: "web_instant_draft", id: "web-1"}});
+    submittedBy: {role: "organizer", uid: null, partnerId: null}, origin: {kind: "try_it_import", id: "import-1"}});
   const {db, requested, deps} = setup({request: draftRequest}, {transport: async ({url}) => url.pathname === "/robots.txt" ?
     {status: 404, location: null, contentType: "text/plain", body: Buffer.alloc(0)} :
     {status: 200, location: null, contentType: "text/html", body: Buffer.from(html)}});
-  // Nominations have spent their whole month; drafts still read.
+  // Nominations have spent their whole month; try-it imports still read.
   db.write(`${supplyIntakeCollections.usage}/2026-10`, {schemaVersion: 1, monthKey: "2026-10", networkRequests: 600,
     updatedAt: NOW});
   assert.equal(await processSupplyIntakeRequest(deps, "nom-moonmoth-1"), "completed");
@@ -181,7 +181,7 @@ test("a website instant draft reads from the tool's own monthly allowance, never
     {result: {captureReceipts: Array<{budgetWindow: {monthLimit: number}}>}}).result.captureReceipts[0];
   assert.equal(receipt.budgetWindow.monthLimit, 300);
 
-  // A spent draft allowance reads nothing more, and leaves nominations alone.
+  // A spent try-it allowance reads nothing more, and leaves nominations alone.
   const spent = setup({request: draftRequest});
   spent.db.write(`${supplyIntakeCollections.usage}/instant-draft-pages-2026-10`, {schemaVersion: 1, monthKey: "2026-10",
     networkRequests: 300, updatedAt: NOW});

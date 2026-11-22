@@ -2,8 +2,7 @@
 import {logger} from "firebase-functions";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import type {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {clientAddress} from "../instantDrafts/request";
-import {limiterKey} from "../instantDrafts/model";
+import {clientAddress, limiterKey} from "./requestLimits";
 import {blockedIntakePatch, checkListingSuppression, suppressionModule} from "../listingSuppressions/registry";
 import {packagedIntake, type IntakePageSource} from "../operations/supplyIntake/runtime";
 import {pageSourceFor, type PageAllowance} from "../operations/supplyIntake/worker";

@@ -5592,22 +5592,6 @@ The bounded native reader includes all program guests without requiring travel
 legs and rejects truncated source. No guest records are copied into the fence. Real emulator
 rules, transaction integration and combined feature acceptance remain gates.
 
-### Website Instant Drafts
-
-`requestInstantDraft` writes an ordinary Supply Intake request with origin
-`web_instant_draft` (always `self_submission`). Its private state sits on the
-server-only request as `supplyIntakeRequests.instantDraft`: the SHA-256 of the
-website's access token (never the token), the verified WhatsApp number with
-its consent and `whatsapp.verifiedByUid`, the link classification, the market
-(`market {marketId, source: chosen|given|inferred, at}`), `expiresAt` (30 days
-after the draft is saved) and the outcome (`building`, `draft_ready`,
-`needs_city`, `staff_follow_up` or `expired`). Page reads for these requests
-count against `supplyIntakeUsage/instant-draft-pages-{monthKey}`, a separate
-300-page monthly allowance. `getInstantDraft` returns `markets` (empty unless
-`needs_city`) and accepts an optional `city` that continues a `needs_city`
-draft. A claimed owner publishing the page is another way listing events
-publish (`onInstantDraftOrganizerPublished`).
-
 ### Try-It AI Fallback
 
 The try-it import commands (#2062) share one model fallback for links and
@@ -6220,12 +6204,12 @@ whether a guessed organiser is suppressed.
   (self-created organizers that matched, newest 50).
 - **Enforcement.** `createSupplyIntakeRequest`, the one entry point for every
   nomination, host application, message nomination, event refresh and
-  instant draft, hashes the request's seed name, links, `@handles` and links
+  try-it import, hashes the request's seed name, links, `@handles` and links
   in its notes, and refresh target, and looks them up with
   `array-contains-any`. A match writes nothing but the case's
   `blockedIntakeCount`; staff front doors (`adminNominateOrganizer`,
   `adminRefreshOrganizerEvents`) refuse with `failed-precondition` naming the
-  case id, the website instant draft refuses without naming anything, and
+  case id, the try-it commands refuse without naming anything, and
   triggers drop the request and log the case id (never the identity).
   `approveListing` repeats the check on the approved name, slug, built links
   and the request (a backstop for identity the worker found after intake and
@@ -6267,8 +6251,7 @@ with a reported fee; refunds stay in each record's existing refund fields.
 Programmatic listings are the organizer pages Catch sources itself (an Admin or
 message nomination, or discovery) and staff approve through
 `adminApproveOrganizerListing` (owner decisions, 19 Nov 2026). An organizer's
-own submission and a website instant draft are not programmatic; none of the
-rules below apply to them.
+own submission is not programmatic; none of the rules below apply to it.
 
 - **Formats.** `contracts/shared/listing_program_common.schema.json#/definitions/format`
   is every city-by-format page format (`functions/src/cityPlans/discoveryFormats.ts`)

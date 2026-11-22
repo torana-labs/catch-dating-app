@@ -5,8 +5,7 @@ import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {listingSuppressionHmacKey} from "../listingSuppressions/registry";
-import {clientAddress} from "../instantDrafts/request";
-import {limiterKey} from "../instantDrafts/model";
+import {clientAddress, limiterKey} from "./requestLimits";
 import type {EnsureTryItWorkspaceCallablePayload} from
   "../shared/generated/ensureTryItWorkspaceCallablePayload";
 import type {EnsureTryItWorkspaceCallableResponse} from

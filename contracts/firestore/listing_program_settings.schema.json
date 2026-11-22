@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/listing_program_settings.schema.json",
   "title": "ListingProgramSettingsDocument",
-  "description": "The programmatic listings pause switch (Settings → Intake). One document, listingProgramSettings/platform; absent means not paused. While paused, adminNominateOrganizer refuses every nomination and listing approval refuses any listing Catch sourced itself (a nomination or discovery); an organizer's own submission and website instant drafts are unaffected. A stored document that fails this contract also refuses. Server-only; written by adminManageListingProgram. Every write bumps revision.",
+  "description": "The programmatic listings pause switch (Settings → Intake). One document, listingProgramSettings/platform; absent means not paused. While paused, adminNominateOrganizer refuses every nomination and listing approval refuses any listing Catch sourced itself (a nomination or discovery); an organizer's own submission is unaffected. A stored document that fails this contract also refuses. Server-only; written by adminManageListingProgram. Every write bumps revision.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "listingProgramSettings",
