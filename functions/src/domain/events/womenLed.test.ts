@@ -11,23 +11,23 @@ import {
   organizerWomenLed,
   womenLedLocked,
 } from "./womenLed";
-import {contractFixture} from "../shared/contractFixtures";
+import {contractFixture} from "../../shared/contractFixtures";
 import {validateOrganizerDocument} from
-  "../shared/generated/validators/organizerDocument";
+  "../../shared/generated/validators/organizerDocument";
 import {validateEventDocument} from
-  "../shared/generated/validators/eventDocument";
+  "../../shared/generated/validators/eventDocument";
 import {validatePublicOrganizerDocument} from
-  "../shared/generated/validators/publicOrganizerDocument";
+  "../../shared/generated/validators/publicOrganizerDocument";
 import {validateUpdateOrganizerCallablePayload} from
-  "../shared/generated/validators/updateOrganizerInput";
+  "../../shared/generated/validators/updateOrganizerInput";
 import {validateUpdateEventCallablePayload} from
-  "../shared/generated/validators/updateEventInput";
+  "../../shared/generated/validators/updateEventInput";
 import {validateAdminUpdateOrganizerDetailsCallablePayload} from
-  "../shared/generated/validators/adminUpdateOrganizerDetailsInput";
+  "../../shared/generated/validators/adminUpdateOrganizerDetailsInput";
 import {validateAdminUpdateEventDetailsCallablePayload} from
-  "../shared/generated/validators/adminUpdateEventDetailsInput";
+  "../../shared/generated/validators/adminUpdateEventDetailsInput";
 import {validateExploreSearchCallablePayload} from
-  "../shared/generated/validators/exploreSearchInput";
+  "../../shared/generated/validators/exploreSearchInput";
 
 const now = Timestamp.fromMillis(Date.parse("2026-11-16T10:00:00.000Z"));
 const owner = {uid: "host-1", role: "owner" as const};

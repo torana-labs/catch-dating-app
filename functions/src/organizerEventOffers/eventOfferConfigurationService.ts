@@ -6,9 +6,10 @@ import {validateEventDocument} from
   "../shared/generated/validators/eventDocument";
 import {eventSourceRevision} from "../events/eventSourceRevision";
 import {canonicalJson, eventPaymentTermsFromPreferences,
-  resolveEventPreferences} from "../events/eventSetupPreferences/resolve";
+  resolveEventPreferences} from
+  "../domain/formats/eventSetupPreferences/resolve";
 import {EventPreferenceError,
-  OrganizerEventDefaults} from "../events/eventSetupPreferences/types";
+  OrganizerEventDefaults} from "../domain/formats/eventSetupPreferences/types";
 import {projectEventPreferences} from
   "../events/progressiveSetup/preferences";
 import {authorizeSetupManager} from "../events/progressiveSetup/service";

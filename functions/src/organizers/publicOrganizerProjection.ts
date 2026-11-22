@@ -4,7 +4,7 @@ import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import {validatePublicOrganizerDocument} from
   "../shared/generated/validators/publicOrganizerDocument";
-import {organizerWomenLed} from "./womenLed";
+import {organizerWomenLed} from "../domain/events/womenLed";
 import {
   organizerSummaryChanged,
   refreshOrganizerEventSummaries,

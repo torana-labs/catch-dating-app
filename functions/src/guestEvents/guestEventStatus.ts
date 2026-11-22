@@ -1,7 +1,7 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {assertUnpartitionedAdmission} from
-  "../organizerFormAdmission/admissionEligibility";
+  "../domain/events/admissionEligibility";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {validateEventBookingDocument} from
   "../shared/generated/validators/eventBookingDocument";

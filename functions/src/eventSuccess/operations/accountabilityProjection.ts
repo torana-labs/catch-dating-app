@@ -1,6 +1,6 @@
 import {operationContentHash} from "../../operations/durableActions";
 import {currentAccountabilityResolution} from "../accountability";
-import {eventSuccessPrimitivesFor} from "../formatPrimitives";
+import {eventSuccessPrimitivesFor} from "../../domain/formats/formatPrimitives";
 import type {EventAssistanceAccountabilityCallableResponse as Response} from
   "../../shared/generated/eventAssistanceAccountabilityCallableResponse";
 import {currentGuest} from "./guestRecords";

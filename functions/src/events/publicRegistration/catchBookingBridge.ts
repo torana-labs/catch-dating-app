@@ -13,7 +13,8 @@ import {
   setActivityNotificationInTransaction,
 } from "../../shared/notifications";
 import {cohortIdForUser, decrementCount, incrementCount} from "../eventPolicy";
-import {registrationUnavailable} from "./policy";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
 
 const PUBLIC_PAYMENT_PREFIX = "pp_";
 

@@ -47,7 +47,7 @@ import {
   crossPathsPilotMinimumEventLeadMillis,
 } from "../crossPaths/pilotPolicy";
 
-import {adminEventWomenLed} from "../organizers/womenLed";
+import {adminEventWomenLed} from "../domain/events/womenLed";
 import {HOST_PILOT_REVIEWS, HOST_ACTIVATIONS, nextPilotReview} from
   "../acquisition/pilotActivation";
 import type {HostPilotEventReviewDocument} from

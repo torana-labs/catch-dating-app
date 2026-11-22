@@ -1,13 +1,13 @@
 import {createHash} from "node:crypto";
 import {snapshotOfferPaymentTerms} from
-  "../events/eventSetupPreferences/payment";
+  "../domain/formats/eventSetupPreferences/payment";
 import {eventPaymentTermsHash, validateEventPaymentTerms} from
-  "../events/eventSetupPreferences/resolve";
+  "../domain/formats/eventSetupPreferences/resolve";
 import {prepareOfferHandoff, PreparedOfferHandoff,
   ReviewedOfferHandoff} from "../organizerEventOfferHandoff/message";
 import type {EventPaymentTerms, OfferPaymentSnapshot,
   ResolvedEventPreferences} from
-  "../events/eventSetupPreferences/types";
+  "../domain/formats/eventSetupPreferences/types";
 import {
   applyEventOfferAction, CurrentOfferContext, EventOffer,
   EventOfferPaymentSnapshot, eventOfferId,

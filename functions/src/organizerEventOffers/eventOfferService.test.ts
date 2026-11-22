@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import type {EventPaymentTerms} from
-  "../events/eventSetupPreferences/types";
+  "../domain/formats/eventSetupPreferences/types";
 import test from "node:test";
 import {
   EventOffer, eventOfferId, OfferActionReceipt, OfferDomainError,
@@ -116,8 +116,9 @@ class AtomicStore implements OfferRepository {
       eventPreferences: async (id) => {
         const paymentTerms = next.paymentTerms.get(id);
         return paymentTerms ? {revision: paymentTerms.revision,
-          preferences: {} as import("../events/eventSetupPreferences/types")
-            .ResolvedEventPreferences, paymentTerms} : null;
+          preferences: {} as import(
+            "../domain/formats/eventSetupPreferences/types"
+          ).ResolvedEventPreferences, paymentTerms} : null;
       },
       handoffPresentation: async (offer) => ({
         event: {eventId: offer.eventId, title: "Saturday Social",

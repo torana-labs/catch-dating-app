@@ -4,7 +4,8 @@ import {eventSuccessStructureDefaults} from
 import {normalizeEventItinerary, assertValidEventItinerary} from
   "./event_itinerary";
 import {eventDistanceLabel, eventTitleLabel} from "../shared/eventLabels";
-import {assertPublicRegistrationTerms} from "./publicRegistration/policy";
+import {assertPublicRegistrationTerms} from
+  "../domain/events/publicRegistrationTerms";
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import {randomBytes} from "crypto";
@@ -91,7 +92,7 @@ import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {isOrganizerManager, isOrganizerOwner} from
   "../shared/organizerHosts";
 import {hostEventWomenLed, hostWomenLedRole, womenLedLocked} from
-  "../organizers/womenLed";
+  "../domain/events/womenLed";
 import {
   normalizeUploadedPhotosForFirestore,
 } from "../shared/uploadedPhotoNormalization";
@@ -111,7 +112,7 @@ import {
   isEventSuccessRotationSuitability,
   isEventSuccessUnitOutcome,
   ResolvedEventSuccessPrimitives,
-} from "../eventSuccess/formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {organizerEventSuccessLayoutDocumentId} from
   "../domain/formats/layoutDocumentId";
 import {

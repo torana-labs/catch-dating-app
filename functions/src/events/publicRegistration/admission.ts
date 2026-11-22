@@ -32,10 +32,9 @@ import {
   publicGuestMembership,
 } from "./authority";
 import {preparePublicGuestIdentity} from "./identity";
-import {
-  assertPublicRegistrationPolicy,
-  registrationUnavailable,
-} from "./policy";
+import {assertPublicRegistrationPolicy} from "./policy";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
 import {
   parsePublicPayment,
   publicPaymentLedger,

@@ -9,16 +9,15 @@ import type {PaymentRoutingSnapshot} from "../../payments/paymentRouting";
 import {assertRazorpayCollectionRoutingCurrent} from
   "../../payments/razorpayCollectionRouting";
 import {assertPaymentRouteSnapshot} from "../../payments/paymentRouting";
-import {canonicalJson} from "../eventSetupPreferences/resolve";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {
   FirestoreSeatTransaction,
   assertCurrentReadySeatSnapshot,
 } from "../seatAuthority/firestoreAdapter";
-import {
-  CHECKOUT_HOLD_MILLIS,
-  heldSeatCount,
-} from "../seatAuthority/seatAuthority";
+import {heldSeatCount} from "../seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 import {
   prepareCheckoutHold,
   applyCheckoutHold,
@@ -35,9 +34,10 @@ import {
   publicBookingPlaces,
   publicGuestNames,
   assertReviewedPublicQuote,
-  registrationUnavailable,
   type PublicCheckoutQuote,
 } from "./policy";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
 import {
   PUBLIC_PAYMENT_COLLECTION,
   openPublicEventPayment,

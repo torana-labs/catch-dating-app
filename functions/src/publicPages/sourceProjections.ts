@@ -4,7 +4,7 @@ import {publicExternalEvent} from "./publicExternalEvent";
 import {projectPublicOrganizer} from "./publicOrganizer";
 import {publicEventAuthorized} from "./publicReadPolicy";
 import {projectPublicReview} from "./publicReview";
-import {organizerWomenLed, womenLedLocked} from "../organizers/womenLed";
+import {organizerWomenLed, womenLedLocked} from "../domain/events/womenLed";
 import {
   organizerTrackingEventPolicyReason,
   trackingConfigurationEligible,

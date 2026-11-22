@@ -1,9 +1,9 @@
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import {organizerEventDefaultsHash} from
-  "../../events/eventSetupPreferences/resolve";
+  "../../domain/formats/eventSetupPreferences/resolve";
 import {EventPreferenceError} from
-  "../../events/eventSetupPreferences/types";
+  "../../domain/formats/eventSetupPreferences/types";
 import type {EventSetupDefaultsDependencies} from "./service";
 
 /** Shares preference policy between organizer storage and event snapshots. */

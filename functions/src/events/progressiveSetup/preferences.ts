@@ -10,10 +10,10 @@ import {validateEventPaymentTerms} from
   "../../shared/generated/validators/eventPaymentTerms";
 import {
   canonicalJson, eventPaymentTermsFromPreferences, resolveEventPreferences,
-} from "../eventSetupPreferences/resolve";
+} from "../../domain/formats/eventSetupPreferences/resolve";
 import {EventPreferenceError, EventPreferenceIntents,
   OrganizerEventDefaults, PreferenceIntent} from
-  "../eventSetupPreferences/types";
+  "../../domain/formats/eventSetupPreferences/types";
 import {projectManagerEventSetupDefaults} from
   "../../organizers/eventSetupDefaults/service";
 import {eventSetupDefaultsDependencies} from

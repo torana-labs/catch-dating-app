@@ -20,7 +20,7 @@ import {
 } from "../shared/eventOrganizers";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {eventSuccessPrimitivesFor} from "./formatPrimitives";
+import {eventSuccessPrimitivesFor} from "../domain/formats/formatPrimitives";
 import {
   type AttendeeVisit,
   type CheckInTimestamp,

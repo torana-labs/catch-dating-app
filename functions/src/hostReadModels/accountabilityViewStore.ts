@@ -5,7 +5,7 @@ import {validateEventDocument} from
   "../shared/generated/validators/eventDocument";
 import {validateEventAttendeeDocument} from
   "../shared/generated/validators/eventAttendeeDocument";
-import {eventSuccessPrimitivesFor} from "../eventSuccess/formatPrimitives";
+import {eventSuccessPrimitivesFor} from "../domain/formats/formatPrimitives";
 import {accountabilityState} from
   "../eventSuccess/operations/accountabilityProjection";
 import {operableEvent} from "./movementViewSupport";

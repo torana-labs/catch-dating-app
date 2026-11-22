@@ -15,7 +15,7 @@ import {
   EVENT_SUCCESS_UNIT_OUTCOMES,
   EVENT_SUCCESS_VARIABLE_RESOLUTION_TABLE,
   EventSuccessMatchingObjective,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {
   DEFAULT_EVENT_SUCCESS_EXCLUSION_ALERT_THRESHOLD_MINUTES,
   affinityConstraintScopeForPair,

@@ -1,7 +1,7 @@
 import {createHash} from "node:crypto";
 import {publicWebhookUrl} from "../organizers/organizerAutomationWebhook";
 import type {CollectionPreference, OfferPaymentSnapshot} from
-  "../events/eventSetupPreferences/types";
+  "../domain/formats/eventSetupPreferences/types";
 
 /**
  * Pure offer rules. The server-only storage adapter and service are not

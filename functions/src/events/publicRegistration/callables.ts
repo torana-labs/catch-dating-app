@@ -39,12 +39,10 @@ import {
   publicGuestMembership,
   readRegistrationManager,
 } from "./authority";
-import {
-  publicBookingPlaces,
-  publicCheckoutQuote,
-  publicGuestNames,
-  registrationUnavailable,
-} from "./policy";
+import {publicBookingPlaces, publicCheckoutQuote, publicGuestNames} from
+  "./policy";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
 import {publicHostMembershipQuoteTerms} from
   "../../hostMemberships/publicCheckout";
 import {

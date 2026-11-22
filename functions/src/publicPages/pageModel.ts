@@ -17,7 +17,7 @@ import {pageOwnerLinks} from "../organizers/organizerLinks";
 import {projectPublicOrganizer, type HostListing} from "./publicOrganizer";
 import {publicEventAuthorized, publicEventListed} from "./publicReadPolicy";
 import {projectPublicReview, type PublicReview} from "./publicReview";
-import {eventWomenLed, organizerWomenLed} from "../organizers/womenLed";
+import {eventWomenLed, organizerWomenLed} from "../domain/events/womenLed";
 import {classifyOrganizerProfile} from
   "../analytics/organizerProfileClassification";
 import {

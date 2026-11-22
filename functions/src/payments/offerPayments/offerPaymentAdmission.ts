@@ -13,7 +13,8 @@ import {validateEventAttendeeDocument} from
 import {readVerifiedOfferRecipient, type LoadRecipientAuth} from
   "../../organizerEventOfferRecipients/recipientGrant";
 import {OfferDomainError} from "../../organizerEventOffers/eventOfferDomain";
-import {canonicalJson} from "../../events/eventSetupPreferences/resolve";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 import {prepareCrmOriginSeatIdentity, SeatIdentityAuthorityError,
   seatIdentityAliasId, seatIdentityValueHash} from
   "../../events/seatIdentityAuthority";
@@ -30,7 +31,7 @@ import {admissionRequestHash, AdmissionPolicyError} from
   "../../organizerFormAdmission/admissionPolicy";
 import {newFormAttendee} from "../../organizerFormAdmission/admissionRoster";
 import {assertUnpartitionedAdmission} from
-  "../../organizerFormAdmission/admissionEligibility";
+  "../../domain/events/admissionEligibility";
 import {formConversionReceiptId} from
   "../../organizers/organizerFormAdmissionIdentity";
 import {OFFER_PAYMENT_COLLECTION, parseOfferPayment} from

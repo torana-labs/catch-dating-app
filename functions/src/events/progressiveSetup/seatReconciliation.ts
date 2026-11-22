@@ -9,7 +9,8 @@ import {projectManagerEventSetupDefaults} from
   "../../organizers/eventSetupDefaults/service";
 import {eventSetupDefaultsDependencies} from
   "../../organizers/eventSetupDefaults/dependencies";
-import {canonicalJson} from "../eventSetupPreferences/resolve";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 import {advanceEventSeatLedgerMigration, PagedSeatBootstrapDeps,
   PagedSeatBootstrapCommand, SeatMigrationProgress,
   discardEventSeatLedgerMigration} from

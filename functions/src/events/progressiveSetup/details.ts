@@ -13,7 +13,8 @@ import {requireDoc} from "../../shared/validation";
 import {EVENT_MAX_DURATION_MINUTES} from "../../shared/businessRules";
 import {organizerEventVenueDocumentId,
   assertOrganizerEventVenueSource} from "../organizerEventVenues";
-import {canonicalJson} from "../eventSetupPreferences/resolve";
+import {canonicalJson} from
+  "../../domain/formats/eventSetupPreferences/resolve";
 import {projectManagerEventSetupDefaults} from
   "../../organizers/eventSetupDefaults/service";
 import {eventSetupDefaultsDependencies} from

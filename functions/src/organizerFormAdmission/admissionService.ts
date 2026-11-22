@@ -1,6 +1,7 @@
 import {readVerifiedOfferRecipient} from
   "../organizerEventOfferRecipients/recipientGrant";
-import {assertUnpartitionedAdmission} from "./admissionEligibility";
+import {assertUnpartitionedAdmission} from
+  "../domain/events/admissionEligibility";
 import {newFormAttendee} from "./admissionRoster";
 import {heldSeatCount} from "../events/seatAuthority/seatAuthority";
 import {createHash} from "node:crypto";

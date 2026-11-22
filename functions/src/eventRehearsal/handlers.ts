@@ -142,7 +142,7 @@ import {applyPracticeRequiredDataSubmission,
   practiceRequiredDataReview, preparePracticeRequiredDataRequest} from
   "./requiredData";
 import {practiceOutcomeReview, preparePracticeOutcome} from "./outcomes";
-import {eventSuccessPrimitivesFor} from "../eventSuccess/formatPrimitives";
+import {eventSuccessPrimitivesFor} from "../domain/formats/formatPrimitives";
 import {practiceRevealReview, preparePracticeReveal,
   settlePracticeReveal} from "./reveal";
 import {practiceAllocationReview, preparePracticeAllocation,
