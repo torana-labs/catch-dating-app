@@ -1,15 +1,15 @@
-import {contractFixture} from "../shared/contractFixtures";
+import {contractFixture} from "../../shared/contractFixtures";
 import assert from "node:assert/strict";
 import {randomUUID} from "node:crypto";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {EventAssistanceMessageIntent as Intent} from
-  "../shared/generated/eventAssistanceMessageIntent";
+  "../../shared/generated/eventAssistanceMessageIntent";
 import {EventAttendanceDispositionStore} from "./attendanceDispositionStore";
 import {Decision, View} from "./attendanceDispositionPolicy";
 import {ProgressFirestore, seedJoiningProgress, progressFixtureManager} from
-  "../eventSuccess/operations/groupProgressTestFixtures";
+  "../../eventSuccess/operations/groupProgressTestFixtures";
 import {GuestAssistanceStore} from
-  "../eventSuccess/operations/guestAssistanceStore";
+  "../../eventSuccess/operations/guestAssistanceStore";
 
 export const manager = progressFixtureManager;
 export const start = 1_000_000;

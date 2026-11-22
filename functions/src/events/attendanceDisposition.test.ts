@@ -14,9 +14,9 @@ import {validateEventAttendeeDocument} from
 import {validateEventAssistanceCommand} from
   "../shared/generated/validators/eventAssistanceCommand";
 import {dispositionCollections as collections} from
-  "./attendanceDispositionStore";
+  "../domain/live/attendanceDispositionStore";
 import {dispositionIdentity, dispositionReceiptIdentity} from
-  "./attendanceDispositionPolicy";
+  "../domain/live/attendanceDispositionPolicy";
 import {getEventAttendanceDispositionHandler, recordEventNoShowHandler} from
   "./attendanceDispositionHandlers";
 import {setEventAttendeeAttendanceHandler} from "./eventAttendees";
@@ -24,7 +24,7 @@ import {guestCollections, guestIdentity} from
   "../eventSuccess/operations/guestRecords";
 
 import {harness, command, decline, manager, start, end, hostDecision} from
-  "./attendanceDispositionTestFixtures";
+  "../domain/live/attendanceDispositionTestFixtures";
 
 test("closeout is explicit and changes no attendance", async () => {
   const h = await harness();

@@ -1,29 +1,29 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
-import {operationContentHash as hash} from "../operations/durableActions";
+import {operationContentHash as hash} from "../../operations/durableActions";
 import type {EventAttendanceDispositionDocument as Record} from
-  "../shared/generated/eventAttendanceDispositionDocument";
+  "../../shared/generated/eventAttendanceDispositionDocument";
 import type {EventAttendanceDispositionCallableResponse as Response} from
-  "../shared/generated/eventAttendanceDispositionCallableResponse";
+  "../../shared/generated/eventAttendanceDispositionCallableResponse";
 import type {GetEventAttendanceDispositionCallablePayload as Scope} from
-  "../shared/generated/getEventAttendanceDispositionCallablePayload";
+  "../../shared/generated/getEventAttendanceDispositionCallablePayload";
 import {validateGetEventAttendanceDispositionCallablePayload} from
-  "../shared/generated/validators/getEventAttendanceDispositionInput";
+  "../../shared/generated/validators/getEventAttendanceDispositionInput";
 import {validateRecordEventNoShowCallablePayload} from
-  "../shared/generated/validators/recordEventNoShowInput";
+  "../../shared/generated/validators/recordEventNoShowInput";
 import {validateEventAttendanceDispositionDocument} from
-  "../shared/generated/validators/eventAttendanceDispositionDocument";
+  "../../shared/generated/validators/eventAttendanceDispositionDocument";
 import {validateEventAttendanceDispositionReceiptDocument} from
-  "../shared/generated/validators/eventAttendanceDispositionReceiptDocument";
+  "../../shared/generated/validators/eventAttendanceDispositionReceiptDocument";
 import {validateEventAttendanceDispositionCallableResponse} from
-  "../shared/generated/validators/eventAttendanceDispositionOutput";
+  "../../shared/generated/validators/eventAttendanceDispositionOutput";
 import {runAssistanceTransaction as transact} from
-  "../eventSuccess/operations/transactionCallback";
+  "../../eventSuccess/operations/transactionCallback";
 import {assertCommandContext, assertCommandRole} from
-  "../eventSuccess/operations/commands";
+  "../../eventSuccess/operations/commands";
 import {guestCollections, guestIdentity} from
-  "../eventSuccess/operations/guestRecords";
-import {invalidSource} from "../eventSuccess/operations/groupProgressSource";
+  "../../eventSuccess/operations/guestRecords";
+import {invalidSource} from "../../eventSuccess/operations/groupProgressSource";
 import {attendanceBinding, DispositionSource, dispositionConflict as conflict,
   dispositionIdentity, dispositionReceiptIdentity, dispositionView,
   requireDispositionDecision, sourceIdentity} from

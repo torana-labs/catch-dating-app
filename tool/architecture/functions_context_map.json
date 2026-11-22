@@ -67,13 +67,6 @@
     {"path": "functions/src/money/", "context": "payments"},
     {"path": "functions/src/foundingHosts/", "context": "payments"},
 
-    {"path": "functions/src/events/attendanceDispositionHandlers.ts", "context": "bookings"},
-    {"path": "functions/src/events/attendanceDispositionPolicy.ts", "context": "bookings"},
-    {"path": "functions/src/events/attendanceDispositionReader.ts", "context": "bookings"},
-    {"path": "functions/src/events/attendanceDispositionStore.ts", "context": "bookings"},
-    {"path": "functions/src/events/attendanceDispositionTestFixtures.ts", "context": "bookings"},
-    {"path": "functions/src/events/attendanceReport.ts", "context": "bookings"},
-    {"path": "functions/src/events/attendanceReportHandlers.ts", "context": "bookings"},
     {"path": "functions/src/events/cancelEventSignUp.ts", "context": "bookings"},
     {"path": "functions/src/events/catchBookingRoster.ts", "context": "bookings"},
     {"path": "functions/src/events/decideEventJoinRequest.ts", "context": "bookings"},
@@ -128,6 +121,8 @@
 
     {"path": "functions/src/eventSuccess/", "context": "live"},
     {"path": "functions/src/eventRehearsal/", "context": "live"},
+    {"path": "functions/src/events/attendanceDispositionHandlers.ts", "context": "live"},
+    {"path": "functions/src/events/attendanceReportHandlers.ts", "context": "live"},
 
     {"path": "functions/src/programs/", "context": "programmes"},
     {"path": "functions/src/transport/", "context": "programmes"},

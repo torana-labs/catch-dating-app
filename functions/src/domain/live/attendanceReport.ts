@@ -1,16 +1,16 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import {FieldPath, Firestore, Transaction} from "firebase-admin/firestore";
-import {operationContentHash as hash} from "../operations/durableActions";
+import {operationContentHash as hash} from "../../operations/durableActions";
 import type {EventAttendanceReportCallableResponse as Response} from
-  "../shared/generated/eventAttendanceReportCallableResponse";
+  "../../shared/generated/eventAttendanceReportCallableResponse";
 import {validateGetEventAttendanceReportCallablePayload} from
-  "../shared/generated/validators/getEventAttendanceReportInput";
+  "../../shared/generated/validators/getEventAttendanceReportInput";
 import {validateEventAttendanceReportCallableResponse} from
-  "../shared/generated/validators/eventAttendanceReportOutput";
+  "../../shared/generated/validators/eventAttendanceReportOutput";
 import {guestCollections, guestIdentity} from
-  "../eventSuccess/operations/guestRecords";
+  "../../eventSuccess/operations/guestRecords";
 import {invalidSource, timestampEvidence} from
-  "../eventSuccess/operations/groupProgressSource";
+  "../../eventSuccess/operations/groupProgressSource";
 import {attendanceClosure, dispositionIdentity, dispositionView, View} from
   "./attendanceDispositionPolicy";
 import {attendanceEventAuthority, attendanceDispositionStateFromSnapshots,

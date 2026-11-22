@@ -1,18 +1,18 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {operationContentHash as hash} from "../operations/durableActions";
+import {operationContentHash as hash} from "../../operations/durableActions";
 import type {EventAttendanceDispositionDocument as Record} from
-  "../shared/generated/eventAttendanceDispositionDocument";
+  "../../shared/generated/eventAttendanceDispositionDocument";
 import type {EventAttendanceDispositionCallableResponse as Response} from
-  "../shared/generated/eventAttendanceDispositionCallableResponse";
-import type {EventDocument} from "../shared/generated/eventDocument";
+  "../../shared/generated/eventAttendanceDispositionCallableResponse";
+import type {EventDocument} from "../../shared/generated/eventDocument";
 import type {EventAttendeeDocument} from
-  "../shared/generated/eventAttendeeDocument";
+  "../../shared/generated/eventAttendeeDocument";
 import type {EventSuccessPlanDocument} from
-  "../shared/generated/eventSuccessPlanDocument";
+  "../../shared/generated/eventSuccessPlanDocument";
 import {currentGuest, Guest, GuestSourceFacts} from
-  "../eventSuccess/operations/guestRecords";
+  "../../eventSuccess/operations/guestRecords";
 import {invalidSource, timestampEvidence} from
-  "../eventSuccess/operations/groupProgressSource";
+  "../../eventSuccess/operations/groupProgressSource";
 
 export type View = Response["view"];
 export type Decision = Record["decision"];
