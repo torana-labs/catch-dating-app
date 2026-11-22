@@ -164,6 +164,13 @@ test("the dry run reports every class and writes nothing", async () => {
   assert.deepEqual(byId.drift.blockers, ["catchCountMismatch"]);
   assert.equal(byId.ghost.class, "blocked");
   assert.ok(byId.ghost.blockers.includes("authUserMissing"));
+  assert.equal(byId.ghost.missingAuthUsersWithSeats, 1);
+  assert.equal(byId.gone.class, "blocked");
+  assert.deepEqual(byId.gone.blockers,
+    ["authUserMissing", "verifiedUidEvidenceUnavailable"]);
+  assert.equal(byId.gone.missingAuthUsers, 1);
+  assert.equal(byId.gone.missingAuthUsersWithSeats, 0);
+  assert.match(eventLine(byId.gone), /1 booking UID\(s\) have no Auth user, 0 of them holding a seat/u);
   assert.equal(byId.held.class, "blocked");
   assert.deepEqual(byId.held.blockers, ["outstandingHolds:guestPayments"]);
   assert.match(eventLine(byId.drift),
@@ -205,7 +212,8 @@ test("apply moves migratable and empty cancelled events onto the ledger",
     assert.equal(db.doc("eventSeatMigrationFences/over").state, "ready");
     assert.equal(db.doc("eventSeatMigrationFences/over").organizerId, "org1");
 
-    for (const id of ["demo", "broken", "crowd", "drift", "ghost", "held"]) {
+    for (const id of ["demo", "broken", "crowd", "drift", "ghost", "gone",
+      "held"]) {
       assert.equal(byId[id].result, undefined, id);
       assert.equal(db.doc(`eventSeatLedgers/${id}`), undefined, id);
     }
@@ -338,6 +346,10 @@ function world() {
     ...booking("drift", "runner1"),
     "events/ghost": activeEvent({bookedCount: 1}),
     ...booking("ghost", "missing1"),
+    // A guest who deleted their account keeps a deleted booking.
+    "events/gone": activeEvent({bookedCount: 1}),
+    ...booking("gone", "runner1"),
+    ...booking("gone", "missing2", "deleted"),
     "events/held": activeEvent(),
     "guestPayments/pay1": {eventId: "held", purpose: "checkout",
       status: "pending"},

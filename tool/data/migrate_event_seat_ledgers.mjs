@@ -380,6 +380,7 @@ async function cancelledSnapshot(db, lib, eventId, event) {
 async function authEvidence(auth, lib, uids) {
   const proofs = [];
   const blockers = [];
+  const missing = [];
   for (let index = 0; index < uids.length; index += 10) {
     const batch = uids.slice(index, index + 10);
     const records = await Promise.all(batch.map(async (uid) => {
@@ -393,6 +394,7 @@ async function authEvidence(auth, lib, uids) {
     records.forEach((record, offset) => {
       if (!record) {
         blockers.push("authUserMissing");
+        missing.push(batch[offset]);
         return;
       }
       if (record.uid !== batch[offset]) {
@@ -410,8 +412,7 @@ async function authEvidence(auth, lib, uids) {
       proofs.push({uid: record.uid, phoneE164: phone, verifiedByAuth: true});
     });
   }
-  return {proofs, blockers, missingUsers:
-    blockers.filter((blocker) => blocker === "authUserMissing").length};
+  return {proofs, blockers, missing};
 }
 
 function formReceipt(raw, organizerId) {
@@ -487,7 +488,18 @@ export async function planActiveEvent({db, auth, lib, eventId, event,
   }
   const evidence = await authEvidence(auth, lib, uids);
   blockers.push(...evidence.blockers);
-  if (evidence.missingUsers > 0) detail.missingAuthUsers = evidence.missingUsers;
+  if (evidence.missing.length > 0) {
+    // Account deletion keeps the booking (status deleted) but removes the
+    // Auth user, and the engine needs Auth evidence for every booking UID.
+    const seated = new Set([
+      ...participations.filter((row) => ACTIVE_BOOKING.has(row.status))
+        .map((row) => row.uid),
+      ...attendees.filter((row) => ACTIVE_ATTENDEE.has(row.status))
+        .map((row) => row.linkedUid)]);
+    detail.missingAuthUsers = evidence.missing.length;
+    detail.missingAuthUsersWithSeats = evidence.missing
+      .filter((uid) => seated.has(uid)).length;
+  }
 
   const responseIds = [...new Set(attendees
     .filter((row) => row.source === "hostManual" &&
@@ -778,6 +790,10 @@ export function eventLine(row) {
   }
   if (row.class === "blocked") {
     parts.push(row.blockers.join(", "));
+    if (row.missingAuthUsers) {
+      parts.push(`${row.missingAuthUsers} booking UID(s) have no Auth user, ` +
+        `${row.missingAuthUsersWithSeats} of them holding a seat`);
+    }
     if (row.blockers.includes("catchCountMismatch")) {
       parts.push(`bookedCount ${row.eventBookedCount}, active Catch bookings ` +
         `${row.activeCatchBookings}`);
