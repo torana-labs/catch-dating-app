@@ -99,7 +99,10 @@
     "jarsigner",
     "jq",
     "keytool",
-    "mkfifo"
+    "mkfifo",
+    // The nightly test read map traces flutter test (tool/ci/test_read_map.mjs);
+    // the workflow installs it with apt.
+    "strace"
   ],
   // Functions tests require compiled output (../lib/...) built by `npm run build`,
   // and tool tests that exercise a Function's helpers import the same output

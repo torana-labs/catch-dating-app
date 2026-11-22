@@ -17,6 +17,27 @@ const hostProgrammeImportFields = [
   ProgramManifestField.destinationHotelName,
 ];
 
+/// Detaching a party-blocked journey from the guest list check: which
+/// journey awaits confirmation, whether the command is running, and the
+/// three moves. Null on the body when the viewer cannot detach.
+@immutable
+class HostProgrammeImportDetach {
+  const HostProgrammeImportDetach({
+    required this.onAsk,
+    required this.onConfirm,
+    required this.onCancel,
+    this.confirmingLegId,
+    this.pending = false,
+  });
+
+  /// The journey whose confirmation shows under its row.
+  final String? confirmingLegId;
+  final bool pending;
+  final ValueChanged<ProgramManifestPartyJourney> onAsk;
+  final VoidCallback onConfirm;
+  final VoidCallback onCancel;
+}
+
 /// Adding the guest list in board order: the file with Change, how many
 /// guests and households the check found, what each column is, and the
 /// rows that need a look.
@@ -31,6 +52,7 @@ class HostProgrammeImportBody extends StatelessWidget {
     required this.onMap,
     this.committed,
     this.error,
+    this.detach,
   });
 
   /// Null until a file is picked.
@@ -49,6 +71,9 @@ class HostProgrammeImportBody extends StatelessWidget {
   /// The last failure, already in words.
   final String? error;
 
+  /// Null when the viewer lacks the coordinator duty.
+  final HostProgrammeImportDetach? detach;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -56,6 +81,7 @@ class HostProgrammeImportBody extends StatelessWidget {
     final table = this.table;
     final preview = this.preview;
     final committed = this.committed;
+    final detach = this.detach;
     final serverIssues = preview?.rowErrors ?? const [];
     return CatchPageBody.screen(
       gap: CatchPageBodyGap.tight,
@@ -149,16 +175,73 @@ class HostProgrammeImportBody extends StatelessWidget {
                     subtitle: issue.reason,
                     onTap: null,
                   ),
-                for (final issue in serverIssues.take(20))
+                // A row its journey's travel party blocks offers Detach
+                // from party under its reason, confirmed in place.
+                for (final (:index, :message, :partyJourney)
+                    in serverIssues.take(20)) ...[
                   CatchIndexRow(
                     key: ValueKey<String>(
-                      'host-programme-import-server-${issue.index}',
+                      'host-programme-import-server-$index',
                     ),
                     marker: CatchIndexRowTone.warning,
-                    title: l10n.hostProgrammeImportRow(row: issue.index + 1),
-                    subtitle: issue.message,
+                    title: l10n.hostProgrammeImportRow(row: index + 1),
+                    subtitle: message,
+                    footer:
+                        detach == null ||
+                            partyJourney == null ||
+                            detach.confirmingLegId == partyJourney.legId
+                        ? null
+                        : CatchButton(
+                            key: ValueKey<String>(
+                              'host-programme-import-detach-$index',
+                            ),
+                            label: l10n.hostProgrammeImportDetach,
+                            variant: CatchButtonVariant.secondary,
+                            size: CatchButtonSize.sm,
+                            onPressed: detach.pending || committed != null
+                                ? null
+                                : () => detach.onAsk(partyJourney),
+                          ),
                     onTap: null,
                   ),
+                  if (detach != null &&
+                      partyJourney != null &&
+                      detach.confirmingLegId == partyJourney.legId)
+                    CatchNotice.inline(
+                      key: ValueKey<String>(
+                        'host-programme-import-detach-confirm-$index',
+                      ),
+                      tone: CatchNoticeTone.warning,
+                      title: l10n.hostProgrammeImportDetachTitle,
+                      body: l10n.hostProgrammeImportDetachBody,
+                      footer: CatchStack(
+                        direction: CatchStackDirection.row,
+                        gap: CatchStackGap.g8,
+                        children: [
+                          CatchButton(
+                            key: const ValueKey<String>(
+                              'host-programme-import-detach-yes',
+                            ),
+                            label: l10n.hostProgrammeImportDetachConfirm,
+                            size: CatchButtonSize.sm,
+                            status: detach.pending
+                                ? CatchButtonStatus.loading
+                                : CatchButtonStatus.idle,
+                            onPressed: detach.pending ? null : detach.onConfirm,
+                          ),
+                          CatchButton(
+                            key: const ValueKey<String>(
+                              'host-programme-import-detach-no',
+                            ),
+                            label: l10n.hostProgrammeImportDetachKeep,
+                            variant: CatchButtonVariant.quiet,
+                            size: CatchButtonSize.sm,
+                            onPressed: detach.pending ? null : detach.onCancel,
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
               ],
             ),
         ],

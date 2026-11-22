@@ -2427,6 +2427,7 @@ dispatched run started after its cron time:
 | Firestore Data Validation (`data-validation.yml`) | 20:13 | Not dispatched: it uses prod, though read-only | "Scheduled run missed" |
 | Deploy backend (`backend-deploy.yml`) | 21:13 | Dispatched once for dev; prod is never dispatched | "Scheduled run missed" |
 | CI nightly (`ci.yml`) | 02:23 | Dispatched once with `full`; the night counts as unknown | "Main CI is red" |
+| Test read map (`test-read-map.yml`) | 03:41 | Not dispatched: report-only shadow job | "Scheduled run missed" |
 
 Each missed run gets one comment on its issue (opened if none is open) naming
 the run, what was dispatched and, for a prod run, the command to run it, for
@@ -2499,6 +2500,27 @@ fix the selector or add a `// test-selection-reads:` declaration. The report is 
 a separate workflow after the nightly, so it never changes the nightly's result,
 and it checks only test selection within the Functions lanes, not whether CI
 planned those lanes at all.
+
+### Test read map
+
+`Test read map` (`.github/workflows/test-read-map.yml`, driven by
+`tool/ci/test_read_map.mjs`) runs nightly at 03:41 UTC and on dispatch, in
+shadow (RE decision, 22 Nov 2026). Each Flutter test file under `test/` that
+imports `dart:io` runs in its own `flutter test` under `strace -f` on Linux,
+four shards, read-only. The log is reduced to the repository paths each kind
+of process touched and deleted before the next test. The test runtime
+(`flutter_tester`) is where a test's own `dart:io` reads happen; its opened,
+listed (directory), probed (stat) and missing paths are kept in full. The
+compiler's reads (the import closure) are kept separately, and the flutter
+tool's only as a count. Golden-tagged tests are excluded as in the CI shards,
+so a file with only golden tests exits 79 and still has a map. The run
+uploads one sorted JSONL artifact, `test-read-map-<run id>`, kept 30 days,
+and the Scheduled run watchdog reports a night it never started (report-only),
+and summarises files, failures, tests whose runtime reads only fonts, shaders
+and the native assets manifest, and tests that list directories. Nothing
+consumes the map: it selects no tests and blocks nothing. Removing a test
+from the selector's always-run set needs a clean shadow week, the release
+engineer's sign-off and then the owner's.
 
 ### Website release train
 

@@ -1,0 +1,79 @@
+name: Test read map
+
+# Shadow read map (RE decision, 22 Nov 2026): each Flutter test file under
+# test/ that imports dart:io runs in its own `flutter test` under `strace -f`,
+# and the repository paths its test runtime opened, listed and probed are
+# recorded, with the compiler's reads kept separate. Nothing consumes the map
+# yet: it changes no selection and never blocks anything. Linux, read-only;
+# it uploads one JSONL artifact per night. Logic and tests:
+# tool/ci/test_read_map.mjs. Operator guide: docs/release_operations.md,
+# "Test read map".
+
+on:
+  schedule:
+    - cron: "41 3 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: test-read-map
+  cancel-in-progress: false
+
+jobs:
+  trace:
+    name: Read map (shard ${{ matrix.shard }}/4)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Install strace
+        run: command -v strace || sudo apt-get install -y -qq strace
+      - uses: ./.github/actions/generate-contracts
+      - uses: ./.github/actions/setup-flutter
+      - run: flutter pub get
+      - name: Trace each dart:io test file
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: node tool/ci/test_read_map.mjs --shard "$SHARD" --shards 4 --out "$RUNNER_TEMP/read-map-$SHARD.jsonl"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-read-map-shard-${{ matrix.shard }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/read-map-${{ matrix.shard }}.jsonl
+          retention-days: 14
+          if-no-files-found: error
+
+  combine:
+    name: Combine the read map
+    needs: trace
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          pattern: test-read-map-shard-*-${{ github.run_id }}
+          merge-multiple: true
+          path: shards
+      - name: Merge shards and summarise
+        run: |
+          set -euo pipefail
+          cat shards/read-map-*.jsonl | jq -cs 'sort_by(.test) | .[]' > test-read-map.jsonl
+          jq -s '{files: length, failed: map(select(.exit != 0 and .exit != 79)) | length,
+            noRuntimeRepoReads: map(select((.runtime.opened + .runtime.listed) | all(test("^(NativeAssetsManifest\\.json|shaders/|packages/catch_ui/assets/fonts/)")))) | length,
+            listing: map(select(.runtime.listed | length > 0)) | length}' test-read-map.jsonl | tee summary.json
+          { echo '### Test read map'; echo '```json'; cat summary.json; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-read-map-${{ github.run_id }}
+          path: test-read-map.jsonl
+          retention-days: 30
+          if-no-files-found: error
