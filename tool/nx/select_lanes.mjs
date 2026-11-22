@@ -1,13 +1,15 @@
 #!/usr/bin/env node
-// Nx chooses which CI lanes run for pull requests and queue groups (design A,
-// signed off 15 Nov 2026). The planner still reads the change for everything
-// else: build targets, the docs checkout, Flutter test selection and its
-// refusal of an unowned file. Its lanes are a shadow line in the summary.
+// Nx chooses which CI lanes run for pull requests, queue groups and main
+// pushes (design A, signed off 15 Nov 2026; main from 22 Nov). The planner
+// still reads the change for everything else: build targets, the docs
+// checkout, Flutter test selection and its refusal of an unowned file. Its
+// lanes are a shadow line in the summary.
 //
 // Nx selects alone in the modes listed in nxSelectsAlone. Emptying that list
 // is the kill switch: every mode returns to the union, where Nx may only add
 // lanes to the planner's. Whenever Nx cannot answer completely, every lane
-// runs, because running more is safe.
+// runs, because running more is safe. A main push the merge queue already
+// validated runs no lane, so it keeps the planner's plan and never runs Nx.
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -19,7 +21,7 @@ import {callerGraph, compare, comparedLanes, narrowedPlanner, nxAffected, planne
   from "./shadow_plan.mjs";
 
 /** The modes in which Nx alone chooses the lanes. Empty it to restore the union everywhere. */
-export const nxSelectsAlone = ["pr", "merge_group"];
+export const nxSelectsAlone = ["pr", "merge_group", "main"];
 
 const buildPlatforms = {
   flutter_build_android: "-android",
@@ -27,6 +29,21 @@ const buildPlatforms = {
   flutter_build_web: "-web",
   flutter_web_smoke: "-web-smoke",
 };
+
+/**
+ * Until the owner decides how main builds apps (A2, 22 Nov), a main push
+ * keeps the planner's app build lanes: Nx chooses every other lane. Main's
+ * builds are a post-merge compile check nothing downstream consumes, and the
+ * nightly full run builds every app.
+ */
+export const mainPlannerBuildLanes = Object.keys(buildPlatforms);
+
+/** Nx's lanes with the app build lanes taken from the planner, for a main push. */
+export function mainBuildUnion(lanes, plannerLanes) {
+  const other = lanes.filter((lane) => !mainPlannerBuildLanes.includes(lane));
+  const builds = plannerLanes.filter((lane) => mainPlannerBuildLanes.includes(lane));
+  return [...new Set([...other, ...builds])].sort();
+}
 
 function run(command, args) {
   return execFileSync(command, args, {encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "inherit"]});
@@ -114,9 +131,16 @@ export function plannerShadow(result) {
   return {lanes, unexplained: lanes.filter((entry) => entry.rule === "UNEXPLAINED").length};
 }
 
-/** Whether Nx may choose for this plan: nightly, full, main and commit-window runs keep the planner's selection. */
-export function nxChooses(plan) {
-  return ["pr", "merge_group"].includes(plan.mode) && plan.full !== true && plan.commitWindow !== true;
+/**
+ * Whether Nx may choose for this plan. Nightly and full runs keep the
+ * planner's selection. Main pushes plan a commit window, which Nx reads like
+ * a pull request's range; a main push the merge queue validated
+ * (`queueVerified`) runs no lane and never needs Nx.
+ */
+export function nxChooses(plan, {queueVerified = false} = {}) {
+  if (plan.full === true || queueVerified) return false;
+  if (plan.mode === "main") return true;
+  return ["pr", "merge_group"].includes(plan.mode) && plan.commitWindow !== true;
 }
 
 /**
@@ -162,7 +186,7 @@ async function main(argv) {
     historyError = `the history could not be read (${error.message.split("\n")[0]})`;
   }
   const change = changedFiles?.includes(manifestFile) ? readManifestChange(args.base, args.head) : null;
-  if (!nxChooses(plan)) {
+  if (!nxChooses(plan, {queueVerified: Boolean(args["queue-verified"])})) {
     if (plan.mode === "main" && changedFiles?.includes(manifestFile)) {
       reportMainShadow({plan, changedFiles, change});
     }
@@ -188,12 +212,18 @@ async function main(argv) {
       nxError = error.message.split("\n")[0];
     }
   }
-  // Loaded only here: the main-push plan job's sparse checkout never reads it.
+  // Loaded only here: a queue-verified main push keeps its sparse checkout and
+  // returns above, so it never reads it.
   const {unknownTopLevel} = alone ? await import("./lane_coverage.mjs") : {unknownTopLevel: () => []};
-  const {lanes, selection, warning} = chooseLanes({mode: plan.mode, alone, plannerLanes: planner.lanes, result, nxError,
+  const chosen = chooseLanes({mode: plan.mode, alone, plannerLanes: planner.lanes, result, nxError,
     unknownPaths: changedFiles ? unknownTopLevel(changedFiles) : []});
+  const {selection, warning} = chosen;
+  const lanes = plan.mode === "main" && selection === "nx" ? mainBuildUnion(chosen.lanes, planner.lanes) : chosen.lanes;
   if (warning) console.log(`::warning::${warning}`);
-  const shadow = result ? plannerShadow(result) : {lanes: [], unexplained: 0};
+  // A planner lane the run executes anyway (main's interim app builds) is not a shadow difference.
+  const fullShadow = result ? plannerShadow(result) : {lanes: [], unexplained: 0};
+  const shadowLanes = fullShadow.lanes.filter((entry) => !lanes.includes(entry.lane));
+  const shadow = {lanes: shadowLanes, unexplained: shadowLanes.filter((entry) => entry.rule === "UNEXPLAINED").length};
   // Recorded in the uploaded plan artifact too, for the weekly metrics (#1819).
   const next = {...applyLanes(plan, lanes), laneSelection: {selection, nxLanes: result?.nxLanes ?? null,
     plannerOnly: shadow.lanes, plannerUnexplained: shadow.unexplained}};

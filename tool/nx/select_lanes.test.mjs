@@ -10,8 +10,8 @@ import {projectPlanOutputs} from "../harness.mjs";
 import {planAffected, queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
 import {planAffectedToolChecks, toolsOwnDesignChecks, toolsOwnUiLintSmoke} from "../lib/tool_impact.mjs";
 import {comparedLanes} from "./shadow_plan.mjs";
-import {appRolesOf, applyLanes, chooseLanes, everyLane, nxChooses, nxSelectsAlone, plannerShadow, selectAlone,
-  unionLanes} from "./select_lanes.mjs";
+import {appRolesOf, applyLanes, chooseLanes, everyLane, mainBuildUnion, mainPlannerBuildLanes, nxChooses, nxSelectsAlone,
+  plannerShadow, selectAlone, unionLanes} from "./select_lanes.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(repoRoot, file), "utf8"));
@@ -34,16 +34,32 @@ test("app builds keep only the platforms still selected", () => {
   assert.deepEqual(applyLanes(plan, ["flutter"]).operations.buildTargets, []);
 });
 
-test("nightly, full and main runs keep the planner's selection", () => {
+test("nightly and full runs keep the planner's selection; main chooses through Nx unless the queue validated it", () => {
   assert.equal(nxChooses({mode: "pr"}), true);
   assert.equal(nxChooses({mode: "merge_group"}), true);
-  assert.equal(nxChooses({mode: "main"}), false);
+  // Every main push plans a commit window.
+  assert.equal(nxChooses({mode: "main", commitWindow: true}), true);
+  assert.equal(nxChooses({mode: "main", commitWindow: true}, {queueVerified: true}), false);
+  assert.equal(nxChooses({mode: "main", full: true}), false);
   assert.equal(nxChooses({mode: "nightly", full: true}), false);
+  assert.equal(nxChooses({mode: "nightly"}), false);
   assert.equal(nxChooses({mode: "pr", commitWindow: true}), false);
 });
 
+// Until the owner decides how main builds apps (A2), a main push keeps the
+// planner's app build lanes and Nx chooses the rest.
+test("a main push takes its app build lanes from the planner and every other lane from Nx", () => {
+  assert.deepEqual(mainPlannerBuildLanes, ["flutter_build_android", "flutter_build_ios", "flutter_build_web",
+    "flutter_web_smoke"]);
+  assert.deepEqual(mainBuildUnion(["flutter", "flutter_web_smoke", "tools"],
+    ["admin", "flutter", "flutter_build_android", "flutter_build_ios"]),
+  ["flutter", "flutter_build_android", "flutter_build_ios", "tools"], "builds follow the planner; admin stays Nx's call");
+  assert.deepEqual(mainBuildUnion(["docs"], ["docs", "flutter_build_web"]), ["docs", "flutter_build_web"]);
+  assert.deepEqual(mainBuildUnion(["flutter_build_ios", "tools"], ["tools"]), ["tools"], "Nx alone adds no main build");
+});
+
 test("pull requests and queue groups run Nx's lanes alone; emptying nxSelectsAlone restores the union", () => {
-  assert.deepEqual(nxSelectsAlone, ["pr", "merge_group"]);
+  assert.deepEqual(nxSelectsAlone, ["pr", "merge_group", "main"]);
   const result = {nxLanes: ["docs", "tools"], unmappedTasks: []};
   assert.deepEqual(chooseLanes({mode: "pr", alone: true, plannerLanes: ["flutter", "tools"], result}),
     {lanes: ["docs", "tools"], selection: "nx", warning: null});
@@ -149,34 +165,61 @@ test("lane jobs read only the change range, the final lanes, and outputs pinned 
   assert.deepEqual(other, [], "a new planner-derived output needs a test that an Nx-only lane gets it complete");
 });
 
-// The flip leaves main alone: its plan job checks out only the planner closure
-// (no node_modules) and select_lanes returns before Nx. Run it from exactly
-// that sparse checkout.
-test("main pushes plan from the sparse planner checkout without Nx or node_modules", () => {
+// A main push the merge queue validated runs no lane: its plan job keeps the
+// sparse planner checkout (no node_modules) and select_lanes returns before
+// Nx. Run it from exactly that sparse checkout.
+function sparsePlannerCheckout(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "select-lanes-main-"));
-  try {
-    for (const entry of componentGraph.ciCheckout.planner.paths) {
-      const file = entry.replace(/^\//u, "");
-      fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
-      fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
-    }
-    execFileSync("git", ["init", "-q"], {cwd: root});
-    execFileSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "--allow-empty", "-m", "base"], {cwd: root});
-    fs.appendFileSync(path.join(root, "tool/tools_manifest.json"), "\n");
-    execFileSync("git", ["add", "-A"], {cwd: root});
-    execFileSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "head"], {cwd: root});
-    const plan = {mode: "main", full: false, commitWindow: true, operations: {ciTargets: [...comparedLanes], buildTargets: []}};
-    fs.writeFileSync(path.join(root, "plan.json"), JSON.stringify(plan));
-    fs.writeFileSync(path.join(root, "out"), "");
-    const result = spawnSync(process.execPath, ["tool/nx/select_lanes.mjs", "--plan", "plan.json", "--base", "HEAD~1",
-      "--head", "HEAD", "--github-output", "out"], {cwd: root, encoding: "utf8", env: {...process.env, NODE_PATH: ""}});
-    assert.equal(result.status, 0, result.stderr);
-    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, "plan.json"), "utf8")), plan, "main keeps the planner's plan");
-    assert.equal(fs.readFileSync(path.join(root, "out"), "utf8"), "", "main writes no lane outputs");
-    assert.equal(fs.existsSync(path.join(root, "node_modules")), false);
-  } finally {
-    fs.rmSync(root, {recursive: true, force: true});
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  for (const entry of componentGraph.ciCheckout.planner.paths) {
+    const file = entry.replace(/^\//u, "");
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
   }
+  execFileSync("git", ["init", "-q"], {cwd: root});
+  execFileSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "--allow-empty", "-m", "base"], {cwd: root});
+  fs.appendFileSync(path.join(root, "tool/tools_manifest.json"), "\n");
+  execFileSync("git", ["add", "-A"], {cwd: root});
+  execFileSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "head"], {cwd: root});
+  const plan = {mode: "main", full: false, commitWindow: true,
+    operations: {ciTargets: ["flutter_build_ios", "tools"], buildTargets: ["consumer-ios", "host-ios"]}};
+  fs.writeFileSync(path.join(root, "plan.json"), JSON.stringify(plan));
+  fs.writeFileSync(path.join(root, "out"), "");
+  const select = (flags) => spawnSync(process.execPath, ["tool/nx/select_lanes.mjs", "--plan", "plan.json", "--base", "HEAD~1",
+    "--head", "HEAD", ...flags, "--github-output", "out"], {cwd: root, encoding: "utf8", env: {...process.env, NODE_PATH: ""}});
+  return {root, plan, select};
+}
+
+test("a queue-verified main push plans from the sparse planner checkout without Nx or node_modules", (t) => {
+  const {root, plan, select} = sparsePlannerCheckout(t);
+  const result = select(["--queue-verified", "44947336445"]);
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, "plan.json"), "utf8")), plan, "the planner's plan stands");
+  assert.equal(fs.readFileSync(path.join(root, "out"), "utf8"), "", "it writes no lane outputs");
+  assert.equal(fs.existsSync(path.join(root, "node_modules")), false);
+});
+
+// A main push the queue did not validate has the whole tree and node_modules.
+// When Nx itself fails there (an npx that exits 1), every lane runs.
+test("a main push Nx cannot answer for runs every lane", (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "select-lanes-main-nx-"));
+  t.after(() => fs.rmSync(dir, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(dir, "bin"));
+  fs.writeFileSync(path.join(dir, "bin", "npx"), "#!/bin/sh\nexit 1\n", {mode: 0o755});
+  const planFile = path.join(dir, "plan.json");
+  const out = path.join(dir, "out");
+  fs.writeFileSync(planFile, JSON.stringify({mode: "main", full: false, commitWindow: true,
+    operations: {ciTargets: ["tools"], buildTargets: []}}));
+  fs.writeFileSync(out, "");
+  const result = spawnSync(process.execPath, ["tool/nx/select_lanes.mjs", "--plan", planFile, "--base", "HEAD~1",
+    "--head", "HEAD", "--github-output", out], {cwd: repoRoot, encoding: "utf8",
+    env: {...process.env, PATH: `${path.join(dir, "bin")}${path.delimiter}${process.env.PATH}`}});
+  assert.equal(result.status, 0, result.stderr);
+  const outputs = Object.fromEntries(fs.readFileSync(out, "utf8").trim().split("\n")
+    .map((line) => line.split(/=(.*)/u).slice(0, 2)));
+  assert.equal(outputs.lane_selection, "every-lane");
+  for (const lane of comparedLanes) assert.equal(outputs[lane], "true", lane);
+  assert.match(result.stdout, /Every lane runs: Nx could not choose lanes/u);
 });
 
 // Run 43244338235 (12 Nov 2026): Nx missed nine lanes the planner selected,

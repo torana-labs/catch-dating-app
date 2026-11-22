@@ -125,10 +125,38 @@ jobs:
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
 
-      # Nx chooses the lanes for pull requests and queue groups, and reads the
-      # whole tree to do it. Other runs keep the planner's selection.
+      - id: queue
+        name: Find the merge-queue validation of this exact source
+        if: ${{ github.event_name == 'push' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -uo pipefail
+          # The merge queue validated this exact commit before main moved to
+          # it, so main re-runs no validation lane: it only plans. Any lookup
+          # failure keeps the full run.
+          run_id=""
+          if runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?event=merge_group&head_sha=$SOURCE_SHA&per_page=20")"; then
+            run_id="$(jq -r --arg sha "$SOURCE_SHA" '[.workflow_runs[]? | select(.event == "merge_group" and
+              .head_sha == $sha and .conclusion == "success" and .path == ".github/workflows/ci.yml")] |
+              max_by(.id) | .id // empty' <<< "$runs" || true)"
+          fi
+          if [[ -n "$run_id" ]]; then
+            jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" || echo '{}')"
+            jq -e '[.jobs[]? | select(.name == "Required CI" and .conclusion == "success")] | length == 1' \
+              <<< "$jobs" > /dev/null || run_id=""
+          fi
+          [[ -z "$run_id" || "$run_id" =~ ^[1-9][0-9]*$ ]] || run_id=""
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "Merge-queue validation reused: ${run_id:-none}" >> "$GITHUB_STEP_SUMMARY"
+
+      # Nx chooses the lanes for pull requests, queue groups and main pushes,
+      # and reads the whole tree to do it. A main push the merge queue already
+      # validated runs no lane: it keeps the sparse checkout and never installs
+      # Nx. A main-mode dispatch (base_sha) plans like a main push.
       - name: Install Nx
-        if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+        if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' || (github.event_name == 'push' && !steps.queue.outputs.run_id) || (github.event_name == 'workflow_dispatch' && inputs.base_sha != '') }}
         run: |
           git sparse-checkout disable
           npm ci --ignore-scripts --no-audit --no-fund
@@ -144,6 +172,7 @@ jobs:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           REQUEST_FULL: ${{ github.event_name == 'schedule' || inputs.full }}
           DISPATCH_BASE_SHA: ${{ inputs.base_sha }}
+          QUEUE_RUN: ${{ steps.queue.outputs.run_id }}
         run: |
           set -euo pipefail
           event_mode="pr"
@@ -247,8 +276,12 @@ jobs:
           rm build/ci/impact-plan.unbound.json
           node tool/harness/compare_selectors.mjs --verify-plan build/ci/impact-plan.json \
             --comparison build/ci/selector-comparison.json --github-output "$GITHUB_OUTPUT"
+          queue_flag=()
+          if [[ -n "${QUEUE_RUN:-}" ]]; then
+            queue_flag=(--queue-verified "$QUEUE_RUN")
+          fi
           node tool/nx/select_lanes.mjs --plan build/ci/impact-plan.json --base "$base_sha" --head "$HEAD_SHA" \
-            --github-output "$GITHUB_OUTPUT"
+            "${queue_flag[@]}" --github-output "$GITHUB_OUTPUT"
           {
             echo "base_sha=$base_sha"
             echo "source_sha=$HEAD_SHA"
@@ -271,32 +304,6 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,
             `tools_owns_design_parity=${design.parity}\n`);
           NODE
-
-      - id: queue
-        name: Find the merge-queue validation of this exact source
-        if: ${{ github.event_name == 'push' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SOURCE_SHA: ${{ github.sha }}
-        run: |
-          set -uo pipefail
-          # The merge queue validated this exact commit before main moved to
-          # it, so main re-runs no validation lane: it only plans. Any lookup
-          # failure keeps the full run.
-          run_id=""
-          if runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?event=merge_group&head_sha=$SOURCE_SHA&per_page=20")"; then
-            run_id="$(jq -r --arg sha "$SOURCE_SHA" '[.workflow_runs[]? | select(.event == "merge_group" and
-              .head_sha == $sha and .conclusion == "success" and .path == ".github/workflows/ci.yml")] |
-              max_by(.id) | .id // empty' <<< "$runs" || true)"
-          fi
-          if [[ -n "$run_id" ]]; then
-            jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" || echo '{}')"
-            jq -e '[.jobs[]? | select(.name == "Required CI" and .conclusion == "success")] | length == 1' \
-              <<< "$jobs" > /dev/null || run_id=""
-          fi
-          [[ -z "$run_id" || "$run_id" =~ ^[1-9][0-9]*$ ]] || run_id=""
-          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-          echo "Merge-queue validation reused: ${run_id:-none}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Report Audience documentation impact
         env:
