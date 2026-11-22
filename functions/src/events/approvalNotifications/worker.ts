@@ -191,8 +191,14 @@ export class ApprovalNotificationWorker {
         endpoint,
         eventUrl(record.intent.context.eventId),
       ]);
+      const wabaId = current.connection?.wabaId;
+      const phoneNumberId = current.connection?.phoneNumberId;
+      if (route === "approvalWhatsapp" && (!wabaId || !phoneNumberId)) {
+        // Readiness requires both provider ids; never record evidence without.
+        throw new Error("Approval WhatsApp sender is not ready");
+      }
       const whatsappProof: EventApprovalNotificationDispatchDocument | null =
-        route === "approvalWhatsapp" ?
+        route === "approvalWhatsapp" && wabaId && phoneNumberId ?
           {
             schemaVersion: 1,
             source: "approvalNotification",
@@ -201,9 +207,8 @@ export class ApprovalNotificationWorker {
             context: record.intent.context,
             senderId: live.binding.senderId,
             bindingRevision: live.binding.bindingRevision,
-            // Readiness required both ids; the dispatch contract re-checks.
-            providerAccountId: current.connection!.wabaId!,
-            providerPhoneNumberId: current.connection!.phoneNumberId!,
+            providerAccountId: wabaId,
+            providerPhoneNumberId: phoneNumberId,
             senderHash: frozen,
             recipientEndpointId: live.binding.recipientEndpointId,
             endpointHash: hashEndpoint(endpoint),
