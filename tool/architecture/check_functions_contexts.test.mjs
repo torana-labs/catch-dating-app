@@ -10,7 +10,7 @@ import {
   placeFunctionsPath,
   relativeImports,
 } from "./check_functions_contexts.mjs";
-import {collectionWrites} from "./functions_collection_writes.mjs";
+import {collectionWrites} from "./lib/functions_collection_writes.mjs";
 
 const appMap = loadContextMap(JSON.stringify({
   roots: {

@@ -11,7 +11,7 @@
 // that bypass an owning context's functions, not every write.
 import path from "node:path";
 import {createRequire} from "node:module";
-import {fromRepo} from "../lib/repo_paths.mjs";
+import {fromRepo} from "../../lib/repo_paths.mjs";
 
 const writeMethods = new Set(["set", "update", "create", "delete"]);
 const maxDepth = 8;

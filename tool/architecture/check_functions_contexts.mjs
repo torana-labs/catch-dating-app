@@ -4,7 +4,7 @@ import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {loadContextMap} from "./check_context_map.mjs";
-import {collectionWrites} from "./functions_collection_writes.mjs";
+import {collectionWrites} from "./lib/functions_collection_writes.mjs";
 
 const functionsMapPath = "tool/architecture/functions_context_map.json";
 const appMapPath = "tool/architecture/context_map.json";
