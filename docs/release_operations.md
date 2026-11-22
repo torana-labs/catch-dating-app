@@ -477,7 +477,7 @@ run that ran is an ancestor of the head, the run validates everything in the
 nightly full mode. Pull requests and nightly runs retain their existing validation
 flow.
 
-Root Flutter unit/widget tests are selected by
+Root and app-package Flutter unit/widget tests are selected by
 `tool/harness/lib/flutter_test_selection.dart` from the exact base and head Git
 objects. Dart's parser follows imports, exports, conditional imports and parts
 in both snapshots, so deleted or moved dependencies remain covered. Every
@@ -497,10 +497,11 @@ path outside its roots, or names a root that is not in the tree. Declared roots
 are trusted for computed paths, so the nightly full run is the backstop for a
 wrong declaration. Dart files anywhere in the repository are covered by the
 import graph.
-Paths outside the root package (backend, web, design, docs, tooling, CI,
-golden and integration suites, other packages' apps, the `packages/catch_ui`
-and `packages/kernel` test suites that the package-tests job runs, firebase
-configuration and Markdown outside test or asset directories) are probe-only.
+Paths outside the packages the shards test (backend, web, design, docs,
+tooling, CI, golden and integration suites, the app packages' native folders,
+`integration_test/` and goldens, the `packages/catch_ui` and `packages/kernel`
+test suites that the package-tests job runs, firebase configuration and
+Markdown outside test or asset directories) are probe-only.
 A root test can only read them from disk, so the probes cover them without
 broadening the selection; a root test that imports one is still selected
 through the import graph.
@@ -530,11 +531,27 @@ binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
 contract checks retain their separate owners.
 
-One job, "Catch UI, Consumer & Host package tests", runs the Kernel, Catch
-UI, Consumer and Host package suites and then the Widgetbook dependency
-resolution, golden inventory and web build, after one shared setup. The job
-keeps that name because `host-website.yml`'s queue validation looks it up. Each
-suite is its own step with `!cancelled()` and its own setup step's success in
+The selected tests include the app packages' own: every
+`apps/<app>/test/**_test.dart` outside `apps/<app>/test/goldens/`. An app's
+`lib/` and `test/` need import proof like the root package's, while its native
+folders, `integration_test/` and goldens stay probe-only. The plan records the
+package directory of each file. Each shard lists its files in groups, one per
+package, and runs each group's `flutter test` from that directory. Each group
+is its own run and pays a cold compile, so app-package tests fill the shards in
+order and root tests spread over the room left. A dart:io test file in an app
+package bounds its relative reads against that package's directory, and a test
+that reaches a reader bounded for another package always runs. A test config
+counts only up to the test's package directory. Coverage includes
+`catch_host_app` and `catch_consumer_app`.
+`tool/test/flutter_coverage_report.mjs --package-lcov <directory>` rebases each
+group's LCOV to repository paths, so an app's `lib/` stays apart from the
+root's.
+
+One job, "Kernel, Catch UI & Widgetbook package tests", runs the Kernel and
+Catch UI package suites and then the Widgetbook dependency resolution, golden
+inventory and web build, after one shared setup. `host-website.yml`'s queue
+validation looks up "Analyze & test", which passes only when every Flutter job
+did. Each suite is its own step with `!cancelled()` and its own setup step's success in
 its condition, so a failing suite never hides an independent one; any failure
 still fails the job, and a final step lists every suite's outcome in the job
 summary. On a pull request, each package suite and the Widgetbook steps run
@@ -4111,7 +4128,12 @@ Ubuntu headless journeys, macOS desktop/Widgetbook goldens (including the second
 determinism pass), and native macOS app-shell smoke. Goldens and native smoke
 use separate pinned macOS runners at the same workflow source; neither job
 waits for or substitutes for the other. Committed generated-source freshness
-remains required in the golden job. The smoke retains bounded infrastructure
+remains required in the golden job: it runs a full
+`dart run build_runner build --delete-conflicting-outputs` in the root,
+`apps/host` and `apps/consumer` (never `--build-filter`, which deletes tracked
+outputs outside its filter) and Widgetbook's directory build. Then no
+`*.g.dart` or `*.freezed.dart` may differ or be untracked. On drift it
+uploads the difference as a patch. The smoke retains bounded infrastructure
 retries, and every selected job must pass.
 
 The native macOS app-shell smoke is nightly-only: it runs on the daily schedule

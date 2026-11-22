@@ -9,10 +9,13 @@ status: active
 Part of the testing guide: [TESTS.md](../../TESTS.md) holds the standard suites,
 the shared habits and the index of area guides.
 
-`.github/workflows/flutter-ci.yml` runs the Kernel, Catch UI, Consumer and Host
-package suites and compiles Widgetbook in one job, "Catch UI, Consumer & Host
-package tests", on every relevant Flutter change; a failing suite doesn't stop
-the others, and the job summary lists each outcome. On
+`.github/workflows/flutter-ci.yml` runs the Kernel and Catch UI package suites
+and compiles Widgetbook in one job, "Kernel, Catch UI & Widgetbook package
+tests", on every relevant Flutter change; a failing suite doesn't stop the
+others, and the job summary lists each outcome. The Consumer and Host package
+tests run in the unit and widget test shards instead. The selector plans them
+with the root tests, and each shard runs them from their package directory
+(`docs/release_operations.md`). On
 a pull request each package suite and Widgetbook run only when the change
 reaches its pubspec path-dependency closure
 (`tool/ci/flutter_package_scope.mjs`; React-only `packages/*` with no pubspec
@@ -48,8 +51,11 @@ renders only `package:catch_ui` and `package:catch_tokens` is in
 `flutter test --concurrency=1 --exclude-tags=golden` there; the macOS goldens
 job runs `(cd packages/catch_ui && flutter test --concurrency=1 --tags=golden)`
 after `test/goldens`, with the same `CATCH_GOLDEN_REPORT`, and keeps both
-failure folders. `test/goldens` holds only the goldens that import the app or
-the platform. Locally, `(cd packages/catch_ui && flutter test --concurrency=1)`
+failure folders. An app package's goldens live in `apps/<app>/test/goldens`,
+with the `golden` tag in its `dart_test.yaml`. The macOS job runs each app's
+goldens from its package directory, reports them with `test/goldens`, and
+keeps their failure folders. `test/goldens` holds only the goldens that import
+the app or the platform. Locally, `(cd packages/catch_ui && flutter test --concurrency=1)`
 runs the package's tests and goldens together. The macOS runner lives in `apps/consumer`, so run native passes
 from there with a device id and scope—for example,
 `(cd apps/consumer && bash ../../tool/test_app_shell_integration.sh macos smoke)`
