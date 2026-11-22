@@ -171,6 +171,8 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/join_waitlist_request_whatsapp_city_other.json", "joinWaitlistHTTPRequestSchema"],
   ["valid/join_waitlist_request_weddings.json", "joinWaitlistHTTPRequestSchema"],
   ["valid/join_waitlist_request_host_phone_only.json", "joinWaitlistHTTPRequestSchema"],
+  ["valid/join_waitlist_request_lead_app_link.json", "joinWaitlistHTTPRequestSchema"],
+  ["invalid/join_waitlist_request_lead_app_link_guest.json", "joinWaitlistHTTPRequestSchema"],
   ["valid/host_response_summary_offered.json", "hostResponseSummaryDocumentSchema"],
   ["valid/admin_grant_organizer_entitlement_payload.json", "adminGrantOrganizerEntitlementCallablePayloadSchema"],
   ["valid/admin_revoke_organizer_entitlement_grant_payload.json", "adminRevokeOrganizerEntitlementGrantCallablePayloadSchema"],

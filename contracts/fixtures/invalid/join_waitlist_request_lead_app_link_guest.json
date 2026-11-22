@@ -1,0 +1,17 @@
+{
+  "requestKind": "app_link",
+  "website": "",
+  "lead": {
+    "requestId": "0b6f4a1e2c3d4e5f8a9b0c1d2e3f4a5b",
+    "phone": "+919800000000",
+    "consent": {
+      "purpose": "leadFollowUp",
+      "version": "app-link-whatsapp-v1"
+    },
+    "sourcePage": "/host/start/",
+    "entry": "host_app_link",
+    "appLink": {
+      "app": "guest"
+    }
+  }
+}

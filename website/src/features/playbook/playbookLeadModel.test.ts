@@ -9,6 +9,7 @@ import {websiteLeadRequest} from "../../shared/api/websiteLead";
 import {
   playbookGuideFormat,
   playbookGuideFormats,
+  playbookLeadConsent,
   playbookLeadProblems,
   playbookLeadRequest,
   playbookSendableLeadKind,
@@ -26,6 +27,7 @@ const walkthrough: PlaybookLeadForm = {...guide, id: "walkthrough_request", requ
   fields: fields("name", "orgName", "whatYouHost", "preferredTime")};
 const referral: PlaybookLeadForm = {...guide, id: "referral_host", requestKind: "referral", format: undefined,
   fields: fields("name", "hostName", "hostLink", "relationship")};
+const appLink: PlaybookLeadForm = {id: "host_app_link", requestKind: "app_link", label: "Your WhatsApp number", submitLabel: "Text me the link"};
 
 /** The guide names the lead contract lists for lead.guide.format, read from its description. */
 function contractGuideFormats(): string[] {
@@ -126,6 +128,22 @@ describe("playbookLeadRequest", () => {
     const lead = playbookLeadRequest(form, playbookSendableLeadKind(form)!, answers, "/host/run-clubs/");
     return {lead, body: websiteLeadRequest(lead, "+919876543210", "a".repeat(32))};
   };
+
+  it("files a host app link request with the number alone, under its own short consent line", () => {
+    expect(playbookSendableLeadKind(appLink)).toBe("app_link");
+    expect(playbookSendableLeadKind({...appLink, fields: fields("name")})).toBeNull();
+    expect(playbookLeadProblems(appLink, {phone: "98765 43210"})).toEqual({});
+    expect(playbookLeadConsent("app_link")).toEqual(playbookCopy.leadForm.appLink);
+    expect(playbookCopy.leadForm.appLink.consent).toBe("On WhatsApp, from Catch.");
+    expect(playbookLeadConsent("guide")).toEqual({consent: playbookCopy.leadForm.consent, consentVersion: playbookCopy.leadForm.consentVersion});
+    const {lead, body} = send(appLink, {phone: "98765 43210"});
+    expect(lead).toEqual({kind: "app_link", phone: "98765 43210", consentVersion: "app-link-whatsapp-v1",
+      sourcePage: "/host/run-clubs/", entry: "host_app_link", answers: {app: "host"}});
+    expect(body).toMatchObject({requestKind: "app_link", lead: {consent: {purpose: "leadFollowUp", version: "app-link-whatsapp-v1"},
+      appLink: {app: "host"}}});
+    expect(body).not.toHaveProperty("fullName");
+    expect(isJoinWaitlistHttpRequest(body)).toBe(true);
+  });
 
   it("files a guide under the intake's guide name, with the follow-up consent and the form as its entry", () => {
     const {lead, body} = send(guide, {phone: "98765 43210"});

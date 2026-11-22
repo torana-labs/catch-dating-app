@@ -177,8 +177,8 @@ update and consent change; it is not injected into the host-only controller.
     (`publicEventPayments`) as event and transaction ID. Test-mode payments
     are never sent.
   - Host lead: when a website lead form of a host kind (`guide`,
-    `walkthrough`, `demo`, `venue`, `story`, `org_contact`; not city alerts
-    or referrals) is accepted, Meta `Lead` and the Google Ads host website-lead
+    `walkthrough`, `demo`, `venue`, `story`, `org_contact`, `app_link`; not
+    city alerts or referrals) is accepted, Meta `Lead` and the Google Ads host website-lead
     conversion, plus GA4 `generate_lead` with `audience: organizer`. The event
     ID is the accepted lead receipt (`lead.leadId`), or a generated ID when the
     response has none. The marketing choice must be the one the submission

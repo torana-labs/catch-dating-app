@@ -182,6 +182,38 @@ describe("playbook page", () => {
     expect(band.getByRole("link", {name: "Book a 15-minute walkthrough"}).getAttribute("href")).toBe("/host/walkthrough/");
   });
 
+  it("texts the host app link from the start page's store badges, then shows the link with the badges and QR still there", async () => {
+    const start = (await loadPlaybookPage(resolvePlaybookPage("/host/start/")!))!;
+    const posts: {requestKind: string; fullName?: string; lead: {entry: string; sourcePage: string; appLink: unknown; consent: unknown}}[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      posts.push(JSON.parse(String(init?.body)));
+      return new Response(JSON.stringify({ok: true, alreadyJoined: false, lead: {leadId: "0".repeat(64), requestKind: "app_link", isNew: true}}),
+        {status: 200});
+    }));
+    window.history.replaceState(null, "", "/host/start/");
+    render(<PlaybookPage captures={captures} page={start} />);
+    const band = within(document.getElementById("get-app")!);
+    const form = within(band.getByRole("form", {name: "Text me the link"}));
+    // The short line the other phone captures use, with the privacy policy linked, and nothing more.
+    expect(form.getByText("On WhatsApp, from Catch.")).toBeTruthy();
+    expect(form.getByRole("link", {name: playbookCopy.leadForm.privacy}).getAttribute("href")).toBe("/privacy/");
+    expect(form.queryByText(playbookCopy.leadForm.consent)).toBeNull();
+    // The form is the band's way to get the link: no second WhatsApp button beside it.
+    expect(band.queryByRole("link", {name: "Get the link on WhatsApp", exact: true})?.closest("form")).toBeFalsy();
+
+    fireEvent.change(form.getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98765 43210"}});
+    fireEvent.click(form.getByRole("button", {name: "Text me the link"}));
+    expect(await band.findByText("Here’s the link. We’ll also send it to you on WhatsApp.")).toBeTruthy();
+    expect(band.queryByRole("form", {name: "Text me the link"})).toBeNull();
+    expect(band.getByRole("link", {name: "Download on the App Store"})).toBeTruthy();
+    expect(band.getByRole("img", {name: /QR code that opens/u})).toBeTruthy();
+
+    expect(posts).toHaveLength(1);
+    expect(posts[0]).toMatchObject({requestKind: "app_link", lead: {entry: "host_app_link", sourcePage: "/host/start/", appLink: {app: "host"},
+      consent: {purpose: "leadFollowUp", version: "app-link-whatsapp-v1"}}});
+    expect(posts[0]).not.toHaveProperty("fullName");
+  });
+
   it("draws a product page's live bands only: no try-it band or button, and the host footer", async () => {
     const event = (await loadPlaybookPage(resolvePlaybookPage("/product/running-the-event/")!))!;
     render(<PlaybookPage captures={captures} page={event} />);

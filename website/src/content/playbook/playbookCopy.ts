@@ -31,6 +31,8 @@ export const playbookCopy = {
     consent: "We reply on WhatsApp.",
     /** Names this wording on every stored consent; change it whenever the wording changes. */
     consentVersion: "playbook-lead-whatsapp-v2",
+    /** An app link request's own line and version instead: the link comes on WhatsApp, from the brand. */
+    appLink: {consent: `On WhatsApp, from ${brand.name}.`, consentVersion: "app-link-whatsapp-v1"},
     privacy: "Privacy policy",
     retry: "Try again",
     /** Under a field left empty when the button is tapped. */
@@ -53,6 +55,7 @@ export const playbookCopy = {
       demo: "Thanks. We’ll message you on WhatsApp when your demo is ready.",
       walkthrough: "Thanks. We’ll confirm your time on WhatsApp.",
       referral: "Thanks. We’ll get in touch with them and keep you posted on WhatsApp.",
+      app_link: "Here’s the link. We’ll also send it to you on WhatsApp.",
     },
   },
 } as const;
