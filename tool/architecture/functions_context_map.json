@@ -67,6 +67,7 @@
     {"path": "functions/src/entitlements/", "context": "payments"},
     {"path": "functions/src/money/", "context": "payments"},
     {"path": "functions/src/foundingHosts/", "context": "payments"},
+    {"path": "functions/src/growth/", "context": "payments"},
 
     {"path": "functions/src/events/attendanceDispositionHandlers.ts", "context": "bookings"},
     {"path": "functions/src/events/attendanceDispositionPolicy.ts", "context": "bookings"},
@@ -139,7 +140,6 @@
 
     {"path": "functions/src/marketplace/", "context": "insights"},
     {"path": "functions/src/organizerInsights/", "context": "insights"},
-    {"path": "functions/src/growth/", "context": "insights"},
     {"path": "functions/src/analytics/", "context": "insights"},
 
     {"path": "functions/src/operations/supplyIntake/", "context": "supply"},
@@ -165,6 +165,7 @@
     {"path": "functions/src/admin/", "surface": "admin"},
     {"path": "functions/src/commercialTerms/adminListCommercialTerms.ts", "surface": "admin"},
     {"path": "functions/src/takedownRequests/admin.ts", "surface": "admin"},
+    {"path": "functions/src/growth/adminGetGrowth.ts", "surface": "admin"},
 
     {"path": "functions/src/hostReadModels/", "surface": "host"},
     {"path": "functions/src/hostAlerts/", "surface": "host"},

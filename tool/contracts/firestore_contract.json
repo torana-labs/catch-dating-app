@@ -6780,7 +6780,7 @@
       "typescriptInterface": "OrganizerGrowthFactsDocument",
       "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
       "owner": "Functions growth facts writers (listing approval and organizer, claim, booking and payment triggers)",
-      "writerContext": "insights",
+      "writerContext": "payments",
       "read": "server only",
       "write": "server only"
     },
