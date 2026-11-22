@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit, decideUncovered, nightlyWindow, owedFromIssue,
-  reportedUncovered, uncoveredCommits, uncoveredReportCounts}
+import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit, decideUncovered, failedJobNames, nightlyWindow,
+  onlyMobileBlockFailures, owedFromIssue, reportedUncovered, uncoveredCommits, uncoveredReportCounts}
   from "./main_red_alert.mjs";
+import {CAPTURE_JOB, GOLDENS_JOB} from "./golden_policy.mjs";
 
 const run = (conclusion, extra = {}) => ({id: 7, html_url: "https://example.test/run/7", head_sha: "a".repeat(40),
   conclusion, event: "push", display_title: "CI", ...extra});
@@ -147,6 +148,15 @@ test("the workflow listens only to main's push and nightly CI and can only write
   assert.doesNotMatch(workflow, /contents: write|pull-requests: write/u);
   assert.match(workflow, /RUN_ID: \$\{\{ github\.event\.workflow_run\.id \}\}/u);
   assert.match(workflow, /node tool\/ci\/main_red_alert\.mjs/u);
+  // Only the golden-policy job may dispatch, and only the dispatch-only baseline workflows.
+  const jobs = workflow.split(/\n  (?=[a-z-]+:\n)/u).slice(1);
+  const policy = jobs.find((block) => block.startsWith("golden-policy:"));
+  assert.ok(policy, "golden-policy job");
+  assert.match(policy, /permissions:\n {6}actions: write\n {6}contents: read\n {6}issues: write\n/u);
+  assert.match(policy, /run: node tool\/ci\/golden_policy\.mjs/u);
+  for (const block of jobs.filter((entry) => !entry.startsWith("golden-policy:"))) {
+    assert.doesNotMatch(block, /actions: write/u, block.split(":")[0]);
+  }
 });
 
 const NOW = Date.parse("2026-11-30T12:00:00Z");
@@ -176,6 +186,23 @@ test("a red run inside the week, reporting lanes included, keeps the floor", () 
   }
   // A red run just outside the week no longer counts.
   assert.equal(decideFloorExit({runs: [...greenWeek(), ciRun(7.1, "failure")], now: NOW, openIssue: null}).action, "open");
+});
+
+test("a run whose only failures were the macOS golden and capture jobs does not restart the green week", () => {
+  // Owner decision, 22 Nov 2026: they block mobile releases instead (golden_policy.mjs).
+  const red = {...ciRun(2, "failure", "push"), id: 41};
+  assert.equal(decideFloorExit({runs: [...greenWeek(), red], now: NOW, openIssue: null, mobileOnly: new Set([41])}).action, "open");
+  // Control: the same run with any other failure still restarts it.
+  assert.deepEqual(decideFloorExit({runs: [...greenWeek(), red], now: NOW, openIssue: null, mobileOnly: new Set([42])}),
+    {action: "none", reason: "red_within_window"});
+  const failed = (...jobs) => failedJobNames(jobs);
+  assert.equal(onlyMobileBlockFailures(failed(job(GOLDENS_JOB, "failure"), job("Required CI", "failure"),
+    job("flutter / Analyze & test", "success"))), true, "Required CI fails because of them");
+  assert.equal(onlyMobileBlockFailures(failed(job(CAPTURE_JOB, "timed_out"), job(GOLDENS_JOB, "failure"))), true);
+  assert.equal(onlyMobileBlockFailures(failed(job(GOLDENS_JOB, "failure"), job(lint, "failure"))), false,
+    "another failure restarts the week");
+  assert.equal(onlyMobileBlockFailures(failed(job("Required CI", "failure"))), false, "Required CI alone");
+  assert.equal(onlyMobileBlockFailures(failed(job(GOLDENS_JOB, "success"))), false, "nothing failed");
 });
 
 test("cancelled runs, other events, short history and missing nightlies never end the floor", () => {

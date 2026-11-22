@@ -762,7 +762,7 @@ The current workflows are:
 | `.github/workflows/marketing-website.yml` | Validates marketing source and Storybook accessibility, calls the exact build/promote adapters on matching `main` pushes, then requires production 404 and launch-route postconditions. |
 | `.github/workflows/admin-website.yml` | Reuses the merge queue's Admin validation of the exact commit, or validates Admin source itself when the queue did not run it, then calls the exact build/promote adapters, which check live callable dependencies, for the production `admin` target. |
 | `.github/workflows/host-website.yml` | Validates the Host target, then reuses the merge queue's Flutter validation of the exact commit, or runs standalone roster tests and Host-owned Flutter analysis itself when the queue did not run it, then builds and promotes the independent production `host` target. |
-| `.github/workflows/release-readiness.yml` | Manual prod release gate. |
+| `.github/workflows/release-readiness.yml` | Manual prod release gate. Fails first while an open issue carries `release-block:mobile` (see Main CI alert). |
 | `.github/workflows/mobile-beta.yml` | Nightly (when app sources changed) and on-demand fastlane test builds: builds, verifies and uploads each app to TestFlight internal testers or the Play internal track in one job, with build provenance. See Mobile releases. |
 | `.github/workflows/mobile-production.yml` | Reviewer-gated fastlane promotion of a build testers already have: App Store review submission or a Play staged rollout, with no rebuild. See Mobile releases. |
 | `.github/workflows/store-listing.yml` | Manual fastlane download of the App Store and Play store listings into a reviewable artifact, or reviewer-gated upload of the committed listing in `fastlane/metadata/<role>/`. See Store listings. |
@@ -2411,6 +2411,38 @@ earlier run that ran and so covers the commit, closes it. Runs older than 26
 hours are left to the nightly, and a commit whose ancestry the compare API
 cannot answer is logged, not reported. The report triggers nothing.
 
+The macOS goldens and the capture render no longer run in the merge queue, so
+main pushes and the nightly are where they fail. The alert workflow's
+`golden-policy` job (`tool/ci/golden_policy.mjs`, owner decision, 22 Nov 2026)
+keeps two more issues in step with those two jobs, beside "Main CI is red":
+
+- **"Golden or capture failure"**, labelled `release-block:mobile`, opens when
+  `visual-integration / macOS goldens & Widgetbook determinism` or
+  `capture-freshness / Render and validate canonical iPhone captures` fails on a
+  main push or the nightly: a render error, an assertion, stale generated code
+  or a failed capture render. Release Readiness fails while it is open, for
+  every app role (`tool/ci/release_block.mjs`, its first check, which also fails
+  when the issue list cannot be read). A baseline refresh is the wrong fix for a
+  failure, so nothing is dispatched. It closes itself on the next main run that
+  passes every job it still owes; a capture is also settled by a reuse of a
+  validated render of the same inputs. A skipped job settles nothing.
+- **"Golden baselines drifted"**, unlabelled and report only, opens when the
+  goldens job passes but some goldens differ from their baselines. Each suite
+  writes its own report (app, `catch_ui` package, Widgetbook), and the job
+  uploads them as the `golden-drift-<run>-<attempt>` artifact. Opening the
+  issue, and a suite that newly drifts, dispatches that suite's baseline
+  workflow (`package-golden-baselines.yml` or `widgetbook-golden-baselines.yml`)
+  from main with `ref` set to the drifted commit and `name_pattern` `.`; the
+  issue links the run. Those workflows only upload the changed baselines:
+  review the artifact and commit it. The app goldens (`test/goldens`) have no
+  baseline workflow; refresh them on macOS with `flutter test --concurrency=1
+  --update-goldens test/goldens`. The issue closes on the next main run whose
+  goldens pass with no drift. Drift blocks neither merges nor releases.
+
+Nothing is reverted automatically. The job needs `actions: write` only to
+dispatch those two dispatch-only workflows; the alert and selection-miss jobs
+keep their permissions.
+
 ### Scheduled run watchdog
 
 GitHub drops or delays scheduled runs under load: the :30 Deploy backend
@@ -2570,7 +2602,12 @@ are checked exactly as before.
 
 The floor ends once main stays green for a week (owner decision, 14 Nov 2026):
 every completed main push and nightly CI run for 7 days concluded success,
-reporting lanes included, with at least 6 nightly runs in that window. The
+reporting lanes included, with at least 6 nightly runs in that window. A run
+whose only failures were the macOS goldens or the capture render, with the
+`Required CI` job that fails because of them, does not restart the week, and a
+"Main CI is red" issue that owes only those jobs does not hold it (owner
+decision, 22 Nov 2026): those failures block mobile releases instead, through
+the "Golden or capture failure" issue. The
 Main CI alert workflow checks this after each green main run
 (`decideFloorExit` in `tool/ci/main_red_alert.mjs`) and opens one issue,
 "Main CI green for 7 days: reporting lanes can block again", listing the

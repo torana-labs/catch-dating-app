@@ -1512,6 +1512,32 @@
       ]
     },
     {
+      "id": "ci:golden-policy",
+      "category": "ci",
+      "path": "tool/ci/golden_policy.mjs",
+      "command": "node tool/ci/golden_policy.mjs",
+      "surface": "remote-write",
+      "guard": "none",
+      "guardReason": "Opens, comments on and closes the golden and capture issues, and dispatches the dispatch-only baseline workflows, with gh; meant to run only from main-red-alert.yml.",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/main-red-alert.yml",
+        ".github/workflows/marketing-captures.yml",
+        ".github/workflows/package-golden-baselines.yml",
+        ".github/workflows/visual-integration-ci.yml",
+        ".github/workflows/widgetbook-golden-baselines.yml",
+        "tool/ci/golden_policy.mjs",
+        "tool/ci/golden_policy.test.mjs"
+      ],
+      "description": "Keeps two GitHub issues in step with main's macOS goldens and capture render (push and nightly runs): 'Golden or capture failure', labelled release-block:mobile so Release Readiness fails while it is open, when either job failed; and the report-only 'Golden baselines drifted', which dispatches the drifted suite's baseline workflow at that commit for a person to review and commit. No auto-revert.",
+      "checks": [
+        "node --check tool/ci/golden_policy.mjs",
+        "node --test tool/ci/golden_policy.test.mjs"
+      ],
+      "role": "gate",
+      "runbook": "docs/release_operations.md#main-ci-alert"
+    },
+    {
       "id": "ci:ios-build-inputs",
       "category": "ci",
       "path": "tool/ci/ios_build_inputs.mjs",
@@ -1646,6 +1672,7 @@
       "impactPaths": [
         ".github/workflows/main-red-alert.yml",
         "tool/ci/main_red_alert.mjs",
+        "tool/ci/golden_policy.mjs",
         "tool/ci/main_red_alert.test.mjs",
         "tool/ci/required_ci_floor.mjs"
       ],
@@ -1761,6 +1788,26 @@
         "node tool/ci/queue_entry_timings.mjs --help"
       ],
       "runbook": "tool/README.md#merge-queue-entry-timings"
+    },
+    {
+      "id": "ci:release-block",
+      "category": "ci",
+      "path": "tool/ci/release_block.mjs",
+      "command": "node tool/ci/release_block.mjs --check mobile",
+      "surface": "remote-read",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/release-readiness.yml",
+        "tool/ci/release_block.mjs",
+        "tool/ci/release_block.test.mjs"
+      ],
+      "description": "Release Readiness's first check: fails, naming each issue, while an open issue carries release-block:mobile (opened by tool/ci/golden_policy.mjs), and fails closed when the issue list cannot be read.",
+      "checks": [
+        "node --check tool/ci/release_block.mjs",
+        "node --test tool/ci/release_block.test.mjs"
+      ],
+      "role": "gate",
+      "runbook": "docs/release_operations.md#main-ci-alert"
     },
     {
       "id": "ci:required-ci-floor",
