@@ -48,13 +48,17 @@ const allowedFeatureImports = new Map([
   // form opens the page's try-it tool (the guest list and Reports' export
   // uploads are their own features), and the /refer/ form carries the
   // referral sign-in above it.
-  ["playbook", new Set(["guestImportTryIt", "marketing", "pastSalesTryIt", "referral", "tryIt"])],
+  // The walkthrough page's form is the slot picker (features/walkthroughs).
+  ["playbook", new Set(["guestImportTryIt", "marketing", "pastSalesTryIt", "referral", "tryIt", "walkthroughs"])],
   // The /refer/ form signs the referrer in with the one shared sign-in sheet.
   ["referral", new Set(["account"])],
   ["reviews", new Set(["organizers"])],
   // A try-it tool confirms the phone with the one shared sign-in sheet and
   // ends with Catch Host's store badges.
   ["tryIt", new Set(["account", "marketing"])],
+  // Booking a walkthrough confirms the WhatsApp number with the one shared
+  // sign-in sheet, as the try-it tools do.
+  ["walkthroughs", new Set(["account"])],
 ]);
 
 /**
