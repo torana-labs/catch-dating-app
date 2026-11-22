@@ -382,6 +382,11 @@ void main() {
             'partiesCreated': 1,
             'groupsCreated': 2,
             'rowErrors': [
+              {
+                'index': 1,
+                'message': 'Remove this journey from its party first.',
+                'partyJourney': {'legId': 'leg-1', 'revision': 4},
+              },
               {'index': 2, 'message': 'missing display name'},
             ],
             'alreadyApplied': false,
@@ -405,9 +410,15 @@ void main() {
         });
         expect(result.mode, 'preview');
         expect(result.groupsCreated, 2);
-        expect(result.rowErrors.single, (
+        expect(result.rowErrors, hasLength(2));
+        final blocked = result.rowErrors.first;
+        expect(blocked.index, 1);
+        expect(blocked.partyJourney?.legId, 'leg-1');
+        expect(blocked.partyJourney?.revision, 4);
+        expect(result.rowErrors.last, (
           index: 2,
           message: 'missing display name',
+          partyJourney: null,
         ));
         expect(result.alreadyApplied, isFalse);
       },
