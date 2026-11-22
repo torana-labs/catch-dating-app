@@ -6073,7 +6073,7 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
       "rulesTestNames": [
-        "lets current managers get contact and application detail views by id"
+        "lets current managers get contact, application and attendance report views by id"
       ],
       "owner": "Host read model projector: hostReadModels contact detail view triggers",
       "read": "current organizer managers get by id while their account is not deleted; a view not written yet reads as missing",
@@ -6092,6 +6092,29 @@
       ]
     },
     {
+      "id": "hostEventAttendanceReports",
+      "path": "hostEventAttendanceReports/{eventId}",
+      "rulesMatch": "/hostEventAttendanceReports/{eventId}",
+      "typescriptInterface": "HostEventAttendanceReportDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets current managers get contact, application and attendance report views by id"
+      ],
+      "owner": "Host read model projector: hostReadModels attendance report view triggers",
+      "read": "current organizer managers get by id while their account is not deleted; a view not written yet reads as missing",
+      "write": "server only; rebuilt from the event's attendees, its closeout decisions and the event itself, deleted when the event is gone or its roster is over the report limit",
+      "exportedFunctions": [
+        "onHostEventAttendanceReportAttendeeWritten",
+        "onHostEventAttendanceReportDispositionWritten",
+        "onHostEventAttendanceReportEventWritten"
+      ],
+      "migrationNotes": [
+        "view equals what getEventAttendanceReport returns as of view.serverTime. Events that ended before the triggers have no view until their next attendee or closeout write; Host close-out then shows its own counts without the report section.",
+        "getEventAttendanceReport and getEventAttendanceDisposition stay deployed; recordEventNoShow is the command."
+      ]
+    },
+    {
       "id": "hostApplicationDetailViews",
       "path": "hostApplicationDetailViews/{applicationId}",
       "rulesMatch": "/hostApplicationDetailViews/{applicationId}",
@@ -6099,7 +6122,7 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
       "rulesTestNames": [
-        "lets current managers get contact and application detail views by id"
+        "lets current managers get contact, application and attendance report views by id"
       ],
       "owner": "Host read model projector: hostReadModels application detail view triggers",
       "read": "current organizer managers get by id while their account is not deleted; a view not written yet reads as missing",

@@ -22030,6 +22030,29 @@ class AppLocalizationsEn extends AppLocalizations {
       'Guests choose who they would like to see again';
 
   @override
+  String get hostEventsCloseOutReportTitle => 'Attendance report';
+
+  @override
+  String get hostEventsCloseOutReportCame => 'Came';
+
+  @override
+  String get hostEventsCloseOutReportNoShows => 'Didn’t come';
+
+  @override
+  String get hostEventsCloseOutReportUnmarked => 'Not marked yet';
+
+  @override
+  String get hostEventsCloseOutReportNotExpected => 'Waitlist or cancelled';
+
+  @override
+  String get hostEventsCloseOutNoShowTooEarly =>
+      'You can mark who didn’t come once the night has ended.';
+
+  @override
+  String get hostEventsCloseOutNoShowUnavailable =>
+      'This guest can’t be marked as not coming.';
+
+  @override
   String get hostEventsCloseOutNoShows => 'Tell no-shows about next week';
 
   @override

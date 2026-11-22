@@ -188,7 +188,7 @@ describe("firestore.rules", () => {
         {complete: false}));
       await assertFails(deleteDoc(doc(db, "hostEventRequestViews", "trivia")));
     });
-    it("lets current managers get contact and application detail views by id", async () => {
+    it("lets current managers get contact, application and attendance report views by id", async () => {
       await seed(["organizers", "org"], summaryOrganizer({hostUserIds: ["manager"]}));
       await seed(["organizers", "other"], summaryOrganizer({hostUserId: "other-host"}));
       const views = [
@@ -198,6 +198,8 @@ describe("firestore.rules", () => {
         ["hostApplicationDetailViews", (organizerId, id) => ({organizerId,
           applicationId: id, detail: {organizerId, applicationId: id,
             answers: []}, version: 1})],
+        ["hostEventAttendanceReports", (organizerId, id) => ({organizerId,
+          eventId: id, view: {members: []}, version: 1})],
       ];
       for (const [collectionId, view] of views) {
         await seed([collectionId, "own"], view("org", "own"));

@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_event_attendance_reports.schema.json",
+  "title": "HostEventAttendanceReportDocument",
+  "description": "Server-maintained manager read view of one event's attendance report for Host close-out: the roster report exactly as getEventAttendanceReport returns it, as of serverTime. Written by triggers on eventAttendees (status, check-in and revision changes), eventAttendanceDispositions (no-shows recorded or cleared) and events (cancelled, moved or deleted); deleted when the event is gone or its roster is over the report limit. Never identity, permission or mutation authority: no-shows are recorded through recordEventNoShow.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostEventAttendanceReports",
+  "x-firestore-path": "hostEventAttendanceReports/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "Host read model projector (hostReadModels attendance report view triggers)",
+  "required": [
+    "organizerId",
+    "eventId",
+    "view",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "view": {
+      "$ref": "../shared/event_attendance_disposition.schema.json#/definitions/ReportView",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

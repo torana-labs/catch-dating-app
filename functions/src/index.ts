@@ -1190,6 +1190,10 @@ export {onHostContactDetailViewContactWritten,
   onHostContactDetailViewEventWritten,
   onHostContactDetailViewMergeReceiptWritten} from
   "./hostReadModels/contactDetailViewTriggers";
+export {onHostEventAttendanceReportAttendeeWritten,
+  onHostEventAttendanceReportDispositionWritten,
+  onHostEventAttendanceReportEventWritten} from
+  "./hostReadModels/attendanceReportViewTriggers";
 export {onHostApplicationDetailViewApplicationWritten,
   onHostApplicationDetailViewFormResponseWritten,
   onHostApplicationDetailViewImportedResponseWritten,

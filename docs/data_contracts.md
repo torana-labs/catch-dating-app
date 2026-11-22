@@ -447,7 +447,13 @@ uses the generated live request; unavailable, unauthorized, oversized and
 malformed reads remain errors. Account-scoped providers discard prior reports
 on reload or auth change. Successful individual decisions invalidate only the
 matching event/account aggregate and fetch fresh totals.
-Roster and report UI integration remain separate work.
+The Host close-out screen reads the report from the server-written
+`hostEventAttendanceReports/{eventId}` view (organizerId, eventId, the report as
+`view`, version 1), rebuilt by triggers on `eventAttendees`,
+`eventAttendanceDispositions` and `events` with the callable's own builder.
+Current managers get it by id; a view not written yet reads as missing. Didn't
+come for a booked guest nobody checked in records a no-show through
+`getEventAttendanceDisposition` then `recordEventNoShow`.
 
 ### Event Assistance Transaction Boundary
 

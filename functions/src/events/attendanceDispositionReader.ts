@@ -28,6 +28,28 @@ export const dispositionCollections = {records: "eventAttendanceDispositions",
 export function attendanceEventAuthority(actorUid: string,
   context: Scope["context"], eventSnap: DocumentSnapshot,
   organizerSnap: DocumentSnapshot, planSnap: DocumentSnapshot) {
+  const source = attendanceEventSource(context, eventSnap, organizerSnap,
+    planSnap);
+  if (!isOrganizerManager(
+    organizerSnap.data() as unknown as OrganizerDocument, actorUid)) {
+    throw new HttpsError("permission-denied",
+      "Only an organizer manager can review attendance closeout.");
+  }
+  return source;
+}
+
+/**
+ * Source validation without an actor, for the server's own roster report:
+ * the event, its organizer and its plan, when there is one.
+ * @param {Scope["context"]} context The live event context.
+ * @param {DocumentSnapshot} eventSnap The event.
+ * @param {DocumentSnapshot} organizerSnap Its organizer.
+ * @param {DocumentSnapshot} planSnap Its Event Success plan, if any.
+ * @return {object} The validated sources.
+ */
+export function attendanceEventSource(context: Scope["context"],
+  eventSnap: DocumentSnapshot, organizerSnap: DocumentSnapshot,
+  planSnap: DocumentSnapshot) {
   const event = eventSnap.data();
   const organizer = organizerSnap.data();
   const plan = planSnap.data() ?? null;
@@ -38,11 +60,6 @@ export function attendanceEventAuthority(actorUid: string,
         plan.eventId !== context.eventId ||
         (plan.organizerId) !== context.organizerId))) {
     throw invalidSource();
-  }
-  if (!isOrganizerManager(organizer as unknown as OrganizerDocument,
-    actorUid)) {
-    throw new HttpsError("permission-denied",
-      "Only an organizer manager can review attendance closeout.");
   }
   return {context, event, plan, eventSnap, planGeneration: planSnap.createTime};
 }
