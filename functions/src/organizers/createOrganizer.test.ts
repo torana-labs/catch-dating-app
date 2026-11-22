@@ -133,3 +133,31 @@ test("app creation keeps opaque identity separate from the public route",
       "hidden"
     );
   });
+
+test("setup's answer is stored once with the server time, a skip stores none",
+  async () => {
+    const firestore = new FakeFirestore({"users/owner-1": {name: "Owner"}});
+    const create = (organizerId: string, signupSource?: string) =>
+      createOrganizerHandler({
+        auth: {uid: "owner-1", token: {}} as CallableRequest["auth"],
+        data: {organizerId, name: "Lantern Lane Social",
+          description: "Quiz nights.", location: "in-mh-mumbai",
+          area: "Bandra", ...(signupSource ? {signupSource} : {})},
+        rawRequest: {headers: {}} as CallableRequest["rawRequest"],
+      } as CallableRequest<unknown>, {
+        firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+        serverTimestamp: () => ({kind: "serverTimestamp"}) as unknown as
+          FirebaseFirestore.FieldValue,
+        reserveCanonicalRoute: async () => undefined,
+      });
+
+    await create("AnsweredAutoId000001", "friendOrHost");
+    await create("SkippedAutoId0000001");
+    assert.deepEqual(
+      firestore.get("organizers/AnsweredAutoId000001")?.signupSource,
+      {source: "friendOrHost", answeredAt: {kind: "serverTimestamp"}});
+    assert.equal(
+      "signupSource" in (firestore.get("organizers/SkippedAutoId0000001") ??
+        {}), false);
+    await assert.rejects(create("RejectedAutoId000001", "dating"));
+  });
