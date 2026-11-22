@@ -10,6 +10,14 @@ import type {
 
 export const organizerProgramViewsCollection = "organizerProgramViews";
 
+/**
+ * The list counts and their fences, kept by organizerProgramCounts. A setup
+ * rewrite carries them over unchanged.
+ */
+export const organizerProgramCountFields = ["guestCount",
+  "repliedGuestCount", "flyingInCount", "guestCountsAsOfMicros",
+  "flyingInCountAsOfMicros"] as const;
+
 const functionLimit = 40;
 const pickupLimit = 32;
 const hotelLimit = 64;
@@ -122,17 +130,20 @@ export async function readOrganizerProgramView(
 
 /**
  * Rewrites one programme's setup view from current sources, writing only on
- * change. A source that fails its contract is logged and keeps its previous
- * view.
+ * change, and carries the list counts over from the previous view in the
+ * same transaction. A source that fails its contract is logged and keeps its
+ * previous view.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {string} programId The programme document id.
- * @return {Promise<void>} Resolves once the view matches its sources.
+ * @return {Promise<boolean>} Whether the view exists without its counts
+ *   yet, so the caller recounts it.
  */
 export async function reconcileOrganizerProgramView(
-  db: FirebaseFirestore.Firestore, programId: string): Promise<void> {
-  await db.runTransaction(async (tx) => {
+  db: FirebaseFirestore.Firestore, programId: string): Promise<boolean> {
+  return db.runTransaction(async (tx) => {
     const ref = db.collection(organizerProgramViewsCollection).doc(programId);
     const old = await tx.get(ref);
+    const oldData = old.data();
     let next: OrganizerProgramViewDocument | null;
     try {
       next = await readOrganizerProgramView(db, tx, programId);
@@ -140,10 +151,19 @@ export async function reconcileOrganizerProgramView(
       logger.warn("Organizer programme view kept a source that fails its " +
         "contract.", {programId,
         reason: error instanceof Error ? error.message : String(error)});
-      return;
+      return false;
     }
-    if (isDeepStrictEqual(old.data() ?? null, next)) return;
+    if (next && oldData) {
+      for (const field of organizerProgramCountFields) {
+        if (typeof oldData[field] === "number") next[field] = oldData[field];
+      }
+    }
+    const needsCounts = next !== null &&
+      (typeof next.guestCountsAsOfMicros !== "number" ||
+        typeof next.flyingInCountAsOfMicros !== "number");
+    if (isDeepStrictEqual(oldData ?? null, next)) return needsCounts;
     if (next) tx.set(ref, next);
     else if (old.exists) tx.delete(ref);
+    return needsCounts;
   });
 }

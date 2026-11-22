@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_program_views.schema.json",
   "title": "OrganizerProgramViewDocument",
-  "description": "Server-maintained setup view of one programme, at organizerProgramViews/{programId}: the programme object getOrganizerProgram returned (kind, title, zone, dates, status, capabilities, transport settings, branding, retention dates, revision), the creator, the count of functions listOrganizerPrograms returned and the setup lists of functions, pickup points and hotels exactly as getOrganizerProgram returned them, except a function's live expected and checked-in counts (those change with every check-in; the phone reads them from programResourceViews). Written by triggers on organizerPrograms, programFunctions, programPickupPoints and programHotels. Readable by the organizer's current managers (get and list by organizer), the creator (get and list by creator), and an account whose live programAdmin duty reaches the programme (get), exactly the people requireProgramSetupAccess admits. Guest, household, journey and staff counts are not here: they stay on the callables. Never the programme's sender connection, entitlement or request hash, and never identity, permission or mutation authority.",
+  "description": "Server-maintained setup view of one programme, at organizerProgramViews/{programId}: the programme object getOrganizerProgram returned (kind, title, zone, dates, status, capabilities, transport settings, branding, retention dates, revision), the creator, the count of functions listOrganizerPrograms returned and the setup lists of functions, pickup points and hotels exactly as getOrganizerProgram returned them, except a function's live expected and checked-in counts (those change with every check-in; the phone reads them from programResourceViews). Written by triggers on organizerPrograms, programFunctions, programPickupPoints and programHotels; the list counts by triggers on programGuests and programTravelLegs and a nightly recount. Readable by the organizer's current managers (get and list by organizer), the creator (get and list by creator), and an account whose live programAdmin duty reaches the programme (get), exactly the people requireProgramSetupAccess admits. It also carries the planner list's counts (guestCount, repliedGuestCount, flyingInCount), which listOrganizerPrograms used to return; the phone derives the replied share from them. They are absent until the view's first recount. Household, journey detail and staff counts are not here: they stay on getOrganizerProgram. Never the programme's sender connection, entitlement or request hash, and never identity, permission or mutation authority.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerProgramViews",
@@ -306,6 +306,31 @@
           }
         }
       }
+    },
+    "guestCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Guests of the programme who are not anonymized, as listOrganizerPrograms counted them. Absent until the view's first recount."
+    },
+    "repliedGuestCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Of guestCount, the guests whose RSVP is set and not pending. The phone shows repliedGuestCount / guestCount as the replied share."
+    },
+    "flyingInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Inbound journeys of the programme that are not no-shows. Absent until the view's first recount."
+    },
+    "guestCountsAsOfMicros": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Fence of guestCount and repliedGuestCount: the read time, in microseconds since the epoch, of the recount that last set them. A guest write at or before it was already counted; a later write moves them once."
+    },
+    "flyingInCountAsOfMicros": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Fence of flyingInCount: the read time, in microseconds since the epoch, of the recount that last set it."
     },
     "version": {
       "const": 1
