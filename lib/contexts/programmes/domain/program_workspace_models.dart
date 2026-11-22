@@ -453,8 +453,10 @@ class ProgramGuestGroupRow {
   final int revision;
 }
 
-/// `listProgramGuests` page: guests plus the household/function/group joins
-/// needed to render the household×function RSVP grid.
+/// One page of programme guests plus the household/function/group joins
+/// needed to render the household×function RSVP grid, as the
+/// `listProgramGuests` callable returned it and the guest directory read
+/// model now does.
 class ProgramGuestListPage {
   const ProgramGuestListPage({
     required this.programId,
