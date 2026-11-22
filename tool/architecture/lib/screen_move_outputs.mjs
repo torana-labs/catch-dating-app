@@ -153,20 +153,27 @@ export function staleReviewIds(root) {
   }
 }
 
-// The analyzer's stale-exception reports for the given files.
+// The analyzer's stale-exception reports for the given files. dart analyze
+// takes one directory, so the root analysis (which covers apps/*) runs once
+// and its findings are filtered to the files.
 export function staleIgnoreFindings(root, files) {
   if (files.length === 0) return [];
-  const result = spawnSync("dart", ["analyze", "--format=machine", ...files], {
+  const wanted = new Set(files);
+  const result = spawnSync("dart", ["analyze", "--format=machine", "."], {
     cwd: root,
     encoding: "utf8",
     maxBuffer: 1 << 28,
   });
+  if (result.status === 64 || result.error != null) {
+    throw new Error(`dart analyze could not run:\n${result.stderr || result.error?.message}`);
+  }
   const findings = [];
   for (const line of `${result.stdout}\n${result.stderr}`.split("\n")) {
     const fields = line.split("|");
     if (fields.length < 8 || !/catch_arch_invalid_ignore$/iu.test(fields[2])) continue;
     if (!fields.slice(7).join("|").startsWith("Remove this stale exception")) continue;
-    findings.push({file: path.relative(root, fields[3]), line: Number(fields[4])});
+    const file = path.relative(fs.realpathSync(root), fs.realpathSync.native(fields[3]));
+    if (wanted.has(file)) findings.push({file, line: Number(fields[4])});
   }
   return findings;
 }
