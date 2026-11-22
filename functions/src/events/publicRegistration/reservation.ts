@@ -1,6 +1,5 @@
 import {assertPublicEventAge} from "../../profiles/eventProfileRequirements";
 import {createHash} from "node:crypto";
-import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {PublicEventPaymentDocument as Payment} from
   "../../shared/generated/firestoreAdminTypes";
@@ -41,9 +40,10 @@ import {
 } from "./policy";
 import {
   PUBLIC_PAYMENT_COLLECTION,
+  openPublicEventPayment,
   publicPaymentId,
   parsePublicPayment,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {assertAccountMayBook} from "../../safety/accountStanding";
 import {publicHostMembershipQuoteTerms} from
   "../../hostMemberships/publicCheckout";
@@ -235,9 +235,8 @@ export async function reservePublicPayment(input: {
       },
       resolveIdentity: async () => identity.identity,
     });
-    const now = Timestamp.fromMillis(nowMillis);
-    const payment: Payment = {
-      purpose: "publicEvent",
+    // The payment validates before any write; the transaction commits all.
+    const payment = openPublicEventPayment(tx, paymentRef, {
       eventId,
       organizerId,
       recipientUid: uid,
@@ -261,28 +260,9 @@ export async function reservePublicPayment(input: {
         guestUnitAmountPaise: quote.guestUnitAmountPaise} : {}),
       ...(guestNames.length > 0 ? {guestNames} : {}),
       currency: quote.currency,
-      receipt: paymentId,
-      status: "creatingOrder",
-      providerOrderId: null,
-      providerPaymentId: null,
-      providerRefundId: null,
-      refundedAmountPaise: 0,
-      admissionReceiptId: null,
-      reservationReleased: false,
-      leaseUntil: null,
-      createdAt: now,
-      updatedAt: now,
-      capturedAt: null,
-      admittedAt: null,
-      checkoutExpiresAt: Timestamp.fromMillis(
-        nowMillis + CHECKOUT_HOLD_MILLIS,
-      ),
-      lastErrorCode: null,
-    };
-    parsePublicPayment(payment, paymentId);
+    }, nowMillis);
     identity.apply();
     applyCheckoutHold(seats, hold);
-    tx.create(paymentRef, payment);
     return {paymentId, payment, replayed: false};
   });
 }

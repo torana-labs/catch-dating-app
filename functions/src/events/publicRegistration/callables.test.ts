@@ -7,7 +7,7 @@ import {uid, phone, eventId, now} from "./testFixture";
 import {CHECKOUT_HOLD_MILLIS} from "../seatAuthority/seatAuthority";
 import {reconcileVerifiedEventOrder} from
   "../../payments/eventCheckout/eventPaymentWebhook";
-import {publicPaymentLedger} from "./paymentLedger";
+import {publicPaymentLedger} from "../../domain/payments/publicEventPayments";
 
 const request = (
   data: unknown,

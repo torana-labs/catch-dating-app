@@ -1,13 +1,20 @@
 import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {createHash} from "node:crypto";
+import {Timestamp} from "firebase-admin/firestore";
 import type {PublicEventPaymentDocument as Payment} from
   "../../shared/generated/firestoreAdminTypes";
 import {validatePublicEventPaymentDocument} from
   "../../shared/generated/validators/publicEventPaymentDocument";
-import {CHECKOUT_HOLD_MILLIS} from "../seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../events/seatAuthority/seatAuthority";
 import {assertPaymentRouteSnapshot} from "../../payments/paymentRouting";
-import {registrationUnavailable} from "./policy";
+import {registrationUnavailable} from "../../events/publicRegistration/policy";
 
+/**
+ * A guest's payment for a public event: its id, ledger parsing and the one
+ * place a booking opens it. guestPayments belongs to the payments context;
+ * bookings (events/publicRegistration) supplies the booking facts and calls
+ * these functions inside its own transaction.
+ */
 export const PUBLIC_PAYMENT_COLLECTION = GUEST_PAYMENTS;
 export const PUBLIC_ADMISSION_COLLECTION = "publicEventAdmissionReceipts";
 export function publicPaymentId(
@@ -128,3 +135,46 @@ export const publicPaymentLedger = {
   collection: PUBLIC_PAYMENT_COLLECTION,
   parse: parsePublicPayment,
 };
+
+/** What a booking knows when it opens a public event payment. */
+export type PublicEventPaymentFacts = Omit<Payment, "purpose" | "receipt" |
+  "status" | "providerOrderId" | "providerPaymentId" | "providerRefundId" |
+  "refundedAmountPaise" | "admissionReceiptId" | "reservationReleased" |
+  "leaseUntil" | "createdAt" | "updatedAt" | "capturedAt" | "admittedAt" |
+  "checkoutExpiresAt" | "lastErrorCode">;
+
+/**
+ * Opens a public event payment in the booking's transaction, after every
+ * read: it waits for a provider order and holds its seat for
+ * CHECKOUT_HOLD_MILLIS. Returns the stored document.
+ */
+export function openPublicEventPayment(
+  tx: FirebaseFirestore.Transaction,
+  ref: FirebaseFirestore.DocumentReference,
+  facts: PublicEventPaymentFacts,
+  nowMillis: number,
+): Payment {
+  const now = Timestamp.fromMillis(nowMillis);
+  const payment: Payment = {
+    purpose: "publicEvent",
+    ...facts,
+    receipt: ref.id,
+    status: "creatingOrder",
+    providerOrderId: null,
+    providerPaymentId: null,
+    providerRefundId: null,
+    refundedAmountPaise: 0,
+    admissionReceiptId: null,
+    reservationReleased: false,
+    leaseUntil: null,
+    createdAt: now,
+    updatedAt: now,
+    capturedAt: null,
+    admittedAt: null,
+    checkoutExpiresAt: Timestamp.fromMillis(nowMillis + CHECKOUT_HOLD_MILLIS),
+    lastErrorCode: null,
+  };
+  parsePublicPayment(payment, ref.id);
+  tx.create(ref, payment);
+  return payment;
+}

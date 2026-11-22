@@ -17,7 +17,8 @@ import {deriveEventSeatPolicy} from "../seatAuthority/firestoreAdapter";
 import {publicCheckoutQuote} from "./policy";
 import {reservePublicPayment} from "./reservation";
 import {finalizePublicPayment} from "./admission";
-import {PUBLIC_PAYMENT_COLLECTION} from "./paymentLedger";
+import {PUBLIC_PAYMENT_COLLECTION} from
+  "../../domain/payments/publicEventPayments";
 export {uid, phone, now, eventId, org};
 
 export async function publicFixture() {

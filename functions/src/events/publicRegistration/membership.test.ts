@@ -13,7 +13,8 @@ import {eventGuestEntry} from "../../guestEvents/eventGuestEntry";
 import {publicFixture, uid, org, now, eventId} from "./testFixture";
 import {publicCheckoutQuote} from "./policy";
 import {finalizePublicPayment} from "./admission";
-import {PUBLIC_PAYMENT_COLLECTION} from "./paymentLedger";
+import {PUBLIC_PAYMENT_COLLECTION} from
+  "../../domain/payments/publicEventPayments";
 
 async function fixture() {
   const h = await publicFixture();

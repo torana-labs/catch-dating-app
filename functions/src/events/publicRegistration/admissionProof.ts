@@ -6,7 +6,7 @@ import {canonicalJson} from "../eventSetupPreferences/resolve";
 import {
   PUBLIC_ADMISSION_COLLECTION,
   publicAdmissionId,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {registrationUnavailable} from "./policy";
 
 /** Immutable source-specific financial proof, not current seat authority. */

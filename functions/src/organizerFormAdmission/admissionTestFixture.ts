@@ -47,7 +47,7 @@ export class Store {
         direction]),
       limit: (count: number) => ({collection: name, filters, count, order}),
     });
-    return {doc: (id: string) => ({path: `${name}/${id}`,
+    return {doc: (id: string) => ({path: `${name}/${id}`, id,
       collection: (child: string) =>
         this.collection(`${name}/${id}/${child}`)}),
     where: (field: string, op: string, value: unknown) =>

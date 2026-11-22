@@ -15,7 +15,7 @@ import {
   PUBLIC_ADMISSION_COLLECTION,
   parsePublicPayment,
   publicPaymentLedger,
-} from "./paymentLedger";
+} from "../../domain/payments/publicEventPayments";
 import {readPublicPaidAdmission} from "./admissionProof";
 import {cancelPaidEventAdmission} from
   "../../payments/eventCheckout/eventPaymentCancellation";
