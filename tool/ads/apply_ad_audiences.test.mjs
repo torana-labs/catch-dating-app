@@ -8,6 +8,7 @@ import {
   googleUserListOperation,
   loadAdAudiences,
   metaAudienceParams,
+  siteUrlFragment,
   planGoogleAudiences,
   planMetaAudiences,
 } from "./apply_ad_audiences.mjs";
@@ -60,7 +61,9 @@ test("Google lists are URL rules with their membership span", () => {
   const operation = googleUserListOperation(policy.google.audiences[0]).userListOperation.create;
   assert.equal(operation.membershipLifeSpan, "540");
   assert.deepEqual(operation.ruleBasedUserList.flexibleRuleUserList.inclusiveOperands[0].rule.ruleItemGroups[0]
-    .ruleItems[0], {name: "url__", stringRuleItem: {operator: "CONTAINS", value: "catchdates.com/host"}});
+    .ruleItems[0], {name: "url__", stringRuleItem: {operator: "CONTAINS", value: siteUrlFragment("/host")}});
+  assert.ok(siteUrlFragment("/host").endsWith("/host"));
+  assert.equal(siteUrlFragment("/").includes("/"), false);
 });
 
 test("plans keep existing audiences and create only the missing ones", async () => {

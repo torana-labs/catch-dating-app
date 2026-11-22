@@ -3,6 +3,7 @@ import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
+import {brand} from "@catch/brand";
 import {parseCommonArgs} from "../lib/cli_args.mjs";
 import {metaGraph} from "./apply_meta_campaigns.mjs";
 import {googleAdsApi} from "./apply_google_campaigns.mjs";
@@ -67,8 +68,8 @@ export function loadAdAudiences(file = POLICY_PATH) {
         audience.membershipDays > 540) {
       throw new Error(`${where} keeps people 1 to 540 days.`);
     }
-    if (typeof audience.urlContains !== "string" || !audience.urlContains.trim()) {
-      throw new Error(`${where} needs urlContains.`);
+    if (typeof audience.urlPath !== "string" || !/^\/[a-z0-9/-]*$/.test(audience.urlPath)) {
+      throw new Error(`${where} needs a urlPath such as "/" or "/host".`);
     }
   }
   const observe = google.observeOn;
@@ -106,6 +107,11 @@ export function metaAudienceParams(meta, audience) {
     ...(audience.source === "pixel" ? {prefill: true} : {})};
 }
 
+/** The brand domain plus a path: what a Google list's URL rule must contain. */
+export function siteUrlFragment(urlPath) {
+  return urlPath === "/" ? brand.web.domain : `${brand.web.domain}${urlPath}`;
+}
+
 /** The Google Ads mutate operation that creates one remarketing list. */
 export function googleUserListOperation(audience) {
   return {userListOperation: {create: {
@@ -118,7 +124,7 @@ export function googleUserListOperation(audience) {
         inclusiveRuleOperator: "AND",
         inclusiveOperands: [{rule: {ruleItemGroups: [{ruleItems: [{
           name: "url__",
-          stringRuleItem: {operator: "CONTAINS", value: audience.urlContains},
+          stringRuleItem: {operator: "CONTAINS", value: siteUrlFragment(audience.urlPath)},
         }]}]}}],
       },
     },

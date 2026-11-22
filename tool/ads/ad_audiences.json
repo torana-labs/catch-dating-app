@@ -59,19 +59,19 @@
         "name": "Catch | Host page visitors | 540d",
         "description": "Website visitors who opened a /host page.",
         "membershipDays": 540,
-        "urlContains": "catchdates.com/host"
+        "urlPath": "/host"
       },
       {
         "name": "Catch | All site visitors | 30d",
         "description": "Every website visitor in the last 30 days.",
         "membershipDays": 30,
-        "urlContains": "catchdates.com"
+        "urlPath": "/"
       }
     ],
     "observeOn": {
       "campaign": "Catch Host | Search | Organisers",
       "audiences": ["Catch | Host page visitors | 540d", "Catch | All site visitors | 30d"],
-      "note": "Observation only (bid_only): the lists report how known visitors behave without narrowing who sees the ads."
+      "note": "Lists match URLs on the brand domain (@catch/brand) plus urlPath. Observation only (bid_only): the lists report how known visitors behave without narrowing who sees the ads."
     }
   }
 }
