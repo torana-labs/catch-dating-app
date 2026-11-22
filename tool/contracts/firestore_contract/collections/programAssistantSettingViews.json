@@ -1,0 +1,24 @@
+{
+  "id": "programAssistantSettingViews",
+  "path": "programAssistantSettingViews/{programId}",
+  "rulesMatch": "/programAssistantSettingViews/{programId}",
+  "dartModel": null,
+  "typescriptInterface": "ProgramAssistantSettingViewDocument",
+  "rulesTestFile": "functions/test/rules/program_whatsapp_setting_views.rules.test.cjs",
+  "rulesTestNames": [
+    "admits the owner and the coordinator duty to the settings view, by id only"
+  ],
+  "owner": "Programme read model projector: programWhatsapp settingViewTriggers",
+  "writerContext": "programmes",
+  "read": "get by programme id for the programme owner and the coordinator duty (programAccessViews), as requireSettingsAccess admits them, while not deleted; never listed",
+  "write": "server only; written from organizerPrograms, programAssistantSettings and programStaffGrants",
+  "exportedFunctions": [
+    "onProgramSettingViewProgramChanged",
+    "onProgramSettingViewSettingsChanged",
+    "onProgramSettingViewGrantChanged"
+  ],
+  "migrationNotes": [
+    "Replaces getProgramAssistantSettings for the Host app (#2306): the settings exactly as the callable returned them (defaults with usesDefaults and revision 0 when none are saved) and the escalation staff with each grant's expiry instead of the callable's clock filter. Saving stays updateProgramAssistantSettings, fenced by the revision. The program-setting-views copy-forward migration creates views for programmes that predate the triggers.",
+    "Staff display names are personal data; archive anonymization scrubs them on the grant, and the grant trigger rewrites the view."
+  ]
+}

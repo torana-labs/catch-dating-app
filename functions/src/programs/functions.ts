@@ -112,6 +112,10 @@ export {onProgramWhatsappThreadViewThreadChanged,
   onProgramWhatsappThreadViewHouseholdChanged,
   onProgramWhatsappThreadViewProgramChanged} from
   "./programWhatsapp/threadViewTriggers";
+export {onProgramSettingViewProgramChanged,
+  onProgramSettingViewSettingsChanged, onProgramSettingViewGrantChanged,
+  onProgramSenderViewConnectionChanged} from
+  "./programWhatsapp/settingViewTriggers";
 export {
   onProgramGuestWhatsappEndpointWritten,
   onProgramHouseholdWhatsappEndpointWritten,
