@@ -21,6 +21,7 @@ ones that are finished:
   - no modified or untracked files (ignored files such as node_modules go with it);
   - not locked, not the primary checkout, no process has its cwd inside it;
   - no open PR for its branch;
+  - not a claimed task with no commits yet (HEAD still at the claim's base);
   - idle for at least --min-idle-hours (default ${DEFAULT_MIN_IDLE_HOURS}).
 Removal is a non-forced git worktree remove. A worktree guard claim for the
 path is released first with finish --abandon. Branches, refs and stashes stay.
@@ -35,6 +36,7 @@ export function classifyWorktree({
   dirty = false,
   inUse = false,
   openPullRequest = false,
+  unstartedClaim = false,
   ancestorOfMain = false,
   mergedPullRequest = null,
   idleHours = 0,
@@ -46,6 +48,10 @@ export function classifyWorktree({
   if (dirty) return {action: "keep", reason: "uncommitted-changes"};
   if (inUse) return {action: "keep", reason: "process-running-inside"};
   if (openPullRequest) return {action: "keep", reason: "open-pull-request"};
+  // A task worktree starts at its claim's base, which is already in main, so
+  // until its first commit it would look finished. The guard's stale command
+  // owns claims that never start.
+  if (unstartedClaim) return {action: "keep", reason: "claimed-not-started"};
   const merged = mergedPullRequest != null
     ? `merged-pr-${mergedPullRequest}`
     : ancestorOfMain ? "in-origin-main" : null;
@@ -159,13 +165,14 @@ export function sweepWorktrees({
       facts.ancestorOfMain = mainSha.ok && entry.head != null &&
         git(["merge-base", "--is-ancestor", entry.head, mainSha.stdout], top.stdout).ok;
       facts.mergedPullRequest = gh.mergedByHead.get(entry.head) ?? null;
+      const claim = claimFileFor(commonDir, entry.path);
+      facts.unstartedClaim = claim != null && entry.head != null && claim.baseSha === entry.head;
       facts.idleHours = idleHoursFor(entry.path, now);
     }
     const decision = classifyWorktree(facts);
     const row = {path: entry.path, branch: entry.branch, head: entry.head, ...decision};
     if (apply && decision.action === "remove") {
-      const claim = claimFileFor(commonDir, entry.path);
-      if (claim) {
+      if (claimFileFor(commonDir, entry.path)) {
         try {
           executeTaskCommand({
             args: ["finish", "--worktree", entry.path, "--abandon",
