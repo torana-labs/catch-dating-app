@@ -52,7 +52,6 @@ export const markdownReaders = {
 // Scripts that name Markdown without CI reading it: a pointer in a message, a
 // path filter that skips documents, an output, or a local-only tool.
 export const markdownMentions = {
-  "tool/architecture/provider_graph.dart": "names docs/screen_data_caching.md as the rule's documentation",
   "tool/architecture/rename_to_organizer.mjs": "a path filter that leaves documents out of the rename",
   "tool/ci/flutter_package_scope.mjs": "classifies Markdown as outside package code",
   "tool/contracts/generate_market_catalog.mjs": "a path filter that leaves documents out of the scan",
