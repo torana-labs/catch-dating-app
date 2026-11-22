@@ -124,8 +124,8 @@ GoRouter consumerGoRouter(Ref ref) => _buildGoRouter(ref, isHostApp: false);
 @Riverpod(keepAlive: true)
 GoRouter hostGoRouter(Ref ref) => _buildGoRouter(ref, isHostApp: true);
 
-const _fromQueryParam = 'from';
-const _onboardingIntentQueryParam = 'intent';
-const _completeProfileIntent = 'complete-profile';
-const _completeRunPreferencesIntent = 'complete-run-preferences';
+const _fromQueryParam = routeFromQueryParam;
+const _onboardingIntentQueryParam = onboardingIntentQueryParam;
+const _completeProfileIntent = completeProfileIntent;
+const _completeRunPreferencesIntent = completeRunPreferencesIntent;
 const _initialRouteOverride = String.fromEnvironment('CATCH_INITIAL_ROUTE');
