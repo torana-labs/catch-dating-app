@@ -141,11 +141,11 @@
       "ground": "coral",
       "kicker": "Your next event",
       "title": "Pack the hall. Keep the list.",
-      "lead": "Start the free trial, or leave your number and we’ll send the society setup guide on WhatsApp.",
+      "lead": "Start the free trial, or leave your number and a person from our team will message you on WhatsApp to help you set up.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
-      "leadForm": {"id": "society_setup_guide", "requestKind": "guide", "format": "colleges", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "leadForm": {"id": "society_setup_guide", "requestKind": "guide", "format": "colleges", "label": "Your WhatsApp number", "submitLabel": "Message me"},
       "media": {"kind": "capture", "slot": "host-create-colleges"}
     }
   ]
