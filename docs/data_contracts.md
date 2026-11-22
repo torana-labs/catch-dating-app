@@ -3640,7 +3640,7 @@ name or "there") through `adminSendCatchWhatsappReply` with
 `purpose: "hostLeadFollowUp"`: only when the person has not written in the
 last 24 hours, never after STOP, and at most once per WhatsApp number in any
 7 days (every attempt WhatsApp did not refuse counts). It is recorded in their
-Support thread and as the lead's `followUpWhatsapp`. A reply to either
+Support thread, which it starts when they have none, and in the audit log. A reply to either
 template, a quick-reply button included, lands in the Support thread like any
 inbound message.
 

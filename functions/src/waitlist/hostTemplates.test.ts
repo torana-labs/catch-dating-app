@@ -9,8 +9,11 @@ import {
   recordWhatsappSupportReceipt,
   supportConversationId,
 } from "../supportInbox/conversations";
-import type {CatchTemplateName} from "./catchTemplates";
-import {CATCH_TEMPLATES, leadFirstName} from "./catchTemplates";
+import type {CatchTemplateName} from "../catchMessaging/catchTemplates";
+import {
+  CATCH_TEMPLATES,
+  leadFirstName,
+} from "../catchMessaging/catchTemplates";
 import {
   hostAppLinkMessageId,
   sendHostAppLinkForLead,
@@ -20,10 +23,12 @@ import {
   hostLeadFollowUpMessageId,
   sendHostLeadFollowUp,
   type HostLeadFollowUpDeps,
-} from "./hostLeadFollowUp";
+} from "../catchMessaging/hostLeadFollowUp";
 import {projectInboxSource} from "../admin/inbox/model";
-import {CATCH_ENDPOINT_STOPS} from "./whatsappEndpointStops";
-import {catchEndpointHash, catchStopId} from "./whatsappReply";
+import {CATCH_ENDPOINT_STOPS} from
+  "../catchMessaging/whatsappEndpointStops";
+import {catchEndpointHash, catchStopId} from
+  "../catchMessaging/whatsappReply";
 
 const T0 = Date.UTC(2026, 10, 23, 9);
 const HOUR = 3600_000;
@@ -261,10 +266,8 @@ test("staff send the follow-up with the lead's first name, recorded in the " +
   assert.equal(message.text, CATCH_TEMPLATES.host_lead_follow_up.text(
     {first_name: "Ira"}));
   assert.equal(h.conversation()!.status, "waitingOnThem");
-  const record = h.intent(HOST_LEAD).followUpWhatsapp as
-    Record<string, unknown>;
-  assert.equal(record.state, "accepted");
-  assert.equal(record.actorUid, "ops-1");
+  // The lead itself is only read; the thread and the audit log hold the send.
+  assert.equal(h.intent(HOST_LEAD).followUpWhatsapp, undefined);
   const audits = [...h.db.docs.keys()]
     .filter((path) => path.startsWith("adminAuditLogs/"));
   assert.equal(audits.length, 2);

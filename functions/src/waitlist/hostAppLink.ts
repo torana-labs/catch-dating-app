@@ -2,22 +2,33 @@ import {getFirestore, Timestamp, type Firestore} from
   "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import {defineBoolean, defineString} from "firebase-functions/params";
-import {isInternalTestLead} from "../waitlist/internalTestLead";
+import {isInternalTestLead} from "./internalTestLead";
 import {
   defaultSupportInboxDeps,
   type SupportInboxDeps,
 } from "../supportInbox/conversations";
 import {SupportReplyRefused} from "../supportInbox/whatsappReplies";
 import {claimSupportWhatsappTemplate} from "../supportInbox/whatsappTemplates";
-import {catchTemplateSender, type CatchTemplateSender} from "./catchSender";
-import {CATCH_TEMPLATES} from "./catchTemplates";
+import type {SalesInboundIntentsDocument} from
+  "../shared/generated/firestoreAdminTypes";
+import {
+  catchReplyTemplateSender,
+  type CatchTemplateSender,
+} from "../catchMessaging/catchSender";
+import {CATCH_TEMPLATES} from "../catchMessaging/catchTemplates";
 import {
   deliverClaimedTemplate,
-  settledRecordUpdate,
-  type TemplateSendRecord,
-} from "./templateDelivery";
-import {CATCH_ENDPOINT_STOPS} from "./whatsappEndpointStops";
-import {catchEndpointHash, catchReplyHash, catchStopId} from "./whatsappReply";
+  type TemplateDeliveryOutcome,
+} from "../catchMessaging/templateDelivery";
+import {CATCH_ENDPOINT_STOPS} from "../catchMessaging/whatsappEndpointStops";
+import {
+  catchEndpointHash,
+  catchReplyHash,
+  catchStopId,
+} from "../catchMessaging/whatsappReply";
+
+type TemplateSendRecord = NonNullable<
+  SalesInboundIntentsDocument["appLinkWhatsapp"]>;
 
 // "Text me the link": when a website lead of kind app_link asks for the
 // Catch Host app, Catch's WhatsApp number sends the approved host_app_link
@@ -94,6 +105,20 @@ export function hostAppLinkRecipient(value: unknown): string | null {
     phone : null;
 }
 
+/**
+ * The fields that settle the lead's record of its send, as dotted updates.
+ * @param {TemplateDeliveryOutcome} outcome What happened.
+ * @return {object} Update fields.
+ */
+function settledRecord(outcome: TemplateDeliveryOutcome):
+  Record<string, unknown> {
+  return {
+    "appLinkWhatsapp.state": outcome.state,
+    "appLinkWhatsapp.providerMessageId": outcome.providerMessageId,
+    "appLinkWhatsapp.deliveryErrorCode": outcome.deliveryErrorCode,
+  };
+}
+
 function createdMillis(value: unknown): number | null {
   const createdAt = record(value)?.createdAt;
   return createdAt instanceof Timestamp ? createdAt.toMillis() : null;
@@ -134,7 +159,7 @@ async function sendOnce(deps: HostAppLinkDeps, intentId: string):
   const template = CATCH_TEMPLATES.host_app_link;
   const now = () => Timestamp.fromMillis(deps.nowMillis());
   const skip = async (reason: "stopped" | "unavailable") => {
-    const skipped: TemplateSendRecord = {templateName: template.name,
+    const skipped: TemplateSendRecord = {templateName: "host_app_link",
       state: "skipped", skipReason: reason, conversationId: null,
       messageId: null, providerMessageId: null, deliveryErrorCode: null,
       actorUid: null, attemptedAt: now()};
@@ -174,7 +199,7 @@ async function sendOnce(deps: HostAppLinkDeps, intentId: string):
         if (stopped) throw new SupportReplyRefused("stopped");
       },
       onClaim: (tx, {conversationId, now: at}) => tx.update(intentRef, {
-        appLinkWhatsapp: {templateName: template.name, state: "sending",
+        appLinkWhatsapp: {templateName: "host_app_link", state: "sending",
           skipReason: null, conversationId, messageId,
           providerMessageId: null, deliveryErrorCode: null, actorUid: null,
           attemptedAt: at} satisfies TemplateSendRecord,
@@ -194,7 +219,7 @@ async function sendOnce(deps: HostAppLinkDeps, intentId: string):
     bodyHash, toE164, template: template.name, variables: {}, send,
     automatic: true, nowMillis: deps.nowMillis,
   });
-  await intentRef.update(settledRecordUpdate("appLinkWhatsapp", outcome))
+  await intentRef.update(settledRecord(outcome))
     .catch(() => deps.warn("Host app link record not settled.", {intentId}));
   if (outcome.state !== "accepted") {
     deps.warn(outcome.state === "failed" ?
@@ -213,40 +238,6 @@ const repliesEnabled = defineBoolean("CATCH_WHATSAPP_REPLIES_ENABLED",
 const wabaId = defineString("CATCH_WHATSAPP_WABA_ID", {default: ""});
 const phoneNumberId = defineString("CATCH_WHATSAPP_PHONE_NUMBER_ID",
   {default: ""});
-const credential = defineString("CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
-  {default: ""});
-const graph = defineString("CATCH_WHATSAPP_REPLY_GRAPH_VERSION",
-  {default: ""});
-
-// Template sends use the Support reply sender's pinned token and Graph
-// version; one sender per credential version per instance.
-let cachedSender: {key: string;
-  sender: Promise<CatchTemplateSender | null>} | null = null;
-
-/**
- * Catch's template sender from the reply credential, cached per version.
- * @param {object} scope Catch's WhatsApp account and number.
- * @return {Promise<CatchTemplateSender | null>} The sender, or null.
- */
-export function catchReplyTemplateSender(
-  scope: {wabaId: string; phoneNumberId: string}
-): Promise<CatchTemplateSender | null> {
-  const version = credential.value().trim();
-  const graphVersion = graph.value().trim();
-  const key = JSON.stringify([version, graphVersion, scope.wabaId,
-    scope.phoneNumberId]);
-  if (cachedSender?.key !== key) {
-    const sender = catchTemplateSender({credentialVersion: version,
-      graphVersion, wabaId: scope.wabaId,
-      phoneNumberId: scope.phoneNumberId}).catch((error: unknown) => {
-      cachedSender = null;
-      throw error;
-    });
-    cachedSender = {key, sender};
-  }
-  return cachedSender.sender;
-}
-
 export const defaultHostAppLinkDeps: HostAppLinkDeps = {
   config: () => ({enabled: appLinkEnabled.value() && repliesEnabled.value(),
     wabaId: wabaId.value().trim(),

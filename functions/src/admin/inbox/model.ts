@@ -504,16 +504,15 @@ function projectLead(sourceId: string, data: Data): InboxProjection {
 
 const templateLabels: Record<string, string> = {
   host_app_link: `the ${BRAND.stores.hostAppName} app link`,
-  host_lead_follow_up: "the follow-up",
 };
 
 /**
- * What Catch's WhatsApp number sent the lead from a template: the automatic
- * Host app link, and the latest follow-up staff sent. One step per settled
- * outcome; a send still in flight shows once it settles.
+ * What Catch's WhatsApp number sent the lead by itself: the automatic Host
+ * app link. One step per settled outcome; a send still in flight shows once
+ * it settles. Follow-ups staff send are in the person's Support thread.
  */
 function whatsappTemplateSteps(data: Data): JourneyStep[] {
-  return (["appLinkWhatsapp", "followUpWhatsapp"] as const).flatMap((field) => {
+  return (["appLinkWhatsapp"] as const).flatMap((field) => {
     const send = record(data[field]);
     const state = text(send?.state);
     const occurredAt = iso(send?.attemptedAt);

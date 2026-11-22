@@ -19,8 +19,7 @@ import {validateAdminSendCatchWhatsappReplyCallableResponse} from
   "../shared/generated/validators/adminSendCatchWhatsappReplyOutput";
 import type {AdminSendCatchWhatsappReplyCallableResponse} from
   "../shared/generated/adminSendCatchWhatsappReplyCallableResponse";
-import {catchTextSender} from "./catchSender";
-import {catchReplyTemplateSender} from "./hostAppLink";
+import {catchReplyTemplateSender, catchTextSender} from "./catchSender";
 import {isHostLeadFollowUp, sendHostLeadFollowUp} from "./hostLeadFollowUp";
 import {defaultSupportInboxDeps} from "../supportInbox/conversations";
 import type {CatchTextSender} from "./autoReply";

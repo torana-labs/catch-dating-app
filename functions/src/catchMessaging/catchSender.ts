@@ -89,6 +89,40 @@ export async function catchTemplateSender(config: {
     deadline: now() + SEND_TIMEOUT_MS})).providerMessageId;
 }
 
+const replyCredential = defineString(
+  "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION", {default: ""});
+const replyGraph = defineString("CATCH_WHATSAPP_REPLY_GRAPH_VERSION",
+  {default: ""});
+
+// Template sends use the Support reply sender's pinned token and Graph
+// version; one sender per credential version per instance.
+let cachedReplyTemplateSender: {key: string;
+  sender: Promise<CatchTemplateSender | null>} | null = null;
+
+/**
+ * Catch's template sender from the reply credential, cached per version.
+ * @param {object} scope Catch's WhatsApp account and number.
+ * @return {Promise<CatchTemplateSender | null>} The sender, or null.
+ */
+export function catchReplyTemplateSender(
+  scope: {wabaId: string; phoneNumberId: string}
+): Promise<CatchTemplateSender | null> {
+  const version = replyCredential.value().trim();
+  const graphVersion = replyGraph.value().trim();
+  const key = JSON.stringify([version, graphVersion, scope.wabaId,
+    scope.phoneNumberId]);
+  if (cachedReplyTemplateSender?.key !== key) {
+    const sender = catchTemplateSender({credentialVersion: version,
+      graphVersion, wabaId: scope.wabaId,
+      phoneNumberId: scope.phoneNumberId}).catch((error: unknown) => {
+      cachedReplyTemplateSender = null;
+      throw error;
+    });
+    cachedReplyTemplateSender = {key, sender};
+  }
+  return cachedReplyTemplateSender.sender;
+}
+
 async function readPinnedSecret(version: string): Promise<string> {
   const project = getApp().options.projectId || process.env.GCLOUD_PROJECT;
   if (!project || !version.startsWith(`projects/${project}/secrets/`)) {

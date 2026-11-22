@@ -25,7 +25,7 @@ import {validMobileNumber} from "../shared/mobileNumber";
  * a typed salesInboundIntents row, so it reaches the Admin inbox the way a
  * Host application does. Nothing here sends a message: staff reply first,
  * except that an app_link lead gets the approved Host app link template from
- * the row's create trigger (catchMessaging/hostAppLink.ts). The city
+ * the row's create trigger (hostAppLink.ts). The city
  * new-plans consent is recorded only.
  */
 

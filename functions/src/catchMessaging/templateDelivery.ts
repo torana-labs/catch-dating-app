@@ -1,8 +1,6 @@
 import {Timestamp, type Firestore} from "firebase-admin/firestore";
 import {MetaProviderError} from
   "../platform/delivery/organizerWhatsappProvider";
-import type {SalesInboundIntentsDocument} from
-  "../shared/generated/firestoreAdminTypes";
 import {
   completeSupportWhatsappReply,
   endSupportWhatsappReply,
@@ -15,11 +13,7 @@ import {reconcileEarlyStatuses} from "./supportConversationReply";
 // its Support message is claimed (supportInbox/whatsappTemplates.ts): call
 // WhatsApp, then settle the message. An answer from WhatsApp that refuses it
 // marks it failed; no answer marks it unknown, because it may still have been
-// sent. Neither is ever retried. The lead's own record of the send is kept on
-// its salesInboundIntents document.
-
-export type TemplateSendRecord = NonNullable<
-  SalesInboundIntentsDocument["appLinkWhatsapp"]>;
+// sent. Neither is ever retried.
 
 export interface TemplateDeliveryOutcome {
   state: "accepted" | "failed" | "unknown";
@@ -80,18 +74,3 @@ export async function deliverClaimedTemplate(db: Firestore, input: {
   }
 }
 
-/**
- * The fields that settle a lead's record of a send, as dotted updates.
- * @param {string} field appLinkWhatsapp or followUpWhatsapp.
- * @param {TemplateDeliveryOutcome} outcome What happened.
- * @return {object} Update fields.
- */
-export function settledRecordUpdate(
-  field: "appLinkWhatsapp" | "followUpWhatsapp",
-  outcome: TemplateDeliveryOutcome): Record<string, unknown> {
-  return {
-    [`${field}.state`]: outcome.state,
-    [`${field}.providerMessageId`]: outcome.providerMessageId,
-    [`${field}.deliveryErrorCode`]: outcome.deliveryErrorCode,
-  };
-}

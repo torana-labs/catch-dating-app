@@ -24,11 +24,7 @@ import {
 import {claimSupportWhatsappTemplate} from "../supportInbox/whatsappTemplates";
 import type {CatchTemplateSender} from "./catchSender";
 import {CATCH_TEMPLATES, leadFirstName} from "./catchTemplates";
-import {
-  deliverClaimedTemplate,
-  settledRecordUpdate,
-  type TemplateSendRecord,
-} from "./templateDelivery";
+import {deliverClaimedTemplate} from "./templateDelivery";
 import {supportRepliesConfigured, type SupportConversationReplyConfig} from
   "./supportConversationReply";
 import {CATCH_ENDPOINT_STOPS} from "./whatsappEndpointStops";
@@ -135,8 +131,9 @@ export async function sendHostLeadFollowUp(request: CallableRequest<unknown>,
     {maxRequests: 30, windowMs: 60_000});
   await deps.rateLimit(db, data.intentId, "adminSendHostLeadFollowUp",
     {maxRequests: 5, windowMs: 60_000});
-  const intentRef = db.collection("salesInboundIntents").doc(data.intentId);
-  const intent = (await intentRef.get()).data();
+  // Read only: the send is recorded in the Support thread and the audit log.
+  const intent = (await db.collection("salesInboundIntents")
+    .doc(data.intentId).get()).data();
   if (!intent) throw new HttpsError("not-found", "Lead not found.");
   const phone = typeof intent.phone === "string" &&
     /^\+[1-9][0-9]{6,14}$/u.test(intent.phone) ? intent.phone : null;
@@ -185,14 +182,9 @@ export async function sendHostLeadFollowUp(request: CallableRequest<unknown>,
         catchStopId(config, catchEndpointHash(address))),
       recentSinceMillis: nowMillis - HOST_LEAD_FOLLOW_UP_GAP_MS,
       check: (facts) => assertFollowUpAllowed(facts),
-      onClaim: (tx, {conversationId, now: at}) => {
+      onClaim: (tx, {conversationId}) => {
         targetPath = `${SUPPORT_CONVERSATIONS}/${conversationId}/messages/` +
           messageId;
-        tx.update(intentRef, {followUpWhatsapp: {
-          templateName: template.name, state: "sending", skipReason: null,
-          conversationId, messageId, providerMessageId: null,
-          deliveryErrorCode: null, actorUid: context.uid, attemptedAt: at,
-        } satisfies TemplateSendRecord});
         setAdminAuditLogInTransaction(tx, db, context, {
           action: "adminSendCatchWhatsappReply", targetPath, request,
           after: {purpose: "hostLeadFollowUp", messageId,
@@ -215,8 +207,6 @@ export async function sendHostLeadFollowUp(request: CallableRequest<unknown>,
     bodyHash, toE164: phone, template: template.name, variables, send,
     automatic: false, nowMillis: deps.now,
   });
-  await intentRef.update(settledRecordUpdate("followUpWhatsapp", outcome))
-    .catch(() => undefined);
   await writeAdminAuditLog(db, context, {
     action: "adminSendCatchWhatsappReply", targetPath, request,
     after: {purpose: "hostLeadFollowUp", messageId, intentId: data.intentId,

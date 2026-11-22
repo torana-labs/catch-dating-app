@@ -6,7 +6,7 @@ import {onSchedule} from "firebase-functions/v2/scheduler";
 import {
   defaultHostAppLinkDeps,
   sendHostAppLinkForLead,
-} from "../catchMessaging/hostAppLink";
+} from "../waitlist/hostAppLink";
 import {ResendEmailProvider} from "../email/resendEmailProvider";
 import {SecretVersionReferenceGuard} from "../shared/secretVersionReference";
 import {
@@ -58,7 +58,7 @@ export const alertOperatorOnSupportMessage = onDocumentCreated({
 });
 
 // A "Text me the link" lead also gets the Host app link on WhatsApp first
-// (catchMessaging/hostAppLink.ts, off unless
+// (waitlist/hostAppLink.ts, off unless
 // CATCH_WHATSAPP_HOST_APP_LINK_ENABLED). That send never throws and is
 // claimed once per lead, so a retry for the alert never sends it again.
 export const alertOperatorOnSalesLead = onDocumentCreated({
