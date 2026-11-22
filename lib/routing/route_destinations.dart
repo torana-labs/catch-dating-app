@@ -49,24 +49,6 @@ String _locationWithFrom(String path, {String? from}) {
   ).toString();
 }
 
-String profileCompletionLocation({
-  String? from,
-  List<String>? eventRequirements,
-}) {
-  final safeFrom = _sanitizeFrom(from);
-  return Uri(
-    path: Routes.onboardingScreen.path,
-    queryParameters: {
-      _onboardingIntentQueryParam: _completeProfileIntent,
-      if (eventRequirements != null)
-        'eventRequirements': eventRequirements.join(','),
-      if (safeFrom != null &&
-          Uri.parse(safeFrom).path != Routes.onboardingScreen.path)
-        _fromQueryParam: safeFrom,
-    },
-  ).toString();
-}
-
 /// URL hints choose questions only; event admission rechecks live requirements.
 List<String>? _eventRequirementsFromUri(Uri uri) {
   final value = uri.queryParameters['eventRequirements'];
@@ -81,25 +63,7 @@ List<String>? _eventRequirementsFromUri(Uri uri) {
       : null;
 }
 
-String runPreferencesCompletionLocation({String? from}) {
-  final safeFrom = _sanitizeFrom(from);
-  return Uri(
-    path: Routes.onboardingScreen.path,
-    queryParameters: {
-      _onboardingIntentQueryParam: _completeRunPreferencesIntent,
-      if (safeFrom != null &&
-          Uri.parse(safeFrom).path != Routes.onboardingScreen.path)
-        _fromQueryParam: safeFrom,
-    },
-  ).toString();
-}
-
-String? _sanitizeFrom(String? from) {
-  if (from == null || from.isEmpty || !from.startsWith('/')) return null;
-  final uri = Uri.tryParse(from);
-  if (uri == null || uri.hasScheme || uri.hasAuthority) return null;
-  return uri.toString();
-}
+String? _sanitizeFrom(String? from) => sanitizeRouteFrom(from);
 
 bool _isTransientRoute(String path) =>
     path == Routes.loadingScreen.path ||
