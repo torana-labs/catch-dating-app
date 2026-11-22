@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildInventory,
+  canonicalRouterFiles,
   extractRouterSemanticClosure,
   extractGoRouterConfigurationBlock,
   extractImperativePageRoutesFromSource,
@@ -236,7 +237,7 @@ test("fails closed on GoRoute definitions outside the canonical graph", () => {
       "final route = router.GoRoute(path: '/hidden');",
       "lib/feature/imported_routes.dart",
     ),
-    /GoRoute construction is outside lib\/routing\/go_router\.dart/u,
+    /GoRoute construction is outside the canonical router files \(lib\/routing\/go_router\.dart\)/u,
   );
 });
 
@@ -246,7 +247,7 @@ test("fails closed on GoRoute definitions in an app package", () => {
       "final route = GoRoute(path: '/today');",
       "apps/host/lib/today/today_screen.dart",
     ),
-    /GoRoute construction is outside lib\/routing\/go_router\.dart/u,
+    /GoRoute construction is outside the canonical router files \(lib\/routing\/go_router\.dart\)/u,
   );
 });
 
@@ -271,7 +272,52 @@ Widget fixtureScreen() => const FixtureScreen();
 void unrelated() { print('diagnostic'); }
 `;
 const inventory = (routerSource = router, imperativePageRoutes = []) => buildInventory({
-  routeContractSource: contract, routerSource, imperativePageRoutes,
+  routeContractSource: contract,
+  routers: [{path: "lib/routing/go_router.dart", source: routerSource}],
+  imperativePageRoutes,
+});
+
+test("GoRoute construction is legal in every canonical router file and nowhere else", () => {
+  assert.deepEqual(canonicalRouterFiles, ["lib/routing/go_router.dart"]);
+  const files = ["apps/host/lib/routing/host_router.dart", "apps/consumer/lib/routing/consumer_router.dart"];
+  for (const file of files) {
+    validateRouteSourceForInventory("final route = GoRoute(path: '/a');", file, files);
+  }
+  assert.throws(
+    () => validateRouteSourceForInventory("final route = GoRoute(path: '/a');", "lib/routing/go_router.dart", files),
+    /outside the canonical router files \(apps\/host\/lib\/routing\/host_router\.dart, apps\/consumer/u,
+  );
+});
+
+test("each router file is its own graph, and a shared page may be mounted by both", () => {
+  const twoRoutes = "enum Routes {\n fixture('/fixture'),\n hostOnly('/host-only'),\n ;\n }";
+  const graph = (routes) => `GoRouter buildRouter() { return GoRouter(routes: [${routes}]); }
+Widget fixtureScreen() => const FixtureScreen();`;
+  const fixtureRoute = "GoRoute(path: Routes.fixture.path, name: Routes.fixture.name, builder: (_, _) => fixtureScreen())";
+  const hostRoute = "GoRoute(path: Routes.hostOnly.path, name: Routes.hostOnly.name, builder: (_, _) => const HostOnlyScreen())";
+  const build = (consumer, host) => buildInventory({
+    routeContractSource: twoRoutes,
+    routers: [
+      {path: "apps/consumer/lib/routing/consumer_router.dart", source: graph(consumer)},
+      {path: "apps/host/lib/routing/host_router.dart", source: graph(host)},
+    ],
+    imperativePageRoutes: [],
+  });
+  const both = build(fixtureRoute, `${fixtureRoute}, ${hostRoute}`);
+  assert.deepEqual(both.source.runtimePaths,
+    ["apps/consumer/lib/routing/consumer_router.dart", "apps/host/lib/routing/host_router.dart"]);
+  assert.equal(both.source.runtimeRouteCount, 3);
+  assert.equal(both.source.goRouteCount, 3);
+  assert.deepEqual(both.routes.map((route) => [route.id, route.runtimePath, route.presentationTarget]), [
+    ["fixture", "/fixture", "fixtureScreen"],
+    ["hostOnly", "/host-only", "HostOnlyScreen"],
+  ]);
+  assert.throws(() => build(`${fixtureRoute}, ${fixtureRoute}`, hostRoute),
+    /Routes\.fixture is wired by more than one GoRoute in apps\/consumer\/lib\/routing\/consumer_router\.dart/u);
+  assert.throws(() => build(fixtureRoute, fixtureRoute), /Routes\.hostOnly is declared but not wired/u);
+  assert.notEqual(build(fixtureRoute, `${fixtureRoute}, ${hostRoute}`).source.routeContractSha256,
+    build(fixtureRoute, `${hostRoute}, ${fixtureRoute}`).source.routeContractSha256,
+    "a change in the second graph changes the contract hash");
 });
 
 test("unrelated router code and imperative line movement do not stale semantic inventory", () => {
