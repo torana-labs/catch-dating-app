@@ -59,6 +59,12 @@ export function walkthroughIndiaTime(startAt: string): string {
   return date ? clock(date, walkthroughTimeZone) : startAt;
 }
 
+/** A slot's India-time day as the day buttons read it: "Mon 23 Nov". */
+export function walkthroughIndiaDay(startAt: string): string {
+  const date = validDate(startAt);
+  return date ? dayOf(date, walkthroughTimeZone) : startAt;
+}
+
 /** The visitor's IANA time zone, or null when the browser does not say. */
 export function visitorTimeZone(): string | null {
   try {
