@@ -577,12 +577,16 @@ window for withdrawals, or invalidate from the backend when a listing or event
 is published or withdrawn. The second needs backend Functions delivery.
 Neither is adopted.
 
-Browser code reaches callables through `website/src/firebase.ts`, one module
-of about 84 exports spanning forms, the event runtime, claims, reviews,
-messaging preferences and checkout. Splitting it into one service module per
-backend domain, with `firebase.ts` reduced to runtime bootstrap, needs a
-change to `tool/web/check_website_import_boundaries.mjs`, which today allows
-only `firebase.ts` to import the generated callable types.
+Browser code reaches callables through `website/src/firebase.ts`, which only
+re-exports one service module per backend domain under
+`website/src/services/firebase/`: `auth`, `account`, `forms`, `eventRuntime`,
+`events`, `claims`, `organizers`, `eventMessaging`, `programmes`, `tryIt` and
+`salesDemo`. Each calls Functions through the shared runtime in `runtime.ts`
+(the public and signed-in Firebase runtimes, the bounded App Check wait and
+`invokeWebsiteCallable`). `tool/web/check_website_import_boundaries.mjs` lets
+only those modules, `firebaseReadModels.ts`, `firebaseClaimAccountLinking.ts`
+and `firebaseConfig.ts` load the browser Firebase SDK, and only the domain
+modules import the generated callable types.
 
 ## Current Stack
 

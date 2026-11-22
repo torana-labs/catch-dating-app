@@ -58,9 +58,13 @@ const allowedFeatureImports = new Map([
 ]);
 
 /**
- * The website's Firebase service modules: the only files that load the
- * browser Firebase SDK. Everything else calls them, so every callable gets
- * the shared App Check deadline, the "configured" checks and typed payloads.
+ * The website's Firebase service modules: firebase.ts (the callers' entry,
+ * which re-exports the per-domain modules), the per-domain modules directly
+ * under services/firebase/ (runtime.ts holds the shared runtime and the
+ * callable invoke), and the read-model, account-linking and config modules.
+ * Only they load the browser Firebase SDK, and only the per-domain modules
+ * import the generated callable types, so every callable gets the shared App
+ * Check deadline, the "configured" checks and typed payloads.
  */
 const firebaseServiceFiles = new Set([
   "firebase.ts",
@@ -68,6 +72,16 @@ const firebaseServiceFiles = new Set([
   "firebaseConfig.ts",
   "firebaseReadModels.ts",
 ]);
+const firebaseServiceDirectory = "services/firebase/";
+
+function firebaseDomainModule(relativePath) {
+  return relativePath.startsWith(firebaseServiceDirectory) &&
+    !relativePath.slice(firebaseServiceDirectory.length).includes("/") && !/\.test\./.test(relativePath);
+}
+
+function firebaseServiceFile(relativePath) {
+  return firebaseServiceFiles.has(relativePath) || firebaseDomainModule(relativePath);
+}
 
 if (args.selfTest) {
   runSelfTest();
@@ -113,7 +127,7 @@ function layerFor(relativePath) {
   if (parts[0] === "stories") return {name: "story"};
   if (
     relativePath === "analytics.ts" || relativePath.startsWith("analytics/") ||
-    firebaseServiceFiles.has(relativePath)
+    firebaseServiceFile(relativePath)
   ) {
     return {name: "service"};
   }
@@ -124,7 +138,7 @@ function layerFor(relativePath) {
 }
 
 function browserFirebaseImport(specifier, sourceRelativePath) {
-  return /^firebase(?:\/|$)/.test(specifier) && !firebaseServiceFiles.has(sourceRelativePath) &&
+  return /^firebase(?:\/|$)/.test(specifier) && !firebaseServiceFile(sourceRelativePath) &&
     !/\.test\./.test(sourceRelativePath);
 }
 
@@ -175,11 +189,6 @@ function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
     "tool/demo/demo_seed/personas/india_core_sales_personas.draft.json",
     "tool/demo/lib/demo_world.mjs",
   ].some(target => targetAbsolutePath === path.join(repoRoot, target))) return true;
-  if (["server/publicOrganizerProjection.ts", "server/publicExternalEvent.ts"].includes(sourceRelativePath) && [
-    "website/scripts/next/organizerProjection.mjs",
-    "website/scripts/next/externalEventProjection.mjs",
-    "tool/contracts/generated/schema_contract_validators.mjs",
-  ].some(target => targetAbsolutePath === path.join(repoRoot, target))) return true;
   // The private page test drives the Next proxy itself, which sits beside
   // website/src, to pin that receipts, offers and invitations stay unstored.
   if (sourceRelativePath === "server/privateShellCache.test.ts" &&
@@ -195,7 +204,7 @@ function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
   return (
     sourceRelativePath === "features/organizers/types.ts" ||
     sourceRelativePath === "features/hostBilling/contracts.ts" ||
-    sourceRelativePath === "firebase.ts" ||
+    firebaseDomainModule(sourceRelativePath) ||
     sourceRelativePath === "server/repositories/publicPageRepository.ts"
   ) && isInside(functionsGeneratedRoot, targetAbsolutePath);
 }
@@ -484,6 +493,13 @@ function runSelfTest() {
     assert.deepEqual(layerFor(file), {name: "service"});
     assert.equal(browserFirebaseImport("firebase/functions", file), false);
   }
+  assert.equal(browserFirebaseImport("firebase/functions", "services/firebase/runtime.ts"), false);
+  assert.equal(browserFirebaseImport("firebase/app", "services/firebase/nested/deep.ts"), true);
+  assert.deepEqual(layerFor("services/firebase/forms.ts"), {name: "service"});
+  assert.equal(allowedExternalImport("services/firebase/forms.ts",
+    path.join(repoRoot, "functions/src/shared/generated/getPublicOrganizerFormCallablePayload.ts")), true);
+  assert.equal(allowedExternalImport("firebase.ts",
+    path.join(repoRoot, "functions/src/shared/generated/getPublicOrganizerFormCallablePayload.ts")), false);
   assert.equal(browserFirebaseImport("firebase/functions", "features/organizers/owner/ownerViewBackends.ts"), true);
   assert.equal(browserFirebaseImport("firebase", "features/account/useAccount.ts"), true);
   assert.equal(browserFirebaseImport("firebase/auth", "shared/auth/claimAccountLinking.test.ts"), false);
@@ -497,8 +513,8 @@ function runSelfTest() {
   assert.equal(violationFor("../app/page.tsx", {name: "next-entry"}, {name: "server"}), null);
   assert.equal(violationFor("server/publicCatalog.ts", {name: "server"}, {name: "feature"}), null);
   assert.match(violationFor("server/publicCatalog.ts", {name: "server"}, {name: "generated"}), /build-time data/);
-  assert.equal(allowedExternalImport("server/publicOrganizerProjection.ts",
-    path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), true);
+  assert.equal(allowedExternalImport("server/publicCatalog.ts",
+    path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), false);
   assert.equal(allowedExternalImport("app/leak.ts",
     path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), false);
   assert.equal(allowedExternalImport("server/repositories/publicPageRepository.ts",
