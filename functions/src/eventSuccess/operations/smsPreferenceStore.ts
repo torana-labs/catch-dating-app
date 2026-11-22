@@ -17,7 +17,7 @@ import {
   Permission, parseSmsPermission, smsCollections, smsPermissionId,
 } from "./smsPermissionRecords";
 import {parseSmsConfig, SmsConfig, smsEndpointId} from "./smsProtocol";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 import {
   CATCH_EVENT_SMS_SENDER_ID, ConsentReceipt, parseSmsConsentReceipt,
   SMS_CONSENT_HASH, SMS_CONSENT_RECEIPTS, SMS_CONSENT_TEXT,

@@ -26,7 +26,8 @@ import {whatsappStatusCorrelation} from
   "../platform/delivery/whatsappDeliveryProtocol";
 import {whatsappEndpointHash} from
   "../eventSuccess/operations/whatsappReplyProtocol";
-import {MetaProviderError} from "./organizerWhatsappProvider";
+import {MetaProviderError} from
+  "../platform/delivery/organizerWhatsappProvider";
 import {organizerCampaignFrequencyCapMillis} from "./organizerCampaignModel";
 import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {FakeFirestore} from "../shared/testing/programFirestore";

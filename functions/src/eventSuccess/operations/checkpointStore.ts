@@ -10,7 +10,7 @@ import {assertCommandContext, assertCommandRole} from "./commands";
 import {requireGroupPermission, denied} from "./groupStaffAuthority";
 import {invalidSource} from "./groupProgressSource";
 import {readCheckpoint} from "./checkpointReader";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 import {prepareCheckpointObservation} from "./movementDecisions";
 import {CHECKPOINTS, CHECKPOINT_RECEIPTS, checkpointIdentity,
   checkpointAvailability, checkpointSourceHash, checkpointResponse,

@@ -39,14 +39,14 @@ import {
   metaWhatsappAppId,
   metaWhatsappAppSecret,
   metaWhatsappConfigId,
-  metaWhatsappGraphVersion,
   organizerWhatsappAccessTokens,
 } from "./organizerMessagingSetup";
 import {
   MetaProviderError,
   MetaWhatsappProvider,
   OrganizerTokenStore,
-} from "./organizerWhatsappProvider";
+  metaWhatsappGraphVersion,
+} from "../platform/delivery/organizerWhatsappProvider";
 
 const dayMillis = 24 * 60 * 60 * 1000;
 export const whatsappServiceWindowMillis = dayMillis;

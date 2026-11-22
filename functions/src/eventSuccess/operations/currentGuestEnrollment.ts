@@ -2,7 +2,8 @@ import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {validateEventAttendeeDocument} from
   "../../shared/generated/validators/eventAttendeeDocument";
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 import {currentGuest, Guest, guestCollections, guestIdentity,
   guestSourceFactsFromSnapshots, parseGuest} from "./guestRecords";
 import {invalidWork} from "./liveWorkRecords";

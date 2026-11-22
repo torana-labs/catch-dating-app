@@ -12,7 +12,7 @@ import {guestCollections, parseGrant, requireDocumentId, unavailable} from
   "./guestRecords";
 import {Permission, parseRcsPermission, parseRcsConsentReceipt,
   rcsConsentCollections, rcsSenderHash} from "./rcsConsent";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 import {WithdrawalGrant, parseRcsWithdrawalGrant, RCS_WITHDRAWAL_GRANTS,
   rcsWithdrawalMatchesPermission} from "./rcsWithdrawalRecords";
 import {withdrawalGrantId} from "./messageConsentCollections";

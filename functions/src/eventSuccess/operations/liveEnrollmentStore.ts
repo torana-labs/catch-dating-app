@@ -1,4 +1,5 @@
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 import type {Firestore} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {stageRunAndWorkItemCreate} from

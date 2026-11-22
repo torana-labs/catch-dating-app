@@ -1,7 +1,7 @@
 import {Timestamp, type Firestore} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {runAssistanceTransaction as transact} from
-  "../eventSuccess/operations/transactionCallback";
+  "../platform/transactionCallback";
 import {isWhatsappStopCommand} from "../organizers/organizerCampaignModel";
 import {validateCatchWhatsappWebhookEventDocument} from
   "../shared/generated/validators/catchWhatsappWebhookEventDocument";

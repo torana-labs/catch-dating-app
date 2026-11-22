@@ -1,7 +1,8 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {getApp} from "firebase-admin/app";
 import {defineString} from "firebase-functions/params";
-import {MetaWhatsappProvider} from "../organizers/organizerWhatsappProvider";
+import {MetaWhatsappProvider} from
+  "../platform/delivery/organizerWhatsappProvider";
 import type {CatchTextSender} from "./autoReply";
 import {
   isCatchSenderCredentialVersion,

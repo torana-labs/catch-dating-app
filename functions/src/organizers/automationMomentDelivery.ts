@@ -1,6 +1,6 @@
 import type {Firestore} from "firebase-admin/firestore";
 import type {MetaWhatsappProvider, OrganizerTokenStore} from
-  "./organizerWhatsappProvider";
+  "../platform/delivery/organizerWhatsappProvider";
 import {
   AutomationDeliveryWorker,
   type AutomationDispatchResult,

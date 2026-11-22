@@ -8,7 +8,7 @@ import {
   type CallableRequest,
 } from "firebase-functions/v2/https";
 import {runAssistanceTransaction as transact} from
-  "../eventSuccess/operations/transactionCallback";
+  "../platform/transactionCallback";
 import {validateCatchCommunicationPreferenceDocument} from
   "../shared/generated/validators/catchCommunicationPreferenceDocument";
 import {

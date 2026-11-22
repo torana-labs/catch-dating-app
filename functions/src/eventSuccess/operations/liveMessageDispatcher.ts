@@ -1,8 +1,8 @@
 import type {Firestore} from "firebase-admin/firestore";
 import {MetaWhatsappProvider} from
-  "../../organizers/organizerWhatsappProvider";
+  "../../platform/delivery/organizerWhatsappProvider";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
-import {GuestLinkKeyStore} from "./guestLinkKeyStore";
+import {GuestLinkKeyStore} from "../../platform/guestLinkKeyStore";
 import type {GuestLinkSigningKeys} from
   "../../platform/guestLinkSigningKeys";
 import {threadIdentity} from "./guestRecords";

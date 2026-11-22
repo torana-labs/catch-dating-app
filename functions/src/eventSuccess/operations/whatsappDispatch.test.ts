@@ -8,7 +8,7 @@ import {operationContentHash} from "../../operations/durableActions";
 import {ingestMetaWhatsappWebhook} from
   "../../organizers/organizerWhatsappWebhook";
 import {MetaWhatsappProvider} from
-  "../../organizers/organizerWhatsappProvider";
+  "../../platform/delivery/organizerWhatsappProvider";
 import {WHATSAPP_ENDPOINT_STOPS, parseWhatsappStop, whatsappStopId} from
   "../../shared/organizerWhatsappStops";
 import {guestCollections, guestIdentity} from "./guestRecords";

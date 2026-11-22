@@ -13,7 +13,7 @@ import {guestCollections, parseGrant, requireDocumentId, unavailable} from
 import {Permission, parseSmsPermission, smsCollections} from
   "./smsPermissionRecords";
 import {parseSmsConsentReceipt, SMS_CONSENT_RECEIPTS} from "./smsConsent";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 import {
   WithdrawalGrant, parseSmsWithdrawalGrant, SMS_WITHDRAWAL_GRANTS,
   smsWithdrawalMatchesPermission,

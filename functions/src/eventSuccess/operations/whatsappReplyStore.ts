@@ -1,4 +1,5 @@
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 import {createHash} from "node:crypto";
 import type {Firestore} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";

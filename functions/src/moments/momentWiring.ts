@@ -4,12 +4,12 @@ import {
   metaWhatsappAppId,
   metaWhatsappAppSecret,
   metaWhatsappConfigId,
-  metaWhatsappGraphVersion,
 } from "../organizers/organizerMessagingSetup";
 import {
   MetaWhatsappProvider,
   OrganizerTokenStore,
-} from "../organizers/organizerWhatsappProvider";
+  metaWhatsappGraphVersion,
+} from "../platform/delivery/organizerWhatsappProvider";
 import {
   activityNotificationId,
   allowsPushPreference,

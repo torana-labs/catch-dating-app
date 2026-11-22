@@ -32,7 +32,7 @@ import type {
 import {
   MetaProviderError, MetaWhatsappProvider, OrganizerTokenStore,
   metaTemplateFromDocument,
-} from "./organizerWhatsappProvider";
+} from "../platform/delivery/organizerWhatsappProvider";
 import {whatsappStatusCorrelation} from
   "../platform/delivery/whatsappDeliveryProtocol";
 import type {AutomationWhatsappDispatchDocument} from

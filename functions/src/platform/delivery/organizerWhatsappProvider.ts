@@ -1,11 +1,17 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import * as admin from "firebase-admin";
-import {SecretVersionReferenceGuard} from "../shared/secretVersionReference";
+import {SecretVersionReferenceGuard} from "../../shared/secretVersionReference";
 import {HttpsError} from "firebase-functions/v2/https";
-import {operationContentHash} from "../operations/durableActions";
+import {defineString} from "firebase-functions/params";
+import {operationContentHash} from "../../operations/durableActions";
 import type {OrganizerMessageTemplateDocument} from
-  "../shared/generated/firestoreAdminTypes";
-import {BRAND_ORIGIN_PATTERN} from "../shared/generated/brand";
+  "../../shared/generated/firestoreAdminTypes";
+import {BRAND_ORIGIN_PATTERN} from "../../shared/generated/brand";
+
+/** Meta Graph API version every provider call is pinned to. */
+export const metaWhatsappGraphVersion = defineString(
+  "META_WHATSAPP_GRAPH_VERSION", {default: "v23.0"}
+);
 
 const inviteButtonUrlPattern =
   new RegExp(`^${BRAND_ORIGIN_PATTERN}/invite/\\{\\{1\\}\\}/?$`, "u");

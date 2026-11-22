@@ -5,7 +5,7 @@ import {validateEventWhatsappPolicyDocument} from
 import {validateOrganizerMessageTemplateDocument} from
   "../../shared/generated/validators/organizerMessageTemplateDocument";
 import type {MetaQuickReplyPayload, MetaTemplateSnapshot} from
-  "../../organizers/organizerWhatsappProvider";
+  "../../platform/delivery/organizerWhatsappProvider";
 import {operationContentHash} from "../../operations/durableActions";
 import {Grant, parseGrant, threadIdentity} from "./guestRecords";
 import {grantSecret, matchesGuestSecret} from "./guestLinkTokens";

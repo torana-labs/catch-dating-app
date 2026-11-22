@@ -7,9 +7,8 @@ import {
   MetaWhatsappProvider,
   OrganizerTokenStore,
   metaTemplateFromDocument,
-} from "../../organizers/organizerWhatsappProvider";
-import {metaWhatsappGraphVersion} from
-  "../../organizers/organizerMessagingSetup";
+  metaWhatsappGraphVersion,
+} from "../../platform/delivery/organizerWhatsappProvider";
 import {GupshupSmsTransport, parseSmsCredentials} from
   "../../platform/delivery/gupshupSmsTransport";
 import {smsProviderCorrelation} from

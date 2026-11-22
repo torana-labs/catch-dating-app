@@ -25,7 +25,7 @@ import {advanceCheckpointWorkRecords, CHECKPOINT_WORK_RUNTIME,
 import {acquireCheckpointWorkLease, readCheckpointAssignmentReceipt} from
   "./checkpointWorkAccess";
 import {releaseAssistanceWorkLease} from "./liveWorkRunner";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 
 /** Transfers a named report, never staff access or arrival evidence. */
 export class CheckpointReporterStore {

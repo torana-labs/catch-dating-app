@@ -11,7 +11,7 @@ import type {EventRcsPreferenceCallableResponse as Response} from
 import {operationContentHash} from "../../operations/durableActions";
 import {GuestSourceFacts, guestSourceFactsFromSnapshots,
   requireDocumentId} from "./guestRecords";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 import {parseRcsConfig, RcsConfig, rcsEndpointId, rcsPhoneHash} from
   "./rcsProtocol";
 import {readRcsSubscription, RcsSubscription, rcsSubscriptionId} from

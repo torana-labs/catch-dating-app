@@ -1,6 +1,7 @@
 import {assertGroupDutyAssignment, availableGroupDuties} from
   "./groupDutyPolicy";
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import {Firestore, Timestamp, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";

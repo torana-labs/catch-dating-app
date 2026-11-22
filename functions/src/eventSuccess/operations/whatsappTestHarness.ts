@@ -7,7 +7,7 @@ import {operationContentHash} from "../../operations/durableActions";
 import {ingestMetaWhatsappWebhook} from
   "../../organizers/organizerWhatsappWebhook";
 import {MetaWhatsappProvider} from
-  "../../organizers/organizerWhatsappProvider";
+  "../../platform/delivery/organizerWhatsappProvider";
 import type {SetEventWhatsappPreferenceCallablePayload as PreferenceInput} from
   "../../shared/generated/setEventWhatsappPreferenceCallablePayload";
 import {GuestAssistanceStore} from "./guestAssistanceStore";

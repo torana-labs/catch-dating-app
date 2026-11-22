@@ -26,7 +26,7 @@ import {
   accountabilitySourceHash,
   accountabilityState,
 } from "./accountabilityProjection";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 import {assistanceReceiptRef, isDigest, isMillis, isRevision,
   replayAssistanceReceipt, writeAssistanceReceipt} from "./assistanceReceipts";
 
