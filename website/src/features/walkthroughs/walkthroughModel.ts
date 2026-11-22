@@ -21,7 +21,7 @@ export type WalkthroughManagePayload = ManageWalkthroughBookingCallablePayload;
 export type WalkthroughManaged = ManageWalkthroughBookingCallableResponse;
 
 /** India time: a fixed UTC+05:30 with no daylight saving (contracts/shared/walkthrough_common.schema.json). */
-export const walkthroughTimeZone = "Asia/Kolkata";
+const walkthroughTimeZone = "Asia/Kolkata";
 
 /** What the slots and booking calls run against: the site's Firebase callables unless a story or test provides others. */
 export interface WalkthroughClient {

@@ -2,6 +2,7 @@ import {
   CatchBadge,
   CatchButton,
   CatchField,
+  CatchGroundCard,
   CatchIndexRow,
   CatchLoadingIndicator,
   CatchPageBody,
@@ -11,6 +12,7 @@ import {
   CatchText,
   CatchTopBar,
 } from "@catch/web-ui";
+import type {ReactNode} from "react";
 import {brand} from "@content/brand";
 import {hostWalkthroughHref} from "@content/site";
 import {interpolateContent as fill} from "@content/interpolate";
@@ -19,7 +21,7 @@ import {Form} from "../../shared/ui/primitives";
 import {SignInSheetView} from "../account/SignInSheet";
 import {useSignInSheetController} from "../account/useSignInSheetController";
 import {walkthroughProblemText} from "./WalkthroughBooking";
-import {useStepFocus, WalkthroughSlotGrid} from "./WalkthroughSlotGrid";
+import {useStepFocus, walkthroughSlotGridNode} from "./WalkthroughSlotGrid";
 import {useWalkthroughManageController, type WalkthroughManageController} from "./useWalkthroughManageController";
 import {walkthroughIndiaDay, walkthroughIndiaTime, walkthroughLocalTime} from "./walkthroughModel";
 
@@ -41,11 +43,15 @@ function BookingSummary({controller}: {controller: WalkthroughManageController})
   const local = walkthroughLocalTime(start, controller.timeZone);
   const status = booking.status === "cancelled" ? words.status.cancelled : booking.confirmed ? words.status.confirmed : words.status.booked;
   return (
-    <CatchSection container="tile">
-      <CatchIndexRow density="compact" title={fill(copy.chosen, {day: walkthroughIndiaDay(start), time: walkthroughIndiaTime(start)})} wrap
-        subtitle={local && controller.timeZone ? fill(copy.localTime, {local, zone: controller.timeZone}) : undefined}
-        trailing={<CatchBadge label={status} size="sm" tone={booking.status === "cancelled" ? "neutral" : booking.confirmed ? "success" : "gold"} />} />
-    </CatchSection>
+    <CatchStack gap={8}>
+      <CatchStack align="start">
+        <CatchBadge label={status} size="sm" tone={booking.status === "cancelled" ? "neutral" : booking.confirmed ? "success" : "gold"} />
+      </CatchStack>
+      <CatchSection container="tile">
+        <CatchIndexRow density="compact" title={fill(copy.chosen, {day: walkthroughIndiaDay(start), time: walkthroughIndiaTime(start)})} wrap
+          subtitle={local && controller.timeZone ? fill(copy.localTime, {local, zone: controller.timeZone}) : undefined} />
+      </CatchSection>
+    </CatchStack>
   );
 }
 
@@ -90,8 +96,8 @@ function Move({controller, focus}: {controller: WalkthroughManageController; foc
             <CatchText as="p" variant="body">{copy.loading}</CatchText>
           </CatchStack>
         ) : controller.slots.bookingOpen && controller.slots.days.length ? (
-          <WalkthroughSlotGrid day={controller.day} onDay={controller.pickDay} onSlot={controller.pickSlot} slotStartAt={controller.slotStartAt}
-            slots={controller.slots} timeZone={controller.timeZone} />
+          walkthroughSlotGridNode({day: controller.day, onDay: controller.pickDay, onSlot: controller.pickSlot, slotStartAt: controller.slotStartAt,
+            slots: controller.slots, timeZone: controller.timeZone})
         ) : <CatchText as="p" role="status" variant="body">{copy.done.changeOnWhatsapp}</CatchText>}
         <Problem controller={controller} />
         <CatchStack direction="row" gap={8} wrap>
@@ -182,15 +188,20 @@ function Body({controller, focus}: {controller: WalkthroughManageController; foc
  * to another open time or cancels it. Pass the URL's search and hash; the
  * token never leaves the fragment except in the call that proves it.
  */
-export function WalkthroughManagePage({search, hash}: {search: string; hash: string}) {
+function WalkthroughManagePage({search, hash}: {search: string; hash: string}) {
   const controller = useWalkthroughManageController({search, hash});
   const focus = useStepFocus(controller.stage.name);
   return (
     <>
       <CatchTopBar homeHref="/" title={brand.name} variant="site" />
-      <CatchPageBody as="main" pt="s4">
-        <CatchPaneLayout main={<Body controller={controller} focus={focus} />} pattern="reading" />
+      <CatchPageBody as="main" gutter={false} pt="s4">
+        <CatchPaneLayout main={<CatchGroundCard ground="white" outlined><Body controller={controller} focus={focus} /></CatchGroundCard>} pattern="reading" />
       </CatchPageBody>
     </>
   );
+}
+
+/** The manage page as a node, for the route that will render it (walkthroughModel.ts walkthroughManagePageLive). */
+export function walkthroughManagePageNode(props: {search: string; hash: string}): ReactNode {
+  return <WalkthroughManagePage {...props} />;
 }

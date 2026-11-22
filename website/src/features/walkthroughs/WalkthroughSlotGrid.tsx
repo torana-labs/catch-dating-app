@@ -1,5 +1,5 @@
 import {CatchChoiceInput, CatchStack, CatchText} from "@catch/web-ui";
-import {useEffect, useId, useRef} from "react";
+import {useEffect, useId, useRef, type ReactNode} from "react";
 import {interpolateContent as fill} from "@content/interpolate";
 import {walkthroughBookingCopy as copy} from "@content/walkthroughBooking";
 import {walkthroughIndiaTime, walkthroughLocalTime, type WalkthroughSlots} from "./walkthroughModel";
@@ -13,7 +13,7 @@ const requiredLabelCopy = {optionalLabel: "", optionalSuffix: "", optionalSemant
  * Tab moves between them. Under the times, the chosen time on the visitor's
  * own clock when that is not India time, or the slot length.
  */
-export function WalkthroughSlotGrid({slots, day, slotStartAt, timeZone, onDay, onSlot}: {
+function WalkthroughSlotGrid({slots, day, slotStartAt, timeZone, onDay, onSlot}: {
   slots: WalkthroughSlots;
   day: string | null;
   slotStartAt: string | null;
@@ -54,6 +54,11 @@ export function WalkthroughSlotGrid({slots, day, slotStartAt, timeZone, onDay, o
       </CatchStack>
     </CatchStack>
   );
+}
+
+/** The slot grid as a node, for the booking and the manage page's move step. */
+export function walkthroughSlotGridNode(props: Parameters<typeof WalkthroughSlotGrid>[0]): ReactNode {
+  return <WalkthroughSlotGrid {...props} />;
 }
 
 /**

@@ -18,7 +18,7 @@ import {Form} from "../../shared/ui/primitives";
 import {SignInSheetView} from "../account/SignInSheet";
 import {useSignInSheetController} from "../account/useSignInSheetController";
 import {useWalkthroughBookingController, type WalkthroughBookingController} from "./useWalkthroughBookingController";
-import {useStepFocus, WalkthroughSlotGrid} from "./WalkthroughSlotGrid";
+import {useStepFocus, walkthroughSlotGridNode} from "./WalkthroughSlotGrid";
 import {
   walkthroughDayOf,
   walkthroughIndiaTime,
@@ -72,8 +72,8 @@ function PickStep({controller, focus}: {controller: WalkthroughBookingController
       <CatchStack gap={16}>
         <Heading focus={focus} text={copy.title} />
         {controller.notice ? <CatchText as="p" role="alert" variant="body">{controller.notice}</CatchText> : null}
-        <WalkthroughSlotGrid day={controller.day} onDay={controller.pickDay} onSlot={controller.pickSlot} slotStartAt={controller.slotStartAt}
-          slots={slots} timeZone={controller.timeZone} />
+        {walkthroughSlotGridNode({day: controller.day, onDay: controller.pickDay, onSlot: controller.pickSlot, slotStartAt: controller.slotStartAt,
+          slots, timeZone: controller.timeZone})}
         <CatchStack align="start">
           <CatchButton label={copy.continue} onPressed={noop} type="submit" />
         </CatchStack>
@@ -104,11 +104,15 @@ function DetailsStep({controller, focus}: {controller: WalkthroughBookingControl
   return (
     <CatchStack gap={16}>
       <Heading focus={focus} text={copy.details.title} />
-      <CatchSection container="tile">
-        <CatchIndexRow density="compact" title={slotWhen(day.label, slotStartAt)} wrap
-          subtitle={local && controller.timeZone ? fill(copy.localTime, {local, zone: controller.timeZone}) : undefined}
-          trailing={<CatchButton label={copy.changeTime} onPressed={controller.busy ? null : controller.changeTime} size="sm" variant="quiet" />} />
-      </CatchSection>
+      <CatchStack gap={4}>
+        <CatchSection container="tile">
+          <CatchIndexRow density="compact" title={slotWhen(day.label, slotStartAt)} wrap
+            subtitle={local && controller.timeZone ? fill(copy.localTime, {local, zone: controller.timeZone}) : undefined} />
+        </CatchSection>
+        <CatchStack align="start">
+          <CatchButton label={copy.changeTime} onPressed={controller.busy ? null : controller.changeTime} size="sm" variant="quiet" />
+        </CatchStack>
+      </CatchStack>
       <Form aria-label={copy.details.title} noValidate onSubmit={controller.submitDetails} pending={controller.busy}>
         <CatchStack gap={12}>
           {controller.fields.map((field) => (
@@ -121,9 +125,8 @@ function DetailsStep({controller, focus}: {controller: WalkthroughBookingControl
             {verified ? fill(copy.phone.bookingFor, {phone: controller.phone ?? ""}) : copy.phone.lead}
           </CatchText>
           <CatchStack align="start">
-            {verified ? button : (
-              <SignInSheetView onClose={() => {sheet.reset(); controller.closeSignIn();}} open={controller.signIn} sheet={sheet} trigger={button} />
-            )}
+            {/* The sheet stays mounted once the number is confirmed, so the read that confirms it never moves focus out of a field. */}
+            <SignInSheetView onClose={() => {sheet.reset(); controller.closeSignIn();}} open={controller.signIn && !verified} sheet={sheet} trigger={button} />
           </CatchStack>
           <CatchConsentNote href="/privacy/" linkLabel={playbookCopy.leadForm.privacy} text={playbookCopy.leadForm.consent} />
         </CatchStack>

@@ -40,7 +40,7 @@ export const walkthroughBookingCopy = {
     tooLong: "Keep it under {max} characters.",
   },
   phone: {
-    lead: "We confirm on WhatsApp, so confirm your number with a code before you book.",
+    lead: "Next, confirm your WhatsApp number with a code.",
     confirmAndBook: "Confirm my number and book",
     book: "Book this time",
     /** {phone}: the code-verified number. */
