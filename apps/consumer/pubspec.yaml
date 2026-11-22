@@ -7,34 +7,62 @@ resolution: workspace
 environment:
   sdk: ^3.12.0
 
+# Consumer screens move here from the root package (Phase 4, #2373). Every
+# package they or their tests import is declared, because
+# depend_on_referenced_packages fails an undeclared import and a mechanical
+# move commit must not edit this file.
 dependencies:
+  audioplayers: ^6.6.0
   catch_dating_app:
     path: ../..
   catch_kernel:
     path: ../../packages/kernel
+  catch_l10n:
+    path: ../../packages/l10n
   catch_platform:
     path: ../../packages/platform
+  catch_tokens:
+    path: ../../packages/catch_tokens
+  catch_ui:
+    path: ../../packages/catch_ui
+  country_code_picker: ^3.2.0
   flutter:
     sdk: flutter
+  flutter_reorderable_grid_view: ^5.10.0
   # One Riverpod minor; see the root pubspec.
   flutter_riverpod: '>=3.5.0 <3.6.0'
+  freezed_annotation: ^3.0.0
+  go_router: ^17.1.0
   health: ^13.3.2
+  image_picker: ^1.2.4
+  intl: ^0.20.2
+  lottie: ^3.8.2
+  qr_flutter: ^4.1.0
   razorpay_flutter: ^1.4.7
   riverpod_annotation: ^4.0.8
 
 dev_dependencies:
   build_runner: ^2.11.1
-  catch_l10n:
-    path: ../../packages/l10n
   cloud_firestore: ^6.10.2
   cloud_functions: ^6.5.1
+  fake_async: ^1.3.3
+  fake_cloud_firestore: ^4.3.0
+  firebase_auth: ^6.7.1
+  firebase_auth_mocks: ^0.15.1
   firebase_core: ^4.15.2
+  firebase_messaging: ^16.7.1
+  firebase_storage: ^13.6.1
   flutter_lints: ^6.0.0
   flutter_native_splash: ^2.4.7
   flutter_test:
     sdk: flutter
+  freezed: ^4.0.1
+  google_maps_flutter: ^2.18.1
+  json_schema: ^5.2.2
+  package_info_plus: ^10.2.2
   riverpod_generator: ^4.0.10
   shared_preferences: ^2.5.6
+  url_launcher: ^6.3.3
 
 # Consumer native splash. Colors mirror design/tokens/catch.tokens.json and are
 # rewritten by tool/branding/generate_native_brand_assets.dart.
