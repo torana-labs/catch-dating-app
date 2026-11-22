@@ -201,8 +201,13 @@ function joined(...values: unknown[]): string | null {
   return parts.length ? parts.join(" · ") : null;
 }
 
-/** Reserved test domains and the explicit internal QA markers. */
-function isInternalTest(intent: Data): boolean {
+/**
+ * Reserved test domains and the explicit internal QA markers. Catch's own
+ * automatic WhatsApp to a lead skips these too.
+ * @param {object} intent The salesInboundIntents document.
+ * @return {boolean} True for an internal test lead.
+ */
+export function isInternalTest(intent: Data): boolean {
   return /^internal_qa_/iu.test(String(intent.submissionId)) ||
     /^\[QA\]/iu.test(String(intent.fullName ?? "").trim()) ||
     /@(?:[^@]*\.)?(?:example\.(?:com|net|org|test)|invalid|test)$/iu

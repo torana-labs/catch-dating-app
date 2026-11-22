@@ -24,6 +24,7 @@ export const materializedNonSecretParams = [
   "CATCH_WHATSAPP_WEBHOOK_ENABLED",
   "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED",
   "CATCH_WHATSAPP_REPLIES_ENABLED",
+  "CATCH_WHATSAPP_HOST_APP_LINK_ENABLED",
   "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY",
   "CATCH_WHATSAPP_REPLY_ACTOR_UID",
   "CATCH_WHATSAPP_REPLY_RECIPIENT_UID",
@@ -114,6 +115,10 @@ function normalizedProviderParams(environment = process.env, projectId) {
     environment, "CATCH_WHATSAPP_REPLIES_ENABLED");
   const catchAtomicIngressReady = normalizedBooleanParam(
     environment, "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY");
+  // The automatic host_app_link template to "Text me the link" leads. Off
+  // by default; it sends with the Support reply sender, so it needs replies.
+  const catchHostAppLinkEnabled = normalizedBooleanParam(
+    environment, "CATCH_WHATSAPP_HOST_APP_LINK_ENABLED");
   // These are configuration checks, not historical STOP attestation or sending
   // authority. The runtime still requires current Auth/App Check, independently
   // reviewed readiness, verified recipient consent and an atomic one-shot claim.
@@ -191,6 +196,10 @@ function normalizedProviderParams(environment = process.env, projectId) {
     assert(catchWebhookConfigured && catchAtomicIngressReady === "true" &&
       catchConsumersEnabled === "true",
     "CATCH_WHATSAPP_REPLIES_ENABLED requires configured atomic ingress and consumers");
+  }
+  if (catchHostAppLinkEnabled === "true") {
+    assert(catchRepliesEnabled === "true",
+      "CATCH_WHATSAPP_HOST_APP_LINK_ENABLED requires CATCH_WHATSAPP_REPLIES_ENABLED");
   }
 
   const eventAssistance = {
@@ -361,6 +370,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     CATCH_WHATSAPP_WEBHOOK_ENABLED: catchWebhookConfigured ? "true" : "false",
     CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: catchConsumersEnabled,
     CATCH_WHATSAPP_REPLIES_ENABLED: catchRepliesEnabled,
+    CATCH_WHATSAPP_HOST_APP_LINK_ENABLED: catchHostAppLinkEnabled,
     CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: catchAtomicIngressReady,
     CATCH_WHATSAPP_REPLY_ACTOR_UID:
       catchReplyScope.CATCH_WHATSAPP_REPLY_ACTOR_UID || " ",

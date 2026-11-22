@@ -629,6 +629,14 @@
           "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
         }
       }
+    },
+    "appLinkWhatsapp": {
+      "$ref": "#/definitions/whatsappTemplateSend",
+      "description": "An app_link lead's automatic host_app_link template from Catch's WhatsApp number: written once when Catch claims the send (state sending), then settled. Its presence means the lead has had its one attempt, so a retried trigger never sends again. Absent while CATCH_WHATSAPP_HOST_APP_LINK_ENABLED is off, for internal test leads and for any lead it does not apply to."
+    },
+    "followUpWhatsapp": {
+      "$ref": "#/definitions/whatsappTemplateSend",
+      "description": "The latest host_lead_follow_up template staff sent this lead from Admin, as the Support thread records it. Each send replaces it; the Support conversation keeps every one."
     }
   },
   "allOf": [
@@ -1925,6 +1933,114 @@
           "referrerRole": {
             "type": "null"
           }
+        }
+      }
+    },
+    "whatsappTemplateSend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "templateName",
+        "state",
+        "skipReason",
+        "conversationId",
+        "messageId",
+        "providerMessageId",
+        "deliveryErrorCode",
+        "actorUid",
+        "attemptedAt"
+      ],
+      "description": "One approved WhatsApp template sent from Catch's number to the lead's phone. sending: claimed, WhatsApp not yet answered. accepted: WhatsApp took it and gave providerMessageId; delivery and read statuses then show on the Support message (supportConversations/{conversationId}/messages/{messageId}). failed: WhatsApp refused it (deliveryErrorCode). unknown: no answer, so it may have been sent; never retried. skipped: not sent, for skipReason (stopped: they sent STOP; unavailable: this environment has no sender credential or ids).",
+      "properties": {
+        "templateName": {
+          "enum": [
+            "host_app_link",
+            "host_lead_follow_up"
+          ]
+        },
+        "state": {
+          "enum": [
+            "sending",
+            "accepted",
+            "failed",
+            "unknown",
+            "skipped"
+          ]
+        },
+        "skipReason": {
+          "anyOf": [
+            {
+              "enum": [
+                "stopped",
+                "unavailable"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversationId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^whatsapp-[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messageId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "providerMessageId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "deliveryErrorCode": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "actorUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attemptedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
         }
       }
     }

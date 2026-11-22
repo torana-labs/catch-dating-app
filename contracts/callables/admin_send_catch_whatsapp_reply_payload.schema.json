@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_send_catch_whatsapp_reply_payload.schema.json",
   "title": "AdminSendCatchWhatsappReplyCallablePayload",
-  "description": "A free-form WhatsApp text from Catch's number. supportConversation replies to a Support conversation's WhatsApp sender inside the 24-hour customer-service window; clientRequestId makes a retry return the first attempt's outcome instead of sending again. serviceSupport is the controlled reply trial for one reviewed inbound message.",
+  "description": "A WhatsApp message from Catch's number. supportConversation replies to a Support conversation's WhatsApp sender inside the 24-hour customer-service window; clientRequestId makes a retry return the first attempt's outcome instead of sending again. hostLeadFollowUp sends the approved host_lead_follow_up template to a host lead's phone (salesInboundIntents/{intentId}), allowed only when the person has not written in the last 24 hours and no follow-up went to that number in the last 7 days; it is recorded in their Support thread and is idempotent on clientRequestId. serviceSupport is the controlled reply trial for one reviewed inbound message.",
   "oneOf": [
     {
       "type": "object",
@@ -41,6 +41,31 @@
           ],
           "minLength": 1,
           "maxLength": 128
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "intentId",
+        "clientRequestId"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string",
+          "const": "hostLeadFollowUp"
+        },
+        "intentId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "clientRequestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9_-]{8,64}$"
         }
       }
     },

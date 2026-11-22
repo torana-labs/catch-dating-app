@@ -99,12 +99,12 @@ export function maskedContactLabel(
   return "Instagram";
 }
 
-function preview(text: string): string {
+export function preview(text: string): string {
   const flat = text.replace(/\s+/gu, " ").trim();
   return flat.length > 160 ? `${flat.slice(0, 157)}...` : flat;
 }
 
-async function accountFor(
+export async function accountFor(
   deps: SupportInboxDeps,
   channel: SupportChannel,
   address: string

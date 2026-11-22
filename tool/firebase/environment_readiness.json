@@ -1015,7 +1015,8 @@
       "owner": "catch-messaging",
       "credentialClass": "provider-token",
       "consumers": [
-        "adminSendCatchWhatsappReply"
+        "adminSendCatchWhatsappReply",
+        "alertOperatorOnSalesLead"
       ],
       "binding": {
         "kind": "parameter",
