@@ -295,13 +295,17 @@ function perPaying(channel: Growth["channels"][number]): {text: string; tone?: T
 
 function channelsView(data: Growth): [ReactNode, ReactNode, CatchMetricData[]] {
   const ads = data.channels.find((channel) => channel.channel === "ads");
-  const spend = data.adSpend.metaMinor;
+  const {metaMinor, googleMinor} = data.adSpend;
+  const spend = metaMinor === null && googleMinor === null ? null : (metaMinor ?? 0) + (googleMinor ?? 0);
+  const platformSpend = (platform: string, minor: number | null, connected: boolean) =>
+    `${platform} ${minor !== null ? rupees(minor) : connected ? "none" : "not connected"}`;
   const priced = data.channels.filter((channel) => channel.paying > 0 && channel.costMinor !== null &&
     (channel.costKind === "ads" || channel.costKind === "credit"));
   const cheapest = [...priced].sort((a, b) => (a.costMinor ?? 0) / a.paying - (b.costMinor ?? 0) / b.paying)[0];
   const stats: CatchMetricData[] = [
     {label: `Ad spend, ${monthName(data.adSpend.month)}`, value: spend === null ? "Not connected" : rupees(spend),
-      note: data.adSpend.metaConnected ? "Meta only" : "Meta waits for its token", noteTone: data.adSpend.metaConnected ? "secondary" : "warning"},
+      note: `${platformSpend("Meta", metaMinor, data.adSpend.metaConnected)} · ${platformSpend("Google", googleMinor, data.adSpend.googleConnected)}`,
+      noteTone: spend === null ? "warning" : "secondary"},
     {label: "Cost per claim", value: spend !== null && data.adSpend.adClaims > 0 ? rupees(Math.round(spend / data.adSpend.adClaims)) : "None yet",
       note: `from ads, ${data.adSpend.adClaims} ${data.adSpend.adClaims === 1 ? "claim" : "claims"}`},
     {label: "Cost per paying organizer", value: ads && ads.paying > 0 && ads.costMinor !== null ? rupees(Math.round(ads.costMinor / ads.paying)) : "None yet",

@@ -258,6 +258,8 @@ export function buildGrowth(input: GrowthInput): Growth {
   const lastMonth = monthOf(monthWindow(currentMonth).startMillis - 1);
   const meta = input.costs.find((cost) => cost.month === lastMonth &&
     cost.category === "ads_meta");
+  const google = input.costs.find((cost) => cost.month === lastMonth &&
+    cost.category === "ads_google");
 
   const nominatorMap = new Map<string, OrganizerGrowthFactsDocument[]>();
   for (const facts of input.facts) {
@@ -341,6 +343,7 @@ export function buildGrowth(input: GrowthInput): Growth {
     claimsByMonth: [...claimsMap.entries()].sort(([a], [b]) =>
       a.localeCompare(b)).map(([month, count]) => ({month, count})),
     adSpend: {month: lastMonth, metaMinor: meta?.amountMinor ?? null,
+      googleMinor: google?.amountMinor ?? null,
       metaConnected: input.costs.some((cost) => cost.source === "meta_api"),
       googleConnected: input.costs.some((cost) =>
         cost.source === "google_ads_api"),

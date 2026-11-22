@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import {marketForIdOrAlias} from "../../locations/marketConfig";
+import {BRAND} from "../../shared/generated/brand";
 import {projectWalkthroughBooking} from "./walkthroughBookings";
 import {projectTakedownRequest} from "./takedownRequests";
 
@@ -415,8 +416,10 @@ function projectEnquiry(sourceId: string, data: Data): InboxProjection | null {
 const leadLabels: Record<string, string> = {
   guide: "Send the setup guide", walkthrough: "Walkthrough request", demo: "Demo request", venue: "List a space",
   story: "Put forward for a story", referral: "Host referral", org_contact: "College, team or brand",
-  city_alerts: "New plans in their city",
+  city_alerts: "New plans in their city", app_link: "App link request",
 };
+
+const appLinkApps: Record<string, string> = {host: BRAND.stores.hostAppName};
 
 const interestLabels: Record<string, string> = {
   runs: "Runs", courts: "Courts", dinners: "Dinners", quizzes: "Quizzes", nights_out: "Nights out", fitness: "Fitness",
@@ -425,7 +428,7 @@ const interestLabels: Record<string, string> = {
 
 /** What a lead asked for, in a line: "60 standing · Tuesdays", "Lantern Lane Social · @lanternlane". */
 function leadDetail(kind: string, lead: Data): string | null {
-  const payload = record(lead[{org_contact: "orgContact", city_alerts: "cityAlerts"}[kind] ?? kind]) ?? {};
+  const payload = record(lead[{org_contact: "orgContact", city_alerts: "cityAlerts", app_link: "appLink"}[kind] ?? kind]) ?? {};
   const parts = (...values: unknown[]) => values.map(text).filter(Boolean).join(" · ") || null;
   switch (kind) {
   case "guide": return text(payload.format) ? `${humanize(text(payload.format))} guide` : null;
@@ -441,6 +444,10 @@ function leadDetail(kind: string, lead: Data): string | null {
   case "org_contact": return parts(humanize(text(payload.orgType)), payload.orgName, payload.message);
   case "city_alerts": return strings(payload.interests).map((interest) => interestLabels[interest] ?? interest).join(", ") ||
     "Any plans";
+  case "app_link": {
+    const app = text(payload.app);
+    return `Asked for the ${app ? appLinkApps[app] ?? humanize(app) : "app"} link on WhatsApp`;
+  }
   default: return null;
   }
 }
