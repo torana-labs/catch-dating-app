@@ -4039,8 +4039,15 @@ main pushes (owner decision, 15 Nov 2026). In the 30 days before (16 Oct to
 analysis in the same run did not, and a runner cancellation on 2 Nov failed a
 merge-queue group on its own. A nightly smoke failure fails the scheduled run
 like any other nightly job, so the Main CI alert and the nightly issue still
-report it. Goldens and the Headless journeys keep running wherever the lane is
-selected. Pull requests also run the Headless journeys in the Flutter lane
+report it. The macOS goldens are out of the merge queue too (owner decision,
+22 Nov 2026): the 5 hosted macOS runners held queue groups past the 90-minute
+timeout on 18–19 Nov. They run on the nightly and on main pushes whose inputs
+select the visual lane. A main push the queue already validated runs only the
+goldens (`macos_only`), and only when the queue run's own plan for that exact
+source selected the lane. If that plan cannot be read, the goldens run; they
+are never skipped for that reason. A main or nightly golden failure fails the
+run, so the Main CI alert reports it. The Headless journeys keep running
+wherever the lane is selected, the queue included. Pull requests also run the Headless journeys in the Flutter lane
 (`flutter-ci.yml`, Linux), so a broken app-shell journey fails the PR instead
 of ejecting it from the merge queue. Golden pixel comparisons are report
 only: the job summary lists goldens beyond the 0.30% hosted-macOS raster
