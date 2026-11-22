@@ -1,5 +1,4 @@
 import {preparePairSeatTransition} from "./pairSeatAuthority";
-import {readSeatMigrationWriterFence} from "../events/seatMigrationPaged";
 import * as admin from "firebase-admin";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import type {CrossPathsPairHoldDocument} from
@@ -36,8 +35,6 @@ export async function releaseCrossPathsPairHoldInTransaction(params: {
   // A stale expiry query must never cancel a booking that won the race.
   if (params.reason === "expired" && (hold.status !== "active" ||
       hold.expiresAt.toMillis() > params.now.toMillis())) return hold;
-  await readSeatMigrationWriterFence({db: params.db, tx: params.tx,
-    eventId: hold.eventId});
   const eventRef = params.db.collection("events").doc(hold.eventId);
   const eventSnap = await params.tx.get(eventRef);
   const event = eventSnap.data();

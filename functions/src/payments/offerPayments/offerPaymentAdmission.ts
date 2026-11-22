@@ -19,7 +19,6 @@ import {prepareCrmOriginSeatIdentity, SeatIdentityAuthorityError,
   seatIdentityAliasId, seatIdentityValueHash} from
   "../../events/seatIdentityAuthority";
 import {eventAttendeeId} from "../../events/eventAttendees";
-import {readSeatMigrationWriterFence} from "../../events/seatMigrationPaged";
 import {FirestoreSeatTransaction, assertCurrentReadySeatSnapshot} from
   "../../events/seatAuthority/firestoreAdapter";
 import {SeatAuthorityError} from "../../events/seatAuthority/seatAuthority";
@@ -113,8 +112,7 @@ export async function finalizeCapturedOfferPayment(params: {
         .collection("organizerFormConversionReceipts")
         .doc(formConversionReceiptId(responseId, "eventAttendeeProposal",
           eventId)));
-      if (legacy.exists || await readSeatMigrationWriterFence({db, tx,
-        eventId}) !== "ready") unavailable();
+      if (legacy.exists) unavailable();
       const identity = await prepareCrmOriginSeatIdentity({db, tx, eventId,
         organizerId, originId: payment.originId, responseId,
         verifiedOfferRecipient: {grantId: payment.grantId, uid,

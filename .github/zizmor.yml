@@ -7,7 +7,8 @@ rules:
       # never for pull-request workflow runs.
       - website-release.yml
       # Runs only for main's own push and nightly CI runs, checks out main,
-      # and can only write issues.
+      # and can only write issues and dispatch the dispatch-only golden
+      # baseline workflows (golden-policy job).
       - main-red-alert.yml
   unpinned-uses:
     ignore:

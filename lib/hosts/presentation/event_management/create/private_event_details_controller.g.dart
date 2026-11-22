@@ -58,7 +58,7 @@ final class PrivateEventDetailsDependenciesProvider
 }
 
 String _$privateEventDetailsDependenciesHash() =>
-    r'be766cf34ee3de8e2869ab438edb1b6e8d181b37';
+    r'1e6facabe630255702096a2e75be7244b1db7653';
 
 /// Exact-command journal makes a lost details response safe to retry after
 /// app restart or manager access changes, without creating another mutation.
@@ -123,7 +123,7 @@ final class PrivateEventDetailsControllerProvider
 }
 
 String _$privateEventDetailsControllerHash() =>
-    r'ca7d6ccfe2e37585af3d9f61b609e06224012699';
+    r'8e469119a21e59155628979487823ace1870e779';
 
 /// Exact-command journal makes a lost details response safe to retry after
 /// app restart or manager access changes, without creating another mutation.

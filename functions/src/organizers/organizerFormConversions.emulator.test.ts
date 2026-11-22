@@ -451,7 +451,7 @@ test("Firestore conversion authority, receipts and attendee handoff",
       "organizerContactIdentityLinks", "organizerContactNotes",
       "organizerAudienceSummaries", "organizerContactEventEdges",
       "events", "eventAttendees", "eventAttendeeImports", "deletedUsers",
-      "eventSeatMigrationFences", "eventSeatLedgers", "eventSeatReservations",
+      "eventSeatLedgers", "eventSeatReservations",
       "eventSeatIdentityAliases", "eventSeatRequestReceipts",
       "payments"];
     const records = async (name: string) => (await db.collection(name)
@@ -475,8 +475,6 @@ test("Firestore conversion authority, receipts and attendee handoff",
       }
       seed.update(db.doc("organizerForms/form1"), {submittedResponseCount: 1});
       seed.set(db.doc("events/event1"), event);
-      seed.set(db.doc("eventSeatMigrationFences/event1"), {eventId: "event1",
-        migrationRevision: 1, state: "ready"});
       seed.set(db.doc("eventSeatLedgers/event1"), {eventId: "event1",
         capacity: 2,
         occupied: 0, revision: 1, capacityRevision: 1,

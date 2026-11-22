@@ -1480,14 +1480,23 @@ test("Widgetbook first pass selects every package suite and preserves golden obl
   for (const name of [steps[first].name, "Flutter goldens (report pixel changes)", library]) {
     assert.doesNotMatch(namedStep(source, name), /(?:if:|continue-on-error:|--update-goldens)/u);
   }
-  // Golden pixel changes are reported through the shared comparator, never failed.
-  for (const name of [steps[first].name, steps[second].name, "Flutter goldens (report pixel changes)", library]) {
+  // Golden pixel changes are reported through the shared comparator, never failed,
+  // one report per suite so the Main CI alert can dispatch that suite's baselines.
+  for (const [name, suite] of [[steps[first].name, "widgetbook"], [steps[second].name, "widgetbook"],
+    ["Flutter goldens (report pixel changes)", "app"], [library, "package"]]) {
     assert.ok(namedStep(source, name).includes(
-      "CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv"), name);
+      `CATCH_GOLDEN_REPORT: \${{ runner.temp }}/catch-golden-report-${suite}.tsv`), name);
   }
   const report = namedStep(source, "Report golden pixel changes");
   assert.ok(report.includes("if: ${{ always() && steps.flutter-goldens.outcome != 'skipped' }}"));
   assert.match(report, />> "\$GITHUB_STEP_SUMMARY"/u);
+  assert.ok(report.includes('cat "$REPORT_DIR"/catch-golden-report-{app,package,widgetbook}.tsv 2>/dev/null > "$REPORT" || true'));
+  const drift = namedStep(source, "Retain golden drift reports");
+  assert.ok(drift.includes("if: ${{ always() && steps.golden-report.outputs.has_changes == 'true' }}"));
+  assert.match(drift, /name: golden-drift-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/u);
+  for (const suite of ["app", "package", "widgetbook"]) {
+    assert.ok(drift.includes(`\${{ runner.temp }}/catch-golden-report-${suite}.tsv`), suite);
+  }
   // The repeat render is a corpus property, checked by nightly full validation only.
   const determinism = namedStep(source, steps[second].name);
   assert.match(determinism,

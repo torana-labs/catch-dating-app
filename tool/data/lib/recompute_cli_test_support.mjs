@@ -7,7 +7,7 @@ import {fileURLToPath, pathToFileURL} from "node:url";
 
 // The actual CLI runs in a child with local SDK replacements. No installed
 // Firebase SDK or projection module can be used by these entrypoint controls.
-export function verifyRecomputeCli(t, cli, data) {
+export function verifyRecomputeCli(t, cli, data, {reads = 2} = {}) {
   const run = fakeSdkCli(t, cli, data);
   const aliases = JSON.parse(fs.readFileSync(new URL("../../../.firebaserc", import.meta.url), "utf8")).projects;
   for (const {args, env, project} of [
@@ -27,7 +27,7 @@ export function verifyRecomputeCli(t, cli, data) {
     const result = run([...args, "--json"], env);
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.report.projectId, project);
-    assert.equal(result.report.reads.length, 2);
+    assert.equal(result.report.reads.length, reads);
     assert.equal(result.report.writes.length, 0);
     assert.match(result.stdout, /"repairsNeeded": 1/u);
     assert.match(result.stdout, /Dry run only/u);
@@ -61,7 +61,7 @@ export function verifyRecomputeCli(t, cli, data) {
     const result = run([...args, "--apply"], {FIRESTORE_EMULATOR_HOST: "inherited:8080"});
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.report.emulatorHost, host);
-    assert.equal(result.report.reads.length, 2);
+    assert.equal(result.report.reads.length, reads);
     assert.equal(result.report.writes.length, 1);
     assert.equal(result.report.commits, 1);
     assert.match(result.stdout, /Applied/u);

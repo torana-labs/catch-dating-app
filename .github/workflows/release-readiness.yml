@@ -22,6 +22,8 @@ on:
 
 permissions:
   contents: read
+  # Reads the open release-block issues only.
+  issues: read
 
 jobs:
   checklist:
@@ -42,6 +44,13 @@ jobs:
           node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: npm
           cache-dependency-path: functions/package-lock.json
+
+      # A golden or capture failure on main blocks every mobile release until
+      # it passes again (owner decision, 22 Nov 2026; tool/ci/golden_policy.mjs).
+      - name: Require no open mobile release block
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/ci/release_block.mjs --check mobile
 
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:

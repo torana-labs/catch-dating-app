@@ -1,7 +1,7 @@
 import type {StoredTryItWorkspace} from "./workspace";
 import {deleteTryItDraftEvent} from "../domain/events/eventDocumentWrites";
 import {deleteEventSeatLedgerInTransaction, eventSeatRecordCollections,
-  seatLedgerHasHolds} from "../events/seatAuthority/eventSeatLedgerBirth";
+  seatLedgerHasHolds} from "../events/seatAuthority/eventSeatLedgers";
 import type {SeatLedger} from "../events/seatAuthority/seatAuthority";
 
 // Removing a try-it workspace's guest data before its organizer goes (owner

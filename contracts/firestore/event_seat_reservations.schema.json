@@ -8,7 +8,7 @@
   "x-firestore-collection": "eventSeatReservations",
   "x-firestore-path": "eventSeatReservations/{reservationId}",
   "x-document-id-field": "id",
-  "x-owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority, seatMigrationPaged)",
+  "x-owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority)",
   "required": [
     "eventId",
     "canonicalKey",

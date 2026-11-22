@@ -10,6 +10,7 @@
   "impactPaths": [
     ".github/workflows/main-red-alert.yml",
     "tool/ci/main_red_alert.mjs",
+    "tool/ci/golden_policy.mjs",
     "tool/ci/main_red_alert.test.mjs",
     "tool/ci/required_ci_floor.mjs"
   ],

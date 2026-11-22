@@ -19,6 +19,7 @@ import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "./seatIdentityAuthority";
 import {publishedEventSetup, withStoredEventPolicy} from
   "../domain/events/testing/eventSetupFixture";
+import {withEventSeatLedgers} from "./seatAuthority/eventSeatLedgerTestSupport";
 
 type FakeData = Record<string, unknown>;
 
@@ -252,12 +253,51 @@ function seatReservationPath(key: string): string {
     .update(`event-1\u001f${key}`).digest("hex");
 }
 
+/** A fixture that seeds no seat records of its own gets what every event now
+ * has: a verified seat identity for each seeded user and an active
+ * reservation for each signed-up or attended booking. */
+function withSeatIdentities(
+  docs: Record<string, FakeData | undefined>
+): Record<string, FakeData | undefined> {
+  if (!docs["events/event-1"] ||
+      Object.keys(docs).some((path) => path.startsWith("eventSeat"))) {
+    return docs;
+  }
+  const seeded = {...docs};
+  let active = 0;
+  for (const path of Object.keys(docs)) {
+    const uid = /^users\/([^/]+)$/u.exec(path)?.[1] ?? null;
+    if (uid) {
+      seeded[`eventSeatVerifiedPhones/${seatVerifiedPhoneProofId("event-1",
+        uid)}`] = {eventId: "event-1", organizerId: "club-1", uid,
+        phoneE164: null, migrationRevision: 1, state: "current"};
+      seeded[`eventSeatIdentityAliases/${seatIdentityAliasId("event-1", "uid",
+        uid)}`] = {eventId: "event-1", organizerId: "club-1", kind: "uid",
+        valueHash: seatIdentityValueHash("uid", uid),
+        canonicalKey: `uid_${uid}`, identityRevision: 1,
+        migrationRevision: 1, state: "ready"};
+    }
+    const booking = path.startsWith("eventBookings/event-1_") ? docs[path] :
+      undefined;
+    if (booking && ["signedUp", "attended"].includes(String(booking.status))) {
+      const key = `uid_${String(booking.uid)}`;
+      seeded[seatReservationPath(key)] = {eventId: "event-1",
+        canonicalKey: key, identityRevision: 1, active: true, revision: 1,
+        reservedAtMillis: 1, releasedAtMillis: null};
+      active += 1;
+    }
+  }
+  // The ledger counts the reservations, whatever the seeded bookedCount.
+  const ledger = withEventSeatLedgers({"events/event-1":
+    {...docs["events/event-1"], bookedCount: active}},
+  )["eventSeatLedgers/event-1"];
+  return {...seeded, "eventSeatLedgers/event-1": ledger};
+}
+
 function readySeatDocs(sourceEvent: FakeData,
   uids: readonly string[]): Record<string, FakeData> {
   const policy = deriveEventSeatPolicy(sourceEvent);
   const rows: Record<string, FakeData> = {
-    "eventSeatMigrationFences/event-1": {eventId: "event-1",
-      migrationRevision: 1, state: "ready"},
     "eventSeatLedgers/event-1": {eventId: "event-1",
       capacity: policy.capacity, occupied: 1, revision: 1,
       capacityRevision: 1, policyVersion: policy.policyVersion,
@@ -421,28 +461,6 @@ test("promotion enrolls a newly verified waitlisted UID in the same batch",
       ?.state, "ready");
     assert.equal(h.firestore.get("eventBookings/event-1_runner-2")
       ?.status, "signedUp");
-  });
-
-test("locked migration denies cancellation and promotion atomically",
-  async () => {
-    const sourceEvent = event({bookedCount: 1, waitlistedCount: 1});
-    const rows = readySeatDocs(sourceEvent, ["runner-1", "runner-2"]);
-    rows["eventSeatMigrationFences/event-1"].state = "locked";
-    const h = harness({"events/event-1": sourceEvent,
-      "users/runner-1": user(),
-      "users/runner-2": user({gender: "woman",
-        interestedInGenders: ["man"]}),
-      "eventBookings/event-1_runner-1":
-        participation("runner-1", "signedUp"),
-      "eventBookings/event-1_runner-2":
-        participation("runner-2", "waitlisted"), ...rows});
-    await assert.rejects(() =>
-      cancelEventSignUpHandler(request("runner-1"), h.deps));
-    assert.equal(h.firestore.get("eventBookings/event-1_runner-1")
-      ?.status, "signedUp");
-    assert.equal(h.firestore.get("eventBookings/event-1_runner-2")
-      ?.status, "waitlisted");
-    assert.equal(h.firestore.get("eventSeatLedgers/event-1")?.occupied, 1);
   });
 
 test("unresolved promoted seat rejects cancellation without partial writes",
@@ -689,7 +707,8 @@ function harness(
     authorizeRazorpayRefund?: (payment: PaymentDocument) =>
       Promise<LegacyRazorpayRefundAuthorization>} = {}
 ) {
-  const firestore = new FakeFirestore(initialDocs);
+  const firestore = new FakeFirestore(
+    withEventSeatLedgers(withSeatIdentities(initialDocs)));
   const refunds: Array<{paymentId: string; amountInPaise: number}> = [];
   const notifications: Array<{
     token: string;

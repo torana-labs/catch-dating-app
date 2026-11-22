@@ -28,15 +28,12 @@ abstract class PrivateEventDetailsState with _$PrivateEventDetailsState {
     PrivateEventBasicSummary? event,
     ManagerEventSetupDefaults? defaults,
     PrivateEventDetailsUpdateRequest? pending,
-    PrivateSeatReconciliationProgress? reconciliationProgress,
     Object? error,
     @Default(false) bool loading,
     @Default(false) bool saving,
     @Default(false) bool uploading,
     @Default(true) bool actorAvailable,
-    @Default(false) bool discardUnavailable,
     @Default(false) bool photoUploadAvailable,
-    @Default(false) bool reconciliationAvailable,
   }) = _PrivateEventDetailsState;
 
   bool get canEdit =>
@@ -50,16 +47,6 @@ abstract class PrivateEventDetailsState with _$PrivateEventDetailsState {
       !uploading;
   bool get canEditFormat => canEdit && event?.canEditBasics == true;
   bool get canAddPhotos => canEdit && photoUploadAvailable;
-  bool get canDiscardPending =>
-      !discardUnavailable &&
-      reconciliationAvailable &&
-      actorAvailable &&
-      !saving &&
-      !loading &&
-      pending?.details.admissionTerms != null &&
-      pending?.discard != true &&
-      pending!.details.toJson().length == 1 &&
-      !const {'apply', 'cleanup'}.contains(reconciliationProgress?.phase);
 }
 
 /// Commands and services. The event and the organizer defaults are read
@@ -68,16 +55,11 @@ abstract class PrivateEventDetailsState with _$PrivateEventDetailsState {
 class PrivateEventDetailsDependencies {
   const PrivateEventDetailsDependencies({
     required this.write,
-    this.reconcile,
     this.journal = const PrivateEventDetailsJournal(),
     this.currentUserId,
     this.pickAndUploadPhotos,
   });
   final WritePrivateEventDetails write;
-  final Future<PrivateSeatReconciliationResult> Function(
-    PrivateEventDetailsUpdateRequest,
-  )?
-  reconcile;
   final PrivateEventDetailsJournal journal;
   final String? Function()? currentUserId;
   final Future<List<UploadedPhoto>> Function(PrivateEventDetailsScope, int)?
@@ -91,7 +73,6 @@ PrivateEventDetailsDependencies privateEventDetailsDependencies(Ref ref) {
   final media = ref.watch(privateEventMediaServiceProvider);
   return PrivateEventDetailsDependencies(
     write: details.update,
-    reconcile: details.reconcile,
     currentUserId: () => ref.read(uidProvider).asData?.value,
     pickAndUploadPhotos: (scope, position) => media.pickAndUpload(
       userId: scope.userId,
@@ -138,7 +119,6 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
     });
     return PrivateEventDetailsState(
       photoUploadAvailable: dependencies.pickAndUploadPhotos != null,
-      reconciliationAvailable: dependencies.reconcile != null,
     );
   }
 
@@ -149,10 +129,6 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
   String get _eventId => scope.eventId;
   WritePrivateEventDetails get _write => _dependencies.write;
   PrivateEventDetailsJournal get _journal => _dependencies.journal;
-  Future<PrivateSeatReconciliationResult> Function(
-    PrivateEventDetailsUpdateRequest,
-  )?
-  get _reconcile => _dependencies.reconcile;
   PrivateEventBasicSummary? get _event => state.event;
   ManagerEventSetupDefaults? get _defaults => state.defaults;
   PrivateEventDetailsUpdateRequest? get _pending => state.pending;
@@ -179,12 +155,7 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
     _eventView.close();
     _defaultsView.close();
     _update(
-      (s) => s.copyWith(
-        actorAvailable: false,
-        event: null,
-        defaults: null,
-        reconciliationProgress: null,
-      ),
+      (s) => s.copyWith(actorAvailable: false, event: null, defaults: null),
     );
   }
 
@@ -346,7 +317,6 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
       );
       return;
     }
-    _update((s) => s.copyWith(discardUnavailable: false));
     final request = PrivateEventDetailsUpdateRequest(
       organizerId: _organizerId,
       eventId: _eventId,
@@ -393,87 +363,16 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
     }
   }
 
-  bool get _canDiscardPending => _actorAvailable && state.canDiscardPending;
-
-  Future<void> discardPending() async {
-    if (!_canDiscardPending) return;
-    final request = _pending!;
-    _update((s) => s.copyWith(saving: true));
-    _update((s) => s.copyWith(error: null));
-
-    try {
-      await _journal.setDiscardIntent(
-        userId: _userId,
-        request: request,
-        discard: true,
-      );
-      _update((s) => s.copyWith(pending: request.withDiscard(true)));
-      if (!_actorAvailable) return;
-      await _sendPending(_pending!);
-    } catch (cause) {
-      if (_actorAvailable) _update((s) => s.copyWith(error: cause));
-    } finally {
-      _update((s) => s.copyWith(saving: false));
-    }
-  }
-
   Future<void> _sendPending(PrivateEventDetailsUpdateRequest request) async {
     if (!_actorAvailable) return;
-    PrivateEventCreateReceipt? receipt;
+    final PrivateEventCreateReceipt receipt;
     try {
-      if (_reconcile != null &&
-          request.details.admissionTerms != null &&
-          request.details.toJson().length == 1) {
-        // Each response is bounded server work. The journal survives interruption;
-        // a very large roster can continue with the same pending command.
-        for (var page = 0; page < 12 && _actorAvailable; page++) {
-          final result = await _reconcile!(request);
-          if (!_actorAvailable) return;
-          if ((result.receipt?.eventId ??
-                  result.progress?.eventId ??
-                  result.discardedEventId) !=
-              _eventId) {
-            throw const FormatException(
-              'Guest reconciliation changed identity',
-            );
-          }
-          if (result.discardedEventId != null) {
-            if (result.discardedRequestId != request.requestId) {
-              throw const FormatException('Discard receipt changed request');
-            }
-            await _journal.clear(userId: _userId, request: request);
-            _update((s) => s.copyWith(pending: null));
-            _update((s) => s.copyWith(reconciliationProgress: null));
-            // The listeners already hold the current event and defaults.
-            return;
-          }
-          receipt = result.receipt;
-          _update((s) => s.copyWith(reconciliationProgress: result.progress));
-
-          if (receipt != null) break;
-        }
-        if (receipt == null) return;
-      } else {
-        receipt = await _write(request);
-      }
+      receipt = await _write(request);
     } catch (cause) {
       if (_actorAvailable && isDefinitiveDetailsRejection(cause, request)) {
         await _journal.clear(userId: _userId, request: request);
         _update((s) => s.copyWith(pending: null));
-        _update((s) => s.copyWith(reconciliationProgress: null));
         // The listeners already hold the current event to review against.
-      } else if (_actorAvailable &&
-          request.discard &&
-          isDiscardUnavailable(cause, request)) {
-        // The server proved application has started. Preserve the original
-        // settings command and allow completion instead of retrying discard.
-        await _journal.setDiscardIntent(
-          userId: _userId,
-          request: request,
-          discard: false,
-        );
-        _update((s) => s.copyWith(pending: request.withDiscard(false)));
-        _update((s) => s.copyWith(discardUnavailable: true));
       }
       rethrow;
     }
@@ -484,7 +383,6 @@ class PrivateEventDetailsController extends _$PrivateEventDetailsController {
     }
     await _journal.clear(userId: _userId, request: request);
     _update((s) => s.copyWith(pending: null));
-    _update((s) => s.copyWith(reconciliationProgress: null));
     if (!_actorAvailable) return;
     // No reread: saving ends when the listener delivers the committed
     // revision (an older replay revision is already reflected).

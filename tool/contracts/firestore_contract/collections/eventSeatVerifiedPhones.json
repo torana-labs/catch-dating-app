@@ -4,7 +4,7 @@
   "rulesMatch": "/eventSeatVerifiedPhones/{privateDocument=**}",
   "typescriptInterface": "EventSeatVerifiedPhoneDocument",
   "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
-  "owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority, seatMigrationPaged)",
+  "owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority)",
   "writerContext": "bookings",
   "read": "server only",
   "write": "server only"

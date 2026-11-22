@@ -11,7 +11,6 @@ import {assertRazorpayCollectionRoutingCurrent} from
 import {assertPaymentRouteSnapshot} from "../../payments/paymentRouting";
 import {canonicalJson} from
   "../../domain/formats/eventSetupPreferences/resolve";
-import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
 import {
   FirestoreSeatTransaction,
   assertCurrentReadySeatSnapshot,
@@ -134,10 +133,7 @@ export async function reservePublicPayment(input: {
         nowMillis}), places);
     assertReviewedPublicQuote(reviewedQuote, quote);
     const organizerId = event.organizerId!;
-    if (
-      nowMillis + CHECKOUT_HOLD_MILLIS >= quote.startTimeMillis ||
-      (await readSeatMigrationWriterFence({db, tx, eventId})) !== "ready"
-    ) {
+    if (nowMillis + CHECKOUT_HOLD_MILLIS >= quote.startTimeMillis) {
       registrationUnavailable("Checkout is closed for this event.");
     }
     const identity = await preparePublicGuestIdentity({

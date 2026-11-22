@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {eventFeedbackPrompt, eventStartReminder} from "./momentTemplates";
 import {
   evaluateRecipientPolicy,
   inQuietHours,
+  isTimeCriticalMoment,
   rollupPolicy,
   type PolicyInput,
 } from "./momentPolicy";
@@ -15,6 +17,7 @@ const base: PolicyInput = {
   localMinuteOfDay: 720,
   sentTodayForEndpoint: 0,
   dailyCap: 2,
+  timeCritical: false,
 };
 
 test("quiet hours wrap midnight and defer rather than suppress", () => {
@@ -98,4 +101,41 @@ test("rollup aggregates suppression reasons", () => {
     send: 2, deferred: 1,
     suppressed: {noConsent: 2, dailyCap: 1},
   });
+});
+
+test("time-critical sends skip quiet hours and the daily cap only", () => {
+  const quiet = {startMinute: 1260, endMinute: 480};
+  const urgent: PolicyInput = {...base,
+    endpoint: {kind: "uid", uid: "u1"}, explicitConsentRequired: false,
+    quietHours: quiet, localMinuteOfDay: 375, sentTodayForEndpoint: 9,
+    timeCritical: true};
+  assert.deepEqual(evaluateRecipientPolicy(urgent), {kind: "send"});
+  // A preference opt-out still wins.
+  assert.deepEqual(evaluateRecipientPolicy({...urgent,
+    consent: {communicationPermission: "optedOut"}}),
+  {kind: "suppress", reason: "preferenceOff"});
+  // The same send without the class is capped, then deferred.
+  assert.deepEqual(evaluateRecipientPolicy({...urgent, timeCritical: false}),
+    {kind: "suppress", reason: "dailyCap"});
+  assert.deepEqual(evaluateRecipientPolicy({...urgent, timeCritical: false,
+    sentTodayForEndpoint: 0}), {kind: "defer", reason: "quietHours"});
+});
+
+test("only the system start reminder is time-critical", () => {
+  const reminder = eventStartReminder({eventId: "e1"});
+  assert.ok(isTimeCriticalMoment(reminder));
+  // Stored before the rule existed: a host-edited lead keeps the class.
+  assert.ok(isTimeCriticalMoment({...reminder,
+    initiation: {kind: "anchored", anchorKind: "scopeStart",
+      anchorId: null, offsetMinutes: -30}}));
+  assert.ok(!isTimeCriticalMoment({...reminder, origin: "organizer"}));
+  assert.ok(!isTimeCriticalMoment(eventFeedbackPrompt({eventId: "e1"})));
+  assert.ok(!isTimeCriticalMoment({...reminder,
+    initiation: {kind: "anchored", anchorKind: "scopeStart",
+      anchorId: null, offsetMinutes: 30}}));
+  assert.ok(!isTimeCriticalMoment({...reminder,
+    initiation: {kind: "anchored", anchorKind: "scopeStart",
+      anchorId: null, offsetMinutes: 0, offsetDays: -1}}));
+  assert.ok(!isTimeCriticalMoment({...reminder,
+    initiation: {kind: "scheduled", atMillis: 1}}));
 });

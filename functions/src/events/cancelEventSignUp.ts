@@ -49,7 +49,7 @@ import {
 } from "./scheduleConflicts";
 import {isPublicPaymentBooking} from
   "./publicRegistration/catchBookingBridge";
-import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
+import {requireEventSeatLedger} from "./seatAuthority/eventSeatLedgers";
 import {FirestoreSeatIdentityAuthority,
   prepareCatchUidSeatIdentity} from "./seatIdentityAuthority";
 import {applyFirestoreSeatBatch, FirestoreSeatBatchPreparation,
@@ -207,7 +207,6 @@ export async function cancelEventSignUpHandler(
       "EventDocument"
 
     );
-    const seatMode = await readSeatMigrationWriterFence({db, tx, eventId});
     const user = requireDoc<UserProfileDocument>(
       userSnap,
       "UserProfileDocument"
@@ -266,54 +265,47 @@ export async function cancelEventSignUpHandler(
       razorpayAuthorization: refundPreflight?.authorization}) : null;
     if (refundIntent?.state === "pending") refundPaymentId = paymentDoc.id;
 
-    const seatTransaction = seatMode === "ready" ?
-      new FirestoreSeatTransaction(db, tx) : null;
-    const seatLedger = seatTransaction ?
-      await seatTransaction.ledger(eventId) : null;
+    const seatTransaction = new FirestoreSeatTransaction(db, tx);
+    const seatLedger = await requireEventSeatLedger({db, tx, eventId});
     let retainedGuestSeat = false;
-    if (seatMode === "ready") {
-      const currentAuthPhone = await deps.loadCurrentAuthPhone(userId);
-      const preparedIdentity = await prepareCatchUidSeatIdentity({db, tx,
-        eventId, organizerId: event.organizerId, uid: userId,
-        currentAuthPhoneNumber: currentAuthPhone});
-      const guests = await tx.get(db.collection("eventAttendees")
-        .where("eventId", "==", eventId)
-        .where("linkedUid", "==", userId).limit(2));
-      const independentGuests = guests.docs.filter((guest) => {
-        const row = guest.data();
-        return ["hostImport", "hostManual", "providerSync"]
-          .includes(row.source) &&
-          ["registered", "checkedIn"].includes(row.status);
-      });
-      if (guests.docs.length > 1 || independentGuests.length > 1) {
+    const currentAuthPhone = await deps.loadCurrentAuthPhone(userId);
+    const preparedIdentity = await prepareCatchUidSeatIdentity({db, tx,
+      eventId, organizerId: event.organizerId, uid: userId,
+      currentAuthPhoneNumber: currentAuthPhone});
+    const guests = await tx.get(db.collection("eventAttendees")
+      .where("eventId", "==", eventId)
+      .where("linkedUid", "==", userId).limit(2));
+    const independentGuests = guests.docs.filter((guest) => {
+      const row = guest.data();
+      return ["hostImport", "hostManual", "providerSync"]
+        .includes(row.source) &&
+        ["registered", "checkedIn"].includes(row.status);
+    });
+    if (guests.docs.length > 1 || independentGuests.length > 1) {
+      throw new HttpsError("failed-precondition",
+        "Linked guest seat needs reconciliation.");
+    }
+    if (independentGuests.length === 1) {
+      const guestIdentity = await new FirestoreSeatIdentityAuthority()
+        .resolve({db, tx, eventId,
+          organizerId: event.organizerId,
+          subject: {kind: "importAttendee",
+            attendeeId: independentGuests[0].id}});
+      if (!guestIdentity || guestIdentity.key !==
+          preparedIdentity.identity.key ||
+          guestIdentity.revision !== preparedIdentity.identity.revision) {
         throw new HttpsError("failed-precondition",
           "Linked guest seat needs reconciliation.");
       }
-      if (independentGuests.length === 1) {
-        const guestIdentity = await new FirestoreSeatIdentityAuthority()
-          .resolve({db, tx, eventId,
-            organizerId: event.organizerId,
-            subject: {kind: "importAttendee",
-              attendeeId: independentGuests[0].id}});
-        if (!guestIdentity || guestIdentity.key !==
-            preparedIdentity.identity.key ||
-            guestIdentity.revision !== preparedIdentity.identity.revision) {
-          throw new HttpsError("failed-precondition",
-            "Linked guest seat needs reconciliation.");
-        }
-        const reservation = await seatTransaction!.reservation(eventId,
-          guestIdentity.key);
-        if (!reservation?.active) {
-          throw new HttpsError("failed-precondition",
-            "Linked guest reservation is unavailable.");
-        }
-        retainedGuestSeat = true;
+      const reservation = await seatTransaction.reservation(eventId,
+        guestIdentity.key);
+      if (!reservation?.active) {
+        throw new HttpsError("failed-precondition",
+          "Linked guest reservation is unavailable.");
       }
+      retainedGuestSeat = true;
     }
-    const currentSignedUpCount = seatLedger?.occupied ??
-      event.bookedCount ??
-        activeParticipations.filter((edge) =>
-          edge.data.status === "signedUp").length;
+    const currentSignedUpCount = seatLedger.occupied;
     const currentWaitlistedCount = event.waitlistedCount ??
         waitlistedParticipations.length;
     let nextBookedCount = Math.max(0,
@@ -484,11 +476,7 @@ export async function cancelEventSignUpHandler(
 
     let seatPreparation: FirestoreSeatBatchPreparation | null = null;
     let applySeatIdentities: Array<() => void> = [];
-    if (seatMode === "ready" && !retainedGuestSeat) {
-      if (!seatLedger || !seatTransaction) {
-        throw new HttpsError("failed-precondition",
-          "Event seat authority is unavailable.");
-      }
+    if (!retainedGuestSeat) {
       const organizerId = event.organizerId;
       const uids = promotedUid ? [userId, promotedUid] : [userId];
       const preparedIdentities = await Promise.all(uids.map(async (uid) =>
@@ -564,7 +552,7 @@ export async function cancelEventSignUpHandler(
     const rosterNow = admin.firestore.Timestamp.now();
     writeCatchBookingRoster({db, tx, slot: cancellerRoster,
       booking: participationAfterPatch(participationSnap.data(), cancellation),
-      now: rosterNow, seatReady: seatMode === "ready"});
+      now: rosterNow});
     releaseUserEventScheduleInTransaction(tx, db, {
       uid: userId,
       eventId,
@@ -578,8 +566,7 @@ export async function cancelEventSignUpHandler(
       if (promotedRoster) {
         writeCatchBookingRoster({db, tx, slot: promotedRoster,
           booking: participationAfterPatch(promotedBefore ?? undefined,
-            promotedParticipationPatch), now: rosterNow,
-          seatReady: seatMode === "ready"});
+            promotedParticipationPatch), now: rosterNow});
       }
     }
     if (promotedOfferRef && promotedOfferPatch) {

@@ -59,8 +59,6 @@
     "type functions/src/events/seatAuthority/checkoutSeatHold.ts PreparedCheckoutHold",
     "type functions/src/events/seatAuthority/temporarySeatHold.ts PreparedTemporaryHold",
     "type functions/src/events/seatIdentityAuthority.ts SeatIdentityMigration",
-    "type functions/src/events/seatMigrationStore.ts SeatMigrationBootstrapCommand",
-    "type functions/src/events/seatMigrationStore.ts SeatMigrationStoreDependencies",
     "type functions/src/moments/momentModel.ts MomentActionKind",
     "type functions/src/moments/momentModel.ts MomentInitiationKind",
     "type functions/src/operations/collections.ts OperationCollectionName",
