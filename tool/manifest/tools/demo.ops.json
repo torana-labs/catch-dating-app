@@ -1,0 +1,31 @@
+{
+  "id": "demo:ops",
+  "category": "demo",
+  "path": "tool/demo/demo_ops.mjs",
+  "command": "node tool/demo/demo_ops.mjs",
+  "surface": "remote-destructive",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Operational wrapper for demo seeding, Cross Paths fixtures, matching, Suvbot, and demo readiness.",
+  "impactPaths": [
+    "tool/demo/demo_ops.mjs",
+    "tool/demo/demo_ops_core.mjs",
+    "tool/demo/demo_ops_core.test.mjs",
+    "tool/demo/cross_paths_demo_core.mjs",
+    "tool/demo/cross_paths_demo_core.test.mjs",
+    "tool/demo/demo_seed_scenario_catalog.test.mjs",
+    "tool/demo/demo_seed_scenario_catalog.mjs",
+    "tool/demo/demo_seed/scenarios/**",
+    "contracts/**/*.json",
+    "tool/contracts/generate_schema_contracts.mjs"
+  ],
+  "checks": [
+    "node --test tool/demo/demo_seed_scenario_catalog.test.mjs",
+    "node --check tool/demo/demo_ops.mjs",
+    "node --test tool/demo/demo_ops_core.test.mjs tool/demo/cross_paths_demo_core.test.mjs",
+    "node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --check"
+  ],
+  "role": "generator",
+  "checkSafety": "local-readonly",
+  "runbook": "docs/demo_data_seeding.md#internal-demo-ops-cli"
+}

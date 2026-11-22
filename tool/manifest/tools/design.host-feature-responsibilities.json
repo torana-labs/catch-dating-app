@@ -1,0 +1,34 @@
+{
+  "id": "design:host-feature-responsibilities",
+  "category": "design",
+  "path": "tool/design/build_host_feature_responsibilities.mjs",
+  "impactPaths": [
+    "tool/design/build_host_feature_responsibilities.test.mjs",
+    "design/features/host_feature_responsibilities.json",
+    "design/features/host_feature_responsibilities.schema.json",
+    "design/source_packs/host-v2/host-coverage-manifest.json",
+    "packages/platform/lib/routing/route_contract.dart",
+    "lib/hosts/today/README.md",
+    "lib/hosts/events/README.md",
+    "lib/hosts/audience/README.md",
+    "lib/hosts/inbox/README.md",
+    "lib/hosts/organizer/README.md"
+  ],
+  "command": "node tool/design/build_host_feature_responsibilities.mjs --check",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "description": "Validates the ordered Today, Events, Audience, Inbox, and Organizer responsibility boundaries against the Host shell, typed routes, Dart symbols, data contracts, and focused tests, then generates one local overview in each destination root.",
+  "checks": [
+    "node --check tool/design/build_host_feature_responsibilities.mjs",
+    "node --test tool/design/build_host_feature_responsibilities.test.mjs",
+    "node tool/design/build_host_feature_responsibilities.mjs --check"
+  ],
+  "role": "generator"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "design:widgetbook-contract-refs",
+  "category": "design",
+  "path": "tool/design/check_widgetbook_contract_refs.mjs",
+  "command": "node tool/design/check_widgetbook_contract_refs.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates component contracts, primitive contract-state previews, and screen preview ids against generated Widgetbook directories.",
+  "checks": [
+    "node --check tool/design/check_widgetbook_contract_refs.mjs",
+    "node --test tool/design/check_widgetbook_contract_refs.test.mjs",
+    "node tool/design/check_widgetbook_contract_refs.mjs --check"
+  ],
+  "impactPaths": [
+    "tool/design/check_widgetbook_contract_refs.test.mjs",
+    "widgetbook/lib/**"
+  ],
+  "role": "finder",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

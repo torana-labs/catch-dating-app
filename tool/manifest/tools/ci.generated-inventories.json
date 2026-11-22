@@ -1,0 +1,36 @@
+{
+  "id": "ci:generated-inventories",
+  "category": "ci",
+  "path": "tool/ci/generated_inventories.mjs",
+  "command": "node tool/ci/generated_inventories.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "role": "generator",
+  "description": "Materializes the two exact-source route/catalog inventories while preserving authored guidance and coverage decisions. Offline real-Git checks use Node and Git; no Flutter or network. CI writes an ignored source/run-bound two-output receipt; later checks verify current inventory bytes before reusing exact drift commands.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/ci/generated_inventories.test.mjs",
+    "tool/ui_capture/check_route_inventory.mjs",
+    "tool/lib/repo_paths.mjs",
+    "tool/design/generate_widget_catalog.mjs",
+    "tool/design/generate_widget_classification.mjs",
+    "tool/design/component_concepts.mjs",
+    "tool/design/lib/component_naming.mjs",
+    "tool/design/lib/new_widget_inventory_declarations.mjs",
+    "tool/design/lib/production_widget_roots.mjs",
+    ".github/workflows/ci.yml",
+    ".github/workflows/flutter-ci.yml",
+    ".github/workflows/tools-ci.yml",
+    "tool/marketing/export_hosted_captures.mjs",
+    "tool/marketing/capture_manifest.json"
+  ],
+  "checks": [
+    "node --check tool/ci/generated_inventories.mjs",
+    "node --test tool/ci/generated_inventories.test.mjs"
+  ]
+}

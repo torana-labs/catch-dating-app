@@ -1,0 +1,14 @@
+{
+  "id": "architecture:organizer-rename",
+  "category": "generator",
+  "path": "tool/architecture/rename_to_organizer.mjs",
+  "command": "node tool/architecture/rename_to_organizer.mjs --plan",
+  "surface": "local-writes-repo",
+  "status": "internal",
+  "description": "Library: contracts:organizer-nomenclature imports clubNameFindings and fails on anything this rename would still change. The Club-to-Organizer rename of Flutter code is finished. Renames Club to Organizer in Flutter code: Dart file and folder names, identifiers, code references in comments, localization keys, and the registries and tools that name them. Names the generated schema contracts declare, string literals and the club subtype stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
+  "checks": [
+    "node --test tool/architecture/rename_to_organizer.test.mjs",
+    "node --check tool/architecture/rename_to_organizer.mjs"
+  ],
+  "role": "generator"
+}

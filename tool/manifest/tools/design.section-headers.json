@@ -1,0 +1,29 @@
+{
+  "id": "design:section-headers",
+  "category": "design",
+  "path": "tool/design/check_section_headers.mjs",
+  "command": "node tool/design/check_section_headers.mjs --summary",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Reports duplicate CatchSection titles, standalone header-plus-section shells, parallel label-plus-child kicker shells, and feature-local titled section/card shells so section header ownership routes through CatchSection or an explicit content primitive.",
+  "checks": [
+    "node --check tool/design/check_section_headers.mjs",
+    "node --test tool/design/check_section_headers.test.mjs",
+    "node tool/design/check_section_headers.mjs --summary --max 25 --fail-on high"
+  ],
+  "impactPaths": [
+    "tool/design/check_section_headers.test.mjs",
+    "widgetbook/lib/**"
+  ],
+  "role": "finder",
+  "alsoEnforces": [
+    "DESIGN-PRIMITIVES-001",
+    "UI-LINT-001"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

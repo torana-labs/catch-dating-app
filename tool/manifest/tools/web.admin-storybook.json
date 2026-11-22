@@ -1,0 +1,30 @@
+{
+  "id": "web:admin-storybook",
+  "category": "lint",
+  "path": "admin/.storybook/main.ts",
+  "command": "npm --workspace catch-admin run build:storybook",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "description": "Builds the Storybook workbench for registry-linked admin shared primitives and future admin route/workspace review states.",
+  "checks": [
+    "npm --workspace catch-admin run build:storybook",
+    "node --check admin/scripts/checkStorybookBundleBudget.mjs",
+    "node admin/scripts/checkStorybookBundleBudget.mjs --self-test"
+  ],
+  "role": "generator",
+  "rules": [
+    {
+      "id": "WEB-STORYBOOK-BUNDLE-001",
+      "title": "Admin Storybook preserves app-authored feature chunk boundaries",
+      "appliesTo": [
+        "admin/.storybook/main.ts",
+        "admin/src/stories/**",
+        "admin/src/features/**",
+        "admin/storybook-bundle-budget.json",
+        "admin/scripts/checkStorybookBundleBudget.mjs",
+        "admin/package.json"
+      ],
+      "instruction": "Keep Catch-authored admin feature and route-story chunks within the reviewed Storybook budgets. Split feature code and large generated datasets with named Rollup boundaries; do not hide regressions by raising the general Vite warning limit."
+    }
+  ]
+}

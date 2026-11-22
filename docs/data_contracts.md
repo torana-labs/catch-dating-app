@@ -42,7 +42,7 @@ Read this before changing:
 | Tool-side schema registry and validators | `tool/contracts/generated/` |
 | Firestore operation ownership metadata (one file per collection) | `tool/contracts/firestore_contract/` |
 | Human operation map | `docs/backend_operation_catalog.md` |
-| Rules a tool enforces | `tool/tools_manifest.json` |
+| Rules a tool enforces | `tool/manifest/tools/` |
 | Countries and cities Catch serves, with each city's lifecycle and surface flags | `contracts/catalogs/markets.json` (see [Market Catalog](#market-catalog)) |
 
 Do not hand-edit generated outputs. Change the contract source, run the schema

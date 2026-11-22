@@ -1,0 +1,39 @@
+{
+  "id": "web:react-controller-test-targets",
+  "category": "test",
+  "path": "tool/web/check_react_controller_test_targets.mjs",
+  "command": "node tool/web/check_react_controller_test_targets.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Requires a unit test that imports each React feature controller/mutation hook, found from the source, without gating on aggregate coverage percentages.",
+  "checks": [
+    "node --check tool/web/check_react_controller_test_targets.mjs",
+    "node tool/web/check_react_controller_test_targets.mjs --self-test",
+    "node tool/web/check_react_controller_test_targets.mjs --check"
+  ],
+  "impactPaths": [
+    "packages/web-config/**"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "WEB-CONTROLLER-TEST-001",
+      "title": "React controller coverage uses explicit behavior-test targets",
+      "appliesTo": [
+        "admin/src/features/**",
+        "website/src/features/**",
+        "tool/web/check_react_controller_test_targets.mjs",
+        ".github/workflows/admin-website.yml",
+        ".github/workflows/marketing-website.yml"
+      ],
+      "instruction": "Every React feature controller or mutation hook needs a unit test that imports it and registers a test, normally beside it. Keep aggregate percentage reports informational."
+    }
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

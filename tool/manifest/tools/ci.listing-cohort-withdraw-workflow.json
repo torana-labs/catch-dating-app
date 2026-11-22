@@ -1,0 +1,24 @@
+{
+  "id": "ci:listing-cohort-withdraw-workflow",
+  "category": "ci",
+  "path": "tool/ci/listing_cohort_withdraw_workflow.test.mjs",
+  "command": "node --test tool/ci/listing_cohort_withdraw_workflow.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    ".github/workflows/listing-cohort-withdraw.yml",
+    "tool/ci/listing_cohort_withdraw_workflow.test.mjs"
+  ],
+  "description": "Keeps the listing cohort withdraw workflow dispatch-only from main, keyless and least-privileged, with only environment, mode, a cohort id, a city slug and a manifest SHA-256 as checked inputs, a prod apply gated by the credential-free prod-takedown environment, no artifacts, a counts-only summary, and --allow-prod only for a prod apply.",
+  "checks": [
+    "node --check tool/ci/listing_cohort_withdraw_workflow.test.mjs",
+    "node --test tool/ci/listing_cohort_withdraw_workflow.test.mjs"
+  ],
+  "role": "gate"
+}

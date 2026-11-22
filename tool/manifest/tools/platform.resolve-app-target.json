@@ -1,0 +1,14 @@
+{
+  "id": "platform:resolve-app-target",
+  "category": "platform",
+  "path": "tool/platform/resolve_app_target.mjs",
+  "command": "node tool/platform/resolve_app_target.mjs --role consumer --environment dev",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Resolves one explicit Consumer or Host target from the canonical six-target manifest for shell scripts and CI.",
+  "checks": [
+    "node --check tool/platform/resolve_app_target.mjs",
+    "node tool/platform/resolve_app_target.mjs --role host --environment prod --field id"
+  ],
+  "role": "finder"
+}

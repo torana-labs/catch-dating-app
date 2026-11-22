@@ -1,0 +1,30 @@
+{
+  "id": "design:import-ds-props",
+  "category": "design",
+  "path": "tool/design/import_ds_props.mjs",
+  "impactPaths": [
+    "tool/design/import_ds_props.test.mjs",
+    "tool/design/lib/system_components.mjs",
+    "tool/design/system_components.test.mjs",
+    "design/components/catch.components.json",
+    "design/components/guidelines/**",
+    "design/components/system/**"
+  ],
+  "command": "node tool/design/import_ds_props.mjs",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "role": "generator",
+  "description": "Imports the design source's component types into each registry record's system block and copies its guidelines, whose Flutter section comes from the record's dart field. CI has no design source, so --check there compares props, slots and Flutter sections against the committed copies.",
+  "checks": [
+    "node --check tool/design/import_ds_props.mjs",
+    "node --test tool/design/import_ds_props.test.mjs",
+    "node --test tool/design/system_components.test.mjs",
+    "node tool/design/import_ds_props.mjs --check"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

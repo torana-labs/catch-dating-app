@@ -1,0 +1,29 @@
+{
+  "id": "design:section-dividers",
+  "category": "design",
+  "path": "tool/design/check_section_dividers.mjs",
+  "command": "node tool/design/check_section_dividers.mjs --summary",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Reports raw Divider inventory, high-confidence CatchSection row-divider misuse, custom CatchField leading content without declared text-lane geometry, feature row groups that assign sibling divider flags, and thin feature-local CatchSection wrappers so row and section hairlines route through canonical roles.",
+  "checks": [
+    "node --check tool/design/check_section_dividers.mjs",
+    "node --test tool/design/check_section_dividers.test.mjs",
+    "node tool/design/check_section_dividers.mjs --summary --max 25 --fail-on high"
+  ],
+  "impactPaths": [
+    "widgetbook/lib/**"
+  ],
+  "role": "finder",
+  "alsoEnforces": [
+    "DESIGN-PRIMITIVES-001",
+    "DESIGN-TOKENS-001",
+    "UI-LINT-001"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "id": "audit:host-crm-boundaries",
+  "category": "audit",
+  "path": "tool/architecture/check_host_crm_boundaries.mjs",
+  "command": "node tool/architecture/check_host_crm_boundaries.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Enforces corrected Host CRM ownership, application routing, provenance, consent, communication-plan, saved-audience, manual-handoff, and count-copy boundaries.",
+  "checks": [
+    "node --check tool/architecture/check_host_crm_boundaries.mjs",
+    "node --test tool/architecture/check_host_crm_boundaries.test.mjs",
+    "node tool/architecture/check_host_crm_boundaries.mjs"
+  ],
+  "impactPaths": [
+    "tool/architecture/check_host_crm_boundaries.test.mjs"
+  ],
+  "role": "gate",
+  "rules": [
+    {
+      "id": "HOST-CRM-AUTHORITY-001",
+      "title": "Keep Host CRM identity, provenance, permission, intent, route, and delivery authorities separate",
+      "appliesTo": [
+        "lib/hosts/presentation/customers/**",
+        "lib/hosts/presentation/inbox/**",
+        "lib/hosts/presentation/host_audience_controller.dart",
+        "packages/l10n/lib/app_en.arb",
+        "lib/routing/go_router.dart",
+        "packages/platform/lib/routing/route_contract.dart",
+        "functions/src/events/eventAttendees.ts",
+        "functions/src/organizers/organizerAudienceProjection.ts",
+        "functions/src/organizers/organizerCampaign*.ts",
+        "functions/src/organizers/organizerContacts.ts",
+        "functions/src/organizers/organizerForm*.ts",
+        "functions/src/organizers/organizerManualSendTasks.ts",
+        "functions/src/organizers/organizerSavedAudiences.ts",
+        "functions/src/organizers/organizerWhatsappWebhook.ts",
+        "functions/src/shared/organizerContactOrigins.ts",
+        "contracts/firestore/organizer_*communication*.schema.json",
+        "contracts/firestore/organizer_contact_*.schema.json",
+        "contracts/firestore/organizer_manual_send_tasks.schema.json",
+        "tool/architecture/check_host_crm_boundaries.mjs"
+      ],
+      "instruction": "Keep contact identity, immutable provenance, participant-controlled communication permission, organizer suppression, host intent, server-resolved route, manual work, and provider delivery evidence as separate authorities. Audience owns People, saved audiences, Forms, Applications, and Responses; the Forms domain retains response/application semantics and mutation ownership without becoming a global shell destination. Inbox consumes audience references and owns Sends/Inbox composition. Legacy Customers and Forms application links redirect to Audience. Host Forms may append source-backed contact provenance or prepare reviewed work but ordinary form consent never grants marketing permission and automations never dispatch outreach. External handoff may record only device acceptance and explicit host assertions, never delivery or read state. Visible Host CRM counts use ICU plural ownership."
+    }
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

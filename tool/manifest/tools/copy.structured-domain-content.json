@@ -1,0 +1,13 @@
+{
+  "id": "copy:structured-domain-content",
+  "category": "generator",
+  "path": "tool/copy/sync_structured_domain_copy.dart",
+  "command": "dart run tool/copy/sync_structured_domain_copy.dart",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Validates marketing-owned structured domain copy and regenerates typed Event Success and event-policy catalogs from Dart structure templates.",
+  "checks": [
+    "dart run tool/copy/sync_structured_domain_copy.dart"
+  ],
+  "role": "generator"
+}

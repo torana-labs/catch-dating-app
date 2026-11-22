@@ -1,0 +1,55 @@
+{
+  "id": "design:icon-catalog",
+  "category": "design",
+  "path": "tool/design/generate_icon_catalog.mjs",
+  "command": "node tool/design/generate_icon_catalog.mjs --check",
+  "surface": "local-writes-repo",
+  "status": "active",
+  "description": "Validates the shared icon-role catalog against the vendored Flutter font, locked React family version and activity kinds, and verifies the generated Flutter CatchIcons and @catch/web-ui role maps.",
+  "checks": [
+    "node --check tool/design/generate_icon_catalog.mjs",
+    "node --test tool/design/generate_icon_catalog.test.mjs",
+    "node tool/design/generate_icon_catalog.mjs --check"
+  ],
+  "impactPaths": [
+    "tool/design/generate_icon_catalog.test.mjs",
+    "design/tokens/catch.icons.json",
+    "design/tokens/catch.icons.schema.json",
+    "design/tokens/catch.icons.legacy_flutter.json",
+    "contracts/shared/event_common.schema.json",
+    "package-lock.json",
+    "packages/web-ui/package.json",
+    "packages/web-ui/src/icons/**",
+    "packages/catch_ui/assets/fonts/**",
+    "packages/catch_ui/lib/src/foundations/catch_icons.dart",
+    "packages/catch_ui/lib/src/foundations/catch_icons.g.dart"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "role": "generator",
+  "rules": [
+    {
+      "id": "ICON-ROLES-001",
+      "title": "Features draw catalogued icon roles through the shared icon layer",
+      "appliesTo": [
+        "design/tokens/catch.icons*",
+        "packages/catch_ui/**",
+        "lib/**",
+        "packages/platform/lib/**",
+        "apps/**",
+        "widgetbook/**",
+        "test/**",
+        "integration_test/**",
+        "website/**",
+        "admin/**",
+        "packages/web-ui/**"
+      ],
+      "instruction": "Features name semantic icon roles from the shared catalog. Keep the vendored Flutter font and React icon family at the catalogued version, with exactly one role per activity kind. Existing direct family references and legacy CatchIcons aliases may only decrease; record each reduction rather than increasing an allowance. The catalog owns glyph selection, so changing a family does not require feature code to select glyphs."
+    }
+  ]
+}

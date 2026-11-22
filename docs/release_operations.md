@@ -384,7 +384,7 @@ every lane. Data files a script names, the app sources it names, and tool
 tests and fixtures keep their Nx inputs. This means a broken
 `tool/run.mjs` fails in the queue, in every lane that runs it, before main
 reuses the queue's result (#1831).
-`tool/tools_manifest.json` selects by semantic diff (`tool/nx/manifest_diff.mjs`)
+The tools manifest (`tool/manifest/`) selects by semantic diff (`tool/nx/manifest_diff.mjs`)
 in `pr` and `merge_group`, in both the planner and Nx: an edit runs Tools and
 policy, which run the changed checks and validate the manifest, plus every lane
 whose `ci.yml` jobs run a changed or removed entry by name (through reusable
@@ -695,7 +695,7 @@ from the exact committed input window; full runs and control changes retain all
 handoff checks. Ordinary unrelated app logic no longer regenerates the context
 pack. Failure or cancellation of the owning Tools lane still fails Required CI.
 
-Design parity source checks are explicit commands in `tool/tools_manifest.json`,
+Design parity source checks are explicit commands in the tools manifest (`tool/manifest/tools/`),
 shared by the local umbrella and the tool runner. Identical scanner commands run
 once within the Marketing/design tool bucket. Whole-product similarity and
 advisory migration reports remain explicit `--reports` output. These prove

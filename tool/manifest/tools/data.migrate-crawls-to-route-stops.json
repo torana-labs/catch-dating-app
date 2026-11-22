@@ -1,0 +1,11 @@
+{
+  "id": "data:migrate-crawls-to-route-stops",
+  "category": "data",
+  "path": "functions/scripts/migrate-crawls-to-route-stops.cjs",
+  "status": "retired",
+  "role": "operator",
+  "description": "One-off migration that moved future bar crawl events still saved with the freeFormMixer interaction model onto routeStops, leaving past events, started events and the demo crawl unchanged; its planning logic was functions/src/eventSuccess/crawlRouteStopsMigration.ts.",
+  "retiredOn": "2026-11-19",
+  "reason": "Nothing left to migrate. On 19 Nov 2026 the owner ran its dry run against catchdates-dev and catch-dating-app-64e51: both returned no events to migrate and none skipped, and a count by eventFormat.activityKind found no barCrawl events in either project. routeStops is a first-class interaction model in contracts/shared/event_common.schema.json and the event runtime. The planning module and its test went with it, since this script was their only caller.",
+  "lastCommit": "b5a30bc69730fa0cb5d8c15d0ee82bd9563063a8"
+}

@@ -8,8 +8,8 @@ Durable business workflows do not belong here. Resumable workflow runs, work
 items, leases, budgets, agent decisions, and receipts live in `operations/` and
 are governed by `docs/operations_platform.md`; the retired organizer-intake and
 event-guide trees must not return. Stable workflow checks remain discoverable through
-`operations:boundaries` and `operations:workflow-manifest` in
-`tools_manifest.json`. `remote_ops_manifest.json` remains the separate inventory
+`operations:boundaries` and `operations:workflow-manifest` in the tools
+manifest (`manifest/`). `remote_ops_manifest.json` remains the separate inventory
 for commands that can touch external systems.
 
 ```sh
@@ -72,15 +72,15 @@ empty category can never count as a successful CI lane. Tools CI
 validates the complete category matrix before fanout. Ordinary tool changes run
 the exact active owner declared by `path` or `impactPaths`, its transitive
 `alsoCheckIds`, and the mandatory repository guards in
-`tools_manifest.json#ciImpact`. In CI each tool also owns every file its checks
+`manifest/manifest.json#ciImpact`. In CI each tool also owns every file its checks
 reach through static imports: `tool/impact/import_owners.mjs` derives them with
 the dependency-cruiser pinned in `tool/impact/` (`npm ci --prefix tool/impact`),
 and `affected-tools --import-owners <file>` reads that output. A path owned only
 through imports also runs `ciImpact.importOwnerCheckIds`, because imports cannot
 show files read as text. Shared helpers in `ciImpact.importGraphPaths` run the
-full matrix whenever the graph is absent or names no owner. An edit to
-`tool/tools_manifest.json` runs only the tools whose entries changed plus
-`ciImpact.manifestCheckIds`; a `ciImpact` edit, or a plan without a base
+full matrix whenever the graph is absent or names no owner. An edit to a
+tool's file in `tool/manifest/tools/` runs only the tools whose entries changed plus
+`ciImpact.manifestCheckIds`; a `ciImpact` edit (in `tool/manifest/manifest.json`), or a plan without a base
 revision, still runs the full matrix. Canonical Harness control-plane paths come from
 `component_graph.json#repo.harness`; the tool manifest declares only additional
 full-matrix paths. Terminal graph classifications override broad Harness
@@ -197,7 +197,7 @@ skipped, failed or cancelled preflight. Full tests and analysis remain required.
 `docs:metadata` validates source-owned Markdown metadata. Its `--base` comparison
 also rejects surviving references to deleted or renamed documents: Markdown
 links and code spans, plus literal repository paths in any tracked
-non-Markdown text such as `tool/tools_manifest.json`,
+non-Markdown text such as the tools manifest's files,
 workflows, scripts and generated packs. For each document the change edits, it
 also rejects `path.md#heading` references whose heading the change removed;
 anchors that were already unresolved before the change are printed as
@@ -1296,10 +1296,15 @@ ids, non-empty text, and exact generated output.
 ## Adding Or Moving A Tool
 
 1. Put the implementation in the narrowest matching category folder.
-2. Add or update the entry in `tool/tools_manifest.json`. Code that reads the
-   manifest goes through `tool/lib/tools_manifest.mjs` (`loadToolsManifest`,
-   `toolsManifestAt`, `isToolsManifestPath` and friends), never the file path,
-   so where the manifest lives is decided in one place.
+2. Add or update the tool's own file, `tool/manifest/tools/<category>.<name>.json`
+   for the id `<category>:<name>` (the file name must match the id). The header,
+   `tool/manifest/manifest.json`, holds only `version`, `updated` and
+   `ciImpact`. Code that reads the manifest goes through
+   `tool/lib/tools_manifest.mjs` (`loadToolsManifest`, `toolsManifestAt`,
+   `isToolsManifestPath` and friends), never a file path; it combines the files
+   with tools sorted by id and fails closed on a misnamed, orphan or malformed
+   file. `node tool/lib/tools_manifest.mjs` prints the combined manifest, which
+   is never committed.
 3. Include at least one cheap `checks` command unless the tool is an interactive Flutter entrypoint.
 4. Declare `ciRequirements.repositoryView: index` only when sparse Git-index
    visibility is sound; otherwise CI uses a full repository checkout.
@@ -1370,7 +1375,7 @@ Name that check in the reason, and keep the evidence in the PR.
 ## Operator Runbooks
 
 Runbooks for live-system tools that have no section elsewhere. Each tool's
-`runbook` field in `tool/tools_manifest.json` points at its heading here. Every
+`runbook` field in its `tool/manifest/tools/` file points at its heading here. Every
 command below previews by default unless the section says otherwise; read the
 preview before adding `--apply`.
 

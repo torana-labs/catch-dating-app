@@ -1,0 +1,25 @@
+{
+  "id": "contracts:storage-contract",
+  "category": "contracts",
+  "path": "tool/contracts/check_storage_contract.mjs",
+  "command": "node tool/contracts/check_storage_contract.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks Storage contract metadata against storage rules and tests.",
+  "checks": [
+    "node --check tool/contracts/check_storage_contract.mjs"
+  ],
+  "rules": [
+    {
+      "id": "STORAGE-CONTRACT-001",
+      "title": "Storage path contracts stay tied to rules and rules tests",
+      "appliesTo": [
+        "contracts/storage/*.schema.json",
+        "storage.rules",
+        "functions/test/storage.rules.test.cjs",
+        "tool/contracts/check_storage_contract.mjs"
+      ],
+      "instruction": "Every storage path schema must declare x-storage-rules-match, x-storage-read, x-storage-write, x-storage-rules-test-file, and matching storage.rules coverage. Review passes for storage contracts should run the static storage checker and, when feasible, the firestore/storage emulator rules suite."
+    }
+  ]
+}

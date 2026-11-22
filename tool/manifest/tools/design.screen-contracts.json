@@ -1,0 +1,30 @@
+{
+  "id": "design:screen-contracts",
+  "category": "design",
+  "path": "tool/design/check_screen_contracts.mjs",
+  "impactPaths": [
+    "design/screens/catch.screens.json",
+    "design/screens/catch.screens.schema.json",
+    "tool/ui_capture/route_inventory.json",
+    "test/ui_captures/catalog/screen_capture_catalog.dart",
+    "test/ui_captures/catalog/entries/**",
+    "design/components/catch.components.json",
+    "tool/ui_capture/lib/capture_catalog_sources.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "command": "node tool/design/check_screen_contracts.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Validates screen composition contracts against routes, captures, components, source paths, and Dart symbols.",
+  "checks": [
+    "node --check tool/design/check_screen_contracts.mjs",
+    "node tool/design/check_screen_contracts.mjs --check"
+  ],
+  "role": "finder"
+}

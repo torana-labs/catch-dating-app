@@ -1,0 +1,27 @@
+{
+  "id": "marketing:public-contact-operator",
+  "category": "marketing",
+  "path": "website/scripts/next/publicContactOperator.mjs",
+  "command": "node --experimental-strip-types website/scripts/next/publicContactOperator.mjs --project <id> [--apply] [--allow-prod]",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "role": "operator",
+  "description": "Reads and, with --apply, writes the public contact configuration the website shows; production needs --allow-prod.",
+  "checks": [
+    "node --check website/scripts/next/publicContactOperator.mjs",
+    "node --experimental-strip-types --test website/scripts/next/publicContactOperator.test.mjs"
+  ],
+  "impactPaths": [
+    "website/scripts/next/publicContactOperator.test.mjs",
+    "website/src/content/publicContact.ts"
+  ],
+  "runbook": "docs/web_surface_architecture.md#public-contact-configuration",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

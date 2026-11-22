@@ -1,0 +1,24 @@
+{
+  "id": "meta:nx-markdown-inputs",
+  "category": "meta",
+  "path": "tool/nx/markdown_inputs.test.mjs",
+  "command": "node --test tool/nx/markdown_inputs.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Markdown a check reads selects the lanes that run it: every tools-manifest Markdown impactPath is a lane-tools input, and every script CI runs that names a Markdown path is a listed reader (whose documents select its lanes through nx affected) or a listed mention.",
+  "checks": [
+    "node --test tool/nx/markdown_inputs.test.mjs"
+  ],
+  "impactPaths": [
+    "nx.json",
+    "tool/manifest/**",
+    "tool/nx/workflow_callers.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

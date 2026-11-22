@@ -1,0 +1,27 @@
+{
+  "id": "meta:nx-manifest-diff",
+  "category": "meta",
+  "path": "tool/nx/manifest_diff.mjs",
+  "command": "node --test tool/nx/manifest_diff.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Selects lanes for a tools manifest edit by semantic diff: Tools and policy plus every lane whose jobs run a changed or removed entry, and every lane for any change it does not recognise. Pull requests and the merge queue use it; main reports it.",
+  "checks": [
+    "node --check tool/nx/manifest_diff.mjs",
+    "node --test tool/nx/manifest_diff.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/nx/manifest_diff.test.mjs",
+    "tool/nx/select_lanes.mjs",
+    "tool/nx/shadow_plan.mjs",
+    "tool/nx/workflow_callers.mjs",
+    "tool/manifest/**"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

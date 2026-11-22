@@ -1,0 +1,14 @@
+{
+  "id": "architecture:context-move",
+  "category": "generator",
+  "path": "tool/architecture/move_to_contexts.mjs",
+  "command": "node tool/architecture/move_to_contexts.mjs --plan",
+  "surface": "local-writes-repo",
+  "status": "internal",
+  "description": "Library: contracts:organizer-nomenclature reaches rewriteDartDirectives and rewritePathMentions through the rename libraries. The context move is finished: --check reports no legacy file waiting, lib/domain and lib/data are gone, and context_map.json has no moveTo entry. The catch_arch_* lints and audit:context-map enforce placement. Its CLI still prints the plan and --verify proves an old move commit. Moves legacy domain/ and data/ files into lib/contexts/<context>/ as tool/architecture/context_map.json places them, rewrites every Dart directive and whole-path mention, writes each context's public API file, and proves a move commit is mechanical (--verify). --imports-only updates another branch after the move lands.",
+  "checks": [
+    "node --test tool/architecture/move_to_contexts.test.mjs",
+    "node --check tool/architecture/move_to_contexts.mjs"
+  ],
+  "role": "generator"
+}

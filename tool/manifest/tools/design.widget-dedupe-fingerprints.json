@@ -1,0 +1,28 @@
+{
+  "id": "design:widget-dedupe-fingerprints",
+  "category": "design",
+  "path": "tool/widget_dedupe/bin/extract_fingerprints.dart",
+  "impactPaths": [
+    "tool/widget_dedupe/lib/src/fingerprint_extractor.dart",
+    "tool/widget_dedupe/test/fingerprint_extractor_test.dart",
+    "tool/widget_dedupe/fixtures/**",
+    "tool/widget_dedupe/pubspec.yaml"
+  ],
+  "command": "dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json tool/widget_dedupe/bin/extract_fingerprints.dart --help",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter",
+      "flutter-pub"
+    ]
+  },
+  "role": "generator",
+  "description": "Extracts structural fingerprints for explicit Dart widget files or an explicit disposable classification input for dedupe and similarity analysis.",
+  "checks": [
+    "dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json tool/widget_dedupe/bin/extract_fingerprints.dart --help",
+    "dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json test:test tool/widget_dedupe/test/fingerprint_extractor_test.dart"
+  ]
+}

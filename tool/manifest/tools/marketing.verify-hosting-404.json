@@ -1,0 +1,13 @@
+{
+  "id": "marketing:verify-hosting-404",
+  "category": "marketing",
+  "path": "website/scripts/verifyHosting404.mjs",
+  "command": "node website/scripts/verifyHosting404.mjs",
+  "surface": "remote-read",
+  "status": "internal",
+  "description": "Asserts that a unique unknown URL on a supplied marketing Hosting origin returns HTTP 404 without following redirects.",
+  "checks": [
+    "node --check website/scripts/verifyHosting404.mjs"
+  ],
+  "role": "finder"
+}

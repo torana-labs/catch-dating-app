@@ -1,0 +1,51 @@
+{
+  "id": "web:admin-pending-operations",
+  "rules": [
+    {
+      "id": "PENDING-SNAPSHOT-001",
+      "title": "Protect the submitted request snapshot while an operation is pending",
+      "appliesTo": [
+        "lib/**/presentation/**",
+        "website/src/features/**",
+        "admin/src/features/**",
+        "design/screens/catch.screens.json",
+        "test/**"
+      ],
+      "instruction": "Every pending user operation must declare one integrity policy. Frozen snapshots disable request-defining inputs, conflicting actions, mutation-reset callbacks, and unsafe route exits until settlement. Versioned snapshots require immutable generations plus stale-result rejection or cancellation and tests. Independently keyed concurrency requires distinct typed scope keys and separate pending/error surfaces. A loading button alone is not sufficient; controllers must also deduplicate duplicate dispatches or use an equivalent idempotency boundary."
+    }
+  ],
+  "category": "lint",
+  "path": "tool/web/check_admin_pending_operations.mjs",
+  "impactPaths": [
+    "admin/src/app/App.tsx",
+    "admin/src/shared/pendingOperation.tsx",
+    "admin/src/shared/pendingOperation.test.tsx",
+    "admin/src/shared/ui/AdminPrimitives/actions.tsx",
+    "admin/src/shared/ui/AdminPrimitives/shell.tsx",
+    "admin/src/features/safety/controllers/useAccessReviewController.ts",
+    "admin/src/features/settings/controllers/useTeamController.ts",
+    "admin/src/features/events/controllers/useEventPublishingController.ts",
+    "admin/src/features/events/controllers/useEventPageEditorController.ts",
+    "admin/src/features/marketing/controllers/useMarketingOpsController.ts",
+    "admin/src/features/organizers/controllers/useOrganizerPageEditorController.ts",
+    "admin/src/features/safety/controllers/useSafetyTriageController.ts",
+    "admin/src/features/users/controllers/useUserAnalyticsController.ts"
+  ],
+  "command": "node tool/web/check_admin_pending_operations.mjs --check",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Enforces one exclusive Admin operation lease across the controllers it names, the shared workspace/navigation boundary, and immutable-snapshot regression proof.",
+  "checks": [
+    "node --check tool/web/check_admin_pending_operations.mjs",
+    "node tool/web/check_admin_pending_operations.mjs --self-test",
+    "node tool/web/check_admin_pending_operations.mjs --check --summary"
+  ],
+  "role": "gate",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  }
+}

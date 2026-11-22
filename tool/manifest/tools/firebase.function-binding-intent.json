@@ -1,0 +1,30 @@
+{
+  "id": "firebase:function-binding-intent",
+  "category": "firebase",
+  "path": "tool/firebase/function_binding_intent.mjs",
+  "command": "node --test tool/firebase/function_binding_intent.test.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "role": "gate",
+  "description": "Parses authored Functions binding intent without executing source; rejects unsupported and mutable configuration.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "impactPaths": [
+    "functions/src/**",
+    "functions/package-lock.json",
+    "tool/firebase/environment_readiness.json",
+    "tool/firebase/function_binding_intent.test.mjs",
+    "functions/scripts/functionExports.cjs",
+    "functions/scripts/functionExports.test.cjs"
+  ],
+  "checks": [
+    "node --check tool/firebase/function_binding_intent.mjs",
+    "node --test tool/firebase/function_binding_intent.test.mjs",
+    "node --test functions/scripts/functionExports.test.cjs"
+  ]
+}

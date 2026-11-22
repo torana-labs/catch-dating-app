@@ -1,0 +1,16 @@
+{
+  "id": "data:backfill-event-discovery",
+  "category": "data",
+  "path": "tool/data/backfill_event_discovery_fields.mjs",
+  "command": "node tool/data/backfill_event_discovery_fields.mjs",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "status": "active",
+  "description": "Backfills event discovery projection fields for Explore's direct event index.",
+  "checks": [
+    "node --check tool/data/backfill_event_discovery_fields.mjs",
+    "node --test tool/data/backfill_event_discovery_fields.test.mjs"
+  ],
+  "role": "generator",
+  "runbook": "docs/release_operations.md#explore-event-discovery-rollout"
+}

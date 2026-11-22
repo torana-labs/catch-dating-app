@@ -1,0 +1,25 @@
+{
+  "id": "design:widget-similarity-registry",
+  "category": "design",
+  "path": "tool/design/build_widget_similarity.mjs",
+  "impactPaths": [
+    "tool/design/generate_widget_classification.mjs",
+    "tool/design/build_widget_similarity.test.mjs",
+    "widgetbook/lib/**"
+  ],
+  "command": "node tool/design/build_widget_similarity.mjs --check",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "role": "generator",
+  "description": "Builds widget similarity directly from current dedupe fingerprints and authored decisions; check mode is read-only and explicit generation writes only an ignored build report.",
+  "checks": [
+    "node --check tool/design/build_widget_similarity.mjs",
+    "node --test tool/design/build_widget_similarity.test.mjs"
+  ]
+}

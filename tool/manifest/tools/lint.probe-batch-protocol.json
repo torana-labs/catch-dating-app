@@ -1,0 +1,14 @@
+{
+  "id": "lint:probe-batch-protocol",
+  "category": "lint",
+  "path": "tool/lib/lint_probe_batch.mjs",
+  "command": "node --test tool/lib/lint_probe_batch.test.mjs",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Checked by lint:catch-ui-plugin-smoke. Checks per-file lint fixture assertions and analyzer output attribution, refusing plugin crashes, malformed output, missing fixtures, and diagnostics from the wrong file.",
+  "checks": [
+    "node --check tool/lib/lint_probe_batch.mjs",
+    "node --test tool/lib/lint_probe_batch.test.mjs"
+  ],
+  "role": "gate"
+}

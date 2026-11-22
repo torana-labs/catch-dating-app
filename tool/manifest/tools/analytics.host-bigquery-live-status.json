@@ -1,0 +1,26 @@
+{
+  "id": "analytics:host-bigquery-live-status",
+  "category": "analytics",
+  "path": "tool/analytics/host_analytics_live_status.mjs",
+  "command": "node tool/analytics/host_analytics_live_status.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "description": "Checks live Firebase and BigQuery host analytics deployment status.",
+  "checks": [
+    "node --check tool/analytics/host_analytics_live_status.mjs",
+    "node --test tool/analytics/host_analytics_contract.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/analytics/host_analytics_contract.mjs",
+    "tool/analytics/host_analytics_contract.test.mjs",
+    "analytics/sql/marts/refresh_mart_host_event_daily.sql",
+    "extensions/bq-host-organizers.env"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "runbook": "docs/release_operations.md#firebase-backend-delivery-order"
+}

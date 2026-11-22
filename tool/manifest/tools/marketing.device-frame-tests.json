@@ -1,0 +1,13 @@
+{
+  "id": "marketing:device-frame-tests",
+  "category": "marketing",
+  "path": "tool/marketing/frame_device_capture_test.dart",
+  "command": "dart run tool/marketing/frame_device_capture_test.dart",
+  "surface": "local-read",
+  "status": "internal",
+  "description": "Verifies native product-capture framing without resampling and rejects undersampled inputs.",
+  "checks": [
+    "dart run tool/marketing/frame_device_capture_test.dart"
+  ],
+  "role": "gate"
+}

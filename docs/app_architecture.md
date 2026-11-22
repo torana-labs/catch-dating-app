@@ -31,7 +31,7 @@ This spec consolidates and normalizes guidance from:
   token tiers, sizing rules, design-tool boundaries, and analyzer-plugin policy.
 - `docs/widget_catalog.md`: widget ownership, primitive governance, public
   widget catalog, and private-helper remediation.
-- `tool/tools_manifest.json`: rules a tool enforces, on the tool that enforces
+- `tool/manifest/tools/`: rules a tool enforces, on the tool that enforces
   them, such as `CONTROLLER-BOUNDARY-001`, `PROVIDER-SEAM-001`,
   `MUTATION-ERROR-SURFACE-001`, `PENDING-SNAPSHOT-001`,
   `EXTERNAL-SIDE-EFFECT-001`, `UI-LINT-001`, and `WIDGET-CATALOG-001`.
@@ -4252,7 +4252,7 @@ exemption.
 
 Use three enforcement levels.
 
-A rule a tool enforces is written on that tool in `tool/tools_manifest.json`:
+A rule a tool enforces is written on that tool in its `tool/manifest/tools/` file:
 its `rules` holds the id, title, paths and instruction, and any other tool that
 helps enforce it names the id in `alsoEnforces`. `node tool/run.mjs check
 --manifest-only` validates those entries. A rule no tool checks is a sentence in

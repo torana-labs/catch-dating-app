@@ -1,0 +1,23 @@
+{
+  "id": "contracts:bigquery-export-paths",
+  "category": "contracts",
+  "path": "tool/contracts/check_bigquery_export_paths.mjs",
+  "command": "node tool/contracts/check_bigquery_export_paths.mjs",
+  "surface": "local-read",
+  "status": "active",
+  "description": "Checks that every extensions/*.env BigQuery export reads a collection in the live Firestore registry, that env files and firebase.json extension instances match, and that the host analytics contract pins what the env files deploy.",
+  "impactPaths": [
+    "tool/contracts/check_bigquery_export_paths.test.mjs",
+    "tool/contracts/lib/firestore_rules_blocks.mjs",
+    "tool/contracts/firestore_contract/**",
+    "tool/contracts/lib/firestore_contract.mjs",
+    "tool/analytics/host_analytics_contract.mjs",
+    "extensions/**",
+    "firebase.json"
+  ],
+  "checks": [
+    "node --check tool/contracts/check_bigquery_export_paths.mjs",
+    "node --test tool/contracts/check_bigquery_export_paths.test.mjs",
+    "node tool/contracts/check_bigquery_export_paths.mjs"
+  ]
+}

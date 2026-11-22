@@ -1,0 +1,31 @@
+{
+  "id": "data:listing-cohort-withdraw",
+  "category": "data",
+  "path": "tool/data/listing_cohort_withdraw.mjs",
+  "command": "node tool/data/listing_cohort_withdraw.mjs --env <dev|prod> --cohort-id <cohort> [--city <slug>] --mode <plan|apply|verify> [--manifest-sha256 <hash>]",
+  "surface": "remote-write",
+  "guard": "apply-and-prod-flag",
+  "checkSafety": "local-readonly",
+  "status": "active",
+  "description": "Withdraws one programmatic listing cohort: counts-only plan of the public, unclaimed organisers whose listingProgram.cohortId matches, with a manifest SHA-256; apply only with the matching hash, suppressing each page (noindex) in re-checked transactions with one admin audit row per organiser; idempotent re-run and verify.",
+  "checks": [
+    "node --check tool/data/listing_cohort_withdraw.mjs",
+    "node --test tool/data/listing_cohort_withdraw.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/data/listing_cohort_withdraw.test.mjs",
+    "tool/data/lib/listing_cohort_withdraw/withdraw.mjs",
+    "tool/data/fixtures/listing_cohort_withdraw/fakes.mjs",
+    "tool/data/fixtures/listing_cohort_withdraw/world.mjs",
+    "contracts/shared/listing_program_common.schema.json",
+    "contracts/shared/profile_common.schema.json"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "role": "operator",
+  "runbook": "docs/release_operations.md#listing-cohort-withdraw"
+}
