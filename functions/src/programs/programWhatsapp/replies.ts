@@ -18,12 +18,12 @@ import {
   MetaProviderError,
   MetaWhatsappProvider,
   OrganizerTokenStore,
-} from "../../organizers/organizerWhatsappProvider";
+  metaWhatsappGraphVersion,
+} from "../../platform/delivery/organizerWhatsappProvider";
 import {
   metaWhatsappAppId,
   metaWhatsappAppSecret,
   metaWhatsappConfigId,
-  metaWhatsappGraphVersion,
 } from "../../organizers/organizerMessagingSetup";
 import {programStaffGrantId} from "../../shared/programAuthority";
 import {whatsappStatusCorrelation} from

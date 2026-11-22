@@ -21,7 +21,7 @@ import {validateOrganizerMessageTemplateDocument} from
   "../../shared/generated/validators/organizerMessageTemplateDocument";
 import {requireDoc} from "../../shared/validation";
 import {metaTemplateFromDocument} from
-  "../../organizers/organizerWhatsappProvider";
+  "../../platform/delivery/organizerWhatsappProvider";
 import {
   WHATSAPP_ENDPOINT_STOPS,
   whatsappStopId,

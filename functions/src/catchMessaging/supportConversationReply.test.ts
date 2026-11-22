@@ -3,7 +3,8 @@ import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {FakeFirestore} from "../shared/testing/programFirestore";
-import {MetaProviderError} from "../organizers/organizerWhatsappProvider";
+import {MetaProviderError} from
+  "../platform/delivery/organizerWhatsappProvider";
 import {
   AdminSupportDeps,
   adminGetSupportConversationHandler,

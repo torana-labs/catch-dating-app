@@ -21,7 +21,8 @@ import {whatsappStatusCorrelation} from
   "../platform/delivery/whatsappDeliveryProtocol";
 import {whatsappEndpointHash} from
   "../eventSuccess/operations/whatsappReplyProtocol";
-import {MetaProviderError} from "./organizerWhatsappProvider";
+import {MetaProviderError} from
+  "../platform/delivery/organizerWhatsappProvider";
 import {
   hashCanonical,
   organizerContactChannelStateId,

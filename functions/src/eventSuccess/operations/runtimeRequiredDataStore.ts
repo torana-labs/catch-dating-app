@@ -30,7 +30,8 @@ import {validateEventSuccessPlanDocument} from
 import {completedRuntimeFieldIds, optionalRuntimeFieldIds,
   requiredRuntimeFieldIds, type RuntimeFieldId} from "../runtimeProfile";
 import {assertCommandContext, assertCommandRole} from "./commands";
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 
 export const RUNTIME_DATA_REQUESTS = "eventRuntimeDataRequests";
 /** commandReceipts command for one required-data request operation. */

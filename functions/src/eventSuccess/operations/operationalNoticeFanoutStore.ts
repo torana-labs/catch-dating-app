@@ -11,7 +11,8 @@ import {FirestoreOperationsRepository} from
   "../../operations/firestoreRepository";
 import type {OperationActionReceipt, OperationLease} from
   "../../operations/models";
-import {runAssistanceTransaction as transact} from "./transactionCallback";
+import {runAssistanceTransaction as transact} from
+  "../../platform/transactionCallback";
 import {advanceFanoutPage} from "./boundedFanout";
 import {ensureCurrentGuestEnrollment} from "./currentGuestEnrollment";
 import {requireDocumentId} from "./guestRecords";

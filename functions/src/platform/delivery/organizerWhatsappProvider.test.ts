@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {SecretVersionReferenceGuard} from "../shared/secretVersionReference";
+import {SecretVersionReferenceGuard} from "../../shared/secretVersionReference";
 import {
   MetaWhatsappProvider,
   MetaProviderError,
   OrganizerTokenStore,
   MetaTemplateSnapshot,
 } from "./organizerWhatsappProvider";
-import {BRAND} from "../shared/generated/brand";
+import {BRAND} from "../../shared/generated/brand";
 
 const config = {
   appId: "app-id",

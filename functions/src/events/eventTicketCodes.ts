@@ -31,7 +31,7 @@ import {validateResolveEventTicketCodeCallableResponse} from
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {GuestLinkKeyStore} from
-  "../eventSuccess/operations/guestLinkKeyStore";
+  "../platform/guestLinkKeyStore";
 import type {GuestLinkSigningKeys} from "../platform/guestLinkSigningKeys";
 
 /**

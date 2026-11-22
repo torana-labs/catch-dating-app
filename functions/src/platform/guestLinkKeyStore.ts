@@ -1,8 +1,8 @@
 import {SecretVersionReferenceGuard} from
-  "../../shared/secretVersionReference";
+  "../shared/secretVersionReference";
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import type {GuestLinkSigningKeys} from
-  "../../platform/guestLinkSigningKeys";
+  "./guestLinkSigningKeys";
 
 const schema = "catch.event-assistance-guest-keys/v1";
 const unavailable = () => new Error("Guest response signing keys unavailable");

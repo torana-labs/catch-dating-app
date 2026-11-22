@@ -18,7 +18,7 @@ import {validateEventAttendanceDispositionReceiptDocument} from
 import {validateEventAttendanceDispositionCallableResponse} from
   "../../shared/generated/validators/eventAttendanceDispositionOutput";
 import {runAssistanceTransaction as transact} from
-  "../../eventSuccess/operations/transactionCallback";
+  "../../platform/transactionCallback";
 import {assertCommandContext, assertCommandRole} from
   "../../eventSuccess/operations/commands";
 import {guestCollections, guestIdentity} from

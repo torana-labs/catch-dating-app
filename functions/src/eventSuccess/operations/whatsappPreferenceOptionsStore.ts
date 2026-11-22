@@ -10,7 +10,7 @@ import {readMessagePreferenceDiscovery, messagePreferenceClock} from
   "./messagePreferenceDiscovery";
 import {parseWhatsappPermission, WHATSAPP_PERMISSIONS} from
   "./whatsappPermissionRecords";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 
 const pageSize = 50;
 

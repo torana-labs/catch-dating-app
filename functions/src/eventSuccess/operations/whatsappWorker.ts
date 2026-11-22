@@ -1,6 +1,6 @@
 import {operationContentHash} from "../../operations/durableActions";
 import {MetaProviderError, MetaWhatsappProvider, OrganizerTokenStore} from
-  "../../organizers/organizerWhatsappProvider";
+  "../../platform/delivery/organizerWhatsappProvider";
 import type {PermitResult} from "./messageOutbox";
 import type {PreparedMessageChannel, ChannelDispatchResult} from
   "./messageChannel";

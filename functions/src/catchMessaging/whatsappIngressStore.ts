@@ -4,7 +4,7 @@ import {
   type Transaction,
 } from "firebase-admin/firestore";
 import {runAssistanceTransaction} from
-  "../eventSuccess/operations/transactionCallback";
+  "../platform/transactionCallback";
 import {validateCatchWhatsappIngressEvidenceDocument} from
   "../shared/generated/validators/catchWhatsappIngressEvidenceDocument";
 import {

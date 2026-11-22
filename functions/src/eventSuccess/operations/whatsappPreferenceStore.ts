@@ -25,7 +25,7 @@ import {whatsappEndpointHash, whatsappEndpointId} from
   "./whatsappReplyProtocol";
 import {ConsentSender, whatsappConsentSender} from "./whatsappConsentSender";
 import {WHATSAPP_POLICIES} from "./whatsappTemplate";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 import {EndpointStop, parseWhatsappStop, WHATSAPP_ENDPOINT_STOPS,
   whatsappStopId} from "../../shared/organizerWhatsappStops";
 

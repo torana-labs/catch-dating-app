@@ -4,7 +4,7 @@ import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError, onCall, type CallableRequest} from
   "firebase-functions/v2/https";
 import {runAssistanceTransaction as transact} from
-  "../eventSuccess/operations/transactionCallback";
+  "../platform/transactionCallback";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";

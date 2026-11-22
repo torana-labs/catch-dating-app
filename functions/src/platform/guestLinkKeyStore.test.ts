@@ -1,5 +1,5 @@
 import {SecretVersionReferenceGuard} from
-  "../../shared/secretVersionReference";
+  "../shared/secretVersionReference";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";

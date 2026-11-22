@@ -27,7 +27,7 @@ import {CloseoutChange, checkpointCloseoutView, currentCloseoutDecision} from
 import {readCheckpointCloseoutReceipt} from "./checkpointCloseoutAccess";
 import {acquireCheckpointWorkLease} from "./checkpointWorkAccess";
 import {releaseAssistanceWorkLease} from "./liveWorkRunner";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 
 /** Close or reopen an obligation without changing arrival or visit facts. */
 export class CheckpointCloseoutStore {

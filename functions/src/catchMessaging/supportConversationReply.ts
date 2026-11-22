@@ -7,7 +7,8 @@ import {
 } from "../platform/adminAudit";
 import {assertOutboundContentAllowed} from
   "../communications/outboundContentPolicy";
-import {MetaProviderError} from "../organizers/organizerWhatsappProvider";
+import {MetaProviderError} from
+  "../platform/delivery/organizerWhatsappProvider";
 import type {checkRateLimit} from "../shared/rateLimit";
 import type {AdminSendCatchWhatsappReplyCallablePayload} from
   "../shared/generated/adminSendCatchWhatsappReplyCallablePayload";

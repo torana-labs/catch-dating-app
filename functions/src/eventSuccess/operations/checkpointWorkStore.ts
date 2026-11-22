@@ -13,7 +13,7 @@ import {requireDocumentId} from "./guestRecords";
 import {readCheckpoint} from "./checkpointReader";
 import {checkpointResponse, parseDepartureRoster} from "./checkpointRecords";
 import {DEPARTURE_ROSTERS} from "./departureRosterSource";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 import {ASSISTANCE_WORKFLOW, invalidWork} from "./liveWorkRecords";
 import {releaseAssistanceWorkLease} from "./liveWorkRunner";
 import {advanceCheckpointWorkRecords, CHECKPOINT_WORK_RUNTIME,

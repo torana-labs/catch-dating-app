@@ -1,4 +1,5 @@
-import {MetaWhatsappProvider} from "../organizers/organizerWhatsappProvider";
+import {MetaWhatsappProvider} from
+  "../platform/delivery/organizerWhatsappProvider";
 import {assertCatchReplyEnabled} from "./whatsappReply";
 import type {CatchReplyConfig, PreparedCatchReply} from "./whatsappReply";
 

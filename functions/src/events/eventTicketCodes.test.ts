@@ -3,7 +3,7 @@ import test from "node:test";
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import {parseGuestLinkKeys} from
-  "../eventSuccess/operations/guestLinkKeyStore";
+  "../platform/guestLinkKeyStore";
 import {FakeFirestore, type FakeData} from
   "../shared/testing/programFirestore";
 import {request} from "../shared/testing/programFixtures";

@@ -4,7 +4,8 @@ import type {Firestore} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {ProgressFirestore, seedJoiningProgress} from
   "./groupProgressTestFixtures";
-import {MetaWhatsappProvider} from "../../organizers/organizerWhatsappProvider";
+import {MetaWhatsappProvider} from
+  "../../platform/delivery/organizerWhatsappProvider";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
 import {guestCollections, parseGrant} from "./guestRecords";
 import type {GuestLinkSigningKeys} from

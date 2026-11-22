@@ -10,7 +10,7 @@ import {onDocumentCreated, onDocumentWritten} from
   "firebase-functions/v2/firestore";
 import type {Firestore} from "firebase-admin/firestore";
 import {runAssistanceTransaction as transact} from
-  "../eventSuccess/operations/transactionCallback";
+  "../platform/transactionCallback";
 import {catchEndpointHash, safeMillis} from "./whatsappReply";
 import type {CatchReplyOperation} from "./whatsappReply";
 import {CATCH_REPLY_OPERATIONS, readCatchOperation} from "./whatsappReplyStore";

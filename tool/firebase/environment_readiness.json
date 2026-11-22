@@ -334,7 +334,7 @@
       "sourcePaths": [
         "functions/src/organizers/organizerCampaignDispatcher.ts",
         "functions/src/organizers/organizerMessagingSetup.ts",
-        "functions/src/organizers/organizerWhatsappProvider.ts"
+        "functions/src/platform/delivery/organizerWhatsappProvider.ts"
       ],
       "credentialClass": "provider-secret",
       "binding": {
@@ -844,7 +844,7 @@
     {
       "id": "functions.reference.guest-keyring",
       "sourcePaths": [
-        "functions/src/eventSuccess/operations/guestLinkKeyStore.ts"
+        "functions/src/platform/guestLinkKeyStore.ts"
       ],
       "owner": "event-assistance",
       "credentialClass": "signing-keyring",
@@ -972,7 +972,7 @@
     {
       "id": "functions.reference.organizer-token",
       "sourcePaths": [
-        "functions/src/organizers/organizerWhatsappProvider.ts"
+        "functions/src/platform/delivery/organizerWhatsappProvider.ts"
       ],
       "owner": "organizer-messaging",
       "credentialClass": "provider-token",

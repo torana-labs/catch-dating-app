@@ -1,7 +1,7 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 import {validateTransferEventAssistanceGroupCallablePayload} from
   "../../shared/generated/validators/transferEventAssistanceGroupInput";
 import {assertCommandContext, assertCommandRole} from "./commands";

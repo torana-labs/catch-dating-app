@@ -10,7 +10,7 @@ import {readMessagePreferenceDiscovery, messagePreferenceClock} from
   "./messagePreferenceDiscovery";
 import {parseSmsPermission, smsCollections} from
   "./smsPermissionRecords";
-import {runAssistanceTransaction} from "./transactionCallback";
+import {runAssistanceTransaction} from "../../platform/transactionCallback";
 
 const pageSize = 50;
 
