@@ -106,6 +106,7 @@
   "lib/eventRehearsal/hostView.test.js",
   "lib/events/attendanceDisposition.test.js",
   "lib/events/attendanceReport.test.js",
+  "lib/hostReadModels/attendanceReportView.test.js",
   "lib/payments/formPayments/formPaymentEmulator.test.js",
   "lib/messaging/participantMessagingPreferencesEmulator.test.js",
   "lib/chats/eventChatAccessEmulator.test.js",
