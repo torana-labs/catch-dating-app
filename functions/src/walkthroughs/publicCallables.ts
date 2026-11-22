@@ -36,6 +36,7 @@ import {
   type GetWalkthroughSlotsResponse,
   type ManageWalkthroughBookingResponse,
 } from "./model";
+import {defaultWalkthroughBookedDeps, sendWalkthroughBooked} from "./bookedWhatsapp";
 import {
   availabilityOf,
   availabilityRef,
@@ -58,10 +59,13 @@ import {
 //   means staff closed booking: show the request form.
 // - bookWalkthrough: App Check and a Firebase sign-in whose phone was verified
 //   with a one-time code. Books one slot for that WhatsApp number, once per
-//   request id, and opens a task in the Admin Inbox (inbox.ts). A person
-//   confirms on WhatsApp; nothing is sent automatically (decision 28).
+//   request id, and opens a task in the Admin Inbox (inbox.ts), where a
+//   person confirms on WhatsApp. Catch's number also sends the approved
+//   "your walkthrough is booked" template (bookedWhatsapp.ts, off unless
+//   CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED).
 // - manageWalkthroughBooking: App Check. Reads, cancels or moves a booking for
-//   whoever holds its manage token or signs in with its verified phone.
+//   whoever holds its manage token or signs in with its verified phone. A
+//   move sends that template again with the new time.
 //
 // A refusal carries details.reason (model.ts WalkthroughRefusal).
 
@@ -69,12 +73,15 @@ export interface WalkthroughDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => Date;
   checkRateLimit: typeof defaultCheckRateLimit;
+  /** The WhatsApp message for a booking's new slot; never throws. Absent: none. */
+  sendBookedMessage?: (bookingId: string) => Promise<unknown>;
 }
 
 const defaultDeps: WalkthroughDeps = {
   firestore: () => admin.firestore(),
   now: () => new Date(),
   checkRateLimit: defaultCheckRateLimit,
+  sendBookedMessage: (bookingId) => sendWalkthroughBooked(defaultWalkthroughBookedDeps, bookingId),
 };
 
 const MINUTE = 60 * 1000;
@@ -184,6 +191,7 @@ export async function bookWalkthroughHandler(request: CallableRequest<unknown>,
   if (outcome.replayOf) return replay(outcome.replayOf, data);
   // The number and the token stay out of logs.
   logger.info("Walkthrough booked.", {bookingId, slotStartAt: outcome.created.slot.startAt, entry: data.entry});
+  await deps.sendBookedMessage?.(bookingId);
   return bookingResponse(outcome.created, false);
 }
 
@@ -220,7 +228,7 @@ export async function manageWalkthroughBookingHandler(request: CallableRequest<u
   const nowIso = now.toISOString();
   const ref = bookingRef(db, data.bookingId);
   const target = data.slotStartAt ? holdRef(db, data.slotStartAt) : null;
-  return db.runTransaction(async (tx) => {
+  const result = await db.runTransaction(async (tx): Promise<ManageWalkthroughBookingResponse> => {
     const bookingSnap = await tx.get(ref);
     if (!bookingSnap.exists) throw refusal("not-found", "We could not find that booking.", "not_found");
     const booking = bookingSnap.data() as WalkthroughBookingDocument;
@@ -272,6 +280,8 @@ export async function manageWalkthroughBookingHandler(request: CallableRequest<u
     tx.set(ref, moved);
     return answer(moved, true);
   });
+  if (data.action === "reschedule" && result.changed) await deps.sendBookedMessage?.(data.bookingId);
+  return result;
 }
 
 export const manageWalkthroughBooking = onCall(appCheckCallableOptionsWithLimits({maxInstances: 5}),
