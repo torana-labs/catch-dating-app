@@ -119,7 +119,7 @@ void main() {
     },
   );
 
-  test('unsupported intersecting filter groups retain server evaluation', () {
+  test('the directory serves one segment, never segments with tags', () {
     expect(
       HostContactSummaryReads.supports(
         const HostAudienceQuery(segment: HostAudienceSegment.newToOrganizer),
@@ -131,6 +131,19 @@ void main() {
         const HostAudienceQuery(
           segment: HostAudienceSegment.newToOrganizer,
           manualTagId: 'tag',
+        ),
+      ),
+      isFalse,
+    );
+    // Segments from different filter groups mean "all of" on the server; one
+    // array-contains-any can only read "any of".
+    expect(
+      HostContactSummaryReads.supports(
+        const HostAudienceQuery(
+          segments: {
+            HostAudienceSegment.regular,
+            HostAudienceSegment.whatsappReachable,
+          },
         ),
       ),
       isFalse,

@@ -37,9 +37,14 @@ class HostContactDirectory {
 }
 
 /// The contact directory from `hostContactSummaries` and the organizer's
-/// directory document. Only an intersecting filter group (segments with
-/// tags) still needs the server's evaluation. A name search is a prefix
+/// directory document. It serves everyone, one segment or any of up to 20
+/// manual tags, with or without a name search. A name search is a prefix
 /// match on `searchName` and lists its matches by name, whatever the sort.
+///
+/// Two segments are not served: the server reads segments from different
+/// filter groups as "all of", and one `array-contains-any` can only read
+/// them as "any of". Segments with tags are not served either, because a
+/// query holds one `array-contains-any`.
 class HostContactSummaryReads {
   const HostContactSummaryReads(this.reader);
   final ScopedReadModelReader reader;
@@ -82,7 +87,7 @@ class HostContactSummaryReads {
   static bool supports(HostAudienceQuery query) {
     final segments = {...query.segments, ?query.segment};
     final tags = {...query.manualTagIds, ?query.manualTagId};
-    return segments.length <= 12 &&
+    return segments.length <= 1 &&
         tags.length <= 20 &&
         (segments.isEmpty || tags.isEmpty);
   }
