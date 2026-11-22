@@ -1,7 +1,6 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {citiesPageCopy} from "@content/citiesPage";
-import {interpolateContent as fill} from "@content/interpolate";
 import {nightPlanTryItCopy} from "@content/nightPlanTryIt";
 import {websiteCities} from "@content/markets";
 import {playbookCopy} from "@content/playbook/playbookCopy";
@@ -90,7 +89,7 @@ describe("playbook page", () => {
     expect(band.getByText("Start the free trial, or leave your number and we’ll send the run club setup guide on WhatsApp.")).toBeTruthy();
     expect(band.getByRole("link", {name: "Start free trial"})).toBeTruthy();
     const form = within(band.getByRole("form", {name: "Send the guide"}));
-    expect(form.getByText(fill(playbookCopy.leadForm.consent, {action: "Send the guide"}))).toBeTruthy();
+    expect(form.getByText(playbookCopy.leadForm.consent)).toBeTruthy();
     expect(form.getByText("We’ll message you on WhatsApp with the guide.")).toBeTruthy();
 
     fireEvent.click(form.getByRole("button", {name: "Send the guide"}));

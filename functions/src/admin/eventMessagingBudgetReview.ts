@@ -22,8 +22,8 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {reviewEventMessageSetupInTransaction} from
   "../eventSuccess/operations/messageSetupReview";
-import {requireAdminRole} from "./adminAuth";
-import {writeAdminAuditLog} from "./adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {writeAdminAuditLog} from "../platform/adminAudit";
 import {eventMessagingBudgetDecisionId} from "./eventMessagingBudget";
 
 const decisionCollection = "eventMessagingBudgetDecisions";

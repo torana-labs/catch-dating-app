@@ -115,11 +115,33 @@ export function checkSpecTable({source, map}) {
   return finding(`the context table in "${specHeading}" disagrees with ${contextMapPath}; expected ${missing.join("; ") || "nothing"}; found extra ${extra.join("; ") || "nothing"}`);
 }
 
+// Every root and legacy entry must still place at least one tracked file. A
+// folder that moved or was deleted leaves an entry that silently places
+// nothing, so a stale map reads as a live one.
+export function checkMappedPaths({map, files}) {
+  const entries = [
+    ...Object.entries(map.roots).map(([root, rootPath]) =>
+      ({path: rootPath, label: `root ${root}`})),
+    ...map.legacy.map((entry) => ({path: entry.path, label: "legacy entry"})),
+  ];
+  return entries
+    .filter(({path: mappedPath}) =>
+      !files.some((file) => file.startsWith(mappedPath)))
+    .map(({path: mappedPath, label}) => ({
+      rule: "mappedPathMissing",
+      path: contextMapPath,
+      line: 1,
+      reason: `${label} ${mappedPath} matches no tracked file; remove it or ` +
+        "point it at the folder's new home",
+    }));
+}
+
 // What the analyzer cannot see from one file: that the map itself is well
-// formed and that the spec agrees with it. Placement and import order are
+// formed, that every path it places exists, and that the spec agrees with it. Placement and import order are
 // catch_arch_* lints in packages/catch_ui_lints.
 export function scanContextMap({snapshot}) {
-  if (snapshot == null || typeof snapshot.readTexts !== "function") {
+  if (snapshot == null || typeof snapshot.readTexts !== "function" ||
+      !Array.isArray(snapshot.files)) {
     throw new Error("Context map check requires a repository snapshot.");
   }
   const sources = snapshot.readTexts([contextMapPath, specPath]);
@@ -130,7 +152,10 @@ export function scanContextMap({snapshot}) {
   const map = loadContextMap(mapSource);
   return {
     contexts: map.contexts.length,
-    findings: checkSpecTable({source: sources.get(specPath), map}),
+    findings: [
+      ...checkMappedPaths({map, files: snapshot.files}),
+      ...checkSpecTable({source: sources.get(specPath), map}),
+    ],
   };
 }
 
@@ -139,7 +164,8 @@ function printHelp() {
   node tool/architecture/check_context_map.mjs
   node tool/architecture/check_context_map.mjs --json
 
-Checks that ${contextMapPath} is well formed and that the context table in
+Checks that ${contextMapPath} is well formed, that every root and legacy
+path in it still matches a tracked file, and that the context table in
 ${specPath} matches it. Where each file sits and which imports it may make are
 catch_arch_* lints in packages/catch_ui_lints, which read the same map.`);
 }

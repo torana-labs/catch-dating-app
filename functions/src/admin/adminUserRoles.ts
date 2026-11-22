@@ -8,8 +8,8 @@ import {
   AdminRoleClaim,
   adminRolesFromToken,
   requireAdminRole,
-} from "./adminAuth";
-import {writeAdminAuditLog} from "./adminAudit";
+} from "../platform/adminAuth";
+import {writeAdminAuditLog} from "../platform/adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {AdminSetAdminUserRolesCallablePayload} from
   "../shared/generated/adminSetAdminUserRolesCallablePayload";

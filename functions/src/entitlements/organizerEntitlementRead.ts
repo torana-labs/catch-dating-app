@@ -23,7 +23,7 @@ import {
 import {validateOrganizerEntitlementsDocument} from
   "../shared/generated/validators/organizerEntitlementsDocument";
 import {grantIsActive, grantRemaining} from "./entitlementPolicy";
-import {adminRolesFromToken} from "../admin/adminAuth";
+import {adminRolesFromToken} from "../platform/adminAuth";
 
 const entitlementCollection = "organizerEntitlements";
 

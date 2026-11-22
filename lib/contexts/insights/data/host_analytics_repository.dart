@@ -14,8 +14,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_analytics_repository.g.dart';
 
-// keepalive: the device IANA timezone is stable for the app process and lets
-// host surfaces render from their market fallback while the plugin resolves.
+// keepalive: account-free: the device IANA timezone is stable for the app
+// process and lets host surfaces render from their market fallback while the
+// plugin resolves.
 @Riverpod(keepAlive: true)
 Future<String?> hostAnalyticsDeviceTimezone(Ref ref) async {
   try {

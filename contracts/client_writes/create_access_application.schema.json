@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/create_access_application.schema.json",
+  "title": "CreateAccessApplicationClientWrite",
+  "description": "Client-owned Firestore create of the launch access application at accessApplications/{uid} (LaunchAccessRepository.submitApplication on first submission). Rules pin status to pending, submissionCount to 1 and every timestamp to the request time; review, cohort and activation fields stay Admin-SDK-owned.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "data"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid"
+      ],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationVersion",
+        "status",
+        "city",
+        "role",
+        "eventTypes",
+        "availabilityWindows",
+        "wantsToHost",
+        "whyCatch",
+        "submissionCount",
+        "submittedAt",
+        "updatedAt",
+        "createdAt"
+      ],
+      "properties": {
+        "applicationVersion": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/applicationVersion"
+        },
+        "status": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/status"
+        },
+        "city": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/city"
+        },
+        "role": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/role"
+        },
+        "eventTypes": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/eventTypes"
+        },
+        "availabilityWindows": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/availabilityWindows"
+        },
+        "wantsToHost": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/wantsToHost"
+        },
+        "inviteCode": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/inviteCode"
+        },
+        "instagramHandle": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/instagramHandle"
+        },
+        "referralSource": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/referralSource"
+        },
+        "whyCatch": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/whyCatch"
+        },
+        "submissionCount": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/submissionCount"
+        },
+        "submittedAt": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/submittedAt"
+        },
+        "updatedAt": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/updatedAt"
+        },
+        "createdAt": {
+          "$ref": "../firestore/access_applications.schema.json#/properties/createdAt"
+        }
+      }
+    }
+  },
+  "x-firestore-operation": "create",
+  "x-firestore-path": "accessApplications/{uid}",
+  "x-owner": "authenticated owner direct application create"
+}

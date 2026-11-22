@@ -60,7 +60,7 @@ final class AppShellFcmInitializationProvider
 }
 
 String _$appShellFcmInitializationHash() =>
-    r'9150995d5809e4b8c039b7d771a3fbc291aa9c11';
+    r'c1db3f0106b9ee90d1a97dfd91a868e247d19ff4';
 
 final class AppShellFcmInitializationFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<void>, (String, GoRouter)> {

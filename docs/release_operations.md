@@ -3576,7 +3576,9 @@ never to an artifact.
      `roles/bigquery.dataEditor` on exactly these tables:
      `catch_analytics.organizers_raw_changelog`, `events_raw_changelog`,
      `reviews_raw_changelog`, `saved_events_raw_changelog`,
-     `event_participations_raw_changelog`, `event_invite_links_raw_changelog`,
+     `event_bookings_raw_changelog`, `event_participations_raw_changelog`
+     (rows written before the 22 Nov 2026 export move),
+     `event_invite_links_raw_changelog`,
      `organizer_growth_events`, `host_analytics_events`, and
      `catch_marketplace_metrics.event_success_scorecards_raw_changelog` and
      `event_success_feedback_raw_changelog`; plus what the host mart refresh

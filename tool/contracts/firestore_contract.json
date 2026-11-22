@@ -60,6 +60,18 @@
       {
         "id": "seedEvents",
         "reason": "Server-only collection; no test yet proves client reads and writes are denied."
+      },
+      {
+        "id": "demoSelfServiceAccess",
+        "reason": "Client access (owner only) has no rules test yet."
+      },
+      {
+        "id": "organizer_posts",
+        "reason": "Client access (any signed-in user) has no rules test yet."
+      },
+      {
+        "id": "eventPrivateAccess",
+        "reason": "Client access (the event's organizer hosts) has no rules test yet."
       }
     ]
   },
@@ -390,7 +402,7 @@
     },
     {
       "id": "organizerPaymentOauthStates",
-      "path": "organizerPaymentOauthStates/{stateId}",
+      "path": "organizerPaymentOauthStates/{stateHash}",
       "rulesMatch": "/organizerPaymentOauthStates/{stateId}",
       "typescriptInterface": "OrganizerPaymentOauthStateDocument",
       "dartModel": null,
@@ -888,7 +900,7 @@
     },
     {
       "id": "organizerEventVenues",
-      "path": "organizerEventVenues/{organizerId_venueId}",
+      "path": "organizerEventVenues/{venueDocumentId}",
       "rulesMatch": "/organizerEventVenues/{venueDocumentId}",
       "typescriptInterface": "OrganizerEventVenueDocument",
       "dartModel": "lib/contexts/events/domain/organizer_event_venue.dart",
@@ -960,7 +972,7 @@
     },
     {
       "id": "eventRehearsalActors",
-      "path": "eventRehearsalActors/{actorId}",
+      "path": "eventRehearsalActors/{actorDocumentId}",
       "rulesMatch": "/eventRehearsalActors/{actorId}",
       "typescriptInterface": "EventRehearsalActorDocument",
       "dartModel": "lib/contexts/live/domain/event_rehearsal.dart",
@@ -988,7 +1000,7 @@
     },
     {
       "id": "eventRehearsalActions",
-      "path": "eventRehearsalActions/{actionId}",
+      "path": "eventRehearsalActions/{actionDocumentId}",
       "rulesMatch": "/eventRehearsalActions/{actionId}",
       "typescriptInterface": "EventRehearsalActionDocument",
       "dartModel": "lib/contexts/live/domain/event_rehearsal.dart",
@@ -1131,7 +1143,7 @@
     },
     {
       "id": "organizerCommunicationPreferences",
-      "path": "organizerCommunicationPreferences/{preferenceId}",
+      "path": "organizerCommunicationPreferences/{organizerId_uid}",
       "rulesMatch": "/organizerCommunicationPreferences/{preferenceId}",
       "typescriptInterface": "OrganizerCommunicationPreferenceDocument",
       "dartModel": null,
@@ -2369,7 +2381,7 @@
     },
     {
       "id": "eventSuccessGuestHistory",
-      "path": "eventSuccessGuestHistory/{historyId}",
+      "path": "eventSuccessGuestHistory/{eventId_uid}",
       "rulesMatch": "/eventSuccessGuestHistory/{historyId}",
       "typescriptInterface": "EventSuccessGuestHistoryDocument",
       "dartModel": null,
@@ -2494,6 +2506,7 @@
       "id": "eventParticipations",
       "path": "eventParticipations/{participationId}",
       "rulesMatch": "/eventParticipations/{participationId}",
+      "schemaContract": "contracts/firestore/event_bookings.schema.json",
       "typescriptInterface": "EventBookingDocument",
       "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "onEventBookingMirroredToLegacy trigger (transitional legacy mirror of eventBookings)",
@@ -3138,10 +3151,10 @@
       ]
     },
     {
-      "dartModel": null,
       "id": "organizerProgramViews",
       "path": "organizerProgramViews/{programId}",
       "rulesMatch": "/organizerProgramViews/{programId}",
+      "dartModel": null,
       "typescriptInterface": "OrganizerProgramViewDocument",
       "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
       "rulesTestNames": [
@@ -3765,10 +3778,10 @@
       ]
     },
     {
-      "dartModel": null,
       "id": "programWhatsappThreadViews",
       "path": "programWhatsappThreadViews/{threadId}",
       "rulesMatch": "/programWhatsappThreadViews/{threadId}",
+      "dartModel": null,
       "typescriptInterface": "ProgramWhatsappThreadViewDocument",
       "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
       "rulesTestNames": [
@@ -4170,6 +4183,7 @@
       "id": "operationRuns",
       "path": "operationRuns/{runId}",
       "rulesMatch": "/operationRuns/{runId}",
+      "schemaContract": "contracts/operations/run.schema.json",
       "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted operations workers",
       "read": "server/admin callable only",
@@ -4183,6 +4197,7 @@
       "id": "operationWorkItems",
       "path": "operationWorkItems/{workItemId}",
       "rulesMatch": "/operationWorkItems/{workItemId}",
+      "schemaContract": "contracts/operations/work_item.schema.json",
       "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted operations workers",
       "read": "server/admin callable only",
@@ -4196,6 +4211,7 @@
       "id": "operationActionReceipts",
       "path": "operationActionReceipts/{actionId}",
       "rulesMatch": "/operationActionReceipts/{actionId}",
+      "schemaContract": "contracts/operations/action_receipt.schema.json",
       "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted operations workers",
       "read": "server only",
@@ -4205,6 +4221,7 @@
       "id": "operationLeases",
       "path": "operationLeases/{leaseId}",
       "rulesMatch": "/operationLeases/{leaseId}",
+      "schemaContract": "contracts/operations/lease.schema.json",
       "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "trusted operations workers",
       "read": "server only",
@@ -5796,10 +5813,7 @@
       "rulesMatch": "/catchWhatsappReplyOperations/{operationId}",
       "typescriptInterface": "CatchWhatsappReplyOperationDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/src/catchMessaging/whatsappReplyStore.test.ts",
-      "rulesTestNames": [
-        "new Catch state denies SDK clients including privileged staff"
-      ],
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
       "owner": "Catch support reply service",
       "read": "server only; exact controlled support/adminOwner callable scope",
       "write": "server only; permanent one-reply claim and monotonic delivery projection",
@@ -5816,10 +5830,7 @@
       "rulesMatch": "/catchWhatsappEndpointStops/{stopId}",
       "typescriptInterface": "CatchWhatsappEndpointStopDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/src/catchMessaging/whatsappReplyStore.test.ts",
-      "rulesTestNames": [
-        "new Catch state denies SDK clients including privileged staff"
-      ],
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
       "owner": "Catch support reply service",
       "read": "server only; exact controlled support/adminOwner callable scope",
       "write": "server only; atomic ingress suppression with no TTL or reset",
@@ -5836,10 +5847,7 @@
       "rulesMatch": "/catchWhatsappReplyReadiness/{readinessId}",
       "typescriptInterface": "CatchWhatsappReplyReadinessDocument",
       "dartModel": null,
-      "rulesTestFile": "functions/src/catchMessaging/whatsappReplyStore.test.ts",
-      "rulesTestNames": [
-        "new Catch state denies SDK clients including privileged staff"
-      ],
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
       "owner": "Catch support reply service",
       "read": "server only; exact controlled support/adminOwner callable scope",
       "write": "disconnected readiness transaction adapter; audited external authority fence and complete archive evidence required; no live callable writer",
@@ -6028,7 +6036,7 @@
       ],
       "migrationNotes": [
         "bill equals what listOrganizerBills returns for the bill: no staff ids, reminders, history or link id, and the payment link only while unpaid. The host-organizer-bill-views copy-forward migration creates views for bills sent before the trigger.",
-        "listOrganizerBills stays deployed for released Host builds and the website owner pages."
+        "listOrganizerBills stays deployed for older Host builds only; current Host builds and the website billing portal read these views."
       ]
     },
     {
@@ -6265,6 +6273,2153 @@
       "migrationNotes": [
         "The moment exactly as listOrganizerMoments returned it and its plan summary (anchor, sent count, next planned run while armed); the board state that compares moments is the phone's. The organiser's WhatsApp sender stays on listOrganizerMoments. Organiser-scope automation moments get no row. The organizer-moment-views copy-forward migration creates rows for moments that predate the triggers and leaves rows the triggers wrote alone."
       ]
+    },
+    {
+      "id": "pushInstallations",
+      "path": "users/{uid}/pushInstallations/{installationId}",
+      "rulesMatch": "/users/{uid}/pushInstallations/{installationId}",
+      "typescriptInterface": "PushInstallationDocument",
+      "rulesTestFile": "functions/test/rules/users.rules.test.cjs",
+      "owner": "the signed-in app (FcmService) writes its own installation; push senders read",
+      "read": "owner only",
+      "write": "owner direct create, update and delete of bounded push installation documents"
+    },
+    {
+      "id": "accessApplications",
+      "path": "accessApplications/{uid}",
+      "rulesMatch": "/accessApplications/{uid}",
+      "typescriptInterface": "AccessApplicationDocument",
+      "rulesTestFile": "functions/test/rules/launch_access_applications.rules.test.cjs",
+      "owner": "authenticated applicant owns application fields while editable; admin callables own review, cohort, and activation fields",
+      "read": "owner only",
+      "write": "owner direct create and revision of editable application fields; review, cohort and activation fields are server only"
+    },
+    {
+      "id": "eventAssistanceCheckpointReceipts",
+      "path": "eventAssistanceCheckpointReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceCheckpointReceipts/{receiptId}",
+      "typescriptInterface": "EventAssistanceCheckpointReceiptDocument",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+      "owner": "event-assistance checkpoint command",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventAssistanceOperationalNoticeQuotas",
+      "path": "eventAssistanceOperationalNoticeQuotas/{quotaId}",
+      "rulesMatch": "/eventAssistanceOperationalNoticeQuotas/{quotaId}",
+      "typescriptInterface": "EventAssistanceOperationalNoticeQuotaDocument",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+      "owner": "trusted event-assistance operational notice publisher",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventAssistanceOperationalNoticePublications",
+      "path": "eventAssistanceOperationalNoticePublications/{publicationId}",
+      "rulesMatch": "/eventAssistanceOperationalNoticePublications/{publicationId}",
+      "typescriptInterface": "EventAssistanceOperationalNoticePublicationDocument",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+      "owner": "trusted event-assistance operational notice publisher",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventPlanChanges",
+      "path": "eventPlanChanges/{sourceId}",
+      "rulesMatch": "/eventPlanChanges/{sourceId}",
+      "typescriptInterface": "EventPlanChangeDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "updateEvent callable and trusted Event Assistance workers",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerPhoneLeads",
+      "path": "organizerPhoneLeads/{leadId}",
+      "rulesMatch": "/organizerPhoneLeads/{leadId}",
+      "typescriptInterface": "OrganizerPhoneLeadDocument",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+      "owner": "phone lead triggers (functions/src/organizers/phoneLeads/sync.ts)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "supportConversationMessages",
+      "path": "supportConversations/{conversationId}/messages/{messageId}",
+      "rulesMatch": "/supportConversations/{privateDocument=**}",
+      "typescriptInterface": "SupportConversationMessageDocument",
+      "rulesTestFile": "functions/test/rules/chat_and_match_writes.rules.test.cjs",
+      "owner": "Support inbox service and Admin support callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "supportConversations",
+      "path": "supportConversations/{conversationId}",
+      "rulesMatch": "/supportConversations/{privateDocument=**}",
+      "typescriptInterface": "SupportConversationDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Support inbox service and Admin support callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "supportSavedReplies",
+      "path": "supportSavedReplies/{replyId}",
+      "rulesMatch": "/supportSavedReplies/{replyId}",
+      "typescriptInterface": "SupportSavedReplyDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Admin support callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "accountSafetyStates",
+      "path": "accountSafetyStates/{uid}",
+      "rulesMatch": "/accountSafetyStates/{uid}",
+      "typescriptInterface": "AccountSafetyStateDocument",
+      "rulesTestFile": "functions/test/rules/chat_and_match_writes.rules.test.cjs",
+      "owner": "Account safety action service",
+      "read": "owner get only; no list",
+      "write": "server only"
+    },
+    {
+      "id": "accountSafetyNotices",
+      "path": "accountSafetyNotices/{uid}/items/{noticeId}",
+      "rulesMatch": "/accountSafetyNotices/{uid}/items/{noticeId}",
+      "typescriptInterface": "AccountSafetyNoticeDocument",
+      "rulesTestFile": "functions/test/rules/activity_notifications.rules.test.cjs",
+      "owner": "Account safety action service and report callables",
+      "read": "owner only",
+      "write": "server only"
+    },
+    {
+      "id": "accountSafetyActions",
+      "path": "accountSafetyActions/{actionId}",
+      "rulesMatch": "/accountSafetyActions/{actionId}",
+      "typescriptInterface": "AccountSafetyActionDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Admin account safety callables and the severe-report restriction",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "bannedIdentities",
+      "path": "bannedIdentities/{identityId}",
+      "rulesMatch": "/bannedIdentities/{identityId}",
+      "typescriptInterface": "BannedIdentityDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Account safety action service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "blockedSignupAttempts",
+      "path": "blockedSignupAttempts/{attemptId}",
+      "rulesMatch": "/blockedSignupAttempts/{attemptId}",
+      "typescriptInterface": "BlockedSignupAttemptDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Banned identity screening triggers",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerGuestBlocks",
+      "path": "organizerGuestBlocks/{blockId}",
+      "rulesMatch": "/organizerGuestBlocks/{blockId}",
+      "typescriptInterface": "OrganizerGuestBlockDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "manageOrganizerGuestBlock callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "safetySettings",
+      "path": "safetySettings/{settingsId}",
+      "rulesMatch": "/safetySettings/{settingsId}",
+      "typescriptInterface": "SafetySettingsDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Admin safety settings callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "discoverySettings",
+      "path": "discoverySettings/{settingsId}",
+      "rulesMatch": "/discoverySettings/{settingsId}",
+      "typescriptInterface": "DiscoverySettingsDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Admin discovery settings callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "supplyNominators",
+      "path": "supplyNominators/{nominatorId}",
+      "rulesMatch": "/supplyNominators/{nominatorId}",
+      "typescriptInterface": "SupplyNominatorDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Admin nominator registry callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerGrowthFacts",
+      "path": "organizerGrowthFacts/{organizerId}",
+      "rulesMatch": "/organizerGrowthFacts/{organizerId}",
+      "typescriptInterface": "OrganizerGrowthFactsDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Functions growth facts writers (listing approval and organizer, claim, booking and payment triggers)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerBills",
+      "path": "organizerBills/{billId}",
+      "rulesMatch": "/organizerBills/{billId}",
+      "typescriptInterface": "OrganizerBillDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Functions organizer billing (daily cycle generation, adminManageOrganizerBills, Razorpay payment link webhook)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerBillingCycles",
+      "path": "organizerBillingCycles/{organizerId}",
+      "rulesMatch": "/organizerBillingCycles/{organizerId}",
+      "typescriptInterface": "OrganizerBillingCycleDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Functions organizer billing (daily cycle generation)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerBillingPlans",
+      "path": "organizerBillingPlans/{organizerId}",
+      "rulesMatch": "/organizerBillingPlans/{organizerId}",
+      "typescriptInterface": "OrganizerBillingPlanDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Functions organizer billing (manageOrganizerBillingPlan, Razorpay payment link webhook, daily cycle generation)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerBillNotices",
+      "path": "organizerBillNotices/{noticeId}",
+      "rulesMatch": "/organizerBillNotices/{noticeId}",
+      "typescriptInterface": "OrganizerBillNoticeDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Functions organizer billing (adminManageOrganizerBills send/remind, bill notice delivery)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "billingNoticeSettings",
+      "path": "billingNoticeSettings/{settingsId}",
+      "rulesMatch": "/billingNoticeSettings/{settingsId}",
+      "typescriptInterface": "BillingNoticeSettingsDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Catch owner (production setup); read by Functions bill notice delivery and operator alerts",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "moneyInvoiceCounters",
+      "path": "moneyInvoiceCounters/{financialYear}",
+      "rulesMatch": "/moneyInvoiceCounters/{financialYear}",
+      "typescriptInterface": "MoneyInvoiceCounterDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Functions organizer billing (sending a bill)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "moneySettings",
+      "path": "moneySettings/{settingsId}",
+      "rulesMatch": "/moneySettings/{settingsId}",
+      "typescriptInterface": "MoneySettingsDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "adminManageMoneySettings",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "listingProgramSettings",
+      "path": "listingProgramSettings/{settingsId}",
+      "rulesMatch": "/listingProgramSettings/{settingsId}",
+      "typescriptInterface": "ListingProgramSettingsDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "adminManageListingProgram",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "nominatorCredits",
+      "path": "nominatorCredits/{creditId}",
+      "rulesMatch": "/nominatorCredits/{creditId}",
+      "typescriptInterface": "NominatorCreditDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Functions organizer billing (bill paid) and adminManageNominatorCredits",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "platformCosts",
+      "path": "platformCosts/{costId}",
+      "rulesMatch": "/platformCosts/{costId}",
+      "typescriptInterface": "PlatformCostDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "adminManagePlatformCosts and ad spend imports",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "moneyIssueResolutions",
+      "path": "moneyIssueResolutions/{resolutionId}",
+      "rulesMatch": "/moneyIssueResolutions/{resolutionId}",
+      "typescriptInterface": "MoneyIssueResolutionDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "adminManagePaymentIssues",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "publicRouteReservations",
+      "path": "publicRouteReservations/{routeKey}",
+      "rulesMatch": "/publicRouteReservations/{routeKey}",
+      "typescriptInterface": "PublicRouteReservationDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "admin organizer publishing callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "demoSelfServiceAccess",
+      "path": "demoSelfServiceAccess/{uid}",
+      "rulesMatch": "/demoSelfServiceAccess/{uid}",
+      "typescriptInterface": "DemoSelfServiceAccessDocument",
+      "owner": "Demo tooling; read by Suvbot",
+      "read": "owner only",
+      "write": "server only"
+    },
+    {
+      "id": "demoOpsRequests",
+      "path": "demoOpsRequests/{operationId}",
+      "rulesMatch": "/demoOpsRequests/{requestId}",
+      "typescriptInterface": "DemoOpsRequestDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Suvbot demo operations",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "demoOpsConfirmations",
+      "path": "demoOpsConfirmations/{confirmationId}",
+      "rulesMatch": "/demoOpsConfirmations/{confirmationId}",
+      "typescriptInterface": "DemoOpsConfirmationDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Suvbot demo operations",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "demoOpsEvents",
+      "path": "demoOpsEvents/{operationId}",
+      "rulesMatch": "/demoOpsEvents/{operationId}",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Suvbot demo operations and the demo ops CLI",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "publicEventAdmissionReceipts",
+      "path": "publicEventAdmissionReceipts/{receiptId}",
+      "rulesMatch": "/publicEventAdmissionReceipts/{documentId}",
+      "typescriptInterface": "PublicEventAdmissionReceiptDocument",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "owner": "public event checkout admission service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerEventOfferRecipients",
+      "path": "organizerEventOfferRecipients/{documentId}",
+      "rulesMatch": "/organizerEventOfferRecipients/{documentId}",
+      "typescriptInterface": "OrganizerEventOfferRecipientDocument",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "owner": "event offer callables and the offer payment transactions",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizers",
+      "path": "organizers/{organizerId}",
+      "rulesMatch": "/organizers/{organizerId}",
+      "typescriptInterface": "OrganizerDocument",
+      "rulesTestFile": "functions/test/rules/event_host_photos.rules.test.cjs",
+      "owner": "organizer callables; aggregate projections are trigger-owned",
+      "read": "signed-in hosts and active team members of the organizer; hosts list their own organizers",
+      "write": "server only"
+    },
+    {
+      "id": "publicOrganizers",
+      "path": "publicOrganizers/{organizerId}",
+      "rulesMatch": "/publicOrganizers/{organizerId}",
+      "typescriptInterface": "PublicOrganizerDocument",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "owner": "syncPublicOrganizer trigger",
+      "read": "public get; list only discoverable organizers",
+      "write": "server only"
+    },
+    {
+      "id": "organizer_posts",
+      "path": "organizers/{organizerId}/posts/{postId}",
+      "rulesMatch": "/organizers/{organizerId}/posts/{postId}",
+      "typescriptInterface": "OrganizerPostDocument",
+      "owner": "createOrganizerPost callable",
+      "read": "any signed-in user",
+      "write": "server only"
+    },
+    {
+      "id": "organizerTeamMemberships",
+      "path": "organizerTeamMemberships/{membershipId}",
+      "rulesMatch": "/organizerTeamMemberships/{membershipId}",
+      "typescriptInterface": "OrganizerTeamMembershipDocument",
+      "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
+      "owner": "organizer team callables",
+      "read": "the member or the organizer's hosts",
+      "write": "server only"
+    },
+    {
+      "id": "organizerEventSuccessLayouts",
+      "path": "organizerEventSuccessLayouts/{layoutDocumentId}",
+      "rulesMatch": "/organizerEventSuccessLayouts/{layoutDocumentId}",
+      "typescriptInterface": "OrganizerEventSuccessLayoutDocument",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "owner": "organizer manager through upsertEventSuccessLayout",
+      "read": "the organizer's hosts",
+      "write": "server only"
+    },
+    {
+      "id": "organizerFollows",
+      "path": "organizerFollows/{followId}",
+      "rulesMatch": "/organizerFollows/{followId}",
+      "typescriptInterface": "OrganizerFollowDocument",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "owner": "organizer follow callables; parent followerCount is trigger-owned",
+      "read": "the follower only",
+      "write": "server only"
+    },
+    {
+      "id": "hostDirectorySummaries",
+      "path": "hostDirectorySummaries/{organizerId}",
+      "rulesMatch": "/hostDirectorySummaries/{organizerId}",
+      "typescriptInterface": "HostDirectorySummaryDocument",
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "owner": "Host read model projector",
+      "read": "the organizer's summary managers",
+      "write": "server only"
+    },
+    {
+      "id": "hostFormSummaries",
+      "path": "hostFormSummaries/{formId}",
+      "rulesMatch": "/hostFormSummaries/{formId}",
+      "typescriptInterface": "HostFormSummaryDocument",
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "owner": "Host read model projector",
+      "read": "the organizer's summary managers",
+      "write": "server only"
+    },
+    {
+      "id": "hostEventSummaries",
+      "path": "hostEventSummaries/{eventId}",
+      "rulesMatch": "/hostEventSummaries/{eventId}",
+      "typescriptInterface": "HostEventSummaryDocument",
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "owner": "Host read model projector",
+      "read": "the organizer's active summary managers",
+      "write": "server only"
+    },
+    {
+      "id": "hostGroupSummaries",
+      "path": "hostGroupSummaries/{audienceId}",
+      "rulesMatch": "/hostGroupSummaries/{audienceId}",
+      "typescriptInterface": "HostGroupSummaryDocument",
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "owner": "Host read model projector",
+      "read": "the organizer's summary managers",
+      "write": "server only"
+    },
+    {
+      "id": "hostGroupDetails",
+      "path": "hostGroupDetails/{audienceId}",
+      "rulesMatch": "/hostGroupDetails/{audienceId}",
+      "typescriptInterface": "HostGroupDetailDocument",
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "owner": "Host read model projector",
+      "read": "the organizer's summary managers, get only",
+      "write": "server only"
+    },
+    {
+      "id": "hostResponseSummaries",
+      "path": "hostResponseSummaries/{summaryId}",
+      "rulesMatch": "/hostResponseSummaries/{summaryId}",
+      "typescriptInterface": "HostResponseSummaryDocument",
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "owner": "Host read model projector",
+      "read": "the organizer's summary managers",
+      "write": "server only"
+    },
+    {
+      "id": "hostContactSummaries",
+      "path": "hostContactSummaries/{contactId}",
+      "rulesMatch": "/hostContactSummaries/{contactId}",
+      "typescriptInterface": "HostContactSummaryDocument",
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "owner": "Host read model projector",
+      "read": "the organizer's summary managers",
+      "write": "server only"
+    },
+    {
+      "id": "organizerSavedAudiences",
+      "path": "organizerSavedAudiences/{audienceId}",
+      "rulesMatch": "/organizerSavedAudiences/{audienceId}",
+      "typescriptInterface": "OrganizerSavedAudienceDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "manager-only organizer saved-audience callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerSenderConnections",
+      "path": "organizerSenderConnections/{connectionId}",
+      "rulesMatch": "/organizerSenderConnections/{connectionId}",
+      "typescriptInterface": "OrganizerSenderConnectionDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "organizer messaging sender onboarding and provider health sync",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerApplicationForms",
+      "path": "organizerApplicationForms/{formId}",
+      "rulesMatch": "/organizerApplicationForms/{formId}",
+      "typescriptInterface": "OrganizerApplicationFormDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "organizer application form callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerApplicationFormVersions",
+      "path": "organizerApplicationFormVersions/{versionId}",
+      "rulesMatch": "/organizerApplicationFormVersions/{versionId}",
+      "typescriptInterface": "OrganizerApplicationFormVersionDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "organizer application form publish and import callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerApplications",
+      "path": "organizerApplications/{applicationId}",
+      "rulesMatch": "/organizerApplications/{applicationId}",
+      "typescriptInterface": "OrganizerApplicationDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "organizer application submission, import, and review callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerApplicationResponses",
+      "path": "organizerApplicationResponses/{responseId}",
+      "rulesMatch": "/organizerApplicationResponses/{responseId}",
+      "typescriptInterface": "OrganizerApplicationResponseDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "organizer application submission and import callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerApplicationImportReceipts",
+      "path": "organizerApplicationImportReceipts/{receiptId}",
+      "rulesMatch": "/organizerApplicationImportReceipts/{receiptId}",
+      "typescriptInterface": "OrganizerApplicationImportReceiptDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "organizer application import callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerFormResponseDrafts",
+      "path": "organizerFormResponseDrafts/{draftId}",
+      "rulesMatch": "/organizerFormResponseDrafts/{draftId}",
+      "typescriptInterface": "OrganizerFormResponseDraftDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "organizer form respondent callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "paymentRoutingPolicies",
+      "path": "paymentRoutingPolicies/{policyId}",
+      "rulesMatch": "/paymentRoutingPolicies/{policyId}",
+      "typescriptInterface": "PaymentRoutingPolicyDocument",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "owner": "payment routing server operations",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerFormResponses",
+      "path": "organizerFormResponses/{responseId}",
+      "rulesMatch": "/organizerFormResponses/{responseId}",
+      "typescriptInterface": "OrganizerFormResponseDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "organizer form submission callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerFormAssets",
+      "path": "organizerFormAssets/{assetId}",
+      "rulesMatch": "/organizerFormAssets/{assetId}",
+      "typescriptInterface": "OrganizerFormAssetDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "organizer form respondent asset callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerFormShareLinks",
+      "path": "organizerFormShareLinks/{linkId}",
+      "rulesMatch": "/organizerFormShareLinks/{linkId}",
+      "typescriptInterface": "OrganizerFormShareLinkDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "organizer form distribution callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerFormAggregates",
+      "path": "organizerFormAggregates/{aggregateId}",
+      "rulesMatch": "/organizerFormAggregates/{aggregateId}",
+      "typescriptInterface": "OrganizerFormAggregateDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "organizer form aggregate projection",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerFormAggregateEvents",
+      "path": "organizerFormAggregateEvents/{eventId}",
+      "rulesMatch": "/organizerFormAggregateEvents/{eventId}",
+      "typescriptInterface": "OrganizerFormAggregateEventDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "organizer form aggregate projection",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerFormExports",
+      "path": "organizerFormExports/{exportId}",
+      "rulesMatch": "/organizerFormExports/{exportId}",
+      "typescriptInterface": "OrganizerFormExportDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "organizer form export pipeline",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerFormAutomationRules",
+      "path": "organizerFormAutomationRules/{ruleId}",
+      "rulesMatch": "/organizerFormAutomationRules/{ruleId}",
+      "typescriptInterface": "OrganizerFormAutomationRuleDocument",
+      "rulesTestFile": "functions/test/rules/host_form_operation_reads.rules.test.cjs",
+      "owner": "organizer form automation management",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerFormAutomationRuns",
+      "path": "organizerFormAutomationRuns/{runId}",
+      "rulesMatch": "/organizerFormAutomationRuns/{runId}",
+      "typescriptInterface": "OrganizerFormAutomationRunDocument",
+      "rulesTestFile": "functions/test/rules/host_form_operation_reads.rules.test.cjs",
+      "owner": "organizer form automation executor",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerFormConversionReceipts",
+      "path": "organizerFormConversionReceipts/{receiptId}",
+      "rulesMatch": "/organizerFormConversionReceipts/{receiptId}",
+      "typescriptInterface": "OrganizerFormConversionReceiptDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "organizer form reviewed conversion",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventChatMessages",
+      "path": "eventChatMessages/{id}",
+      "rulesMatch": "/eventChatMessages/{id}",
+      "typescriptInterface": "EventChatMessageDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "event chat callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventChatReactions",
+      "path": "eventChatReactions/{id}",
+      "rulesMatch": "/eventChatReactions/{id}",
+      "typescriptInterface": "EventChatReactionDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "event chat callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventChatPresence",
+      "path": "eventChatPresence/{id}",
+      "rulesMatch": "/eventChatPresence/{id}",
+      "typescriptInterface": "EventChatPresenceDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "event chat callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventChatRooms",
+      "path": "eventChatRooms/{eventId}",
+      "rulesMatch": "/eventChatRooms/{eventId}",
+      "typescriptInterface": "EventChatRoomDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "event chat access callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventChatMemberships",
+      "path": "eventChatMemberships/{membershipId}",
+      "rulesMatch": "/eventChatMemberships/{membershipId}",
+      "typescriptInterface": "EventChatMembershipDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "event chat access callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "participantIntakeProfiles",
+      "path": "participantIntakeProfiles/{uid}",
+      "rulesMatch": "/participantIntakeProfiles/{uid}",
+      "typescriptInterface": "ParticipantIntakeProfileDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "participant intake profile callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerMessageTemplates",
+      "path": "organizerMessageTemplates/{templateId}",
+      "rulesMatch": "/organizerMessageTemplates/{templateId}",
+      "typescriptInterface": "OrganizerMessageTemplateDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "WhatsApp template synchronization",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerContactChannelStates",
+      "path": "organizerContactChannelStates/{stateId}",
+      "rulesMatch": "/organizerContactChannelStates/{stateId}",
+      "typescriptInterface": "OrganizerContactChannelStateDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "campaign delivery and unsubscribe webhooks",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerCampaigns",
+      "path": "organizerCampaigns/{campaignId}",
+      "rulesMatch": "/organizerCampaigns/{campaignId}",
+      "typescriptInterface": "OrganizerCampaignDocument",
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "owner": "organizer campaign callables and dispatcher",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerMoments",
+      "path": "organizerMoments/{momentId}",
+      "rulesMatch": "/organizerMoments/{momentId}",
+      "typescriptInterface": "OrganizerMomentDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "organizer moment callables + moment sweep",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerMomentRuns",
+      "path": "organizerMomentRuns/{runId}",
+      "rulesMatch": "/organizerMomentRuns/{runId}",
+      "typescriptInterface": "OrganizerMomentRunDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "moment runner",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerMomentSends",
+      "path": "organizerMomentSends/{sendId}",
+      "rulesMatch": "/organizerMomentSends/{sendId}",
+      "typescriptInterface": "OrganizerMomentSendDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "moment runner",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerMomentSweepState",
+      "path": "organizerMomentSweepState/{sweepId}",
+      "rulesMatch": "/organizerMomentSweepState/{sweepId}",
+      "typescriptInterface": "OrganizerMomentSweepStateDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "moment runner",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerCampaignRecipients",
+      "path": "organizerCampaignRecipients/{recipientId}",
+      "rulesMatch": "/organizerCampaignRecipients/{recipientId}",
+      "typescriptInterface": "OrganizerCampaignRecipientDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "campaign approval, dispatcher and provider webhook",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerCampaignWebhookReceipts",
+      "path": "organizerCampaignWebhookReceipts/{receiptId}",
+      "rulesMatch": "/organizerCampaignWebhookReceipts/{receiptId}",
+      "typescriptInterface": "OrganizerCampaignWebhookReceiptDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "WhatsApp provider webhook",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "deliveryMessages",
+      "path": "deliveryMessages/{messageId}",
+      "rulesMatch": "/deliveryMessages/{messageId}",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "trusted automation delivery workers; trusted campaign delivery workers; trusted event approval notification services; trusted program delivery workers",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "whatsappDispatches",
+      "path": "whatsappDispatches/{attemptId}",
+      "rulesMatch": "/whatsappDispatches/{attemptId}",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "trusted automation delivery workers; trusted campaign delivery workers; trusted approval notification delivery worker",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventApprovalNotificationPreferences",
+      "path": "eventApprovalNotificationPreferences/{id}",
+      "rulesMatch": "/eventApprovalNotificationPreferences/{id}",
+      "typescriptInterface": "EventApprovalPreferenceDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "trusted event approval notification services",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventApprovalNotificationReceipts",
+      "path": "eventApprovalNotificationReceipts/{id}",
+      "rulesMatch": "/eventApprovalNotificationReceipts/{id}",
+      "typescriptInterface": "EventApprovalNotificationReceiptDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "trusted event approval notification services",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventApprovalNotificationSettings",
+      "path": "eventApprovalNotificationSettings/{id}",
+      "rulesMatch": "/eventApprovalNotificationSettings/{id}",
+      "typescriptInterface": "EventApprovalNotificationSettingsDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "trusted event approval notification services",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventApprovalNotificationBudgets",
+      "path": "eventApprovalNotificationBudgets/{id}",
+      "rulesMatch": "/eventApprovalNotificationBudgets/{id}",
+      "typescriptInterface": "EventApprovalNotificationBudgetDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "trusted event approval notification services",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerMessagingWebhookEvents",
+      "path": "organizerMessagingWebhookEvents/{eventId}",
+      "rulesMatch": "/organizerMessagingWebhookEvents/{eventId}",
+      "typescriptInterface": "OrganizerMessagingWebhookEventDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "WhatsApp webhook ingress and receipt processor",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerWhatsappReplyOperations",
+      "path": "organizerWhatsappReplyOperations/{operationId}",
+      "rulesMatch": "/organizerWhatsappReplyOperations/{operationId}",
+      "typescriptInterface": "OrganizerWhatsappReplyOperationDocument",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "owner": "sendOrganizerWhatsappReply callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerClaimRequests",
+      "path": "organizerClaimRequests/{requestId}",
+      "rulesMatch": "/organizerClaimRequests/{requestId}",
+      "typescriptInterface": "OrganizerClaimRequestDocument",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "owner": "requestOrganizerClaim, adminRecommendOrganizerClaim and adminDecideOrganizerClaim callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "scheduleLocks",
+      "path": "scheduleLocks/{lockId}",
+      "rulesMatch": "/scheduleLocks/{lockId}",
+      "typescriptInterface": "ScheduleLockDocument",
+      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "owner": "event publication, schedule edit, signup and waitlist callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "programGuestGroups",
+      "path": "programGuestGroups/{groupId}",
+      "rulesMatch": "/programGuestGroups/{groupId}",
+      "typescriptInterface": "ProgramGuestGroupDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "program guest management and reviewed conversion callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "programDoorJournal",
+      "path": "programDoorJournal/{journalId}",
+      "rulesMatch": "/programDoorJournal/{journalId}",
+      "typescriptInterface": "ProgramDoorJournalDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "program door journal callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "programRetentionRuns",
+      "path": "programRetentionRuns/{programId}",
+      "rulesMatch": "/programRetentionRuns/{programId}",
+      "typescriptInterface": "ProgramRetentionRunDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "program retention sweep",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventCrossPathsConsents",
+      "path": "eventCrossPathsConsents/{consentId}",
+      "rulesMatch": "/eventCrossPathsConsents/{consentId}",
+      "typescriptInterface": "EventCrossPathsConsentDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "setCrossPathsEventConsent callable",
+      "read": "the consenting guest only",
+      "write": "server only"
+    },
+    {
+      "id": "crossPathsSuggestionExposures",
+      "path": "crossPathsSuggestionExposures/{exposureId}",
+      "rulesMatch": "/crossPathsSuggestionExposures/{exposureId}",
+      "typescriptInterface": "CrossPathsSuggestionExposureDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "getCrossPathsSuggestions callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "crossPathsInvitations",
+      "path": "crossPathsInvitations/{invitationId}",
+      "rulesMatch": "/crossPathsInvitations/{invitationId}",
+      "typescriptInterface": "CrossPathsInvitationDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "Cross Paths invitation callables",
+      "read": "sender or recipient, unless either blocked the other",
+      "write": "server only"
+    },
+    {
+      "id": "crossPathsPairHolds",
+      "path": "crossPathsPairHolds/{holdId}",
+      "rulesMatch": "/crossPathsPairHolds/{holdId}",
+      "typescriptInterface": "CrossPathsPairHoldDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "Cross Paths pair-inventory callables and payment fulfillment",
+      "read": "either participant by get, unless either blocked the other; no list",
+      "write": "server only"
+    },
+    {
+      "id": "publicEvents",
+      "path": "publicEvents/{eventId}",
+      "rulesMatch": "/publicEvents/{eventId}",
+      "typescriptInterface": "PublicEventDocument",
+      "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
+      "owner": "reconcilePublicEvent (events trigger)",
+      "read": "public get; list only listed events",
+      "write": "server only"
+    },
+    {
+      "id": "externalEvents",
+      "path": "externalEvents/{eventId}",
+      "rulesMatch": "/externalEvents/{eventId}",
+      "typescriptInterface": "ExternalEventDocument",
+      "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
+      "owner": "organizer intake import tooling after admin review; external source corrections and takedowns are admin-owned",
+      "read": "public, only while public and active",
+      "write": "server only"
+    },
+    {
+      "id": "eventPrivateAccess",
+      "path": "eventPrivateAccess/{eventId}",
+      "rulesMatch": "/eventPrivateAccess/{eventId}",
+      "typescriptInterface": "EventPrivateAccessDocument",
+      "owner": "createEvent callable; readable only by the host of the linked event",
+      "read": "the event's organizer hosts",
+      "write": "server only"
+    },
+    {
+      "id": "eventSuccessPlans",
+      "path": "eventSuccessPlans/{eventId}",
+      "rulesMatch": "/eventSuccessPlans/{eventId}",
+      "typescriptInterface": "EventSuccessPlanDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "setup fields through saveEventSuccessPlanSetup and night.plan (functions/src/eventSuccess/planSetup.ts); create and older Catch Host builds by organizer manager direct write; event participants read",
+      "read": "the event's hosts, and guests once the plan is visible to them",
+      "write": "event hosts create and update setup fields before the event is live; delete server only"
+    },
+    {
+      "id": "eventSuccessFeedback",
+      "path": "eventSuccessFeedback/{feedbackId}",
+      "rulesMatch": "/eventSuccessFeedback/{feedbackId}",
+      "typescriptInterface": "EventSuccessFeedbackDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "attendee direct write after attended event; attendee read; backend aggregate",
+      "read": "the guest who wrote it",
+      "write": "the guest creates and updates validated feedback; delete server only"
+    },
+    {
+      "id": "eventSuccessConversationGraphs",
+      "path": "eventSuccessConversationGraphs/{graphId}",
+      "rulesMatch": "/eventSuccessConversationGraphs/{graphId}",
+      "typescriptInterface": "EventSuccessConversationGraphDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "subject attendee read; conversation graph callable write",
+      "read": "the checked-in guest's own graph, by get",
+      "write": "server only"
+    },
+    {
+      "id": "eventSafetyReports",
+      "path": "eventSafetyReports/{reportId}",
+      "rulesMatch": "/eventSafetyReports/{reportId}",
+      "typescriptInterface": "EventSafetyReportDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "onEventSuccessFeedbackWritten trigger",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventSuccessPreferences",
+      "path": "eventSuccessPreferences/{preferenceId}",
+      "rulesMatch": "/eventSuccessPreferences/{preferenceId}",
+      "typescriptInterface": "EventSuccessPreferenceDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "attendee direct write while signed up or attended; host read for assignment generation context",
+      "read": "the guest or the event's hosts",
+      "write": "the guest creates and updates validated preferences; delete server only"
+    },
+    {
+      "id": "eventSuccessCompatibilityResponses",
+      "path": "eventSuccessCompatibilityResponses/{responseId}",
+      "rulesMatch": "/eventSuccessCompatibilityResponses/{responseId}",
+      "typescriptInterface": "EventSuccessCompatibilityResponseDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "attendee direct write while signed up or attended; backend read for opted-in assignment generation",
+      "read": "the participant's own response, by get",
+      "write": "the participant creates and updates a validated response; delete server only"
+    },
+    {
+      "id": "eventSuccessWingmanRequests",
+      "path": "eventSuccessWingmanRequests/{requestId}",
+      "rulesMatch": "/eventSuccessWingmanRequests/{requestId}",
+      "typescriptInterface": "EventSuccessWingmanRequestDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "attendee direct write after attended event; host read only while active and consented",
+      "read": "the requester by get; the event's hosts get and list active, consented requests",
+      "write": "server only"
+    },
+    {
+      "id": "eventSuccessArrivalMissions",
+      "path": "eventSuccessArrivalMissions/{missionId}",
+      "rulesMatch": "/eventSuccessArrivalMissions/{missionId}",
+      "typescriptInterface": "EventSuccessArrivalMissionDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "server-owned; attendee read only for their own mission",
+      "read": "the observing participant's own mission, by get",
+      "write": "server only"
+    },
+    {
+      "id": "eventSuccessAssignments",
+      "path": "eventSuccessAssignments/{assignmentId}",
+      "rulesMatch": "/eventSuccessAssignments/{assignmentId}",
+      "typescriptInterface": "EventSuccessAssignmentDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "event-success assignment callables",
+      "read": "the event's hosts (get and list) or the assigned participant (get)",
+      "write": "server only"
+    },
+    {
+      "id": "eventSuccessAssignmentDrafts",
+      "path": "eventSuccessAssignmentDrafts/{assignmentDraftId}",
+      "rulesMatch": "/eventSuccessAssignmentDrafts/{assignmentDraftId}",
+      "typescriptInterface": "EventSuccessAssignmentDraftDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "event-success assignment preparation",
+      "read": "the event's hosts, guided rotations only",
+      "write": "server only"
+    },
+    {
+      "id": "eventAssignmentFeatureConsents",
+      "path": "eventAssignmentFeatureConsents/{consentId}",
+      "rulesMatch": "/eventAssignmentFeatureConsents/{consentId}",
+      "typescriptInterface": "EventAssignmentFeatureConsentDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "participant consent callable; private server read",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventSuccessUnitOutcomes",
+      "path": "eventSuccessUnitOutcomes/{eventId}",
+      "rulesMatch": "/eventSuccessUnitOutcomes/{eventId}",
+      "typescriptInterface": "EventSuccessUnitOutcomesDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "recordEventSuccessUnitOutcomes callable",
+      "read": "the event's hosts, by get",
+      "write": "server only"
+    },
+    {
+      "id": "eventSuccessStandings",
+      "path": "eventSuccessStandings/{eventId}",
+      "rulesMatch": "/eventSuccessStandings/{eventId}",
+      "typescriptInterface": "EventSuccessStandingsDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "recordEventSuccessUnitOutcomes callable",
+      "read": "the event's hosts and participants, by get",
+      "write": "server only"
+    },
+    {
+      "id": "eventSuccessScorecards",
+      "path": "eventSuccessScorecards/{eventId}",
+      "rulesMatch": "/eventSuccessScorecards/{eventId}",
+      "typescriptInterface": "EventSuccessScorecardDocument",
+      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+      "owner": "event success feedback and matching triggers",
+      "read": "the event's hosts",
+      "write": "server only"
+    },
+    {
+      "id": "participantSignalFacts",
+      "path": "participantSignalFacts/{factId}",
+      "rulesMatch": "/participantSignalFacts/{factId}",
+      "typescriptInterface": "ParticipantSignalFactDocument",
+      "rulesTestFile": "functions/test/rules/participant_success_metrics.rules.test.cjs",
+      "owner": "Participant signal recorder",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "participantMetricCounters",
+      "path": "participantMetricCounters/{uid}",
+      "rulesMatch": "/participantMetricCounters/{uid}",
+      "typescriptInterface": "ParticipantMetricCounterDocument",
+      "rulesTestFile": "functions/test/rules/participant_success_metrics.rules.test.cjs",
+      "owner": "Participant signal recorder",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "hostPaymentAccounts",
+      "path": "hostPaymentAccounts/{accountId}",
+      "rulesMatch": "/hostPaymentAccounts/{accountId}",
+      "typescriptInterface": "HostPaymentAccountDocument",
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "owner": "Stripe Connect and Razorpay Route onboarding, refresh, and webhook callables",
+      "read": "the account owner",
+      "write": "server only"
+    },
+    {
+      "id": "organizerSalesAccounts",
+      "path": "organizerSalesAccounts/{organizerId}",
+      "rulesMatch": "/organizerSalesAccounts/{privateDocument=**}",
+      "typescriptInterface": "OrganizerSalesAccountDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales account service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "customValues",
+      "path": "organizerSalesAccounts/{organizerId}/customValues/{fieldId}",
+      "rulesMatch": "/organizerSalesAccounts/{privateDocument=**}",
+      "typescriptInterface": "SalesCustomFieldValueDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales custom-field service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesContacts",
+      "path": "salesContacts/{contactId}",
+      "rulesMatch": "/salesContacts/{privateDocument=**}",
+      "typescriptInterface": "SalesContactDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales contact service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesContactRelationships",
+      "path": "salesContactRelationships/{relationshipId}",
+      "rulesMatch": "/salesContactRelationships/{privateDocument=**}",
+      "typescriptInterface": "SalesContactRelationshipDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales contact service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesEvidence",
+      "path": "salesEvidence/{evidenceId}",
+      "rulesMatch": "/salesEvidence/{privateDocument=**}",
+      "typescriptInterface": "SalesEvidenceDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales evidence service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesEvidenceProposals",
+      "path": "salesEvidenceProposals/{proposalId}",
+      "rulesMatch": "/salesEvidenceProposals/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales evidence service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesTasks",
+      "path": "salesTasks/{taskId}",
+      "rulesMatch": "/salesTasks/{privateDocument=**}",
+      "typescriptInterface": "SalesTaskDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales task service and organizer claim projection",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesOpportunities",
+      "path": "salesOpportunities/{opportunityId}",
+      "rulesMatch": "/salesOpportunities/{privateDocument=**}",
+      "typescriptInterface": "SalesOpportunityDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales opportunity service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesActivities",
+      "path": "salesActivities/{activityId}",
+      "rulesMatch": "/salesActivities/{privateDocument=**}",
+      "typescriptInterface": "SalesActivityDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales service, canonical claim projection and confirmed demo projection",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesCustomFields",
+      "path": "salesCustomFields/{fieldId}",
+      "rulesMatch": "/salesCustomFields/{privateDocument=**}",
+      "typescriptInterface": "SalesCustomFieldDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales custom-field service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesSettings",
+      "path": "salesSettings/{settingId}",
+      "rulesMatch": "/salesSettings/{privateDocument=**}",
+      "typescriptInterface": "SalesSettingDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales runtime settings",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesActionReceipts",
+      "path": "salesActionReceipts/{receiptId}",
+      "rulesMatch": "/salesActionReceipts/{privateDocument=**}",
+      "typescriptInterface": "SalesActionReceiptDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales action dispatcher",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "rows",
+      "path": "salesImportJobs/{importId}/rows/{rowIndex}",
+      "rulesMatch": "/salesImportJobs/{privateDocument=**}",
+      "typescriptInterface": "SalesImportJobRowDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales import service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesImportJobs",
+      "path": "salesImportJobs/{importId}",
+      "rulesMatch": "/salesImportJobs/{privateDocument=**}",
+      "typescriptInterface": "SalesImportJobDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales import service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesImportRows",
+      "path": "salesImportRows/{rowKey}",
+      "rulesMatch": "/salesImportRows/{privateDocument=**}",
+      "typescriptInterface": "SalesImportRowDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales import service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesSuppressionDecisions",
+      "path": "salesSuppressionDecisions/{decisionId}",
+      "rulesMatch": "/salesSuppressionDecisions/{privateDocument=**}",
+      "typescriptInterface": "SalesSuppressionDecisionDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales suppression and contactability service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "hostOperatorAlertWindows",
+      "path": "hostOperatorAlerts/{scopeId}/windows/{windowId}",
+      "rulesMatch": "/hostOperatorAlerts/{privateDocument=**}",
+      "typescriptInterface": "HostOperatorAlertWindowDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Operator alert triggers (functions/src/hostAlerts)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "hostOperatorAlerts",
+      "path": "hostOperatorAlerts/{alertId}",
+      "rulesMatch": "/hostOperatorAlerts/{privateDocument=**}",
+      "typescriptInterface": "HostOperatorAlertDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "Operator alert triggers (functions/src/hostAlerts)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesInboundIntents",
+      "path": "salesInboundIntents/{intentId}",
+      "rulesMatch": "/salesInboundIntents/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "joinWaitlist (Host applications and website leads), partner nominations and adminLinkSalesInboundIntent",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "assistantClients",
+      "path": "assistantClients/{clientId}",
+      "rulesMatch": "/assistantClients/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "sales assistant gateway server-only management",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "assistantDelegations",
+      "path": "assistantDelegations/{delegationId}",
+      "rulesMatch": "/assistantDelegations/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "sales assistant gateway server-only management",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "assistantGatewayBudgets",
+      "path": "assistantGatewayBudgets/{budgetId}",
+      "rulesMatch": "/assistantGatewayBudgets/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "sales assistant gateway server-only budget transaction",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "assistantManagementReceipts",
+      "path": "assistantManagementReceipts/{receiptId}",
+      "rulesMatch": "/assistantManagementReceipts/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "sales assistant gateway server-only immutable management transaction",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesDemoBlueprints",
+      "path": "salesDemoBlueprints/{blueprintId}",
+      "rulesMatch": "/salesDemoBlueprints/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "sales demo admin callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesDemoCapabilities",
+      "path": "salesDemoCapabilities/{capability}",
+      "rulesMatch": "/salesDemoCapabilities/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "product capability owner using trusted server administration",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesDemoInvitations",
+      "path": "salesDemoInvitations/{invitationId}",
+      "rulesMatch": "/salesDemoInvitations/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "sales demo admin and trial callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesFitQueueEntries",
+      "path": "salesFitQueueEntries/{organizerId}",
+      "rulesMatch": "/salesFitQueueEntries/{privateDocument=**}",
+      "typescriptInterface": "SalesFitQueueEntryDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales fit queue callables and source mutation invalidation hooks",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesFitQueueMeta",
+      "path": "salesFitQueueMeta/{metaId}",
+      "rulesMatch": "/salesFitQueueMeta/{privateDocument=**}",
+      "typescriptInterface": "SalesFitQueueMetaDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales fit queue service and source mutation hooks",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesImportHistoryRows",
+      "path": "salesImportHistoryRows/{rowId}",
+      "rulesMatch": "/salesImportHistoryRows/{privateDocument=**}",
+      "typescriptInterface": "SalesImportHistoryRowDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales import history service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesImportHistoryRecords",
+      "path": "salesImportHistoryRecords/{recordId}",
+      "rulesMatch": "/salesImportHistoryRecords/{privateDocument=**}",
+      "typescriptInterface": "SalesImportHistoryRecordDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales import history service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesPrivacyRestrictions",
+      "path": "salesPrivacyRestrictions/{id}",
+      "rulesMatch": "/salesPrivacyRestrictions/{privateDocument=**}",
+      "typescriptInterface": "SalesPrivacyRestriction",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "Private Sales privacy lifecycle",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesPrivacyPolicies",
+      "path": "salesPrivacyPolicies/{id}",
+      "rulesMatch": "/salesPrivacyPolicies/{privateDocument=**}",
+      "typescriptInterface": "SalesPrivacyPolicy",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "Private Sales privacy lifecycle",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesPrivacyPlans",
+      "path": "salesPrivacyPlans/{id}",
+      "rulesMatch": "/salesPrivacyPlans/{privateDocument=**}",
+      "typescriptInterface": "SalesPrivacyPlan",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "Private Sales privacy lifecycle",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesPrivacyBatchReceipts",
+      "path": "salesPrivacyBatchReceipts/{id}",
+      "rulesMatch": "/salesPrivacyBatchReceipts/{privateDocument=**}",
+      "typescriptInterface": "SalesPrivacyBatchReceipt",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "Private Sales privacy lifecycle",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesImportCompensations",
+      "path": "salesImportCompensations/{effectId}",
+      "rulesMatch": "/salesImportCompensations/{privateDocument=**}",
+      "typescriptInterface": "SalesImportCompensationDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales import compensation service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesDemoSetups",
+      "path": "salesDemoSetups/{setupId}",
+      "rulesMatch": "/salesDemoSetups/{privateDocument=**}",
+      "typescriptInterface": "SalesDemoSetupDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "verified organizer demo setup boundary",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesDemoSessions",
+      "path": "salesDemoSessions/{sessionId}",
+      "rulesMatch": "/salesDemoSessions/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "sales demo trial callable and bounded expiry worker",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesPilotPlans",
+      "path": "salesPilotPlans/{opportunityId}",
+      "rulesMatch": "/salesPilotPlans/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales commercial service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesQuotes",
+      "path": "salesQuotes/{quoteId}",
+      "rulesMatch": "/salesQuotes/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales commercial service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesQuoteVersions",
+      "path": "salesQuoteVersions/{versionId}",
+      "rulesMatch": "/salesQuoteVersions/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales commercial service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesCommercialDecisions",
+      "path": "salesCommercialDecisions/{decisionId}",
+      "rulesMatch": "/salesCommercialDecisions/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales commercial service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesOpportunityStageHistory",
+      "path": "salesOpportunityStageHistory/{historyId}",
+      "rulesMatch": "/salesOpportunityStageHistory/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales commercial service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesIntelligencePolicies",
+      "path": "salesIntelligencePolicies/{policyRecordId}",
+      "rulesMatch": "/salesIntelligencePolicies/{privateDocument=**}",
+      "typescriptInterface": "SalesIntelligencePolicyDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales intelligence policy callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesIntelligenceAssessments",
+      "path": "salesIntelligenceAssessments/{assessmentId}",
+      "rulesMatch": "/salesIntelligenceAssessments/{privateDocument=**}",
+      "typescriptInterface": "SalesIntelligenceAssessmentDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales intelligence assessment callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesIntelligenceClauses",
+      "path": "salesIntelligenceClauses/{clauseId}",
+      "rulesMatch": "/salesIntelligenceClauses/{privateDocument=**}",
+      "typescriptInterface": "SalesIntelligenceClauseDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales intelligence clause callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesIntelligenceReceipts",
+      "path": "salesIntelligenceReceipts/{receiptId}",
+      "rulesMatch": "/salesIntelligenceReceipts/{privateDocument=**}",
+      "typescriptInterface": "SalesIntelligenceReceiptDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales intelligence mutation service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesIntelligenceScoreSnapshots",
+      "path": "salesIntelligenceScoreSnapshots/{snapshotId}",
+      "rulesMatch": "/salesIntelligenceScoreSnapshots/{privateDocument=**}",
+      "typescriptInterface": "SalesIntelligenceScoreSnapshotDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales intelligence score callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesOutreachDrafts",
+      "path": "salesOutreachDrafts/{draftId}",
+      "rulesMatch": "/salesOutreachDrafts/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales intelligence Operations bridge",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesHostSettlementAttestations",
+      "path": "salesHostSettlementAttestations/{attestationId}",
+      "rulesMatch": "/salesHostSettlementAttestations/{privateDocument=**}",
+      "typescriptInterface": "SalesHostSettlementAttestationsDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales commercial service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesHostSettlementEvidenceUses",
+      "path": "salesHostSettlementEvidenceUses/{evidenceId}",
+      "rulesMatch": "/salesHostSettlementEvidenceUses/{privateDocument=**}",
+      "typescriptInterface": "SalesHostSettlementEvidenceUsesDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales commercial service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesHostSettlementIdentities",
+      "path": "salesHostSettlementIdentities/{settlementIdentityHash}",
+      "rulesMatch": "/salesHostSettlementIdentities/{privateDocument=**}",
+      "typescriptInterface": "SalesHostSettlementIdentitiesDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales commercial service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesIntakeLinks",
+      "path": "salesIntakeLinks/{linkId}",
+      "rulesMatch": "/salesIntakeLinks/{privateDocument=**}",
+      "typescriptInterface": "SalesIntakeLinkDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "retired adminLinkOrganizerIntakeToSales callable; existing records are kept read-only",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesProviderAttempts",
+      "path": "salesProviderAttempts/{attemptId}",
+      "rulesMatch": "/salesProviderAttempts/{privateDocument=**}",
+      "typescriptInterface": "SalesProviderAttemptDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "disabled internal Sales writing preparation worker",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesProviderBudgets",
+      "path": "salesProviderBudgets/{bucketId}",
+      "rulesMatch": "/salesProviderBudgets/{privateDocument=**}",
+      "typescriptInterface": "SalesProviderBudgetDocument",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "disabled internal Sales writing preparation accounting",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "salesOutreachJobs",
+      "path": "salesOutreachJobs/{jobId}",
+      "rulesMatch": "/salesOutreachJobs/{privateDocument=**}",
+      "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+      "owner": "private Sales intelligence generate callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "adAudienceRuns",
+      "path": "adAudienceRuns/{audienceKey}",
+      "rulesMatch": "/adAudienceRuns/{privateDocument=**}",
+      "typescriptInterface": "AdAudienceRunDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "ad customer-list job",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "adConversionContexts",
+      "path": "adConversionContexts/{subjectId}",
+      "rulesMatch": "/adConversionContexts/{privateDocument=**}",
+      "typescriptInterface": "AdConversionContextDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "public event checkout service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "adConversionDeliveries",
+      "path": "adConversionDeliveries/{deliveryId}",
+      "rulesMatch": "/adConversionDeliveries/{privateDocument=**}",
+      "typescriptInterface": "AdConversionDeliveryDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "ad conversion delivery worker",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "adMatchingOptOuts",
+      "path": "adMatchingOptOuts/{optOutId}",
+      "rulesMatch": "/adMatchingOptOuts/{privateDocument=**}",
+      "typescriptInterface": "AdMatchingOptOutDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "ad-matching opt-out",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "adminAuditLogs",
+      "path": "adminAuditLogs/{logId}",
+      "rulesMatch": "/adminAuditLogs/{privateDocument=**}",
+      "typescriptInterface": "AdminAuditLogDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Admin callables (writeAdminAuditLog)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "adminRoleAssignments",
+      "path": "adminRoleAssignments/{uid}",
+      "rulesMatch": "/adminRoleAssignments/{privateDocument=**}",
+      "typescriptInterface": "AdminRoleAssignmentDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "adminSetAdminUserRoles",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "catchWhatsappAppAuthorities",
+      "path": "catchWhatsappAppAuthorities/{uid}",
+      "rulesMatch": "/catchWhatsappAppAuthorities/{privateDocument=**}",
+      "typescriptInterface": "CatchWhatsappAppAuthorityDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Catch support authority service",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "catchWhatsappAutoReplies",
+      "path": "catchWhatsappAutoReplies/{replyId}",
+      "rulesMatch": "/catchWhatsappAutoReplies/{privateDocument=**}",
+      "typescriptInterface": "CatchWhatsappAutoReplyDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Catch WhatsApp inbound router",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "catchWhatsappClarifications",
+      "path": "catchWhatsappClarifications/{endpointHash}",
+      "rulesMatch": "/catchWhatsappClarifications/{privateDocument=**}",
+      "typescriptInterface": "CatchWhatsappClarificationDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Catch WhatsApp inbound router",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "catchWhatsappIngressEvidence",
+      "path": "catchWhatsappIngressEvidence/{eventId}",
+      "rulesMatch": "/catchWhatsappIngressEvidence/{privateDocument=**}",
+      "typescriptInterface": "CatchWhatsappIngressEvidenceDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Catch signed webhook ingress",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "catchWhatsappReadinessPublications",
+      "path": "catchWhatsappReadinessPublications/{reference}",
+      "rulesMatch": "/catchWhatsappReadinessPublications/{privateDocument=**}",
+      "typescriptInterface": "CatchWhatsappReadinessPublicationDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Catch WhatsApp readiness publication (owner review)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventIntakeReviewDecisions",
+      "path": "eventIntakeReviewDecisions/{decisionId}",
+      "rulesMatch": "/eventIntakeReviewDecisions/{privateDocument=**}",
+      "typescriptInterface": "EventIntakeReviewDecisionDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "retired adminRecordEventIntakeReviewDecision callable; existing records are kept read-only",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventRosterHandoffs",
+      "path": "eventRosterHandoffs/{tokenHash}",
+      "rulesMatch": "/eventRosterHandoffs/{privateDocument=**}",
+      "typescriptInterface": "EventRosterHandoffDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "createEventRosterHandoff and ingestEventRosterWebhook",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventSeatIdentityAliases",
+      "path": "eventSeatIdentityAliases/{aliasId}",
+      "rulesMatch": "/eventSeatIdentityAliases/{privateDocument=**}",
+      "typescriptInterface": "EventSeatIdentityAliasDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority, seatMigrationPaged)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventSeatLedgers",
+      "path": "eventSeatLedgers/{eventId}",
+      "rulesMatch": "/eventSeatLedgers/{privateDocument=**}",
+      "typescriptInterface": "EventSeatLedgerDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority, seatMigrationPaged)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventSeatMigrationFences",
+      "path": "eventSeatMigrationFences/{eventId}",
+      "rulesMatch": "/eventSeatMigrationFences/{privateDocument=**}",
+      "typescriptInterface": "EventSeatMigrationFenceDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Seat migration bootstrap (functions/src/events/seatMigrationPaged.ts)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventSeatMigrationPlans",
+      "path": "eventSeatMigrationPlans/{eventId}",
+      "rulesMatch": "/eventSeatMigrationPlans/{privateDocument=**}",
+      "typescriptInterface": "EventSeatMigrationPlanDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Seat migration bootstrap (functions/src/events/seatMigrationPaged.ts)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventSeatMigrationRuns",
+      "path": "eventSeatMigrationRuns/{eventId}",
+      "rulesMatch": "/eventSeatMigrationRuns/{privateDocument=**}",
+      "typescriptInterface": "EventSeatMigrationRunDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Seat migration bootstrap (functions/src/events/seatMigrationPaged.ts)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventSeatMigrationStages",
+      "path": "eventSeatMigrationStages/{stageId}",
+      "rulesMatch": "/eventSeatMigrationStages/{privateDocument=**}",
+      "typescriptInterface": "EventSeatMigrationStageDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Seat migration bootstrap (functions/src/events/seatMigrationPaged.ts)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventSeatRequestReceipts",
+      "path": "eventSeatRequestReceipts/{receiptId}",
+      "rulesMatch": "/eventSeatRequestReceipts/{privateDocument=**}",
+      "typescriptInterface": "EventSeatRequestReceiptDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority, seatMigrationPaged)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventSeatReservations",
+      "path": "eventSeatReservations/{reservationId}",
+      "rulesMatch": "/eventSeatReservations/{privateDocument=**}",
+      "typescriptInterface": "EventSeatReservationDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority, seatMigrationPaged)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "eventSeatVerifiedPhones",
+      "path": "eventSeatVerifiedPhones/{proofId}",
+      "rulesMatch": "/eventSeatVerifiedPhones/{privateDocument=**}",
+      "typescriptInterface": "EventSeatVerifiedPhoneDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Seat authority (functions/src/events/seatAuthority, seatIdentityAuthority, seatMigrationPaged)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "externalEventPublicationReceipts",
+      "path": "externalEventPublicationReceipts/{receiptId}",
+      "rulesMatch": "/externalEventPublicationReceipts/{privateDocument=**}",
+      "typescriptInterface": "ExternalEventPublicationReceiptDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "adminPublishListingEvents and adminTakedownExternalEvent callables and the onSupplyIntakeListingApproved trigger",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "formCommunicationConsentIntents",
+      "path": "formCommunicationConsentIntents/{responseId}",
+      "rulesMatch": "/formCommunicationConsentIntents/{privateDocument=**}",
+      "typescriptInterface": "FormCommunicationConsentIntentDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "organizer form respondent callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "hostOrganizerActivations",
+      "path": "hostOrganizerActivations/{organizerId}",
+      "rulesMatch": "/hostOrganizerActivations/{privateDocument=**}",
+      "typescriptInterface": "HostOrganizerActivationDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Host acquisition reviewed pilot workflow",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "hostPilotEventReviews",
+      "path": "hostPilotEventReviews/{eventId}",
+      "rulesMatch": "/hostPilotEventReviews/{privateDocument=**}",
+      "typescriptInterface": "HostPilotEventReviewDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Host acquisition reviewed pilot workflow",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "launchWaitlist",
+      "path": "launchWaitlist/{waitlistId}",
+      "rulesMatch": "/launchWaitlist/{privateDocument=**}",
+      "typescriptInterface": "LaunchWaitlistDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "joinWaitlist",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "marketingOpsDashboards",
+      "path": "marketingOpsDashboards/{dashboardId}",
+      "rulesMatch": "/marketingOpsDashboards/{privateDocument=**}",
+      "typescriptInterface": "MarketingOpsDashboardDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "adminCreateMarketingContentDraft and related Admin callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "metaLeadgenEvents",
+      "path": "metaLeadgenEvents/{leadgenId}",
+      "rulesMatch": "/metaLeadgenEvents/{privateDocument=**}",
+      "typescriptInterface": "MetaLeadgenEventDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "Meta lead-form intake",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "nativeRefundRecoveryCursors",
+      "path": "nativeRefundRecoveryCursors/{stateId}",
+      "rulesMatch": "/nativeRefundRecoveryCursors/{privateDocument=**}",
+      "typescriptInterface": "NativeRefundRecoveryCursorDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "payment recovery schedulers",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerIntakeCurationDecisions",
+      "path": "organizerIntakeCurationDecisions/{operationId}",
+      "rulesMatch": "/organizerIntakeCurationDecisions/{privateDocument=**}",
+      "typescriptInterface": "OrganizerIntakeCurationDecisionDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "adminApproveOrganizerListing callable (the retired adminRecordOrganizerCuration and adminCreateOrganizerDraftFromCandidate wrote earlier records)",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerIntakeFieldCorrections",
+      "path": "organizerIntakeFieldCorrections/{correctionId}",
+      "rulesMatch": "/organizerIntakeFieldCorrections/{privateDocument=**}",
+      "typescriptInterface": "OrganizerIntakeFieldCorrectionDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "adminUpdateOrganizerDetails callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerIntakeReviewDecisions",
+      "path": "organizerIntakeReviewDecisions/{entityId}",
+      "rulesMatch": "/organizerIntakeReviewDecisions/{privateDocument=**}",
+      "typescriptInterface": "OrganizerIntakeReviewDecisionDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "retired adminDecideOrganizerIntake callable; existing records are kept read-only",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "organizerPolicyGapReviewDecisions",
+      "path": "organizerPolicyGapReviewDecisions/{decisionId}",
+      "rulesMatch": "/organizerPolicyGapReviewDecisions/{privateDocument=**}",
+      "typescriptInterface": "OrganizerPolicyGapReviewDecisionDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "adminDecideOrganizerPolicyGap callable",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "programRoomBlocks",
+      "path": "programRoomBlocks/{roomBlockId}",
+      "rulesMatch": "/programRoomBlocks/{privateDocument=**}",
+      "typescriptInterface": "ProgramRoomBlockDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "program accommodation callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "programStays",
+      "path": "programStays/{stayId}",
+      "rulesMatch": "/programStays/{privateDocument=**}",
+      "typescriptInterface": "ProgramStayDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "program accommodation callables",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "guestImportHeaderShapes",
+      "path": "guestImportHeaderShapes/{shapeHash}",
+      "rulesMatch": "/guestImportHeaderShapes/{privateDocument=**}",
+      "typescriptInterface": "GuestImportHeaderShapeDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "importGuestList",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "tryItWorkspaces",
+      "path": "tryItWorkspaces/{uid}",
+      "rulesMatch": "/tryItWorkspaces/{privateDocument=**}",
+      "typescriptInterface": "TryItWorkspaceDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "ensureTryItWorkspace and expireTryItWorkspaces",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "walkthroughAvailability",
+      "path": "walkthroughAvailability/{calendarId}",
+      "rulesMatch": "/walkthroughAvailability/{privateDocument=**}",
+      "typescriptInterface": "WalkthroughAvailabilityDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "adminSetWalkthroughAvailability",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "walkthroughBookings",
+      "path": "walkthroughBookings/{bookingId}",
+      "rulesMatch": "/walkthroughBookings/{privateDocument=**}",
+      "typescriptInterface": "WalkthroughBookingDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "bookWalkthrough, manageWalkthroughBooking and adminUpdateWalkthroughBooking",
+      "read": "server only",
+      "write": "server only"
+    },
+    {
+      "id": "walkthroughSlotHolds",
+      "path": "walkthroughSlotHolds/{holdId}",
+      "rulesMatch": "/walkthroughSlotHolds/{privateDocument=**}",
+      "typescriptInterface": "WalkthroughSlotHoldDocument",
+      "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+      "owner": "bookWalkthrough, manageWalkthroughBooking and adminUpdateWalkthroughBooking",
+      "read": "server only",
+      "write": "server only"
     }
   ]
 }

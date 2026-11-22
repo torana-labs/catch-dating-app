@@ -423,8 +423,8 @@ class OrganizersRepository {
   );
 }
 
-// keepalive: club repository is a shared Firestore/Functions facade reused by
-// discovery, hosting, and route guards.
+// keepalive: account-free: club repository is a shared Firestore/Functions
+// facade reused by discovery, hosting, and route guards.
 @Riverpod(keepAlive: true)
 OrganizersRepository organizersRepository(Ref ref) => OrganizersRepository(
   ref.watch(firebaseFirestoreProvider),

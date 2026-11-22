@@ -2,8 +2,8 @@
 import * as admin from "firebase-admin";
 import {isDeepStrictEqual} from "node:util";
 import {CallableRequest, onCall} from "firebase-functions/v2/https";
-import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
-import {requireAdminRole} from "../admin/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {WalkthroughAvailabilityDocument, WalkthroughBookingDocument} from "../shared/generated/firestoreAdminTypes";

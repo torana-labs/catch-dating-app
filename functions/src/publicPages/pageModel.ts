@@ -23,7 +23,7 @@ import {eventWomenLed, organizerWomenLed} from "../organizers/womenLed";
  * Assembles the organizer and event public page read models from one
  * organizer's source documents. Pure: the caller reads the sources and
  * writes the result. Publication, suppression and every public field come
- * from the projectors that mirror the website reader; this module only
+ * from the public projectors in this folder; this module only
  * arranges their output into pages and removes dating framing.
  */
 export type OrganizerPage =
@@ -99,8 +99,8 @@ export function buildOrganizerScope(
     listing.capabilities.publicReviews.readState === "enabled";
 
   // Women-led is resolved here, from the organizer's default and each Catch
-  // event's override; imported events follow the organizer. The website
-  // projections it mirrors stay unchanged.
+  // event's override; imported events follow the organizer. The listing
+  // projections stay unchanged.
   const womenLed = organizerWomenLed(organizer.data);
   const events: PageEvent[] = [
     ...sortById(sources.catchEvents).flatMap((doc) => {
@@ -134,7 +134,7 @@ export function buildOrganizerScope(
       const review = projectPublicReview(doc.id, doc.data, organizerId);
       return review ? [review] : [];
     });
-  // The website reader takes the newest documents first, then projects.
+  // The newest documents first, then projected.
   const organizerReviews = reviewsReadable ?
     projectReviews(sources.reviews.slice(0, pageLimits.latestReviews)) : [];
   const followerCount = listing.metrics?.followerCount ?? 0;

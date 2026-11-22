@@ -13,8 +13,8 @@ class CatchNoticeQueue {
   CatchNoticeData? get current => notices.isEmpty ? null : notices.first;
 }
 
-// keepalive: notice queue is app-wide UI state that must survive route
-// transitions until dismissed.
+// keepalive: account-free: notice queue is app-wide UI state that must survive
+// route transitions until dismissed.
 @Riverpod(keepAlive: true)
 class CatchNoticeController extends _$CatchNoticeController {
   @override

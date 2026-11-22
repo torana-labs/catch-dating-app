@@ -8,8 +8,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'force_update_provider.g.dart';
 
 /// The current app version and build number from the platform.
-// keepalive: package info is startup/platform metadata reused by the force
-// update gate.
+// keepalive: account-free: package info is startup/platform metadata reused by
+// the force update gate.
 @Riverpod(keepAlive: true)
 Future<({String version, String buildNumber})> appPackageInfo(Ref ref) async {
   final info = await PackageInfo.fromPlatform();
@@ -20,8 +20,8 @@ Future<({String version, String buildNumber})> appPackageInfo(Ref ref) async {
 ///
 /// Loading and error states are surfaced to the app shell so the app does not
 /// silently continue when the compatibility check cannot complete.
-// keepalive: force-update decision is a global app-shell gate shared by router
-// and update-required surfaces.
+// keepalive: account-free: force-update decision is a global app-shell gate
+// shared by router and update-required surfaces.
 @Riverpod(keepAlive: true)
 AsyncValue<bool> forceUpdateRequired(Ref ref) {
   final config = ref.watch(appVersionConfigProvider);

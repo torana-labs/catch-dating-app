@@ -176,8 +176,8 @@ class HostCommunicationRepository {
   );
 }
 
-// keepalive: Reuse the callable and Firestore clients for the communication
-// subdomain; rules authorize every read.
+// keepalive: account-free: Reuse the callable and Firestore clients for the
+// communication subdomain; rules authorize every read.
 @Riverpod(keepAlive: true)
 HostCommunicationRepository hostCommunicationRepository(Ref ref) =>
     HostCommunicationRepository(

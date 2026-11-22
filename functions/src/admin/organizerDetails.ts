@@ -24,8 +24,8 @@ import {
   validateAdminUpdateOrganizerDetailsCallablePayload,
 } from "../shared/generated/validators/adminUpdateOrganizerDetailsInput";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "./adminAuth";
-import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
   readOrganizerRouteReservationStatus,

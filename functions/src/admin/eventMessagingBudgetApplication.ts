@@ -59,8 +59,8 @@ import {
   whatsappBudgetScopes,
   WHATSAPP_BUDGETS,
 } from "../eventSuccess/operations/whatsappSpend";
-import {requireAdminRole} from "./adminAuth";
-import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {requireAdminRole} from "../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
 
 const decisionCollection = "eventMessagingBudgetDecisions";
 const receiptCollection = "eventMessagingBudgetApplicationReceipts";

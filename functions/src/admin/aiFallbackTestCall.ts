@@ -21,7 +21,7 @@ import type {AdminAiFallbackTestCallCallableResponse} from
 import {validateAdminAiFallbackTestCallCallablePayload} from
   "../shared/generated/validators/adminAiFallbackTestCallInput";
 import {validateCallableWithAjv} from "../shared/validation";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 
 // The owner's live test of the AI fallback's federated sign-in (#2062),
 // before anything is switched on for visitors. One fixed, fictional

@@ -11,8 +11,8 @@ import {validateAdminGetTakedownRequestCallablePayload} from "../shared/generate
 import {validateAdminUpdateTakedownRequestCallablePayload} from "../shared/generated/validators/adminUpdateTakedownRequestInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
-import {requireAdminRole, type AdminContext} from "../admin/adminAuth";
+import {setAdminAuditLogInTransaction} from "../platform/adminAudit";
+import {requireAdminRole, type AdminContext} from "../platform/adminAuth";
 import {iso} from "../admin/inbox/model";
 import {
   APPEAL_DECIDE_WITHIN_MS, APPEAL_WINDOW_MS, CASE_OUTCOMES, REQUEST_POLICIES, SUSPEND_REQUEST_TYPES,

@@ -53,8 +53,8 @@ class PushInstallationStore {
   );
 }
 
-// keepalive: a stateless facade over the app's Firestore singleton, held by
-// the app-wide push service.
+// keepalive: account-free: a stateless facade over the app's Firestore
+// singleton, held by the app-wide push service.
 @Riverpod(keepAlive: true)
 PushInstallationStore pushInstallationStore(Ref ref) =>
     PushInstallationStore(ref.watch(firebaseFirestoreProvider));

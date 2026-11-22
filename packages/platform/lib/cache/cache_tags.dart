@@ -92,8 +92,8 @@ final class _CacheTagRegistration {
   final void Function() onInvalidate;
 }
 
-// keepalive: an account-free registry of live read-owner callbacks that holds
-// no data; AuthSessionController replaces it at sign-out.
+// keepalive: account-free: an account-free registry of live read-owner
+// callbacks that holds no data; AuthSessionController replaces it at sign-out.
 @Riverpod(keepAlive: true)
 CacheTagRegistry cacheTags(Ref ref) => CacheTagRegistry();
 

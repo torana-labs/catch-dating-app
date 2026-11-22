@@ -434,8 +434,6 @@
     "ListMyHostAssignmentsCallablePayload",
     "ListMyOrganizerJourneysCallablePayload",
     "ListMyOrganizerJourneysCallableResponse",
-    "ListMyOwnedOrganizersCallablePayload",
-    "ListMyOwnedOrganizersCallableResponse",
     "ListOrganizerBillsCallablePayload",
     "ListOrganizerBillsCallableResponse",
     "ListOrganizerApplicationsCallablePayload",

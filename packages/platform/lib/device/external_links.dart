@@ -10,12 +10,14 @@ part 'external_links.g.dart';
 
 typedef ExternalUrlLauncher = Future<bool> Function(Uri uri, {LaunchMode mode});
 
-// keepalive: launcher is a platform facade shared by controllers across routes.
+// keepalive: account-free: launcher is a platform facade shared by controllers
+// across routes.
 @Riverpod(keepAlive: true)
 ExternalUrlLauncher externalUrlLauncher(Ref ref) =>
     (uri, {mode = LaunchMode.platformDefault}) => launchUrl(uri, mode: mode);
 
-// keepalive: link controller centralizes external navigation policy app-wide.
+// keepalive: account-free: link controller centralizes external navigation
+// policy app-wide.
 @Riverpod(keepAlive: true)
 ExternalLinkController externalLinkController(Ref ref) =>
     ExternalLinkController(ref.watch(externalUrlLauncherProvider));

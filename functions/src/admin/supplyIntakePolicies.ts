@@ -8,7 +8,7 @@ import type {AdminListSupplyIntakePoliciesCallableResponse} from "../shared/gene
 import {validateAdminListSupplyIntakePoliciesCallablePayload} from "../shared/generated/validators/adminListSupplyIntakePoliciesInput";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole} from "../platform/adminAuth";
 import {decisionIdForPolicyGap} from "./organizerPolicyGap";
 
 // The Supply Intake capabilities that stay off until the owner records a

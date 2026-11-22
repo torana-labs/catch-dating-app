@@ -1,6 +1,5 @@
 import {CatchButton, CatchConsentNote, CatchField, CatchGroundCard, CatchStack, CatchText} from "@catch/web-ui";
 import type {ReactNode} from "react";
-import {interpolateContent as fill} from "@content/interpolate";
 import {playbookCopy} from "../../content/playbook/playbookCopy";
 import type {PlaybookLeadForm as PlaybookLeadFormContent} from "../../content/playbook/playbookContract";
 import {Form} from "../../shared/ui/primitives";
@@ -10,9 +9,9 @@ import type {PlaybookLeadFormProps} from "./usePlaybookPageController";
 import {phoneFieldCopy} from "@content/phoneField";
 import {activePhoneCountry} from "@content/markets";
 
-/** The consent line under the button, naming the button, with the privacy policy linked at its end. */
-function ConsentLine({action}: {action: string}) {
-  return <CatchConsentNote href="/privacy/" linkLabel={playbookCopy.leadForm.privacy} text={fill(playbookCopy.leadForm.consent, {action})} />;
+/** The one line under the button: how the reply comes, with the privacy policy linked at its end. */
+function ConsentLine() {
+  return <CatchConsentNote href="/privacy/" linkLabel={playbookCopy.leadForm.privacy} text={playbookCopy.leadForm.consent} />;
 }
 
 /**
@@ -43,7 +42,7 @@ function PlaybookLeadForm({form, kind, leadIn}: {form: PlaybookLeadFormContent; 
   const footer = (
     <>
       {form.note ? <CatchText tone="secondary" variant="body-meta">{form.note}</CatchText> : null}
-      <ConsentLine action={form.submitLabel} />
+      <ConsentLine />
     </>
   );
   const body: ReactNode = card ? (

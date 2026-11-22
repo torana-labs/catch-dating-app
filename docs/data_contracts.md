@@ -2970,6 +2970,35 @@ derived from `x-catch-ownership` and validated by
 collection-level ownership metadata (paths, rules-match strings, operations,
 exported function names, migration notes).
 
+The registry, the rules and the schemas must agree in every direction, and
+`check_firestore_contract.mjs` checks each one:
+
+- Every `match` block in `firestore.rules`, nested ones included, is some
+  entry's `rulesMatch`, and every `rulesMatch` is a whole match path that
+  governs the entry's `path`. Several entries may share one block, such as the
+  `config/*` documents under `/config/{docId}` or subcollections under a
+  `{privateDocument=**}` match.
+- Every entry has a schema contract: a `contracts/firestore` schema whose
+  `x-firestore-path` is exactly the entry's `path`. Where the stored shape is
+  owned elsewhere, the entry names it in `schemaContract` instead, as the
+  operations engine's collections do (`contracts/operations/*.schema.json`)
+  and the `eventParticipations` legacy mirror does (`event_bookings`).
+- Every `contracts/firestore` schema's `x-firestore-path` is a registry entry.
+- A `rulesTestFile` names the collection it covers. A server-only collection
+  joins the list in `functions/test/rules/server_only_collections.rules.test.cjs`;
+  a collection with client access and no test yet goes in
+  `collectionsWithoutRulesTests`.
+
+So a new collection needs its rules block, its schema and its registry entry in
+the same change.
+
+Retiring or renaming a collection also moves its BigQuery export in the same
+change. `tool/contracts/check_bigquery_export_paths.mjs` fails while any
+`extensions/*.env` `COLLECTION_PATH` names a collection the registry no longer
+has, while an env file and the `firebase.json` extension instances disagree,
+or while `tool/analytics/host_analytics_contract.mjs` pins a path or table the
+env files do not deploy.
+
 It does not own multi-document business behavior, ranking algorithms,
 notification fan-out, dynamic Auth/current-time checks, or full Firestore rules.
 Those stay in Functions, repositories, rules, and domain services, consuming
@@ -6410,20 +6439,21 @@ held, and `summariseOperatorAlertOverflow` emails one list of their links at
 minute 2 of the next hour.
 
 Staff read and act on bills through `adminManageOrganizerBills`. An organizer's
-owner reads their own through `listOrganizerBills` (the host billing website),
-which leaves out unsent bills and everything only staff need (reminders,
-history, terms revisions). The Host app reads the same rows from
+owner reads their own bills, which leave out unsent bills and everything only
+staff need (reminders, history, terms revisions). The Host app and the host
+billing website read them from
 `hostOrganizerBillViews/{billId}` (`organizerId`, `billId`, `periodEndMillis`,
-`month`, `version` and `bill`, exactly the callable's row; the payment link only
+`month`, `version` and `bill`, exactly the `listOrganizerBills` row older Host
+builds still call for; the payment link only
 while unpaid) through a listener, newest first; a trigger on `organizerBills`
 keeps them and the `host-organizer-bill-views` copy-forward migration creates
 views for bills sent before it. Only the organizer's current owner reads them
 under rules.
-The host billing website finds the caller's organizers through
-`listMyOwnedOrganizers`: the organizers whose `ownerUserId` is the caller, or
+The host billing website finds the caller's organizers by listening to
+`organizers` under rules: the organizers whose `ownerUserId` is the caller, or
 whose legacy `hostUserId` is when no owner is recorded (the owner rule of every
-billing callable), archived ones included, a page of at most 50 at a time in
-organizer id order, each with its name and trial and plan status. No prices.
+billing callable), archived ones included. The `listMyOwnedOrganizers` callable
+that served this is retired.
 
 The free trial is computed, never stored (`functions/src/money/hostTrial.ts`).
 It starts at the organizer's first event, the start of the first non-cancelled

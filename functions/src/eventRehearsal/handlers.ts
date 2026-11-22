@@ -23,7 +23,7 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {adminRolesFromToken} from "../admin/adminAuth";
+import {adminRolesFromToken} from "../platform/adminAuth";
 import {requireAuth} from "../shared/auth";
 import {requireScheduledEvent} from "../events/configuredEvent";
 import {

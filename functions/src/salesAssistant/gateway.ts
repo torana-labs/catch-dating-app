@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";
 import type {Request, Response} from "express";
 import {HttpsError} from "firebase-functions/v2/https";
-import {adminRolesFromToken} from "../admin/adminAuth";
+import {adminRolesFromToken} from "../platform/adminAuth";
 import type {SalesPrincipal} from "../admin/sales/types";
 import {ASSISTANT_ACTIONS, READ_ACTIONS, WRITE_ACTIONS} from "./actions";
 import {SALES_ASSISTANT_OPENAPI} from "./openapi";

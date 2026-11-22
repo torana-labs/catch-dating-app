@@ -1,5 +1,5 @@
 import {createHash} from "node:crypto";
-import {ADMIN_ROLE_CLAIMS} from "../admin/adminAuth";
+import {ADMIN_ROLE_CLAIMS} from "../platform/adminAuth";
 import type {ReadinessApproval} from "./whatsappReadinessProvisioning";
 import type {TrustedCatchHistoryArchivePin} from
   "./whatsappHistoryArchiveVerifier";

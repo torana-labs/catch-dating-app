@@ -333,7 +333,9 @@ class ProgramOperationsOutbox {
   }
 }
 
-// keepalive: one journal shared by arrivals, dispatch, and hotel operations.
+// keepalive: account-free: a durable command journal shared by arrivals,
+// dispatch and hotel operations; it keys entries by the signed-in account
+// inside.
 @Riverpod(keepAlive: true)
 ProgramOperationOutboxStore programOperationOutboxStore(Ref ref) {
   final auth = ref.watch(firebaseAuthProvider);
@@ -347,7 +349,8 @@ ProgramOperationOutboxStore programOperationOutboxStore(Ref ref) {
   );
 }
 
-// keepalive: commands survive navigation between program work surfaces.
+// keepalive: account-free: commands survive navigation between program work
+// surfaces.
 @Riverpod(keepAlive: true)
 ProgramOperationsOutbox programOperationsOutbox(Ref ref) =>
     ProgramOperationsOutbox(

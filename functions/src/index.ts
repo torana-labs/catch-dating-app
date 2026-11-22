@@ -1265,7 +1265,6 @@ export {
 export {listMyOrganizerJourneys} from "./organizers/organizerJourney";
 export {listOrganizerBills} from "./money/organizerOwnBills";
 export {getOrganizerBillingStatus} from "./money/organizerBillingStatus";
-export {listMyOwnedOrganizers} from "./money/ownedOrganizers";
 export {manageOrganizerBillingPlan} from "./money/organizerBillingPlan";
 export {adminManageMoneySettings} from "./money/moneySettings";
 export {adminManageFoundingHostOffers} from

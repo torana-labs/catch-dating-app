@@ -21,6 +21,10 @@ import {Timestamp} from "firebase-admin/firestore";
  * later (consent, money, safety, a legal or audit record, anything a person
  * or regulator reads) keeps its own collection with its own retention. The
  * classification is in docs/data_contracts.md ("Command receipts").
+ *
+ * Production code reaches the collection only through these helpers:
+ * functions/eslint.config.cjs rejects naming `commandReceipts` or importing
+ * `COMMAND_RECEIPTS` / `buildCommandReceipt` anywhere else.
  */
 export const COMMAND_RECEIPTS = "commandReceipts";
 

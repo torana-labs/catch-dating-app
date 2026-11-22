@@ -2,8 +2,8 @@ import * as admin from "firebase-admin";
 import {Timestamp} from "firebase-admin/firestore";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
-import {requireAdminRole} from "../../admin/adminAuth";
-import {setAdminAuditLogInTransaction} from "../../admin/adminAudit";
+import {requireAdminRole} from "../../platform/adminAuth";
+import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
 import {appCheckCallableOptions} from "../../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";

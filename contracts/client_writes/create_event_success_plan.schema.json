@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/create_event_success_plan.schema.json",
+  "title": "CreateEventSuccessPlanClientWrite",
+  "description": "Client-owned Firestore create of the default live event guide at eventSuccessPlans/{eventId} (EventSuccessRepository.ensurePlanForEvent, in a transaction that writes only when the plan is absent). Rules require setup status, the first step and no live-control fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "data"
+  ],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "$ref": "../firestore/event_success_plans.schema.json"
+    }
+  },
+  "x-firestore-operation": "create",
+  "x-firestore-path": "eventSuccessPlans/{eventId}",
+  "x-owner": "event host direct plan create"
+}

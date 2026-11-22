@@ -7,8 +7,6 @@ const {doc, collection, getDoc, getDocs, setDoc} = require("firebase/firestore")
 
 const privatePaths = [
   "hostOperatorAlerts/synthetic-private",
-  "hostAcquisitionConsents/synthetic-private",
-  "hostAcquisitionDeliveries/synthetic-private",
   "adConversionContexts/pp_0123456789abcdef0123456789abcdef",
   "adConversionDeliveries/meta_hc_0123456789abcdef0123456789abcdef",
   "metaLeadgenEvents/1234567890123456",

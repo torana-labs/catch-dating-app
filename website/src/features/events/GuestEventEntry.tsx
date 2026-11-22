@@ -1,4 +1,5 @@
 import {CatchButton, CatchCheckboxInput, CatchField, CatchGap, CatchLegacyText} from "@catch/web-ui";
+import {TermsLine} from "../account/TermsLine";
 import {useState} from "react";
 import {offerCodeSent} from "../../content/eventOffer";
 import {approvalNotificationCopy as notificationCopy, eventPageCopy, guestEventCopy as copy} from "../../content/events";
@@ -113,7 +114,7 @@ function PhoneStep({c}: {c: Controller}) {
           status={c.pending ? "loading" : "idle"} type="submit" />
         {c.codeSent ? <CatchButton fullWidth label={copy.changePhone} onPressed={c.pending ? null : c.changePhone}
           variant="quiet" /> : null}
-        <CatchLegacyText as="p" color="ink2" variant="bodyS">{copy.privacy}</CatchLegacyText>
+        <TermsLine />
       </CatchGap>
     </Form>
   );

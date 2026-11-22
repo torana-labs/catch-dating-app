@@ -388,8 +388,8 @@ BackendErrorMapper _eventBookingErrorMapper({required String fallbackMessage}) {
   };
 }
 
-// keepalive: payment repository is a shared Functions/link facade for checkout
-// and confirmation flows.
+// keepalive: account-free: payment repository is a shared Functions/link facade
+// for checkout and confirmation flows.
 @Riverpod(keepAlive: true)
 PaymentRepository paymentRepository(Ref ref) {
   final auth = ref.watch(authenticatedSessionProvider);

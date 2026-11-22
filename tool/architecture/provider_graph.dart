@@ -2228,6 +2228,7 @@ const cacheRuleIds = [
   'CACHE-INVALIDATE-001',
   'CACHE-LISTENER-001',
   'KEEPALIVE-MANUAL-001',
+  'KEEPALIVE-SCOPE-001',
 ];
 
 const _readKindListener = 'listener';
@@ -2423,9 +2424,41 @@ final class _ReadFacts {
       );
     }
 
+    // KEEPALIVE-SCOPE-001: a kept-alive provider names its scope, and only a
+    // scope the code bears out. A handwritten provider with no marker at all
+    // is already KEEPALIVE-MANUAL-001.
+    if (provider.keepAlive && provider.kind != 'alias') {
+      final scope = _keepAliveScope(file, provider.start);
+      final declaration = _declarationSource(file, provider.start);
+      if (scope == null) {
+        if (provider.kind != 'manual' ||
+            _hasMarkerAbove(file, provider.start, _keepAliveMarker)) {
+          add('KEEPALIVE-SCOPE-001', provider.path, provider.name, 'no-scope');
+        }
+      } else if (scope == _scopeSessionRoot &&
+          !_identitySources.hasMatch(declaration)) {
+        add(
+          'KEEPALIVE-SCOPE-001',
+          provider.path,
+          provider.name,
+          'session-root-without-identity',
+        );
+      } else if (scope == _scopeAccountFree &&
+          provider.kind == 'generated-class' &&
+          _accountReads.hasMatch(declaration)) {
+        add(
+          'KEEPALIVE-SCOPE-001',
+          provider.path,
+          provider.name,
+          'account-state',
+        );
+      }
+    }
+
     if (!readOwner) continue;
 
-    // CACHE-LIFETIME-001: one lifetime; keepAlive only when account-free.
+    // CACHE-LIFETIME-001: one lifetime; keepAlive only when account-free or
+    // a session root.
     if (declared.length > 1) {
       add(
         'CACHE-LIFETIME-001',
@@ -2565,10 +2598,49 @@ Set<String> _composesReadOwner(
 }
 
 final _keepAliveMarker = RegExp(r'//\s*keepalive:\s*\S');
+
+/// A kept-alive read owner may hold data only when it is account-free or a
+/// session root (see [_keepAliveScope]).
 final _accountFreeMarker = RegExp(
-  r'//\s*keepalive:.*account-free',
-  caseSensitive: false,
+  r'//\s*keepalive:\s*(?:account-free|session-root):',
 );
+
+const _scopeAccountFree = 'account-free';
+const _scopeSessionRoot = 'session-root';
+
+/// Reading these means a provider holds or follows the signed-in account.
+final _accountReads = RegExp(
+  r'\b(?:uidProvider|authenticatedSessionProvider|currentUser|'
+  r'requireSignedInUid)\b',
+);
+
+/// A session root follows the signed-in identity, so it reads one of these.
+final _identitySources = RegExp(
+  r'\b(?:uidProvider|authenticatedSessionProvider|authStateChangesProvider|'
+  r'authRepositoryProvider|firebaseAuthProvider|currentUser|'
+  r'requireSignedInUid)\b',
+);
+
+/// The scope a kept-alive provider's `// keepalive:` marker declares:
+/// `account-free` (it holds nothing that belongs to one account) or
+/// `session-root` (it is the signed-in identity, or follows it, and kept-alive
+/// infrastructure such as the router reads it). Null when the marker names
+/// neither.
+String? _keepAliveScope(_ScannedFile file, int offset) {
+  for (final scope in [_scopeAccountFree, _scopeSessionRoot]) {
+    final marker = RegExp(r'//\s*keepalive:\s*' + scope + r':\s*\S');
+    if (_hasMarkerAbove(file, offset, marker)) return scope;
+  }
+  return null;
+}
+
+/// The source of the declaration at [offset], or empty when none starts there.
+String _declarationSource(_ScannedFile file, int offset) =>
+    file.unit.declarations
+        .where((d) => d.offset == offset)
+        .firstOrNull
+        ?.toSource() ??
+    '';
 
 /// Whether one of the three lines above the declaration at [offset] (or
 /// above its doc comment and annotations) matches [marker].
@@ -2957,6 +3029,8 @@ final class _ReadSiteVisitor extends RecursiveAstVisitor<void> {
         if (arguments.isNotEmpty) {
           node.policyArguments.add(arguments.first.toSource());
         }
+      case 'retainForCurrentSession':
+        node.lifetimes.add('session');
       case 'retainForSession':
         node.lifetimes.add('session');
         if (arguments.length > 1) {

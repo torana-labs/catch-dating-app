@@ -15,8 +15,8 @@ part of 'app_version_config_provider.dart';
 /// Reads are synchronous — all Remote Config values were fetched and activated
 /// at startup, falling back to [kAppVersionConfigDefaults] when the fetch
 /// failed.
-// keepalive: version config is a global route gate read synchronously after
-// startup Remote Config activation.
+// keepalive: account-free: version config is a global route gate read
+// synchronously after startup Remote Config activation.
 
 @ProviderFor(appVersionConfig)
 final appVersionConfigProvider = AppVersionConfigProvider._();
@@ -28,8 +28,8 @@ final appVersionConfigProvider = AppVersionConfigProvider._();
 /// Reads are synchronous — all Remote Config values were fetched and activated
 /// at startup, falling back to [kAppVersionConfigDefaults] when the fetch
 /// failed.
-// keepalive: version config is a global route gate read synchronously after
-// startup Remote Config activation.
+// keepalive: account-free: version config is a global route gate read
+// synchronously after startup Remote Config activation.
 
 final class AppVersionConfigProvider
     extends
@@ -46,8 +46,8 @@ final class AppVersionConfigProvider
   /// Reads are synchronous — all Remote Config values were fetched and activated
   /// at startup, falling back to [kAppVersionConfigDefaults] when the fetch
   /// failed.
-  // keepalive: version config is a global route gate read synchronously after
-  // startup Remote Config activation.
+  // keepalive: account-free: version config is a global route gate read
+  // synchronously after startup Remote Config activation.
   AppVersionConfigProvider._()
     : super(
         from: null,

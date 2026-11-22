@@ -189,8 +189,8 @@ class FirebaseOrganizerMomentsRepository implements OrganizerMomentsRepository {
   );
 }
 
-// keepalive: one stateless facade over account-free SDK singletons is shared
-// by every Moments route.
+// keepalive: account-free: one stateless facade over account-free SDK
+// singletons is shared by every Moments route.
 @Riverpod(keepAlive: true)
 OrganizerMomentsRepository organizerMomentsRepository(Ref ref) =>
     FirebaseOrganizerMomentsRepository(

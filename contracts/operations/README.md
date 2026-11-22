@@ -1,10 +1,18 @@
 # Operations contracts
 
 These draft-07 JSON Schemas define the portable boundary shared by operations
-workers, trusted backend services, CLIs, and admin read models. They are not
-Firestore collection registrations yet. A production persistence adapter must
-project these JSON values to its native timestamp and transaction types without
-changing their semantics.
+workers, trusted backend services, CLIs, and admin read models. A persistence
+adapter must project these JSON values to its native timestamp and transaction
+types without changing their semantics.
+
+The Firestore adapter (`functions/src/operations/firestoreRepository.ts`)
+stores runs, work items, action receipts and leases exactly in these shapes, in
+`operationRuns`, `operationWorkItems`, `operationActionReceipts` and
+`operationLeases`. Their entries in `tool/contracts/firestore_contract.json`
+name `run`, `work_item`, `action_receipt` and `lease` as their
+`schemaContract`, so these files are the Firestore contract for those
+collections. Decisions, publication plans and rule proposals and evaluations
+are not persisted.
 
 The contracts deliberately separate:
 

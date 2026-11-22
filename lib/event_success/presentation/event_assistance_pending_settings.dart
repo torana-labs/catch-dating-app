@@ -7,12 +7,14 @@ part 'event_assistance_pending_settings.g.dart';
 
 /// Discovery references only. Each settings editor owns its command and retry.
 /// Current event setup may omit a group whose setting save remains unconfirmed.
-// keepalive: Pending setting discovery survives closed sheets until confirmation or account reset.
-@Riverpod(keepAlive: true)
+/// Session lifetime: pending setting discovery survives closed sheets until
+/// confirmation, and ends with the signed-in period.
+@riverpod
 class EventAssistancePendingSettings extends _$EventAssistancePendingSettings {
   AuthenticatedSession? _account;
   @override
   Set<EventAssistanceGroupScope> build() {
+    ref.retainForCurrentSession();
     final auth = ref.watch(authenticatedSessionProvider);
     final authState = catchAsyncStateFromAsyncValue(auth);
     _account = !authState.isSettledData ? null : authState.value;

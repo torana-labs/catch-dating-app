@@ -510,8 +510,8 @@ class HostProviderRepository {
   );
 }
 
-// keepalive: one provider client coordinates setup, sync, and disconnect state
-// across every external-booking management surface.
+// keepalive: account-free: one provider client coordinates setup, sync, and
+// disconnect state across every external-booking management surface.
 @Riverpod(keepAlive: true)
 HostProviderRepository hostProviderRepository(Ref ref) =>
     HostProviderRepository(

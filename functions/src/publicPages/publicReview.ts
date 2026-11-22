@@ -7,10 +7,9 @@ import {
 } from "./publicReadPolicy";
 
 /**
- * One published review. This mirrors projectPublicReview in
- * website/src/server/publicReviewProjection.ts; the shared parity fixtures
- * in contracts/fixtures/public_pages hold both to the same output. Call it
- * only after the organizer's public review capability is checked.
+ * One published review as the public pages show it. The golden fixtures in
+ * contracts/fixtures/public_pages and projections.test.ts hold its output.
+ * Call it only after the organizer's public review capability is checked.
  */
 export type PublicReview = HostListing["reviews"][number];
 

@@ -9,15 +9,15 @@ part of 'force_update_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// The current app version and build number from the platform.
-// keepalive: package info is startup/platform metadata reused by the force
-// update gate.
+// keepalive: account-free: package info is startup/platform metadata reused by
+// the force update gate.
 
 @ProviderFor(appPackageInfo)
 final appPackageInfoProvider = AppPackageInfoProvider._();
 
 /// The current app version and build number from the platform.
-// keepalive: package info is startup/platform metadata reused by the force
-// update gate.
+// keepalive: account-free: package info is startup/platform metadata reused by
+// the force update gate.
 
 final class AppPackageInfoProvider
     extends
@@ -30,8 +30,8 @@ final class AppPackageInfoProvider
         $FutureModifier<({String buildNumber, String version})>,
         $FutureProvider<({String buildNumber, String version})> {
   /// The current app version and build number from the platform.
-  // keepalive: package info is startup/platform metadata reused by the force
-  // update gate.
+  // keepalive: account-free: package info is startup/platform metadata reused by
+  // the force update gate.
   AppPackageInfoProvider._()
     : super(
         from: null,
@@ -64,8 +64,8 @@ String _$appPackageInfoHash() => r'5951c12936e1cf5f3d3daf309d4c60d1159c2791';
 ///
 /// Loading and error states are surfaced to the app shell so the app does not
 /// silently continue when the compatibility check cannot complete.
-// keepalive: force-update decision is a global app-shell gate shared by router
-// and update-required surfaces.
+// keepalive: account-free: force-update decision is a global app-shell gate
+// shared by router and update-required surfaces.
 
 @ProviderFor(forceUpdateRequired)
 final forceUpdateRequiredProvider = ForceUpdateRequiredProvider._();
@@ -74,8 +74,8 @@ final forceUpdateRequiredProvider = ForceUpdateRequiredProvider._();
 ///
 /// Loading and error states are surfaced to the app shell so the app does not
 /// silently continue when the compatibility check cannot complete.
-// keepalive: force-update decision is a global app-shell gate shared by router
-// and update-required surfaces.
+// keepalive: account-free: force-update decision is a global app-shell gate
+// shared by router and update-required surfaces.
 
 final class ForceUpdateRequiredProvider
     extends
@@ -89,8 +89,8 @@ final class ForceUpdateRequiredProvider
   ///
   /// Loading and error states are surfaced to the app shell so the app does not
   /// silently continue when the compatibility check cannot complete.
-  // keepalive: force-update decision is a global app-shell gate shared by router
-  // and update-required surfaces.
+  // keepalive: account-free: force-update decision is a global app-shell gate
+  // shared by router and update-required surfaces.
   ForceUpdateRequiredProvider._()
     : super(
         from: null,

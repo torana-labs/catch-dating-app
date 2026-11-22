@@ -9,6 +9,7 @@ import {EventSmsPreferencePanel} from "../eventMessaging/EventSmsPreferencePanel
 import {eventDetailCopy} from "../../content/events";
 import {usePendingRequestNavigationBlocked} from "../../shared/pendingRequest";
 import {Form} from "../../shared/ui/primitives";
+import {TermsLine} from "../account/TermsLine";
 import {eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
 import {phoneFieldCopy} from "@content/phoneField";
 import {activePhoneCountry} from "@content/markets";
@@ -101,7 +102,7 @@ function FreeEventRegistration({
             <EventRcsPreferencesPanel {...registeredScope} />
             <EventWhatsappPreferencesPanel {...registeredScope} />
           </> : null}
-        <CatchLegacyText as="p" color="ink2" variant="bodyS">{copy.privacy}</CatchLegacyText>
+        {stage !== "success" ? <TermsLine /> : null}
       </CatchGap>
     </Form>
   );

@@ -12,9 +12,11 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.d
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,6 +62,11 @@ class FakeAuthRepository extends Fake implements AuthRepository {
 
   @override
   Stream<User?> authStateChanges() => _authStateController.stream;
+
+  void emitAuthState(User? user) {
+    currentUserValue = user;
+    _authStateController.add(user);
+  }
 
   @override
   Future<void> verifyPhoneNumber({
@@ -214,6 +221,9 @@ ProviderContainer createOnboardingTestContainer({
   AppAnalytics? appAnalytics,
 }) {
   final effectiveOverrides = <Object>[
+    // Onboarding state lives for the signed-in period, so it reads the auth
+    // state; without a test of its own, nobody is signed in.
+    firebaseAuthProvider.overrideWithValue(MockFirebaseAuth()),
     appAnalyticsProvider.overrideWithValue(
       appAnalytics ??
           AppAnalytics(

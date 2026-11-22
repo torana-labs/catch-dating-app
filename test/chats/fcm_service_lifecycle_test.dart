@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_platform/app_config.dart';
@@ -185,9 +186,21 @@ void main() {
     'shared shell initialization connects actual SDK stream to arrivals',
     () async {
       final container = ProviderContainer(
-        overrides: [fcmServiceProvider.overrideWithValue(service)],
+        overrides: [
+          fcmServiceProvider.overrideWithValue(service),
+          uidProvider.overrideWith((ref) => Stream.value('one')),
+        ],
       );
       addTearDown(container.dispose);
+      final signedIn = container.listen(uidProvider, (_, _) {});
+      addTearDown(signedIn.close);
+      await container.read(uidProvider.future);
+      // The shell listens to its initialization for as long as it is shown.
+      final shell = container.listen(
+        appShellFcmInitializationProvider('one', router),
+        (_, _) {},
+      );
+      addTearDown(shell.close);
       await container.read(
         appShellFcmInitializationProvider('one', router).future,
       );

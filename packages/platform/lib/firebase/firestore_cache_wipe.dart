@@ -85,8 +85,8 @@ final class FirestoreCacheWipe {
   }
 }
 
-// keepalive: an account-free SDK effect that holds no data. It reads
-// Firestore only if this process already started it, so signing out never
+// keepalive: account-free: an account-free SDK effect that holds no data. It
+// reads Firestore only if this process already started it, so signing out never
 // initializes Firebase on its own.
 @Riverpod(keepAlive: true)
 FirestoreCacheWipe firestoreCacheWipe(Ref ref) => FirestoreCacheWipe(

@@ -120,7 +120,8 @@ class EventTicketResolution {
   bool get isCheckedIn => status == EventAttendeeStatus.checkedIn;
 }
 
-// keepalive: One Firebase-backed repository instance serves every event.
+// keepalive: account-free: One Firebase-backed repository instance serves every
+// event.
 @Riverpod(keepAlive: true)
 EventTicketCodeRepository eventTicketCodeRepository(Ref ref) =>
     EventTicketCodeRepository(ref.watch(firebaseFunctionsProvider));

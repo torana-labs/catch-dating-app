@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
 import 'package:catch_dating_app/contexts/profiles/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
@@ -59,9 +60,10 @@ abstract class OnboardingData with _$OnboardingData {
 ///
 /// **When to use this pattern:** Multi-step flows where state must survive
 /// navigation and a freezed data class captures the full form state.
-// keepalive: onboarding state must survive step navigation until completion or
-// explicit invalidation.
-@Riverpod(keepAlive: true)
+///
+/// Session lifetime: the form state survives step navigation until completion
+/// or an explicit reset, and never outlives the signed-in period.
+@riverpod
 class OnboardingController extends _$OnboardingController {
   static const welcomeStep = OnboardingStep.welcome;
   static const nameDobStep = OnboardingStep.nameDob;
@@ -79,7 +81,10 @@ class OnboardingController extends _$OnboardingController {
   final _editedProfileFields = <String>{};
 
   @override
-  OnboardingData build() => const OnboardingData();
+  OnboardingData build() {
+    ref.retainForCurrentSession();
+    return const OnboardingData();
+  }
 
   Future<void> initStep({
     bool profileCompletionOnly = false,
@@ -514,8 +519,7 @@ class OnboardingController extends _$OnboardingController {
         );
     await _deleteDraftNow();
     // The router will redirect away shortly.
-    // Invalidate self so the keepAlive provider is disposed and its
-    // state (including OnboardingData) is freed.
+    // Invalidate self so its state (including OnboardingData) starts over.
     ref
         .read(appAnalyticsProvider)
         .logEvent(AnalyticsEvents.onboardingCompleted);

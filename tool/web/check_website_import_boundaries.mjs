@@ -57,6 +57,18 @@ const allowedFeatureImports = new Map([
   ["tryIt", new Set(["account", "marketing"])],
 ]);
 
+/**
+ * The website's Firebase service modules: the only files that load the
+ * browser Firebase SDK. Everything else calls them, so every callable gets
+ * the shared App Check deadline, the "configured" checks and typed payloads.
+ */
+const firebaseServiceFiles = new Set([
+  "firebase.ts",
+  "firebaseClaimAccountLinking.ts",
+  "firebaseConfig.ts",
+  "firebaseReadModels.ts",
+]);
+
 if (args.selfTest) {
   runSelfTest();
   process.exit(0);
@@ -101,8 +113,7 @@ function layerFor(relativePath) {
   if (parts[0] === "stories") return {name: "story"};
   if (
     relativePath === "analytics.ts" || relativePath.startsWith("analytics/") ||
-    relativePath === "firebase.ts" || relativePath === "firebaseReadModels.ts" ||
-    relativePath === "firebaseConfig.ts"
+    firebaseServiceFiles.has(relativePath)
   ) {
     return {name: "service"};
   }
@@ -110,6 +121,11 @@ function layerFor(relativePath) {
     return {name: "entry"};
   }
   return {name: "root"};
+}
+
+function browserFirebaseImport(specifier, sourceRelativePath) {
+  return /^firebase(?:\/|$)/.test(specifier) && !firebaseServiceFiles.has(sourceRelativePath) &&
+    !/\.test\./.test(sourceRelativePath);
 }
 
 function sourceModule(source) {
@@ -313,6 +329,10 @@ for (const file of [...walkSourceFiles(websiteSrcRoot),
       violations.push({source: sourceRelativePath, specifier,
         reason: "privileged runtime packages must remain in server modules"});
     }
+    if (browserFirebaseImport(specifier, sourceRelativePath)) {
+      violations.push({source: sourceRelativePath, specifier,
+        reason: "the browser Firebase SDK loads only in the Firebase service modules; call firebase.ts instead"});
+    }
     if (webUiDeepImport(specifier)) {
       violations.push({
         source: sourceRelativePath,
@@ -458,6 +478,16 @@ function runSelfTest() {
     assert.equal(privilegedImport(importSpecifiers(source)[0], "../app/client.tsx", {name: "next-entry"}, source), true);
   }
   assert.equal(isClientModule('// "use client";\nconst text = "use client";'), false);
+
+  // Only the Firebase service modules load the browser SDK; tests may mock it.
+  for (const file of firebaseServiceFiles) {
+    assert.deepEqual(layerFor(file), {name: "service"});
+    assert.equal(browserFirebaseImport("firebase/functions", file), false);
+  }
+  assert.equal(browserFirebaseImport("firebase/functions", "features/organizers/owner/ownerViewBackends.ts"), true);
+  assert.equal(browserFirebaseImport("firebase", "features/account/useAccount.ts"), true);
+  assert.equal(browserFirebaseImport("firebase/auth", "shared/auth/claimAccountLinking.test.ts"), false);
+  assert.equal(browserFirebaseImport("firebase-admin/firestore", "server/repositories/organizerRepository.ts"), false);
 
   assert.deepEqual(layerFor("server/publicCatalog.ts"), {name: "server"});
   assert.deepEqual(layerFor("../app/page.tsx"), {name: "next-entry"});

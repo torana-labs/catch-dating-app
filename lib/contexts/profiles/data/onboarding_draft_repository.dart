@@ -53,8 +53,8 @@ class OnboardingDraftRepository {
   );
 }
 
-// keepalive: onboarding draft repository is shared by the multi-step flow and
-// persists progress across route rebuilds.
+// keepalive: account-free: onboarding draft repository is shared by the
+// multi-step flow and persists progress across route rebuilds.
 @Riverpod(keepAlive: true)
 OnboardingDraftRepository onboardingDraftRepository(Ref ref) =>
     OnboardingDraftRepository(ref.watch(firebaseFirestoreProvider));

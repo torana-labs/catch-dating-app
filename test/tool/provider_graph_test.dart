@@ -866,9 +866,35 @@ $repository
 // keepalive: shared for every screen.
 @Riverpod(keepAlive: true)
 Stream<int> keptEvent(Ref ref) => ref.watch(eventsRepositoryProvider).watchEvent();
-// keepalive: account-free reference data every account shares.
+// keepalive: account-free: reference data every account shares.
 @Riverpod(keepAlive: true)
 Future<int> cities(Ref ref) => ref.watch(eventsRepositoryProvider).fetchEvent();
+// keepalive: session-root: the signed-in identity the router follows.
+@Riverpod(keepAlive: true)
+Stream<String?> uid(Ref ref) => ref.watch(authRepositoryProvider).uidChanges();
+// keepalive: session-root: claims to follow the account but reads none.
+@Riverpod(keepAlive: true)
+int pretender(Ref ref) => 1;
+// keepalive: account-free: search text kept across tabs.
+@Riverpod(keepAlive: true)
+class SearchText extends _\$SearchText {
+  String build() {
+    ref.listen(uidProvider, (_, _) => state = '');
+    return '';
+  }
+}
+// keepalive: account-free: an app-wide notice queue.
+@Riverpod(keepAlive: true)
+class Notices extends _\$Notices {
+  List<String> build() => const [];
+}
+@riverpod
+class Draft extends _\$Draft {
+  String build() {
+    ref.retainForCurrentSession();
+    return '';
+  }
+}
 @riverpod
 Future<int> inline(Ref ref) {
   ref.retain(CachePolicy(retain: Duration.zero, staleAfter: null));
@@ -923,6 +949,10 @@ int eventViewModel(Ref ref) => ref.watch(watchEventProvider).value ?? 0;
 
     expect(found, {
       'CACHE-LIFETIME-001 keptEventProvider keepAlive',
+      'KEEPALIVE-SCOPE-001 keptEventProvider no-scope',
+      'KEEPALIVE-SCOPE-001 pretenderProvider session-root-without-identity',
+      'KEEPALIVE-SCOPE-001 searchTextProvider account-state',
+      'KEEPALIVE-SCOPE-001 storageProvider no-scope',
       'CACHE-POLICY-001 inlineProvider policy:CachePolicy(retain: Duration.zero, staleAfter: null)',
       'CACHE-POLICY-001 inline inline-policy',
       'CACHE-ACCOUNT-001 unkeyedProvider no-session-key',
@@ -937,6 +967,10 @@ int eventViewModel(Ref ref) => ref.watch(watchEventProvider).value ?? 0;
     expect(
       graph.providers.singleWhere((p) => p.name == 'unkeyedProvider').lifetimes,
       ['timed'],
+    );
+    expect(
+      graph.providers.singleWhere((p) => p.name == 'draftProvider').lifetimes,
+      ['session'],
     );
   });
 
@@ -975,7 +1009,7 @@ final anotherProvider = Provider<int>((ref) => 1);
     expect(grown.unlistedCacheFindings.single.symbol, 'anotherProvider');
 
     await _writeFixture(root, 'lib/sample/data/fixture.dart', '''
-// keepalive: one journal per process.
+// keepalive: account-free: one journal per process.
 final journalProvider = Provider<int>((ref) => 1);
 ''');
     final fixed = await buildProviderGraph(root);

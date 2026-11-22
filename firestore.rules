@@ -1250,6 +1250,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Backend-owned manifests of the paths each demo operation wrote, for
+    // cleanup and audit.
+    match /demoOpsEvents/{operationId} {
+      allow read, write: if false;
+    }
+
     // Server-owned durable activity timeline. Users can read their own timeline
     // and mark items as read, but cannot create, delete, or edit notification
     // content.
@@ -4111,12 +4117,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /formCommunicationConsentIntents/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /hostAcquisitionConsents/{privateDocument=**} {
-      allow read, write: if false;
-    }
-    match /hostAcquisitionDeliveries/{privateDocument=**} {
       allow read, write: if false;
     }
     match /hostOrganizerActivations/{privateDocument=**} {

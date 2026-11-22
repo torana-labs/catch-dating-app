@@ -61,7 +61,8 @@ class FirebaseHostWorkRepository implements HostWorkRepository {
   }
 }
 
-// keepalive: one stateless repository is shared by every work route.
+// keepalive: account-free: one stateless repository is shared by every work
+// route.
 @Riverpod(keepAlive: true)
 HostWorkRepository hostWorkRepository(Ref ref) => FirebaseHostWorkRepository(
   ref.watch(firebaseFirestoreProvider),

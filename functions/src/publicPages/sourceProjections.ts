@@ -18,7 +18,7 @@ function stringOrNull(value: unknown): string | null {
   return typeof value === "string" ? value : null;
 }
 
-/** website/src/server/repositories/catchEventRepository.ts project(). */
+/** A published, active Catch event whose public projection reads. */
 export function publicCatchEventAuthorized(
   id: string, data: unknown, now: number
 ): boolean {
