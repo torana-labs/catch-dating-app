@@ -198,8 +198,9 @@ describe("playbook page", () => {
     expect(form.getByText("On WhatsApp, from Catch.")).toBeTruthy();
     expect(form.getByRole("link", {name: playbookCopy.leadForm.privacy}).getAttribute("href")).toBe("/privacy/");
     expect(form.queryByText(playbookCopy.leadForm.consent)).toBeNull();
-    // The form is the band's way to get the link: no second WhatsApp button beside it.
-    expect(band.queryByRole("link", {name: "Get the link on WhatsApp", exact: true})?.closest("form")).toBeFalsy();
+    // The form is the band's way to get the link: no WhatsApp button beside it, only the wide pages' QR line.
+    const chats = band.queryAllByRole("link").filter((link) => /^https:\/\/wa\.me\//u.test(link.getAttribute("href") ?? ""));
+    expect(chats).toHaveLength(1);
 
     fireEvent.change(form.getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98765 43210"}});
     fireEvent.click(form.getByRole("button", {name: "Text me the link"}));

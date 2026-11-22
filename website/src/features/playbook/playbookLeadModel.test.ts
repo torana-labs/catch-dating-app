@@ -1,5 +1,6 @@
 import {describe, expect, it} from "vitest";
 import runClubs from "@content/playbook/pages/host/run-clubs.json";
+import hostStart from "@content/playbook/pages/host/start.json";
 import {playbookCopy} from "@content/playbook/playbookCopy";
 import {websiteLeadCopy} from "@content/websiteLead";
 import {validatedPlaybookPage, type PlaybookLeadForm, type PlaybookPageDocument} from "../../content/playbook/playbookContract";
@@ -27,7 +28,8 @@ const walkthrough: PlaybookLeadForm = {...guide, id: "walkthrough_request", requ
   fields: fields("name", "orgName", "whatYouHost", "preferredTime")};
 const referral: PlaybookLeadForm = {...guide, id: "referral_host", requestKind: "referral", format: undefined,
   fields: fields("name", "hostName", "hostLink", "relationship")};
-const appLink: PlaybookLeadForm = {id: "host_app_link", requestKind: "app_link", label: "Your WhatsApp number", submitLabel: "Text me the link"};
+// The start page's Text me the link form, beside the host store badges.
+const appLink = (validatedPlaybookPage(hostStart).sections.find((section) => section.type === "cta" && section.leadForm) as {leadForm: PlaybookLeadForm}).leadForm;
 
 /** The guide names the lead contract lists for lead.guide.format, read from its description. */
 function contractGuideFormats(): string[] {
