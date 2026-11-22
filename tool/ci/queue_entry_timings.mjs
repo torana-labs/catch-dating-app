@@ -41,8 +41,16 @@ export function queueEvents(timeline = []) {
     .sort((left, right) => Date.parse(left.at) - Date.parse(right.at));
 }
 
-/** One run's timings. `timeline` may be absent; then the enqueue wait and removal cause are null. */
-export function analyzeRun(run, jobs = [], timeline = null) {
+/** GitHub writes removed_from_merge_queue about a second before merged on a successful queue merge. */
+export const MERGE_AFTER_REMOVAL_SECONDS = 60;
+
+/**
+ * One run's timings. `timeline` may be absent; then the enqueue wait and
+ * removal cause are null. `next` is the same PR's next run, if any: queue
+ * events from its creation on belong to it, and a run followed by one on a
+ * new base with no queue event in between was superseded (regrouped).
+ */
+export function analyzeRun(run, jobs = [], timeline = null, {next = null} = {}) {
   const ran = jobs.filter(executed);
   const required = jobs.find((job) => job.name === "Required CI");
   const gating = ran.filter((job) => job.name !== "Required CI" && job.completed_at);
@@ -58,13 +66,23 @@ export function analyzeRun(run, jobs = [], timeline = null) {
   const events = timeline ? queueEvents(timeline) : null;
   const enqueued = events?.filter((event) => event.event === "added_to_merge_queue" &&
     Date.parse(event.at) <= Date.parse(run.created_at)).at(-1) ?? null;
-  const after = events?.find((event) => event.event !== "added_to_merge_queue" &&
-    Date.parse(event.at) >= Date.parse(run.created_at)) ?? null;
-  const failed = ran.filter((job) => job.conclusion === "failure").map((job) => job.name);
+  const windowEnd = next ? Date.parse(next.created_at) : Infinity;
+  const within = (events ?? []).filter((event) => event.event !== "added_to_merge_queue" &&
+    Date.parse(event.at) >= Date.parse(run.created_at) && Date.parse(event.at) < windowEnd);
+  const mergedEvent = within.find((event) => event.event === "merged");
+  const removedEvent = within.find((event) => event.event === "removed_from_merge_queue");
+  // A removal just before the merge is how GitHub records a successful queue merge.
+  const mergedAfterRemoval = removedEvent && mergedEvent &&
+    seconds(removedEvent.at, mergedEvent.at) >= 0 && seconds(removedEvent.at, mergedEvent.at) <= MERGE_AFTER_REMOVAL_SECONDS;
+  const removal = removedEvent && !mergedAfterRemoval &&
+    (!mergedEvent || Date.parse(removedEvent.at) < Date.parse(mergedEvent.at)) ? removedEvent : null;
+  // Required CI only aggregates the lanes; the cause is the lane that failed.
+  const failed = ran.filter((job) => job.conclusion === "failure" && job.name !== "Required CI").map((job) => job.name);
   const cancelled = jobs.filter((job) => job.conclusion === "cancelled").map((job) => job.name);
   let outcome;
-  if (after?.event === "merged") outcome = "merged";
-  else if (after?.event === "removed_from_merge_queue") outcome = "removed";
+  if (removal) outcome = "removed";
+  else if (mergedEvent) outcome = "merged";
+  else if (next && baseOf(next.head_branch) !== baseOf(run.head_branch)) outcome = "superseded";
   else if (!required || !required.conclusion) outcome = run.status === "completed" ? "no-required-ci" : "incomplete";
   else if (required.conclusion === "success") outcome = "passed";
   else if (required.conclusion === "cancelled" || cancelled.length) outcome = "cancelled";
@@ -82,7 +100,7 @@ export function analyzeRun(run, jobs = [], timeline = null) {
     runnerWait: Object.fromEntries(Object.entries(waits).map(([kind, list]) =>
       [kind, {jobs: list.length, total: sum(list), max: list.length ? Math.max(...list) : 0}])),
     outcome, failedJobs: failed, cancelledJobs: cancelled,
-    removal: after?.event === "removed_from_merge_queue" ? {at: after.at, reason: after.reason, actor: after.actor} : null,
+    removal: removal ? {at: removal.at, reason: removal.reason, actor: removal.actor} : null,
   };
 }
 
@@ -138,6 +156,20 @@ export function stats(values) {
 /** Fewer entries than this in a period are reported as thin, not extrapolated. */
 export const THIN_BELOW = 10;
 
+/**
+ * Why removed entries left the queue: each failing job (Required CI excluded)
+ * with how many removals it appears in, and the removals with no failing job
+ * (dequeued by hand, or a cancelled or timed-out run).
+ */
+export function removalCauses(entries) {
+  const removed = entries.filter((entry) => entry.outcome === "removed");
+  const byJob = {};
+  for (const entry of removed) for (const job of new Set(entry.failedJobs)) byJob[job] = (byJob[job] ?? 0) + 1;
+  return {removed: removed.length, withFailingJob: removed.filter((entry) => entry.failedJobs.length).length,
+    withoutFailingJob: removed.filter((entry) => !entry.failedJobs.length).length,
+    topFailingJobs: Object.entries(byJob).sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))};
+}
+
 function summarizePeriod(entries) {
   const counts = (list) => Object.entries(list.reduce((acc, key) => ({...acc, [key]: (acc[key] ?? 0) + 1}), {}))
     .sort((left, right) => right[1] - left[1]);
@@ -152,13 +184,24 @@ function summarizePeriod(entries) {
     runnerWaitMacosMax: stats(entries.map((entry) => (entry.runnerWait.macos.jobs ? entry.runnerWait.macos.max : null))),
     runsUsingMacos: entries.filter((entry) => entry.runnerWait.macos.jobs > 0).length,
     outcomes: Object.fromEntries(counts(entries.map((entry) => entry.outcome))),
+    removalCauses: removalCauses(entries),
   };
 }
 
 /** The report: per-run entries, periods before and after `split`, and every removal or cancellation. */
 export function report(dataset, {split = null} = {}) {
+  const byPr = new Map();
+  for (const run of [...dataset.runs].sort((left, right) => Date.parse(left.created_at) - Date.parse(right.created_at))) {
+    const pr = prNumberOf(run.head_branch);
+    byPr.set(pr, [...(byPr.get(pr) ?? []), run]);
+  }
+  const nextOf = (run) => {
+    const list = byPr.get(prNumberOf(run.head_branch)) ?? [];
+    return list[list.indexOf(run) + 1] ?? null;
+  };
   const entries = dataset.runs
-    .map((run) => analyzeRun(run, dataset.jobs?.[run.id] ?? [], dataset.timelines?.[prNumberOf(run.head_branch)] ?? null))
+    .map((run) => analyzeRun(run, dataset.jobs?.[run.id] ?? [], dataset.timelines?.[prNumberOf(run.head_branch)] ?? null,
+      {next: nextOf(run)}))
     .sort((left, right) => Date.parse(left.createdAt) - Date.parse(right.createdAt));
   const withJobs = entries.filter((entry) => (dataset.jobs?.[entry.runId] ?? []).length > 0);
   const periods = split
@@ -193,6 +236,11 @@ export function formatReport(result) {
     lines.push(`  longest runner wait per run, Linux: median ${period.runnerWaitLinuxMax.median ?? "-"} s, p90 ${period.runnerWaitLinuxMax.p90 ?? "-"} s, max ${period.runnerWaitLinuxMax.max ?? "-"} s`);
     lines.push(`  longest runner wait per run, macOS: ${period.runsUsingMacos} runs used macOS; median ${period.runnerWaitMacosMax.median ?? "-"} s, p90 ${period.runnerWaitMacosMax.p90 ?? "-"} s, max ${period.runnerWaitMacosMax.max ?? "-"} s`);
     lines.push(`  outcomes: ${Object.entries(period.outcomes).map(([outcome, count]) => `${outcome} ${count}`).join(", ")}`);
+    const causes = period.removalCauses;
+    if (causes.removed) {
+      lines.push(`  removals: ${causes.removed} (${causes.withFailingJob} with a failing job, ${causes.withoutFailingJob} without)`);
+      lines.push(`  top failing jobs in removals: ${causes.topFailingJobs.slice(0, 5).map(([job, count]) => `${job} ×${count}`).join(", ") || "none"}`);
+    }
   }
   const rebuilds = result.rebuilds;
   lines.push("", `Queue rebuilds (all ${result.runs} runs): ${rebuilds.prs} PRs, ${rebuilds.prsWithSeveralRuns} with more than one run; ` +
