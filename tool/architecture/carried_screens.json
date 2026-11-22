@@ -1,0 +1,13 @@
+{
+  "description": "Files under apps/*/lib and lib/pages that keep the rules of the path in from until their redraw: the Catch lints evaluate a carried file as that legacy path, so its reasoned ignores and drawing stay legal. Only tool/architecture/move_screens.mjs adds entries, for moved files whose old path was not under a new root. catch_arch_stale_carry reports an entry whose file already meets the new-root rules, and the entry then goes. See docs/app_architecture.md, Carried screens.",
+  "carried": [
+    {
+      "path": "lib/pages/celebration/celebration_screen.dart",
+      "from": "lib/pages/celebration/celebration_screen.dart"
+    },
+    {
+      "path": "lib/pages/startup/splash_screen.dart",
+      "from": "lib/pages/startup/splash_screen.dart"
+    }
+  ]
+}
