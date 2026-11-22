@@ -6,8 +6,20 @@ import {
   adminAssignSalesPartnerCallablePayloadSchema,
 } from "../../shared/generated/schemas/adminAssignSalesPartnerInput";
 import {
+  adminGetSalesPartnerAccessCallablePayloadSchema,
+} from "../../shared/generated/schemas/adminGetSalesPartnerAccessInput";
+import {
+  adminRevokeSalesPartnerAccessCallablePayloadSchema,
+} from "../../shared/generated/schemas/adminRevokeSalesPartnerAccessInput";
+import {
   validateAdminAssignSalesPartnerCallablePayload,
 } from "../../shared/generated/validators/adminAssignSalesPartnerInput";
+import {
+  validateAdminGetSalesPartnerAccessCallablePayload,
+} from "../../shared/generated/validators/adminGetSalesPartnerAccessInput";
+import {
+  validateAdminRevokeSalesPartnerAccessCallablePayload,
+} from "../../shared/generated/validators/adminRevokeSalesPartnerAccessInput";
 import {SALES_ACTION_SCHEMAS, SALES_READ_SCHEMAS} from "./schemas";
 
 const root = path.resolve(__dirname, "../../../../contracts");
@@ -55,26 +67,51 @@ test("Sales catalog requests match the runtime validator authority", () => {
 });
 
 
-test("Partner catalog requests match their separate runtime validator", () => {
+// Partner callables validate with their own generated validators, outside
+// SALES_READ_SCHEMAS and SALES_ACTION_SCHEMAS.
+const PARTNER_VALIDATORS: Record<string, {
+  schema: Record<string, unknown>;
+  validate: (value: unknown) => boolean;
+}> = {
+  adminAssignSalesPartner: {
+    schema: adminAssignSalesPartnerCallablePayloadSchema,
+    validate: validateAdminAssignSalesPartnerCallablePayload,
+  },
+  adminGetSalesPartnerAccess: {
+    schema: adminGetSalesPartnerAccessCallablePayloadSchema,
+    validate: validateAdminGetSalesPartnerAccessCallablePayload,
+  },
+  adminRevokeSalesPartnerAccess: {
+    schema: adminRevokeSalesPartnerAccessCallablePayloadSchema,
+    validate: validateAdminRevokeSalesPartnerAccessCallablePayload,
+  },
+};
+
+test("Partner catalog requests match their separate runtime validators", () => {
   const catalog = readCatalog<{actionId: string; callable: string;
     requestSchema: string; example: Record<string, unknown>}>();
   const entries = catalog.actions.filter((entry) =>
     entry.actionId.startsWith("sales.partners."));
-  assert.deepEqual(entries.map((entry) => entry.callable),
-    ["adminAssignSalesPartner"]);
-  const entry = entries[0];
-  const schema = JSON.parse(readFileSync(
-    path.join(root, "..", entry.requestSchema), "utf8"));
-  assert.deepEqual(schema, adminAssignSalesPartnerCallablePayloadSchema);
-  assert.equal(validateAdminAssignSalesPartnerCallablePayload(entry.example),
-    true);
-  for (const field of schema.required as string[]) {
-    const incomplete = {...entry.example};
-    delete incomplete[field];
-    assert.equal(validateAdminAssignSalesPartnerCallablePayload(incomplete),
-      false, `Missing partner offer field must be rejected: ${field}`);
+  assert.deepEqual(entries.map((entry) => entry.callable).sort(),
+    Object.keys(PARTNER_VALIDATORS).sort());
+  for (const entry of entries) {
+    const {schema: expected, validate} = PARTNER_VALIDATORS[entry.callable];
+    const schema = JSON.parse(readFileSync(
+      path.join(root, "..", entry.requestSchema), "utf8"));
+    assert.deepEqual(schema, expected, `Contract drift: ${entry.callable}`);
+    assert.equal(validate(entry.example), true,
+      `Catalog example must validate: ${entry.callable}`);
+    for (const field of schema.required as string[]) {
+      const incomplete = {...entry.example};
+      delete incomplete[field];
+      assert.equal(validate(incomplete), false,
+        `${entry.callable} must reject a missing ${field}`);
+    }
   }
+  const offer = entries.find((entry) =>
+    entry.callable === "adminAssignSalesPartner");
+  assert.ok(offer);
   assert.equal(validateAdminAssignSalesPartnerCallablePayload({
-    ...entry.example, grantsSendPermission: true,
+    ...offer.example, grantsSendPermission: true,
   }), false);
 });

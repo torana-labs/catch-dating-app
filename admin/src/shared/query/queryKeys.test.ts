@@ -33,4 +33,13 @@ describe("adminQueryKeys", () => {
       "executions",
     ]);
   });
+
+  it("keys a host's partner access by the host it describes", () => {
+    expect(adminQueryKeys.sales.partnerAccess("host-one")).toEqual([
+      "admin",
+      "sales",
+      "partner-access",
+      "host-one",
+    ]);
+  });
 });

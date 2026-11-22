@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_sales_partner_access_response.schema.json",
+  "title": "AdminGetSalesPartnerAccessResponse",
+  "description": "One organizer's referral partner reservation and the reserved partner's membership. Carries no prospect research, notes, contacts or next action.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "assignment",
+    "membership",
+    "evaluatedAt"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96
+    },
+    "assignment": {
+      "description": "The organizer's reservation, or null when none was ever made. An offered or accepted reservation past its end reads as expired.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "partnerUid",
+            "state",
+            "revision",
+            "reviewAt",
+            "expiresAt",
+            "updatedAt"
+          ],
+          "properties": {
+            "partnerUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "state": {
+              "enum": [
+                "offered",
+                "accepted",
+                "declined",
+                "revoked",
+                "expired"
+              ]
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "reviewAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "membership": {
+      "description": "The reserved partner's membership, or null when there is no reservation or the membership is gone.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "partnerUid",
+            "displayName",
+            "state",
+            "revision",
+            "expiresAt"
+          ],
+          "properties": {
+            "partnerUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "displayName": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "state": {
+              "enum": [
+                "active",
+                "revoked",
+                "expired"
+              ]
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "evaluatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSalesPartnerAccess"
+  ]
+}

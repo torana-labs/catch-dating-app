@@ -476,6 +476,54 @@ export async function revokePartnerAccess(
     });
 }
 
+/**
+ * An administrator's view of one organizer's partner reservation and the
+ * reserved partner's membership, with the revisions a revoke or a new offer
+ * must name. No research, notes, contacts or next action leave the server.
+ */
+export async function getPartnerAccess(
+  deps: PartnerDeps, actor: PartnerActor,
+  payload: unknown): Promise<Record<string, unknown>> {
+  const input = object(payload, ["organizerId"]);
+  const organizerId = id(input.organizerId);
+  employee(actor);
+  await deps.checkAuth(actor, true);
+  const now = deps.now();
+  const current = (value: unknown) => {
+    const at = Date.parse(String(value));
+    return Number.isFinite(at) && at > now.getTime();
+  };
+  const row = (await deps.db.collection(ASSIGNMENTS).doc(organizerId).get())
+    .data() as PartnerAssignment | undefined;
+  if (!row || row.organizerId !== organizerId) {
+    return {organizerId, assignment: null, membership: null,
+      evaluatedAt: now.toISOString()};
+  }
+  const live = row.status === "offered" || row.status === "accepted";
+  const member = (await deps.db.collection(MEMBERSHIPS).doc(row.partnerUid)
+    .get()).data() as PartnerMembership | undefined;
+  return {
+    organizerId,
+    assignment: {
+      partnerUid: row.partnerUid,
+      state: live && !current(row.expiresAt) ? "expired" : row.status,
+      revision: row.revision,
+      reviewAt: row.reviewAt,
+      expiresAt: row.expiresAt,
+      updatedAt: row.updatedAt,
+    },
+    membership: member?.uid === row.partnerUid ? {
+      partnerUid: member.uid,
+      displayName: member.displayName,
+      state: member.status === "revoked" ? "revoked" :
+        current(member.expiresAt) ? "active" : "expired",
+      revision: member.revision,
+      expiresAt: member.expiresAt,
+    } : null,
+    evaluatedAt: now.toISOString(),
+  };
+}
+
 /** No account summary, employee notes, contact inventory, or guest records. */
 export async function getPartnerWorkspace(
   deps: PartnerDeps, actor: PartnerActor,

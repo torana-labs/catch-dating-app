@@ -90,6 +90,10 @@ export const adminQueryKeys = {
     analytics: (payloadKey: string, mode: string, access: string) =>
       [...adminQueryKeys.all, "overview", "analytics", mode, access, payloadKey] as const,
   },
+  sales: {
+    partnerAccess: (organizerId: string) =>
+      [...adminQueryKeys.all, "sales", "partner-access", organizerId] as const,
+  },
   safety: {
     queue: () => [...adminQueryKeys.all, "safety", "queue"] as const,
     detail: (targetPath: string) =>
