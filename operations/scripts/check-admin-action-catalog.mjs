@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import {adminCallableNames, readAdminCallableSources} from
   "../../tool/admin/callable_inventory.mjs";
-import fs from "node:fs/promises";
+import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {loadAdminActionCatalog} from "../src/admin/action-catalog.mjs";
@@ -23,7 +23,7 @@ if (isMain()) {
 export async function checkAdminActionCatalog({
   catalog,
   adminApiSource,
-  functionsIndexSource,
+  functionExportNames,
   validatorSource,
 } = {}) {
   let resolvedCatalog = catalog;
@@ -34,10 +34,11 @@ export async function checkAdminActionCatalog({
     return failure("catalog-load-failed", error);
   }
   const apiSource = adminApiSource ?? readAdminCallableSources(repoRoot);
-  const indexSource = functionsIndexSource ?? await fs.readFile(
-    path.join(repoRoot, "functions", "src", "index.ts"),
-    "utf8"
-  );
+  // The one reader of the Functions entry point's export list; it needs no
+  // installed packages.
+  const exportNames = functionExportNames ?? createRequire(import.meta.url)(
+    "../../functions/scripts/functionExports.cjs"
+  ).functionExportNames({root: path.join(repoRoot, "functions")});
   const generatedSource = validatorSource ?? (await import(
     "../../admin/scripts/generateCallableValidators.mjs"
   )).adminCallableValidatorRegistrySource();
@@ -59,7 +60,7 @@ export async function checkAdminActionCatalog({
     guiCallables,
     catalogCallables
   );
-  const exported = new Set(indexSource.match(/\b[a-z][A-Za-z0-9]+\b/gu) ?? []);
+  const exported = new Set(exportNames);
   for (const callable of allCatalogCallables) {
     if (!exported.has(callable)) findings.push({
       id: "catalog-callable-not-exported",

@@ -58,6 +58,42 @@ test("rejects every other entry shape with the rule and line, never the source t
   })(), 3);
 });
 
+test("the tokenizer reads setup and comments without losing or inventing an export", () => {
+  const source = [
+    "import {setGlobalOptions} from \"firebase-functions\";",
+    "/* export {fake} from \"./commented\"; */",
+    "// export {alsoFake} from \"./commented\";",
+    "const note = \"export {inString} from './x'\";",
+    "const shape = `${note} {${JSON.stringify({a: [1, 2]})}}`;",
+    "setGlobalOptions({region: \"asia-south1\", nested: {deep: [1, {x: 2}]}})",
+    "export {",
+    "  first, // a trailing comment",
+    "  second as renamed,",
+    "} from \"./alpha\"",
+    "if (note) { void shape }",
+    "export {third} from './beta';",
+  ].join("\n");
+  assert.deepEqual(functionExportsFromSource(source).map(({name}) => name), ["first", "renamed", "third"]);
+  for (const [bad, rule] of [
+    ["const s = \"open;\nexport {a} from \"./x\";", "syntax"],
+    ["/* never closed\nexport {a} from \"./x\";", "syntax"],
+    ["const r = /x/u;\nexport {a} from \"./x\";", "syntax"],
+    ["setGlobalOptions({);\nexport {a} from \"./x\";", "syntax"],
+    ["export {a} \"./x\";", "local"],
+    ["export {a} from \"./x\" export {b} from \"./y\";", "syntax"],
+  ]) assert.throws(() => functionExportsFromSource(bad), (error) => error.rule === rule, bad);
+});
+
+test("the tokenizer agrees with the TypeScript AST on today's entry point", () => {
+  const ts = require("typescript");
+  const source = fs.readFileSync(path.resolve(__dirname, "../src/index.ts"), "utf8");
+  const ast = ts.createSourceFile("index.ts", source, ts.ScriptTarget.Latest, true);
+  const viaAst = ast.statements.filter((s) => ts.isExportDeclaration(s) && !s.isTypeOnly)
+    .flatMap((s) => s.exportClause.elements.filter((e) => !e.isTypeOnly).map((e) => ({name: e.name.text,
+      symbol: (e.propertyName ?? e.name).text, module: s.moduleSpecifier.text.slice(2)})));
+  assert.deepEqual(functionExportsFromSource(source), viaAst);
+});
+
 test("reads src/index.ts under a functions root, refusing links and missing files", (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-function-exports-"));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {setTimeout as sleep} from "node:timers/promises";
@@ -15,11 +16,12 @@ export function validateAdminLiveDataSources({
   contract,
   appSource,
   apiSource,
-  functionsIndexSource,
+  functionExportNames,
   featureFiles,
   retainedOperationalSnapshots = [],
 }) {
   const violations = [];
+  const exportedFunctions = new Set(functionExportNames);
   const routes = Array.isArray(contract?.routes) ? contract.routes : [];
   if (contract?.schemaVersion !== 1) {
     violations.push("contract: schemaVersion must be 1");
@@ -47,7 +49,7 @@ export function validateAdminLiveDataSources({
       if (!apiSource.includes(`"${callable}"`)) {
         violations.push(`${route.routeId}: ${callable} is absent from adminApi`);
       }
-      if (!functionsIndexSource.includes(callable)) {
+      if (!exportedFunctions.has(callable)) {
         violations.push(
           `${route.routeId}: ${callable} is absent from Functions exports`
         );
@@ -237,10 +239,10 @@ async function main(argv) {
       fromRepo("admin/src/shared/api/adminApi.ts"),
       "utf8"
     ),
-    functionsIndexSource: fs.readFileSync(
-      fromRepo("functions/src/index.ts"),
-      "utf8"
-    ),
+    // The one reader of the Functions entry point's export list.
+    functionExportNames: createRequire(import.meta.url)(
+      "../../functions/scripts/functionExports.cjs"
+    ).functionExportNames({root: fromRepo("functions")}),
     featureFiles: collectFeatureFiles(fromRepo("admin/src/features")),
     retainedOperationalSnapshots: [
       "admin/src/features/intake/organizer/generated/organizerIntakeBridge.json",

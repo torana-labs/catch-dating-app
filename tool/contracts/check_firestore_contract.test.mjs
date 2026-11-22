@@ -90,12 +90,6 @@ for (const consumer of ["dart", "alias", "exportedFunctions", "operation"]) {
   });
 }
 
-test("local named exports also expose only their public alias", t => {
-  const source = "const localName = () => {}; export {localName as publicName};";
-  accepted(check(fixture(t, source)));
-  missing(check(fixture(t, source, "localName")), "localName");
-});
-
 for (const [kind, source] of Object.entries({
   "line comment": "// export {publicName} from './handler';",
   "block comment": "/* export {publicName} from './handler'; */",
@@ -111,11 +105,8 @@ for (const [kind, source] of Object.entries({
 }
 
 for (const [kind, source] of Object.entries({
-  "direct const": "export const publicName = () => {};",
-  "direct function": "export function publicName() {}",
-  "direct async function": "export async function publicName() {}",
   "grouped reexports": "export {publicName, another} from './handler';",
-  "local export": "const publicName = () => {}; export {publicName};",
+  "multi-line reexports": "export {\n  another,\n  publicName,\n} from './handler';",
 })) {
   test(`${kind} satisfies the authored export contract without evaluation`, t => {
     accepted(check(fixture(t, source)));
@@ -126,7 +117,14 @@ for (const [kind, source] of Object.entries({
   "wildcard": "export * from './handler';",
   "default": "export default function publicName() {}",
   "malformed": "export {publicName from './handler';",
-  "duplicate": "export {publicName}; export {publicName};",
+  "duplicate": "export {publicName} from './handler'; export {publicName} from './other';",
+  // The entry point only re-exports Functions from their modules
+  // (functions/scripts/functionExports.cjs).
+  "direct const": "export const publicName = () => {};",
+  "direct function": "export function publicName() {}",
+  "direct async function": "export async function publicName() {}",
+  "local export": "const publicName = () => {}; export {publicName};",
+  "local named alias": "const localName = () => {}; export {localName as publicName};",
 })) {
   test(`${kind} export syntax fails closed`, t => {
     const result = check(fixture(t, source));
@@ -154,7 +152,7 @@ function registerOrphans(root, rulesMatch = "/orphans/{privateDocument=**}") {
 }
 
 test("a schema needs a top-level rules match for its root collection", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"), JSON.stringify({
     "x-firestore-collection": "orphans", "x-firestore-path": "orphans/{id}",
   }));
@@ -173,7 +171,7 @@ test("a schema needs a top-level rules match for its root collection", t => {
 });
 
 test("every rules match block needs a registry entry", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.writeFileSync(path.join(root, "firestore.rules"), documents(
     "  match /items/{id} {}\n" +
     "  match /users/{uid} {\n    match /pushInstallations/{installationId} { allow read: if true; }\n  }"));
@@ -185,7 +183,7 @@ test("every rules match block needs a registry entry", t => {
 });
 
 test("a registry rulesMatch must be a whole match path that governs the entry path", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.writeFileSync(path.join(root, "firestore.rules"), documents(
     "  match /items/{id} {\n    match /orphans/{o} {}\n  }"));
   fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"), JSON.stringify({
@@ -209,7 +207,7 @@ test("a registry rulesMatch must be a whole match path that governs the entry pa
 });
 
 test("every registry entry has a schema contract, at its path or named explicitly", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.rmSync(path.join(root, "contracts/firestore/items.schema.json"));
   let result = check(root);
   assert.equal(result.status, 1, result.stderr);
@@ -238,7 +236,7 @@ test("every registry entry has a schema contract, at its path or named explicitl
 });
 
 test("every contracts/firestore schema describes a registered path", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.writeFileSync(path.join(root, "firestore.rules"), documents(
     "  match /items/{id} {}\n  match /orphans/{privateDocument=**} { allow read, write: if false; }"));
   fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"), JSON.stringify({
@@ -252,7 +250,7 @@ test("every contracts/firestore schema describes a registered path", t => {
 });
 
 test("a rules test file must name the collection it covers", t => {
-  const root = fixture(t, "export const publicName = () => {};", "publicName", "dart", "tested");
+  const root = fixture(t, "export {publicName} from './handler';", "publicName", "dart", "tested");
   accepted(check(root));
   fs.writeFileSync(path.join(root, "functions/test/rules/items.rules.test.cjs"),
     "it('denies itemsArchive', () => {});");
@@ -262,7 +260,7 @@ test("a rules test file must name the collection it covers", t => {
 });
 
 test("a schema without x-firestore-path is rejected", t => {
-  const root = fixture(t, "export const publicName = () => {};");
+  const root = fixture(t, "export {publicName} from './handler';");
   fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"),
     JSON.stringify({"x-firestore-collection": "orphans"}));
   const result = check(root);
@@ -288,7 +286,7 @@ test("CLI rejects malformed options rather than silently checking another scope"
 });
 
 test("every collection names its rules test or is listed as untested, never both", t => {
-  const source = "export const publicName = () => {};";
+  const source = "export {publicName} from './handler';";
   accepted(check(fixture(t, source, "publicName", "dart", "listed")));
   accepted(check(fixture(t, source, "publicName", "dart", "tested")));
   for (const [coverage, message] of [
