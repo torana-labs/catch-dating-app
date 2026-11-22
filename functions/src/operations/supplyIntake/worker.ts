@@ -142,16 +142,14 @@ const CONTRACT_ERRORS = new Set(["INVALID_INTAKE_REQUEST", "INVALID_ACQUISITION_
 export type PageAllowance = "shared" | "web_instant_draft";
 
 /**
- * A website instant draft reads from the tool's own monthly allowance
- * (owner decision, 16 Nov 2026), so drafts never starve staff nominations;
- * every other front door shares the main one.
+ * A try-it import (a website visitor reading their own page) reads from the
+ * website tools' own monthly allowance, so visitors never starve staff
+ * nominations; every other front door shares the main one. The allowance
+ * kept the name of the retired instant-draft tool it was made for (owner
+ * decisions, 16 and 18 Nov 2026; command catalog linkAllowance).
  */
 export function pageAllowanceFor(request: {origin?: {kind?: unknown} | null}): PageAllowance {
-  // A try-it import is the same website visitor reading their own page, so
-  // it reads from the same allowance (owner decision, 18 Nov 2026; command
-  // catalog linkAllowance), which can be split out later.
-  const kind = request.origin?.kind;
-  return kind === "web_instant_draft" || kind === "try_it_import" ? "web_instant_draft" : "shared";
+  return request.origin?.kind === "try_it_import" ? "web_instant_draft" : "shared";
 }
 
 /** The usage document that counts one allowance's month: {monthKey}, or instant-draft-pages-{monthKey}. */

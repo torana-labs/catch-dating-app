@@ -39,19 +39,6 @@ export function salesRelationshipPhones(data: Data): PhoneObservation[] {
 }
 
 /**
- * The number a person verified while submitting an instant draft, once the
- * draft is saved as an organizer.
- * @return {PhoneObservation[]} Zero or one observation.
- */
-export function instantDraftPhones(data: Data): PhoneObservation[] {
-  const organizerId = typeof data?.approval?.organizerId === "string" ?
-    data.approval.organizerId : null;
-  const phone = data?.instantDraft?.whatsapp?.phone;
-  if (!organizerId || typeof phone !== "string") return [];
-  return [{organizerId, source: "self_verified_submitter", phones: [phone]}];
-}
-
-/**
  * Applies the difference between two views of one record.
  * @return {Promise<number>} Lead documents written.
  */
@@ -103,13 +90,4 @@ export const onSalesRelationshipPhoneLeads = onDocumentWritten({
   if (!anySourceEnabled()) return;
   await syncLogged("sales", salesRelationshipPhones(event.data?.before.data()),
     salesRelationshipPhones(event.data?.after.data()));
-});
-
-export const onInstantDraftPhoneLeads = onDocumentWritten({
-  document: "supplyIntakeRequests/{requestId}",
-  secrets: [listingSuppressionHmacKey],
-}, async (event) => {
-  if (!anySourceEnabled()) return;
-  await syncLogged("instant_draft", instantDraftPhones(event.data?.before.data()),
-    instantDraftPhones(event.data?.after.data()));
 });

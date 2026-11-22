@@ -16,7 +16,7 @@ import {supplyIntakeCollections} from "./worker";
 
 const UNMAPPED_MARKET = "unassigned";
 
-export function supplyIntakeRequestId(prefix: "nom" | "intent" | "msg" | "discovery" | "refresh" | "draft" | "tryit", parts: readonly string[]): string {
+export function supplyIntakeRequestId(prefix: "nom" | "intent" | "msg" | "discovery" | "refresh" | "tryit", parts: readonly string[]): string {
   return `${prefix}-${createHash("sha256").update(JSON.stringify(parts)).digest("hex").slice(0, 40)}`;
 }
 
@@ -37,17 +37,6 @@ export interface SupplyIntakeRequestApproval {
   approvedAt: string;
   materialHash: string;
   salesOwnerUid: string;
-}
-
-/**
- * The private state a website instant draft keeps beside its request
- * (supplyIntakeRequests.instantDraft). Everything but outcome is fixed at
- * capture, so a retry must carry the same capture.
- */
-export interface SupplyIntakeInstantDraft {
-  schemaVersion: 1;
-  draftId: string;
-  accessTokenHash: string;
 }
 
 /**
@@ -81,8 +70,8 @@ export interface SupplyIntakeRequestResult {
  * Writes one queued request. An event refresh for an organizer Catch already
  * lists is created with that organizer's approval, so it never waits for
  * listing review and its events go straight to the publication policy. A
- * website instant draft is created with its private draft state, which
- * makes any later approval save a private draft instead of publishing.
+ * try-it import is created with its private import state and is never
+ * approved.
  *
  * Every request is first checked against the do-not-list registry
  * (listingSuppressions): a request whose name, links, handles or target
@@ -92,14 +81,11 @@ export interface SupplyIntakeRequestResult {
  * is unavailable, intake fails closed with "unavailable".
  */
 export async function createSupplyIntakeRequest(tx: Transaction, db: Firestore, request: SupplyIntakeRequest, now: Date,
-  {approval = null, instantDraft = null, tryItImport = null}: {approval?: SupplyIntakeRequestApproval | null;
-    instantDraft?: SupplyIntakeInstantDraft | null; tryItImport?: SupplyIntakeTryItImport | null} = {}):
+  {approval = null, tryItImport = null}: {approval?: SupplyIntakeRequestApproval | null;
+    tryItImport?: SupplyIntakeTryItImport | null} = {}):
   Promise<SupplyIntakeRequestResult> {
   if (!validateSupplyIntakeRequest(request)) {
     throw new HttpsError("invalid-argument", "The intake request does not satisfy its contract.");
-  }
-  if ((request.origin?.kind === "web_instant_draft") !== (instantDraft !== null)) {
-    throw new HttpsError("invalid-argument", "Only a website instant draft request carries instant draft state.");
   }
   if ((request.origin?.kind === "try_it_import") !== (tryItImport !== null) || (tryItImport !== null && approval !== null)) {
     throw new HttpsError("invalid-argument", "Only a try-it import request carries try-it import state, and it is never approved.");
@@ -123,10 +109,8 @@ export async function createSupplyIntakeRequest(tx: Transaction, db: Firestore, 
   const ref = db.collection(supplyIntakeCollections.requests).doc(request.requestId);
   const existing = await tx.get(ref);
   if (existing.exists) {
-    const stored = existing.data() as {request?: unknown; instantDraft?: Record<string, unknown> | null;
-      tryItImport?: Record<string, unknown> | null};
+    const stored = existing.data() as {request?: unknown; tryItImport?: Record<string, unknown> | null};
     if (canonical(stored.request) !== canonical(request) ||
-        canonical(capture(stored.instantDraft ?? null)) !== canonical(capture(instantDraft as object | null)) ||
         canonical(importCapture(stored.tryItImport ?? null)) !== canonical(importCapture(tryItImport as object | null))) {
       throw new HttpsError("already-exists", "This intake request id already holds a different request.");
     }
@@ -134,18 +118,10 @@ export async function createSupplyIntakeRequest(tx: Transaction, db: Firestore, 
   }
   const at = now.toISOString();
   tx.create(ref, {schemaVersion: 1, requestId: request.requestId, request, status: "queued", attempts: 0,
-    leaseUntil: null, result: null, failure: null, approval, ...(instantDraft ? {instantDraft} : {}),
+    leaseUntil: null, result: null, failure: null, approval,
     ...(tryItImport ? {tryItImport} : {}),
     createdAt: at, updatedAt: at});
   return {requestId: request.requestId, created: true};
-}
-
-/** The fixed part of an instant draft: its consent time and outcome may differ on a retry. */
-function capture(value: object | null): unknown {
-  if (!value) return null;
-  const {outcome: _outcome, whatsapp, ...rest} = value as Record<string, unknown>; // eslint-disable-line @typescript-eslint/no-unused-vars
-  const {consentedAt: _consentedAt, ...consent} = (whatsapp ?? {}) as Record<string, unknown>; // eslint-disable-line @typescript-eslint/no-unused-vars
-  return {...rest, whatsapp: consent};
 }
 
 /** The fixed part of a try-it import: appliedAt may differ on a retry. */

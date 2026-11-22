@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/book_walkthrough_payload.schema.json",
   "title": "BookWalkthroughCallablePayload",
-  "description": "A prospective host books one open walkthrough slot. The caller must be signed in with a phone verified by a one-time code (the website's Continue with phone sheet, as checkout and instant drafts use); that phone is the WhatsApp number staff confirm on, and a sent phone must equal it. App Check protected and rate limited. The same requestId and manageToken return the same booking.",
+  "description": "A prospective host books one open walkthrough slot. The caller must be signed in with a phone verified by a one-time code (the website's Continue with phone sheet, as checkout and the try-it tools use); that phone is the WhatsApp number staff confirm on, and a sent phone must equal it. App Check protected and rate limited. The same requestId and manageToken return the same booking.",
   "type": "object",
   "additionalProperties": false,
   "x-owner": "Website Start / Walkthrough page",

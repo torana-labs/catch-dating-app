@@ -33,8 +33,8 @@ import {aiOrganizerRequest, importAiOrganizer, lazyPageAi, sharedPageAiFallback,
 // Command organizer.import-from-link (contracts/commands/catalog.json; #2060).
 // A phone-verified visitor with a try-it workspace sends one public link. The
 // first preview with an idempotency key writes a Supply Intake request (origin
-// try_it_import) and answers running; the same worker and page allowance as
-// website instant drafts read it. Previewing again with the same key reads the
+// try_it_import) and answers running; the Supply Intake worker reads it from
+// the website tools' page allowance. Previewing again with the same key reads the
 // finished listing back and answers what apply would write into the workspace,
 // or that the page belongs to an organizer Catch already lists (the visitor's
 // own workspace never counts). Apply writes the reviewed fields and records

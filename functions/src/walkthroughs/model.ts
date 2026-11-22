@@ -226,7 +226,7 @@ export function clientAddress(request: CallableRequest<unknown>): string {
 /**
  * The phone the caller's Firebase sign-in verified with a one-time code (the
  * website's Continue with phone sheet, the same verification checkout and
- * instant drafts use) is the WhatsApp number staff confirm on. A sent number
+ * the try-it tools use) is the WhatsApp number staff confirm on. A sent number
  * must be that same number, so nobody can book for a number they do not hold.
  */
 export function verifiedPhone(request: CallableRequest<unknown>, submittedPhone: string | undefined):

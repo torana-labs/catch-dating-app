@@ -384,10 +384,7 @@ export {
   requestOrganizerClaim,
 } from "./organizers/organizerClaims";
 export {findClaimableOrganizers} from "./organizers/phoneLeads/find";
-export {
-  onInstantDraftPhoneLeads,
-  onSalesRelationshipPhoneLeads,
-} from "./organizers/phoneLeads/sync";
+export {onSalesRelationshipPhoneLeads} from "./organizers/phoneLeads/sync";
 export {
   confirmOrganizerClaimVerification,
   getOrganizerClaimVerificationOptions,
@@ -1020,9 +1017,6 @@ export {
   adminListSupplyNominators,
   adminSetSupplyNominator,
 } from "./operations/supplyIntake/nominators";
-export {requestInstantDraft} from "./instantDrafts/request";
-export {getInstantDraft} from "./instantDrafts/status";
-export {expireInstantDrafts} from "./instantDrafts/expiry";
 export {onInstantDraftOrganizerPublished} from "./instantDrafts/publishOnClaim";
 export {ensureTryItWorkspace} from "./commands/ensureTryItWorkspace";
 export {importOrganizerFromLink} from "./commands/importOrganizerFromLink";

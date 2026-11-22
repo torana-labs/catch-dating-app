@@ -82,9 +82,8 @@ async function reviewRow(db: FirebaseFirestore.Firestore, requestId: string,
     kind: intakeRequest.kind as Row["kind"],
     submittedByRole: submittedBy.role as Row["submittedByRole"],
     submittedAt: String(intakeRequest.submittedAt),
-    // The review contract lists the staff-facing front doors; a website
-    // instant draft (which approval saves as a private draft) reads as none.
-    origin: (typeof origin?.kind === "string" && origin.kind !== "web_instant_draft" ? origin.kind : "none") as Row["origin"],
+    // The review contract lists the staff-facing front doors; any other origin reads as none.
+    origin: reviewOrigin(origin?.kind),
     market: {slug, marketId: market?.marketId ?? null, label: market?.label ?? null,
       open: market?.hostCreatable === true},
     suggestedSlug: publicSlugFor(name ?? text(seed?.name, 500) ?? listing.listingId as string),
@@ -157,4 +156,11 @@ function strings(value: unknown, maxItems: number, maxLength: number): string[] 
 
 function nonNegative(value: unknown): number {
   return Number.isSafeInteger(value) && (value as number) >= 0 ? value as number : 0;
+}
+
+const reviewOrigins: ReadonlyArray<Row["origin"]> =
+  ["admin_nomination", "sales_inbound_intent", "message_nomination", "discovery_run"];
+
+function reviewOrigin(kind: unknown): Row["origin"] {
+  return reviewOrigins.find((origin) => origin === kind) ?? "none";
 }

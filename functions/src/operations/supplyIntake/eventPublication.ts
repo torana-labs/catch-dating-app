@@ -24,9 +24,9 @@ import {supplyIntakeCollections} from "./worker";
 // Publishes events Supply Intake imported for an approved organizer listing
 // as read-only, outbound-only externalEvents. Staff publish them through
 // adminPublishListingEvents; the event publication policy publishes the ones
-// that pass every automated check when a listing is approved; and a claimed
-// owner of a website instant draft publishes them by publishing the page
-// (instantDrafts/publishOnClaim.ts). All of them run the
+// that pass every automated check when a listing is approved; and the owner
+// of a try-it workspace that applied an import publishes them by publishing
+// the page (instantDrafts/publishOnClaim.ts). All of them run the
 // Supply Intake import plan (event-import.mjs) and review rules
 // (event-publication.mjs) from the packaged Operations runtime, then write
 // through the same checks as any external event: contract validation, the
@@ -133,8 +133,8 @@ export type ListingEventActor =
       eventLocations?: Map<string, StaffEventLocation>; request?: CallableRequest<unknown>}
   | {kind: "policy"}
   /**
-   * The claimed owner of the organizer, publishing its page (owner decision,
-   * 16 Nov 2026, for website instant drafts). Their publish is the review:
+   * The owner of the organizer, publishing its page (owner decisions, 16 and
+   * 18 Nov 2026, for imports from a link). Their publish is the review:
    * every automated check must still pass, and the organizer must be theirs.
    */
   | {kind: "owner"; ownerUid: string};

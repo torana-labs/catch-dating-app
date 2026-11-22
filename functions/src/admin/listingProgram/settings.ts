@@ -19,7 +19,7 @@ import {setAdminAuditLogInTransaction} from "../../platform/adminAudit";
 // programme). One server-only document; absent means not paused. While it is
 // paused, adminNominateOrganizer refuses every nomination and listing
 // approval refuses any listing Catch sourced itself. An organizer's own
-// submission and the website's instant drafts are unaffected.
+// submission is unaffected.
 
 export const listingProgramSettingsCollection = "listingProgramSettings";
 export const listingProgramSettingsId = "platform";
