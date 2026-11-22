@@ -592,7 +592,7 @@ Preserve these contracts when narrowing work:
 | App journeys and rendering; app platform | App source changes select visual/integration obligations | Independent Ubuntu headless journeys; macOS goldens, repeated Widgetbook rendering and native smoke remain separate required jobs | Fix the earliest behavior/render assertion; native dependency retry never retries a product assertion |
 | Generated schema freshness; backend platform | Generated schema bindings and backend package inputs select Contracts, including output-only edits | Contracts installs Functions generator dependencies and executes checked-source freshness commands | Run the named generator, inspect the diff and rerun freshness; a plan's codegen ID alone proves nothing |
 | Component/route/design source integrity; design system | Existing semantic checks and seeded dedupe probes remain blocking | Design parity retains component, route, screen, feature and preview contracts; focused similarity tests exercise reporting code | Repair the named source invariant; metadata checks do not establish live Figma or pixel parity |
-| Capture provenance and website image copies; marketing website | Website, shared React, capture-tool and capture-image inputs select capture freshness and full React validation. App inputs select neither: Marketing Website produces captures for that commit before it publishes | Pinned macOS canonical producer renders or validates exact-source captures; Linux consumers verify immutable artifact identity and import before builds; selected lane must succeed in finalization and Required CI | Repair the source or producer failure; never replace missing artifact proof with stale tracked images or restamped PNGs |
+| Capture provenance and website image copies; marketing website | Website, shared React, capture-tool and capture-image inputs select capture freshness and full React validation. App inputs select neither: Marketing Website produces captures for that commit before it publishes | Pinned macOS canonical producer renders or validates exact-source captures; Linux consumers verify immutable artifact identity and import before builds; selected lane must succeed in finalization and Required CI. The merge queue skips the macOS render; there the marketing lane builds with the tracked images only when the run's own jobs prove the render was deferred, and the main push and nightly render | Repair the source or producer failure; never replace missing artifact proof with stale tracked images or restamped PNGs outside that proven queue deferral |
 | Authored design decisions; design system | Todo decision edits select scoped index validation; counts/gaps derive from source registries | `check_comprehensive_todo_summary.mjs --summary` prints current counts without editing Markdown; P1 decision coverage remains checked | Add or repair the authored decision row; do not copy regenerated counts into prose |
 
 Whole-product widget similarity is advisory and has no product acceptance
@@ -4070,7 +4070,21 @@ goldens (`macos_only`), and only when the queue run's own plan for that exact
 source selected the lane. If that plan cannot be read, the goldens run; they
 are never skipped for that reason. A main or nightly golden failure fails the
 run, so the Main CI alert reports it. The Headless journeys keep running
-wherever the lane is selected, the queue included. Pull requests also run the Headless journeys in the Flutter lane
+wherever the lane is selected, the queue included.
+The macOS capture render (`marketing-captures.yml`, job `export`) leaves the
+merge queue on the same decision; its Linux plan, Storybook build and reuse
+still run there. When a queue group needs a new render, the marketing lane's
+"Decide whether the capture render was deferred" step reads the run's own jobs.
+It builds with the tracked captures, skipping the import and the built-bytes
+check, only when capture freshness succeeded with no capture binding, its plan
+job succeeded, and both reuse and render were skipped. Anything else, an API
+error included, is not deferred, so a broken capture pipeline still fails the
+lane on the missing binding. A main push the queue validated renders the
+captures when the queue's plan selected capture freshness or marketing, read
+the same way as the goldens and run if that plan cannot be read; the nightly
+renders too, and later queue groups reuse those renders. A plan that succeeds
+but emits a render value other than true or false would also read as deferred;
+the plan's own tests pin that value. Pull requests also run the Headless journeys in the Flutter lane
 (`flutter-ci.yml`, Linux), so a broken app-shell journey fails the PR instead
 of ejecting it from the merge queue. Golden pixel comparisons are report
 only: the job summary lists goldens beyond the 0.30% hosted-macOS raster

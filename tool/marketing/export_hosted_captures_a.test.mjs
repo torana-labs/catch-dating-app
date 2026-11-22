@@ -126,7 +126,7 @@ test("hosted workflow keeps manual dispatch and limits PR events to explicit cap
   assert.match(storybook, /runs-on: ubuntu-24\.04\n/u);
   assert.match(storybook, /run: npm ci\n[^]*?run: npm --workspace website run build:storybook\n[^]*?name: capture-storybook-/u);
   assert.match(storybook, /retention-days: 1\n/u);
-  assert.match(render, /needs: \[plan, storybook\]\n[^]*?    if: \$\{\{ !cancelled\(\) && needs\.plan\.result == 'success' && needs\.plan\.outputs\.render == 'true' && \(needs\.storybook\.result == 'success' \|\| \(needs\.storybook\.result == 'skipped' && needs\.plan\.outputs\.web_render != 'true'\)\) \}\}\n/u);
+  assert.match(render, /needs: \[plan, storybook\]\n[^]*?    if: \$\{\{ github\.event_name != 'merge_group' && !cancelled\(\) && needs\.plan\.result == 'success' && needs\.plan\.outputs\.render == 'true' && \(needs\.storybook\.result == 'success' \|\| \(needs\.storybook\.result == 'skipped' && needs\.plan\.outputs\.web_render != 'true'\)\) \}\}\n/u);
   assert.doesNotMatch(render + reuse, /npm ci|build:storybook/u);
   assert.match(render, /npm install --no-save --no-package-lock --ignore-scripts --prefix "\$RUNNER_TEMP\/playwright" "playwright@\$PLAYWRIGHT_VERSION"\n/u);
   assert.match(render, /playwright" install webkit\n/u);

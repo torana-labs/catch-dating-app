@@ -13,7 +13,7 @@ import {
   walkthroughSlotsAfterTaken,
 } from "../../stories/fixtures/walkthroughBooking";
 import {provideWalkthroughDeps, type WalkthroughDeps} from "./walkthroughClientContext";
-import {walkthroughManagePageNode} from "./WalkthroughManagePage";
+import {WalkthroughManagePage} from "./WalkthroughManagePage";
 
 vi.mock("../../firebase", () => ({}));
 
@@ -25,7 +25,7 @@ const hash = `#t=${walkthroughFixtureToken}`;
 
 function render(deps: WalkthroughDeps, link: {search: string; hash: string} = {search, hash}): void {
   renderInto(<StrictMode><QueryClientProvider client={new QueryClient()}>
-    {provideWalkthroughDeps(deps, walkthroughManagePageNode({search: link.search, hash: link.hash}))}
+    {provideWalkthroughDeps(deps, <WalkthroughManagePage hash={link.hash} search={link.search} />)}
   </QueryClientProvider></StrictMode>);
 }
 

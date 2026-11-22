@@ -12,6 +12,9 @@ import {playbookTryItTool} from "../tryIt/tryItModel";
 import fs from "node:fs";
 import path from "node:path";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
+import {walkthroughBookingCopy} from "@content/walkthroughBooking";
+import {provideWalkthroughDeps} from "../walkthroughs/walkthroughClientContext";
+import {scriptedWalkthroughClient, walkthroughNoSlots} from "../../stories/fixtures/walkthroughBooking";
 
 vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
 
@@ -120,17 +123,28 @@ describe("playbook page", () => {
     }
   });
 
-  it("asks for a walkthrough on its request page: the minimal header with WhatsApp beside it, and a walkthrough lead", async () => {
+  it("books a walkthrough with the slot picker while times are open", async () => {
+    const walkthrough = (await loadPlaybookPage(resolvePlaybookPage("/host/walkthrough/")!))!;
+    render(<>{provideWalkthroughDeps({client: scriptedWalkthroughClient().client, timeZone: null},
+      <PlaybookPage captures={captures} page={walkthrough} />)}</>);
+    expect(await screen.findByRole("heading", {name: walkthroughBookingCopy.title})).toBeTruthy();
+    expect(screen.getByRole("radiogroup", {name: walkthroughBookingCopy.day})).toBeTruthy();
+    expect(screen.queryByRole("form", {name: "Book my walkthrough"})).toBeNull();
+  });
+
+  it("asks for a walkthrough on its request page when no time is open: the minimal header with WhatsApp beside it, and a walkthrough lead", async () => {
     const walkthrough = (await loadPlaybookPage(resolvePlaybookPage("/host/walkthrough/")!))!;
     const posts: {requestKind: string; fullName: string; lead: {entry: string; walkthrough: unknown}}[] = [];
     vi.stubGlobal("fetch", vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
       posts.push(JSON.parse(String(init?.body)));
       return new Response(JSON.stringify({ok: true, alreadyJoined: false, lead: {leadId: "0".repeat(64), requestKind: "walkthrough", isNew: true}}), {status: 200});
     }));
-    render(<PlaybookPage captures={captures} page={walkthrough} />);
+    render(<>{provideWalkthroughDeps({client: scriptedWalkthroughClient({slots: [walkthroughNoSlots]}).client},
+      <PlaybookPage captures={captures} page={walkthrough} />)}</>);
     expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Book a 15-minute walkthrough.");
     expect(screen.queryByRole("navigation", {name: /breadcrumb/iu})).toBeNull();
     expect(within(screen.getByRole("banner")).getByRole("link", {name: "WhatsApp us"}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
+    expect(await screen.findByText(walkthroughBookingCopy.problems.noSlots)).toBeTruthy();
     const form = within(screen.getByRole("form", {name: "Book my walkthrough"}));
     fireEvent.click(form.getByRole("button", {name: "Book my walkthrough"}));
     expect(await form.findByText(playbookCopy.leadForm.required.preferredTime)).toBeTruthy();

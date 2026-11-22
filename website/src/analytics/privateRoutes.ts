@@ -7,6 +7,8 @@ export function isPrivateEventUpdatePath(path: string): boolean {
     path === "/offer" || path === "/offer/" ||
     path === "/account" || path === "/account/" ||
     path === "/host/billing" || path === "/host/billing/" ||
+    // A walkthrough booking's manage link names the booking and carries its token.
+    path === "/start/walkthrough/manage" || path === "/start/walkthrough/manage/" ||
     // Listing requests carry names and contact details: no analytics or replay.
     path.startsWith("/listings/request");
 }

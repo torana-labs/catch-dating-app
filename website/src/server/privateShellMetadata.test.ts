@@ -28,6 +28,10 @@ it("maps credential routes to a public family enum only", () => {
   expect(privateShellFamily("/host/billing/")).toBe("host");
   expect(privateShellFamily("/host/billing")).toBe("host");
   for (const path of ["/host/", "/host", "/host/run-clubs/", "/host/billing/plans/"]) expect(privateShellFamily(path)).toBeNull();
+  // The walkthrough manage link is the shell's; nothing else under /start/ is.
+  expect(privateShellFamily("/start/walkthrough/manage")).toBe("start");
+  expect(privateShellFamily("/start/walkthrough/manage/")).toBe("start");
+  for (const path of ["/start/", "/start/walkthrough/", "/start/walkthrough/manage/x/"]) expect(privateShellFamily(path)).toBeNull();
 });
 
 it("writes family metadata and falls back to the bare title for unknown families", () => {
