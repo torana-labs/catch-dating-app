@@ -7,7 +7,7 @@ import {
   eventSuccessPrimitivesFor,
   type EventSuccessGuestCueTiming,
   type EventSuccessPhoneAvailability,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 
 const TIMINGS: EventSuccessGuestCueTiming[] =
   ["arrival", "stepChange", "midStep", "postEvent"];

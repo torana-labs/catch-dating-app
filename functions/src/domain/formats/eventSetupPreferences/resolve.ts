@@ -1,5 +1,5 @@
 import {createHash} from "crypto";
-import {EVENT_MAX_DURATION_MINUTES} from "../../shared/businessRules";
+import {EVENT_MAX_DURATION_MINUTES} from "../../../shared/businessRules";
 import {
   EventPaymentTerms, EventPreferenceError, EventPreferenceIntents,
   OrganizerEventDefaults, PreferenceIntent, ResolvedEventPreferences,

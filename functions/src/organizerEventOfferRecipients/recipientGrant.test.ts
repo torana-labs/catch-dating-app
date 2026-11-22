@@ -7,9 +7,9 @@ import {fixture, approvedApplicationFixture, org, eventId, responseId,
   contactId, actorUid, offerId} from
   "../organizerFormAdmission/admissionTestFixture";
 import type {ResolvedEventPreferences} from
-  "../events/eventSetupPreferences/types";
+  "../domain/formats/eventSetupPreferences/types";
 import {eventPaymentTermsFromPreferences, eventPaymentTermsHash} from
-  "../events/eventSetupPreferences/resolve";
+  "../domain/formats/eventSetupPreferences/resolve";
 import {issueOfferRecipientInvitation, claimOfferRecipientInvitation,
   offerRecipientGrantId, readVerifiedOfferRecipient} from "./recipientGrant";
 

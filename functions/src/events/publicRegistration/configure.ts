@@ -21,10 +21,9 @@ import {
 } from "../../shared/commandReceipts";
 import {readRegistrationManager} from "./authority";
 import {readSeatMigrationWriterFence} from "../seatMigrationPaged";
-import {
-  assertPublicRegistrationAvailability,
-  registrationUnavailable,
-} from "./policy";
+import {assertPublicRegistrationAvailability} from "./policy";
+import {registrationUnavailable} from
+  "../../domain/events/publicRegistrationTerms";
 import {updateEventPublicRegistration} from
   "../../domain/events/eventDocumentWrites";
 

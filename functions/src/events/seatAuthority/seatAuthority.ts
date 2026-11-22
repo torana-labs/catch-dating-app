@@ -1,4 +1,5 @@
 import {createHash} from "crypto";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 
 /** Private server-owned records. No endpoint or path is registered here. */
 export interface SeatLedger {
@@ -113,7 +114,6 @@ function hash(value: unknown): string {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
 }
 
-export const CHECKOUT_HOLD_MILLIS = 15 * 60 * 1000;
 /** Matches the attendee row's partySize ceiling; callers set tighter limits. */
 export const MAX_RESERVATION_PLACES = 20;
 

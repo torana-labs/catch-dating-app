@@ -1,8 +1,19 @@
 import {createHash} from "crypto";
-import {assertReadySeatState, CanonicalSeatIdentity, CHECKOUT_HOLD_MILLIS,
-  checkoutHeldCount, heldSeatCount, MAX_RESERVATION_PLACES, reservationPlaces,
-  SeatAuthorityError, SeatCommand, SeatLedger, SeatReceipt, SeatReservation,
-  SeatTransaction} from "./seatAuthority";
+import {
+  assertReadySeatState,
+  CanonicalSeatIdentity,
+  checkoutHeldCount,
+  heldSeatCount,
+  MAX_RESERVATION_PLACES,
+  reservationPlaces,
+  SeatAuthorityError,
+  SeatCommand,
+  SeatLedger,
+  SeatReceipt,
+  SeatReservation,
+  SeatTransaction,
+} from "./seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "../../domain/payments/checkoutHold";
 
 export type CheckoutHoldOperation = "checkoutHold" |
   "confirmCheckoutHold" | "releaseCheckoutHold";

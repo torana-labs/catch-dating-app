@@ -2,9 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {AudienceTestStore} from "../organizers/organizerAudienceTestStore";
 import {eventPaymentTermsFromPreferences} from
-  "../events/eventSetupPreferences/resolve";
+  "../domain/formats/eventSetupPreferences/resolve";
 import type {ResolvedEventPreferences} from
-  "../events/eventSetupPreferences/types";
+  "../domain/formats/eventSetupPreferences/types";
 import {formConversionReceiptId} from
   "../organizers/organizerFormAdmissionIdentity";
 import {organizerContactOriginId} from

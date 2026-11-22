@@ -27,7 +27,7 @@ import {
   EventSuccessMatchingObjective,
   EventSuccessVariableResolution,
   eventSuccessVariableResolutionFor,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {
   AssignmentConstraintConfig,
   AssignmentConstraintEvaluation,

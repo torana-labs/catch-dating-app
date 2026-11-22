@@ -46,7 +46,7 @@ import {
   storedOwnerLinks,
   type OwnerLinkInput,
 } from "../organizers/organizerLinks";
-import {adminOrganizerWomenLed} from "../organizers/womenLed";
+import {adminOrganizerWomenLed} from "../domain/events/womenLed";
 
 const organizerDetailsRoles = ["admin", "adminOwner", "support"] as const;
 

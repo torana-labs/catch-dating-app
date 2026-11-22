@@ -24,7 +24,7 @@ import {normalizeMarkEventAttendancePayload} from "./eventPayloadNormalization";
 import {
   eventSuccessGuestCueAllowed,
   eventSuccessPrimitivesFor,
-} from "../eventSuccess/formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 import {buildAttendanceSignalFact} from "../marketplace/signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,

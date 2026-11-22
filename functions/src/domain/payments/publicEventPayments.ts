@@ -5,9 +5,9 @@ import type {PublicEventPaymentDocument as Payment} from
   "../../shared/generated/firestoreAdminTypes";
 import {validatePublicEventPaymentDocument} from
   "../../shared/generated/validators/publicEventPaymentDocument";
-import {CHECKOUT_HOLD_MILLIS} from "../../events/seatAuthority/seatAuthority";
+import {CHECKOUT_HOLD_MILLIS} from "./checkoutHold";
 import {assertPaymentRouteSnapshot} from "../../payments/paymentRouting";
-import {registrationUnavailable} from "../../events/publicRegistration/policy";
+import {registrationUnavailable} from "../events/publicRegistrationTerms";
 
 /**
  * A guest's payment for a public event: its id, ledger parsing and the one

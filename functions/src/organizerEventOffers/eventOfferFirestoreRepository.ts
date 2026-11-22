@@ -1,8 +1,8 @@
 import {createHash} from "node:crypto";
 import type {EventPaymentTerms} from
-  "../events/eventSetupPreferences/types";
+  "../domain/formats/eventSetupPreferences/types";
 import {eventPaymentTermsHash, validateEventPaymentTerms} from
-  "../events/eventSetupPreferences/resolve";
+  "../domain/formats/eventSetupPreferences/resolve";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {
   EventDocument, OrganizerApplicationDocument,

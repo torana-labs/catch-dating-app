@@ -6,9 +6,6 @@ import type {
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {requireEventPolicyTerms} from "./configuredEvent";
 
-import {requiresCommunityMembership} from
-  "../memberships/communityMembershipAuthority";
-
 export const cohortIds = {
   unspecified: "unspecified",
   menInterestedInWomen: "menInterestedInWomen",
@@ -103,6 +100,15 @@ export interface EventPolicyBundleDocument {
   settlement: {
     hostPayoutTiming: "afterEventCompletion";
   };
+}
+
+export function requiresCommunityMembership(
+  policy: Pick<EventPolicyBundleDocument, "admission">
+): boolean {
+  return (
+    policy.admission.membershipRequired === true ||
+    policy.admission.format === "membersOnly"
+  );
 }
 
 export interface EventRosterSnapshot {

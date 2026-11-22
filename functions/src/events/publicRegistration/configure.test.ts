@@ -12,10 +12,9 @@ import {
   configureEventRegistration,
   registrationReceiptRef,
 } from "./configure";
-import {
-  assertPublicRegistrationPolicy,
-  publicRegistrationMode,
-} from "./policy";
+import {assertPublicRegistrationPolicy} from "./policy";
+import {publicRegistrationMode} from
+  "../../domain/events/publicRegistrationTerms";
 
 test("paid opt-in is explicit, revision-checked and replay-safe", async () => {
   const h = await publicFixture();

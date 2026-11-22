@@ -22,7 +22,7 @@ import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
   EventSuccessUnitOutcome,
   eventSuccessPrimitivesFor,
-} from "./formatPrimitives";
+} from "../domain/formats/formatPrimitives";
 
 type OutcomeEntry =
   RecordEventSuccessUnitOutcomesCallablePayload["entries"][number];
