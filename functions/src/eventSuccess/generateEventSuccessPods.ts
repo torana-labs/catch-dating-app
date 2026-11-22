@@ -43,7 +43,7 @@ import {
   unitLabel,
   unitSingularLabel,
   unitSubtitle,
-} from "./assignmentTopology";
+} from "../domain/formats/assignmentTopology";
 import {
   EventSuccessAssignmentAlgorithm,
   EventSuccessCompatibilityPolicy,

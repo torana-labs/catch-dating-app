@@ -784,7 +784,7 @@ concurrent reassignment and T4 pre-generation resolve under single-writer
 fencing.
 
 **T6 — `resourceCapacity` and `sequence` topology.** `effort: high`
-Owner: `functions/src/eventSuccess/assignmentTopology.ts`, `generateEventSuccessRotations.ts`, new scheduler.
+Owner: `functions/src/domain/formats/assignmentTopology.ts`, `generateEventSuccessRotations.ts`, new scheduler.
 The tournament engine per A.4 and A.6, including fair sit-outs wired to T3 and
 rotation cost weighted by `unitProximity` from T5. Tests: round-robin
 correctness, court-count constraint, sit-out fairness bound,

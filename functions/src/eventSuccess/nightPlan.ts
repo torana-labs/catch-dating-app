@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import {resolveAssignmentTopology, type EventSuccessUnitKind} from "./assignmentTopology";
+import {resolveAssignmentTopology, type EventSuccessUnitKind} from "../domain/formats/assignmentTopology";
 import {
   eventSuccessPlaybookShape,
   eventSuccessStructureDefaults,
