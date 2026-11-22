@@ -8284,12 +8284,14 @@
       "description": "Validates the tool manifest, lists and dispatches registered commands, and fail-closed selects checks from explicit or affected paths without creating a second execution-authority layer.",
       "impactPaths": [
         "tool/lib/cli_args.mjs",
-        "tool/lib/cli_args.test.mjs"
+        "tool/lib/cli_args.test.mjs",
+        "tool/lib/tools_manifest.mjs",
+        "tool/lib/tools_manifest.test.mjs"
       ],
       "role": "gate",
       "checks": [
         "node --check tool/run.mjs",
-        "node --test tool/run.test.mjs tool/lib/tool_impact.test.mjs tool/lib/cli_args.test.mjs"
+        "node --test tool/run.test.mjs tool/lib/tool_impact.test.mjs tool/lib/cli_args.test.mjs tool/lib/tools_manifest.test.mjs"
       ]
     },
     {

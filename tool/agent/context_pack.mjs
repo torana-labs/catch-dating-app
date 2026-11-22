@@ -4,6 +4,7 @@ import {fromRepo} from "../lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
 import {parseDocumentLifecycleStatus} from "../docs/check_doc_metadata.mjs";
 import {sourceRulesFromManifest} from "../lib/tool_manifest_rules.mjs";
+import {loadToolsManifestFromSnapshot} from "../lib/tools_manifest.mjs";
 import {
   deriveCheckSelection,
   matchesScopePatterns,
@@ -24,7 +25,7 @@ const task = args.task ?? "unspecified";
 const scopePaths = normalizeScopePaths(args.paths);
 const selectionPaths = expandSelectionPaths(scopePaths);
 const skillManifest = readJson("docs/agent_skills/skills_manifest.json", {skills: []});
-const toolsManifest = readJson("tool/tools_manifest.json", {tools: []});
+const toolsManifest = loadToolsManifestFromSnapshot(repositorySnapshot, {fallback: {tools: []}});
 const selection = deriveCheckSelection({
   task,
   paths: selectionPaths,

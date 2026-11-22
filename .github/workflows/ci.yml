@@ -113,6 +113,7 @@ jobs:
             /tool/lib/tool_impact.mjs
             /tool/lib/tool_manifest_rules.mjs
             /tool/lib/tool_platform.mjs
+            /tool/lib/tools_manifest.mjs
             /tool/run.mjs
             /tool/tools_manifest.json
             /.github/actions/load-toolchain/action.yml
@@ -320,15 +321,17 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {toolsOwnUiLintSmoke, toolsOwnDesignChecks} from './tool/lib/tool_impact.mjs';
+          import {loadToolsManifest} from './tool/lib/tools_manifest.mjs';
           const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
+          const manifest = loadToolsManifest();
           const owned = toolsOwnUiLintSmoke({
             plan: read('build/ci/impact-plan.json'),
-            manifest: read('tool/tools_manifest.json'),
+            manifest,
             componentGraph: read('tool/harness/component_graph.json'),
           });
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `tools_owns_ui_lint_smoke=${owned}\n`);
           const design = toolsOwnDesignChecks({
-            plan: read('build/ci/impact-plan.json'), manifest: read('tool/tools_manifest.json'),
+            plan: read('build/ci/impact-plan.json'), manifest,
             componentGraph: read('tool/harness/component_graph.json'),
           });
           fs.appendFileSync(process.env.GITHUB_OUTPUT,

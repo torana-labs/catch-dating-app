@@ -20,6 +20,7 @@ import {fileURLToPath} from "node:url";
 
 import {matchesGlobPath} from "../lib/path_glob.mjs";
 import {callerGraph, compare, targets} from "./shadow_plan.mjs";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const readJson = (file) => JSON.parse(fs.readFileSync(path.join(workspaceRoot, file), "utf8"));
@@ -91,7 +92,7 @@ export function markdownNamingScripts(root = workspaceRoot) {
 }
 
 /** The Markdown impactPaths of the tools manifest, with the entries that name them. */
-export function manifestMarkdown(manifest = readJson("tool/tools_manifest.json")) {
+export function manifestMarkdown(manifest = loadToolsManifest()) {
   const byPath = new Map();
   for (const tool of manifest.tools) {
     for (const impact of tool.impactPaths ?? []) {
@@ -166,7 +167,7 @@ test("every Markdown impactPath in the tools manifest is a lane-tools input", ()
 // came from Dart, ARB and Firebase files; widen this only with that evidence.
 const laneToolsExceptions = ["admin/", "website/"];
 
-function uncoveredImpactFiles(nxJson, manifest = readJson("tool/tools_manifest.json")) {
+function uncoveredImpactFiles(nxJson, manifest = loadToolsManifest()) {
   // Nx never hashes a tracked symlink (mode 120000), so one cannot select the lane.
   const files = execFileSync("git", ["ls-files", "-s"], {cwd: workspaceRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024})
     .trim().split("\n").filter((entry) => !entry.startsWith("120000 ")).map((entry) => entry.slice(entry.indexOf("\t") + 1))

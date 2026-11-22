@@ -222,6 +222,7 @@
                   "{workspaceRoot}/docs/agent_skills/**/*",
                   "{workspaceRoot}/tool/README.md",
                   "{workspaceRoot}/tool/tools_manifest.json",
+                  "{workspaceRoot}/tool/lib/tools_manifest.mjs",
                   "{workspaceRoot}/tool/run.mjs",
                   "{workspaceRoot}/tool/harness.mjs",
                   "{workspaceRoot}/tool/harness/**/*",
@@ -606,6 +607,7 @@
                 "{workspaceRoot}/tool/audit/check_fn_readme_inventory.mjs",
                 "{workspaceRoot}/tool/audit/fn_readme_inventory_baseline.json",
                 "{workspaceRoot}/tool/run.mjs",
+                "{workspaceRoot}/tool/lib/tools_manifest.mjs",
                 "{workspaceRoot}/tool/tools_manifest.json"
               ]
             }

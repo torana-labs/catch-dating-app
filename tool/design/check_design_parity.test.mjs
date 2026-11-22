@@ -3,7 +3,8 @@ import fs from "node:fs";
 import test from "node:test";
 import {designParityCommands} from "./check_design_parity.mjs";
 import {uniqueToolChecks} from "../lib/tool_impact.mjs";
-const manifest = JSON.parse(fs.readFileSync(new URL("../tools_manifest.json", import.meta.url), "utf8"));
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
+const manifest = loadToolsManifest();
 const commands = designParityCommands(manifest);
 
 test("flat parity commands preserve real source invariants and deduplicate the full design bucket", () => {

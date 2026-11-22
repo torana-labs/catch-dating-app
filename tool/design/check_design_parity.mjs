@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {spawnSync} from "node:child_process";
 import {repoRoot} from "../lib/repo_paths.mjs";
+import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 
 const args = process.argv.slice(2);
 const command = args[0] ?? "--check";
@@ -32,7 +32,7 @@ export function designParityCommands(manifest) {
 }
 
 function runGate() {
-  const manifest = JSON.parse(fs.readFileSync(path.join(repoRoot, "tool/tools_manifest.json"), "utf8"));
+  const manifest = loadToolsManifest();
   const blocking = designParityCommands(manifest);
   const advisory = args.includes("--reports") ? [
     "node tool/design/build_widget_similarity.mjs",
