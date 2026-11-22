@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
@@ -438,6 +439,35 @@ void main() {
         );
       },
     );
+
+    test('createOrganizer sends the setup answer only when given', () async {
+      final callable =
+          functions.httpsCallable('createOrganizer') as TestHttpsCallable;
+      callable.resultData = {'organizerId': 'club-42'};
+
+      await repository.createOrganizer(
+        name: 'Lantern Lane Social',
+        description: 'Quiz nights.',
+        location: 'in-mh-mumbai',
+        area: 'Bandra',
+        signupSource: OrganizerSignupSource.friendOrHost,
+      );
+      await repository.createOrganizer(
+        name: 'Lantern Lane Social',
+        description: 'Quiz nights.',
+        location: 'in-mh-mumbai',
+        area: 'Bandra',
+      );
+
+      expect(
+        callable.calls.first,
+        containsPair('signupSource', 'friendOrHost'),
+      );
+      expect(
+        callable.calls.last,
+        isNot(containsPair('signupSource', anything)),
+      );
+    });
 
     test('updateOrganizer delegates field patches to the callable', () async {
       await repository.updateOrganizer(

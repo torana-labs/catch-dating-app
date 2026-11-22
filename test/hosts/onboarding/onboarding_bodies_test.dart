@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:catch_dating_app/hosts/onboarding/code_body.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_details_body.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_done_body.dart';
@@ -7,6 +8,7 @@ import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_body.dart';
 import 'package:catch_kernel/brand.dart';
 import 'package:catch_kernel/city_catalog.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -237,6 +239,7 @@ void main() {
         onPickLogo: () => logo++,
         onDescriptionChanged: (_) {},
         onToggleFormat: formats.add,
+        onSignupSourceChanged: (_) {},
         createError: 'Could not create the page.',
       ),
     );
@@ -261,6 +264,60 @@ void main() {
     await tester.tap(find.text('Add a logo'));
     expect(formats, [HostSetupFormat.run]);
     expect(logo, 1);
+  });
+
+  testWidgets('how they heard is one tap, and Skip stays picked until then', (
+    tester,
+  ) async {
+    final answers = <OrganizerSignupSource?>[];
+    Future<void> pump(OrganizerSignupSource? picked) => pumpOnboardingBody(
+      tester,
+      HostSetupDetailsBody(
+        state: onboardingState(
+          step: HostSetupStep.details,
+          signupSource: picked,
+        ),
+        onPickLogo: () {},
+        onDescriptionChanged: (_) {},
+        onToggleFormat: (_) {},
+        onSignupSourceChanged: answers.add,
+      ),
+    );
+    bool selected(String key) =>
+        tester.widget<CatchChip>(find.byKey(ValueKey<String>(key))).selected;
+
+    await pump(null);
+    expect(find.text('How did you hear about Catch?'), findsOneWidget);
+    for (final label in [
+      'Instagram or Facebook ad',
+      'Google search',
+      'Instagram post or reel',
+      'A friend or another host',
+      'Someone from Catch reached out',
+      'Somewhere else',
+      'Skip',
+    ]) {
+      expect(find.text(label), findsOneWidget);
+    }
+    expect(selected('host-setup-signup-source-skip'), isTrue);
+
+    final googleChip = find.byKey(
+      const ValueKey<String>('host-setup-signup-source-googleSearch'),
+    );
+    await tester.ensureVisible(googleChip);
+    await tester.tap(googleChip);
+    expect(answers, [OrganizerSignupSource.googleSearch]);
+
+    await pump(OrganizerSignupSource.googleSearch);
+    expect(selected('host-setup-signup-source-googleSearch'), isTrue);
+    expect(selected('host-setup-signup-source-skip'), isFalse);
+
+    final skipChip = find.byKey(
+      const ValueKey<String>('host-setup-signup-source-skip'),
+    );
+    await tester.ensureVisible(skipChip);
+    await tester.tap(skipChip);
+    expect(answers, [OrganizerSignupSource.googleSearch, null]);
   });
 
   group('getting paid', () {

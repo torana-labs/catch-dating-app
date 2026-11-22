@@ -60,7 +60,7 @@ final class HostSetupControllerProvider
 }
 
 String _$hostSetupControllerHash() =>
-    r'406df64d229288625bcc94cb5b7c237bd3411781';
+    r'2c48be9b9776084db890acbdbd6fdeae982ae942';
 
 /// Organiser setup's step state over the create-organizer draft.
 ///

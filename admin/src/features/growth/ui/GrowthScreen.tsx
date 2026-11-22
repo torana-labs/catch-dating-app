@@ -35,6 +35,7 @@ import {
   nominatorRoleLabels,
   rupees,
   share,
+  signupSourceLabels,
   trendLabel,
 } from "../controllers/growthLabels";
 
@@ -319,9 +320,12 @@ function channelsView(data: Growth): [ReactNode, ReactNode, CatchMetricData[]] {
     perPaying: perPaying(channel),
   }));
   const main = (
-    <CatchSection dividers="none" note="where each organizer first came from" title="By channel">
-      <CatchTable<ChannelRow> columns={channelColumns} density="compact" label="By channel" rowKey="key" rows={rows} />
-    </CatchSection>
+    <CatchGap size="section">
+      <CatchSection dividers="none" note="where each organizer first came from" title="By channel">
+        <CatchTable<ChannelRow> columns={channelColumns} density="compact" label="By channel" rowKey="key" rows={rows} />
+      </CatchSection>
+      <SignupSourceTable signupSources={data.signupSources} />
+    </CatchGap>
   );
   const aside = (
     <CatchGap size="section">
@@ -346,6 +350,37 @@ function channelsView(data: Growth): [ReactNode, ReactNode, CatchMetricData[]] {
     </CatchGap>
   );
   return [main, aside, stats];
+}
+
+interface SignupSourceRow {
+  key: string;
+  source: string;
+  organizers: string;
+  paying: string;
+}
+
+const signupSourceColumns: CatchTableColumn<SignupSourceRow>[] = [
+  {key: "source", label: "They said", kind: "title"},
+  {key: "organizers", label: "Organizers", kind: "number", width: "100px"},
+  {key: "paying", label: "Paying", kind: "number", width: "70px"},
+];
+
+/**
+ * What organizers that set themselves up said in Catch Host setup. Kept apart
+ * from the channel table: an organizer keeps its derived channel whatever it
+ * answered, so the two can be compared, never added up.
+ */
+function SignupSourceTable({signupSources}: {signupSources: Growth["signupSources"]}) {
+  const rows: SignupSourceRow[] = [
+    ...signupSources.rows.map((row) => ({key: row.source, source: signupSourceLabels[row.source],
+      organizers: String(row.organizers), paying: String(row.paying)})),
+    {key: "unanswered", source: "Skipped or not asked", organizers: String(signupSources.unanswered), paying: "—"},
+  ];
+  return (
+    <CatchSection dividers="none" note="what hosts told us in setup, beside the channel, not in it" title="Self-reported source">
+      <CatchTable<SignupSourceRow> columns={signupSourceColumns} density="compact" label="Self-reported source" rowKey="key" rows={rows} />
+    </CatchSection>
+  );
 }
 
 // ---------- Nominators ----------

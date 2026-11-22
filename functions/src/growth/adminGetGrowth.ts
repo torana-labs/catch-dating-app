@@ -24,7 +24,8 @@ import {validateAdminGetGrowthCallablePayload} from
 import {validateAdminGetGrowthCallableResponse} from
   "../shared/generated/validators/adminGetGrowthOutput";
 import {growthFactsCollection} from "./organizerGrowthFacts";
-import {buildGrowth} from "./growthReadModel";
+import {buildGrowth, setItselfUp, type SignupSource} from
+  "./growthReadModel";
 
 // Pre-launch volumes; a bounded read keeps one callable within its budget.
 const readLimit = 10_000;
@@ -53,6 +54,32 @@ async function namesOf(db: FirebaseFirestore.Firestore, collection: string,
     }
   }
   return names;
+}
+
+/**
+ * What organizers that set themselves up said in setup about how they heard
+ * of Catch, read in batches with only that field.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {string[]} ids Organizer ids.
+ * @return {Promise<Map<string, SignupSource>>} Answers by organizer id.
+ */
+async function signupSourcesOf(db: FirebaseFirestore.Firestore,
+  ids: string[]): Promise<Map<string, SignupSource>> {
+  const answers = new Map<string, SignupSource>();
+  for (let index = 0; index < ids.length; index += 100) {
+    const refs = ids.slice(index, index + 100).map((id) =>
+      db.collection("organizers").doc(id));
+    if (!refs.length) continue;
+    for (const snap of await db.getAll(...refs,
+      {fieldMask: ["signupSource"]})) {
+      const source = (snap.data()?.signupSource as
+        {source?: unknown} | null | undefined)?.source;
+      if (typeof source === "string") {
+        answers.set(snap.id, source as SignupSource);
+      }
+    }
+  }
+  return answers;
 }
 
 /**
@@ -94,17 +121,19 @@ export async function adminGetGrowthHandler(
   const billed = new Set(bills.map((bill) => bill.organizerId));
   const nominated = facts.filter((entry) => entry.nominator &&
     !billed.has(entry.organizerId)).map((entry) => entry.organizerId);
-  const [users, organizerNames] = await Promise.all([
+  const [users, organizerNames, signupSources] = await Promise.all([
     namesOf(db, "users", unnamedPeople, (user) =>
       user.displayName ?? user.name ?? user.firstName),
     namesOf(db, "organizers", nominated, (organizer) => organizer.name),
+    signupSourcesOf(db, facts.filter(setItselfUp)
+      .map((entry) => entry.organizerId)),
   ]);
   for (const [uid, name] of users) personNames.set(uid, name);
   const result = buildGrowth({range: data.range, nowMillis: Date.now(), facts,
     bills, credits: creditsSnap.docs.map((doc) =>
       doc.data() as NominatorCreditDocument),
     costs: costsSnap.docs.map((doc) => doc.data() as PlatformCostDocument),
-    organizerNames, personNames});
+    organizerNames, personNames, signupSources});
   if (!validateAdminGetGrowthCallableResponse(result)) {
     throw new HttpsError("internal", "Growth could not be read.");
   }

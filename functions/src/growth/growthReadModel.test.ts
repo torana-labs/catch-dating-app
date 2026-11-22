@@ -75,6 +75,7 @@ const input = {
   costs: [],
   organizerNames: new Map([["lantern", "Lantern Lane Social"]]),
   personNames: new Map([["neha", "Neha Kulkarni"], ["riya", "Riya Sharma"]]),
+  signupSources: new Map(),
 };
 
 test("medians and ranges", () => {
@@ -116,4 +117,27 @@ test("channels, nominators and best organizers", () => {
   assert.deepEqual(growth.best.map((row) => [row.organizerId, row.salesMinor,
     row.earnedMinor, row.payingSinceMonth, row.inTrial]),
   [["moonmoth", 300_000, 10_000, "2026-10", false]]);
+});
+
+test("setup answers count beside the channels, never in them", () => {
+  const selfMade = (id: string,
+    channel: OrganizerGrowthFactsDocument["channel"]) =>
+    ({...facts(id, channel, {listed: sep + 3 * day, claimed: sep + 3 * day}),
+      channelSource: {kind: "provenance" as const, requestId: null,
+        originKind: "userCreated", campaign: null}});
+  const growth = buildGrowth({...input,
+    facts: [...input.facts, selfMade("quayside", "came_to_us"),
+      selfMade("tidewater", "came_to_us"), selfMade("ferncourt", "came_to_us")],
+    bills: [...input.bills, bill("quayside", "2026-10", 50_000, "sent")],
+    signupSources: new Map([["quayside", "metaAd"],
+      ["tidewater", "friendOrHost"], ["harbor", "googleSearch"]])});
+  assert.deepEqual(growth.signupSources.rows.map((row) =>
+    [row.source, row.organizers, row.paying]), [
+    ["metaAd", 1, 1], ["googleSearch", 1, 0], ["instagramPost", 0, 0],
+    ["friendOrHost", 1, 0], ["teamOutreach", 0, 0], ["other", 0, 0]]);
+  assert.equal(growth.signupSources.unanswered, 1);
+  // The derived channel is untouched by what they said.
+  assert.equal(growth.channels.find((row) => row.channel === "ads")?.listed, 0);
+  assert.equal(growth.channels.find((row) =>
+    row.channel === "came_to_us")?.listed, 3);
 });

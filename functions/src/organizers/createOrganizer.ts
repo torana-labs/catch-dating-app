@@ -222,6 +222,11 @@ export async function stageOwnedOrganizerCreate(
     phoneNumber: data.phoneNumber ?? null,
     email: data.email ?? null,
     hostDefaults: data.hostDefaults ?? defaultHostDefaults(),
+    // Setup's optional "how did you hear" answer, stored once, server-only,
+    // apart from the derived channel in organizerGrowthFacts.
+    ...(data.signupSource ? {
+      signupSource: {source: data.signupSource, answeredAt: timestamp},
+    } : {}),
     organizerType: data.organizerType ?? "club",
     organizerTypeUpdatedAt: timestamp,
     organizerTypeUpdatedByUid: ownerUid,

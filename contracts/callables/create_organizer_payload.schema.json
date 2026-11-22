@@ -34,6 +34,10 @@
     "instagramHandle": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
     "phoneNumber": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
     "email": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+    "signupSource": {
+      "$ref": "../shared/event_common.schema.json#/definitions/organizerSignupSource",
+      "description": "Optional answer to \"How did you hear about Catch?\" from Catch Host setup. Omitted when the host skips it; the server stores it once on the organizer with the time it was saved."
+    },
     "hostDefaults": {
       "$ref": "../shared/event_common.schema.json#/definitions/organizerHostDefaults"
     }

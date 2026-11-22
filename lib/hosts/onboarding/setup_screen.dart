@@ -141,6 +141,7 @@ class _HostSetupScreenState extends ConsumerState<HostSetupScreen> {
               description: draft.description!.trim(),
               hostDefaults: draft.hostDefaults,
               profileImage: _logo?.image,
+              signupSource: draft.signupSource,
             );
       });
     } catch (_) {

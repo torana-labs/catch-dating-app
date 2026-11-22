@@ -358,6 +358,8 @@ export function sampleGetOrganizerOverview(
       "sample-claim", requesterName: "Arjun Bhatia", requesterRole: "manager",
     createdAt: "2026-06-23T08:00:00.000Z"} : null,
     growth: extras?.growth ?? null,
+    signupSource: row.claimState === "claimed" ?
+      {source: "friendOrHost", answeredAt: row.listedAt} : null,
     journey: [...journey].sort((a, b) => (a.at ?? "").localeCompare(b.at ?? "")),
     nextStep: row.claimState === "claimPending" ? "decideClaim" :
       row.claimState === "unclaimed" ? "claim" : null,

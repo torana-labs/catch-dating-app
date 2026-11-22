@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -44,6 +45,11 @@ class HostSetupController extends _$HostSetupController {
       ),
     );
   }
+
+  /// How they heard about Catch, in one tap; null is Skip, and nothing is
+  /// saved for it.
+  void setSignupSource(OrganizerSignupSource? source) =>
+      _edit(state.draft.copyWith(signupSource: source));
 
   void logoPicked() => state = state.copyWith(hasLogo: true);
 

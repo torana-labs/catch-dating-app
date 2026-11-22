@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_signup_source.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
@@ -238,6 +239,7 @@ class OrganizersRepository {
     String? phoneNumber,
     String? email,
     OrganizerHostDefaults? hostDefaults,
+    OrganizerSignupSource? signupSource,
   }) => withBackendErrorContext(
     () async {
       final result = await _functions
@@ -255,6 +257,7 @@ class OrganizersRepository {
               instagramHandle: instagramHandle,
               phoneNumber: phoneNumber,
               email: email,
+              signupSource: signupSource?.name,
               hostDefaults: hostDefaults?.toJson(),
             ).toJson(),
           );
