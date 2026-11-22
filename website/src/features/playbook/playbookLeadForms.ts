@@ -1,8 +1,10 @@
+import {createElement} from "react";
 import {guestImportToolNode} from "../guestImportTryIt/GuestImportTool";
 import {pastSalesToolNode} from "../pastSalesTryIt/PastSalesTool";
 import {nightPlanTryItNode} from "../tryIt/NightPlanTryIt";
 import {playbookTryItTool, websiteReadyTryItCommands} from "../tryIt/tryItModel";
 import {referralSignInNode} from "../referral/ReferralSignIn";
+import {AppLinkCapture} from "../marketing/AppLinkCapture";
 import {tryItToolNode} from "../tryIt/TryItTool";
 import {playbookLeadFormNode} from "./PlaybookLeadForm";
 import type {PlaybookLeadFormProps, PlaybookLeadFormSlots} from "./usePlaybookPageController";
@@ -40,6 +42,15 @@ function playbookReferralFormNode(props: PlaybookLeadFormProps) {
 }
 
 /**
+ * An app link request's slot: the site's one "Text me the link" capture
+ * (features/marketing), its words from content/appDownload.ts and the
+ * page's form id as its entry. Keyed by page, band and form.
+ */
+function playbookAppLinkFormNode({form, pageId, sectionId}: PlaybookLeadFormProps) {
+  return createElement(AppLinkCapture, {formId: form.id, key: `${pageId}-${sectionId}-${form.id}`});
+}
+
+/**
  * The lead forms that have a backend, by request kind: send me the setup
  * guide, list your space, get a demo link, ask for a walkthrough, text me the
  * app link and refer a host post to the website lead intake (/api/join-waitlist), the referral
@@ -52,7 +63,7 @@ export const playbookLeadForms: PlaybookLeadFormSlots = {
   venue: playbookLeadFormNode,
   demo: playbookLeadFormNode,
   walkthrough: playbookLeadFormNode,
-  app_link: playbookLeadFormNode,
+  app_link: playbookAppLinkFormNode,
   tool: playbookToolFormNode,
   referral: playbookReferralFormNode,
 };
