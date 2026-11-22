@@ -1,0 +1,15 @@
+{
+  "id": "programStaffInvites",
+  "path": "programStaffInvites/{inviteId}",
+  "rulesMatch": "/programStaffInvites/{inviteId}",
+  "typescriptInterface": "ProgramStaffInviteDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program staff invite callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Single-use, phone-bound invite redeemable only by a signed-in account whose verified phone matches phoneE164.",
+    "Invite ids are unguessable server-generated tokens; redemption materializes a programStaffGrants document."
+  ]
+}

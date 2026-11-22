@@ -1,0 +1,11 @@
+{
+  "id": "crossPathsPairHolds",
+  "path": "crossPathsPairHolds/{holdId}",
+  "rulesMatch": "/crossPathsPairHolds/{holdId}",
+  "typescriptInterface": "CrossPathsPairHoldDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "Cross Paths pair-inventory callables and payment fulfillment",
+  "writerContext": "connections",
+  "read": "either participant by get, unless either blocked the other; no list",
+  "write": "server only"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "hostRosterIntakeReceipts",
+  "path": "hostRosterIntakeSessions/{sessionId}/receipts/{receiptId}",
+  "rulesMatch": "/hostRosterIntakeSessions/{sessionId}/receipts/{receiptId}",
+  "typescriptInterface": "HostRosterIntakeReceiptDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps Host roster intake sessions and receipts server-only"
+  ],
+  "owner": "manageHostRosterIntake callable",
+  "writerContext": "bookings",
+  "read": "server only; exact replay receipt returned through manager callable",
+  "write": "server only; atomically created with canonical roster import",
+  "exportedFunctions": [
+    "manageHostRosterIntake"
+  ],
+  "migrationNotes": [
+    "Separate bounded receipt avoids duplicating the reviewed payload into the session document."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "config_public_contact",
+  "path": "config/publicContact",
+  "rulesMatch": "/config/{docId}",
+  "owner": "website public contact operator; exact versioned document validated by website/src/content/publicContact.ts",
+  "writerContext": "platform",
+  "read": "server only through the existing website Firestore viewer identity; clients denied",
+  "write": "bounded operator transaction with Firestore IAM writer authority; clients denied",
+  "migrationNotes": [
+    "Only schemaVersion, revision and supportEmail are stored. Missing, invalid and unavailable documents use the source-controlled Gmail fallback."
+  ]
+}

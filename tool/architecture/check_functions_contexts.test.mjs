@@ -223,17 +223,20 @@ test("finds inline writes through refs, constants, helpers and transactions", ()
 
 test("reads one writer context per registry collection", () => {
   const map = fixtureMap();
-  const {byName, findings} = loadWriterContexts(JSON.stringify({collections: [
+  const {byName, findings} = loadWriterContexts({collections: [
     {id: "eventBookings", path: "eventBookings/{id}", writerContext: "bookings"},
     {id: "deliveryMessages", path: "deliveryMessages/{id}", writerContext: "shared",
       sharedWriterReason: "One outbox every context enqueues to."},
     {id: "chat_messages", path: "matches/{m}/messages/{id}", writerContext: "events"},
     {id: "orphan", path: "orphan/{id}"},
     {id: "loose", path: "loose/{id}", writerContext: "shared"},
-  ]}), map);
+  ]}, map);
   assert.deepEqual([...byName.keys()],
     ["eventBookings", "deliveryMessages", "messages", "loose"]);
-  assert.deepEqual(findings.map(({reason}) => reason.split(" ")[0]), ["orphan", "loose"]);
+  assert.deepEqual(findings.map(({path, reason}) => `${path} ${reason.split(" ")[0]}`), [
+    "tool/contracts/firestore_contract/collections/orphan.json orphan",
+    "tool/contracts/firestore_contract/collections/loose.json loose",
+  ]);
 });
 
 test("reports writes from outside the owning context, not shared outboxes", () => {

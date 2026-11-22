@@ -1,0 +1,18 @@
+{
+  "id": "eventSuccessLateArrivals",
+  "path": "eventSuccessLateArrivals/{resolutionId}",
+  "rulesMatch": "/eventSuccessLateArrivals/{resolutionId}",
+  "typescriptInterface": "EventSuccessLateArrivalDocument",
+  "dartModel": "lib/contexts/live/domain/event_success_presence.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "Event Success Host late-arrival callable",
+  "writerContext": "live",
+  "read": "attendee own deterministic eventId_uid document or authorized event Host; current organizer managers list an event's placements (organizerId and eventId)",
+  "write": "server only",
+  "exportedFunctions": [
+    "resolveEventSuccessLateArrival"
+  ],
+  "migrationNotes": [
+    "The resolution may patch only a Host-only unpublished draft; published assignments are immutable."
+  ]
+}

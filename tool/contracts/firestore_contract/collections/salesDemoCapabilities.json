@@ -1,0 +1,10 @@
+{
+  "id": "salesDemoCapabilities",
+  "path": "salesDemoCapabilities/{capability}",
+  "rulesMatch": "/salesDemoCapabilities/{privateDocument=**}",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "product capability owner using trusted server administration",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "organizerContactChannelStates",
+  "path": "organizerContactChannelStates/{stateId}",
+  "rulesMatch": "/organizerContactChannelStates/{stateId}",
+  "typescriptInterface": "OrganizerContactChannelStateDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "campaign delivery and unsubscribe webhooks",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

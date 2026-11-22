@@ -1,0 +1,11 @@
+{
+  "id": "organizerApplications",
+  "path": "organizerApplications/{applicationId}",
+  "rulesMatch": "/organizerApplications/{applicationId}",
+  "typescriptInterface": "OrganizerApplicationDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "organizer application submission, import, and review callables",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

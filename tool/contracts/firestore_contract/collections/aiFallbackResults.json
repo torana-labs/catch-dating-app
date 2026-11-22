@@ -1,0 +1,18 @@
+{
+  "id": "aiFallbackResults",
+  "path": "aiFallbackResults/{cacheKey}",
+  "rulesMatch": "/aiFallbackResults/{cacheKey}",
+  "typescriptInterface": "AiFallbackResultDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps durable operations records server-owned"
+  ],
+  "owner": "trusted try-it import callables",
+  "writerContext": "platform",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "importGuestList"
+  ]
+}

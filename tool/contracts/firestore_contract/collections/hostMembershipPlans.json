@@ -1,0 +1,24 @@
+{
+  "id": "hostMembershipPlans",
+  "path": "hostMembershipPlans/{planId}",
+  "rulesMatch": "/hostMembershipPlans/{planId}",
+  "typescriptInterface": "HostMembershipPlanDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "publishes only published membership plans"
+  ],
+  "owner": "host membership plans callable",
+  "writerContext": "payments",
+  "read": "signed-in users read published plans; managers read all plans through the callable",
+  "write": "server only; manageHostMembershipPlans",
+  "exportedFunctions": [
+    "manageHostMembershipPlans",
+    "manageHostMembershipCheckout",
+    "hostMembershipRazorpayWebhook"
+  ],
+  "migrationNotes": [
+    "Provider prices are immutable: a changed amount gets a new provider price id and revision while existing members keep their own price.",
+    "activeMemberCount is a server projection of non-expired memberships, used for the member cap."
+  ]
+}

@@ -5,6 +5,10 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
+import {
+  loadFirestoreContract,
+  writeFirestoreContract,
+} from "./lib/firestore_contract.mjs";
 
 const checker = fileURLToPath(new URL("./check_firestore_contract.mjs", import.meta.url));
 const repository = path.resolve(path.dirname(checker), "../..");
@@ -36,7 +40,7 @@ function fixture(t, source, name = "publicName", consumer = "dart", coverage = "
     write(collection.rulesTestFile, "it('denies items', () => doc(db, \"items\", \"one\"));");
   }
   if (coverage === "unknown") gap.collections.push({id: "items", reason: "x"}, {id: "gone", reason: "x"});
-  write("tool/contracts/firestore_contract.json", {
+  writeFirestoreContract(root, {
     schemaVersion: 2, collectionsWithoutRulesTests: gap, collections: [collection],
   });
   write("firestore.rules", "match /items/{id} {}");
@@ -137,10 +141,10 @@ const documents = (body) =>
   `service cloud.firestore { match /databases/{d}/documents {\n${body}\n} }`;
 
 function editRegistry(root, edit) {
-  const file = path.join(root, "tool/contracts/firestore_contract.json");
-  const registry = JSON.parse(fs.readFileSync(file, "utf8"));
+  const registry = loadFirestoreContract({root});
   edit(registry);
-  fs.writeFileSync(file, JSON.stringify(registry));
+  fs.rmSync(path.join(root, "tool/contracts/firestore_contract"), {recursive: true});
+  writeFirestoreContract(root, registry);
 }
 
 function registerOrphans(root, rulesMatch = "/orphans/{privateDocument=**}") {

@@ -1,0 +1,11 @@
+{
+  "id": "formCommunicationConsentIntents",
+  "path": "formCommunicationConsentIntents/{responseId}",
+  "rulesMatch": "/formCommunicationConsentIntents/{privateDocument=**}",
+  "typescriptInterface": "FormCommunicationConsentIntentDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "organizer form respondent callables",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

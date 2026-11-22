@@ -1,0 +1,11 @@
+{
+  "id": "nominatorCredits",
+  "path": "nominatorCredits/{creditId}",
+  "rulesMatch": "/nominatorCredits/{creditId}",
+  "typescriptInterface": "NominatorCreditDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Functions organizer billing (bill paid) and adminManageNominatorCredits",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only"
+}

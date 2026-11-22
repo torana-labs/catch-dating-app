@@ -1,0 +1,26 @@
+{
+  "id": "programHotelRoomViews",
+  "path": "programHotelRoomViews/{programId}__{hotelId}",
+  "rulesMatch": "/programHotelRoomViews/{viewId}",
+  "typescriptInterface": "ProgramHotelRoomViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_screen_read_views.rules.test.cjs",
+  "rulesTestNames": [
+    "gives the hotel desk covering the hotel its board, and no other duty"
+  ],
+  "owner": "Programme read model projector: programHotelRoomViewTriggers",
+  "writerContext": "programmes",
+  "read": "get by id where a hotel desk duty covers the hotel (coordinators hold it), and the programme owner, while not deleted; never listed",
+  "write": "server only; written from programStays, programRoomBlocks, programHotels, programTravelLegs, programGuests and the programme's time zone",
+  "exportedFunctions": [
+    "onProgramHotelRoomStayChanged",
+    "onProgramHotelRoomBlockChanged",
+    "onProgramHotelRoomHotelChanged",
+    "onProgramHotelRoomLegChanged",
+    "onProgramHotelRoomGuestChanged",
+    "onProgramHotelRoomProgramChanged"
+  ],
+  "migrationNotes": [
+    "Exactly the board getProgramHotelRooms returned, without the caller's access expiry and the read time; the stay revisions are the upsertProgramStay fence. Guest and block ids and display names only, never a contact field or note. The program-hotel-room-views copy-forward migration creates boards for hotels that predate the triggers and leaves boards the triggers wrote alone."
+  ]
+}

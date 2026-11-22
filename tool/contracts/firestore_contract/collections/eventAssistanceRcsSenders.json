@@ -1,0 +1,13 @@
+{
+  "id": "eventAssistanceRcsSenders",
+  "path": "eventAssistanceRcsSenders/{senderId}",
+  "rulesMatch": "/eventAssistanceRcsSenders/{senderId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance RCS provisioning",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "RCS consent remains separate from other channels. Verified participant callables write exact decision receipts and current permission atomically. Sender provisioning, dispatch and activation remain separate."
+  ]
+}

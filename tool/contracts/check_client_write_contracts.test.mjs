@@ -6,6 +6,7 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
 import {checkClientWriteContracts} from "./check_client_write_contracts.mjs";
+import {writeFirestoreContract} from "./lib/firestore_contract.mjs";
 
 const checker = fileURLToPath(new URL("./check_client_write_contracts.mjs", import.meta.url));
 
@@ -34,7 +35,7 @@ function fixture(t, {rules = RULES, contracts} = {}) {
     fs.writeFileSync(target, typeof value === "string" ? value : JSON.stringify(value));
   };
   write("firestore.rules", rules);
-  write("tool/contracts/firestore_contract.json", {collections: [
+  writeFirestoreContract(root, {collections: [
     {id: "items", path: "items/{itemId}"},
     {id: "tokens", path: "owners/{uid}/tokens/{tokenId}"},
   ]});
@@ -111,7 +112,7 @@ test("contract metadata, registry path and data shape are checked", t => {
     "contracts/client_writes/upsert_item.schema.json: data.colour is not a field of items.schema.json"));
   assert.ok(errors.includes("contracts/client_writes/delete_token.schema.json: a delete carries no data"));
   assert.ok(errors.includes(
-    "contracts/client_writes/unregistered.schema.json: owners/{uid}/tokens/{tokenId}/extra/{x} is not a collection path in tool/contracts/firestore_contract.json"));
+    "contracts/client_writes/unregistered.schema.json: owners/{uid}/tokens/{tokenId}/extra/{x} is not a collection path in tool/contracts/firestore_contract"));
 });
 
 test("a whole-document data ref must name the schema for the same path", t => {

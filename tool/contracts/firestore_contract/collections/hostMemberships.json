@@ -1,0 +1,30 @@
+{
+  "id": "hostMemberships",
+  "path": "hostMemberships/{membershipId}",
+  "rulesMatch": "/hostMemberships/{membershipId}",
+  "typescriptInterface": "HostMembershipDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets members read only their own paid membership records"
+  ],
+  "owner": "host membership state machine",
+  "writerContext": "payments",
+  "read": "owner (uid) only; hosts see members through CRM and roster callables",
+  "write": "server only; verified provider evidence and member/host intents",
+  "exportedFunctions": [
+    "hostMembershipRazorpayWebhook",
+    "manageHostMembershipCheckout",
+    "manageMyHostMembership",
+    "processHostMembershipBillingPause",
+    "onHostMembershipAudienceProjected",
+    "onHostMembershipBenefitUseWritten",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Keyed hm_<sha256([organizerId, uid])> so a rejoining member keeps tenure and member-since.",
+    "Distinct from organizerCommunityMemberships (unpaid host approval grants).",
+    "savedInPaise and memberPricedBookings are kept by onHostMembershipBenefitUseWritten and carried through every state-machine transition; absent reads as 0.",
+    "Subject account deletion cancels live subscriptions immediately, applies the expiry, then erases membership, checkout and benefit-use roots; charge ledgers are retained as payment records."
+  ]
+}

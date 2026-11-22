@@ -1,0 +1,14 @@
+{
+  "id": "transportTrips",
+  "path": "transportTrips/{tripId}",
+  "rulesMatch": "/transportTrips/{tripId}",
+  "typescriptInterface": "TransportTripDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program dispatch and arrival callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Dispatch snapshots plate, vendor, class and manifest at departure; the trip is the reconciliation atom."
+  ]
+}

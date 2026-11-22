@@ -1,0 +1,11 @@
+{
+  "id": "eventRosterHandoffs",
+  "path": "eventRosterHandoffs/{tokenHash}",
+  "rulesMatch": "/eventRosterHandoffs/{privateDocument=**}",
+  "typescriptInterface": "EventRosterHandoffDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "createEventRosterHandoff and ingestEventRosterWebhook",
+  "writerContext": "bookings",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "organizerContactTagVocabularies",
+  "path": "organizerContactTagVocabularies/{organizerId}",
+  "rulesMatch": "/organizerContactTagVocabularies/{organizerId}",
+  "typescriptInterface": "OrganizerContactTagVocabularyDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "manager-only organizer contact mutation callable",
+  "writerContext": "organizers",
+  "read": "server only; sanitized vocabulary labels are returned by CRM callables",
+  "write": "server only",
+  "exportedFunctions": [
+    "listOrganizerContacts",
+    "getOrganizerContactDetail",
+    "mutateOrganizerContact"
+  ],
+  "migrationNotes": [
+    "The vocabulary is capped at 20 tags and contact assignment is capped at 5 tags.",
+    "Deterministic tag ids are separate from versioned computed audience segment values."
+  ]
+}

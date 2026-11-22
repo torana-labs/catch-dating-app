@@ -1,0 +1,11 @@
+{
+  "id": "crossPathsSuggestionExposures",
+  "path": "crossPathsSuggestionExposures/{exposureId}",
+  "rulesMatch": "/crossPathsSuggestionExposures/{exposureId}",
+  "typescriptInterface": "CrossPathsSuggestionExposureDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "getCrossPathsSuggestions callable",
+  "writerContext": "connections",
+  "read": "server only",
+  "write": "server only"
+}

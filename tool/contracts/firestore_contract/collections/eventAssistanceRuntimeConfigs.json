@@ -1,0 +1,14 @@
+{
+  "id": "eventAssistanceRuntimeConfigs",
+  "path": "eventAssistanceRuntimeConfigs/{runtimeId}",
+  "rulesMatch": "/eventAssistanceRuntimeConfigs/{runtimeId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "event-assistance runtime configuration",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "getEventAssistanceRuntimeConfig",
+    "setEventAssistanceRuntimeConfig"
+  ]
+}

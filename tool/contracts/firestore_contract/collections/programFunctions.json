@@ -1,0 +1,14 @@
+{
+  "id": "programFunctions",
+  "path": "programFunctions/{functionId}",
+  "rulesMatch": "/programFunctions/{functionId}",
+  "typescriptInterface": "ProgramFunctionDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program management callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Private program sub-events (ceremony, reception, offsite sessions); no public read surface."
+  ]
+}

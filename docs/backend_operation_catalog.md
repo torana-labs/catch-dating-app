@@ -10,8 +10,8 @@ status: active
 
 Read this before changing Cloud Functions, Firestore rules, repository writes,
 callable interfaces, trigger-owned projections, payments, safety workflows, or
-notification fan-out. Treat `tool/contracts/firestore_contract.json` as the
-machine-readable ownership contract and this document as the human map.
+notification fan-out. Treat `tool/contracts/firestore_contract/` (one file per
+collection) as the machine-readable ownership contract and this document as the human map.
 
 ## Operating Rules
 
@@ -914,8 +914,8 @@ prevents repeated fan-out, but FCM remains best-effort, not guaranteed delivery.
 When adding a new durable Activity producer, write the timeline item through
 `functions/src/shared/notifications.ts`, keep IDs deterministic where the
 source event has a stable ID, add Functions tests for duplicate delivery, add a
-rules test if the client read/update contract changes, and extend
-`tool/contracts/firestore_contract.json`.
+rules test if the client read/update contract changes, and extend the
+collection's file in `tool/contracts/firestore_contract/collections/`.
 
 Internal demo tooling marks source documents with `demoOps`, `demoOpsId`,
 `demoOpsCommand`, `seedPrefix`, and `synthetic`. Trigger-owned notification

@@ -1,0 +1,18 @@
+{
+  "id": "organizerContactMergeReceipts",
+  "path": "organizerContactMergeReceipts/{receiptId}",
+  "rulesMatch": "/organizerContactMergeReceipts/{receiptId}",
+  "typescriptInterface": "OrganizerContactMergeReceiptDocument",
+  "dartModel": null,
+  "owner": "organizer contact merge and unmerge callables",
+  "writerContext": "organizers",
+  "read": "server only; authorized managers receive sanitized merge history",
+  "write": "server only",
+  "exportedFunctions": [
+    "mergeOrganizerContacts",
+    "unmergeOrganizerContacts"
+  ],
+  "migrationNotes": [
+    "Receipts are immutable. Unmerge writes a new reversal receipt and rebuilds source edges."
+  ]
+}

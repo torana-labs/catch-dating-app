@@ -1,0 +1,46 @@
+{
+  "id": "profileDecisions",
+  "path": "profileDecisions/{userId}/outgoing/{targetId}",
+  "rulesMatch": "/profileDecisions/{userId}/outgoing/{targetId}",
+  "typescriptInterface": "SwipeDocument",
+  "dartModel": "lib/contexts/connections/domain/swipe.dart",
+  "rulesTestFile": "functions/test/rules/swipes.rules.test.cjs",
+  "owner": "swiper owns outgoing swipe create",
+  "writerContext": "connections",
+  "read": "swiper only",
+  "write": "swiper create only",
+  "exportedFunctions": [
+    "onSwipeCreated"
+  ],
+  "operations": [
+    {
+      "id": "owner_outgoing_create",
+      "type": "directCreate",
+      "owner": "authenticated swiper",
+      "allowedFields": [
+        "swiperId",
+        "targetId",
+        "eventId",
+        "direction",
+        "reactionTargetId",
+        "reactionTargetType",
+        "reactionTargetLabel",
+        "reactionTargetPreview",
+        "comment",
+        "createdAt"
+      ],
+      "pathDataFields": [
+        "swiperId",
+        "targetId"
+      ],
+      "rulesMustContain": [
+        "hasValidSwipeCreate(userId, targetId)"
+      ],
+      "rulesTestNames": [
+        "allows attended users to create valid outgoing swipes",
+        "denies malformed swipe payloads",
+        "denies swipes outside the eligible event candidate relationship"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "organizerPhoneLeads",
+  "path": "organizerPhoneLeads/{leadId}",
+  "rulesMatch": "/organizerPhoneLeads/{leadId}",
+  "typescriptInterface": "OrganizerPhoneLeadDocument",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "phone lead triggers (functions/src/organizers/phoneLeads/sync.ts)",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

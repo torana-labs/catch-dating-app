@@ -1,0 +1,10 @@
+{
+  "id": "salesDemoSessions",
+  "path": "salesDemoSessions/{sessionId}",
+  "rulesMatch": "/salesDemoSessions/{privateDocument=**}",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "sales demo trial callable and bounded expiry worker",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

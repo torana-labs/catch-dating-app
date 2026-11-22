@@ -1,0 +1,13 @@
+{
+  "id": "organizerWhatsappEndpointStops",
+  "path": "organizerWhatsappEndpointStops/{stopId}",
+  "rulesMatch": "/organizerWhatsappEndpointStops/{stopId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "authenticated WhatsApp ingress",
+  "writerContext": "platform",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Latest signed text STOP, keyed by organizer and endpoint, commits with the private queue receipt and does not depend on CRM contacts. No TTL pending suppression/consent retention reconciliation."
+  ]
+}

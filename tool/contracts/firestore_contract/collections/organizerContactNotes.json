@@ -1,0 +1,24 @@
+{
+  "id": "organizerContactNotes",
+  "path": "organizerContactNotes/{noteId}",
+  "rulesMatch": "/organizerContactNotes/{noteId}",
+  "typescriptInterface": "OrganizerContactNoteDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "manager-only organizer contact note callables",
+  "writerContext": "organizers",
+  "read": "current organizer managers get and list one contact's notes (organizerId equality) while their account is not deleted; the Host person page reads the newest",
+  "write": "server only",
+  "exportedFunctions": [
+    "createOrganizerContactNote",
+    "mutateOrganizerContactNote",
+    "getOrganizerContactDetail"
+  ],
+  "migrationNotes": [
+    "Notes are organizer-scoped operational memory, author-stamped, and excluded from exportOrganizerContacts without an opt-in path.",
+    "Existing contacts require no backfill because notes are separate append-only records with optimistic edits."
+  ],
+  "rulesTestNames": [
+    "lets managers read their contact notes and keeps outreach and manual-tag vocabularies callable-only"
+  ]
+}

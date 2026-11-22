@@ -877,8 +877,9 @@ file per collection area with shared fixtures and the emulator lifecycle in
 `test/rules/rulesHarness.cjs`; Storage rules tests live at
 `test/storage.rules.test.cjs`. They use the `@firebase/rules-unit-testing`
 emulators. The `.rules.test.cjs` suffix puts a new rules file in the strict list.
-Each collection in `tool/contracts/firestore_contract.json` names its rules
-test as `rulesTestFile`, or is listed in `collectionsWithoutRulesTests` with a
+Each collection's file in `tool/contracts/firestore_contract/collections/` names its rules
+test as `rulesTestFile`, or is listed in `collectionsWithoutRulesTests` (in
+`tool/contracts/firestore_contract/contract.json`) with a
 reason; `tool/contracts/check_firestore_contract.mjs` enforces one or the other. Add test cases for any new rule conditions, especially `diff()`
 checks, `hasOnly`/`hasAll` shape validation, and Storage paths that depend on
 Firestore relationship documents.

@@ -1,0 +1,13 @@
+{
+  "id": "eventAssistanceCheckpoints",
+  "path": "eventAssistanceCheckpoints/{reportId}",
+  "rulesMatch": "/eventAssistanceCheckpoints/{reportId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "event-assistance checkpoint observation",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "recordEventAssistanceCheckpoint"
+  ]
+}

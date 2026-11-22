@@ -1,0 +1,15 @@
+{
+  "id": "programTravelLegs",
+  "path": "programTravelLegs/{legId}",
+  "rulesMatch": "/programTravelLegs/{legId}",
+  "typescriptInterface": "ProgramTravelLegDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program travel and dispatch callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "One leg per guest journey; readyAt and manualCurbAt outrank provider estimates.",
+    "flightInstanceId links future provider facts without overwriting manual observations."
+  ]
+}

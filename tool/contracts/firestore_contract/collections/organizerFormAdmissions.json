@@ -1,0 +1,16 @@
+{
+  "id": "organizerFormAdmissions",
+  "path": "organizerFormAdmissions/{documentId}",
+  "rulesMatch": "/organizerFormAdmissions/{documentId}",
+  "typescriptInterface": "OrganizerFormAdmissionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps atomic form admission ownership and payment receipts server-only"
+  ],
+  "owner": "atomic organizer form admission service",
+  "writerContext": "payments",
+  "read": "server only; current manager receipt projection",
+  "write": "server only; immutable source marker and receipt in one transaction",
+  "exportedFunctions": []
+}

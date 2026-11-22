@@ -1,0 +1,24 @@
+{
+  "id": "commercialTermsRevisions",
+  "path": "commercialTermsRevisions/{revisionId}",
+  "rulesMatch": "/commercialTermsRevisions/{revisionId}",
+  "typescriptInterface": "CommercialTermsRevisionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps commercial terms and their history server-only"
+  ],
+  "owner": "manageCommercialTerms and the founding place grant",
+  "writerContext": "payments",
+  "read": "server only; operator audit through adminListCommercialTerms",
+  "write": "create-only in the same transaction as the commercialTerms write it records (manageCommercialTerms, or a founding place grant with actorUid system:foundingHostOffer)",
+  "exportedFunctions": [
+    "manageCommercialTerms",
+    "adminListCommercialTerms",
+    "onFoundingHostOrganizerWritten",
+    "reconcileFoundingHostPlacesDaily"
+  ],
+  "migrationNotes": [
+    "New append-only history keyed <termsId>_r<revision>; never updated or deleted."
+  ]
+}

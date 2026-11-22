@@ -1,0 +1,24 @@
+{
+  "id": "externalEventMappings",
+  "path": "externalEventMappings/{mappingId}",
+  "rulesMatch": "/externalEventMappings/{mappingId}",
+  "typescriptInterface": "ExternalEventMappingDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "external event provider mapping and reconciliation callables",
+  "writerContext": "organizers",
+  "read": "current organizer managers get their event's mapping by its derived id under rules (an event without one reads as missing); nobody lists the collection",
+  "write": "server only",
+  "exportedFunctions": [
+    "connectOrganizerLumaProvider",
+    "disconnectOrganizerProvider",
+    "syncOrganizerProviderEvent"
+  ],
+  "migrationNotes": [
+    "One deterministic mapping per Catch event preserves immutable provider and field authority while allowing credential rotation.",
+    "The document holds no credential; the Host app derives its id (eem_ + the first 48 hex characters of sha256(eventId)) and listens to it."
+  ],
+  "rulesTestNames": [
+    "lets managers get their own event's provider mapping only"
+  ]
+}

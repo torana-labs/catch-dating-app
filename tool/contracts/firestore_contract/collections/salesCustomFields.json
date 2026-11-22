@@ -1,0 +1,11 @@
+{
+  "id": "salesCustomFields",
+  "path": "salesCustomFields/{fieldId}",
+  "rulesMatch": "/salesCustomFields/{privateDocument=**}",
+  "typescriptInterface": "SalesCustomFieldDocument",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "private Sales custom-field service",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

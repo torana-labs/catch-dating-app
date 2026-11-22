@@ -1,0 +1,24 @@
+{
+  "id": "activity_notifications",
+  "path": "notifications/{uid}/items/{notificationId}",
+  "rulesMatch": "/notifications/{uid}/items/{notificationId}",
+  "typescriptInterface": "ActivityNotificationDocument",
+  "dartModel": "lib/contexts/messaging/domain/activity_notification.dart",
+  "rulesTestFile": "functions/test/rules/activity_notifications.rules.test.cjs",
+  "owner": "notification fan-out Cloud Functions and booking callables",
+  "writerContext": "platform",
+  "read": "notification owner only",
+  "write": "server create/content only; owner may mark read",
+  "exportedFunctions": [
+    "onMatchCreated",
+    "onMessageCreated",
+    "createEvent",
+    "updateEvent",
+    "cancelEvent",
+    "signUpForFreeEvent",
+    "cancelEventSignUp"
+  ],
+  "migrationNotes": [
+    "Durable Activity timeline source. Match/message triggers, create-event fan-out, host event update/cancellation, and booking/cancellation callables write it; event reminder producer remains queued."
+  ]
+}

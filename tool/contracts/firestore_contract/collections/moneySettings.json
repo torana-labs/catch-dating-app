@@ -1,0 +1,11 @@
+{
+  "id": "moneySettings",
+  "path": "moneySettings/{settingsId}",
+  "rulesMatch": "/moneySettings/{settingsId}",
+  "typescriptInterface": "MoneySettingsDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "adminManageMoneySettings",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only"
+}

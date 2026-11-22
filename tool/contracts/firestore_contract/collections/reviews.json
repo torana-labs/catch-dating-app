@@ -1,0 +1,78 @@
+{
+  "id": "reviews",
+  "path": "reviews/{reviewId}",
+  "rulesMatch": "/reviews/{reviewId}",
+  "typescriptInterface": "ReviewDocument",
+  "dartModel": "lib/contexts/reviews/domain/review.dart",
+  "rulesTestFile": "functions/test/rules/reviews.rules.test.cjs",
+  "owner": "review mutations are callable-owned; aggregate stats are trigger-owned",
+  "writerContext": "reviews",
+  "read": "authenticated users",
+  "write": "all review writes are callable-owned; direct client writes are denied",
+  "exportedFunctions": [
+    "createEventReview",
+    "updateEventReview",
+    "deleteEventReview"
+  ],
+  "operations": [
+    {
+      "id": "attended_run_review_create",
+      "type": "callable",
+      "owner": "createEventReview",
+      "function": "createEventReview",
+      "payloadSchemaRef": "contracts/callables/create_event_review_payload.schema.json",
+      "strictAllowedFieldsMatch": true,
+      "allowedFields": [
+        "organizerId",
+        "eventId",
+        "rating",
+        "comment"
+      ],
+      "pathDataFields": [
+        "eventId",
+        "reviewerUserId"
+      ],
+      "rulesMustContain": [
+        "allow write: if false"
+      ],
+      "rulesTestNames": [
+        "denies direct review writes because reviews are callable-owned"
+      ]
+    },
+    {
+      "id": "author_content_update",
+      "type": "callable",
+      "owner": "updateEventReview",
+      "function": "updateEventReview",
+      "payloadSchemaRef": "contracts/callables/update_event_review_payload.schema.json",
+      "strictAllowedFieldsMatch": true,
+      "allowedFields": [
+        "rating",
+        "comment"
+      ],
+      "deniedFields": [
+        "organizerId",
+        "eventId",
+        "reviewerUserId",
+        "reviewerName",
+        "createdAt"
+      ],
+      "rulesTestNames": [
+        "denies direct review writes because reviews are callable-owned"
+      ]
+    },
+    {
+      "id": "author_review_delete",
+      "type": "callable",
+      "owner": "deleteEventReview",
+      "function": "deleteEventReview",
+      "payloadSchemaRef": "contracts/callables/delete_event_review_payload.schema.json",
+      "rulesTestNames": [
+        "denies direct review writes because reviews are callable-owned"
+      ]
+    }
+  ],
+  "migrationNotes": [
+    "Existing club-level/random-id reviews should be migrated or archived before enforcing this in production. The app should write event-scoped reviews through callables only."
+  ]
+}

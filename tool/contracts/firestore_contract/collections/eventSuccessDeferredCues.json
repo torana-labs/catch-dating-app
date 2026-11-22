@@ -1,0 +1,22 @@
+{
+  "id": "eventSuccessDeferredCues",
+  "path": "eventSuccessDeferredCues/{cueId}",
+  "rulesMatch": "/eventSuccessDeferredCues/{cueId}",
+  "typescriptInterface": "EventSuccessDeferredCueDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps held guest cues server-only"
+  ],
+  "owner": "Event attendance and Event Success live control callables",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "markEventAttendance",
+    "controlEventSuccessLive"
+  ],
+  "migrationNotes": [
+    "One held companion-ready push per guest and event; deleted when sent at the next planned stop or the finish."
+  ]
+}

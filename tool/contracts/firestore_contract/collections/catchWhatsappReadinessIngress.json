@@ -1,0 +1,16 @@
+{
+  "id": "catchWhatsappReadinessIngress",
+  "path": "catchWhatsappReadinessIngress/{ingressId}",
+  "rulesMatch": "/catchWhatsappReadinessIngress/{ingressId}",
+  "typescriptInterface": "CatchWhatsappReadinessIngressDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/src/catchMessaging/whatsappReadinessFirestore.emulator.test.ts",
+  "rulesTestNames": [
+    "readiness control documents deny every SDK client including staff"
+  ],
+  "owner": "Catch support readiness provisioning",
+  "writerContext": "messaging",
+  "read": "server only; protected review, bounded current Auth observation and Firestore authority read sets",
+  "write": "no writer provided; separately audited ingress cutover attestation required",
+  "exportedFunctions": []
+}

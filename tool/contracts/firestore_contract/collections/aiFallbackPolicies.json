@@ -1,0 +1,18 @@
+{
+  "id": "aiFallbackPolicies",
+  "path": "aiFallbackPolicies/{policyId}",
+  "rulesMatch": "/aiFallbackPolicies/{policyId}",
+  "typescriptInterface": "AiFallbackPolicyDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps durable operations records server-owned"
+  ],
+  "owner": "staff, through the Admin SDK",
+  "writerContext": "platform",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "importGuestList"
+  ]
+}

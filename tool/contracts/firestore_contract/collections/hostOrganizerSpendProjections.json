@@ -1,0 +1,21 @@
+{
+  "id": "hostOrganizerSpendProjections",
+  "path": "hostOrganizerSpendProjections/{organizerId}",
+  "rulesMatch": "/hostOrganizerSpendProjections/{organizerId}",
+  "typescriptInterface": "HostOrganizerSpendProjectionDocument",
+  "dartModel": "lib/contexts/audience/domain/crm/host_event_roster_insights.dart",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers get their door read models and nothing else"
+  ],
+  "owner": "Host organizer spend evaluator: hostReadModels roster insight payment trigger and backfill",
+  "writerContext": "host",
+  "read": "current organizer managers get their organizer's document; nobody lists the collection",
+  "write": "server only; written in the same transaction as organizerSpendTotals when the thresholds change",
+  "exportedFunctions": [
+    "onHostRosterInsightBookingPaymentChanged"
+  ],
+  "migrationNotes": [
+    "Thresholds only, never an account or a per-guest amount. A missing document means the organizer has no counted Catch payment yet."
+  ]
+}

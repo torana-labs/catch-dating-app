@@ -1,0 +1,24 @@
+{
+  "id": "hostWhatsappThreadViews",
+  "path": "hostWhatsappThreadViews/{threadId}",
+  "rulesMatch": "/hostWhatsappThreadViews/{threadId}",
+  "typescriptInterface": "HostWhatsappThreadViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+  "rulesTestNames": [
+    "lets current managers read WhatsApp thread views and one thread's messages"
+  ],
+  "owner": "Host read model projector: hostReadModels WhatsApp thread view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get and list (organizerId equality) while their account is not deleted; a view not written yet reads as missing",
+  "write": "server only; written from the thread and its contact, deleted with the thread",
+  "exportedFunctions": [
+    "onHostWhatsappThreadViewThreadChanged",
+    "onHostWhatsappThreadViewContactChanged",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "The view equals the summary the retired listOrganizerWhatsappThreads callable returned, without the clock-dependent serviceWindowOpen flag. The host-whatsapp-thread-views copy-forward migration creates views for threads retained before the triggers.",
+    "Account deletion unlinks linkedUid on the views as it does on contacts."
+  ]
+}

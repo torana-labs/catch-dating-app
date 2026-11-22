@@ -1,0 +1,11 @@
+{
+  "id": "participantSignalFacts",
+  "path": "participantSignalFacts/{factId}",
+  "rulesMatch": "/participantSignalFacts/{factId}",
+  "typescriptInterface": "ParticipantSignalFactDocument",
+  "rulesTestFile": "functions/test/rules/participant_success_metrics.rules.test.cjs",
+  "owner": "Participant signal recorder",
+  "writerContext": "insights",
+  "read": "server only",
+  "write": "server only"
+}

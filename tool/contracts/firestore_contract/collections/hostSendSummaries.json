@@ -1,0 +1,27 @@
+{
+  "id": "hostSendSummaries",
+  "path": "hostSendSummaries/{sendId}",
+  "rulesMatch": "/hostSendSummaries/{sendId}",
+  "typescriptInterface": "HostSendSummaryDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+  "rulesTestNames": [
+    "lets current managers list Sends rows and nothing else"
+  ],
+  "owner": "Host read model projector: hostReadModels send summary triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get and list (organizerId equality) while their account is not deleted",
+  "write": "server only; written from each campaign, announcement summary and follower post with its delivery operation, and on template and saved audience renames",
+  "exportedFunctions": [
+    "onHostSendCampaignChanged",
+    "onHostSendAnnouncementChanged",
+    "onHostSendFollowerPostChanged",
+    "onHostSendFollowerDeliveryChanged",
+    "onHostSendTemplateChanged",
+    "onHostSendSavedAudienceChanged"
+  ],
+  "migrationNotes": [
+    "row equals what the retired listOrganizerCampaigns callable returned for the Send. The host-send-summaries copy-forward migration creates rows for Sends recorded before the triggers.",
+    "Approval, dispatch, cancellation and getOrganizerCampaignReport stay callables: the report's revision is their write fence."
+  ]
+}

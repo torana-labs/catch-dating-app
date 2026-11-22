@@ -1,0 +1,14 @@
+{
+  "id": "programTravelParties",
+  "path": "programTravelParties/{partyId}",
+  "rulesMatch": "/programTravelParties/{partyId}",
+  "typescriptInterface": "ProgramTravelPartyDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program travel callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "Ride-together parties are atomic in grouping suggestions."
+  ]
+}

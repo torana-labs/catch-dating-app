@@ -1,0 +1,37 @@
+{
+  "id": "hostRosterIntakeSessions",
+  "path": "hostRosterIntakeSessions/{sessionId}",
+  "rulesMatch": "/hostRosterIntakeSessions/{sessionId}",
+  "typescriptInterface": "HostRosterIntakeSessionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps Host roster intake sessions and receipts server-only"
+  ],
+  "owner": "manageHostRosterIntake callable",
+  "writerContext": "bookings",
+  "read": "server only; manager receives bounded callable review projection",
+  "write": "server only; authority and revision checked transactionally",
+  "exportedFunctions": [
+    "manageHostRosterIntake"
+  ],
+  "operations": [
+    {
+      "id": "manage_host_roster_intake",
+      "type": "callable",
+      "owner": "manageHostRosterIntake",
+      "function": "manageHostRosterIntake",
+      "payloadSchemaRef": "contracts/callables/manage_host_roster_intake_payload.schema.json",
+      "rulesMustContain": [
+        "allow read, write: if false"
+      ],
+      "rulesTestNames": [
+        "keeps Host roster intake sessions and receipts server-only"
+      ]
+    }
+  ],
+  "migrationNotes": [
+    "Private upload evidence is capped below Firestore document limits and never enters public Supply Intake.",
+    "Apply rechecks manager, event and roster authority in the canonical import transaction."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "eventAssistanceOperationalNoticePublications",
+  "path": "eventAssistanceOperationalNoticePublications/{publicationId}",
+  "rulesMatch": "/eventAssistanceOperationalNoticePublications/{publicationId}",
+  "typescriptInterface": "EventAssistanceOperationalNoticePublicationDocument",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance operational notice publisher",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only"
+}

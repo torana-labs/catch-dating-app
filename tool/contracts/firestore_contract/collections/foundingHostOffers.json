@@ -1,0 +1,23 @@
+{
+  "id": "foundingHostOffers",
+  "path": "foundingHostOffers/{marketId}",
+  "rulesMatch": "/foundingHostOffers/{marketId}",
+  "typescriptInterface": "FoundingHostOfferDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/founding_host_offers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps the founding-host offer config, organizer places and owner guards server-only"
+  ],
+  "owner": "Admin Owner through adminManageFoundingHostOffers (cap, deadline); the founding place grant (takenCount)",
+  "writerContext": "payments",
+  "read": "server only; adminManageFoundingHostOffers, the founding place grant and its daily reconcile",
+  "write": "adminManageFoundingHostOffers: expected-revision replacement of cap and deadline with a reason and an admin audit log, never below takenCount. The founding place grant increments takenCount in the transaction that creates the place, so the cap is never exceeded",
+  "exportedFunctions": [
+    "adminManageFoundingHostOffers",
+    "onFoundingHostOrganizerWritten",
+    "reconcileFoundingHostPlacesDaily"
+  ],
+  "migrationNotes": [
+    "New collection (owner decision 16 Nov 2026). Absent until the owner opens a city; no backfill. Organizers that gained an owner before a city opened are not founding hosts."
+  ]
+}

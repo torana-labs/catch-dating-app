@@ -1,0 +1,19 @@
+{
+  "id": "organizerClaimInstagramCodes",
+  "path": "organizerClaimInstagramCodes/{code}",
+  "rulesMatch": "/organizerClaimInstagramCodes/{code}",
+  "typescriptInterface": "OrganizerClaimInstagramCodeDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets a requester follow only their own claim verification"
+  ],
+  "owner": "organizer claim verification callables and the Instagram claim webhook",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only; TTL deletes a reservation after expiresAt",
+  "exportedFunctions": [
+    "startOrganizerClaimVerification",
+    "instagramClaimWebhook"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "salesPrivacyBatchReceipts",
+  "path": "salesPrivacyBatchReceipts/{id}",
+  "rulesMatch": "/salesPrivacyBatchReceipts/{privateDocument=**}",
+  "typescriptInterface": "SalesPrivacyBatchReceipt",
+  "rulesTestFile": "functions/test/salesPrivate.rules.test.cjs",
+  "owner": "Private Sales privacy lifecycle",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

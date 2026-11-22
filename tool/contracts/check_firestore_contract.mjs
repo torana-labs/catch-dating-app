@@ -7,6 +7,7 @@ import {
   parseRulesMatchBlocks,
   rulesPathGoverns,
 } from "./lib/firestore_rules_blocks.mjs";
+import {firestoreContractDir, loadFirestoreContract} from "./lib/firestore_contract.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -17,7 +18,6 @@ if (args.length !== 0 && (args.length !== 2 || args[0] !== "--root" ||
 }
 const repoRoot = args.length ? path.resolve(args[1]) : path.resolve(toolDir, "../..");
 
-const contractPath = path.join(repoRoot, "tool/contracts/firestore_contract.json");
 const rulesPath = path.join(repoRoot, "firestore.rules");
 const generatedTypesPath = path.join(
   repoRoot,
@@ -33,7 +33,7 @@ const OWNERSHIP_TAGS = new Set([
   "server-only",
 ]);
 
-const contract = readJson(contractPath);
+const contract = loadFirestoreContract({root: repoRoot});
 const rules = readText(rulesPath);
 const generatedTypes = readText(generatedTypesPath);
 const functionExports = new Set(discoverFunctionExportNames({sourceRoot: repoRoot}));
@@ -374,7 +374,7 @@ function validateOwnershipTags(collection, label) {
   for (const groupName of legacyGroups) {
     if (collection[groupName] !== undefined) {
       errors.push(
-        `${label}.${groupName} is no longer carried in firestore_contract.json. ` +
+        `${label}.${groupName} is no longer carried in the Firestore contract. ` +
         `Move ownership to per-property "x-catch-ownership" annotations on ` +
         `the corresponding schema in contracts/firestore/.`
       );
@@ -383,14 +383,14 @@ function validateOwnershipTags(collection, label) {
 
   if (collection.allFields !== undefined) {
     errors.push(
-      `${label}.allFields is no longer carried in firestore_contract.json. ` +
+      `${label}.allFields is no longer carried in the Firestore contract. ` +
       `Schema properties are the source of truth.`
     );
   }
 
   if (collection.internalDemoFields !== undefined) {
     errors.push(
-      `${label}.internalDemoFields is no longer carried in firestore_contract.json. ` +
+      `${label}.internalDemoFields is no longer carried in the Firestore contract. ` +
       `Use the schema's "x-internal-demo-fields" root array.`
     );
   }
@@ -819,8 +819,8 @@ function validateEveryRulesMatchIsRegistered() {
     if (!registered.has(block.path)) {
       errors.push(
         `firestore.rules:${block.line}: match ${block.path} has no entry in ` +
-        `tool/contracts/firestore_contract.json; register the collection ` +
-        `(id, path, rulesMatch, owner, read, write) with its schema contract`
+        `${firestoreContractDir}; register the collection in ` +
+        `collections/<id>.json (id, path, rulesMatch, owner, read, write) with its schema contract`
       );
     }
   }
@@ -836,7 +836,7 @@ function validateEverySchemaIsRegistered() {
     if (!registeredPaths.has(documentPath)) {
       errors.push(
         `${relative(filePath)}: ${documentPath} has no entry in ` +
-        `tool/contracts/firestore_contract.json`
+        firestoreContractDir
       );
     }
   }

@@ -1,0 +1,14 @@
+{
+  "id": "eventAssistanceMemberships",
+  "path": "eventAssistanceMemberships/{membershipId}",
+  "rulesMatch": "/eventAssistanceMemberships/{membershipId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "event group membership",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "transferEventAssistanceGroup",
+    "resolveEventAssistanceAccountability"
+  ]
+}

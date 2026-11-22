@@ -1,0 +1,11 @@
+{
+  "id": "operationLeases",
+  "path": "operationLeases/{leaseId}",
+  "rulesMatch": "/operationLeases/{leaseId}",
+  "schemaContract": "contracts/operations/lease.schema.json",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted operations workers",
+  "writerContext": "platform",
+  "read": "server only",
+  "write": "server only"
+}

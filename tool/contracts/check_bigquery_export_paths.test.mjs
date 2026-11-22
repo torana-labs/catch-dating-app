@@ -6,6 +6,7 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
 import {checkBigQueryExportPaths} from "./check_bigquery_export_paths.mjs";
+import {writeFirestoreContract} from "./lib/firestore_contract.mjs";
 
 const checker = fileURLToPath(new URL("./check_bigquery_export_paths.mjs", import.meta.url));
 const SOURCE = "firebase/firestore-bigquery-export@0.3.2";
@@ -18,7 +19,7 @@ function fixture(t, {envs, extensions, hostExports} = {}) {
     fs.mkdirSync(path.dirname(target), {recursive: true});
     fs.writeFileSync(target, typeof value === "string" ? value : JSON.stringify(value));
   };
-  write("tool/contracts/firestore_contract.json", {collections: [
+  writeFirestoreContract(root, {collections: [
     {id: "events", path: "events/{eventId}"},
     {id: "guestPayments", path: "guestPayments/{paymentId}"},
     {id: "pushInstallations", path: "users/{uid}/pushInstallations/{installationId}"},
@@ -50,7 +51,7 @@ test("an export of a retired collection fails, the way the payments export shoul
     "bq-host-payments": "COLLECTION_PATH=payments\nTABLE_ID=payments\n",
   }});
   assert.deepEqual(await checkBigQueryExportPaths(root), [
-    "extensions/bq-host-payments.env: COLLECTION_PATH=payments is not a collection in tool/contracts/firestore_contract.json; point the export at the live collection or retire the export with its collection",
+    "extensions/bq-host-payments.env: COLLECTION_PATH=payments is not a collection in tool/contracts/firestore_contract; point the export at the live collection or retire the export with its collection",
   ]);
 });
 

@@ -1,0 +1,19 @@
+{
+  "id": "organizerContactEventEdges",
+  "path": "organizerContactEventEdges/{edgeId}",
+  "rulesMatch": "/organizerContactEventEdges/{edgeId}",
+  "typescriptInterface": "OrganizerContactEventEdgeDocument",
+  "dartModel": null,
+  "owner": "organizer audience projection",
+  "writerContext": "organizers",
+  "read": "server only; manager access is through CRM detail callables",
+  "write": "server only",
+  "exportedFunctions": [
+    "onEventAttendeeAudienceProjected",
+    "mergeOrganizerContacts",
+    "unmergeOrganizerContacts"
+  ],
+  "migrationNotes": [
+    "Edges are rebuildable from canonical attendee and event facts and retain the attendee source revision."
+  ]
+}

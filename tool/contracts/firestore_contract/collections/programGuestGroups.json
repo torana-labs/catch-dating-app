@@ -1,0 +1,11 @@
+{
+  "id": "programGuestGroups",
+  "path": "programGuestGroups/{groupId}",
+  "rulesMatch": "/programGuestGroups/{groupId}",
+  "typescriptInterface": "ProgramGuestGroupDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "program guest management and reviewed conversion callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only"
+}

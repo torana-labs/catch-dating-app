@@ -1,0 +1,17 @@
+{
+  "id": "eventAssistanceCases",
+  "path": "eventAssistanceCases/{caseId}",
+  "rulesMatch": "/eventAssistanceCases/{caseId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance guest boundary",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "getEventAssistanceGuestView",
+    "submitEventAssistanceGuestChoice",
+    "resolveEventAssistanceCase",
+    "onHostEventCaseViewCaseChanged",
+    "requestEventRuntimeHostHelp"
+  ]
+}

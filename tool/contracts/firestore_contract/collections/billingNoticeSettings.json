@@ -1,0 +1,11 @@
+{
+  "id": "billingNoticeSettings",
+  "path": "billingNoticeSettings/{settingsId}",
+  "rulesMatch": "/billingNoticeSettings/{settingsId}",
+  "typescriptInterface": "BillingNoticeSettingsDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Catch owner (production setup); read by Functions bill notice delivery and operator alerts",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only"
+}

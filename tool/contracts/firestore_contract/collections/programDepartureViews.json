@@ -1,0 +1,24 @@
+{
+  "id": "programDepartureViews",
+  "path": "programDepartureViews/{legId}",
+  "rulesMatch": "/programDepartureViews/{legId}",
+  "typescriptInterface": "ProgramDepartureViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/program_arrivals.rules.test.cjs",
+  "rulesTestNames": [
+    "reads a hotel's departures only under a hotel desk duty covering it"
+  ],
+  "owner": "Programme read model projector: programArrivalViewTriggers",
+  "writerContext": "programmes",
+  "read": "get and list (query naming programId and hotelId) where a hotel desk duty covers the hotel, and the programme owner, while not deleted",
+  "write": "server only; written from programTravelLegs, programStays, programGuests and programTravelParties",
+  "exportedFunctions": [
+    "onProgramArrivalLegChanged",
+    "onProgramArrivalPartyChanged",
+    "onProgramArrivalGuestChanged",
+    "onProgramDepartureStayChanged"
+  ],
+  "migrationNotes": [
+    "Exactly the row the retired getProgramDeparturesRoster callable returned; the desk counts are computed on the phone from the rows and its clock. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "walkthroughAvailability",
+  "path": "walkthroughAvailability/{calendarId}",
+  "rulesMatch": "/walkthroughAvailability/{privateDocument=**}",
+  "typescriptInterface": "WalkthroughAvailabilityDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "adminSetWalkthroughAvailability",
+  "writerContext": "sales",
+  "read": "server only",
+  "write": "server only"
+}

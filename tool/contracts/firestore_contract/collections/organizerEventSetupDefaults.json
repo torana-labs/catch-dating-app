@@ -1,0 +1,19 @@
+{
+  "id": "organizerEventSetupDefaults",
+  "path": "organizerEventSetupDefaults/{organizerId}",
+  "rulesMatch": "/organizerEventSetupDefaults/{organizerId}",
+  "typescriptInterface": "OrganizerEventSetupDefaultsDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps organizer event setup defaults server-only"
+  ],
+  "owner": "organizer event setup manager operations",
+  "writerContext": "formats",
+  "read": "server only; managers read its projection in hostEventSetupDefaultViews",
+  "write": "server only",
+  "exportedFunctions": [
+    "updateOrganizerEventSetupDefaults",
+    "onHostEventSetupDefaultViewDefaultsChanged"
+  ]
+}

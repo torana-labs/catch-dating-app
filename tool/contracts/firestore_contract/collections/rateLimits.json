@@ -1,0 +1,12 @@
+{
+  "id": "rateLimits",
+  "path": "rateLimits/{docId}",
+  "rulesMatch": "/rateLimits/{docId}",
+  "owner": "shared callable rate-limit middleware",
+  "writerContext": "platform",
+  "read": "server/admin only",
+  "write": "server only",
+  "migrationNotes": [
+    "Requires a Firestore TTL policy on expiresAt."
+  ]
+}

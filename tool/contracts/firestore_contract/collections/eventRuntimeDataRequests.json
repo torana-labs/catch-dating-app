@@ -1,0 +1,20 @@
+{
+  "id": "eventRuntimeDataRequests",
+  "path": "eventRuntimeDataRequests/{requestId}",
+  "rulesMatch": "/eventRuntimeDataRequests/{requestId}",
+  "typescriptInterface": "EventRuntimeDataRequestDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "server-only Event Runtime required-data coordinator",
+  "writerContext": "live",
+  "read": "server only; future callers receive a bounded guest or Host projection",
+  "write": "server only",
+  "exportedFunctions": [
+    "onEventRuntimeParticipantWritten",
+    "getEventRuntimeBootstrap",
+    "submitEventRuntimeProfile"
+  ],
+  "migrationNotes": [
+    "One current source-fenced request per event attendee; guest bootstrap exposes only the bounded request fields and lifecycle."
+  ]
+}

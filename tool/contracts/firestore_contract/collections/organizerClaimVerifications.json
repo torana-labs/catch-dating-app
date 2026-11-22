@@ -1,0 +1,19 @@
+{
+  "id": "organizerClaimVerifications",
+  "path": "organizerClaimVerifications/{attemptId}",
+  "rulesMatch": "/organizerClaimVerifications/{attemptId}",
+  "typescriptInterface": "OrganizerClaimVerificationDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets a requester follow only their own claim verification"
+  ],
+  "owner": "organizer claim verification callables and the Instagram claim webhook",
+  "writerContext": "organizers",
+  "read": "the requester may get only their own attempt, to show its code and follow its status",
+  "write": "server only",
+  "exportedFunctions": [
+    "startOrganizerClaimVerification",
+    "instagramClaimWebhook"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "eventSuccessPlans",
+  "path": "eventSuccessPlans/{eventId}",
+  "rulesMatch": "/eventSuccessPlans/{eventId}",
+  "typescriptInterface": "EventSuccessPlanDocument",
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "owner": "setup fields through saveEventSuccessPlanSetup and night.plan (functions/src/eventSuccess/planSetup.ts); create and older Catch Host builds by organizer manager direct write; event participants read",
+  "writerContext": "live",
+  "read": "the event's hosts, and guests once the plan is visible to them",
+  "write": "event hosts create and update setup fields before the event is live; delete server only"
+}

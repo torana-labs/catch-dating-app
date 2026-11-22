@@ -1,0 +1,18 @@
+{
+  "id": "customDomains",
+  "path": "customDomains/{hostname}",
+  "rulesMatch": "/customDomains/{hostname}",
+  "typescriptInterface": "CustomDomainDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps the custom domain registry server-only"
+  ],
+  "owner": "custom domain registry (#1110): owner domain callables, reconcileCustomDomains, Admin moderation and the form domain operator CLI",
+  "writerContext": "organizers",
+  "read": "server only; the organiser team sees a bounded view through getOrganizerDomain, the website server reads active records with the Admin SDK and resolvePublicFormDomain discloses only an active form's public id",
+  "write": "server only; registry transactions fenced by generation and revision",
+  "exportedFunctions": [
+    "resolvePublicFormDomain"
+  ]
+}

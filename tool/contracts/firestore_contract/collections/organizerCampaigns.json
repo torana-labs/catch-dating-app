@@ -1,0 +1,11 @@
+{
+  "id": "organizerCampaigns",
+  "path": "organizerCampaigns/{campaignId}",
+  "rulesMatch": "/organizerCampaigns/{campaignId}",
+  "typescriptInterface": "OrganizerCampaignDocument",
+  "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+  "owner": "organizer campaign callables and dispatcher",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "hostMembershipCheckouts",
+  "path": "hostMembershipCheckouts/{checkoutId}",
+  "rulesMatch": "/hostMembershipCheckouts/{checkoutId}",
+  "typescriptInterface": "HostMembershipCheckoutDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "lets members read only their own paid membership records"
+  ],
+  "owner": "host membership checkout callable",
+  "writerContext": "payments",
+  "read": "owner (uid) only",
+  "write": "server only",
+  "exportedFunctions": [
+    "manageHostMembershipCheckout",
+    "hostMembershipRazorpayWebhook",
+    "requestAccountDeletion"
+  ],
+  "migrationNotes": [
+    "Open unexpired checkouts reserve plan capacity for the member cap."
+  ]
+}

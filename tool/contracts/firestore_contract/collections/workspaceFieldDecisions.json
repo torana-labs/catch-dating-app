@@ -1,0 +1,21 @@
+{
+  "id": "workspaceFieldDecisions",
+  "path": "workspaceFieldDecisions/{decisionId}",
+  "rulesMatch": "/workspaceFieldDecisions/{decisionId}",
+  "typescriptInterface": "WorkspaceFieldDecisionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/private_workspace_relationship_authority.rules.test.cjs",
+  "owner": "program guest/household explicit field choice adapters",
+  "writerContext": "programmes",
+  "read": "server only; scoped callable projections",
+  "write": "server only",
+  "exportedFunctions": [
+    "upsertProgramGuest",
+    "upsertProgramHousehold",
+    "anonymizeDueProgramsSweep"
+  ],
+  "migrationNotes": [
+    "Immutable revision-bound reviewer decisions retain previous and chosen assertion pointers.",
+    "Exact program retention deletes decisions; imported conflicts do not silently replace a valid selected value."
+  ]
+}

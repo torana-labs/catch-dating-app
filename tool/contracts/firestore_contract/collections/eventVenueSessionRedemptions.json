@@ -1,0 +1,21 @@
+{
+  "id": "eventVenueSessionRedemptions",
+  "path": "eventVenueSessionRedemptions/{redemptionId}",
+  "rulesMatch": "/eventVenueSessionRedemptions/{redemptionId}",
+  "typescriptInterface": "EventVenueSessionRedemptionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "attendance and First Hello callables",
+  "writerContext": "live",
+  "read": "server only; callers receive bounded callable results",
+  "write": "server only",
+  "exportedFunctions": [
+    "selfCheckInAttendance",
+    "checkInEventRuntime",
+    "startEventSuccessFirstHelloMission",
+    "completeEventSuccessFirstHelloMission"
+  ],
+  "migrationNotes": [
+    "A session is multi-attendee, but each authenticated attendee may redeem it only once."
+  ]
+}

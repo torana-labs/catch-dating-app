@@ -1,0 +1,15 @@
+{
+  "id": "programStaffGrants",
+  "path": "programStaffGrants/{grantId}",
+  "rulesMatch": "/programStaffGrants/{grantId}",
+  "typescriptInterface": "ProgramStaffGrantDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "program staff access callables",
+  "writerContext": "programmes",
+  "read": "a staff member may get only their own grant document",
+  "write": "server only",
+  "migrationNotes": [
+    "Deterministic id programId__uid mirrors event staff grants; duties carry independent station scopes.",
+    "Duties never confer organizer, CRM, messaging or cross-program authority."
+  ]
+}

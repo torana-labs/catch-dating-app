@@ -1,0 +1,11 @@
+{
+  "id": "organizerIntakeReviewDecisions",
+  "path": "organizerIntakeReviewDecisions/{entityId}",
+  "rulesMatch": "/organizerIntakeReviewDecisions/{privateDocument=**}",
+  "typescriptInterface": "OrganizerIntakeReviewDecisionDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "retired adminDecideOrganizerIntake callable; existing records are kept read-only",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only"
+}

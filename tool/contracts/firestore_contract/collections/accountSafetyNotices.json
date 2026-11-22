@@ -1,0 +1,11 @@
+{
+  "id": "accountSafetyNotices",
+  "path": "accountSafetyNotices/{uid}/items/{noticeId}",
+  "rulesMatch": "/accountSafetyNotices/{uid}/items/{noticeId}",
+  "typescriptInterface": "AccountSafetyNoticeDocument",
+  "rulesTestFile": "functions/test/rules/activity_notifications.rules.test.cjs",
+  "owner": "Account safety action service and report callables",
+  "writerContext": "platform",
+  "read": "owner only",
+  "write": "server only"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "organizerGuestBlocks",
+  "path": "organizerGuestBlocks/{blockId}",
+  "rulesMatch": "/organizerGuestBlocks/{blockId}",
+  "typescriptInterface": "OrganizerGuestBlockDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "manageOrganizerGuestBlock callable",
+  "writerContext": "safety",
+  "read": "server only",
+  "write": "server only"
+}

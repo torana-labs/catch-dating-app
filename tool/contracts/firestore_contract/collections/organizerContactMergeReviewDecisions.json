@@ -1,0 +1,19 @@
+{
+  "id": "organizerContactMergeReviewDecisions",
+  "path": "organizerContactMergeReviewDecisions/{decisionId}",
+  "rulesMatch": "/organizerContactMergeReviewDecisions/{decisionId}",
+  "typescriptInterface": "OrganizerContactMergeReviewDecisionDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "organizer contact merge review callables",
+  "writerContext": "organizers",
+  "read": "server only; authorized managers receive sanitized candidate decisions",
+  "write": "server only",
+  "exportedFunctions": [
+    "listOrganizerContactMergeCandidates",
+    "reviewOrganizerContactMergeCandidate"
+  ],
+  "migrationNotes": [
+    "The latest deterministic pair decision suppresses a different-people candidate until the same reviewing manager reopens it."
+  ]
+}

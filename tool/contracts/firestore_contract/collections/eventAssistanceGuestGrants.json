@@ -1,0 +1,14 @@
+{
+  "id": "eventAssistanceGuestGrants",
+  "path": "eventAssistanceGuestGrants/{linkId}",
+  "rulesMatch": "/eventAssistanceGuestGrants/{linkId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "trusted event-assistance guest boundary",
+  "writerContext": "live",
+  "read": "server only",
+  "write": "server only",
+  "exportedFunctions": [
+    "getEventAssistanceGuestView",
+    "submitEventAssistanceGuestChoice"
+  ]
+}

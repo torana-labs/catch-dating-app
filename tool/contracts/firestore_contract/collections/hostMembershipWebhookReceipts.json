@@ -1,0 +1,21 @@
+{
+  "id": "hostMembershipWebhookReceipts",
+  "path": "hostMembershipWebhookReceipts/{receiptId}",
+  "rulesMatch": "/hostMembershipWebhookReceipts/{receiptId}",
+  "typescriptInterface": "HostMembershipWebhookReceiptDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps membership billing state server-only"
+  ],
+  "owner": "hostMembershipRazorpayWebhook",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only; create once per provider event",
+  "exportedFunctions": [
+    "hostMembershipRazorpayWebhook"
+  ],
+  "migrationNotes": [
+    "Stores ids and outcome only, never raw payloads."
+  ]
+}

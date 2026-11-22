@@ -1,0 +1,11 @@
+{
+  "id": "organizerFormAutomationRuns",
+  "path": "organizerFormAutomationRuns/{runId}",
+  "rulesMatch": "/organizerFormAutomationRuns/{runId}",
+  "typescriptInterface": "OrganizerFormAutomationRunDocument",
+  "rulesTestFile": "functions/test/rules/host_form_operation_reads.rules.test.cjs",
+  "owner": "organizer form automation executor",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

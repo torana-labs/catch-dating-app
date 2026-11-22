@@ -1,0 +1,24 @@
+{
+  "id": "organizerFormDrafts",
+  "path": "organizerFormDrafts/{formId}",
+  "rulesMatch": "/organizerFormDrafts/{formId}",
+  "typescriptInterface": "OrganizerFormDraftDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps organizer form state server-only"
+  ],
+  "owner": "manager-only organizer form draft callables",
+  "writerContext": "organizers",
+  "read": "server only; managers receive a safe editor projection",
+  "write": "server only with optimistic revision checks",
+  "exportedFunctions": [
+    "createOrganizerForm",
+    "updateOrganizerFormDraft",
+    "getOrganizerFormEditor",
+    "validateOrganizerFormDraft",
+    "publishOrganizerForm",
+    "duplicateOrganizerForm",
+    "deleteOrganizerFormDraft"
+  ]
+}

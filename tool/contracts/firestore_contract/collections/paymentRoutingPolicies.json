@@ -1,0 +1,11 @@
+{
+  "id": "paymentRoutingPolicies",
+  "path": "paymentRoutingPolicies/{policyId}",
+  "rulesMatch": "/paymentRoutingPolicies/{policyId}",
+  "typescriptInterface": "PaymentRoutingPolicyDocument",
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "payment routing server operations",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only"
+}

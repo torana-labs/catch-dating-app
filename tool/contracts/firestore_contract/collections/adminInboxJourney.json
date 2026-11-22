@@ -1,0 +1,24 @@
+{
+  "id": "adminInboxJourney",
+  "path": "adminInboxJourney/{stepId}",
+  "rulesMatch": "/adminInboxJourney/{stepId}",
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "owner": "admin inbox triggers and callables",
+  "writerContext": "admin",
+  "read": "server/admin callable only",
+  "write": "server only",
+  "exportedFunctions": [
+    "adminGetInboxItem",
+    "adminUpdateInboxItem",
+    "onSupplyIntakeRequestWrittenSyncInbox",
+    "onOrganizerClaimRequestWrittenSyncInbox",
+    "onSalesInboundIntentWrittenSyncInbox",
+    "onAccessApplicationWrittenSyncInbox",
+    "onExternalEventWrittenSyncInbox",
+    "wakeSnoozedInboxItemsEvery30Minutes",
+    "reconcileAdminInboxNightly"
+  ],
+  "migrationNotes": [
+    "Append-only: each step is created once with the time Catch first saw it, keyed {itemId}~{stepId}."
+  ]
+}

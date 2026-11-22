@@ -1,0 +1,11 @@
+{
+  "id": "nativeRefundRecoveryCursors",
+  "path": "nativeRefundRecoveryCursors/{stateId}",
+  "rulesMatch": "/nativeRefundRecoveryCursors/{privateDocument=**}",
+  "typescriptInterface": "NativeRefundRecoveryCursorDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "payment recovery schedulers",
+  "writerContext": "payments",
+  "read": "server only",
+  "write": "server only"
+}

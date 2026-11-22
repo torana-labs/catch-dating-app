@@ -1,0 +1,11 @@
+{
+  "id": "organizerMessageTemplates",
+  "path": "organizerMessageTemplates/{templateId}",
+  "rulesMatch": "/organizerMessageTemplates/{templateId}",
+  "typescriptInterface": "OrganizerMessageTemplateDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "WhatsApp template synchronization",
+  "writerContext": "organizers",
+  "read": "server only",
+  "write": "server only"
+}

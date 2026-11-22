@@ -1,0 +1,20 @@
+{
+  "id": "organizerContactOutreach",
+  "path": "organizerContactOutreach/{outreachId}",
+  "rulesMatch": "/organizerContactOutreach/{outreachId}",
+  "typescriptInterface": "OrganizerContactOutreachDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+  "owner": "manager-only organizer contact outreach callable",
+  "writerContext": "organizers",
+  "read": "server only; bounded manager access is embedded in contact detail",
+  "write": "server only",
+  "exportedFunctions": [
+    "recordOrganizerContactOutreach",
+    "getOrganizerContactDetail"
+  ],
+  "migrationNotes": [
+    "Outreach records are organizer-scoped, author-stamped activity facts excluded from exportOrganizerContacts without an opt-in path.",
+    "Existing contacts require no backfill because outreach records are separate append-only documents."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "eventRuntimeClaimRequests",
+  "path": "eventRuntimeClaimRequests/{requestId}",
+  "rulesMatch": "/eventRuntimeClaimRequests/{requestId}",
+  "typescriptInterface": "EventRuntimeClaimRequestDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "Event Success runtime claim and Host approval callables",
+  "writerContext": "live",
+  "read": "authorized event host only",
+  "write": "server only",
+  "exportedFunctions": [
+    "claimEventRuntimeAccess",
+    "approveEventRuntimeClaim"
+  ],
+  "migrationNotes": [
+    "Contains only bounded candidate attendee ids and the verified phone's last four digits; claimants receive sanitized status via callable."
+  ]
+}

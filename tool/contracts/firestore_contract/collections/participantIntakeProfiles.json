@@ -1,0 +1,11 @@
+{
+  "id": "participantIntakeProfiles",
+  "path": "participantIntakeProfiles/{uid}",
+  "rulesMatch": "/participantIntakeProfiles/{uid}",
+  "typescriptInterface": "ParticipantIntakeProfileDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "participant intake profile callables",
+  "writerContext": "profiles",
+  "read": "server only",
+  "write": "server only"
+}

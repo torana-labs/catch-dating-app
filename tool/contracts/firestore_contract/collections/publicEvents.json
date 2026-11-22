@@ -1,0 +1,11 @@
+{
+  "id": "publicEvents",
+  "path": "publicEvents/{eventId}",
+  "rulesMatch": "/publicEvents/{eventId}",
+  "typescriptInterface": "PublicEventDocument",
+  "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
+  "owner": "reconcilePublicEvent (events trigger)",
+  "writerContext": "events",
+  "read": "public get; list only listed events",
+  "write": "server only"
+}

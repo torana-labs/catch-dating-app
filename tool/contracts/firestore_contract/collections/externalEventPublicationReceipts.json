@@ -1,0 +1,11 @@
+{
+  "id": "externalEventPublicationReceipts",
+  "path": "externalEventPublicationReceipts/{receiptId}",
+  "rulesMatch": "/externalEventPublicationReceipts/{privateDocument=**}",
+  "typescriptInterface": "ExternalEventPublicationReceiptDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "adminPublishListingEvents and adminTakedownExternalEvent callables and the onSupplyIntakeListingApproved trigger",
+  "writerContext": "supply",
+  "read": "server only",
+  "write": "server only"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "eventRehearsalMessages",
+  "path": "eventRehearsalMessages/{messageDocumentId}",
+  "rulesMatch": "/eventRehearsalMessages/{messageDocumentId}",
+  "typescriptInterface": "EventRehearsalMessageDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+  "rulesTestNames": [
+    "keeps all dress rehearsal collections callable-only"
+  ],
+  "owner": "event rehearsal callables",
+  "writerContext": "live",
+  "read": "server only; synthetic actor-scoped callable projections",
+  "write": "server only; message and guest effect share the rehearsal transaction",
+  "exportedFunctions": [
+    "controlEventRehearsal",
+    "submitEventRehearsalGuestAction",
+    "resetEventRehearsal",
+    "expireEventRehearsals"
+  ],
+  "migrationNotes": [
+    "At most one message is created per counted rehearsal action. Reset and expiry delete the bounded synthetic message history. No live outbox document or provider binding is written."
+  ]
+}

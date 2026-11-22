@@ -1,0 +1,11 @@
+{
+  "id": "catchWhatsappAppAuthorities",
+  "path": "catchWhatsappAppAuthorities/{uid}",
+  "rulesMatch": "/catchWhatsappAppAuthorities/{privateDocument=**}",
+  "typescriptInterface": "CatchWhatsappAppAuthorityDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Catch support authority service",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only"
+}

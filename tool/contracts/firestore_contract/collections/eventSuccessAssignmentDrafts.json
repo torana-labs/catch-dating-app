@@ -1,0 +1,11 @@
+{
+  "id": "eventSuccessAssignmentDrafts",
+  "path": "eventSuccessAssignmentDrafts/{assignmentDraftId}",
+  "rulesMatch": "/eventSuccessAssignmentDrafts/{assignmentDraftId}",
+  "typescriptInterface": "EventSuccessAssignmentDraftDocument",
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "owner": "event-success assignment preparation",
+  "writerContext": "live",
+  "read": "the event's hosts, guided rotations only",
+  "write": "server only"
+}

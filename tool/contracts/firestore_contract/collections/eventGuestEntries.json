@@ -1,0 +1,23 @@
+{
+  "id": "eventGuestEntries",
+  "path": "eventGuestEntries/{eventId}",
+  "rulesMatch": "/eventGuestEntries/{eventId}",
+  "typescriptInterface": "EventGuestEntryDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
+  "rulesTestNames": [
+    "lets a guest get an event's guest entry and only their own status"
+  ],
+  "owner": "event guest entry triggers",
+  "writerContext": "discovery",
+  "read": "any signed-in person gets one entry by id; nobody lists the collection",
+  "write": "server only; triggers on events, organizers and organizerForms rebuild an entry from the event, its organizer and its application form, and delete it when the event is unpublished",
+  "exportedFunctions": [
+    "onEventGuestEntryEventWritten",
+    "onEventGuestEntryOrganizerWritten",
+    "onEventGuestEntryFormWritten"
+  ],
+  "migrationNotes": [
+    "Replaced the getEventViewerState guest surface for the website event page (#1337); that callable is retired. Backfilled by the guest-event-read-models migration."
+  ]
+}

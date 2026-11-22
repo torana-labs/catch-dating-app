@@ -1,0 +1,11 @@
+{
+  "id": "catchWhatsappReadinessPublications",
+  "path": "catchWhatsappReadinessPublications/{reference}",
+  "rulesMatch": "/catchWhatsappReadinessPublications/{privateDocument=**}",
+  "typescriptInterface": "CatchWhatsappReadinessPublicationDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Catch WhatsApp readiness publication (owner review)",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only"
+}

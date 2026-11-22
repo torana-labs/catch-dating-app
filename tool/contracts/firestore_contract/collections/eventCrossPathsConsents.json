@@ -1,0 +1,11 @@
+{
+  "id": "eventCrossPathsConsents",
+  "path": "eventCrossPathsConsents/{consentId}",
+  "rulesMatch": "/eventCrossPathsConsents/{consentId}",
+  "typescriptInterface": "EventCrossPathsConsentDocument",
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "setCrossPathsEventConsent callable",
+  "writerContext": "connections",
+  "read": "the consenting guest only",
+  "write": "server only"
+}

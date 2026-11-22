@@ -1,0 +1,11 @@
+{
+  "id": "eventSuccessCompatibilityResponses",
+  "path": "eventSuccessCompatibilityResponses/{responseId}",
+  "rulesMatch": "/eventSuccessCompatibilityResponses/{responseId}",
+  "typescriptInterface": "EventSuccessCompatibilityResponseDocument",
+  "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
+  "owner": "attendee direct write while signed up or attended; backend read for opted-in assignment generation",
+  "writerContext": "live",
+  "read": "the participant's own response, by get",
+  "write": "the participant creates and updates a validated response; delete server only"
+}

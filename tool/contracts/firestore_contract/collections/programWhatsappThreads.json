@@ -1,0 +1,15 @@
+{
+  "id": "programWhatsappThreads",
+  "path": "programWhatsappThreads/{programWhatsappThreadId}",
+  "rulesMatch": "/programWhatsappThreads/{programWhatsappThreadId}",
+  "typescriptInterface": "ProgramWhatsappThreadDocument",
+  "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+  "owner": "programme WhatsApp inbound router and reply callables",
+  "writerContext": "programmes",
+  "read": "server only",
+  "write": "server only",
+  "migrationNotes": [
+    "One household's WhatsApp conversation with the wedding's number; the 24-hour window is the last inbound plus 24 hours.",
+    "Deleted by the archive retention sweep."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "programAlertViews",
+  "path": "programAlertViews/{programId}__{alertId}",
+  "rulesMatch": "/programAlertViews/{alertId}",
+  "typescriptInterface": "ProgramAlertViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+  "rulesTestNames": [
+    "shows an alert to the lead holding its duty, never another duty's",
+    "lists alerts per duty for a lead and all of them for full reach"
+  ],
+  "owner": "Programme read model projector: programLiveBoardViewTriggers",
+  "writerContext": "programmes",
+  "read": "get and list by an account with the function lead duty for an alert stamped for a duty it holds (a lead lists one duty at a time), and by full reach (coordinators and the owner) for every alert, travel alerts included, while not deleted",
+  "write": "server only; written from organizerMomentSends, programTravelLegs and programAlerts",
+  "exportedFunctions": [
+    "onProgramAlertSendChanged",
+    "onProgramAlertLegChanged",
+    "onProgramAlertResolutionChanged"
+  ],
+  "migrationNotes": [
+    "One document per alert; a staff attention alert per run and duty from the earliest send, ending 24 hours after it (clients hide it past expiresAtMillis; documents are not removed by a TTL yet). Carries the assignee's account id so a phone can tell its own alerts; the retention sweep deletes the resolutions, which clears the assignee. The program-live-board-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+  ]
+}

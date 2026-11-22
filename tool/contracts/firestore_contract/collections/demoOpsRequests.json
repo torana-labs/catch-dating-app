@@ -1,0 +1,11 @@
+{
+  "id": "demoOpsRequests",
+  "path": "demoOpsRequests/{operationId}",
+  "rulesMatch": "/demoOpsRequests/{requestId}",
+  "typescriptInterface": "DemoOpsRequestDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Suvbot demo operations",
+  "writerContext": "ops",
+  "read": "server only",
+  "write": "server only"
+}

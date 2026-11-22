@@ -1,0 +1,18 @@
+{
+  "id": "eventShareIntents",
+  "path": "eventShareIntents/{intentId}",
+  "rulesMatch": "/eventShareIntents/{intentId}",
+  "typescriptInterface": "EventShareIntentDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+  "owner": "recordEventShareIntent",
+  "writerContext": "events",
+  "read": "server only; Hosts receive aggregate link counts",
+  "write": "server only",
+  "exportedFunctions": [
+    "recordEventShareIntent"
+  ],
+  "migrationNotes": [
+    "A share intent records only a Catch-owned share action and expires by TTL; it does not assert delivery or recipient identity."
+  ]
+}

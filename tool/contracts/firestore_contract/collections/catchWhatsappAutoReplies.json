@@ -1,0 +1,11 @@
+{
+  "id": "catchWhatsappAutoReplies",
+  "path": "catchWhatsappAutoReplies/{replyId}",
+  "rulesMatch": "/catchWhatsappAutoReplies/{privateDocument=**}",
+  "typescriptInterface": "CatchWhatsappAutoReplyDocument",
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Catch WhatsApp inbound router",
+  "writerContext": "messaging",
+  "read": "server only",
+  "write": "server only"
+}

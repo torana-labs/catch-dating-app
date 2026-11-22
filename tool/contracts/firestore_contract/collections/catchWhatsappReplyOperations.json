@@ -1,0 +1,18 @@
+{
+  "id": "catchWhatsappReplyOperations",
+  "path": "catchWhatsappReplyOperations/{operationId}",
+  "rulesMatch": "/catchWhatsappReplyOperations/{operationId}",
+  "typescriptInterface": "CatchWhatsappReplyOperationDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "Catch support reply service",
+  "writerContext": "messaging",
+  "read": "server only; exact controlled support/adminOwner callable scope",
+  "write": "server only; permanent one-reply claim and monotonic delivery projection",
+  "exportedFunctions": [
+    "adminReviewCatchWhatsappInbound",
+    "adminSendCatchWhatsappReply",
+    "onCatchWhatsappWebhookEventCreated",
+    "onCatchWhatsappReplyOperationWritten"
+  ]
+}
