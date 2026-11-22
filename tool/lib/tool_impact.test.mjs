@@ -888,6 +888,7 @@ test("canonical harness full paths come only from the component graph", () => {
     "tool/harness.mjs",
     "tool/repository_root_manifest.json",
     "tool/manifest/**",
+    "tool/tools_manifest.json",
     "tool/lib/path_glob.mjs",
     "tool/lib/tool_impact.mjs",
     "tool/lib/repository_snapshot.mjs",
