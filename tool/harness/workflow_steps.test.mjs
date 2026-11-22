@@ -238,9 +238,13 @@ test("local verification resolves Tools matrix checks and preserves package test
   assert.ok(plan.githubOnlyObligations.some((item) => item.target === "flutter"));
   assert.ok(plan.githubOnlyObligations.some((item) => item.workflow === "flutter-ci.yml"));
   assert.ok(plan.skipped.some((step) => step.reason.startsWith("composite action")));
-  for (const directory of ["apps/consumer", "apps/host"]) {
-    assert.ok(plan.gates.some((gate) => gate.workingDirectory === directory && gate.command.includes("flutter test")), directory);
+  for (const directory of ["packages/kernel", "packages/catch_ui"]) {
+    assert.ok(plan.gates.some((gate) => gate.workingDirectory === directory && / test\b/u.test(gate.command)), directory);
   }
+  // The app packages' tests run in the test shards, with the root's: each
+  // shard's matrix entry exists only in CI.
+  assert.ok(plan.githubOnlyObligations.some((item) =>
+    item.job === "flutter-test-shards" && item.name === "Unit & widget tests"));
 });
 
 test("local verification reports planner spawn errors before reading stdout", () => {
