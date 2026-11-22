@@ -26,6 +26,7 @@ import {
   FirestoreSeatTransaction,
   prepareFirestoreSeat,
 } from "../../events/seatAuthority/firestoreAdapter";
+import {updateEventBookingCounters} from "../events/eventDocumentWrites";
 
 type WalkInPolicy = NonNullable<EventDocument["runtimeAccess"]>[
   "walkInPolicy"];
@@ -227,8 +228,8 @@ function writeBookedCount(
   now: FirebaseFirestore.Timestamp
 ): void {
   if (bookedCount === null) return;
-  tx.update(db.collection("events").doc(eventId), {bookedCount,
-    updatedAt: now});
+  updateEventBookingCounters(tx, db.collection("events").doc(eventId),
+    {bookedCount, updatedAt: now});
 }
 
 function sha256(value: string): string {

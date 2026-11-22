@@ -6,6 +6,10 @@ import type {CrossPathsPairHoldDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {decrementCount} from "../events/eventPolicy";
 import {requireDoc} from "../shared/validation";
+import {
+  type EventPairHoldCountersPatch,
+  updateEventPairHoldCounters,
+} from "../domain/events/eventDocumentWrites";
 
 export type PairHoldReleaseReason =
   "expired" | "cancelled" | "event_unavailable" |
@@ -57,7 +61,7 @@ export async function releaseCrossPathsPairHoldInTransaction(params: {
       invalidationReason: "hold_expired"});
   }
   if (event) {
-    const eventUpdate: Record<string, unknown> = {};
+    const eventUpdate: EventPairHoldCountersPatch = {};
     if (hold.status === "active") {
       eventUpdate.crossPathsPairHeldCount = Math.max(
         0,
@@ -73,7 +77,7 @@ export async function releaseCrossPathsPairHoldInTransaction(params: {
         Math.trunc(Number(event.crossPathsPairConfirmedCount ?? 0)) - 1
       );
     }
-    params.tx.update(eventRef, eventUpdate);
+    updateEventPairHoldCounters(params.tx, eventRef, eventUpdate);
   }
 
   const terminalStatus = params.reason === "expired" ? "expired" :

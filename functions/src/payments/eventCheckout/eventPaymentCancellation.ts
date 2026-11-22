@@ -3,6 +3,8 @@ import type {EventPaymentLedger, EventSeatPaymentState,
   EventPaymentAdmissionReader} from "./eventPaymentState";
 import {Timestamp} from "firebase-admin/firestore";
 import {readCatchBookingRoster} from "../../events/catchBookingRoster";
+import {updateEventBookingCounters} from
+  "../../domain/events/eventDocumentWrites";
 import type {EventDocument} from
   "../../shared/generated/firestoreAdminTypes";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -174,7 +176,7 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
       applySeatPlan(seatTx, release);
       // A multi-place booking returns every place it held at once.
       const bookedCount = ledger.occupied - reservationPlaces(reservation);
-      tx.update(eventRef, {bookedCount, ...bridgedCounts});
+      updateEventBookingCounters(tx, eventRef, {bookedCount, ...bridgedCounts});
     }
     tx.update(attendeeRef, {status: "cancelled", cancelledAt: now,
       preCheckInStatus: null, updatedAt: now});

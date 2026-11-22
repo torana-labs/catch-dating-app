@@ -55,6 +55,7 @@ import {
   resolveInviteAttribution,
   InviteAttribution,
 } from "./inviteLinks";
+import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
 
 interface WaitlistDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -209,7 +210,7 @@ export async function joinEventWaitlistHandler(
       endTimeMillis: configuredEvent.endTime.toMillis(),
     });
 
-    tx.update(eventRef, {
+    updateEventBookingCounters(tx, eventRef, {
       waitlistedCount: admin.firestore.FieldValue.increment(1),
       waitlistedCohortCounts: incrementCount(
         event.waitlistedCohortCounts ?? {},
@@ -332,7 +333,7 @@ export async function leaveEventWaitlistHandler(
       event.waitlistedCount ?? 1;
     const rosterSlot = await readCatchBookingRoster({db, tx, eventId,
       uid: userId, verifiedPhone: () => loadVerifiedRosterPhone(userId)});
-    tx.update(eventRef, {
+    updateEventBookingCounters(tx, eventRef, {
       waitlistedCount: Math.max(0, currentWaitlistedCount - 1),
       ...(cohortAtSignup ?
         {

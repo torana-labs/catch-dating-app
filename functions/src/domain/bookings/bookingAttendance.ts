@@ -15,6 +15,7 @@ import {
   readCatchBookingRoster,
   writeCatchBookingRoster,
 } from "../../events/catchBookingRoster";
+import {updateEventBookingCounters} from "../events/eventDocumentWrites";
 
 /** Reads done; `apply` stages the attendance writes in the same transaction. */
 export interface PreparedBookingAttendance {
@@ -53,7 +54,7 @@ export async function prepareMarkBookingAttended(params: {
     apply: ({bookingSnap, organizerId}) => {
       const booking = bookingSnap.data() as
         Partial<EventBookingDocument> | undefined;
-      tx.update(db.collection("events").doc(eventId), {
+      updateEventBookingCounters(tx, db.collection("events").doc(eventId), {
         checkedInCount: admin.firestore.FieldValue.increment(1),
       });
       const attendance = eventParticipationPatch({

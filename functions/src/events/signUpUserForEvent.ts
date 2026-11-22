@@ -61,6 +61,10 @@ import {
   inviteAttributionWriteFields,
   InviteAttribution,
 } from "./inviteLinks";
+import {
+  type EventBookingCountersPatch,
+  updateEventBookingCounters,
+} from "../domain/events/eventDocumentWrites";
 
 /**
  * Core sign-up business logic — shared by signUpForFreeEvent (free events),
@@ -451,7 +455,7 @@ export async function signUpUserForEvent(
       "eventSignup";
     const notificationCopy =
       eventActivityNotificationCopy(notificationType, event);
-    const eventUpdate: Record<string, unknown> = {
+    const eventUpdate: EventBookingCountersPatch = {
       bookedCount: seatMode === "ready" ? nextBookedCount :
         admin.firestore.FieldValue.increment(1),
       ...(gender ? {
@@ -489,7 +493,7 @@ export async function signUpUserForEvent(
     guestLink?.apply();
     applySeatIdentity?.();
     scheduleClaim.apply();
-    tx.update(eventRef, eventUpdate);
+    updateEventBookingCounters(tx, eventRef, eventUpdate);
     const attribution = attributionForSignup({
       existingParticipation,
       candidate: options.inviteAttribution,

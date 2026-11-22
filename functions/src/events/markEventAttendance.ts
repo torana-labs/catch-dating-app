@@ -45,6 +45,7 @@ import {
 } from "../shared/notifications";
 import {readConsumerPushToken} from "../shared/consumerPushToken";
 import {deferCompanionReadyCue} from "../eventSuccess/deferredGuestCues";
+import {updateEventBookingCounters} from "../domain/events/eventDocumentWrites";
 
 interface MarkEventAttendanceDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -162,7 +163,7 @@ export async function markEventAttendanceHandler(
     const alreadyAttended = existingParticipation.status === "attended";
     const rosterSlot = await readCatchBookingRoster({db, tx, eventId,
       uid: userId, verifiedPhone: () => loadVerifiedRosterPhone(userId)});
-    tx.update(eventRef, {
+    updateEventBookingCounters(tx, eventRef, {
       checkedInCount: deps.increment(alreadyAttended ? -1 : 1),
     });
     const attendance = eventParticipationPatch({
