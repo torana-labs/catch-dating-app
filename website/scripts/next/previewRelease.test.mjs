@@ -152,6 +152,7 @@ test("preview workflow keeps the tested build uncredentialed and never promotes 
   assert.match(deploy, /--min-instances 0 --max-instances 1/u);
   assert.match(deploy, /CATCH_WEBSITE_STAGE=preview/u);
   assert.match(deploy, /hosting:channel:deploy next-candidate --expires 3d/u);
+  assert.match(deploy, /--no-authorized-domains/u);
   assert.doesNotMatch(deploy, /firebase deploy|hosting:clone|--force|CATCH_WEBSITE_STAGE=production/u);
   // Main's checkout supplies the scripts; the release source is checked out
   // beside it, before any gate, build or credential, and names everything the
