@@ -112,11 +112,11 @@ async function inbound(h: ReturnType<typeof harness>, eventId: string,
 
 const followUpRequest = (clientRequestId = "req-follow-1",
   token: Record<string, unknown> = {support: true}) => ({
-  auth: {uid: "ops-1", token},
-  app: {appId: "admin"},
-  data: {purpose: "hostLeadFollowUp", intentId: HOST_LEAD, clientRequestId},
-  rawRequest: {headers: {}},
-}) as never;
+    auth: {uid: "ops-1", token},
+    app: {appId: "admin"},
+    data: {purpose: "hostLeadFollowUp", intentId: HOST_LEAD, clientRequestId},
+    rawRequest: {headers: {}},
+  }) as never;
 
 const refusedWith = (pattern: RegExp) => (error: unknown) =>
   error instanceof HttpsError && pattern.test(error.message);

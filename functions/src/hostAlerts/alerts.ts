@@ -2,6 +2,7 @@ import {createHash} from "node:crypto";
 import {assertTransactionalEmail, type TransactionalEmail} from
   "../email/emailProvider";
 import {BRAND} from "../shared/generated/brand";
+import {isInternalTestLead} from "../waitlist/internalTestLead";
 import type {HostOperatorAlertDocument} from
   "../shared/generated/firestoreAdminTypes";
 
@@ -202,19 +203,6 @@ function joined(...values: unknown[]): string | null {
 }
 
 /**
- * Reserved test domains and the explicit internal QA markers. Catch's own
- * automatic WhatsApp to a lead skips these too.
- * @param {object} intent The salesInboundIntents document.
- * @return {boolean} True for an internal test lead.
- */
-export function isInternalTest(intent: Data): boolean {
-  return /^internal_qa_/iu.test(String(intent.submissionId)) ||
-    /^\[QA\]/iu.test(String(intent.fullName ?? "").trim()) ||
-    /@(?:[^@]*\.)?(?:example\.(?:com|net|org|test)|invalid|test)$/iu
-      .test(String(intent.email ?? ""));
-}
-
-/**
  * The alert for a new salesInboundIntents row, or null when it needs none:
  * partner nominations (a signed-in partner already told staff), city alert
  * sign-ups (nothing to answer), rows not awaiting review, and internal QA.
@@ -228,7 +216,7 @@ export function salesLeadAlert(intentId: string, value: unknown):
   const at = millis(intent?.createdAt);
   if (!intent || at === null || !/^[a-f0-9]{64}$/u.test(intentId) ||
       intent.status !== "needs_identity_review" ||
-      isInternalTest(intent)) return null;
+      isInternalTestLead(intent)) return null;
   const application = record(intent.hostApplication) ?? {};
   const programme = record(intent.programmeApplication) ?? {};
   const lead = record(intent.lead) ?? {};

@@ -2,7 +2,7 @@ import {getFirestore, Timestamp, type Firestore} from
   "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import {defineBoolean, defineString} from "firebase-functions/params";
-import {isInternalTest} from "../hostAlerts/alerts";
+import {isInternalTestLead} from "../waitlist/internalTestLead";
 import {
   defaultSupportInboxDeps,
   type SupportInboxDeps,
@@ -88,7 +88,7 @@ export function hostAppLinkRecipient(value: unknown): string | null {
       intent.status !== "needs_identity_review" ||
       record(lead.appLink)?.app !== "host" ||
       consent?.version !== HOST_APP_LINK_CONSENT_VERSION ||
-      isInternalTest(intent)) return null;
+      isInternalTestLead(intent)) return null;
   const phone = intent.phone;
   return typeof phone === "string" && /^\+[1-9][0-9]{6,14}$/u.test(phone) ?
     phone : null;
