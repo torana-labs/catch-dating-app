@@ -40,6 +40,7 @@ class HostSetupDetailsBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final formats = state.formats;
+    final signupSource = state.draft.signupSource;
     return CatchPageBody.screen(
       gap: CatchPageBodyGap.tight,
       children: [
@@ -121,9 +122,50 @@ class HostSetupDetailsBody extends StatelessWidget {
             ),
           ],
         ),
-        _SignupSourceQuestion(
-          selected: state.draft.signupSource,
-          onChanged: onSignupSourceChanged,
+        // How they heard: one tap on an answer, or Skip, which stays picked
+        // until an answer is and saves nothing.
+        CatchStack(
+          children: [
+            CatchStack(
+              gap: CatchStackGap.g4,
+              align: CatchStackAlign.start,
+              children: [
+                CatchText(
+                  l10n.hostOnboardingSignupSourceTitle,
+                  variant: CatchTextVariant.labelAction,
+                ),
+                CatchText(
+                  l10n.hostOnboardingSignupSourceNote,
+                  variant: CatchTextVariant.bodySmall,
+                  tone: CatchTextTone.secondary,
+                ),
+              ],
+            ),
+            CatchStack(
+              direction: CatchStackDirection.row,
+              gap: CatchStackGap.g8,
+              wrap: true,
+              children: [
+                for (final source in OrganizerSignupSource.values)
+                  CatchChip.choice(
+                    key: ValueKey<String>(
+                      'host-setup-signup-source-${source.name}',
+                    ),
+                    label: _signupSourceLabel(l10n, source),
+                    selected: signupSource == source,
+                    mode: CatchChipMode.single,
+                    onPressed: () => onSignupSourceChanged(source),
+                  ),
+                CatchChip.choice(
+                  key: const ValueKey<String>('host-setup-signup-source-skip'),
+                  label: l10n.hostOnboardingSignupSourceSkip,
+                  selected: signupSource == null,
+                  mode: CatchChipMode.single,
+                  onPressed: () => onSignupSourceChanged(null),
+                ),
+              ],
+            ),
+          ],
         ),
         HostSetupPageLinkTile(
           link: l10n.hostOnboardingDetailsPagePending,
@@ -131,66 +173,6 @@ class HostSetupDetailsBody extends StatelessWidget {
         ),
         if (createError != null)
           CatchNotice.inline(body: createError!, tone: CatchNoticeTone.danger),
-      ],
-    );
-  }
-}
-
-/// "How did you hear about Catch?": one tap on an answer, or Skip, which
-/// stays picked until an answer is and saves nothing.
-class _SignupSourceQuestion extends StatelessWidget {
-  const _SignupSourceQuestion({
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final OrganizerSignupSource? selected;
-  final ValueChanged<OrganizerSignupSource?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return CatchStack(
-      children: [
-        CatchStack(
-          gap: CatchStackGap.g4,
-          align: CatchStackAlign.start,
-          children: [
-            CatchText(
-              l10n.hostOnboardingSignupSourceTitle,
-              variant: CatchTextVariant.labelAction,
-            ),
-            CatchText(
-              l10n.hostOnboardingSignupSourceNote,
-              variant: CatchTextVariant.bodySmall,
-              tone: CatchTextTone.secondary,
-            ),
-          ],
-        ),
-        CatchStack(
-          direction: CatchStackDirection.row,
-          gap: CatchStackGap.g8,
-          wrap: true,
-          children: [
-            for (final source in OrganizerSignupSource.values)
-              CatchChip.choice(
-                key: ValueKey<String>(
-                  'host-setup-signup-source-${source.name}',
-                ),
-                label: _signupSourceLabel(l10n, source),
-                selected: selected == source,
-                mode: CatchChipMode.single,
-                onPressed: () => onChanged(source),
-              ),
-            CatchChip.choice(
-              key: const ValueKey<String>('host-setup-signup-source-skip'),
-              label: l10n.hostOnboardingSignupSourceSkip,
-              selected: selected == null,
-              mode: CatchChipMode.single,
-              onPressed: () => onChanged(null),
-            ),
-          ],
-        ),
       ],
     );
   }
