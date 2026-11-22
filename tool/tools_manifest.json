@@ -5024,6 +5024,31 @@
       }
     },
     {
+      "id": "docs:function-catalog",
+      "category": "audit",
+      "path": "tool/docs/function_catalog.mjs",
+      "impactPaths": [
+        "tool/docs/function_catalog.test.mjs",
+        "docs/backend_operation_catalog/functions/**"
+      ],
+      "command": "node tool/docs/function_catalog.mjs --check",
+      "surface": "local-read",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "index",
+        "setup": [
+          "node"
+        ]
+      },
+      "description": "Validates the per-area Cloud Functions inventory files under docs/backend_operation_catalog/functions/ (area-style name, exact header, five cells per row, one trailing newline) and prints the combined inventory table, which is never committed.",
+      "checks": [
+        "node --check tool/docs/function_catalog.mjs",
+        "node --test tool/docs/function_catalog.test.mjs",
+        "node tool/docs/function_catalog.mjs --check"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "docs:metadata",
       "category": "audit",
       "path": "tool/docs/check_doc_metadata.mjs",
