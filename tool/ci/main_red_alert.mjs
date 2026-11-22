@@ -15,6 +15,7 @@ import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {REPORTING_LANES, REQUIRED_CI_JOB, laneOfJob} from "./required_ci_floor.mjs";
+import {MOBILE_BLOCK_JOBS} from "./golden_policy.mjs";
 
 export const ISSUE_TITLE = "Main CI is red";
 export const FLOOR_EXIT_TITLE = "Main CI green for 7 days: reporting lanes can block again";
@@ -112,11 +113,27 @@ export function decideAlert({run, jobs, openIssue, nightlies = null, owed = null
 }
 
 /**
+ * Whether failed jobs are only the macOS golden and capture jobs, with the
+ * Required CI job that fails because of them. Owner decision, 22 Nov 2026:
+ * those failures block mobile releases (tool/ci/golden_policy.mjs) but do not
+ * restart the sprint floor's green week.
+ */
+export function onlyMobileBlockFailures(names) {
+  const rest = names.filter((name) => name !== REQUIRED_CI_JOB);
+  return rest.length > 0 && rest.every((name) => MOBILE_BLOCK_JOBS.includes(name));
+}
+
+/** The names of a run's failed jobs. */
+export const failedJobNames = (jobs) => jobs.filter((job) => FAILED.has(job.conclusion)).map((job) => job.name);
+
+/**
  * Whether the sprint floor can end. Owner decision, 14 Nov 2026: the reporting
  * lanes (REPORTING_LANES) block merges again once main stays green for a week.
  * Green means every completed main push and nightly CI run concluded success,
  * reporting lanes included; cancelled and skipped runs neither break nor make
- * the streak. Pure, so every case is testable.
+ * the streak. A run whose only failures were the macOS golden and capture jobs
+ * (onlyMobileBlockFailures) does not break it either (owner decision, 22 Nov
+ * 2026). Pure, so every case is testable.
  *
  * @param {object} input
  * @param {Array<{created_at:string, conclusion:string|null, status:string, event:string}>} input.runs
@@ -126,8 +143,11 @@ export function decideAlert({run, jobs, openIssue, nightlies = null, owed = null
  * @param {boolean} [input.alertOpen] Whether a "Main CI is red" issue is still open: main
  *   is not proven green while a failed job has not passed again.
  * @param {readonly string[]} [input.reportingLanes]
+ * @param {ReadonlySet<number>} [input.mobileOnly] Ids of failed runs whose only failures were the
+ *   macOS golden and capture jobs.
  */
-export function decideFloorExit({runs, now, openIssue, alertOpen = false, reportingLanes = REPORTING_LANES}) {
+export function decideFloorExit({runs, now, openIssue, alertOpen = false, reportingLanes = REPORTING_LANES,
+  mobileOnly = new Set()}) {
   if (reportingLanes.length === 0 || openIssue) return {action: "none"};
   if (alertOpen) return {action: "none", reason: "alert_open"};
   const since = now - FLOOR_EXIT_DAYS * DAY;
@@ -135,7 +155,7 @@ export function decideFloorExit({runs, now, openIssue, alertOpen = false, report
     !["cancelled", "skipped", "neutral", null].includes(run.conclusion));
   // The history must reach past the window, or a red run just before it could hide.
   if (!counted.some((run) => Date.parse(run.created_at) < since)) return {action: "none", reason: "history_too_short"};
-  const lastRed = counted.filter((run) => run.conclusion !== "success")
+  const lastRed = counted.filter((run) => run.conclusion !== "success" && !mobileOnly.has(Number(run.id)))
     .reduce((latest, run) => Math.max(latest, Date.parse(run.created_at)), -Infinity);
   if (lastRed >= since) return {action: "none", reason: "red_within_window"};
   const nightlies = counted.filter((run) => run.event === "schedule" && Date.parse(run.created_at) >= since).length;
@@ -300,7 +320,10 @@ function main() {
   }
   console.log(`Main CI alert: ${decision.action}${decision.reason ? ` (${decision.reason})` : ""} ` +
     `(run ${runId}, ${run.conclusion})`);
-  if (run.conclusion === "success") floorExit(repository, issues, openIssue && decision.action !== "close");
+  // An alert that owes only the golden and capture jobs does not hold the floor.
+  const owedAfter = (decision.body && owedFromIssue([decision.body])) || owed;
+  const mobileOwed = Boolean(owedAfter && !owedAfter.unknown && onlyMobileBlockFailures(owedAfter.jobs));
+  if (run.conclusion === "success") floorExit(repository, issues, Boolean(openIssue && decision.action !== "close" && !mobileOwed));
   if (run.event === "push") {
     try {
       uncoveredTip(repository);
@@ -353,7 +376,21 @@ function floorExit(repository, issues, alertOpen) {
     `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&created=%3E%3D${from}&per_page=100`]))
     .flatMap((page) => page.workflow_runs ?? []);
   const openIssue = issues.find((issue) => issue.title === FLOOR_EXIT_TITLE && !issue.pull_request) ?? null;
-  const decision = decideFloorExit({runs, now, openIssue, alertOpen});
+  // Read the jobs of failed runs in the window; a run that cannot be read still counts as red.
+  const since = now - FLOOR_EXIT_DAYS * DAY;
+  const mobileOnly = new Set();
+  for (const run of runs) {
+    if (!["push", "schedule"].includes(run.event) || run.status !== "completed" || !FAILED.has(run.conclusion) ||
+      Date.parse(run.created_at) < since) continue;
+    try {
+      const jobs = JSON.parse(gh(["api", "--paginate", "--slurp",
+        `repos/${repository}/actions/runs/${run.id}/jobs?per_page=100&filter=latest`])).flatMap((page) => page.jobs ?? []);
+      if (onlyMobileBlockFailures(failedJobNames(jobs))) mobileOnly.add(Number(run.id));
+    } catch {
+      // Counted as red.
+    }
+  }
+  const decision = decideFloorExit({runs, now, openIssue, alertOpen, mobileOnly});
   if (decision.action === "open") {
     gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
   }
