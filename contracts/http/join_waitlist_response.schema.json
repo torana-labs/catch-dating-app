@@ -59,7 +59,8 @@
                 "story",
                 "referral",
                 "org_contact",
-                "city_alerts"
+                "city_alerts",
+                "app_link"
               ]
             },
             "isNew": {
