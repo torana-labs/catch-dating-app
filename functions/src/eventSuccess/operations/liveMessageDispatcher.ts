@@ -3,7 +3,8 @@ import {MetaWhatsappProvider} from
   "../../organizers/organizerWhatsappProvider";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
 import {GuestLinkKeyStore} from "./guestLinkKeyStore";
-import type {GuestLinkSigningKeys} from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import {threadIdentity} from "./guestRecords";
 import {hasAutomaticDelivery} from "./deliveryWorkRecords";
 import type {MessageRecord} from "./messageOutbox";

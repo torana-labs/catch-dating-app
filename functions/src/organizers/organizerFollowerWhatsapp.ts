@@ -6,7 +6,7 @@ import type {
   OrganizerSenderConnectionDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {organizerFollowerWhatsappRoute} from
-  "../communications/communicationRoutes";
+  "../platform/delivery/communicationRoutes";
 
 /**
  * Follower updates on WhatsApp (route organizerFollowerWhatsapp).

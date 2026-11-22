@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import type {FakeData} from "../../shared/testing/programFirestore";
 import {baseSeed, now} from "../../shared/testing/programFixtures";
-import {hashEndpoint} from "../../organizers/organizerCampaignModel";
+import {hashEndpoint} from "../../platform/delivery/endpointHash";
 import type {OrganizerMessagingWebhookEventDocument} from
   "../../shared/generated/firestoreAdminTypes";
 

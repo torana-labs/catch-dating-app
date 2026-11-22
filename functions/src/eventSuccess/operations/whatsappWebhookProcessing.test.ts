@@ -14,7 +14,8 @@ import {WhatsappDeliveryStore} from "./whatsappDeliveryStore";
 import {WhatsappReplyStore} from "./whatsappReplyStore";
 import {WHATSAPP_DISPATCHES} from "./whatsappSpend";
 import {whatsappNativeReplyId} from "./whatsappReplyProtocol";
-import {whatsappStatusCorrelation} from "./whatsappDeliveryProtocol";
+import {whatsappStatusCorrelation} from
+  "../../platform/delivery/whatsappDeliveryProtocol";
 import {
   EventWhatsappWebhookProcessor, isEventAssistanceWhatsappEvent,
   onEventAssistanceWhatsappEventCreated, processEventAssistanceWhatsappEvent,

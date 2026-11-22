@@ -34,7 +34,7 @@ import {
   metaTemplateFromDocument,
 } from "./organizerWhatsappProvider";
 import {whatsappStatusCorrelation} from
-  "../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../platform/delivery/whatsappDeliveryProtocol";
 import type {AutomationWhatsappDispatchDocument} from
   "../shared/generated/automationWhatsappDispatchDocument";
 import {
@@ -43,10 +43,10 @@ import {
 } from "../shared/organizerCommunicationPreferences";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {
-  hashEndpoint,
   organizerCampaignFrequencyCapMillis,
   organizerContactChannelStateId,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {
   organizerAutomationDueMillis, readOrganizerAutomationEventTx,
 } from "./organizerAutomationSource";

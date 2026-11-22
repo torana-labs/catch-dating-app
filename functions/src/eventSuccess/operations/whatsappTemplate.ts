@@ -8,8 +8,9 @@ import type {MetaQuickReplyPayload, MetaTemplateSnapshot} from
   "../../organizers/organizerWhatsappProvider";
 import {operationContentHash} from "../../operations/durableActions";
 import {Grant, parseGrant, threadIdentity} from "./guestRecords";
-import {grantSecret, GuestLinkSigningKeys, matchesGuestSecret} from
-  "./guestLinkTokens";
+import {grantSecret, matchesGuestSecret} from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import type {MessageRecord} from "./messageOutbox";
 import {parseMessageIntent} from "./messageProtocol";
 import {sameMessageContext} from "./messagingPolicy";

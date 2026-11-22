@@ -32,8 +32,7 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {GuestLinkKeyStore} from
   "../eventSuccess/operations/guestLinkKeyStore";
-import type {GuestLinkSigningKeys} from
-  "../eventSuccess/operations/guestLinkTokens";
+import type {GuestLinkSigningKeys} from "../platform/guestLinkSigningKeys";
 
 /**
  * Guest ticket codes. A code is stateless: it names one attendee row of one

@@ -8,7 +8,8 @@ import type {FirestoreMessageOutbox} from "./firestoreMessageOutbox";
 import type {DeliveryDecision} from "./messagingPolicy";
 import {WhatsappDispatchStore, WhatsappSenderConfig} from
   "./whatsappDispatchStore";
-import {whatsappStatusCorrelation} from "./whatsappDeliveryProtocol";
+import {whatsappStatusCorrelation} from
+  "../../platform/delivery/whatsappDeliveryProtocol";
 
 export type WhatsappSubmissionOutcome =
   {kind: "accepted"; providerMessageId: string} | {kind: "unknown"};

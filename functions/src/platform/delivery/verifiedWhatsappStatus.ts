@@ -1,13 +1,13 @@
 import {createHash} from "node:crypto";
 import type {Firestore} from "firebase-admin/firestore";
 import {validateOrganizerMessagingWebhookEventDocument} from
-  "../shared/generated/validators/organizerMessagingWebhookEventDocument";
+  "../../shared/generated/validators/organizerMessagingWebhookEventDocument";
 import {validateOrganizerCampaignWebhookReceiptDocument} from
-  "../shared/generated/validators/organizerCampaignWebhookReceiptDocument";
+  "../../shared/generated/validators/organizerCampaignWebhookReceiptDocument";
 import {
   whatsappAttemptFromStatus,
   whatsappStatusCorrelation,
-} from "../eventSuccess/operations/whatsappDeliveryProtocol";
+} from "./whatsappDeliveryProtocol";
 
 interface DispatchProof {
   attemptId: string;

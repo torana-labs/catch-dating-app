@@ -18,13 +18,15 @@ import type {CampaignWhatsappDispatchDocument}
 import type {OrganizerCampaignRecipientDocument}
   from "../shared/generated/firestoreAdminTypes";
 import {whatsappStatusCorrelation} from
-  "../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../platform/delivery/whatsappDeliveryProtocol";
 import {whatsappEndpointHash} from
   "../eventSuccess/operations/whatsappReplyProtocol";
 import {MetaProviderError} from "./organizerWhatsappProvider";
 import {
-  hashCanonical, hashEndpoint, organizerContactChannelStateId,
+  hashCanonical,
+  organizerContactChannelStateId,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
 

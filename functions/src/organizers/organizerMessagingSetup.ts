@@ -38,10 +38,10 @@ import {requireOrganizerManager} from
 import {checkRateLimit, RateLimitConfig} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
-  hashEndpoint,
   organizerMessageTemplateId,
   organizerSenderConnectionId,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {
   MetaTemplateSnapshot,
   MetaWhatsappProvider,

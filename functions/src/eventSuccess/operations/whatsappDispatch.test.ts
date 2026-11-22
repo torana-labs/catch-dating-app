@@ -19,7 +19,8 @@ import {WHATSAPP_CONSENT_RECEIPTS,
   parseWhatsappConsentReceipt} from "./whatsappConsent";
 import {EventWhatsappWorker} from "./whatsappWorker";
 import {WhatsappDeliveryStore} from "./whatsappDeliveryStore";
-import {whatsappStatusCorrelation} from "./whatsappDeliveryProtocol";
+import {whatsappStatusCorrelation} from
+  "../../platform/delivery/whatsappDeliveryProtocol";
 import {WhatsappReplyStore} from "./whatsappReplyStore";
 import {WhatsappWithdrawalStore} from "./whatsappWithdrawalStore";
 import {WHATSAPP_WITHDRAWAL_GRANTS} from "./whatsappWithdrawalRecords";

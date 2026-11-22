@@ -462,7 +462,7 @@ test("signed WhatsApp failure unlocks one SMS fallback",
   async () => {
     const {createHash} = await import("node:crypto");
     const {whatsappStatusCorrelation} = await import(
-      "../../eventSuccess/operations/whatsappDeliveryProtocol.js"
+      "../../platform/delivery/whatsappDeliveryProtocol.js"
     );
     const {ApprovalWhatsappReceipts} = await import("./whatsappReceipts.js");
     const h = await fixture();
@@ -544,7 +544,7 @@ test("a later endpoint STOP suppresses SMS after WhatsApp technical failure",
       "../../shared/organizerWhatsappStops.js"
     );
     const {hashEndpoint} = await import(
-      "../../organizers/organizerCampaignModel.js"
+      "../../platform/delivery/endpointHash.js"
     );
     const h = await fixture();
     await h.optIn();

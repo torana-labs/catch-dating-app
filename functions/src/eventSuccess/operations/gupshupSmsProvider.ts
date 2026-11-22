@@ -1,23 +1,26 @@
 import {parseSmsCredentials, type SmsCredentials,
   GupshupSmsTransport,
   type SmsSubmissionOutcome,
-} from "../../messaging/gupshupSmsTransport";
+} from "../../platform/delivery/gupshupSmsTransport";
 export {parseSmsCredentials, type SmsCredentials} from
-  "../../messaging/gupshupSmsTransport";
+  "../../platform/delivery/gupshupSmsTransport";
 import {SecretVersionReferenceGuard} from "../../shared/secretVersionReference";
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {operationContentHash} from "../../operations/durableActions";
 import type {LiveDispatchPermit} from "./messageOutbox";
 import type {RenderedSms, SmsConfig} from "./smsProtocol";
-import {parseSmsConfig, smsEndpointId, smsSegments} from "./smsProtocol";
+import {parseSmsConfig, smsEndpointId} from "./smsProtocol";
+import {smsSegments} from "../../platform/delivery/smsSegments";
 import {parseDeliveryAttempt} from "./messageProtocol";
 import {
   smsProviderCorrelation,
   smsReportTokenHash,
-} from "./smsReportCredentials";
+} from "../../platform/delivery/smsReportCredentials";
 
-export type {SmsSubmissionOutcome} from "../../messaging/gupshupSmsTransport";
-export {parseGupshupSubmission} from "../../messaging/gupshupSmsTransport";
+export type {SmsSubmissionOutcome} from
+  "../../platform/delivery/gupshupSmsTransport";
+export {parseGupshupSubmission} from
+  "../../platform/delivery/gupshupSmsTransport";
 
 /** Exact numbered secret version; no token is stored in an outbox or error. */
 export class SmsCredentialStore {

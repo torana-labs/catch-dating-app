@@ -18,8 +18,8 @@ import {organizerRelationshipId} from "../shared/relationshipDocuments";
 import {
   emptyCampaignAudienceCounts,
   hashCanonical,
-  hashEndpoint,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {
   effectiveFollowerWhatsappStatus,
   followerUpdateTemplateReady,
