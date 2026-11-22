@@ -7,9 +7,11 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_manifest_map
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_import_body.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_import_detach_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -41,6 +43,9 @@ class _HostProgrammeImportScreenState
   Object? _error;
   bool _pending = false;
 
+  /// The party-blocked journey whose Detach awaits confirmation.
+  ProgramManifestPartyJourney? _confirming;
+
   ProgramManifestMappedRows get _mapped {
     final table = _table;
     if (table == null) {
@@ -61,6 +66,7 @@ class _HostProgrammeImportScreenState
       _error = null;
       _preview = null;
       _committed = null;
+      _confirming = null;
     });
     try {
       final picked = await ref
@@ -114,6 +120,26 @@ class _HostProgrammeImportScreenState
     }
   }
 
+  /// Detaches [journey] from its travel party, then checks the list again
+  /// so the row it blocked clears. A failure shows as a notice and keeps
+  /// the confirmation open.
+  Future<void> _detach(ProgramManifestPartyJourney journey) async {
+    try {
+      await HostProgrammeImportDetachCommands.detachMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostProgrammeImportDetachCommandsProvider.notifier)
+            .detach(programId: widget.programId, journey: journey),
+      );
+    } on Object {
+      // The mutation's error shows as a notice.
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _confirming = null);
+    await _run('preview');
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -125,6 +151,19 @@ class _HostProgrammeImportScreenState
     final preview = _preview;
     final committed = _committed;
     final error = _error;
+    final canDetach = ref.watch(
+      hostProgrammeImportCanDetachProvider(widget.programId),
+    );
+    final detaching = ref
+        .watch(HostProgrammeImportDetachCommands.detachMutation)
+        .isPending;
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [HostProgrammeImportDetachCommands.detachMutation],
+      errorContext: AppErrorContext.event,
+    );
+    final confirming = _confirming;
     void close() => context.canPop() ? context.pop() : null;
     return CatchRoot(
       format: CatchFormat.nightsOut,
@@ -185,7 +224,19 @@ class _HostProgrammeImportScreenState
           onMap: (field, column) => setState(() {
             _mapping = {..._mapping, field: column};
             _preview = null;
+            _confirming = null;
           }),
+          detach: canDetach
+              ? HostProgrammeImportDetach(
+                  confirmingLegId: confirming?.legId,
+                  pending: detaching || _pending,
+                  onAsk: (journey) => setState(() => _confirming = journey),
+                  onConfirm: () {
+                    if (confirming != null) unawaited(_detach(confirming));
+                  },
+                  onCancel: () => setState(() => _confirming = null),
+                )
+              : null,
         ),
       ),
     );

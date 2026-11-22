@@ -40528,6 +40528,36 @@ abstract class AppLocalizations {
     required int updated,
   });
 
+  /// Button under a guest list check row blocked by the journey's travel party.
+  ///
+  /// In en, this message translates to:
+  /// **'Detach from party'**
+  String get hostProgrammeImportDetach;
+
+  /// Title of the in-page confirmation before detaching a journey from its travel party.
+  ///
+  /// In en, this message translates to:
+  /// **'Detach from their party?'**
+  String get hostProgrammeImportDetachTitle;
+
+  /// Body of the in-page confirmation before detaching a journey from its travel party.
+  ///
+  /// In en, this message translates to:
+  /// **'The rest of the party still rides together. We check the list again after.'**
+  String get hostProgrammeImportDetachBody;
+
+  /// Confirms detaching a journey from its travel party.
+  ///
+  /// In en, this message translates to:
+  /// **'Detach'**
+  String get hostProgrammeImportDetachConfirm;
+
+  /// Closes the detach confirmation without changing the party.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep in party'**
+  String get hostProgrammeImportDetachKeep;
+
   /// Formats live top bar back label.
   ///
   /// In en, this message translates to:
