@@ -16,6 +16,7 @@
     "upsertTransportVendor",
     "upsertProgramTravelLeg",
     "upsertProgramTravelParty",
+    "detachProgramTravelLeg",
     "setProgramTravelReadiness",
     "markProgramTripArrived",
     "voidProgramTrip",

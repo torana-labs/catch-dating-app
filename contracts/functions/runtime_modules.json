@@ -200,6 +200,7 @@
     "DeleteEventReviewCallablePayload",
     "DeleteOrganizerFormDraftCallablePayload",
     "DeleteProgramGuestGroupCallablePayload",
+    "DetachProgramTravelLegCallablePayload",
     "DisableEventInviteLinkCallablePayload",
     "DisconnectOrganizerProviderCallablePayload",
     "DispatchProgramTripCallablePayload",

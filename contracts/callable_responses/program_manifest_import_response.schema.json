@@ -80,6 +80,27 @@
           "message": {
             "type": "string",
             "maxLength": 280
+          },
+          "partyJourney": {
+            "type": "object",
+            "description": "The existing journey whose party membership blocks this row, with the revision detachProgramTravelLeg expects. Present only on party-blocked rows.",
+            "additionalProperties": false,
+            "required": [
+              "legId",
+              "revision"
+            ],
+            "properties": {
+              "legId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            }
           }
         }
       }

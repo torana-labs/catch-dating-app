@@ -5,7 +5,8 @@ import type {
   ProgramPickupPointDocument, ProgramTravelLegDocument,
   ProgramTravelPartyDocument, TransportOperationReceiptDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import {buildManifestPlans, type ManifestRow} from "./programManifestPlan";
+import {buildManifestPlans, type ManifestRow, type RowIssue} from
+  "./programManifestPlan";
 import {buildManifestWrites} from "./programManifestWrites";
 
 type Plan = ReturnType<typeof buildManifestPlans>;
@@ -127,14 +128,19 @@ export function buildManifestChunk(args: {
     }
     if (issues.length > 0) {
       for (const index of indices) {
-        const own = issues.filter((issue) => issue.index === index);
-        const messages = new Set(own.map((issue) => issue.message));
-        if (messages.size === 0) {
-          messages.add("This travel party was not imported because " +
-            "another row needs correction.");
+        // One issue per message, keeping the first one's detachable journey.
+        const own = new Map<string, RowIssue>();
+        for (const issue of issues) {
+          if (issue.index === index && !own.has(issue.message)) {
+            own.set(issue.message, issue);
+          }
         }
-        planned.issues.push(...[...messages].map((message) =>
-          ({index, message})));
+        if (own.size === 0) {
+          const message = "This travel party was not imported because " +
+            "another row needs correction.";
+          own.set(message, {index, message});
+        }
+        planned.issues.push(...own.values());
       }
     } else {
       for (const write of groupWrites) {
