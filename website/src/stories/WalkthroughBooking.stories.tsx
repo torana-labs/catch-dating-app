@@ -5,7 +5,7 @@ import walkthroughPage from "@content/playbook/pages/host/walkthrough.json";
 import type {PlaybookLeadForm} from "@content/playbook/playbookContract";
 import {walkthroughBookingNode} from "../features/walkthroughs/WalkthroughBooking";
 import {provideWalkthroughDeps, type WalkthroughDeps} from "../features/walkthroughs/walkthroughClientContext";
-import {walkthroughManagePageNode} from "../features/walkthroughs/WalkthroughManagePage";
+import {WalkthroughManagePage} from "../features/walkthroughs/WalkthroughManagePage";
 import {PageShell} from "../shared/site";
 import {
   scriptedWalkthroughClient,
@@ -109,13 +109,32 @@ export const Taken360 = story(steps.Taken, 360);
 export const Empty360 = story(steps.Empty, 360);
 export const Closed360 = story(steps.Closed, 360);
 
-/** The manage page as the confirmation's link opens it. */
-export const Manage360: Story = {
-  name: "Manage a booking · 360",
-  render: () => (
-    <div style={{margin: "0 auto", width: 360}}>
-      {provideWalkthroughDeps({client: scriptedWalkthroughClient({manage: [walkthroughManagedFor({confirmed: true})]}).client, timeZone: "Asia/Kolkata"},
-        walkthroughManagePageNode({search: `?booking=${walkthroughFixtureBookingId}`, hash: `#t=${walkthroughFixtureToken}`}))}
+/** The manage page's review states, as routes.json walkthrough_manage lists them. */
+const manageStates = ["booked", "confirmed", "cancelled", "sign-in", "not-found"];
+const manageRoute = {catchRoute: {id: "walkthrough_manage", path: "/start/walkthrough/manage/", reviewStates: manageStates,
+  stateCoverage: {storybook: manageStates, manual: []}}};
+
+function ManageAt({width, deps, hash = `#t=${walkthroughFixtureToken}`}: {width: 360 | 1280; deps: () => WalkthroughDeps; hash?: string}) {
+  return (
+    <div style={{margin: "0 auto", width}}>
+      {provideWalkthroughDeps(deps(), <WalkthroughManagePage hash={hash} search={`?booking=${walkthroughFixtureBookingId}`} />)}
     </div>
-  ),
-};
+  );
+}
+
+const manage = (name: string, deps: () => WalkthroughDeps, width: 360 | 1280 = 360, hash?: string): Story => ({
+  name: `Manage: ${name} · ${width}`,
+  parameters: manageRoute,
+  render: () => <ManageAt deps={deps} hash={hash} width={width} />,
+});
+
+/** The manage page as the confirmation's link opens it. */
+export const Manage360 = manage("booked", () => ({client: scriptedWalkthroughClient().client, timeZone: "Asia/Kolkata"}));
+export const ManageConfirmed1280 = manage("confirmed", () => ({client: scriptedWalkthroughClient({manage: [walkthroughManagedFor({confirmed: true})]}).client,
+  timeZone: "Asia/Kolkata"}), 1280);
+export const ManageCancelled360 = manage("cancelled", () => ({client: scriptedWalkthroughClient({manage: [
+  walkthroughManagedFor({status: "cancelled", canChange: false})]}).client, timeZone: "Asia/Kolkata"}));
+export const ManageSignIn360 = manage("sign-in", () => ({client: scriptedWalkthroughClient({manage: [
+  walkthroughRefusal("permission-denied", "not_yours")]}).client}), 360, "");
+export const ManageNotFound360 = manage("not-found", () => ({client: scriptedWalkthroughClient({manage: [
+  walkthroughRefusal("not-found", "not_found")]}).client}));

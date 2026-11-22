@@ -66,6 +66,7 @@ writeRoute("/listings/request/", staticRouteMeta(websiteMeta, "listing_requests"
 writeRoute("/listings/policy/", staticRouteMeta(websiteMeta, "listing_policy", baseUrl));
 writeRoute("/listings/notice-and-takedown/", staticRouteMeta(websiteMeta, "takedown_policy", baseUrl));
 writeRoute("/host/billing/", staticRouteMeta(websiteMeta, "host_billing", baseUrl));
+writeRoute("/start/walkthrough/manage/", staticRouteMeta(websiteMeta, "walkthrough_manage", baseUrl));
 writeRoute("/event-update/", staticRouteMeta(websiteMeta, "event_assistance", baseUrl));
 writeRoute("/rehearse/", staticRouteMeta(websiteMeta, "event_rehearsal", baseUrl));
 writeRoute("/invite/", staticRouteMeta(websiteMeta, "event_invite", baseUrl));

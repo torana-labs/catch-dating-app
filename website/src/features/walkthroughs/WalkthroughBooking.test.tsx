@@ -10,6 +10,7 @@ import type {PlaybookLeadForm} from "../../content/playbook/playbookContract";
 import {
   scriptedWalkthroughClient,
   walkthroughBookingClosed,
+  walkthroughFixtureBookingId,
   walkthroughFixturePhone,
   walkthroughNoSlots,
   walkthroughOpenSlots,
@@ -109,6 +110,10 @@ describe("walkthrough slot picker", () => {
     const done = await screen.findByRole("heading", {name: "You’re booked for Mon 23 Nov, 4:00 PM IST."});
     await waitFor(() => expect(document.activeElement).toBe(done));
     expect(screen.getByText(copy.done.next)).toBeTruthy();
+    // The manage link carries the booking's id and, in its fragment, the token this booking was made with.
+    expect(screen.getByText(copy.done.manageLead)).toBeTruthy();
+    const manage = screen.getByRole("link", {name: copy.done.manage});
+    expect(manage.getAttribute("href")).toBe(`/start/walkthrough/manage?booking=${walkthroughFixtureBookingId}#t=${calls.book[0]?.manageToken}`);
     expect(screen.getByText(new RegExp(`on WhatsApp, at \\${walkthroughFixturePhone}`, "u"))).toBeTruthy();
     expect(calls.book).toHaveLength(1);
     const [sent] = calls.book;
@@ -210,7 +215,8 @@ describe("walkthrough slot picker", () => {
     fireEvent.click(await screen.findByRole("button", {name: copy.phone.book}));
     const alert = await screen.findByRole("alert");
     expect(within(alert).getByText(copy.problems.hasUpcoming)).toBeTruthy();
-    expect(within(alert).getByText(copy.done.changeOnWhatsapp)).toBeTruthy();
+    expect(within(alert).getByRole("link", {name: copy.done.manage}).getAttribute("href"))
+      .toBe(`/start/walkthrough/manage?booking=wt-${"b2".repeat(20)}`);
   });
 
   it("goes back to the times from the details", async () => {

@@ -81,6 +81,9 @@
         "host_billing": {
           "$ref": "#/$defs/staticMeta"
         },
+        "walkthrough_manage": {
+          "$ref": "#/$defs/staticMeta"
+        },
         "public_form": {
           "$ref": "#/$defs/staticMeta"
         },

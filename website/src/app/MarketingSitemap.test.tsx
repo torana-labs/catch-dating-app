@@ -105,6 +105,13 @@ describe("consolidated public sitemap", () => {
     expect(getPageKey("/host/")).toBe("host");
     expect(pageMeta.host_billing.robots).toBe("noindex, follow");
   });
+  it("serves the walkthrough manage link under its own private page key", () => {
+    expect(getPageKey("/start/walkthrough/manage/")).toBe("walkthrough_manage");
+    expect(getPageKey("/start/walkthrough/manage")).toBe("walkthrough_manage");
+    expect(getPageKey("/start/")).toBe("not_found");
+    expect(pageMeta.walkthrough_manage.robots).toBe("noindex, follow");
+    expect(retiredMarketingDestination({pathname: "/start/walkthrough/manage", search: "?booking=wt-x", hash: "#t=private"})).toBeNull();
+  });
   it("leaves credential-bearing transactional paths and canonical profiles untouched", () => {
     for (const pathname of ["/booking/event", "/offer", "/invite/token", "/f/form", "/rsvp/token", "/join/runtime", "/event-update/link", "/demo/invitation", "/rehearse/id", "/organizers/moonmoth/", "/events/id", "/claim/real-id"]) {
       expect(retiredMarketingDestination({pathname, search: "?token=private", hash: "#credential"})).toBeNull();

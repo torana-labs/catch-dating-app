@@ -11,6 +11,8 @@ const families = {
   family: "programme_link",
   // The organiser owner's billing (/host/billing/) only; every other /host/ path is a public page.
   host: "host_billing",
+  // The walkthrough booking's manage page (/start/walkthrough/manage/) only.
+  start: "walkthrough_manage",
 } as const;
 
 /** Only a public route-family enum enters the rewrite; never the credential URL. */
@@ -18,7 +20,8 @@ export function privateShellFamily(pathname: string): keyof typeof families | nu
   const first = pathname.split("/")[1];
   if (!Object.hasOwn(families, first) || (first === "offer" && !/^\/offer\/?$/.test(pathname)) ||
     (first === "account" && !/^\/account\/?$/.test(pathname)) ||
-    (first === "host" && !/^\/host\/billing\/?$/.test(pathname))) return null;
+    (first === "host" && !/^\/host\/billing\/?$/.test(pathname)) ||
+    (first === "start" && !/^\/start\/walkthrough\/manage\/?$/.test(pathname))) return null;
   return first as keyof typeof families;
 }
 

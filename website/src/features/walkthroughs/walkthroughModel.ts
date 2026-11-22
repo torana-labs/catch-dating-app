@@ -201,10 +201,11 @@ export function walkthroughProblemFor(error: unknown): {problem: WalkthroughProb
 }
 
 /**
- * Whether the manage page the booking's managePath opens
+ * The manage page the booking's managePath opens
  * (/start/walkthrough/manage?booking=…, functions/src/walkthroughs/model.ts
- * MANAGE_PATH_PREFIX) is routed on this site. Until it is, the confirmation
- * and the "already booked" refusal send the visitor to the WhatsApp chat
- * instead of a link that would 404. Flip it in the PR that registers the route.
+ * MANAGE_PATH_PREFIX) is routed (routes.json walkthrough_manage), so the
+ * confirmation and the "already booked" refusal link to it. Set it false
+ * only if that route is withdrawn: they then send the visitor to the
+ * WhatsApp chat instead.
  */
-export const walkthroughManagePageLive = false;
+export const walkthroughManagePageLive: boolean = true;

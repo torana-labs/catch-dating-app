@@ -67,6 +67,7 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/eventOffers/EventOfferPage.tsx",
   "../features/account/AccountPage.tsx",
   "../features/hostBilling/HostBillingPage.tsx",
+  "../features/walkthroughs/WalkthroughManagePage.tsx",
   "../features/eventAssistance/EventAssistancePage.tsx",
   "../features/eventRehearsal/EventRehearsalPage.tsx",
   "../features/events/EventInvitePage.tsx",
@@ -143,6 +144,9 @@ const AccountPage = route(async () => ({
 const HostBillingPage = route(async () => ({
   default: (await import("../features/hostBilling/HostBillingPage")).HostBillingPage,
 }), "../features/hostBilling/HostBillingPage", "HostBillingPage");
+const WalkthroughManagePage = route(async () => ({
+  default: (await import("../features/walkthroughs/WalkthroughManagePage")).WalkthroughManagePage,
+}), "../features/walkthroughs/WalkthroughManagePage", "WalkthroughManagePage");
 const EventAssistancePage = route(async () => ({
   default: (await import("../features/eventAssistance/EventAssistancePage")).EventAssistancePage,
 }), "../features/eventAssistance/EventAssistancePage", "EventAssistancePage");
@@ -299,7 +303,7 @@ function CanonicalMarketingRouteShell() {
       ? "listing"
       : fallbackPage;
   const routeKey = page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
-      page === "household_rsvp" || page === "programme_link" ? page :
+      page === "household_rsvp" || page === "programme_link" || page === "walkthrough_manage" ? page :
     `${location.pathname}${location.search}${location.hash}`;
   const meta = event
     ? pageMetaForEvent(event)
@@ -323,7 +327,7 @@ function CanonicalMarketingRouteShell() {
           page={page}
           routeKey={routeKey}
           hash={page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" || page === "household_rsvp" ||
-            page === "programme_link" ? "" : location.hash}
+            page === "programme_link" || page === "walkthrough_manage" ? "" : location.hash}
         />
         {fallbackPage === "discovery" && discoveryRoute ? (
           discoveryRoute.kind === "cityFormat" ?
@@ -381,6 +385,7 @@ function CanonicalMarketingRouteShell() {
           <Route path={marketingRoutePaths.event_offer} element={<EventOfferRoute />} />
           <Route path={marketingRoutePaths.account} element={<AccountPage />} />
           <Route path={marketingRoutePaths.host_billing} element={<HostBillingPage />} />
+          <Route path={marketingRoutePaths.walkthrough_manage} element={<WalkthroughManageRoute />} />
           <Route
             path={marketingRoutePaths.event_assistance}
             element={<EventAssistanceRoute />}
@@ -506,7 +511,7 @@ function CanonicalMarketingRouteShell() {
        page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
        page === "event_invite" ||
        page === "household_rsvp" || page === "programme_link" || page === "account" ||
-       page === "host_billing" ||
+       page === "host_billing" || page === "walkthrough_manage" ||
        page === "public_form" ?
         null : <MarketingConsentBanner />}
     </PageShell>
@@ -540,6 +545,12 @@ function EventAssistanceRoute() {
   const {linkId = ""} = useParams<{linkId: string}>();
   return <EventAssistancePage key={location.key}
     credential={assistanceCredential(linkId, location.hash)} />;
+}
+
+/** The walkthrough manage link: the booking id from ?booking= and the token from #t=, read once per visit. */
+function WalkthroughManageRoute() {
+  const location = useLocation();
+  return <WalkthroughManagePage hash={location.hash} key={location.key} search={location.search} />;
 }
 
 function HouseholdRsvpRoute() {
