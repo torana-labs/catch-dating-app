@@ -6696,6 +6696,7 @@
         "tool/marketing/export_hosted_captures_c.test.mjs",
         "tool/marketing/lib/hosted_capture_support.test.mjs",
         "tool/marketing/lib/capture_seeds.mjs",
+        "tool/marketing/lib/capture_seeds.test.mjs",
         ".github/workflows/marketing-captures.yml",
         ".github/workflows/ci.yml",
         "artifacts/marketing/app-screenshots/**",
@@ -6719,7 +6720,7 @@
       },
       "checks": [
         "node --check tool/marketing/export_hosted_captures.mjs",
-        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs"
+        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs tool/marketing/lib/capture_seeds.test.mjs"
       ]
     },
     {
