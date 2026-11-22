@@ -6,6 +6,31 @@
  * same rules cover phone-record guests and signed-in app users.
  */
 
+import type {MomentDefinition} from "./momentModel";
+
+/**
+ * A time-critical moment is worthless once late, and is something the
+ * recipient asked for by booking, so it skips quiet hours and the daily
+ * cap (consent and preference opt-outs still apply). Today that is the
+ * system start reminder: a system-default `eventReminder` push anchored
+ * before the event start.
+ *
+ * The class is derived from the moment's shape, not stored, so start
+ * reminders provisioned before this rule existed get it too, and an
+ * organizer-authored push can never opt itself out of quiet hours.
+ */
+export function isTimeCriticalMoment(moment: MomentDefinition): boolean {
+  const {initiation, action} = moment;
+  return moment.origin === "systemDefault" &&
+    action.kind === "push" &&
+    action.notificationType === "eventReminder" &&
+    initiation.kind === "anchored" &&
+    initiation.anchorKind === "scopeStart" &&
+    initiation.offsetMinutes <= 0 &&
+    (initiation.offsetDays ?? 0) === 0 &&
+    (initiation.offsetMonths ?? 0) === 0;
+}
+
 export type RecipientEndpoint = {
   kind: "phone";
   e164: string;
@@ -46,6 +71,9 @@ export interface PolicyInput {
   localMinuteOfDay: number;
   sentTodayForEndpoint: number;
   dailyCap: number;
+  /** Time-critical sends skip the daily cap and quiet hours
+   *  (`isTimeCriticalMoment`). */
+  timeCritical: boolean;
 }
 
 export type SuppressionReason =
@@ -109,6 +137,7 @@ export function evaluateRecipientPolicy(input: PolicyInput): PolicyDecision {
       }
     }
   }
+  if (input.timeCritical) return {kind: "send"};
   if (input.dailyCap > 0 && input.sentTodayForEndpoint >= input.dailyCap) {
     return {kind: "suppress", reason: "dailyCap"};
   }

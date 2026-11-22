@@ -29,6 +29,7 @@ import {
 } from "./momentDocuments";
 import {
   evaluateRecipientPolicy,
+  isTimeCriticalMoment,
   rollupPolicy,
   type ConsentFacts,
   type PolicyDecision,
@@ -679,7 +680,11 @@ async function dispatchRun(
     return await markRun(db, run, deps.nowMillis(), "skipped",
       {reason: disposition}) ? "skipped" : "deferred";
   }
-  const quietEnd = await deps.quietEndMillis(moment.scope, now);
+  // A time-critical moment (the system start reminder) skips quiet hours:
+  // deferring a T-15m reminder for a dawn event to 08:00 would expire it.
+  const timeCritical = isTimeCriticalMoment(moment);
+  const quietEnd = timeCritical ? null :
+    await deps.quietEndMillis(moment.scope, now);
   if (quietEnd !== null) {
     // A deferral that would land past expiry never fires — record the
     // honest terminal state instead of parking the run.
@@ -748,6 +753,7 @@ async function dispatchRun(
       localMinuteOfDay: localMinute,
       sentTodayForEndpoint: sentToday,
       dailyCap,
+      timeCritical,
     });
     const decisionIndex = decisions.push(decision) - 1;
     if (decision.kind === "defer") continue; // resolved run-level next pass
@@ -830,7 +836,8 @@ async function dispatchRun(
   if (decisions.some((d) => d.kind === "defer")) {
     // Travel-deferred recipients wake the run at their own due, not a flat
     // minute later; a quiet-hours defer still wins when both apply.
-    const quietRetry = await deps.quietEndMillis(moment.scope, now);
+    const quietRetry = timeCritical ? null :
+      await deps.quietEndMillis(moment.scope, now);
     const candidates = [quietRetry, pendingTravelDue, pendingDeliveryDue]
       .filter((v): v is number => v !== null);
     const retry = candidates.length > 0 ?
