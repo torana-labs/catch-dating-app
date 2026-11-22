@@ -1,1512 +1,208 @@
-import type {ManageWebsiteAccountCallablePayload} from "../../functions/src/shared/generated/manageWebsiteAccountCallablePayload";
-import type {ManageWebsiteAccountCallableResponse} from "../../functions/src/shared/generated/manageWebsiteAccountCallableResponse";
-import type {FollowOrganizerByPhoneCallablePayload} from "../../functions/src/shared/generated/followOrganizerByPhoneCallablePayload";
-import type {FollowOrganizerByPhoneCallableResponse} from "../../functions/src/shared/generated/followOrganizerByPhoneCallableResponse";
-import type {WithdrawParticipantMessagingPermissionCallablePayload} from "../../functions/src/shared/generated/withdrawParticipantMessagingPermissionCallablePayload";
-import type {WithdrawParticipantMessagingPermissionCallableResponse} from "../../functions/src/shared/generated/withdrawParticipantMessagingPermissionCallableResponse";
-import type {GetEventTicketCodeCallableResponse} from "../../functions/src/shared/generated/getEventTicketCodeCallableResponse";
-import type {ManageEventApprovalNotificationsCallablePayload} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallablePayload";
-import type {ManageEventApprovalNotificationsCallableResponse} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallableResponse";
-export {beginClaimPhoneLink, signInOrLinkClaimGoogle} from "./firebaseClaimAccountLinking";
-import type {EnsureTryItWorkspaceCallablePayload} from "../../functions/src/shared/generated/ensureTryItWorkspaceCallablePayload";
-import type {EnsureTryItWorkspaceCallableResponse} from "../../functions/src/shared/generated/ensureTryItWorkspaceCallableResponse";
-import type {ImportOrganizerFromLinkCallablePayload} from "../../functions/src/shared/generated/importOrganizerFromLinkCallablePayload";
-import type {ImportOrganizerFromLinkCallableResponse} from "../../functions/src/shared/generated/importOrganizerFromLinkCallableResponse";
-import type {ImportEventFromLinkCallablePayload} from "../../functions/src/shared/generated/importEventFromLinkCallablePayload";
-import type {ImportEventFromLinkCallableResponse} from "../../functions/src/shared/generated/importEventFromLinkCallableResponse";
-import type {CreatePromotionKitCallablePayload} from "../../functions/src/shared/generated/createPromotionKitCallablePayload";
-import type {CreatePromotionKitCallableResponse} from "../../functions/src/shared/generated/createPromotionKitCallableResponse";
-import type {ImportGuestListCallablePayload} from "../../functions/src/shared/generated/importGuestListCallablePayload";
-import type {ImportGuestListCallableResponse} from "../../functions/src/shared/generated/importGuestListCallableResponse";
-import type {ImportPastSalesCallablePayload} from "../../functions/src/shared/generated/importPastSalesCallablePayload";
-import type {ImportPastSalesCallableResponse} from "../../functions/src/shared/generated/importPastSalesCallableResponse";
-import type {ImportFormFromLinkCallablePayload} from "../../functions/src/shared/generated/importFormFromLinkCallablePayload";
-import type {ImportFormFromLinkCallableResponse} from "../../functions/src/shared/generated/importFormFromLinkCallableResponse";
-import type {PlanNightCallablePayload} from "../../functions/src/shared/generated/planNightCallablePayload";
-import type {PlanNightCallableResponse} from "../../functions/src/shared/generated/planNightCallableResponse";
-import type {CreateEventRehearsalCallablePayload} from "../../functions/src/shared/generated/createEventRehearsalCallablePayload";
-import type {CreateEventRehearsalCallableResponse} from "../../functions/src/shared/generated/createEventRehearsalCallableResponse";
-import type {ManagePublicEventCheckoutCallablePayload} from "../../functions/src/shared/generated/managePublicEventCheckoutCallablePayload";
-import type {ManagePublicEventCheckoutCallableResponse} from "../../functions/src/shared/generated/managePublicEventCheckoutCallableResponse";
-import type {ManageEventOfferCheckoutCallablePayload} from "../../functions/src/shared/generated/manageEventOfferCheckoutCallablePayload";
-import type {ManageEventOfferCheckoutCallableResponse} from "../../functions/src/shared/generated/manageEventOfferCheckoutCallableResponse";
-import type {ListEventSmsPreferencesCallablePayload} from "../../functions/src/shared/generated/listEventSmsPreferencesInput";
-import type {ListEventSmsPreferencesCallableResponse} from "../../functions/src/shared/generated/listEventSmsPreferencesOutput";
-import type {GetEventWhatsappPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload";
-import type {SetEventWhatsappPreferenceCallablePayload} from "../../functions/src/shared/generated/setEventWhatsappPreferenceCallablePayload";
-import type {EventWhatsappPreferenceCallableResponse} from "../../functions/src/shared/generated/eventWhatsappPreferenceCallableResponse";
-import type {ListEventWhatsappPreferencesCallablePayload} from "../../functions/src/shared/generated/listEventWhatsappPreferencesInput";
-import type {ListEventWhatsappPreferencesCallableResponse} from "../../functions/src/shared/generated/listEventWhatsappPreferencesOutput";
-import type {GetEventRcsPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventRcsPreferenceInput";
-import type {SetEventRcsPreferenceCallablePayload} from "../../functions/src/shared/generated/setEventRcsPreferenceInput";
-import type {EventRcsPreferenceCallableResponse} from "../../functions/src/shared/generated/eventRcsPreferenceOutput";
-import type {ListEventRcsPreferencesCallablePayload} from "../../functions/src/shared/generated/listEventRcsPreferencesInput";
-import type {ListEventRcsPreferencesCallableResponse} from "../../functions/src/shared/generated/listEventRcsPreferencesOutput";
-import type {GetEventRcsWithdrawalCallablePayload} from "../../functions/src/shared/generated/getEventRcsWithdrawalInput";
-import type {WithdrawEventRcsCallablePayload} from "../../functions/src/shared/generated/withdrawEventRcsInput";
-import type {EventRcsWithdrawalCallableResponse} from "../../functions/src/shared/generated/eventRcsWithdrawalOutput";
-import type {GetEventWhatsappWithdrawalCallablePayload} from "../../functions/src/shared/generated/getEventWhatsappWithdrawalCallablePayload";
-import type {WithdrawEventWhatsappCallablePayload} from "../../functions/src/shared/generated/withdrawEventWhatsappCallablePayload";
-import type {EventWhatsappWithdrawalCallableResponse} from "../../functions/src/shared/generated/eventWhatsappWithdrawalCallableResponse";
-import type {GetEventAssistanceSmsWithdrawalCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceSmsWithdrawalCallablePayload";
-import type {WithdrawEventAssistanceSmsCallablePayload} from "../../functions/src/shared/generated/withdrawEventAssistanceSmsCallablePayload";
-import type {EventAssistanceSmsWithdrawalCallableResponse} from "../../functions/src/shared/generated/eventAssistanceSmsWithdrawalCallableResponse";
-import type {GetEventAssistanceSmsPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceSmsPreferenceCallablePayload";
-import type {SetEventAssistanceSmsPreferenceCallablePayload} from "../../functions/src/shared/generated/setEventAssistanceSmsPreferenceCallablePayload";
-import type {EventAssistanceSmsPreferenceCallableResponse} from "../../functions/src/shared/generated/eventAssistanceSmsPreferenceCallableResponse";
-import type {EventAssistanceGuestViewCallableResponse} from "../../functions/src/shared/generated/eventAssistanceGuestViewCallableResponse";
-import type {GetEventAssistanceGuestViewCallablePayload} from "../../functions/src/shared/generated/getEventAssistanceGuestViewCallablePayload";
-import type {SubmitEventAssistanceGuestChoiceCallablePayload} from "../../functions/src/shared/generated/submitEventAssistanceGuestChoiceCallablePayload";
-import type {SubmitEventAssistanceGuestChoiceCallableResponse} from "../../functions/src/shared/generated/submitEventAssistanceGuestChoiceCallableResponse";
-import type {GetOrganizerClaimVerificationOptionsCallablePayload} from "../../functions/src/shared/generated/getOrganizerClaimVerificationOptionsCallablePayload";
-import type {OrganizerClaimVerificationOptionsCallableResponse} from "../../functions/src/shared/generated/organizerClaimVerificationOptionsCallableResponse";
-import type {StartOrganizerClaimVerificationCallablePayload} from "../../functions/src/shared/generated/startOrganizerClaimVerificationCallablePayload";
-import type {StartOrganizerClaimVerificationCallableResponse} from "../../functions/src/shared/generated/startOrganizerClaimVerificationCallableResponse";
-import type {ConfirmOrganizerClaimVerificationCallablePayload} from "../../functions/src/shared/generated/confirmOrganizerClaimVerificationCallablePayload";
-import type {ConfirmOrganizerClaimVerificationCallableResponse} from "../../functions/src/shared/generated/confirmOrganizerClaimVerificationCallableResponse";
-import type {GetOrganizerOwnerViewCallablePayload} from "../../functions/src/shared/generated/getOrganizerOwnerViewCallablePayload";
-import type {OrganizerOwnerViewCallableResponse} from "../../functions/src/shared/generated/organizerOwnerViewCallableResponse";
-import type {ManageOrganizerOwnerPageCallablePayload} from "../../functions/src/shared/generated/manageOrganizerOwnerPageCallablePayload";
-import type {ManageOrganizerOwnerPageCallableResponse} from "../../functions/src/shared/generated/manageOrganizerOwnerPageCallableResponse";
-import type {UpdateOrganizerCallablePayload} from "../../functions/src/shared/generated/updateOrganizerCallablePayload";
-import type {SetReviewResponseCallablePayload} from "../../functions/src/shared/generated/setReviewResponseCallablePayload";
-import type {SetOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/setOrganizerTrackingSettingsCallablePayload";
-import type {OrganizerTrackingSettingsCallableResponse} from "../../functions/src/shared/generated/organizerTrackingSettingsCallableResponse";
-import type {FirebaseApp} from "firebase/app";
-import type {AppCheck} from "firebase/app-check";
-import type {Auth, User} from "firebase/auth";
-import type {Functions} from "firebase/functions";
-import type {Firestore} from "firebase/firestore";
-import type {CheckInEventRuntimeCallablePayload} from "../../functions/src/shared/generated/checkInEventRuntimeCallablePayload";
-import type {CheckInEventRuntimeCallableResponse} from "../../functions/src/shared/generated/checkInEventRuntimeCallableResponse";
-import type {RequestEventRuntimeHostHelpCallablePayload} from "../../functions/src/shared/generated/requestEventRuntimeHostHelpCallablePayload";
-import type {RequestEventRuntimeHostHelpCallableResponse} from "../../functions/src/shared/generated/requestEventRuntimeHostHelpCallableResponse";
-import type {ClaimEventRuntimeAccessCallablePayload} from "../../functions/src/shared/generated/claimEventRuntimeAccessCallablePayload";
-import type {ClaimEventRuntimeAccessCallableResponse} from "../../functions/src/shared/generated/claimEventRuntimeAccessCallableResponse";
-import type {CompleteEventSuccessFirstHelloMissionCallablePayload} from "../../functions/src/shared/generated/completeEventSuccessFirstHelloMissionCallablePayload";
-import type {ListParticipantActivityCallablePayload} from "../../functions/src/shared/generated/listParticipantActivityCallablePayload";
-import type {ListParticipantActivityCallableResponse} from "../../functions/src/shared/generated/listParticipantActivityCallableResponse";
-import type {BeginOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/beginOrganizerFormResponseCallablePayload";
-import type {BeginOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/beginOrganizerFormResponseCallableResponse";
-import type {CreateOrganizerFormAssetIntentCallablePayload} from "../../functions/src/shared/generated/createOrganizerFormAssetIntentCallablePayload";
-import type {CreateOrganizerFormAssetIntentCallableResponse} from "../../functions/src/shared/generated/createOrganizerFormAssetIntentCallableResponse";
-import type {CreateEventInviteLinkCallablePayload} from "../../functions/src/shared/generated/createEventInviteLinkCallablePayload";
-import type {CreatePublicOrganizerReviewCallablePayload} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallablePayload";
-import type {CreatePublicOrganizerReviewCallableResponse} from "../../functions/src/shared/generated/createPublicOrganizerReviewCallableResponse";
-import type {EventSuccessAssignmentDocument} from "../../functions/src/shared/generated/eventSuccessAssignmentDocument";
-import type {EventSuccessLateArrivalDocument} from "../../functions/src/shared/generated/eventSuccessLateArrivalDocument";
-import type {EventSuccessStandingsDocument} from "../../functions/src/shared/generated/eventSuccessStandingsDocument";
-import type {EventRehearsalGuestBootstrapCallableResponse} from "../../functions/src/shared/generated/eventRehearsalGuestBootstrapCallableResponse";
-import type {GetEventRehearsalGuestBootstrapCallablePayload} from "../../functions/src/shared/generated/getEventRehearsalGuestBootstrapCallablePayload";
-import type {SubmitEventRehearsalGuestActionCallablePayload} from "../../functions/src/shared/generated/submitEventRehearsalGuestActionCallablePayload";
+/**
+ * The website's Firebase services, one module per backend domain under
+ * services/firebase/ (runtime.ts holds the shared runtime and callable
+ * invoke). Callers import from here; the service modules are the only files
+ * that load the browser Firebase SDK (tool/web/check_website_import_boundaries.mjs).
+ */
+export {
+  getWebsiteAppCheckToken,
+  getWebsiteReferrerIdToken,
+  getSignedInFirestore,
+} from "./services/firebase/runtime";
+export type {
+  User,
+} from "./services/firebase/runtime";
+export {
+  beginClaimPhoneLink,
+  signInOrLinkClaimGoogle,
+  watchClaimAuthState,
+  watchSalesDemoAuthState,
+  watchEventRuntimeAuthState,
+  watchPublicFormAuthState,
+  signInForClaim,
+  signOutClaimUser,
+  beginWebsiteAccountPhoneVerification,
+  beginPublicEventPhoneVerification,
+  signOutGuestUser,
+  verifyGuestEmail,
+  refreshGuestIdentity,
+  beginSalesDemoPhoneVerification,
+  watchWebsiteAccountAuthState,
+  signOutWebsiteAccount,
+} from "./services/firebase/auth";
+export type {
+  PublicEventPhoneVerification,
+} from "./services/firebase/auth";
+export {
+  manageWebsiteAccount,
+  setWebsiteOrganizerFollow,
+  followWebsiteOrganizerByPhone,
+  getWebsiteEventTicketCode,
+  withdrawWebsiteMessagingPermission,
+} from "./services/firebase/account";
+export type {
+  WebsiteAccount,
+  WebsiteAccountSection,
+  WebsiteEventTicketCode,
+} from "./services/firebase/account";
+export {
+  getPublicOrganizerForm,
+  listParticipantFormActivity,
+  beginOrganizerFormResponse,
+  saveOrganizerFormResponseDraft,
+  createOrganizerFormAssetIntent,
+  uploadOrganizerFormAsset,
+  finalizeOrganizerFormAsset,
+  submitOrganizerFormResponse,
+  promoteFormCommunicationIntent,
+  findOrganizerFormPayment,
+  prepareOrganizerFormPayment,
+  getOrganizerFormPayment,
+  withdrawOrganizerFormResponse,
+  sendPublicFormEmailSignInLink,
+  completePublicFormEmailSignIn,
+} from "./services/firebase/forms";
+export type {
+  PublicOrganizerForm,
+  ParticipantFormActivityPage,
+  PublicOrganizerFormDraft,
+  PublicOrganizerFormReceipt,
+  PublicOrganizerFormAssetIntent,
+  PublicOrganizerFormPayment,
+  PublicOrganizerFormPaymentRequest,
+} from "./services/firebase/forms";
 export {
   deriveEventSuccessMomentSeed,
   eventSuccessMomentPresentationCatalog,
   eventSuccessMomentPresentationFor,
   eventSuccessSocialMissionPromptFor,
   resolveEventSuccessCeremonyTimeline,
-} from "../../functions/src/shared/generated/eventSuccessMomentPresentations";
+  getEventRuntimeBootstrap,
+  claimEventRuntimeAccess,
+  submitEventRuntimeProfile,
+  checkInEventRuntime,
+  requestEventRuntimeHostHelp,
+  heartbeatEventRuntimePresence,
+  getEventSuccessConversationGraph,
+  submitEventSuccessConversationGraph,
+  createEventRuntimeAttendeeInviteLink,
+  recordEventRuntimeShareIntent,
+  startEventRuntimeFirstHello,
+  completeEventRuntimeFirstHello,
+  fetchEventRuntimeWingmanCandidates,
+  submitEventRuntimeWingmanRequest,
+  withdrawEventRuntimeWingmanRequest,
+  watchEventRuntimeLiveState,
+  eventRuntimeTimestampMillis,
+  saveEventRuntimeCompatibilityAnswers,
+  saveEventRuntimeFeedback,
+  getEventRehearsalGuestBootstrap,
+  submitEventRehearsalGuestAction,
+} from "./services/firebase/eventRuntime";
 export type {
   EventSuccessCeremonyTimeline,
   EventSuccessMomentPresentationContract,
   EventSuccessDisclosureLevel,
   EventSuccessInteractionModel,
   EventSuccessSocialMissionPromptContract,
-} from "../../functions/src/shared/generated/eventSuccessMomentPresentations";
-import type {EventIdCallablePayload} from "../../functions/src/shared/generated/eventIdCallablePayload";
-import type {FetchEventSuccessWingmanCandidatesCallableResponse} from "../../functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse";
-import type {GetEventRuntimeBootstrapCallablePayload} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallablePayload";
-import type {GetEventRuntimeBootstrapCallableResponse} from "../../functions/src/shared/generated/getEventRuntimeBootstrapCallableResponse";
-import type {GetPublicOrganizerFormCallablePayload} from "../../functions/src/shared/generated/getPublicOrganizerFormCallablePayload";
-import type {GetPublicOrganizerFormCallableResponse} from "../../functions/src/shared/generated/getPublicOrganizerFormCallableResponse";
-import type {FinalizeOrganizerFormAssetCallablePayload} from "../../functions/src/shared/generated/finalizeOrganizerFormAssetCallablePayload";
-import type {FinalizeOrganizerFormAssetCallableResponse} from "../../functions/src/shared/generated/finalizeOrganizerFormAssetCallableResponse";
-import type {GetEventSuccessConversationGraphCallableResponse} from "../../functions/src/shared/generated/getEventSuccessConversationGraphCallableResponse";
-import type {HeartbeatEventSuccessPresenceCallableResponse} from "../../functions/src/shared/generated/heartbeatEventSuccessPresenceCallableResponse";
-import type {RecordOrganizerAnalyticsEventCallablePayload} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload";
-import type {RecordOrganizerAnalyticsEventCallableResponse} from "../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse";
-import type {RecordEventInviteLinkOpenCallablePayload} from "../../functions/src/shared/generated/recordEventInviteLinkOpenCallablePayload";
-import type {RecordEventShareIntentCallablePayload} from "../../functions/src/shared/generated/recordEventShareIntentCallablePayload";
-import type {RegisterPublicEventCallablePayload} from "../../functions/src/shared/generated/registerPublicEventCallablePayload";
-import type {RegisterPublicEventCallableResponse} from "../../functions/src/shared/generated/registerPublicEventCallableResponse";
-import type {ResolveEventInviteLandingCallablePayload} from "../../functions/src/shared/generated/resolveEventInviteLandingCallablePayload";
-import type {ResolveEventInviteLandingCallableResponse} from "../../functions/src/shared/generated/resolveEventInviteLandingCallableResponse";
-import type {SaveOrganizerFormResponseDraftCallablePayload} from "../../functions/src/shared/generated/saveOrganizerFormResponseDraftCallablePayload";
-import type {SaveOrganizerFormResponseDraftCallableResponse} from "../../functions/src/shared/generated/saveOrganizerFormResponseDraftCallableResponse";
-import type {RequestOrganizerClaimCallablePayload} from "../../functions/src/shared/generated/requestOrganizerClaimCallablePayload";
-import type {RequestOrganizerClaimCallableResponse} from "../../functions/src/shared/generated/requestOrganizerClaimCallableResponse";
-import type {StartEventSuccessFirstHelloMissionCallablePayload} from "../../functions/src/shared/generated/startEventSuccessFirstHelloMissionCallablePayload";
-import type {SubmitEventRuntimeProfileCallablePayload} from "../../functions/src/shared/generated/submitEventRuntimeProfileCallablePayload";
-import type {SubmitEventRuntimeProfileCallableResponse} from "../../functions/src/shared/generated/submitEventRuntimeProfileCallableResponse";
-import type {SubmitEventSuccessConversationGraphCallablePayload} from "../../functions/src/shared/generated/submitEventSuccessConversationGraphCallablePayload";
-import type {SubmitEventSuccessConversationGraphCallableResponse} from "../../functions/src/shared/generated/submitEventSuccessConversationGraphCallableResponse";
-import type {SubmitEventSuccessWingmanRequestCallablePayload} from "../../functions/src/shared/generated/submitEventSuccessWingmanRequestCallablePayload";
-import type {SubmitOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/submitOrganizerFormResponseCallablePayload";
-import type {SubmitOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/submitOrganizerFormResponseCallableResponse";
-import type {PromoteFormCommunicationIntentCallablePayload} from "../../functions/src/shared/generated/promoteFormCommunicationIntentCallablePayload";
-import type {PromoteFormCommunicationIntentCallableResponse} from "../../functions/src/shared/generated/promoteFormCommunicationIntentCallableResponse";
-import type {PrepareOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/prepareOrganizerFormPaymentCallablePayload";
-import type {GetProgramHouseholdRsvpViewCallablePayload} from "../../functions/src/shared/generated/getProgramHouseholdRsvpViewCallablePayload";
-import type {ProgramHouseholdRsvpViewCallableResponse} from "../../functions/src/shared/generated/programHouseholdRsvpViewCallableResponse";
-import type {SubmitProgramHouseholdRsvpCallablePayload} from "../../functions/src/shared/generated/submitProgramHouseholdRsvpCallablePayload";
-import type {SubmitProgramHouseholdRsvpCallableResponse} from "../../functions/src/shared/generated/submitProgramHouseholdRsvpCallableResponse";
-import type {GetProgramGuestIdStatusCallablePayload} from "../../functions/src/shared/generated/getProgramGuestIdStatusCallablePayload";
-import type {ProgramGuestIdStatusCallableResponse} from "../../functions/src/shared/generated/programGuestIdStatusCallableResponse";
-import type {CreateProgramAssetUploadCallablePayload} from "../../functions/src/shared/generated/createProgramAssetUploadCallablePayload";
-import type {ProgramAssetUploadCallableResponse} from "../../functions/src/shared/generated/programAssetUploadCallableResponse";
-import type {SubmitProgramGuestIdCallablePayload} from "../../functions/src/shared/generated/submitProgramGuestIdCallablePayload";
-import type {ProgramGuestIdCallableResponse} from "../../functions/src/shared/generated/programGuestIdCallableResponse";
-import type {GetProgramHotelHandoverCallablePayload} from "../../functions/src/shared/generated/getProgramHotelHandoverCallablePayload";
-import type {ProgramHotelHandoverCallableResponse} from "../../functions/src/shared/generated/programHotelHandoverCallableResponse";
-import type {GetProgramDriverTripCallablePayload} from "../../functions/src/shared/generated/getProgramDriverTripCallablePayload";
-import type {GetProgramFamilyViewCallablePayload} from "../../functions/src/shared/generated/getProgramFamilyViewCallablePayload";
-import type {ProgramFamilyViewCallableResponse} from "../../functions/src/shared/generated/programFamilyViewCallableResponse";
-import type {ProgramDriverTripCallableResponse} from "../../functions/src/shared/generated/programDriverTripCallableResponse";
-import type {GetProgramVendorRunSheetCallablePayload} from "../../functions/src/shared/generated/getProgramVendorRunSheetCallablePayload";
-import type {ProgramVendorRunSheetCallableResponse} from "../../functions/src/shared/generated/programVendorRunSheetCallableResponse";
-import type {GetProgramHamperWebViewCallablePayload} from "../../functions/src/shared/generated/getProgramHamperWebViewCallablePayload";
-import type {ProgramHamperWebViewCallableResponse} from "../../functions/src/shared/generated/programHamperWebViewCallableResponse";
-import type {UpsertProgramHamperCallablePayload} from "../../functions/src/shared/generated/upsertProgramHamperCallablePayload";
-import type {ProgramHamperCallableResponse} from "../../functions/src/shared/generated/programHamperCallableResponse";
-import type {GetOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/getOrganizerFormPaymentCallablePayload";
-import type {FindOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/findOrganizerFormPaymentCallablePayload";
-import type {FindOrganizerFormPaymentCallableResponse} from "../../functions/src/shared/generated/findOrganizerFormPaymentCallableResponse";
-import type {GetOrganizerFormPaymentCallableResponse} from "../../functions/src/shared/generated/getOrganizerFormPaymentCallableResponse";
-import type {WithdrawOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/withdrawOrganizerFormResponseCallablePayload";
-import type {WithdrawOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/withdrawOrganizerFormResponseCallableResponse";
-import {
-  appCheckSiteKey,
-  claimFirebaseConfigured,
-  eventRuntimeFirebaseConfigured,
-  firebaseConfig as config,
-  publicAnalyticsFirebaseConfigured,
-  publicEventRegistrationFirebaseConfigured,
-  publicFormsFirebaseConfigured,
-  publicReviewsFirebaseConfigured,
-} from "./firebaseConfig";
-
-export type RequestOrganizerClaimPayload = RequestOrganizerClaimCallablePayload;
-export type OrganizerClaimRole = RequestOrganizerClaimPayload["requesterRole"];
-export type RequestOrganizerClaimResponse = RequestOrganizerClaimCallableResponse;
-export type PublicOrganizerReview =
-  CreatePublicOrganizerReviewCallableResponse["review"];
-
-export type CreatePublicOrganizerReviewPayload =
-  CreatePublicOrganizerReviewCallablePayload;
-export type CreatePublicOrganizerReviewResponse =
-  CreatePublicOrganizerReviewCallableResponse;
-
-export type RecordOrganizerAnalyticsEventPayload =
-  RecordOrganizerAnalyticsEventCallablePayload;
-export type RecordOrganizerAnalyticsEventResponse =
-  RecordOrganizerAnalyticsEventCallableResponse;
-export type RegisterPublicEventPayload = RegisterPublicEventCallablePayload;
-export type RegisterPublicEventResponse = RegisterPublicEventCallableResponse;
-export type EventRuntimeBootstrap = GetEventRuntimeBootstrapCallableResponse;
-export type EventRehearsalGuestBootstrap =
-  EventRehearsalGuestBootstrapCallableResponse;
-// Single-step controls. Assistance replies and required-data submissions need
-// their own structured payloads and cannot use the generic action button.
-export type EventRehearsalGuestAction = Exclude<
-  SubmitEventRehearsalGuestActionCallablePayload["action"],
-  "respondToAssistance" | "submitRequiredData"
->;
-export type EventSuccessConversationGraph =
-  GetEventSuccessConversationGraphCallableResponse;
-export type EventInviteLanding = ResolveEventInviteLandingCallableResponse;
-export type PublicOrganizerForm = GetPublicOrganizerFormCallableResponse;
-export type ParticipantFormActivityPage = ListParticipantActivityCallableResponse;
-export type PublicOrganizerFormDraft =
-  BeginOrganizerFormResponseCallableResponse;
-export type PublicOrganizerFormReceipt =
-  SubmitOrganizerFormResponseCallableResponse;
-export type PublicOrganizerFormAssetIntent =
-  CreateOrganizerFormAssetIntentCallableResponse;
-
-export interface PublicEventPhoneVerification {
-  clear: () => void;
-  confirm: (code: string) => Promise<User>;
-}
-
-export interface EventRuntimeAttendeeInviteLink {
-  inviteLinkId: string;
-  inviteToken: string;
-  eventId: string;
-  label: string;
-  source: string | null;
-}
-
-let runtimePromise: Promise<FirebaseRuntime | null> | null = null;
-let publicRuntimePromise: Promise<PublicFirebaseRuntime | null> | null = null;
-
-interface PublicFirebaseRuntime {
-  app: FirebaseApp;
-  appCheck: AppCheck;
-  functions: Functions;
-}
-
-interface FirebaseRuntime {
-  app: FirebaseApp;
-  appCheck: AppCheck;
-  auth: Auth;
-  firestore: Firestore;
-  functions: Functions;
-}
-
-export type {User};
-
-export function watchClaimAuthState(
-  callback: (user: User | null) => void
-): () => void {
-  if (!claimFirebaseConfigured) {
-    callback(null);
-    return () => undefined;
-  }
-  let cancelled = false;
-  let unsubscribe: () => void = () => undefined;
-  void getFirebaseRuntime()
-    .then(async (runtime) => {
-      if (!runtime) {
-        callback(null);
-        return;
-      }
-      const {onAuthStateChanged} = await import("firebase/auth");
-      if (cancelled) return;
-      unsubscribe = onAuthStateChanged(runtime.auth, callback);
-    })
-    .catch(() => {
-      callback(null);
-    });
-  return () => {
-    cancelled = true;
-    unsubscribe();
-  };
-}
-
-/** Sales contact verification can refresh credentials without changing UID. */
-export function watchSalesDemoAuthState(callback: (user: User | null) => void): () => void {
-  if (!claimFirebaseConfigured) {callback(null); return () => undefined;}
-  let cancelled = false;
-  let unsubscribe: () => void = () => undefined;
-  void getFirebaseRuntime().then(async (runtime) => {
-    if (cancelled) return;
-    if (!runtime) {callback(null); return;}
-    const {onIdTokenChanged} = await import("firebase/auth");
-    if (cancelled) return;
-    unsubscribe = onIdTokenChanged(runtime.auth, callback);
-  }).catch(() => {if (!cancelled) callback(null);});
-  return () => {cancelled = true; unsubscribe();};
-}
-
-export const watchEventRuntimeAuthState = watchClaimAuthState;
-export const watchPublicFormAuthState = watchClaimAuthState;
-
-export async function getPublicOrganizerForm(
-  payload: GetPublicOrganizerFormCallablePayload
-): Promise<GetPublicOrganizerFormCallableResponse> {
-  // The public runtime: reading a form loads neither Auth nor Firestore.
-  return invokeWebsiteCallable<GetPublicOrganizerFormCallablePayload, GetPublicOrganizerFormCallableResponse>(
-    "getPublicOrganizerForm", payload, publicFormsFirebaseConfigured, "Public forms", "public");
-}
-
-export async function listParticipantFormActivity(
-  payload: ListParticipantActivityCallablePayload
-): Promise<ParticipantFormActivityPage> {
-  return invokeWebsiteCallable(
-    "listParticipantActivity", payload, publicFormsFirebaseConfigured, "Public forms"
-  );
-}
-
-export async function beginOrganizerFormResponse(
-  payload: BeginOrganizerFormResponseCallablePayload
-): Promise<BeginOrganizerFormResponseCallableResponse> {
-  return invokeWebsiteCallable(
-    "beginOrganizerFormResponse",
-    payload,
-    publicFormsFirebaseConfigured,
-    "Public forms"
-  );
-}
-
-export async function saveOrganizerFormResponseDraft(
-  payload: SaveOrganizerFormResponseDraftCallablePayload
-): Promise<SaveOrganizerFormResponseDraftCallableResponse> {
-  return invokeWebsiteCallable(
-    "saveOrganizerFormResponseDraft",
-    payload,
-    publicFormsFirebaseConfigured,
-    "Public forms"
-  );
-}
-
-export async function createOrganizerFormAssetIntent(
-  payload: CreateOrganizerFormAssetIntentCallablePayload
-): Promise<CreateOrganizerFormAssetIntentCallableResponse> {
-  return invokeWebsiteCallable(
-    "createOrganizerFormAssetIntent",
-    payload,
-    publicFormsFirebaseConfigured,
-    "Public forms"
-  );
-}
-
-export async function uploadOrganizerFormAsset(
-  intent: CreateOrganizerFormAssetIntentCallableResponse,
-  file: Blob
-): Promise<void> {
-  const body = new FormData();
-  for (const [key, value] of Object.entries(intent.uploadFields)) {
-    body.append(key, value);
-  }
-  body.append("file", file);
-  const response = await fetch(intent.uploadUrl, {method: "POST", body});
-  if (!response.ok) {
-    throw new Error("The secure file upload failed. Please try again.");
-  }
-}
-
-export async function finalizeOrganizerFormAsset(
-  payload: FinalizeOrganizerFormAssetCallablePayload
-): Promise<FinalizeOrganizerFormAssetCallableResponse> {
-  return invokeWebsiteCallable(
-    "finalizeOrganizerFormAsset",
-    payload,
-    publicFormsFirebaseConfigured,
-    "Public forms"
-  );
-}
-
-export async function submitOrganizerFormResponse(
-  payload: SubmitOrganizerFormResponseCallablePayload
-): Promise<SubmitOrganizerFormResponseCallableResponse> {
-  return invokeWebsiteCallable(
-    "submitOrganizerFormResponse",
-    payload,
-    publicFormsFirebaseConfigured,
-    "Public forms"
-  );
-}
-
-export async function promoteFormCommunicationIntent(
-  payload: PromoteFormCommunicationIntentCallablePayload
-): Promise<PromoteFormCommunicationIntentCallableResponse> {
-  return invokeWebsiteCallable(
-    "promoteFormCommunicationIntent",
-    payload,
-    publicFormsFirebaseConfigured,
-    "Public form messaging preferences"
-  );
-}
-
-export type EventOfferCheckoutResponse = ManageEventOfferCheckoutCallableResponse;
-
-export async function manageEventOfferCheckout(
-  payload: ManageEventOfferCheckoutCallablePayload
-): Promise<ManageEventOfferCheckoutCallableResponse> {
-  return invokeWebsiteCallable("manageEventOfferCheckout", {...payload, includeEventAccess: true},
-    publicFormsFirebaseConfigured, "Event invitation checkout");
-}
-
-export type PublicOrganizerFormPayment = GetOrganizerFormPaymentCallableResponse;
-export type PublicOrganizerFormPaymentRequest = PrepareOrganizerFormPaymentCallablePayload;
-
-export async function findOrganizerFormPayment(
-  payload: FindOrganizerFormPaymentCallablePayload
-): Promise<FindOrganizerFormPaymentCallableResponse> {
-  return invokeWebsiteCallable("findOrganizerFormPayment", payload,
-    publicFormsFirebaseConfigured, "Public form payment recovery");
-}
-
-export async function prepareOrganizerFormPayment(
-  payload: PrepareOrganizerFormPaymentCallablePayload
-): Promise<PublicOrganizerFormPayment> {
-  return invokeWebsiteCallable("prepareOrganizerFormPayment", payload,
-    publicFormsFirebaseConfigured, "Public form payment");
-}
-
-export async function getOrganizerFormPayment(
-  payload: GetOrganizerFormPaymentCallablePayload
-): Promise<PublicOrganizerFormPayment> {
-  return invokeWebsiteCallable("getOrganizerFormPayment", payload,
-    publicFormsFirebaseConfigured, "Public form payment");
-}
-
-export async function withdrawOrganizerFormResponse(
-  payload: WithdrawOrganizerFormResponseCallablePayload
-): Promise<WithdrawOrganizerFormResponseCallableResponse> {
-  return invokeWebsiteCallable(
-    "withdrawOrganizerFormResponse",
-    payload,
-    publicFormsFirebaseConfigured,
-    "Public forms"
-  );
-}
-
-export async function sendPublicFormEmailSignInLink(
-  email: string,
-  returnUrl: string
-): Promise<void> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !publicFormsFirebaseConfigured) {
-    throw new Error("Public forms are not configured for this build.");
-  }
-  const {sendSignInLinkToEmail} = await import("firebase/auth");
-  await sendSignInLinkToEmail(runtime.auth, email, {
-    url: returnUrl,
-    handleCodeInApp: true,
-  });
-}
-
-export async function completePublicFormEmailSignIn(
-  email: string,
-  emailLink: string
-): Promise<User> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !publicFormsFirebaseConfigured) {
-    throw new Error("Public forms are not configured for this build.");
-  }
-  const {signInOrLinkEmailLink} = await import("./firebaseClaimAccountLinking");
-  return signInOrLinkEmailLink(runtime.auth, email, emailLink);
-}
-
-export interface EventRuntimeMission {
-  observerUid: string;
-  targetUid: string;
-  targetDisplayName: string;
-  targetContext: string;
-  question: string;
-  answerOptions: Array<{id: string; label: string}>;
-  status: "active" | "completed" | "expired";
-  selectedAnswerId?: string | null;
-}
-
-export interface EventRuntimeLiveState {
-  assignments: EventSuccessAssignmentDocument[];
-  compatibilityAnswerIds: string[];
-  feedback: EventRuntimeFeedback | null;
-  mission: EventRuntimeMission | null;
-  lateArrival: EventSuccessLateArrivalDocument | null;
-  plan: EventRuntimePlanState | null;
-  standings: EventSuccessStandingsDocument | null;
-  wingmanTargetUid: string | null;
-}
-
-export interface EventRuntimePlanState {
-  attendeePrompt: string | null;
-  activeStepIndex: number;
-  activeRevealRoundIndex: number;
-  publishedRevealRoundIndex: number;
-  publishedRotationRoundIndex: number;
-  revealCountdownSeconds: number | null;
-  revealStartedAtMillis: number | null;
-  revealStatus: "idle" | "countingDown" | "revealed";
-  status: "setup" | "live" | "complete";
-}
-
-export interface EventRuntimeFeedback {
-  welcomeRating: number;
-  structureRating: number;
-  metNewPeopleCount: number;
-  safetyConcern: boolean;
-  privateNote: string | null;
-}
-
-export interface EventRuntimeContext {
-  eventId: string;
-  organizerId: string;
-  uid: string;
-}
-
-export async function getEventRuntimeBootstrap(
-  payload: GetEventRuntimeBootstrapCallablePayload
-): Promise<GetEventRuntimeBootstrapCallableResponse> {
-  return invokeWebsiteCallable(
-    "getEventRuntimeBootstrap",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function claimEventRuntimeAccess(
-  payload: ClaimEventRuntimeAccessCallablePayload
-): Promise<ClaimEventRuntimeAccessCallableResponse> {
-  return invokeWebsiteCallable(
-    "claimEventRuntimeAccess",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function submitEventRuntimeProfile(
-  payload: SubmitEventRuntimeProfileCallablePayload
-): Promise<SubmitEventRuntimeProfileCallableResponse> {
-  return invokeWebsiteCallable(
-    "submitEventRuntimeProfile",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function checkInEventRuntime(
-  payload: CheckInEventRuntimeCallablePayload
-): Promise<CheckInEventRuntimeCallableResponse> {
-  return invokeWebsiteCallable(
-    "checkInEventRuntime",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-/** Opens a host-help case the live console sees; a retry with the same requestId returns it. */
-export async function requestEventRuntimeHostHelp(
-  payload: RequestEventRuntimeHostHelpCallablePayload
-): Promise<RequestEventRuntimeHostHelpCallableResponse> {
-  return invokeWebsiteCallable(
-    "requestEventRuntimeHostHelp",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function heartbeatEventRuntimePresence(
-  eventId: string
-): Promise<HeartbeatEventSuccessPresenceCallableResponse> {
-  return invokeWebsiteCallable(
-    "heartbeatEventSuccessPresence",
-    {eventId, surface: "web"},
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function getEventSuccessConversationGraph(
-  eventId: string
-): Promise<GetEventSuccessConversationGraphCallableResponse> {
-  return invokeWebsiteCallable(
-    "getEventSuccessConversationGraph",
-    {eventId},
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function submitEventSuccessConversationGraph(
-  payload: SubmitEventSuccessConversationGraphCallablePayload
-): Promise<SubmitEventSuccessConversationGraphCallableResponse> {
-  return invokeWebsiteCallable(
-    "submitEventSuccessConversationGraph",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function createEventRuntimeAttendeeInviteLink(
-  eventId: string,
-  label: string
-): Promise<EventRuntimeAttendeeInviteLink> {
-  const payload: CreateEventInviteLinkCallablePayload = {
-    eventId,
-    label,
-    source: "runtime_web",
-    linkKind: "attendeeReferrer",
-  };
-  return invokeWebsiteCallable(
-    "createAttendeeInviteLink",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function recordEventRuntimeShareIntent(
-  payload: Pick<
-    RecordEventShareIntentCallablePayload,
-    "eventId" | "inviteLinkId" | "channelHint"
-  >
-): Promise<{recorded: boolean}> {
-  return invokeWebsiteCallable(
-    "recordEventShareIntent",
-    {...payload, surface: "runtimeWeb"},
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function startEventRuntimeFirstHello(
-  payload: StartEventSuccessFirstHelloMissionCallablePayload
-): Promise<{missionId: string; attended?: boolean}> {
-  return invokeWebsiteCallable(
-    "startEventSuccessFirstHelloMission",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function completeEventRuntimeFirstHello(
-  payload: CompleteEventSuccessFirstHelloMissionCallablePayload
-): Promise<{attended: boolean}> {
-  return invokeWebsiteCallable(
-    "completeEventSuccessFirstHelloMission",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function fetchEventRuntimeWingmanCandidates(
-  payload: EventIdCallablePayload
-): Promise<FetchEventSuccessWingmanCandidatesCallableResponse> {
-  return invokeWebsiteCallable(
-    "fetchEventSuccessWingmanCandidates",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function submitEventRuntimeWingmanRequest(
-  payload: SubmitEventSuccessWingmanRequestCallablePayload
-): Promise<{saved: boolean}> {
-  return invokeWebsiteCallable(
-    "submitEventSuccessWingmanRequest",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function withdrawEventRuntimeWingmanRequest(
-  payload: EventIdCallablePayload
-): Promise<{withdrawn: boolean}> {
-  return invokeWebsiteCallable(
-    "withdrawEventSuccessWingmanRequest",
-    payload,
-    eventRuntimeFirebaseConfigured
-  );
-}
-
-/**
- * A market's public founding-host counter (publicFoundingHostOffers, public
- * read), or null when the build has no Firebase config or the market has
- * none. The callback gets the raw document; the caller decides what it shows.
- */
-export async function watchPublicFoundingHostOffer(
-  marketId: string,
-  onValue: (value: unknown) => void,
-  onError: (error: Error) => void,
-): Promise<() => void> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime) {
-    onValue(null);
-    return () => undefined;
-  }
-  const {doc, onSnapshot} = await import("firebase/firestore");
-  return onSnapshot(
-    doc(runtime.firestore, "publicFoundingHostOffers", marketId),
-    (snapshot) => onValue(snapshot.exists() ? snapshot.data() : null),
-    onError,
-  );
-}
-
-export async function watchEventRuntimeLiveState(
-  context: EventRuntimeContext,
-  onValue: (state: EventRuntimeLiveState) => void,
-  onError: (error: Error) => void
-): Promise<() => void> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !eventRuntimeFirebaseConfigured) {
-    throw new Error("Event runtime is not configured for this build.");
-  }
-  const {doc, onSnapshot} = await import("firebase/firestore");
-  const state: EventRuntimeLiveState = {
-    assignments: [],
-    compatibilityAnswerIds: [],
-    feedback: null,
-    mission: null,
-    lateArrival: null,
-    plan: null,
-    standings: null,
-    wingmanTargetUid: null,
-  };
-  const assignmentByModule = new Map<string, EventSuccessAssignmentDocument>();
-  const emit = () => onValue({
-    ...state,
-    assignments: [...assignmentByModule.values()],
-    compatibilityAnswerIds: [...state.compatibilityAnswerIds],
-  });
-  const subscriptions = ["micro_pods", "guided_rotations"].map((moduleId) =>
-    onSnapshot(
-      doc(
-        runtime.firestore,
-        "eventSuccessAssignments",
-        `${context.eventId}_${moduleId}_${context.uid}`
-      ),
-      (snapshot) => {
-        if (snapshot.exists()) {
-          assignmentByModule.set(
-            moduleId,
-            snapshot.data() as EventSuccessAssignmentDocument
-          );
-        } else {
-          assignmentByModule.delete(moduleId);
-        }
-        emit();
-      },
-      (error) => onError(error)
-    ));
-  subscriptions.push(onSnapshot(
-    doc(runtime.firestore, "eventSuccessPlans", context.eventId),
-    (snapshot) => {
-      const data = snapshot.data();
-      const structureConfig = isRecord(data?.structureConfig) ?
-        data.structureConfig : null;
-      state.plan = data ? {
-        attendeePrompt: typeof data.attendeePrompt === "string" ?
-          data.attendeePrompt : null,
-        activeStepIndex: Number.isInteger(data.activeStepIndex) ?
-          Number(data.activeStepIndex) : 0,
-        activeRevealRoundIndex: Number.isInteger(data.activeRevealRoundIndex) ?
-          Number(data.activeRevealRoundIndex) : 0,
-        publishedRevealRoundIndex: Number.isInteger(data.publishedRevealRoundIndex) ?
-          Number(data.publishedRevealRoundIndex) : -1,
-        publishedRotationRoundIndex: Number.isInteger(
-          data.publishedRotationRoundIndex
-        ) ? Number(data.publishedRotationRoundIndex) : -1,
-        revealCountdownSeconds: Number.isInteger(
-          structureConfig?.revealCountdownSeconds
-        ) ? Number(structureConfig?.revealCountdownSeconds) : null,
-        revealStartedAtMillis: eventRuntimeTimestampMillis(
-          data.revealStartedAt
-        ),
-        revealStatus: data.revealStatus === "countingDown" ||
-          data.revealStatus === "revealed" ? data.revealStatus : "idle",
-        status: data.status === "live" || data.status === "complete" ?
-          data.status : "setup",
-      } : null;
-      emit();
-    },
-    (error) => onError(error)
-  ));
-  subscriptions.push(onSnapshot(
-    doc(
-      runtime.firestore,
-      "eventSuccessLateArrivals",
-      `${context.eventId}_${context.uid}`
-    ),
-    (snapshot) => {
-      state.lateArrival = snapshot.exists() ?
-        snapshot.data() as EventSuccessLateArrivalDocument : null;
-      emit();
-    },
-    (error) => onError(error)
-  ));
-  subscriptions.push(onSnapshot(
-    doc(runtime.firestore, "eventSuccessStandings", context.eventId),
-    (snapshot) => {
-      state.standings = snapshot.exists() ?
-        snapshot.data() as EventSuccessStandingsDocument : null;
-      emit();
-    },
-    (error) => onError(error)
-  ));
-  subscriptions.push(onSnapshot(
-    doc(
-      runtime.firestore,
-      "eventSuccessArrivalMissions",
-      `${context.eventId}_${context.uid}`
-    ),
-    (snapshot) => {
-      state.mission = snapshot.exists() ?
-        snapshot.data() as EventRuntimeMission : null;
-      emit();
-    },
-    (error) => onError(error)
-  ));
-  subscriptions.push(onSnapshot(
-    doc(
-      runtime.firestore,
-      "eventSuccessFeedback",
-      `${context.eventId}_${context.uid}`
-    ),
-    (snapshot) => {
-      const data = snapshot.data();
-      state.feedback = data ? {
-        welcomeRating: Number(data.welcomeRating),
-        structureRating: Number(data.structureRating),
-        metNewPeopleCount: Number(data.metNewPeopleCount),
-        safetyConcern: data.safetyConcern === true,
-        privateNote: typeof data.privateNote === "string" ? data.privateNote : null,
-      } : null;
-      emit();
-    },
-    (error) => onError(error)
-  ));
-  subscriptions.push(onSnapshot(
-    doc(
-      runtime.firestore,
-      "eventSuccessCompatibilityResponses",
-      `${context.eventId}_${context.uid}`
-    ),
-    (snapshot) => {
-      const answerIds = snapshot.data()?.answerIds;
-      state.compatibilityAnswerIds = Array.isArray(answerIds) ?
-        answerIds.filter((value): value is string => typeof value === "string") :
-        [];
-      emit();
-    },
-    (error) => onError(error)
-  ));
-  subscriptions.push(onSnapshot(
-    doc(
-      runtime.firestore,
-      "eventSuccessWingmanRequests",
-      `${context.eventId}_${context.uid}`
-    ),
-    (snapshot) => {
-      const data = snapshot.data();
-      state.wingmanTargetUid = data?.status === "active" &&
-        typeof data.targetUid === "string" ? data.targetUid : null;
-      emit();
-    },
-    (error) => onError(error)
-  ));
-  return () => subscriptions.forEach((unsubscribe) => unsubscribe());
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
-export function eventRuntimeTimestampMillis(value: unknown): number | null {
-  if (!isRecord(value)) return null;
-  const toMillis = value.toMillis;
-  if (typeof toMillis === "function") {
-    const millis = Number(toMillis.call(value));
-    return Number.isFinite(millis) ? millis : null;
-  }
-  const seconds = value.seconds ?? value._seconds;
-  const nanoseconds = value.nanoseconds ?? value._nanoseconds ?? 0;
-  if (typeof seconds !== "number" || typeof nanoseconds !== "number") {
-    return null;
-  }
-  const millis = seconds * 1000 + Math.floor(nanoseconds / 1_000_000);
-  return Number.isFinite(millis) ? millis : null;
-}
-
-export async function saveEventRuntimeCompatibilityAnswers(
-  context: EventRuntimeContext,
-  answerIds: string[]
-): Promise<void> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !eventRuntimeFirebaseConfigured) {
-    throw new Error("Event runtime is not configured for this build.");
-  }
-  const {doc, getDoc, serverTimestamp, setDoc} = await import(
-    "firebase/firestore"
-  );
-  const ref = doc(
-    runtime.firestore,
-    "eventSuccessCompatibilityResponses",
-    `${context.eventId}_${context.uid}`
-  );
-  const existing = await getDoc(ref);
-  await setDoc(ref, {
-    eventId: context.eventId,
-    organizerId: context.organizerId,
-    uid: context.uid,
-    answerIds,
-    createdAt: existing.data()?.createdAt ?? serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
-}
-
-export async function saveEventRuntimeFeedback(
-  context: EventRuntimeContext,
-  feedback: EventRuntimeFeedback
-): Promise<void> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !eventRuntimeFirebaseConfigured) {
-    throw new Error("Event runtime is not configured for this build.");
-  }
-  const {doc, getDoc, serverTimestamp, setDoc} = await import(
-    "firebase/firestore"
-  );
-  const ref = doc(
-    runtime.firestore,
-    "eventSuccessFeedback",
-    `${context.eventId}_${context.uid}`
-  );
-  const existing = await getDoc(ref);
-  await setDoc(ref, {
-    eventId: context.eventId,
-    organizerId: context.organizerId,
-    uid: context.uid,
-    ...feedback,
-    createdAt: existing.data()?.createdAt ?? serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
-}
-
-export async function signInForClaim() {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime) {
-    throw new Error("Claim sign-in is not configured for this build.");
-  }
-  const {signInOrLinkClaimGoogle} = await import("./firebaseClaimAccountLinking");
-  await signInOrLinkClaimGoogle(runtime.auth);
-}
-
-export async function signOutClaimUser() {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime) return;
-  const {signOut} = await import("firebase/auth");
-  await signOut(runtime.auth);
-}
-
-export async function requestOrganizerClaim(
-  payload: RequestOrganizerClaimPayload
-): Promise<RequestOrganizerClaimResponse> {
-  return invokeWebsiteCallable<RequestOrganizerClaimPayload, RequestOrganizerClaimResponse>(
-    "requestOrganizerClaim", payload, claimFirebaseConfigured, "Claim requests");
-}
-
-export type OrganizerClaimVerificationOptions = OrganizerClaimVerificationOptionsCallableResponse;
-export type OrganizerClaimVerificationStart = StartOrganizerClaimVerificationCallableResponse;
-export type OrganizerClaimVerificationConfirm = ConfirmOrganizerClaimVerificationCallableResponse;
-export type OrganizerClaimVerificationMethod = StartOrganizerClaimVerificationCallablePayload["method"];
-
-/** What the claim page needs from a verification attempt it is waiting on. */
-export interface OrganizerClaimAttemptState {
-  status: "awaitingProof" | "verified" | "expired" | "superseded";
-  expiresAtMillis: number | null;
-  rejection: "wrongSender" | "codeNotFound" | null;
-}
-
-export async function getOrganizerClaimVerificationOptions(
-  payload: GetOrganizerClaimVerificationOptionsCallablePayload
-): Promise<OrganizerClaimVerificationOptions> {
-  return invokeWebsiteCallable("getOrganizerClaimVerificationOptions", payload,
-    claimFirebaseConfigured, "Claim checks");
-}
-
-export async function startOrganizerClaimVerification(
-  payload: StartOrganizerClaimVerificationCallablePayload
-): Promise<OrganizerClaimVerificationStart> {
-  return invokeWebsiteCallable("startOrganizerClaimVerification", payload,
-    claimFirebaseConfigured, "Claim checks");
-}
-
-export async function confirmOrganizerClaimVerification(
-  payload: ConfirmOrganizerClaimVerificationCallablePayload
-): Promise<OrganizerClaimVerificationConfirm> {
-  return invokeWebsiteCallable("confirmOrganizerClaimVerification", payload,
-    claimFirebaseConfigured, "Claim checks");
-}
-
-/** Follows the requester's own attempt, which the Instagram webhook completes. */
-export async function watchOrganizerClaimAttempt(
-  attemptId: string,
-  onValue: (state: OrganizerClaimAttemptState | null) => void,
-  onError: (error: Error) => void
-): Promise<() => void> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !claimFirebaseConfigured) {
-    throw new Error("Claim checks are not configured for this build.");
-  }
-  const {doc, onSnapshot} = await import("firebase/firestore");
-  return onSnapshot(doc(runtime.firestore, "organizerClaimVerifications", attemptId), (snapshot) => {
-    const data = snapshot.data();
-    if (!data) {
-      onValue(null);
-      return;
-    }
-    const expiresAt = data.expiresAt as {toMillis?: () => number} | undefined;
-    const rejection = (data.lastRejection as {reason?: unknown} | null | undefined)?.reason;
-    onValue({
-      status: data.status as OrganizerClaimAttemptState["status"],
-      expiresAtMillis: typeof expiresAt?.toMillis === "function" ? expiresAt.toMillis() : null,
-      rejection: rejection === "wrongSender" || rejection === "codeNotFound" ? rejection : null,
-    });
-  }, (error) => onError(error));
-}
-
-export async function createPublicOrganizerReview(
-  payload: CreatePublicOrganizerReviewPayload
-): Promise<CreatePublicOrganizerReviewResponse> {
-  return invokeWebsiteCallable<CreatePublicOrganizerReviewPayload, CreatePublicOrganizerReviewResponse>(
-    "createPublicOrganizerReview", payload, publicReviewsFirebaseConfigured, "Public review writes");
-}
-
-export async function recordOrganizerAnalyticsEvent(
-  payload: RecordOrganizerAnalyticsEventPayload
-): Promise<RecordOrganizerAnalyticsEventResponse> {
-  if (!publicAnalyticsFirebaseConfigured) return {accepted: false};
-  return invokeWebsiteCallable<RecordOrganizerAnalyticsEventPayload, RecordOrganizerAnalyticsEventResponse>(
-    "recordOrganizerAnalyticsEvent", payload, publicAnalyticsFirebaseConfigured, "Organiser analytics events");
-}
-
-export async function beginWebsiteAccountPhoneVerification(
-  phoneNumber: string, recaptchaContainerId: string
-): Promise<PublicEventPhoneVerification> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !claimFirebaseConfigured) {
-    throw new Error("Account verification is not configured for this build.");
-  }
-  const {RecaptchaVerifier} = await import("firebase/auth");
-  const {beginClaimPhoneLink} = await import("./firebaseClaimAccountLinking");
-  const verifier = new RecaptchaVerifier(runtime.auth, recaptchaContainerId, {size: "invisible"});
-  try {
-    const challenge = await beginClaimPhoneLink(runtime.auth, phoneNumber, verifier);
-    return {clear: () => verifier.clear(),
-      confirm: async (code) => (await challenge.confirm(code)).user};
-  } catch (error) {verifier.clear(); throw error;}
-}
-
-export async function beginPublicEventPhoneVerification(
-  phoneNumber: string,
-  recaptchaContainerId: string
-): Promise<PublicEventPhoneVerification> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !(
-    publicEventRegistrationFirebaseConfigured || publicFormsFirebaseConfigured
-  )) {
-    throw new Error("Website phone verification is not configured for this build.");
-  }
-  const {RecaptchaVerifier} = await import("firebase/auth");
-  const {beginClaimPhoneLink} = await import("./firebaseClaimAccountLinking");
-  const verifier = new RecaptchaVerifier(
-    runtime.auth,
-    recaptchaContainerId,
-    {size: "invisible"}
-  );
-  try {
-    const confirmation = await beginClaimPhoneLink(
-      runtime.auth,
-      phoneNumber,
-      verifier
-    );
-    return {
-      clear: () => verifier.clear(),
-      confirm: async (code) => (await confirmation.confirm(code)).user,
-    };
-  } catch (error) {
-    verifier.clear();
-    throw error;
-  }
-}
-
-/**
- * The try-it commands (contracts/commands/catalog.json) by callable: each
- * one's payload and response, generated from its schemas. The website's
- * command client (shared/api/tryItCommands.ts) is the only caller.
- */
-export interface TryItCommandCallables {
-  ensureTryItWorkspace: {payload: EnsureTryItWorkspaceCallablePayload; response: EnsureTryItWorkspaceCallableResponse};
-  importOrganizerFromLink: {payload: ImportOrganizerFromLinkCallablePayload; response: ImportOrganizerFromLinkCallableResponse};
-  importEventFromLink: {payload: ImportEventFromLinkCallablePayload; response: ImportEventFromLinkCallableResponse};
-  createPromotionKit: {payload: CreatePromotionKitCallablePayload; response: CreatePromotionKitCallableResponse};
-  importGuestList: {payload: ImportGuestListCallablePayload; response: ImportGuestListCallableResponse};
-  importPastSales: {payload: ImportPastSalesCallablePayload; response: ImportPastSalesCallableResponse};
-  planNight: {payload: PlanNightCallablePayload; response: PlanNightCallableResponse};
-  importFormFromLink: {payload: ImportFormFromLinkCallablePayload; response: ImportFormFromLinkCallableResponse};
-}
-
-/** Who a try-it command would run as: the signed-in account and its phone, when Firebase verified one by code. */
-export interface TryItCaller {
-  readonly uid: string;
-  readonly phoneNumber: string | null;
-}
-
-/**
- * The signed-in website account a try-it tool would act as, once the saved
- * sign-in is restored; null when no one is signed in or this build has no
- * Firebase. The one sign-in sheet (features/account) links or signs in the
- * phone, so a caller with a phoneNumber passes requirePhoneVerifiedCaller.
- */
-export async function readTryItCaller(): Promise<TryItCaller | null> {
-  if (!claimFirebaseConfigured) return null;
-  const runtime = await getFirebaseRuntime();
-  if (!runtime) return null;
-  await runtime.auth.authStateReady();
-  const user = runtime.auth.currentUser;
-  return user && !user.isAnonymous ? {uid: user.uid, phoneNumber: user.phoneNumber ?? null} : null;
-}
-
-/** One try-it command call as the signed-in account, with the site's App Check token, like every website callable. */
-export async function invokeTryItCommand<Name extends keyof TryItCommandCallables>(
-  callable: Name, payload: TryItCommandCallables[Name]["payload"]
-): Promise<TryItCommandCallables[Name]["response"]> {
-  return invokeWebsiteCallable<TryItCommandCallables[Name]["payload"], TryItCommandCallables[Name]["response"]>(
-    callable, payload, claimFirebaseConfigured, "Try-it tools");
-}
-
-export type TryItRehearsalPayload = CreateEventRehearsalCallablePayload;
-export type TryItRehearsalResponse = CreateEventRehearsalCallableResponse;
-
-/**
- * The plan-a-night tool's practice session: createEventRehearsal for the
- * visitor's try-it workspace, with the setup night.plan answered. Not a
- * command, so it has no envelope; it is the same callable Catch Host's
- * dress rehearsal uses, as the signed-in account with App Check.
- */
-export async function createTryItRehearsal(payload: TryItRehearsalPayload): Promise<TryItRehearsalResponse> {
-  return invokeWebsiteCallable<TryItRehearsalPayload, TryItRehearsalResponse>(
-    "createEventRehearsal", payload, claimFirebaseConfigured, "Try-it tools");
-}
-
-export async function registerPublicEvent(
-  payload: RegisterPublicEventPayload
-): Promise<RegisterPublicEventResponse> {
-  return invokeWebsiteCallable<RegisterPublicEventPayload, RegisterPublicEventResponse>(
-    "registerPublicEvent", payload, publicEventRegistrationFirebaseConfigured, "Website event registrations");
-}
-
-export async function recordEventInviteLinkOpen(
-  payload: RecordEventInviteLinkOpenCallablePayload
-): Promise<{accepted: boolean; inviteLinkId: string}> {
-  return invokeWebsiteCallable(
-    "recordEventInviteLinkOpen",
-    payload,
-    publicEventRegistrationFirebaseConfigured || eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function resolveEventInviteLanding(
-  payload: ResolveEventInviteLandingCallablePayload
-): Promise<ResolveEventInviteLandingCallableResponse> {
-  return invokeWebsiteCallable(
-    "resolveEventInviteLanding",
-    payload,
-    publicEventRegistrationFirebaseConfigured || eventRuntimeFirebaseConfigured
-  );
-}
-
-export async function getEventRehearsalGuestBootstrap(
-  payload: GetEventRehearsalGuestBootstrapCallablePayload
-): Promise<EventRehearsalGuestBootstrapCallableResponse> {
-  return invokeWebsiteCallable(
-    "getEventRehearsalGuestBootstrap",
-    payload,
-    eventRuntimeFirebaseConfigured,
-    "Event rehearsal"
-  );
-}
-
-export async function submitEventRehearsalGuestAction(
-  payload: SubmitEventRehearsalGuestActionCallablePayload
-): Promise<EventRehearsalGuestBootstrapCallableResponse> {
-  return invokeWebsiteCallable(
-    "submitEventRehearsalGuestAction",
-    payload,
-    eventRuntimeFirebaseConfigured,
-    "Event rehearsal"
-  );
-}
-
-async function getFirebaseRuntime() {
-  if (!config || !appCheckSiteKey) return null;
-  runtimePromise ??= loadFirebaseRuntime();
-  return runtimePromise;
-}
-
-async function getPublicFirebaseRuntime() {
-  if (!config || !appCheckSiteKey) return null;
-  publicRuntimePromise ??= loadPublicFirebaseRuntime();
-  return publicRuntimePromise;
-}
-
-async function loadPublicFirebaseRuntime():
-  Promise<PublicFirebaseRuntime | null> {
-  if (!config || !appCheckSiteKey) return null;
-  const [
-    {initializeApp},
-    {initializeAppCheck, ReCaptchaEnterpriseProvider},
-    {getFunctions},
-  ] = await Promise.all([
-    import("firebase/app"),
-    import("firebase/app-check"),
-    import("firebase/functions"),
-  ]);
-  const app = initializeApp(config);
-  const appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey),
-    isTokenAutoRefreshEnabled: true,
-  });
-  return {app, appCheck, functions: getFunctions(app, "asia-south1")};
-}
-
-/**
- * The site's App Check token for the HTTP Functions that require one, such
- * as the website lead intake behind /api/join-waitlist (sent as
- * X-Firebase-AppCheck). Firebase and App Check load on the first call, not
- * with the page. Null where this build has no Firebase or App Check
- * configuration, or when a token cannot be minted: it never throws, and the
- * endpoint answers a missing token with 401.
- */
-export async function getWebsiteAppCheckToken(): Promise<string | null> {
-  try {
-    const runtime = await getPublicFirebaseRuntime();
-    if (!runtime) return null;
-    return (await appCheckTokenWithinDeadline(runtime.appCheck)).token || null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * The signed-in website account's Firebase ID token, for the one website lead
- * that credits its sender: a host referral, which the lead intake reads as
- * `Authorization: Bearer` (functions/src/waitlist/websiteLead.ts). Firebase
- * Auth loads on the first call, not with the page, and the call waits for the
- * saved sign-in to be restored. Null when no one is signed in, the account is
- * anonymous (the intake would not credit it), this build has no Firebase
- * configuration, or a token cannot be read: it never throws, so a referral
- * without an account goes exactly as before.
- */
-export async function getWebsiteReferrerIdToken(): Promise<string | null> {
-  if (!claimFirebaseConfigured) return null;
-  try {
-    const runtime = await getFirebaseRuntime();
-    if (!runtime) return null;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const restored = await Promise.race([
-      runtime.auth.authStateReady().then(() => true),
-      new Promise<false>((resolve) => {timer = setTimeout(() => resolve(false), REFERRER_SIGN_IN_DEADLINE_MS);}),
-    ]).finally(() => clearTimeout(timer));
-    const user = restored ? runtime.auth.currentUser : null;
-    if (!user || user.isAnonymous) return null;
-    return (await user.getIdToken()) || null;
-  } catch {
-    return null;
-  }
-}
-
-/** A referral waits this long for a saved sign-in, then goes without one. */
-const REFERRER_SIGN_IN_DEADLINE_MS = 5_000;
-
-/**
- * How long a website call waits for its App Check token. App Check mints the
- * token through the reCAPTCHA Enterprise script, which has no failure path:
- * when a content blocker, a network or a firewall stops the script, the token
- * never settles. The Functions SDK starts its own timeout only after the token,
- * so without this a call, and the page waiting on it, would wait forever.
- */
-const APP_CHECK_TOKEN_DEADLINE_MS = 15_000;
-
-class AppCheckDeadlineError extends Error {
-  constructor() {
-    super("App Check could not start in this browser.");
-    this.name = "AppCheckDeadlineError";
-  }
-}
-
-/** App Check's token, or an AppCheckDeadlineError once the deadline passes. */
-async function appCheckTokenWithinDeadline(appCheck: AppCheck) {
-  const {getToken} = await import("firebase/app-check");
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const deadline = new Promise<never>((_resolve, reject) => {
-    timer = setTimeout(() => reject(new AppCheckDeadlineError()), APP_CHECK_TOKEN_DEADLINE_MS);
-  });
-  try {
-    return await Promise.race([getToken(appCheck), deadline]);
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-/**
- * The app's one Firestore instance. In a browser it keeps an IndexedDB cache
- * shared across tabs, so a repeat visit paints from cache while the listener
- * catches up; rules still decide every server read. Firestore can be set up
- * only once per app, so a second caller, or a browser without IndexedDB,
- * gets the existing or in-memory instance.
- */
-async function websiteFirestore(app: FirebaseApp): Promise<Firestore> {
-  const firestore = await import("firebase/firestore");
-  if (typeof window === "undefined" || typeof indexedDB === "undefined") return firestore.getFirestore(app);
-  try {
-    return firestore.initializeFirestore(app, {localCache: firestore.persistentLocalCache({
-      tabManager: firestore.persistentMultipleTabManager()})});
-  } catch {
-    return firestore.getFirestore(app);
-  }
-}
-
-async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {
-  const [publicRuntime, {getAuth}] = await Promise.all([
-    getPublicFirebaseRuntime(),
-    import("firebase/auth"),
-  ]);
-  if (!publicRuntime) return null;
-  const {app, appCheck, functions} = publicRuntime;
-  return {
-    app,
-    appCheck,
-    auth: getAuth(app),
-    firestore: await websiteFirestore(app),
-    functions,
-  };
-}
-
-/**
- * Firestore for a signed-in page's own read models, or null when this build
- * has no account sign-in. The page listens under the same rules the apps do.
- */
-export async function getSignedInFirestore(): Promise<Firestore | null> {
-  const runtime = await getFirebaseRuntime();
-  return runtime && claimFirebaseConfigured ? runtime.firestore : null;
-}
-
-/**
- * Every website callable goes through here, so each one waits a bounded time
- * for App Check. "public" uses the runtime without Auth or Firestore, for
- * calls that never act as a signed-in person.
- */
-async function invokeWebsiteCallable<Request, Response>(
-  name: string,
-  payload: Request,
-  configured: boolean,
-  capabilityLabel = "Event runtime",
-  runtimeKind: "full" | "public" = "full"
-): Promise<Response> {
-  const runtime = runtimeKind === "public" ? await getPublicFirebaseRuntime() : await getFirebaseRuntime();
-  if (!runtime || !configured) {
-    throw new Error(`${capabilityLabel} are not configured for this build.`);
-  }
-  // A token that cannot be minted in time fails the call instead of holding
-  // it. A token exchange that fails outright still lets the call go without
-  // one, as the SDK does, and the function answers for itself.
-  await appCheckTokenWithinDeadline(runtime.appCheck).catch((error: unknown) => {
-    if (error instanceof AppCheckDeadlineError) throw error;
-  });
-  const {httpsCallable} = await import("firebase/functions");
-  const callable = httpsCallable<Request, Response>(runtime.functions, name);
-  return (await callable(payload)).data;
-}
-
-export async function getEventAssistanceGuestView(
-  payload: GetEventAssistanceGuestViewCallablePayload
-): Promise<EventAssistanceGuestViewCallableResponse> {
-  return invokeWebsiteCallable("getEventAssistanceGuestView", payload,
-    eventRuntimeFirebaseConfigured, "Event updates");
-}
-
-export async function submitEventAssistanceGuestChoice(
-  payload: SubmitEventAssistanceGuestChoiceCallablePayload
-): Promise<SubmitEventAssistanceGuestChoiceCallableResponse> {
-  return invokeWebsiteCallable("submitEventAssistanceGuestChoice", payload,
-    eventRuntimeFirebaseConfigured, "Event updates");
-}
-
-export async function listEventSmsPreferences(payload: ListEventSmsPreferencesCallablePayload): Promise<ListEventSmsPreferencesCallableResponse> {
-  return invokeWebsiteCallable("listEventSmsPreferences", payload,
-    eventRuntimeFirebaseConfigured, "Event text preferences");
-}
-
-export async function getEventAssistanceSmsPreference(
-  payload: GetEventAssistanceSmsPreferenceCallablePayload
-): Promise<EventAssistanceSmsPreferenceCallableResponse> {
-  return invokeWebsiteCallable("getEventAssistanceSmsPreference", payload,
-    eventRuntimeFirebaseConfigured, "Event text preferences");
-}
-
-export async function setEventAssistanceSmsPreference(
-  payload: SetEventAssistanceSmsPreferenceCallablePayload
-): Promise<EventAssistanceSmsPreferenceCallableResponse> {
-  return invokeWebsiteCallable("setEventAssistanceSmsPreference", payload,
-    eventRuntimeFirebaseConfigured, "Event text preferences");
-}
-
-export async function getEventAssistanceSmsWithdrawal(
-  payload: GetEventAssistanceSmsWithdrawalCallablePayload
-): Promise<EventAssistanceSmsWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("getEventAssistanceSmsWithdrawal", payload,
-    eventRuntimeFirebaseConfigured, "Event text withdrawal");
-}
-export async function withdrawEventAssistanceSms(
-  payload: WithdrawEventAssistanceSmsCallablePayload
-): Promise<EventAssistanceSmsWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("withdrawEventAssistanceSms", payload,
-    eventRuntimeFirebaseConfigured, "Event text withdrawal");
-}
-
-export async function getEventWhatsappWithdrawal(
-  payload: GetEventWhatsappWithdrawalCallablePayload
-): Promise<EventWhatsappWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("getEventWhatsappWithdrawal", payload,
-    eventRuntimeFirebaseConfigured, "Event WhatsApp withdrawal");
-}
-export async function withdrawEventWhatsapp(
-  payload: WithdrawEventWhatsappCallablePayload
-): Promise<EventWhatsappWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("withdrawEventWhatsapp", payload,
-    eventRuntimeFirebaseConfigured, "Event WhatsApp withdrawal");
-}
-
-export async function getEventRcsWithdrawal(
-  payload: GetEventRcsWithdrawalCallablePayload
-): Promise<EventRcsWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("getEventRcsWithdrawal", payload,
-    eventRuntimeFirebaseConfigured, "Event RCS withdrawal");
-}
-export async function withdrawEventRcs(
-  payload: WithdrawEventRcsCallablePayload
-): Promise<EventRcsWithdrawalCallableResponse> {
-  return invokeWebsiteCallable("withdrawEventRcs", payload,
-    eventRuntimeFirebaseConfigured, "Event RCS withdrawal");
-}
-
-export async function listEventRcsPreferences(payload: ListEventRcsPreferencesCallablePayload): Promise<ListEventRcsPreferencesCallableResponse> {
-  return invokeWebsiteCallable("listEventRcsPreferences", payload,
-    eventRuntimeFirebaseConfigured, "Event RCS preferences");
-}
-
-export async function getEventRcsPreference(payload: GetEventRcsPreferenceCallablePayload): Promise<EventRcsPreferenceCallableResponse> {
-  return invokeWebsiteCallable("getEventRcsPreference", payload,
-    eventRuntimeFirebaseConfigured, "Event RCS preferences");
-}
-
-export async function setEventRcsPreference(payload: SetEventRcsPreferenceCallablePayload): Promise<EventRcsPreferenceCallableResponse> {
-  return invokeWebsiteCallable("setEventRcsPreference", payload,
-    eventRuntimeFirebaseConfigured, "Event RCS preferences");
-}
-
-export async function listEventWhatsappPreferences(payload: ListEventWhatsappPreferencesCallablePayload): Promise<ListEventWhatsappPreferencesCallableResponse> {
-  return invokeWebsiteCallable("listEventWhatsappPreferences", payload,
-    eventRuntimeFirebaseConfigured, "Event WhatsApp preferences");
-}
-
-export async function getEventWhatsappPreference(payload: GetEventWhatsappPreferenceCallablePayload): Promise<EventWhatsappPreferenceCallableResponse> {
-  return invokeWebsiteCallable("getEventWhatsappPreference", payload,
-    eventRuntimeFirebaseConfigured, "Event WhatsApp preferences");
-}
-
-export async function setEventWhatsappPreference(payload: SetEventWhatsappPreferenceCallablePayload): Promise<EventWhatsappPreferenceCallableResponse> {
-  return invokeWebsiteCallable("setEventWhatsappPreference", payload,
-    eventRuntimeFirebaseConfigured, "Event WhatsApp preferences");
-}
-
-export async function getProgramHouseholdRsvpView(
-  payload: GetProgramHouseholdRsvpViewCallablePayload
-): Promise<ProgramHouseholdRsvpViewCallableResponse> {
-  return invokeWebsiteCallable("getProgramHouseholdRsvpView", payload,
-    eventRuntimeFirebaseConfigured, "Household RSVP");
-}
-
-export async function submitProgramHouseholdRsvp(
-  payload: SubmitProgramHouseholdRsvpCallablePayload
-): Promise<SubmitProgramHouseholdRsvpCallableResponse> {
-  return invokeWebsiteCallable("submitProgramHouseholdRsvp", payload,
-    eventRuntimeFirebaseConfigured, "Household RSVP");
-}
-
-/**
- * Absolute URL for the server-generated household itinerary feed. The token
- * rides in the query string of a plain navigation/download, matching how
- * calendar clients fetch webcal URLs; it is never embedded in page state or
- * analytics.
- */
-export function programHouseholdItineraryIcsUrl(token: string): string | null {
-  const projectId = config?.projectId;
-  if (!projectId) return null;
-  return `https://asia-south1-${projectId}.cloudfunctions.net/` +
-    `programHouseholdItineraryIcs?token=${encodeURIComponent(token)}`;
-}
-
-/** The programme's token links (P4.10): each read takes the link's own signed token. */
+  EventRuntimeBootstrap,
+  EventRehearsalGuestBootstrap,
+  EventRehearsalGuestAction,
+  EventSuccessConversationGraph,
+  EventRuntimeAttendeeInviteLink,
+  EventRuntimeMission,
+  EventRuntimeLiveState,
+  EventRuntimePlanState,
+  EventRuntimeFeedback,
+  EventRuntimeContext,
+} from "./services/firebase/eventRuntime";
+export {
+  manageEventOfferCheckout,
+  registerPublicEvent,
+  recordEventInviteLinkOpen,
+  resolveEventInviteLanding,
+  managePublicEventCheckout,
+  subscribePublicCatchEvents,
+  watchGuestEventDocuments,
+  manageEventApprovalNotifications,
+} from "./services/firebase/events";
+export type {
+  RegisterPublicEventPayload,
+  RegisterPublicEventResponse,
+  EventInviteLanding,
+  EventOfferCheckoutResponse,
+  GuestEventDocuments,
+} from "./services/firebase/events";
+export {
+  requestOrganizerClaim,
+  getOrganizerClaimVerificationOptions,
+  startOrganizerClaimVerification,
+  confirmOrganizerClaimVerification,
+  watchOrganizerClaimAttempt,
+} from "./services/firebase/claims";
+export type {
+  RequestOrganizerClaimPayload,
+  OrganizerClaimRole,
+  RequestOrganizerClaimResponse,
+  OrganizerClaimVerificationOptions,
+  OrganizerClaimVerificationStart,
+  OrganizerClaimVerificationConfirm,
+  OrganizerClaimVerificationMethod,
+  OrganizerClaimAttemptState,
+} from "./services/firebase/claims";
+export {
+  watchPublicFoundingHostOffer,
+  createPublicOrganizerReview,
+  recordOrganizerAnalyticsEvent,
+  invokeHostBillingCallable,
+  getOrganizerOwnerView,
+  manageOrganizerOwnerPage,
+  updateOrganizerDescription,
+  setReviewResponse,
+  setOrganizerTrackingSettings,
+} from "./services/firebase/organizers";
+export type {
+  PublicOrganizerReview,
+  CreatePublicOrganizerReviewPayload,
+  CreatePublicOrganizerReviewResponse,
+  RecordOrganizerAnalyticsEventPayload,
+  RecordOrganizerAnalyticsEventResponse,
+  HostBillingCallable,
+} from "./services/firebase/organizers";
+export {
+  getEventAssistanceGuestView,
+  submitEventAssistanceGuestChoice,
+  listEventSmsPreferences,
+  getEventAssistanceSmsPreference,
+  setEventAssistanceSmsPreference,
+  getEventAssistanceSmsWithdrawal,
+  withdrawEventAssistanceSms,
+  getEventWhatsappWithdrawal,
+  withdrawEventWhatsapp,
+  getEventRcsWithdrawal,
+  withdrawEventRcs,
+  listEventRcsPreferences,
+  getEventRcsPreference,
+  setEventRcsPreference,
+  listEventWhatsappPreferences,
+  getEventWhatsappPreference,
+  setEventWhatsappPreference,
+} from "./services/firebase/eventMessaging";
+export {
+  getProgramHouseholdRsvpView,
+  submitProgramHouseholdRsvp,
+  programHouseholdItineraryIcsUrl,
+  getProgramGuestIdStatus,
+  createProgramAssetUpload,
+  uploadProgramAsset,
+  submitProgramGuestId,
+  getProgramHotelHandover,
+  getProgramDriverTrip,
+  getProgramVendorRunSheet,
+  getProgramFamilyView,
+  getProgramHamperWebView,
+  upsertProgramHamper,
+} from "./services/firebase/programmes";
 export type {
   ProgramAssetUploadCallableResponse,
   ProgramDriverTripCallableResponse,
@@ -1518,263 +214,18 @@ export type {
   ProgramVendorRunSheetCallableResponse,
   SubmitProgramGuestIdCallablePayload,
   UpsertProgramHamperCallablePayload,
-};
-
-export async function getProgramGuestIdStatus(
-  payload: GetProgramGuestIdStatusCallablePayload
-): Promise<ProgramGuestIdStatusCallableResponse> {
-  return invokeWebsiteCallable("getProgramGuestIdStatus", payload,
-    eventRuntimeFirebaseConfigured, "Programme links");
-}
-
-export async function createProgramAssetUpload(
-  payload: CreateProgramAssetUploadCallablePayload
-): Promise<ProgramAssetUploadCallableResponse> {
-  return invokeWebsiteCallable("createProgramAssetUpload", payload,
-    eventRuntimeFirebaseConfigured, "Programme links");
-}
-
-/** POSTs one file to the signed policy createProgramAssetUpload returned. */
-export async function uploadProgramAsset(
-  intent: ProgramAssetUploadCallableResponse,
-  file: Blob
-): Promise<void> {
-  const body = new FormData();
-  for (const [key, value] of Object.entries(intent.uploadFields)) {
-    body.append(key, value);
-  }
-  body.append("file", file);
-  const response = await fetch(intent.uploadUrl, {method: "POST", body});
-  if (!response.ok) {
-    throw new Error("The secure file upload failed. Please try again.");
-  }
-}
-
-export async function submitProgramGuestId(
-  payload: SubmitProgramGuestIdCallablePayload
-): Promise<ProgramGuestIdCallableResponse> {
-  return invokeWebsiteCallable("submitProgramGuestId", payload,
-    eventRuntimeFirebaseConfigured, "Programme links");
-}
-
-export async function getProgramHotelHandover(
-  payload: GetProgramHotelHandoverCallablePayload
-): Promise<ProgramHotelHandoverCallableResponse> {
-  return invokeWebsiteCallable("getProgramHotelHandover", payload,
-    eventRuntimeFirebaseConfigured, "Programme links");
-}
-
-export async function getProgramDriverTrip(
-  payload: GetProgramDriverTripCallablePayload
-): Promise<ProgramDriverTripCallableResponse> {
-  return invokeWebsiteCallable("getProgramDriverTrip", payload,
-    eventRuntimeFirebaseConfigured, "Programme links");
-}
-
-export async function getProgramVendorRunSheet(
-  payload: GetProgramVendorRunSheetCallablePayload
-): Promise<ProgramVendorRunSheetCallableResponse> {
-  return invokeWebsiteCallable("getProgramVendorRunSheet", payload,
-    eventRuntimeFirebaseConfigured, "Programme links");
-}
-
-export async function getProgramFamilyView(
-  payload: GetProgramFamilyViewCallablePayload
-): Promise<ProgramFamilyViewCallableResponse> {
-  return invokeWebsiteCallable("getProgramFamilyView", payload,
-    eventRuntimeFirebaseConfigured, "Programme links");
-}
-
-export async function getProgramHamperWebView(
-  payload: GetProgramHamperWebViewCallablePayload
-): Promise<ProgramHamperWebViewCallableResponse> {
-  return invokeWebsiteCallable("getProgramHamperWebView", payload,
-    eventRuntimeFirebaseConfigured, "Programme links");
-}
-
-export async function upsertProgramHamper(
-  payload: UpsertProgramHamperCallablePayload
-): Promise<ProgramHamperCallableResponse> {
-  return invokeWebsiteCallable("upsertProgramHamper", payload,
-    eventRuntimeFirebaseConfigured, "Programme links");
-}
-
-export async function managePublicEventCheckout(payload: ManagePublicEventCheckoutCallablePayload): Promise<ManagePublicEventCheckoutCallableResponse> {
-  return invokeWebsiteCallable("managePublicEventCheckout", payload, publicEventRegistrationFirebaseConfigured, "Event registration");
-}
-
-export async function invokeSalesDemoCallable<Request, Response>(
-  name: "getSalesDemoPreview" | "startSalesDemo" |
-    "getSalesDemoSession" | "advanceSalesDemo" |
-    "getSalesDemoSetup" | "prepareSalesDemoFormDraft" |
-    "createSalesDemoContinuation" | "getSalesDemoContinuation" | "prepareSalesDemoContinuationForm",
-  payload: Request
-): Promise<Response> {
-  return invokeWebsiteCallable<Request, Response>(name, payload,
-    claimFirebaseConfigured, "Private demo");
-}
-
-/** Listed public event copies (#1666), live. Rules list only listed copies and
- * keep events/{id} to the organizer's team. Never deliver Firestore's local
- * cache as authority. */
-export async function subscribePublicCatchEvents(
-  onSnapshotReceived: (snapshot: {
-    metadata: {fromCache: boolean; hasPendingWrites: boolean};
-    size: number; docs: readonly {id: string; data(): unknown}[];
-  }) => void,
-  onUnavailable: () => void
-): Promise<() => void> {
-  const runtime = await getPublicFirebaseRuntime();
-  if (!runtime) throw new Error("Public event service is unavailable.");
-  const {collection, query, where, limit, onSnapshot} =
-    await import("firebase/firestore");
-  const source = query(collection(await websiteFirestore(runtime.app), "publicEvents"),
-    where("listing", "==", "listed"), limit(401));
-  return onSnapshot(source, {includeMetadataChanges: true}, onSnapshotReceived, onUnavailable);
-
-}
-
-
-/** The raw documents behind a guest's step on an event page; the caller parses them. */
-export interface GuestEventDocuments {
-  entry: unknown;
-  status: unknown;
-  bookingFacts: unknown;
-}
-
-/**
- * Listens to the event's guest entry, the signed-in guest's own row for it
- * and their booking facts, and reports all three once each has arrived.
- * The UID comes from the signed-in account; rules let a guest read only
- * their own row and facts.
- */
-export async function watchGuestEventDocuments(
-  eventId: string,
-  uid: string,
-  onValue: (documents: GuestEventDocuments) => void,
-  onError: (error: Error) => void
-): Promise<() => void> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !(publicEventRegistrationFirebaseConfigured || publicFormsFirebaseConfigured)) {
-    throw new Error("Event guest status are not configured for this build.");
-  }
-  const {doc, onSnapshot} = await import("firebase/firestore");
-  const documents: Partial<Record<keyof GuestEventDocuments, unknown>> = {};
-  const listen = (key: keyof GuestEventDocuments, path: string, id: string) =>
-    onSnapshot(doc(runtime.firestore, path, id), (snapshot) => {
-      documents[key] = snapshot.data() ?? null;
-      if ("entry" in documents && "status" in documents && "bookingFacts" in documents) {
-        onValue({entry: documents.entry, status: documents.status, bookingFacts: documents.bookingFacts});
-      }
-    }, (error) => onError(error));
-  const stops = [
-    listen("entry", "eventGuestEntries", eventId),
-    listen("status", "guestEventStatuses", `${eventId}_${uid}`),
-    listen("bookingFacts", "guestBookingFacts", uid),
-  ];
-  return () => stops.forEach((stop) => stop());
-}
-
-/** Explicit account switching is shared by public guest surfaces. */
-export const signOutGuestUser = signOutClaimUser;
-
-
-export async function manageEventApprovalNotifications(
-  payload: ManageEventApprovalNotificationsCallablePayload
-): Promise<ManageEventApprovalNotificationsCallableResponse> {
-  return invokeWebsiteCallable("manageEventApprovalNotifications", payload,
-    publicEventRegistrationFirebaseConfigured || publicFormsFirebaseConfigured,
-    "Application notifications");
-}
-
-/** Verification adds a contact to the current identity; it never signs in as another account. */
-export async function verifyGuestEmail(uid: string, email: string, eventId: string): Promise<void> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime) throw new Error("Authentication unavailable");
-  const {verifyEmailOnCurrentAccount} = await import("./firebaseClaimAccountLinking");
-  await verifyEmailOnCurrentAccount(runtime.auth, uid, email,
-    new URL(`/events/${encodeURIComponent(eventId)}/`, window.location.origin).href);
-}
-
-export async function refreshGuestIdentity(uid: string): Promise<void> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime) throw new Error("Authentication unavailable");
-  const user = runtime.auth.currentUser;
-  if (!user || user.uid !== uid) throw new Error("Account changed");
-  await user.reload();
-  if (runtime.auth.currentUser?.uid !== uid) throw new Error("Account changed");
-  await user.getIdToken(true);
-}
-
-export const beginSalesDemoPhoneVerification = beginWebsiteAccountPhoneVerification;
-export const watchWebsiteAccountAuthState = watchSalesDemoAuthState;
-export function manageWebsiteAccount(payload: ManageWebsiteAccountCallablePayload): Promise<ManageWebsiteAccountCallableResponse> {
-  return invokeWebsiteCallable("manageWebsiteAccount", payload, claimFirebaseConfigured, "Website account");
-}
-/** The host billing portal's owner callables; the feature parses the replies. */
-export type HostBillingCallable = "getOrganizerBillingStatus" | "manageOrganizerBillingPlan";
-export function invokeHostBillingCallable(name: HostBillingCallable,
-  payload: Record<string, unknown>): Promise<unknown> {
-  return invokeWebsiteCallable(name, payload, claimFirebaseConfigured, "Host billing");
-}
-/**
- * The organiser owner view on a claimed organiser page. Every call acts as
- * the signed-in owner, editor or analyst; the server checks the role.
- */
-export function getOrganizerOwnerView(
-  payload: GetOrganizerOwnerViewCallablePayload
-): Promise<OrganizerOwnerViewCallableResponse> {
-  return invokeWebsiteCallable("getOrganizerOwnerView", payload, claimFirebaseConfigured, "Organizer owner tools");
-}
-export function manageOrganizerOwnerPage(
-  payload: ManageOrganizerOwnerPageCallablePayload
-): Promise<ManageOrganizerOwnerPageCallableResponse> {
-  return invokeWebsiteCallable("manageOrganizerOwnerPage", payload, claimFirebaseConfigured, "Organizer owner tools");
-}
-/** Saves the organiser's about text through the organiser command the Host app uses. */
-export async function updateOrganizerDescription(organizerId: string, description: string): Promise<void> {
-  await invokeWebsiteCallable<UpdateOrganizerCallablePayload, unknown>("updateOrganizer",
-    {organizerId, fields: {description}}, claimFirebaseConfigured, "Organizer owner tools");
-}
-export async function setReviewResponse(payload: SetReviewResponseCallablePayload): Promise<void> {
-  await invokeWebsiteCallable<SetReviewResponseCallablePayload, unknown>("setReviewResponse", payload,
-    claimFirebaseConfigured, "Organizer owner tools");
-}
-export function setOrganizerTrackingSettings(
-  payload: SetOrganizerTrackingSettingsCallablePayload
-): Promise<OrganizerTrackingSettingsCallableResponse> {
-  return invokeWebsiteCallable("setOrganizerTrackingSettings", payload, claimFirebaseConfigured, "Organizer owner tools");
-}
-export function setWebsiteOrganizerFollow(organizerId: string, following: boolean, expectedUid: string): Promise<{following: boolean}> {
-  return invokeWebsiteCallable(following ? "followOrganizer" : "unfollowOrganizer", {organizerId, expectedUid}, claimFirebaseConfigured, "Organizer following");
-}
-
-/**
- * Follow with just a phone number (CAT-253). Call after the phone code
- * signed in or linked the verified phone; the token is refreshed first so it
- * carries that phone. whatsappUpdates is the follower's own tick.
- */
-export async function followWebsiteOrganizerByPhone(
-  payload: FollowOrganizerByPhoneCallablePayload
-): Promise<FollowOrganizerByPhoneCallableResponse> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !claimFirebaseConfigured) {
-    throw new Error("Organizer following are not configured for this build.");
-  }
-  await runtime.auth.currentUser?.getIdToken(true);
-  return invokeWebsiteCallable("followOrganizerByPhone", payload, claimFirebaseConfigured, "Organizer following");
-}
-export type WebsiteAccount = ManageWebsiteAccountCallableResponse;
-export type WebsiteAccountSection = NonNullable<Extract<ManageWebsiteAccountCallablePayload, {action: "read"}>["sections"]>[number];
-export type WebsiteEventTicketCode = GetEventTicketCodeCallableResponse;
-/** The guest's signed pass for one booking, the same code the apps show at the door. */
-export function getWebsiteEventTicketCode(eventId: string): Promise<GetEventTicketCodeCallableResponse> {
-  return invokeWebsiteCallable("getEventTicketCode", {eventId}, claimFirebaseConfigured, "Event passes");
-}
-/** Withdraws one organiser's WhatsApp permission with the reviewed receipt; it never grants consent. */
-export function withdrawWebsiteMessagingPermission(
-  payload: WithdrawParticipantMessagingPermissionCallablePayload
-): Promise<WithdrawParticipantMessagingPermissionCallableResponse> {
-  return invokeWebsiteCallable("withdrawParticipantMessagingPermission", payload, claimFirebaseConfigured, "Messaging permissions");
-}
-export const signOutWebsiteAccount = signOutClaimUser;
+} from "./services/firebase/programmes";
+export {
+  readTryItCaller,
+  invokeTryItCommand,
+  createTryItRehearsal,
+} from "./services/firebase/tryIt";
+export type {
+  TryItCommandCallables,
+  TryItCaller,
+  TryItRehearsalPayload,
+  TryItRehearsalResponse,
+} from "./services/firebase/tryIt";
+export {
+  invokeSalesDemoCallable,
+} from "./services/firebase/salesDemo";
