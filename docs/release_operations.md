@@ -285,6 +285,29 @@ run in nightly validation, and signed store builds come from
 [Mobile releases](#mobile-releases). Without that proof for the same commit, `main`
 runs every selected lane.
 
+Proof reuse runs in shadow (Phase 1, 22 Nov 2026); it skips nothing and gates
+nothing, and the owner decides on reuse after a full week of shadow runs with
+no miss. On a ready pull request and in the merge queue, the `Compute
+proof-reuse keys` job (`tool/ci/proof_reuse_shadow.mjs`) hashes each lane's
+inputs at the head commit with `tool/nx/lane_key.mjs`: every file the lane's
+Nx tasks and ci.yml jobs read, its workflow and toolchain files, and the
+hasher's own version. A pull request records the keys once, as a `proof-keys`
+notice on that job. In a queue group the job then decides, per lane, whether
+the queued pull request's pass could have been reused. The pull request must
+come from this repository and change no workflow, composite action,
+`tool/ci/**` or `tool/nx/**` file. The lane must have passed in the pull
+request's latest `ci.yml` run for its current head, read from GitHub's job
+records, never from the notice or an artifact. Its key, recomputed by the
+group's own hasher at the pull request head, must equal both the recorded key
+and the key at the group head. Only `contracts` and `operations` can qualify:
+the other lanes narrow their tests on pull requests, run different steps there,
+or share a job, so a pull request pass does not prove their queue result; their
+keys are still compared and reported. The `Compare proof-reuse verdicts with
+the lanes` job joins each verdict with the lane's real queue result, writes the
+`proof-reuse-shadow-<run>-<attempt>` artifact and a summary table, and warns on
+a miss: a lane that would have been reused but failed. Both jobs are
+`continue-on-error` and outside `Required CI`; any unknown means not eligible.
+
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
 path, and invokes reusable validation workflows only for affected targets.
