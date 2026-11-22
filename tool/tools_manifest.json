@@ -1635,6 +1635,26 @@
       "runbook": "docs/release_operations.md#required-pr-checks"
     },
     {
+      "id": "ci:test-read-map",
+      "category": "ci",
+      "path": "tool/ci/test_read_map.mjs",
+      "command": "node tool/ci/test_read_map.mjs",
+      "surface": "local-read",
+      "status": "active",
+      "impactPaths": [
+        ".github/workflows/test-read-map.yml",
+        "tool/ci/test_read_map.mjs",
+        "tool/ci/test_read_map.test.mjs"
+      ],
+      "description": "Shadow read map: runs each Flutter test file under test/ that imports dart:io in its own flutter test under strace -f and records the repository paths its test runtime opened, listed and probed, with the compiler's reads kept separate. Nightly from test-read-map.yml; nothing consumes it yet.",
+      "checks": [
+        "node --check tool/ci/test_read_map.mjs",
+        "node --test tool/ci/test_read_map.test.mjs"
+      ],
+      "role": "report",
+      "runbook": "docs/release_operations.md#test-read-map"
+    },
+    {
       "id": "ci:main-red-alert",
       "category": "ci",
       "path": "tool/ci/main_red_alert.mjs",
