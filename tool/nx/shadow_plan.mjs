@@ -11,6 +11,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {planAffected, queueOnlyCiTargets} from "../harness/lib/component_graph.mjs";
 import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
+import {matchesGlobPath} from "../lib/path_glob.mjs";
 import {describeChange, manifestChange, manifestFile, manifestPlannerLanes} from "./manifest_diff.mjs";
 import {callerLanes, isCiConfiguration, isClassified, isSelector, manifestLanes, notCalledByCi, workflowCallers}
   from "./workflow_callers.mjs";
@@ -159,6 +160,32 @@ const reachedOnlyByTools = (file, graph) => [...((graph ?? callerGraph()).lanes.
   .every((lane) => ["tools", "policy_docs"].includes(lane));
 
 /**
+ * What a native app build reads beyond Dart (owner decision A2, 22 Nov 2026):
+ * the native projects, dependency manifests and lockfiles, Gradle, CocoaPods
+ * and Xcode files, and native plugin code.
+ */
+export const nativeBuildInputGlobs = Object.freeze([
+  "android/**", "ios/**", "apps/*/android/**", "apps/*/ios/**", "apps/*/macos/**",
+  "packages/*/android/**", "packages/*/ios/**", "packages/*/macos/**",
+  "firebase/*/ios/**", "firebase/*/host/ios/**",
+  "**/pubspec.yaml", "**/pubspec.lock",
+  "**/*.gradle", "**/*.gradle.kts", "**/gradle.properties", "**/gradle-wrapper.properties",
+  "**/Podfile", "**/Podfile.lock", "**/*.podspec",
+  "**/*.xcodeproj/**", "**/*.xcworkspace/**",
+  "**/*.swift", "**/*.kt", "**/*.java", "**/*.m", "**/*.mm", "**/*.h",
+]);
+
+/** Whether a changed path is a native build input. */
+export const nativeBuildInput = (file) => !file.endsWith(".md") &&
+  nativeBuildInputGlobs.some((glob) => matchesGlobPath(file, glob));
+
+// The roots whose change makes Admin or Operations read a contract change itself.
+const contractLaneOwnRoots = {
+  admin: ["admin/", "packages/web-ui/", "packages/web-config/"],
+  operations: ["operations/", "packages/command-client/"],
+};
+
+/**
  * Known reasons the planner and Nx disagree on a lane. A disagreement that
  * matches one is explained; anything else is unexplained and counts against
  * the cut-over (#1554). Each rule is pinned by a fixture in shadow_plan.test.mjs.
@@ -220,6 +247,35 @@ export const explanationRules = [
   {id: "planner-contracts-source", side: "planner",
     why: "The planner runs nine lanes for any contract file; Nx runs only the consumers of the changed contract family.",
     matches: ({sources}) => sources.length > 0 && sources.every((source) => source.component === "contracts.source")},
+  // Main pushes, 15-22 Nov (the main flip's week of shadow data).
+  {id: "planner-indexes-to-contracts", side: "planner", lanes: ["contracts"],
+    why: "The planner runs Contracts for firestore.indexes.json; the only check that reads it, contracts:firestore-query-indexes, runs in Tools, which reads the file (lane-tools input).",
+    matches: ({sources}) => sources.length > 0 && sources.every((source) => source.component === "backend.firestore-indexes")},
+  {id: "planner-contract-propagation", side: "planner", lanes: ["admin", "operations"],
+    why: "The planner carries any contract change to Admin and Operations through their contract-consumer components; Nx runs them only when the changed contract family is an input of their projects (contracts-http feeds Functions and the website).",
+    matches: ({lane, sources, changedFiles}) => sources.length > 0 &&
+      sources.every((source) => source.component === "contracts.source" || source.relationship === "affected") &&
+      changedFiles.some((file) => file.startsWith("contracts/")) &&
+      !changedFiles.some((file) => contractLaneOwnRoots[lane].some((root) => file.startsWith(root)))},
+  {id: "planner-shared-ui-test-only", side: "planner", lanes: ["marketing", "capture_freshness"],
+    why: "The planner carries a packages/web-ui change to the website; a web-ui test is not a website input, and Admin runs @catch/web-ui:test.",
+    matches: ({sources, changedFiles}) => {
+      const webUi = changedFiles.filter((file) => file.startsWith("packages/web-ui/"));
+      return sources.length > 0 && sources.every((source) => source.relationship === "affected" &&
+        ["web.marketing", "marketing.capture-freshness"].includes(source.component)) &&
+        webUi.length > 0 && webUi.every((file) => /\.test\.[cm]?[jt]sx?$/u.test(file));
+    }},
+  {id: "planner-other-packages-coarse", side: "planner", lanes: ["admin", "marketing", "capture_freshness"],
+    why: "The planner's repo.other-packages runs Admin, Marketing and capture freshness for any package; packages/command-client is read only by the Operations project (its only Nx dependent).",
+    matches: ({sources, changedFiles}) => {
+      const packages = changedFiles.filter((file) => file.startsWith("packages/"));
+      return sources.length > 0 && sources.every((source) => source.component === "repo.other-packages") &&
+        packages.length > 0 && packages.every((file) => file.startsWith("packages/command-client/"));
+    }},
+  {id: "main-native-builds-only", side: "planner",
+    lanes: ["flutter_build_android", "flutter_build_ios", "flutter_build_web"],
+    why: "On main the planner builds the apps for any app change; main builds them only for a native build input (owner decision A2), leaving Dart-only changes to the queue's web smoke and the nightly builds.",
+    matches: ({mode, changedFiles}) => mode === "main" && !changedFiles.some(nativeBuildInput)},
   {id: "docs-reads-every-markdown", side: "nx", lanes: ["docs"],
     why: "lane-docs reads every Markdown file; the planner leaves doc-contract files (READMEs it classifies as terminal) out of Docs.",
     matches: ({changedFiles}) => changedFiles.some((file) => file.endsWith(".md"))},
@@ -264,10 +320,10 @@ export const explanationRules = [
 ];
 
 /** The rule that explains one disagreeing lane, or null. */
-export function explain({lane, side, sources = [], nxTasks = [], changedFiles = [], graph}) {
+export function explain({lane, side, sources = [], nxTasks = [], changedFiles = [], graph, mode}) {
   const rule = explanationRules.find((candidate) => candidate.side === side &&
     (!candidate.lanes || candidate.lanes.includes(lane)) &&
-    candidate.matches({lane, sources: sources.filter((source) => source.value === lane), nxTasks, changedFiles, graph}));
+    candidate.matches({lane, sources: sources.filter((source) => source.value === lane), nxTasks, changedFiles, graph, mode}));
   return rule?.id ?? null;
 }
 
@@ -293,7 +349,7 @@ export function compare({plannerLanes, plannerFull = false, nxTasks, tagsByProje
   const explained = [
     ...plannerOnly.map((lane) => ({lane, side: "planner"})),
     ...nxOnly.map((lane) => ({lane, side: "nx"})),
-  ].map((entry) => ({...entry, rule: explain({...entry, sources: plannerSources, nxTasks, changedFiles, graph})}));
+  ].map((entry) => ({...entry, rule: explain({...entry, sources: plannerSources, nxTasks, changedFiles, graph, mode})}));
   const unexplained = (side) => explained.filter((entry) => entry.side === side && !entry.rule).map((entry) => entry.lane);
   return {
     agree: plannerOnly.length === 0 && nxOnly.length === 0,

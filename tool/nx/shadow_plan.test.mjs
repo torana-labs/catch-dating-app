@@ -171,6 +171,23 @@ const explanationFixtures = [
     sources: [source("operations.workflow-doc", "functions")], changedFiles: ["operations/README.md"]},
   {rule: "planner-contracts-source", commit: "(synthetic: contracts/admin)", lane: "flutter", side: "planner",
     sources: [source("contracts.source", "flutter")], changedFiles: ["contracts/admin/admin_action_catalog.json"]},
+  {rule: "planner-indexes-to-contracts", commit: "e300d2613", lane: "contracts", side: "planner",
+    sources: [source("backend.firestore-indexes", "contracts")], changedFiles: ["firestore.indexes.json"]},
+  {rule: "planner-contract-propagation", commit: "197b8574e", lane: "operations", side: "planner",
+    sources: [source("operations.contract-consumer", "operations", "affected")],
+    changedFiles: ["contracts/http/join_waitlist_request.schema.json", "functions/src/waitlist/joinWaitlist.ts"]},
+  {rule: "planner-contract-propagation", commit: "197b8574e", lane: "admin", side: "planner",
+    sources: [source("contracts.source", "admin"), source("web.admin", "admin", "affected")],
+    changedFiles: ["contracts/http/join_waitlist_request.schema.json", "website/src/content/site.ts"]},
+  {rule: "planner-shared-ui-test-only", commit: "5fe3e2966", lane: "marketing", side: "planner",
+    sources: [source("web.marketing", "marketing", "affected")],
+    changedFiles: ["packages/catch_ui/lib/src/components/catch_button.dart", "packages/web-ui/src/components/buttonParity.test.ts"]},
+  {rule: "planner-other-packages-coarse", commit: "e3bc551dc", lane: "capture_freshness", side: "planner",
+    sources: [source("repo.other-packages", "capture_freshness")],
+    changedFiles: ["packages/command-client/src/admin-catalog.mjs", "packages/command-client/src/index.mjs"]},
+  {rule: "main-native-builds-only", commit: "9cc568a23", lane: "flutter_build_ios", side: "planner", mode: "main",
+    sources: [source("app.source", "flutter_build_ios")],
+    changedFiles: ["lib/event_rehearsal/presentation/event_rehearsal_assistance_editor.dart", "firestore.rules"]},
   {rule: "nx-control-plane", commit: "ce8dda26", lane: "flutter", side: "nx", changedFiles: ["tool/nx/select_lanes.mjs"]},
   {rule: "docs-reads-every-markdown", commit: "32e79379", lane: "docs", side: "nx", changedFiles: ["functions/README.md"]},
   {rule: "contracts-scan-consumers", commit: "0284bd52", lane: "contracts", side: "nx",
@@ -226,6 +243,26 @@ test("a disagreement with no known cause stays unexplained", () => {
     changedFiles: ["packages/catch_ui/lib/src/a.dart", "packages/catch_ui/test/a_test.dart"]}), null);
   assert.equal(explain({lane: "flutter_build_ios", side: "planner", sources: [source("app.ui", "flutter_build_ios")],
     changedFiles: ["packages/catch_ui/test/a_test.dart"]}), null);
+
+  // A native input builds on main, and the rule is main's alone.
+  assert.equal(explain({lane: "flutter_build_ios", side: "planner", mode: "main", sources: [source("app.source", "flutter_build_ios")],
+    changedFiles: ["lib/main.dart", "apps/consumer/ios/Podfile"]}), null);
+  assert.equal(explain({lane: "flutter_build_android", side: "planner", mode: "merge_group",
+    sources: [source("app.source", "flutter_build_android")], changedFiles: ["lib/main.dart"]}), null);
+  // Main-flip rules: each stops at the change that makes the lane read it.
+  assert.equal(explain({lane: "contracts", side: "planner",
+    sources: [source("backend.firestore-indexes", "contracts"), source("contracts.source", "contracts")],
+    changedFiles: ["firestore.indexes.json", "contracts/firestore/a.schema.json"]}), null);
+  assert.equal(explain({lane: "admin", side: "planner",
+    sources: [source("contracts.source", "admin"), source("web.admin", "admin", "affected")],
+    changedFiles: ["contracts/admin/admin_action_catalog.json", "admin/src/App.tsx"]}), null, "an Admin edit");
+  assert.equal(explain({lane: "operations", side: "planner",
+    sources: [source("operations.contract-consumer", "operations", "affected")],
+    changedFiles: ["contracts/http/a.schema.json", "packages/command-client/src/index.mjs"]}), null);
+  assert.equal(explain({lane: "marketing", side: "planner", sources: [source("web.marketing", "marketing", "affected")],
+    changedFiles: ["packages/web-ui/src/components/Button.tsx"]}), null, "a web-ui source is a website input");
+  assert.equal(explain({lane: "capture_freshness", side: "planner", sources: [source("repo.other-packages", "capture_freshness")],
+    changedFiles: ["packages/brand/brand.json"]}), null, "another package");
 
   const result = compare({plannerLanes: ["flutter"], nxTasks: ["lane-docs:lane"], changedFiles: ["README.md"],
     plannerSources: [source("app.source", "flutter")]});

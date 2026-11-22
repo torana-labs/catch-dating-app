@@ -286,8 +286,8 @@ commit, `main` runs every selected lane.
 path, and invokes reusable validation workflows only for affected targets.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
-For `pr` and `merge_group`, `tool/nx/select_lanes.mjs` runs the lanes
-`nx affected` selects, and only those (design A). The planner's selection is a
+For `pr`, `merge_group` and `main`, `tool/nx/select_lanes.mjs` runs the lanes
+`nx affected` selects, and only those (design A; main from 22 Nov 2026). The planner's selection is a
 shadow. The plan summary lists each lane the planner would also run, with the
 `shadow_plan.mjs` rule that explains it, or UNEXPLAINED. The count of
 unexplained lanes is the `planner_unexplained` output and is also stored in the
@@ -302,8 +302,27 @@ apps. Every lane job reads only the change range, the final lanes and outputs
 pinned by `select_lanes.test.mjs`. `tool/nx/lane_coverage.test.mjs` replaces
 the planner's refusal of an unowned path. Every tracked file must be an input
 of a lane task, a selector, or listed in `noLaneReads` with why no lane reads
-it. Main, nightly, full and commit-window runs keep the planner's selection,
-and the main plan job never installs Nx. Only tasks the change affects
+it. A main push plans the commit window since the last main run that ran,
+and Nx reads that range as it reads a pull request's. A main push the merge
+queue already validated runs no lane: the plan job looks for that queue run
+before anything else, skips Install Nx when it finds it, and passes
+`--queue-verified` so `select_lanes.mjs` keeps the planner's plan without
+calling Nx. That path stays on the sparse planner checkout and costs nothing
+extra (about 24 s); a main push without it adds Install Nx (about 30 s) and
+the Nx query (about 10 s) to a run that executes lanes for about 20 minutes.
+On main the native app builds (`flutter_build_android`, `_ios`, `_web`) run
+only for a native build input (owner decision, 22 Nov 2026): native project
+folders, pubspec files and lockfiles, Gradle, CocoaPods and Xcode files, and
+native plugin code (`nativeBuildInputGlobs` in `shadow_plan.mjs`). A Dart-only
+app change relies on the merge queue's web smoke and the nightly full builds,
+so main runs neither; a build lane the CI caller graph selects (its workflow, a
+script it runs, a selector) still runs (`mainBuildLanes`). Main's builds upload
+nothing: release builds come from the mobile beta and production workflows.
+A `workflow_dispatch` with `base_sha` plans exactly like a main push. Nightly
+and full runs keep the planner's selection.
+Retry a `ci.yml` run with **Re-run all jobs**: every lane job requires the
+plan of its own attempt (`producer_attempt`), so **Re-run failed jobs** re-executes
+nothing and Required CI exits 64. Only tasks the change affects
 select a lane (`--excludeTaskDependencies`): the tasks they depend on do not,
 so a website-only change does not run Admin because the website builds
 `@catch/web-ui`. Nx inputs name what each task reads. Markdown is not an

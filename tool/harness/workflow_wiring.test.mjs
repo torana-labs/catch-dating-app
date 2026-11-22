@@ -1880,6 +1880,17 @@ test("main reuses a successful merge-queue run of the exact source for every val
   const lookup = extractSteps(ci).find((entry) => entry.name === "Find the merge-queue validation of this exact source");
   assert.ok(lookup?.run, "missing merge-queue lookup step");
   assert.match(lookup.if, /github\.event_name == 'push'/u);
+  // A queue-verified main push never installs or calls Nx (design A, main flip):
+  // the lookup runs first, Install Nx skips when it found the run, and
+  // select_lanes is told so.
+  const install = extractSteps(ci).find((entry) => entry.name === "Install Nx");
+  assert.ok(plan.indexOf("name: Find the merge-queue validation") < plan.indexOf("name: Install Nx") &&
+    plan.indexOf("name: Install Nx") < plan.indexOf("name: Resolve fail-closed impact plan"),
+  "the queue lookup precedes Install Nx, which precedes the plan");
+  assert.match(install.if, /github\.event_name == 'push' && !steps\.queue\.outputs\.run_id/u);
+  assert.doesNotMatch(install.if, /github\.event_name == 'push'(?! &&)/u, "every main push installing Nx");
+  assert.match(plan, /QUEUE_RUN: \$\{\{ steps\.queue\.outputs\.run_id \}\}/u);
+  assert.match(plan, /queue_flag=\(--queue-verified "\$QUEUE_RUN"\)/u);
   const job = (id) => ci.slice(ci.indexOf(`\n  ${id}:\n`) + 1).split(/\n  [a-z-]+:\n/u)[0];
   for (const id of ["source-preflight", "flutter", "visual-integration", "tools", "admin", "operations",
     "docs-policy", "functions", "firestore-rules", "contracts", "marketing", "capture-freshness", "app-builds"]) {
