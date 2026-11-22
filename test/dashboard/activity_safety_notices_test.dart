@@ -66,7 +66,10 @@ void main() {
       onAppeal: (notice) => appealed.add(notice.id),
     );
 
-    expect(find.text('From Catch'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('activity-safety-notices')),
+      findsOneWidget,
+    );
     expect(find.text('Your account is restricted'), findsOneWidget);
     expect(find.text('A warning from Catch'), findsOneWidget);
     expect(find.text('Appeal'), findsOneWidget);
@@ -84,6 +87,9 @@ void main() {
 
   testWidgets('no notices hides From Catch', (tester) async {
     await _pump(tester, notices: const []);
-    expect(find.text('From Catch'), findsNothing);
+    expect(
+      find.byKey(const ValueKey<String>('activity-safety-notices')),
+      findsNothing,
+    );
   });
 }

@@ -2786,6 +2786,48 @@ abstract class AppLocalizations {
   /// **'Activity'**
   String get dashboardActivityScreenTitleActivity;
 
+  /// Product copy used by lib/dashboard/presentation/activity_screen.dart (safety notices section title).
+  ///
+  /// In en, this message translates to:
+  /// **'From Catch'**
+  String get dashboardActivityFromCatch;
+
+  /// Product copy used by lib/dashboard/presentation/activity_screen.dart (opens the appeal of a safety decision).
+  ///
+  /// In en, this message translates to:
+  /// **'Appeal'**
+  String get dashboardActivityAppeal;
+
+  /// Product copy used by lib/dashboard/presentation/activity_screen.dart (appeal sheet title).
+  ///
+  /// In en, this message translates to:
+  /// **'Appeal this decision'**
+  String get dashboardActivityAppealTitle;
+
+  /// Product copy used by lib/dashboard/presentation/activity_screen.dart (appeal text field).
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us why this decision is wrong'**
+  String get dashboardActivityAppealField;
+
+  /// Product copy used by lib/dashboard/presentation/activity_screen.dart (appeal sheet button).
+  ///
+  /// In en, this message translates to:
+  /// **'Send appeal'**
+  String get dashboardActivityAppealSend;
+
+  /// Product copy used by lib/dashboard/presentation/activity_screen.dart (notice after an appeal is sent).
+  ///
+  /// In en, this message translates to:
+  /// **'Appeal sent. Someone who didn’t make the decision will review it.'**
+  String get dashboardActivityAppealSent;
+
+  /// Product copy used by lib/dashboard/presentation/activity_screen.dart (notice when the decision cannot be appealed).
+  ///
+  /// In en, this message translates to:
+  /// **'This decision can only be appealed once, or is no longer in force.'**
+  String get dashboardActivityAppealClosed;
+
   /// Product copy used by lib/dashboard/presentation/dashboard_screen.dart (tooltip).
   ///
   /// In en, this message translates to:
@@ -45011,6 +45053,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Decline'**
   String get hostEventsGuestsDecline;
+
+  /// Guests: what the choices for a booked guest do.
+  ///
+  /// In en, this message translates to:
+  /// **'See their profile, report them to Catch, or stop them booking your events.'**
+  String get hostEventsGuestsGuestBody;
+
+  /// Guests: reports the guest to Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get hostEventsGuestsReport;
+
+  /// Guests: stops the guest booking this organiser's events.
+  ///
+  /// In en, this message translates to:
+  /// **'Block from your events'**
+  String get hostEventsGuestsBlock;
+
+  /// Guests: title of the report reasons.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you reporting {name}?'**
+  String hostEventsGuestsReportTitle({required String name});
+
+  /// Guests: under the report reasons.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the closest reason. Catch’s team reads every report.'**
+  String get hostEventsGuestsReportBody;
+
+  /// Guests: report reason unsafe_behaviour.
+  ///
+  /// In en, this message translates to:
+  /// **'Made people feel unsafe'**
+  String get hostEventsGuestsReportUnsafe;
+
+  /// Guests: report reason harassment.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassed someone'**
+  String get hostEventsGuestsReportHarassment;
+
+  /// Guests: report reason other.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get hostEventsGuestsReportOther;
+
+  /// Guests: notice after a report is sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks. Catch’s team will look into it.'**
+  String get hostEventsGuestsReported;
+
+  /// Guests: title of the block confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Block {name} from your events?'**
+  String hostEventsGuestsBlockTitle({required String name});
+
+  /// Guests: what blocking does.
+  ///
+  /// In en, this message translates to:
+  /// **'They won’t be able to book your events. Bookings they already have stay, so cancel those from the guest list.'**
+  String get hostEventsGuestsBlockBody;
+
+  /// Guests: confirms the block.
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
+  String get hostEventsGuestsBlockConfirm;
+
+  /// Guests: notice after a guest is blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} can’t book your events now'**
+  String hostEventsGuestsBlockedNotice({required String name});
+
+  /// Guests: opens the block list; also its title.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked from your events'**
+  String get hostEventsGuestsBlockedLink;
+
+  /// Guests: block list with nobody on it.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is blocked from your events.'**
+  String get hostEventsGuestsBlockedEmpty;
+
+  /// Guests: block list row for an account with no name.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone without a name'**
+  String get hostEventsGuestsBlockedNoName;
+
+  /// Guests: block list row, when they were blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked {date}'**
+  String hostEventsGuestsBlockedOn({required String date});
+
+  /// Guests: the block list failed to load.
+  ///
+  /// In en, this message translates to:
+  /// **'The list could not load'**
+  String get hostEventsGuestsBlockedErrorTitle;
+
+  /// Guests: block list row action that removes the block.
+  ///
+  /// In en, this message translates to:
+  /// **'Let them back'**
+  String get hostEventsGuestsLetBack;
+
+  /// Guests: notice after a block is removed.
+  ///
+  /// In en, this message translates to:
+  /// **'They can book your events again'**
+  String get hostEventsGuestsLetBackDone;
 
   /// Plan screen with no plan: opens the event editor, where the format is chosen.
   ///
