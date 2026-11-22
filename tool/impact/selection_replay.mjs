@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import {execFileSync} from "node:child_process";
+import {createRequire} from "node:module";
 import fs from "node:fs";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
@@ -35,7 +36,8 @@ const commits = git("log", "--first-parent", "--format=%H %s", `-${values.commit
   .map((line) => ({sha: line.slice(0, 40), subject: line.slice(41)}));
 const lists = {
   unit: discoverableFunctionsTests(),
-  emulator: JSON.parse(fs.readFileSync(path.join(repoRoot, "functions/test/emulator-tests.json"), "utf8")),
+  emulator: createRequire(import.meta.url)(path.join(repoRoot, "functions/scripts/run-tests.cjs"))
+    .listedStrictTests(path.join(repoRoot, "functions")),
 };
 const {modules} = await functionsModules();
 // Every selector call reads the same sources; read each once.
