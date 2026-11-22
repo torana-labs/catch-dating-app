@@ -95,8 +95,8 @@ test("the settings view is the callable's settings with staff expiries",
     for (const field of ["enabled", "languages", "replyWithin",
       "escalationStaffUids", "neverDoes", "tone", "dailyTokenBudget",
       "answerTopics", "attachmentReads", "revision", "usesDefaults"]) {
-      assert.deepEqual(view[field], (callable as unknown as Record<string, unknown>)[
-        field], field);
+      const expected = callable as unknown as Record<string, unknown>;
+      assert.deepEqual(view[field], expected[field], field);
     }
     const staff = view.staff as Array<{uid: string; expiresAtMillis: number}>;
     // Every unrevoked active grant, the callable's list before expiry.
