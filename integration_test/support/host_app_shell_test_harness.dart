@@ -177,6 +177,60 @@ class HostShellBackend {
   /// Writes a published event as the backend's publication command leaves it
   /// (`publicationState` is backend-owned and absent from [Event.toJson]),
   /// and the roster label view its evaluator writes before any attendee.
+  /// A programme of [organizerId] that this Host manages, as the programme
+  /// triggers leave it: its `organizerProgramViews` row and the Host's own
+  /// `programAccessViews` grant, which together list it on Events.
+  Future<void> seedManagedProgramme({
+    required String organizerId,
+    required String programId,
+    required String title,
+  }) async {
+    final startsAt = DateTime.now()
+        .add(const Duration(days: 30))
+        .millisecondsSinceEpoch;
+    await firestore.collection('organizerProgramViews').doc(programId).set({
+      'programId': programId,
+      'organizerId': organizerId,
+      'createdBy': uid,
+      'kind': 'wedding',
+      'title': title,
+      'timezone': 'Asia/Kolkata',
+      'status': 'active',
+      'startsAtMillis': startsAt,
+      'endsAtMillis': startsAt + const Duration(days: 2).inMilliseconds,
+      'revision': 1,
+      'functionCount': 1,
+    });
+    await firestore
+        .collection('programAccessViews')
+        .doc('${programId}__$uid')
+        .set({
+          'programId': programId,
+          'organizerId': organizerId,
+          'uid': uid,
+          'ownerUid': uid,
+          'role': 'manager',
+          'status': 'active',
+          'organizerManager': false,
+          'activeFromMillis': 0,
+          'expiresAtMillis': null,
+          'duties': <String, int>{},
+          'pickupAll': <String, int>{},
+          'pickupScoped': <String, int>{},
+          'hotelAll': <String, int>{},
+          'hotelScoped': <String, int>{},
+          'functionAll': <String, int>{},
+          'functionScoped': <String, int>{},
+          'workPickup': <String, int>{},
+          'workHotel': <String, int>{},
+          'workFunction': <String, int>{},
+          'assignments': <Map<String, Object?>>[],
+          'grantExpiresAtMillis': null,
+          'revision': 1,
+          'version': 1,
+        });
+  }
+
   Future<void> seedPublishedEvent(Event event) async {
     await firestore.collection('events').doc(event.id).set({
       ...event.toJson(),
