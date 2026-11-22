@@ -89,6 +89,8 @@ List<Override> _deskOverrides(Map<String, Object?> access) => [
     ),
   ),
   programGuestListProvider('p-1').overrideWithValue(AsyncData(_guestPage)),
+  programGuestGroupListProvider('p-1').overrideWithValue(const AsyncData([])),
+  programHouseholdListProvider('p-1').overrideWithValue(const AsyncData([])),
 ];
 
 void main() {
