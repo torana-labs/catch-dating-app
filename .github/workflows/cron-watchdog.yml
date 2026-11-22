@@ -1,0 +1,80 @@
+name: Scheduled run watchdog
+
+# Notices a scheduled workflow that never started (owner decision, 22 Nov
+# 2026: "dev runs automatically, prod asks first"). Each hour it checks the
+# latest daily run of Firestore Data Validation (20:13 UTC), Deploy backend
+# (21:13 UTC) and the nightly CI (02:23 UTC) whose grace period has passed. A
+# missing dev-only or read-only run (Data Validation, the nightly CI, Deploy
+# backend for dev) is dispatched once. A missing prod deploy is never
+# dispatched: the "Main CI is red" issue gets the missing run and the command
+# for the owner. A nightly that never started is reported as unknown, not
+# green. Each missed run is handled at most once, recorded in the issue.
+# Logic and tests: tool/ci/cron_watchdog.mjs. Operator guide:
+# docs/release_operations.md, "Scheduled run watchdog".
+
+on:
+  schedule:
+    # Hourly at :47, off the :00/:30 minutes GitHub delays most.
+    - cron: "47 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Print what would happen; dispatch and post nothing.
+        type: boolean
+        default: true
+      grace_hours:
+        description: Hours after its cron before a run counts as missing (1-23).
+        type: string
+        default: "3"
+      now:
+        description: Evaluate as of this ISO time (dry runs; empty means now).
+        type: string
+        default: ""
+      assume_missing:
+        description: Treat this target's runs as absent (dry runs only).
+        type: choice
+        options: [none, data-validation, deploy-backend, nightly-ci]
+        default: none
+
+permissions: {}
+
+concurrency:
+  group: cron-watchdog
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    name: Check scheduled runs started
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      # Read the checkout, read and dispatch workflow runs, comment on issues.
+      contents: read
+      actions: write
+      issues: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            .github/actions/load-toolchain
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Dispatch or report missed scheduled runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WATCHDOG_GRACE_HOURS: ${{ github.event_name == 'workflow_dispatch' && inputs.grace_hours || '3' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+          EVALUATE_AT: ${{ github.event_name == 'workflow_dispatch' && inputs.now || '' }}
+          ASSUME_MISSING: ${{ github.event_name == 'workflow_dispatch' && inputs.assume_missing || 'none' }}
+        run: |
+          set -euo pipefail
+          args=()
+          if [[ "$DRY_RUN" == "true" ]]; then args+=(--dry-run); fi
+          if [[ -n "$EVALUATE_AT" ]]; then args+=(--now "$EVALUATE_AT"); fi
+          if [[ "$ASSUME_MISSING" != "none" ]]; then args+=(--assume-missing "$ASSUME_MISSING"); fi
+          node tool/ci/cron_watchdog.mjs "${args[@]}"

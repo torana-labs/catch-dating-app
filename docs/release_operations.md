@@ -2369,6 +2369,42 @@ none of the last 30 nightly runs was green. Opening the issue notifies repositor
 runs change nothing. Fix forward on main; never close the issue by hand
 while main is still red.
 
+### Scheduled run watchdog
+
+GitHub drops or delays scheduled runs under load: the :30 Deploy backend
+schedule started 5-7 hours late on 17 and 18 Nov 2026, and a nightly that never
+ran looked the same as a quiet one. `Scheduled run watchdog`
+(`.github/workflows/cron-watchdog.yml`, driven by `tool/ci/cron_watchdog.mjs`)
+runs hourly at :47 (owner decision, 22 Nov 2026: "dev runs automatically, prod
+asks first"). For each watched schedule it takes the latest daily run whose
+grace period has passed (3 hours by default) and checks that a scheduled or
+dispatched run started after its cron time:
+
+| Workflow | Cron (UTC) | If no run started |
+|---|---|---|
+| Firestore Data Validation (`data-validation.yml`) | 20:13 | Dispatched once (read-only) |
+| Deploy backend (`backend-deploy.yml`) | 21:13 | Dispatched once for dev; prod is never dispatched |
+| CI nightly (`ci.yml`) | 02:23 | Dispatched once with `full`, and reported as unknown |
+
+Each missed run gets one comment on the "Main CI is red" issue (opened if none
+is open) naming the run, what was dispatched and, for prod, the command to run
+it, for example `gh workflow run backend-deploy.yml --repo <owner>/<repo> --ref main
+-f environment=prod`. Run that only after checking the dev deploy succeeded. The
+comment carries a hidden marker, and a run that already has one is never
+dispatched or reported again, so each expected run is handled at most once. A
+nightly that never started counts as **unknown**, never green; a dispatched
+recovery run is a `workflow_dispatch` run, so the Main CI alert and the sprint
+floor's seven-day count still treat that night as missing. The watchdog has
+`actions: write` and `issues: write` and nothing else that writes.
+
+To check it by hand, dispatch the workflow with `dry_run` on (the default): it
+prints what it would dispatch and post, and writes nothing. `assume_missing`
+treats one target's runs as absent and `now` evaluates as of a given time, both
+in dry runs only. `grace_hours` changes the grace period for one run; change the
+default in `tool/ci/cron_watchdog.mjs`. To watch another schedule, add it to
+`TARGETS` there; a test requires each entry's cron to match its workflow's own
+`schedule` and its dispatch inputs to exist.
+
 ### Weekly CI metrics
 
 CI efficiency is measured every week instead of reconstructed by hand (owner
