@@ -1677,6 +1677,14 @@ validator and Operations catalog inventory; they must not bypass server-side
 current-role, revision or receipt checks. Sample mode is clearly identified and
 cannot approve commercial terms or issue real invitations.
 
+A host page's Referral partner row reads `adminGetSalesPartnerAccess`: the
+host's current reservation and the reserved partner's membership, with their
+revisions and no research, notes or next action. When nobody holds the host,
+the row offers it at the reservation's revision. When someone does, the row
+revokes this host only, or the partner's whole membership, through
+`adminRevokeSalesPartnerAccess` at the revision just read. Both are admin and
+owner only, and an unconfirmed revoke retries its frozen request.
+
 The marketing `/demo/:invitationId` route is a lazy transactional surface. Its
 fragment grant is removed after capture and retained only in page memory.
 Route keys, hash scrolling, marketing analytics and the consent banner exclude

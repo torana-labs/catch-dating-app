@@ -10,8 +10,8 @@ const offer = () => ({partnerUid: "partner", nextAction: "Verify current buyer",
   reviewAt: new Date(Date.now() + 3600_000).toISOString(), expiresAt: new Date(Date.now() + 86400000).toISOString()});
 function fixture() {
   const {wrapper} = createQueryHarness();
-  return renderHook(({actor, host}) => useSalesPartnerOfferController(actor, host),
-    {wrapper, initialProps: {actor: "admin", host: "host-one"}});
+  return renderHook(({actor, host, revision}) => useSalesPartnerOfferController(actor, host, revision),
+    {wrapper, initialProps: {actor: "admin", host: "host-one", revision: 0}});
 }
 it("offers only a new assignment and blocks double submission and repeat success", async () => {
   let resolve!: () => void;
@@ -56,8 +56,27 @@ it("discards late completions and retries after actor or organizer changes", asy
   api.offerSalesPartner.mockImplementationOnce(() => new Promise<void>((r) => {resolve = r;}));
   const {result, rerender} = fixture(); let done!: Promise<boolean>;
   await act(async () => {done = result.current.offer(offer());});
-  rerender({actor: "other-admin", host: "host-two"});
+  rerender({actor: "other-admin", host: "host-two", revision: 0});
   await act(async () => {resolve(); await done; await result.current.retry();});
   expect(result.current.offeredTo).toBeNull(); expect(result.current.ticket).toBeNull();
   expect(api.offerSalesPartner).toHaveBeenCalledTimes(1);
+});
+it("offers at the current reservation revision, and a new revision allows the next offer", async () => {
+  const {result, rerender} = fixture();
+  rerender({actor: "admin", host: "host-one", revision: 3});
+  await act(async () => {await result.current.offer(offer());});
+  expect(api.offerSalesPartner.mock.calls[0][0]).toMatchObject({expectedRevision: 3});
+  await act(async () => {await result.current.offer(offer());});
+  expect(api.offerSalesPartner).toHaveBeenCalledTimes(1);
+  rerender({actor: "admin", host: "host-one", revision: 5});
+  expect(result.current.offeredTo).toBeNull();
+  await act(async () => {await result.current.offer(offer());});
+  expect(api.offerSalesPartner.mock.calls[1][0]).toMatchObject({expectedRevision: 5});
+});
+it("keeps a stale-revision error on screen while the reservation is read again", async () => {
+  api.offerSalesPartner.mockRejectedValueOnce(Object.assign(new Error("Record changed"), {code: "functions/aborted"}));
+  const {result, rerender} = fixture();
+  await act(async () => {await result.current.offer(offer());});
+  rerender({actor: "admin", host: "host-one", revision: 2});
+  expect(result.current.error).toMatch(/check who has it now/u);
 });

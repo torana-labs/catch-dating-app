@@ -1,4 +1,4 @@
-import {hashEndpoint} from "../../organizers/organizerCampaignModel";
+import {hashEndpoint} from "../../platform/delivery/endpointHash";
 import {operationContentHash} from "../../operations/durableActions";
 import type {EventWhatsappReplyBindingDocument as ReplyBinding} from
   "../../shared/generated/eventWhatsappReplyBindingDocument";

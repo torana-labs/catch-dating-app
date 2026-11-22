@@ -6,7 +6,7 @@ import {
 import type {Firestore} from "firebase-admin/firestore";
 import {FirestoreDeliveryOutbox} from "../../delivery/firestoreDeliveryOutbox";
 import {operationContentHash as hash} from "../../operations/durableActions";
-import {hashEndpoint} from "../../organizers/organizerCampaignModel";
+import {hashEndpoint} from "../../platform/delivery/endpointHash";
 import type {EventApprovalNotificationDispatchDocument} from
   "../../shared/generated/eventApprovalNotificationDispatchDocument";
 import {

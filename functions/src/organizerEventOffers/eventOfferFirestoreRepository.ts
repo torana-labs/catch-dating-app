@@ -15,8 +15,10 @@ import type {
 import {effectiveOrganizerWhatsappPurposeStatus,
   organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
-import {organizerContactChannelStateId, hashEndpoint} from
-  "../organizers/organizerCampaignModel";
+import {
+  organizerContactChannelStateId,
+} from "../organizers/organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {whatsappStopId} from "../shared/organizerWhatsappStops";
 import {resolveIndividualCommunicationPlan} from
   "../communications/organizerCommunicationPlan";

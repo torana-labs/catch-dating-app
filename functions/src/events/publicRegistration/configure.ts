@@ -25,6 +25,8 @@ import {
   assertPublicRegistrationAvailability,
   registrationUnavailable,
 } from "./policy";
+import {updateEventPublicRegistration} from
+  "../../domain/events/eventDocumentWrites";
 
 /** An explicit, revision-checked opt-in; origin and booking provenance survive
  * every transition. Closing remains possible even after the event ends.
@@ -127,7 +129,7 @@ export async function configureEventRegistration(input: {
       });
     }
     const next = revision + 1;
-    tx.update(eventRef, {
+    updateEventPublicRegistration(tx, eventRef, {
       publicRegistrationMode: command.mode,
       publicRegistrationEnabled: command.mode !== "closed",
       publicRegistrationRevision: next,

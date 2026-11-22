@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 import runClubs from "@content/playbook/pages/host/run-clubs.json";
-import hostStart from "@content/playbook/pages/host/start.json";
+import {appLinkCopy} from "@content/appDownload";
 import {playbookCopy} from "@content/playbook/playbookCopy";
 import {websiteLeadCopy} from "@content/websiteLead";
 import {validatedPlaybookPage, type PlaybookLeadForm, type PlaybookPageDocument} from "../../content/playbook/playbookContract";
@@ -10,7 +10,6 @@ import {websiteLeadRequest} from "../../shared/api/websiteLead";
 import {
   playbookGuideFormat,
   playbookGuideFormats,
-  playbookLeadConsent,
   playbookLeadProblems,
   playbookLeadRequest,
   playbookSendableLeadKind,
@@ -28,8 +27,6 @@ const walkthrough: PlaybookLeadForm = {...guide, id: "walkthrough_request", requ
   fields: fields("name", "orgName", "whatYouHost", "preferredTime")};
 const referral: PlaybookLeadForm = {...guide, id: "referral_host", requestKind: "referral", format: undefined,
   fields: fields("name", "hostName", "hostLink", "relationship")};
-// The start page's Text me the link form, beside the host store badges.
-const appLink = (validatedPlaybookPage(hostStart).sections.find((section) => section.type === "cta" && section.leadForm) as {leadForm: PlaybookLeadForm}).leadForm;
 
 /** The guide names the lead contract lists for lead.guide.format, read from its description. */
 function contractGuideFormats(): string[] {
@@ -70,9 +67,17 @@ describe("playbook guide formats", () => {
   it("maps every format tag a page's guide form names, and every page form can be sent", async () => {
     const forms = await pageLeadForms();
     expect(forms.some(({form}) => form.id === "run_club_setup_guide")).toBe(true);
+    expect(forms.some(({form}) => form.requestKind === "app_link")).toBe(true);
     for (const {page, form} of forms) {
       const where = `${page.id} ${form.id}`;
       if (form.requestKind === "guide") expect(playbookGuideFormat(form.format), where).toBeDefined();
+      if (form.requestKind === "app_link") {
+        // The site's one "Text me the link" capture draws it (features/marketing), in its own words.
+        expect(playbookSendableLeadKind(form), where).toBeNull();
+        expect({label: form.label, submitLabel: form.submitLabel, fields: form.fields}, where)
+          .toEqual({label: appLinkCopy.label, submitLabel: appLinkCopy.submit, fields: undefined});
+        continue;
+      }
       // A try-it tool's form waits for its command: it never sends, so it never renders.
       expect(playbookSendableLeadKind(form), where).toBe(form.requestKind === "tool" ? null : form.requestKind);
       expect(form.id, where).toMatch(entryPattern);
@@ -130,22 +135,6 @@ describe("playbookLeadRequest", () => {
     const lead = playbookLeadRequest(form, playbookSendableLeadKind(form)!, answers, "/host/run-clubs/");
     return {lead, body: websiteLeadRequest(lead, "+919876543210", "a".repeat(32))};
   };
-
-  it("files a host app link request with the number alone, under its own short consent line", () => {
-    expect(playbookSendableLeadKind(appLink)).toBe("app_link");
-    expect(playbookSendableLeadKind({...appLink, fields: fields("name")})).toBeNull();
-    expect(playbookLeadProblems(appLink, {phone: "98765 43210"})).toEqual({});
-    expect(playbookLeadConsent("app_link")).toEqual(playbookCopy.leadForm.appLink);
-    expect(playbookCopy.leadForm.appLink.consent).toBe("On WhatsApp, from Catch.");
-    expect(playbookLeadConsent("guide")).toEqual({consent: playbookCopy.leadForm.consent, consentVersion: playbookCopy.leadForm.consentVersion});
-    const {lead, body} = send(appLink, {phone: "98765 43210"});
-    expect(lead).toEqual({kind: "app_link", phone: "98765 43210", consentVersion: "app-link-whatsapp-v1",
-      sourcePage: "/host/run-clubs/", entry: "host_app_link", answers: {app: "host"}});
-    expect(body).toMatchObject({requestKind: "app_link", lead: {consent: {purpose: "leadFollowUp", version: "app-link-whatsapp-v1"},
-      appLink: {app: "host"}}});
-    expect(body).not.toHaveProperty("fullName");
-    expect(isJoinWaitlistHttpRequest(body)).toBe(true);
-  });
 
   it("files a guide under the intake's guide name, with the follow-up consent and the form as its entry", () => {
     const {lead, body} = send(guide, {phone: "98765 43210"});

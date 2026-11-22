@@ -1078,7 +1078,8 @@ export {generateSalesPartnerOutreach, getSalesPartnerOutreachJob,
   getSalesPartnerPreparation, registerSalesPartner, nominateSalesOrganizer,
   getSalesPartnerWorkspace, decideSalesPartnerAssignment,
   updateSalesPartnerAssignment, adminAssignSalesPartner,
-  adminRevokeSalesPartnerAccess} from "./partners/callables";
+  adminRevokeSalesPartnerAccess, adminGetSalesPartnerAccess} from
+  "./partners/callables";
 
 export {createSalesDemoContinuation, getSalesDemoContinuation,
   prepareSalesDemoContinuationForm} from "./salesDemo/callables";

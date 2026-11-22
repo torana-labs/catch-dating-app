@@ -12,8 +12,8 @@ import type {OrganizerMessagingWebhookEventDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
-import {hashEndpoint, organizerContactChannelStateId} from
-  "./organizerCampaignModel";
+import {organizerContactChannelStateId} from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {validateOrganizerMessagingWebhookEventDocument} from
   "../shared/generated/validators/organizerMessagingWebhookEventDocument";
 import {WHATSAPP_ENDPOINT_STOPS, parseWhatsappStop} from

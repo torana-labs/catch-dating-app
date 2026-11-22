@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_sales_partner_access_payload.schema.json",
+  "title": "AdminGetSalesPartnerAccessCallablePayload",
+  "description": "An administrator reads one organizer's referral partner reservation and that partner's membership, with the revisions a revoke or a new offer must name.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  },
+  "x-callable-aliases": [
+    "adminGetSalesPartnerAccess"
+  ]
+}

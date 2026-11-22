@@ -1,15 +1,18 @@
 import {act, cleanup, fireEvent, render, screen, within} from "@testing-library/react";
-import {afterEach, describe, expect, it} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
 import {brand} from "@catch/brand";
-import {appDownloadCopy} from "@content/appDownload";
+import {appDownloadCopy, appLinkCopy} from "@content/appDownload";
 import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
 import {hostFeeCalculatorCopy, hostPricingFacts} from "@content/pricing";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {HostPage} from "./HostPage";
 import {hostLandingHref, hostNightHref} from "./useHostLandingController";
 
+vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
+
 afterEach(() => {
   cleanup();
+  vi.unstubAllGlobals();
   window.history.replaceState(null, "", "/");
 });
 
@@ -181,6 +184,30 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(start.getByRole("link", {name: "Download on the App Store"}).getAttribute("href")).toBe(brand.stores.host.ios);
     expect(start.getByRole("link", {name: copy.start.personWhatsapp}).getAttribute("href")!.startsWith(whatsappPrefix)).toBe(true);
     expect(start.getByRole("link", {name: copy.start.weddings}).getAttribute("href")).toBe("/weddings/");
+  });
+
+  it("texts Catch Host's link from the start band, keeping its WhatsApp and walkthrough links, then shows the badges and QR", async () => {
+    const posts: {requestKind: string; lead: {entry: string; sourcePage: string; appLink: unknown; consent: unknown}}[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      posts.push(JSON.parse(String(init?.body)));
+      return new Response(JSON.stringify({ok: true, alreadyJoined: false, lead: {leadId: "0".repeat(64), requestKind: "app_link", isNew: true}}),
+        {status: 200});
+    }));
+    window.history.replaceState(null, "", "/host/");
+    renderPage();
+    const start = within(screen.getByRole("region", {name: copy.start.title}));
+    expect(start.getByRole("link", {name: copy.start.personWhatsapp}).getAttribute("href")!.startsWith(whatsappPrefix)).toBe(true);
+    expect(start.getByRole("link", {name: copy.start.personWalkthrough}).getAttribute("href")).toBe("/host/walkthrough/");
+    const form = within(start.getByRole("form", {name: appLinkCopy.submit}));
+    expect(form.getByText(appLinkCopy.consent)).toBeTruthy();
+    fireEvent.change(form.getByRole("textbox", {name: new RegExp(appLinkCopy.label, "u")}), {target: {value: "98765 43210"}});
+    fireEvent.click(form.getByRole("button", {name: appLinkCopy.submit}));
+    expect(await start.findByText(appLinkCopy.sent)).toBeTruthy();
+    expect(start.getByRole("link", {name: "Download on the App Store"}).getAttribute("href")).toBe(brand.stores.host.ios);
+    expect(start.getByRole("img", {name: appDownloadCopy.host.qrLabel})).toBeTruthy();
+    expect(posts).toHaveLength(1);
+    expect(posts[0]).toMatchObject({requestKind: "app_link", lead: {entry: appLinkCopy.formId, sourcePage: "/host/", appLink: {app: "host"},
+      consent: {purpose: "leadFollowUp", version: appLinkCopy.consentVersion}}});
   });
 
   it("lets the reader pick a step and shows that step's Catch Host screen, with the people and weddings lines as sentences", () => {

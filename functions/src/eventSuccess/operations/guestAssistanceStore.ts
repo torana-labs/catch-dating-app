@@ -25,8 +25,10 @@ import {
   requireDocumentId, Thread, threadIdentity, unavailable,
 } from "./guestRecords";
 import {
-  grantSecret, GuestLinkSigningKeys, guestSecretHash, matchesGuestSecret,
+  grantSecret, guestSecretHash, matchesGuestSecret,
 } from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 
 interface ResolvedGuestView {
   grant: Grant;

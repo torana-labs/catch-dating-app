@@ -7,7 +7,8 @@ import {ProgressFirestore, seedJoiningProgress} from
 import {MetaWhatsappProvider} from "../../organizers/organizerWhatsappProvider";
 import {GuestAssistanceStore} from "./guestAssistanceStore";
 import {guestCollections, parseGrant} from "./guestRecords";
-import type {GuestLinkSigningKeys} from "./guestLinkTokens";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import type {MessageRecord} from "./messageOutbox";
 import {
   parseWhatsappPolicy, renderEventWhatsapp, WhatsappPolicy,

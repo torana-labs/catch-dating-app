@@ -11,7 +11,8 @@ import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
 import {LiveAttempt, MessageRecord, parseMessageRecord} from "./messageOutbox";
 import {sameMessageContext} from "./messagingPolicy";
 import {messageRecipientMatches} from "./messageRecipient";
-import {ConfirmedDeliveryState} from "./deliveryReceiptState";
+import type {ConfirmedDeliveryState} from
+  "../../platform/delivery/confirmedDeliveryState";
 import {mergeDeliveryReceipt} from "./deliveryReceipts";
 import {guestCollections, parseGuest} from "./guestRecords";
 import {readEventAssistanceMessageGate} from "./guestMessageGate";

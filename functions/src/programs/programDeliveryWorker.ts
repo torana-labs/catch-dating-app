@@ -28,7 +28,7 @@ import {
   metaTemplateFromDocument,
 } from "../organizers/organizerWhatsappProvider";
 import {whatsappStatusCorrelation} from
-  "../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../platform/delivery/whatsappDeliveryProtocol";
 import {whatsappEndpointHash} from
   "../eventSuccess/operations/whatsappReplyProtocol";
 import type {ProgramWhatsappDispatchDocument} from

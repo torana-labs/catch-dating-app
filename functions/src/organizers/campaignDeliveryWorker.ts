@@ -37,7 +37,7 @@ import {
   metaTemplateFromDocument,
 } from "./organizerWhatsappProvider";
 import {whatsappStatusCorrelation} from
-  "../eventSuccess/operations/whatsappDeliveryProtocol";
+  "../platform/delivery/whatsappDeliveryProtocol";
 import type {CampaignWhatsappDispatchDocument} from
   "../shared/generated/campaignWhatsappDispatchDocument";
 import {
@@ -45,10 +45,12 @@ import {
   organizerCommunicationPreferenceId,
 } from "../shared/organizerCommunicationPreferences";
 import {
-  classifyMetaError, hashCanonical, hashEndpoint,
+  classifyMetaError,
+  hashCanonical,
   organizerCampaignFrequencyCapMillis,
   organizerContactChannelStateId,
 } from "./organizerCampaignModel";
+import {hashEndpoint} from "../platform/delivery/endpointHash";
 import {campaignVariables} from "./organizerCampaigns";
 import {followerRecipientSuppression} from "./organizerFollowerWhatsappLeg";
 

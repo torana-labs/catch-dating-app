@@ -3,6 +3,11 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
+import {
+  type EventBookingCountersPatch,
+  updateEventBookingCounters,
+  updateEventProviderOrigin,
+} from "../domain/events/eventDocumentWrites";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import type {ConnectOrganizerLumaProviderCallablePayload} from
@@ -204,15 +209,13 @@ export async function connectOrganizerLumaProviderHandler(
   const batch = db.batch();
   batch.set(connectionRef, connection);
   batch.set(mappingRef, mapping);
-  batch.update(db.collection("events").doc(data.eventId), {
-    eventOrigin: {
-      ...event.eventOrigin,
-      rosterAuthority: "providerSync",
-      externalEventId: externalEvent.id,
-      adapterVersion: "luma-public-api-v1",
-      connectedAt: now,
-      connectedBy: actorUid,
-    },
+  updateEventProviderOrigin(batch, db.collection("events").doc(data.eventId), {
+    ...event.eventOrigin,
+    rosterAuthority: "providerSync",
+    externalEventId: externalEvent.id,
+    adapterVersion: "luma-public-api-v1",
+    connectedAt: now,
+    connectedBy: actorUid,
   });
   try {
     await batch.commit();
@@ -536,13 +539,11 @@ export async function disconnectOrganizerProviderHandler(
     revision: admin.firestore.FieldValue.increment(1),
   });
   const event = await requireScopedEvent(db, data.organizerId, data.eventId);
-  batch.update(db.collection("events").doc(data.eventId), {
-    eventOrigin: {
-      ...event.eventOrigin,
-      rosterAuthority: "hostImport",
-      connectedAt: null,
-      connectedBy: null,
-    },
+  updateEventProviderOrigin(batch, db.collection("events").doc(data.eventId), {
+    ...event.eventOrigin,
+    rosterAuthority: "hostImport",
+    connectedAt: null,
+    connectedBy: null,
   });
   await batch.commit();
   return providerSetupResponse(db, data.organizerId, data.eventId);
@@ -713,7 +714,7 @@ export async function reconcileLumaGuests(params: {
         1 : 0), 0);
     if (checkedInDelta > 0 || seatResult !== null &&
       seatResult.seatDelta !== 0) {
-      const eventPatch: Record<string, unknown> = {};
+      const eventPatch: EventBookingCountersPatch = {};
       if (checkedInDelta > 0) {
         eventPatch.checkedInCount = admin.firestore.FieldValue.increment(
           checkedInDelta);
@@ -721,7 +722,8 @@ export async function reconcileLumaGuests(params: {
       if (seatResult) {
         eventPatch.bookedCount = seatResult.occupiedAfter;
       }
-      tx.update(params.db.collection("events").doc(eventId), eventPatch);
+      updateEventBookingCounters(tx, params.db.collection("events")
+        .doc(eventId), eventPatch);
     }
     const counts = {
       pageCount: params.pageCount,

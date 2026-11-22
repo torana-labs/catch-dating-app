@@ -5049,6 +5049,42 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "moderationStatus",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "mode": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "eventId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "moderationStatus",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "mode": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "reviewerUserId",
           "mode": "ASCENDING"
         },

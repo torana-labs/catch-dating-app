@@ -12,6 +12,12 @@ it("validates the callable input and confirms matching organizer, recipient and 
   await expect(offerSalesPartner(input)).resolves.toBeUndefined();
   expect(mocks.call).toHaveBeenCalledWith(input);
 });
+it("re-offers over a closed reservation at its current revision", async () => {
+  mocks.call.mockResolvedValue({data: {organizerId: "host", partnerUid: "partner", revision: 4, status: "offered"}});
+  await expect(offerSalesPartner({...input, expectedRevision: 3})).resolves.toBeUndefined();
+  mocks.call.mockResolvedValue({data: {organizerId: "host", partnerUid: "partner", revision: 1, status: "offered"}});
+  await expect(offerSalesPartner({...input, expectedRevision: 3})).rejects.toThrow("not confirmed");
+});
 it("rejects a mismatched receipt instead of claiming success", async () => {
   mocks.call.mockResolvedValue({data: {organizerId: "host", partnerUid: "someone-else", revision: 1, status: "offered"}});
   await expect(offerSalesPartner(input)).rejects.toThrow("not confirmed");

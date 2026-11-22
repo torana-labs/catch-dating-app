@@ -8,12 +8,12 @@ import {validateOrganizerCampaignWebhookReceiptDocument} from
 import {validateProgramWhatsappDispatchDocument} from
   "../shared/generated/validators/programWhatsappDispatchDocument";
 import {FirestoreDeliveryOutbox} from "../delivery/firestoreDeliveryOutbox";
-import type {WhatsappDeliveryResult} from
-  "../eventSuccess/operations/whatsappDeliveryStore";
 import {whatsappAttemptFromStatus, whatsappStatusCorrelation} from
-  "../eventSuccess/operations/whatsappDeliveryProtocol";
-import {normalizeWhatsappDeliveryStatus} from
-  "../eventSuccess/operations/whatsappDeliveryStatus";
+  "../platform/delivery/whatsappDeliveryProtocol";
+import {
+  normalizeWhatsappDeliveryStatus,
+  type WhatsappDeliveryResult,
+} from "../platform/delivery/whatsappDeliveryStatus";
 import {programDeliveryAdapter} from "./programDelivery";
 import {PROGRAM_WHATSAPP_DISPATCHES} from "./programDeliveryWorker";
 import type {ProgramDeliveryOutbox} from "./programDeliveryWorker";

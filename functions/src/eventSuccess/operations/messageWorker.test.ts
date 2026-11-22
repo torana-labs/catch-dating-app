@@ -17,7 +17,8 @@ import type {MessageRecord} from "./messageOutbox";
 import type {VerifiedDeliveryReceipt} from "./deliveryReceipts";
 import {newMessageRecord} from "./messageOutbox";
 import {WHATSAPP_DISPATCHES} from "./whatsappSpend";
-import {whatsappStatusCorrelation} from "./whatsappDeliveryProtocol";
+import {whatsappStatusCorrelation} from
+  "../../platform/delivery/whatsappDeliveryProtocol";
 import {WhatsappDeliveryStore} from "./whatsappDeliveryStore";
 
 type Routes = MessageRecord["intent"]["permittedRoutes"];

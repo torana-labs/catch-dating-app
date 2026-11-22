@@ -1,11 +1,7 @@
 import {createHash, createHmac, timingSafeEqual} from "node:crypto";
+import type {GuestLinkSigningKeys} from
+  "../../platform/guestLinkSigningKeys";
 import type {Grant} from "./guestRecords";
-
-export interface GuestLinkSigningKeys {
-  currentKeyId: string;
-  /** Keys stay in the trusted worker's secret binding, never Firestore. */
-  keyFor(keyId: string): Buffer;
-}
 
 export function grantSecret(grant: Grant, keys: GuestLinkSigningKeys): string {
   const key = keys.keyFor(grant.signingKeyId);
