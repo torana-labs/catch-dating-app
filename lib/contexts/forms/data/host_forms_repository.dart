@@ -9,12 +9,14 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configura
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_conversion.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_embed.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_export.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -252,18 +254,49 @@ class HostFormsRepository {
     },
   );
 
+  /// A published form's public link and embed code, built on the device
+  /// from its `hostFormSummaries` row (the `getOrganizerFormShareAssets`
+  /// callable is no longer called). [embedId] names the embed frame; each
+  /// read draws a fresh one, as the callable did.
   Future<HostFormShareAssets> getShareAssets({
     required String organizerId,
     required String formId,
-  }) => _call(
-    name: 'getOrganizerFormShareAssets',
-    payload: GetOrganizerFormShareAssetsCallableRequest(
-      organizerId: organizerId,
-      formId: formId,
-    ).toJson(),
-    action: 'load organizer form share assets',
-    parse: HostFormShareAssets.fromCallableData,
-  );
+    String? embedId,
+  }) async {
+    const context = BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'load organizer form share assets',
+      resource: 'hostFormSummaries',
+    );
+    final HostFormSummary? form;
+    try {
+      form = await _required(
+        summaries,
+        'form list',
+      ).summary(organizerId: organizerId, formId: formId);
+    } on FormatException catch (error) {
+      // A row of another organizer reads as missing, as the callable said.
+      throw DocumentNotFoundException('form', cause: error, context: context);
+    }
+    if (form == null) {
+      throw const DocumentNotFoundException('form', context: context);
+    }
+    if (form.activeVersionId == null ||
+        form.publishedVersion < 1 ||
+        form.status == HostFormLifecycleStatus.archived) {
+      throw const BackendOperationException(
+        code: 'failed-precondition',
+        message: 'Publish this form before sharing it.',
+        context: context,
+      );
+    }
+    return HostFormShareAssets.forPublicForm(
+      site: AppConfig.publicSiteUrl,
+      publicFormId: form.publicFormId,
+      title: form.title,
+      embedId: embedId ?? newHostFormEmbedId(),
+    );
+  }
 
   Future<HostFormShareLink> createShareLink({
     required String organizerId,
@@ -660,15 +693,6 @@ Future<List<HostFormTemplateSummary>> hostFormTemplates(
   Ref ref,
   String organizerId,
 ) => ref.watch(hostFormsRepositoryProvider).listTemplates(organizerId);
-
-@riverpod
-Future<HostFormShareAssets> hostFormShareAssets(
-  Ref ref, {
-  required String organizerId,
-  required String formId,
-}) => ref
-    .watch(hostFormsRepositoryProvider)
-    .getShareAssets(organizerId: organizerId, formId: formId);
 
 Map<Object?, Object?> _requiredMap(Object? value, String label) {
   if (value is Map<Object?, Object?>) return value;

@@ -218,6 +218,13 @@ describe("first-party Google tag and Meta Pixel", () => {
     // No receipt: a generated id still deduplicates.
     expect(controller.hostLead({kind: "demo", leadId: null, phone: null})).toBe(true);
     expect(metaEvents("Lead")[1]?.[4]).toEqual({eventID: expect.stringMatching(/^catch_1800000000000_generated\d+$/u)});
+    // A host app link request (Text me the link) is a host lead too.
+    const appLinkId = "e".repeat(64);
+    expect(controller.hostLead({kind: "app_link", leadId: appLinkId, phone: "+919812345678"})).toBe(true);
+    expect(googleEvents("conversion").at(-1)?.[2]).toEqual({send_to: "AW-18526407471/WgIECMue97odEK-WioJF",
+      transaction_id: appLinkId, event_id: appLinkId});
+    expect(metaEvents("Lead").at(-1)).toEqual(["trackSingle", catchPixel, "Lead", {content_category: "host", lead_kind: "app_link"},
+      {eventID: appLinkId}]);
     assertNoForbiddenFields();
   });
 });

@@ -3604,8 +3604,8 @@ without `cityId` (older clients, Host and weddings forms) is unchanged.
 ### Website Leads
 
 The website's lead forms post to `joinWaitlist` with a `requestKind` (`guide`,
-`walkthrough`, `demo`, `venue`, `story`, `referral`, `org_contact` or
-`city_alerts`) and a `lead` object: a `requestId` reused on retries, the
+`walkthrough`, `demo`, `venue`, `story`, `referral`, `org_contact`,
+`city_alerts` or `app_link`) and a `lead` object: a `requestId` reused on retries, the
 WhatsApp `phone`, the `consent` (purpose `cityNewPlans` for city alerts,
 `leadFollowUp` otherwise, with a version), the `sourcePage`, the form's
 `entry` and exactly one payload object named for the kind. A lead carries no
@@ -3617,7 +3617,11 @@ stores the referred host as its `hostApplication`, the shape partner
 nominations use, so it seeds a Supply Intake listing, and records
 `lead.referralCredit` naming the signed-in referrer, or
 `missing_referrer_account` when there is none. The Admin Inbox projects each
-lead as a `lead` item that staff close with a note. Nothing is sent.
+lead as a `lead` item that staff close with a note. Nothing is sent: an
+`app_link` lead ("Text me the link" beside the host store badges, payload
+`appLink: {app: "host"}`) shows the badges and QR code at once, and staff send
+the link on WhatsApp from the lead alert until an approved utility template
+sends it.
 
 Each WhatsApp launch notice with a city counts its person once per city:
 `cityInterestMarkers/{sha256(phone|cityKey)}` is created in the same

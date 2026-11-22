@@ -46,7 +46,8 @@ export const playbookGuideFormats: Readonly<Record<string, WebsiteLeadGuideForma
  * WhatsApp; its organisation and what they run are optional to the intake.
  * A referral needs the person's name and the host's name, link and how they
  * know them; the intake credits it to the signed-in referrer it reads from
- * the request, never from the form.
+ * the request, never from the form. An app link request (Text me the link)
+ * asks for the number alone.
  */
 const kindFields = {
   guide: {needs: [], may: ["name"]},
@@ -54,6 +55,7 @@ const kindFields = {
   demo: {needs: ["name", "whatYouHost"], may: []},
   walkthrough: {needs: ["name", "preferredTime"], may: ["orgName", "whatYouHost"]},
   referral: {needs: ["name", "hostName", "hostLink", "relationship"], may: []},
+  app_link: {needs: [], may: []},
 } as const satisfies Record<string, {needs: readonly PlaybookLeadFieldName[]; may: readonly PlaybookLeadFieldName[]}>;
 
 type PlaybookLeadFieldName = NonNullable<PlaybookLeadForm["fields"]>[number]["name"];
@@ -96,6 +98,16 @@ export function playbookSendableLeadKind(form: PlaybookLeadForm): PlaybookSendab
 }
 
 /**
+ * The consent line a form of this kind shows and the version its lead
+ * stores: an app link request's own short line, every other kind the
+ * playbook's.
+ */
+export function playbookLeadConsent(kind: PlaybookSendableLeadKind): {readonly consent: string; readonly consentVersion: string} {
+  const words = playbookCopy.leadForm;
+  return kind === "app_link" ? words.appLink : {consent: words.consent, consentVersion: words.consentVersion};
+}
+
+/**
  * Each answer the form cannot send, with the words under its field: an
  * empty field (a name needs two letters, as the intake does) or a number
  * that is not a mobile number.
@@ -112,16 +124,17 @@ export function playbookLeadProblems(form: PlaybookLeadForm, answers: PlaybookLe
 
 /**
  * The lead a sendable form files: its kind, the number as typed, the
- * playbook consent version, the page path, the form's id as its entry, and
+ * consent version its line names (playbookLeadConsent), the page path, the form's id as its entry, and
  * the kind's answers (a guide's format as the intake names it; a venue's
  * name as spaceName; a walkthrough's organisation and what they run as
  * organisation and whatYouRun; a referral's host name, link and how they
- * know them). A shown name goes as the person's full name.
+ * know them; an app link request names the host app). A shown name goes as
+ * the person's full name.
  */
 export function playbookLeadRequest(form: PlaybookLeadForm, kind: PlaybookSendableLeadKind, answers: PlaybookLeadAnswers, sourcePage: string): WebsiteLeadForm {
   const shared = {
     phone: answers.phone ?? "",
-    consentVersion: playbookCopy.leadForm.consentVersion,
+    consentVersion: playbookLeadConsent(kind).consentVersion,
     sourcePage,
     entry: form.id,
   };
@@ -147,6 +160,7 @@ export function playbookLeadRequest(form: PlaybookLeadForm, kind: PlaybookSendab
       answers: {preferredTime: typed(answers.preferredTime), ...(organisation ? {organisation} : {}), ...(whatYouRun ? {whatYouRun} : {})},
     };
   }
+  if (kind === "app_link") return {kind, ...shared, ...named, answers: {app: "host"}};
   if (kind === "referral") {
     return {
       kind, ...shared, fullName,

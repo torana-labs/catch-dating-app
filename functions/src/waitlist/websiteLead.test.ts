@@ -56,6 +56,8 @@ const validLeads: Record<LeadKind, Record<string, unknown>> = {
     {cityAlerts: {interests: ["runs", "dinners"]}},
     {city: "Pune", cityId: "in-mh-pune", citySource: "network_guess"},
     "/explore/", "ex-wa", "cityNewPlans"),
+  app_link: lead("app_link", {appLink: {app: "host"}}, {}, "/host/start/",
+    "host_app_link"),
 };
 
 function lead(kind: LeadKind, payload: Record<string, unknown>,
@@ -95,6 +97,11 @@ const invalidLeads: Array<[string, Record<string, unknown>]> = [
   ["org contact with an unknown type", withLead(validLeads.org_contact, {
     orgContact: {orgType: "agency", orgName: "Acme"}})],
   ["city alerts without a city", without(validLeads.city_alerts, "city")],
+  ["app link for an app that has none", withLead(validLeads.app_link, {
+    appLink: {app: "guest"}})],
+  ["app link without its app", withLead(validLeads.app_link, {appLink: {}})],
+  ["app link with a guide's payload", withLead(validLeads.app_link, {
+    guide: {format: "run_club"}})],
   ["city alerts under the follow-up purpose", withLead(
     validLeads.city_alerts, {consent: {purpose: "leadFollowUp",
       version: "lead-2026-11"}})],

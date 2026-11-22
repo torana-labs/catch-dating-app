@@ -6,8 +6,8 @@ import {
 
 /**
  * The website lead client: the short forms on the marketing pages (send me
- * the guide, book a walkthrough, refer a host, new plans in my city and so
- * on) post a typed lead to /api/join-waitlist. See "Website Leads" in
+ * the guide, book a walkthrough, refer a host, new plans in my city, text
+ * me the app link and so on) post a typed lead to /api/join-waitlist. See "Website Leads" in
  * docs/data_contracts.md and functions/src/waitlist/websiteLead.ts.
  *
  * This module owns no copy: each outcome names its state, and the caller
@@ -29,6 +29,7 @@ export interface WebsiteLeadAnswers {
   referral: NonNullable<LeadFields["referral"]>;
   org_contact: NonNullable<LeadFields["orgContact"]>;
   city_alerts: NonNullable<LeadFields["cityAlerts"]>;
+  app_link: NonNullable<LeadFields["appLink"]>;
 }
 
 /** The lead property that carries each kind's answers. */
@@ -41,6 +42,7 @@ const payloadKeys = {
   referral: "referral",
   org_contact: "orgContact",
   city_alerts: "cityAlerts",
+  app_link: "appLink",
 } as const satisfies {[Kind in WebsiteLeadKind]: keyof LeadFields};
 
 /** Kinds the contract refuses without the person's name. */

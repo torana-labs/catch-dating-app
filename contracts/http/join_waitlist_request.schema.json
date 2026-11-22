@@ -113,9 +113,10 @@
         "story",
         "referral",
         "org_contact",
-        "city_alerts"
+        "city_alerts",
+        "app_link"
       ],
-      "description": "Marks a website lead and names its form: guide (send me the setup guide), walkthrough (book a walkthrough), demo (get a demo link), venue (list your space), story (put me forward for a story), referral (refer a host), org_contact (a college, team or brand), city_alerts (new plans in my city). Absent on waitlist, Host and programme submissions."
+      "description": "Marks a website lead and names its form: guide (send me the setup guide), walkthrough (book a walkthrough), demo (get a demo link), venue (list your space), story (put me forward for a story), referral (refer a host), org_contact (a college, team or brand), city_alerts (new plans in my city), app_link (text me the app link). Absent on waitlist, Host and programme submissions."
     },
     "lead": {
       "$ref": "#/definitions/lead"
@@ -556,7 +557,7 @@
     "lead": {
       "type": "object",
       "additionalProperties": false,
-      "description": "The fields every website lead carries, plus exactly one payload named for its requestKind (orgContact for org_contact, cityAlerts for city_alerts).",
+      "description": "The fields every website lead carries, plus exactly one payload named for its requestKind (orgContact for org_contact, cityAlerts for city_alerts, appLink for app_link).",
       "required": [
         "requestId",
         "phone",
@@ -615,6 +616,9 @@
         },
         "cityAlerts": {
           "$ref": "#/definitions/leadCityAlerts"
+        },
+        "appLink": {
+          "$ref": "#/definitions/leadAppLink"
         }
       }
     },
@@ -860,6 +864,23 @@
           }
         }
       }
+    },
+    "leadAppLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "app"
+      ],
+      "description": "A request for an app's download link (Text me the link): staff send it on WhatsApp.",
+      "properties": {
+        "app": {
+          "type": "string",
+          "enum": [
+            "host"
+          ],
+          "description": "Which app's link: host (the host app)."
+        }
+      }
     }
   },
   "anyOf": [
@@ -1029,6 +1050,11 @@
                     "required": [
                       "cityAlerts"
                     ]
+                  },
+                  {
+                    "required": [
+                      "appLink"
+                    ]
                   }
                 ]
               }
@@ -1097,6 +1123,11 @@
                   {
                     "required": [
                       "cityAlerts"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "appLink"
                     ]
                   }
                 ]
@@ -1167,6 +1198,11 @@
                     "required": [
                       "cityAlerts"
                     ]
+                  },
+                  {
+                    "required": [
+                      "appLink"
+                    ]
                   }
                 ]
               }
@@ -1233,6 +1269,11 @@
                     "required": [
                       "cityAlerts"
                     ]
+                  },
+                  {
+                    "required": [
+                      "appLink"
+                    ]
                   }
                 ]
               }
@@ -1298,6 +1339,11 @@
                   {
                     "required": [
                       "cityAlerts"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "appLink"
                     ]
                   }
                 ]
@@ -1368,6 +1414,11 @@
                     "required": [
                       "cityAlerts"
                     ]
+                  },
+                  {
+                    "required": [
+                      "appLink"
+                    ]
                   }
                 ]
               }
@@ -1433,6 +1484,11 @@
                   {
                     "required": [
                       "cityAlerts"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "appLink"
                     ]
                   }
                 ]
@@ -1502,6 +1558,82 @@
                   {
                     "required": [
                       "orgContact"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "appLink"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "requestKind": {
+              "const": "app_link"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "lead": {
+              "required": [
+                "appLink"
+              ],
+              "properties": {
+                "consent": {
+                  "properties": {
+                    "purpose": {
+                      "const": "leadFollowUp"
+                    }
+                  }
+                }
+              },
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "guide"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "walkthrough"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "demo"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "venue"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "story"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "referral"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "orgContact"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "cityAlerts"
                     ]
                   }
                 ]

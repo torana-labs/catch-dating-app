@@ -104,6 +104,12 @@
       "kicker": "Then finish it",
       "title": "Your draft waits in {{brand.stores.hostAppName}}.",
       "lead": "Sign in with the phone number you confirmed here. Add the details and publish when you’re ready.",
+      "leadForm": {
+        "id": "host_app_link",
+        "requestKind": "app_link",
+        "label": "Your WhatsApp number",
+        "submitLabel": "Text me the link"
+      },
       "storeBadges": "host",
       "media": {
         "kind": "capture",
