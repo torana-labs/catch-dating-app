@@ -48,7 +48,7 @@
         "adProgramme": "host",
         "ageMin": 21,
         "advantageAudience": true,
-        "excludeAudiences": ["Catch | Active hosts"]
+        "excludeAudiences": ["Catch | Active hosts", "Catch | Website host leads | 180d", "Catch | Lead form sent | 90d"]
       },
       "ads": [
         {
