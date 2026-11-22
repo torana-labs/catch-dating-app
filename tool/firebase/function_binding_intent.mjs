@@ -242,7 +242,12 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
         } else if (ts.isExportDeclaration(statement)) {
           if (statement.isTypeOnly) continue;
           if (!statement.exportClause || !ts.isNamedExports(statement.exportClause)) {
-            if (!scanOnly || statement.exportClause || !statement.moduleSpecifier?.text?.startsWith(".")) fail("a module a Function reaches uses export *; name its exports", statement);
+            // The entry point may star exactly its area entries
+            // (functions/scripts/functionExports.cjs owns that grammar).
+            const areaEntry = real === path.join(src, "index.ts") && !statement.exportClause &&
+              /^\.\/[a-z][A-Za-z0-9]*\/functions$/u.test(statement.moduleSpecifier?.text ?? "");
+            if (!areaEntry && (!scanOnly || statement.exportClause ||
+              !statement.moduleSpecifier?.text?.startsWith("."))) fail("a module a Function reaches uses export *; name its exports", statement);
             mod.stars.push(statement.moduleSpecifier.text);
             continue;
           }
@@ -265,6 +270,13 @@ export function collectFunctionBindingIntent({sourceRoot, environment, projectId
     };
     const exported = (name, mod) => enter(`export:${mod.file}:${name}`, () => {
       const entry = mod.exports.get(name);
+      if (!entry && mod.file === path.join(src, "index.ts") && mod.stars.length) {
+        // A name the entry point re-exports through one of its area entries.
+        const holders = mod.stars.map((specifier) => load(path.resolve(src, `${specifier}.ts`), false, mod))
+          .filter((area) => area.exports.has(name));
+        if (holders.length > 1) fail("the same name arrives through more than one export *", mod);
+        if (holders.length === 1) return exported(name, holders[0]);
+      }
       if (!entry) fail("does not export a name its importer asks for", mod);
       return entry.module ? imported(entry, mod) : symbol(entry.name, mod, new Map());
     }, mod);

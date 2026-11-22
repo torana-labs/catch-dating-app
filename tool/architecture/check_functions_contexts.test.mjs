@@ -34,7 +34,7 @@ function fixtureMap(overrides = {}) {
       surfaces: "functions/src/surfaces/",
       platform: "functions/src/platform/",
     },
-    entry: ["functions/src/index.ts"],
+    entry: ["functions/src/index.ts", "functions/src/*/functions.ts"],
     contexts: ["events", "bookings", {id: "supply", owns: "Listings."}],
     surfaces: [{id: "admin", owns: "Console."}, {id: "host", owns: "Host."}],
     legacy: [
@@ -60,6 +60,9 @@ function check(files, map = fixtureMap(), {keepStale = false} = {}) {
 test("places target roots, the longest legacy path, and the entry point", () => {
   const map = fixtureMap();
   assert.deepEqual(placeFunctionsPath("functions/src/index.ts", map), {layer: "entry"});
+  // Area entries the entry point stars are entry files too, one folder deep only.
+  assert.deepEqual(placeFunctionsPath("functions/src/operations/functions.ts", map), {layer: "entry"});
+  assert.notDeepEqual(placeFunctionsPath("functions/src/operations/nested/functions.ts", map), {layer: "entry"});
   assert.deepEqual(placeFunctionsPath("functions/src/platform/adminAuth.ts", map),
     {layer: "platform"});
   assert.deepEqual(placeFunctionsPath("functions/src/domain/supply/approval.ts", map),

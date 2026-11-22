@@ -21,10 +21,14 @@ const rules = Object.freeze({
   unreadable: "is missing, not a regular file, or larger than 2 MiB",
   syntax: "has syntax errors",
   unnamed: "must name each export: export {name} from \"./module\"",
+  star: "may use export * only as export * from \"./<area>/functions\", once per area",
+  areaSetup: "may only re-export Functions; move any other statement out of the area entry",
+  areaStar: "must name each export; an area entry may not use export *",
+  areaLocal: "may only re-export from a module inside its own area",
   local: "may only re-export from a relative module inside functions/src",
   declaration: "must not declare, default-export or assign an export; re-export it from its module",
   name: "exports a name that is not a plain identifier",
-  duplicate: "exports the same name twice",
+  duplicate: "exports a name that the entry point or another area entry already exports",
   setupImport: "setup may import packages only, not Functions source",
   empty: "exports no Functions",
 });
@@ -142,23 +146,29 @@ function tokenize(source, file) {
 }
 
 /**
- * The Functions an entry source exports, in source order: each as
- * {name, symbol, module}, where module is relative to functions/src without
- * "./" (e.g. "chats/eventChatAccess") and symbol is the name inside it.
+ * The export statements of one source file, in order: {kind: "named", line,
+ * specifier, elements} or {kind: "star", line, specifier}, plus the line of
+ * the first statement that is not an export (setupLine), if any.
  */
-function functionExportsFromSource(source, {file = entryFile} = {}) {
+function exportStatements(source, file) {
   if (typeof source !== "string" || source.length > maxEntryBytes) throw new FunctionEntryError("unreadable", file);
   const tokens = tokenize(source, file);
-  const result = [];
-  const seen = new Set();
+  const statements = [];
+  let setupLine = null;
   let i = 0;
   const at = (offset = 0) => tokens[i + offset];
   const is = (token, value) => token && token.value === value && token.type !== "string";
   const statementStart = (token) => token.depth === 0 && token.type === "word" && token.value === "export";
+  // A semicolon or a line break ends the statement (automatic semicolon insertion).
+  const endStatement = (last, fail) => {
+    if (is(at(), ";")) i += 1;
+    else if (at() && at().line === last.line) fail("syntax");
+  };
   while (i < tokens.length) {
     const start = at();
     if (!statementStart(start)) {
       // Setup: skip to the end of the statement or the next export.
+      setupLine ??= start.line;
       i += 1;
       while (i < tokens.length && !statementStart(at()) &&
         !(is(tokens[i - 1], ";") && tokens[i - 1].depth === 0)) i += 1;
@@ -184,7 +194,15 @@ function functionExportsFromSource(source, {file = entryFile} = {}) {
       i += 1;
       continue;
     }
-    if (is(at(), "*")) fail("unnamed");
+    if (is(at(), "*")) {
+      i += 1;
+      if (!is(at(), "from") || at(1)?.type !== "string") fail("star");
+      const specifier = at(1);
+      i += 2;
+      endStatement(specifier, fail);
+      statements.push({kind: "star", line, specifier: specifier.value});
+      continue;
+    }
     if (is(at(), "=") || reservedDeclarations.has(at()?.value) && at()?.type === "word") fail("declaration");
     if (!is(at(), "{")) fail("syntax");
     i += 1;
@@ -215,17 +233,63 @@ function functionExportsFromSource(source, {file = entryFile} = {}) {
     const specifier = at();
     if (specifier?.type !== "string") fail("syntax");
     i += 1;
-    // A semicolon or a line break ends the statement (automatic semicolon insertion).
-    if (is(at(), ";")) i += 1;
-    else if (at() && at().line === specifier.line) fail("syntax");
+    endStatement(specifier, fail);
     if (typeOnly) continue;
-    if (!specifier.value.startsWith("./") || specifier.value.split("/").includes("..")) fail("local");
-    for (const element of elements) {
-      if (element.typeOnly) continue;
-      if (!identifier.test(element.name) || !identifier.test(element.symbol)) fail("name");
-      if (seen.has(element.name)) fail("duplicate");
-      seen.add(element.name);
-      result.push({name: element.name, symbol: element.symbol, module: specifier.value.slice(2)});
+    statements.push({kind: "named", line, specifier: specifier.value,
+      elements: elements.filter((element) => !element.typeOnly)});
+  }
+  return {statements, setupLine};
+}
+
+const areaStar = /^\.\/([a-z][A-Za-z0-9]*)\/functions$/u;
+const insideModule = (specifier) => specifier.startsWith("./") && !specifier.split("/").includes("..");
+
+/**
+ * The Functions an entry source exports, in source order: each as
+ * {name, symbol, module}, where module is relative to functions/src without
+ * "./" (e.g. "chats/eventChatAccess") and symbol is the name inside it.
+ *
+ * The entry point re-exports named Functions from their modules, or a whole
+ * area with exactly `export * from "./<area>/functions"`. An area entry
+ * (src/<area>/functions.ts) holds only named re-exports from modules inside
+ * that area, in its own order, and the star expands in place. readText(file)
+ * supplies an area entry by its functions-relative path; without it, an
+ * entry source that uses a star cannot be read. A name exported twice, by
+ * any two statements or area entries, fails at the second one.
+ */
+function functionExportsFromSource(source, {file = entryFile, readText} = {}) {
+  const result = [];
+  const seen = new Set();
+  const areas = new Set();
+  const add = (elements, module, at, line) => {
+    for (const {name, symbol} of elements) {
+      if (!identifier.test(name) || !identifier.test(symbol)) throw new FunctionEntryError("name", at, line);
+      if (seen.has(name)) throw new FunctionEntryError("duplicate", at, line);
+      seen.add(name);
+      result.push({name, symbol, module});
+    }
+  };
+  for (const statement of exportStatements(source, file).statements) {
+    if (statement.kind === "named") {
+      if (!insideModule(statement.specifier)) throw new FunctionEntryError("local", file, statement.line);
+      add(statement.elements, statement.specifier.slice(2), file, statement.line);
+      continue;
+    }
+    const area = areaStar.exec(statement.specifier)?.[1];
+    if (!area || areas.has(area)) throw new FunctionEntryError("star", file, statement.line);
+    areas.add(area);
+    const areaFile = `src/${area}/functions.ts`;
+    const text = readText?.(areaFile);
+    if (typeof text !== "string") throw new FunctionEntryError("unreadable", areaFile);
+    const {statements, setupLine} = exportStatements(text, areaFile);
+    if (setupLine !== null) throw new FunctionEntryError("areaSetup", areaFile, setupLine);
+    if (!statements.length) throw new FunctionEntryError("empty", areaFile);
+    for (const inner of statements) {
+      if (inner.kind === "star") throw new FunctionEntryError("areaStar", areaFile, inner.line);
+      if (!insideModule(inner.specifier) || inner.specifier === "./functions") {
+        throw new FunctionEntryError("areaLocal", areaFile, inner.line);
+      }
+      add(inner.elements, `${area}/${inner.specifier.slice(2)}`, areaFile, inner.line);
     }
   }
   if (!result.length) throw new FunctionEntryError("empty", file);
@@ -234,17 +298,18 @@ function functionExportsFromSource(source, {file = entryFile} = {}) {
 
 /**
  * The Functions functions/src/index.ts exports under a functions directory, in
- * source order. readText(file) may supply functions-relative sources instead
- * of the file system (a snapshot or an in-memory source set); it returns the
- * text or undefined.
+ * source order, with each area entry it stars expanded in place. readText(file)
+ * may supply functions-relative sources instead of the file system (a snapshot
+ * or an in-memory source set); it returns the text or undefined.
  */
-function functionExports({root = functionsRoot, ts, readText} = {}) {
+function functionExports({root = functionsRoot, readText} = {}) {
   const read = readText ? (file) => {
     const text = readText(file);
     if (typeof text !== "string") throw new FunctionEntryError("unreadable", file);
     return text;
   } : (file) => readEntryText(root, file);
-  return functionExportsFromSource(read(entryFile), {ts, file: entryFile});
+  return functionExportsFromSource(read(entryFile), {file: entryFile,
+    readText: (file) => { try { return read(file); } catch { return undefined; } }});
 }
 
 /** Sorted exported Function names under a functions directory. */

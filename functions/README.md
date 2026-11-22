@@ -68,11 +68,20 @@ evidence and scoped live approvals remain prerequisites for activation.
 
 ## Function inventory
 
-These rows name current `src/index.ts` exports, including exports that remain
+These rows name the current exported Functions, including exports that remain
 dormant pending activation. Historical Function names belong in prose outside
 the inventory. `node tool/audit/check_fn_readme_inventory.mjs --write` keeps the
-rows between the markers in step with `src/index.ts`: it drops removed exports
+rows between the markers in step with the export list: it drops removed exports
 and lists new ones under "Not yet described" for you to move and describe.
+
+Each top-level `src/<area>/` lists the Functions it deploys in
+`src/<area>/functions.ts`, as named re-exports from modules inside that area.
+`src/index.ts` holds the setup (global options, Admin SDK initialization) and
+one `export * from "./<area>/functions";` per area. To add a Function, add its
+re-export to its area's `functions.ts`; a new area also needs its star line in
+`src/index.ts` and a codebase in `deploy-codebases.json`.
+`scripts/functionExports.cjs` is the one reader of this list: it accepts only
+that shape and fails on a name two areas both export.
 
 <!-- fn-inventory:start (generated rows: node tool/audit/check_fn_readme_inventory.mjs --write) -->
 | Function | File | Purpose |
@@ -815,9 +824,10 @@ resilience only; rotation publication never performs synchronous generation.
 The compiled entry point loads each Function's module the first time its
 export is read. Every Function runs as its own Cloud Run service that reads
 only its own export, so a cold start loads that Function's code instead of
-the whole backend. `scripts/lazy-entry.cjs` rewrites `lib/index.js` after
-`tsc` (the `postbuild` step) and fails the build on any re-export shape it
-cannot defer. `src/index.ts` stays an ordinary list of re-exports, and global
+the whole backend. `scripts/lazy-entry.cjs` writes `lib/index.js` after `tsc`
+(the `postbuild` step) from the compiled setup and one lazy getter per
+exported Function, requiring its defining module directly, and fails the
+build on any entry shape `scripts/functionExports.cjs` rejects. Global
 options still run before any Function is defined. Deploy discovery and the
 emulator read every export, so they load everything as before.
 

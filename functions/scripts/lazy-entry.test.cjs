@@ -31,12 +31,27 @@ test("runs the compiled setup first, then defers each export's module into its g
   assert.ok(!lines.some((line) => /^(?:var|const) \w+ = require\("\./.test(line)), "no module loads at startup");
 });
 
+test("expands each starred area entry in place, loading the defining module directly", () => {
+  const result = lazyEntrySource([
+    "import {setGlobalOptions} from \"firebase-functions\";",
+    "setGlobalOptions({region: \"asia-south1\"});",
+    "export * from \"./alpha/functions\";",
+  ].join("\n"), {readText: (file) => file === "src/alpha/functions.ts" ?
+    "export {first, second as renamed} from \"./one\";\n" : undefined});
+  assert.equal(result.exports, 2);
+  assert.deepEqual(result.source.trimEnd().split("\n").slice(-2), [
+    "Object.defineProperty(exports, \"first\", { enumerable: true, get: function () { return require(\"./alpha/one\").first; } });",
+    "Object.defineProperty(exports, \"renamed\", { enumerable: true, get: function () { return require(\"./alpha/one\").second; } });",
+  ]);
+});
+
 test("refuses entry points the resolver rejects instead of writing a partly lazy one", () => {
   for (const [source, rule] of [
-    [`${entry}\nexport * from "./gamma";`, /must name each export/u],
+    [`${entry}\nexport * from "./gamma";`, /export \* only as export \* from/u],
+    [`${entry}\nexport * from "./gamma/functions";`, /src\/gamma\/functions\.ts is missing/u],
     [`${entry}\nexport const local = 1;`, /must not declare/u],
     [`import "./local";\n${entry}`, /setup may import packages only/u],
-    [`${entry}\nexport {first} from "./delta";`, /same name twice/u],
+    [`${entry}\nexport {first} from "./delta";`, /already exports/u],
   ]) assert.throws(() => lazyEntrySource(source), rule);
 });
 

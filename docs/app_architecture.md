@@ -439,7 +439,9 @@ module sits in one of four places, recorded in
   `functions/src/domain/<context>/`.
 - **surfaces:** endpoints and read models built for one client: `admin`,
   `host`, `website` and `ops`. Target root `functions/src/surfaces/<surface>/`.
-- **entry:** `functions/src/index.ts`.
+- **entry:** `functions/src/index.ts` and the area entries it stars,
+  `functions/src/<area>/functions.ts` (named re-exports only; see
+  `functions/README.md`, Function inventory).
 
 Rules, checked by `node tool/architecture/check_functions_contexts.mjs`:
 
