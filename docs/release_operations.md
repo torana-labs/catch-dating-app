@@ -2427,6 +2427,7 @@ dispatched run started after its cron time:
 | Firestore Data Validation (`data-validation.yml`) | 20:13 | Not dispatched: it uses prod, though read-only | "Scheduled run missed" |
 | Deploy backend (`backend-deploy.yml`) | 21:13 | Dispatched once for dev; prod is never dispatched | "Scheduled run missed" |
 | CI nightly (`ci.yml`) | 02:23 | Dispatched once with `full`; the night counts as unknown | "Main CI is red" |
+| Test read map (`test-read-map.yml`) | 03:41 | Not dispatched: report-only shadow job | "Scheduled run missed" |
 
 Each missed run gets one comment on its issue (opened if none is open) naming
 the run, what was dispatched and, for a prod run, the command to run it, for
@@ -2514,6 +2515,7 @@ compiler's reads (the import closure) are kept separately, and the flutter
 tool's only as a count. Golden-tagged tests are excluded as in the CI shards,
 so a file with only golden tests exits 79 and still has a map. The run
 uploads one sorted JSONL artifact, `test-read-map-<run id>`, kept 30 days,
+and the Scheduled run watchdog reports a night it never started (report-only),
 and summarises files, failures, tests whose runtime reads only fonts, shaders
 and the native assets manifest, and tests that list directories. Nothing
 consumes the map: it selects no tests and blocks nothing. Removing a test

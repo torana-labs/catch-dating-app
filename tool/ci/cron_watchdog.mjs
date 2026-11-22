@@ -70,6 +70,15 @@ export const TARGETS = Object.freeze([
     nightly: true,
     issue: MAIN_RED_TITLE,
   },
+  {
+    id: "test-read-map",
+    name: "Test read map (shadow)",
+    workflow: "test-read-map.yml",
+    cron: "41 3 * * *",
+    // Report-only: a shadow job nothing consumes, so a missed night is noted, not re-run.
+    reportOnly: true,
+    issue: MISSED_TITLE,
+  },
 ]);
 
 /** The latest occurrence at or before `now` of a daily "M H * * *" cron, in UTC milliseconds. */
@@ -158,6 +167,10 @@ export function decide({now, graceHours, repository, runs, records, targets = TA
       dispatches.push({target: target.id, workflow: target.workflow, inputs: target.dispatch});
       actions.push("dispatched");
       lines.push(`- Dispatched now (dev-only): \`${command(repository, target.workflow, target.dispatch)}\``);
+    }
+    if (target.reportOnly) {
+      actions.push("reported");
+      lines.push("- Report only: not dispatched; the next scheduled run covers it.");
     }
     if (target.ask) {
       actions.push("asked");
