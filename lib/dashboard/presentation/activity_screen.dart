@@ -43,7 +43,9 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
     // Activity shows without them.
     final notices = uid == null
         ? const <SafetyNotice>[]
-        : ref.watch(watchSafetyNoticesProvider(uid)).asData?.value ??
+        : catchAsyncStateFromAsyncValue(
+                ref.watch(watchSafetyNoticesProvider(uid)),
+              ).value ??
               const <SafetyNotice>[];
     final markAllReadMutation = ref.watch(
       ActivityController.markAllReadMutation,
@@ -288,8 +290,6 @@ class ActivityScreenSkeleton extends StatelessWidget {
   }
 }
 
-/// Activity: From Catch safety notices first, when there are any, then the
-/// activity timeline.
 class ActivityScreenBody extends StatelessWidget {
   const ActivityScreenBody({
     super.key,
@@ -322,7 +322,7 @@ class ActivityScreenBody extends StatelessWidget {
       items: [
         if (notices.isNotEmpty)
           CatchSectionListItem(
-            child: CatchSection(
+            child: CatchSection.divided(
               key: const ValueKey<String>('activity-safety-notices'),
               title: l10n.dashboardActivityFromCatch,
               children: [
