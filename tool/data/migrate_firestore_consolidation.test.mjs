@@ -1095,6 +1095,48 @@ test("program-door-views creates headers, roster rows and journal views once, wi
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("program-setting-views creates each programme's sender and settings views once, nothing secret", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-setting-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active",
+      whatsappSenderConnectionId: "conn-1"},
+    "organizerPrograms/p2": {organizerId: "o1", createdBy: "owner-1", status: "active"},
+    "organizerSenderConnections/conn-1": {organizerId: "o1", channel: "whatsapp",
+      provider: "metaCloudApi", status: "active", wabaId: "1111", phoneNumberId: "2222",
+      secretVersionResource: "projects/p/secrets/s/versions/1",
+      displayPhoneNumber: "+91 98765 00000", verifiedName: "Aditi & Kabir"},
+    "programAssistantSettings/p1": {programId: "p1", organizerId: "o1", enabled: true,
+      languages: ["hi"], replyWithin: "hour", escalationStaffUids: [], neverDoes: [],
+      tone: "warm", dailyTokenBudget: 1000, answerTopics: [], attachmentReads: [],
+      updatedByUid: "owner-1", updatedAtMillis: 5, revision: 3,
+      lastRequestId: "req-1", lastRequestHash: "hash-marker"},
+    "programStaffGrants/p1__desk-1": {programId: "p1", organizerId: "o1", uid: "desk-1",
+      displayName: "Arjun", phoneLastFour: "0001", status: "active",
+      expiresAt: at(later), revokedAt: null},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 4);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["programSenderViews/p1"].sender.boundToProgramme, true);
+  assert.equal(db.data["programSenderViews/p2"].sender.boundToProgramme, false);
+  assert.equal(db.data["programSenderViews/p2"].organizerActiveConnectionId, "conn-1");
+  assert.equal(db.data["programAssistantSettingViews/p1"].revision, 3);
+  assert.deepEqual(db.data["programAssistantSettingViews/p1"].staff,
+    [{uid: "desk-1", displayName: "Arjun", expiresAtMillis: later}]);
+  assert.equal(db.data["programAssistantSettingViews/p2"].usesDefaults, true);
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
+    ([key]) => key.startsWith("programSenderViews/") ||
+      key.startsWith("programAssistantSettingViews/"))));
+  for (const secret of ["1111", "2222", "projects/p/secrets", "hash-marker", "req-1", "0001"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-live-board-views creates each alert and count once, one per run and duty", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-live-board-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
