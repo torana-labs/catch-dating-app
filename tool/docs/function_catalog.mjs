@@ -5,6 +5,7 @@
 // combined table (never committed) and, with --check, validates each file.
 
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
@@ -49,6 +50,47 @@ export function fragmentProblems(name, source) {
   return problems;
 }
 
+/**
+ * The area each exported Function comes from, from
+ * functions/scripts/functionExports.cjs (no installed packages needed).
+ */
+export function exportAreas(root = repoRoot) {
+  const {functionExports} = createRequire(import.meta.url)(path.join(root, "functions/scripts/functionExports.cjs"));
+  return new Map(functionExports({root: path.join(root, "functions")})
+    .map(({name, module}) => [name, module.split("/")[0]]));
+}
+
+/** The area a row belongs to: its first exported name, or the one area a wildcard family matches. */
+function rowArea(row, areas) {
+  const first = cells(row)[0] ?? "";
+  for (const [, name, star, suffix] of first.matchAll(/`(\w+)(\*?)(\w*)`/gu)) {
+    if (!star && areas.has(name)) return areas.get(name);
+    if (star) {
+      const matches = new Set([...areas].filter(([exported]) =>
+        exported.startsWith(name) && exported.endsWith(suffix)).map(([, area]) => area));
+      if (matches.size === 1) return [...matches][0];
+    }
+  }
+  return null; // Retired or internal names may sit beside the rows they relate to.
+}
+
+/** Problems across all area files: a row listed twice, or a row filed under another area. */
+export function catalogProblems(fragments, areas) {
+  const problems = [];
+  const seen = new Map();
+  for (const {name, source} of fragments) {
+    const area = name.replace(/\.md$/u, "");
+    source.replace(/\n$/u, "").split("\n").slice(2).forEach((row, index) => {
+      const at = `${name}:${index + 3}`;
+      if (seen.has(row)) problems.push(`${at}: repeats the row at ${seen.get(row)}`);
+      else seen.set(row, at);
+      const owner = rowArea(row, areas);
+      if (owner && owner !== area) problems.push(`${at}: belongs in ${owner}.md, the area that exports it`);
+    });
+  }
+  return problems;
+}
+
 export function readFragments(root = repoRoot) {
   const dir = path.join(root, fragmentDir);
   return fs.readdirSync(dir).filter((name) => name.endsWith(".md")).sort()
@@ -66,6 +108,7 @@ function main(argv) {
   if (argv.includes("--check")) {
     const problems = fragments.flatMap(({name, source}) => fragmentProblems(name, source));
     if (!fragments.length) problems.push(`${fragmentDir} has no area files`);
+    if (!problems.length) problems.push(...catalogProblems(fragments, exportAreas()));
     if (problems.length) {
       process.stderr.write(`${problems.join("\n")}\n`);
       return 1;

@@ -3,7 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {fragmentDir, fragmentProblems, header, readFragments, rollUp} from "./function_catalog.mjs";
+import {catalogProblems, exportAreas, fragmentDir, fragmentProblems, header, readFragments, rollUp} from "./function_catalog.mjs";
 
 const head = `${header.join("\n")}\n`;
 const row = "| `a` | Callable | Admin | None | Notes with `a | b` in code. |";
@@ -42,8 +42,25 @@ test("the roll-up joins areas in name order under one header", () => {
   }
 });
 
+test("a row listed twice, or filed under an area that does not export it, fails", () => {
+  const areas = new Map([["getChat", "chats"], ["onChatRoomChanged", "chats"], ["payInvoice", "money"]]);
+  const chats = `${head}| \`getChat\` | Callable | App | None | Reads. |\n`;
+  assert.deepEqual(catalogProblems([{name: "chats.md", source: chats}], areas), []);
+  // A duplicate row, in the same file or another.
+  assert.match(catalogProblems([{name: "chats.md", source: `${chats}| \`getChat\` | Callable | App | None | Reads. |\n`}], areas)
+    .join("\n"), /chats\.md:4: repeats the row at chats\.md:3/u);
+  // A row in the wrong area, by name or by wildcard family.
+  assert.match(catalogProblems([{name: "money.md", source: chats}], areas).join("\n"),
+    /money\.md:3: belongs in chats\.md/u);
+  assert.match(catalogProblems([{name: "money.md", source: `${head}| \`onChat*Changed\` (rooms) | Triggers | App | None | x |\n`}], areas)
+    .join("\n"), /belongs in chats\.md/u);
+  // A retired name no area exports may sit beside related rows.
+  assert.deepEqual(catalogProblems([{name: "money.md", source: `${head}| \`retiredCallable\` | Retired | None | None | x |\n`}], areas), []);
+});
+
 test("every committed area file is valid", () => {
   const fragments = readFragments();
   assert.ok(fragments.length > 0);
   assert.deepEqual(fragments.flatMap(({name, source}) => fragmentProblems(name, source)), []);
+  assert.deepEqual(catalogProblems(fragments, exportAreas()), []);
 });
