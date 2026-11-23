@@ -16,8 +16,8 @@ separate stage counts are not historical cohort conversions.
   override. Advertising-provider events do not increase first-party counters.
 - `catch_analytics.*_raw_latest`: Firestore-to-BigQuery export views for
   `organizers`, `events`, `eventBookings`, `guestPayments`, `reviews`,
-  `savedEvents`, `eventInviteLinks`, and `matches`, one extension instance per
-  collection.
+  `savedEvents` and `eventInviteLinks`, one extension instance per collection.
+  Nothing reads `matches`, so it is not exported (FIX-5, #2447).
 - `catch_marketplace_metrics.event_success_scorecards_raw_latest`: existing
   Event Success export, used for post-event connection/chat/repeat metrics.
 

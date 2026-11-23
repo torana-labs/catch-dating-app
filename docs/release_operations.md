@@ -3783,9 +3783,14 @@ tool/analytics/deploy_host_analytics_bigquery.sh <env> --refresh-only
 BigQuery keeps deleted rows for its time-travel and fail-safe windows (7 days
 each by default) before they are gone for good.
 
-`participant_metric_counters_raw_changelog` holds per-user totals only. It has
-no peer ids and is not deleted. Firestore `eventSuccessScorecards` for past
-events keep aggregate counts until they are next refreshed.
+Firestore `eventSuccessScorecards` for past events keep aggregate counts until
+they are next refreshed.
+
+The `matches` and `participantMetricCounters` exports were removed because
+nothing reads them (FIX-5, #2447). Once the owner uninstalls `bq-host-matches`
+and drops `catch_analytics.matches_raw_changelog`, every exported chat row is
+gone, deck-era ones included, and the `matches` statements above no longer
+apply.
 
 **Follow-ups.** Today's rules still accept deck-shaped decisions (passes,
 reaction fields, comments) from old app builds. Pick one of these:
@@ -3870,8 +3875,8 @@ never to an artifact.
      (rows written before the 22 Nov 2026 export move),
      `event_invite_links_raw_changelog`,
      `organizer_growth_events`, `host_analytics_events`, and
-     `catch_marketplace_metrics.event_success_scorecards_raw_changelog` and
-     `event_success_feedback_raw_changelog`; plus what the host mart refresh
+     `catch_marketplace_metrics.event_success_scorecards_raw_changelog`; plus
+     what the host mart refresh
      (`tool/analytics/deploy_host_analytics_bigquery.sh --refresh-only`)
      already needs on the mart tables.
 4. **Check the `prod-takedown` GitHub environment requires a reviewer** and
@@ -4177,10 +4182,14 @@ A smoke build can also emit a single canary event with
 ### BigQuery — two separate exports, do not conflate them
 
 - **Firestore → BigQuery**: configured in-repo. `firebase.json` declares the
-  Event Success, participant metric, and host analytics operational export
-  instances. Existing `bq-event-success-*` and `bq-participant-*` instances are
-  installed in all three projects; newly declared `bq-host-*` instances must be
-  deployed explicitly before host analytics marts can refresh from live data.
+  export instances that something reads: `bq-event-success-scorecards` (host
+  mart), `bq-participant-signal-facts` (user mart) and the `bq-host-*`
+  instances (host mart and Admin marketplace). An export with no SQL or code
+  reader is removed (FIX-5, #2447): `bq-event-success-feedback`,
+  `bq-participant-metric-counters` and `bq-host-matches`. Removing an instance
+  from source does not uninstall it; the owner runs `firebase ext:uninstall`
+  and drops its tables. Newly declared `bq-host-*` instances must be deployed
+  explicitly before host analytics marts can refresh from live data.
   Extension parameter changes are **not** part of the normal
   `deploy_firebase_targets.sh` target set — push them with an explicit
   `firebase deploy --only extensions` when changed.

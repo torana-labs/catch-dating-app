@@ -44,7 +44,6 @@ export const BIGQUERY_CHANGELOGS = Object.freeze({
   eventParticipations: "catch_analytics.event_participations_raw_changelog",
   eventInviteLinks: "catch_analytics.event_invite_links_raw_changelog",
   eventSuccessScorecards: "catch_marketplace_metrics.event_success_scorecards_raw_changelog",
-  eventSuccessFeedback: "catch_marketplace_metrics.event_success_feedback_raw_changelog",
 });
 
 /** Tables Functions stream rows into, keyed by organizer_id. */
