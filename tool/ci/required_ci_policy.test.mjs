@@ -52,7 +52,7 @@ function failed(result) {
 }
 
 test("Required CI retains every automated dependency without the human source gate", () => {
-  assert.deepEqual(dependencies, ["plan", "source-preflight", ...gatingLanes]);
+  assert.deepEqual(dependencies, ["plan", "source-preflight", ...gatingLanes, "semantic-checks"]);
   assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
   passed(run("Require every selected lane"));
   const needs = successfulNeeds();
@@ -188,4 +188,37 @@ test("Required CI accepts merge-queue-proven lanes only when this source's queue
     broken["source-preflight"].result = result;
     failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(broken), QUEUE_RUN: "39822205436"}));
   }
+});
+
+test("the semantic gates block every merge-queue entry and only report on a pull request", () => {
+  const job = ci.slice(ci.indexOf("\n  semantic-checks:\n"), ci.indexOf("\n  required:\n"));
+  assert.match(job, /name: Semantic checks\n/u);
+  assert.match(job, /needs: \[plan\]\n/u);
+  // Every queue entry, the nightly, a non-draft pull request and a main push
+  // without queue proof; never plan-selected.
+  assert.match(job, /producer_attempt == format\('\{0\}', github\.run_attempt\)/u);
+  assert.match(job, /github\.event_name == 'merge_group' \|\| github\.event_name == 'schedule'/u);
+  assert.match(job, /github\.event_name == 'pull_request' && !github\.event\.pull_request\.draft/u);
+  assert.match(job, /github\.event_name == 'push' && !needs\.plan\.outputs\.queue_verified_run/u);
+  assert.doesNotMatch(job, /needs\.plan\.outputs\.(?!producer_attempt|queue_verified_run)/u);
+  assert.match(job, /continue-on-error: \$\{\{ github\.event_name == 'pull_request' \}\}/u);
+  assert.match(job, /node tool\/ci\/semantic_gates\.mjs run --candidates --timings build\/ci\/semantic-timings\.json/u);
+  assert.match(job, /fetch-depth: 0/u);
+
+  const queue = (result) => {
+    const needs = successfulNeeds();
+    if (result === undefined) delete needs["semantic-checks"].result;
+    else needs["semantic-checks"].result = result;
+    return {NEEDS_JSON: JSON.stringify(needs), EVENT_NAME: "merge_group"};
+  };
+  passed(run("Require every selected lane", queue("success")));
+  // A skipped gate (a wrong if:) or a failed one cannot pass the queue.
+  failed(run("Require every selected lane", queue("skipped")));
+  failed(run("Require every selected lane", queue("failure")));
+  // On a pull request the job continues on error, so its need reads success
+  // even when a gate fails, and a skipped draft run passes too.
+  passed(run("Require every selected lane"));
+  const pr = successfulNeeds();
+  pr["semantic-checks"].result = "success";
+  passed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(pr)}));
 });
