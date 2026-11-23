@@ -231,12 +231,18 @@ test("Meta lead-form leads get the welcome only from a form that asks for " +
 
 test("the consenting Meta forms are listed by form id with a consent " +
   "version, and an unlisted form is never welcomed by default", () => {
+  assert.equal(META_LEAD_FORM_WHATSAPP_CONSENT.get("1490757942994590"),
+    "meta-leadform-whatsapp-v1");
   for (const [formId, version] of META_LEAD_FORM_WHATSAPP_CONSENT) {
     assert.match(formId, /^[0-9]{5,20}$/);
     assert.match(version, /^meta-leadform-whatsapp-v[0-9]+$/);
   }
   assert.equal(hostLeadWelcomeRecipient(metaLead({metaLead: {
     ...metaLead().metaLead, formId: V2_FORM}}), true), null);
+  assert.equal(hostLeadWelcomeRecipient(metaLead({metaLead: {
+    ...metaLead().metaLead, formId: "1490757942994590"}}), true), PHONE);
+  assert.equal(hostLeadWelcomeRecipient(metaLead({metaLead: {
+    ...metaLead().metaLead, formId: "1490757942994590"}}), false), null);
   assert.equal(hostLeadWelcomeRecipient(metaLead(), true, CONSENT_FORMS),
     PHONE);
 });

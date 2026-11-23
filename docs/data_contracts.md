@@ -3657,9 +3657,9 @@ and `venue` leads whose consent is `leadFollowUp` with version
 `playbook-lead-whatsapp-v2` (the form's "We reply on WhatsApp."). A Meta
 lead-form lead with a phone gets it only when its `metaLead.formId` is listed
 in `META_LEAD_FORM_WHATSAPP_CONSENT` (`waitlist/hostLeadTemplates.ts`: forms
-whose line before Submit says "We'll reply on WhatsApp at the number you
-gave.", from "Catch Host | Organisers | v3"; earlier forms said it only after
-Submit) and while `CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED` is also on;
+whose disclaimer before Submit says "We'll reply on WhatsApp / At the phone
+number you gave.", from "Catch Host | Organisers | v3", consent version
+`meta-leadform-whatsapp-v1`; earlier forms said it only after Submit) and while `CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED` is also on;
 its six hours run from when the person sent the form. `app_link` (the app link),
 `walkthrough` (a request for a time), `referral`, `city_alerts`, `story` and
 `org_contact` leads and partner nominations get no welcome, and a number that
