@@ -823,7 +823,7 @@ jobs:
       # audit:widget-cleanup scans with rg; the other gates need only Node.
       - uses: ./.github/actions/install-ripgrep
       # Uncached, like source preflight: only validation-lane workflows may
-      # restore cached contracts (tool/ci/generate_contracts_cache.test.mjs).
+      # restore cached contracts (the ci:generate-contracts-cache policy).
       - uses: ./.github/actions/generate-contracts
       - name: Generate the Admin build modules
         run: |
