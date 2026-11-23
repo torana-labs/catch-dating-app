@@ -1194,6 +1194,48 @@ test("program-setting-views creates each programme's sender and settings views o
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("host-form-views creates each form, version and funnel view once, no token", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-form-views");
+  const load = createFunctionsRequire();
+  const {AudienceTestStore} = load("./lib/organizers/organizerAudienceTestStore.js");
+  const forms = load("./lib/organizers/organizerForms.js");
+  const {Timestamp} = load("firebase-admin/firestore");
+  const store = new AudienceTestStore({
+    "organizers/o1": {ownerUserId: "host-1", hostUserIds: ["host-1"], hostProfiles: []},
+  });
+  const deps = {firestore: () => store.asFirestore(), checkRateLimit: async () => undefined,
+    timestamp: () => Timestamp.fromMillis(1_790_000_000_000),
+    publicFormId: () => "public_form_12345678901234567890"};
+  const request = (data) => ({auth: {uid: "host-1", token: {}}, data: {organizerId: "o1", ...data}});
+  const created = await forms.createOrganizerFormHandler(request({templateId: "quiz-team-night",
+    requestId: "create-1", title: null, defaultTargetKind: "organizer", defaultTargetId: null}), deps);
+  const formId = created.form.formId;
+  const published = await forms.publishOrganizerFormHandler(request({formId, expectedRevision: 1}), deps);
+  const versionId = published.activeVersionId;
+  const db = fakeDb({...store.docs,
+    "organizerFormShareLinks/link-1": {organizerId: "o1", formId,
+      publicFormId: "public_form_12345678901234567890", label: "Poster", source: "manual",
+      tokenHash: "f".repeat(64), createdByUid: "host-1", createdAt: Timestamp.fromMillis(5),
+      openCount: 3, startCount: 2, submissionCount: 1},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 3);
+  await applyMigrationPlan(db, plan);
+  const editor = db.data[`hostFormEditorViews/${formId}`];
+  assert.equal(editor.organizerId, "o1");
+  assert.equal(editor.form.status, "published");
+  assert.equal(editor.form.draftRevision, 1);
+  const analytics = db.data[`hostFormAnalyticsViews/${versionId}`];
+  assert.equal(analytics.formVersion, 1);
+  assert.equal(analytics.opens, 0);
+  assert.deepEqual(db.data[`hostFormSourceViews/${formId}`].sources, [{sourceLinkId: "link-1",
+    label: "Poster", opens: 3, starts: 2, submissions: 1}]);
+  assert.equal(JSON.stringify(db.data[`hostFormSourceViews/${formId}`]).includes("f".repeat(64)), false);
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-live-board-views creates each alert and count once, one per run and duty", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-live-board-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});

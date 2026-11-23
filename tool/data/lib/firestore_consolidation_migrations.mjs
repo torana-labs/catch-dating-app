@@ -621,6 +621,20 @@ function settingViews() {
   return programSettingViewModule;
 }
 
+let hostFormViewModule = null;
+function formViews() {
+  try {
+    hostFormViewModule ??= createFunctionsRequire()(
+      "./lib/hostReadModels/formViewStore.js");
+  } catch (error) {
+    throw new Error(
+      "The host-form-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return hostFormViewModule;
+}
+
 let programArrivalViewModule = null;
 function functionsProgramArrivalViews() {
   try {
@@ -2100,6 +2114,46 @@ export const MIGRATIONS = [
         transform: (data, id, db) => newView(db,
           "programAssistantSettingViews", id,
           (tx) => settingViews().readProgramAssistantSettingView(db, tx, id)),
+      },
+    ],
+  },
+  {
+    name: "host-form-views",
+    description:
+      "The Host form editor and form analytics read hostFormEditorViews, " +
+      "hostFormAnalyticsViews and hostFormSourceViews (#2306) instead of " +
+      "the getOrganizerFormEditor and getOrganizerFormAnalytics callables. " +
+      "Every form with a draft gets its editor view (summary, draft " +
+      "definition and validation issues), every published version its " +
+      "analytics view (funnel and question aggregates, with the privacy " +
+      "threshold applied) and every form with share links its funnel view " +
+      "(labels and counters, never a token). Existing views are never " +
+      "replaced; forms, drafts, versions, aggregates and links are never " +
+      "changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerForms",
+        target: "hostFormEditorViews",
+        skipReason: "no draft, a draft of another organizer, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostFormEditorViews", id,
+          (tx) => formViews().readFormEditorView(db, tx, id)),
+      },
+      {
+        source: "organizerFormVersions",
+        target: "hostFormAnalyticsViews",
+        skipReason: "already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostFormAnalyticsViews", id,
+          (tx) => formViews().readFormAnalyticsView(db, tx, id)),
+      },
+      {
+        source: "organizerForms",
+        target: "hostFormSourceViews",
+        skipReason: "no share links, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostFormSourceViews", id,
+          (tx) => formViews().readFormSourceView(db, tx, id)),
       },
     ],
   },

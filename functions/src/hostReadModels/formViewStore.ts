@@ -37,9 +37,9 @@ type Tx = FirebaseFirestore.Transaction;
  */
 export async function readFormEditorView(db: Db, tx: Tx, formId: string):
   Promise<HostFormEditorViewDocument | null> {
-  const [formSnap, draftSnap] = await tx.getAll(
-    db.collection("organizerForms").doc(formId),
-    db.collection("organizerFormDrafts").doc(formId));
+  const [formSnap, draftSnap] = await Promise.all([
+    tx.get(db.collection("organizerForms").doc(formId)),
+    tx.get(db.collection("organizerFormDrafts").doc(formId))]);
   if (!formSnap.exists || !draftSnap.exists) return null;
   const form = requireDoc<OrganizerFormDocument>(formSnap,
     "OrganizerFormDocument");
