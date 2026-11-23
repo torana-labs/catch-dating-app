@@ -3655,10 +3655,12 @@ the same way from the same trigger and recorded as `welcomeWhatsapp`, while
 `CATCH_WHATSAPP_REPLIES_ENABLED`) is on. It goes to website `guide`, `demo`
 and `venue` leads whose consent is `leadFollowUp` with version
 `playbook-lead-whatsapp-v2` (the form's "We reply on WhatsApp."). A Meta
-lead-form lead with a phone gets it only while
-`CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED` is also on, because that form
-mentions WhatsApp only on its thank-you screen, after it is sent; its six
-hours run from when the person sent the form. `app_link` (the app link),
+lead-form lead with a phone gets it only when its `metaLead.formId` is listed
+in `META_LEAD_FORM_WHATSAPP_CONSENT` (`waitlist/hostLeadTemplates.ts`: forms
+whose line before Submit says "We'll reply on WhatsApp at the number you
+gave.", from "Catch Host | Organisers | v3"; earlier forms said it only after
+Submit) and while `CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED` is also on;
+its six hours run from when the person sent the form. `app_link` (the app link),
 `walkthrough` (a request for a time), `referral`, `city_alerts`, `story` and
 `org_contact` leads and partner nominations get no welcome, and a number that
 had a welcome in the last seven days is skipped (`skipReason: recentlySent`).

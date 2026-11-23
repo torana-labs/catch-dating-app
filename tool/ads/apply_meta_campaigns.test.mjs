@@ -18,6 +18,7 @@ import {adTargetingFromCatalog, readMarketCatalog} from "../lib/market_catalog.m
 
 const policy = loadMetaCampaigns();
 const campaign = policy.campaigns[0];
+const liveForm = policy.leadForms.find((form) => form.name === campaign.leadForm);
 
 function withPolicy(change, catalog) {
   const copy = structuredClone(policy);
@@ -55,6 +56,22 @@ test("policy guards: paused, prefix, budget, copy limits, mapped questions", () 
   }), /must ask for PHONE/);
 });
 
+test("the campaign's form asks for WhatsApp consent before Submit; old forms are history", () => {
+  // hostLeadTemplates.ts welcomes a Meta lead only from a form with this line.
+  assert.match(liveForm.consentLine, /WhatsApp/);
+  const sent = leadFormParams(liveForm);
+  assert.deepEqual(sent.custom_disclaimer, {body: {text: liveForm.consentLine}});
+  assert.doesNotMatch(sent.thank_you_page.body, /WhatsApp/);
+  const history = policy.leadForms.filter((form) => form.retired);
+  assert.ok(history.length > 0);
+  for (const form of history) assert.equal(leadFormParams(form).custom_disclaimer, undefined);
+  assert.throws(withPolicy((p) => { p.campaigns[0].leadForm = history[0].name; }), /retired lead form/);
+  assert.throws(withPolicy((p) => {
+    p.leadForms.find((form) => form.consentLine).consentLine = "x".repeat(121);
+  }), /consent line over 120/);
+  assert.throws(withPolicy((p) => { p.leadForms[0].retired = "yes"; }), /retired must be true/);
+});
+
 test("cities come only from the city catalog", () => {
   const host = adTargetingFromCatalog(readMarketCatalog(), "host");
   assert.deepEqual(campaign.targeting.cities, host.metaCityKeys);
@@ -79,7 +96,7 @@ test("payloads: paused, lead objective, on-ad leads, Catch links", () => {
   const link = creative.object_story_spec.link_data;
   assert.equal(link.call_to_action.value.lead_gen_form_id, "777");
   assert.equal(new URL(link.link).origin, brand.web.origin);
-  const form = leadFormParams(policy.leadForms[0]);
+  const form = leadFormParams(liveForm);
   assert.equal(form.is_optimized_for_quality, true);
   assert.equal(new URL(form.privacy_policy.url).origin, brand.web.origin);
   const keys = form.questions.filter((q) => q.type === "CUSTOM").map((q) => q.key);
@@ -132,11 +149,13 @@ test("without Page access the plan is blocked and apply refuses", async () => {
 test("existing forms and campaigns are kept; new ones are created paused", async () => {
   const pages = [{id: policy.pageId, access_token: "page-token"}];
   const kept = await planMetaCampaigns({policy, render, api: fakeApi({pages,
-    forms: [{id: "555", name: policy.leadForms[0].name, status: "ACTIVE"}],
+    forms: [{id: "555", name: liveForm.name, status: "ACTIVE"}],
     campaigns: [{id: "1", name: campaign.name, status: "PAUSED"}]})});
   assert.deepEqual(kept.changes.map((c) => c.kind), ["keep", "keep"]);
+  // A retired form is never planned again, even once Meta stops listing it.
+  assert.deepEqual(kept.changes.map((c) => c.target), [liveForm.name, campaign.name]);
   const archived = await planMetaCampaigns({policy, render, api: fakeApi({pages,
-    forms: [{id: "556", name: policy.leadForms[0].name, status: "ARCHIVED"}]})});
+    forms: [{id: "556", name: liveForm.name, status: "ARCHIVED"}]})});
   assert.equal(archived.changes[0].kind, "create");
   const api = fakeApi({pages});
   const plan = await planMetaCampaigns({policy, api, render});
@@ -149,7 +168,7 @@ test("existing forms and campaigns are kept; new ones are created paused", async
 
 test("an existing campaign's cities follow the catalog", async () => {
   const pages = [{id: policy.pageId, access_token: "page-token"}];
-  const forms = [{id: "555", name: policy.leadForms[0].name, status: "ACTIVE"}];
+  const forms = [{id: "555", name: liveForm.name, status: "ACTIVE"}];
   const campaigns = [{id: "1", name: campaign.name, status: "PAUSED"}];
   const adSet = (keys) => [{id: "9", name: `${campaign.name} | All cities`,
     targeting: {age_min: 21, geo_locations: {cities: keys.map((key) => ({key, name: "x"})), location_types: ["home"]}}}];
@@ -175,7 +194,7 @@ test("the host list is excluded once it exists, keeping exclusions set by hand",
   const policy = loadMetaCampaigns();
   policy.campaigns[0].targeting.excludeAudiences = ["Catch | Active hosts"];
   const pages = [{id: policy.pageId, access_token: "page-token"}];
-  const forms = [{id: "555", name: policy.leadForms[0].name, status: "ACTIVE"}];
+  const forms = [{id: "555", name: liveForm.name, status: "ACTIVE"}];
   const campaigns = [{id: "1", name: campaign.name, status: "PAUSED"}];
   const cities = campaign.targeting.cities.map((key) => ({key}));
   const adSets = (excluded) => [{id: "9", name: `${campaign.name} | All cities`,
