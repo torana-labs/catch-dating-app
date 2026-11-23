@@ -14,6 +14,7 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {organizerManagerUserIds} from "../shared/organizerHosts";
 import {reconcileOrganizerJourneyViews} from "./organizerJourneyViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -82,21 +83,44 @@ export function resolveJourneyViewOrganizerIds(source: JourneyViewSource,
 
 const options = {retry: true};
 
-async function reconcileForWrite(source: JourneyViewSource,
-  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
-    {documentId: string}>): Promise<void> {
+async function reconcileForChange(source: JourneyViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
   const organizerIds = resolveJourneyViewOrganizerIds(source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
+    documentId, before,
+    after);
   for (const organizerId of organizerIds) {
     await reconcileOrganizerJourneyViews(admin.firestore(), organizerId);
   }
+}
+
+async function reconcileForWrite(
+  source: JourneyViewSource,
+  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
+    {documentId: string}>
+): Promise<void> {
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
 }
 
 /** Name, listing, claim and managers: who reads a journey and its steps. */
 export const onHostOrganizerJourneyViewOrganizerChanged = onDocumentWritten({
   ...options, document: "organizers/{documentId}",
 }, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * Name, listing, claim and managers: who reads a journey and its steps.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostOrganizerJourneyViewProjections = defineProjections(
+  "organizers", [{
+    id: "hostOrganizerJourneyView", kind: "projection", when: () => true,
+    run: (change) => reconcileForChange("organizers", change.documentId,
+      change.before, change.after),
+  }]);
 
 /** A claim request adds, decides or withdraws its requester's steps. */
 export const onHostOrganizerJourneyViewClaimChanged = onDocumentWritten({

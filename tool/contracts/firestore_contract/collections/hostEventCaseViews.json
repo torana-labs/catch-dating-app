@@ -17,6 +17,7 @@
     "onHostEventCaseViewAttendeeChanged",
     "onHostEventCaseViewEventChanged",
     "onHostEventCaseViewOrganizerChanged",
+    "dispatchOrganizers",
     "resolveEventAssistanceCase"
   ],
   "migrationNotes": [

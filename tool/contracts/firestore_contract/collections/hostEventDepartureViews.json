@@ -23,7 +23,8 @@
     "onHostMovementViewMembershipChanged",
     "onHostMovementViewWorkItemChanged",
     "onHostMovementViewStaffGrantChanged",
-    "onHostMovementViewOrganizerChanged"
+    "onHostMovementViewOrganizerChanged",
+    "dispatchOrganizers"
   ],
   "migrationNotes": [
     "label and sourceState follow the group's current source, so an event or plan change re-evaluates the event's rosters."

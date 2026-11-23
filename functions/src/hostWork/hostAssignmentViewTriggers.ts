@@ -6,6 +6,7 @@ import {
   reconcileProgramAssignmentView,
   reconcileTeamAssignmentView,
 } from "./hostAssignmentViews";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 const fanoutLimit = 600;
@@ -95,15 +96,10 @@ export const onHostAssignmentMembershipChanged = onDocumentWritten({
     event.params.membershipId, before);
 });
 
-/** An organiser's name: every programme, event and team row naming it. */
-export const onHostAssignmentOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{organizerId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["name"])) return;
-  const db = admin.firestore();
-  const organizerId = event.params.organizerId;
+/** Every programme, event and team row that names an organiser. */
+async function reconcileOrganizerNameRows(
+  db: FirebaseFirestore.Firestore, organizerId: string
+): Promise<void> {
   // One equality filter each keeps these off the composite index list.
   const [programGrants, eventGrants, memberships] = await Promise.all([
     db.collection("programStaffGrants").where("organizerId", "==",
@@ -125,4 +121,29 @@ export const onHostAssignmentOrganizerChanged = onDocumentWritten({
   for (const membership of memberships.docs) {
     await reconcileTeamAssignmentView(db, membership.id);
   }
+}
+
+/** An organiser's name: every programme, event and team row naming it. */
+export const onHostAssignmentOrganizerChanged = onDocumentWritten({
+  ...options, document: "organizers/{organizerId}",
+}, async (event) => {
+  const before = event.data?.before.data();
+  const after = event.data?.after.data();
+  if (unchanged(before, after, ["name"])) return;
+  await reconcileOrganizerNameRows(admin.firestore(),
+    event.params.organizerId);
 });
+
+/**
+ * An organiser's name: every programme, event and team row naming it.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostAssignmentViewProjections = defineProjections(
+  "organizers", [{
+    id: "hostAssignmentView", kind: "projection",
+    when: (change) => !unchanged(change.before, change.after, ["name"]),
+    run: (change, ctx) => reconcileOrganizerNameRows(ctx.db,
+      change.documentId),
+  }]);

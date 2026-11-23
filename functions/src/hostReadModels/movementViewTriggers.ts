@@ -15,6 +15,7 @@ import {
   defaultMovementViewDeps,
   MovementViewDeps,
 } from "./movementViewSupport";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -202,14 +203,24 @@ export async function reconcileMovementTargets(
 
 const options = {retry: true, memory: "512MiB" as const};
 
-async function reconcileForWrite(source: MovementViewSource,
-  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
-    {documentId: string}>): Promise<void> {
+async function reconcileForChange(source: MovementViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
   const db = admin.firestore();
   const targets = await resolveMovementTargets(db, source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
+    documentId, before,
+    after);
   await reconcileMovementTargets(db, targets);
+}
+
+async function reconcileForWrite(
+  source: MovementViewSource,
+  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
+    {documentId: string}>
+): Promise<void> {
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
 }
 
 export const onHostMovementViewEventChanged = onDocumentWritten({
@@ -245,3 +256,15 @@ export const onHostMovementViewStaffGrantChanged = onDocumentWritten({
 export const onHostMovementViewOrganizerChanged = onDocumentWritten({
   ...options, document: "organizers/{documentId}",
 }, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * An organizer's managers: its open checkpoint views.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostMovementViewProjections = defineProjections("organizers", [{
+  id: "hostMovementView", kind: "projection", when: () => true,
+  run: (change) => reconcileForChange("organizers", change.documentId,
+    change.before, change.after),
+}]);

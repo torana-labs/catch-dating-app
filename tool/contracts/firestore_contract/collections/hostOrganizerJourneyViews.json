@@ -15,6 +15,7 @@
   "write": "server only; written per organizer from organizers, organizerClaimRequests, supplyIntakeRequests, events and organizerGrowthFacts, and deleted when its reader is no longer a manager or claimant",
   "exportedFunctions": [
     "onHostOrganizerJourneyViewOrganizerChanged",
+    "dispatchOrganizers",
     "onHostOrganizerJourneyViewClaimChanged",
     "onHostOrganizerJourneyViewIntakeChanged",
     "onHostOrganizerJourneyViewEventChanged",

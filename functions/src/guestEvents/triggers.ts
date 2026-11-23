@@ -13,6 +13,7 @@ import {guestEventStatuses, refreshGuestEventStatus} from
 import {savedEvents} from "./guestEventCard";
 import {refreshSavedEventCard, refreshSavedEventCardsForEvent} from
   "./savedEventCards";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 
@@ -276,6 +277,21 @@ export const onEventGuestEntryOrganizerWritten = onDocumentWritten({
   await refreshEventGuestEntriesForOrganizer(admin.firestore(),
     event.params.documentId);
 });
+
+/**
+ * An organizer's archive, app visibility or public page: its guests' entries.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const eventGuestEntryProjections = defineProjections("organizers", [{
+  id: "eventGuestEntries", kind: "projection",
+  when: ({before, after}) => !before || !after ||
+    changed(before, after, ["archived", "appVisibility", "publicPage"]),
+  run: async (change, ctx) => {
+    await refreshEventGuestEntriesForOrganizer(ctx.db, change.documentId);
+  },
+}]);
 
 export const onEventGuestEntryFormWritten = onDocumentWritten({
   ...options, document: "organizerForms/{documentId}",

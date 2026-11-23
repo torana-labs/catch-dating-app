@@ -16,6 +16,7 @@
     "onHostEventSetupViewEventChanged",
     "onHostEventSetupViewPreferencesChanged",
     "onHostEventSetupViewOrganizerChanged",
+    "dispatchOrganizers",
     "onHostEventSetupViewAttendeeChanged",
     "onHostEventSetupViewAttendeeImportChanged",
     "onHostEventSetupViewParticipationChanged",

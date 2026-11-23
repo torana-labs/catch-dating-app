@@ -23,6 +23,7 @@ const endpointWrappers = new Map([
   ["admin/salesIntelligence/callables.ts", new Set(["read", "write"])],
   ["admin/salesPrivacy/callables.ts", new Set(["privacyCallable"])],
   ["partners/callables.ts", new Set(["callable"])],
+  ["platform/dispatch/runtime.ts", new Set(["dispatchTrigger"])],
 ]);
 const factories = new Map([
   ["https", new Set(["onCall", "onRequest"])],
