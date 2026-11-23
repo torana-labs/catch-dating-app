@@ -70,6 +70,17 @@ export const onHostAssignmentEventGrantChanged = onDocumentWritten({
     before);
 });
 
+/** Every staff row that names an event. */
+async function reconcileEventNameRows(
+  db: FirebaseFirestore.Firestore, eventId: string
+): Promise<void> {
+  const grants = await db.collection("eventStaffGrants")
+    .where("eventId", "==", eventId).limit(fanoutLimit).get();
+  for (const grant of grants.docs) {
+    await reconcileEventAssignmentView(db, grant.id);
+  }
+}
+
 /** An event's name, or the event appearing or vanishing: its staff rows. */
 export const onHostAssignmentEventChanged = onDocumentWritten({
   ...options, document: "events/{eventId}",
@@ -77,13 +88,20 @@ export const onHostAssignmentEventChanged = onDocumentWritten({
   const before = event.data?.before.data();
   const after = event.data?.after.data();
   if (unchanged(before, after, ["name"])) return;
-  const db = admin.firestore();
-  const grants = await db.collection("eventStaffGrants")
-    .where("eventId", "==", event.params.eventId).limit(fanoutLimit).get();
-  for (const grant of grants.docs) {
-    await reconcileEventAssignmentView(db, grant.id);
-  }
+  await reconcileEventNameRows(admin.firestore(), event.params.eventId);
 });
+
+/**
+ * An event's name, or the event appearing or vanishing.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostAssignmentEventProjections = defineProjections("events", [{
+  id: "hostAssignmentView", kind: "projection",
+  when: (change) => !unchanged(change.before, change.after, ["name"]),
+  run: (change, ctx) => reconcileEventNameRows(ctx.db, change.documentId),
+}]);
 
 /** A team membership joining, leaving or changing: that account's row. */
 export const onHostAssignmentMembershipChanged = onDocumentWritten({

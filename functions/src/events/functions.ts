@@ -1,6 +1,7 @@
 // The Functions this area deploys. src/index.ts re-exports this file
 // (read by functions/scripts/functionExports.cjs).
 
+export {dispatchEvents} from "./dispatch/events.generated";
 export {signUpForFreeEvent} from "./signUpForFreeEvent";
 // TRANSITIONAL: keeps eventParticipations readable for released apps until
 // phase 2 of the eventBookings rename.

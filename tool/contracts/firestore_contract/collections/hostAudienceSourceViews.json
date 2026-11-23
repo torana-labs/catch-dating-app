@@ -17,6 +17,7 @@
     "onHostAudienceSourceViewApplicationFormChanged",
     "onHostAudienceSourceViewVersionChanged",
     "onHostAudienceSourceViewEventChanged",
+    "dispatchEvents",
     "onHostAudienceSourceViewTagsChanged"
   ],
   "migrationNotes": [

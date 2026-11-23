@@ -7,6 +7,7 @@ import {
   reconcileHostContactDetailViewsForAccount,
   reconcileHostContactDetailViewsForEvent,
 } from "./contactDetailViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 const options = {retry: true};
@@ -131,6 +132,19 @@ export const onHostContactDetailViewEventWritten = onDocumentWritten({
   await reconcileHostContactDetailViewsForEvent(admin.firestore(),
     event.params.eventId);
 });
+
+/**
+ * An event renamed or its origin changed: its contacts' detail views.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostContactDetailEventProjections = defineProjections("events", [{
+  id: "hostContactDetailView", kind: "projection",
+  when: (change) => contactDetailEventChanged(change.before, change.after),
+  run: (change, ctx) => reconcileHostContactDetailViewsForEvent(ctx.db,
+    change.documentId),
+}]);
 
 /**
  * The contact a merge receipt changes the merges of: the survivor it names.

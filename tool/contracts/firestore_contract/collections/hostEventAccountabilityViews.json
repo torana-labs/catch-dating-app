@@ -14,6 +14,7 @@
   "write": "server only; one per attendee of an event whose format has the sweep primitive, deleted with the attendee, the event or the sweep",
   "exportedFunctions": [
     "onHostGuestViewEventChanged",
+    "dispatchEvents",
     "onHostGuestViewPlanChanged",
     "onHostGuestViewAttendeeChanged",
     "onHostGuestViewGuestChanged",

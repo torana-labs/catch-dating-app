@@ -192,6 +192,20 @@ export const onHostEventDeliveryViewAttendeeChanged = onDocumentWritten({
 export const onHostEventDeliveryViewEventChanged = onDocumentWritten({
   ...options, document: "events/{documentId}",
 }, (event) => reconcileForWrite("events", event));
+
+/**
+ * An event's organizer, status or end: its live delivery views.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostEventDeliveryViewEventProjections = defineProjections(
+  "events", [{
+    id: "hostEventDeliveryView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("events", change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostEventDeliveryViewWorkItemChanged = onDocumentWritten({
   ...options, document: "operationWorkItems/{documentId}",
 }, (event) => reconcileForWrite("operationWorkItems", event));

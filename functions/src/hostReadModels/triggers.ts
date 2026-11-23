@@ -4,6 +4,7 @@ import {reconcileSimpleSummary} from "./simpleStore";
 import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {reconcileContactSummary} from "./contactStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true, memory: "512MiB" as const};
 export const onHostContactSummaryChanged = onDocumentWritten({
@@ -79,6 +80,21 @@ export const onHostEventSummaryChanged = onDocumentWritten({
   await reconcileSimpleSummary(
     admin.firestore(), "events", event.params.eventId);
 });
+
+/**
+ * An event write outside an already published event: its summary row.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostEventSummaryProjections = defineProjections("events", [{
+  id: "hostEventSummary", kind: "projection",
+  when: ({before, after}) => !(before && after &&
+    before.publicationState === "published" &&
+    after.publicationState === "published"),
+  run: (change, ctx) => reconcileSimpleSummary(ctx.db, "events",
+    change.documentId),
+}]);
 
 export const onHostAudienceSummaryCoverageChanged = onDocumentWritten({
   ...options, document: "organizerAudienceSummaries/{organizerId}",

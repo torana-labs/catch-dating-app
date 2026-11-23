@@ -23,6 +23,7 @@
     "requestAccountDeletion",
     "onHostRequestViewParticipationWritten",
     "onHostRequestViewEventWritten",
+    "dispatchEvents",
     "onHostRequestViewProfileWritten",
     "onHostRequestViewContactSummaryWritten",
     "onHostRequestViewContactWritten"

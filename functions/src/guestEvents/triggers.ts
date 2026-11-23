@@ -238,27 +238,47 @@ export const onGuestEventStatusOfferRecipientWritten = onDocumentWritten({
 }, (event) => refreshPairs(guestEventStatusPairs(...versions(event),
   "eventId", "recipientUid", null)));
 
-export const onEventGuestEntryEventWritten = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, async (event) => {
-  const [before, after] = versions(event);
+/**
+ * The event's public copy, guest entry, guests' status rows and saved
+ * cards, each rebuilt from its sources.
+ */
+async function refreshEventGuestEntryWrite(eventId: string,
+  before: Data, after: Data): Promise<void> {
   // The public copy (#1666) carries live counts, so every write refreshes it.
-  await reconcilePublicEvent(event.params.documentId);
+  await reconcilePublicEvent(eventId);
   if (!eventTermsChanged(before, after)) return;
   const db = admin.firestore();
-  await refreshEventGuestEntry(db, event.params.documentId);
+  await refreshEventGuestEntry(db, eventId);
   // Status rows carry the guest's list card, so this also refreshes it.
   const refreshed = new Set<string>();
-  await refreshGuestEventStatusesForEvent(db, event.params.documentId,
+  await refreshGuestEventStatusesForEvent(db, eventId,
     refreshed);
   // Going live gives linked guests their roster link, even those with no
   // row yet (a cancelled roster row alone keeps no row on a draft).
   if (rosterLinksOpened(before, after)) {
-    await refreshLinkedGuestStatusesForEvent(db, event.params.documentId,
+    await refreshLinkedGuestStatusesForEvent(db, eventId,
       refreshed);
   }
-  await refreshSavedEventCardsForEvent(db, event.params.documentId);
-});
+  await refreshSavedEventCardsForEvent(db, eventId);
+}
+
+export const onEventGuestEntryEventWritten = onDocumentWritten({
+  ...options, document: "events/{documentId}",
+}, (event) => refreshEventGuestEntryWrite(event.params.documentId,
+  ...versions(event)));
+
+/**
+ * An event write: its public copy and guest-facing rows.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const eventGuestEntryEventProjections = defineProjections("events", [{
+  id: "eventGuestEntries", kind: "projection",
+  when: () => true,
+  run: (change) => refreshEventGuestEntryWrite(change.documentId,
+    change.before, change.after),
+}]);
 
 /** A new saved-event edge gets its list card; event changes keep it. */
 export const onSavedEventCardCreated = onDocumentCreated({

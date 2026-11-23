@@ -17,6 +17,7 @@
     "onHostAssignmentProgramChanged",
     "onHostAssignmentEventGrantChanged",
     "onHostAssignmentEventChanged",
+    "dispatchEvents",
     "onHostAssignmentMembershipChanged",
     "dispatchOrganizers"
   ],
