@@ -22,6 +22,11 @@ on:
         required: false
         type: string
         default: ""
+      visual_report:
+        description: Run the report-only Storybook visual comparisons; CI sets it for its nightly, scheduled or dispatched with full.
+        required: false
+        type: boolean
+        default: false
       skip_deployable_build:
         description: Skip the generic site build when the caller will build one exact production artifact.
         required: false
@@ -289,8 +294,9 @@ jobs:
           retention-days: 7
 
       # Storybook screenshots take 5-6 minutes and only report, so they run in
-      # the CI nightly (schedule) alone, not on pull requests, in the merge
-      # queue or on main pushes (owner decision, 23 Nov 2026: the marketing
+      # the CI nightly alone (visual_report: scheduled, or the watchdog's full
+      # dispatch when the schedule is missed), not on pull requests, in the
+      # merge queue or on main pushes (owner decision, 23 Nov 2026: the marketing
       # report was the queue's last job in every run). A visual change is
       # attributed to the nightly's commit range, not to one merge. Pixel
       # changes against the committed baselines are reported in the job summary
@@ -309,14 +315,14 @@ jobs:
 
       - name: Report marketing and shared web UI visual changes
         id: marketing-visual-check
-        if: ${{ inputs.surface == 'marketing' && !inputs.update_visual_baselines && github.event_name == 'schedule' }}
+        if: ${{ inputs.surface == 'marketing' && !inputs.update_visual_baselines && inputs.visual_report }}
         run: |
           node tool/web/check_storybook_visuals.mjs --surface website --report
           node tool/web/check_storybook_visuals.mjs --surface webui --report
 
       - name: Report admin visual changes
         id: admin-visual-check
-        if: ${{ inputs.surface == 'admin' && !inputs.update_visual_baselines && github.event_name == 'schedule' }}
+        if: ${{ inputs.surface == 'admin' && !inputs.update_visual_baselines && inputs.visual_report }}
         run: node tool/web/check_storybook_visuals.mjs --surface admin --report
 
       - name: Capture marketing and shared web UI visual baselines

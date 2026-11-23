@@ -4301,7 +4301,9 @@ tests keep that tolerance honest.
 The Storybook visual reports of the marketing and admin websites
 (`react-surface-validation.yml`, "Report marketing and shared web UI visual
 changes" and "Report admin visual changes") run only in the CI nightly (owner
-decision, 23 Nov 2026). The marketing report was the merge queue's last job in
+decision, 23 Nov 2026): ci.yml sets their `visual_report` input on a scheduled
+run and on the Scheduled run watchdog's `full` dispatch that replaces a missed
+one. The marketing report was the merge queue's last job in
 every run measured, a median 8.1 minutes after the next lane, and it only
 reports. They no longer run in the merge queue, on main pushes or in the
 website workflows' push runs, so a visual change is attributed to the

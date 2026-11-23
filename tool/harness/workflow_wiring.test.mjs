@@ -1118,10 +1118,29 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   ]) {
     const step = namedStep(react, name);
     assert.match(step, new RegExp(`id: ${id}\\n`, "u"), name);
-    assert.match(step, /!inputs\.update_visual_baselines && github\.event_name == 'schedule' \}\}/u, name);
+    assert.match(step, /!inputs\.update_visual_baselines && inputs\.visual_report \}\}/u, name);
     assert.doesNotMatch(step, /continue-on-error|--check/u, name);
     // Never in the merge queue, on a pull request or on a main push.
     assert.doesNotMatch(step, /merge_group|!=/u, name);
+  }
+  assert.match(react, /visual_report:\n\s+description:[^\n]+\n\s+required: false\n\s+type: boolean\n\s+default: false/u);
+  // CI asks for the reports on its nightly only: scheduled, or re-run by the
+  // Scheduled run watchdog as a full dispatch when the schedule is missed.
+  // The website deploy workflows never pass it.
+  const nightly = "github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full)";
+  for (const surface of ["admin", "marketing"]) {
+    const call = ci.slice(ci.indexOf(`\n  ${surface}:\n`) + 1).split(/\n  [a-z-]+:\n/u)[0];
+    assert.ok(call.includes(`      visual_report: \${{ ${nightly} }}\n`), surface);
+  }
+  for (const file of ["marketing-website.yml", "admin-website.yml"]) {
+    assert.doesNotMatch(workflow(file), /visual_report/u, file);
+  }
+  const runsReport = (event, full) => vm.runInNewContext(nightly.replaceAll("==", "===")
+    .replaceAll("github.event_name", "event").replaceAll("inputs.full", "full"), {event, full});
+  assert.equal(runsReport("schedule", null), true);
+  assert.equal(runsReport("workflow_dispatch", true), true, "the watchdog's full dispatch");
+  for (const [event, full] of [["workflow_dispatch", false], ["merge_group", null], ["pull_request", null], ["push", null]]) {
+    assert.equal(runsReport(event, full), false, event);
   }
   // The accessibility gates render every story, so they keep a broken story out
   // of the queue: they run for their surface on every event, merge_group included.

@@ -82,6 +82,8 @@ export function laneSteps(workflow, {event = "merge_group", surface = "admin"} =
   const context = {
     "inputs.surface": surface,
     "inputs.update_visual_baselines": false,
+    // CI sets visual_report for its nightly only.
+    "inputs.visual_report": event === "schedule",
     "inputs.skip_deployable_build": false,
     "github.event_name": event,
     "github.workflow": "Admin Website",

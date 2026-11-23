@@ -665,8 +665,9 @@ modules import the generated callable types.
   updates while another surface refactor is dirty. Platform ownership is part
   of the contract because `system-ui` is intentionally stack-native: Darwin
   and Linux captures never compare against one another. React CI pins the
-  Linux capture to Ubuntu 24.04 and runs `--report` in the CI nightly only
-  (owner decision, 23 Nov 2026; never in the merge queue): changed, missing and stale
+  Linux capture to Ubuntu 24.04 and runs `--report` in the CI nightly only,
+  scheduled or re-run by the watchdog (owner decision, 23 Nov 2026; never in the
+  merge queue): changed, missing and stale
   baselines are listed in the job summary with actual plus diff images in the
   diagnostics artifact, and never fail the run, because the product is still
   changing visually on purpose. A ready story that cannot render still fails.

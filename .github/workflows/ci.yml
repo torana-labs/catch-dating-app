@@ -504,6 +504,8 @@ jobs:
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: admin
+      # The nightly, scheduled or re-run by the Scheduled run watchdog (full dispatch).
+      visual_report: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full) }}
 
   marketing:
     needs: [plan, capture-freshness]
@@ -511,6 +513,8 @@ jobs:
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: marketing
+      # The nightly, scheduled or re-run by the Scheduled run watchdog (full dispatch).
+      visual_report: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full) }}
       capture_binding: ${{ needs.capture-freshness.outputs.capture_binding }}
       capture_result: ${{ needs.capture-freshness.result }}
 
