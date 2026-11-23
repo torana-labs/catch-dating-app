@@ -5,7 +5,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_display_state.
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going_section.dart';
-import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
+import 'package:catch_dating_app/pages/reviews/reviews_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

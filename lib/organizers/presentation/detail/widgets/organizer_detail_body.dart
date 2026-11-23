@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/organizers/organizers.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_contact_section.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_formatters.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_host_section.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_photo_rail.dart';
-import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_plans_section.dart';
+import 'package:catch_dating_app/pages/reviews/reviews_section.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_l10n/l10n.dart';

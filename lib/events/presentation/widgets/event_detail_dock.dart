@@ -13,7 +13,8 @@ import 'package:catch_dating_app/events/presentation/event_detail_screen_state.d
 import 'package:catch_dating_app/events/presentation/organizer_event_checkout_controller.dart';
 import 'package:catch_dating_app/events/presentation/widgets/organizer_payment_method_sheet.dart';
 import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
-import 'package:catch_dating_app/host_memberships/host_memberships.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_plan_sheet.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_upsell_banner.dart';
 import 'package:catch_kernel/organizer_supply_capabilities.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';

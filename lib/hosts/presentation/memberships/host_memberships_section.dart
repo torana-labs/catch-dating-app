@@ -6,6 +6,7 @@ import 'package:catch_dating_app/hosts/presentation/memberships/host_membership_
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_state.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_razorpay_connection_section.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_copy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';

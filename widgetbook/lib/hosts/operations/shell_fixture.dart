@@ -6,8 +6,8 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.d
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
-import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
+import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
