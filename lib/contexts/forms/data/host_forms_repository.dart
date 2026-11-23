@@ -140,9 +140,9 @@ class HostFormsRepository {
 
   /// One form's editor from its `hostFormEditorViews` row (the
   /// `getOrganizerFormEditor` callable is no longer called). A form this
-  /// device just created or saved opens once the view reaches that revision,
-  /// or with the newest view after [HostFormViewReads.ownWriteWait]; a save
-  /// from a stale view still fails its revision check on the server.
+  /// device just created or saved opens once the view reaches that revision;
+  /// a save from a view another device has since moved past still fails its
+  /// revision check on the server.
   Future<HostFormEditor> getEditor({
     required String organizerId,
     required String formId,

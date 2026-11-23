@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_analytics.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
-import 'package:catch_platform/cache/cache_policies.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:catch_platform/streams/combine_latest.dart';
@@ -21,16 +18,13 @@ class HostFormViewReads {
   static const analytics = 'hostFormAnalyticsViews';
   static const sources = 'hostFormSourceViews';
 
-  /// How long an open waits for the editor view to catch up with this
-  /// device's own last save before it shows the newest view it has.
-  static final ownWriteWait = CachePolicies.listener.firstLoad;
-
   /// One form's editor, read once. With [reached], a view that does not
-  /// satisfy it is followed for up to [ownWriteWait], so a form this device
-  /// just created or saved opens at that revision rather than the one
-  /// before the trigger caught up; it then takes the newest view it saw.
-  /// Null when the form has no view. A row of another organizer fails with a
-  /// [FormatException].
+  /// satisfy it is followed until one does, so a form this device just
+  /// created or saved opens at that revision rather than the one before the
+  /// trigger caught up. The listener is never idle-timed-out: its
+  /// first-value deadline covers an offline device, and the trigger retries
+  /// until the view catches up. Null when the form has no view. A row of
+  /// another organizer fails with a [FormatException].
   Future<HostFormEditor?> editor({
     required String organizerId,
     required String formId,
@@ -41,17 +35,12 @@ class HostFormViewReads {
       scopeId: organizerId,
       id: formId,
     );
-    var latest = doc == null ? null : editorFromView(doc);
-    if (reached == null || (latest != null && reached(latest))) return latest;
-    try {
-      return await reader
-          .watchDocument(collection: editors, scopeId: organizerId, id: formId)
-          .map((doc) => latest = doc == null ? latest : editorFromView(doc))
-          .firstWhere((editor) => editor != null && reached(editor))
-          .timeout(ownWriteWait);
-    } on TimeoutException {
-      return latest;
-    }
+    final first = doc == null ? null : editorFromView(doc);
+    if (reached == null || (first != null && reached(first))) return first;
+    return reader
+        .watchDocument(collection: editors, scopeId: organizerId, id: formId)
+        .map((doc) => doc == null ? null : editorFromView(doc))
+        .firstWhere((editor) => editor != null && reached(editor));
   }
 
   /// One published version's analytics, with its form's share-link funnel,

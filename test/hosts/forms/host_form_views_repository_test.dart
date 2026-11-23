@@ -7,7 +7,6 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:fake_async/fake_async.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -261,27 +260,6 @@ void main() {
           .set(_editorView(draftRevision: 1, updatedAtMillis: 5));
       await opening;
       expect(opened?.form.draftRevision, 1);
-    });
-
-    test('a view that never catches up opens as the newest one seen', () {
-      fakeAsync((async) {
-        db
-            .collection('hostFormEditorViews')
-            .doc('form-1')
-            .set(_editorView(draftRevision: 0));
-        HostFormEditor? opened;
-        repository
-            .createForm(organizerId: 'org', templateId: 'blank', requestId: 'r')
-            .then(
-              (_) => repository
-                  .getEditor(organizerId: 'org', formId: 'form-1')
-                  .then((editor) => opened = editor),
-            );
-        async.elapse(
-          HostFormViewReads.ownWriteWait + const Duration(seconds: 1),
-        );
-        expect(opened?.form.draftRevision, 0);
-      });
     });
   });
 
