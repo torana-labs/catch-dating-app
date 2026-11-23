@@ -13,7 +13,6 @@ import {
   type DocumentSnapshot,
   type FirestoreEvent,
 } from "firebase-functions/v2/firestore";
-import type {MemoryOption} from "firebase-functions/v2/options";
 import type {DispatchDeadLetterDocument} from
   "../../shared/generated/firestoreAdminTypes";
 
@@ -68,6 +67,13 @@ const SPEC_ID = /^[a-z][A-Za-z0-9]{0,63}$/;
 const SOURCE_ID = /^[a-z][A-Za-z0-9]{0,63}$/;
 const RECEIPT_COMMAND = /^[a-z][A-Za-z0-9]{0,63}$/;
 const RAW_ID = /^[A-Za-z0-9:._-]{1,100}$/;
+/**
+ * Memory sizes a spec may ask for: the firebase-functions MemoryOption
+ * values, spelled out because only src/index.ts may import that module
+ * (tool/firebase/function_binding_intent.mjs).
+ */
+export type MemoryOption = "128MiB" | "256MiB" | "512MiB" | "1GiB" | "2GiB" |
+  "4GiB" | "8GiB" | "16GiB" | "32GiB";
 const MEMORY_ORDER: readonly MemoryOption[] = ["128MiB", "256MiB", "512MiB",
   "1GiB", "2GiB", "4GiB", "8GiB", "16GiB", "32GiB"];
 
