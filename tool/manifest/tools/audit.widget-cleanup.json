@@ -11,5 +11,6 @@
     "node --test tool/lib/widget_cleanup_gate.test.mjs",
     "bash tool/widget_cleanup_scan.sh --check"
   ],
-  "role": "gate"
+  "role": "gate",
+  "queueGate": "always"
 }

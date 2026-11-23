@@ -27,5 +27,6 @@
     "setup": [
       "node"
     ]
-  }
+  },
+  "queueGate": "always"
 }

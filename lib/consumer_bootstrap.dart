@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
+import 'package:catch_dating_app/pages/start/onboarding_welcome_body.dart';
 import 'package:catch_dating_app/pages/startup/splash_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';

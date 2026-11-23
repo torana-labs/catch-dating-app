@@ -23,5 +23,6 @@
       ],
       "instruction": "Growing repository reads use a reviewed ReadLimitPolicy value plus an opaque cursor path. Numeric limit and take literals must not be reintroduced in repository code, and bounded-set exceptions must remain explicit in data_contracts.md."
     }
-  ]
+  ],
+  "queueGate": "always"
 }

@@ -1,0 +1,23 @@
+{
+  "id": "hostFormEditorViews",
+  "path": "hostFormEditorViews/{formId}",
+  "rulesMatch": "/hostFormEditorViews/{formId}",
+  "dartModel": null,
+  "typescriptInterface": "HostFormEditorViewDocument",
+  "rulesTestFile": "functions/test/rules/host_form_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers get a form's editor view and nothing else"
+  ],
+  "owner": "Host read model projector: hostReadModels form view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get one form's view by id, as getOrganizerFormEditor admitted them (requireOrganizerManager); a view not written yet reads as missing; nobody lists the collection",
+  "write": "server only; written from organizerForms and organizerFormDrafts and deleted when either is gone",
+  "exportedFunctions": [
+    "onHostFormEditorViewFormChanged",
+    "onHostFormEditorViewDraftChanged"
+  ],
+  "migrationNotes": [
+    "Replaces getOrganizerFormEditor for the Host app (#2306): the summary, draft definition and validation issues exactly as the callable returned them. Saves stay on updateOrganizerFormDraft, fenced by form.draftRevision; the editor waits for the view to reach the revision its own last save returned. The host-form-views copy-forward migration creates views for forms that predate the triggers.",
+    "The draft holds the organizer's own questions and copy, which every manager already edits; no respondent data."
+  ]
+}

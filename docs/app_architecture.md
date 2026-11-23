@@ -2659,10 +2659,10 @@ implementation.
 
 Reference files:
 
-- `lib/auth/presentation/auth_controller.dart`
-- `lib/auth/presentation/auth_presentation_state.dart`
+- `lib/pages/sign_in/auth_controller.dart`
+- `lib/pages/sign_in/auth_presentation_state.dart`
 - `lib/auth/presentation/phone_step.dart`
-- `test/auth/presentation/auth_controller_test.dart`
+- `test/pages/sign_in/auth_controller_test.dart`
 - `test/auth/presentation/auth_screen_test.dart`
 
 An in-flight request owns the exact input snapshot that was submitted. A

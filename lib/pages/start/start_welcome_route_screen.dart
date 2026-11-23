@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
+import 'package:catch_dating_app/pages/start/onboarding_welcome_body.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

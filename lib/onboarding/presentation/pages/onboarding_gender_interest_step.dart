@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step_state.dart';
 import 'package:catch_dating_app/onboarding/shared/onboarding_step_layout.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/riverpod_ui/mutation_error_util.dart';

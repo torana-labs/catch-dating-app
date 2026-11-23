@@ -38,5 +38,6 @@
       ],
       "instruction": "Keep handwritten Dart files at or below 800 lines. A larger file states its reason in a `// size-exemption: <reason>` comment in its first 20 lines, and no file passes 2,500 lines. Generated producer outputs are excluded by identity."
     }
-  ]
+  ],
+  "queueGate": "always"
 }

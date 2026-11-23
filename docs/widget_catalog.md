@@ -1097,12 +1097,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PromptField</code> | <code>lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingRunningPrefsBody</code> | <code>lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingRunningPrefsStep</code> | <code>lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart</code> | — | — | No class documentation or registry summary. |
-| <code>OnboardingWelcomeBody</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart</code> | — | — | No class documentation or registry summary. |
-| <code>WelcomeFocusText</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart</code> | — | — | Localized binding for the library-owned welcome focus lockup. |
-| <code>WelcomeReelList</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart</code> | — | — | No class documentation or registry summary. |
-| <code>WelcomeReelRow</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart</code> | — | — | No class documentation or registry summary. |
-| <code>WelcomeRevealTransition</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart</code> | — | — | No class documentation or registry summary. |
-| <code>WelcomeSceneLayout</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingStepLayout</code> | <code>lib/onboarding/shared/onboarding_step_layout.dart</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerDetailReadOnlyPreview</code> | <code>lib/organizers/presentation/detail/organizer_detail_read_only_preview.dart</code> | — | — | Live, consumer-facing Club Detail composition for an owner-facing read-only preview. The selected [initialOrganizer] renders immediately while live detail data hydrates, matching the consumer route's initial-club fallback policy. |
 | <code>OrganizerContactSection</code> | <code>lib/organizers/presentation/detail/widgets/organizer_contact_section.dart</code> | — | — | No class documentation or registry summary. |
@@ -1155,6 +1149,12 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>StarRatingPicker</code> | <code>lib/pages/reviews/star_rating_row.dart</code> | — | — | Tappable star row for picking a rating. |
 | <code>StarRatingRow</code> | <code>lib/pages/reviews/star_rating_row.dart</code> | — | — | Read-only star row. [rating] is 1-5 (integers for filled stars). |
 | <code>WriteReviewSheet</code> | <code>lib/pages/reviews/write_review_sheet.dart</code> | — | — | No class documentation or registry summary. |
+| <code>OnboardingWelcomeBody</code> | <code>lib/pages/start/onboarding_welcome_body.dart</code> | — | — | No class documentation or registry summary. |
+| <code>WelcomeFocusText</code> | <code>lib/pages/start/onboarding_welcome_body.dart</code> | — | — | Localized binding for the library-owned welcome focus lockup. |
+| <code>WelcomeReelList</code> | <code>lib/pages/start/onboarding_welcome_body.dart</code> | — | — | No class documentation or registry summary. |
+| <code>WelcomeReelRow</code> | <code>lib/pages/start/onboarding_welcome_body.dart</code> | — | — | No class documentation or registry summary. |
+| <code>WelcomeRevealTransition</code> | <code>lib/pages/start/onboarding_welcome_body.dart</code> | — | — | No class documentation or registry summary. |
+| <code>WelcomeSceneLayout</code> | <code>lib/pages/start/onboarding_welcome_body.dart</code> | — | — | No class documentation or registry summary. |
 | <code>StartupBrandHeader</code> | <code>lib/pages/startup/splash_screen.dart</code> | <code>Header</code> | <code>catch.startup_loading_screen</code> | The shared role-specific brand anchor used by Host startup and auth. |
 | <code>PaymentCheckoutHeader</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentCheckoutSheet</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart</code> | — | — | No class documentation or registry summary. |
@@ -1448,9 +1448,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProfilePhotoEditorScreen</code> | <code>lib/image_uploads/shared/profile_photo_editor_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>LaunchAccessApplicationScreen</code> | <code>lib/launch_access/presentation/launch_access_application_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingScreen</code> | <code>lib/onboarding/presentation/onboarding_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>StartWelcomeRouteScreen</code> | <code>lib/onboarding/presentation/start_welcome_route_screen.dart</code> | — | — | Route-level surface owner for the logged-out Welcome experience. |
 | <code>OrganizerDetailScreen</code> | <code>lib/organizers/presentation/detail/organizer_detail_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>CelebrationScreen</code> | <code>lib/pages/celebration/celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>StartWelcomeRouteScreen</code> | <code>lib/pages/start/start_welcome_route_screen.dart</code> | — | — | Route-level surface owner for the logged-out Welcome experience. |
 | <code>SplashScreen</code> | <code>lib/pages/startup/splash_screen.dart</code> | — | <code>catch.startup_loading_screen</code> | Branded app-start composition with the Catch logo and a delayed bounded loading indicator. Also called: <code>LaunchScreen</code>, <code>StartupScreen</code>, <code>StartupLoadingScreen</code>, <code>AppLoadingScreen</code>. |
 | <code>PaymentConfirmationLoadingScreen</code> | <code>lib/payments/presentation/payment_confirmation_loading_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentConfirmationScreen</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart</code> | — | — | No class documentation or registry summary. |

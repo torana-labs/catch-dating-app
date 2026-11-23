@@ -23,5 +23,6 @@
   "role": "gate",
   "alsoEnforces": [
     "ROOT-SCREEN-COMPOSITION-001"
-  ]
+  ],
+  "queueGate": "always"
 }

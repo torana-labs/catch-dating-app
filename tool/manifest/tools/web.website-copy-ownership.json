@@ -34,5 +34,6 @@
       ],
       "instruction": "User-visible marketing-authored strings belong under website/src/content, in page-specific content modules. Permanent technical exceptions require an exact-string allowlist entry with a reason."
     }
-  ]
+  ],
+  "queueGate": "always"
 }

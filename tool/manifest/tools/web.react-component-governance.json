@@ -45,5 +45,6 @@
   ],
   "alsoEnforces": [
     "DESIGN-LEXICON-001"
-  ]
+  ],
+  "queueGate": "always"
 }

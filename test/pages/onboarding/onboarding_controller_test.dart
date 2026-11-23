@@ -8,16 +8,16 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_controller.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_profile_draft.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_step.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../events/events_test_helpers.dart';
-import '../test_pump_helpers.dart';
-import 'onboarding_test_helpers.dart';
+import '../../events/events_test_helpers.dart';
+import '../../onboarding/onboarding_test_helpers.dart';
+import '../../test_pump_helpers.dart';
 
 class _CountingDraftRepository extends FakeOnboardingDraftRepository {
   int fetchCount = 0;

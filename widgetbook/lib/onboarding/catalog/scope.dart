@@ -8,8 +8,8 @@ import 'package:catch_dating_app/contexts/profiles/domain/photo_upload_state.dar
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_controller.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_step.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

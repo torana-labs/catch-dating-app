@@ -10,7 +10,7 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
-import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
+import 'package:catch_dating_app/pages/account/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';

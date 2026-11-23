@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
@@ -9,8 +8,9 @@ import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
+import 'package:catch_dating_app/pages/account/auth_session_controller.dart';
+import 'package:catch_dating_app/pages/account/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_account_state.dart';
-import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_tokens/catch_tokens.dart';

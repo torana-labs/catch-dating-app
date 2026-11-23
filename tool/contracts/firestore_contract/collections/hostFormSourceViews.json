@@ -1,0 +1,23 @@
+{
+  "id": "hostFormSourceViews",
+  "path": "hostFormSourceViews/{formId}",
+  "rulesMatch": "/hostFormSourceViews/{formId}",
+  "dartModel": null,
+  "typescriptInterface": "HostFormSourceViewDocument",
+  "rulesTestFile": "functions/test/rules/host_form_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets managers get a form's share-link funnel view and nothing else"
+  ],
+  "owner": "Host read model projector: hostReadModels form view triggers",
+  "writerContext": "host",
+  "read": "current organizer managers get one form's view by id, as getOrganizerFormAnalytics admitted them (requireOrganizerManager); a form with no links has no view and reads as missing; nobody lists the collection",
+  "write": "server only; written from organizerFormShareLinks and organizerForms and deleted when the form or its last link is gone",
+  "exportedFunctions": [
+    "onHostFormEditorViewFormChanged",
+    "onHostFormSourceViewLinkChanged"
+  ],
+  "migrationNotes": [
+    "Replaces the sources of getOrganizerFormAnalytics for the Host app (#2306): each share link's label and counters, at most 200, never the link token.",
+    "No personal data. The host-form-views copy-forward migration creates views for forms whose links predate the triggers."
+  ]
+}

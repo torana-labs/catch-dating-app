@@ -62,8 +62,8 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_s
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/programmes.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
-import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
+import 'package:catch_dating_app/pages/start/start_welcome_route_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';

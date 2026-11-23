@@ -14,5 +14,6 @@
   "role": "gate",
   "alsoEnforces": [
     "FORM-CONTRACT-001"
-  ]
+  ],
+  "queueGate": "always"
 }

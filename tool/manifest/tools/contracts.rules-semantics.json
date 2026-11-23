@@ -8,5 +8,6 @@
   "description": "Checks Firestore rule semantics against schema-owned paths.",
   "checks": [
     "node --check tool/contracts/check_firestore_rules_semantics.mjs"
-  ]
+  ],
+  "queueGate": "always"
 }

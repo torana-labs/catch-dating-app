@@ -38,5 +38,6 @@
   "alsoEnforces": [
     "ICON-ROLES-001"
   ],
-  "baseline": "tool/design/icon_family_usage_baseline.json"
+  "baseline": "tool/design/icon_family_usage_baseline.json",
+  "queueGate": "always"
 }

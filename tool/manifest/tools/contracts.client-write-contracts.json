@@ -19,5 +19,6 @@
     "node --check tool/contracts/check_client_write_contracts.mjs",
     "node --test tool/contracts/check_client_write_contracts.test.mjs",
     "node tool/contracts/check_client_write_contracts.mjs"
-  ]
+  ],
+  "queueGate": "candidate"
 }

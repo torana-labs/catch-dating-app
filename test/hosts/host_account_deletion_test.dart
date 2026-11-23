@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
-import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
+import 'package:catch_dating_app/pages/account/settings_controller.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_platform/routing/route_contract.dart';

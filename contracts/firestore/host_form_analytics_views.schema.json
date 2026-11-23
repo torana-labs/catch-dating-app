@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_form_analytics_views.schema.json",
+  "title": "HostFormAnalyticsViewDocument",
+  "description": "Server-maintained manager read view of one published form version's funnel and question aggregates, at hostFormAnalyticsViews/{versionId}, exactly as getOrganizerFormAnalytics returns them for the version without the source links (those are on hostFormSourceViews). The privacy threshold is applied in the trigger: a question below it, sensitive, or free text keeps only its response count, so its choice counts and numeric totals never reach the view. Written by triggers on organizerFormVersions and organizerFormAggregates. Never answers, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostFormAnalyticsViews",
+  "x-firestore-path": "hostFormAnalyticsViews/{versionId}",
+  "x-document-id-field": "versionId",
+  "x-owner": "Host read model projector (hostReadModels form view triggers)",
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "formVersion",
+    "opens",
+    "starts",
+    "submissions",
+    "withdrawals",
+    "completionRate",
+    "medianCompletionMillis",
+    "questions",
+    "privacyThreshold",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "formId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "versionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "formVersion": {
+      "$ref": "../callable_responses/get_organizer_form_analytics_response.schema.json#/properties/version",
+      "description": "The published version number N of versionId.",
+      "x-catch-ownership": "server-only"
+    },
+    "opens": {
+      "$ref": "../callable_responses/get_organizer_form_analytics_response.schema.json#/properties/opens",
+      "x-catch-ownership": "server-only"
+    },
+    "starts": {
+      "$ref": "../callable_responses/get_organizer_form_analytics_response.schema.json#/properties/starts",
+      "x-catch-ownership": "server-only"
+    },
+    "submissions": {
+      "$ref": "../callable_responses/get_organizer_form_analytics_response.schema.json#/properties/submissions",
+      "x-catch-ownership": "server-only"
+    },
+    "withdrawals": {
+      "$ref": "../callable_responses/get_organizer_form_analytics_response.schema.json#/properties/withdrawals",
+      "x-catch-ownership": "server-only"
+    },
+    "completionRate": {
+      "$ref": "../callable_responses/get_organizer_form_analytics_response.schema.json#/properties/completionRate",
+      "x-catch-ownership": "server-only"
+    },
+    "medianCompletionMillis": {
+      "$ref": "../callable_responses/get_organizer_form_analytics_response.schema.json#/properties/medianCompletionMillis",
+      "x-catch-ownership": "server-only"
+    },
+    "questions": {
+      "$ref": "../callable_responses/get_organizer_form_analytics_response.schema.json#/properties/questions",
+      "x-catch-ownership": "server-only"
+    },
+    "privacyThreshold": {
+      "$ref": "../callable_responses/get_organizer_form_analytics_response.schema.json#/properties/privacyThreshold",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

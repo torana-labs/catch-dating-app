@@ -32,5 +32,6 @@
     "node --check tool/web/check_react_query_state.mjs",
     "node tool/web/check_react_query_state.mjs --self-test",
     "node tool/web/check_react_query_state.mjs --check"
-  ]
+  ],
+  "queueGate": "always"
 }

@@ -3,10 +3,10 @@ import 'package:catch_dating_app/contexts/connections/data/match_repository.dart
 import 'package:catch_dating_app/contexts/organizers/data/organizer_entitlement_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
-import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_navigation.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
+import 'package:catch_dating_app/routing/shell/shell_chrome.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/errors/error_logger.dart';

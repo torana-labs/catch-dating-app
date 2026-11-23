@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
-import 'package:catch_dating_app/auth/presentation/auth_presentation_state.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_presentation_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

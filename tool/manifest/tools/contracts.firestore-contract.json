@@ -35,5 +35,6 @@
     "node --test tool/contracts/lib/firestore_contract.test.mjs",
     "node --test tool/contracts/check_firestore_contract.test.mjs",
     "node tool/contracts/check_firestore_contract.mjs"
-  ]
+  ],
+  "queueGate": "always"
 }
