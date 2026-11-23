@@ -21,6 +21,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_contro
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -31,7 +32,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart'
     show buildEvent, buildEventParticipation, buildPublicProfile, buildUser;
-import '../test_pump_helpers.dart';
 import 'event_success_live_test_helpers.dart';
 
 part 'event_success_companion_flow_tests.dart';

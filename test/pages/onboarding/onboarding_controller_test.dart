@@ -12,12 +12,12 @@ import 'package:catch_dating_app/pages/onboarding/onboarding_controller.dart';
 import 'package:catch_dating_app/pages/onboarding/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/pages/onboarding/onboarding_step.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../events/events_test_helpers.dart';
 import '../../onboarding/onboarding_test_helpers.dart';
-import '../../test_pump_helpers.dart';
 
 class _CountingDraftRepository extends FakeOnboardingDraftRepository {
   int fetchCount = 0;

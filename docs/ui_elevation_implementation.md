@@ -43,4 +43,4 @@ These items remain review work, not claims that current implementations fail:
 Follow [AGENTS.md](../AGENTS.md) and derive the affected checks from the current
 diff. For visual changes, inspect light and dark renders and the affected text
 scales using the existing capture/golden harness. Preserve the actively consumed
-`lib/design_fixtures/` library when removing obsolete standalone prototypes.
+`packages/catch_test_support/lib/design_fixtures/` library when removing obsolete standalone prototypes.

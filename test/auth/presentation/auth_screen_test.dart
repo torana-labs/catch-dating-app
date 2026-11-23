@@ -9,6 +9,7 @@ import 'package:catch_dating_app/pages/startup/splash_screen.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:country_code_picker/country_code_picker.dart';
@@ -19,7 +20,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../onboarding/onboarding_test_helpers.dart';
-import '../../test_pump_helpers.dart';
 
 Future<void> pumpAuthScreen(
   WidgetTester tester, {

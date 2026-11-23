@@ -6,12 +6,11 @@ import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/cache/cache_policies.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../test_pump_helpers.dart';
 
 void main() {
   for (final fillRemaining in [true, false]) {

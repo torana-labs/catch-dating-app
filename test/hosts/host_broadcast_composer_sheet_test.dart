@@ -1,14 +1,13 @@
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
-import 'package:catch_dating_app/design_fixtures/host_inbox_surface_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/design_fixtures/host_inbox_surface_fixtures.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('keeps one request id across a failed retry', (tester) async {

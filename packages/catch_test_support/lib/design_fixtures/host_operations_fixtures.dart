@@ -16,8 +16,8 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_draft.dart
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defaults.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/design_fixtures/utility_surface_fixtures.dart';
 
 /// Shared deterministic fixtures for host operations design review.
 ///

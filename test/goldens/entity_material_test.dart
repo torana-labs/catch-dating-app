@@ -1,11 +1,10 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/organizers/shared/organizer_placeholder_cover.dart';
+import 'package:catch_test_support/goldens/golden_pump.dart';
 import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'support/golden_pump.dart';
 
 final _portrait = FileImage(repoFile('test/goldens/fixtures/portrait.jpg'));
 final _organizer = Organizer(

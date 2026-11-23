@@ -1,8 +1,9 @@
 // Marketing capture `host_insights_phone`. One file per marketing capture keeps each
 // capture's inputs to its own imports; see docs/marketing_app_media_pipeline.md.
 
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_screen.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
+
 import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';
 import '../shared/door_capture.dart';

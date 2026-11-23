@@ -3,7 +3,7 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_mode
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
-import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/dashboard_surface_fixtures.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

@@ -3,13 +3,13 @@ import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/goldens/golden_pump.dart';
 import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../ui_captures/fixtures/sales_demo_synthetic_fixtures.dart';
-import 'support/golden_pump.dart';
 
 /// Phase 2 flagship Profile — golden-iterated in isolation, rendered in the
 /// Catches register (reactable) so the per-section like/comment controls and

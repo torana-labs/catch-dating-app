@@ -2,6 +2,7 @@
 // that import this file depend on it.
 
 import 'dart:async';
+
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
@@ -11,15 +12,16 @@ import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.d
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show AsyncData;
 import 'package:flutter_test/flutter_test.dart' show Fake;
+
 import 'capture_viewer.dart';
 
 final hostTodayOrganizer = HostOperationsFixtures.primaryOrganizer;

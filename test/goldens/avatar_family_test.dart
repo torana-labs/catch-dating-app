@@ -1,10 +1,9 @@
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/goldens/golden_pump.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'support/golden_pump.dart';
 
 const _colors = CatchAvatarColors(
   accent: Color(0xffba4630),

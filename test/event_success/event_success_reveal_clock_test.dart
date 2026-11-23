@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_clock_mixin.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('reveal clock starts, pauses, resumes, and cancels on disposal', (

@@ -10,14 +10,14 @@ import 'package:catch_dating_app/contexts/connections/data/match_repository.dart
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../support/catch_test_fonts.dart';
-import '../test_pump_helpers.dart';
 import 'event_chat_controller_test.dart' show roomAccess;
 
 void main() {

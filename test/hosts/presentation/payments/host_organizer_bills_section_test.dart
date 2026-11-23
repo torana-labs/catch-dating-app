@@ -4,12 +4,11 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_organizer_bill
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../../test_pump_helpers.dart';
 
 HostOrganizerBill _bill({
   HostOrganizerBillStatus status = HostOrganizerBillStatus.sent,

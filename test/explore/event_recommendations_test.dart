@@ -4,10 +4,11 @@ import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/dashboard_test_helpers.dart'
+    show recommendationCandidate;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart' as fixtures;
-import '../support/dashboard_test_helpers.dart' show recommendationCandidate;
 
 void main() {
   test('removes already booked events from recommendations', () {

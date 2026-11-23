@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
+import 'package:catch_test_support/contract_schemas.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
-
-import '../support/contract_schemas.dart';
 
 class TestFirebaseFunctions extends Fake implements FirebaseFunctions {
   final callables = <String, TestHttpsCallable>{};

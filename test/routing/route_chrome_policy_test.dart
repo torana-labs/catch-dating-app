@@ -1,11 +1,12 @@
-import 'dart:io';
-
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('consumer detail routes render above the floating tab shell', () {
-    final source = File('lib/routing/consumer_router.dart').readAsStringSync();
+    final source = repoFile(
+      'lib/routing/consumer_router.dart',
+    ).readAsStringSync();
 
     for (final route in <Routes>[
       Routes.notificationsScreen,
