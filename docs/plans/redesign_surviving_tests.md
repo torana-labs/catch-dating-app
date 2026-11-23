@@ -1466,7 +1466,7 @@ capture renders for the ads. 0 behaviours.
 - `body` save in flight disables form and question edits
 - `body` background hides the catalog until a fresh preview completes
 
-**`test/event_success/event_success_live_screens_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/event_success/presentation/event_success_controller.dart`, `lib/event_success/presentation/event_success_host_workspace_page_body.dart` · decided by rules · also under P3.4 live, P3.5 insights, P5 live/formats, P6 live
+**`test/event_success/event_success_live_screens_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/contexts/live/actions/event_success_controller.dart`, `lib/event_success/presentation/event_success_host_workspace_page_body.dart` · decided by rules · also under P3.4 live, P3.5 insights, P5 live/formats, P6 live
 
 - `body` host setup collapses to a read-only plan after bookings start
 - `action` host setup preserves custom format interaction model on save

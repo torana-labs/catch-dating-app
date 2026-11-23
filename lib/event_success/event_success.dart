@@ -5,6 +5,7 @@ export 'package:catch_dating_app/contexts/formats/domain/event_success_feature_s
 export 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 export 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
 export 'package:catch_dating_app/contexts/formats/domain/event_success_structure.dart';
+export 'package:catch_dating_app/contexts/live/actions/event_success_controller.dart'; // public-api: command seam for route-owned actions
 export 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 export 'package:catch_dating_app/contexts/live/domain/event_assistance_action_plan.dart';
 export 'package:catch_dating_app/contexts/live/domain/event_assistance_deliveries_page.dart';
@@ -49,7 +50,6 @@ export 'presentation/event_message_preferences_navigation_section.dart'; // publ
 export 'presentation/event_sender_preference_controller.dart'; // public-api: verified participant WhatsApp and RCS sender navigation and consent state
 export 'presentation/event_sms_preference_controller.dart'; // public-api: verified participant SMS review and mutation state for guest route composition
 export 'presentation/event_success_companion_screen.dart'; // public-api: route entry point exposed to app routing
-export 'presentation/event_success_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/event_success_defaults_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/event_success_questionnaire_config_editor.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/event_success_room_setup_section.dart'; // public-api: shared create and post-creation room setup

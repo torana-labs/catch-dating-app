@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/live/actions/event_success_controller.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_moving_night.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_run_body.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_run_controller.dart';

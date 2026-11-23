@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
-import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/formats/domain/event_success_compatibility_response.dart';
+import 'package:catch_dating_app/contexts/account/account.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart';
+import 'package:catch_dating_app/contexts/events/events.dart';
+import 'package:catch_dating_app/contexts/formats/formats.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
@@ -10,7 +10,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart'
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
-import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/profiles.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
