@@ -44,9 +44,12 @@ import {
   validateUnarchiveProgramCallablePayload,
 } from "../shared/generated/validators/unarchiveProgramInput";
 
-/** Approved policy: archive grants a 14-day grace window before the
- *  identity scrub runs; unarchive is only possible inside it. */
-export const archiveGraceMillis = 14 * 24 * 60 * 60 * 1000;
+/** Approved policy (owner, 23 Nov 2026): archive grants a 60-day grace
+ *  window before the identity scrub runs; unarchive is only possible inside
+ *  it. Programmes run for months and post-event messages (photos, thanks)
+ *  can follow an early archive, so the window is longer than a one-off
+ *  event's would be. */
+export const archiveGraceMillis = 60 * 24 * 60 * 60 * 1000;
 const retentionRunLeaseMillis = 10 * 60_000;
 const retentionPageLimit = 300;
 const sweepProgramLimit = 25;
@@ -396,8 +399,22 @@ export async function anonymizeProgram(
       return null;
     }
     const now = deps.now();
-    if (program.anonymizeAt &&
-        program.anonymizeAt.toMillis() > now.toMillis()) {
+    // The stored clock was set at archive time. A programme archived under a
+    // shorter earlier policy is held to the current grace: its clock moves
+    // out instead of the scrub running early.
+    const policyDueMillis = program.archivedAt ?
+      program.archivedAt.toMillis() + archiveGraceMillis : 0;
+    const storedDueMillis = program.anonymizeAt?.toMillis() ?? 0;
+    if (policyDueMillis > storedDueMillis &&
+        policyDueMillis > now.toMillis()) {
+      tx.update(programRef, {
+        anonymizeAt: admin.firestore.Timestamp.fromMillis(policyDueMillis),
+        updatedAt: now,
+        revision: nextRevision(program.revision, now),
+      });
+      return null;
+    }
+    if (storedDueMillis > now.toMillis()) {
       return null; // Archived but still inside the grace window.
     }
     const run = runSnap.data() as ProgramRetentionRunDocument | undefined;

@@ -102,7 +102,7 @@ test("dormant Functions cannot enter logical or exact deploy plans", () => {
   const enabledTargets = listFirebaseFunctionTargets();
   const enabledTargetSet = new Set(enabledTargets);
 
-  assert.equal(dormantFirebaseFunctionTargets.length, 28);
+  assert.equal(dormantFirebaseFunctionTargets.length, 27);
   for (const target of dormantFirebaseFunctionTargets) {
     assert.equal(
       sourceExports.has(target), true, `${target} must remain implemented`,
@@ -127,28 +127,20 @@ test("dormant Functions cannot enter logical or exact deploy plans", () => {
   );
 });
 
-test("program anonymizer stays implemented but cannot be activated by full or exact deployment", () => {
+test("program anonymizer is enabled with archive and unarchive (owner approval, 23 Nov 2026)", () => {
   const scheduler = "functions:anonymizeDueProgramsSweep";
   const enabledTargets = listFirebaseFunctionTargets();
   assert.ok(listFirebaseFunctionExports().includes(scheduler));
-  assert.ok(dormantFirebaseFunctionTargets.includes(scheduler));
-  assert.equal(enabledTargets.includes(scheduler), false);
-  for (const plan of planFirebaseDeployGroups([
-    "functions", "firestore-indexes", "firestore-rules", "storage-rules",
-  ], {functionTargets: enabledTargets})) {
-    assert.equal(plan.deployOnly.split(",").includes(scheduler), false);
+  assert.equal(dormantFirebaseFunctionTargets.includes(scheduler), false);
+  for (const target of [
+    scheduler, "functions:archiveProgram", "functions:unarchiveProgram",
+  ]) {
+    assert.ok(enabledTargets.includes(target), `${target} must be enabled`);
   }
-  assert.throws(() => planFirebaseDeployTargets(scheduler, {
+  const [plan] = planFirebaseDeployTargets("functions", {
     functionTargets: enabledTargets,
-  }), /not enabled by source policy/u);
-  const retained = ["functions:archiveProgram", "functions:unarchiveProgram"];
-  for (const target of retained) assert.ok(enabledTargets.includes(target));
-  const [historicalPlan] = planFirebaseDeployTargets(
-    [...retained, scheduler].join(","), {
-      filterDormantExactTargets: true,
-      functionTargets: enabledTargets,
-    });
-  assert.deepEqual(historicalPlan.deployOnly.split(","), retained);
+  });
+  assert.ok(plan.deployOnly.split(",").includes(scheduler));
 });
 
 test("historical delivery may remove only known dormant exact targets", () => {

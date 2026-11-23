@@ -663,6 +663,35 @@ test("anonymizeProgram scrubs identity and preserves operational truth",
     assertRetainedContracts(db);
   });
 
+test("a clock set under the old 14-day policy moves out, never scrubs early",
+  async () => {
+    const db = new FakeFirestore(retentionSeed());
+    archived(db);
+    const oldDue = T0 + 14 * 24 * 60 * 60 * 1000;
+    db.updateDoc("organizerPrograms/program-1", {
+      anonymizeAt: admin.firestore.Timestamp.fromMillis(oldDue),
+    });
+    const afterOldDue = admin.firestore.Timestamp.fromMillis(oldDue + 10_000);
+    const early = await anonymizeProgram(db as never, "program-1",
+      retentionDeps(db, {now: () => afterOldDue}), oldDue + 70_000);
+    assert.equal(early, "skipped");
+    const held = db.getDoc("organizerPrograms/program-1")!;
+    assert.equal(held.anonymizedAt, null);
+    assert.equal(
+      (held.anonymizeAt as {toMillis(): number}).toMillis(), T_GRACE);
+    assert.equal(db.getDoc("programGuests/guest-1")!.phoneE164 !== null, true);
+
+    const pastGrace = admin.firestore.Timestamp.fromMillis(T_GRACE + 10_000);
+    const due = await anonymizeProgram(db as never, "program-1",
+      retentionDeps(db, {now: () => pastGrace}), T_GRACE + 70_000);
+    assert.equal(due, "completed");
+    assert.ok(db.getDoc("organizerPrograms/program-1")!.anonymizedAt);
+  });
+
+test("the archive grace is 60 days", () => {
+  assert.equal(archiveGraceMillis, 60 * 24 * 60 * 60 * 1000);
+});
+
 test("anonymizeProgram is idempotent and skipped once marked", async () => {
   const db = new FakeFirestore(retentionSeed());
   archived(db);

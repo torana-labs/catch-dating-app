@@ -18,7 +18,7 @@ class ProgramSetupRepository {
 
   final FirebaseFunctions _functions;
 
-  /// `archiveProgram`: starts the 14-day anonymization grace window; the
+  /// `archiveProgram`: starts the 60-day anonymization grace window; the
   /// program keeps reading but every mutation surface rejects writes.
   Future<ProgramMutationResult> archiveProgram({
     required String programId,

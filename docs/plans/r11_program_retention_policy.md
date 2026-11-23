@@ -30,7 +30,7 @@ the lifecycle hook exists.
 `archiveProgram(programId)` callable, organizer owner/manager only:
 
 1. Sets `organizerPrograms.status = "archived"`, `archivedAt`, and
-   `anonymizeAt = archivedAt + 14 days` (the approved recap grace
+   `anonymizeAt = archivedAt + 60 days` (the approved recap grace
    window — planners still see names while archived-not-anonymized).
 2. Disables further mutations on program-scoped collections (rules +
    callable guards check status). Reads continue.
@@ -98,8 +98,12 @@ requiring it.
 
 ## Approved decisions (product owner, 2026-09-29)
 
-1. **Grace period: 14 days.** Archive sets the anonymization clock;
-   the sweep scrubs at `archivedAt + 14d`. Archive is reversible via
+1. **Grace period: 60 days** (changed from 14 on 2026-11-23: programmes
+   run for months, and post-event messages such as photos can follow an
+   early archive). Archive sets the anonymization clock; the sweep scrubs
+   at `archivedAt + 60d`, and moves out any clock set under the earlier
+   14-day policy instead of scrubbing early. The sweep runs in production
+   from that date; it was dormant until then. Archive is reversible via
    `unarchiveProgram` while `anonymizedAt == null`; anonymization is
    irreversible.
 2. **Export: offered, not required.** The confirm flow surfaces the

@@ -2,7 +2,7 @@
  "$schema": "http://json-schema.org/draft-07/schema#",
  "$id": "https://catch.app/contracts/callables/archive_program_payload.schema.json",
  "title": "ArchiveProgramCallablePayload",
- "description": "Archive a program: explicit owner/manager action that starts the 14-day anonymization grace window. expectedRevision fences concurrent edits.",
+ "description": "Archive a program: explicit owner/manager action that starts the 60-day anonymization grace window. expectedRevision fences concurrent edits.",
  "type": "object",
  "additionalProperties": false,
  "x-callable-aliases": [
