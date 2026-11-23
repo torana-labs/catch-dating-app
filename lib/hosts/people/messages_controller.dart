@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/chats/chats.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
@@ -7,6 +6,7 @@ import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_autom
 import 'package:catch_dating_app/hosts/people/automations_controller.dart';
 import 'package:catch_dating_app/hosts/people/automations_state.dart';
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

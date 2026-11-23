@@ -11,6 +11,9 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
+import 'package:catch_dating_app/pages/chat/chat_controller.dart';
+import 'package:catch_dating_app/pages/chat/widgets/chat_input.dart';
+import 'package:catch_dating_app/pages/chat/widgets/message_bubble.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/errors/error_logger.dart';

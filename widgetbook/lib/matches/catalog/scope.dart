@@ -1,7 +1,4 @@
-import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
@@ -15,6 +12,9 @@ import 'package:catch_dating_app/contexts/profiles/data/public_profile_repositor
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
+import 'package:catch_dating_app/pages/chat/chat_screen.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/pages/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/routing/route_contract.dart';

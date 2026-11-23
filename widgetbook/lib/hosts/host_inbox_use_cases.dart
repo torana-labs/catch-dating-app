@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_campaign_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_communication_repository.dart';
@@ -18,6 +17,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_page_body.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/theme/app_theme.dart';

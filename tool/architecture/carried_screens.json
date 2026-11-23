@@ -3,7 +3,43 @@
   "carried": [
     {"path": "lib/pages/celebration/celebration_screen.dart", "from": "lib/pages/celebration/celebration_screen.dart"},
 
+    {"path": "lib/pages/chat/chat_screen.dart", "from": "lib/chats/presentation/chat_screen.dart"},
+
+    {"path": "lib/pages/chat/event_chat_participants_screen.dart", "from": "lib/chats/presentation/event_chat_participants_screen.dart"},
+
+    {"path": "lib/pages/chat/event_chat_screen.dart", "from": "lib/chats/presentation/event_chat_screen.dart"},
+
+    {"path": "lib/pages/chat/event_profile_screen.dart", "from": "lib/chats/presentation/event_profile_screen.dart"},
+
+    {"path": "lib/pages/chat/widgets/chat_event_context_header.dart", "from": "lib/chats/presentation/widgets/chat_event_context_header.dart"},
+
+    {"path": "lib/pages/chat/widgets/chat_input.dart", "from": "lib/chats/presentation/widgets/chat_input.dart"},
+
+    {"path": "lib/pages/chat/widgets/chat_message_list.dart", "from": "lib/chats/presentation/widgets/chat_message_list.dart"},
+
+    {"path": "lib/pages/chat/widgets/chat_share_card.dart", "from": "lib/chats/presentation/widgets/chat_share_card.dart"},
+
+    {"path": "lib/pages/chat/widgets/event_chat_message_tile.dart", "from": "lib/chats/presentation/widgets/event_chat_message_tile.dart"},
+
+    {"path": "lib/pages/chat/widgets/event_profile_answer_field.dart", "from": "lib/chats/presentation/widgets/event_profile_answer_field.dart"},
+
+    {"path": "lib/pages/chat/widgets/event_profile_editor_section.dart", "from": "lib/chats/presentation/widgets/event_profile_editor_section.dart"},
+
+    {"path": "lib/pages/chat/widgets/event_profile_identity_section.dart", "from": "lib/chats/presentation/widgets/event_profile_identity_section.dart"},
+
+    {"path": "lib/pages/chat/widgets/event_profile_photo_field.dart", "from": "lib/chats/presentation/widgets/event_profile_photo_field.dart"},
+
+    {"path": "lib/pages/chat/widgets/message_bubble.dart", "from": "lib/chats/presentation/widgets/message_bubble.dart"},
+
+    {"path": "lib/pages/chat/widgets/suvbot_dock.dart", "from": "lib/chats/presentation/widgets/suvbot_dock.dart"},
+
     {"path": "lib/pages/check_in/event_check_in_qr_scanner.dart", "from": "lib/events/shared/event_check_in_qr_scanner.dart"},
+
+    {"path": "lib/pages/inbox/match_celebration_dialog.dart", "from": "lib/matches/shared/match_celebration_dialog.dart"},
+
+    {"path": "lib/pages/inbox/widgets/chats_list.dart", "from": "lib/chats/presentation/inbox/widgets/chats_list.dart"},
+
+    {"path": "lib/pages/inbox/widgets/chats_sliver_header.dart", "from": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart"},
 
     {"path": "lib/pages/live_room/event_success_attendee_spatial_row.dart", "from": "lib/event_success/presentation/event_success_attendee_spatial_row.dart"},
 

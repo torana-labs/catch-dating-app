@@ -90,7 +90,6 @@
 
     {"path": "lib/cross_paths/", "context": "connections"},
 
-    {"path": "lib/matches/", "context": "connections"},
 
     {"path": "lib/swipes/", "context": "connections"},
 

@@ -1,11 +1,3 @@
-// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- the host inbox reuses the guest chat inbox until Inbox is redrawn under apps/host
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- the host inbox reuses the guest chat inbox until Inbox is redrawn under apps/host
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
-// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- the host inbox reuses the guest chat inbox until Inbox is redrawn under apps/host
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
-// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- the host inbox reuses the guest chat inbox until Inbox is redrawn under apps/host
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
@@ -26,6 +18,10 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_page_body.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/pages/inbox/widgets/chats_empty_state.dart';
+import 'package:catch_dating_app/pages/inbox/widgets/chats_list.dart';
+import 'package:catch_dating_app/pages/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';

@@ -1,4 +1,4 @@
-part of 'chat_screen_test.dart';
+part of '../pages/chat/chat_screen_test.dart';
 
 void _registerChatScreenSuvbotTests() {
   group('ChatScreen Suvbot', () {
