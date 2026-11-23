@@ -2,7 +2,6 @@
 // (read by functions/scripts/functionExports.cjs).
 
 export {
-  onPublicPageEventWritten,
   onPublicPageExternalEventWritten,
   onPublicPageReviewWritten,
   reconcilePublicPages,

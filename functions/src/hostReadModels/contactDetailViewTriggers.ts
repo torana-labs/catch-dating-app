@@ -123,21 +123,10 @@ export const onHostContactDetailViewPaymentWritten = onDocumentWritten({
   }
 });
 
-/** An event renamed or its origin changed. */
-export const onHostContactDetailViewEventWritten = onDocumentWritten({
-  ...options, document: "events/{eventId}",
-}, async (event) => {
-  if (!contactDetailEventChanged(event.data?.before.data(),
-    event.data?.after.data())) return;
-  await reconcileHostContactDetailViewsForEvent(admin.firestore(),
-    event.params.eventId);
-});
-
 /**
  * An event renamed or its origin changed: its contacts' detail views.
- * The events dispatcher (issue #2451) runs the same work; both run until
- * the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostContactDetailEventProjections = defineProjections("events", [{
   id: "hostContactDetailView", kind: "projection",

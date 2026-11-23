@@ -262,16 +262,10 @@ async function refreshEventGuestEntryWrite(eventId: string,
   await refreshSavedEventCardsForEvent(db, eventId);
 }
 
-export const onEventGuestEntryEventWritten = onDocumentWritten({
-  ...options, document: "events/{documentId}",
-}, (event) => refreshEventGuestEntryWrite(event.params.documentId,
-  ...versions(event)));
-
 /**
  * An event write: its public copy and guest-facing rows.
- * The events dispatcher (issue #2451) runs the same work; both run until
- * the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const eventGuestEntryEventProjections = defineProjections("events", [{
   id: "eventGuestEntries", kind: "projection",

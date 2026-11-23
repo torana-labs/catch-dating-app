@@ -13,7 +13,6 @@
   "read": "current organizer managers get and list their own organizer's views (the history pages by organizerId, progressId and progressRevision descending)",
   "write": "server only; one per recorded departure roster, deleted with the roster, its event or its group",
   "exportedFunctions": [
-    "onHostMovementViewEventChanged",
     "dispatchEvents",
     "onHostMovementViewPlanChanged",
     "onHostMovementViewProgressChanged",

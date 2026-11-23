@@ -13,7 +13,6 @@
   "read": "current organizer managers get their event's document; a view not written yet reads as missing; nobody lists the collection",
   "write": "server only; written by every evaluation that changes it, frozen a day after the event ends, deleted with the event or its organizer",
   "exportedFunctions": [
-    "onHostRosterInsightEventChanged",
     "dispatchEvents",
     "onHostRosterInsightAttendeeChanged",
     "onHostRosterInsightEdgeChanged",

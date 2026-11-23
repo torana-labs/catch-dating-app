@@ -13,7 +13,6 @@
   "read": "any signed-in person gets one entry by id; nobody lists the collection",
   "write": "server only; triggers on events, organizers and organizerForms rebuild an entry from the event, its organizer and its application form, and delete it when the event is unpublished",
   "exportedFunctions": [
-    "onEventGuestEntryEventWritten",
     "dispatchEvents",
     "dispatchOrganizers",
     "onEventGuestEntryFormWritten"

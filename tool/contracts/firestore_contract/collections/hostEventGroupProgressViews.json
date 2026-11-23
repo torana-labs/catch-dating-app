@@ -13,7 +13,6 @@
   "read": "current organizer managers get and list their own organizer's views (the live console gets one group's view by id)",
   "write": "server only; one per configured group of an event with an eventFormat and an endTime, deleted with the group or the event",
   "exportedFunctions": [
-    "onHostMovementViewEventChanged",
     "dispatchEvents",
     "onHostMovementViewPlanChanged",
     "onHostMovementViewProgressChanged",

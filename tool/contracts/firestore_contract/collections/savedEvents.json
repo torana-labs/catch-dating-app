@@ -11,7 +11,6 @@
   "write": "owner direct create/delete only; the guest event triggers write the eventCard field",
   "exportedFunctions": [
     "onSavedEventCardCreated",
-    "onEventGuestEntryEventWritten",
     "dispatchEvents"
   ],
   "operations": [

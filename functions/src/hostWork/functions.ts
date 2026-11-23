@@ -6,6 +6,5 @@ export {
   onHostAssignmentProgramGrantChanged,
   onHostAssignmentProgramChanged,
   onHostAssignmentEventGrantChanged,
-  onHostAssignmentEventChanged,
   onHostAssignmentMembershipChanged,
 } from "./hostAssignmentViewTriggers";

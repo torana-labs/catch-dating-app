@@ -16,7 +16,6 @@
     "onHostAudienceSourceViewFormChanged",
     "onHostAudienceSourceViewApplicationFormChanged",
     "onHostAudienceSourceViewVersionChanged",
-    "onHostAudienceSourceViewEventChanged",
     "dispatchEvents",
     "onHostAudienceSourceViewTagsChanged"
   ],

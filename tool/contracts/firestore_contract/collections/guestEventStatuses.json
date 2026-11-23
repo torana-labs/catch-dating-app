@@ -18,7 +18,6 @@
     "onGuestEventStatusPaymentWritten",
     "onGuestEventStatusApplicationWritten",
     "onGuestEventStatusOfferRecipientWritten",
-    "onEventGuestEntryEventWritten",
     "dispatchEvents",
     "requestAccountDeletion"
   ],

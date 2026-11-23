@@ -71,21 +71,11 @@ export const onHostFormSummaryChanged = onDocumentWritten({
     await refreshFormResponseSummaries(db, "formId", event.params.formId);
   }
 });
-export const onHostEventSummaryChanged = onDocumentWritten({
-  ...options, document: "events/{eventId}",
-}, async (event) => {
-  if (event.data?.before.exists && event.data?.after.exists &&
-      event.data.before.get("publicationState") === "published" &&
-      event.data.after.get("publicationState") === "published") return;
-  await reconcileSimpleSummary(
-    admin.firestore(), "events", event.params.eventId);
-});
 
 /**
  * An event write outside an already published event: its summary row.
- * The events dispatcher (issue #2451) runs the same work; both run until
- * the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the events dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostEventSummaryProjections = defineProjections("events", [{
   id: "hostEventSummary", kind: "projection",

@@ -15,7 +15,6 @@
   "exportedFunctions": [
     "onHostEventCaseViewCaseChanged",
     "onHostEventCaseViewAttendeeChanged",
-    "onHostEventCaseViewEventChanged",
     "dispatchEvents",
     "dispatchOrganizers",
     "resolveEventAssistanceCase"
