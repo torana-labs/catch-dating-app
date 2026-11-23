@@ -16,6 +16,7 @@ import {
   maxEventAttendees,
   membershipViewsCollection,
 } from "./guestViewSupport";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -251,12 +252,22 @@ export async function reconcileGuestViewTargets(
 
 const options = {retry: true, memory: "512MiB" as const};
 
-async function reconcileForWrite(source: GuestViewSource,
-  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
-    {documentId: string}>): Promise<void> {
-  const targets = resolveGuestViewTargets(source, event.params.documentId,
-    event.data?.before.data(), event.data?.after.data());
+async function reconcileForChange(source: GuestViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
+  const targets = resolveGuestViewTargets(source, documentId,
+    before, after);
   await reconcileGuestViewTargets(admin.firestore(), targets);
+}
+
+async function reconcileForWrite(
+  source: GuestViewSource,
+  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
+    {documentId: string}>
+): Promise<void> {
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
 }
 
 export const onHostGuestViewEventChanged = onDocumentWritten({
@@ -277,6 +288,18 @@ export const onHostGuestViewMembershipChanged = onDocumentWritten({
 export const onHostGuestViewOrganizerChanged = onDocumentWritten({
   ...options, document: "organizers/{documentId}",
 }, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * An organizer's managers: its events' open membership views.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostGuestViewProjections = defineProjections("organizers", [{
+  id: "hostGuestView", kind: "projection", when: () => true,
+  run: (change) => reconcileForChange("organizers", change.documentId,
+    change.before, change.after),
+}]);
 export const onHostGuestViewStaffGrantChanged = onDocumentWritten({
   ...options, document: "eventStaffGrants/{documentId}",
 }, (event) => reconcileForWrite("eventStaffGrants", event));

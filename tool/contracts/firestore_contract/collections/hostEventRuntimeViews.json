@@ -19,6 +19,7 @@
     "onHostGuestViewGuestChanged",
     "onHostGuestViewMembershipChanged",
     "onHostGuestViewOrganizerChanged",
+    "dispatchOrganizers",
     "onHostGuestViewStaffGrantChanged",
     "onHostGuestViewSettingChanged",
     "onHostGuestViewRuntimeChanged"

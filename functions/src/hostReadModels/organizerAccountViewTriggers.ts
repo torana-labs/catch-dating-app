@@ -8,6 +8,7 @@ import {
 import {reconcileOrganizerOwnerView} from "./organizerOwnerViewStore";
 import {organizerFollowerUpdateTemplateName} from
   "../organizers/organizerFollowerWhatsapp";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 
@@ -34,18 +35,34 @@ function organizerIds(before: Data, after: Data): string[] {
  * An organizer appearing or vanishing: its billing view. Its owner, owner
  * links, about text or photos changing: its owner view.
  */
-export const onHostOrganizerAccountViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{organizerId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  const db = admin.firestore();
-  const id = event.params.organizerId;
+async function reconcileOrganizerAccountViews(
+  db: FirebaseFirestore.Firestore, id: string, before: Data, after: Data
+): Promise<void> {
   if (!before || !after) await reconcileOrganizerBillingView(db, id);
   if (same(before, after, ["ownerUserId", "hostUserId", "ownerLinks",
     "description", "organizerPhotos"])) return;
   await reconcileOrganizerOwnerView(db, id);
-});
+}
+
+export const onHostOrganizerAccountViewOrganizerChanged = onDocumentWritten({
+  ...options, document: "organizers/{organizerId}",
+}, (event) => reconcileOrganizerAccountViews(admin.firestore(),
+  event.params.organizerId, event.data?.before.data(),
+  event.data?.after.data()));
+
+/**
+ * The organizer's billing and owner views.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostOrganizerAccountViewProjections = defineProjections(
+  "organizers", [{
+    id: "hostOrganizerAccountView", kind: "projection",
+    when: () => true,
+    run: (change, ctx) => reconcileOrganizerAccountViews(ctx.db,
+      change.documentId, change.before, change.after),
+  }]);
 
 /**
  * Catch's commercial terms changing the trial length: the organizer's

@@ -264,6 +264,26 @@ export function dispatcherMemory(
   return MEMORY_ORDER[largest];
 }
 
+/**
+ * Concurrent events one dispatcher instance serves. Each trigger it replaces
+ * served up to 80 events at 512 MiB, about 6.4 MiB per concurrent projection
+ * run; one dispatcher event runs every matching spec, so dividing by the spec
+ * count (and scaling by memory) keeps that budget per run.
+ */
+const SINGLE_TRIGGER_CONCURRENCY = 80;
+const MEMORY_MIB: Readonly<Record<MemoryOption, number>> = {
+  "128MiB": 128, "256MiB": 256, "512MiB": 512, "1GiB": 1024, "2GiB": 2048,
+  "4GiB": 4096, "8GiB": 8192, "16GiB": 16384, "32GiB": 32768,
+};
+
+/** Instance concurrency for a source's dispatcher; see above. */
+export function dispatcherConcurrency(sets: readonly ProjectionSet[]): number {
+  const specCount = Math.max(1, sets.flatMap((set) => set.specs).length);
+  const memoryShare = MEMORY_MIB[dispatcherMemory(sets)] / 512;
+  return Math.min(SINGLE_TRIGGER_CONCURRENCY, Math.max(1,
+    Math.floor(SINGLE_TRIGGER_CONCURRENCY * memoryShare / specCount)));
+}
+
 /** True when any of `fields` differs between before and after. */
 export function fieldsChanged(change: DispatchChange,
   fields: readonly string[]): boolean {
@@ -440,5 +460,6 @@ export function dispatchTrigger(source: string, document: string,
     retry: true,
     timeoutSeconds: dispatcherTimeoutSeconds(sets),
     memory: dispatcherMemory(sets),
+    concurrency: dispatcherConcurrency(sets),
   }, dispatchHandler(source, sets));
 }

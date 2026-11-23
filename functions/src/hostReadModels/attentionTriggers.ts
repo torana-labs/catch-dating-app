@@ -12,6 +12,7 @@ import {
   reconcileOrganizerAttention,
   sweepDueOrganizerAttention,
 } from "./attentionStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -166,23 +167,43 @@ async function organizersOwnedBy(
 const options = {retry: true, memory: "512MiB" as const};
 
 /** Re-evaluates every organizer a source write can affect. */
-async function reconcileForWrite(
-  source: AttentionSource,
-  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
-    {documentId: string}>
-): Promise<void> {
+async function reconcileForChange(source: AttentionSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
   const db = admin.firestore();
   const organizerIds = await resolveAttentionOrganizerIds(db, source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
+    documentId, before,
+    after);
   for (const organizerId of organizerIds) {
     await reconcileOrganizerAttention(db, organizerId);
   }
 }
 
+async function reconcileForWrite(
+  source: AttentionSource,
+  event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
+    {documentId: string}>
+): Promise<void> {
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
+}
+
 export const onOrganizerAttentionOrganizerChanged = onDocumentWritten({
   ...options, document: "organizers/{documentId}",
 }, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * An organizer write re-evaluates its attention queue.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const organizerAttentionProjections = defineProjections("organizers", [{
+  id: "organizerAttention", kind: "projection", when: () => true,
+  run: (change) => reconcileForChange("organizers", change.documentId,
+    change.before, change.after),
+}]);
 export const onOrganizerAttentionEventChanged = onDocumentWritten({
   ...options, document: "events/{documentId}",
 }, (event) => reconcileForWrite("events", event));

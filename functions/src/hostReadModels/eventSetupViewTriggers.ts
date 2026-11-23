@@ -11,6 +11,7 @@ import {
   reconcileEventSetupView,
   setupEventIdsForOrganizer,
 } from "./eventSetupViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -91,18 +92,26 @@ function isSame(left: unknown, right: unknown): boolean {
 const options = {retry: true, memory: "512MiB" as const};
 
 /** Re-evaluates every event setup view a source write can affect. */
+async function reconcileForChange(source: EventSetupViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
+  const db = admin.firestore();
+  const eventIds = await resolveEventSetupViewEventIds(db, source,
+    documentId, before,
+    after);
+  for (const eventId of eventIds) {
+    await reconcileEventSetupView(db, eventId);
+  }
+}
+
 async function reconcileForWrite(
   source: EventSetupViewSource,
   event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
     {documentId: string}>
 ): Promise<void> {
-  const db = admin.firestore();
-  const eventIds = await resolveEventSetupViewEventIds(db, source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
-  for (const eventId of eventIds) {
-    await reconcileEventSetupView(db, eventId);
-  }
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
 }
 
 export const onHostEventSetupViewEventChanged = onDocumentWritten({
@@ -114,6 +123,18 @@ export const onHostEventSetupViewPreferencesChanged = onDocumentWritten({
 export const onHostEventSetupViewOrganizerChanged = onDocumentWritten({
   ...options, document: "organizers/{documentId}",
 }, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * An organizer write: the setup views of its events.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostEventSetupViewProjections = defineProjections("organizers", [{
+  id: "hostEventSetupView", kind: "projection", when: () => true,
+  run: (change) => reconcileForChange("organizers", change.documentId,
+    change.before, change.after),
+}]);
 export const onHostEventSetupViewAttendeeChanged = onDocumentWritten({
   ...options, document: "eventAttendees/{documentId}",
 }, (event) => reconcileForWrite("eventAttendees", event));

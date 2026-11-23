@@ -23,7 +23,8 @@
     "onHostMovementViewMembershipChanged",
     "onHostMovementViewWorkItemChanged",
     "onHostMovementViewStaffGrantChanged",
-    "onHostMovementViewOrganizerChanged"
+    "onHostMovementViewOrganizerChanged",
+    "dispatchOrganizers"
   ],
   "migrationNotes": [
     "eventOpen is evaluated one millisecond before eventEndAtMillis; the phone ANDs it, and the guidance it gates, with the app clock.",

@@ -9,6 +9,7 @@ import {
   organizerSummaryChanged,
   refreshOrganizerEventSummaries,
 } from "./eventOrganizerSummary";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 /**
  * Public organizer projection (#1221).
@@ -166,18 +167,78 @@ export async function reconcilePublicOrganizer(organizerId: string,
 }
 
 /**
- * Keeps the projection current, and the organizerSummary on the organizer's
- * events that have not ended when the projection changes what it holds.
+ * Whether this organizer write moves the summary its events carry: the
+ * summary of the public projection before and after. It depends only on
+ * the write, so a retry of the same write asks again and refreshes again.
+ * @param {Source | undefined} before Organizer before.
+ * @param {Source | undefined} after Organizer after.
+ * @return {boolean} Whether the events' summary may be stale.
  */
+export function organizerWriteMovesSummary(before: Source | undefined,
+  after: Source | undefined): boolean {
+  const view = (source: Source | undefined) => {
+    if (!publicOrganizerEligible(source)) return undefined;
+    const projection = projectPublicOrganizer(source as Source);
+    return validatePublicOrganizerDocument(projection) ? projection :
+      undefined;
+  };
+  return organizerSummaryChanged(view(before), view(after));
+}
+
+export interface PublicOrganizerWriteDeps {
+  reconcile: (organizerId: string) =>
+    Promise<{summaryChanged: boolean}>;
+  refresh: (organizerId: string) => Promise<unknown>;
+}
+
+const liveWriteDeps: PublicOrganizerWriteDeps = {
+  reconcile: (organizerId) => reconcilePublicOrganizerDetailed(organizerId),
+  refresh: (organizerId) => refreshOrganizerEventSummaries(organizerId),
+};
+
+/**
+ * Keeps the projection current, and the organizerSummary on the
+ * organizer's events that have not ended when it may be stale: when this
+ * attempt changed the projection's summary, or when the write itself
+ * moves it. The second condition makes a retry converge: an attempt that
+ * wrote the projection and then failed part way through the events finds
+ * the projection unchanged on the retry, but the write still moves the
+ * summary, so the retry refreshes the events it missed. The refresh
+ * rewrites only events whose summary differs from the current projection.
+ * @param {string} organizerId Organizer id.
+ * @param {Source | undefined} before Organizer before.
+ * @param {Source | undefined} after Organizer after.
+ * @param {PublicOrganizerWriteDeps} deps Injectable steps.
+ * @return {Promise<void>} Resolves once both are current.
+ */
+export async function syncPublicOrganizerWrite(organizerId: string,
+  before: Source | undefined, after: Source | undefined,
+  deps: PublicOrganizerWriteDeps = liveWriteDeps): Promise<void> {
+  const {summaryChanged} = await deps.reconcile(organizerId);
+  if (summaryChanged || organizerWriteMovesSummary(before, after)) {
+    await deps.refresh(organizerId);
+  }
+}
+
+/** Keeps the public projection and its events' summary current. */
 export const syncPublicOrganizer = onDocumentWritten(
   {document: "organizers/{organizerId}", retry: true},
-  async (event) => {
-    const {summaryChanged} =
-      await reconcilePublicOrganizerDetailed(event.params.organizerId);
-    if (summaryChanged) {
-      await refreshOrganizerEventSummaries(event.params.organizerId);
-    }
-  });
+  (event) => syncPublicOrganizerWrite(event.params.organizerId,
+    event.data?.before.data() as Source | undefined,
+    event.data?.after.data() as Source | undefined));
+
+/**
+ * The public organizer projection and its events' summary.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const publicOrganizerProjections = defineProjections("organizers", [{
+  id: "publicOrganizer", kind: "projection", when: () => true,
+  run: (change) => syncPublicOrganizerWrite(change.documentId,
+    change.before as Source | undefined,
+    change.after as Source | undefined),
+}]);
 
 /**
  * Creates or refreshes the projection for every organizer. Dry run by

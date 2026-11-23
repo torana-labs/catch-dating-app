@@ -14,7 +14,8 @@
   "write": "server only; written by every evaluation that changes it and deleted with the organizer",
   "exportedFunctions": [
     "onHostEventSetupDefaultViewDefaultsChanged",
-    "onHostEventSetupDefaultViewOrganizerChanged"
+    "onHostEventSetupDefaultViewOrganizerChanged",
+    "dispatchOrganizers"
   ],
   "migrationNotes": [
     "The view carries the basics, preferences and reviewed-defaults hashes the defaults update command and the first-save basics are fenced by; the client never recomputes them."

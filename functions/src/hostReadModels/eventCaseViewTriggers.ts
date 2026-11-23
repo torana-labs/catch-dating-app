@@ -16,6 +16,7 @@ import {
   sameFields,
   valueAt,
 } from "./support/fanout";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -113,18 +114,26 @@ async function collect(ids: AsyncGenerator<string>): Promise<string[]> {
 const options = {retry: true, memory: "512MiB" as const};
 
 /** Re-evaluates every case view a source write can affect. */
+async function reconcileForChange(source: EventCaseViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
+  const db = admin.firestore();
+  const caseIds = await resolveEventCaseViewIds(db, source,
+    documentId, before,
+    after);
+  for (const caseId of caseIds) {
+    await reconcileEventCaseView(db, caseId);
+  }
+}
+
 async function reconcileForWrite(
   source: EventCaseViewSource,
   event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
     {documentId: string}>
 ): Promise<void> {
-  const db = admin.firestore();
-  const caseIds = await resolveEventCaseViewIds(db, source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
-  for (const caseId of caseIds) {
-    await reconcileEventCaseView(db, caseId);
-  }
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
 }
 
 export const onHostEventCaseViewCaseChanged = onDocumentWritten({
@@ -139,3 +148,15 @@ export const onHostEventCaseViewEventChanged = onDocumentWritten({
 export const onHostEventCaseViewOrganizerChanged = onDocumentWritten({
   ...options, document: "organizers/{documentId}",
 }, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * An organizer's manager fields: its open case views.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostEventCaseViewProjections = defineProjections("organizers", [{
+  id: "hostEventCaseView", kind: "projection", when: () => true,
+  run: (change) => reconcileForChange("organizers", change.documentId,
+    change.before, change.after),
+}]);

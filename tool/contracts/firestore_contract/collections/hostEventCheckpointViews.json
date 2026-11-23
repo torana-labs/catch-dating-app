@@ -23,7 +23,8 @@
     "onHostMovementViewMembershipChanged",
     "onHostMovementViewWorkItemChanged",
     "onHostMovementViewStaffGrantChanged",
-    "onHostMovementViewOrganizerChanged"
+    "onHostMovementViewOrganizerChanged",
+    "dispatchOrganizers"
   ],
   "migrationNotes": [
     "request.state, request.ownerAvailability and the reporter choices follow the app clock through request.dueAt, ownerValidUntilMillis and each reporter's validUntil.",
