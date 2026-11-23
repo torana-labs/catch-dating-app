@@ -4180,7 +4180,10 @@ tests keep that tolerance honest.
 
 Use `bash tool/test_app_shell_integration.sh <device> smoke` for the bounded
 native lane and `bash tool/test_app_shell_integration.sh <device> all` for every
-native suite. The main Flutter workflow separately analyzes and builds
+native suite. Each app package ships its own macOS runner, and the script runs
+each suite from the project that owns it: the Consumer suites from
+`apps/consumer`, the Host journeys from `apps/host`. The bounded native lane
+boots both runners: the Consumer smoke suite, then the Host journeys. The main Flutter workflow separately analyzes and builds
 `widgetbook/` for web, runs the unit/widget suite with LCOV, publishes the raw
 LCOV plus a handwritten feature-level Markdown summary, and deliberately does
 not impose a global coverage percentage threshold. These are repository

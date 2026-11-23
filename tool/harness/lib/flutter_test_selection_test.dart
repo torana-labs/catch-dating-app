@@ -48,6 +48,7 @@ void main() {
       'test/goldens/home_test.dart',
       'test/integration/shell_test.dart',
       'apps/host/test/goldens/home_test.dart',
+      'apps/host/test/integration/journey_test.dart',
       'apps/host/integration_test/journey_test.dart',
       'apps/host/test/support/pump.dart',
       'packages/catch_ui/test/button_test.dart',
@@ -929,6 +930,8 @@ void main() {
         'apps/host/ios/Runner/Info.plist',
         'apps/host/web/index.html',
         'apps/consumer/integration_test/app_shell_smoke_test.dart',
+        'apps/host/integration_test/host_app_shell_journeys_test.dart',
+        'apps/host/test/integration/host_app_shell_journeys_test.dart',
         'apps/host/test/goldens/baseline/home.png',
         'apps/host/test/goldens/home_golden_test.dart',
       ]) {

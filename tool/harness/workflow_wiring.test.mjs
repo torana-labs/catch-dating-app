@@ -1620,8 +1620,10 @@ test("headless journeys start independently of macOS rendering and native smoke"
   assert.match(goldens, /Widgetbook package suites \(pass 1\)/u);
   assert.match(goldens, /Widgetbook corpus goldens \(pass 2, determinism\)/u);
   assert.match(goldens, /git diff --exit-code/u);
-  assert.match(native, /working-directory: apps\/consumer\n\s+run: bash \.\.\/\.\.\/tool\/test_app_shell_integration.sh macos smoke/u);
-  assert.match(native, /lockfiles: apps\/consumer\/macos\/Podfile\.lock/u);
+  // The runner script cds into each app project; the job itself stays at the root.
+  assert.match(native, /run: bash tool\/test_app_shell_integration.sh macos smoke/u);
+  assert.doesNotMatch(native, /working-directory:/u);
+  assert.match(native, /lockfiles: apps\/\*\/macos\/Podfile\.lock/u);
   assert.match(native, /cache-cocoapods/u);
   assert.match(native, /actions\/checkout@[0-9a-f]{40} # v6/u);
   assert.doesNotMatch(goldens, /macos smoke/u);

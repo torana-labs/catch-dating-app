@@ -218,7 +218,8 @@ jobs:
     # skipped job leaves the caller's visual-integration result green.
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: macos-26
-    timeout-minutes: 30
+    # Two macOS app builds (Consumer and Host), each about five minutes.
+    timeout-minutes: 40
     # Independent runners use the same immutable checkout. Committed codegen
     # freshness remains required in goldens; neither result can replace it.
     steps:
@@ -236,10 +237,11 @@ jobs:
         uses: ./.github/actions/cache-cocoapods
         with:
           cocoapods-version: ${{ steps.toolchain.outputs.cocoapods-version }}
-          lockfiles: apps/consumer/macos/Podfile.lock
+          lockfiles: apps/*/macos/Podfile.lock
 
-      # The macOS runner lives in the Consumer project, and Flutter only runs
-      # device tests from that project's own integration_test/ directory.
+      # Each app keeps its macOS runner in its own project, and Flutter only
+      # runs device tests from that project's integration_test/ directory, so
+      # the runner script boots the Consumer smoke from apps/consumer and the
+      # Host journeys from apps/host.
       - name: Hosted native app-shell smoke
-        working-directory: apps/consumer
-        run: bash ../../tool/test_app_shell_integration.sh macos smoke
+        run: bash tool/test_app_shell_integration.sh macos smoke

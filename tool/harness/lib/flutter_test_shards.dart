@@ -5,13 +5,17 @@ import 'dart:math' as math;
 ///
 /// The shards run the root package's unit and widget tests (`.`) and each app
 /// package's (`apps/<app>`). Golden suites belong to the macOS goldens lane
-/// and `test/integration/` to the app-shell journeys, so neither is a shard
-/// test. Other packages' suites belong to the package-tests job.
+/// and `test/integration/` (in the root or an app) to the app-shell
+/// journeys, so neither is a shard test. Other packages' suites belong to the
+/// package-tests job.
 String? testPackage(String name) {
   if (!name.endsWith('_test.dart')) return null;
   final app = RegExp(r'^apps/([^/]+)/test/').firstMatch(name);
   if (app != null) {
-    return name.startsWith('${app[0]}goldens/') ? null : 'apps/${app[1]}';
+    final inTest = name.substring(app[0]!.length);
+    return inTest.startsWith('goldens/') || inTest.startsWith('integration/')
+        ? null
+        : 'apps/${app[1]}';
   }
   if (!name.startsWith('test/') ||
       name.startsWith('test/goldens/') ||

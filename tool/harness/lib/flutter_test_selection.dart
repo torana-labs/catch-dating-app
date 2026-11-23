@@ -310,11 +310,13 @@ bool _probeOnlyInput(String name) =>
 
 // An app package's lib/ and test/ are sources the shards test, so they need
 // import proof like the root package's. Its native folders, integration
-// suites and goldens have their own gates.
+// suites (integration_test/ and their headless test/integration/ entrypoints)
+// and goldens have their own gates.
 bool _appProbeOnly(String name) {
   final rest = RegExp(r'^apps/[^/]+/(.*)$').firstMatch(name)?.group(1);
   return rest != null &&
       (rest.startsWith('test/goldens/') ||
+          rest.startsWith('test/integration/') ||
           !(rest.startsWith('lib/') || rest.startsWith('test/')));
 }
 
