@@ -115,7 +115,9 @@ export function formatCarried(json) {
   const {carried, ...rest} = json;
   const entries = [...carried]
     .map((entry) => ({path: entry.path, from: entry.from}))
-    .sort((a, b) => a.path.localeCompare(b.path))
+    // Code-unit order, as Dart's String.compareTo sorts: catch_new_root_scope_test
+    // holds the list to it, and localeCompare would put "_actions" before ".".
+    .sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0))
     .map((entry) => `    {"path": ${JSON.stringify(entry.path)}, "from": ${JSON.stringify(entry.from)}}`);
   const head = Object.entries(rest).map(([key, value]) => `  ${JSON.stringify(key)}: ${JSON.stringify(value)},`);
   return ["{", ...head, "  \"carried\": [", entries.join(",\n\n"), "  ]", "}", ""].join("\n");
