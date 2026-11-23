@@ -324,7 +324,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `detachProgramTravelLeg` | `src/transport/programTravelPartyDetach.ts` | Coordinator-only removal of one journey from its ride-together party, fenced by the journey's revision; the party keeps its label and vehicle setting, and a departed sibling does not block it |
 | `importProgramManifest` | `src/programs/programManifestImport.ts` | Preview/commit guest manifest import with externalReference dedup, household/party label matching, and receipt-backed idempotent convergence |
 | `importWeddingPhoneContacts` | `src/programs/programManifestImport.ts` | Wedding-only phone contact preview/commit through the canonical manifest importer; fresh server readiness and current program authority are required |
-| `recordProgramDoorJournal` / `getProgramFunctionDoorView` / `createProgramWalkIn` | `src/doorJournal/` | Durable offline-safe door check-in journal, the function-scoped door roster/counts/journal-tail projection, and least-privilege walk-in creation for program function entry points |
+| `recordProgramDoorJournal` / `createProgramWalkIn` | `src/doorJournal/` | Durable offline-safe door check-in journal and least-privilege walk-in creation for program function entry points; the door reads `programDoorFunctions`, `programDoorRows` and `programDoorJournalViews` |
 | `getProgramAttendanceReport` | `src/programs/attendanceReportView.ts` | Program-wide attendance report for reconciliationViewer staff, coordinators, and managers: per-function RSVP/door separation plus sorted exception guest ids; fails closed past the read cap |
 | `archiveProgram` / `unarchiveProgram` / `anonymizeDueProgramsSweep` | `src/programs/programRetention.ts` | Manager-owned archive lifecycle with a grace window: unarchive restores the pre-archive status only while no sweep lease is in flight; the scheduled sweep anonymizes due programs with journaled chunked resume |
 | `reconcileOrganizerProgramCountsSweep` | `src/programs/organizerProgramCountTriggers.ts` | Nightly (03:45 IST) recount of every programme view's guest, replied and flying-in counts from `programGuests` and `programTravelLegs`, the backstop for the delta triggers; `tool/data/recompute_organizer_program_counts.mjs` runs the same recount as a backfill |
@@ -574,7 +574,6 @@ enter previews.
 | `getProgramGuestIdStatus` | `src/programs/guestIds.ts` | A household's members with their ID status (names and status only) by its RSVP link. |
 | `getProgramHamperWebView` | `src/programs/hampers.ts` | Porters' hamper list for one hotel by hamperPorter link. |
 | `getProgramHotelHandover` | `src/programs/guestIds.ts` | Hotel front desk rooming list with accepted IDs by hotelHandover link. |
-| `getProgramLiveBoard` | `src/programs/programLiveBoard.ts` | Not yet described. |
 | `getProgramVendorRunSheet` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `importEventFromLink` | `src/commands/importEventFromLink.ts` | Command `event.import-from-link`: creates a private draft event in a try-it workspace from one public event page. |
 | `importFormFromLink` | `src/commands/importFormFromLink.ts` | Command `form.import-from-link`: creates a private draft form in a try-it workspace from one public Google Form. |

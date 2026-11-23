@@ -383,10 +383,11 @@ reads/writes; grants do not publish a profile or disclose private endpoints.
 
 ## Programme live weekend, departures and web links
 
-`getProgramLiveBoard` derives the live board on read: the function on now,
-today's schedule in the programme's zone, inbound travel counts and alerts
-merged from staff attention sends, cancelled or diverted flights and
-disrupted journeys. `resolveProgramAlert` writes only the resolution
+The live board reads `programAlertViews`, `programTravelCountViews` and the
+function labels of `programResourceViews` (see the read paths below): the
+function on now and today's schedule in the programme's zone, inbound travel
+counts and alerts merged from staff attention sends, cancelled or diverted
+flights and disrupted journeys. `resolveProgramAlert` writes only the resolution
 (`programAlerts/{programId}_{alertId}`: take, finish, reopen), fenced by
 `expectedRevision` with a `requestId` replay. Function leads see the staff
 alerts for duties they hold; managers and coordinators see every alert.
@@ -452,9 +453,9 @@ with their resolution, readable by duty, travel alerts by full reach only),
 `programTravelCountViews` and the function labels of `programResourceViews`;
 the phone computes the schedule phases from its clock. `resolveProgramAlert`,
 `recordProgramDoorJournal` and `createProgramWalkIn` stay commands with their
-revision and request-id fences. `listProgramStaffAttention` was retired in
-Nov 2026; the other two callables stay deployed for older builds,
-retire-later.
+revision and request-id fences. `listProgramStaffAttention`,
+`getProgramFunctionDoorView` and `getProgramLiveBoard` were retired in Nov
+2026.
 
 `getProgramArrivalsRoster`, `getProgramDeparturesRoster` and
 `listTransportVendors` move to read models: `programArrivalViews` (readable
@@ -681,8 +682,11 @@ and they are listed in `functions/retired-functions.json`:
 `listProgramStaff` (`programStaffViews`), `listProgramStaffAttention`
 (`programAlertViews`), `getProgramWhatsappThread`
 (`programWhatsappThreadViews` and `programWhatsappMessages`),
-`listProgramWhatsappCannedReplies` (`programWhatsappCannedReplies`) and
-`listProgramPhotos` (`programPhotos` plus `signProgramPhotoUrls`).
+`listProgramWhatsappCannedReplies` (`programWhatsappCannedReplies`),
+`listProgramPhotos` (`programPhotos` plus `signProgramPhotoUrls`),
+`getProgramFunctionDoorView` (`programDoorFunctions`, `programDoorRows` and
+`programDoorJournalViews`) and `getProgramLiveBoard` (`programAlertViews`,
+`programTravelCountViews` and `programResourceViews`).
 
 **Retire-later callables (programme read batches 3 to 5, #1339).** Deployed for
 older builds, no current client calls them: `listProgramWhatsappThreads` for

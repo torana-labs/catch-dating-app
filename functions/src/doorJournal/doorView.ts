@@ -1,7 +1,3 @@
-/* firestore-index: programDoorJournal (
-  functionId:ASCENDING,
-  occurredAtMillis:DESCENDING
-) */
 import * as admin from "firebase-admin";
 import {createHash} from "node:crypto";
 import {CallableRequest, HttpsError, onCall} from
@@ -11,10 +7,7 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
-  dutyAssignments,
   nextRevision,
-  programProjectionExpiresAt,
-  programStaffGrantId,
   requireProgramAccess,
   requireProgramMutable,
 } from "../shared/programAuthority";
@@ -23,20 +16,11 @@ import type {
   ProgramFunctionDocument,
   ProgramFunctionGuestDocument,
   ProgramGuestDocument,
-  ProgramHouseholdDocument,
 } from "../shared/generated/firestoreAdminTypes";
-import type {ProgramFunctionScopeCallablePayload} from
-  "../shared/generated/programFunctionScopeCallablePayload";
 import type {CreateProgramWalkInCallablePayload} from
   "../shared/generated/createProgramWalkInCallablePayload";
-import type {ProgramFunctionDoorViewCallableResponse} from
-  "../shared/generated/programFunctionDoorViewCallableResponse";
 import type {ProgramMutationCallableResponse} from
   "../shared/generated/programMutationCallableResponse";
-import {
-  validateProgramFunctionScopeCallablePayload,
-} from
-  "../shared/generated/validators/programFunctionScopeInput";
 import {
   validateCreateProgramWalkInCallablePayload,
 } from
@@ -44,8 +28,6 @@ import {
 import {journalIdFor} from "./journalPlan";
 import {requireDoorAuthority} from "./recordProgramDoorJournal";
 
-const JOURNAL_TAIL_LIMIT = 60;
-const ROSTER_LIMIT = 500;
 const WALK_IN_ID_PREFIX = "walkin_";
 
 export interface DoorViewDeps {
@@ -90,200 +72,6 @@ async function loadFunction(
       "not-found", "Function not found in this program.");
   }
   return fn;
-}
-
-type RosterRow = ProgramFunctionDoorViewCallableResponse["guests"][number];
-
-/**
- * Door roster for one function. `allGuests` functions treat every program
- * guest as invited even without a join row; `selectedGuests` functions list
- * exactly their join rows — invited guests plus door-created walk-ins
- * (invited=false). Guest rows carry display names only, never contacts.
- */
-export async function getProgramFunctionDoorViewHandler(
-  request: CallableRequest<unknown>,
-  deps: DoorViewDeps = defaultDeps,
-): Promise<ProgramFunctionDoorViewCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<ProgramFunctionScopeCallablePayload>(
-    request, validateProgramFunctionScopeCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramFunctionDoorView", {
-    maxRequests: 120, windowMs: 60 * 1000,
-  });
-  const access = await requireProgramAccess({
-    db, programId: data.programId, actorUid, now: deps.now(),
-  });
-  const fn = await loadFunction(db, data.programId, data.functionId);
-  requireDoorAuthority(access, data.functionId);
-  const now = deps.now();
-
-  const [rowsSnap, journalSnap] = await Promise.all([
-    db.collection("programFunctionGuests")
-      .where("functionId", "==", data.functionId)
-      .limit(ROSTER_LIMIT + 1)
-      .get(),
-    db.collection("programDoorJournal")
-      .where("functionId", "==", data.functionId)
-      .orderBy("occurredAtMillis", "desc")
-      .limit(JOURNAL_TAIL_LIMIT)
-      .get(),
-  ]);
-
-  const rows = new Map<string, ProgramFunctionGuestDocument>();
-  for (const snap of rowsSnap.docs.slice(0, ROSTER_LIMIT)) {
-    const row = snap.data() as ProgramFunctionGuestDocument;
-    if (row.programId === data.programId) rows.set(row.guestId, row);
-  }
-
-  // allGuests functions invite the whole program guest list; join rows are
-  // optional state on top of that list.
-  const allGuests = (fn.invitationMode ?? "allGuests") === "allGuests";
-  const guestIdSet = new Set<string>(rows.keys());
-  if (allGuests) {
-    const guestsSnap = await db.collection("programGuests")
-      .where("programId", "==", data.programId)
-      .limit(ROSTER_LIMIT + 1)
-      .get();
-    for (const snap of guestsSnap.docs.slice(0, ROSTER_LIMIT)) {
-      guestIdSet.add(snap.id);
-    }
-  }
-
-  const journalDocs = journalSnap.docs
-    .map((snap) => ({journalId: snap.id,
-      entry: snap.data() as ProgramDoorJournalDocument}))
-    .filter(({entry}) => entry.programId === data.programId)
-    .slice(0, JOURNAL_TAIL_LIMIT);
-  for (const {entry} of journalDocs) guestIdSet.add(entry.guestId);
-
-  const guestSnaps = await Promise.all([...guestIdSet].map((guestId) =>
-    db.collection("programGuests").doc(guestId).get()));
-  const guestsById = new Map<string, ProgramGuestDocument>();
-  for (const snap of guestSnaps) {
-    if (!snap.exists) continue;
-    const guest = snap.data() as ProgramGuestDocument;
-    if (guest.programId === data.programId) guestsById.set(snap.id, guest);
-  }
-  const householdIdsToLoad = [...new Set(
-    [...guestsById.values()]
-      .map((guest) => guest.householdId)
-      .filter((id): id is string => typeof id === "string"),
-  )];
-  const householdSnaps = await Promise.all(householdIdsToLoad.map((id) =>
-    db.collection("programHouseholds").doc(id).get()));
-  const householdLabels = new Map<string, string>();
-  for (const snap of householdSnaps) {
-    if (!snap.exists) continue;
-    const household = snap.data() as ProgramHouseholdDocument;
-    if (household.programId === data.programId) {
-      householdLabels.set(snap.id, household.label);
-    }
-  }
-
-  // Resolve staff display names for the activity rail through grants;
-  // uids never cross the wire.
-  const actorUids = [
-    ...new Set(journalDocs.map(({entry}) => entry.actorUid)),
-  ];
-  const grantSnaps = await Promise.all(actorUids.map((uid) =>
-    db.collection("programStaffGrants")
-      .doc(programStaffGrantId(data.programId, uid)).get()));
-  const actorLabels = new Map<string, string>();
-  for (const snap of grantSnaps) {
-    if (!snap.exists) continue;
-    const grant = snap.data() as
-      {displayName?: string; programId?: string} | undefined;
-    if (grant && grant.programId === data.programId &&
-        typeof grant.displayName === "string" && grant.displayName !== "") {
-      actorLabels.set(snap.id.split("__").pop()!, grant.displayName);
-    }
-  }
-
-  const roster: RosterRow[] = [];
-  let expectedHeads = 0;
-  let checkedInHeads = 0;
-  let checkedInParties = 0;
-  let noShowCount = 0;
-  let walkInCount = 0;
-  for (const guestId of guestIdSet) {
-    const guest = guestsById.get(guestId);
-    if (!guest) continue;
-    const row = rows.get(guestId);
-    const invited = allGuests ? row?.invited ?? true : row?.invited ?? false;
-    const attendanceStatus = row?.attendanceStatus ?? "expected";
-    const rsvpStatus = row?.rsvpStatus ?? "pending";
-    const partySize = row?.partySize ?? null;
-    if (!invited && attendanceStatus === "expected") continue;
-    const heads = partySize ?? 1;
-    if (rsvpStatus === "attending") expectedHeads += heads;
-    if (attendanceStatus === "checkedIn") {
-      checkedInHeads += heads;
-      checkedInParties++;
-    }
-    if (attendanceStatus === "noShow") noShowCount++;
-    if (!invited) walkInCount++;
-    roster.push({
-      guestId,
-      displayName: guest.displayName,
-      invited,
-      rsvpStatus,
-      attendanceStatus,
-      partySize,
-      householdLabel: guest.householdId ?
-        householdLabels.get(guest.householdId) ?? null : null,
-      responseNote: row?.responseNote ?? null,
-    });
-  }
-  roster.sort((a, b) => a.displayName.localeCompare(b.displayName) ||
-    a.guestId.localeCompare(b.guestId));
-
-  // Projection retention deadline: earliest contributing door-duty expiry.
-  const covering = [
-    ...dutyAssignments(access, "functionCheckIn"),
-    ...dutyAssignments(access, "functionLead"),
-  ].filter((assignment) => (assignment.functionIds ?? []).length === 0 ||
-    assignment.functionIds!.includes(data.functionId));
-
-  return {
-    programId: data.programId,
-    functionId: data.functionId,
-    serverTimeMillis: now.toMillis(),
-    accessExpiresAtMillis: programProjectionExpiresAt(access, covering),
-    function: {
-      name: fn.name,
-      invitationMode: allGuests ? "allGuests" : "selectedGuests",
-      checkInEnabled: fn.checkInEnabled ?? true,
-      status: fn.status,
-      startsAtMillis: fn.startsAt.toMillis(),
-      endsAtMillis: fn.endsAt.toMillis(),
-      venueName: fn.venueName ?? null,
-      venueNotes: fn.venueNotes ?? null,
-      dressCode: fn.dressCode ?? null,
-      instructions: fn.instructions ?? null,
-      expectedCount: fn.expectedCount ?? 0,
-      checkedInCount: fn.checkedInCount ?? 0,
-    },
-    counts: {
-      listedCount: roster.length,
-      expectedHeads,
-      checkedInHeads,
-      checkedInParties,
-      noShowCount,
-      walkInCount,
-    },
-    guests: roster,
-    journal: journalDocs.map(({journalId, entry}) => ({
-      journalId,
-      guestId: entry.guestId,
-      displayName: guestsById.get(entry.guestId)?.displayName ?? null,
-      action: entry.action,
-      occurredAtMillis: entry.occurredAtMillis,
-      partySize: entry.partySize,
-      note: entry.note,
-      actorLabel: actorLabels.get(entry.actorUid) ?? null,
-    })),
-  };
 }
 
 /**
@@ -428,12 +216,6 @@ export async function createProgramWalkInHandler(
     return {entityId: guestId, revision: 1, alreadyApplied: false};
   });
 }
-
-export const getProgramFunctionDoorView = onCall(
-  appCheckCallableOptionsWithLimits(
-    {timeoutSeconds: 60, maxInstances: 20}),
-  (request) => getProgramFunctionDoorViewHandler(request)
-);
 
 export const createProgramWalkIn = onCall(
   appCheckCallableOptionsWithLimits(
