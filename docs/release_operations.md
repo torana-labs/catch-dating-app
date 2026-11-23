@@ -2619,6 +2619,37 @@ consumes the map: it selects no tests and blocks nothing. Removing a test
 from the selector's always-run set needs a clean shadow week, the release
 engineer's sign-off and then the owner's.
 
+### Semantic check replay
+
+Whole-repo semantic checks may block in the merge queue only after a clean
+replay (owner decision, 22 Nov 2026). `tool/ci/semantic_check_replay.mjs`
+produces that evidence; it is run by hand and changes no gating.
+
+- `inventory` lists the whole-repo checks. A check qualifies when it is an
+  active, local, non-generator tool whose manifest command runs a repository
+  script, not a unit-test file, and needs neither Flutter nor a browser.
+  `EXCLUDED` and `INCLUDED` in the script name the exceptions, each with a
+  reason. For each check it shows where a merge-queue CI run executes it: always
+  in the tools lane when affected-tools selects it, plus any lane workflow
+  step that runs its script. A check gates only when that lane is in
+  `Required CI`'s needs and the step does not continue on error.
+- `run --out <results.jsonl>` replays every check against the newest
+  `--commits` (default 200) first-parent commits of `--ref`, in scratch
+  worktrees under `--workdir` (never the caller's checkout). Each commit runs
+  with its own locked dependencies, its own schema contracts and Admin build
+  modules, and its own manifest command for each check. A failed check runs
+  again up to `--reruns` times, so a commit whose attempts disagree is a flake.
+  The run also records whether the queue's affected-tools selection, as of that
+  commit, would have run the check. Results append as JSON lines, so a stopped
+  run resumes where it left off.
+- `report --results <results.jsonl>` summarises each check: pass rate,
+  flakes, p50/p95 runtime, and failure incidents (consecutive failing commits,
+  with the commit that introduced each one and the one that fixed it). It also
+  counts the merges the queue would have blocked. Its verdict is `clean`,
+  `failing` (a person decides whether each failure was real), `flaky`, `slow`
+  (p95 over two minutes) or `insufficient` (fewer than 50 commits). Moving a
+  check into a gating lane is a separate, owner-approved change.
+
 ### Website release train
 
 `Website Release` (`.github/workflows/website-release.yml`, driven by
