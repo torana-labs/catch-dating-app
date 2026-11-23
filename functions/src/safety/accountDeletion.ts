@@ -265,6 +265,7 @@ async function queueRelationshipCleanup(params: {
     queueOrganizerCommunicationPreferenceCleanup(db, uid, writer),
     queueHostAnalyticsSnapshotCleanup(db, uid, writer),
     queueParticipantPrivateStateCleanup(db, uid, writer),
+    queueEventSuccessCleanup(db, uid, writer),
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
@@ -414,6 +415,53 @@ async function queueParticipantPrivateStateCleanup(
     removedAt: admin.firestore.FieldValue.serverTimestamp(),
     reactionCounts: {like: 0, love: 0, laugh: 0, wow: 0, sad: 0, thanks: 0},
   }));
+}
+
+/**
+ * Erases the account's derived event and dating data (#2444). Its own signal
+ * facts, metric counters, event feedback, compatibility answers, conversation
+ * graphs and runtime identities are deleted. Other people's records lose the
+ * account: their signal facts naming it as peer are deleted too (the fact id
+ * carries the peer's uid), while their running counters keep the anonymous
+ * total, and their conversation graphs drop it from selectedUids. Scorecard
+ * triggers recompute the host aggregates from what remains.
+ */
+async function queueEventSuccessCleanup(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  writer: BatchQueue
+) {
+  const [ownFacts, peerFacts, feedback, compatibility, ownGraphs,
+    peerGraphs, runtime] = await Promise.all([
+    db.collection("participantSignalFacts").where("uid", "==", uid).get(),
+    db.collection("participantSignalFacts").where("peerUid", "==", uid).get(),
+    db.collection("eventSuccessFeedback").where("uid", "==", uid).get(),
+    db.collection("eventSuccessCompatibilityResponses")
+      .where("uid", "==", uid).get(),
+    db.collection("eventSuccessConversationGraphs")
+      .where("uid", "==", uid).get(),
+    db.collection("eventSuccessConversationGraphs")
+      .where("selectedUids", "array-contains", uid).get(),
+    db.collection("eventRuntimeParticipants").where("uid", "==", uid).get(),
+  ]);
+  const deleted = new Set<string>();
+  for (const records of [ownFacts, peerFacts, feedback, compatibility,
+    ownGraphs, runtime]) {
+    records.forEach((doc) => {
+      if (deleted.has(doc.ref.path)) return;
+      deleted.add(doc.ref.path);
+      writer.delete(doc.ref);
+    });
+  }
+  peerGraphs.forEach((doc) => {
+    if (deleted.has(doc.ref.path)) return;
+    const selectedUids = doc.data().selectedUids;
+    writer.update(doc.ref, {
+      selectedUids: Array.isArray(selectedUids) ?
+        selectedUids.filter((selected: unknown) => selected !== uid) : [],
+    });
+  });
+  writer.delete(db.collection("participantMetricCounters").doc(uid));
 }
 
 /**

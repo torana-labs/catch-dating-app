@@ -1,0 +1,1322 @@
+{
+  "description": "What account deletion (requestAccountDeletion) does with every registered Firestore collection that can hold a person's uid. tool/contracts/check_account_deletion_erasure.mjs fails when such a collection has no entry. handling: deleted (the person's documents are removed; references in other people's documents may be anonymised as 'how' says), anonymised (the documents stay without the person's uid or identity), kept (with a reason; needsDecision marks a gap the owner has not decided), notPersonal (with a reason). A deleted or anonymised entry must be written by a handler file: handledBy, or the handlers list.",
+  "handlers": [
+    "functions/src/safety/accountDeletion.ts",
+    "functions/src/safety/accountDeletionSeats.ts",
+    "functions/src/hostMemberships/accountDeletion.ts"
+  ],
+  "collections": {
+    "accessApplications": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Launch access application at accessApplications/{uid}, with the applicant's answers. Deletion leaves it. Proposed: delete the applicant's document and keep only the staff review outcome."
+    },
+    "accountSafetyActions": {
+      "handling": "kept",
+      "reason": "Safety case record kept 180 days after deletion: safetyRetention.ts sets retainUntil and purgeRetainedSafetyRecords purges it."
+    },
+    "accountSafetyNotices": {
+      "handling": "deleted",
+      "how": "retainSafetyRecordsForDeletedAccount deletes the account's notices; they only served the live account.",
+      "handledBy": [
+        "functions/src/safety/safetyRetention.ts",
+        "functions/src/safety/accountStanding.ts"
+      ]
+    },
+    "accountSafetyStates": {
+      "handling": "deleted",
+      "how": "retainSafetyRecordsForDeletedAccount deletes the account's standing; it only served the live account.",
+      "handledBy": [
+        "functions/src/safety/safetyRetention.ts",
+        "functions/src/safety/accountStanding.ts"
+      ]
+    },
+    "activity_notifications": {
+      "handling": "deleted",
+      "how": "queueNotificationCleanup deletes notifications/{uid}/items."
+    },
+    "adConversionContexts": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "adConversionDeliveries": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "adMatchingOptOuts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "adminActionExecutions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "adminAuditLogs": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "adminInboxItems": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Staff work item: assigneeUid and the dismissal and recommendation byUid name staff, but nominatorUid names the person who nominated an organiser. Proposed: keep for nominator credit or clear nominatorUid at deletion."
+    },
+    "adminInboxJourney": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "adminPeopleIndex": {
+      "handling": "anonymised",
+      "how": "onUserWrittenIndexPeople re-indexes the users tombstone: name 'Deleted user', no phone, no city, deleted true.",
+      "handledBy": [
+        "functions/src/admin/peopleSearch.ts"
+      ]
+    },
+    "adminRoleAssignments": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Mirror of a staff account's Admin custom claims at adminRoleAssignments/{uid}. Auth deletion removes the claims but leaves this mirror. Proposed: delete it with the account."
+    },
+    "assistantClients": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "assistantDelegations": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "assistantManagementReceipts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "bannedIdentities": {
+      "handling": "kept",
+      "reason": "A ban keeps holding after deletion: only a SHA-256 hash of the phone or device is stored, so a banned person cannot return."
+    },
+    "blockedSignupAttempts": {
+      "handling": "kept",
+      "reason": "Safety case record kept 180 days after deletion: safetyRetention.ts sets retainUntil and purgeRetainedSafetyRecords purges it."
+    },
+    "blocks": {
+      "handling": "deleted",
+      "how": "queueBlockCleanup deletes block edges in both directions."
+    },
+    "catchCommunicationPermissionReceipts": {
+      "handling": "deleted",
+      "how": "queueOrganizerCommunicationPreferenceCleanup deletes the account's receipts. Consent proof. Retention of consent receipts is counsel question OQ-C2; deletion does not change it here."
+    },
+    "catchCommunicationPreferences": {
+      "handling": "deleted",
+      "how": "queueOrganizerCommunicationPreferenceCleanup deletes catchCommunicationPreferences/{uid}."
+    },
+    "catchWhatsappAppAuthorities": {
+      "handling": "kept",
+      "reason": "Capability authority bound to the Catch WhatsApp operator's account; Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "catchWhatsappOperatorSetupAudits": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "catchWhatsappOperatorSetupOperations": {
+      "handling": "kept",
+      "reason": "Permanent, never-reset operator setup slot; Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "catchWhatsappReadinessApprovals": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "catchWhatsappReadinessAudits": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "catchWhatsappReadinessPublications": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "catchWhatsappReplyOperations": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Catch support reply claim naming the recipient account (recipientUid) and the staff actor. Proposed: keep for the support retention period and clear recipientUid at deletion."
+    },
+    "catchWhatsappReplyReadiness": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Reviewed STOP clearance for one Catch sender and recipient endpoint, naming the recipient account. Proposed: keep as opt-out evidence (see OQ-C2) or clear recipientUid."
+    },
+    "commercialTerms": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "commercialTermsRevisions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "contactPermissionReceipts": {
+      "handling": "deleted",
+      "how": "queueOrganizerCommunicationPreferenceCleanup deletes the account's receipts exactly as the old receipt collections are deleted. Consent proof. Retention of consent receipts is counsel question OQ-C2; deletion does not change it here."
+    },
+    "contactPermissions": {
+      "handling": "deleted",
+      "how": "queueOrganizerCommunicationPreferenceCleanup deletes users/{uid}/contactPermissions."
+    },
+    "crossPathsInvitations": {
+      "handling": "deleted",
+      "how": "queueCrossPathsInvitationCleanup deletes every invitation whose participantIds contain the account."
+    },
+    "crossPathsPairHolds": {
+      "handling": "deleted",
+      "how": "queueCrossPathsPairHoldCleanup releases each pair hold involving the account, then deletes it."
+    },
+    "crossPathsShowcaseEligibility": {
+      "handling": "deleted",
+      "how": "Deleted at the start of account deletion."
+    },
+    "crossPathsSuggestionExposures": {
+      "handling": "deleted",
+      "how": "queueCrossPathsSuggestionExposureCleanup deletes receipts where the account is viewer or candidate."
+    },
+    "customDomains": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "deletedUsers": {
+      "handling": "kept",
+      "reason": "The deletion fence itself: uid, status and timestamps only. Retries, late work and webhooks read it to treat the account as deleted."
+    },
+    "deliveryMessages": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Delivery pipeline record whose context names the recipient account. Proposed: delete the account's records or give the collection a TTL."
+    },
+    "demoOpsConfirmations": {
+      "handling": "kept",
+      "reason": "Internal Suvbot and seed tooling: it names staff testers and synthetic accounts only, never a real guest."
+    },
+    "demoOpsEvents": {
+      "handling": "kept",
+      "reason": "Internal Suvbot and seed tooling: it names staff testers and synthetic accounts only, never a real guest."
+    },
+    "demoOpsRequests": {
+      "handling": "kept",
+      "reason": "Internal Suvbot and seed tooling: it names staff testers and synthetic accounts only, never a real guest."
+    },
+    "demoSelfServiceAccess": {
+      "handling": "kept",
+      "reason": "Internal Suvbot and seed tooling: it names staff testers and synthetic accounts only, never a real guest."
+    },
+    "discoverySettings": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "eventApprovalNotificationPreferences": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "eventApprovalNotificationReceipts": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "eventAssignmentFeatureConsents": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "eventAssistanceCases": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventAssistanceConsentReceipts": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Consent proof. Retention of consent receipts is counsel question OQ-C2; deletion does not change it here. actorUid can be the guest who gave the consent."
+    },
+    "eventAssistanceDeliveryRepairs": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventAssistanceMessages": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventAssistancePermissions": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Event assistance messaging permission for the guest it concerns (subjectUid). Proposed: delete it with the account's other contact permissions."
+    },
+    "eventAssistanceRcsDispatches": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "RCS dispatch whose reply binding names the guest (subjectUid). Proposed: delete or clear subjectUid at deletion."
+    },
+    "eventAssistanceWhatsappReplyBindings": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "WhatsApp reply binding naming the guest (subjectUid). Proposed: delete the account's bindings."
+    },
+    "eventAssistanceWithdrawalGrants": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Withdrawal grant for the guest (subjectUid); opt-out evidence. Proposed: keep as consent proof under OQ-C2, otherwise delete."
+    },
+    "eventAttendanceDispositionReceipts": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventAttendanceDispositions": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventAttendees": {
+      "handling": "anonymised",
+      "how": "accountDeletionSeats.ts clears linkedUid and linkedAt on the organiser's roster rows in the seat transaction; the row stays as the organiser's record.",
+      "handledBy": [
+        "functions/src/safety/accountDeletionSeats.ts"
+      ]
+    },
+    "eventBookings": {
+      "handling": "kept",
+      "reason": "The booking stays for the organiser's roster, the seat ledger and payments: accountDeletionSeats.ts marks it status deleted and cancels a Catch booking. The uid remains as the ledger's identity."
+    },
+    "eventBroadcasts": {
+      "handling": "anonymised",
+      "how": "Broadcasts the account authored are deleted; where it was a recipient, its uid and delivery evidence are removed and the delivery counts recomputed."
+    },
+    "eventChatDirectoryEntries": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "eventChatMemberships": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account. removedByUid on other members' rows names the host who removed them."
+    },
+    "eventChatMessages": {
+      "handling": "anonymised",
+      "how": "queueParticipantPrivateStateCleanup clears uid, text and reply link on the account's messages and marks them removed, so other members' threads keep their shape."
+    },
+    "eventChatPresence": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "eventChatProfileShares": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "eventChatReactions": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "eventChatRooms": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventCloseOuts": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventCrossPathsConsents": {
+      "handling": "deleted",
+      "how": "queueCrossPathsConsentCleanup deletes the account's consent edges."
+    },
+    "eventHostPhotos": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventIntakeReviewDecisions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "eventInviteAttributions": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Attribution evidence naming the invited account (subjectUid); hosts see only aggregates. Proposed: clear subjectUid at deletion and keep the aggregate effect."
+    },
+    "eventInviteLinks": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Invite link owned by a host or a guest account (hostUid, ownerUid). Proposed: keep the link's counters and clear ownerUid when a guest owner is deleted."
+    },
+    "eventInviteTouches": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Short-lived evidence that the account resolved an invite URL. Proposed: delete the account's touches, or give the collection a TTL."
+    },
+    "eventLivePositions": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Short-lived position of a Host or operator during a moving event (attendees are never tracked). Deletion leaves it. Proposed: delete the account's positions."
+    },
+    "eventMessagingBudgetApplicationReceipts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "eventMessagingBudgetDecisions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "eventParticipations": {
+      "handling": "kept",
+      "reason": "Transitional mirror of eventBookings written only by onEventBookingMirroredToLegacy; it follows eventBookings exactly, deletion state included."
+    },
+    "eventRehearsalActions": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventRehearsalCases": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventRehearsalHostViews": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventRehearsalMessages": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventRehearsals": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventRosterHandoffs": {
+      "handling": "kept",
+      "reason": "Expiring capability that routes one forwarded roster to one Host identity; it lapses at its own expiry and holds no guest data."
+    },
+    "eventRuntimeClaimRequests": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Pending runtime identity claim by the guest at eventRuntimeClaimRequests/{eventId_uid}. Proposed: delete it with the account's eventRuntimeParticipants."
+    },
+    "eventRuntimeDataRequests": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Request for the guest's missing event-scoped runtime data. Proposed: delete it with the account's eventRuntimeParticipants."
+    },
+    "eventRuntimeParticipants": {
+      "handling": "deleted",
+      "how": "queueEventSuccessCleanup deletes the account's runtime identity (runtime profile and consents) for every event; the host roster reads the booking, which deletion marks deleted."
+    },
+    "eventSafetyReports": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Safety review item materialised from a feedback concern, naming the reporter. It is not in the 180-day safety retention set. Proposed: give it the same retention as reports."
+    },
+    "eventSeatVerifiedPhones": {
+      "handling": "kept",
+      "reason": "Seat proof: accountDeletionSeats.ts revokes it and erases phoneE164. The uid stays as the seat ledger's identity history (payments and fraud retention)."
+    },
+    "eventSetupPreferences": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventSetupReceipts": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "eventShareIntents": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Evidence that the account opened a share surface, feeding host link counts. Proposed: delete the account's intents."
+    },
+    "eventStaffGrants": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Expiring event staff access granted to the account. Proposed: revoke and delete the account's grants at deletion."
+    },
+    "eventStaffPresence": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Door-presence heartbeat of a manager or staff member at eventStaffPresence/{eventId}_{uid}. Proposed: delete the account's rows."
+    },
+    "eventSuccessArrivalMissions": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "First Hello mission naming the observing guest and the guest they look for. Proposed: delete missions where either uid is the account."
+    },
+    "eventSuccessAssignmentDrafts": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Host-only precomputed assignment of the guest until its round is published. Proposed: delete the account's drafts."
+    },
+    "eventSuccessAssignments": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Live guidance assignment of the guest, with peer uids in its rotation slots. Proposed: delete the account's assignments and remove its uid from peers' slots."
+    },
+    "eventSuccessCompatibilityResponses": {
+      "handling": "deleted",
+      "how": "queueEventSuccessCleanup deletes the account's questionnaire answers; hosts never read individual answers and finished rotations do not reread them."
+    },
+    "eventSuccessConversationGraphs": {
+      "handling": "deleted",
+      "how": "queueEventSuccessCleanup deletes the account's own graphs and removes its uid from other guests' selectedUids. The graph trigger recomputes the host's aggregate counts."
+    },
+    "eventSuccessDeferredCues": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Server-only cue held back for the guest by the event's phone rule. Proposed: delete the account's cues."
+    },
+    "eventSuccessFeedback": {
+      "handling": "deleted",
+      "how": "queueEventSuccessCleanup deletes the account's feedback. The scorecard trigger recomputes the event's aggregate without it; the safety report it raised (eventSafetyReports) is separate."
+    },
+    "eventSuccessGuestHistory": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "One guest's game history for one night, projected from eventSuccessStandings. Proposed: delete the account's history and anonymise its standings entries."
+    },
+    "eventSuccessLateArrivals": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Host resolution for the guest's late arrival (resolvedByUid names the host). Proposed: delete the account's records."
+    },
+    "eventSuccessPlans": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Host plan whose affinity constraints and spatial overrides pair named guests. Proposed: drop constraints and overrides naming the account."
+    },
+    "eventSuccessPreferences": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "The guest's opt-out preferences for live guidance. Proposed: delete the account's preferences."
+    },
+    "eventSuccessPresence": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Liveness heartbeat of the guest at eventSuccessPresence/{eventId_uid}. Proposed: delete the account's rows."
+    },
+    "eventSuccessWingmanRequests": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "The guest's request for introduction help, naming the target guest. Proposed: delete requests where either uid is the account."
+    },
+    "eventVenueSessionRedemptions": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Single-use receipt binding the guest to one venue session. Proposed: delete the account's receipts once the session is over."
+    },
+    "eventWaitlistOffers": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Waitlist offer to the guest at eventWaitlistOffers/{eventId_uid}. Deletion leaves it. Proposed: delete open offers and keep settled ones only as long as the booking they produced."
+    },
+    "events": {
+      "handling": "kept",
+      "reason": "womenLed.setByUid names the host or staff member who set the women-led flag; kept as the audit of an organiser setting."
+    },
+    "externalEventMappings": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "externalEventPublicationReceipts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "externalEvents": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "foundingHostOffers": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "foundingHostOwnerPlaces": {
+      "handling": "kept",
+      "reason": "Founding-host place granted to the owner account in one city; a commercial entitlement that counts toward the city's cap. Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "foundingHostPlaces": {
+      "handling": "kept",
+      "reason": "Founding-host place of one organiser, naming its owner account. Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "guestBookingFacts": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "guestEventStatuses": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "guestMessagingPermissions": {
+      "handling": "deleted",
+      "how": "queueOrganizerCommunicationPreferenceCleanup deletes the account's guest permission rows."
+    },
+    "guestPayments": {
+      "handling": "kept",
+      "reason": "queuePaymentCleanup marks the account's payments userDeleted. Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "hostAnalyticsSnapshots": {
+      "handling": "deleted",
+      "how": "queueHostAnalyticsSnapshotCleanup deletes the account's snapshots."
+    },
+    "hostApplicationDetailViews": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Manager view of a host application that can carry the applicant's community membership uid. Proposed: refresh it after the membership is deleted."
+    },
+    "hostAssignmentViews": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Server-maintained staff work-list rows of the account (projections of its grants and memberships). Proposed: delete the account's rows."
+    },
+    "hostContactMergeCandidateViews": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "hostEventCaseViews": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Host view of an event assistance case; view.assignment.uid can name the guest the case is about. Proposed: refresh it after the case is anonymised."
+    },
+    "hostEventDeliveryViews": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "hostEventRequestViews": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Host view listing guests' runtime data requests by uid. Proposed: refresh it after the account's eventRuntimeDataRequests are removed."
+    },
+    "hostMembershipBenefitUses": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "hostMembershipCharges": {
+      "handling": "kept",
+      "reason": "Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "hostMembershipCheckouts": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "hostMemberships": {
+      "handling": "deleted",
+      "how": "endAccountHostMemberships stops billing, then queueParticipantPrivateStateCleanup deletes the account's memberships."
+    },
+    "hostOrganizerJourneyViews": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Per-person read view of how an organiser page got here, keyed by the viewer's uid. Proposed: delete the account's views."
+    },
+    "hostOrganizerOwnerViews": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Projection of an organiser's website owner page naming ownerUid. Deletion clears organizers.ownerUserId, but only this view's own writer refreshes it. Proposed: refresh or clear it at deletion."
+    },
+    "hostPaymentAccounts": {
+      "handling": "kept",
+      "reason": "Payout-provider account state of a host. Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "hostProfiles": {
+      "handling": "deleted",
+      "how": "Deleted at the start of account deletion, with the avatar file."
+    },
+    "hostRosterIntakeSessions": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "hostWhatsappThreadViews": {
+      "handling": "anonymised",
+      "how": "queueOrganizerAudienceIdentityCleanup sets linkedUid to null on every inbox view linked to the account."
+    },
+    "listingProgramSettings": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "matches": {
+      "handling": "kept",
+      "reason": "The other participant keeps the closed conversation: queueMatchCleanup marks the match blocked by the deleted account and clears unread counts. participantIds stays so the peer's history and any safety review still resolve; the profile behind it is gone."
+    },
+    "moderationFlags": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Moderation ticket about the account (targetUserId). It is not in the 180-day safety retention set. Proposed: give it the same retention as reports."
+    },
+    "moneyIssueResolutions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "moneySettings": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "nominatorCredits": {
+      "handling": "kept",
+      "reason": "Credit earned by a nominator from a paid organiser bill. Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "onboarding_drafts": {
+      "handling": "deleted",
+      "how": "Deleted at the start of account deletion."
+    },
+    "operationWorkItems": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Supply Intake work item whose payload names the account that submitted a listing (submittedBy.uid). Proposed: redact submittedBy.uid at deletion."
+    },
+    "organizerApplicationFormVersions": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerApplicationForms": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerApplicationImportReceipts": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerApplicationResponses": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Organiser-owned application answers linked to the applicant's account (linkedUid). Proposed: clear linkedUid as organizerContacts does; the organiser keeps its record."
+    },
+    "organizerApplications": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Organiser application summary linked to the applicant's account (linkedUid). Proposed: clear linkedUid as organizerContacts does."
+    },
+    "organizerAttentionItems": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Host Today attention item assigned to a host team member (assignedHostUid). Proposed: clear the assignment when that host is deleted."
+    },
+    "organizerBillingCycles": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "organizerBillingPlans": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "organizerBills": {
+      "handling": "kept",
+      "reason": "Organiser bill history; byUid names the staff member who acted. Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "organizerCampaignRecipients": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Frozen campaign recipient naming the follower's account. Proposed: clear followerRecipient.uid at deletion and keep the delivery receipt."
+    },
+    "organizerCampaigns": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerClaimRequests": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Listing-claim request naming the requesting account. Proposed: keep as the record of who claimed an organiser (business record) or clear requesterUid."
+    },
+    "organizerClaimVerifications": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "The account's attempt to prove it runs an organiser listing. Proposed: delete unresolved attempts at deletion."
+    },
+    "organizerCommunicationPermissionReceipts": {
+      "handling": "deleted",
+      "how": "queueOrganizerCommunicationPreferenceCleanup deletes the account's receipts. Consent proof. Retention of consent receipts is counsel question OQ-C2; deletion does not change it here."
+    },
+    "organizerCommunicationPreferences": {
+      "handling": "deleted",
+      "how": "queueOrganizerCommunicationPreferenceCleanup deletes the account's preferences."
+    },
+    "organizerCommunityMembershipDecisions": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account. actorUid on other members' decisions names the host who decided."
+    },
+    "organizerCommunityMemberships": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "organizerContactEventEdges": {
+      "handling": "anonymised",
+      "how": "queueOrganizerAudienceIdentityCleanup sets linkedUid to null on edges of contacts linked to the account."
+    },
+    "organizerContactMergeReceipts": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerContactMergeReviewDecisions": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerContactNotes": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerContactOrigins": {
+      "handling": "anonymised",
+      "how": "queueOrganizerCommunicationPreferenceCleanup sets actorUid to null on origins the account created."
+    },
+    "organizerContactOutreach": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerContactTagVocabularies": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerContacts": {
+      "handling": "anonymised",
+      "how": "queueOrganizerAudienceIdentityCleanup unlinks the contact: linkedUid null, identity unlinked, channel statuses unknown. The organiser keeps its CRM record."
+    },
+    "organizerEventOfferAudits": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerEventOfferRecipients": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Single-uid claim of an organiser's offer invitation by the recipient account. Proposed: clear recipientUid at deletion and keep issuedByUid as the organiser's audit."
+    },
+    "organizerEventOffers": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerEventSetupDefaults": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerFollows": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "queueOrganizerMembershipCleanup marks the follow inactive, stops pushes and decrements the follower count, but the edge keeps the uid. Proposed: delete the edge; its count effect is already applied."
+    },
+    "organizerFormAdmissionReceipts": {
+      "handling": "kept",
+      "reason": "Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "organizerFormAssets": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Metadata of the respondent's private uploads (respondentUid). Proposed: delete the account's assets and their files."
+    },
+    "organizerFormAutomationRules": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerFormConversionReceipts": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerFormDrafts": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerFormExports": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerFormResponseDrafts": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Expiring autosave of the respondent's answers (respondentUid). Proposed: delete the account's drafts."
+    },
+    "organizerFormResponses": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Organiser-owned submitted response by the account (respondentUid). Proposed: clear respondentUid and keep the organiser's response, as organizerContacts does."
+    },
+    "organizerFormShareLinks": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerFormVersions": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerForms": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerGrowthFacts": {
+      "handling": "kept",
+      "reason": "First nominator of an organiser, kept for nominator credit (nominatorCredits). Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "organizerGuestBlocks": {
+      "handling": "deleted",
+      "how": "retainSafetyRecordsForDeletedAccount deletes the organiser block entries for the account.",
+      "handledBy": [
+        "functions/src/safety/safetyRetention.ts",
+        "functions/src/safety/accountStanding.ts"
+      ]
+    },
+    "organizerIntakeCurationDecisions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "organizerIntakeFieldCorrections": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "organizerIntakeReviewDecisions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "organizerManualSendTasks": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerMeetingHistory": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Who a guest met at one organiser's events (organizerMeetingHistory/{organizerId_uid}). Proposed: delete the account's history and remove its uid from other guests' histories."
+    },
+    "organizerMomentViews": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerMoments": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerPaymentConnections": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerPaymentOauthStates": {
+      "handling": "kept",
+      "reason": "Single-use, expiring OAuth state bound to the host who started the connection. Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerPolicyGapReviewDecisions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "organizerPostDeliveryOperations": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerProviderConnections": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerReferrals": {
+      "handling": "kept",
+      "reason": "Host-to-host referral record for referral credit. Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "organizerSalesAccounts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "organizerSavedAudiences": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerSenderConnections": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerSpendTotals": {
+      "handling": "kept",
+      "reason": "Running payment totals per paying account, derived from guestPayments; kept with the payment ledger it summarises. Financial record kept for payments and fraud (deletedUsers.retainedFor); the uid ties the ledger entry to the account that paid, earned or was charged."
+    },
+    "organizerTeamMemberships": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Owner or manager edge of the account on an organiser team. Deletion removes the account from organizers.hostUserIds but leaves this edge. Proposed: delete it."
+    },
+    "organizerTrackingSettings": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerWhatsappMessages": {
+      "handling": "kept",
+      "reason": "WhatsApp message body retained 12 months by its own policy; actorUid names the host who sent it. Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizerWhatsappReplyOperations": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizer_posts": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "organizers": {
+      "handling": "anonymised",
+      "how": "removeOrganizerHostIdentity removes the account from hostUserIds and hostProfiles and clears ownerUserId and hostUserId (with host name and avatar) where they name it."
+    },
+    "participantFormProfileProposals": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "participantFormProfileViews": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "participantIntakeProfileViews": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "participantIntakeProfiles": {
+      "handling": "deleted",
+      "how": "queueParticipantPrivateStateCleanup deletes participantIntakeProfiles/{uid}."
+    },
+    "participantMetricCounters": {
+      "handling": "deleted",
+      "how": "queueEventSuccessCleanup deletes participantMetricCounters/{uid}, the account's own running totals."
+    },
+    "participantOrganizerCards": {
+      "handling": "deleted",
+      "how": "Deleted by queueParticipantPrivateStateCleanup: every document whose uid is the account."
+    },
+    "participantSignalFacts": {
+      "handling": "deleted",
+      "how": "queueEventSuccessCleanup deletes the account's own facts (uid) and anonymises other people's facts that name it as peerUid by removing peerUid. Rows already exported to BigQuery are outside Firestore."
+    },
+    "platformCosts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "profileDecisions": {
+      "handling": "deleted",
+      "how": "queueSwipeCleanup deletes every outgoing decision where the account is the swiper or the target."
+    },
+    "programAccessViews": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Rules-readable summary of the account's authority over one programme. Proposed: delete the account's views with its grants."
+    },
+    "programAlertViews": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programAlerts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programArrivalViews": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programAssistantRuns": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programAssistantSettingViews": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programAssistantSettings": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programDoorJournal": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programFunctionGuests": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programGuestIds": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programHampers": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programLodgingProposals": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programLodgingReceipts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programPhotos": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programStaffGrants": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Expiring programme staff access granted to the account. Proposed: revoke and delete the account's grants at deletion."
+    },
+    "programStaffInvites": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programStaffViews": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Staff-list row of the account's programme grant. Proposed: delete it with the grant."
+    },
+    "programTravelLegs": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programVendorBills": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programWhatsappCannedReplies": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programWhatsappMessages": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programWhatsappReplyOperations": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "programWhatsappThreads": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "providerSyncRuns": {
+      "handling": "kept",
+      "reason": "Names the host team member who authored, changed or ran an organiser's shared business record; kept as its authorship history. A deleted host's personal Host projections are removed by removeOrganizerHostIdentity."
+    },
+    "publicEventAdmissionReceipts": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Admission receipt naming the recipient account. Deletion leaves it. Proposed: keep it when it backs a paid admission (payments retention), otherwise delete it."
+    },
+    "publicEvents": {
+      "handling": "kept",
+      "reason": "Public projection of events; womenLed.setByUid follows the event's own record."
+    },
+    "publicOrganizers": {
+      "handling": "anonymised",
+      "how": "syncPublicOrganizer re-projects the organiser after removeOrganizerHostIdentity, so the host fields follow organizers.",
+      "handledBy": [
+        "functions/src/organizers/publicOrganizerProjection.ts"
+      ]
+    },
+    "publicProfiles": {
+      "handling": "deleted",
+      "how": "Deleted at the start of account deletion."
+    },
+    "publicRouteReservations": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "pushInstallations": {
+      "handling": "deleted",
+      "how": "queuePushInstallationCleanup deletes users/{uid}/pushInstallations."
+    },
+    "rateLimits": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Callable rate-limit counters keyed by account and window; operational state with no profile data. Proposed: give the collection a TTL or delete the account's counters."
+    },
+    "reports": {
+      "handling": "kept",
+      "reason": "queueReportCleanup marks reports involving the account; Safety case record kept 180 days after deletion: safetyRetention.ts sets retainUntil and purgeRetainedSafetyRecords purges it."
+    },
+    "reviews": {
+      "handling": "kept",
+      "reason": "queueReviewCleanup replaces the reviewer name with 'Deleted user' and marks it reviewerDeleted; reviewerUserId stays so rating history and the one-review-per-guest guard hold."
+    },
+    "safetySettings": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesActionReceipts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesActivities": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesCommercialDecisions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesDemoBlueprints": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesDemoCapabilities": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesDemoContinuations": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesDemoInvitations": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesDemoSessions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesDemoSetups": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesEvidence": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesEvidenceProposals": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesFitQueueEntries": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesHostSettlementAttestations": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesInboundIntents": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesIntakeLinks": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesIntelligenceAssessments": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesIntelligenceReceipts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesOpportunities": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesOpportunityStageHistory": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesOutreachDrafts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesOutreachJobs": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesPartnerAssignments": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesPartnerMemberships": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Membership of an external sales partner account. Proposed: end and delete it when the partner's account is deleted."
+    },
+    "salesPrivacyBatchReceipts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesPrivacyPlans": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesPrivacyPolicies": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesPrivacyRestrictions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesProviderAttempts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesSuppressionDecisions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "salesTasks": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "savedEvents": {
+      "handling": "deleted",
+      "how": "queueSavedEventCleanup deletes the account's saved events."
+    },
+    "scheduleLocks": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Time-slot claim that can name the account holding it. Proposed: release and delete the account's locks."
+    },
+    "seedEvents": {
+      "handling": "kept",
+      "reason": "Internal Suvbot and seed tooling: it names staff testers and synthetic accounts only, never a real guest."
+    },
+    "supplyIntakeRequests": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Intake request whose tryItImport.uid names the account that started a try-it import (approval fields name staff). Proposed: clear tryItImport.uid at deletion."
+    },
+    "supplyNominators": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "A person staff allowed to nominate organisers, with their account uid. Proposed: delete the record when that account is deleted."
+    },
+    "supportConversationMessages": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "Message in a support conversation written by the person or by staff (authorUid). Proposed: keep for a support retention period, then delete."
+    },
+    "supportConversations": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "The person's support conversation with Catch. Proposed: keep for a support retention period, clear uid at deletion, then delete."
+    },
+    "supportSavedReplies": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "takedownRequests": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "transportOperationReceipts": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "transportTrips": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "tryItWorkspaces": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "The account's try-it workspace at tryItWorkspaces/{uid}. Proposed: delete it at deletion."
+    },
+    "users": {
+      "handling": "anonymised",
+      "how": "Replaced by the fixed six-key tombstone (deleted, deletedAt, name and displayName 'Deleted user', empty phoneNumber, profileComplete false); see DELETED_USER_PROFILE_KEYS."
+    },
+    "walkthroughAvailability": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "walkthroughBookings": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "whatsappDispatches": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "WhatsApp dispatch whose context names the recipient account. Proposed: delete the account's dispatches or give the collection a TTL."
+    },
+    "workspaceFieldAssertions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "workspaceFieldDecisions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "workspaceMembershipAssertions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    },
+    "workspaceMembershipDecisions": {
+      "handling": "kept",
+      "reason": "Names the Catch staff member who acted; kept as the operator audit trail of that action. It carries no guest profile data."
+    }
+  }
+}
