@@ -130,6 +130,9 @@ test("outcomeOf separates pass, fail, flaky and setup", () => {
   assert.equal(outcomeOf(record("a", "x", [1, 1, 1])), "fail");
   assert.equal(outcomeOf(record("a", "x", [1, 0])), "flaky");
   assert.equal(outcomeOf({sha: "a", id: "x", setupError: "npm ci", attempts: []}), "setup");
+  assert.equal(outcomeOf(record("a", "x", [137, 0])), "pass", "a host kill is not a flake");
+  assert.equal(outcomeOf(record("a", "x", [137, 137, 137])), "killed");
+  assert.equal(outcomeOf({sha: "a", id: "x", attempts: [{status: null, signal: "SIGKILL"}, {status: 1}]}), "fail");
 });
 
 test("summarize groups consecutive failures into incidents and counts the merges the queue would have blocked", () => {
@@ -147,7 +150,7 @@ test("summarize groups consecutive failures into incidents and counts the merges
   const time = {c3: 3600, c5: 3600 * 4.5};
   const [x, y] = summarize(records, {order, timeOf: (sha) => time[sha] ?? null});
   assert.equal(x.id, "x");
-  assert.deepEqual([x.commits, x.pass, x.fail, x.flaky, x.setup], [6, 2, 3, 1, 0]);
+  assert.deepEqual([x.commits, x.pass, x.fail, x.flaky, x.setup, x.killed, x.hostKills], [6, 2, 3, 1, 0, 0, 0]);
   assert.equal(x.passRate, 2 / 6);
   assert.deepEqual(x.flakes, [{sha: "c2", statuses: [1, 0]}]);
   assert.deepEqual(x.incidents.map((incident) => [incident.introducedAt, incident.commits, incident.fixedAt,

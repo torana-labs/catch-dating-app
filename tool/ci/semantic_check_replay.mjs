@@ -153,11 +153,22 @@ const percentile = (values, p) => {
   return sorted[Math.min(sorted.length - 1, Math.ceil((p / 100) * sorted.length) - 1)];
 };
 
-/** One record's outcome: pass, fail, flaky (attempts disagree) or setup. */
+/**
+ * An attempt the replay host killed (SIGKILL, exit 137: the container's
+ * memory limit) says nothing about the check; the timeout kill is exit 124.
+ */
+export const killedByHost = (attempt) => attempt.status === 137 || attempt.signal === "SIGKILL";
+
+/**
+ * One record's outcome: pass, fail, flaky (attempts disagree), setup, or
+ * killed (every attempt killed by the host). Host-killed attempts are left out.
+ */
 export function outcomeOf(record) {
   if (record.setupError) return "setup";
-  const passes = record.attempts.filter((attempt) => attempt.status === 0).length;
-  if (passes === record.attempts.length) return "pass";
+  const judged = record.attempts.filter((attempt) => !killedByHost(attempt));
+  if (judged.length === 0) return "killed";
+  const passes = judged.filter((attempt) => attempt.status === 0).length;
+  if (passes === judged.length) return "pass";
   return passes === 0 ? "fail" : "flaky";
 }
 
@@ -180,7 +191,7 @@ export function summarize(records, {order, timeOf = () => null}) {
     list.sort((a, b) => position.get(a.sha) - position.get(b.sha));
     const counted = list.filter((record) => record.present !== false);
     const outcomes = counted.map((record) => ({record, outcome: outcomeOf(record)}));
-    const tally = {pass: 0, fail: 0, flaky: 0, setup: 0};
+    const tally = {pass: 0, fail: 0, flaky: 0, setup: 0, killed: 0};
     for (const {outcome} of outcomes) tally[outcome] += 1;
     const firstAttempts = counted.filter((record) => !record.setupError)
       .map((record) => record.attempts[0].ms);
@@ -211,6 +222,7 @@ export function summarize(records, {order, timeOf = () => null}) {
       ...tally,
       passRate: judged === 0 ? null : tally.pass / judged,
       flakeRate: judged === 0 ? null : tally.flaky / judged,
+      hostKills: counted.reduce((sum, record) => sum + (record.attempts ?? []).filter(killedByHost).length, 0),
       selected: counted.filter((record) => record.selected === true).length,
       blockedMerges: incidents.reduce((sum, incident) => sum + incident.blockedMerges, 0),
       runtimeMs: {p50: percentile(firstAttempts, 50), p95: percentile(firstAttempts, 95),
@@ -245,6 +257,7 @@ const seconds = (ms) => (ms === null ? "n/a" : `${(ms / 1000).toFixed(1)}`);
 /** A Markdown table of every check plus each failure incident. */
 export function renderMarkdown(summaries, {queueMap = {}, thresholds = {}, window = null} = {}) {
   const lines = [];
+  const kills = summaries.reduce((sum, summary) => sum + summary.hostKills, 0);
   if (window) lines.push(`Replayed ${window.commits} first-parent commits of ${window.ref}, ` +
     `${window.oldest.slice(0, 8)} to ${window.newest.slice(0, 8)}.`, "");
   lines.push("| Check | Gates in queue today | Commits | Pass | Fail | Flaky | Setup | Pass rate | Selected | Blocked merges | p50 s | p95 s | Verdict |",
@@ -258,6 +271,7 @@ export function renderMarkdown(summaries, {queueMap = {}, thresholds = {}, windo
       `${summary.blockedMerges} | ${seconds(summary.runtimeMs.p50)} | ${seconds(summary.runtimeMs.p95)} | ` +
       `${verdictOf(summary, thresholds)} |`);
   }
+  if (kills) lines.push("", `${kills} attempt(s) were killed by the replay host (SIGKILL, exit 137) and are not counted.`);
   const failing = summaries.filter((summary) => summary.incidents.length || summary.flakes.length);
   if (failing.length) lines.push("", "### Failures and flakes", "");
   for (const summary of failing) {
