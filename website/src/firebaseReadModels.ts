@@ -77,6 +77,34 @@ export async function watchOrganizerBills(organizerId: string, onValue: (bills: 
   (snapshot) => onValue(snapshot.docs.map((doc) => (doc.data() as {bill?: unknown}).bill)), onError);
 }
 
+/**
+ * One organizer's billing status for its owner: the hostOrganizerBillingViews
+ * row (#2306), the trial's facts and the plan, no prices. Only the owner may
+ * read it; an organizer with no row yet reads as null.
+ */
+export async function watchOrganizerBillingView(organizerId: string,
+  onValue: (view: {trial: unknown; plan: unknown} | null) => void,
+  onError: (error: Error) => void): Promise<StopWatching> {
+  const firestore = await signedInFirestore();
+  const {doc, onSnapshot} = await import("firebase/firestore");
+  return onSnapshot(doc(firestore, "hostOrganizerBillingViews", organizerId), (snapshot) => {
+    const data = snapshot.data();
+    onValue(data && data.organizerId === organizerId ? {trial: data.trial, plan: data.plan} : null);
+  }, onError);
+}
+
+/**
+ * One organizer's website owner page facts: the hostOrganizerOwnerViews row
+ * (#2306). Its owner and managers may read it; a missing row reads as null.
+ */
+export async function watchOrganizerOwnerView(organizerId: string, onValue: (row: unknown) => void,
+  onError: (error: Error) => void): Promise<StopWatching> {
+  const firestore = await signedInFirestore();
+  const {doc, onSnapshot} = await import("firebase/firestore");
+  return onSnapshot(doc(firestore, "hostOrganizerOwnerViews", organizerId),
+    (snapshot) => onValue(snapshot.data() ?? null), onError);
+}
+
 /** The organizer fields that decide whether its tracking settings may be edited. */
 interface TrackingEligibilityFields {
   archived?: unknown; status?: unknown; ownerUserId?: unknown;

@@ -41,9 +41,12 @@ describe("useOwnerViewController", () => {
 
   it("stays hidden for a signed-in visitor the server refuses", async () => {
     const backends = {...ownerViewStoryBackends(ownerViewFixture("owner")),
-      getView: vi.fn(async () => {throw Object.assign(new Error("no"), {code: "functions/permission-denied"});})};
+      watchView: vi.fn(async (_organizerId: string, _uid: string, _onValue: unknown, onError: (error: Error) => void) => {
+        onError(Object.assign(new Error("no"), {code: "permission-denied"}));
+        return () => undefined;
+      })};
     const {result} = render({backends});
-    await waitFor(() => expect(backends.getView).toHaveBeenCalled());
+    await waitFor(() => expect(backends.watchView).toHaveBeenCalled());
     expect(result.current.hidden).toBe(true);
     expect(result.current.data).toBeNull();
   });
