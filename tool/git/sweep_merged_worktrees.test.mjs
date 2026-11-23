@@ -115,6 +115,33 @@ test("sweepWorktrees reports, then removes only finished worktrees", () => {
   }
 });
 
+test("sweepWorktrees removes a worktree whose head is an earlier commit of a merged PR", () => {
+  const f = fixture();
+  try {
+    const asked = [];
+    const report = sweepWorktrees({
+      cwd: f.repo, apply: true, fetch: false,
+      now: () => new Date(Date.now() + 48 * 3600 * 1000),
+      github: () => ({
+        available: true,
+        mergedByHead: new Map(),
+        openBranches: new Set(["claude/open"]),
+        mergedContaining: (sha) => { asked.push(sha); return sha === f.squashedHead ? 9 : null; },
+      }),
+      processCwds: () => [],
+    });
+    const byName = Object.fromEntries(report.results.map((r) => [path.basename(r.path), r]));
+    assert.equal(byName.squashed.reason, "merged-pr-9");
+    assert.equal(byName.squashed.outcome, "removed");
+    assert.equal(byName.unmerged.reason, "unmerged-commits");
+    assert.ok(fs.existsSync(f.unmerged));
+    // Only clean worktrees the cheap checks left undecided cost a GitHub lookup.
+    assert.deepEqual(new Set(asked), new Set([sh(f.unmerged, "rev-parse", "HEAD"), f.squashedHead]));
+  } finally {
+    fs.rmSync(f.root, {recursive: true, force: true});
+  }
+});
+
 test("sweepWorktrees keeps a worktree a process is running in", () => {
   const f = fixture();
   try {
