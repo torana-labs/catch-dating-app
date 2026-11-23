@@ -56,18 +56,26 @@ with the `golden` tag in its `dart_test.yaml`. The macOS job runs each app's
 goldens from its package directory, reports them with `test/goldens`, and
 keeps their failure folders. `test/goldens` holds only the goldens that import
 the app or the platform. Locally, `(cd packages/catch_ui && flutter test --concurrency=1)`
-runs the package's tests and goldens together. The macOS runner lives in `apps/consumer`, so run native passes
-from there with a device id and scope—for example,
-`(cd apps/consumer && bash ../../tool/test_app_shell_integration.sh macos smoke)`
-or `... macos all`. Each native suite has a thin entrypoint in
-`apps/consumer/integration_test/` that delegates to the shared suite, because
-Flutter runs device tests only from the current project's `integration_test/`
-directory; add one when adding a native suite. Live Firebase/device evidence remains a release-runbook lane rather than
-being implied by repository integration tests.
+runs the package's tests and goldens together.
 
-Catch Host journeys (`integration_test/host_app_shell_journeys_test.dart`) boot
-the Host entrypoint's router against `HostShellBackend`: real Host repositories
-over an in-memory Firestore and a recording callable surface whose responses
-follow the callable contracts. A screen that calls a callable without a fixture
-fails the journey by name, so a new Host read needs a fixture in
-`integration_test/support/host_app_shell_test_harness.dart`.
+Each app package has its own macOS runner (`apps/consumer/macos`,
+`apps/host/macos`), and Flutter runs device tests only from the current
+project's `integration_test/` directory. `tool/test_app_shell_integration.sh`
+names each suite with the project it runs from and changes into that project,
+so run native passes from the repository root with a device id and scope, for
+example `bash tool/test_app_shell_integration.sh macos smoke` or
+`... macos all`. The smoke scope boots each runner once: the Consumer smoke
+suite and the Host journeys. The Consumer suites live in the root
+`integration_test/`, with a thin entrypoint in `apps/consumer/integration_test/`
+for each; add one when adding a Consumer native suite. Live Firebase/device
+evidence remains a release-runbook lane rather than being implied by
+repository integration tests.
+
+Catch Host journeys (`apps/host/integration_test/host_app_shell_journeys_test.dart`)
+boot the Host entrypoint's router against `HostShellBackend`: real Host
+repositories over an in-memory Firestore and a recording callable surface
+whose responses follow the callable contracts. A screen that calls a callable
+without a fixture fails the journey by name, so a new Host read needs a fixture
+in `apps/host/integration_test/support/host_app_shell_test_harness.dart`. The
+headless run reaches them through `apps/host/test/integration/`, which the
+test shards skip like the root `test/integration/`.

@@ -1,0 +1,30 @@
+{
+  "id": "ci:semantic-check-replay",
+  "category": "ci",
+  "path": "tool/ci/semantic_check_replay.mjs",
+  "command": "node tool/ci/semantic_check_replay.mjs inventory",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "role": "finder",
+  "description": "Lists the whole-repo semantic tool checks and where each runs and gates in a merge-queue CI run, and replays them against main's recent first-parent commits in scratch worktrees, reporting pass rate, flakes (same commit, different result), runtime, failure incidents and the merges the queue would have blocked. Report-only: it changes no gating.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "root-npm"
+    ]
+  },
+  "impactPaths": [
+    "tool/ci/semantic_check_replay.test.mjs",
+    "tool/ci/required_ci_floor.mjs",
+    "tool/lib/tools_manifest.mjs",
+    "tool/manifest/**",
+    ".github/workflows/*.yml"
+  ],
+  "checks": [
+    "node --check tool/ci/semantic_check_replay.mjs",
+    "node --test tool/ci/semantic_check_replay.test.mjs",
+    "node tool/ci/semantic_check_replay.mjs inventory"
+  ],
+  "runbook": "docs/release_operations.md#semantic-check-replay"
+}

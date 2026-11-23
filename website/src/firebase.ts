@@ -155,7 +155,6 @@ export {
   createPublicOrganizerReview,
   recordOrganizerAnalyticsEvent,
   invokeHostBillingCallable,
-  getOrganizerOwnerView,
   manageOrganizerOwnerPage,
   updateOrganizerDescription,
   setReviewResponse,

@@ -20,12 +20,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test/events/events_test_helpers.dart' as event_helpers;
-import '../test/organizers/organizers_test_helpers.dart' as organizer_helpers;
-import '../test/support/profile_readiness_fixtures.dart';
-import 'support/app_shell_test_binding.dart';
-import 'support/app_shell_test_harness.dart';
-import 'support/app_shell_workflow_steps.dart';
+import '../../../integration_test/support/app_shell_test_binding.dart';
+import '../../../integration_test/support/app_shell_test_harness.dart';
+import '../../../integration_test/support/app_shell_workflow_steps.dart';
+import '../../../test/events/events_test_helpers.dart' as event_helpers;
+import '../../../test/organizers/organizers_test_helpers.dart'
+    as organizer_helpers;
+import '../../../test/support/profile_readiness_fixtures.dart';
 import 'support/host_app_shell_test_harness.dart';
 
 const _hostUid = 'host-journey-user';
@@ -539,6 +540,8 @@ Future<void> _enterKeyed(WidgetTester tester, String key, String text) async {
   );
   await tester.ensureVisible(field);
   await tester.enterText(field, text);
-  tester.testTextInput.hide();
+  // The native binding drives the platform's own text input, so only the
+  // headless test text input has a keyboard to hide.
+  if (tester.testTextInput.isRegistered) tester.testTextInput.hide();
   await tester.pump();
 }

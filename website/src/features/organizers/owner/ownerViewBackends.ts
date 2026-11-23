@@ -1,6 +1,5 @@
 import {ownerViewCopy} from "../../../content/ownerView";
 import {
-  getOrganizerOwnerView,
   manageOrganizerOwnerPage,
   setOrganizerTrackingSettings,
   setReviewResponse,
@@ -15,17 +14,22 @@ import {
   type OwnerTrackingSettings,
   type OwnerViewData,
 } from "./ownerViewTypes";
+import {isOwnerViewRow, ownerViewFromRow} from "./ownerViewModel";
 
 /**
  * Everything the owner view reads and writes. Production calls the existing
  * organiser commands (updateOrganizer for about, setReviewResponse for
- * replies, setOrganizerTrackingSettings for Pixel and GA4) and the two
- * owner-view callables, all through the website's Firebase service. Tracking settings are read from the Firestore read
- * models the Host app listens to. Stories pass fakes.
+ * replies, setOrganizerTrackingSettings for Pixel and GA4) and
+ * manageOrganizerOwnerPage, all through the website's Firebase service. The
+ * page itself and the tracking settings are read from Firestore read models
+ * (hostOrganizerOwnerViews, #2306, and the Host app's tracking settings).
+ * Stories pass fakes.
  */
 export interface OwnerViewBackends {
   watchUser: (callback: (uid: string | null) => void) => () => void;
-  getView: (organizerId: string) => Promise<OwnerViewData>;
+  /** Listens to the page as uid sees it until the returned stop runs. */
+  watchView: (organizerId: string, uid: string, onValue: (view: OwnerViewData) => void,
+    onError: (error: Error) => void) => Promise<() => void>;
   manage: (command: OwnerPageCommand) => Promise<OwnerPageResult>;
   saveAbout: (organizerId: string, description: string) => Promise<void>;
   replyToReview: (reviewId: string, message: string) => Promise<void>;
@@ -38,10 +42,13 @@ export interface OwnerViewBackends {
 
 export const ownerViewBackends: OwnerViewBackends = {
   watchUser: (callback) => watchWebsiteAccountAuthState((user) => callback(user?.uid ?? null)),
-  getView: async (organizerId) => {
-    const data: unknown = await getOrganizerOwnerView({organizerId});
-    if (!isOwnerViewData(data)) throw new TypeError(ownerViewCopy.bar.failed);
-    return data;
+  watchView: async (organizerId, uid, onValue, onError) => {
+    const {watchOrganizerOwnerView} = await import("../../../firebaseReadModels");
+    return watchOrganizerOwnerView(organizerId, (row) => {
+      const view = isOwnerViewRow(row, organizerId) ? ownerViewFromRow(row, uid, Date.now()) : null;
+      if (view && isOwnerViewData(view)) onValue(view);
+      else onError(new TypeError(ownerViewCopy.bar.failed));
+    }, onError);
   },
   manage: (command) => manageOrganizerOwnerPage(command),
   saveAbout: (organizerId, description) => updateOrganizerDescription(organizerId, description),

@@ -63,6 +63,16 @@ export {onHostSendCampaignChanged, onHostSendAnnouncementChanged,
   "./sendSummaryTriggers";
 export {onHostOrganizerBillViewBillChanged} from
   "./organizerBillViewTriggers";
+export {onHostOrganizerAccountViewOrganizerChanged,
+  onHostOrganizerBillingViewTermsChanged,
+  onHostOrganizerBillingViewGrowthChanged,
+  onHostOrganizerBillingViewPlanChanged,
+  onHostOrganizerEntitlementViewChanged,
+  onHostOrganizerOwnerViewInsightsChanged,
+  onHostOrganizerOwnerViewQuotaChanged,
+  onHostOrganizerOwnerViewSenderChanged,
+  onHostOrganizerOwnerViewTemplateChanged} from
+  "./organizerAccountViewTriggers";
 export {onHostOrganizerJourneyViewOrganizerChanged,
   onHostOrganizerJourneyViewClaimChanged,
   onHostOrganizerJourneyViewIntakeChanged,

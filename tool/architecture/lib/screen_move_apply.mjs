@@ -1,5 +1,5 @@
 // Builds a group's complete plan (every rename and every rewritten text, in
-// memory) and applies it: the moves, one commit and the log entry. Also the
+// memory) and applies it: the moves, one commit and the group's move record. Also the
 // replay that --imports-only runs on other branches.
 import fs from "node:fs";
 import path from "node:path";
@@ -30,7 +30,7 @@ import {
   isMentionText,
   rewriteMentions,
   rewriteScreenDirectives,
-  screenMoveLogPath,
+  screenMovesDir,
   staleFolderMentions,
 } from "./screen_move_rewrite.mjs";
 import {
@@ -48,7 +48,13 @@ import {
   newRootMatcher,
   readCarried,
 } from "./screen_move_outputs.mjs";
-import {formatLog, logEntry, parseLog, replayMoves} from "./screen_move_verify.mjs";
+import {
+  formatRecord,
+  moveRecord,
+  readRecords,
+  recordPath,
+  replayMoves,
+} from "./screen_move_verify.mjs";
 
 export const contextMapPath = "tool/architecture/context_map.json";
 const sortedPackageDirs = [".", "apps/host", "apps/consumer", "widgetbook", "packages/catch_test_support"];
@@ -72,10 +78,10 @@ function dependencyReader(read) {
 
 // Everything --plan reports and --apply performs, with no file touched.
 export function buildGroupPlan({root, group, graph, files, packages, map, read = fileReader(root)}) {
-  const log = parseLog(read(screenMoveLogPath));
+  const log = {entries: readRecords({files, read})};
   const errors = [];
-  if (log.entries.some((entry) => entry.group === group)) {
-    errors.push({kind: "group", message: `${screenMoveLogPath} already logs group ${group}; choose a new group name.`});
+  if (log.entries.some((entry) => entry.group === group) || files.includes(recordPath(group))) {
+    errors.push({kind: "group", message: `${recordPath(group)} already records group ${group}; choose a new group name.`});
   }
   const entries = groupEntries(map, group);
   const source = planSourceMoves({group, map, files, graph, read});
@@ -276,14 +282,15 @@ function applyOnCleanTree({root, plan, cleanupComments, external}) {
   const pruned = pruneLegacyEntries(fs.readFileSync(mapFile, "utf8"), trackedFiles(root));
   fs.writeFileSync(mapFile, pruned.source);
   written.add(contextMapPath);
-  const log = {...plan.log, entries: [...plan.log.entries, logEntry({
+  const record = recordPath(plan.group);
+  writeFile(root, record, formatRecord(moveRecord({
     group: plan.group,
+    sequence: Date.now(),
     entries: plan.entries,
     moves: plan.moves,
     folders: plan.folders,
-  })]};
-  writeFile(root, screenMoveLogPath, formatLog(log));
-  written.add(screenMoveLogPath);
+  })));
+  written.add(record);
   if (external) sortDirectives(root, sortedPackageDirs);
   const carried = updateCarriedScreens({root, moves: plan.moves});
   let removedComments = [];
@@ -345,21 +352,24 @@ function applyOnCleanTree({root, plan, cleanupComments, external}) {
   };
 }
 
-// The log entries a replay applies: those a move commit appended, or those a
-// ref has that the branch's merge-base with it lacks.
+// The records a replay applies, in replay order: the one a move commit
+// added, or those a ref has that the branch's merge-base with it lacks.
 export function replayEntries({root, from = null, since = null}) {
-  const logAt = (ref) => {
+  const recordsAt = (ref) => {
+    let files;
     try {
-      return parseLog(git(["show", `${ref}:${screenMoveLogPath}`], root, {stdio: ["ignore", "pipe", "ignore"]}));
+      files = git(["ls-tree", "-r", "--name-only", ref, "--", screenMovesDir], root,
+        {stdio: ["ignore", "pipe", "ignore"]}).split("\n").filter(Boolean);
     } catch {
-      return {version: 1, entries: []};
+      return [];
     }
+    return readRecords({files, read: (file) => git(["show", `${ref}:${file}`], root)});
   };
   const [newer, older] = from != null
-    ? [logAt(from), logAt(`${from}^`)]
-    : [logAt(since), logAt(git(["merge-base", "HEAD", since], root).trim())];
-  const known = new Set(older.entries.map((entry) => entry.group));
-  return newer.entries.filter((entry) => !known.has(entry.group));
+    ? [recordsAt(from), recordsAt(`${from}^`)]
+    : [recordsAt(since), recordsAt(git(["merge-base", "HEAD", since], root).trim())];
+  const known = new Set(older.map((entry) => entry.group));
+  return newer.filter((entry) => !known.has(entry.group));
 }
 
 // Rewrites this branch for logged moves: files it added under a moved folder

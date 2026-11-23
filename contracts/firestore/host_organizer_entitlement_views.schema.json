@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_organizer_entitlement_views.schema.json",
+  "title": "HostOrganizerEntitlementViewDocument",
+  "description": "Server-maintained plan grants of one organizer for its managers, at hostOrganizerEntitlementViews/{organizerId}: the grants, meters and catalog version getOrganizerEntitlement returned, with each grant's validity window and revocation instant instead of the clock-dependent active flag. Written by a trigger on organizerEntitlements; a missing view means no grants. Admin internals (who granted it, the receipt reference, the note) and the static SKU catalog never reach it. Readable by the organizer's current owner and managers. Never identity, permission or mutation authority: consumption and grants stay server commands.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostOrganizerEntitlementViews",
+  "x-firestore-path": "hostOrganizerEntitlementViews/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host read model projector (hostReadModels organizerAccountViewTriggers)",
+  "required": [
+    "organizerId",
+    "catalogVersion",
+    "revision",
+    "grants",
+    "meters",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "catalogVersion": {
+      "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/catalogVersion"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "grants": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "grantId",
+          "sku",
+          "skuLabel",
+          "unit",
+          "quantityTotal",
+          "quantityConsumed",
+          "quantityRemaining",
+          "validFromMillis",
+          "validUntilMillis",
+          "source",
+          "revokedAtMillis"
+        ],
+        "properties": {
+          "grantId": {
+            "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/grants/items/properties/grantId"
+          },
+          "sku": {
+            "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/grants/items/properties/sku"
+          },
+          "skuLabel": {
+            "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/grants/items/properties/skuLabel"
+          },
+          "unit": {
+            "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/grants/items/properties/unit"
+          },
+          "quantityTotal": {
+            "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/grants/items/properties/quantityTotal"
+          },
+          "quantityConsumed": {
+            "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/grants/items/properties/quantityConsumed"
+          },
+          "quantityRemaining": {
+            "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/grants/items/properties/quantityRemaining"
+          },
+          "validFromMillis": {
+            "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/grants/items/properties/validFromMillis"
+          },
+          "validUntilMillis": {
+            "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/grants/items/properties/validUntilMillis"
+          },
+          "source": {
+            "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/grants/items/properties/source"
+          },
+          "revokedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "When the grant was revoked; null while it stands. A grant is active while unrevoked and inside its validity window."
+          }
+        }
+      }
+    },
+    "meters": {
+      "$ref": "../callable_responses/organizer_entitlement_response.schema.json#/properties/meters"
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

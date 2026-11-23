@@ -1692,6 +1692,26 @@ service cloud.firestore {
       allow get, list: if isHostSummaryOwner(resource.data.organizerId);
       allow write: if false;
     }
+    // An organizer's billing status (#2306), as getOrganizerBillingStatus
+    // returned it: the trial's facts and the plan, never prices. Only its
+    // owner reads it, by the organizer's id.
+    match /hostOrganizerBillingViews/{organizerId} {
+      allow get: if isHostSummaryOwner(organizerId);
+      allow list, write: if false;
+    }
+    // An organizer's plan grants (#2306), as getOrganizerEntitlement
+    // returned them without admin internals; its owner and managers read it
+    // by the organizer's id, and a missing view reads as no grants.
+    match /hostOrganizerEntitlementViews/{organizerId} {
+      allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
+    }
+    // The facts of an organizer's website owner page (#2306): its owner and
+    // managers read them by the organizer's id.
+    match /hostOrganizerOwnerViews/{organizerId} {
+      allow get: if isHostSummaryManager(organizerId);
+      allow list, write: if false;
+    }
     // How a page got here, one view per reader holding only that reader's
     // own claim. A current manager gets their view; someone whose claim is
     // still being checked gets or lists their waiting views.

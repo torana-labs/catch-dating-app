@@ -269,8 +269,10 @@ reviews computed before a commit and checked again by it.
 `listEventSmsPreferences`, `listEventWhatsappPreferences` and
 `listEventRcsPreferences` are the discovery step of the consent review, over
 private permission history. `getOrganizerMessagingSetup` reads server-only
-sender connections. `getOrganizerBillingStatus` is computed from server-only
-commercial terms.
+sender connections. `getOrganizerBillingStatus` moved to
+`hostOrganizerBillingViews` (#2306): the trigger copies only the trial length
+from the server-only commercial terms, with the trial's anchor, start and end
+and the plan status, and the readers derive the state and days left.
 
 **Read path decision (Nov 2026): server-trust, computed or issued data.**
 `getUserAnalytics` queries BigQuery. `getOrganizerFormResponseDetail` signs
