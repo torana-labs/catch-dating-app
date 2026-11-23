@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_placeholder_cover.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_placeholder_cover.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

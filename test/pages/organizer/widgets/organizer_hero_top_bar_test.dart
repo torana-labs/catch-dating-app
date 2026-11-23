@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_cover.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_placeholder_cover.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_cover.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_placeholder_cover.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_hero_top_bar.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -9,7 +9,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'organizers_test_helpers.dart';
+import '../../../organizers/organizers_test_helpers.dart';
 
 void main() {
   group('OrganizerHeroTopBar', () {

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/organizers/actions/organizer_follow_controller.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_action_keys.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_action_keys.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/routing/route_contract.dart';

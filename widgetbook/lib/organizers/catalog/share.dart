@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_share_card.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_host_identity_row.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_host_identity_row.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_share_card.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

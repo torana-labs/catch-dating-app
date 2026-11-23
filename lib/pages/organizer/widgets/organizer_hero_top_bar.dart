@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_share_card.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_cover.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_transition_tags.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_cover.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_transition_tags.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_share_card.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_share.dart';

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/explore/presentation/explore_organizer_display_state.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_cover.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_cover.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

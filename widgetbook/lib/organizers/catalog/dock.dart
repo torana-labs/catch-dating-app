@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_dock.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_detail_dock.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';

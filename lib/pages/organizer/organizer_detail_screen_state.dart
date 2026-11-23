@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dar
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/catch_async_state.dart';
 

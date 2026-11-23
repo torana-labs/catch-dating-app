@@ -16259,7 +16259,7 @@
       "summary": "Club-detail membership dock with role-specific guest, visitor, member, and owner action states.",
       "dart": {
         "symbol": "OrganizerDetailDock",
-        "file": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart",
+        "file": "lib/pages/organizer/widgets/organizer_detail_dock.dart",
         "constructors": [
           "OrganizerDetailDock"
         ]
@@ -20255,7 +20255,7 @@
           {
             "id": "catch.organizer_poster.artwork",
             "symbol": "OrganizerPlaceholderCover",
-            "file": "lib/organizers/shared/organizer_placeholder_cover.dart",
+            "file": "lib/pages/organizer/organizer_placeholder_cover.dart",
             "summary": "Deterministic no-photo organizer artwork used by poster and compact cover states.",
             "states": [
               "standard",
@@ -20589,7 +20589,7 @@
       "summary": "Canonical club-cover resolver for uploaded photos, the global image grade, deterministic club artwork, and compact fallbacks.",
       "dart": {
         "symbol": "OrganizerCover",
-        "file": "lib/organizers/shared/organizer_cover.dart",
+        "file": "lib/pages/organizer/organizer_cover.dart",
         "constructors": [
           "OrganizerCover"
         ]

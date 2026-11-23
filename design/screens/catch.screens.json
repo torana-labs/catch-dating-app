@@ -51,7 +51,7 @@
           "routes": [
             "organizerDetailScreen"
           ],
-          "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+          "file": "lib/pages/organizer/organizer_detail_screen.dart",
           "symbol": "OrganizerDetailScreen",
           "family": "media-hero",
           "expression": "CatchScaffold.workspace",
@@ -383,7 +383,7 @@
           "routes": [
             "hostOrganizerDetailScreen"
           ],
-          "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+          "file": "lib/pages/organizer/organizer_detail_screen.dart",
           "symbol": "OrganizerDetailScreen",
           "family": "media-hero",
           "expression": "CatchScaffold.workspace",
@@ -3229,26 +3229,26 @@
         }
       ],
       "source": {
-        "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+        "file": "lib/pages/organizer/organizer_detail_screen.dart",
         "symbol": "OrganizerDetailScreen"
       },
       "stateController": {
         "primary": "organizerDetailViewModelProvider",
         "files": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_detail_screen_state.dart",
+            "file": "lib/pages/organizer/organizer_detail_screen_state.dart",
             "symbol": "HostOrganizerDetailScreenState"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_detail_view_model.dart",
+            "file": "lib/pages/organizer/organizer_detail_view_model.dart",
             "symbol": "organizerDetailViewModel"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+            "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
             "symbol": "OrganizerDetailBody"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart",
+            "file": "lib/pages/organizer/widgets/organizer_detail_dock.dart",
             "symbol": "OrganizerMembershipDock"
           }
         ],
@@ -3571,7 +3571,7 @@
               "OrganizerHero"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart",
+              "file": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart",
               "symbol": "OrganizerHeroTopBar"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -3602,7 +3602,7 @@
               "MetricStrip"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "CatchMetricSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -3630,7 +3630,7 @@
               "HostCard"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_host_section.dart",
+              "file": "lib/pages/organizer/widgets/organizer_host_section.dart",
               "symbol": "OrganizerHostSection"
             },
             "currentOwner": "OrganizerHostSection",
@@ -3662,7 +3662,7 @@
               "TagList"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "OrganizerDetailBody"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -3690,7 +3690,7 @@
               "PhotoStrip"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart",
+              "file": "lib/pages/organizer/widgets/organizer_photo_rail.dart",
               "symbol": "OrganizerPhotoRail"
             },
             "currentOwner": "OrganizerPhotoRail",
@@ -3718,7 +3718,7 @@
               "ContactList"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_contact_section.dart",
+              "file": "lib/pages/organizer/widgets/organizer_contact_section.dart",
               "symbol": "OrganizerContactSection"
             },
             "currentOwner": "OrganizerContactSection",
@@ -3747,7 +3747,7 @@
               "EventTicket"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart",
+              "file": "lib/pages/organizer/widgets/organizer_schedule_section.dart",
               "symbol": "OrganizerScheduleSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -3803,7 +3803,7 @@
               "OrganizerDock"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_dock.dart",
               "symbol": "OrganizerMembershipDock"
             },
             "currentOwner": "OrganizerDetailScreen",
@@ -11912,38 +11912,38 @@
         }
       ],
       "source": {
-        "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+        "file": "lib/pages/organizer/organizer_detail_screen.dart",
         "symbol": "OrganizerDetailScreen"
       },
       "stateController": {
         "primary": "HostOrganizerDetailScreenState.fromState + organizerDetailViewModelProvider",
         "files": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_detail_screen_state.dart",
+            "file": "lib/pages/organizer/organizer_detail_screen_state.dart",
             "symbol": "HostOrganizerDetailScreenState"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+            "file": "lib/pages/organizer/organizer_detail_screen.dart",
             "symbol": "OrganizerDetailScreen"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_detail_view_model.dart",
+            "file": "lib/pages/organizer/organizer_detail_view_model.dart",
             "symbol": "organizerDetailViewModel"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+            "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
             "symbol": "OrganizerDetailBody"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart",
+            "file": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart",
             "symbol": "OrganizerHeroTopBar"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart",
+            "file": "lib/pages/organizer/widgets/organizer_schedule_section.dart",
             "symbol": "OrganizerScheduleSection"
           },
           {
-            "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+            "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
             "symbol": "CatchMetricSection"
           },
           {
@@ -12356,7 +12356,7 @@
               "HostOrganizerDetailScreenState"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/organizer_detail_screen_state.dart",
+              "file": "lib/pages/organizer/organizer_detail_screen_state.dart",
               "symbol": "HostOrganizerDetailScreenState"
             },
             "currentOwner": "HostOrganizerDetailScreenState",
@@ -12387,7 +12387,7 @@
               "OrganizerDetailBody"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "OrganizerDetailBody"
             },
             "currentOwner": "OrganizerDetailScreen",
@@ -12416,7 +12416,7 @@
               "OrganizerHeroTopBar"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart",
+              "file": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart",
               "symbol": "OrganizerHeroTopBar"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -12446,7 +12446,7 @@
               "CatchMetricSection"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "CatchMetricSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -12475,7 +12475,7 @@
               "OrganizerHostRow"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "OrganizerHostSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -12508,7 +12508,7 @@
               "OrganizerContactSection"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart",
+              "file": "lib/pages/organizer/widgets/organizer_detail_body.dart",
               "symbol": "OrganizerContactSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -12540,7 +12540,7 @@
               "HostScheduleRows"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart",
+              "file": "lib/pages/organizer/widgets/organizer_schedule_section.dart",
               "symbol": "OrganizerScheduleSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -12597,7 +12597,7 @@
               "HostOrganizerDetailActions"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+              "file": "lib/pages/organizer/organizer_detail_screen.dart",
               "symbol": "OrganizerDetailScreen"
             },
             "currentOwner": "OrganizerDetailScreen",
@@ -12628,7 +12628,7 @@
               "HostOrganizerDetailErrorState"
             ],
             "flutter": {
-              "file": "lib/organizers/presentation/detail/organizer_detail_screen.dart",
+              "file": "lib/pages/organizer/organizer_detail_screen.dart",
               "symbol": "OrganizerDetailScreen"
             },
             "currentOwner": "HostOrganizerDetailScreenState",

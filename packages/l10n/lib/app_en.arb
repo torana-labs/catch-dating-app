@@ -2478,70 +2478,70 @@
   },
   "organizersOrganizerDetailScreenBodyOrganizerid": "organizerId",
   "@organizersOrganizerDetailScreenBodyOrganizerid": {
-    "description": "Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).",
+    "description": "Product copy used by lib/pages/organizer/organizer_detail_screen.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.organizer_detail_screen"
   },
   "organizersOrganizerDetailScreenBodyEventid": "eventId",
   "@organizersOrganizerDetailScreenBodyEventid": {
-    "description": "Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).",
+    "description": "Product copy used by lib/pages/organizer/organizer_detail_screen.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.organizer_detail_screen"
   },
   "organizersOrganizerDetailScreenBodyUid": "uid",
   "@organizersOrganizerDetailScreenBodyUid": {
-    "description": "Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).",
+    "description": "Product copy used by lib/pages/organizer/organizer_detail_screen.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.organizer_detail_screen"
   },
   "organizersOrganizerDetailScreenTitleOrganizerNotFound": "Organizer not found",
   "@organizersOrganizerDetailScreenTitleOrganizerNotFound": {
-    "description": "Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (title).",
+    "description": "Product copy used by lib/pages/organizer/organizer_detail_screen.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.organizer_detail_screen"
   },
   "organizersOrganizerDetailScreenMessageThisOrganizerIsNo": "This organizer is no longer available.",
   "@organizersOrganizerDetailScreenMessageThisOrganizerIsNo": {
-    "description": "Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (message).",
+    "description": "Product copy used by lib/pages/organizer/organizer_detail_screen.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.organizer_detail_screen"
   },
   "organizersOrganizerContactSectionTitleContact": "Contact",
   "@organizersOrganizerContactSectionTitleContact": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_contact_section.dart (title).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_contact_section.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_contact_section"
   },
   "organizersOrganizerDetailBodyTitleAbout": "About",
   "@organizersOrganizerDetailBodyTitleAbout": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyTitleWhatWeDo": "What we do",
   "@organizersOrganizerDetailBodyTitleWhatWeDo": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyTitleFromTheOrganizer": "From the organizer",
   "@organizersOrganizerDetailBodyTitleFromTheOrganizer": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyTitleYourHosts": "Your hosts",
   "@organizersOrganizerDetailBodyTitleYourHosts": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
@@ -2597,70 +2597,70 @@
   },
   "organizersOrganizerDetailBodyTitleReviews": "Reviews",
   "@organizersOrganizerDetailBodyTitleReviews": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyTitleGetInTouch": "Get in touch",
   "@organizersOrganizerDetailBodyTitleGetInTouch": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailDockLabelDisableOrganizerPushNotifications": "Disable organizer push notifications",
   "@organizersOrganizerDetailDockLabelDisableOrganizerPushNotifications": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockLabelEnableOrganizerPushNotifications": "Enable organizer push notifications",
   "@organizersOrganizerDetailDockLabelEnableOrganizerPushNotifications": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerHeroAppBarTooltipBack": "Back",
   "@organizersOrganizerHeroAppBarTooltipBack": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (tooltip).",
+    "description": "Product copy used by lib/pages/organizer/widgets/club_hero_app_bar.dart (tooltip).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_hero_app_bar"
   },
   "organizersOrganizerHeroAppBarTooltipShareOrganizer": "Share organizer",
   "@organizersOrganizerHeroAppBarTooltipShareOrganizer": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (tooltip).",
+    "description": "Product copy used by lib/pages/organizer/widgets/club_hero_app_bar.dart (tooltip).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_hero_app_bar"
   },
   "organizersOrganizerHostSectionMessageMessageHost": "Message host",
   "@organizersOrganizerHostSectionMessageMessageHost": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_host_section.dart (message).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_host_section.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_host_section"
   },
   "organizersOrganizerPhotoStripTextFromTheOrganizer": "FROM THE ORGANIZER",
   "@organizersOrganizerPhotoStripTextFromTheOrganizer": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_photo_strip.dart (Text).",
+    "description": "Product copy used by lib/pages/organizer/widgets/club_photo_strip.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_photo_strip"
   },
   "organizersOrganizerScheduleSectionTitleNoEventsScheduled": "No events scheduled",
   "@organizersOrganizerScheduleSectionTitleNoEventsScheduled": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart (title).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_schedule_section.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_schedule_section"
   },
   "organizersOrganizerScheduleSectionMessageFutureEventsWillAppear": "Future events will appear here once the host publishes one.",
   "@organizersOrganizerScheduleSectionMessageFutureEventsWillAppear": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart (message).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_schedule_section.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_schedule_section"
@@ -2681,14 +2681,14 @@
   },
   "organizersOrganizerIdentityAtomsLabelOwner": "Owner",
   "@organizersOrganizerIdentityAtomsLabelOwner": {
-    "description": "Product copy used by lib/organizers/shared/club_identity_atoms.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/club_identity_atoms.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.shared.organizer_identity_atoms"
   },
   "organizersOrganizerIdentityAtomsLabelHost": "Host",
   "@organizersOrganizerIdentityAtomsLabelHost": {
-    "description": "Product copy used by lib/organizers/shared/club_identity_atoms.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/club_identity_atoms.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.shared.organizer_identity_atoms"
@@ -6997,28 +6997,28 @@
   },
   "organizersOrganizerHeroAppBarTitleOrganizerDetailCollapsedTitle": "club-detail-collapsed-title",
   "@organizersOrganizerHeroAppBarTitleOrganizerDetailCollapsedTitle": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (title).",
+    "description": "Product copy used by lib/pages/organizer/widgets/club_hero_app_bar.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_hero_app_bar"
   },
   "organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle": "club-detail-expanded-title",
   "@organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (Text).",
+    "description": "Product copy used by lib/pages/organizer/widgets/club_hero_app_bar.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_hero_app_bar"
   },
   "organizersOrganizerScheduleSectionTitleSchedule": "Schedule",
   "@organizersOrganizerScheduleSectionTitleSchedule": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart (title).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_schedule_section.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_schedule_section"
   },
   "organizersOrganizerShareCardTextOrganizerOnCatch": "ORGANIZER ON CATCH",
   "@organizersOrganizerShareCardTextOrganizerOnCatch": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_share_card.dart (Text).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_share_card.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_share_card"
@@ -7605,7 +7605,7 @@
   },
   "organizersOrganizerDetailDockTextMembers": "{members}",
   "@organizersOrganizerDetailDockTextMembers": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (Text).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (Text).",
     "placeholders": {
       "members": {}
     },
@@ -7615,7 +7615,7 @@
   },
   "organizersOrganizerHeroAppBarSemanticlabelNameCoverPhoto": "{name} cover photo",
   "@organizersOrganizerHeroAppBarSemanticlabelNameCoverPhoto": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (semanticLabel).",
+    "description": "Product copy used by lib/pages/organizer/widgets/club_hero_app_bar.dart (semanticLabel).",
     "placeholders": {
       "name": {}
     },
@@ -7625,7 +7625,7 @@
   },
   "organizersOrganizerHostSectionLabelViewDisplaynameProfile": "View {displayName} profile",
   "@organizersOrganizerHostSectionLabelViewDisplaynameProfile": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_host_section.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_host_section.dart (label).",
     "placeholders": {
       "displayName": {}
     },
@@ -7635,7 +7635,7 @@
   },
   "organizersOrganizerPhotoStripTextLengthPhotos": "{length} PHOTOS",
   "@organizersOrganizerPhotoStripTextLengthPhotos": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/club_photo_strip.dart (Text).",
+    "description": "Product copy used by lib/pages/organizer/widgets/club_photo_strip.dart (Text).",
     "placeholders": {
       "length": {}
     },
@@ -7645,7 +7645,7 @@
   },
   "organizersOrganizerShareCardLabelAreaCitylabel": "{area}, {cityLabel}",
   "@organizersOrganizerShareCardLabelAreaCitylabel": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_share_card.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_share_card.dart (label).",
     "placeholders": {
       "area": {},
       "cityLabel": {}
@@ -7656,7 +7656,7 @@
   },
   "organizersOrganizerShareCardSemanticlabelNameCoverPhoto": "{name} cover photo",
   "@organizersOrganizerShareCardSemanticlabelNameCoverPhoto": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_share_card.dart (semanticLabel).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_share_card.dart (semanticLabel).",
     "placeholders": {
       "name": {}
     },
@@ -12424,14 +12424,14 @@
   },
   "organizersOrganizerDetailDockVisiblecopyFreeToJoinLeave": "FREE TO JOIN · LEAVE ANYTIME",
   "@organizersOrganizerDetailDockVisiblecopyFreeToJoinLeave": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockVisiblecopyMemberManageAnytime": "MEMBER · MANAGE ANYTIME",
   "@organizersOrganizerDetailDockVisiblecopyMemberManageAnytime": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
@@ -13070,28 +13070,28 @@
   },
   "organizersOrganizerDetailBodyLabelMembers": "Followers",
   "@organizersOrganizerDetailBodyLabelMembers": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyLabelRating": "Rating",
   "@organizersOrganizerDetailBodyLabelRating": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyLabelReviews": "Reviews",
   "@organizersOrganizerDetailBodyLabelReviews": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
   },
   "organizersOrganizerDetailBodyLabelEst": "Established",
   "@organizersOrganizerDetailBodyLabelEst": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_body"
@@ -13261,35 +13261,35 @@
   },
   "organizersOrganizerDetailDockLabelSignInToJoin": "Sign in to follow",
   "@organizersOrganizerDetailDockLabelSignInToJoin": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockLabelJoinOrganizer": "Follow organizer",
   "@organizersOrganizerDetailDockLabelJoinOrganizer": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockLabelJoined": "Following",
   "@organizersOrganizerDetailDockLabelJoined": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockLabelManage": "Manage",
   "@organizersOrganizerDetailDockLabelManage": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"
   },
   "organizersOrganizerDetailDockLabelNewEvent": "New event",
   "@organizersOrganizerDetailDockLabelNewEvent": {
-    "description": "Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).",
+    "description": "Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "organizers.presentation.detail.widgets.organizer_detail_dock"

@@ -105,6 +105,28 @@
 
     {"path": "lib/pages/memberships/host_membership_plan_sheet.dart", "from": "lib/host_memberships/presentation/host_membership_plan_sheet.dart"},
 
+    {"path": "lib/pages/organizer/organizer_detail_screen.dart", "from": "lib/organizers/presentation/detail/organizer_detail_screen.dart"},
+
+    {"path": "lib/pages/organizer/organizer_host_identity_row.dart", "from": "lib/organizers/shared/organizer_host_identity_row.dart"},
+
+    {"path": "lib/pages/organizer/organizer_placeholder_cover.dart", "from": "lib/organizers/shared/organizer_placeholder_cover.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_contact_section.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_contact_section.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_detail_body.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_detail_body.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_detail_dock.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_host_section.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_host_section.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_photo_rail.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_schedule_section.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart"},
+
+    {"path": "lib/pages/organizer/widgets/organizer_share_card.dart", "from": "lib/organizers/presentation/detail/widgets/organizer_share_card.dart"},
+
     {"path": "lib/pages/reviews/reviews_section.dart", "from": "lib/reviews/shared/reviews_section.dart"},
 
     {"path": "lib/pages/reviews/star_rating_row.dart", "from": "lib/reviews/shared/star_rating_row.dart"},
