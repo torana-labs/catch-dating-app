@@ -48,6 +48,11 @@ import {validateHostMembershipDocument} from
   "../shared/generated/validators/hostMembershipDocument";
 import {membershipIsEntitled} from "../hostMemberships/entitlement";
 import {hostMembershipId} from "../hostMemberships/ids";
+import {
+  isStaleSourceEvent,
+  SourceVersion,
+  sourceVersionOf,
+} from "../shared/sourceVersion";
 
 
 export interface AudienceProjectionDeps {
@@ -488,40 +493,87 @@ export async function rebuildOrganizerContact(
   });
 }
 
-/** Applies organizer communication grants to every verified UID contact. */
+/**
+ * Writes one person's effective WhatsApp and SMS status onto each of their
+ * verified contacts for that organizer. The status never comes from a trigger
+ * payload: each contact's transaction re-reads the preference, so a late
+ * delivery of an older opt-in cannot overwrite a newer opt-out. An event older
+ * than the preference's current updateTime writes nothing; the newer event
+ * (retried until it succeeds) owns the status.
+ * @return {Promise<string[]>} Ids of the contacts it updated.
+ */
+export async function applyOrganizerCommunicationStatuses(params: {
+  preferenceId: string;
+  organizerId: string;
+  uid: string;
+  eventVersion?: SourceVersion;
+}, deps: AudienceProjectionDeps = defaultDeps): Promise<string[]> {
+  const {preferenceId, organizerId, uid, eventVersion} = params;
+  const db = deps.firestore();
+  const preferenceRef = db.collection("organizerCommunicationPreferences")
+    .doc(preferenceId);
+  const contactsSnap = await db.collection("organizerContacts")
+    .where("organizerId", "==", organizerId)
+    .where("linkedUid", "==", uid)
+    .get();
+  const updated: string[] = [];
+  for (const doc of contactsSnap.docs) {
+    const wrote = await db.runTransaction(async (tx) => {
+      const [preferenceSnap, contactSnap] = await Promise.all([
+        tx.get(preferenceRef), tx.get(doc.ref),
+      ]);
+      if (isStaleSourceEvent(preferenceSnap, eventVersion)) return false;
+      const contact = contactSnap.data() as OrganizerContactDocument |
+        undefined;
+      if (!contact || contact.organizerId !== organizerId ||
+          contact.linkedUid !== uid) return false;
+      const preference = preferenceSnap.data() as
+        OrganizerCommunicationPreferenceDocument | undefined;
+      const now = deps.timestamp();
+      tx.update(doc.ref, {
+        whatsappStatus: effectiveOrganizerCommunicationStatus(
+          preference,
+          "whatsapp"
+        ),
+        smsStatus: effectiveOrganizerCommunicationStatus(preference, "sms"),
+        revision: Math.max(contact.revision + 1, now.toMillis()),
+        updatedAt: now,
+      });
+      return true;
+    });
+    if (wrote) updated.push(doc.id);
+  }
+  return updated;
+}
+
+/**
+ * Applies organizer communication grants to every verified UID contact, then
+ * rebuilds each updated contact. The payload only names the person; the
+ * status is re-read from the preference.
+ */
 export async function projectOrganizerCommunicationPreference(
+  preferenceId: string,
   before: OrganizerCommunicationPreferenceDocument | undefined,
   after: OrganizerCommunicationPreferenceDocument | undefined,
+  eventVersion?: SourceVersion,
   projectionEventId?: string,
   deps: AudienceProjectionDeps = defaultDeps
 ): Promise<void> {
   const preference = after ?? before;
   if (!preference) return;
-  const db = deps.firestore();
-  const contactsSnap = await db.collection("organizerContacts")
-    .where("organizerId", "==", preference.organizerId)
-    .where("linkedUid", "==", preference.uid)
-    .get();
-  const now = deps.timestamp();
   const receiptBase = projectionEventId ??
     `preference:${preference.organizerId}:${preference.uid}:` +
       `${preference.updatedAt.toMillis()}`;
-  for (const doc of contactsSnap.docs) {
-    await doc.ref.update({
-      whatsappStatus: effectiveOrganizerCommunicationStatus(
-        after,
-        "whatsapp"
-      ),
-      smsStatus: effectiveOrganizerCommunicationStatus(after, "sms"),
-      revision: Math.max(
-        (doc.data() as OrganizerContactDocument).revision + 1,
-        now.toMillis()
-      ),
-      updatedAt: now,
-    });
+  const updated = await applyOrganizerCommunicationStatuses({
+    preferenceId,
+    organizerId: preference.organizerId,
+    uid: preference.uid,
+    eventVersion,
+  }, deps);
+  for (const contactId of updated) {
     await rebuildOrganizerContact(
-      doc.id,
-      `${receiptBase}|${doc.id}`,
+      contactId,
+      `${receiptBase}|${contactId}`,
       deps
     );
   }
@@ -746,15 +798,24 @@ export const onEventAttendeeAudienceProjected = onDocumentWritten(
   }
 );
 
+// Retried: the status is re-read from the preference in each contact's
+// transaction, stale events write nothing, and rebuild receipts are keyed by
+// the event id, so a rerun is idempotent.
 export const onOrganizerCommunicationPreferenceAudienceProjected =
   onDocumentWritten(
-    "organizerCommunicationPreferences/{preferenceId}",
+    {document: "organizerCommunicationPreferences/{preferenceId}", retry: true},
     async (event) => {
       const before = event.data?.before.data() as
         OrganizerCommunicationPreferenceDocument | undefined;
       const after = event.data?.after.data() as
         OrganizerCommunicationPreferenceDocument | undefined;
-      await projectOrganizerCommunicationPreference(before, after, event.id);
+      await projectOrganizerCommunicationPreference(
+        event.params.preferenceId,
+        before,
+        after,
+        sourceVersionOf(event.data?.after),
+        event.id
+      );
     }
   );
 
