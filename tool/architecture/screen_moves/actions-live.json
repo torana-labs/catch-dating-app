@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "group": "actions-live",
+  "sequence": 1795416685949,
+  "entries": [
+    {
+      "path": "lib/event_success/presentation/event_success_controller.dart",
+      "moveTo": "lib/contexts/live/actions/event_success_controller.dart"
+    }
+  ],
+  "moves": {
+    "lib/event_success/presentation/event_success_controller.dart": "lib/contexts/live/actions/event_success_controller.dart",
+    "lib/event_success/presentation/event_success_controller.g.dart": "lib/contexts/live/actions/event_success_controller.g.dart"
+  },
+  "folders": {}
+}

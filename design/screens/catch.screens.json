@@ -5730,7 +5730,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/event_success/presentation/event_success_controller.dart",
+            "file": "lib/contexts/live/actions/event_success_controller.dart",
             "symbol": "EventSuccessController"
           },
           {
