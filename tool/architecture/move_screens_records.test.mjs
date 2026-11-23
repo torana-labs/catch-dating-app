@@ -11,6 +11,7 @@ import {checkLegacyLayout} from "./check_context_map.mjs";
 import {pruneLegacyEntries} from "./lib/dart_moves.mjs";
 import {formatCarried} from "./lib/screen_move_outputs.mjs";
 import {isMentionText} from "./lib/screen_move_rewrite.mjs";
+import {missingDependencies, pubspecDependencies} from "./lib/screen_move_plan.mjs";
 import {parseRecord, readRecords, recordPath, verifyScreenMove} from "./lib/screen_move_verify.mjs";
 
 const map = [
@@ -162,4 +163,28 @@ test("the Catch lint rule tests keep their synthetic legacy paths when a move ru
   assert.equal(isMentionText("test/tool/catch_provider_free_rule_test.dart"), false);
   assert.equal(isMentionText("test/tool/provider_graph_test.dart"), true);
   assert.equal(isMentionText("test/chats/chat_screen_test.dart"), true);
+});
+
+test("a file that moves into another package with the files it imports needs no dependency on its old package", () => {
+  const packages = [
+    {name: "catch_platform", dir: "packages/platform/", lib: "packages/platform/lib/"},
+    {name: "catch_dating_app", dir: "", lib: "lib/"},
+  ];
+  const sources = {
+    "lib/firebase_options.dart": "import 'package:catch_dating_app/firebase_options_dev.dart';\nimport 'package:catch_dating_app/app.dart';\n",
+    "lib/firebase_options_dev.dart": "class DevOptions {}\n",
+  };
+  const moves = new Map([
+    ["lib/firebase_options.dart", "packages/platform/lib/firebase/firebase_options.dart"],
+    ["lib/firebase_options_dev.dart", "packages/platform/lib/firebase/firebase_options_dev.dart"],
+  ]);
+  const errors = missingDependencies({
+    moves,
+    read: (file) => sources[file] ?? null,
+    packages,
+    dependenciesOf: () => pubspecDependencies("dependencies:\n  catch_kernel:\n"),
+  });
+  // Only lib/app.dart, which stays behind, is a real dependency on catch_dating_app.
+  assert.equal(errors.length, 1);
+  assert.match(errors[0].message, /does not declare catch_dating_app, which 1 moving file\(s\) import/u);
 });

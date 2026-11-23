@@ -34,7 +34,9 @@ checks Widgetbook for every new or moved public widget except screens, bodies,
 states and widgets/ under apps/*/lib and lib/pages, and requires shared
 widgets to use the Catch* namespace and an exact source identity in the component
 registry. New or moved feature UI also requires a feature-prefixed role name and
-a canonical source-file suffix. The widget catalog is generated output, not an independent input.
+a canonical source-file suffix. A widget or helper that a recorded Phase 4 screen
+move (tool/architecture/screen_moves/) carried to a new path under the same name
+is not new and leaves the gate. The widget catalog is generated output, not an independent input.
 The scan fails closed when its base ref is unavailable.
 `);
   process.exit(0);
@@ -69,9 +71,18 @@ const registryDocument = JSON.parse(
 const aliasIndex = componentAliasIndex(registryDocument.components ?? []);
 const roleNounRedirects = registryDocument.roleNounRedirects ?? {};
 
+// A Phase 4 screen move (tool/architecture/move_screens.mjs) relocates a file
+// unchanged apart from its directives and records the relocation in
+// tool/architecture/screen_moves/<group>.json. A widget or helper it carried
+// keeps its name in the recorded new home, so it is not new UI: the carried
+// list and the redraw own its debt, and the move stays mechanical.
+const screenMoveSources = readScreenMoveSources();
+const screenMovedWidgets = [];
+const screenMovedHelpers = [];
 const newWidgetClassCandidates = currentSnapshot.widgetClasses.filter(
   (entry) => !baseSnapshot.widgetClassKeys.has(widgetClassKey(entry)),
-);
+).filter((entry) => !recordScreenMove(entry, baseSnapshot.widgetClasses, screenMovedWidgets,
+  (base) => base.name === entry.name && base.baseClass === entry.baseClass));
 const movedWidgets = newWidgetClassCandidates
   .filter((entry) => isMovedWidgetClass(entry, baseSnapshot, currentSnapshot))
   .map((entry) => classifyWidget(withMoveMetadata(
@@ -87,7 +98,8 @@ const addedWidgets = newWidgetClassCandidates
 
 const newWidgetHelperCandidates = currentSnapshot.widgetHelpers.filter(
   (entry) => !baseSnapshot.widgetHelperKeys.has(widgetHelperKey(entry)),
-);
+).filter((entry) => !recordScreenMove(entry, baseSnapshot.widgetHelpers, screenMovedHelpers,
+  (base) => base.name === entry.name && (base.owner ?? null) === (entry.owner ?? null)));
 const movedWidgetHelpers = newWidgetHelperCandidates
   .filter((entry) => isMovedWidgetHelper(entry, baseSnapshot, currentSnapshot))
   .map((entry) => classifyWidgetHelper(withMoveMetadata(
@@ -101,12 +113,16 @@ const addedWidgetHelpers = newWidgetHelperCandidates
   .map(classifyWidgetHelper)
   .sort(compareByFileLine);
 
-const summary = summarize({
-  addedWidgets,
-  addedWidgetHelpers,
-  movedWidgets,
-  movedWidgetHelpers,
-});
+const summary = {
+  ...summarize({
+    addedWidgets,
+    addedWidgetHelpers,
+    movedWidgets,
+    movedWidgetHelpers,
+  }),
+  screenMovedWidgetClasses: screenMovedWidgets.length,
+  screenMovedWidgetReturningHelpers: screenMovedHelpers.length,
+};
 const report = {
   generatedAt: new Date().toISOString(),
   baseRef,
@@ -120,6 +136,8 @@ const report = {
       "New or moved public widget classes need Widgetbook coverage (screens, bodies, states and widgets/ under apps/*/lib and lib/pages have captures and body render tests instead) and feature UI requires canonical role names/file suffixes; design-system homes also require a canonical Catch* name, app-coupled shared widgets and design-system widgets require exact source identity in the component registry, and no new widget may reuse a registered component's name or alias. New or moved private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public covered widgets. The catalog inventory is generated separately.",
   },
   summary,
+  screenMovedWidgets,
+  screenMovedHelpers,
   movedWidgets,
   movedWidgetHelpers,
   addedWidgets,
@@ -304,6 +322,7 @@ function printSummary(report, outputPath) {
   console.log(`  Added Widget-returning helpers: ${summary.addedWidgetReturningHelpers}`);
   console.log(`  Moved widget classes: ${summary.movedWidgetClasses}`);
   console.log(`  Moved Widget-returning helpers: ${summary.movedWidgetReturningHelpers}`);
+  console.log(`  Carried by recorded screen moves: ${summary.screenMovedWidgetClasses} widget class(es), ${summary.screenMovedWidgetReturningHelpers} helper(s)`);
   console.log(`  Unresolved items: ${summary.unresolved}`);
   console.log(`  Issues: ${JSON.stringify(summary.issues)}`);
   if (!shouldNoWrite) console.log(`Report written to: ${outputPath}`);
@@ -430,6 +449,27 @@ function widgetHelperKey(entry) {
 
 function widgetHelperIdentityKey(entry) {
   return `${entry.library}::${entry.name}`;
+}
+
+// target path -> source path for every recorded screen move.
+function readScreenMoveSources() {
+  const dir = fromRepo("tool/architecture/screen_moves");
+  const sources = new Map();
+  if (!fs.existsSync(dir)) return sources;
+  for (const name of fs.readdirSync(dir).filter((file) => file.endsWith(".json")).sort()) {
+    const record = JSON.parse(fs.readFileSync(path.join(dir, name), "utf8"));
+    for (const [from, to] of Object.entries(record.moves ?? {})) sources.set(to, from);
+  }
+  return sources;
+}
+
+// Whether a recorded screen move carried this declaration from its source
+// file in the base; such entries are collected in `into` and leave the gate.
+function recordScreenMove(entry, baseEntries, into, sameDeclaration) {
+  const source = screenMoveSources.get(entry.file);
+  if (source == null || !baseEntries.some((base) => base.file === source && sameDeclaration(base))) return false;
+  into.push({file: entry.file, line: entry.line, name: entry.name, ...(entry.owner ? {owner: entry.owner} : {}), from: source});
+  return true;
 }
 
 function isMovedWidgetClass(entry, baseSnapshot, currentSnapshot) {

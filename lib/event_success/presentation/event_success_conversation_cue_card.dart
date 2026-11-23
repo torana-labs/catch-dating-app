@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/formats/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_conversation_cue.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
+import 'package:catch_dating_app/pages/live_room/event_success_conversation_cue_copy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_tokens/catch_tokens.dart';

@@ -3,6 +3,12 @@
   "carried": [
     {"path": "lib/pages/celebration/celebration_screen.dart", "from": "lib/pages/celebration/celebration_screen.dart"},
 
+    {"path": "lib/pages/check_in/event_check_in_qr_scanner.dart", "from": "lib/events/shared/event_check_in_qr_scanner.dart"},
+
+    {"path": "lib/pages/live_room/event_success_attendee_spatial_row.dart", "from": "lib/event_success/presentation/event_success_attendee_spatial_row.dart"},
+
+    {"path": "lib/pages/live_room/event_success_room_map.dart", "from": "lib/event_success/presentation/event_success_room_map.dart"},
+
     {"path": "lib/pages/memberships/host_membership_plan_sheet.dart", "from": "lib/host_memberships/presentation/host_membership_plan_sheet.dart"},
 
     {"path": "lib/pages/reviews/reviews_section.dart", "from": "lib/reviews/shared/reviews_section.dart"},

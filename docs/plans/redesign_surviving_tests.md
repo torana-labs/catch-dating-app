@@ -747,7 +747,7 @@ Layout only, deleted with the screen:
 - `journey` participants setup mode offers the next open waitlist spots
 - `action` participants setup mode labels manual approvals as requests
 
-**`test/events/event_check_in_qr_payload_test.dart`** — behaviour · subject `lib/events/shared/event_check_in_qr_scanner.dart` · decided by rules
+**`test/events/event_check_in_qr_payload_test.dart`** — behaviour · subject `lib/pages/check_in/event_check_in_qr_scanner.dart` · decided by rules
 
 - `domain` event check-in QR scan classifier keeps scanner plugin details hidden
 - `domain` only a live venue-session QR yields attendance authority
@@ -1118,7 +1118,7 @@ Layout only, deleted with the screen:
 
 - `action` visit keeps its exact retry across dismissal: practice={practice} scale={scale}
 
-**`test/event_success/event_success_control_room_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/event_success/presentation/event_success_room_map.dart` · decided by rules
+**`test/event_success/event_success_control_room_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/pages/live_room/event_success_room_map.dart` · decided by rules
 
 - `body` restart mid-round resumes the correct persisted beat
 - `body` Room workspace renders the saved map before placements exist
@@ -1156,7 +1156,7 @@ Layout only, deleted with the screen:
 
 - `domain` progress cue state resolves complete, current, and future positions
 
-**`test/event_success/event_success_room_map_test.dart`** — behaviour · subject `lib/event_success/presentation/event_success_room_map.dart` · decided by rules
+**`test/pages/live_room/event_success_room_map_test.dart`** — behaviour · subject `lib/pages/live_room/event_success_room_map.dart` · decided by rules
 
 - `body` attendee map is read-only and keeps assigned distinct
 - `body` tap placement exposes every outcome without precision drag
@@ -1466,7 +1466,7 @@ capture renders for the ads. 0 behaviours.
 - `body` save in flight disables form and question edits
 - `body` background hides the catalog until a fresh preview completes
 
-**`test/event_success/event_success_live_screens_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/event_success/presentation/event_success_controller.dart`, `lib/event_success/presentation/event_success_host_workspace_page_body.dart` · decided by rules · also under P3.4 live, P3.5 insights, P5 live/formats, P6 live
+**`test/event_success/event_success_live_screens_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/contexts/live/actions/event_success_controller.dart`, `lib/event_success/presentation/event_success_host_workspace_page_body.dart` · decided by rules · also under P3.4 live, P3.5 insights, P5 live/formats, P6 live
 
 - `body` host setup collapses to a read-only plan after bookings start
 - `action` host setup preserves custom format interaction model on save
@@ -3513,7 +3513,7 @@ Layout only, deleted with the screen:
 - `parts` exports an event invite as a png with the event link
 - `parts` uses a personal invite URL and records only share intent
 
-**`test/events/event_viewer_state_provider_test.dart`** — behaviour · subject `lib/events/presentation/widgets/event_detail_dock.dart`, `lib/events/presentation/event_booking_controller.dart` · decided by rules
+**`test/events/event_viewer_state_provider_test.dart`** — behaviour · subject `lib/events/presentation/widgets/event_detail_dock.dart`, `lib/contexts/bookings/actions/event_booking_controller.dart` · decided by rules
 
 - `body` unresolved current facts never fall back to local approval
 - `body` failed viewer reads expose retry rather than booking
@@ -3721,7 +3721,7 @@ Layout only, deleted with the screen:
 
 `apps/consumer/lib/book`. 44 behaviours: 28 action, 3 parts, 11 body, 2 journey.
 
-**`test/events/event_booking_controller_test.dart`** — behaviour · subject `lib/events/presentation/event_booking_controller.dart` · decided by rules
+**`test/contexts/bookings/actions/event_booking_controller_test.dart`** — behaviour · subject `lib/contexts/bookings/actions/event_booking_controller.dart` · decided by rules
 
 - `action` EventBookingController.book: books a free event through the payment repository
 - `action` EventBookingController.book: books a paid event with the full payment payload
@@ -3738,7 +3738,7 @@ Layout only, deleted with the screen:
 - `action` EventBookingController mutations: joinWaitlist surfaces repository errors
 - `action` EventBookingController mutations: leaveWaitlist throws when the user is not signed in
 
-**`test/events/event_booking_session_continuation_test.dart`** — behaviour · subject `lib/events/presentation/event_booking_controller.dart` · decided by rules
+**`test/events/event_booking_session_continuation_test.dart`** — behaviour · subject `lib/contexts/bookings/actions/event_booking_controller.dart` · decided by rules
 
 - `action` paid offer cannot start checkout after {transition}
 - `action` paused owner cannot miss a same-account session replacement
@@ -3903,7 +3903,7 @@ Layout only, deleted with the screen:
 - `body` companion route is unavailable until host saves setup
 - `domain` companion route state resolves core loading messages and ready data
 
-**`test/event_success/event_success_runtime_test.dart`** — behaviour · subject `lib/event_success/presentation/event_success_conversation_cue_copy.dart` · decided by rules
+**`test/event_success/event_success_runtime_test.dart`** — behaviour · subject `lib/pages/live_room/event_success_conversation_cue_copy.dart` · decided by rules
 
 - `domain` EventSuccessRuntime: gates live prompts and post-match openers separately
 - `domain` EventSuccessRuntime: walks every format from light to reflective disclosure

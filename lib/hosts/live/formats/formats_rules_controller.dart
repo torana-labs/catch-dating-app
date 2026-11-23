@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/live/actions/event_success_controller.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment_features.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_rules_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

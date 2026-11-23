@@ -12,7 +12,11 @@
 // - potentialSavedSeconds: the same for runs where a narrowed (pr_subset) lane's
 //   keys matched and it passed on the pull request, the evidence for whether
 //   those lanes should run queue-equivalent on pull requests;
-// - misses: lanes that would have been reused but did not pass.
+// - misses: lanes that would have been reused but did not pass;
+// - unchecked*: the same for eligible lanes whose pull request record came
+//   from another hasher version, so it could not cross-check the recomputed
+//   key (would_reuse_unchecked, RE 23 Nov 2026), kept apart from the checked
+//   numbers. An unchecked miss is still a miss and is posted to the issue.
 //
 // All times are integer seconds of runner time (summed job runtimes), not
 // wall-clock. A miss is also posted once to the "Proof reuse shadow miss"
@@ -77,19 +81,27 @@ export function buildDaily({date, repository, generatedAt, source, runs, reports
       laneEntries[lane.lane] = {outcome: lane.outcome, class: lane.class, reason: lane.reason, keysMatch: lane.keysMatch === true,
         prResult: lane.prResult ?? null, real: lane.real ?? null, potential, realSeconds};
       const total = lanes[lane.lane] ??= {class: lane.class, compared: 0, eligible: 0, wouldReuse: 0, hits: 0, misses: 0,
+        wouldReuseUnchecked: 0, uncheckedHits: 0, uncheckedMisses: 0, uncheckedSavedSeconds: 0,
         keysMatchPassed: 0, savedSeconds: 0, potentialSavedSeconds: 0, potentialMisses: 0, reasons: {}};
       total.compared += 1;
       if (lane.class === "eligible") total.eligible += 1;
       if (lane.verdict === "would_reuse") total.wouldReuse += 1;
+      if (lane.verdict === "would_reuse_unchecked") total.wouldReuseUnchecked += 1;
       if (lane.outcome === "hit") {
         total.hits += 1;
         total.savedSeconds += realSeconds;
       }
-      if (lane.outcome === "miss") {
-        total.misses += 1;
+      if (lane.outcome === "hit_unchecked") {
+        total.uncheckedHits += 1;
+        total.uncheckedSavedSeconds += realSeconds;
+      }
+      if (lane.outcome === "miss" || lane.outcome === "miss_unchecked") {
+        const unchecked = lane.outcome === "miss_unchecked";
+        if (unchecked) total.uncheckedMisses += 1;
+        else total.misses += 1;
         misses.push({lane: lane.lane, run: Number(run.id), attempt: Number(run.run_attempt),
           runUrl: run.html_url ?? `https://github.com/${repository}/actions/runs/${run.id}`,
-          pr: report.pr ? Number(report.pr) : null, real: lane.real ?? null});
+          pr: report.pr ? Number(report.pr) : null, real: lane.real ?? null, unchecked});
       }
       if (lane.keysMatch === true && lane.prResult === "success") total.keysMatchPassed += 1;
       if (potential) {
@@ -110,7 +122,8 @@ export function buildDaily({date, repository, generatedAt, source, runs, reports
     runsWithoutReport: withoutReport,
     lanes: Object.fromEntries(Object.entries(lanes).sort(([left], [right]) => left.localeCompare(right))),
     totals: {savedSeconds: sum("savedSeconds"), potentialSavedSeconds: sum("potentialSavedSeconds"), misses: sum("misses"),
-      potentialMisses: sum("potentialMisses")},
+      potentialMisses: sum("potentialMisses"), uncheckedSavedSeconds: sum("uncheckedSavedSeconds"),
+      uncheckedMisses: sum("uncheckedMisses")},
     misses,
     perRun: entries,
   };
@@ -125,7 +138,8 @@ export function newMisses(misses, texts) {
 export function missBody(misses, date) {
   return [
     `Proof reuse shadow, ${date}: ${misses.length === 1 ? "a lane" : `${misses.length} lanes`} would have been reused but did not pass in the merge queue.`,
-    "", ...misses.map((miss) => `- \`${miss.lane}\` in ${miss.runUrl}${miss.pr ? ` (#${miss.pr})` : ""}: ${miss.real}`),
+    "", ...misses.map((miss) => `- \`${miss.lane}\` in ${miss.runUrl}${miss.pr ? ` (#${miss.pr})` : ""}: ${miss.real}` +
+      (miss.unchecked ? " (unchecked: the pull request's record came from another hasher version)" : "")),
     "", "The bar for enabling reuse is a week with zero misses. Find why the lane's key matched the pull request's but its queue result differed.",
   ].join("\n") + misses.map((miss) => `\n<!-- proof-reuse-miss ${miss.run}:${miss.attempt}:${miss.lane} -->`).join("") + FOOTER;
 }
@@ -138,11 +152,15 @@ export function summaryMarkdown(daily) {
       `${daily.runsWithoutReport.length - daily.cancelledRuns} other without a report.`,
     `Saved (hits, eligible lanes): ${daily.totals.savedSeconds}s. Potential (narrowed lanes, keys matched): ` +
       `${daily.totals.potentialSavedSeconds}s. Misses: ${daily.totals.misses}. Potential misses: ${daily.totals.potentialMisses}.`,
+    `Unchecked (record from another hasher version): saved ${daily.totals.uncheckedSavedSeconds}s, ` +
+      `misses ${daily.totals.uncheckedMisses}.`,
     "Runner time (summed job runtimes), not wall-clock.", "",
-    "| Lane | Class | Compared | Would reuse | Hits | Misses | Keys matched, PR passed | Saved s | Potential s |",
-    "|---|---|---|---|---|---|---|---|---|",
+    "| Lane | Class | Compared | Would reuse | Hits | Misses | Unchecked reuse | Unchecked hits | Unchecked misses | " +
+      "Keys matched, PR passed | Saved s | Unchecked s | Potential s |",
+    "|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ...lanes.map(([lane, total]) => `| ${lane} | ${total.class} | ${total.compared} | ${total.wouldReuse} | ${total.hits} | ` +
-      `${total.misses} | ${total.keysMatchPassed} | ${total.savedSeconds} | ${total.potentialSavedSeconds} |`),
+      `${total.misses} | ${total.wouldReuseUnchecked} | ${total.uncheckedHits} | ${total.uncheckedMisses} | ` +
+      `${total.keysMatchPassed} | ${total.savedSeconds} | ${total.uncheckedSavedSeconds} | ${total.potentialSavedSeconds} |`),
   ].join("\n");
 }
 
@@ -222,7 +240,7 @@ function main(argv) {
   if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `date=${date}\n`);
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${summaryMarkdown(daily)}\n`);
   console.log(`Proof reuse daily ${date}: ${daily.runsWithVerdicts}/${daily.runs} runs with verdicts, ` +
-    `${daily.totals.misses} miss(es); miss issue: ${postMisses(repository, daily.misses, date)}`);
+    `${daily.totals.misses} miss(es), ${daily.totals.uncheckedMisses} unchecked; miss issue: ${postMisses(repository, daily.misses, date)}`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main(process.argv.slice(2));

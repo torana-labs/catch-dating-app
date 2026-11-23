@@ -598,7 +598,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventMessagePreferencesNavigationSection</code> | <code>lib/event_success/presentation/event_message_preferences_navigation_section.dart</code> | — | — | Consumer event-detail entry. No identity or preference reads until opened. |
 | <code>EventMessagePreferencesSheet</code> | <code>lib/event_success/presentation/event_message_preferences_sheet.dart</code> | — | — | Resolves only the signed-in attendee. Opening this sheet cannot enroll a phone or choose an attendee, and refresh never carries an old identity. |
 | <code>EventMessageSenderSection</code> | <code>lib/event_success/presentation/event_message_sender_section.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessAttendeeSpatialRow</code> | <code>lib/event_success/presentation/event_success_attendee_spatial_row.dart</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionEmptyState</code> | <code>lib/event_success/presentation/event_success_companion_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionErrorState</code> | <code>lib/event_success/presentation/event_success_companion_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionScaffold</code> | <code>lib/event_success/presentation/event_success_companion_screen.dart</code> | — | — | No class documentation or registry summary. |
@@ -611,7 +610,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CustomQuestionnaireField</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart</code> | — | — | One accordion text field of a custom questionnaire: the set name, a question prompt or an answer option. |
 | <code>CustomQuestionnaireSection</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessQuestionnaireConfigEditor</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessRoomMap</code> | <code>lib/event_success/presentation/event_success_room_map.dart</code> | — | — | Shared normalized room map used by Host and attendee runtimes. |
 | <code>EventSuccessRoomSetupSection</code> | <code>lib/event_success/presentation/event_success_room_setup_section.dart</code> | — | — | Shared room-layout setup used by Create Event and post-creation Host Setup. |
 | <code>EventSuccessModuleList</code> | <code>lib/event_success/presentation/event_success_setup_body.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessSetupBody</code> | <code>lib/event_success/presentation/event_success_setup_body.dart</code> | — | — | Compact Event Success setup shared by create-event defaults and Host Manage. |
@@ -712,7 +710,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventAgendaSliverList</code> | <code>lib/events/shared/event_agenda_list.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventAgendaSliverSkeleton</code> | <code>lib/events/shared/event_agenda_list.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventAgendaTileSkeleton</code> | <code>lib/events/shared/event_agenda_list.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventCheckInQrScanner</code> | <code>lib/events/shared/event_check_in_qr_scanner.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventShareCard</code> | <code>lib/events/shared/event_share_card.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventShareChip</code> | <code>lib/events/shared/event_share_card.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventActionCard</code> | <code>lib/events/shared/event_tiles/event_action_card.dart</code> | — | — | No class documentation or registry summary. |
@@ -1135,6 +1132,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaperCelebrationDetailsCard</code> | <code>lib/pages/celebration/celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaperCelebrationIcon</code> | <code>lib/pages/celebration/celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaperCelebrationScaffold</code> | <code>lib/pages/celebration/celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>EventCheckInQrScanner</code> | <code>lib/pages/check_in/event_check_in_qr_scanner.dart</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessAttendeeSpatialRow</code> | <code>lib/pages/live_room/event_success_attendee_spatial_row.dart</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessRoomMap</code> | <code>lib/pages/live_room/event_success_room_map.dart</code> | — | — | Shared normalized room map used by Host and attendee runtimes. |
 | <code>HostMembershipJoinSheet</code> | <code>lib/pages/memberships/host_membership_plan_sheet.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostMembershipPlanSheet</code> | <code>lib/pages/memberships/host_membership_plan_sheet.dart</code> | — | — | Plan details and the join flow: choose a billing interval, authorize the mandate on Razorpay's hosted page, then confirm the membership started. |
 | <code>HostMembershipPlansList</code> | <code>lib/pages/memberships/host_membership_plans_section.dart</code> | — | — | Provider-free plan rows, reused by previews and tests. |

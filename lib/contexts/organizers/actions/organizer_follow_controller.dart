@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
+import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

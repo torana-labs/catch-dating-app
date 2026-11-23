@@ -9,7 +9,11 @@ name: Scheduled run watchdog
 # never dispatched: the "Scheduled run missed" issue gets the missing run and
 # the command for the owner. A nightly that never started is reported as
 # unknown, not green, on the "Main CI is red" issue. Each missed run is
-# handled at most once, recorded in its issue.
+# handled at most once, recorded in its issue. It also runs after each CI run
+# on main completes, because the hourly schedule stalls with the scheduler it
+# watches (no slot started from 01:47 to 04:47 UTC on 23 Nov 2026); the records
+# and the concurrency group keep the extra runs from acting twice. An
+# occurrence from before a workflow reached main is not owed.
 # Logic and tests: tool/ci/cron_watchdog.mjs. Operator guide:
 # docs/release_operations.md, "Scheduled run watchdog".
 
@@ -17,6 +21,11 @@ on:
   schedule:
     # Hourly at :47, off the :00/:30 minutes GitHub delays most.
     - cron: "47 * * * *"
+  # Main pushes are not scheduler-dependent, so they wake the watchdog too.
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -46,6 +55,13 @@ concurrency:
 jobs:
   watch:
     name: Check scheduled runs started
+    # A workflow_run wake counts only for main's own push or nightly CI runs,
+    # never a pull-request run (a fork's branch can also be called main).
+    if: >-
+      github.event_name != 'workflow_run' || (
+      contains(fromJSON('["push", "schedule"]'), github.event.workflow_run.event) &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:

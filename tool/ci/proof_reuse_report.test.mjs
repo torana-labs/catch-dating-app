@@ -21,15 +21,17 @@ test("the fixture day builds the committed proof-reuse-daily/1 file", () => {
 test("the header's counts agree with its lists", () => {
   const daily = fixtureDaily();
   // The run from 21 Nov is not in the 22 Nov file.
-  assert.equal(daily.runs, 3);
+  assert.equal(daily.runs, 4);
   assert.equal(daily.runs, daily.runsWithVerdicts + daily.runsWithoutReport.length);
   assert.equal(daily.cancelledRuns, daily.runsWithoutReport.filter((run) => run.conclusion === "cancelled").length);
   assert.equal(daily.perRun.length, daily.runsWithVerdicts);
-  assert.deepEqual(daily.perRun.map((run) => run.run), [501, 502]);
-  for (const field of ["savedSeconds", "potentialSavedSeconds", "misses", "potentialMisses"]) {
+  assert.deepEqual(daily.perRun.map((run) => run.run), [501, 502, 504]);
+  for (const field of ["savedSeconds", "potentialSavedSeconds", "misses", "potentialMisses", "uncheckedSavedSeconds", "uncheckedMisses"]) {
     assert.equal(daily.totals[field], Object.values(daily.lanes).reduce((total, lane) => total + lane[field], 0), field);
   }
-  assert.equal(daily.totals.misses, daily.misses.length);
+  // The miss list holds both kinds; the totals keep them apart.
+  assert.equal(daily.totals.misses, daily.misses.filter((miss) => !miss.unchecked).length);
+  assert.equal(daily.totals.uncheckedMisses, daily.misses.filter((miss) => miss.unchecked).length);
   for (const run of daily.perRun) {
     for (const lane of Object.values(run.lanes)) assert.ok(Number.isInteger(lane.realSeconds));
   }
@@ -39,7 +41,8 @@ test("a day with no queue runs is an empty file, not an error", () => {
   const daily = buildDaily({...input, runs: [], reports: new Map(), jobs: new Map()});
   assert.deepEqual({runs: daily.runs, lanes: daily.lanes, misses: daily.misses, perRun: daily.perRun},
     {runs: 0, lanes: {}, misses: [], perRun: []});
-  assert.deepEqual(daily.totals, {savedSeconds: 0, potentialSavedSeconds: 0, misses: 0, potentialMisses: 0});
+  assert.deepEqual(daily.totals, {savedSeconds: 0, potentialSavedSeconds: 0, misses: 0, potentialMisses: 0,
+    uncheckedSavedSeconds: 0, uncheckedMisses: 0});
   assert.throws(() => buildDaily({...input, date: "22 Nov", reports: new Map(), jobs: new Map()}), /YYYY-MM-DD/u);
 });
 
@@ -59,6 +62,9 @@ test("each miss is posted once, by its hidden marker", () => {
   const body = missBody(misses, "2026-11-22");
   assert.match(body, /`contracts` in https:\/\/github\.com\/owner\/repo\/actions\/runs\/502 \(#42\): failure/u);
   assert.match(body, /<!-- proof-reuse-miss 502:1:contracts -->/u);
+  // An unchecked miss is still a miss, posted and labelled.
+  assert.match(body, /`operations` in https:\/\/github\.com\/owner\/repo\/actions\/runs\/504 \(#44\): failure \(unchecked: /u);
+  assert.match(body, /<!-- proof-reuse-miss 504:1:operations -->/u);
   assert.match(body, /_Posted by the Proof reuse daily workflow/u);
   assert.deepEqual(newMisses(misses, [null, "unrelated"]), misses);
   assert.deepEqual(newMisses(misses, ["older", body]), []);
@@ -68,11 +74,13 @@ test("each miss is posted once, by its hidden marker", () => {
 
 test("the summary states runner time and every compared lane", () => {
   const summary = summaryMarkdown(fixtureDaily());
-  assert.match(summary, /3 queue runs: 2 with verdicts, 1 cancelled, 0 other without a report\./u);
+  assert.match(summary, /4 queue runs: 3 with verdicts, 1 cancelled, 0 other without a report\./u);
   assert.match(summary, /Saved \(hits, eligible lanes\): 240s\. Potential .*: 1800s\. Misses: 1\. Potential misses: 1\./u);
+  assert.match(summary, /Unchecked \(record from another hasher version\): saved 180s, misses 1\./u);
   assert.match(summary, /not wall-clock/u);
-  assert.match(summary, /\| contracts \| eligible \| 2 \| 2 \| 1 \| 1 \| 2 \| 240 \| 0 \|/u);
-  assert.match(summary, /\| flutter \| pr_subset \| 2 \| 0 \| 0 \| 0 \| 2 \| 0 \| 1800 \|/u);
+  assert.match(summary, /\| contracts \| eligible \| 3 \| 2 \| 1 \| 1 \| 1 \| 1 \| 0 \| 3 \| 240 \| 180 \| 0 \|/u);
+  assert.match(summary, /\| operations \| eligible \| 3 \| 0 \| 0 \| 0 \| 1 \| 0 \| 1 \| 1 \| 0 \| 0 \| 0 \|/u);
+  assert.match(summary, /\| flutter \| pr_subset \| 2 \| 0 \| 0 \| 0 \| 0 \| 0 \| 0 \| 2 \| 0 \| 0 \| 1800 \|/u);
 });
 
 // The real script against a fake gh serving the fixture day: runs, artifacts, jobs and the miss issue.
@@ -135,11 +143,12 @@ test("the script writes the day's file and opens the miss issue", (t) => {
   assert.equal(output, "date=2026-11-22\n");
   const expected = fixtureDaily();
   assert.deepEqual({...daily, generatedAt: null}, {...expected, generatedAt: null});
-  assert.match(log, /2\/3 runs with verdicts, 1 miss\(es\); miss issue: opened/u);
+  assert.match(log, /3\/4 runs with verdicts, 1 miss\(es\), 1 unchecked; miss issue: opened/u);
   assert.equal(posts.length, 1);
   assert.equal(posts[0].endpoint, "repos/owner/repo/issues");
   assert.equal(posts[0].title, `title=${MISS_TITLE}`);
   assert.match(posts[0].body, /proof-reuse-miss 502:1:contracts/u);
+  assert.match(posts[0].body, /proof-reuse-miss 504:1:operations/u);
   assert.match(summary, /### Proof reuse shadow, 2026-11-22/u);
 });
 
@@ -148,7 +157,7 @@ test("the script comments on the open miss issue, and only with misses not yet p
   const commented = runCli(t, {openIssue});
   assert.match(commented.log, /miss issue: commented/u);
   assert.equal(commented.posts[0].endpoint, "repos/owner/repo/issues/7/comments");
-  const posted = runCli(t, {openIssue, comments: [{body: "<!-- proof-reuse-miss 502:1:contracts -->"}]});
+  const posted = runCli(t, {openIssue, comments: [{body: "<!-- proof-reuse-miss 502:1:contracts -->\n<!-- proof-reuse-miss 504:1:operations -->"}]});
   assert.match(posted.log, /miss issue: already_posted/u);
   assert.deepEqual(posted.posts, []);
 });

@@ -299,13 +299,20 @@ come from this repository and change no workflow, composite action,
 request's latest `ci.yml` run for its current head, read from GitHub's job
 records, never from the notice or an artifact. Its key, recomputed by the
 group's own hasher at the pull request head, must equal both the recorded key
-and the key at the group head. Only `contracts` and `operations` can qualify:
+and the key at the group head. A record made by another hasher version (a
+merge changed `lane_key.mjs`, `workflow_callers.mjs` or the other hasher
+sources since the pull request ran) cannot cross-check the key, but both keys
+are still recomputed by the group's hasher and the result still comes from
+job records, so a match is recorded separately as `would_reuse_unchecked`
+and compared the same way (RE, 23 Nov 2026); a record of the same version
+with a different key stays `hasher_mismatch`. Only `contracts` and
+`operations` can qualify:
 the other lanes narrow their tests on pull requests, run different steps there,
 or share a job, so a pull request pass does not prove their queue result; their
 keys are still compared and reported. The `Compare proof-reuse verdicts with
 the lanes` job joins each verdict with the lane's real queue result, writes the
 `proof-reuse-shadow-<run>-<attempt>` artifact and a summary table, and warns on
-a miss: a lane that would have been reused but failed. Both jobs are
+a miss: a lane that would have been reused, checked or unchecked, but failed. Both jobs are
 `continue-on-error` and outside `Required CI`; any unknown means not eligible.
 
 `Proof reuse daily` (`.github/workflows/proof-reuse-daily.yml`,
@@ -319,8 +326,11 @@ lane verdicts. Per lane, `savedSeconds` sums the runtime of the lane's jobs in
 runs where it would have been reused and passed, and `potentialSavedSeconds`
 does the same for narrowed lanes whose keys matched and that passed on the
 pull request, the evidence for running those lanes queue-equivalent on pull
-requests. Times are runner time (summed job runtimes), not wall-clock. Each
-miss is posted once to the open `Proof reuse shadow miss` issue, opened if
+requests. The `unchecked*` fields (`wouldReuseUnchecked`, `uncheckedHits`,
+`uncheckedMisses`, `uncheckedSavedSeconds`) count `would_reuse_unchecked`
+verdicts apart from the checked ones, and each `misses` entry says whether it
+was `unchecked`. Times are runner time (summed job runtimes), not wall-clock.
+Each miss, checked or unchecked, is posted once to the open `Proof reuse shadow miss` issue, opened if
 none is open; close it once the miss is understood. To rebuild a day, run the
 workflow from the Actions tab with its `date` input (`YYYY-MM-DD`). The report
 is read-only on Actions and writes only that issue.
@@ -2544,9 +2554,15 @@ schedule started 5-7 hours late on 17 and 18 Nov 2026, and a nightly that never
 ran looked the same as a quiet one. `Scheduled run watchdog`
 (`.github/workflows/cron-watchdog.yml`, driven by `tool/ci/cron_watchdog.mjs`)
 runs hourly at :47 (owner decision, 22 Nov 2026: "dev runs automatically, prod
-asks first"). For each watched schedule it takes the latest daily run whose
-grace period has passed (3 hours by default) and checks that a scheduled or
-dispatched run started after its cron time:
+asks first"), and also after each push or nightly CI run of main itself
+completes (`workflow_run`; never a pull-request run). The
+hourly schedule depends on the scheduler it watches: no slot from 01:47 to 04:47
+UTC started on 23 Nov 2026, while main pushes kept running. For each watched
+schedule it takes the latest daily run whose grace period has passed (3 hours
+by default) and checks that a scheduled or dispatched run started after its
+cron time. A run from before the workflow reached main is not owed: if no
+commit on main touched the workflow file by that cron time, the check reads
+`not_scheduled_yet` and nothing is reported.
 
 | Workflow | Cron (UTC) | If no run started | Reported on |
 |---|---|---|---|
@@ -2563,7 +2579,9 @@ environment=prod`. Run a prod deploy only after checking the dev deploy
 succeeded. The comment carries a hidden marker. The watchdog reads markers from
 both issues, closed ones included, updated in the last 3 days, and never
 dispatches or reports a run that already has one, so each expected run is
-handled at most once.
+handled at most once, however many times the watchdog runs. Its concurrency
+group runs one check at a time, so two runs never read the markers before
+either writes.
 
 A nightly that never started counts as **unknown**, never green, and is
 reported on "Main CI is red" because it is about CI health. The recovery run

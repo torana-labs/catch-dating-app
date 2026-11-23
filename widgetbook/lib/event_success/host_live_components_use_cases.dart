@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_compatibility_section.dart';
+import 'package:catch_dating_app/pages/live_room/event_success_room_map.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

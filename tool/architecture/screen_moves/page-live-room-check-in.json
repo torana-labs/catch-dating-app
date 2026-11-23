@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "group": "page-live-room-check-in",
+  "sequence": 1795409379445,
+  "entries": [
+    {
+      "path": "lib/event_success/presentation/event_success_conversation_cue_copy.dart",
+      "moveTo": "lib/pages/live_room/event_success_conversation_cue_copy.dart"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_room_seat_positions.dart",
+      "moveTo": "lib/pages/live_room/event_success_room_seat_positions.dart"
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_room_map.dart",
+      "moveTo": "lib/pages/live_room/event_success_room_map.dart"
+    },
+    {
+      "path": "lib/events/shared/event_check_in_qr_scanner.dart",
+      "moveTo": "lib/pages/check_in/event_check_in_qr_scanner.dart"
+    }
+  ],
+  "moves": {
+    "lib/event_success/presentation/event_success_attendee_spatial_row.dart": "lib/pages/live_room/event_success_attendee_spatial_row.dart",
+    "lib/event_success/presentation/event_success_conversation_cue_copy.dart": "lib/pages/live_room/event_success_conversation_cue_copy.dart",
+    "lib/event_success/presentation/event_success_room_map.dart": "lib/pages/live_room/event_success_room_map.dart",
+    "lib/event_success/presentation/event_success_room_seat_positions.dart": "lib/pages/live_room/event_success_room_seat_positions.dart",
+    "lib/events/shared/event_check_in_qr_scanner.dart": "lib/pages/check_in/event_check_in_qr_scanner.dart",
+    "test/event_success/event_success_room_map_test.dart": "test/pages/live_room/event_success_room_map_test.dart"
+  },
+  "folders": {}
+}

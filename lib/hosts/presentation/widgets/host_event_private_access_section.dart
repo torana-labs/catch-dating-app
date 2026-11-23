@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/routing/app_deep_links.dart';
+import 'package:catch_platform/routing/app_deep_links.dart';
 
 /// The guest link for an invite-only event, or null without an invite code.
 String? hostEventInviteUrl({
