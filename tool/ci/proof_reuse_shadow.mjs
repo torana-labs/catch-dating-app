@@ -128,12 +128,22 @@ export function decideVerdicts({lanes, reason = null, record = null, jobs = [], 
     if (prResult === "failed") return no("pr_lane_failed");
     if (prResult !== "success") return no("not_run_on_pr");
     if (!record) return no("no_record");
-    if (record.v !== version || record.lanes?.[lane] !== prKey) return no("hasher_mismatch");
     if (!prKey || !groupKey) return no("unknown");
+    // A record from another hasher version cannot cross-check the key, but the
+    // trust never rested on it: both keys are recomputed here by this hasher
+    // and the result comes from GitHub's job records (RE, 23 Nov 2026). The
+    // same version with a different key is a real disagreement.
+    const unchecked = record.v !== version;
+    if (!unchecked && record.lanes?.[lane] !== prKey) return no("hasher_mismatch");
     if (!keysMatch) return no("inputs_changed");
-    return {...base, verdict: "would_reuse", reason: "keys_match"};
+    return unchecked ? {...base, verdict: "would_reuse_unchecked", reason: "keys_match_unchecked"} :
+      {...base, verdict: "would_reuse", reason: "keys_match"};
   });
 }
+
+const REUSE_VERDICTS = new Set(["would_reuse", "would_reuse_unchecked"]);
+/** A miss, checked or not: a lane that would have been reused but did not pass in the queue. */
+export const isMiss = (lane) => lane.outcome === "miss" || lane.outcome === "miss_unchecked";
 
 /**
  * Each verdict against the lane's real queue result. Pure.
@@ -144,19 +154,22 @@ export function decideVerdicts({lanes, reason = null, record = null, jobs = [], 
 export function compareShadow(verdicts, needs) {
   return verdicts.map((verdict) => {
     const real = verdict.job ? needs?.[verdict.job]?.result ?? "missing" : "missing";
-    const outcome = verdict.verdict !== "would_reuse" ? "not_eligible" : real === "success" ? "hit" : "miss";
+    // An unchecked verdict is compared the same way, in its own buckets.
+    const suffix = verdict.verdict === "would_reuse_unchecked" ? "_unchecked" : "";
+    const outcome = !REUSE_VERDICTS.has(verdict.verdict) ? "not_eligible" : `${real === "success" ? "hit" : "miss"}${suffix}`;
     return {...verdict, real, outcome};
   });
 }
 
 export function summaryMarkdown(report) {
-  const misses = report.lanes.filter((lane) => lane.outcome === "miss");
+  const count = (outcome) => report.lanes.filter((lane) => lane.outcome === outcome).length;
   return [
     "### Proof reuse shadow", "",
-    `Pull request ${report.pr ? `#${report.pr}` : "unknown"}: ${report.lanes.filter((lane) => lane.outcome === "hit").length} would reuse, ` +
-      `${misses.length} miss(es). Shadow only: every lane ran.`, "",
+    `Pull request ${report.pr ? `#${report.pr}` : "unknown"}: ${count("hit")} would reuse, ${count("miss")} miss(es); ` +
+      `unchecked (record from another hasher version): ${count("hit_unchecked")} would reuse, ${count("miss_unchecked")} miss(es). ` +
+      "Shadow only: every lane ran.", "",
     "| Lane | Verdict | Reason | Keys match | Real |", "|---|---|---|---|---|",
-    ...report.lanes.map((lane) => `| ${lane.lane} | ${lane.outcome === "miss" ? "**MISS**" : lane.outcome} | ${lane.reason} | ` +
+    ...report.lanes.map((lane) => `| ${lane.lane} | ${isMiss(lane) ? `**${lane.outcome.toUpperCase()}**` : lane.outcome} | ${lane.reason} | ` +
       `${lane.keysMatch ? "yes" : "no"} | ${lane.real} |`),
   ].join("\n");
 }
@@ -254,16 +267,18 @@ async function main(argv) {
         lanes: decideVerdicts({lanes: comparedLanes, reason: "unknown", version: "unknown"})};
     }
     write(report);
-    console.log(`Proof reuse verdicts: ${report.lanes.filter((lane) => lane.verdict === "would_reuse").map((lane) => lane.lane)
-      .join(", ") || "none"} would reuse${report.error ? ` (unknown: ${report.error})` : ""}`);
+    const reused = (verdict) => report.lanes.filter((lane) => lane.verdict === verdict).map((lane) => lane.lane).join(", ") || "none";
+    console.log(`Proof reuse verdicts: ${reused("would_reuse")} would reuse; unchecked: ${reused("would_reuse_unchecked")}` +
+      `${report.error ? ` (unknown: ${report.error})` : ""}`);
     return;
   }
   const verdicts = JSON.parse(fs.readFileSync(args.verdicts, "utf8"));
   const report = {...verdicts, lanes: compareShadow(verdicts.lanes ?? [], JSON.parse(process.env.NEEDS_JSON ?? "{}"))};
   write(report);
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${summaryMarkdown(report)}\n`);
-  for (const miss of report.lanes.filter((lane) => lane.outcome === "miss")) {
-    console.log(`::warning title=Proof reuse shadow miss::${miss.lane} would have been reused but its queue run ended ${miss.real}.`);
+  for (const miss of report.lanes.filter(isMiss)) {
+    console.log(`::warning title=Proof reuse shadow miss::${miss.lane} would have been reused` +
+      `${miss.outcome === "miss_unchecked" ? " (unchecked: record from another hasher version)" : ""} but its queue run ended ${miss.real}.`);
   }
 }
 
