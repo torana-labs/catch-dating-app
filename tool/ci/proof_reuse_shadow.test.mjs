@@ -6,7 +6,7 @@ import path from "node:path";
 import test from "node:test";
 import YAML from "yaml";
 import {ELIGIBLE_LANES, KEYS_JOB, LANE_JOBS, RECORD_TITLE, changesCi, compareShadow, decideVerdicts, hasherVersion,
-  laneClass, laneResult, prFromHeadRef, readRecord, summaryMarkdown} from "./proof_reuse_shadow.mjs";
+  isMiss, laneClass, laneResult, prFromHeadRef, readRecord, summaryMarkdown} from "./proof_reuse_shadow.mjs";
 import {comparedLanes} from "../nx/shadow_plan.mjs";
 
 const workflow = (file) => fs.readFileSync(new URL(`../../.github/workflows/${file}`, import.meta.url), "utf8");
@@ -126,13 +126,37 @@ test("every unknown makes a lane not eligible", () => {
   assert.deepEqual(verdict({jobs: [job("contracts", "skipped")]}), ["not_eligible", "not_run_on_pr"]);
   assert.deepEqual(verdict({jobs: []}), ["not_eligible", "not_run_on_pr"]);
   assert.deepEqual(verdict({record: null}), ["not_eligible", "no_record"]);
-  // The record is only a cross-check of the recomputed key; a different hasher or key never matches.
-  assert.deepEqual(verdict({record: {...record, v: "lane-key/1+other"}}), ["not_eligible", "hasher_mismatch"]);
+  // The same hasher version with a different recorded key is a real disagreement.
   assert.deepEqual(verdict({record: {...record, lanes: {contracts: "forged"}}}), ["not_eligible", "hasher_mismatch"]);
   assert.deepEqual(verdict({keys: keys({group: {contracts: null}})}), ["not_eligible", "unknown"]);
   assert.deepEqual(verdict({keys: keys({group: {contracts: "c2"}})}), ["not_eligible", "inputs_changed"]);
   // The record says nothing about results: a lane that did not pass is never reused, whatever it claims.
   assert.deepEqual(verdict({jobs: [job("operations / Operations platform", "success")]}), ["not_eligible", "not_run_on_pr"]);
+});
+
+test("a record from another hasher version cannot cross-check, so a match is reused unchecked", () => {
+  const stale = {...record, v: "lane-key/1+other", lanes: {contracts: "anything"}};
+  const verdicts = decideVerdicts({lanes, record: stale, jobs: passed, version, keys: keys()});
+  assert.deepEqual(byLane(verdicts), {
+    contracts: ["would_reuse_unchecked", "keys_match_unchecked"],
+    operations: ["not_eligible", "inputs_changed"],
+    functions: ["not_eligible", "pr_subset"],
+  });
+  // The recomputed keys and the pull request's result still decide everything else.
+  const verdict = (input) => byLane(decideVerdicts({lanes: ["contracts"], record: stale, jobs: passed, version, keys: keys(), ...input}))
+    .contracts;
+  assert.deepEqual(verdict({keys: keys({group: {contracts: "c2"}})}), ["not_eligible", "inputs_changed"]);
+  assert.deepEqual(verdict({keys: keys({pr: {contracts: null}})}), ["not_eligible", "unknown"]);
+  assert.deepEqual(verdict({jobs: []}), ["not_eligible", "not_run_on_pr"]);
+  assert.deepEqual(verdict({record: null}), ["not_eligible", "no_record"]);
+  // Compared exactly like a checked verdict, in its own buckets; a failure is a miss.
+  assert.deepEqual(compareShadow(verdicts, {contracts: {result: "success"}}).map((lane) => lane.outcome),
+    ["hit_unchecked", "not_eligible", "not_eligible"]);
+  const missed = compareShadow(verdicts, {contracts: {result: "failure"}});
+  assert.deepEqual(missed.map((lane) => [lane.outcome, isMiss(lane)]),
+    [["miss_unchecked", true], ["not_eligible", false], ["not_eligible", false]]);
+  assert.match(summaryMarkdown({pr: "12", lanes: missed}), /unchecked \(record from another hasher version\): 0 would reuse, 1 miss\(es\)/u);
+  assert.match(summaryMarkdown({pr: "12", lanes: missed}), /\| contracts \| \*\*MISS_UNCHECKED\*\* \| keys_match_unchecked \| yes \| failure \|/u);
 });
 
 test("a lane that would have been reused but failed in the queue is a miss", () => {

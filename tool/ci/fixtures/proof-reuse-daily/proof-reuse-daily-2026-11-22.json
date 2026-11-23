@@ -6,8 +6,8 @@
     "workflowRunId": 9000,
     "sha": "1111111111111111111111111111111111111111"
   },
-  "runs": 3,
-  "runsWithVerdicts": 2,
+  "runs": 4,
+  "runsWithVerdicts": 3,
   "cancelledRuns": 1,
   "runsWithoutReport": [
     {
@@ -19,17 +19,22 @@
   "lanes": {
     "contracts": {
       "class": "eligible",
-      "compared": 2,
-      "eligible": 2,
+      "compared": 3,
+      "eligible": 3,
       "wouldReuse": 2,
       "hits": 1,
       "misses": 1,
-      "keysMatchPassed": 2,
+      "wouldReuseUnchecked": 1,
+      "uncheckedHits": 1,
+      "uncheckedMisses": 0,
+      "uncheckedSavedSeconds": 180,
+      "keysMatchPassed": 3,
       "savedSeconds": 240,
       "potentialSavedSeconds": 0,
       "potentialMisses": 0,
       "reasons": {
-        "keys_match": 2
+        "keys_match": 2,
+        "keys_match_unchecked": 1
       }
     },
     "flutter": {
@@ -39,6 +44,10 @@
       "wouldReuse": 0,
       "hits": 0,
       "misses": 0,
+      "wouldReuseUnchecked": 0,
+      "uncheckedHits": 0,
+      "uncheckedMisses": 0,
+      "uncheckedSavedSeconds": 0,
       "keysMatchPassed": 2,
       "savedSeconds": 0,
       "potentialSavedSeconds": 1800,
@@ -49,18 +58,23 @@
     },
     "operations": {
       "class": "eligible",
-      "compared": 2,
-      "eligible": 2,
+      "compared": 3,
+      "eligible": 3,
       "wouldReuse": 0,
       "hits": 0,
       "misses": 0,
-      "keysMatchPassed": 0,
+      "wouldReuseUnchecked": 1,
+      "uncheckedHits": 0,
+      "uncheckedMisses": 1,
+      "uncheckedSavedSeconds": 0,
+      "keysMatchPassed": 1,
       "savedSeconds": 0,
       "potentialSavedSeconds": 0,
       "potentialMisses": 0,
       "reasons": {
         "keys_differ": 1,
-        "pr_not_passed": 1
+        "pr_not_passed": 1,
+        "keys_match_unchecked": 1
       }
     }
   },
@@ -68,7 +82,9 @@
     "savedSeconds": 240,
     "potentialSavedSeconds": 1800,
     "misses": 1,
-    "potentialMisses": 1
+    "potentialMisses": 1,
+    "uncheckedSavedSeconds": 180,
+    "uncheckedMisses": 1
   },
   "misses": [
     {
@@ -77,7 +93,17 @@
       "attempt": 1,
       "runUrl": "https://github.com/owner/repo/actions/runs/502",
       "pr": 42,
-      "real": "failure"
+      "real": "failure",
+      "unchecked": false
+    },
+    {
+      "lane": "operations",
+      "run": 504,
+      "attempt": 1,
+      "runUrl": "https://github.com/owner/repo/actions/runs/504",
+      "pr": 44,
+      "real": "failure",
+      "unchecked": true
     }
   ],
   "perRun": [
@@ -154,6 +180,34 @@
           "real": "skipped",
           "potential": false,
           "realSeconds": 0
+        }
+      }
+    },
+    {
+      "run": 504,
+      "attempt": 1,
+      "pr": 44,
+      "createdAt": "2026-11-22T18:30:00Z",
+      "lanes": {
+        "contracts": {
+          "outcome": "hit_unchecked",
+          "class": "eligible",
+          "reason": "keys_match_unchecked",
+          "keysMatch": true,
+          "prResult": "success",
+          "real": "success",
+          "potential": false,
+          "realSeconds": 180
+        },
+        "operations": {
+          "outcome": "miss_unchecked",
+          "class": "eligible",
+          "reason": "keys_match_unchecked",
+          "keysMatch": true,
+          "prResult": "success",
+          "real": "failure",
+          "potential": false,
+          "realSeconds": 90
         }
       }
     }
