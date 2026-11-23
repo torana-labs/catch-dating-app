@@ -74,7 +74,8 @@ export async function readOrganizerOwnerView(db: Db, tx: Tx,
   const quotaRefs = months.map((month) => db
     .collection(followerMessageQuotasCollection)
     .doc(followerMessageQuotaId(organizerId, month)));
-  const snaps = await tx.getAll(...dayRefs, ...quotaRefs);
+  const snaps = await Promise.all([...dayRefs, ...quotaRefs]
+    .map((ref) => tx.get(ref)));
   const insightDays = snaps.slice(0, dayRefs.length).flatMap((day) => {
     const row = day.data() as OrganizerInsightsDocument | undefined;
     if (!row || row.organizerId !== organizerId) return [];
@@ -84,8 +85,9 @@ export async function readOrganizerOwnerView(db: Db, tx: Tx,
   });
   const followerMessageMonths = snaps.slice(dayRefs.length)
     .map((quota, index) => {
-      const requestIds = quota.get("organizerId") === organizerId ?
-        quota.get("requestIds") : null;
+      const row = quota.data();
+      const requestIds = row?.organizerId === organizerId ?
+        row.requestIds : null;
       return {month: months[index],
         used: Array.isArray(requestIds) ?
           Math.min(followerMessageLimit, requestIds.length) : 0};

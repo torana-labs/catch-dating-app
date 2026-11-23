@@ -607,6 +607,25 @@ function guestDirectoryStep(source, kind) {
   };
 }
 
+let organizerAccountViewModules = null;
+function accountViews() {
+  try {
+    const load = createFunctionsRequire();
+    organizerAccountViewModules ??= {
+      account: load("./lib/hostReadModels/organizerAccountViews.js"),
+      owner: load("./lib/hostReadModels/organizerOwnerViewStore.js"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The host-organizer-account-views migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return organizerAccountViewModules;
+}
+
+const organizerAccountNow = new Date();
+
 let programArrivalViewModule = null;
 function functionsProgramArrivalViews() {
   try {
@@ -2051,6 +2070,51 @@ export const MIGRATIONS = [
               !validId(data.uid)) return null;
           return programAccessViewRow(db, data.programId, data.uid);
         },
+      },
+    ],
+  },
+  {
+    name: "host-organizer-account-views",
+    description:
+      "The Host app's billing status and plan grants and the website's " +
+      "billing portal and owner page read hostOrganizerBillingViews, " +
+      "hostOrganizerEntitlementViews and hostOrganizerOwnerViews through " +
+      "Firestore (#2306) instead of the getOrganizerBillingStatus, " +
+      "getOrganizerEntitlement and getOrganizerOwnerView callables. Every " +
+      "organizer without them gets a billing view (the trial's facts and " +
+      "the plan status, no prices) and an owner view (its owner, page " +
+      "fields, 40 days of insights, follower allowance and WhatsApp " +
+      "readiness), and every entitlements document an entitlement view " +
+      "(grants with validity windows, never the admin note, receipt or " +
+      "granter). Existing views are never replaced; sources are never " +
+      "changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizers",
+        target: "hostOrganizerBillingViews",
+        skipReason: "already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostOrganizerBillingViews",
+          id, (tx) => accountViews().account.readOrganizerBillingView(db, tx,
+            id)),
+      },
+      {
+        source: "organizerEntitlements",
+        target: "hostOrganizerEntitlementViews",
+        skipReason: "an invalid entitlements document, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db,
+          "hostOrganizerEntitlementViews", id, (tx) => accountViews().account
+            .readOrganizerEntitlementView(db, tx, id)),
+      },
+      {
+        source: "organizers",
+        target: "hostOrganizerOwnerViews",
+        skipReason: "already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostOrganizerOwnerViews",
+          id, (tx) => accountViews().owner.readOrganizerOwnerView(db, tx, id,
+            organizerAccountNow)),
       },
     ],
   },

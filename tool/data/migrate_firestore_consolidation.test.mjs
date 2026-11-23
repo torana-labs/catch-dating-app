@@ -1152,6 +1152,36 @@ test("program-guest-directory-views creates each row once, contacts only from as
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("host-organizer-account-views creates each organizer's views once, nothing internal", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-organizer-account-views");
+  const {platformTermsDocument} = createFunctionsRequire()("./lib/commercialTerms/testFixture.js");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const db = fakeDb({
+    "organizers/o1": {ownerUserId: "owner-1", hostUserId: "owner-1", description: "Sunday runs",
+      ownerLinks: [], organizerPhotos: []},
+    "commercialTerms/platform": platformTermsDocument(),
+    "organizerGrowthFacts/o1": {milestones: {firstEventAt: at(1_000_000), firstPaidBookingAt: null}},
+    "organizerBillingPlans/o1": {plan: "toolsOnly", status: "active", startsAtMillis: 5,
+      endsAtMillis: null, paymentLinkId: "plink-marker"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 2);
+  await applyMigrationPlan(db, plan);
+  const billing = db.data["hostOrganizerBillingViews/o1"];
+  assert.deepEqual(billing.trial, {days: 30, anchor: "firstEvent", startsAtMillis: 1_000_000,
+    endsAtMillis: 1_000_000 + 30 * 86_400_000});
+  assert.deepEqual(billing.plan, {plan: "toolsOnly", status: "active", startsAtMillis: 5, endsAtMillis: null});
+  assert.equal(db.data["hostOrganizerOwnerViews/o1"].ownerUid, "owner-1");
+  assert.equal(db.data["hostOrganizerOwnerViews/o1"].about, "Sunday runs");
+  const copied = JSON.stringify([billing, db.data["hostOrganizerOwnerViews/o1"]]);
+  for (const secret of ["plink-marker", "feeMinor", "rateBasisPoints"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-live-board-views creates each alert and count once, one per run and duty", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-live-board-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
