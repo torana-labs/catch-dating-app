@@ -9,18 +9,21 @@
     "lets an account read only its own access view",
     "lists an account's own views by a query naming its uid, and no others"
   ],
-  "owner": "Programme read model projector: programAccessViewTriggers",
+  "owner": "Programme access writers: programAuthorityWrites (in each grant command's transaction) and the organizer trigger programAccessViewTriggers",
   "writerContext": "programmes",
-  "read": "an account gets only its own view by the derived id programId__uid, and lists only its own views by a query naming its uid, while it is not deleted. Other programme read models authorize through it with one get()",
-  "write": "server only; written from the staff grant (and the owner-approval proof it carries), from the programme's creator and from the organizer's managers",
+  "read": "an account gets only its own view by the derived id programId__uid, and lists only its own views by a query naming its uid, while it is not deleted. Released Host builds gate the work shell and the programme list on it; no security rule authorises through it any more",
+  "write": "server only; written in the transaction of the command that creates the programme or issues, claims or revokes a staff grant, and by a trigger on organizers for the organizer manager flag. Released Host builds read it; rules no longer authorise through it (accessGrants does)",
   "exportedFunctions": [
-    "onProgramAccessViewGrantChanged",
-    "onProgramAccessViewProgramChanged",
+    "createOrganizerProgram",
+    "grantProgramStaff",
+    "revokeProgramStaff",
+    "claimProgramStaffInvite",
     "onProgramAccessViewOrganizerChanged"
   ],
   "migrationNotes": [
     "Mirrors requireProgramAccess without the clock: expiries, the grant expiry and the owner's authorization deadline are folded into per-duty instants that rules compare with request.time. The program-access-views copy-forward migration creates views for owners and grants that predate the triggers.",
     "organizerManager mirrors requireProgramSetupAccess's organizer-manager branch for the phone's offline gate on the programme list and detail; it grants no duty, so an organizer manager's setup-only view is inactive. The program-access-views-organizer-managers migration creates views for organizer managers and adds the flag to existing views.",
-    "The view holds ids, duty names and instants only, never the grant's name or phone digits, so account deletion and archive anonymization have no personal data to scrub in it; it keeps the uid the grant keeps."
+    "The view holds ids, duty names and instants only, never the grant's name or phone digits, so account deletion and archive anonymization have no personal data to scrub in it; it keeps the uid the grant keeps.",
+    "Issue #2474 step 1: grant, revoke, claim and programme creation write the view in their own transaction beside its accessGrants document, so onProgramAccessViewGrantChanged and onProgramAccessViewProgramChanged are retired. The organizer trigger stays for the organizer manager flag, which is display only, until step 3."
   ]
 }

@@ -8,7 +8,7 @@
   "x-firestore-collection": "programStaffViews",
   "x-firestore-path": "programStaffViews/{programId}__{uid}",
   "x-document-id-field": "viewId",
-  "x-owner": "Programme read model projector (programStaffViewTriggers)",
+  "x-owner": "Programme access writers (programAuthorityWrites, in each grant command's transaction)",
   "required": [
     "programId",
     "organizerId",

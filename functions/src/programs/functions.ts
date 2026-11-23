@@ -18,8 +18,7 @@ export {
   grantProgramStaff,
   revokeProgramStaff,
 } from "./programStaff";
-export {onProgramAccessViewGrantChanged,
-  onProgramAccessViewProgramChanged, onProgramAccessViewOrganizerChanged} from
+export {onProgramAccessViewOrganizerChanged} from
   "./programAccessViewTriggers";
 export {onProgramWorkSummaryChanged, onProgramPickupPointViewChanged,
   onProgramHotelViewChanged, onProgramFunctionViewChanged} from
@@ -47,8 +46,6 @@ export {onOrganizerProgramGuestCountChanged,
   onOrganizerProgramTravelLegCountChanged,
   reconcileOrganizerProgramCountsSweep} from
   "./organizerProgramCountTriggers";
-export {onProgramStaffViewGrantChanged, onProgramStaffViewProgramChanged} from
-  "./programStaffViewTriggers";
 export {onProgramGuestDirectoryGuestChanged,
   onProgramGuestDirectoryFunctionGuestChanged,
   onProgramGuestDirectoryHouseholdChanged,

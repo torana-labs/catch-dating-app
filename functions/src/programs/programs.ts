@@ -41,6 +41,7 @@ import {
   requireProgramMutable,
 } from "../shared/programAuthority";
 import {loadProgramOverviewCounts} from "./programOverviewCounts";
+import {stageProgramAuthority} from "./programAuthorityWrites";
 import {replanProgramMoments} from "../moments/momentRunner";
 import type {
   OrganizerDocument,
@@ -199,6 +200,8 @@ export async function createOrganizerProgramHandler(
           alreadyApplied: true};
       }
     }
+    const organizerSnap = await tx.get(
+      db.collection("organizers").doc(data.organizerId));
     const now = deps.now();
     const document: OrganizerProgramDocument = {
       organizerId: data.organizerId,
@@ -219,6 +222,10 @@ export async function createOrganizerProgramHandler(
       ...(requestHash === undefined ? {} : {createRequestHash: requestHash}),
     };
     tx.set(ref, document);
+    // The owner's authority commits with the programme (FIX-10).
+    stageProgramAuthority(tx, db, {programId: ref.id, program: document,
+      uid: actorUid, grant: undefined, organizer: organizerSnap.data(),
+      nowMillis: now.toMillis(), updatedAt: now});
     return {entityId: ref.id, revision: 1, alreadyApplied: false};
   });
 }

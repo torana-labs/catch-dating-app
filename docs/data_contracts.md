@@ -5242,14 +5242,36 @@ with display labels configurable via `organizerPrograms.householdSideLabels`.
 capability allowlist at grant time so program-scoped limit checks do not
 drift with later catalog edits.
 
+`accessGrants/{scopeType}__{scopeId}__{uid}` (#2474, STR-2 and FIX-10) is one
+account's authority over one scope: the document security rules `get()` by id
+to decide access. Authority is never a projection: `createOrganizerProgram`,
+`grantProgramStaff`, `revokeProgramStaff` and `claimProgramStaffInvite` write
+it in the same transaction as the programme or grant
+(`functions/src/programs/programAuthorityWrites.ts` over
+`functions/src/domain/access/programAccessGrants.ts`), so a grant or revocation
+is in force the moment its command commits and no trigger stands between a
+command and the rules. Step 1 writes programme scopes
+(`program__{programId}__{uid}`); event and organiser scopes follow. The
+programme document carries `role` (`owner` for the creator, else `staff`),
+`status`, `activeFromMillis`, `expiresAtMillis`, `assignments`, `grantedBy`,
+`revision`, `updatedAt` and `reach`: the expiry maps below, computed by the same
+`programAccessViewFor` that builds the view, without the organizer manager
+standing (organiser managers' setup access comes from the organiser, and an
+organiser manager with no grant has no document). It holds authorisation only:
+no name or phone digits. An account gets and lists only its own documents; no
+client writes one. The `access-grants-programs` migration creates documents for
+owners and grants written before the transactional writers, then refreshes
+`accessGrants` and `programAccessViews`, so a rerun that writes nothing shows
+both agree with their sources.
+
 `programAccessViews/{programId}__{uid}` (#1339) is one account's current
-authority over one programme, written by triggers on `programStaffGrants`,
-`organizerPrograms` and `organizers` (`onProgramAccessViewGrantChanged`,
-`onProgramAccessViewProgramChanged`, `onProgramAccessViewOrganizerChanged`) and
-created for existing owners and grants by the `program-access-views`
-copy-forward migration, for organiser managers by
-`program-access-views-organizer-managers`, and repaired by
-`program-access-views-refresh` (a view that differs from what the triggers would
+authority over one programme as released Host builds read it, written beside
+its access document in the same transaction by the commands above, and by a
+trigger on `organizers` (`onProgramAccessViewOrganizerChanged`) for the
+display-only organizer manager flag. It was created for existing owners and
+grants by the `program-access-views` copy-forward migration, for organiser
+managers by `program-access-views-organizer-managers`, and is repaired by
+`program-access-views-refresh` (a view that differs from what the writers would
 compute now is rewritten under a last-update-time precondition; nothing is
 deleted). The programme's creator
 gets `role: manager` with no expiry; a staff member gets `role: staff` and the
@@ -5282,7 +5304,8 @@ a view with `status: inactive`, `role: staff`, empty maps and the flag, so no
 rules helper and no work screen admits it; the organizer trigger rewrites an
 account's views of every programme of the organizer when it becomes or stops
 being a manager, and a view carrying nothing else is deleted. Rules compare
-these with `request.time` through `hasProgramDuty`, `programDutyCoversPickup`,
+the same maps in the access document's `reach` (never the view's) with
+`request.time` through `hasProgramDuty`, `programDutyCoversPickup`,
 `programDutyCoversHotel`, `programDutyCoversFunction` and `isProgramManager`;
 each dimension is checked alone, as the callables' `allowed*Ids` union them, so
 a read that needs one assignment to satisfy two dimensions stays a callable.
@@ -5442,9 +5465,9 @@ Organiser-scope automation moments have no row, and the organiser's WhatsApp
 sender stays on the callable.
 
 `programStaffViews/{programId}__{uid}` (#1339) is the administrators' staff
-list, kept by triggers on `programStaffGrants` and `organizerPrograms` and
-created for existing grants by the `program-staff-views` copy-forward
-migration. A row is exactly the member row the retired `listProgramStaff` callable returned (display
+list, written in the same transaction as the grant by `grantProgramStaff`,
+`revokeProgramStaff` and `claimProgramStaffInvite` (#2474), and created for
+existing grants by the `program-staff-views` copy-forward migration. A row is exactly the member row the retired `listProgramStaff` callable returned (display
 name, last four phone digits, the duty assignments with scopes and expiries,
 the grant's expiry and revision), with the status the callable computed from
 the clock replaced by the facts it computes from: `revoked`, `ownerApproved`
@@ -5455,8 +5478,8 @@ required, expired or active from those and its clock. Rules let accounts
 holding the programme administration duty, and the owner, get or list rows with
 a query naming `programId`; a coordinator holds every duty but programAdmin and
 reads none. Display names and phone digits are personal data and are scrubbed
-with the grant by archive anonymization, which reaches the rows through the
-grant trigger. `revokeProgramStaff` and `grantProgramStaff` stay callables
+with the grant by archive anonymization, which rewrites the row in the batch
+that scrubs the grant. `revokeProgramStaff` and `grantProgramStaff` stay callables
 fenced by the grant's revision.
 
 `programWhatsappThreadViews/{threadId}` (the thread's own id) is the programme

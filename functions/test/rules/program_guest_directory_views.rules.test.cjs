@@ -9,6 +9,8 @@ const {
 } = require("@firebase/rules-unit-testing");
 const {collection, doc, getDoc, getDocs, orderBy, query, setDoc, where} =
   require("firebase/firestore");
+const {accessGrantFromView, accessGrantPath} =
+  require("./programAccessGrantFixture.cjs");
 
 const rules = fs.readFileSync(path.resolve(__dirname, "..", "..", "..",
   "firestore.rules"), "utf8");
@@ -44,8 +46,11 @@ function view(uid, overrides = {}) {
     assignments: [], grantExpiresAtMillis: future(2), organizerManager: false,
     revision: 1, version: 1, ...overrides};
 }
+// Rules authorise from the access grant (#2474); fixtures keep the view's
+// shape and become the document the transactional writers store.
 const seedView = (uid, overrides) => seedRaw(
-  ["programAccessViews", `program-1__${uid}`], view(uid, overrides));
+  accessGrantPath("program-1", uid),
+  accessGrantFromView(view(uid, overrides)));
 
 const guestRow = (id, programId = "program-1") => ({programId,
   organizerId: "org-1", kind: "guest", sourceId: id,
@@ -82,10 +87,11 @@ describe("programme guest directory rules", () => {
       // An organizer manager with no grant holds setup authority only.
       await seedView("orgmgr-1", {status: "inactive", organizerManager: true,
         expiresAtMillis: null});
-      // A view written before programAll existed holds no directory.
+      // A grant whose reach has no programAll holds no directory.
       const legacy = view("legacy-1", {duties: {guestRelations: future(2)}});
       delete legacy.programAll;
-      await seedRaw(["programAccessViews", "program-1__legacy-1"], legacy);
+      await seedRaw(accessGrantPath("program-1", "legacy-1"),
+        accessGrantFromView({...legacy, absentReach: ["programAll"]}));
       await seedView("gone-1", {programAll: {guestRelations: future(2)}});
       await seedRaw(["deletedUsers", "gone-1"], {deletedAt: new Date()});
       const get = (uid) => getDoc(doc(authed(uid),

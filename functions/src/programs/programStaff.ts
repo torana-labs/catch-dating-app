@@ -34,6 +34,7 @@ import {
   requireProgramMutable,
 } from "../shared/programAuthority";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
+import {stageProgramAuthority} from "./programAuthorityWrites";
 import {normalizeRosterPhone} from "../events/eventAttendees";
 import {eventStaffDisplayName, resolveStaffAuthUser} from
   "../events/eventStaff";
@@ -356,6 +357,11 @@ export async function grantProgramStaffHandler(
       revision: nextRevision(current?.revision, committedAt),
     };
     tx.set(ref, document);
+    // The grant is in force for rules the moment it commits (FIX-10).
+    stageProgramAuthority(tx, db, {programId: data.programId,
+      program: fresh.program, uid: authUser.uid, grant: document,
+      organizer: fresh.organizer, nowMillis: committedAt.toMillis(),
+      updatedAt: committedAt});
     return {entityId: authUser.uid, revision: document.revision,
       alreadyApplied: false};
   });
@@ -396,13 +402,19 @@ export async function revokeProgramStaffHandler(
     const committedAt = deps.now();
     programAdministrationDeadline(access, committedAt.toMillis());
     const revision = nextRevision(grant.revision, committedAt);
-    tx.update(ref, {
-      status: "revoked",
+    const revoked = {
+      status: "revoked" as const,
       revokedBy: actorUid,
       revokedAt: committedAt,
       updatedAt: committedAt,
       revision,
-    });
+    };
+    tx.update(ref, revoked);
+    // The revocation is in force for rules the moment it commits (FIX-10).
+    stageProgramAuthority(tx, db, {programId: data.programId, program,
+      uid: data.uid, grant: {...grant, ...revoked},
+      organizer: access.organizer, nowMillis: committedAt.toMillis(),
+      updatedAt: committedAt});
     return {entityId: data.uid, revision, alreadyApplied: false};
   });
 }
