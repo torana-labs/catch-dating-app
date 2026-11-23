@@ -50,6 +50,10 @@ export {onHostProviderConnectionViewConnectionChanged,
   "./providerConnectionViewTriggers";
 export {onHostFormVersionFilterSourceChanged} from
   "./formVersionFilterTriggers";
+export {onHostFormEditorViewFormChanged, onHostFormEditorViewDraftChanged,
+  onHostFormAnalyticsViewVersionChanged,
+  onHostFormAnalyticsViewAggregateChanged,
+  onHostFormSourceViewLinkChanged} from "./formViewTriggers";
 export {onHostWhatsappThreadViewThreadChanged,
   onHostWhatsappThreadViewContactChanged} from
   "./whatsappThreadViewTriggers";
