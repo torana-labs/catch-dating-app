@@ -812,6 +812,39 @@ superseded when its PR gets a new run on another base before the old one
 finished. A dataset without timelines reports everything except the enqueue
 wait and removal causes, which show as "not measured", never as zero.
 
+### Proof-reuse shadow in the timings report
+
+`report --proof-reuse <dir>` adds the merge-queue proof-reuse shadow. It reads
+every `proof-reuse-daily-<date>.json` in the directory, the daily artifacts of
+the Proof reuse daily workflow (`tool/ci/proof_reuse_report.mjs`, schema
+`proof-reuse-daily/1`). It refuses any other schema, and a file whose name and
+date disagree. Download the artifacts into one directory and run:
+
+```bash
+node tool/ci/queue_entry_timings.mjs report --data build/ci/queue.json --proof-reuse build/ci/proof-reuse
+```
+
+Each day shows:
+
+- the runner time that hits saved against the potential (`pr_subset` lanes);
+- misses and potential misses;
+- the unchecked numbers (a hit or miss whose hasher record was stale);
+- cancelled runs and other runs without a report.
+
+Runner time is summed job runtime, not wall-clock. The report also shows the
+critical-path time that hits would have saved. For each run with a hit that
+`--data` has jobs for, it takes the last gating finish (Required CI excluded)
+minus the last finish of the jobs left once the reused lanes' jobs are removed,
+so a lane saves only when it finished last. Jobs that waited on a reused lane
+keep their real times, so the figure is a lower bound. Checked and unchecked
+hits are counted apart.
+
+A day whose `runs` is not `runsWithVerdicts` plus its runs without a report,
+or whose `cancelledRuns` differs from the cancelled runs it lists, is flagged
+`PROBLEM`. A run and attempt already counted on an earlier day is skipped.
+Without `--data`, only the proof-reuse section is printed, and every run with a
+hit counts as not in the dataset.
+
 ## CI Network Retries
 
 `tool/ci/retry_on_match.mjs` reruns a CI command only when it failed with

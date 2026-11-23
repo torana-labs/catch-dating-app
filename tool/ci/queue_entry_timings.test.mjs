@@ -5,8 +5,9 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
-import {THIN_BELOW, analyzeRun, baseOf, fetchDataset, formatReport, parseArgs, prNumberOf, queueEvents, queueRebuilds,
-  report, runnerKind, stats} from "./queue_entry_timings.mjs";
+import {PROOF_REUSE_SCHEMA, THIN_BELOW, analyzeRun, baseOf, criticalPathSaving, fetchDataset, formatReport,
+  loadProofReuseDays, parseArgs, prNumberOf, proofReuseSummary, queueEvents, queueRebuilds, report, runnerKind,
+  stats} from "./queue_entry_timings.mjs";
 
 const script = fileURLToPath(new URL("./queue_entry_timings.mjs", import.meta.url));
 const branch = (pr, base) => `gh-readonly-queue/main/pr-${pr}-${base.padEnd(40, "0")}`;
@@ -203,4 +204,91 @@ test("removal causes name the failing lane, never Required CI, and count removal
   assert.deepEqual(causes, {removed: 3, withFailingJob: 2, withoutFailingJob: 1,
     topFailingJobs: [["flutter / Analyze & test", 2]]});
   assert.match(formatReport(report(dataset)), /removals: 3 \(2 with a failing job, 1 without\)\n  top failing jobs in removals: flutter \/ Analyze & test ×2/u);
+});
+
+const fixtureDir = fileURLToPath(new URL("./fixtures/proof-reuse-daily/", import.meta.url));
+const fixtureDay = () => JSON.parse(fs.readFileSync(path.join(fixtureDir, "proof-reuse-daily-2026-11-22.json"), "utf8"));
+const laneJobs = (lastLane) => [
+  job("Plan affected targets", at(0, 0), at(0, 2), at(1, 0)),
+  job("flutter / Unit & widget tests", at(1, 0), at(1, 10), at(9, 0)),
+  job("contracts / Contract checks", at(1, 0), at(1, 10), at(lastLane === "contracts" ? 14 : 5, 0)),
+  job("operations / Operations tests", at(1, 0), at(1, 10), at(lastLane === "operations" ? 12 : 4, 0)),
+  job("Required CI", at(14, 5), at(14, 7), at(14, 10)),
+];
+
+test("the critical-path saving counts only a reused lane that finished last", () => {
+  // contracts ends at 14:00, the next gating job (flutter) at 9:00: 5 minutes saved.
+  assert.equal(criticalPathSaving(laneJobs("contracts"), ["contracts"]), 300);
+  // contracts was not last: reusing it moves nothing.
+  assert.equal(criticalPathSaving(laneJobs("operations"), ["contracts"]), 0);
+  // Required CI and skipped jobs never count; a run with no gating job is not measured.
+  assert.equal(criticalPathSaving([job("Required CI", at(1), at(1), at(2))], ["contracts"]), null);
+  assert.equal(criticalPathSaving(laneJobs("contracts"), []), 0);
+});
+
+test("the proof-reuse fixture reads back with its counts, unchecked numbers and critical path", () => {
+  const days = loadProofReuseDays(fixtureDir);
+  assert.deepEqual(days.map((day) => day.date), ["2026-11-22"]);
+  // 501 had a checked contracts hit (contracts last), 504 an unchecked one (operations last), 502 none.
+  const summary = proofReuseSummary(days, {501: laneJobs("contracts"), 504: laneJobs("operations")});
+  const [row] = summary.rows;
+  assert.deepEqual(row.problems, []);
+  assert.equal(row.runs, 4);
+  assert.equal(row.runsWithVerdicts, 3);
+  assert.equal(row.cancelledRuns, 1);
+  assert.deepEqual([row.savedSeconds, row.potentialSavedSeconds, row.uncheckedSavedSeconds], [240, 1800, 180]);
+  assert.deepEqual([row.misses, row.uncheckedMisses, row.potentialMisses], [1, 1, 1]);
+  assert.deepEqual(row.criticalPath, {checked: {savedSeconds: 300, runs: 1}, unchecked: {savedSeconds: 0, runs: 0},
+    runsWithHits: 2, notMeasured: 0, duplicates: 0});
+  const text = formatReport(report({runs: [], jobs: {}}, {proofReuse: days}));
+  assert.match(text, /^Proof reuse shadow \(1 daily files; runner time is summed job runtime, not wall-clock\):/u);
+  assert.match(text, /2026-11-22: 4 runs, 3 with verdicts, 1 cancelled\n/u);
+  assert.match(text, /runner time saved by hits 4\.0 min of 30\.0 min potential; misses 1, potential misses 1/u);
+  assert.match(text, /unchecked: runner time 3\.0 min, misses 1/u);
+  assert.match(text, /2 runs with hits, 2 not in the dataset/u);
+  assert.doesNotMatch(text, /merge_group runs/u);
+});
+
+test("a day whose counts disagree is flagged, and a run seen on an earlier day is not counted twice", () => {
+  const first = fixtureDay();
+  const second = {...fixtureDay(), date: "2026-11-23", runs: 9, cancelledRuns: 0};
+  const summary = proofReuseSummary([first, second], {501: laneJobs("contracts")});
+  assert.deepEqual(summary.rows[0].problems, []);
+  assert.deepEqual(summary.rows[1].problems, ["runs 9 != runsWithVerdicts 3 + runsWithoutReport 1",
+    "cancelledRuns 0 != 1 cancelled in runsWithoutReport"]);
+  assert.equal(summary.rows[1].criticalPath.duplicates, 3);
+  assert.equal(summary.rows[1].criticalPath.runsWithHits, 0);
+  assert.equal(summary.totals.criticalPathSavedSeconds, 300);
+  assert.match(formatProofReuseText(summary), /PROBLEM: runs 9 != /u);
+});
+
+const formatProofReuseText = (summary) => formatReport({runs: 0, proofReuse: summary});
+
+test("only proof-reuse-daily/1 files are read, and a file's date must match its name", () => {
+  const files = {"proof-reuse-daily-2026-11-22.json": {schema: PROOF_REUSE_SCHEMA, date: "2026-11-22"},
+    "notes.json": {schema: "other"}};
+  const read = (file) => JSON.stringify(files[path.basename(file)]);
+  assert.equal(loadProofReuseDays("dir", {list: () => Object.keys(files), read}).length, 1);
+  files["proof-reuse-daily-2026-11-22.json"].schema = "proof-reuse-daily/2";
+  assert.throws(() => loadProofReuseDays("dir", {list: () => Object.keys(files), read}), /expected proof-reuse-daily\/1/u);
+  files["proof-reuse-daily-2026-11-22.json"] = {schema: PROOF_REUSE_SCHEMA, date: "2026-11-21"};
+  assert.throws(() => loadProofReuseDays("dir", {list: () => Object.keys(files), read}), /does not match its name/u);
+});
+
+test("end to end: --proof-reuse with and without a dataset", () => {
+  const alone = spawnSync(process.execPath, [script, "report", "--proof-reuse", fixtureDir], {encoding: "utf8"});
+  assert.equal(alone.status, 0, alone.stderr);
+  assert.match(alone.stdout, /^Proof reuse shadow/u);
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "queue-timings-"));
+  try {
+    const file = path.join(dir, "data.json");
+    fs.writeFileSync(file, JSON.stringify({runs: [run(501, 41, "aaa", at(0), at(14, 10))], jobs: {501: laneJobs("contracts")}}));
+    const both = spawnSync(process.execPath, [script, "report", "--data", file, "--proof-reuse", fixtureDir, "--json"],
+      {encoding: "utf8"});
+    assert.equal(both.status, 0, both.stderr);
+    assert.equal(JSON.parse(both.stdout).proofReuse.totals.criticalPathSavedSeconds, 300);
+  } finally {
+    fs.rmSync(dir, {recursive: true, force: true});
+  }
+  assert.throws(() => parseArgs(["report"]), /--data, --proof-reuse or both/u);
 });
