@@ -9,6 +9,8 @@ const {
 } = require("@firebase/rules-unit-testing");
 const {collection, doc, getDoc, getDocs, query, setDoc, where} =
   require("firebase/firestore");
+const {accessGrantFromView, accessGrantPath} =
+  require("./programAccessGrantFixture.cjs");
 
 const rules = fs.readFileSync(path.resolve(__dirname, "..", "..", "..",
   "firestore.rules"), "utf8");
@@ -44,8 +46,11 @@ function view(uid, overrides = {}) {
     assignments: [], grantExpiresAtMillis: future(2), organizerManager: false,
     revision: 1, version: 1, ...overrides};
 }
+// Rules authorise from the access grant (#2474); fixtures keep the view's
+// shape and become the document the transactional writers store.
 const seedView = (uid, overrides) => seedRaw(
-  ["programAccessViews", `program-1__${uid}`], view(uid, overrides));
+  accessGrantPath("program-1", uid),
+  accessGrantFromView(view(uid, overrides)));
 
 const senderRow = (programId = "program-1") => ({programId,
   organizerId: "org-1",

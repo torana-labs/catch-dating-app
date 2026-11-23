@@ -1,8 +1,9 @@
 // Firestore rules: programme authority. The helpers that mirror
-// requireProgramAccess are exercised through a probe collection appended to
-// the real rules text in this test's own emulator environment, so the
-// production rules gain no test-only match. Request time is the emulator's
-// clock, so expiries are written relative to now.
+// requireProgramAccess read accessGrants (#2474). They are exercised through
+// a probe collection appended to the real rules text in this test's own
+// emulator environment, so the production rules gain no test-only match.
+// Request time is the emulator's clock, so expiries are written relative to
+// now.
 const fs = require("node:fs");
 const path = require("node:path");
 const {after, before, beforeEach, describe, it} = require("node:test");
@@ -20,6 +21,8 @@ const {
   query,
   where,
 } = require("firebase/firestore");
+const {accessGrantFromView, accessGrantPath} =
+  require("./programAccessGrantFixture.cjs");
 
 const rules = fs.readFileSync(path.resolve(__dirname, "..", "..", "..",
   "firestore.rules"), "utf8");
@@ -89,8 +92,14 @@ function view(uid, overrides = {}) {
     version: 1, ...overrides};
 }
 
-const seedView = (uid, overrides) =>
-  seedRaw(["programAccessViews", `program-1__${uid}`], view(uid, overrides));
+// The view stays for released Host builds, which read it; the helpers
+// authorise from the access grant written beside it (#2474).
+async function seedView(uid, overrides) {
+  const fixture = view(uid, overrides);
+  await seedRaw(["programAccessViews", `program-1__${uid}`], fixture);
+  await seedRaw(accessGrantPath("program-1", uid),
+    accessGrantFromView(fixture));
+}
 
 async function probe(uid, kind, extra = {}) {
   await seedRaw(["rulesProbes", `${kind}-${extra.duty ?? "x"}-${extra.scopeId ?? "x"}`],
@@ -248,9 +257,11 @@ describe("programme authority rules", () => {
 
   it("does not let a view for another programme authorize this one",
     async () => {
-      await seedRaw(["programAccessViews", "program-2__lead-2"],
-        view("lead-2", {programId: "program-2",
-          duties: {functionLead: future(2)}}));
+      const other = view("lead-2", {programId: "program-2",
+        duties: {functionLead: future(2)}});
+      await seedRaw(["programAccessViews", "program-2__lead-2"], other);
+      await seedRaw(accessGrantPath("program-2", "lead-2"),
+        accessGrantFromView(other));
       await assertFails(probe("lead-2", "duty", {duty: "functionLead"}));
     });
 });
