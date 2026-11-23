@@ -173,7 +173,7 @@ function unavailableText(reason: "noSlots" | "bookingClosed" | "loadFailed"): st
 function WalkthroughBooking({form, fallback}: {form: PlaybookLeadForm; fallback: ReactNode}) {
   const controller = useWalkthroughBookingController(form);
   const {stage} = controller;
-  const focus = useStepFocus(stage.name);
+  const focus = useStepFocus(stage.name === "loading" ? null : stage.name);
   if (stage.name === "unavailable") {
     return (
       <CatchStack gap={12}>

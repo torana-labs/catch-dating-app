@@ -62,16 +62,23 @@ export function walkthroughSlotGridNode(props: Parameters<typeof WalkthroughSlot
 }
 
 /**
- * A step heading that takes focus when the step changes after the first
- * render, so keyboard and screen-reader users land on the new step. Give
- * the heading this id and tabIndex -1.
+ * A step heading that takes focus when the shown step changes, so keyboard
+ * and screen-reader users land on the new step. `step` is null while nothing
+ * is shown yet (loading), and the first step shown keeps focus where the
+ * visitor has it: slots arriving is not a step change, and focusing then
+ * would scroll the page and pull focus from wherever the visitor is,
+ * including a chip they are already using. A step left for loading and
+ * shown again unchanged keeps focus too. Give the heading this id and
+ * tabIndex -1.
  */
-export function useStepFocus(step: string): string {
+export function useStepFocus(step: string | null): string {
   const id = `walkthrough-step-${useId().replace(/:/gu, "")}`;
-  const first = useRef(true);
+  const shown = useRef<string | null>(null);
   useEffect(() => {
-    if (first.current) {first.current = false; return;}
-    document.getElementById(id)?.focus();
+    if (step === null) return;
+    const previous = shown.current;
+    shown.current = step;
+    if (previous !== null && previous !== step) document.getElementById(id)?.focus();
   }, [id, step]);
   return id;
 }
