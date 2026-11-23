@@ -58,9 +58,112 @@ final class HostSavedAudienceRepositoryProvider
 String _$hostSavedAudienceRepositoryHash() =>
     r'a6a1c3b37ac118f73ccf609dfcb180fbd4d853ef';
 
+/// The organizer's audience sources, live.
+
+@ProviderFor(hostSavedAudienceFilterOptionsStream)
+final hostSavedAudienceFilterOptionsStreamProvider =
+    HostSavedAudienceFilterOptionsStreamFamily._();
+
+/// The organizer's audience sources, live.
+
+final class HostSavedAudienceFilterOptionsStreamProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostSavedAudienceFilterOptions>,
+          HostSavedAudienceFilterOptions,
+          Stream<HostSavedAudienceFilterOptions>
+        >
+    with
+        $FutureModifier<HostSavedAudienceFilterOptions>,
+        $StreamProvider<HostSavedAudienceFilterOptions> {
+  /// The organizer's audience sources, live.
+  HostSavedAudienceFilterOptionsStreamProvider._({
+    required HostSavedAudienceFilterOptionsStreamFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostSavedAudienceFilterOptionsStreamProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() =>
+      _$hostSavedAudienceFilterOptionsStreamHash();
+
+  @override
+  String toString() {
+    return r'hostSavedAudienceFilterOptionsStreamProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<HostSavedAudienceFilterOptions> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<HostSavedAudienceFilterOptions> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostSavedAudienceFilterOptionsStream(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostSavedAudienceFilterOptionsStreamProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostSavedAudienceFilterOptionsStreamHash() =>
+    r'8ab4ce52556e1d74f3dd0da7a189cfae86e63659';
+
+/// The organizer's audience sources, live.
+
+final class HostSavedAudienceFilterOptionsStreamFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<HostSavedAudienceFilterOptions>,
+          String
+        > {
+  HostSavedAudienceFilterOptionsStreamFamily._()
+    : super(
+        retry: null,
+        name: r'hostSavedAudienceFilterOptionsStreamProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The organizer's audience sources, live.
+
+  HostSavedAudienceFilterOptionsStreamProvider call(String organizerId) =>
+      HostSavedAudienceFilterOptionsStreamProvider._(
+        argument: organizerId,
+        from: this,
+      );
+
+  @override
+  String toString() => r'hostSavedAudienceFilterOptionsStreamProvider';
+}
+
+/// The organizer's audience sources, for the automation and audience
+/// editors.
+
 @ProviderFor(hostSavedAudienceFilterOptions)
 final hostSavedAudienceFilterOptionsProvider =
     HostSavedAudienceFilterOptionsFamily._();
+
+/// The organizer's audience sources, for the automation and audience
+/// editors.
 
 final class HostSavedAudienceFilterOptionsProvider
     extends
@@ -72,6 +175,8 @@ final class HostSavedAudienceFilterOptionsProvider
     with
         $FutureModifier<HostSavedAudienceFilterOptions>,
         $FutureProvider<HostSavedAudienceFilterOptions> {
+  /// The organizer's audience sources, for the automation and audience
+  /// editors.
   HostSavedAudienceFilterOptionsProvider._({
     required HostSavedAudienceFilterOptionsFamily super.from,
     required String super.argument,
@@ -118,7 +223,10 @@ final class HostSavedAudienceFilterOptionsProvider
 }
 
 String _$hostSavedAudienceFilterOptionsHash() =>
-    r'5e59d7d1d1b84c5bb3a99bd2fe1d21905fc01992';
+    r'f7cfabad10b562781fba1443d5c96004c03b8558';
+
+/// The organizer's audience sources, for the automation and audience
+/// editors.
 
 final class HostSavedAudienceFilterOptionsFamily extends $Family
     with
@@ -134,6 +242,9 @@ final class HostSavedAudienceFilterOptionsFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The organizer's audience sources, for the automation and audience
+  /// editors.
 
   HostSavedAudienceFilterOptionsProvider call(String organizerId) =>
       HostSavedAudienceFilterOptionsProvider._(

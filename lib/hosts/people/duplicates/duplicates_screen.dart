@@ -90,12 +90,10 @@ class _HostPeopleDuplicatesScreenState
               l10n.hostPeopleDuplicatesReopenedNotice,
             ),
           ),
-          onLoadMore: () => unawaited(
-            ref
-                .read(hostDuplicateReviewPagesProvider(organizerId).notifier)
-                .loadMore(),
-          ),
-          onRetry: () => refreshHostDuplicates(ref, organizerId),
+          onLoadMore: () => ref
+              .read(hostDuplicateReviewPagesProvider(organizerId).notifier)
+              .loadMore(),
+          onRetry: () => retryHostDuplicates(ref, organizerId),
         ),
       ),
     );
@@ -171,7 +169,6 @@ class _HostPeopleDuplicatesScreenState
         (tx) => command(tx.get(hostDuplicateCommandsProvider)),
       );
       if (!mounted) return;
-      refreshHostDuplicates(ref, widget.organizerId);
       onDone(result);
     } on Object {
       // The mutation is watched for errors, which the screen shows.
@@ -205,8 +202,8 @@ Future<void> confirmUndoHostMerge(
   );
 }
 
-/// Undoes one merge: the existing unmerge command on its receipt, then the
-/// review is read again. The person pages follow their listeners.
+/// Undoes one merge: the existing unmerge command on its receipt. The review
+/// and the person pages follow their listeners.
 Future<void> undoHostMerge(
   BuildContext context,
   WidgetRef ref, {
@@ -221,7 +218,6 @@ Future<void> undoHostMerge(
           .undo(organizerId: organizerId, mergeReceiptId: mergeReceiptId),
     );
     if (!context.mounted) return;
-    refreshHostDuplicates(ref, organizerId);
     showCatchNotice(
       context,
       context.l10n.hostPeopleUndoneNotice,

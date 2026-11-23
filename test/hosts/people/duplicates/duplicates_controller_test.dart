@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/hosts/people/duplicates/duplicates_controller.dart';
@@ -12,21 +13,24 @@ const _org = 'organizer-1';
 
 ProviderContainer _container(FakeDuplicateContacts contacts) =>
     ProviderContainer.test(
-      overrides: [hostContactsRepositoryProvider.overrideWithValue(contacts)],
+      overrides: [
+        hostContactsRepositoryProvider.overrideWithValue(contacts),
+        uidProvider.overrideWithValue(const AsyncData('manager-1')),
+      ],
       retry: (_, _) => null,
     );
 
 void main() {
   test('the review lists pairs to review and pairs marked different, with '
       'counts that are a lower bound while pages follow', () async {
-    final contacts = FakeDuplicateContacts({
-      null: duplicatePage(
-        open: [duplicatePairMap('pair-1'), duplicatePairMap('pair-2')],
-        marked: [duplicatePairMap('pair-3', marked: true)],
-        nextCursor: 'next',
-        truncated: true,
-      ),
-    });
+    final contacts = FakeDuplicateContacts([
+      [
+        duplicatePairMap('pair-1'),
+        duplicatePairMap('pair-2'),
+        duplicatePairMap('pair-3', marked: true),
+      ],
+      [duplicatePairMap('pair-4')],
+    ]);
     final container = _container(contacts);
     container
       ..listen(
@@ -44,7 +48,6 @@ void main() {
     expect(open.openCount, 2);
     expect(open.markedCount, 1);
     expect(open.atLeast, isTrue);
-    expect(open.truncated, isTrue);
     expect(open.canLoadMore, isTrue);
     final marked = container.read(
       hostDuplicatesControllerProvider(
@@ -57,17 +60,15 @@ void main() {
     expect(summary?.openCount, 2);
     expect(summary?.atLeast, isTrue);
     expect(summary?.visible, isTrue);
-    expect(contacts.listCursors, [null]);
+    expect(contacts.readers, ['manager-1']);
+    expect(contacts.opened, 1);
   });
 
-  test('Show more reads the next page with the review cursor and shows a '
-      'pair once', () async {
-    final contacts = FakeDuplicateContacts({
-      null: duplicatePage(open: [duplicatePairMap('pair-1')], nextCursor: 'c2'),
-      'c2': duplicatePage(
-        open: [duplicatePairMap('pair-1'), duplicatePairMap('pair-2')],
-      ),
-    });
+  test('Show more opens the next page and shows a pair once', () async {
+    final contacts = FakeDuplicateContacts([
+      [duplicatePairMap('pair-1')],
+      [duplicatePairMap('pair-1'), duplicatePairMap('pair-2')],
+    ]);
     final container = _container(contacts);
     final provider = hostDuplicatesControllerProvider(
       _org,
@@ -76,12 +77,11 @@ void main() {
     container.listen(provider, (_, _) {});
     await flushTestEventQueue();
 
-    await container
-        .read(hostDuplicateReviewPagesProvider(_org).notifier)
-        .loadMore();
+    container.read(hostDuplicateReviewPagesProvider(_org).notifier).loadMore();
+    await flushTestEventQueue();
 
     final state = container.read(provider);
-    expect(contacts.listCursors, [null, 'c2']);
+    expect(contacts.opened, 2);
     expect(state.pairs.map((pair) => pair.candidateId), ['pair-1', 'pair-2']);
     expect(state.canLoadMore, isFalse);
     expect(state.atLeast, isFalse);
@@ -90,13 +90,10 @@ void main() {
   test(
     'a failed next page keeps the pairs and lets Show more retry it',
     () async {
-      final contacts = FakeDuplicateContacts({
-        null: duplicatePage(
-          open: [duplicatePairMap('pair-1')],
-          nextCursor: 'c2',
-        ),
-        'c2': StateError('offline'),
-      });
+      final contacts = FakeDuplicateContacts([
+        [duplicatePairMap('pair-1')],
+        StateError('offline'),
+      ]);
       final container = _container(contacts);
       final provider = hostDuplicatesControllerProvider(
         _org,
@@ -105,9 +102,10 @@ void main() {
       container.listen(provider, (_, _) {});
       await flushTestEventQueue();
 
-      await container
+      container
           .read(hostDuplicateReviewPagesProvider(_org).notifier)
           .loadMore();
+      await flushTestEventQueue();
 
       final state = container.read(provider);
       expect(state.pairs.single.candidateId, 'pair-1');
@@ -119,7 +117,7 @@ void main() {
   test('a review that cannot be read is an error and hides the People '
       'row', () async {
     final container = _container(
-      FakeDuplicateContacts({null: StateError('denied')}),
+      FakeDuplicateContacts(const [], firstError: StateError('denied')),
     );
     container
       ..listen(
@@ -140,7 +138,7 @@ void main() {
 
   test('the commands merge into the kept record with the differences '
       'confirmed, mark and reopen pairs, and undo by receipt', () async {
-    final contacts = FakeDuplicateContacts({null: duplicatePage()});
+    final contacts = FakeDuplicateContacts(const []);
     final container = _container(contacts);
     final commands = container.read(hostDuplicateCommandsProvider);
     final pair = duplicatePair('pair-1');

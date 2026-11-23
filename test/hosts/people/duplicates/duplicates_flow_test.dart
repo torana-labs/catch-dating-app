@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge.dart';
@@ -55,15 +56,18 @@ HostActiveContactMerge _merge() => HostActiveContactMerge(
 );
 
 void main() {
-  testWidgets('Merge confirms the kept record, merges, reads the review '
-      'again and offers Undo', (tester) async {
-    final contacts = FakeDuplicateContacts({
-      null: duplicatePage(open: [duplicatePairMap('pair-1')]),
-    });
+  testWidgets('Merge confirms the kept record, merges and offers Undo; the '
+      'review follows its listener', (tester) async {
+    final contacts = FakeDuplicateContacts([
+      [duplicatePairMap('pair-1')],
+    ]);
     await _pumpApp(
       tester,
       const HostPeopleDuplicatesScreen(organizerId: _org),
-      overrides: [hostContactsRepositoryProvider.overrideWithValue(contacts)],
+      overrides: [
+        hostContactsRepositoryProvider.overrideWithValue(contacts),
+        uidProvider.overrideWithValue(const AsyncData('manager-1')),
+      ],
     );
 
     expect(find.text('Possible duplicates'), findsOneWidget);
@@ -75,25 +79,28 @@ void main() {
 
     expect(contacts.merges.single.survivor, 'rk');
     expect(contacts.merges.single.confirm, isTrue);
-    expect(contacts.listCursors, [null, null]);
+    expect(contacts.readers, ['manager-1']);
     expect(find.text('Merged into Rhea Kapoor'), findsOneWidget);
 
     await tester.tap(find.text('Undo'));
     await pumpFeatureUi(tester);
 
     expect(contacts.undos, ['receipt-1']);
-    expect(contacts.listCursors, [null, null, null]);
+    expect(contacts.readers, ['manager-1']);
   });
 
-  testWidgets('Not the same person records the decision and reads the '
-      'review again', (tester) async {
-    final contacts = FakeDuplicateContacts({
-      null: duplicatePage(open: [duplicatePairMap('pair-1')]),
-    });
+  testWidgets('Not the same person records the decision; the review follows '
+      'its listener', (tester) async {
+    final contacts = FakeDuplicateContacts([
+      [duplicatePairMap('pair-1')],
+    ]);
     await _pumpApp(
       tester,
       const HostPeopleDuplicatesScreen(organizerId: _org),
-      overrides: [hostContactsRepositoryProvider.overrideWithValue(contacts)],
+      overrides: [
+        hostContactsRepositoryProvider.overrideWithValue(contacts),
+        uidProvider.overrideWithValue(const AsyncData('manager-1')),
+      ],
     );
 
     await tester.tap(
@@ -102,7 +109,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(contacts.reviews.single.differentPeople, isTrue);
-    expect(contacts.listCursors, [null, null]);
+    expect(contacts.readers, ['manager-1']);
     expect(find.text('Marked as different people'), findsOneWidget);
   });
 
@@ -156,13 +163,14 @@ void main() {
 
   testWidgets('Undo merge on a person asks first, then undoes the merge by '
       'its receipt', (tester) async {
-    final contacts = FakeDuplicateContacts({null: duplicatePage()});
+    final contacts = FakeDuplicateContacts(const []);
     final detail = peopleDetail();
     await _pumpApp(
       tester,
       const HostPersonScreen(organizerId: _org, contactId: 'rk'),
       overrides: [
         hostContactsRepositoryProvider.overrideWithValue(contacts),
+        uidProvider.overrideWithValue(const AsyncData('manager-1')),
         hostContactSummaryRowProvider(_org, 'rk').overrideWith(
           (ref) => Stream.value((
             contact: peopleContact('rk', 'Rhea Kapoor', nights: 6),

@@ -36,13 +36,18 @@ part 'host_contacts_repository.g.dart';
 // firestore-index: hostContactSummaries (organizerId:ASCENDING, searchName:ASCENDING, __name__:ASCENDING)
 // firestore-index: hostContactSummaries (organizerId:ASCENDING, row.segmentIds:CONTAINS, searchName:ASCENDING, __name__:ASCENDING)
 // firestore-index: hostContactSummaries (organizerId:ASCENDING, manualTagIds:CONTAINS, searchName:ASCENDING, __name__:ASCENDING)
+// firestore-index: hostContactMergeCandidateViews (organizerId:ASCENDING, updatedAtMillis:DESCENDING, __name__:DESCENDING)
 class HostContactsRepository {
   const HostContactsRepository(
     this._functions, {
     required this.summaries,
     this.rosterInsights,
+    this.mergeCandidates,
     HostContactDetailReads? detail,
   }) : _detailReads = detail;
+
+  /// The duplicate review's read model (`hostContactMergeCandidateViews`).
+  final ScopedReadModelReader? mergeCandidates;
 
   /// The directory read model, name searches included. It serves every
   /// directory query the app makes.
@@ -283,24 +288,36 @@ class HostContactsRepository {
     parse: HostAudienceExport.fromCallableData,
   );
 
-  /// One page of the duplicate review: pairs with the evidence for each,
-  /// the pairs marked as different people, and the cursor to the next page.
-  /// The server never lists a pair from a name match alone.
-  Future<HostContactMergeCandidatePage> listMergeCandidates(
+  /// The duplicate review, newest evidence first, [pageSize] pairs at a
+  /// time, every pair kept live (the `listOrganizerContactMergeCandidates`
+  /// callable is no longer called). A pair exists only while a verified
+  /// claim or a proposed phone or email link joins two people, never from a
+  /// name match. [readerUid] may show a pair again only if they marked it.
+  LivePager<HostContactMergeCandidate> watchMergeCandidates(
     String organizerId, {
-    String? cursor,
-    int limit = ReadLimitPolicy.historyPage,
-  }) => callHostCrm(
-    _functions,
-    name: 'listOrganizerContactMergeCandidates',
-    payload: ListOrganizerContactMergeCandidatesCallableRequest(
-      organizerId: organizerId,
-      limit: limit > 50 ? 50 : limit,
-      cursor: cursor,
-    ).toJson(),
-    action: 'load organizer contact merge candidates',
-    parse: HostContactMergeCandidatePage.fromCallableData,
-  );
+    required String readerUid,
+    int pageSize = ReadLimitPolicy.historyPage,
+  }) {
+    final reader =
+        mergeCandidates ??
+        (throw StateError('This repository has no duplicate review.'));
+    return reader
+        .watchPages(
+          collection: 'hostContactMergeCandidateViews',
+          scopeId: organizerId,
+          orderField: 'updatedAtMillis',
+          descending: true,
+          pageSize: pageSize,
+        )
+        .map(
+          (view) => HostContactMergeCandidate.fromMap({
+            ...view,
+            'canReopen':
+                view['decisionState'] == 'differentPeople' &&
+                view['reviewedByUid'] == readerUid,
+          }),
+        );
+  }
 
   Future<void> reviewMergeCandidate({
     required String organizerId,
@@ -389,6 +406,11 @@ HostContactsRepository hostContactsRepository(Ref ref) {
     ),
     rosterInsights: HostRosterInsightReads(
       ref.watch(firebaseFirestoreProvider),
+    ),
+    mergeCandidates: ScopedReadModelReader(
+      ref.watch(firebaseFirestoreProvider),
+      family: hostReadModels,
+      actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
     ),
     detail: HostContactDetailReads(ref.watch(firebaseFirestoreProvider)),
   );

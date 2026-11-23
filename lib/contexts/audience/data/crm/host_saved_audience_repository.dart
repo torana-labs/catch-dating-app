@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_summary.dart';
 import 'package:catch_kernel/read_model_family.dart';
+import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/scoped_read_models.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
@@ -29,19 +30,34 @@ class HostSavedAudienceRepository {
 
   final FirebaseFunctions _functions;
 
-  Future<HostSavedAudienceFilterOptions> savedAudienceFilterOptions(
+  /// What the organizer's audiences and automations can name, from its
+  /// `hostAudienceSourceViews` row while listened to (the filterOptions of
+  /// `listOrganizerSavedAudiences` are no longer read). An organizer whose
+  /// view the server has not written has nothing to name yet.
+  Stream<HostSavedAudienceFilterOptions> watchFilterOptions(
     String organizerId,
-  ) => callHostCrm(
-    _functions,
-    name: 'listOrganizerSavedAudiences',
-    payload: ListOrganizerSavedAudiencesCallableRequest(
-      organizerId: organizerId,
-      limit: 1,
-      includeFilterOptions: true,
-    ).toJson(),
-    action: 'load audience filter choices',
-    parse: HostSavedAudienceFilterOptions.fromCallableData,
-  );
+  ) => summaries
+      .watchDocument(
+        collection: 'hostAudienceSourceViews',
+        scopeId: organizerId,
+        id: organizerId,
+      )
+      .map((view) {
+        if (view == null) return const HostSavedAudienceFilterOptions.empty();
+        // Sources over the server's bounds fail as the callable did.
+        if (view['unavailableReason'] case final String reason) {
+          throw BackendOperationException(
+            code: 'resource-exhausted',
+            message: reason,
+            context: const BackendErrorContext(
+              service: BackendService.firestore,
+              action: 'watch audience filter choices',
+              resource: 'hostAudienceSourceViews',
+            ),
+          );
+        }
+        return HostSavedAudienceFilterOptions.fromMap(view);
+      });
 
   /// The first [limit] active groups by name (or most recently previewed)
   /// while they are listened to: a group saved, archived or previewed
@@ -195,13 +211,23 @@ HostSavedAudienceRepository hostSavedAudienceRepository(Ref ref) {
   );
 }
 
+/// The organizer's audience sources, live.
 @riverpod
-Future<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptions(
+Stream<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptionsStream(
   Ref ref,
   String organizerId,
 ) => ref
     .watch(hostSavedAudienceRepositoryProvider)
-    .savedAudienceFilterOptions(organizerId);
+    .watchFilterOptions(organizerId);
+
+/// The organizer's audience sources, for the automation and audience
+/// editors.
+@riverpod
+Future<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptions(
+  Ref ref,
+  String organizerId,
+) =>
+    ref.watch(hostSavedAudienceFilterOptionsStreamProvider(organizerId).future);
 
 /// A selected group's definition, as a listener on `hostGroupDetails`.
 @riverpod
