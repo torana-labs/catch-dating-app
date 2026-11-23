@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_screen_state.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_body.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_screen_state.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/pages/inbox/widgets/chat_conversations_list.dart';
+import 'package:catch_dating_app/pages/inbox/widgets/chats_empty_state.dart';
+import 'package:catch_dating_app/pages/inbox/widgets/chats_list.dart';
+import 'package:catch_dating_app/pages/inbox/widgets/chats_list_body.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

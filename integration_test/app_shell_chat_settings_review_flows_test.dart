@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/pages/chat/widgets/chat_input.dart';
 import 'package:catch_dating_app/pages/reviews/review_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_ui/catch_ui.dart';

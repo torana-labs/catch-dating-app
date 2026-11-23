@@ -1,9 +1,9 @@
 // copy:allow-file(Widgetbook and capture-only deterministic fixture data)
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 
 /// Deterministic Host Inbox fixtures shared by Widgetbook and UI captures.

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// One side of a fixture pair.
@@ -21,7 +24,7 @@ Map<String, Object?> duplicatePersonMap(
   'revision': revision,
 };
 
-/// A pair as the duplicate review returns it.
+/// A pair as the duplicate review delivers it.
 Map<String, Object?> duplicatePairMap(
   String candidateId, {
   List<Map<String, Object?>>? contacts,
@@ -74,20 +77,6 @@ HostContactMergeCandidate duplicatePair(
   ),
 );
 
-/// A review page as listOrganizerContactMergeCandidates returns it.
-HostContactMergeCandidatePage duplicatePage({
-  List<Map<String, Object?>> open = const [],
-  List<Map<String, Object?>> marked = const [],
-  String? nextCursor,
-  bool truncated = false,
-}) => HostContactMergeCandidatePage.fromCallableData({
-  'organizerId': 'organizer-1',
-  'candidates': open,
-  'dismissedCandidates': marked,
-  'nextCursor': nextCursor,
-  'truncated': truncated,
-});
-
 /// A merge receipt as mergeOrganizerContacts returns it.
 HostContactMergeReceipt duplicateReceipt(String receiptId) =>
     HostContactMergeReceipt.fromCallableData({
@@ -104,25 +93,30 @@ HostContactMergeReceipt duplicateReceipt(String receiptId) =>
 
 /// The duplicate review and the merge commands, recorded.
 class FakeDuplicateContacts extends Fake implements HostContactsRepository {
-  FakeDuplicateContacts(this.pages);
+  FakeDuplicateContacts(this.pages, {this.firstError});
 
-  /// Pages by cursor; the first page has the null cursor.
-  final Map<String?, Object> pages;
-  final listCursors = <String?>[];
+  /// The pairs each page adds, in order; an [Object] that is not a list is
+  /// the error that page fails with.
+  final List<Object> pages;
+
+  /// The error the review fails with before any page opens.
+  final Object? firstError;
+
+  /// The reader each pager was opened for, and how many pages it opened.
+  final readers = <String>[];
+  int opened = 0;
   final merges = <({String candidateId, String survivor, bool confirm})>[];
   final reviews = <({String candidateId, bool differentPeople})>[];
   final undos = <String>[];
 
   @override
-  Future<HostContactMergeCandidatePage> listMergeCandidates(
+  LivePager<HostContactMergeCandidate> watchMergeCandidates(
     String organizerId, {
-    String? cursor,
-    int limit = 50,
-  }) async {
-    listCursors.add(cursor);
-    final page = pages[cursor];
-    if (page is HostContactMergeCandidatePage) return page;
-    throw page ?? StateError('No page for $cursor');
+    required String readerUid,
+    int pageSize = 50,
+  }) {
+    readers.add(readerUid);
+    return _FakePager(this);
   }
 
   @override
@@ -161,5 +155,55 @@ class FakeDuplicateContacts extends Fake implements HostContactsRepository {
   }) async {
     undos.add(mergeReceiptId);
     return duplicateReceipt('receipt-undo');
+  }
+}
+
+class _FakePager implements LivePager<HostContactMergeCandidate> {
+  _FakePager(this._contacts);
+
+  final FakeDuplicateContacts _contacts;
+  final _controller = StreamController<LivePages<HostContactMergeCandidate>>();
+  final _items = <String, HostContactMergeCandidate>{};
+  int _next = 0;
+
+  @override
+  Stream<LivePages<HostContactMergeCandidate>> get pages {
+    final error = _contacts.firstError;
+    if (error != null) {
+      _controller.addError(error);
+    } else {
+      _open();
+    }
+    return _controller.stream;
+  }
+
+  @override
+  void loadMore() => _open();
+
+  void _open() {
+    if (_next >= _contacts.pages.length) return;
+    final page = _contacts.pages[_next];
+    _contacts.opened += 1;
+    if (page is! List<Map<String, Object?>>) {
+      _controller.add(
+        LivePages(
+          items: List.unmodifiable(_items.values),
+          hasMore: true,
+          nextPageError: page,
+        ),
+      );
+      return;
+    }
+    _next += 1;
+    for (final map in page) {
+      final pair = HostContactMergeCandidate.fromMap(map);
+      _items.putIfAbsent(pair.candidateId, () => pair);
+    }
+    _controller.add(
+      LivePages(
+        items: List.unmodifiable(_items.values),
+        hasMore: _next < _contacts.pages.length,
+      ),
+    );
   }
 }

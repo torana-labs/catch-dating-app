@@ -14,6 +14,7 @@ import 'package:catch_dating_app/contexts/formats/domain/event_success_compatibi
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_structure.dart';
+import 'package:catch_dating_app/contexts/live/actions/event_success_controller.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_companion_clock.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_arrival_mission.dart';
@@ -31,7 +32,6 @@ import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/event_success/presentation/companion/event_success_companion_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen_state.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_moment_presentation_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_motion_contract.dart';

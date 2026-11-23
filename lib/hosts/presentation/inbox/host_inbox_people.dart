@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/chats/chats.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:flutter/foundation.dart';
 
 /// Source endpoints remain separate even when CRM proves that they are one person.

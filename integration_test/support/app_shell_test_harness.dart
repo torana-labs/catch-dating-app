@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/app.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
@@ -52,6 +51,7 @@ import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/explore/explore.dart';
 import 'package:catch_dating_app/pages/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/routing/consumer_router.dart';
 import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';

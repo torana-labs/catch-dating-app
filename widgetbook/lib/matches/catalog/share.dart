@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
+import 'package:catch_dating_app/pages/chat/widgets/chat_share_card.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_tokens/catch_tokens.dart';

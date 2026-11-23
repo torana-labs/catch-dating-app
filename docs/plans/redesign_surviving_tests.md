@@ -226,7 +226,7 @@ These appear under more than one destination. Delete only your own cases.
 | `test/hosts/host_operations_screen_test.dart` | P3.1 today 6, P3.5 insights 4, P5 events 2, P5 people 44, P5 organizer 34 |
 | `test/explore/explore_widgets_test.dart` | P5 onboarding 4, P6 explore 52, shared lib/pages/organizer 17 |
 | `test/event_success/event_success_live_screens_test.dart` | P3.4 live 15, P3.5 insights 4, P5 events 3, P5 live/formats 9, P6 live 25 |
-| `test/chats/chat_screen_test.dart` | P5 people 8, P6 chats 34 |
+| `test/pages/chat/chat_screen_test.dart` | P5 people 8, P6 chats 34 |
 | `test/pages/sign_in/auth_controller_test.dart` | P5 onboarding 1, P6 onboarding 39 |
 | `test/organizers/organizers_controllers_test.dart` | P5 organizer 4, P5 onboarding 9, shared lib/pages/organizer 27 |
 | `test/hosts/host_create_event_screen_test.dart` | P3.2 events/create 30, P5 events 9 |
@@ -340,7 +340,7 @@ can move a section:
 - Event-success setup screens go to P5 events (`EventSetup`). Host reports go to
   P3.5.
 - Create-organizer goes to P5 onboarding, edit-organizer to P5 organizer.
-- `lib/force_update` has no row, so it goes to `lib/pages/startup`, since both
+- The force-update screens have no row, so they go to `lib/pages/startup`, since both
   apps show it. `lib/image_uploads`, `lib/user_analytics` and
   `lib/host_memberships` go to P6 you.
 - Re-home targets follow the same rule table throughout; a controller test is
@@ -376,7 +376,7 @@ can move a section:
 - `body` real Host shell owns the lifecycle IA and switches branches
 - `body` Audience Forms draft survives destination changes and shell reflow
 
-**`test/routing/host_workspace_review_regression_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart`, `lib/chats/presentation/event_chat_screen.dart` · decided by rules
+**`test/routing/host_workspace_review_regression_test.dart`** — behaviour · subject `lib/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart`, `lib/pages/chat/event_chat_screen.dart` · decided by rules
 
 - `journey` expanded Manage can open Guests twice and retain both drafts
 - `journey` Manage Chat {destination} keeps organizer and ancestor state
@@ -1466,7 +1466,7 @@ capture renders for the ads. 0 behaviours.
 - `body` save in flight disables form and question edits
 - `body` background hides the catalog until a fresh preview completes
 
-**`test/event_success/event_success_live_screens_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/event_success/presentation/event_success_controller.dart`, `lib/event_success/presentation/event_success_host_workspace_page_body.dart` · decided by rules · also under P3.4 live, P3.5 insights, P5 live/formats, P6 live
+**`test/event_success/event_success_live_screens_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/contexts/live/actions/event_success_controller.dart`, `lib/event_success/presentation/event_success_host_workspace_page_body.dart` · decided by rules · also under P3.4 live, P3.5 insights, P5 live/formats, P6 live
 
 - `body` host setup collapses to a read-only plan after bookings start
 - `action` host setup preserves custom format interaction model on save
@@ -1724,7 +1724,7 @@ Layout only, deleted with the screen:
 - `journey` host inbox rows navigate to host chat route
 - `body` host inbox hides consumer dating matches
 
-**`test/chats/chat_screen_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/chats/presentation/chat_screen.dart` · decided by rules · also under P6 chats
+**`test/pages/chat/chat_screen_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/pages/chat/chat_screen.dart` · decided by rules · also under P6 chats
 
 - `domain` ChatThreadLookupState: waits for host inquiry club context before reading attendee profile
 - `domain` ChatThreadLookupState: uses club host profile instead of public profile for host peer
@@ -1933,7 +1933,7 @@ Layout only, deleted with the screen:
 - `action` history gets an opaque cursor before loading beyond the live window
 - `action` history failure is retryable and account changes discard late replies
 
-**`test/hosts/inbox/host_inbox_pagination_test.dart`** — behaviour · subject `lib/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart`, `lib/chats/presentation/inbox/chats_list_view_model.dart` · decided by rules
+**`test/hosts/inbox/host_inbox_pagination_test.dart`** — behaviour · subject `lib/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart`, `lib/pages/inbox/chats_list_view_model.dart` · decided by rules
 
 - `action` pagination retains authorized rows after {failure} failure and retries
 - `action` refresh invalidates an in-flight older page
@@ -1958,7 +1958,7 @@ Layout only, deleted with the screen:
 - `action` loads past 200 guests and keeps unlinked guests out of contacts
 - `action` page failure retains prior guests and retries the same cursor
 
-**`test/hosts/inbox/host_inbox_purpose_containment_test.dart`** — behaviour · subject `lib/hosts/presentation/inbox/host_inbox_view_model.dart`, `lib/chats/presentation/inbox/chats_list_view_model.dart` · decided by rules
+**`test/hosts/inbox/host_inbox_purpose_containment_test.dart`** — behaviour · subject `lib/hosts/presentation/inbox/host_inbox_view_model.dart`, `lib/pages/inbox/chats_list_view_model.dart` · decided by rules
 
 - `body` program direct link {selection} never mounts history or actions
 - `body` late program completion after workspace switch cannot mount old history
@@ -1970,7 +1970,7 @@ Layout only, deleted with the screen:
 
 - `journey` new message resolves a person and respects route availability {available}
 
-**`test/hosts/inbox/host_person_conversation_test.dart`** — behaviour · subject `lib/hosts/presentation/inbox/host_reply_drafts.dart`, `lib/chats/presentation/widgets/chat_input.dart` · decided by rules
+**`test/hosts/inbox/host_person_conversation_test.dart`** — behaviour · subject `lib/hosts/presentation/inbox/host_reply_drafts.dart`, `lib/pages/chat/widgets/chat_input.dart` · decided by rules
 
 - `journey` person transcript retains source identity and sends on only the selected route
 - `body` revoked membership and a changed identity link cannot leak source history
@@ -3913,7 +3913,7 @@ Layout only, deleted with the screen:
 
 `apps/consumer/lib/after`. 78 behaviours: 27 domain, 18 action, 1 parts, 26 body, 6 journey.
 
-**`test/chats/match_celebration_dialog_test.dart`** — behaviour · subject `lib/matches/shared/match_celebration_dialog.dart` · decided by rules
+**`test/pages/inbox/match_celebration_dialog_test.dart`** — behaviour · subject `lib/pages/inbox/match_celebration_dialog.dart` · decided by rules
 
 - `body` renders full-screen match celebration actions
 
@@ -4055,23 +4055,23 @@ Layout only, deleted with the screen:
 
 `apps/consumer/lib/chats`. 132 behaviours: 17 domain, 61 action, 4 parts, 39 body, 11 journey; 1 more in `widgetbook/test`.
 
-**`test/architecture/keep_alive_provider_lifecycle_test.dart`** — behaviour · subject `lib/chats/presentation/inbox/chats_list_view_model.dart` · decided by rules · also under P6 onboarding, P6 explore, P6 live
+**`test/architecture/keep_alive_provider_lifecycle_test.dart`** — behaviour · subject `lib/pages/inbox/chats_list_view_model.dart` · decided by rules · also under P6 onboarding, P6 explore, P6 live
 
 - `domain` keepAlive provider lifecycle: chat search query survives listener disposal
 - `domain` keepAlive provider lifecycle: chat search query starts empty for the next account
 
-**`test/chats/chat_controller_test.dart`** — behaviour · subject `lib/chats/presentation/chat_controller.dart` · decided by rules
+**`test/pages/chat/chat_controller_test.dart`** — behaviour · subject `lib/pages/chat/chat_controller.dart` · decided by rules
 
 - `action` sendImage deletes the uploaded image when the message write fails
 - `action` sendImage leaves the image in place on success
 - `action` sendImage is a no-op when the user cancels the picker
 - `action` sendImage propagates upload rejection without writing a message
 
-**`test/chats/chat_conversations_list_test.dart`** — behaviour · subject `lib/chats/presentation/inbox/widgets/chat_conversations_list.dart` · decided by rules
+**`test/pages/inbox/widgets/chat_conversations_list_test.dart`** — behaviour · subject `lib/pages/inbox/widgets/chat_conversations_list.dart` · decided by rules
 
 - `body` selected conversation owns a visible semantic row state
 
-**`test/chats/chat_event_context_header_test.dart`** — behaviour · subject `lib/chats/presentation/widgets/chat_event_context_header.dart` · decided by rules, 1 by hand
+**`test/pages/chat/widgets/chat_event_context_header_test.dart`** — behaviour · subject `lib/pages/chat/widgets/chat_event_context_header.dart` · decided by rules, 1 by hand
 
 - `parts` renders an activity-aware dinner context stamp
 - `parts` renders a neutral fallback stamp while event context loads
@@ -4094,14 +4094,14 @@ Layout only, deleted with the screen:
 - `body` does not mark own latest message as unread
 - `journey` navigates from matches list to chat without route extra
 
-**`test/chats/chat_input_bar_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/chats/presentation/widgets/chat_input.dart` · decided by rules
+**`test/chats/chat_input_bar_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/pages/chat/widgets/chat_input.dart` · decided by rules
 
 - `body` derives sendability from the trimmed draft
 - `body` keeps focus for keyboard and internal action taps
 - `body` pending actions leave the editor and peer action usable
 - `body` exposes one editable node and one node per action
 
-**`test/chats/chat_screen_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/chats/presentation/chat_screen.dart` · decided by rules · also under P5 people
+**`test/pages/chat/chat_screen_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/pages/chat/chat_screen.dart` · decided by rules · also under P5 people
 
 - `body` ChatScreen Suvbot: retries failed Suvbot controls through the typed target
 - `action` ChatScreen Suvbot: shows Suvbot controls without chat composer
@@ -4138,12 +4138,12 @@ Layout only, deleted with the screen:
 - `action` ChatScreen: surfaces failed report mutations through chat feedback
 - `action` ChatScreen: surfaces failed block mutations through chat feedback
 
-**`test/chats/chat_share_card_test.dart`** — behaviour · subject `lib/chats/presentation/widgets/chat_share_card.dart` · decided by rules, 1 by hand
+**`test/pages/chat/widgets/chat_share_card_test.dart`** — behaviour · subject `lib/pages/chat/widgets/chat_share_card.dart` · decided by rules, 1 by hand
 
 - `parts` renders an anonymized activity-aware share card
 - `domain` hasShareableChatMessages ignores image-only messages
 
-**`test/chats/event_chat_controller_test.dart`** — behaviour · subject `lib/chats/presentation/event_chat_controller.dart` · decided by rules
+**`test/pages/chat/event_chat_controller_test.dart`** — behaviour · subject `lib/pages/chat/event_chat_controller.dart` · decided by rules
 
 - `action` lost send acknowledgement retries the exact payload ID once
 - `action` failed authority refresh removes messages and disables new writes
@@ -4167,7 +4167,7 @@ Layout only, deleted with the screen:
 - `body` event inbox {dark} {scale} works without dating data
 - `body` empty scan page keeps the continuation action accessible
 
-**`test/chats/event_chat_message_actions_controller_test.dart`** — behaviour · subject `lib/chats/presentation/event_chat_controller.dart` · decided by rules
+**`test/chats/event_chat_message_actions_controller_test.dart`** — behaviour · subject `lib/pages/chat/event_chat_controller.dart` · decided by rules
 
 - `action` report requires a reason; guests cannot remove someone else’s message
 - `action` lost acknowledgement retries the same report and guards double taps
@@ -4175,19 +4175,19 @@ Layout only, deleted with the screen:
 - `action` own message can be removed but not reported or blocked
 - `action` an account change cannot acknowledge or repeat the previous action
 
-**`test/chats/event_chat_message_actions_widget_test.dart`** — behaviour · subject `lib/chats/presentation/event_chat_controller.dart` · decided by rules
+**`test/chats/event_chat_message_actions_widget_test.dart`** — behaviour · subject `lib/pages/chat/event_chat_controller.dart` · decided by rules
 
 - `action` report reason is explicit and readable {dark} {scale}
 - `action` block cancellation writes nothing, removal needs confirmation
 
-**`test/chats/event_chat_participants_controller_test.dart`** — behaviour · subject `lib/chats/presentation/event_chat_participants_controller.dart` · decided by rules
+**`test/pages/chat/event_chat_participants_controller_test.dart`** — behaviour · subject `lib/pages/chat/event_chat_participants_controller.dart` · decided by rules
 
 - `action` empty filtered scans can continue; every loaded page is revalidated
 - `action` authority failure removes all loaded names
 - `action` background hides names; a late old read cannot restore them
 - `action` account change resets pagination and ignores a pending old account read
 
-**`test/chats/event_chat_participants_widget_test.dart`** — behaviour · subject `lib/chats/presentation/event_chat_participants_screen.dart` · decided by rules, 1 by hand
+**`test/chats/event_chat_participants_widget_test.dart`** — behaviour · subject `lib/pages/chat/event_chat_participants_screen.dart` · decided by rules, 1 by hand
 
 - `journey` participant route is readable and opens protected profiles {dark} {scale}
 - `journey` room toolbar opens participants without requiring a message
@@ -4196,7 +4196,7 @@ Layout only, deleted with the screen:
 - `journey` manager sees removed member action without profile navigation
 - `body` empty filtered page preserves continuation instead of declaring the room empty
 
-**`test/chats/event_chat_widget_test.dart`** — mixed (2 layout cases go with the screen) · subject `lib/chats/presentation/event_chat_controller.dart` · decided by rules, 1 by hand
+**`test/chats/event_chat_widget_test.dart`** — mixed (2 layout cases go with the screen) · subject `lib/pages/chat/event_chat_controller.dart` · decided by rules, 1 by hand
 
 - `body` event chat readable {dark} {scale} {joined}
 - `body` host opening and profile review are separate actions
@@ -4204,7 +4204,7 @@ Layout only, deleted with the screen:
 - `body` terminal room {room} hides messages and member actions
 - `body` reaction choices wrap and retain full touch targets
 
-**`test/chats/event_profile_controller_test.dart`** — behaviour · subject `lib/chats/presentation/event_profile_controller.dart` · decided by rules
+**`test/pages/chat/event_profile_controller_test.dart`** — behaviour · subject `lib/pages/chat/event_profile_controller.dart` · decided by rules
 
 - `action` card picker filters ownership and preserves empty-page continuation
 - `action` revocation remains possible with cancelled admission and unavailable cards
@@ -4219,7 +4219,7 @@ Layout only, deleted with the screen:
 - `action` pending save acknowledgement cannot change the next account editor
 - `action` an initial profile response arriving in the background stays hidden
 
-**`test/chats/event_profile_widget_test.dart`** — behaviour · subject `lib/chats/presentation/event_profile_screen.dart` · decided by rules, 2 by hand
+**`test/chats/event_profile_widget_test.dart`** — behaviour · subject `lib/pages/chat/event_profile_screen.dart` · decided by rules, 2 by hand
 
 - `body` long answers remain fully readable before sharing at large text
 - `journey` sender name opens the selected participant profile
@@ -4236,7 +4236,7 @@ Layout only, deleted with the screen:
 - `body` photo-only sharing does not claim only the name is shared
 - `body` real participant screen hides details in background and rechecks on resume
 
-**`test/chats/suvbot_controller_test.dart`** — behaviour · subject `lib/chats/presentation/suvbot_controller.dart` · decided by rules
+**`test/pages/chat/suvbot_controller_test.dart`** — behaviour · subject `lib/pages/chat/suvbot_controller.dart` · decided by rules
 
 - `action` SuvbotController: delegates demo action requests to the repository
 
@@ -4244,19 +4244,19 @@ Layout only, deleted with the screen:
 
 - `journey` production router opens Chats for social-ready users
 
-**`test/routing/router_widgets_test.dart`** — behaviour · subject `lib/chats/presentation/chat_screen.dart` · decided by rules, 2 by hand · also under P3.2 events/create, P5 people, P6 onboarding
+**`test/routing/router_widgets_test.dart`** — behaviour · subject `lib/pages/chat/chat_screen.dart` · decided by rules, 2 by hand · also under P3.2 events/create, P5 people, P6 onboarding
 
 - `body` chat route hydrates the profile when extra is invalid
 - `journey` chat route uses a routed PublicProfile extra immediately
 - `journey` FCM navigation helper drives the real chat route
 
-**`widgetbook/test/matches_previews_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/chats/presentation/inbox/chats_list_view_model.dart` · decided by rules · adjacent, not in the totals
+**`widgetbook/test/matches_previews_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/pages/inbox/chats_list_view_model.dart` · decided by rules · adjacent, not in the totals
 
 - `body` inbox preview queries are prepared independently and stay editable
 
 Layout only, deleted with the screen:
 
-- `test/chats/message_bubble_test.dart`: 6 cases · proves composition only: finds by type or text, with no input-driven condition · decided by rules and hand
+- `test/pages/chat/widgets/message_bubble_test.dart`: 6 cases · proves composition only: finds by type or text, with no input-driven condition · decided by rules and hand
 
 
 ### P6 you

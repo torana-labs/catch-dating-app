@@ -293,6 +293,19 @@ already replaced by a link built on the device from `hostFormSummaries`
 (#2309). `listOrganizerFormTemplates` returned a catalog in code; the Host app
 now ships the gallery, generated from the same catalog.
 
+**Read path decision (Nov 2026, #2306 batch C): CRM.** The saved-audience
+filter options moved to `hostAudienceSourceViews`, one view per organizer
+built by the callable's own `savedAudienceFilterOptions`. The existing
+summaries could not serve it: `hostEventSummaries` holds only unpublished
+events and admits only an active organizer's managers, `hostFormSummaries`
+leaves out imported application forms, and no view held the audience
+questions (`hostFormVersionFilters` holds the response filters, which leave
+out yes/no questions). `listOrganizerContactMergeCandidates` moved to
+`hostContactMergeCandidateViews`: the trigger derives each pair from the
+same claims and links the callable scanned and copies only what it
+returned, so identity hashes and linked uids stay server-only; the contact
+and decision revisions that fence a merge or a decision travel on the row.
+
 **Read path decision (Nov 2026): recorded fallback.** `listOrganizerFormResponses`
 is called only when `HostResponseSummaryReads.supports` is false: answer,
 identity, contact or text filters, and the other combinations the

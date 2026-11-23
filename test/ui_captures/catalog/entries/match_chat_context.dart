@@ -2,13 +2,15 @@
 // capture's inputs to its own imports; see docs/marketing_app_media_pipeline.md.
 
 import 'dart:async';
-import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
+import 'package:catch_dating_app/pages/chat/chat_screen.dart';
+
 import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';
 import '../shared/match_chat_fixtures.dart';

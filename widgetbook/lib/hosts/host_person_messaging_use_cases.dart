@@ -1,5 +1,3 @@
-import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
@@ -17,6 +15,8 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversati
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
+import 'package:catch_dating_app/pages/chat/chat_controller.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/theme/app_theme.dart';

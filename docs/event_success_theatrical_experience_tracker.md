@@ -270,12 +270,12 @@ Status: deferred pending manual review of native haptics/system sounds.
 
 - Passed: `flutter test test/event_success/event_success_live_screens_test.dart test/event_success/event_success_manual_qa_screen_test.dart`
 - Passed: `flutter test test/event_success`
-- Passed: `flutter test test/core/catch_celebration_screen_test.dart test/chats/match_celebration_dialog_test.dart`
+- Passed: `flutter test test/core/catch_celebration_screen_test.dart test/pages/inbox/match_celebration_dialog_test.dart`
 - Passed: `flutter analyze --no-fatal-infos`
 - Passed: `git diff --check`
 - Phase 1B passed: `flutter test test/event_success/event_success_live_screens_test.dart test/event_success/event_success_manual_qa_screen_test.dart`
 - Phase 1B passed: `flutter test test/event_success`
-- Phase 1B passed: `flutter test test/core/catch_celebration_screen_test.dart test/chats/match_celebration_dialog_test.dart`
+- Phase 1B passed: `flutter test test/core/catch_celebration_screen_test.dart test/pages/inbox/match_celebration_dialog_test.dart`
 - Phase 1B passed: `flutter analyze --no-fatal-infos`
 - Phase 1B passed: `git diff --check`
 - Phase 1B visual check: hot reloaded running macOS debug app and inspected
