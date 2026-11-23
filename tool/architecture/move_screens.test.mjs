@@ -426,7 +426,7 @@ test("path mentions move as repo paths and package URIs, honour the exclusions, 
   for (const excluded of [
     "tool/check_catch_ui_lints.sh",
     "tool/catch_ui_lints_probe/run/1/lib/hosts/today/x.dart",
-    "tool/architecture/screen_move_log.json",
+    "tool/architecture/screen_moves/host-today.json",
     "tool/architecture/context_map.json",
     "tool/x/scanner.test.mjs",
     "lib/hosts/today/today_screen.g.dart",
@@ -494,13 +494,14 @@ function applyFixture() {
   return {root, result};
 }
 
-test("--apply writes one commit and a log entry, and --verify accepts it", () => {
+test("--apply writes one commit and the group's move record, and --verify accepts it", () => {
   const {root, result} = applyFixture();
   assert.equal(result.unstaged.length, 0);
   assert.match(git(root, "log", "-1", "--format=%B"), /^refactor\(architecture\): move host-today \(phase 4\)[\s\S]*Screen-Move-Group: host-today/u);
-  const log = JSON.parse(fs.readFileSync(path.join(root, "tool/architecture/screen_move_log.json"), "utf8"));
-  assert.equal(log.entries[0].group, "host-today");
-  assert.equal(log.entries[0].moves["test/hosts/today/today_state_test.dart"], "apps/host/test/today/today_state_test.dart");
+  const record = JSON.parse(fs.readFileSync(path.join(root, "tool/architecture/screen_moves/host-today.json"), "utf8"));
+  assert.equal(record.group, "host-today");
+  assert.ok(Number.isSafeInteger(record.sequence));
+  assert.equal(record.moves["test/hosts/today/today_state_test.dart"], "apps/host/test/today/today_state_test.dart");
   assert.equal(fs.readFileSync(path.join(root, "apps/host/lib/shell.dart"), "utf8"),
     "import 'package:catch_host_app/today/today_screen.dart';\n");
   assert.doesNotMatch(fs.readFileSync(path.join(root, "tool/architecture/context_map.json"), "utf8"), /host-today/u);
@@ -656,7 +657,7 @@ test("--verify rejects a hand edit in a move commit", () => {
   assert.ok(errors.includes("- docs/today.md changed beyond moved paths"), errors.join("\n"));
 });
 
-test("--imports-only replays logged moves onto another branch, including files it added under the folder", () => {
+test("--imports-only replays recorded moves onto another branch, including files it added under the folder", () => {
   const {root} = applyFixture();
   const moveCommit = git(root, "rev-parse", "HEAD").trim();
   git(root, "branch", "-q", "main-after-move");

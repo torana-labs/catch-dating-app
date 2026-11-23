@@ -581,11 +581,15 @@ a time, so every legacy screen moves as it is, with no behavior change:
   with its parts and generated parts, tests follow the files they import into
   the app package, path mentions outside Dart are rewritten, generated outputs
   are regenerated rather than edited, and files that move from code not drawn
-  to the new-root rules are [carried](#carried-screens). Each move appends to
-  `tool/architecture/screen_move_log.json`, so `--verify` and `--imports-only`
-  work after a squash merge. A move PR's diff is renames plus directive and
-  path lines; a conflict is resolved by rerunning the codemod on the latest
-  main, never by hand.
+  to the new-root rules are [carried](#carried-screens). Each move writes its
+  own record, `tool/architecture/screen_moves/<group>.json`, so `--verify` and
+  `--imports-only` work after a squash merge, and replays follow each record's
+  `sequence`. Moves run in parallel: no two edit the same record, and the map's
+  legacy entries and the carried list keep one entry per line with a blank line
+  between neighbours, so moves that drop or carry different entries touch no
+  shared line. A move PR's diff is renames plus directive and path lines; a
+  conflict is resolved by rerunning the codemod on the latest main, never by
+  hand.
 - **Order.** Infrastructure first (the codemod; lint and tool readiness; app
   test shards and coverage; app-package dependencies; shared test support in
   `packages/catch_test_support`; captures split per app), then the actions and
