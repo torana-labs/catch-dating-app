@@ -13,7 +13,9 @@
     "apps/consumer/lib/**",
     "apps/host/lib/**",
     "packages/catch_ui/lib/**",
-    "design/components/widget_naming_baseline.json"
+    "design/components/widget_naming_baseline.json",
+    "tool/design/generate_widget_catalog_carried.test.mjs",
+    "tool/architecture/carried_screens.json"
   ],
   "command": "node tool/design/generate_widget_catalog.mjs --write",
   "surface": "local-writes-repo",
@@ -23,6 +25,7 @@
   "checks": [
     "node --check tool/design/generate_widget_catalog.mjs",
     "node --test tool/design/generate_widget_catalog.test.mjs",
+    "node --test tool/design/generate_widget_catalog_carried.test.mjs",
     "node tool/design/generate_widget_catalog.mjs --check"
   ],
   "ciRequirements": {
