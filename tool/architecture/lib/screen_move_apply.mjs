@@ -221,7 +221,7 @@ function carriedPreview({root, moves, read}) {
   const {added} = carriedAfterMove({json, moves, isNewRoot});
   return {
     status: "carry",
-    reason: `${added.length} moved file(s) will be carried; --apply then drops every entry catch_arch_stale_carry reports.`,
+    reason: `${added.length} moved file(s) will be carried; --apply then drops every entry catch_arch_stale_carry reports that check_library_shims would not flag.`,
     entries: added,
   };
 }
