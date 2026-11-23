@@ -108,3 +108,20 @@ export async function reconcileLayoutViewsForLayout(db: Db,
     after = page.docs[page.size - 1];
   }
 }
+
+/**
+ * Whether a plan write moved anything the layout view reads: the event, the
+ * owner, the selected layout or the unit kind.
+ * @param {FirebaseFirestore.DocumentData|undefined} before The old plan.
+ * @param {FirebaseFirestore.DocumentData|undefined} after The new plan.
+ * @return {boolean} True when the view must be rebuilt.
+ */
+export function layoutViewInputsChanged(
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): boolean {
+  const inputs = (data: FirebaseFirestore.DocumentData | undefined) =>
+    JSON.stringify(data === undefined ? null : [data.eventId ?? null,
+      data.organizerId ?? null, data.layoutId ?? null,
+      data.structureConfig?.unitKind ?? null]);
+  return inputs(before) !== inputs(after);
+}

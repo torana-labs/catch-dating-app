@@ -7,8 +7,8 @@ import {contractValidator} from "../shared/contractTestValidators";
 import {organizerEventSuccessLayoutDocumentId} from
   "../domain/formats/layoutDocumentId";
 import {getEventSuccessSpatialLayoutHandler} from "./layoutAssets";
-import {reconcileEventSuccessLayoutView, reconcileLayoutViewsForLayout} from
-  "./layoutViews";
+import {layoutViewInputsChanged, reconcileEventSuccessLayoutView,
+  reconcileLayoutViewsForLayout} from "./layoutViews";
 
 const validate = contractValidator("EventSuccessLayoutViewDocument");
 const unit = (id: string, gridX: number) => ({id, label: `Table ${id}`,
@@ -74,4 +74,16 @@ test("a layout edit rewrites every event that selects it", async () => {
   assert.equal((fake.get("eventSuccessLayoutViews/e2")!.layout as
     {label: string}).label, "Main hall");
   assert.equal(fake.get("eventSuccessLayoutViews/e3"), undefined);
+});
+
+test("the plan trigger rebuilds the view only when its inputs move", () => {
+  const plan = {eventId: "e1", organizerId: "org", layoutId: "hall",
+    structureConfig: {unitKind: "tables"}, rounds: 3};
+  assert.equal(layoutViewInputsChanged(plan, {...plan, rounds: 4}), false);
+  assert.equal(layoutViewInputsChanged(plan, {...plan, layoutId: "patio"}),
+    true);
+  assert.equal(layoutViewInputsChanged(plan, {...plan,
+    structureConfig: {unitKind: "wholeGroup"}}), true);
+  assert.equal(layoutViewInputsChanged(undefined, plan), true);
+  assert.equal(layoutViewInputsChanged(plan, undefined), true);
 });

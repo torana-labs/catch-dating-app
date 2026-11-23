@@ -1,60 +1,9 @@
 import 'package:catch_dating_app/contexts/live/data/event_participant_context_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_participant_context.dart';
-import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_platform/cache/app_clock.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-/// Answers getEventChatAccess and records every callable, so a test proves
-/// which reads reach Functions.
-class _Functions extends Fake implements FirebaseFunctions {
-  final calls = <String>[];
-
-  @override
-  HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) {
-    calls.add(name);
-    return _Callable();
-  }
-}
-
-class _Callable extends Fake implements HttpsCallable {
-  @override
-  Future<HttpsCallableResult<T>> call<T>([Object? parameters]) async =>
-      _Result<T>(
-        <String, Object?>{
-              'eventId': 'event-1',
-              'organizerId': 'org',
-              'title': 'Lantern walk',
-              'role': 'host',
-              'room': {
-                'status': 'notCreated',
-                'revision': 0,
-                'opensAtMillis': null,
-                'closesAtMillis': null,
-              },
-              'membership': {
-                'status': 'notJoined',
-                'revision': 0,
-                'notificationsMuted': false,
-              },
-              'canManage': true,
-              'canJoin': false,
-              'canReadMessages': false,
-              'canPostMessages': false,
-              'profileClaimRequired': false,
-              'termsVersion': 'event-chat-v1',
-            }
-            as T,
-      );
-}
-
-class _Result<T> extends Fake implements HttpsCallableResult<T> {
-  _Result(this.data);
-  @override
-  final T data;
-}
 
 const _eventId = 'event-1';
 const _uid = 'guest-1';
@@ -124,64 +73,6 @@ void main() {
         },
       });
       await expectLater(read(), throwsA(isA<Exception>()));
-    });
-  });
-
-  group('event chat access', () {
-    test(
-      'a guest with a directory row reads it without the callable',
-      () async {
-        final functions = _Functions();
-        await db
-            .collection('eventChatDirectoryEntries')
-            .doc('${_eventId}_$_uid')
-            .set({
-              'schemaVersion': 1,
-              'uid': _uid,
-              'eventId': _eventId,
-              'organizerId': 'org',
-              'title': 'Lantern walk',
-              'role': 'attendee',
-              'eventStartAtMillis': 1790000000000,
-              'room': {
-                'status': 'open',
-                'revision': 3,
-                'opensAtMillis': null,
-                'closesAtMillis': null,
-              },
-              'membership': {
-                'status': 'joined',
-                'revision': 2,
-                'notificationsMuted': false,
-              },
-              'profileClaimed': true,
-              'termsVersion': 'event-chat-v1',
-              'updatedAtMillis': 1,
-            });
-        final access = await EventChatRepository(
-          functions,
-          firestore: db,
-          currentUid: () => _uid,
-          clock: _clock,
-        ).access(_eventId);
-        expect(access.canReadMessages, isTrue);
-        expect(access.canPostMessages, isTrue);
-        expect(access.canManage, isFalse);
-        expect(functions.calls, isEmpty);
-      },
-    );
-
-    test('a manager with no row asks the callable, which lets them open the '
-        'room', () async {
-      final functions = _Functions();
-      final access = await EventChatRepository(
-        functions,
-        firestore: db,
-        currentUid: () => 'manager-1',
-        clock: _clock,
-      ).access(_eventId);
-      expect(access.canManage, isTrue);
-      expect(functions.calls, ['getEventChatAccess']);
     });
   });
 

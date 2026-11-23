@@ -2,34 +2,19 @@ import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_participant.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_profile.dart';
-import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_chat_repository.g.dart';
 
 class EventChatRepository {
-  const EventChatRepository(
-    this._functions, {
-    this.firestore,
-    this.currentUid,
-    this.clock = const AppClock(),
-  });
+  const EventChatRepository(this._functions);
   final FirebaseFunctions _functions;
-
-  /// Reads the person's own `eventChatDirectoryEntries` rows, which open a
-  /// chat they hold a row for without the access callable.
-  final FirebaseFirestore? firestore;
-
-  /// The signed-in person, whose row [access] reads.
-  final String? Function()? currentUid;
-  final AppClock clock;
 
   Future<EventChatParticipantPage> participants(
     String uid,
@@ -108,39 +93,13 @@ class EventChatRepository {
     );
   }
 
-  /// The signed-in person's access to one event chat. A person with a row
-  /// in `eventChatDirectoryEntries` (admitted to an active event, or a
-  /// manager who has joined its room) reads it from that row, derived at the
-  /// app clock as `getEventChatAccess` derives it. Without a row (a manager
-  /// who has not joined, a cancelled event, or no admission) the callable
-  /// still answers, so a manager can open and join the room.
-  Future<EventChatAccess> access(String eventId) async {
-    final firestore = this.firestore;
-    final uid = currentUid?.call();
-    if (firestore != null && uid != null && uid.isNotEmpty) {
-      final row = await withBackendErrorContext(
-        () => firestore
-            .collection('eventChatDirectoryEntries')
-            .doc('${eventId}_$uid')
-            .get(),
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'open event chat',
-          resource: 'eventChatDirectoryEntries',
+  Future<EventChatAccess> access(String eventId) async =>
+      EventChatAccess.fromMap(
+        await _call(
+          'getEventChatAccess',
+          GetEventChatAccessCallableRequest(eventId: eventId).toJson(),
         ),
       );
-      final data = row.data();
-      if (data != null && data['uid'] == uid && data['eventId'] == eventId) {
-        return EventChatAccess.fromDirectoryEntry(data, now: clock.now());
-      }
-    }
-    return EventChatAccess.fromMap(
-      await _call(
-        'getEventChatAccess',
-        GetEventChatAccessCallableRequest(eventId: eventId).toJson(),
-      ),
-    );
-  }
 
   Future<EventChatPage> messages(String eventId, {int? beforeSequence}) async =>
       EventChatPage.fromMap(
@@ -315,12 +274,8 @@ class EventChatRepository {
 }
 
 @riverpod
-EventChatRepository eventChatRepository(Ref ref) => EventChatRepository(
-  ref.watch(firebaseFunctionsProvider),
-  firestore: ref.watch(firebaseFirestoreProvider),
-  currentUid: () => ref.read(firebaseAuthProvider).currentUser?.uid,
-  clock: ref.watch(appClockProvider),
-);
+EventChatRepository eventChatRepository(Ref ref) =>
+    EventChatRepository(ref.watch(firebaseFunctionsProvider));
 
 @riverpod
 Future<EventChatAccess> eventChatAccess(Ref ref, String eventId) async {

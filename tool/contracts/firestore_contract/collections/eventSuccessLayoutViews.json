@@ -13,7 +13,7 @@
   "read": "get by event id for the event's organizer managers and for a guest whose own eventBookings row is signedUp or attended or whose own eventRuntimeParticipants row is ready, as getEventSuccessSpatialLayout admitted them; a view not written yet reads as missing; never listed",
   "write": "server only; written from eventSuccessPlans and organizerEventSuccessLayouts",
   "exportedFunctions": [
-    "onEventSuccessLayoutViewPlanChanged",
+    "onHostGuestViewPlanChanged",
     "onEventSuccessLayoutViewLayoutChanged"
   ],
   "migrationNotes": [

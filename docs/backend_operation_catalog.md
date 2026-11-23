@@ -257,15 +257,17 @@ documents the reader may not otherwise hold.
 so the guest status trigger resolves it the same way (one row, or ambiguous,
 never a guess) and only that guest reads the row.
 
-**Read path decision (Nov 2026, #2306 batch E): guest event day.**
-`getEventSuccessSpatialLayout` moved to `eventSuccessLayoutViews`, room
-geometry readable by the managers and admitted guests the callable admitted.
-`getEventChatAccess` is read from the person's own `eventChatDirectoryEntries`
-row, which now also follows organizer manager changes. It stays a callable
-for anyone without a row: a manager who has not joined the room (a row per
-manager per event would be a fan-out that also fills every manager's chat
-list), a cancelled event, or no admission. Messages, participants and
-profiles stay on their per-viewer callables.
+**Read path decision (Nov 2026, #2306 batch E): guest event day.** Each read
+was checked against the move test (Catch architecture audit, section 17 Q13):
+the audience must be expressible by a rule that re-reads canonical
+authority, every field must be allowed for that audience, and the filter must
+not depend on the viewer's blocks; fence reads never move.
+`getEventSuccessSpatialLayout` moved to `eventSuccessLayoutViews`: its rule
+re-reads the event's organizer and the guest's own booking or runtime row,
+and the view holds room geometry only. `getEventChatAccess` stays a callable:
+it is a fence read (its room and membership revisions fence
+`updateEventChatAccess`), and a manager who has not joined has no projection
+to read.
 
 **Read path decision (Nov 2026): server-trust, review fences the next command.**
 `getEventChatProfileSharing` returns the revisions that fence the sharing

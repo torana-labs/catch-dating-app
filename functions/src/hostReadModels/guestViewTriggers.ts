@@ -1,5 +1,7 @@
 import {isDeepStrictEqual} from "node:util";
 import * as admin from "firebase-admin";
+import {layoutViewInputsChanged, reconcileEventSuccessLayoutView} from
+  "../eventSuccess/layoutViews";
 import {
   Change,
   DocumentSnapshot,
@@ -264,7 +266,16 @@ export const onHostGuestViewEventChanged = onDocumentWritten({
 }, (event) => reconcileForWrite("events", event));
 export const onHostGuestViewPlanChanged = onDocumentWritten({
   ...options, document: "eventSuccessPlans/{documentId}",
-}, (event) => reconcileForWrite("eventSuccessPlans", event));
+}, async (event) => {
+  await reconcileForWrite("eventSuccessPlans", event);
+  // The same plan write decides the event's room layout view, rebuilt from
+  // the current plan and layout (not this payload) in one transaction.
+  if (layoutViewInputsChanged(event.data?.before.data(),
+    event.data?.after.data())) {
+    await reconcileEventSuccessLayoutView(admin.firestore(),
+      event.params.documentId);
+  }
+});
 export const onHostGuestViewAttendeeChanged = onDocumentWritten({
   ...options, document: "eventAttendees/{documentId}",
 }, (event) => reconcileForWrite("eventAttendees", event));
