@@ -195,7 +195,12 @@ test("the watchdog also wakes after main CI, one check at a time, with unchanged
   const workflow = fs.readFileSync(new URL("../../.github/workflows/cron-watchdog.yml", import.meta.url), "utf8");
   assert.match(workflow, /schedule:\n\s+# [^\n]*\n\s+- cron: "47 \* \* \* \*"/u);
   assert.match(workflow, /workflow_run:\n\s+workflows: \[CI\]\n\s+types: \[completed\]\n\s+branches: \[main\]/u);
-  assert.match(workflow, /if: github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.head_branch == 'main'/u);
+  // A workflow_run wake counts only for main's own push or nightly runs, never a (fork) PR run.
+  const guard = /if: >-\n\s+github\.event_name != 'workflow_run' \|\| \(\n([\s\S]*?)\)\n/u.exec(workflow)?.[1] ?? "";
+  assert.match(guard, /contains\(fromJSON\('\["push", "schedule"\]'\), github\.event\.workflow_run\.event\) &&/u);
+  assert.match(guard, /github\.event\.workflow_run\.head_repository\.full_name == github\.repository &&/u);
+  assert.match(guard, /github\.event\.workflow_run\.head_branch == 'main'/u);
+  assert.doesNotMatch(guard, /pull_request/u);
   assert.match(workflow, /concurrency:\n\s+group: cron-watchdog\n\s+cancel-in-progress: false/u);
   assert.match(workflow, /^permissions: \{\}$/mu);
   const granted = [...workflow.matchAll(/^ {6}(contents|actions|issues|[a-z-]+): (read|write)$/gmu)].map((match) => `${match[1]}:${match[2]}`);

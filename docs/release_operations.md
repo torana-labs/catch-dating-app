@@ -2512,7 +2512,8 @@ schedule started 5-7 hours late on 17 and 18 Nov 2026, and a nightly that never
 ran looked the same as a quiet one. `Scheduled run watchdog`
 (`.github/workflows/cron-watchdog.yml`, driven by `tool/ci/cron_watchdog.mjs`)
 runs hourly at :47 (owner decision, 22 Nov 2026: "dev runs automatically, prod
-asks first"), and also after each CI run on main completes (`workflow_run`). The
+asks first"), and also after each push or nightly CI run of main itself
+completes (`workflow_run`; never a pull-request run). The
 hourly schedule depends on the scheduler it watches: no slot from 01:47 to 04:47
 UTC started on 23 Nov 2026, while main pushes kept running. For each watched
 schedule it takes the latest daily run whose grace period has passed (3 hours
