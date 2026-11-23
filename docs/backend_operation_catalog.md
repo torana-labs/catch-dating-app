@@ -849,7 +849,7 @@ collections by owner decision (12 Nov 2026).
 | Path/field | Owner | Client rule |
 |---|---|---|
 | `publicProfiles/{uid}` | `syncPublicProfile` trigger | Read-only to clients. |
-| `publicOrganizers/{organizerId}` | `syncPublicOrganizer` trigger | Read-only to clients: anyone may get one by id; lists return only discoverable rows. |
+| `publicOrganizers/{organizerId}` | `publicOrganizer` projection of the `dispatchOrganizers` trigger | Read-only to clients: anyone may get one by id; lists return only discoverable rows. |
 | `hostProfiles/{uid}` | Host profile owner writes and organizer team/create seed paths | Public readable professional host identity; dating/profile fields are not stored here. |
 | `organizerTeamMemberships/{organizerId_uid}` | Organizer team callables | Scoped reads; direct client writes denied. |
 | `organizerFollows/{organizerId_uid}` | Organizer follow callables and account deletion | Owner-scoped reads; direct client writes denied. |
