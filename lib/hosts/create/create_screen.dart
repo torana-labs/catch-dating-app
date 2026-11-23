@@ -22,7 +22,6 @@ import 'package:catch_dating_app/hosts/create/widgets/create_plan_step_sheet.dar
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
-import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -32,6 +31,7 @@ import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_platform/routing/app_deep_links.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

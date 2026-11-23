@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_staff_controller.dart';
-import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/clipboard.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -10,6 +9,7 @@ import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_platform/routing/app_deep_links.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_platform/time/time_formatters.dart';
 import 'package:catch_ui/catch_ui.dart';
