@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_contact_merge_candidate_views.schema.json",
+  "title": "HostContactMergeCandidateViewDocument",
+  "description": "Server-maintained manager read view of one possible duplicate pair, at hostContactMergeCandidateViews/{candidateId}: the pair, its evidence and its review decision exactly as listOrganizerContactMergeCandidates returned the candidate, with the reviewing manager's uid in place of the reader-specific canReopen. A pair exists only while a conflicted identity claim or a proposed phone or email link joins two active contacts; no pair comes from a name match. Written by triggers on organizerContactIdentityClaims, organizerContactIdentityLinks, organizerContacts, organizerContactEventEdges and organizerContactMergeReviewDecisions. Never identity hashes, linked account uids or identity evidence, and never identity, permission or mutation authority: merges and decisions stay on their revision-fenced callables.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostContactMergeCandidateViews",
+  "x-firestore-path": "hostContactMergeCandidateViews/{candidateId}",
+  "x-document-id-field": "candidateId",
+  "x-owner": "Host read model projector (hostReadModels CRM view triggers)",
+  "required": [
+    "organizerId",
+    "candidateId",
+    "contactIds",
+    "contacts",
+    "matchKinds",
+    "confidence",
+    "sourceKinds",
+    "sharedEventIds",
+    "sharedEventCount",
+    "updatedAtMillis",
+    "decisionState",
+    "decisionRevision",
+    "reviewedByUid",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "candidateId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "contactIds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      },
+      "description": "The pair's contact ids in sorted order, for array-contains routing.",
+      "x-catch-ownership": "server-only"
+    },
+    "contacts": {
+      "$ref": "../callable_responses/list_organizer_contact_merge_candidates_response.schema.json#/definitions/candidate/properties/contacts",
+      "x-catch-ownership": "server-only"
+    },
+    "matchKinds": {
+      "$ref": "../callable_responses/list_organizer_contact_merge_candidates_response.schema.json#/definitions/candidate/properties/matchKinds",
+      "x-catch-ownership": "server-only"
+    },
+    "confidence": {
+      "$ref": "../callable_responses/list_organizer_contact_merge_candidates_response.schema.json#/definitions/candidate/properties/confidence",
+      "x-catch-ownership": "server-only"
+    },
+    "sourceKinds": {
+      "$ref": "../callable_responses/list_organizer_contact_merge_candidates_response.schema.json#/definitions/candidate/properties/sourceKinds",
+      "x-catch-ownership": "server-only"
+    },
+    "sharedEventIds": {
+      "$ref": "../callable_responses/list_organizer_contact_merge_candidates_response.schema.json#/definitions/candidate/properties/sharedEventIds",
+      "x-catch-ownership": "server-only"
+    },
+    "sharedEventCount": {
+      "$ref": "../callable_responses/list_organizer_contact_merge_candidates_response.schema.json#/definitions/candidate/properties/sharedEventCount",
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAtMillis": {
+      "$ref": "../callable_responses/list_organizer_contact_merge_candidates_response.schema.json#/definitions/candidate/properties/updatedAtMillis",
+      "x-catch-ownership": "server-only"
+    },
+    "decisionState": {
+      "$ref": "../callable_responses/list_organizer_contact_merge_candidates_response.schema.json#/definitions/candidate/properties/decisionState",
+      "x-catch-ownership": "server-only"
+    },
+    "decisionRevision": {
+      "$ref": "../callable_responses/list_organizer_contact_merge_candidates_response.schema.json#/definitions/candidate/properties/decisionRevision",
+      "x-catch-ownership": "server-only"
+    },
+    "reviewedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "The manager who marked the pair as different people, while it is marked; the reader may show it again only if it is them.",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

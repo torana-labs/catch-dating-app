@@ -443,53 +443,78 @@ async function hydrateCandidates(params: {
   ] as const));
   const result: Candidate[] = [];
   for (const seed of params.seeds) {
-    const left = contacts.get(seed.contactIds[0]);
-    const right = contacts.get(seed.contactIds[1]);
-    if (!left || !right) continue;
-    const leftEvents = edges.get(seed.contactIds[0]) ?? new Set<string>();
-    const rightEvents = edges.get(seed.contactIds[1]) ?? new Set<string>();
-    const sharedEventIds = [...leftEvents]
-      .filter((eventId) => rightEvents.has(eventId))
-      .sort();
-    const supportingLinks = links.filter((link) =>
-      seed.identityHashes.has(link.identityHash) &&
-      seed.contactIds.includes(link.contactId)
-    );
-    const sourceKinds = new Set<SourceKind>([
-      left.primarySource,
-      right.primarySource,
-      ...supportingLinks.map((link) => link.source),
-    ]);
+    if (!contacts.has(seed.contactIds[0]) ||
+        !contacts.has(seed.contactIds[1])) continue;
     const decision = decisionById.get(seed.candidateId);
-    const validDecision = decision?.organizerId === params.organizerId &&
-      samePair(decision.contactIds, seed.contactIds) ? decision : undefined;
-    result.push({
-      candidateId: seed.candidateId,
-      contacts: seed.contactIds.map((contactId) => {
-        const contact = contacts.get(contactId)!;
-        return {
-          contactId,
-          displayName: contact.displayNameOverride ?? contact.displayName,
-          phoneE164: contact.phoneE164,
-          email: contact.email,
-          linkedAccount: contact.linkedUid !== null,
-          primarySource: contact.primarySource,
-          revision: contact.revision,
-        };
-      }),
-      matchKinds: [...seed.matchKinds].sort(),
-      confidence: seed.confidence,
-      sourceKinds: [...sourceKinds].sort(),
-      sharedEventIds: sharedEventIds.slice(0, 20),
-      sharedEventCount: sharedEventIds.length,
-      updatedAtMillis: seed.updatedAtMillis,
-      decisionState: validDecision?.state ?? "none",
-      decisionRevision: validDecision?.revision ?? null,
-      canReopen: validDecision?.state === "differentPeople" &&
-        validDecision.reviewedByUid === params.actorUid,
-    });
+    const row = mergeCandidateRow({organizerId: params.organizerId, seed,
+      contacts, events: edges, supportingLinks: links, decision});
+    result.push({...row,
+      canReopen: row.decisionState === "differentPeople" &&
+        decision?.reviewedByUid === params.actorUid});
   }
   return result;
+}
+
+/**
+ * One candidate pair with its evidence, as listOrganizerContactMergeCandidates
+ * returns it, except the reader-specific canReopen. Shared with the
+ * hostContactMergeCandidateViews trigger.
+ * @param {object} params The seed and the facts read for it.
+ * @return {Omit<Candidate, "canReopen">} The candidate row.
+ */
+export function mergeCandidateRow(params: {
+  organizerId: string;
+  seed: CandidateSeed;
+  contacts: ReadonlyMap<string, OrganizerContactDocument>;
+  events: ReadonlyMap<string, ReadonlySet<string>>;
+  supportingLinks: readonly OrganizerContactIdentityLinkDocument[];
+  decision: OrganizerContactMergeReviewDecisionDocument | undefined;
+}): Omit<Candidate, "canReopen"> {
+  const {seed} = params;
+  const left = params.contacts.get(seed.contactIds[0])!;
+  const right = params.contacts.get(seed.contactIds[1])!;
+  const leftEvents = params.events.get(seed.contactIds[0]) ??
+    new Set<string>();
+  const rightEvents = params.events.get(seed.contactIds[1]) ??
+    new Set<string>();
+  const sharedEventIds = [...leftEvents]
+    .filter((eventId) => rightEvents.has(eventId))
+    .sort();
+  const supportingLinks = params.supportingLinks.filter((link) =>
+    seed.identityHashes.has(link.identityHash) &&
+    seed.contactIds.includes(link.contactId)
+  );
+  const sourceKinds = new Set<SourceKind>([
+    left.primarySource,
+    right.primarySource,
+    ...supportingLinks.map((link) => link.source),
+  ]);
+  const decision = params.decision;
+  const validDecision = decision?.organizerId === params.organizerId &&
+    samePair(decision.contactIds, seed.contactIds) ? decision : undefined;
+  return {
+    candidateId: seed.candidateId,
+    contacts: seed.contactIds.map((contactId) => {
+      const contact = params.contacts.get(contactId)!;
+      return {
+        contactId,
+        displayName: contact.displayNameOverride ?? contact.displayName,
+        phoneE164: contact.phoneE164,
+        email: contact.email,
+        linkedAccount: contact.linkedUid !== null,
+        primarySource: contact.primarySource,
+        revision: contact.revision,
+      };
+    }),
+    matchKinds: [...seed.matchKinds].sort(),
+    confidence: seed.confidence,
+    sourceKinds: [...sourceKinds].sort(),
+    sharedEventIds: sharedEventIds.slice(0, 20),
+    sharedEventCount: sharedEventIds.length,
+    updatedAtMillis: seed.updatedAtMillis,
+    decisionState: validDecision?.state ?? "none",
+    decisionRevision: validDecision?.revision ?? null,
+  };
 }
 
 async function loadEdges(
