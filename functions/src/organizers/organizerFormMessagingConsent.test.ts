@@ -107,7 +107,20 @@ test("captured form creates independent immutable receipts exactly once",
     assert.equal(org[0][1].uid, "person");
     assert.equal(org[0][1].sourceResponseId,
       h.records("organizerFormResponses")[0][0].split("/")[1]);
-    assert.equal(h.records("users").length, 0);
+    // No profile is created; only the person's contact permissions are.
+    assert.deepEqual(h.records("users").map(([path]) => path).sort(), [
+      "users/person/contactPermissions/catch",
+      "users/person/contactPermissions/organizer_org"]);
+    // Each receipt has its contactPermissionReceipts copy. The first form
+    // copy names no purpose, so neither sender gains a grant.
+    const copies = h.records("contactPermissionReceipts");
+    assert.deepEqual(copies.map(([path]) => path.split("/")[1]).sort(),
+      [org[0][0], platform[0][0]].map((path) => path.split("/")[1]).sort());
+    for (const [, permission] of h.records("users")) {
+      assert.deepEqual(permission.grants, {});
+      assert.deepEqual(permission.granted, []);
+    }
+    assert.equal(h.records("guestMessagingPermissions").length, 2);
   });
 
 test("free submissions share the same consent transaction without a payment",

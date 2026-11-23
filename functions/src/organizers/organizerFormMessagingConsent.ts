@@ -15,6 +15,8 @@ import {organizerCommunicationPreferenceId,
   unknownOrganizerCommunicationChannel} from
   "../shared/organizerCommunicationPreferences";
 import {requireDoc} from "../shared/validation";
+import {readContactPermissionState, writeContactPermissionState} from
+  "../messaging/contactPermissions";
 
 type Choices = NonNullable<
   SaveOrganizerFormResponseDraftCallablePayload["messagingChoices"]>;
@@ -252,6 +254,10 @@ export async function prepareFormMessagingGrants(params: {
     // finalized payment. A later STOP/settings decision always wins.
     if (previous?.updatedAt &&
         previous.updatedAt.toMillis() >= decidedAt.toMillis()) continue;
+    const contact = await readContactPermissionState(db, tx, {uid,
+      previous: preference, sender: scope === "organizer" ?
+        {kind: "organizer", organizerId: draft.organizerId} :
+        {kind: "catch"}});
     const receiptId = "fcpr_" + sha256(
       [scope, uid, draft.organizerId, responseId].join("|")).slice(0, 48);
     const copy = scope === "organizer" ? formMessagingTerms.organizerWhatsapp :
@@ -286,6 +292,8 @@ export async function prepareFormMessagingGrants(params: {
         tx.create(db.collection("organizerCommunicationPermissionReceipts")
           .doc(receiptId), receipt);
         tx.set(organizerRef, updated);
+        writeContactPermissionState(tx, contact, {next: updated, now,
+          receipts: [{id: receiptId, document: receipt, created: true}]});
       });
     } else {
       const receipt: CatchReceipt = {sourceOrganizerId: draft.organizerId,
@@ -298,6 +306,8 @@ export async function prepareFormMessagingGrants(params: {
         tx.create(db.collection("catchCommunicationPermissionReceipts")
           .doc(receiptId), receipt);
         tx.set(catchRef, updated);
+        writeContactPermissionState(tx, contact, {next: updated, now,
+          receipts: [{id: receiptId, document: receipt, created: true}]});
       });
     }
   }

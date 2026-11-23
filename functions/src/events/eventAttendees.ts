@@ -67,6 +67,8 @@ import {
   unknownOrganizerCommunicationChannel,
 } from
   "../shared/organizerCommunicationPreferences";
+import {readContactPermissionState, writeContactPermissionState} from
+  "../messaging/contactPermissions";
 import {eventPolicyFromEvent} from "./eventPolicy";
 import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import {marketForIdOrAlias} from "../locations/marketConfig";
@@ -914,6 +916,12 @@ export async function registerPublicEventHandler(
       tx.get(db.collection("organizerCommunicationPermissionReceipts")
         .doc(receipt.id))
     ));
+    const contact = permissionReceipts.length > 0 ?
+      await readContactPermissionState(db, tx, {uid,
+        sender: {kind: "organizer", organizerId},
+        previous: communicationPreferenceSnap.exists ?
+          communicationPreferenceSnap.data() as
+            OrganizerCommunicationPreferenceDocument : null}) : null;
     let applyIdentity: () => void = () => undefined;
     let applySeat: () => void = () => undefined;
     let createAttendeeAlias: () => void = () => undefined;
@@ -1048,6 +1056,13 @@ export async function registerPublicEventHandler(
       });
     if (communicationPreference) {
       tx.set(communicationPreferenceRef, communicationPreference);
+    }
+    if (communicationPreference && contact) {
+      // The registration phone is verified, so the permission names it.
+      writeContactPermissionState(tx, contact, {next: communicationPreference,
+        now, receipts: permissionReceipts.map((receipt, index) => ({
+          id: receipt.id, document: receipt.document,
+          created: !receiptSnaps[index].exists, endpointE164: phone}))});
     }
     for (let index = 0; index < permissionReceipts.length; index += 1) {
       const receipt = permissionReceipts[index];

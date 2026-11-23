@@ -11,8 +11,7 @@
   "write": "server only and append-only by operation design",
   "exportedFunctions": [
     "registerPublicEvent",
-    "onOrganizerMessagingWebhookEventCreated",
-    "onGuestMessagingPermissionOrganizerReceiptChanged"
+    "onOrganizerMessagingWebhookEventCreated"
   ],
   "migrationNotes": [
     "Grant receipts bind the organizer, participant, channel, reviewed terms version, consent-copy hash, source identity, and identity strength.",

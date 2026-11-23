@@ -8,17 +8,22 @@
   "rulesTestNames": [
     "lets guests read only their own messaging permission rows"
   ],
-  "owner": "Guest messaging permission projector: messaging guest messaging permission triggers",
+  "owner": "messaging contact permission writer, called in the same transaction by every consent writer",
   "writerContext": "messaging",
   "read": "the guest gets and lists only rows whose uid is theirs, while their account is not deleted; a row not written yet reads as missing",
-  "write": "server only; written from the preference and the receipts it names, deleted when the preference is",
+  "write": "server only; written from the preference and the receipts it names in the transaction that changes the preference, deleted at account deletion",
   "exportedFunctions": [
-    "onGuestMessagingPermissionCatchPreferenceChanged",
-    "onGuestMessagingPermissionOrganizerPreferenceChanged",
-    "onGuestMessagingPermissionCatchReceiptChanged",
-    "onGuestMessagingPermissionOrganizerReceiptChanged"
+    "registerPublicEvent",
+    "followOrganizerByPhone",
+    "promoteFormCommunicationIntent",
+    "submitOrganizerFormResponse",
+    "getOrganizerFormPayment",
+    "withdrawParticipantMessagingPermission",
+    "onOrganizerMessagingWebhookEventCreated",
+    "requestAccountDeletion"
   ],
   "migrationNotes": [
-    "preference is the sender's summary the retired listParticipantMessagingPreferences callable returned (Nov 2026), and the withdrawal response returns the same summary. The guest-messaging-permissions copy-forward migration creates rows for preferences recorded before the triggers."
+    "preference is the sender's summary the retired listParticipantMessagingPreferences callable returned (Nov 2026), and the withdrawal response returns the same summary. The guest-messaging-permissions copy-forward migration creates rows for preferences recorded before the triggers.",
+    "The four onGuestMessagingPermission* triggers retired in issue #2460 phase 1: every preference writer now writes the row in its own transaction. The row is deleted once the guest minimum-build floor passes a build that reads contactPermissions."
   ]
 }

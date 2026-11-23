@@ -203,6 +203,22 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       "catchCommunicationPermissionReceipts/catch-receipt-1": {
         uid: "runner-1", channel: "whatsapp", sourceOrganizerId: "club-1",
       },
+      "users/runner-1/contactPermissions/catch": {senderKind: "catch",
+        senderId: "catch", grants: {}, granted: []},
+      "users/runner-1/contactPermissions/organizer_club-1": {
+        senderKind: "organizer", senderId: "club-1", grants: {},
+        granted: []},
+      "users/runner-2/contactPermissions/organizer_club-1": {
+        senderKind: "organizer", senderId: "club-1", grants: {},
+        granted: []},
+      "contactPermissionReceipts/catch-receipt-1": {uid: "runner-1",
+        senderKind: "catch", senderId: "catch"},
+      "contactPermissionReceipts/receipt-other": {uid: "runner-2",
+        senderKind: "organizer", senderId: "club-1"},
+      "guestMessagingPermissions/catchpref_runner-1": {uid: "runner-1",
+        scope: "catch"},
+      "guestMessagingPermissions/catchpref_runner-2": {uid: "runner-2",
+        scope: "catch"},
       "organizerContactOrigins/origin-1": {
         organizerId: "club-1",
         actorUid: "runner-1",
@@ -534,6 +550,17 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     "catchCommunicationPreferences/runner-1"));
   assert.ok(harness.deletedPublicDocs.includes(
     "catchCommunicationPermissionReceipts/catch-receipt-1"));
+  for (const path of ["users/runner-1/contactPermissions/catch",
+    "users/runner-1/contactPermissions/organizer_club-1",
+    "contactPermissionReceipts/catch-receipt-1",
+    "guestMessagingPermissions/catchpref_runner-1"]) {
+    assert.ok(harness.deletedPublicDocs.includes(path), path);
+  }
+  for (const path of ["users/runner-2/contactPermissions/organizer_club-1",
+    "contactPermissionReceipts/receipt-other",
+    "guestMessagingPermissions/catchpref_runner-2"]) {
+    assert.equal(harness.deletedPublicDocs.includes(path), false, path);
+  }
   assert.ok(
     harness.updateWrites.some((write) =>
       write.path === "organizerContactOrigins/origin-1" &&

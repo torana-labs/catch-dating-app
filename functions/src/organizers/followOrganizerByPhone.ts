@@ -25,6 +25,8 @@ import {
   activeOrganizerFollowPatch,
   organizerRelationshipId,
 } from "../shared/relationshipDocuments";
+import {readContactPermissionState, writeContactPermissionState} from
+  "../messaging/contactPermissions";
 import {
   followByPhonePermissionReceipt,
   followerWhatsappGrant,
@@ -118,6 +120,9 @@ export async function followOrganizerByPhoneHandler(
       db.collection("organizerCommunicationPermissionReceipts")
         .doc(receipt.id) : null;
     const replaySnap = receiptRef ? await tx.get(receiptRef) : null;
+    const contact = receipt && !replaySnap?.exists ?
+      await readContactPermissionState(db, tx, {uid, previous: previous ?? null,
+        sender: {kind: "organizer", organizerId: data.organizerId}}) : null;
 
     // Follow edge: identical to followOrganizer, minus the profile gate.
     const follow = followSnap.data() as
@@ -162,6 +167,8 @@ export async function followOrganizerByPhoneHandler(
       updatedAt: now,
     };
     tx.set(preferenceRef, document);
+    writeContactPermissionState(tx, contact!, {next: document, now,
+      receipts: [{id: receipt.id, document: receipt.document, created: true}]});
     return {following: true as const, whatsappUpdates: "optedIn" as const,
       receiptId: receipt.id, idempotentReplay: false};
   });
