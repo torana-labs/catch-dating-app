@@ -2536,9 +2536,15 @@ schedule started 5-7 hours late on 17 and 18 Nov 2026, and a nightly that never
 ran looked the same as a quiet one. `Scheduled run watchdog`
 (`.github/workflows/cron-watchdog.yml`, driven by `tool/ci/cron_watchdog.mjs`)
 runs hourly at :47 (owner decision, 22 Nov 2026: "dev runs automatically, prod
-asks first"). For each watched schedule it takes the latest daily run whose
-grace period has passed (3 hours by default) and checks that a scheduled or
-dispatched run started after its cron time:
+asks first"), and also after each push or nightly CI run of main itself
+completes (`workflow_run`; never a pull-request run). The
+hourly schedule depends on the scheduler it watches: no slot from 01:47 to 04:47
+UTC started on 23 Nov 2026, while main pushes kept running. For each watched
+schedule it takes the latest daily run whose grace period has passed (3 hours
+by default) and checks that a scheduled or dispatched run started after its
+cron time. A run from before the workflow reached main is not owed: if no
+commit on main touched the workflow file by that cron time, the check reads
+`not_scheduled_yet` and nothing is reported.
 
 | Workflow | Cron (UTC) | If no run started | Reported on |
 |---|---|---|---|
@@ -2555,7 +2561,9 @@ environment=prod`. Run a prod deploy only after checking the dev deploy
 succeeded. The comment carries a hidden marker. The watchdog reads markers from
 both issues, closed ones included, updated in the last 3 days, and never
 dispatches or reports a run that already has one, so each expected run is
-handled at most once.
+handled at most once, however many times the watchdog runs. Its concurrency
+group runs one check at a time, so two runs never read the markers before
+either writes.
 
 A nightly that never started counts as **unknown**, never green, and is
 reported on "Main CI is red" because it is about CI health. The recovery run

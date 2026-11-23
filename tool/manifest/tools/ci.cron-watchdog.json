@@ -8,7 +8,7 @@
   "guardWorkflow": ".github/workflows/cron-watchdog.yml",
   "checkSafety": "local-readonly",
   "status": "active",
-  "description": "Hourly check that Data Validation, Deploy backend and the nightly CI started within 3 hours of their cron. Dispatches a missed dev-only run once (the nightly, the dev deploy), reports a missed prod run with its command for the owner, and reports a nightly that never started as unknown, never green. Each missed run is handled once, recorded by a marker comment.",
+  "description": "Hourly, and after each CI run on main, checks that each watched daily schedule (Data Validation, Deploy backend, the nightly CI, the test read map, the proof-reuse daily) started within 3 hours of its cron, skipping occurrences from before the workflow reached main. Dispatches a missed dev-only run once (the nightly, the dev deploy), reports a missed prod run with its command for the owner and a missed report-only run as a note, and reports a nightly that never started as unknown, never green. Each missed run is handled once, recorded by a marker comment.",
   "checks": [
     "node --check tool/ci/cron_watchdog.mjs",
     "node --test tool/ci/cron_watchdog.test.mjs"
