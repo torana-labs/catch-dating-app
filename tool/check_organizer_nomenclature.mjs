@@ -48,9 +48,9 @@ const forbiddenSourceMarkers = [
   ["lib/contexts/profiles/data", "'clubs/$"],
   ["lib/contexts/discovery/data/explore_recommendations_repository.dart", "Your club"],
   ["lib/contexts/discovery/data/explore_recommendations_repository.dart", "From your clubs"],
-  ["lib/organizers/presentation/detail/organizer_follow_controller.dart", "join a club"],
-  ["lib/organizers/presentation/detail/organizer_follow_controller.dart", "leave a club"],
-  ["lib/organizers/presentation/detail/organizer_follow_controller.dart", "update club notifications"],
+  ["lib/contexts/organizers/actions/organizer_follow_controller.dart", "join a club"],
+  ["lib/contexts/organizers/actions/organizer_follow_controller.dart", "leave a club"],
+  ["lib/contexts/organizers/actions/organizer_follow_controller.dart", "update club notifications"],
 ];
 
 // Checked against the Functions entry point's export list

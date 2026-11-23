@@ -27,7 +27,7 @@ export 'package:catch_dating_app/organizers/presentation/detail/organizer_detail
 // ── Presentation — view models & controllers ────────────────────────────────
 export 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart'; // public-api: read-model seam for route composition
 export 'package:catch_dating_app/organizers/presentation/detail/organizer_host_contact_controller.dart'; // public-api: command seam for route-owned actions
-export 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart'; // public-api: command seam for route-owned actions
+export 'package:catch_dating_app/contexts/organizers/actions/organizer_follow_controller.dart'; // public-api: command seam for route-owned actions
 
 // ── Presentation — widgets commonly reused outside the feature ──────────────
 export 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_body.dart'; // public-api: shared presentation component used outside this feature

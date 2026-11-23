@@ -3254,7 +3254,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
             "symbol": "OrganizerFollowController"
           },
           {
@@ -4151,7 +4151,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
             "symbol": "OrganizerFollowController"
           }
         ],
@@ -11953,7 +11953,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
             "symbol": "OrganizerFollowController"
           },
           {
@@ -19120,7 +19120,7 @@
             "symbol": "EventRecapController"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+            "file": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
             "symbol": "OrganizerFollowController"
           }
         ],
