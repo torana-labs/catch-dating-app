@@ -818,6 +818,17 @@ than Firestore collection reads.
 - `createOrganizerFormShareLink`
 - `getOrganizerFormShareAssets`
 
+The Host app no longer calls the reads in this list (#2306). The editor reads
+`hostFormEditorViews/{formId}` (the summary, draft definition and validation
+issues `getOrganizerFormEditor` returned, kept by triggers on
+`organizerForms` and `organizerFormDrafts`), and opens a form it just created
+or saved once that view reaches the returned revision. Share links are built
+on the device from the `hostFormSummaries` row (#2309). The template gallery
+is generated from `contracts/catalogs/organizer_form_templates.json`, the
+catalog `createOrganizerForm` materializes forms from, so the app no longer
+calls `listOrganizerFormTemplates`. The callables stay deployed for released
+Host builds until #2174 retires them.
+
 ### Respondent
 
 - `getPublicOrganizerForm`
@@ -832,7 +843,9 @@ than Firestore collection reads.
 
 - `listOrganizerFormResponses`
 - `getOrganizerFormResponseDetail`
-- `getOrganizerFormAnalytics`
+- `getOrganizerFormAnalytics` (the Host app reads `hostFormAnalyticsViews`
+  and `hostFormSourceViews` instead; the privacy threshold is applied in
+  their trigger)
 - `requestOrganizerFormExport`
 - `createOrganizerFormAutomation`
 - `setOrganizerFormAutomationState`
