@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-// The package copy of the app's test/goldens/support/golden_pump.dart. It
+// The package copy of the app's packages/catch_test_support/lib/goldens/golden_pump.dart. It
 // renders in CatchTheme, which is AppTheme without the app's ActivityPalette
 // (no package golden reads it), and settles frames itself rather than through
 // the app's test_pump_helpers.dart.

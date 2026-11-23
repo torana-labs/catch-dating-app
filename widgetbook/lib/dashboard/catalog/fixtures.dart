@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/dashboard_surface_fixtures.dart';
 
 final widgetbookDashboardViewer = DashboardSurfaceFixtures.viewer;
 

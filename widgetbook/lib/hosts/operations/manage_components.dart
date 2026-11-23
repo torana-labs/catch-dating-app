@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/contexts/events/data/event_live_position_service.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_route_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_check_in_qr_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

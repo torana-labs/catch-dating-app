@@ -649,7 +649,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
   }
 
   bool _isSizingScannerPath(String path) {
-    return !path.contains('/lib/design_fixtures/');
+    return !path.contains('/packages/catch_test_support/lib/design_fixtures/');
   }
 
   // Shared app UI lives in context parts, shared pages, the platform media

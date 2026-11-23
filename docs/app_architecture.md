@@ -281,7 +281,7 @@ Two habits reviewers hold every layer to:
   production code, route or config registration, or a Widgetbook use case or
   capture-catalog entry for a component with a widget-catalog or contract entry.
   Test-only references do not count, and Widgetbook alone does not count without
-  that entry. `lib/design_fixtures` and intentional in-dev features are exempt.
+  that entry. `packages/catch_test_support/lib/design_fixtures` and intentional in-dev features are exempt.
   Delete orphaned symbols together with their dead tests.
 
 ## Bounded Context Contract

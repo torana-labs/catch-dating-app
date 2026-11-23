@@ -5,10 +5,10 @@ import 'package:catch_dating_app/contexts/live/data/event_assistance_deliveries_
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_deliveries_provider.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
 import 'event_assistance_deliveries_fixtures.dart';
 import 'event_assistance_deliveries_test_repository.dart';
 

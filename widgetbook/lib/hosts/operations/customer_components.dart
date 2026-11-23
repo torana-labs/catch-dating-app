@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

@@ -1,11 +1,10 @@
 import 'package:catch_dating_app/hosts/presentation/widgets/host_booking_provider_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_luma_connection_sheet.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart';
-
-import '../../test/test_pump_helpers.dart';
 
 void main() {
   for (final scale in [1.0, 2.0]) {

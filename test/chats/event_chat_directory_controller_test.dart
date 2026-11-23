@@ -5,10 +5,9 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_directory_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../test_pump_helpers.dart';
 
 class DirectoryRepository extends Fake implements EventChatDirectoryRepository {
   final rows = <String, StreamController<List<EventChatAccess>>>{};

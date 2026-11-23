@@ -66,6 +66,8 @@ import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/push_installation_store.dart';
 import 'package:catch_platform/push/fcm_service.dart';
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_test_support/empty_event_chat_repository.dart';
+import 'package:catch_test_support/event_organizer_summary_fixture.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' show User;
@@ -81,8 +83,6 @@ import '../../test/onboarding/onboarding_test_helpers.dart'
     as onboarding_helpers;
 import '../../test/organizers/organizers_test_helpers.dart'
     as organizer_helpers;
-import '../../test/support/empty_event_chat_repository.dart';
-import '../../test/support/event_organizer_summary_fixture.dart';
 
 const testShellCity = CityData(
   name: 'mumbai',

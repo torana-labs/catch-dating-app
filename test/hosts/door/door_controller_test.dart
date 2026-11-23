@@ -17,11 +17,11 @@ import 'package:catch_dating_app/hosts/door/door_scan_state.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../test_pump_helpers.dart';
 import 'door_fixtures.dart';
 
 /// The attendance outbox path on fakes: each change is recorded and comes

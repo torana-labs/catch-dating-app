@@ -22,6 +22,8 @@ import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/persistence/command_journal_provider.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -31,8 +33,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../support/catch_test_fonts.dart';
-import '../../test_pump_helpers.dart';
 import '../../ui_captures/support/capture_device.dart';
 import '../../ui_captures/support/capture_pump.dart';
 

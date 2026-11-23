@@ -5,10 +5,10 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_signals.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
 import 'event_chat_controller_test.dart' as fixtures;
 import 'event_chat_signal_fake.dart';
 

@@ -7,6 +7,7 @@ import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -14,8 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-
-import '../test_pump_helpers.dart';
 
 void main() {
   ForegroundNotification? parse(

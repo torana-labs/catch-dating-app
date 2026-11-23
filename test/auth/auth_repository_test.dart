@@ -1,11 +1,11 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
 import 'auth_test_helpers.dart';
 
 void main() {

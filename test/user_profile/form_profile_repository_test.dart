@@ -1,11 +1,10 @@
 import 'package:catch_dating_app/contexts/profiles/data/form_profile_repository.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_test_support/contract_schemas.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../support/contract_schemas.dart';
 
 class _NoFunctions extends Fake implements FirebaseFunctions {}
 

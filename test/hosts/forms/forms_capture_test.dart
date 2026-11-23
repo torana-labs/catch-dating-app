@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../support/catch_test_fonts.dart';
 import '../../ui_captures/support/capture_device.dart';
 import '../../ui_captures/support/capture_pump.dart';
 import 'forms_captures.dart';

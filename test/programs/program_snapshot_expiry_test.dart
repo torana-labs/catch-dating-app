@@ -9,12 +9,11 @@ import 'package:catch_dating_app/contexts/programmes/data/program_work_repositor
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../test_pump_helpers.dart';
 
 const _offline = NetworkException('connection-failed', 'Offline');
 const _scope = 'plan:p:station';

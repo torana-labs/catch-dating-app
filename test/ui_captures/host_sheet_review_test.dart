@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../support/catch_test_fonts.dart';
-import '../test_pump_helpers.dart';
 import 'support/capture_device.dart';
 import 'support/capture_pump.dart';
 

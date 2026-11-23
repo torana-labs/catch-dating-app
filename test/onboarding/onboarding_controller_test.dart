@@ -12,11 +12,11 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.d
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
-import '../test_pump_helpers.dart';
 import 'onboarding_test_helpers.dart';
 
 class _CountingDraftRepository extends FakeOnboardingDraftRepository {
