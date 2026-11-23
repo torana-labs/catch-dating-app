@@ -123,22 +123,10 @@ async function reconcileOrganizerNameRows(
   }
 }
 
-/** An organiser's name: every programme, event and team row naming it. */
-export const onHostAssignmentOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{organizerId}",
-}, async (event) => {
-  const before = event.data?.before.data();
-  const after = event.data?.after.data();
-  if (unchanged(before, after, ["name"])) return;
-  await reconcileOrganizerNameRows(admin.firestore(),
-    event.params.organizerId);
-});
-
 /**
  * An organiser's name: every programme, event and team row naming it.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostAssignmentViewProjections = defineProjections(
   "organizers", [{

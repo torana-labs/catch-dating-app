@@ -266,23 +266,10 @@ export const onSavedEventCardCreated = onDocumentCreated({
 }, (event) => refreshSavedEventCard(admin.firestore(),
   event.params.documentId).then(() => undefined));
 
-export const onEventGuestEntryOrganizerWritten = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, async (event) => {
-  const [before, after] = versions(event);
-  if (before && after &&
-      !changed(before, after, ["archived", "appVisibility", "publicPage"])) {
-    return;
-  }
-  await refreshEventGuestEntriesForOrganizer(admin.firestore(),
-    event.params.documentId);
-});
-
 /**
  * An organizer's archive, app visibility or public page: its guests' entries.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const eventGuestEntryProjections = defineProjections("organizers", [{
   id: "eventGuestEntries", kind: "projection",

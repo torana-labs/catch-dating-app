@@ -120,15 +120,11 @@ export const onHostEventSetupViewEventChanged = onDocumentWritten({
 export const onHostEventSetupViewPreferencesChanged = onDocumentWritten({
   ...options, document: "eventSetupPreferences/{documentId}",
 }, (event) => reconcileForWrite("eventSetupPreferences", event));
-export const onHostEventSetupViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
 
 /**
  * An organizer write: the setup views of its events.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostEventSetupViewProjections = defineProjections("organizers", [{
   id: "hostEventSetupView", kind: "projection", when: () => true,

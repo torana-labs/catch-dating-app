@@ -454,9 +454,9 @@ on the team sees only the public page. Photo uploads and removals, events and
 live tools stay in Catch Host.
 
 Edits reach the public page within a minute without a purge: an organiser
-write rebuilds `organizerPublicPages` through `onPublicPageOrganizerWritten`
-within seconds, a server render reads the rebuilt record, and the CDN's cached
-HTML expires after `s-maxage=60`. The owner view re-reads its own data after
+write rebuilds `organizerPublicPages` through the `publicPages` projection of
+`dispatchOrganizers` within seconds, a server render reads the rebuilt record,
+and the CDN's cached HTML expires after `s-maxage=60`. The owner view re-reads its own data after
 every write, so the team sees the change at once.
 
 ## Current State

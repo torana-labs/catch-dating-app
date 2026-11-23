@@ -13,7 +13,6 @@
   "read": "current organizer managers get and list their own organizer's rows through Firestore listeners",
   "write": "server only; the evaluator writes changed rows ahead of time in one transaction per organizer",
   "exportedFunctions": [
-    "onOrganizerAttentionOrganizerChanged",
     "dispatchOrganizers",
     "onOrganizerAttentionEventChanged",
     "onOrganizerAttentionParticipationChanged",

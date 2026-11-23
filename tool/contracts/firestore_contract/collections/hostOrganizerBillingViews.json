@@ -13,7 +13,6 @@
   "read": "get by organizer id for the organizer's current owner (ownerUserId, else the primary host) while their account is not deleted; never listed",
   "write": "server only; written from organizers, commercialTerms (a platform change rewrites every organizer), organizerGrowthFacts and organizerBillingPlans",
   "exportedFunctions": [
-    "onHostOrganizerAccountViewOrganizerChanged",
     "dispatchOrganizers",
     "onHostOrganizerBillingViewTermsChanged",
     "onHostOrganizerBillingViewGrowthChanged",

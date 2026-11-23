@@ -13,7 +13,6 @@
   "read": "server only; the website server reads one document per event page with the Admin SDK",
   "write": "server only; rebuilt with its organizer's page by functions/src/publicPages",
   "exportedFunctions": [
-    "onPublicPageOrganizerWritten",
     "dispatchOrganizers",
     "onPublicPageEventWritten",
     "onPublicPageExternalEventWritten",

@@ -69,21 +69,10 @@ async function rebuildForOrganizerWrite(organizerId: string, before: Raw,
     "organizer");
 }
 
-export const onPublicPageOrganizerWritten = onDocumentWritten({
-  ...options, document: "organizers/{organizerId}",
-}, async (event) => {
-  const organizerId = event.params.organizerId;
-  const before = event.data?.before.data() as Raw;
-  const after = event.data?.after.data() as Raw;
-  if (!organizerContributionChanged(organizerId, before, after)) return;
-  await rebuildForOrganizerWrite(organizerId, before, after);
-});
-
 /**
  * An organizer write that changes its public page contribution.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const publicPageOrganizerProjections = defineProjections(
   "organizers", [{

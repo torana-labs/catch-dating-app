@@ -14,7 +14,6 @@
   "read": "only the view's own uid: gets it while a current manager of the organizer or while their claim is still being checked, and lists it with uid and waitingClaim equality; never while their account is deleted",
   "write": "server only; written per organizer from organizers, organizerClaimRequests, supplyIntakeRequests, events and organizerGrowthFacts, and deleted when its reader is no longer a manager or claimant",
   "exportedFunctions": [
-    "onHostOrganizerJourneyViewOrganizerChanged",
     "dispatchOrganizers",
     "onHostOrganizerJourneyViewClaimChanged",
     "onHostOrganizerJourneyViewIntakeChanged",

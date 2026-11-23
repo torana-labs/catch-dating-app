@@ -1,5 +1,4 @@
 import {isDeepStrictEqual} from "node:util";
-import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import {validatePublicOrganizerDocument} from
@@ -220,18 +219,10 @@ export async function syncPublicOrganizerWrite(organizerId: string,
   }
 }
 
-/** Keeps the public projection and its events' summary current. */
-export const syncPublicOrganizer = onDocumentWritten(
-  {document: "organizers/{organizerId}", retry: true},
-  (event) => syncPublicOrganizerWrite(event.params.organizerId,
-    event.data?.before.data() as Source | undefined,
-    event.data?.after.data() as Source | undefined));
-
 /**
  * The public organizer projection and its events' summary.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const publicOrganizerProjections = defineProjections("organizers", [{
   id: "publicOrganizer", kind: "projection", when: () => true,
