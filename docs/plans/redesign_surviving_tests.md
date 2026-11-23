@@ -747,7 +747,7 @@ Layout only, deleted with the screen:
 - `journey` participants setup mode offers the next open waitlist spots
 - `action` participants setup mode labels manual approvals as requests
 
-**`test/events/event_check_in_qr_payload_test.dart`** — behaviour · subject `lib/events/shared/event_check_in_qr_scanner.dart` · decided by rules
+**`test/events/event_check_in_qr_payload_test.dart`** — behaviour · subject `lib/pages/check_in/event_check_in_qr_scanner.dart` · decided by rules
 
 - `domain` event check-in QR scan classifier keeps scanner plugin details hidden
 - `domain` only a live venue-session QR yields attendance authority
@@ -1118,7 +1118,7 @@ Layout only, deleted with the screen:
 
 - `action` visit keeps its exact retry across dismissal: practice={practice} scale={scale}
 
-**`test/event_success/event_success_control_room_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/event_success/presentation/event_success_room_map.dart` · decided by rules
+**`test/event_success/event_success_control_room_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/pages/live_room/event_success_room_map.dart` · decided by rules
 
 - `body` restart mid-round resumes the correct persisted beat
 - `body` Room workspace renders the saved map before placements exist
@@ -1156,7 +1156,7 @@ Layout only, deleted with the screen:
 
 - `domain` progress cue state resolves complete, current, and future positions
 
-**`test/event_success/event_success_room_map_test.dart`** — behaviour · subject `lib/event_success/presentation/event_success_room_map.dart` · decided by rules
+**`test/pages/live_room/event_success_room_map_test.dart`** — behaviour · subject `lib/pages/live_room/event_success_room_map.dart` · decided by rules
 
 - `body` attendee map is read-only and keeps assigned distinct
 - `body` tap placement exposes every outcome without precision drag
@@ -3903,7 +3903,7 @@ Layout only, deleted with the screen:
 - `body` companion route is unavailable until host saves setup
 - `domain` companion route state resolves core loading messages and ready data
 
-**`test/event_success/event_success_runtime_test.dart`** — behaviour · subject `lib/event_success/presentation/event_success_conversation_cue_copy.dart` · decided by rules
+**`test/event_success/event_success_runtime_test.dart`** — behaviour · subject `lib/pages/live_room/event_success_conversation_cue_copy.dart` · decided by rules
 
 - `domain` EventSuccessRuntime: gates live prompts and post-match openers separately
 - `domain` EventSuccessRuntime: walks every format from light to reflective disclosure

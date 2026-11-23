@@ -11,7 +11,7 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_liv
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_movement_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_settings_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_card.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
+import 'package:catch_dating_app/pages/live_room/event_success_conversation_cue_copy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/hosts/live/live_screen.dart';
+import 'package:catch_dating_app/pages/live_room/event_success_room_map.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
