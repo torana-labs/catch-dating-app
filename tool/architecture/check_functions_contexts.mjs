@@ -15,7 +15,7 @@ const functionsMapPath = "tool/architecture/functions_context_map.json";
 const appMapPath = "tool/architecture/context_map.json";
 const registryPath = firestoreContractDir;
 const sourceRoot = "functions/src/";
-const layers = new Set(["platform", "domain", "surface", "entry"]);
+const layers = new Set(["platform", "domain", "surface", "entry", "dispatch"]);
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -86,6 +86,20 @@ export function loadFunctionsContextMap(source, appMap) {
     const [before, after] = entry.split("*").map((part) => part.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"));
     return new RegExp(`^${before}[^/]+${after}$`, "u");
   });
+  // Generated dispatch registries (issue #2451): one module per source
+  // collection that imports every context's projections for it. Each `*`
+  // stands for one path segment.
+  let dispatchRegistry = null;
+  if (map.dispatchRegistries != null) {
+    const pattern = map.dispatchRegistries;
+    if (typeof pattern !== "string" || !pattern.startsWith(sourceRoot) ||
+        !pattern.includes("*") || !pattern.endsWith(".generated.ts")) {
+      throw new Error("dispatchRegistries must be a path pattern under " +
+        `${sourceRoot} with at least one * that ends in .generated.ts.`);
+    }
+    dispatchRegistry = new RegExp(`^${pattern.split("*")
+      .map((part) => part.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&")).join("[^/]+")}$`, "u");
+  }
   const legacy = [];
   const seen = new Set();
   for (const entry of map.legacy ?? []) {
@@ -116,7 +130,7 @@ export function loadFunctionsContextMap(source, appMap) {
       throw new Error(`${retired} is retired: list each known violation in ${list} instead.`);
     }
   }
-  return {roots, contextRank, surfaces, entries, entryPatterns, legacy,
+  return {roots, contextRank, surfaces, entries, entryPatterns, legacy, dispatchRegistry,
     knownContextOrderImports: knownList(map, "knownContextOrderImports", "--list-context-order"),
     knownCrossContextWrites: knownList(map, "knownCrossContextWrites", "--list-foreign-writes")};
 }
@@ -188,6 +202,7 @@ export function knownKeys(items, keyOf) {
 // Where a functions/src file sits: {layer, context?, surface?}. Target roots
 // win; otherwise the longest legacy prefix decides; null when unplaced.
 export function placeFunctionsPath(relativePath, map) {
+  if (map.dispatchRegistry?.test(relativePath)) return {layer: "dispatch"};
   if (map.entries.has(relativePath) ||
       (map.entryPatterns ?? []).some((pattern) => pattern.test(relativePath))) return {layer: "entry"};
   const {roots} = map;
@@ -235,10 +250,17 @@ export function relativeImports(relativePath, source, exists) {
 // The layering rules, from issue #1350 and docs/app_architecture.md:
 // platform imports only platform; a domain context imports platform and the
 // contexts declared before it; a surface imports platform, any domain context
-// and its own files; nothing but the entry point imports a surface.
+// and its own files; nothing but the entry point imports a surface. A
+// generated dispatch registry is the one module that may import any context
+// or surface, and only an area entry imports it (issue #2451).
 export function importFinding(from, to, map) {
   if (from.layer === "entry") return null;
   if (to.layer === "entry") return {rule: "entryImported", reason: "only the deploy tooling reads index.ts"};
+  if (to.layer === "dispatch") {
+    return {rule: "dispatchRegistryImported",
+      reason: `${describe(from)} imports a dispatch registry; only its area's functions.ts re-exports it`};
+  }
+  if (from.layer === "dispatch") return null;
   if (from.layer === "platform") {
     return to.layer === "platform" ? null :
       {rule: "platformImportsUp", reason: `platform code imports ${describe(to)}`};
@@ -260,6 +282,7 @@ export function importFinding(from, to, map) {
 function describe(place) {
   if (place.layer === "domain") return `domain context ${place.context}`;
   if (place.layer === "surface") return `surface ${place.surface}`;
+  if (place.layer === "dispatch") return "a dispatch registry";
   return place.layer;
 }
 
@@ -351,7 +374,7 @@ export function foreignWrites({writes, writers, map}) {
     if (owner === "shared") continue;
     for (const file of byFile.keys()) {
       const place = placeFunctionsPath(file, map);
-      if (place == null || place.layer === "entry") continue;
+      if (place == null || place.layer === "entry" || place.layer === "dispatch") continue;
       const writer = placeId(place);
       if (writer !== owner) {
         foreign.push({rule: "foreignWrite", path: file, line: 1, collection,
@@ -390,7 +413,9 @@ Places every handwritten functions/src module by ${functionsMapPath} and
 checks its relative imports: platform imports only platform, domain code never
 imports a surface, a surface never imports another surface, and domain
 contexts import only contexts declared before them, and a collection is
-written only from the writerContext ${registryPath} names.
+written only from the writerContext ${registryPath} names. A generated
+dispatch registry (the map's dispatchRegistries pattern) may import any
+context or surface, and only an area entry may import it.
 
 Until issue #1350's file splits land, today's context-order imports and
 cross-context writes are listed one by one in the map's
