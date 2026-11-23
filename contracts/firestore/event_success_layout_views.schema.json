@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_layout_views.schema.json",
+  "title": "EventSuccessLayoutViewDocument",
+  "description": "Server-maintained read view of one event's room layout, at eventSuccessLayoutViews/{eventId}: exactly what getEventSuccessSpatialLayout returns, the selected organizer layout's id, label and units, or a null layout when the plan selects none or seats the whole group. Written by triggers on eventSuccessPlans and organizerEventSuccessLayouts. Room geometry only: never a guest, an assignment, a seat or another organizer's layout, and never identity, permission or mutation authority. Readable by the event's organizer managers and by a guest whose own booking is signed up or attended, or whose own runtime participant row is ready, exactly as the callable admitted them.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessLayoutViews",
+  "x-firestore-path": "eventSuccessLayoutViews/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "Event-success read model projector (eventSuccess layoutViewTriggers)",
+  "required": [
+    "eventId",
+    "organizerId",
+    "layout",
+    "version"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "layout": {
+      "$ref": "../callable_responses/get_event_success_spatial_layout_response.schema.json#/properties/layout",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

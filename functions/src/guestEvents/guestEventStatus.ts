@@ -96,8 +96,16 @@ export async function guestEventStatus(params: {
     offerPaymentId: offerPayments.docs[0]?.id ?? null,
     offerGrantId: null, offerExpiresAtMillis: null, offerAdmissible: false,
     offerAmbiguous: false, applicationStatus: null,
-    participationStatus: null, eventCard: null,
+    participationStatus: null, rosterLink: null, eventCard: null,
     updatedAtMillis: nowMillis};
+  // Which roster row is the guest's own, as the participant context read
+  // resolves it: only the linked uid decides, and two rows are ambiguous
+  // rather than ranked. Names and phone guesses never match.
+  if (["active", "cancelled"].includes(event.status)) {
+    row.rosterLink = attendees.size > 1 ? {kind: "ambiguous"} :
+      attendees.size === 1 ?
+        {kind: "linked", attendeeId: attendees.docs[0].id} : null;
+  }
   const participation = native.data() as EventBookingDocument |
     undefined;
   if (participation && validateEventBookingDocument(participation) &&
@@ -214,7 +222,8 @@ function finish(row: GuestEventStatus, event: EventDocument):
   const empty = row.booking === "none" && !row.ambiguous &&
     row.publicPaymentId === null && row.offerPaymentId === null &&
     row.offerGrantId === null && !row.offerAmbiguous &&
-    row.applicationStatus === null && row.participationStatus === null;
+    row.applicationStatus === null && row.participationStatus === null &&
+    (row.rosterLink ?? null) === null;
   return empty ? null : row;
 }
 

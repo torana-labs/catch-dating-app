@@ -144,3 +144,5 @@ export {getEventRcsWithdrawal, withdrawEventRcs} from
   "./operations/rcsWithdrawalHandlers";
 export {saveEventSuccessPlanSetup} from
   "./saveEventSuccessPlanSetup";
+export {onEventSuccessLayoutViewPlanChanged,
+  onEventSuccessLayoutViewLayoutChanged} from "./layoutViewTriggers";

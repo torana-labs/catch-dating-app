@@ -1,0 +1,23 @@
+{
+  "id": "eventSuccessLayoutViews",
+  "path": "eventSuccessLayoutViews/{eventId}",
+  "rulesMatch": "/eventSuccessLayoutViews/{eventId}",
+  "dartModel": null,
+  "typescriptInterface": "EventSuccessLayoutViewDocument",
+  "rulesTestFile": "functions/test/rules/guest_event_day_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets the event's managers and booked guests get its room layout and nothing else"
+  ],
+  "owner": "Event-success read model projector: eventSuccess layoutViewTriggers",
+  "writerContext": "live",
+  "read": "get by event id for the event's organizer managers and for a guest whose own eventBookings row is signedUp or attended or whose own eventRuntimeParticipants row is ready, as getEventSuccessSpatialLayout admitted them; a view not written yet reads as missing; never listed",
+  "write": "server only; written from eventSuccessPlans and organizerEventSuccessLayouts",
+  "exportedFunctions": [
+    "onEventSuccessLayoutViewPlanChanged",
+    "onEventSuccessLayoutViewLayoutChanged"
+  ],
+  "migrationNotes": [
+    "Replaces getEventSuccessSpatialLayout for the Catch app (#2306): the selected layout exactly as the callable projected it (publicEventSuccessLayout). The guest-event-day-views copy-forward migration creates views for events that predate the triggers.",
+    "No personal data: room geometry and the organizer's layout label."
+  ]
+}

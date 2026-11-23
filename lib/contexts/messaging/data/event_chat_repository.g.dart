@@ -55,7 +55,7 @@ final class EventChatRepositoryProvider
 }
 
 String _$eventChatRepositoryHash() =>
-    r'b2f76ebbf232a46f408db561f07466d3d586fdda';
+    r'5c7fb2b0cd921889574cc01b883ae90d1c17982f';
 
 @ProviderFor(eventChatAccess)
 final eventChatAccessProvider = EventChatAccessFamily._();

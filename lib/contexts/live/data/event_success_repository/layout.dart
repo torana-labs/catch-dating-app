@@ -52,8 +52,8 @@ mixin _EventSuccessLayoutRepository on _EventSuccessRepositoryCore {
   );
 
   /// The event's selected organizer layout, read directly. Rules let the
-  /// organizer team read its layouts; guests use [fetchSpatialLayout], which
-  /// projects only the selected layout to participants.
+  /// organizer team read its layouts; guests use [watchSpatialLayout], whose view
+  /// holds only the selected layout.
   Stream<EventSuccessLayout?> watchSelectedOrganizerLayout({
     required String organizerId,
     required String layoutId,
@@ -73,30 +73,37 @@ mixin _EventSuccessLayoutRepository on _EventSuccessRepositoryCore {
     ),
   );
 
-  Future<EventSuccessLayout?> fetchSpatialLayout(String eventId) =>
-      withBackendErrorContext(
-        () async {
-          final functions = _functions;
-          if (functions == null) {
-            throw StateError('FirebaseFunctions is not configured.');
-          }
-          final response = await functions
-              .httpsCallable('getEventSuccessSpatialLayout')
-              .call(
-                GetEventSuccessSpatialLayoutCallableRequest(
-                  eventId: eventId,
-                ).toJson(),
-              );
-          final data = Map<String, dynamic>.from(response.data as Map);
-          final layout = data['layout'];
-          return layout is Map
-              ? EventSuccessLayout.fromJson(Map<String, dynamic>.from(layout))
-              : null;
-        },
+  /// The event's room layout for a guest, live from
+  /// `eventSuccessLayoutViews/{eventId}` (#2306) instead of the
+  /// `getEventSuccessSpatialLayout` callable: the selected layout's id,
+  /// label and units, or null when the plan has no room map. Rules admit the
+  /// event's managers and a guest whose own booking is signed up or attended,
+  /// or whose own runtime row is ready, as the callable did. A view the
+  /// server has not written reads as no map.
+  Stream<EventSuccessLayout?> watchSpatialLayout(String eventId) =>
+      withBackendErrorStream(
+        () => _db
+            .collection('eventSuccessLayoutViews')
+            .doc(eventId)
+            .snapshots()
+            .where((doc) => doc.exists || !doc.metadata.isFromCache)
+            .map((doc) {
+              final view = doc.data();
+              if (view == null) return null;
+              if (view['eventId'] != eventId || view['version'] != 1) {
+                throw const FormatException('Room layout belongs elsewhere.');
+              }
+              final layout = view['layout'];
+              return layout is Map
+                  ? EventSuccessLayout.fromJson(
+                      Map<String, dynamic>.from(layout),
+                    )
+                  : null;
+            }),
         context: const BackendErrorContext(
-          service: BackendService.functions,
+          service: BackendService.firestore,
           action: 'load event room layout',
-          resource: _layoutsPath,
+          resource: 'eventSuccessLayoutViews',
         ),
       );
 
