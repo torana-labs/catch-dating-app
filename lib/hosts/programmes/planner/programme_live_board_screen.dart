@@ -17,8 +17,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// The live board (RbProgLiveBoard), always night, from
-/// `getProgramLiveBoard`. Alert actions run `resolveProgramAlert`; All
+/// The live board (RbProgLiveBoard), always night, read through listeners
+/// on the `programAlertViews` and `programTravelCountViews` read models and
+/// the programme's functions. Alert actions run `resolveProgramAlert`; All
 /// alerts opens the staff Alerts screen; the top bar plans a message.
 class HostProgrammeLiveBoardScreen extends ConsumerStatefulWidget {
   const HostProgrammeLiveBoardScreen({super.key, required this.programId});

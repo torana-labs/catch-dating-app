@@ -15,9 +15,10 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The alerts for this person's jobs at a programme, always night, from
-/// `getProgramLiveBoard`: the server returns only the alerts stamped for
-/// duties the caller holds (planners and coordinators also see flights).
+/// The alerts for this person's jobs at a programme, always night, read
+/// through listeners on the `programAlertViews` read model: the app listens
+/// only to the alerts stamped for duties the caller holds, and planners and
+/// coordinators read every alert, flights included.
 /// Take it, Done and Reopen run `resolveProgramAlert`.
 class StaffAlertsScreen extends ConsumerStatefulWidget {
   const StaffAlertsScreen({super.key, required this.programId, this.now});
