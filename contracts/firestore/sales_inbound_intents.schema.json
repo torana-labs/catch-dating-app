@@ -636,7 +636,7 @@
     },
     "welcomeWhatsapp": {
       "$ref": "#/definitions/whatsappTemplateSend",
-      "description": "A host lead's automatic host_lead_welcome template from Catch's WhatsApp number: a website guide, demo or venue lead given under consent playbook-lead-whatsapp-v2, or a Meta lead-form lead from a form that asks for WhatsApp before Submit (META_LEAD_FORM_WHATSAPP_CONSENT) while CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED is on. Written once when Catch claims the send (state sending), then settled, or skipped. Its presence means the lead has had its one attempt, so a retried trigger never sends again. Absent while CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED is off, for internal test leads, leads older than six hours and any lead it does not apply to."
+      "description": "A host lead's automatic host_lead_welcome template from Catch's WhatsApp number: a website guide, demo or venue lead given under consent playbook-lead-whatsapp-v2, or a Meta lead-form lead while CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED is on. Written once when Catch claims the send (state sending), then settled, or skipped. Its presence means the lead has had its one attempt, so a retried trigger never sends again. Absent while CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED is off, for internal test leads, leads older than six hours and any lead it does not apply to."
     }
   },
   "allOf": [
