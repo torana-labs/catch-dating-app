@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_body_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_overlay_top_bar.dart';
+import 'package:catch_dating_app/pages/event/event_detail_view_model.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';

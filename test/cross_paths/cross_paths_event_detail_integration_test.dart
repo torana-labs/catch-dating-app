@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/connections/domain/cross_paths_event_c
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
+import 'package:catch_dating_app/pages/event/event_detail_screen.dart';
+import 'package:catch_dating_app/pages/event/event_detail_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

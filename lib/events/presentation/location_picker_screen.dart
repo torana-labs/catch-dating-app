@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/events/data/places_repository.dart'
     show PlaceAutocompleteSuggestion;
 import 'package:catch_dating_app/events/presentation/location_picker_controller.dart';
-import 'package:catch_dating_app/locations/shared/location_map.dart';
+import 'package:catch_dating_app/pages/event/location/location_map.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/l10n.dart';

@@ -5,11 +5,11 @@ import 'package:catch_dating_app/contexts/live/data/event_sms_preference_reposit
 import 'package:catch_dating_app/contexts/live/domain/event_participant_context.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_sender_preference.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_sms_preference.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_channel_accordion.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_preference_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_preferences_navigation_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_preferences_sheet.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_sender_section.dart';
+import 'package:catch_dating_app/pages/event/messages/event_message_channel_accordion.dart';
+import 'package:catch_dating_app/pages/event/messages/event_message_preference_section.dart';
+import 'package:catch_dating_app/pages/event/messages/event_message_preferences_navigation_section.dart';
+import 'package:catch_dating_app/pages/event/messages/event_message_preferences_sheet.dart';
+import 'package:catch_dating_app/pages/event/messages/event_message_sender_section.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

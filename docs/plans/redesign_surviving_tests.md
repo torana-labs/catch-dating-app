@@ -522,7 +522,7 @@ Layout only, deleted with the screen:
 
 `apps/host/lib/events/create`. 138 behaviours: 40 domain, 47 action, 5 parts, 39 body, 7 journey.
 
-**`test/events/events_widgets_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/events/presentation/event_detail_view_model.dart`, `lib/hosts/presentation/event_management/widgets/when_step.dart` · decided by rules · also under P6 explore, shared lib/pages/event
+**`test/events/events_widgets_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/pages/event/event_detail_view_model.dart`, `lib/hosts/presentation/event_management/widgets/when_step.dart` · decided by rules · also under P6 explore, shared lib/pages/event
 
 - `body` Events widgets: basic input widgets render their states and handle taps
 - `body` Events widgets: when step renders schedule validation text
@@ -3162,7 +3162,7 @@ Layout only, deleted with the screen:
 - `body` CalendarScreen: shows a signed-out empty calendar without querying events
 - `body` CalendarScreen: shows a signed-in empty calendar after event streams resolve
 
-**`test/events/event_date_rail_card_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/events/shared/event_tiles/event_date_rail_card.dart` · decided by rules
+**`test/pages/event/tiles/event_date_rail_card_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/pages/event/tiles/event_date_rail_card.dart` · decided by rules
 
 - `body` DateTicket uses activity art and a trailing price decision
 - `parts` DateTicket exposes veiled attendee proof without identities
@@ -3364,14 +3364,14 @@ Layout only, deleted with the screen:
 
 `lib/pages/event`. 163 behaviours: 73 domain, 22 action, 13 parts, 40 body, 15 journey; 1 more in `widgetbook/test`.
 
-**`test/cross_paths/cross_paths_event_consent_section_test.dart`** — behaviour · subject `lib/cross_paths/presentation/cross_paths_event_consent_section.dart` · decided by rules
+**`test/pages/event/cross_paths_event_consent_section_test.dart`** — behaviour · subject `lib/pages/event/cross_paths_event_consent_section.dart` · decided by rules
 
 - `domain` eligibility requires both consent gates and a future booking
 - `domain` keeps only an existing enabled consent revocable after eligibility
 - `parts` stays absent for the hidden state
 - `parts` renders the route-resolved event consent state
 
-**`test/cross_paths/cross_paths_event_detail_integration_test.dart`** — behaviour · subject `lib/events/presentation/event_detail_screen.dart`, `lib/events/presentation/event_detail_view_model.dart` · decided by rules
+**`test/cross_paths/cross_paths_event_detail_integration_test.dart`** — behaviour · subject `lib/pages/event/event_detail_screen.dart`, `lib/pages/event/event_detail_view_model.dart` · decided by rules
 
 - `journey` Cross Paths Event Detail integration: renders route-owned consent when eligible
 - `body` Cross Paths Event Detail integration: keeps an existing consent revocable
@@ -3380,7 +3380,7 @@ Layout only, deleted with the screen:
 
 - `domain` every app row of design/public_surface_behavior.json holds: authority, Explore, the map, organizer and event detail, event location and route guards match the matrix (92 rows)
 
-**`test/events/event_detail_controller_test.dart`** — behaviour · subject `lib/events/presentation/event_detail_controller.dart` · decided by rules
+**`test/pages/event/event_detail_controller_test.dart`** — behaviour · subject `lib/pages/event/event_detail_controller.dart` · decided by rules
 
 - `domain` buildEventDetailViewModel: does not derive guest actions before auth resolves
 - `domain` buildEventDetailViewModel: returns loading while any dependency is still loading
@@ -3407,7 +3407,7 @@ Layout only, deleted with the screen:
 - `action` EventDetailController: records invite-link opens through the event repository seam
 - `action` EventDetailController: logs but does not surface invite-link attribution failures
 
-**`test/events/event_detail_dock_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/events/presentation/widgets/event_detail_dock.dart` · decided by rules
+**`test/pages/event/widgets/event_detail_dock_test.dart`** — mixed (1 layout cases go with the screen) · subject `lib/pages/event/widgets/event_detail_dock.dart` · decided by rules
 
 - `action` EventDetailDock: books a free event from the eligible state
 - `action` EventDetailDock: gates run-event booking behind run preferences
@@ -3424,24 +3424,24 @@ Layout only, deleted with the screen:
 - `parts` EventDetailDock: renders attended and past states
 - `parts` EventDetailDock: does not show attended state before the event starts
 
-**`test/events/event_detail_failed_read_retry_test.dart`** — behaviour · subject `lib/events/presentation/event_detail_view_model.dart` · decided by rules
+**`test/events/event_detail_failed_read_retry_test.dart`** — behaviour · subject `lib/pages/event/event_detail_view_model.dart` · decided by rules
 
 - `domain` Retry re-runs the organizer read keyed by the loaded event
 
-**`test/events/event_detail_information_state_test.dart`** — behaviour · subject `lib/events/presentation/event_detail_information_state.dart` · decided by rules
+**`test/pages/event/event_detail_information_state_test.dart`** — behaviour · subject `lib/pages/event/event_detail_information_state.dart` · decided by rules
 
 - `domain` resolves each Event Detail fact into exactly one section
 - `domain` caps sign-up facts at admission, waitlist, and variable pricing
 - `domain` waitlist copy follows the configured mode
 - `domain` free events use release-the-spot copy instead of refund language
 
-**`test/events/event_detail_paid_checkout_dock_test.dart`** — behaviour · subject `lib/events/presentation/event_detail_screen_state.dart` · decided by rules
+**`test/events/event_detail_paid_checkout_dock_test.dart`** — behaviour · subject `lib/pages/event/event_detail_screen_state.dart` · decided by rules
 
 - `domain` organizer-sold paid seats keep the book action
 - `domain` other paid seats are unavailable with a reason before any tap
 - `domain` paid waitlist offers cannot be accepted when offers are not sold
 
-**`test/events/event_detail_screen_state_test.dart`** — behaviour · subject `lib/events/presentation/event_detail_screen_state.dart` · decided by rules
+**`test/pages/event/event_detail_screen_state_test.dart`** — behaviour · subject `lib/pages/event/event_detail_screen_state.dart` · decided by rules
 
 - `domain` booking profile gate rejects a non-null incomplete profile
 - `domain` EventDetail booking dock state: hides Catch booking for an unclaimed organizer
@@ -3463,7 +3463,7 @@ Layout only, deleted with the screen:
 - `domain` EventDetail host state: derives content display data and message availability
 - `domain` EventDetail host state: shows the verified seal only for owner-verified authority
 
-**`test/events/event_detail_widgets_test.dart`** — mixed (6 layout cases go with the screen) · subject `lib/events/presentation/event_detail_screen.dart` · decided by rules
+**`test/events/event_detail_widgets_test.dart`** — mixed (6 layout cases go with the screen) · subject `lib/pages/event/event_detail_screen.dart` · decided by rules
 
 - `body` EventDetailScreen: renders the loading state
 - `body` EventDetailScreen: uses initialEvent while live data is still loading
@@ -3492,7 +3492,7 @@ Layout only, deleted with the screen:
 - `journey` EventDetailBody: route saved event button surfaces save failures
 - `journey` EventDetailBody: location tap opens the in-app event map
 
-**`test/events/event_field_optionality_test.dart`** — behaviour · subject `lib/hosts/presentation/event_management/widgets/event_itinerary_editor.dart`, `lib/events/presentation/widgets/event_detail_fact_list.dart` · decided by rules, 1 by hand
+**`test/events/event_field_optionality_test.dart`** — behaviour · subject `lib/hosts/presentation/event_management/widgets/event_itinerary_editor.dart`, `lib/pages/event/widgets/event_detail_fact_list.dart` · decided by rules, 1 by hand
 
 - `domain` explicitly skipped route stays skipped after draft serialization
 - `body` blank content omits authored plan, itinerary and photo sections
@@ -3502,18 +3502,18 @@ Layout only, deleted with the screen:
 - `journey` editing itinerary preserves route distance and can clear it
 - `domain` cancellation reason is rendered only for a cancelled event
 
-**`test/events/event_hype_avatar_row_test.dart`** — behaviour · subject `lib/events/presentation/widgets/event_hype_avatar_row.dart` · decided by rules
+**`test/pages/event/widgets/event_hype_avatar_row_test.dart`** — behaviour · subject `lib/pages/event/widgets/event_hype_avatar_row.dart` · decided by rules
 
 - `parts` EventHypeAvatarRow renders veiled activity placeholders when obscured
 - `domain` eventHypeAvatars uses the server-owned candidate order and thumbnails
 - `domain` eventHypeAvatars falls back to full photo while thumbnails backfill
 
-**`test/events/event_share_card_test.dart`** — behaviour · subject `lib/events/shared/event_share_card.dart` · decided by rules
+**`test/pages/event/event_share_card_test.dart`** — behaviour · subject `lib/pages/event/event_share_card.dart` · decided by rules
 
 - `parts` exports an event invite as a png with the event link
 - `parts` uses a personal invite URL and records only share intent
 
-**`test/events/event_viewer_state_provider_test.dart`** — behaviour · subject `lib/events/presentation/widgets/event_detail_dock.dart`, `lib/contexts/bookings/actions/event_booking_controller.dart` · decided by rules
+**`test/events/event_viewer_state_provider_test.dart`** — behaviour · subject `lib/pages/event/widgets/event_detail_dock.dart`, `lib/contexts/bookings/actions/event_booking_controller.dart` · decided by rules
 
 - `body` unresolved current facts never fall back to local approval
 - `body` failed viewer reads expose retry rather than booking
@@ -3523,7 +3523,7 @@ Layout only, deleted with the screen:
 - `action` completed cancellation refreshes current authority
 - `body` unclaimed supply does not start a private viewer read
 
-**`test/events/event_viewer_state_test.dart`** — behaviour · subject `lib/events/presentation/event_detail_screen_state.dart` · decided by rules
+**`test/events/event_viewer_state_test.dart`** — behaviour · subject `lib/pages/event/event_detail_screen_state.dart` · decided by rules
 
 - `domain` booking dock consumes current facts: follow and approval cannot bypass current membership
 - `domain` booking dock consumes current facts: approval cannot bypass present capacity
@@ -3539,7 +3539,7 @@ Layout only, deleted with the screen:
 - `domain` booking dock consumes current facts: unknown scope cannot enable any action
 - `domain` booking dock consumes current facts: missing booking details remain closed despite a valid account
 
-**`test/events/events_widgets_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/events/shared/event_tiles/event_tiles.dart`, `lib/events/presentation/event_detail_view_model.dart` · decided by rules · also under P3.2 events/create, P6 explore
+**`test/events/events_widgets_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/events/shared/event_tiles/event_tiles.dart`, `lib/pages/event/event_detail_view_model.dart` · decided by rules · also under P3.2 events/create, P6 explore
 
 - `body` Events widgets: does not fabricate an itinerary for legacy event documents
 - `journey` Events widgets: location card uses the event required exact coordinates
@@ -3558,7 +3558,7 @@ Layout only, deleted with the screen:
 - `body` Events widgets: who is going shows the empty upcoming state
 - `body` Events widgets: who is going loads profiles and shows overflow for past events
 
-**`test/host_memberships/host_membership_event_dock_test.dart`** — behaviour · subject `lib/events/presentation/event_detail_screen_state.dart` · decided by rules
+**`test/host_memberships/host_membership_event_dock_test.dart`** — behaviour · subject `lib/pages/event/event_detail_screen_state.dart` · decided by rules
 
 - `domain` an included member books free with an included note
 - `domain` a discounted member sees the usual price beside the member price
@@ -3584,7 +3584,7 @@ Layout only, deleted with the screen:
 - `action` delete delegates to repository
 - `action` setOwnerResponse delegates trimmed host response
 
-**`widgetbook/test/primitive_goldens_test.dart`** — behaviour · subject `lib/events/presentation/widgets/event_detail_dock.dart` · decided by rules · adjacent, not in the totals
+**`widgetbook/test/primitive_goldens_test.dart`** — behaviour · subject `lib/pages/event/widgets/event_detail_dock.dart` · decided by rules · adjacent, not in the totals
 
 - `parts` booking dock catalog mounts the production state surface
 
@@ -3751,7 +3751,7 @@ Layout only, deleted with the screen:
 - `action` already completed free booking is not reclassified after account change
 - `action` controller preserves the receipt returned by an already-started checkout
 
-**`test/events/organizer_payment_method_sheet_test.dart`** — behaviour · subject `lib/events/presentation/widgets/organizer_payment_method_sheet.dart` · decided by rules
+**`test/pages/event/widgets/organizer_payment_method_sheet_test.dart`** — behaviour · subject `lib/pages/event/widgets/organizer_payment_method_sheet.dart` · decided by rules
 
 - `parts` payment page shows the quote and every method {name}
 - `parts` without a refund deadline the page omits the refund line
@@ -3793,25 +3793,25 @@ Layout only, deleted with the screen:
 - `domain` keepAlive provider lifecycle: companion launch registry retains de-dupe state without listeners
 - `action` keepAlive provider lifecycle: live effects controller keeps imperative controller instance
 
-**`test/event_success/event_assignment_feature_sheet_test.dart`** — behaviour · subject `lib/event_success/presentation/event_assignment_feature_sheet.dart` · decided by rules
+**`test/pages/event/messages/event_assignment_feature_sheet_test.dart`** — behaviour · subject `lib/pages/event/messages/event_assignment_feature_sheet.dart` · decided by rules
 
 - `parts` auth change discards prior answer result
 - `parts` background clears answer and rejects late result
 - `action` failed write retains error after authoritative refresh
 
-**`test/event_success/event_message_preferences_widgets_test.dart`** — behaviour · subject `lib/event_success/presentation/event_message_preferences_navigation_section.dart` · decided by rules
+**`test/event_success/event_message_preferences_widgets_test.dart`** — behaviour · subject `lib/pages/event/messages/event_message_preferences_navigation_section.dart` · decided by rules
 
 - `action` independent consent and exact retry after dismissal at {scale}
 - `action` previous sender can be withdrawn but never silently granted
 - `parts` {resolution} identity offers recovery without channel reads
 - `action` sign-out removes the old terms and grant actions
 
-**`test/event_success/event_participant_context_test.dart`** — behaviour · subject `lib/event_success/presentation/event_participant_context_provider.dart` · decided by rules
+**`test/event_success/event_participant_context_test.dart`** — behaviour · subject `lib/pages/event/messages/event_participant_context_provider.dart` · decided by rules
 
 - `domain` refresh retires the old link before resolving a new source
 - `domain` same UID re-entry cannot revive a late old-account identity
 
-**`test/event_success/event_sender_preference_controller_test.dart`** — behaviour · subject `lib/event_success/presentation/event_sender_preference_controller.dart` · decided by rules
+**`test/pages/event/messages/event_sender_preference_controller_test.dart`** — behaviour · subject `lib/pages/event/messages/event_sender_preference_controller.dart` · decided by rules
 
 - `action` discovery is read-only; configured sender is the only enrollment choice
 - `action` empty history pages remain explicitly pageable without fetching all senders
@@ -3825,7 +3825,7 @@ Layout only, deleted with the screen:
 - `action` read failures and backward views cannot reuse a prior checkbox callback
 - `action` WhatsApp and RCS remain independently operable for the same participant
 
-**`test/event_success/event_sender_preference_receipt_test.dart`** — behaviour · subject `lib/event_success/presentation/event_sender_preference_controller.dart` · decided by rules
+**`test/event_success/event_sender_preference_receipt_test.dart`** — behaviour · subject `lib/pages/event/messages/event_sender_preference_controller.dart` · decided by rules
 
 - `action` discovery cannot publish another participant’s choices
 - `action` a selected sender read cannot expose a different sender

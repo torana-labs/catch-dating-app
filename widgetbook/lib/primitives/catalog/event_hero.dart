@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_backdrop_image.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_top_bar.dart';
-import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
+import 'package:catch_dating_app/pages/event/event_detail_route_transition.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_fact_list.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_hero_top_bar.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

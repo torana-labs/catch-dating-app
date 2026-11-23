@@ -463,7 +463,7 @@
       "reason": "Club detail media hero owns collapsing photo chrome, not a route title bar."
     },
     {
-      "path": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart",
+      "path": "lib/pages/event/widgets/event_detail_hero_top_bar.dart",
       "expression": "SliverAppBar",
       "occurrences": 1,
       "reason": "Event detail media hero owns collapsing photo chrome, not a route title bar."
