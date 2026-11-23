@@ -4,6 +4,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {registryLegacyMembers} from "./check_library_shims.mjs";
 
 const registryPath = fromRepo("design/components/catch.components.json");
 const outputs = {
@@ -63,18 +64,26 @@ export function buildLintEnforcementOutputs(registry) {
   };
 
   return {
-    tables: renderTables(controls, buttons),
+    tables: renderTables(controls, buttons, legacySymbols(registry)),
     expectations: `${JSON.stringify(expectations, null, 2)}\n`,
     probes: renderProbes(probeSeeds),
   };
 }
 
-function renderTables(controls, buttons) {
+// The Dart symbols of the registry's legacy members: what
+// check_library_shims.mjs refuses under the new roots, and what keeps a
+// carried file from being stale (catch_arch_stale_carry).
+function legacySymbols(registry) {
+  return [...new Set(registryLegacyMembers(registry).map((member) => member.name).filter(Boolean))].sort();
+}
+
+function renderTables(controls, buttons, legacy) {
   const controlSet = controls.map(([name]) => `  '${name}',`).join("\n");
   const replacementMap = controls
     .map(([name, replacement]) => `  '${name}': '${escapeDart(replacement)}',`)
     .join("\n");
   const buttonSet = buttons.map((name) => `  '${name}',`).join("\n");
+  const legacySet = legacy.map((name) => `  '${escapeDart(name)}',`).join("\n");
   return `// GENERATED CODE - DO NOT MODIFY BY HAND.
 //
 // Regenerate with:
@@ -95,6 +104,10 @@ ${replacementMap}
 
 const catchRawButtonControlConstructors = <String>{
 ${buttonSet}
+};
+
+const catchLegacyComponentSymbols = <String>{
+${legacySet}
 };
 `;
 }
