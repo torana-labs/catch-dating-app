@@ -36,7 +36,10 @@ jobs:
   validate:
     name: Validate ${{ inputs.surface }} website
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    # Off pull requests the marketing job also runs the Storybook visual report
+    # and accessibility gate, which brought it to the old 25-minute limit: merge
+    # queue runs 45030166645 and 45088143424 were cancelled at 25m0s.
+    timeout-minutes: 40
 
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
