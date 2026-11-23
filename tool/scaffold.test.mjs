@@ -143,7 +143,7 @@ describe("dry runs", () => {
 
   test("a screen prints the ids its route and capture coverage need", () => {
     const host = scaffoldIn(repoRoot, "screen", "--app", "host", "--name", "today_probe", "--dry-run").stdout;
-    assert.match(host, /the router that mounts it \(lib\/routing\/go_router\.dart\)/u);
+    assert.match(host, /the router that mounts it \(lib\/routing\/consumer_router\.dart or lib\/routing\/host_router\.dart\)/u);
     assert.match(host, /"id": "hostTodayProbeScreen"/u);
     assert.match(host, /"routeId": "hostTodayProbeScreen"/u);
     const consumer = scaffoldIn(repoRoot, "screen", "--page", "page_probe", "--dry-run").stdout;

@@ -1215,8 +1215,8 @@
           "routes": [
             "loadingScreen"
           ],
-          "file": "lib/routing/go_router.dart",
-          "symbol": "_RouteLoadingScreen",
+          "file": "lib/routing/router_frame.dart",
+          "symbol": "RouteLoadingScreen",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
           "bodyGeometry": "full-bleed",

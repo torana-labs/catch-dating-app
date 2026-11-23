@@ -333,9 +333,9 @@ node tool/test/check_flutter_test_size.mjs --check
 `node tool/run.mjs check audit:flutter-source-size` enforces the architecture
 owner's 800-line handwritten source budget across `lib/`, `apps/*/lib/`, packages, and Widgetbook.
 The exact Field constructor facade has its approved 1,150-line ceiling; both
-ordinary debt and the facade can only shrink. `lib/routing/go_router.dart` is
-exempt from the line budget: the route inventory requires every `GoRoute` in
-that one file, so its length tracks route count rather than debt. Git comparison prevents manually
+ordinary debt and the facade can only shrink. `lib/routing/host_router.dart` is
+exempt from the line budget: the route inventory requires every Host `GoRoute`
+in that one file, so its length tracks route count rather than debt. Git comparison prevents manually
 adding new or split oversized files to the legacy baseline. The check uses Node
 and repository source directly, so it does not start a Flutter analyzer.
 

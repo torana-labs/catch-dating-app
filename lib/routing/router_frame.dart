@@ -1,4 +1,140 @@
-part of 'go_router.dart';
+import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
+import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_platform/routing/onboarding_completion_location.dart';
+import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_platform/schema_contracts/generated/profile_requirements.g.dart';
+import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'router_frame.g.dart';
+
+// What both apps' routers share around their route tables: the refresh
+// bridge, the auth and profile redirect, the initial location, the loading
+// route's screen and the typed `state.extra` readers for shared pages. Each
+// app's router file owns its own GoRoute declarations.
+
+/// The refresh signal for an app's GoRouter: sign-in, sign-out and a pending
+/// phone verification, plus the profile document for the guest app. It is
+/// disposed with [ref].
+Listenable appRouterRefresh(Ref ref, {required bool isHostApp}) {
+  final notifier = _RouterRefreshNotifier();
+  ref.listen(uidProvider, (_, _) => notifier.notify());
+  ref.listen(authControllerProvider, (previous, next) {
+    if (previous?.hasPendingVerification != next.hasPendingVerification) {
+      notifier.notify();
+    }
+  });
+  if (!isHostApp) {
+    ref.listen(watchUserProfileProvider, (_, _) => notifier.notify());
+  }
+  ref.onDispose(notifier.dispose);
+  return notifier;
+}
+
+/// The GoRouter redirect for an app: [appRedirect] over the current auth and
+/// profile state. The Host app never waits on a guest profile.
+String? appRedirectFor(
+  Ref ref,
+  GoRouterState state, {
+  required bool isHostApp,
+}) {
+  return appRedirect(
+    uidAsync: ref.read(uidProvider),
+    userProfileAsync: isHostApp
+        ? const AsyncData<UserProfile?>(null)
+        : ref.read(watchUserProfileProvider),
+    hasPendingAuthVerification: ref
+        .read(authControllerProvider)
+        .hasPendingVerification,
+    matchedLocation: state.matchedLocation,
+    uri: state.uri,
+  );
+}
+
+// provider-graph: ownership-listenable:_RouterRefreshNotifier:reactive-state accepted-exception -- GoRouter requires a Listenable refresh bridge. This exact class bridges routing invalidation, owns no feature loaded/business state, and must retain listener cleanup; it is not a business controller migration.
+class _RouterRefreshNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
+}
+
+/// Shared `state.extra` casts for routes that accept typed payloads for
+/// initial screen state.
+Event? routeEventExtra(GoRouterState state) => switch (state.extra) {
+  final Event event => event,
+  _ => null,
+};
+
+/// The organiser a route was opened with, for its first frame.
+Organizer? routeOrganizerExtra(GoRouterState state) => switch (state.extra) {
+  final Organizer organizer => organizer,
+  _ => null,
+};
+
+/// The event page's route payload. A bare [Event] opens the page with the
+/// platform transition and the standard presentation.
+EventDetailRouteExtra eventDetailRouteExtra(GoRouterState state) =>
+    switch (state.extra) {
+      final EventDetailRouteExtra extra => extra,
+      final Event event => EventDetailRouteExtra(initialEvent: event),
+      _ => const EventDetailRouteExtra(),
+    };
+
+/// The loading route: a plain loading state, or the guest profile read the
+/// redirect is waiting on, with its retry.
+class RouteLoadingScreen extends StatelessWidget {
+  const RouteLoadingScreen({super.key, required this.isHostApp});
+
+  final bool isHostApp;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchScaffold.standalone(
+      backgroundColor: CatchTokens.of(context).bg,
+      body: Consumer(
+        builder: (context, ref, _) {
+          const loading = CatchStateViewport.loading(
+            accountForBottomOverlay: false,
+          );
+          final uidAsync = ref.watch(uidProvider);
+          final needsProfile =
+              !isHostApp && !uidAsync.isLoading && uidAsync.value != null;
+          return needsProfile
+              ? CatchStateViewport(
+                  accountForBottomOverlay: false,
+                  child: CatchAsyncBoundary<UserProfile?>(
+                    value: ref.watch(watchUserProfileProvider),
+                    errorContext: AppErrorContext.profile,
+                    retainDataOn: const {},
+                    onRetry: () => ref.invalidate(watchUserProfileProvider),
+                    loadingBuilder: (_) => loading,
+                    // The router refresh resumes the destination once resolved.
+                    builder: (_, _) => loading,
+                  ),
+                )
+              : loading;
+        },
+      ),
+    );
+  }
+}
+
+const _fromQueryParam = routeFromQueryParam;
+const _onboardingIntentQueryParam = onboardingIntentQueryParam;
+const _completeProfileIntent = completeProfileIntent;
+const _completeRunPreferencesIntent = completeRunPreferencesIntent;
+const _initialRouteOverride = String.fromEnvironment('CATCH_INITIAL_ROUTE');
 
 String? _pendingDestination({
   required Uri uri,
@@ -50,7 +186,7 @@ String _locationWithFrom(String path, {String? from}) {
 }
 
 /// URL hints choose questions only; event admission rechecks live requirements.
-List<String>? _eventRequirementsFromUri(Uri uri) {
+List<String>? eventRequirementsFromUri(Uri uri) {
   final value = uri.queryParameters['eventRequirements'];
   if (value == null) return null;
   final requirements = value
@@ -75,9 +211,8 @@ bool _isHostRoute(String? path) =>
     path == Routes.hostHomeScreen.path ||
     (path?.startsWith('${Routes.hostHomeScreen.path}/') ?? false);
 
-@visibleForTesting
 // keepalive: account-free: initial app location is startup routing state
-// consumed by the app-wide keepAlive GoRouter provider.
+// consumed by each app's keepAlive GoRouter provider.
 @Riverpod(keepAlive: true)
 String initialAppLocation(Ref ref) => _initialLocationFromPlatform();
 
@@ -204,8 +339,8 @@ String? appRedirect({
             ...loadingUri.queryParameters,
             _onboardingIntentQueryParam: pendingOnboardingIntent,
             if (pendingOnboardingIntent == _completeProfileIntent &&
-                _eventRequirementsFromUri(uri) != null)
-              'eventRequirements': _eventRequirementsFromUri(uri)!.join(','),
+                eventRequirementsFromUri(uri) != null)
+              'eventRequirements': eventRequirementsFromUri(uri)!.join(','),
           },
         )
         .toString();
@@ -256,7 +391,7 @@ String? appRedirect({
     return pendingOnboardingIntent == _completeProfileIntent
         ? profileCompletionLocation(
             from: from,
-            eventRequirements: _eventRequirementsFromUri(uri),
+            eventRequirements: eventRequirementsFromUri(uri),
           )
         : runPreferencesCompletionLocation(from: from);
   }
@@ -273,7 +408,7 @@ String? appRedirect({
 
   if (userProfile == null || !userProfile.hasBookingReadyIdentityOn(today)) {
     if (onOnboarding) {
-      if (_eventRequirementsFromUri(uri) != null) {
+      if (eventRequirementsFromUri(uri) != null) {
         return _locationWithFrom(
           Routes.onboardingScreen.path,
           from: uri.queryParameters[_fromQueryParam],
@@ -295,7 +430,7 @@ String? appRedirect({
   }
 
   if (onProfileCompletionOnboarding) {
-    final requirements = _eventRequirementsFromUri(uri);
+    final requirements = eventRequirementsFromUri(uri);
     final ready = requirements == null
         ? userProfile.hasSocialReadyProfileOn(today)
         : userProfile.hasBookingReadyIdentityOn(

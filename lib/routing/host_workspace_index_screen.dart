@@ -1,4 +1,4 @@
-part of 'go_router.dart';
+part of 'host_router.dart';
 
 /// One route index recipe shared by the visible workspace and its navigator.
 /// The navigator anchor retains routing state without mounting a second index.
@@ -19,7 +19,7 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
     key: key,
     root: root,
     uri: _hostWorkspaceUri(root, state),
-    initialEvent: _routeEventExtra(state),
+    initialEvent: routeEventExtra(state),
     initialOrganizerId: _routeOrganizerIdExtra(state),
   );
 

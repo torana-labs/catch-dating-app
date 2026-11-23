@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('consumer detail routes render above the floating tab shell', () {
-    final source = File('lib/routing/go_router.dart').readAsStringSync();
+    final source = File('lib/routing/consumer_router.dart').readAsStringSync();
 
     for (final route in <Routes>[
       Routes.notificationsScreen,

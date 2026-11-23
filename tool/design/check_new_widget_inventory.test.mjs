@@ -55,7 +55,7 @@ test("typed factories require their exact real source identities", () => {
     },
     {
       file: "lib/routing/host_inbox_route.dart",
-      library: "lib/routing/go_router.dart",
+      library: "lib/routing/host_router.dart",
       owner: null, name: "hostInboxScreenForUri", returnType: "HostInboxScreen",
     },
   ];

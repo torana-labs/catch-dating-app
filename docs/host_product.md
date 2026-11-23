@@ -1870,7 +1870,7 @@ hand:
 
 | Concern | Current owner seams | Expected implementation delta |
 | --- | --- | --- |
-| Host first run and routing | `lib/routing/go_router.dart`, `lib/hosts/events/presentation/host_events_screen.dart` | first-run intent route, resumable draft, private-event handoff |
+| Host first run and routing | `lib/routing/host_router.dart`, `lib/hosts/events/presentation/host_events_screen.dart` | first-run intent route, resumable draft, private-event handoff |
 | Public organizer creation | `contracts/callables/create_organizer_payload.schema.json`, `functions/src/organizers/createOrganizer.ts`, Host organizer create controller | retain for explicit public identity; add separate private-workspace operation/lifecycle |
 | Organizer authority | `contracts/firestore/organizers.schema.json`, `contracts/firestore/organizer_team_memberships.schema.json` | private lifecycle, fail-closed public capability, event-staff authority |
 | Event creation | `contracts/callables/create_event_payload.schema.json`, `contracts/firestore/events.schema.json`, `functions/src/events/mutateEvent.ts`, `lib/hosts/presentation/event_management/create/` | explicit title, provenance/capabilities, operations-only mutation branch with no public side effects |

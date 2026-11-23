@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/consumer_router.dart';
+import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';

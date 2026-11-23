@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/app.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:flutter/widgets.dart';
 
 /// Host-owned app root selecting only the Host router and default capabilities.

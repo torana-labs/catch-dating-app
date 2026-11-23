@@ -1,46 +1,19 @@
-part of 'go_router.dart';
+part of 'consumer_router.dart';
 
-Event? _eventDetailInitialEvent(GoRouterState state) {
-  return switch (state.extra) {
-    EventDetailRouteExtra(:final initialEvent) => initialEvent,
-    final Event event => event,
-    _ => null,
-  };
-}
-
-EventDetailRouteTransition _eventDetailTransition(GoRouterState state) {
-  return switch (state.extra) {
-    EventDetailRouteExtra(:final transition) => transition,
-    _ => EventDetailRouteTransition.platform,
-  };
-}
-
-EventDetailPresentationMode _eventDetailPresentationMode(GoRouterState state) {
-  return switch (state.extra) {
-    EventDetailRouteExtra(:final presentationMode) => presentationMode,
-    _ => EventDetailPresentationMode.standard,
-  };
-}
-
-Object? _eventDetailHeroTag(GoRouterState state) {
-  return switch (state.extra) {
-    EventDetailRouteExtra(:final heroTag) => heroTag,
-    _ => null,
-  };
-}
-
-EventDetailAttribution? _eventDetailAttribution(GoRouterState state) {
-  return switch (state.extra) {
-    EventDetailRouteExtra(:final attribution) => attribution,
-    _ => null,
-  };
-}
-
-Organizer? _organizerDetailInitialOrganizer(GoRouterState state) {
-  return switch (state.extra) {
-    final Organizer organizer => organizer,
-    _ => null,
-  };
+EventDetailScreen _eventDetailScreen(GoRouterState state) {
+  final extra = eventDetailRouteExtra(state);
+  return EventDetailScreen(
+    organizerId: state.pathParameters['organizerId']!,
+    eventId: state.pathParameters['eventId']!,
+    inviteCode: state.uri.queryParameters['invite'],
+    inviteLinkId:
+        state.uri.queryParameters['il'] ??
+        state.uri.queryParameters['inviteLinkId'],
+    initialEvent: extra.initialEvent,
+    presentationMode: extra.presentationMode,
+    heroTag: extra.heroTag,
+    attribution: extra.attribution,
+  );
 }
 
 Page<void> _organizerDetailPage(BuildContext _, GoRouterState state) {
@@ -49,7 +22,7 @@ Page<void> _organizerDetailPage(BuildContext _, GoRouterState state) {
     name: state.name,
     child: OrganizerDetailScreen(
       organizerId: state.pathParameters['organizerId']!,
-      initialOrganizer: _organizerDetailInitialOrganizer(state),
+      initialOrganizer: routeOrganizerExtra(state),
     ),
     transitionDuration: CatchMotion.calendarScroll,
     reverseTransitionDuration: CatchMotion.base,
@@ -73,7 +46,8 @@ Page<void> _exploreMapPage(BuildContext _, GoRouterState state) {
 
 Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
   final child = _eventDetailScreen(state);
-  if (_eventDetailTransition(state) == EventDetailRouteTransition.platform) {
+  if (eventDetailRouteExtra(state).transition ==
+      EventDetailRouteTransition.platform) {
     return MaterialPage<void>(
       key: state.pageKey,
       name: state.name,
