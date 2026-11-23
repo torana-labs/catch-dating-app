@@ -638,7 +638,9 @@ that would then be clean. The codemod drops every entry it reports, and an
 entry cannot be ignored, so the list only shrinks between moves. A library and
 its parts share one verdict, because the screen rules read the library's path.
 `tool/design/check_library_shims.mjs` skips carried files and fails when one is
-gone. The two screens that predate D24 (`splash_screen.dart`,
+gone, so a library is not clean while any unit silences a Catch lint or
+`deprecated_member_use`, or uses a catch_ui element that is deprecated or a
+registry legacy member: the shims gate would refuse it once uncarried. The two screens that predate D24 (`splash_screen.dart`,
 `celebration_screen.dart`) are carried as their own path until their P6
 redraw; no other entry may carry itself.
 
