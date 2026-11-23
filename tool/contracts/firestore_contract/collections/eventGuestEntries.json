@@ -15,6 +15,7 @@
   "exportedFunctions": [
     "onEventGuestEntryEventWritten",
     "onEventGuestEntryOrganizerWritten",
+    "dispatchOrganizers",
     "onEventGuestEntryFormWritten"
   ],
   "migrationNotes": [

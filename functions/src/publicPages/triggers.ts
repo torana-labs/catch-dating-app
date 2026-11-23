@@ -18,6 +18,7 @@ import {
   reviewContribution,
   reviewOrganizerIds,
 } from "./sourceProjections";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Raw = Record<string, unknown> | undefined;
 const options = {retry: true, memory: "512MiB" as const, timeoutSeconds: 300};
@@ -44,14 +45,19 @@ async function pathPeers(
     .filter((id) => id !== organizerId);
 }
 
-export const onPublicPageOrganizerWritten = onDocumentWritten({
-  ...options, document: "organizers/{organizerId}",
-}, async (event) => {
-  const organizerId = event.params.organizerId;
-  const before = event.data?.before.data() as Raw;
-  const after = event.data?.after.data() as Raw;
-  if (organizerContribution(organizerId, before, liveMarkets) ===
-      organizerContribution(organizerId, after, liveMarkets)) return;
+/** Whether an organizer write changes its public page contribution. */
+function organizerContributionChanged(organizerId: string, before: Raw,
+  after: Raw): boolean {
+  return organizerContribution(organizerId, before, liveMarkets) !==
+    organizerContribution(organizerId, after, liveMarkets);
+}
+
+/**
+ * Rebuilds the organizer's scope and the scopes of pages that share a
+ * path with it, before or after.
+ */
+async function rebuildForOrganizerWrite(organizerId: string, before: Raw,
+  after: Raw): Promise<void> {
   // A page withheld for sharing its path with this organizer may now be
   // unique again, and a page at the new path may now conflict.
   const paths = [before, after].flatMap((data) => {
@@ -61,7 +67,33 @@ export const onPublicPageOrganizerWritten = onDocumentWritten({
   });
   await rebuildAll([organizerId, ...await pathPeers(organizerId, paths)],
     "organizer");
+}
+
+export const onPublicPageOrganizerWritten = onDocumentWritten({
+  ...options, document: "organizers/{organizerId}",
+}, async (event) => {
+  const organizerId = event.params.organizerId;
+  const before = event.data?.before.data() as Raw;
+  const after = event.data?.after.data() as Raw;
+  if (!organizerContributionChanged(organizerId, before, after)) return;
+  await rebuildForOrganizerWrite(organizerId, before, after);
 });
+
+/**
+ * An organizer write that changes its public page contribution.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const publicPageOrganizerProjections = defineProjections(
+  "organizers", [{
+    id: "publicPages", kind: "projection", timeoutSeconds: 300,
+    memory: "512MiB",
+    when: (change) => organizerContributionChanged(change.documentId,
+      change.before as Raw, change.after as Raw),
+    run: (change) => rebuildForOrganizerWrite(change.documentId,
+      change.before as Raw, change.after as Raw),
+  }]);
 
 export const onPublicPageEventWritten = onDocumentWritten({
   ...options, document: "events/{eventId}",

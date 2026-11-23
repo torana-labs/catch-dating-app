@@ -20,6 +20,7 @@ import {
   sameFields,
   valueAt,
 } from "./support/fanout";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -157,18 +158,26 @@ export async function resolveEventDeliveryViewIds(
 const options = {retry: true, memory: "512MiB" as const};
 
 /** Re-evaluates every delivery view a source write can affect. */
+async function reconcileForChange(source: EventDeliveryViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
+  const db = admin.firestore();
+  const messageIds = await resolveEventDeliveryViewIds(db, source,
+    documentId, before,
+    after);
+  for (const messageId of messageIds) {
+    await reconcileEventDeliveryView(db, messageId);
+  }
+}
+
 async function reconcileForWrite(
   source: EventDeliveryViewSource,
   event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
     {documentId: string}>
 ): Promise<void> {
-  const db = admin.firestore();
-  const messageIds = await resolveEventDeliveryViewIds(db, source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
-  for (const messageId of messageIds) {
-    await reconcileEventDeliveryView(db, messageId);
-  }
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
 }
 
 export const onHostEventDeliveryViewMessageChanged = onDocumentWritten({
@@ -192,3 +201,16 @@ export const onHostEventDeliveryViewRunChanged = onDocumentWritten({
 export const onHostEventDeliveryViewOrganizerChanged = onDocumentWritten({
   ...options, document: "organizers/{documentId}",
 }, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * An organizer's manager fields: its manually handled delivery views.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostEventDeliveryViewProjections = defineProjections(
+  "organizers", [{
+    id: "hostEventDeliveryView", kind: "projection", when: () => true,
+    run: (change) => reconcileForChange("organizers", change.documentId,
+      change.before, change.after),
+  }]);

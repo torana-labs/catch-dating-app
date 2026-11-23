@@ -6,6 +6,7 @@ import {
   onDocumentWritten,
 } from "firebase-functions/v2/firestore";
 import {reconcileProviderConnectionView} from "./providerConnectionViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -39,18 +40,26 @@ export function resolveProviderConnectionViewOrganizerIds(
 
 const options = {retry: true, memory: "512MiB" as const};
 
+async function reconcileForChange(source: ProviderConnectionViewSource,
+  documentId: string,
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): Promise<void> {
+  const db = admin.firestore();
+  const organizerIds = resolveProviderConnectionViewOrganizerIds(source,
+    documentId, before,
+    after);
+  for (const organizerId of organizerIds) {
+    await reconcileProviderConnectionView(db, organizerId);
+  }
+}
+
 async function reconcileForWrite(
   source: ProviderConnectionViewSource,
   event: FirestoreEvent<Change<DocumentSnapshot> | undefined,
     {documentId: string}>
 ): Promise<void> {
-  const db = admin.firestore();
-  const organizerIds = resolveProviderConnectionViewOrganizerIds(source,
-    event.params.documentId, event.data?.before.data(),
-    event.data?.after.data());
-  for (const organizerId of organizerIds) {
-    await reconcileProviderConnectionView(db, organizerId);
-  }
+  await reconcileForChange(source, event.params.documentId,
+    event.data?.before.data(), event.data?.after.data());
 }
 
 export const onHostProviderConnectionViewConnectionChanged =
@@ -60,3 +69,16 @@ export const onHostProviderConnectionViewConnectionChanged =
 export const onHostProviderConnectionViewOrganizerChanged = onDocumentWritten({
   ...options, document: "organizers/{documentId}",
 }, (event) => reconcileForWrite("organizers", event));
+
+/**
+ * An organizer write: its provider connection view.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostProviderConnectionViewProjections = defineProjections(
+  "organizers", [{
+    id: "hostProviderConnectionView", kind: "projection", when: () => true,
+    run: (change) => reconcileForChange("organizers", change.documentId,
+      change.before, change.after),
+  }]);

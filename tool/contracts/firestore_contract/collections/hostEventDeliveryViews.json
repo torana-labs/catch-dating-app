@@ -20,6 +20,7 @@
     "onHostEventDeliveryViewWorkItemChanged",
     "onHostEventDeliveryViewRunChanged",
     "onHostEventDeliveryViewOrganizerChanged",
+    "dispatchOrganizers",
     "repairEventAssistanceDelivery"
   ],
   "migrationNotes": [
