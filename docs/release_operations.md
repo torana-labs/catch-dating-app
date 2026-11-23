@@ -644,7 +644,7 @@ decision, 22 Nov 2026; evidence in
 - The nightly budget report is the `semantic-budget` job of `Main CI alert`: it keeps that one issue in step (opened, its body updated, closed once every gate is back within budget).
 
 **Where it runs and gates.** The `Semantic checks` job in `ci.yml` runs the gates (with `--candidates`) on:
-- every `merge_group` run. Required CI needs it, and its "Require every selected lane" step also demands `success` in a merge-queue run, so a skipped job cannot pass the queue;
+- every `merge_group` run. Required CI needs it, so a failed gate fails Required CI. Its "Require every selected lane" step also demands `success` in a merge-queue run, the nightly and a `main` push with no queue proof, so a skipped job cannot pass there either;
 - every non-draft pull request. It continues on error there, so an author sees a red job before queueing, but Required CI is not blocked;
 - the nightly, which provides the budget timings;
 - a `main` push with no merge-queue proof (a bypass or a stale proof), where it feeds Main CI alert like any other lane.

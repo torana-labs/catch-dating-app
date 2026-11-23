@@ -801,7 +801,7 @@ jobs:
     # A pull request sees a red job but Required CI still passes: the gate
     # blocks in the merge queue (and on main), not before it.
     continue-on-error: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       # Full history: ratchets compare with origin/main.
@@ -894,9 +894,13 @@ jobs:
           preflight="$(jq -er '.["source-preflight"].result' <<< "$NEEDS_JSON")"
           # The cited queue run already completed this exact source's preflight.
           [[ "$preflight" == success || ( -n "${QUEUE_RUN:-}" && "$preflight" == skipped ) ]]
-          # The semantic gates block every merge-queue entry: a skipped job (a
-          # wrong if:) must not pass silently, so the queue requires success.
-          if [[ "${EVENT_NAME:-}" == merge_group ]]; then
+          # The semantic gates must have run and passed wherever they block: every
+          # merge-queue entry, the nightly, and a main push with no queue proof.
+          # A failure already fails the check above; this also refuses a skipped
+          # job (a wrong if:). A pull request only reports, and a queue-proven
+          # main push skips the job.
+          if [[ "${EVENT_NAME:-}" == merge_group || "${EVENT_NAME:-}" == schedule ||
+                ( "${EVENT_NAME:-}" == push && -z "${QUEUE_RUN:-}" ) ]]; then
             test "$(jq -er '.["semantic-checks"].result' <<< "$NEEDS_JSON")" = success
           fi
           # Selection only counts when its owning job actually succeeded.
