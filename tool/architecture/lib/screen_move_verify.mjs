@@ -69,7 +69,8 @@ const commentLine = /^[ \t]*\/\/[ \t]*(?:provider-graph:|ignore:)/u;
 // other text equal after rewriting moved paths; generator-owned outputs;
 // removed context map lines; carried-screens lines naming moved files;
 // whole-line removals of provider-graph reviews and catch_ui_lints ignores in
-// moved files; new context public API files; and the one new move record.
+// the Dart files the move touched (moved, or with rewritten imports); new
+// context public API files; and the one new move record.
 export function verifyScreenMove({changes, read, regenerated, packages}) {
   const problems = [];
   const records = changes.filter((change) => isRecordPath(change.file));
@@ -144,7 +145,7 @@ export function verifyScreenMove({changes, read, regenerated, packages}) {
       const oldText = strip(before.toString());
       const newText = strip(after.toString());
       if (oldText === newText) continue;
-      if (moves.has(sources.get(file) ?? "") && onlyCommentLinesRemoved(oldText, newText)) continue;
+      if (onlyCommentLinesRemoved(oldText, newText)) continue;
       problems.push(`${file} changed beyond directives and moved paths`);
       continue;
     }
@@ -203,19 +204,20 @@ function carriedChanges({before, after, moves}) {
 }
 
 // The new text is the old text with some provider-graph or ignore comment
-// lines deleted, and nothing else.
+// lines deleted, and nothing else. Directive lines are already stripped, so a
+// deleted comment that sat among the imports may leave its blank line behind.
 function onlyCommentLinesRemoved(oldText, newText) {
-  const oldLines = oldText.split("\n");
-  const newLines = newText.split("\n");
+  const tidy = (text) => text.split("\n").filter((line) => !commentLine.test(line)).join("\n")
+    .replace(/^\s*\n/u, "").replace(/\n{3,}/gu, "\n\n");
+  if (tidy(oldText) !== tidy(newText)) return false;
+  const oldComments = oldText.split("\n").filter((line) => commentLine.test(line));
   let index = 0;
-  for (const line of oldLines) {
-    if (index < newLines.length && newLines[index] === line) {
-      index += 1;
-    } else if (!commentLine.test(line)) {
-      return false;
-    }
+  for (const line of newText.split("\n").filter((candidate) => commentLine.test(candidate))) {
+    while (index < oldComments.length && oldComments[index] !== line) index += 1;
+    if (index === oldComments.length) return false;
+    index += 1;
   }
-  return index === newLines.length;
+  return true;
 }
 
 // For --imports-only: the files a replay must still move. A file the branch
