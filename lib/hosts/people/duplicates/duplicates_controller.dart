@@ -68,8 +68,7 @@ class HostDuplicateReviewPages extends _$HostDuplicateReviewPages {
 
   @override
   Stream<HostDuplicateReview> build(String organizerId) {
-    final auth = ref.watch(uidProvider);
-    final uid = auth.asData?.value;
+    final uid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider)).value;
     if (uid == null || uid.isEmpty) {
       _pager = null;
       return Stream.error(
