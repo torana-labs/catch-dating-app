@@ -181,7 +181,7 @@ test("renderMarkdown lists every check and each failure with its cause line", ()
 test("parseArgs validates commands and options", () => {
   assert.deepEqual(parseArgs(["run", "--out", "r.jsonl", "--commits", "20", "--checks", "a:b, c:d"]),
     {command: "run", ref: "origin/main", commits: 20, every: 1, workers: 3, reruns: 2, timeout: 600,
-      checks: ["a:b", "c:d"], workdir: null, out: "r.jsonl", results: null, json: null, markdown: null});
+      checks: ["a:b", "c:d"], workdir: null, "commits-from": null, out: "r.jsonl", results: null, json: null, markdown: null});
   assert.equal(parseArgs(["inventory", "--json"]).json, true);
   assert.equal(parseArgs(["run", "--out", "r", "--reruns", "0"]).reruns, 0);
   assert.throws(() => parseArgs(["replay"]), /Usage/u);

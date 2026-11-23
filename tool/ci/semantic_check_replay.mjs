@@ -8,6 +8,7 @@
 //   node tool/ci/semantic_check_replay.mjs run --out <results.jsonl>
 //     [--ref origin/main] [--commits 200] [--every 1] [--workers 3]
 //     [--reruns 2] [--timeout 600] [--checks id,id] [--workdir <dir>]
+//     [--commits-from <earlier.jsonl>]  (replay only the commits that file holds)
 //   node tool/ci/semantic_check_replay.mjs report --results <a.jsonl[,b.jsonl]>
 //     [--json <summary.json>] [--markdown <report.md>]
 //
@@ -284,7 +285,7 @@ export function parseArgs(argv) {
     throw new Error("Usage: semantic_check_replay.mjs inventory|run|report [options]; see the file header.");
   }
   const options = {command, ref: "origin/main", commits: 200, every: 1, workers: 3, reruns: 2,
-    timeout: 600, checks: null, workdir: null, out: null, results: null, json: null, markdown: null};
+    timeout: 600, checks: null, workdir: null, "commits-from": null, out: null, results: null, json: null, markdown: null};
   const numeric = new Set(["commits", "every", "workers", "reruns", "timeout"]);
   for (let index = 0; index < rest.length; index += 1) {
     const flag = rest[index];
@@ -399,7 +400,11 @@ async function replay(options) {
   const inventory = wholeRepoInventory(manifest).checks.filter((check) =>
     !options.checks || options.checks.includes(check.id));
   if (inventory.length === 0) throw new Error("No checks selected.");
-  const window = replayWindow((args) => gitSync(args), options);
+  let window = replayWindow((args) => gitSync(args), options);
+  if (options["commits-from"]) {
+    const wanted = new Set(mergeRecords([fs.readFileSync(options["commits-from"], "utf8")]).map((record) => record.sha));
+    window = window.filter((sha) => wanted.has(sha));
+  }
   const done = new Set();
   if (fs.existsSync(options.out)) {
     for (const line of fs.readFileSync(options.out, "utf8").split("\n").filter(Boolean)) {
