@@ -9,7 +9,6 @@ import 'package:catch_dating_app/contexts/organizers/actions/organizer_follow_co
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
-import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_cross_paths_provider.dart';
@@ -25,6 +24,7 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_feed_skele
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_screen_empty_state.dart';
+import 'package:catch_dating_app/pages/event/event_detail_route_transition.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_l10n/l10n.dart';

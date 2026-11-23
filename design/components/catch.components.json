@@ -17375,7 +17375,7 @@
           {
             "id": "catch.event_card.date_rail",
             "symbol": "EventDateRailCard",
-            "file": "lib/events/shared/event_tiles/event_date_rail_card.dart",
+            "file": "lib/pages/event/tiles/event_date_rail_card.dart",
             "summary": "Compact list and map DateTicket with an activity rail, organizer and event identity hierarchy, one optional context block, and a trailing price decision row.",
             "states": [
               "single-free",
@@ -17396,7 +17396,7 @@
           {
             "id": "catch.event_card.ticket_stub",
             "symbol": "EventTicketStubRow",
-            "file": "lib/events/shared/event_tiles/event_date_rail_card.dart",
+            "file": "lib/pages/event/tiles/event_date_rail_card.dart",
             "summary": "Shared responsive ticket decision row for time, capacity, status, and trailing price copy.",
             "states": [
               "inline",
@@ -18034,7 +18034,7 @@
       "summary": "Event Detail screen-section contract that groups the event-specific hero, ticket facts, overview primitives, host/social sections, consent-safe Cross Paths control, companion prompt, and booking dock under one Catch-owned handoff boundary.",
       "dart": {
         "symbol": "EventDetailBody",
-        "file": "lib/events/presentation/widgets/event_detail_body.dart",
+        "file": "lib/pages/event/widgets/event_detail_body.dart",
         "constructors": [
           "EventDetailBody"
         ]
@@ -18194,7 +18194,7 @@
           {
             "id": "catch.event_detail_sections.hero",
             "symbol": "EventDetailHeroTopBar",
-            "file": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart",
+            "file": "lib/pages/event/widgets/event_detail_hero_top_bar.dart",
             "summary": "Event detail hero section with standard, ticket, and spotlight-dark media treatments plus route-owned top actions.",
             "states": [
               "standard",
@@ -18211,7 +18211,7 @@
           {
             "id": "catch.event_detail_sections.ticket_stub",
             "symbol": "EventDetailTicketStubRow",
-            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+            "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
             "summary": "Flush ticket fact band for when, where, pace, and activity facts below the hero.",
             "states": [
               "band",
@@ -18227,7 +18227,7 @@
           {
             "id": "catch.event_detail_sections.hint_list",
             "symbol": "EventDetailHintList",
-            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+            "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
             "summary": "Why-you-might-click hint list derived from event format and activity context.",
             "states": [
               "two-hints",
@@ -18242,7 +18242,7 @@
           {
             "id": "catch.event_detail_sections.itinerary",
             "symbol": "EventDetailItineraryList",
-            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+            "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
             "summary": "Timed event itinerary rail for route plan, meet, run, and post-event moments.",
             "states": [
               "standard",
@@ -18257,7 +18257,7 @@
           {
             "id": "catch.event_detail_sections.photo_strip",
             "symbol": "EventDetailPhotoGrid",
-            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+            "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
             "summary": "Canonical event-detail photo proof strip with uploaded photos and activity-soft placeholders.",
             "states": [
               "three-photos",
@@ -18272,7 +18272,7 @@
           {
             "id": "catch.event_detail_sections.map_card",
             "symbol": "EventDetailMapCard",
-            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+            "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
             "summary": "Event detail map preview card with exact or morning-of pin states and optional route-owned tap action.",
             "states": [
               "pin-ready",
@@ -18288,7 +18288,7 @@
           {
             "id": "catch.event_detail_sections.mechanism_list",
             "symbol": "EventDetailMechanismList",
-            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+            "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
             "summary": "How-sign-ups-work list for open signup, approval, waitlist, and demand-pricing mechanics.",
             "states": [
               "open-signup",
@@ -18304,7 +18304,7 @@
           {
             "id": "catch.event_detail_sections.good_to_know",
             "symbol": "EventDetailGoodToKnowList",
-            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+            "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
             "summary": "Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows.",
             "states": [
               "requirements",
@@ -18320,7 +18320,7 @@
           {
             "id": "catch.event_detail_sections.hosts",
             "symbol": "EventDetailHostsSection",
-            "file": "lib/events/presentation/widgets/event_detail_body.dart",
+            "file": "lib/pages/event/widgets/event_detail_body.dart",
             "summary": "Provider-free host section adapter for hidden, loading, error, and host-card content states.",
             "states": [
               "hidden",
@@ -18337,7 +18337,7 @@
           {
             "id": "catch.event_detail_sections.social",
             "symbol": "EventDetailSocialSection",
-            "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
+            "file": "lib/pages/event/widgets/event_detail_social_section.dart",
             "summary": "Who's-going and reviews section composition for guest lock, member roster, review visibility, and attended review action states.",
             "states": [
               "guest-locked",
@@ -18354,7 +18354,7 @@
           {
             "id": "catch.event_detail_sections.cross_paths_consent",
             "symbol": "CrossPathsEventConsentSection",
-            "file": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+            "file": "lib/pages/event/cross_paths_event_consent_section.dart",
             "summary": "Provider-free Event Detail renderer for hidden, loading, enabled, disabled, pending, and unavailable event-consent states resolved by the route.",
             "states": [
               "hidden",
@@ -18373,7 +18373,7 @@
           {
             "id": "catch.event_detail_sections.companion_entry",
             "symbol": "EventCompanionCard",
-            "file": "lib/events/presentation/widgets/event_detail_body.dart",
+            "file": "lib/pages/event/widgets/event_detail_body.dart",
             "summary": "Provider-free companion prompt adapter for hidden, loading, error, and available Event Success plan states.",
             "states": [
               "hidden",
@@ -18389,7 +18389,7 @@
           {
             "id": "catch.event_detail_sections.booking_dock",
             "symbol": "EventBookingDock",
-            "file": "lib/events/presentation/widgets/event_detail_dock.dart",
+            "file": "lib/pages/event/widgets/event_detail_dock.dart",
             "summary": "Provider-free booking dock renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states.",
             "states": [
               "eligible",
@@ -18410,7 +18410,7 @@
           {
             "id": "catch.event_detail_sections.avatar_stack",
             "symbol": "EventHypeAvatarRow",
-            "file": "lib/events/presentation/widgets/event_hype_avatar_row.dart",
+            "file": "lib/pages/event/widgets/event_hype_avatar_row.dart",
             "summary": "Event-detail attendee-hype avatar stack that composes the shared Catch person-avatar stack for hidden and revealed roster states.",
             "states": [
               "obscured",
@@ -19253,7 +19253,7 @@
       },
       "dart": {
         "symbol": "MapPreview",
-        "file": "lib/locations/shared/map_preview.dart",
+        "file": "lib/pages/event/location/map_preview.dart",
         "constructors": [
           "MapPreview"
         ]

@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/event_success/presentation/event_message_channel_accordion.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_preference_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_preferences_navigation_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_preferences_sheet.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_sender_section.dart';
+import 'package:catch_dating_app/pages/event/messages/event_message_channel_accordion.dart';
+import 'package:catch_dating_app/pages/event/messages/event_message_preference_section.dart';
+import 'package:catch_dating_app/pages/event/messages/event_message_preferences_navigation_section.dart';
+import 'package:catch_dating_app/pages/event/messages/event_message_preferences_sheet.dart';
+import 'package:catch_dating_app/pages/event/messages/event_message_sender_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';

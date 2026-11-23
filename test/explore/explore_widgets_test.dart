@@ -16,7 +16,6 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
-import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
@@ -44,6 +43,7 @@ import 'package:catch_dating_app/organizers/presentation/discovery/widgets/organ
 import 'package:catch_dating_app/organizers/shared/organizer_cover.dart';
 import 'package:catch_dating_app/organizers/shared/organizer_placeholder_cover.dart';
 import 'package:catch_dating_app/organizers/shared/organizer_transition_tags.dart';
+import 'package:catch_dating_app/pages/event/event_detail_route_transition.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/city_data.dart';

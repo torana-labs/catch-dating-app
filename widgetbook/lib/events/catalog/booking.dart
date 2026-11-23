@@ -3,11 +3,11 @@ import 'package:catch_dating_app/contexts/bookings/data/event_viewer_state_provi
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
-import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
+import 'package:catch_dating_app/pages/event/event_detail_display_state.dart';
+import 'package:catch_dating_app/pages/event/event_detail_information_state.dart';
+import 'package:catch_dating_app/pages/event/event_detail_route_transition.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_body.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_detail_dock.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

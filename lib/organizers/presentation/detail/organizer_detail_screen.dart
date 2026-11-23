@@ -8,10 +8,10 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dar
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_host_contact_controller.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_body.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_dock.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_share_card.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_host_contact_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/catch_async_state.dart';

@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
-import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/pages/event/tiles/event_tile_data.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
