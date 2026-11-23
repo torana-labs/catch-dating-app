@@ -243,7 +243,7 @@ void main() {
       await db
           .collection('hostFormEditorViews')
           .doc('form-1')
-          .set(_editorView(draftRevision: 0, updatedAtMillis: 1));
+          .set(_editorView(draftRevision: 0));
       await repository.createForm(
         organizerId: 'org',
         templateId: 'blank',
@@ -268,7 +268,7 @@ void main() {
         db
             .collection('hostFormEditorViews')
             .doc('form-1')
-            .set(_editorView(draftRevision: 0, updatedAtMillis: 1));
+            .set(_editorView(draftRevision: 0));
         HostFormEditor? opened;
         repository
             .createForm(organizerId: 'org', templateId: 'blank', requestId: 'r')
