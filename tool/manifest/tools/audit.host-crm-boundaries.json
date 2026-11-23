@@ -12,7 +12,13 @@
     "node tool/architecture/check_host_crm_boundaries.mjs"
   ],
   "impactPaths": [
-    "tool/architecture/check_host_crm_boundaries.test.mjs"
+    "tool/architecture/check_host_crm_boundaries.test.mjs",
+    "functions/src/**",
+    "lib/hosts/presentation/**",
+    "lib/routing/host_router.dart",
+    "packages/l10n/lib/app_en.arb",
+    "packages/platform/lib/routing/route_contract.dart",
+    "contracts/firestore/organizer_manual_send_tasks.schema.json"
   ],
   "role": "gate",
   "rules": [
