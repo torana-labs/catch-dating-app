@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "group": "actions-bookings",
+  "sequence": 1795416074100,
+  "entries": [
+    {
+      "path": "lib/events/presentation/event_booking_controller.dart",
+      "moveTo": "lib/contexts/bookings/actions/event_booking_controller.dart"
+    }
+  ],
+  "moves": {
+    "lib/events/presentation/event_booking_controller.dart": "lib/contexts/bookings/actions/event_booking_controller.dart",
+    "lib/events/presentation/event_booking_controller.g.dart": "lib/contexts/bookings/actions/event_booking_controller.g.dart",
+    "test/events/event_booking_controller_test.dart": "test/contexts/bookings/actions/event_booking_controller_test.dart"
+  },
+  "folders": {}
+}

@@ -3513,7 +3513,7 @@ Layout only, deleted with the screen:
 - `parts` exports an event invite as a png with the event link
 - `parts` uses a personal invite URL and records only share intent
 
-**`test/events/event_viewer_state_provider_test.dart`** — behaviour · subject `lib/events/presentation/widgets/event_detail_dock.dart`, `lib/events/presentation/event_booking_controller.dart` · decided by rules
+**`test/events/event_viewer_state_provider_test.dart`** — behaviour · subject `lib/events/presentation/widgets/event_detail_dock.dart`, `lib/contexts/bookings/actions/event_booking_controller.dart` · decided by rules
 
 - `body` unresolved current facts never fall back to local approval
 - `body` failed viewer reads expose retry rather than booking
@@ -3721,7 +3721,7 @@ Layout only, deleted with the screen:
 
 `apps/consumer/lib/book`. 44 behaviours: 28 action, 3 parts, 11 body, 2 journey.
 
-**`test/events/event_booking_controller_test.dart`** — behaviour · subject `lib/events/presentation/event_booking_controller.dart` · decided by rules
+**`test/contexts/bookings/actions/event_booking_controller_test.dart`** — behaviour · subject `lib/contexts/bookings/actions/event_booking_controller.dart` · decided by rules
 
 - `action` EventBookingController.book: books a free event through the payment repository
 - `action` EventBookingController.book: books a paid event with the full payment payload
@@ -3738,7 +3738,7 @@ Layout only, deleted with the screen:
 - `action` EventBookingController mutations: joinWaitlist surfaces repository errors
 - `action` EventBookingController mutations: leaveWaitlist throws when the user is not signed in
 
-**`test/events/event_booking_session_continuation_test.dart`** — behaviour · subject `lib/events/presentation/event_booking_controller.dart` · decided by rules
+**`test/events/event_booking_session_continuation_test.dart`** — behaviour · subject `lib/contexts/bookings/actions/event_booking_controller.dart` · decided by rules
 
 - `action` paid offer cannot start checkout after {transition}
 - `action` paused owner cannot miss a same-account session replacement
