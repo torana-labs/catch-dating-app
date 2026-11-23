@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summary_reads.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_view_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_response_summary_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_analytics.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
@@ -67,7 +68,12 @@ class HostFormValidationResult {
 }
 
 class HostFormsRepository {
-  const HostFormsRepository(this._functions, {this.summaries, this.responses});
+  HostFormsRepository(
+    this._functions, {
+    this.summaries,
+    this.responses,
+    this.views,
+  });
 
   /// The response inbox read model. Only an instance that lists responses
   /// needs it; the export gateway's instance does not.
@@ -75,6 +81,16 @@ class HostFormsRepository {
 
   /// The form list read model. Only an instance that lists forms needs it.
   final HostFormSummaryReads? summaries;
+
+  /// The editor and analytics views. Only an instance that opens a form
+  /// needs them.
+  final HostFormViewReads? views;
+
+  /// The newest editor state each form's own commands returned on this
+  /// device, so opening the form waits for its view to catch up rather than
+  /// showing the revision before. Revisions and instants only; it lives as
+  /// long as this signed-in repository.
+  final _ownWrites = <String, ({int draftRevision, int updatedAtMillis})>{};
 
   final FirebaseFunctions _functions;
 
@@ -103,22 +119,6 @@ class HostFormsRepository {
   }) =>
       _required(summaries, 'form list').watchPages(request, pageSize: pageSize);
 
-  Future<List<HostFormTemplateSummary>> listTemplates(String organizerId) =>
-      _call(
-        name: 'listOrganizerFormTemplates',
-        payload: ListOrganizerFormTemplatesCallableRequest(
-          organizerId: organizerId,
-        ).toJson(),
-        action: 'load form templates',
-        parse: (data) {
-          final map = _requiredMap(data, 'form templates');
-          return _mapList(
-            map['templates'],
-            'form templates',
-          ).map(HostFormTemplateSummary.fromMap).toList(growable: false);
-        },
-      );
-
   Future<HostFormEditor> createForm({
     required String organizerId,
     required String templateId,
@@ -135,21 +135,69 @@ class HostFormsRepository {
       defaultTargetId: null,
     ).toJson(),
     action: 'create organizer form',
-    parse: HostFormEditor.fromCallableData,
+    parse: (data) => _noteEditor(HostFormEditor.fromCallableData(data)),
   );
 
+  /// One form's editor from its `hostFormEditorViews` row (the
+  /// `getOrganizerFormEditor` callable is no longer called). A form this
+  /// device just created or saved opens once the view reaches that revision,
+  /// or with the newest view after [HostFormViewReads.ownWriteWait]; a save
+  /// from a stale view still fails its revision check on the server.
   Future<HostFormEditor> getEditor({
     required String organizerId,
     required String formId,
-  }) => _call(
-    name: 'getOrganizerFormEditor',
-    payload: GetOrganizerFormEditorCallableRequest(
-      organizerId: organizerId,
-      formId: formId,
-    ).toJson(),
-    action: 'load organizer form editor',
-    parse: HostFormEditor.fromCallableData,
-  );
+  }) async {
+    const context = BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'load organizer form editor',
+      resource: HostFormViewReads.editors,
+    );
+    final floor = _ownWrites[formId];
+    final HostFormEditor? editor;
+    try {
+      editor = await _required(views, 'form editor').editor(
+        organizerId: organizerId,
+        formId: formId,
+        reached: floor == null
+            ? null
+            : (editor) =>
+                  editor.form.draftRevision >= floor.draftRevision &&
+                  editor.form.updatedAt.millisecondsSinceEpoch >=
+                      floor.updatedAtMillis,
+      );
+    } on FormatException catch (error) {
+      // A row of another organizer reads as missing, as the callable said.
+      throw DocumentNotFoundException('form', cause: error, context: context);
+    }
+    if (editor == null) {
+      throw const DocumentNotFoundException('form', context: context);
+    }
+    return editor;
+  }
+
+  HostFormEditor _noteEditor(HostFormEditor editor) {
+    _noteForm(editor.form);
+    return editor;
+  }
+
+  HostFormSummary _noteForm(HostFormSummary form) {
+    final known = _ownWrites[form.formId];
+    final updatedAtMillis = form.updatedAt.millisecondsSinceEpoch;
+    if (known == null ||
+        form.draftRevision > known.draftRevision ||
+        updatedAtMillis > known.updatedAtMillis) {
+      _ownWrites[form.formId] = (
+        draftRevision: known == null || form.draftRevision > known.draftRevision
+            ? form.draftRevision
+            : known.draftRevision,
+        updatedAtMillis:
+            known == null || updatedAtMillis > known.updatedAtMillis
+            ? updatedAtMillis
+            : known.updatedAtMillis,
+      );
+    }
+    return form;
+  }
 
   Future<HostFormEditor> updateDraft({
     required String organizerId,
@@ -165,7 +213,7 @@ class HostFormsRepository {
       definition: definition.toJson(),
     ).toJson(),
     action: 'save organizer form draft',
-    parse: HostFormEditor.fromCallableData,
+    parse: (data) => _noteEditor(HostFormEditor.fromCallableData(data)),
   );
 
   Future<HostFormValidationResult> validateDraft({
@@ -195,8 +243,9 @@ class HostFormsRepository {
       expectedRevision: expectedRevision,
     ).toJson(),
     action: 'publish organizer form',
-    parse: (data) =>
-        HostFormSummary.fromMap(_requiredMap(data, 'published organizer form')),
+    parse: (data) => _noteForm(
+      HostFormSummary.fromMap(_requiredMap(data, 'published organizer form')),
+    ),
   );
 
   Future<HostFormSummary> setLifecycle({
@@ -213,8 +262,9 @@ class HostFormsRepository {
       action: action.name,
     ).toJson(),
     action: '${action.name} organizer form',
-    parse: (data) =>
-        HostFormSummary.fromMap(_requiredMap(data, 'organizer form lifecycle')),
+    parse: (data) => _noteForm(
+      HostFormSummary.fromMap(_requiredMap(data, 'organizer form lifecycle')),
+    ),
   );
 
   Future<HostFormEditor> duplicate({
@@ -231,7 +281,7 @@ class HostFormsRepository {
       title: title?.trim().isEmpty ?? true ? null : title?.trim(),
     ).toJson(),
     action: 'duplicate organizer form',
-    parse: HostFormEditor.fromCallableData,
+    parse: (data) => _noteEditor(HostFormEditor.fromCallableData(data)),
   );
 
   Future<void> deleteDraft({
@@ -395,19 +445,18 @@ class HostFormsRepository {
     parse: HostFormResponseDetail.fromCallableData,
   );
 
-  Future<HostFormAnalytics> getAnalytics({
+  /// One published version's analytics and its form's share-link funnel
+  /// while listened to, from `hostFormAnalyticsViews` and
+  /// `hostFormSourceViews` (the `getOrganizerFormAnalytics` callable is no
+  /// longer called).
+  Stream<HostFormAnalytics> watchAnalytics({
     required String organizerId,
     required String formId,
-    String? versionId,
-  }) => _call(
-    name: 'getOrganizerFormAnalytics',
-    payload: GetOrganizerFormAnalyticsCallableRequest(
-      organizerId: organizerId,
-      formId: formId,
-      versionId: versionId,
-    ).toJson(),
-    action: 'load organizer form analytics',
-    parse: HostFormAnalytics.fromCallableData,
+    required String versionId,
+  }) => _required(views, 'form analytics').watchAnalytics(
+    organizerId: organizerId,
+    formId: formId,
+    versionId: versionId,
   );
 
   Future<HostFormExportReceipt> requestExport({
@@ -664,8 +713,9 @@ class JournalHostResponseExportGateway implements HostResponseExportGateway {
   }
 }
 
-// keepalive: account-free: one stateless callable facade is shared by every
-// Forms route.
+// keepalive: account-free: one facade is shared by every Forms route. It
+// keeps only the revisions its own commands returned, and it is rebuilt with
+// the signed-in session, so none reach another account.
 @Riverpod(keepAlive: true)
 HostFormsRepository hostFormsRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);
@@ -685,14 +735,15 @@ HostFormsRepository hostFormsRepository(Ref ref) {
         actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
       ),
     ),
+    views: HostFormViewReads(
+      ScopedReadModelReader(
+        ref.watch(firebaseFirestoreProvider),
+        family: hostReadModels,
+        actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
+      ),
+    ),
   );
 }
-
-@riverpod
-Future<List<HostFormTemplateSummary>> hostFormTemplates(
-  Ref ref,
-  String organizerId,
-) => ref.watch(hostFormsRepositoryProvider).listTemplates(organizerId);
 
 Map<Object?, Object?> _requiredMap(Object? value, String label) {
   if (value is Map<Object?, Object?>) return value;

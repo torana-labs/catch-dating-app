@@ -654,22 +654,30 @@ final class HostFormResponseCanApplyFamily extends $Family
   String toString() => r'hostFormResponseCanApplyProvider';
 }
 
+/// One published version's analytics, live from its trigger-kept views:
+/// a new open, start or submission shows without a refresh.
+
 @ProviderFor(hostFormAnalytics)
 final hostFormAnalyticsProvider = HostFormAnalyticsFamily._();
+
+/// One published version's analytics, live from its trigger-kept views:
+/// a new open, start or submission shows without a refresh.
 
 final class HostFormAnalyticsProvider
     extends
         $FunctionalProvider<
           AsyncValue<HostFormAnalytics>,
           HostFormAnalytics,
-          FutureOr<HostFormAnalytics>
+          Stream<HostFormAnalytics>
         >
     with
         $FutureModifier<HostFormAnalytics>,
-        $FutureProvider<HostFormAnalytics> {
+        $StreamProvider<HostFormAnalytics> {
+  /// One published version's analytics, live from its trigger-kept views:
+  /// a new open, start or submission shows without a refresh.
   HostFormAnalyticsProvider._({
     required HostFormAnalyticsFamily super.from,
-    required ({String organizerId, String formId, String? versionId})
+    required ({String organizerId, String formId, String versionId})
     super.argument,
   }) : super(
          retry: null,
@@ -691,15 +699,15 @@ final class HostFormAnalyticsProvider
 
   @$internal
   @override
-  $FutureProviderElement<HostFormAnalytics> $createElement(
+  $StreamProviderElement<HostFormAnalytics> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<HostFormAnalytics> create(Ref ref) {
+  Stream<HostFormAnalytics> create(Ref ref) {
     final argument =
         this.argument
-            as ({String organizerId, String formId, String? versionId});
+            as ({String organizerId, String formId, String versionId});
     return hostFormAnalytics(
       ref,
       organizerId: argument.organizerId,
@@ -719,13 +727,16 @@ final class HostFormAnalyticsProvider
   }
 }
 
-String _$hostFormAnalyticsHash() => r'ffcc8a3bcf04927f9c80f290e3d4c629bec657e6';
+String _$hostFormAnalyticsHash() => r'41c361c52c1ae78543f7a3d51947f990f945a17e';
+
+/// One published version's analytics, live from its trigger-kept views:
+/// a new open, start or submission shows without a refresh.
 
 final class HostFormAnalyticsFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<HostFormAnalytics>,
-          ({String organizerId, String formId, String? versionId})
+          Stream<HostFormAnalytics>,
+          ({String organizerId, String formId, String versionId})
         > {
   HostFormAnalyticsFamily._()
     : super(
@@ -736,10 +747,13 @@ final class HostFormAnalyticsFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// One published version's analytics, live from its trigger-kept views:
+  /// a new open, start or submission shows without a refresh.
+
   HostFormAnalyticsProvider call({
     required String organizerId,
     required String formId,
-    String? versionId,
+    required String versionId,
   }) => HostFormAnalyticsProvider._(
     argument: (organizerId: organizerId, formId: formId, versionId: versionId),
     from: this,
