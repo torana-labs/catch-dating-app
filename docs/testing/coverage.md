@@ -19,8 +19,15 @@ node tool/test/flutter_coverage_report.mjs \
   --output coverage/flutter-coverage-summary.md
 ```
 
+In an app package, run the same command from `apps/<app>`. Flutter writes
+that LCOV's paths relative to the package, so pass the package directory with
+`--package-lcov apps/<app> --output <file>` to combine it with others under
+repository paths before reporting. CI's test shards do this for every package
+group they run.
+
 The report separates handwritten code from generated/config code and groups
-observed lines by top-level Flutter feature. LCOV does not include files the
+observed lines by top-level Flutter feature, and an app package's lines by
+app and feature (`host/today`). LCOV does not include files the
 test process never loads, so the report says "observed" rather than implying
 repository-wide completeness. Use the feature rows to choose focused additions;
 do not introduce an aggregate pass/fail threshold without reviewed product-risk

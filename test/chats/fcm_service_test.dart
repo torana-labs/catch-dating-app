@@ -48,6 +48,33 @@ void main() {
     });
   });
 
+  group('eventDetailRouteFromMessageData', () {
+    tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+    test('a feedback request opens the event page with its review action', () {
+      expect(
+        routeFromMessageData({
+          'type': 'eventFeedback',
+          'organizerId': 'club-1',
+          'eventId': 'event-7',
+        }),
+        '/organizers/club-1/events/event-7',
+      );
+    });
+
+    test('the Host app ignores a feedback request', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+      expect(
+        eventDetailRouteFromMessageData({
+          'type': 'eventFeedback',
+          'organizerId': 'club-1',
+          'eventId': 'event-7',
+        }),
+        isNull,
+      );
+    });
+  });
+
   group('hostOrganizerPaymentsRouteFromMessageData', () {
     tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 

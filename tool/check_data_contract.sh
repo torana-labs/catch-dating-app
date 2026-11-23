@@ -93,7 +93,7 @@ flutter analyze --fatal-infos \
   lib/hosts/presentation/organizer_management/create/create_organizer_controller.dart \
   lib/contexts/reviews/data/reviews_repository.dart \
   lib/contexts/reviews/data/review_callable_adapters.dart \
-  lib/reviews/shared/reviews_section.dart \
+  lib/pages/reviews/reviews_section.dart \
   lib/contexts/events/data/event_repository.dart \
   lib/contexts/events/data/event_callable_adapters.dart \
   lib/contexts/events/data/event_callable_responses.dart \

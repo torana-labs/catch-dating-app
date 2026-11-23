@@ -16,7 +16,7 @@
     "tool/design/library_shims_baseline.json",
     "tool/lib/flutter_source_roots.mjs",
     "packages/catch_ui/lib/**/*.dart",
-    "packages/catch_ui_lints/lib/src/migration_scope.dart",
+    "tool/architecture/carried_screens.json",
     "apps/**/lib/**/*.dart",
     "lib/pages/**/*.dart"
   ],

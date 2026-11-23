@@ -13,7 +13,7 @@ import {brand} from "../brand.ts";
 export const cityAlertsCopy = {
   kicker: "Hear about new plans first",
   title: "Get new plans in {city} on WhatsApp.",
-  lead: "About once a week.",
+  lead: "We’ll let you know when new plans open.",
   phone: "Your WhatsApp number",
   action: "Get plans",
   consent: `On WhatsApp, from ${brand.name}.`,

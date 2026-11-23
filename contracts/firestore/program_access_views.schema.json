@@ -25,6 +25,7 @@
     "hotelScoped",
     "functionAll",
     "functionScoped",
+    "programAll",
     "workPickup",
     "workHotel",
     "workFunction",
@@ -113,6 +114,10 @@
     "functionScoped": {
       "$ref": "#/definitions/expiryMap",
       "description": "Key duty__functionId to the latest expiry of an assignment that names that function."
+    },
+    "programAll": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "Duty name to the latest expiry of one assignment that covers every pickup point, hotel and function at once, with the coordinator duty counted for every duty but programAdmin. pickupAll, hotelAll and functionAll cannot say this, because each can be raised by a different assignment. The guest directory rules read guestRelations here, as requireProgramGuestDirectoryAccess admits a whole-programme guest relations duty only. Views written before this field read as holding none."
     },
     "workPickup": {
       "$ref": "#/definitions/expiryMap",

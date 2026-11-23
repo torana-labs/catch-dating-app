@@ -1,11 +1,10 @@
 // The Flutter test selector runs tests that reach this helper only when a
 // changed path is under these roots (TESTS.md, "Filesystem reads"). The
-// Flutter SDK fonts, .dart_tool/package_config.json and a caller's native
-// font sit outside the repository or follow its global inputs.
+// Flutter SDK fonts and a caller's native font sit outside the repository.
 // test-selection-reads: packages/catch_ui/assets/fonts/
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter/services.dart';
 
 /// Loads the app text fonts plus icon fonts for visual tests.
@@ -17,14 +16,14 @@ Future<void> loadCatchTestFonts({String? nativeIosFontPath}) async {
   final platformFunctionFonts = _platformFunctionFontFiles();
   final loaders = <FontLoader>[
     FontLoader('packages/catch_ui/Archivo')
-      ..addFont(_bytes('assets/fonts/Archivo-Roman-VF.ttf')),
+      ..addFont(_bytes('Archivo-Roman-VF.ttf')),
     FontLoader('packages/catch_ui/Lucide')
-      ..addFont(_bytes('assets/fonts/lucide/lucide.ttf')),
+      ..addFont(_bytes('lucide/lucide.ttf')),
     FontLoader('packages/catch_ui/IBM Plex Mono')
-      ..addFont(_bytes('assets/fonts/IBMPlexMono-Regular.ttf'))
-      ..addFont(_bytes('assets/fonts/IBMPlexMono-Medium.ttf'))
-      ..addFont(_bytes('assets/fonts/IBMPlexMono-SemiBold.ttf'))
-      ..addFont(_bytes('assets/fonts/IBMPlexMono-Bold.ttf')),
+      ..addFont(_bytes('IBMPlexMono-Regular.ttf'))
+      ..addFont(_bytes('IBMPlexMono-Medium.ttf'))
+      ..addFont(_bytes('IBMPlexMono-SemiBold.ttf'))
+      ..addFont(_bytes('IBMPlexMono-Bold.ttf')),
     for (final family in _platformFunctionFamilies)
       if (nativeIosFontPath != null &&
           (family.startsWith('CupertinoSystem') ||
@@ -41,9 +40,12 @@ Future<void> loadCatchTestFonts({String? nativeIosFontPath}) async {
   await Future.wait([for (final loader in loaders) loader.load()]);
 }
 
-Future<ByteData> _bytes(String path) => File(
-  '${_packageRoot('catch_ui').path}/$path',
-).readAsBytes().then(ByteData.sublistView);
+// The catch_ui package's bundled fonts, read by repository path so the helper
+// loads them from any package directory.
+const _catchUiFonts = 'packages/catch_ui/assets/fonts';
+
+Future<ByteData> _bytes(String name) =>
+    repoFile('$_catchUiFonts/$name').readAsBytes().then(ByteData.sublistView);
 
 Future<ByteData> _fileBytes(File file) =>
     file.readAsBytes().then(ByteData.sublistView);
@@ -122,24 +124,6 @@ Iterable<File> _materialIconFontCandidates() sync* {
 
   yield File('build/unit_test_assets/fonts/MaterialIcons-Regular.otf');
   yield File('build/flutter_assets/fonts/MaterialIcons-Regular.otf');
-}
-
-Directory _packageRoot(String packageName) {
-  final configFile = File('.dart_tool/package_config.json');
-  if (!configFile.existsSync()) {
-    throw StateError('Missing .dart_tool/package_config.json.');
-  }
-
-  final config =
-      jsonDecode(configFile.readAsStringSync()) as Map<String, Object?>;
-  final packages = (config['packages'] as List<Object?>)
-      .cast<Map<String, Object?>>();
-  final package = packages.where((entry) => entry['name'] == packageName).first;
-  final rootUri = Uri.parse(package['rootUri']! as String);
-  final resolved = rootUri.hasScheme
-      ? rootUri
-      : configFile.parent.uri.resolveUri(rootUri);
-  return Directory.fromUri(resolved);
 }
 
 class _PlatformFunctionFontFiles {

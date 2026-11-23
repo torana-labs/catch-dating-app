@@ -8,11 +8,11 @@ import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
+import 'package:catch_dating_app/pages/reviews/reviews_section.dart';
+import 'package:catch_dating_app/pages/reviews/star_rating_row.dart';
+import 'package:catch_dating_app/pages/reviews/write_review_sheet.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
-import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
-import 'package:catch_dating_app/reviews/shared/star_rating_row.dart';
-import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

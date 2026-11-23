@@ -4,20 +4,6 @@ part of 'program_work_repository.dart';
 /// replies) and the assistant settings; the threads, conversations and saved
 /// replies themselves are listeners in `program_inbox_views_repository.dart`.
 extension ProgramWhatsappRepositoryApi on ProgramWorkRepository {
-  /// The wedding's number, for the inbox header: the one part of the inbox
-  /// that is not a listener row (the sender connection stays on the server).
-  Future<ProgramWhatsappSender?> getWhatsappSender(String programId) => _call(
-    name: 'listProgramWhatsappThreads',
-    authorityScopedRead: true,
-    payload: ListProgramWhatsappThreadsCallableRequest(
-      programId: programId,
-      filter: ProgramWhatsappFilter.all.name,
-      limit: 1,
-    ).toJson(),
-    action: 'load the wedding number',
-    parse: (value) => ProgramWhatsappInbox.fromCallableData(value).sender,
-  );
-
   /// Marks a thread read, the write half of opening it. Answers with the
   /// thread's revision.
   Future<int> markWhatsappThreadRead({
@@ -105,21 +91,6 @@ extension ProgramWhatsappRepositoryApi on ProgramWorkRepository {
     ),
   );
 
-  Future<ProgramAssistantSettings> getAssistantSettings({
-    required String programId,
-    String? snapshotAccountId,
-  }) => _call(
-    name: 'getProgramAssistantSettings',
-    authorityScopedRead: true,
-    payload: GetProgramAssistantSettingsCallableRequest(
-      programId: programId,
-    ).toJson(),
-    action: 'load the assistant settings',
-    parse: ProgramAssistantSettings.fromCallableData,
-    snapshotScope: programSnapshotScope('assistantSettings', programId),
-    snapshotAccountId: snapshotAccountId,
-  );
-
   Future<ProgramAssistantSettings> updateAssistantSettings({
     required String programId,
     required ProgramAssistantSettingsChange change,
@@ -186,18 +157,18 @@ Future<ProgramReadView<ProgramWhatsappInbox>> programWhatsappInbox(
   return (value: inbox, snapshotAt: null, snapshotExpiresAt: null);
 }
 
-/// The wedding's WhatsApp number for the inbox header, or null when it
-/// cannot be read now.
+/// The wedding's WhatsApp number for the inbox header from
+/// `programSenderViews` (#2306), or null when there is none or it cannot be
+/// read now.
 @riverpod
 Future<ProgramWhatsappSender?> programWhatsappSender(
   Ref ref,
   String programId,
 ) async {
-  _watchWorkAccount(ref);
   try {
-    return await ref
-        .read(programWorkRepositoryProvider)
-        .getWhatsappSender(programId);
+    return programWhatsappSenderFromView(
+      await ref.watch(programSenderViewStreamProvider(programId).future),
+    );
   } on AppException {
     return null;
   }
@@ -228,29 +199,16 @@ Future<ProgramReadView<List<ProgramCannedReply>>> programCannedReplies(
   snapshotExpiresAt: null,
 );
 
-/// The assistant settings and the wedding's number.
+/// The assistant settings and the wedding's number, live from
+/// `programAssistantSettingViews` and `programSenderViews` (#2306).
 @riverpod
 Future<ProgramReadView<ProgramAssistantSettings>> programAssistantSettings(
   Ref ref,
   String programId,
-) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await _readView(
-    ref,
-    accountId,
-    programId,
-    programSnapshotScope('assistantSettings', programId),
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .getAssistantSettings(
-          programId: programId,
-          snapshotAccountId: accountId,
-        ),
-    ProgramAssistantSettings.fromCallableData,
-  );
-  retainProgramProjection(
-    ref,
-    programProjectionDeadline(null, result.snapshotExpiresAt),
-  );
-  return result;
-}
+) async => (
+  value: await ref.watch(
+    programAssistantSettingsStreamProvider(programId).future,
+  ),
+  snapshotAt: null,
+  snapshotExpiresAt: null,
+);

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
@@ -14,6 +13,7 @@ import 'package:catch_dating_app/event_success/event_success.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_practice_tools_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -153,7 +153,7 @@ void main() {
     (tester) async {
       final fixture =
           jsonDecode(
-                File(
+                repoFile(
                   'test/event_rehearsal/fixtures/staff_reviews.json',
                 ).readAsStringSync(),
               )
@@ -204,7 +204,7 @@ void main() {
   ) async {
     final fixture =
         jsonDecode(
-              File(
+              repoFile(
                 'test/event_rehearsal/fixtures/staff_reviews.json',
               ).readAsStringSync(),
             )

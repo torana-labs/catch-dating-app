@@ -2,7 +2,7 @@
   "version": 1,
   "updated": "2026-10-08",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
-  "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
+  "description": "Phase 1 UI capture coverage policy. Every route from the app routers (consumer_router.dart, host_router.dart) must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
     {
       "routeId": "loadingScreen",

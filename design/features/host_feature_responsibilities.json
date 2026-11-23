@@ -277,7 +277,7 @@
               "lib/hosts/presentation/host_audience_view.dart",
               "lib/hosts/people/people_screen.dart",
               "lib/hosts/forms/forms_screen.dart",
-              "lib/routing/go_router.dart",
+              "lib/routing/host_router.dart",
               "lib/routing/shell/host_shell_screen.dart"
             ],
             "examples": []

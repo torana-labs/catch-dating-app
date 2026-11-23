@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/city_catalog.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'sales_demo_synthetic_fixtures.dart';
@@ -23,7 +23,7 @@ void main() {
     expect(story.scenario.id, 'host-marketing-india');
     final india =
         jsonDecode(
-              File(
+              repoFile(
                 'tool/demo/demo_seed/scenarios/host-marketing-india.json',
               ).readAsStringSync(),
             )

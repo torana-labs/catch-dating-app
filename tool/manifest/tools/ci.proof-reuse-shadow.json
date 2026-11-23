@@ -1,0 +1,22 @@
+{
+  "id": "ci:proof-reuse-shadow",
+  "category": "ci",
+  "path": "tool/ci/proof_reuse_shadow.mjs",
+  "command": "node tool/ci/proof_reuse_shadow.mjs",
+  "surface": "remote-read",
+  "status": "active",
+  "impactPaths": [
+    ".github/workflows/ci.yml",
+    "tool/ci/proof_reuse_shadow.mjs",
+    "tool/ci/proof_reuse_shadow.test.mjs",
+    "tool/nx/lane_key.mjs",
+    "tool/nx/lane_key_replay.mjs"
+  ],
+  "description": "Shadow proof reuse: records each lane's input key on pull requests and, in the merge queue, decides from the pull request's own CI job records and recomputed keys which lanes could have been reused, then compares each verdict with the lane's real result (a lane that would have been reused but failed is a miss). Shadow only: nothing is skipped and no gate changes.",
+  "checks": [
+    "node --check tool/ci/proof_reuse_shadow.mjs",
+    "node --test tool/ci/proof_reuse_shadow.test.mjs"
+  ],
+  "role": "finder",
+  "runbook": "docs/release_operations.md#required-pr-checks"
+}

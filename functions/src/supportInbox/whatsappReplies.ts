@@ -176,7 +176,12 @@ export async function claimSupportWhatsappReply(
 export async function completeSupportWhatsappReply(
   db: FirebaseFirestore.Firestore,
   input: {conversationId: string; messageId: string; bodyHash: string;
-    providerMessageId: string; now: Timestamp}
+    providerMessageId: string; now: Timestamp;
+    /**
+     * Catch's own automatic send: the thread records it, but it neither
+     * stops the waiting clock nor replaces the list preview.
+     */
+    automatic?: boolean}
 ): Promise<Message> {
   const conversationRef = db.collection(SUPPORT_CONVERSATIONS)
     .doc(input.conversationId);
@@ -196,7 +201,10 @@ export async function completeSupportWhatsappReply(
       providerMessageId: input.providerMessageId};
     tx.update(messageRef, {deliveryState: saved.deliveryState,
       providerMessageId: saved.providerMessageId});
-    tx.update(conversationRef, {
+    tx.update(conversationRef, input.automatic ? {
+      lastOutboundAt: input.now,
+      updatedAt: input.now,
+    } : {
       lastOutboundAt: input.now,
       waitingSince: null,
       status: "waitingOnThem",

@@ -3,6 +3,11 @@ import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import * as logger from "firebase-functions/logger";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {onSchedule} from "firebase-functions/v2/scheduler";
+import {
+  defaultHostLeadTemplateDeps,
+  sendHostAppLinkForLead,
+  sendHostLeadWelcomeForLead,
+} from "../waitlist/hostLeadTemplates";
 import {ResendEmailProvider} from "../email/resendEmailProvider";
 import {SecretVersionReferenceGuard} from "../shared/secretVersionReference";
 import {
@@ -53,11 +58,21 @@ export const alertOperatorOnSupportMessage = onDocumentCreated({
     event.params.conversationId, event.params.messageId);
 });
 
+// Before the alert, Catch's WhatsApp number answers the lead
+// (waitlist/hostLeadTemplates.ts): a "Text me the link" lead gets the Host
+// app link (off unless CATCH_WHATSAPP_HOST_APP_LINK_ENABLED) and a host
+// enquiry gets the welcome (off unless
+// CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED). A lead fits at most one. Each
+// send never throws and is claimed once per lead, so a retry for the alert
+// never sends it again.
 export const alertOperatorOnSalesLead = onDocumentCreated({
   document: "salesInboundIntents/{intentId}",
   retry: true, maxInstances: 1, timeoutSeconds: 60,
 }, async (event) => {
-  await alertOnSalesIntent(defaultOperatorAlertDeps, event.params.intentId);
+  const intentId = event.params.intentId;
+  await sendHostAppLinkForLead(defaultHostLeadTemplateDeps, intentId);
+  await sendHostLeadWelcomeForLead(defaultHostLeadTemplateDeps, intentId);
+  await alertOnSalesIntent(defaultOperatorAlertDeps, intentId);
 });
 
 export const summariseOperatorAlertOverflow = onSchedule({

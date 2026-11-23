@@ -58,7 +58,8 @@ function setup(event: Record<string, unknown> = {
       firestore: () => db as never, nowMillis: () => NOW,
       timestampFromMillis: (millis) => millis,
     });
-    assert.equal(provision.created, 1);
+    // Start reminder and feedback request; only the reminder is due.
+    assert.equal(provision.created, 2);
     const result = await runMomentSweep(deps);
     assert.equal(result.runsFired, 1);
     assert.equal(result.runsFailed + result.momentsFailed, 0);

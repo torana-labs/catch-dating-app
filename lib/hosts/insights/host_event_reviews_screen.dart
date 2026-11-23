@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/insights/parts/host_event_review_row.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
-import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
+import 'package:catch_dating_app/pages/reviews/reviews_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';

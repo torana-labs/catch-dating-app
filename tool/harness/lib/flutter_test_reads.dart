@@ -21,25 +21,43 @@ const _fileSystemTypes = {
   'RandomAccessFile',
 };
 
+/// The `package:catch_test_support/repo_file.dart` functions whose path
+/// argument is a repository path, whatever the working directory.
+const _repositoryPathFunctions = {'repoFile', 'repoDirectory'};
+
 // Paths derived from global test inputs (the pubspecs and lockfile), which
 // already select every test when they change.
 bool _globalPath(String path) => path.startsWith('.dart_tool/');
 
-/// The repository paths a `dart:io` file reads, or null when they cannot be
+/// What a bounded file reads: repository paths, and whether any of them came
+/// from a path relative to the test run's working directory (rather than
+/// through `repoFile` or `repoDirectory`, which take repository paths).
+typedef FileReads = ({Set<String> paths, bool relative});
+
+/// The repository paths a test-side file reads, or null when they cannot be
 /// bounded and the file must stay a filesystem probe that always runs.
 ///
-/// Without a declaration, every path the file hands to `File`, `Directory`,
-/// `Link` or `FileSystemEntity` must evaluate to string literals, constants
-/// of the same file, or interpolations and conditionals of those. With a
-/// declaration, computed paths are trusted to stay within the declared roots,
-/// but any literal or constant-prefixed path outside them, a declared root
-/// absent from [paths], or a use of `Process`, `Directory.current` or
-/// `Platform.script` keeps the file a probe.
-Set<String>? fileReads({
+/// A path handed to `File`, `Directory`, `Link` or `FileSystemEntity` is
+/// relative to the test run's working directory, the package directory
+/// [workingDirectory] (`''` for the repository root). A path handed to
+/// `repoFile` or `repoDirectory` is a repository path. When
+/// [workingDirectory] is null, the file runs from every package's directory,
+/// so only its repository paths can be bounded: any relative literal or
+/// constant-prefixed path keeps it a probe.
+///
+/// Without a declaration, every path must evaluate to string literals,
+/// constants of the same file, or interpolations and conditionals of those.
+/// With a declaration, whose roots are repository paths, computed paths are
+/// trusted to stay within the declared roots, but any literal or
+/// constant-prefixed path outside them, a declared root absent from [paths]
+/// (every tracked repository path), or a use of `Process`,
+/// `Directory.current` or `Platform.script` keeps the file a probe.
+FileReads? fileReads({
   required String name,
   required String source,
   required CompilationUnit unit,
   required Set<String> paths,
+  String? workingDirectory = '',
 }) {
   final declared = <String>[];
   for (final match in declarationPattern.allMatches(source)) {
@@ -75,36 +93,58 @@ Set<String>? fileReads({
   final visitor = _PathVisitor(constants);
   unit.accept(visitor);
   if (visitor.forbidden) return null;
+  // Each read as a repository path: the full path when complete, otherwise
+  // the literal prefix before its first computed part ('' when the whole
+  // path is computed, which only a declaration can bound).
+  final resolved = <_Path>[];
+  var relative = false;
+  for (final (path, :repository) in visitor.paths) {
+    final text = path.text.startsWith('./')
+        ? path.text.substring(2)
+        : path.text;
+    if (_globalPath(text)) continue;
+    if (!path.complete && text.isEmpty) {
+      relative |= !repository;
+      resolved.add(path);
+      continue;
+    }
+    if (repository) {
+      resolved.add((text: text, complete: path.complete));
+      continue;
+    }
+    if (workingDirectory == null) return null;
+    relative = true;
+    resolved.add((
+      text: workingDirectory.isEmpty ? text : '$workingDirectory/$text',
+      complete: path.complete,
+    ));
+  }
   if (declared.isEmpty) {
-    if (visitor.paths.any((path) => !path.complete)) return null;
+    if (resolved.any((path) => !path.complete)) return null;
     final reads = <String>{};
-    for (final path in visitor.paths) {
+    for (final path in resolved) {
       final normalized = _normalize(path.text);
       if (normalized == null || normalized.isEmpty) return null;
       reads.add(normalized);
     }
-    return reads;
+    return (paths: reads, relative: relative);
   }
   for (final root in declared) {
     if (!paths.any((path) => path == root || path.startsWith('$root/'))) {
       return null;
     }
   }
-  for (final path in visitor.paths) {
+  for (final path in resolved) {
     if (!path.complete && path.text.isEmpty) continue; // Trusted computation.
-    final text = path.text.startsWith('./')
-        ? path.text.substring(2)
-        : path.text;
-    if (_globalPath(text)) continue;
     final inside = declared.any(
       (root) =>
-          text == root ||
-          text.startsWith('$root/') ||
-          (!path.complete && text == '$root/'),
+          path.text == root ||
+          path.text.startsWith('$root/') ||
+          (!path.complete && path.text == '$root/'),
     );
     if (!inside) return null;
   }
-  return declared.toSet();
+  return (paths: declared.toSet(), relative: relative);
 }
 
 /// Whether a changed repository path is one a test with [reads] can read.
@@ -135,7 +175,10 @@ class _PathVisitor extends RecursiveAstVisitor<void> {
   _PathVisitor(this.constants);
 
   final Map<String, Expression> constants;
-  final paths = <_Path>[];
+
+  /// Every path the file reads, each marked by whether it is a repository
+  /// path (a `repoFile` or `repoDirectory` argument).
+  final paths = <(_Path, {bool repository})>[];
   var forbidden = false;
   final _evaluating = <String>{};
   final _consumed = <SimpleIdentifier>{};
@@ -198,16 +241,21 @@ class _PathVisitor extends RecursiveAstVisitor<void> {
     return results;
   }
 
-  void _arguments(ArgumentList arguments) {
+  void _add(_Path path, {bool repository = false}) =>
+      paths.add((path, repository: repository));
+
+  void _arguments(ArgumentList arguments, {bool repository = false}) {
     final positional = arguments.arguments.where(
       (argument) => argument is! NamedArgument,
     );
     if (positional.isEmpty) {
-      paths.add(_computed);
+      _add(_computed, repository: repository);
       return;
     }
     for (final argument in positional) {
-      paths.addAll(evaluate(argument.argumentExpression));
+      for (final path in evaluate(argument.argumentExpression)) {
+        _add(path, repository: repository);
+      }
     }
   }
 
@@ -218,11 +266,14 @@ class _PathVisitor extends RecursiveAstVisitor<void> {
     if (target == null && _fileSystemTypes.contains(method)) {
       _consumed.add(node.methodName);
       _arguments(node.argumentList);
+    } else if (target == null && _repositoryPathFunctions.contains(method)) {
+      _consumed.add(node.methodName);
+      _arguments(node.argumentList, repository: true);
     } else if (target is SimpleIdentifier &&
         _fileSystemTypes.contains(target.name)) {
       _consumed.add(target);
       if (method == 'fromUri' || method == 'fromRawPath') {
-        paths.add(_computed);
+        _add(_computed);
       } else {
         _arguments(node.argumentList);
       }
@@ -238,7 +289,7 @@ class _PathVisitor extends RecursiveAstVisitor<void> {
       if (named == null) {
         _arguments(node.argumentList);
       } else {
-        paths.add(_computed);
+        _add(_computed);
       }
     }
     super.visitInstanceCreationExpression(node);
@@ -255,7 +306,7 @@ class _PathVisitor extends RecursiveAstVisitor<void> {
       _consumed.add(node.prefix);
       // A temporary directory holds only what the test itself writes.
       if (!(prefix == 'Directory' && member == 'systemTemp')) {
-        paths.add(_computed);
+        _add(_computed);
       }
     }
     super.visitPrefixedIdentifier(node);
@@ -264,8 +315,11 @@ class _PathVisitor extends RecursiveAstVisitor<void> {
   @override
   void visitSimpleIdentifier(SimpleIdentifier node) {
     if (node.name == 'Process') forbidden = true;
-    if (_fileSystemTypes.contains(node.name) && !_consumed.contains(node)) {
-      paths.add(_computed); // A tear-off or alias escapes path evaluation.
+    if ((_fileSystemTypes.contains(node.name) ||
+            _repositoryPathFunctions.contains(node.name)) &&
+        !_consumed.contains(node)) {
+      // A tear-off or alias escapes path evaluation.
+      _add(_computed, repository: _repositoryPathFunctions.contains(node.name));
     }
     super.visitSimpleIdentifier(node);
   }

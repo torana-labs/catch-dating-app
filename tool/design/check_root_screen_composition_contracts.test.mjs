@@ -174,7 +174,7 @@ function fixtureRoot({
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-tab-root-"));
   write(
     root,
-    "lib/routing/go_router.dart",
+    "lib/routing/consumer_router.dart",
     `
       StatefulShellBranch(
         navigatorKey: ${routerBranchKey},
@@ -192,9 +192,9 @@ function fixtureRoot({
     root,
     "tool/design/root_screen_composition_contracts.json",
     JSON.stringify({
-      schemaVersion: 3,
+      schemaVersion: 4,
       logicalName: "fixture",
-      routerPath: "lib/routing/go_router.dart",
+      routerPaths: ["lib/routing/consumer_router.dart"],
       shells: [
         {
           path: "lib/routing/shell/app_shell.dart",

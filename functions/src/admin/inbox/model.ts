@@ -387,6 +387,7 @@ function projectEnquiry(sourceId: string, data: Data): InboxProjection | null {
     journey.push({stepId: "dismissed", occurredAt: iso(data.updatedAt) ?? createdAt, title: "Dismissed",
       detail: null, actorUid: null, tone: "muted"});
   }
+  journey.push(...whatsappTemplateSteps(data));
   const open = status === "needs_identity_review";
   return {
     itemId: inboxItemId("salesInboundIntent", sourceId),
@@ -454,7 +455,8 @@ function leadDetail(kind: string, lead: Data): string | null {
 
 /**
  * A website lead (joinWaitlist requestKind): a person waiting for a WhatsApp
- * reply. Nothing is sent for staff, so it waits until someone replies and
+ * reply. Apart from the automatic Host app link or welcome, nothing is sent for staff,
+ * so it waits until someone replies (or sends the follow-up template) and
  * closes it with what they said. A referral closes itself when its listing
  * is approved and links it.
  */
@@ -476,6 +478,7 @@ function projectLead(sourceId: string, data: Data): InboxProjection {
     journey.push({stepId: "dismissed", occurredAt: iso(data.updatedAt) ?? createdAt, title: "Dismissed",
       detail: null, actorUid: null, tone: "muted"});
   }
+  journey.push(...whatsappTemplateSteps(data));
   const open = status === "needs_identity_review";
   return {
     itemId: inboxItemId("salesInboundIntent", sourceId),
@@ -497,6 +500,37 @@ function projectLead(sourceId: string, data: Data): InboxProjection {
     recommendation: null,
     journey,
   };
+}
+
+const templateLabels: Record<string, string> = {
+  host_app_link: `the ${BRAND.stores.hostAppName} app link`,
+  host_lead_welcome: "the welcome",
+};
+
+/**
+ * What Catch's WhatsApp number sent the lead by itself: the automatic Host
+ * app link or welcome. One step per settled outcome; a send still in flight
+ * shows once it settles. Follow-ups staff send are in the person's Support
+ * thread.
+ */
+function whatsappTemplateSteps(data: Data): JourneyStep[] {
+  return (["appLinkWhatsapp", "welcomeWhatsapp"] as const).flatMap((field) => {
+    const send = record(data[field]);
+    const state = text(send?.state);
+    const occurredAt = iso(send?.attemptedAt);
+    if (!send || !state || state === "sending" || !occurredAt) return [];
+    const what = templateLabels[String(send.templateName)] ?? "a template message";
+    const code = typeof send.deliveryErrorCode === "number" ? `WhatsApp error ${send.deliveryErrorCode}` : null;
+    const [title, detail, tone]: [string, string | null, JourneyTone] =
+      state === "accepted" ? [`Sent ${what} on WhatsApp`, "From Catch's number; replies land in Support", "success"] :
+        state === "failed" ? [`WhatsApp refused ${what}`, code ?? "Not sent; reply by hand", "danger"] :
+          state === "unknown" ? [`Couldn't confirm ${what} was sent`, "Check their Support thread before sending anything", "warning"] :
+            [`Didn't send ${what}`, send.skipReason === "stopped" ? "They sent STOP to Catch's number" :
+              send.skipReason === "recentlySent" ? "Their number had a welcome in the last week" :
+                "No WhatsApp sender is set up here", "muted"];
+    return [{stepId: `whatsapp-${text(send.messageId) ?? field}-${state}`, occurredAt, title, detail,
+      actorUid: text(send.actorUid), tone}];
+  });
 }
 
 /** "Meher Shah Weddings · 12 Dec wedding" from the programme answers. */

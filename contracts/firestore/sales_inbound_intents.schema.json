@@ -392,7 +392,7 @@
         "city_alerts",
         "app_link"
       ],
-      "description": "Present on a website lead (joinWaitlist requestKind); absent on Host applications and partner nominations. Staff reply on WhatsApp; nothing is sent automatically."
+      "description": "Present on a website lead (joinWaitlist requestKind); absent on Host applications and partner nominations. Staff reply on WhatsApp; the only automatic messages are the Host app link (appLinkWhatsapp) and the host lead welcome (welcomeWhatsapp), each behind its own switch."
     },
     "lead": {
       "$ref": "#/definitions/lead"
@@ -629,6 +629,14 @@
           "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
         }
       }
+    },
+    "appLinkWhatsapp": {
+      "$ref": "#/definitions/whatsappTemplateSend",
+      "description": "An app_link lead's automatic host_app_link template from Catch's WhatsApp number: written once when Catch claims the send (state sending), then settled. Its presence means the lead has had its one attempt, so a retried trigger never sends again. Absent while CATCH_WHATSAPP_HOST_APP_LINK_ENABLED is off, for internal test leads and for any lead it does not apply to."
+    },
+    "welcomeWhatsapp": {
+      "$ref": "#/definitions/whatsappTemplateSend",
+      "description": "A host lead's automatic host_lead_welcome template from Catch's WhatsApp number: a website guide, demo or venue lead given under consent playbook-lead-whatsapp-v2, or a Meta lead-form lead while CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED is on. Written once when Catch claims the send (state sending), then settled, or skipped. Its presence means the lead has had its one attempt, so a retried trigger never sends again. Absent while CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED is off, for internal test leads, leads older than six hours and any lead it does not apply to."
     }
   },
   "allOf": [
@@ -1925,6 +1933,115 @@
           "referrerRole": {
             "type": "null"
           }
+        }
+      }
+    },
+    "whatsappTemplateSend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "templateName",
+        "state",
+        "skipReason",
+        "conversationId",
+        "messageId",
+        "providerMessageId",
+        "deliveryErrorCode",
+        "actorUid",
+        "attemptedAt"
+      ],
+      "description": "An approved WhatsApp template sent from Catch's number to the lead's phone. sending: claimed, WhatsApp not yet answered. accepted: WhatsApp took it and gave providerMessageId; delivery and read statuses then show on the Support message (supportConversations/{conversationId}/messages/{messageId}). failed: WhatsApp refused it (deliveryErrorCode). unknown: no answer, so it may have been sent; never retried. skipped: not sent, for skipReason (stopped: they sent STOP; unavailable: this environment has no sender credential or ids; recentlySent: the number had a welcome in the last seven days).",
+      "properties": {
+        "templateName": {
+          "enum": [
+            "host_app_link",
+            "host_lead_welcome"
+          ]
+        },
+        "state": {
+          "enum": [
+            "sending",
+            "accepted",
+            "failed",
+            "unknown",
+            "skipped"
+          ]
+        },
+        "skipReason": {
+          "anyOf": [
+            {
+              "enum": [
+                "stopped",
+                "unavailable",
+                "recentlySent"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conversationId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^whatsapp-[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messageId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 160
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "providerMessageId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "deliveryErrorCode": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "actorUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attemptedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
         }
       }
     }

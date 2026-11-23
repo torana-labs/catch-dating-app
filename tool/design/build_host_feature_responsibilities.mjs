@@ -155,6 +155,17 @@ export function parseDartRoutes(source) {
   return routes;
 }
 
+// People holds the audience and the inbox, so the app package nests them.
+const appDestinations = new Map([["audience", "people/audience"], ["inbox", "people/inbox"]]);
+
+/**
+ * Where a host feature's README may live: its legacy folder until the Phase 4
+ * codemod moves the destination, then its folder in the host app package.
+ */
+export function hostFeatureTargetRoots(id) {
+  return [`lib/hosts/${id}`, `apps/host/lib/${appDestinations.get(id) ?? id}`];
+}
+
 export function validateAndResolveHostFeatureResponsibilities({
   contract,
   shellManifest,
@@ -195,8 +206,9 @@ export function validateAndResolveHostFeatureResponsibilities({
         `${label}: primary route ${feature.primaryRouteId} is not an index route of shell destination ${shellRoute?.destination ?? "missing"}.`,
       );
     }
-    if (feature.targetRoot !== `lib/hosts/${feature.id}`) {
-      errors.push(`${label}: targetRoot must be lib/hosts/${feature.id}.`);
+    const targetRoots = hostFeatureTargetRoots(feature.id);
+    if (!targetRoots.includes(feature.targetRoot)) {
+      errors.push(`${label}: targetRoot must be ${targetRoots.join(" or ")}.`);
     }
     if (!feature.ownedRouteIds.includes(feature.primaryRouteId)) {
       errors.push(`${label}: ownedRouteIds must include primaryRouteId ${feature.primaryRouteId}.`);

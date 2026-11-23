@@ -285,6 +285,29 @@ run in nightly validation, and signed store builds come from
 [Mobile releases](#mobile-releases). Without that proof for the same commit, `main`
 runs every selected lane.
 
+Proof reuse runs in shadow (Phase 1, 22 Nov 2026); it skips nothing and gates
+nothing, and the owner decides on reuse after a full week of shadow runs with
+no miss. On a ready pull request and in the merge queue, the `Compute
+proof-reuse keys` job (`tool/ci/proof_reuse_shadow.mjs`) hashes each lane's
+inputs at the head commit with `tool/nx/lane_key.mjs`: every file the lane's
+Nx tasks and ci.yml jobs read, its workflow and toolchain files, and the
+hasher's own version. A pull request records the keys once, as a `proof-keys`
+notice on that job. In a queue group the job then decides, per lane, whether
+the queued pull request's pass could have been reused. The pull request must
+come from this repository and change no workflow, composite action,
+`tool/ci/**` or `tool/nx/**` file. The lane must have passed in the pull
+request's latest `ci.yml` run for its current head, read from GitHub's job
+records, never from the notice or an artifact. Its key, recomputed by the
+group's own hasher at the pull request head, must equal both the recorded key
+and the key at the group head. Only `contracts` and `operations` can qualify:
+the other lanes narrow their tests on pull requests, run different steps there,
+or share a job, so a pull request pass does not prove their queue result; their
+keys are still compared and reported. The `Compare proof-reuse verdicts with
+the lanes` job joins each verdict with the lane's real queue result, writes the
+`proof-reuse-shadow-<run>-<attempt>` artifact and a summary table, and warns on
+a miss: a lane that would have been reused but failed. Both jobs are
+`continue-on-error` and outside `Required CI`; any unknown means not eligible.
+
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
 path, and invokes reusable validation workflows only for affected targets.
@@ -477,18 +500,23 @@ run that ran is an ancestor of the head, the run validates everything in the
 nightly full mode. Pull requests and nightly runs retain their existing validation
 flow.
 
-Root Flutter unit/widget tests are selected by
+Root and app-package Flutter unit/widget tests are selected by
 `tool/harness/lib/flutter_test_selection.dart` from the exact base and head Git
 objects. Dart's parser follows imports, exports, conditional imports and parts
 in both snapshots, so deleted or moved dependencies remain covered. Every
 ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
-A test that reaches a `dart:io` file under `test/` or `tool/` runs only when a
+A test that reaches a file-reading file under `test/`, `tool/`, an app
+package's `test/` or `packages/catch_test_support/lib/` runs only when a
 changed path is one that file can read, if those reads are bounded
-(`tool/harness/lib/flutter_test_reads.dart`). Reads are bounded when every
-path the file gives `File`, `Directory`, `Link` or `FileSystemEntity` is a
-string literal, a constant of the same file, or an interpolation or
-conditional of those, or when the file names its roots in a
-`// test-selection-reads:` comment (TESTS.md, "Filesystem reads"). A changed
+(`tool/harness/lib/flutter_test_reads.dart`). A file reads files when it
+imports `dart:io` or the `repoFile()` library of `packages/catch_test_support`.
+Reads are bounded when every path the file gives `File`, `Directory`, `Link`,
+`FileSystemEntity`, `repoFile` or `repoDirectory` is a string literal, a
+constant of the same file, or an interpolation or conditional of those, or
+when the file names its roots in a `// test-selection-reads:` comment
+(TESTS.md, "Filesystem reads"). `repoFile` paths are repository paths;
+other paths resolve against the test's package directory, so a shared
+test-support helper with one is a probe. A changed
 path such a test can read counts as covered, so a test fixture with a known
 reader no longer keeps the full suite. Any other `dart:io` file is a filesystem
 probe and its tests always run, as does a declared file that uses `Process`,
@@ -497,10 +525,11 @@ path outside its roots, or names a root that is not in the tree. Declared roots
 are trusted for computed paths, so the nightly full run is the backstop for a
 wrong declaration. Dart files anywhere in the repository are covered by the
 import graph.
-Paths outside the root package (backend, web, design, docs, tooling, CI,
-golden and integration suites, other packages' apps, the `packages/catch_ui`
-and `packages/kernel` test suites that the package-tests job runs, firebase
-configuration and Markdown outside test or asset directories) are probe-only.
+Paths outside the packages the shards test (backend, web, design, docs,
+tooling, CI, golden and integration suites, the app packages' native folders,
+`integration_test/` and goldens, the `packages/catch_ui` and `packages/kernel`
+test suites that the package-tests job runs, firebase configuration and
+Markdown outside test or asset directories) are probe-only.
 A root test can only read them from disk, so the probes cover them without
 broadening the selection; a root test that imports one is still selected
 through the import graph.
@@ -530,11 +559,27 @@ binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
 contract checks retain their separate owners.
 
-One job, "Catch UI, Consumer & Host package tests", runs the Kernel, Catch
-UI, Consumer and Host package suites and then the Widgetbook dependency
-resolution, golden inventory and web build, after one shared setup. The job
-keeps that name because `host-website.yml`'s queue validation looks it up. Each
-suite is its own step with `!cancelled()` and its own setup step's success in
+The selected tests include the app packages' own: every
+`apps/<app>/test/**_test.dart` outside `apps/<app>/test/goldens/`. An app's
+`lib/` and `test/` need import proof like the root package's, while its native
+folders, `integration_test/` and goldens stay probe-only. The plan records the
+package directory of each file. Each shard lists its files in groups, one per
+package, and runs each group's `flutter test` from that directory. Each group
+is its own run and pays a cold compile, so app-package tests fill the shards in
+order and root tests spread over the room left. A dart:io test file in an app
+package bounds its relative reads against that package's directory, and a test
+that reaches a reader bounded for another package always runs. A test config
+counts only up to the test's package directory. Coverage includes
+`catch_host_app` and `catch_consumer_app`.
+`tool/test/flutter_coverage_report.mjs --package-lcov <directory>` rebases each
+group's LCOV to repository paths, so an app's `lib/` stays apart from the
+root's.
+
+One job, "Kernel, Catch UI & Widgetbook package tests", runs the Kernel and
+Catch UI package suites and then the Widgetbook dependency resolution, golden
+inventory and web build, after one shared setup. `host-website.yml`'s queue
+validation looks up "Analyze & test", which passes only when every Flutter job
+did. Each suite is its own step with `!cancelled()` and its own setup step's success in
 its condition, so a failing suite never hides an independent one; any failure
 still fails the job, and a final step lists every suite's outcome in the job
 summary. On a pull request, each package suite and the Widgetbook steps run
@@ -2537,9 +2582,11 @@ planned those lanes at all.
 
 `Test read map` (`.github/workflows/test-read-map.yml`, driven by
 `tool/ci/test_read_map.mjs`) runs nightly at 03:41 UTC and on dispatch, in
-shadow (RE decision, 22 Nov 2026). Each Flutter test file under `test/` that
-imports `dart:io` runs in its own `flutter test` under `strace -f` on Linux,
-four shards, read-only. The log is reduced to the repository paths each kind
+shadow (RE decision, 22 Nov 2026). Each root or app-package Flutter test file
+that imports `dart:io` or `repoFile()` (`packages/catch_test_support`) runs in
+its own `flutter test`, from its package directory, under `strace -f` on
+Linux, four shards, read-only. A test that reads only through a helper it
+imports is not traced. The log is reduced to the repository paths each kind
 of process touched and deleted before the next test. The test runtime
 (`flutter_tester`) is where a test's own `dart:io` reads happen; its opened,
 listed (directory), probed (stat) and missing paths are kept in full. The
@@ -4142,7 +4189,12 @@ Ubuntu headless journeys, macOS desktop/Widgetbook goldens (including the second
 determinism pass), and native macOS app-shell smoke. Goldens and native smoke
 use separate pinned macOS runners at the same workflow source; neither job
 waits for or substitutes for the other. Committed generated-source freshness
-remains required in the golden job. The smoke retains bounded infrastructure
+remains required in the golden job: it runs a full
+`dart run build_runner build --delete-conflicting-outputs` in the root,
+`apps/host` and `apps/consumer` (never `--build-filter`, which deletes tracked
+outputs outside its filter) and Widgetbook's directory build. Then no
+`*.g.dart` or `*.freezed.dart` may differ or be untracked. On drift it
+uploads the difference as a patch. The smoke retains bounded infrastructure
 retries, and every selected job must pass.
 
 The native macOS app-shell smoke is nightly-only: it runs on the daily schedule
@@ -4156,9 +4208,14 @@ report it. The macOS goldens are out of the merge queue too (owner decision,
 22 Nov 2026): the 5 hosted macOS runners held queue groups past the 90-minute
 timeout on 18–19 Nov. They run on the nightly and on main pushes whose inputs
 select the visual lane. A main push the queue already validated runs only the
-goldens (`macos_only`), and only when the queue run's own plan for that exact
-source selected the lane. If that plan cannot be read, the goldens run; they
-are never skipped for that reason. A main or nightly golden failure fails the
+goldens (`macos_only`), and only when a queue plan selected the lane: its own
+commit's, or that of any commit whose own push run was replaced before it ran.
+`tool/ci/main_macos_selection.mjs` takes the range from the same base the plan
+step uses (`main_push_base.mjs`) and reads each commit's own queue run plan
+(`main_push_queue_proof.mjs`), up to 30 commits (22 Nov 2026: 4d66cf5e6's run
+was replaced, and the next run read only its own plan). If any plan in the
+range cannot be read, the base is unknown, or the range is empty or longer,
+the goldens run; they are never skipped for that reason. A main or nightly golden failure fails the
 run, so the Main CI alert reports it. The Headless journeys keep running
 wherever the lane is selected, the queue included.
 The macOS capture render (`marketing-captures.yml`, job `export`) leaves the
@@ -4170,8 +4227,8 @@ check, only when capture freshness succeeded with no capture binding, its plan
 job succeeded, and both reuse and render were skipped. Anything else, an API
 error included, is not deferred, so a broken capture pipeline still fails the
 lane on the missing binding. A main push the queue validated renders the
-captures when the queue's plan selected capture freshness or marketing, read
-the same way as the goldens and run if that plan cannot be read; the nightly
+captures when a queue plan in that same range selected capture freshness or
+marketing, read the same way as the goldens and run if one cannot be read; the nightly
 renders too, and later queue groups reuse those renders. A plan that succeeds
 but emits a render value other than true or false would also read as deferred;
 the plan's own tests pin that value. Pull requests also run the Headless journeys in the Flutter lane

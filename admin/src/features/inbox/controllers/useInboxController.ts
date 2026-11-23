@@ -10,6 +10,7 @@ import {
   getListingReview,
   linkEnquiry,
   searchOrganizers,
+  sendLeadFollowUp,
   listInboxItems,
   nominateOrganizer,
   publishListingEvent,
@@ -73,6 +74,9 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
   const claimDecision = useMutation({mutationFn: decideClaim});
   const accessDecision = useMutation({mutationFn: decideAccess});
   const enquiryLink = useMutation({mutationFn: linkEnquiry});
+  const followUp = useMutation({mutationFn: sendLeadFollowUp});
+  // A retry after a lost answer keeps its request id, so the server replays it instead of sending again.
+  const followUpRequestIds = useRef(new Map<string, string>());
   const [reviewRequestId, setReviewRequestId] = useState<string | null>(null);
   const listingReview = useQuery({
     queryKey: [...inboxKey, "listing-review", reviewRequestId],
@@ -213,12 +217,34 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
     hostMatches: hostQuery.trim().length >= 2 ? hostSearch.data ?? [] : [],
     linkEnquiry: (input: Parameters<typeof linkEnquiry>[0], name: string) => run(() => enquiryLink.mutateAsync(input),
       `Linked to ${name}. Their Sales work is open.`, true),
+    /** Sends the approved WhatsApp follow-up template to a host lead; it shows in their Support thread. */
+    sendFollowUp: (intentId: string) => {
+      const ids = followUpRequestIds.current;
+      const clientRequestId = ids.get(intentId) ?? crypto.randomUUID();
+      ids.set(intentId, clientRequestId);
+      return run(async () => {
+        try {
+          await followUp.mutateAsync({intentId, clientRequestId});
+          ids.delete(intentId);
+        } catch (error) {
+          if (!uncertain(error)) ids.delete(intentId);
+          throw error;
+        }
+      }, "Follow-up sent on WhatsApp. It's in their Support thread.", false);
+    },
+    isSendingFollowUp: followUp.isPending,
     isWorking: update.isPending || recommend.isPending || claimDecision.isPending || accessDecision.isPending ||
-      enquiryLink.isPending,
+      enquiryLink.isPending || followUp.isPending,
     refresh,
     /** For panels that take their own steps, such as a listing request: refresh the queue after one. */
     refreshItem: () => void refresh(),
   };
+}
+
+/** An answer that never arrived: the send may have happened, so a retry must reuse its request id. */
+function uncertain(error: unknown): boolean {
+  const code = (error as {code?: unknown} | null)?.code;
+  return code === "functions/unavailable" || code === "functions/deadline-exceeded" || code === "functions/internal";
 }
 
 export type InboxController = ReturnType<typeof useInboxController>;

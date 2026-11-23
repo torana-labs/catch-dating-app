@@ -76,7 +76,7 @@
         {"time": "6:20 AM", "title": "Check in, then pocket the phone", "body": "QR or self check-in at the meeting point."},
         {"time": "6:30 AM", "title": "A first hello at the start line", "body": "Each pod gets one question to answer before they set off."},
         {"time": "7:15 AM", "title": "Nobody left on the road", "body": "At the finish, you or your sweep mark each runner back."},
-        {"time": "Sunday", "title": "The next run, already easier", "body": "Photos follow the run. Runners get a feedback prompt, and your report shows who came for the first time and who came back."}
+        {"time": "Sunday", "title": "The next run, already easier", "body": "Photos follow the run. Runners on the {{brand.name}} app get a feedback prompt, and your report shows who came for the first time and who came back."}
       ],
       "media": {"kind": "capture", "slot": "host-live-tablet-run-clubs"}
     },
@@ -138,17 +138,17 @@
       "ground": "yellow",
       "kicker": "Bring your club across in an afternoon",
       "title": "Your next run, without the thread.",
-      "lead": "Start the free trial, or leave your number and we’ll send the run club setup guide on WhatsApp.",
+      "lead": "Start the free trial and read the run club guide. Or leave your number, and a person from our team will send it to you on WhatsApp.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "Read the run club guide", "to": {"page": "playbook_guide/run-club"}, "emphasis": "secondary"}
       ],
       "leadForm": {
         "id": "run_club_setup_guide",
         "requestKind": "guide",
         "format": "run-clubs",
         "label": "Your WhatsApp number",
-        "submitLabel": "Send the guide",
-        "note": "We’ll message you on WhatsApp with the guide."
+        "submitLabel": "Send me the guide"
       },
       "storeBadges": "host",
       "media": {"kind": "capture", "slot": "host-create-run-clubs"}

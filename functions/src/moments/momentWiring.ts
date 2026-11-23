@@ -15,6 +15,7 @@ import {
   allowsPushPreference,
   createActivityNotificationIfAbsent,
   eventActivityNotificationCopy,
+  eventFeedbackNotificationCopy,
   sendFcmNotification,
   type ActivityNotificationType,
   type NotificationPreference,
@@ -61,6 +62,10 @@ const DEFAULT_TIMEZONE = "Asia/Kolkata";
 const DEFAULT_QUIET_HOURS: QuietHours = {startMinute: 21 * 60, endMinute: 480};
 const DEFAULT_DAILY_CAP = 4;
 
+// Activity items carry only types every shipped Consumer build can decode
+// (an unknown type fails the whole activity list there). Other push types,
+// such as eventFeedback, keep their own push type and copy, while the item
+// falls back to organizerUpdate and still opens the event from its ids.
 const ACTIVITY_TYPES: ReadonlySet<string> = new Set([
   "message", "match", "eventReminder", "eventSignup", "waitlistPromotion",
   "waitlistOffer", "waitlistOfferExpiring", "waitlistOfferExpired",
@@ -253,6 +258,17 @@ async function pushCopy(
 ): Promise<{title: string; body: string}> {
   if (moment.scope.kind === "event" &&
       moment.action.kind === "push" &&
+      moment.action.notificationType === "eventFeedback") {
+    const event = (await db.collection("events")
+      .doc(moment.scope.eventId).get()).data() as
+      Parameters<typeof eventFeedbackNotificationCopy>[0] | undefined;
+    if (event) {
+      return eventFeedbackNotificationCopy(event,
+        await organizerName(db, event.organizerId));
+    }
+  }
+  if (moment.scope.kind === "event" &&
+      moment.action.kind === "push" &&
       ACTIVITY_TYPES.has(moment.action.notificationType)) {
     const eventSnap = await db.collection("events")
       .doc(moment.scope.eventId).get();
@@ -264,6 +280,18 @@ async function pushCopy(
     }
   }
   return {title: moment.name, body: ""};
+}
+
+async function organizerName(
+  db: Firestore,
+  organizerId: unknown,
+): Promise<string | null> {
+  if (typeof organizerId !== "string" || organizerId.length === 0) {
+    return null;
+  }
+  const name = (await db.collection("organizers").doc(organizerId).get())
+    .data()?.name;
+  return typeof name === "string" && name.trim() ? name.trim() : null;
 }
 
 /** IDs are interpolated by the native route parser; preserve exact safe

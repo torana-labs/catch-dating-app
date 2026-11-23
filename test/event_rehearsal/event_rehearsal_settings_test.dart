@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_draft.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_rules.dart';
@@ -8,6 +7,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_c
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_settings_change.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
@@ -15,7 +15,7 @@ import '../support/contract_schemas.dart';
 
 Map<String, Object?> sample(String name) =>
     (jsonDecode(
-              File(
+              repoFile(
                 'test/event_rehearsal/fixtures/settings_reviews.json',
               ).readAsStringSync(),
             )

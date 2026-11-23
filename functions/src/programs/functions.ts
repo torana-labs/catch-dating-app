@@ -49,6 +49,11 @@ export {onOrganizerProgramGuestCountChanged,
   "./organizerProgramCountTriggers";
 export {onProgramStaffViewGrantChanged, onProgramStaffViewProgramChanged} from
   "./programStaffViewTriggers";
+export {onProgramGuestDirectoryGuestChanged,
+  onProgramGuestDirectoryFunctionGuestChanged,
+  onProgramGuestDirectoryHouseholdChanged,
+  onProgramGuestDirectoryGroupChanged} from
+  "./programGuestDirectoryViewTriggers";
 export {onProgramHotelRoomStayChanged, onProgramHotelRoomBlockChanged,
   onProgramHotelRoomHotelChanged, onProgramHotelRoomLegChanged,
   onProgramHotelRoomGuestChanged, onProgramHotelRoomProgramChanged} from
@@ -112,6 +117,10 @@ export {onProgramWhatsappThreadViewThreadChanged,
   onProgramWhatsappThreadViewHouseholdChanged,
   onProgramWhatsappThreadViewProgramChanged} from
   "./programWhatsapp/threadViewTriggers";
+export {onProgramSettingViewProgramChanged,
+  onProgramSettingViewSettingsChanged, onProgramSettingViewGrantChanged,
+  onProgramSenderViewConnectionChanged} from
+  "./programWhatsapp/settingViewTriggers";
 export {
   onProgramGuestWhatsappEndpointWritten,
   onProgramHouseholdWhatsappEndpointWritten,

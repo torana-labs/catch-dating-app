@@ -104,6 +104,7 @@ jobs:
             /tool/ci/toolchain.env
             /tool/ci/main_push_base.mjs
             /tool/ci/main_push_queue_proof.mjs
+            /tool/ci/main_macos_selection.mjs
             /tool/ci/ios_build_inputs.mjs
             /tool/harness/component_graph.json
             /tool/harness/lib/component_graph.mjs
@@ -150,6 +151,7 @@ jobs:
         name: Select main's macOS jobs from the queue's plan
         if: ${{ github.event_name == 'push' && steps.queue.outputs.run_id != '' }}
         env:
+          BEFORE_SHA: ${{ github.event.before }}
           GH_TOKEN: ${{ github.token }}
           QUEUE_RUN: ${{ steps.queue.outputs.run_id }}
           SOURCE_SHA: ${{ github.sha }}
@@ -157,29 +159,19 @@ jobs:
           set -uo pipefail
           # The merge queue no longer runs the macOS goldens or the capture
           # render (owner decision, 22 Nov 2026), so a main push it validated
-          # runs them when the queue's own Nx plan for this exact source
-          # selected visual integration, or capture freshness or marketing.
-          # Any failure to read that plan runs both; it never skips them.
-          goldens=true
-          captures=true
-          dir="$(mktemp -d)"
-          if artifacts="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$QUEUE_RUN/artifacts?per_page=100")" &&
-            artifact="$(jq -er '[.artifacts[]? | select((.name | startswith("harness-plan-")) and (.expired | not))] |
-              max_by(.id) | .id' <<< "$artifacts")" &&
-            [[ "$artifact" =~ ^[1-9][0-9]*$ ]] &&
-            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact/zip" > "$dir/plan.zip" &&
-            unzip -q -o "$dir/plan.zip" impact-plan.json -d "$dir" &&
-            selected="$(jq -r --arg sha "$SOURCE_SHA" 'select(.sourceSha == $sha) |
-              .operations.ciTargets | arrays |
-              "\(index("visual_integration") != null) \(index("capture_freshness") != null or index("marketing") != null)"' \
-              "$dir/impact-plan.json")" &&
-            [[ "$selected" =~ ^(true|false)\ (true|false)$ ]]; then
-            goldens="${selected% *}"
-            captures="${selected#* }"
+          # runs them when a queue plan selected visual integration, or capture
+          # freshness or marketing: this commit's, and that of every commit
+          # whose own push run was replaced (the range from the same base the
+          # plan step uses). Any failure to read one of them runs both; it
+          # never skips them.
+          if ! selected="$(node tool/ci/main_macos_selection.mjs --head "$SOURCE_SHA" --before "$BEFORE_SHA" \
+            --run-id "$GITHUB_RUN_ID" --queue-run "$QUEUE_RUN")" ||
+            ! grep -qx 'goldens=\(true\|false\)' <<< "$selected" ||
+            ! grep -qx 'captures=\(true\|false\)' <<< "$selected"; then
+            selected=$'goldens=true\ncaptures=true\nreason=selection_failed'
           fi
-          echo "goldens=$goldens" >> "$GITHUB_OUTPUT"
-          echo "captures=$captures" >> "$GITHUB_OUTPUT"
-          echo "macOS jobs on this main push (queue run $QUEUE_RUN): goldens $goldens, captures $captures" >> "$GITHUB_STEP_SUMMARY"
+          grep -E '^(goldens|captures)=' <<< "$selected" >> "$GITHUB_OUTPUT"
+          echo "macOS jobs on this main push (queue run $QUEUE_RUN): $(tr '\n' ' ' <<< "$selected")" >> "$GITHUB_STEP_SUMMARY"
 
       # Nx chooses the lanes for pull requests, queue groups and main pushes,
       # and reads the whole tree to do it. A main push the merge queue already
@@ -700,6 +692,98 @@ jobs:
       - run: zizmor --offline --config .github/zizmor.yml --min-severity medium .github
       - name: Shellcheck standalone scripts
         run: git ls-files -z '*.sh' | xargs -0 shellcheck --severity=warning
+
+  # Shadow proof reuse (Phase 1, 22 Nov 2026): records each lane's input key
+  # on pull requests and, in the merge queue, whether a lane that passed on the
+  # queued pull request could have been reused. Shadow only: every lane still
+  # runs, nothing is skipped, and neither job is in Required CI's needs.
+  proof-keys:
+    name: Compute proof-reuse keys
+    needs: [plan]
+    if: >-
+      ${{ needs.plan.result == 'success' &&
+          (github.event_name == 'merge_group' ||
+           (github.event_name == 'pull_request' && !github.event.pull_request.draft)) }}
+    continue-on-error: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      checks: read
+      contents: read
+      pull-requests: read
+    outputs:
+      verdicts: ${{ steps.verdicts.outputs.verdicts }}
+    steps:
+      # A pull request's keys are those of its own head, the commit its queue
+      # group recomputes, not of the merge commit.
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Install Nx
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Record this commit's lane keys
+        env:
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: node tool/ci/proof_reuse_shadow.mjs --keys --head "$HEAD_SHA" --out build/ci/proof-keys.json
+      - id: verdicts
+        name: Decide which lanes the queue could have reused
+        if: ${{ github.event_name == 'merge_group' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.sha }}
+          HEAD_REF: ${{ github.event.merge_group.head_ref }}
+        run: |
+          set -euo pipefail
+          node tool/ci/proof_reuse_shadow.mjs --verdicts --head "$HEAD_SHA" --head-ref "$HEAD_REF" \
+            --out build/ci/proof-verdicts.json
+          echo "verdicts=$(jq -c . build/ci/proof-verdicts.json)" >> "$GITHUB_OUTPUT"
+
+  proof-reuse-shadow:
+    name: Compare proof-reuse verdicts with the lanes
+    needs: [proof-keys, admin, app-builds, capture-freshness, contracts, docs-policy, firestore-rules, flutter,
+      functions, marketing, operations, tools, visual-integration]
+    if: ${{ !cancelled() && github.event_name == 'merge_group' && needs.proof-keys.outputs.verdicts != '' }}
+    continue-on-error: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tool/ci/proof_reuse_shadow.mjs
+            /.github/actions/load-toolchain/action.yml
+            /tool/ci/toolchain.env
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Compare each verdict with the lane's real result
+        env:
+          VERDICTS: ${{ needs.proof-keys.outputs.verdicts }}
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$VERDICTS" > "$RUNNER_TEMP/proof-verdicts.json"
+          node tool/ci/proof_reuse_shadow.mjs --compare --verdicts "$RUNNER_TEMP/proof-verdicts.json" \
+            --out build/ci/proof-reuse-shadow.json
+      - name: Upload the proof-reuse shadow report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: proof-reuse-shadow-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/proof-reuse-shadow.json
+          if-no-files-found: error
+          retention-days: 30
 
   required:
     name: Required CI

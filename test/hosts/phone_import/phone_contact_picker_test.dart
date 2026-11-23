@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:catch_dating_app/contexts/programmes/data/phone_contact_picker.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -111,13 +110,13 @@ void main() {
     expect(calls, 1);
   });
   test('native policy uses selected-only URI and no broad contacts permission', () {
-    final swift = File(
+    final swift = repoFile(
       'apps/host/ios/Runner/AppDelegate.swift',
     ).readAsStringSync();
-    final kotlin = File(
+    final kotlin = repoFile(
       'apps/host/android/app/src/main/kotlin/com/catchdates/app/NativePhoneContactsPicker.kt',
     ).readAsStringSync();
-    final manifest = File(
+    final manifest = repoFile(
       'apps/host/android/app/src/main/AndroidManifest.xml',
     ).readAsStringSync();
     expect(swift, contains('didSelect contacts: [CNContact]'));

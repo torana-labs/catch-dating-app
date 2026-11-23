@@ -313,7 +313,8 @@ registerHooks({resolve(specifier, context, next) {
 
 // #1767: app render inputs select capture production in the merge queue only.
 test("an app render input selects capture freshness in the merge queue, not on a pull request", () => {
-  for (const file of ["lib/app.dart", "test/app_test.dart", "packages/catch_ui/lib/catch_ui.dart", "pubspec.lock"]) {
+  for (const file of ["lib/app.dart", "test/app_test.dart", "packages/catch_ui/lib/catch_ui.dart",
+    "packages/catch_test_support/lib/repo_file.dart", "pubspec.lock"]) {
     const select = (mode) => compare({plannerLanes: [], nxTasks: [], changedFiles: [file], mode}).nxLanes;
     assert.ok(select("merge_group").includes("capture_freshness"), `${file} merge_group`);
     assert.ok(!select("pr").includes("capture_freshness"), `${file} pr`);

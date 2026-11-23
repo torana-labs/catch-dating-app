@@ -463,12 +463,23 @@ reads the staff attention alerts of `programAlertViews` (source
 `staffAttention`, alert id `{runId}_{duty}`), under the same duty rule. Both
 callables were retired in Nov 2026.
 
-**Read path decision (Nov 2026, #1339): server-trust.** `listProgramGuests` and
-`listProgramHouseholds` stay callables: their phone numbers and emails are
-resolved from the workspace field assertions and decisions (the disclosure
-evidence a client must not hold), and the `fieldAuthority` and revisions they
-return are the write fence of `upsertProgramGuest`, `upsertProgramHousehold`
-and the field conflict choices.
+**Read path decision (Nov 2026, #2306): sender display.** The programme sender
+(`listProgramWhatsappThreads`' header, `listOrganizerMoments`' new-message
+sender, `getProgramAssistantSettings`' number) moved to `programSenderViews`,
+and the assistant settings to `programAssistantSettingViews`: the trigger
+copies only the display number, verified name, status and connection id, so
+provider ids and secrets stay on `organizerSenderConnections`.
+`getEventAssistanceRuntimeConfig` stays a callable: its sender picker pages
+Catch SMS and RCS senders with WhatsApp ones and computes each choice's
+availability for the event and a review hash.
+
+**Read path decision (Nov 2026, #1339, revised by #2306).** `listProgramGuests`
+moved to `programGuestDirectoryViews`: its trigger resolves phone numbers and
+emails from the workspace field assertions exactly as the callable did, so that
+evidence and the `fieldAuthority` (which no client read) stay server-only, and
+the rows carry the revisions `upsertProgramGuest` and `upsertProgramHousehold`
+fence on. `listProgramHouseholds` stays a callable for the guest editor's
+household picker.
 
 **Read path decision (Nov 2026, #1339): server-trust.** `getProgramStakeholderCounts`
 and `getProgramAttendanceReport` stay callables: the stakeholder viewer and the

@@ -5,10 +5,12 @@ import path from "node:path";
 import test from "node:test";
 import {
   buildCoverageReport,
+  combinePackageCoverage,
   mergeCoverageShards,
   parseLcov,
   renderCoverageMarkdown,
   readShardSources,
+  rebaseLcov,
 } from "./flutter_coverage_report.mjs";
 
 const fixture = `TN:
@@ -103,6 +105,32 @@ test("shard merge unions covered lines without double-counting shared files", ()
   assert.equal((merged.match(/SF:lib\/core\/clock.dart/g) ?? []).length, 1);
   assert.equal(buildCoverageReport(merged).summary.linesFound, 6);
   assert.equal(buildCoverageReport(merged).summary.linesHit, 4);
+});
+
+test("an app package's coverage keeps its own files apart from the root package's", () => {
+  // flutter test --coverage writes paths relative to the package it ran in.
+  const host = "TN:\nSF:lib/today/today_body.dart\nDA:1,1\nend_of_record\n" +
+    "SF:../../lib/core/clock.dart\nDA:2,1\nend_of_record\n" +
+    "SF:../../packages/platform/lib/errors/app_exception.dart\nDA:1,0\nend_of_record\n";
+  const root = "TN:\nSF:lib/core/clock.dart\nDA:1,1\nDA:2,0\nend_of_record\n";
+  assert.match(rebaseLcov(host, "apps/host"), /^SF:apps\/host\/lib\/today\/today_body\.dart$/mu);
+  assert.equal(rebaseLcov(root, "."), root);
+  const shard = combinePackageCoverage([
+    {packageDirectory: ".", source: root},
+    {packageDirectory: "apps/host", source: host},
+  ]);
+  assert.deepEqual(parseLcov(shard), [
+    {path: "apps/host/lib/today/today_body.dart", linesFound: 1, linesHit: 1},
+    {path: "lib/core/clock.dart", linesFound: 2, linesHit: 2},
+    {path: "packages/platform/lib/errors/app_exception.dart", linesFound: 1, linesHit: 0},
+  ]);
+  // The coverage job's shard merge keeps the rebased app paths.
+  assert.equal(mergeCoverageShards([shard], 1), shard);
+  assert.deepEqual(buildCoverageReport(shard).features.map((row) => row.feature).sort(),
+    ["core", "host/today", "platform"]);
+  assert.throws(() => rebaseLcov("SF:../../../outside.dart\n", "apps/host"), /outside the repository/u);
+  assert.throws(() => rebaseLcov(root, "packages/catch_ui"), /Unsupported test package directory/u);
+  assert.throws(() => combinePackageCoverage([]), /No package coverage/u);
 });
 
 test("missing and malformed coverage shards cannot pass", () => {

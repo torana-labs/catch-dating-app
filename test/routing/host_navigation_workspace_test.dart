@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
+import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';

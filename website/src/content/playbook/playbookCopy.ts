@@ -48,7 +48,7 @@ export const playbookCopy = {
     },
     /** In the form's place once it is sent. */
     sent: {
-      guide: "Done. We’ll send you the guide on WhatsApp.",
+      guide: "Thanks. A person from our team will message you on WhatsApp.",
       venue: "Thanks. We’ll message you on WhatsApp about your space.",
       demo: "Thanks. We’ll message you on WhatsApp when your demo is ready.",
       walkthrough: "Thanks. We’ll confirm your time on WhatsApp.",

@@ -488,7 +488,7 @@ const programAccessViewFields = [
   "programId", "organizerId", "uid", "ownerUid", "role", "status",
   "activeFromMillis", "expiresAtMillis", "duties", "pickupAll",
   "pickupScoped", "hotelAll", "hotelScoped", "functionAll", "functionScoped",
-  "workPickup", "workHotel", "workFunction", "arrivalRoutes", "tripRoutes",
+  "programAll", "workPickup", "workHotel", "workFunction", "arrivalRoutes", "tripRoutes",
   "assignments",
   "grantExpiresAtMillis", "organizerManager", "revision", "version",
 ];
@@ -577,6 +577,48 @@ async function newView(db, collection, id, build) {
     // A source that fails its contract gets no view, as in the trigger.
     return null;
   }
+}
+
+let programGuestDirectoryModule = null;
+function guestDirectoryViews() {
+  try {
+    programGuestDirectoryModule ??= createFunctionsRequire()(
+      "./lib/programs/programGuestDirectoryViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-guest-directory-views migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programGuestDirectoryModule;
+}
+
+/** One guest directory step: every source row without a view gets one. */
+function guestDirectoryStep(source, kind) {
+  return {
+    source,
+    target: "programGuestDirectoryViews",
+    skipReason: "no programme or organizer, a guest whose name is not " +
+      "disclosable, or already viewed",
+    targetId: (id) => validId(id) ? `${kind}__${id}` : null,
+    transform: (data, id, db) => newView(db, "programGuestDirectoryViews",
+      `${kind}__${id}`, (tx) => guestDirectoryViews()
+        .readProgramGuestDirectoryRow(db, tx, kind, id)),
+  };
+}
+
+let programSettingViewModule = null;
+function settingViews() {
+  try {
+    programSettingViewModule ??= createFunctionsRequire()(
+      "./lib/programs/programWhatsapp/settingViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-setting-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programSettingViewModule;
 }
 
 let programArrivalViewModule = null;
@@ -1990,6 +2032,74 @@ export const MIGRATIONS = [
           id : null,
         transform: (data, id, db) => newTripView(db, "organizerMomentViews",
           id, (tx) => momentViews().readOrganizerMomentView(db, tx, id)),
+      },
+    ],
+  },
+  {
+    name: "program-guest-directory-views",
+    description:
+      "The Host app's guest list, guest desk and programme inbox audience " +
+      "read programGuestDirectoryViews through Firestore (#2306) instead of " +
+      "the listProgramGuests callable. Every guest, household and guest " +
+      "group without a row gets one: a guest's fields with its name, phone " +
+      "and email resolved from the workspace field assertions as the " +
+      "callable resolves them, and its function rows; a household's label, " +
+      "members and revision; a group's label, dimension, order, member " +
+      "count and revision. A guest whose name is not disclosable gets none. " +
+      "Then every programAccessViews view that differs from what the " +
+      "triggers would compute now is rewritten under a last-update-time " +
+      "precondition, which adds programAll, the whole-programme duty the " +
+      "directory rules read. Existing rows are never replaced; guests, " +
+      "households, groups, programmes and grants are never changed. Build " +
+      "Functions first.",
+    steps: [
+      guestDirectoryStep("programGuests", "guest"),
+      guestDirectoryStep("programHouseholds", "household"),
+      guestDirectoryStep("programGuestGroups", "group"),
+      {
+        kind: "fill",
+        collection: "programAccessViews",
+        refresh: programAccessViewFields,
+        fill: async (data, id, db) => {
+          if (!validId(data.programId) || typeof data.uid !== "string" ||
+              !validId(data.uid)) return null;
+          return programAccessViewRow(db, data.programId, data.uid);
+        },
+      },
+    ],
+  },
+  {
+    name: "program-setting-views",
+    description:
+      "The programme inbox header, the planned-message sender and the " +
+      "assistant settings read programSenderViews and " +
+      "programAssistantSettingViews through listeners (#2306) instead of the " +
+      "sender reads of listProgramWhatsappThreads and listOrganizerMoments " +
+      "and the getProgramAssistantSettings callable. Every programme without " +
+      "views gets them: its display-safe sender (the bound connection, else " +
+      "the organiser's first active WhatsApp sender, and that first active " +
+      "sender's id), never provider ids, the secret reference or test " +
+      "evidence; and its assistant settings (the stored ones, else the " +
+      "defaults) with each active escalation grant's expiry. Existing views " +
+      "are never replaced; programmes, connections, settings and grants are " +
+      "never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerPrograms",
+        target: "programSenderViews",
+        skipReason: "no organizer, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "programSenderViews", id,
+          (tx) => settingViews().readProgramSenderView(db, tx, id)),
+      },
+      {
+        source: "organizerPrograms",
+        target: "programAssistantSettingViews",
+        skipReason: "no organizer, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db,
+          "programAssistantSettingViews", id,
+          (tx) => settingViews().readProgramAssistantSettingView(db, tx, id)),
       },
     ],
   },

@@ -56,6 +56,7 @@ export function loadContextMap(source) {
     if (entry.context == null && !declaredLayers.has(entry.layer)) {
       throw new Error(`${entry.path} needs a declared context or layer.`);
     }
+    checkMoveFields(entry);
     legacy.push(entry);
   }
   legacy.sort((a, b) => b.path.length - a.path.length);
@@ -66,6 +67,81 @@ export function loadContextMap(source) {
     legacy,
     forbidLegacyContextFiles: map.forbidLegacyContextFiles === true,
   };
+}
+
+// A legacy entry may say where its files move ("moveTo") and which screen-move
+// group moves them ("group"); move_screens.mjs plans and applies a group. A
+// folder moves to a folder and a Dart file to a Dart file.
+function checkMoveFields(entry) {
+  const unknown = Object.keys(entry)
+    .filter((key) => !["path", "context", "layer", "moveTo", "group"].includes(key));
+  if (unknown.length > 0) {
+    throw new Error(`${entry.path} has unknown field(s): ${unknown.join(", ")}.`);
+  }
+  if (entry.group != null) {
+    if (typeof entry.group !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(entry.group)) {
+      throw new Error(`${entry.path} needs a kebab-case group, not ${JSON.stringify(entry.group)}.`);
+    }
+    if (entry.moveTo == null) throw new Error(`${entry.path} has a group but no moveTo.`);
+  }
+  if (entry.moveTo == null) return;
+  if (typeof entry.moveTo !== "string" || entry.moveTo === entry.path) {
+    throw new Error(`${entry.path} needs a moveTo path that differs from its own.`);
+  }
+  const folder = entry.path.endsWith("/");
+  if (!folder && !entry.path.endsWith(".dart")) {
+    throw new Error(`${entry.path} must name a folder or a Dart file to carry a moveTo.`);
+  }
+  if (folder !== entry.moveTo.endsWith("/") || (!folder && !entry.moveTo.endsWith(".dart"))) {
+    throw new Error(`${entry.path} must move to a ${folder ? "folder ending in /" : "Dart file"}, not ${entry.moveTo}.`);
+  }
+}
+
+// Where a moveTo may point: an app package's lib/, a shared page, a
+// context's actions/ or data/ folder, or the platform and test-support
+// packages. Never the Widgetbook corpus sources lib/pages/startup/ and
+// lib/contexts/*/parts/, which a mechanical move cannot enter without new
+// golden baselines.
+export function checkMoveTargets({map, files}) {
+  const appPackages = new Set(files
+    .map((file) => /^apps\/([^/]+)\/pubspec\.yaml$/u.exec(file)?.[1])
+    .filter(Boolean));
+  const findings = [];
+  for (const entry of map.legacy) {
+    if (entry.moveTo == null) continue;
+    const reason = moveTargetProblem(entry.moveTo, map, appPackages);
+    if (reason == null) continue;
+    findings.push({
+      rule: "moveToInvalid",
+      path: contextMapPath,
+      line: 1,
+      reason: `${entry.path} moves to ${entry.moveTo}, but ${reason}`,
+    });
+  }
+  return findings;
+}
+
+function moveTargetProblem(target, map, appPackages) {
+  const app = /^apps\/([^/]+)\/lib\/./u.exec(target);
+  if (app != null) {
+    return appPackages.has(app[1]) ? null : `apps/${app[1]} has no pubspec.yaml`;
+  }
+  if (target.startsWith(map.roots.pages)) {
+    if (target.startsWith(`${map.roots.pages}startup/`)) {
+      return `${map.roots.pages}startup/ is a Widgetbook corpus source`;
+    }
+    return target.length > map.roots.pages.length ? null : "it names no page";
+  }
+  if (target.startsWith(map.roots.contexts)) {
+    const [context, layer] = target.slice(map.roots.contexts.length).split("/");
+    if (!map.contextRank.has(context)) return `${context} is not a declared context`;
+    return ["actions", "data"].includes(layer)
+      ? null
+      : "a move into a context goes to its actions/ or data/ folder";
+  }
+  if (/^packages\/(?:platform|catch_test_support)\/lib\/./u.test(target)) return null;
+  return "a moveTo must sit under apps/<app>/lib/, lib/pages/, " +
+    "lib/contexts/<context>/(actions|data)/ or packages/(platform|catch_test_support)/lib/";
 }
 
 // Returns where a lib/ path sits: {layer, context, legacy}. Target roots win;
@@ -137,7 +213,8 @@ export function checkMappedPaths({map, files}) {
 }
 
 // What the analyzer cannot see from one file: that the map itself is well
-// formed, that every path it places exists, and that the spec agrees with it. Placement and import order are
+// formed, that every path it places exists, that every moveTo is a valid
+// destination, and that the spec agrees with it. Placement and import order are
 // catch_arch_* lints in packages/catch_ui_lints.
 export function scanContextMap({snapshot}) {
   if (snapshot == null || typeof snapshot.readTexts !== "function" ||
@@ -154,6 +231,7 @@ export function scanContextMap({snapshot}) {
     contexts: map.contexts.length,
     findings: [
       ...checkMappedPaths({map, files: snapshot.files}),
+      ...checkMoveTargets({map, files: snapshot.files}),
       ...checkSpecTable({source: sources.get(specPath), map}),
     ],
   };
@@ -165,7 +243,8 @@ function printHelp() {
   node tool/architecture/check_context_map.mjs --json
 
 Checks that ${contextMapPath} is well formed, that every root and legacy
-path in it still matches a tracked file, and that the context table in
+path in it still matches a tracked file, that every moveTo points where a
+screen move may land, and that the context table in
 ${specPath} matches it. Where each file sits and which imports it may make are
 catch_arch_* lints in packages/catch_ui_lints, which read the same map.`);
 }

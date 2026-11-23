@@ -291,8 +291,9 @@ render fields enter the hash: `id`, `status`, `device`, `fixtureKey` and
 `sourcePath`. Every other field, known or new (website copy, destinations,
 pages, scenario pointers, facts, disclosure), is presentation and never
 invalidates a render; scenario data enters through its JSON files.
-Production screens import each other for navigation and
-`lib/routing/go_router.dart` imports every screen, so static import closures
+Production screens import each other for navigation and the two app routers
+(`lib/routing/consumer_router.dart`, `lib/routing/host_router.dart`) import
+every screen, so static import closures
 cover much of `lib/`; recording what a render executed is what keeps one
 screen's widget change from staling the others. No machine-specific font path
 or font bytes are distributed.

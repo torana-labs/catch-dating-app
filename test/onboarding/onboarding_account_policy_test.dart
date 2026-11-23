@@ -8,7 +8,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.d
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step_state.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/routing/onboarding_completion_location.dart';

@@ -153,7 +153,7 @@
         "channel",
         "mode"
       ],
-      "description": "A person on the Catch team confirms on WhatsApp; nothing is sent automatically (decision 28).",
+      "description": "A person on the Catch team confirms on WhatsApp. While CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED is on, Catch's number also sends the approved booking message for each slot booked or moved to; it does not stand in for that confirmation.",
       "properties": {
         "channel": {
           "const": "whatsapp"

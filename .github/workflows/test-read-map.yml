@@ -1,8 +1,8 @@
 name: Test read map
 
-# Shadow read map (RE decision, 22 Nov 2026): each Flutter test file under
-# test/ that imports dart:io runs in its own `flutter test` under `strace -f`,
-# and the repository paths its test runtime opened, listed and probed are
+# Shadow read map (RE decision, 22 Nov 2026): each root or app-package Flutter
+# test file that imports dart:io or repoFile() runs in its own `flutter test`
+# under `strace -f`, and the repository paths its test runtime opened, listed and probed are
 # recorded, with the compiler's reads kept separate. Nothing consumes the map
 # yet: it changes no selection and never blocks anything. Linux, read-only;
 # it uploads one JSONL artifact per night. Logic and tests:
@@ -40,7 +40,7 @@ jobs:
       - uses: ./.github/actions/generate-contracts
       - uses: ./.github/actions/setup-flutter
       - run: flutter pub get
-      - name: Trace each dart:io test file
+      - name: Trace each file-reading test file
         env:
           SHARD: ${{ matrix.shard }}
         run: node tool/ci/test_read_map.mjs --shard "$SHARD" --shards 4 --out "$RUNNER_TEMP/read-map-$SHARD.jsonl"

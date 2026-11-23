@@ -59,8 +59,9 @@ class HostInboxThreadRowData {
 }
 
 /// The audience a program scope can prove belongs to it: guest contactIds
-/// from `listProgramGuests` plus the app uids those contacts are linked to on
-/// WhatsApp thread summaries. Nothing is inferred from phone numbers.
+/// from the programme guest directory plus the app uids those contacts are
+/// linked to on WhatsApp thread summaries. Nothing is inferred from phone
+/// numbers.
 @immutable
 class HostInboxProgramAudience {
   const HostInboxProgramAudience({

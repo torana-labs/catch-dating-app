@@ -8,7 +8,7 @@ import {fileURLToPath} from "node:url";
 
 import {
   exportedFiles,
-  legacyFiles,
+  carriedFiles,
   maskDart,
   newRootFindings,
   newRootFiles,
@@ -212,13 +212,12 @@ test("a new-root file cannot silence the analyzer's checks, even the one that re
   assert.deepEqual(uses("// catch_no_raw_color is what this avoids\nconst a = 1;"), []);
 });
 
-test("the legacy list is read from the one place it is written", () => {
-  const scope = fs.readFileSync(new URL("../../packages/catch_ui_lints/lib/src/migration_scope.dart", import.meta.url), "utf8");
-  assert.deepEqual([...legacyFiles(scope)].sort(), [
-    "lib/pages/celebration/celebration_screen.dart",
-    "lib/pages/startup/splash_screen.dart",
-  ]);
-  assert.throws(() => legacyFiles("const other = 1;"), /newRootLegacyFiles not found/u);
+test("the carried list is read from the one place it is written", () => {
+  const list = fs.readFileSync(new URL("../../tool/architecture/carried_screens.json", import.meta.url), "utf8");
+  assert.ok(carriedFiles(list).has("lib/pages/startup/splash_screen.dart"));
+  assert.deepEqual([...carriedFiles(JSON.stringify({carried: [{path: "a.dart", from: "lib/a.dart"}]}))], ["a.dart"]);
+  assert.throws(() => carriedFiles("{"), /carried_screens\.json/u);
+  assert.throws(() => carriedFiles("{}"), /no carried list/u);
 });
 
 function seedRepository(files) {
@@ -230,7 +229,9 @@ function seedRepository(files) {
   };
   write(barrel, "export 'src/a.dart';");
   write("packages/catch_ui/lib/src/a.dart", "class CatchNew {}\n@Deprecated('Use CatchNew')\ntypedef CatchOld = CatchNew;");
-  write("packages/catch_ui_lints/lib/src/migration_scope.dart", "const newRootLegacyFiles = <String>{\n  'lib/pages/listed/listed_screen.dart',\n};");
+  write("tool/architecture/carried_screens.json", JSON.stringify({carried: [
+    {path: "lib/pages/listed/listed_screen.dart", from: "lib/listed/presentation/listed_screen.dart"},
+  ]}));
   write("lib/pages/listed/listed_screen.dart", "");
   for (const [file, text] of Object.entries(files)) write(file, text);
   return root;

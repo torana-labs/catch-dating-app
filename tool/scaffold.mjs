@@ -7,22 +7,26 @@ import {isMain, parseCommonArgs} from "./lib/cli_args.mjs";
 import {fromRepo} from "./lib/repo_paths.mjs";
 import {componentAliasIndex, normalizeSymbol} from "./design/component_concepts.mjs";
 import {roleNounRedirectAdvice, roleNouns} from "./design/lib/component_naming.mjs";
+import {canonicalRouterFiles} from "./ui_capture/check_route_inventory.mjs";
 
 const usage = `Usage:
   node tool/scaffold.mjs context --name <ctx> [--dry-run]
-  node tool/scaffold.mjs screen --app <host|consumer> --name <name> [--destination <folder>] [--dry-run]
+  node tool/scaffold.mjs screen --app <host|consumer> --name <name> [--destination <folder>[/<folder>...]] [--dry-run]
   node tool/scaffold.mjs screen --page <name> [--dry-run]
   node tool/scaffold.mjs component --name <Name> --tier <T1|T2|T3|T4> [--dry-run]
   node tool/scaffold.mjs web-component --name <Name> [--dry-run]
 
 Creates the files a new context package, screen, catch_ui component or web-ui
 component starts from, in the shape docs/app_architecture.md (App Roots) fixes.
+A screen goes in apps/<app>/lib/<destination>/, where a destination may nest
+(people/audience), or in lib/pages/<page>/.
 --dry-run prints the files and their contents and writes nothing. Every command
 refuses to overwrite an existing file, and writes nothing when it refuses.`;
 
 const tiers = ["T1", "T2", "T3", "T4"];
 const bannedQualifier = /(?:^|[a-z0-9])(?:Custom|New|Modern|Legacy|Old|V\d+)(?=[A-Z]|$)/u;
 const snakeName = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/u;
+const destinationPath = /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*(?:\/[a-z][a-z0-9]*(?:_[a-z0-9]+)*)*$/u;
 const pascalName = /^(?:[A-Z][a-z0-9]*)+$/u;
 
 class UsageError extends Error {}
@@ -49,6 +53,14 @@ function requireOption(options, name) {
 
 function requireSnake(value, flag) {
   if (!snakeName.test(value)) throw new UsageError(`--${flag} must be lower_snake_case, received '${value}'.`);
+  return value;
+}
+
+/** A destination folder under apps/<app>/lib/: lower_snake_case folders joined by /. */
+function requireDestination(value) {
+  if (!destinationPath.test(value)) {
+    throw new UsageError(`--destination must be lower_snake_case folders joined by /, such as people/audience, received '${value}'.`);
+  }
   return value;
 }
 
@@ -126,7 +138,7 @@ function screenPlan(options) {
     ? requireSnake(requireOption(options, "name"), "name")
     : requireSnake(requireOption(options, "page"), "page");
   const destination = page === undefined && options.destination !== undefined
-    ? requireSnake(requireOption(options, "destination"), "destination")
+    ? requireDestination(requireOption(options, "destination"))
     : name;
 
   const packageName = app === null
@@ -179,7 +191,7 @@ function screenPlan(options) {
       ...(dependencies.length > 0
         ? [`apps/${app}/pubspec.yaml, under dependencies:\n${dependencies.join("\n")}\nthen flutter pub get`]
         : []),
-      `packages/platform/lib/routing/route_contract.dart and lib/routing/go_router.dart: add the route ${routeId}, then node tool/ui_capture/check_route_inventory.mjs --update writes it to tool/ui_capture/route_inventory.json:\n  {"id": "${routeId}", ...}`,
+      `packages/platform/lib/routing/route_contract.dart and the router that mounts it (${canonicalRouterFiles.join(" or ")}): add the route ${routeId}, then node tool/ui_capture/check_route_inventory.mjs --update writes it to tool/ui_capture/route_inventory.json:\n  {"id": "${routeId}", ...}`,
       `tool/ui_capture/capture_coverage.json, under routes, until the capture lands:\n  {"routeId": "${routeId}", "status": "planned", "priority": "P1", "reason": "Redesigned screen; its capture lands with it."}`,
       "After editing the view model, run build_runner so its .g.dart matches.",
     ],

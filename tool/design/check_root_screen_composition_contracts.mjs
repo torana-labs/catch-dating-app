@@ -40,30 +40,40 @@ export function checkRootScreenCompositionContracts({
 
   const manifest = JSON.parse(fs.readFileSync(absoluteManifestPath, "utf8"));
   validateManifest(manifest, findings, manifestPath);
-  const routerPath = manifest.routerPath;
-  if (typeof routerPath !== "string" || routerPath.length === 0) {
+  const routerPaths = manifest.routerPaths;
+  if (!Array.isArray(routerPaths) || routerPaths.length === 0 ||
+      routerPaths.some((routerPath) => typeof routerPath !== "string" || routerPath.length === 0)) {
     return summarize(manifest, findings);
   }
 
-  const absoluteRouterPath = path.join(root, routerPath);
-  if (!fs.existsSync(absoluteRouterPath)) {
-    findings.push({
-      code: "missing-router",
-      path: routerPath,
-      message: "Configured router source does not exist.",
-    });
-    return summarize(manifest, findings);
+  const routers = [];
+  for (const routerPath of routerPaths) {
+    const absoluteRouterPath = path.join(root, routerPath);
+    if (!fs.existsSync(absoluteRouterPath)) {
+      findings.push({
+        code: "missing-router",
+        path: routerPath,
+        message: "Configured router source does not exist.",
+      });
+      continue;
+    }
+    routers.push({path: routerPath, source: fs.readFileSync(absoluteRouterPath, "utf8")});
   }
+  if (routers.length !== routerPaths.length) return summarize(manifest, findings);
 
-  const routerSource = fs.readFileSync(absoluteRouterPath, "utf8");
-  const actualBranchKeys = new Set(
-    [...routerSource.matchAll(branchKeyPattern)].map((match) => match[1]),
-  );
+  // Each app's router declares its own branches; the manifest covers both.
+  const allRouters = routerPaths.join(", ");
+  const actualBranchKeys = new Map();
+  for (const router of routers) {
+    for (const match of router.source.matchAll(branchKeyPattern)) {
+      if (!actualBranchKeys.has(match[1])) actualBranchKeys.set(match[1], router.path);
+    }
+  }
   const expectedBranchKeys = new Set(
     (manifest.branches ?? []).map((branch) => branch.branchKey),
   );
 
-  for (const branchKey of actualBranchKeys) {
+  for (const [branchKey, routerPath] of actualBranchKeys) {
     if (expectedBranchKeys.has(branchKey)) continue;
     findings.push({
       code: "unregistered-branch",
@@ -75,8 +85,8 @@ export function checkRootScreenCompositionContracts({
     if (actualBranchKeys.has(branchKey)) continue;
     findings.push({
       code: "missing-branch",
-      path: routerPath,
-      message: `Manifest branch ${branchKey} is not declared by the router.`,
+      path: allRouters,
+      message: `Manifest branch ${branchKey} is not declared by a router.`,
     });
   }
 
@@ -90,11 +100,11 @@ export function checkRootScreenCompositionContracts({
   for (const branch of manifest.branches ?? []) {
     if (
       typeof branch.routeName === "string" &&
-      !routerSource.includes(branch.routeName)
+      !routers.some((router) => router.source.includes(branch.routeName))
     ) {
       findings.push({
         code: "missing-route-name",
-        path: routerPath,
+        path: actualBranchKeys.get(branch.branchKey) ?? allRouters,
         message: `${branch.branchKey} route marker ${branch.routeName} is absent.`,
       });
     }
@@ -242,11 +252,19 @@ function checkOwner({root, owner, findings, ownerKind}) {
 }
 
 function validateManifest(manifest, findings, manifestPath) {
-  if (manifest.schemaVersion !== 3) {
+  if (manifest.schemaVersion !== 4) {
     findings.push({
       code: "invalid-schema-version",
       path: manifestPath,
-      message: "schemaVersion must be 3.",
+      message: "schemaVersion must be 4.",
+    });
+  }
+  if (!Array.isArray(manifest.routerPaths) || manifest.routerPaths.length === 0 ||
+      manifest.routerPaths.some((routerPath) => typeof routerPath !== "string" || routerPath.length === 0)) {
+    findings.push({
+      code: "invalid-router-paths",
+      path: manifestPath,
+      message: "routerPaths must list every app router file.",
     });
   }
   if (!Array.isArray(manifest.shells) || manifest.shells.length === 0) {

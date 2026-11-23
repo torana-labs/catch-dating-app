@@ -251,16 +251,16 @@ test("Flutter package suites and Widgetbook run only for changes their closure r
   assert.match(scope, /--event "\$EVENT_NAME"/u);
   assert.match(scope, /EVENT_NAME: \$\{\{ github\.event_name \}\}/u);
   assert.match(scope, /--summary "\$GITHUB_STEP_SUMMARY"/u);
-  for (const name of ["packages/kernel", "packages/catch_ui", "apps/consumer", "apps/host", "widgetbook"]) {
+  for (const name of ["packages/kernel", "packages/catch_ui", "widgetbook"]) {
     assert.match(scope, new RegExp(`--package ${name}\\b`, "u"));
   }
+  // The app packages' tests run in the test shards.
+  assert.doesNotMatch(scope, /--package apps\//u);
   // Each suite keeps its own scope output, and runs after an independent
   // suite fails once its own setup step succeeded.
   for (const [step, setup, output] of [
     ["Kernel package tests", "pub", "kernel"],
     ["Catch UI package tests", "pub", "catch_ui"],
-    ["Consumer package tests", "pub", "consumer"],
-    ["Host package tests", "pub", "host"],
     ["Resolve Widgetbook dependencies", "pub", "widgetbook"],
     ["Check the Widgetbook golden inventory", "widgetbook_pub", "widgetbook"],
     ["Build Widgetbook web app", "widgetbook_pub", "widgetbook"],
@@ -287,6 +287,52 @@ test("Flutter selection keeps full validation and bounds matrix outputs", () => 
   assert.match(namedStep(flutter, "Unit & widget tests"), /\.sourceSha == \$sha/u);
 });
 
+test("a test shard runs each package group from its directory and combines its coverage", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "flutter-shard-step-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const bin = path.join(root, "bin");
+  fs.mkdirSync(bin);
+  fs.mkdirSync(path.join(root, "apps/host"), {recursive: true});
+  fs.mkdirSync(path.join(root, "build/ci"), {recursive: true});
+  fs.writeFileSync(path.join(root, "build/ci/flutter-test-plan.json"), JSON.stringify({
+    sourceSha: "abc",
+    shards: [{groups: [
+      {package: "apps/host", files: ["test/host_test.dart"]},
+      {package: ".", files: ["test/a_test.dart", "test/b_test.dart"]},
+    ]}],
+  }));
+  const trace = path.join(root, "trace.jsonl");
+  for (const tool of ["flutter", "node"]) {
+    fs.writeFileSync(path.join(bin, tool), `#!/bin/sh
+printf '{"tool":"%s","cwd":"%s","args":"%s"}\\n' "${tool}" "$PWD" "$*" >> "$TRACE"
+[ "${tool}" = flutter ] && [ "$PWD" = "$FAIL_IN" ] && exit 3
+exit 0
+`, {mode: 0o755});
+  }
+  const step = extractSteps(workflow("flutter-ci.yml")).find((entry) => entry.name === "Unit & widget tests");
+  const run = (failIn) => {
+    fs.rmSync(trace, {force: true});
+    const result = spawnSync("bash", ["-e", "-c", step.run], {cwd: root, encoding: "utf8", env: {
+      ...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, TRACE: trace,
+      FAIL_IN: failIn, GITHUB_SHA: "abc", SHARD_INDEX: "0", SHARD_TOTAL: "1",
+    }});
+    return {status: result.status, calls: fs.readFileSync(trace, "utf8").trim().split("\n").map((line) => JSON.parse(line))};
+  };
+  const passed = run("");
+  assert.equal(passed.status, 0);
+  const real = fs.realpathSync(root);
+  assert.deepEqual(passed.calls.map(({tool, cwd}) => [tool, cwd]),
+    [["flutter", path.join(real, "apps/host")], ["flutter", real], ["node", real]]);
+  assert.match(passed.calls[0].args, /--exclude-tags=golden --coverage .* test\/host_test\.dart$/u);
+  assert.match(passed.calls[1].args, / test\/a_test\.dart test\/b_test\.dart$/u);
+  assert.equal(passed.calls[2].args,
+    "tool/test/flutter_coverage_report.mjs --package-lcov apps/host --package-lcov . --output coverage/lcov.info");
+  // A failed group still lets the next one run, then fails the step.
+  const failed = run(path.join(real, "apps/host"));
+  assert.notEqual(failed.status, 0);
+  assert.deepEqual(failed.calls.map(({tool}) => tool), ["flutter", "flutter", "node"]);
+});
+
 test("Flutter analysis covers every pubspec and empty test selections fail closed", () => {
   const flutter = workflow("flutter-ci.yml");
   const aggregate = namedStep(flutter, "Analyze every Dart and Flutter package");
@@ -305,8 +351,9 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
   );
 
   assert.match(shard, /flutter test[^\n]*--coverage/u);
-  // Without this the report measures nothing under packages/platform and still passes.
-  assert.match(shard, /--coverage-package '\^catch_\(dating_app\|platform\)\$'/u);
+  // Without this the report measures nothing under packages/platform or the
+  // app packages and still passes.
+  assert.match(shard, /--coverage-package '\^catch_\(dating_app\|platform\|host_app\|consumer_app\)\$'/u);
   const coverage = namedStep(flutter, "Merge coverage without rerunning tests");
   assert.match(coverage, /--merge-shards coverage\/shards/u);
   assert.match(coverage, /--expected-shards "\$SHARD_TOTAL"/u);
@@ -327,15 +374,15 @@ test("Flutter analysis covers every pubspec and empty test selections fail close
 
 test("Flutter CI runs every package suite and Widgetbook in one job without masking failures", () => {
   const flutter = workflow("flutter-ci.yml");
-  // Widgetbook folded into the package job; host-website.yml's queue
-  // validation looks the job up by this exact name.
+  // Widgetbook folded into the package job. The app packages' tests run in
+  // the test shards instead.
   assert.doesNotMatch(flutter, /^  widgetbook:\n/mu);
   assert.doesNotMatch(flutter, /Widgetbook analyze & build/u);
   const job = flutter.slice(
     flutter.indexOf("  app-package-tests:"), flutter.indexOf("  analyze-and-test:"),
   );
-  assert.match(job, /^  app-package-tests:\n(?:    #.*\n)*    name: Catch UI, Consumer & Host package tests\n/mu);
-  assert.match(workflow("host-website.yml"), /flutter \/ Catch UI, Consumer & Host package tests/u);
+  assert.match(job, /^  app-package-tests:\n(?:    #.*\n)*    name: Kernel, Catch UI & Widgetbook package tests\n/mu);
+  assert.doesNotMatch(job, /apps\/(?:host|consumer)/u);
   assert.match(job, /timeout-minutes: 35\n/u);
   assert.doesNotMatch(job, /continue-on-error:|\n    if:|strategy:/u);
   const steps = extractSteps(`jobs:\n${job}`);
@@ -343,8 +390,6 @@ test("Flutter CI runs every package suite and Widgetbook in one job without mask
   for (const [name, directory, run] of [
     ["Kernel package tests", "packages/kernel", "dart test --concurrency=1"],
     ["Catch UI package tests", "packages/catch_ui", "flutter test --concurrency=1 --exclude-tags=golden"],
-    ["Consumer package tests", "apps/consumer", "flutter test --concurrency=1"],
-    ["Host package tests", "apps/host", "flutter test --concurrency=1"],
     ["Resolve Widgetbook dependencies", "widgetbook", "flutter pub get"],
     ["Check the Widgetbook golden inventory", "widgetbook",
       'flutter test test/primitive_goldens_test.dart --plain-name "generator visits every registered case and every designation once"'],
@@ -373,7 +418,7 @@ test("Flutter CI runs every package suite and Widgetbook in one job without mask
   // The summary names every suite's outcome, even after a failure.
   const summary = namedStep(job, "Summarize package suite outcomes");
   assert.match(summary, /if: always\(\)/u);
-  for (const id of ["kernel", "catch_ui", "consumer", "host", "widgetbook_pub", "widgetbook_inventory", "widgetbook_build"]) {
+  for (const id of ["kernel", "catch_ui", "widgetbook_pub", "widgetbook_inventory", "widgetbook_build"]) {
     assert.match(summary, new RegExp(`\\$\\{\\{ steps\\.${id}\\.outcome \\}\\}`, "u"), id);
   }
   const summaryRun = steps.find((step) => step.name === "Summarize package suite outcomes");
@@ -381,8 +426,7 @@ test("Flutter CI runs every package suite and Widgetbook in one job without mask
   const run = spawnSync("bash", ["-e", "-c", summaryRun.run], {
     env: {
       ...process.env, GITHUB_STEP_SUMMARY: out,
-      SCOPE_KERNEL: "true", KERNEL: "success", SCOPE_CATCH_UI: "true", CATCH_UI: "failure",
-      SCOPE_CONSUMER: "true", CONSUMER: "success", SCOPE_HOST: "false", HOST: "skipped",
+      SCOPE_KERNEL: "false", KERNEL: "skipped", SCOPE_CATCH_UI: "true", CATCH_UI: "failure",
       SCOPE_WIDGETBOOK: "true", WIDGETBOOK_PUB: "failure", WIDGETBOOK_INVENTORY: "skipped", WIDGETBOOK_BUILD: "skipped",
     },
     encoding: "utf8",
@@ -390,7 +434,7 @@ test("Flutter CI runs every package suite and Widgetbook in one job without mask
   assert.equal(run.status, 0, run.stderr);
   const table = fs.readFileSync(out, "utf8");
   assert.match(table, /\| Catch UI package tests \| failure \|/u);
-  assert.match(table, /\| Host package tests \| not affected \|/u);
+  assert.match(table, /\| Kernel package tests \| not affected \|/u);
   assert.match(table, /\| Build Widgetbook web app \| not run: its setup or an earlier step failed \|/u);
 
   assert.match(flutter, /needs:\n(?:      - .*\n)*      - app-package-tests/u);
@@ -504,7 +548,8 @@ test("resolved composition gate owns its authorities and both split suites", () 
     "tool/ui_capture/check_route_inventory.mjs",
     "tool/ui_capture/route_inventory.json",
     "tool/design/screen_top_bar_contracts.json",
-    "lib/routing/go_router.dart",
+    "lib/routing/consumer_router.dart",
+    "lib/routing/host_router.dart",
     "lib/**",
     "apps/host/lib/**",
     "apps/consumer/lib/**",
@@ -1477,13 +1522,14 @@ test("Widgetbook first pass selects every package suite and preserves golden obl
   assert.equal(steps[second].run, "(cd widgetbook && flutter test --concurrency=1 test/primitive_goldens_test.dart)");
   assert.equal(steps.filter((step) => step.run === steps[first].run).length, 1);
   const library = "Catch UI package goldens (report pixel changes)";
-  for (const name of [steps[first].name, "Flutter goldens (report pixel changes)", library]) {
+  const apps = "App package goldens (report pixel changes)";
+  for (const name of [steps[first].name, "Flutter goldens (report pixel changes)", library, apps]) {
     assert.doesNotMatch(namedStep(source, name), /(?:if:|continue-on-error:|--update-goldens)/u);
   }
   // Golden pixel changes are reported through the shared comparator, never failed,
   // one report per suite so the Main CI alert can dispatch that suite's baselines.
   for (const [name, suite] of [[steps[first].name, "widgetbook"], [steps[second].name, "widgetbook"],
-    ["Flutter goldens (report pixel changes)", "app"], [library, "package"]]) {
+    ["Flutter goldens (report pixel changes)", "app"], [library, "package"], [apps, "app"]]) {
     assert.ok(namedStep(source, name).includes(
       `CATCH_GOLDEN_REPORT: \${{ runner.temp }}/catch-golden-report-${suite}.tsv`), name);
   }
@@ -1509,10 +1555,13 @@ test("Widgetbook first pass selects every package suite and preserves golden obl
   const libraryIndex = steps.findIndex((step) => step.name === library);
   assert.ok(libraryIndex === app + 1, "library goldens follow the app goldens");
   assert.equal(steps[libraryIndex].run, "(cd packages/catch_ui && flutter test --concurrency=1 --tags=golden)");
+  // App packages' goldens follow, each from its own package directory.
+  assert.equal(steps.findIndex((step) => step.name === apps), libraryIndex + 1);
   const upload = namedStep(source, "Retain golden failure diffs");
   assert.ok(upload.includes("if: ${{ failure() || steps.golden-report.outputs.has_changes == 'true' }}"));
   assert.match(upload, /uses: actions\/upload-artifact@/u);
-  assert.match(upload, /path: \|\n\s+test\/goldens\/failures\/\n\s+packages\/catch_ui\/test\/goldens\/failures\//u);
+  assert.match(upload,
+    /path: \|\n\s+test\/goldens\/failures\/\n\s+packages\/catch_ui\/test\/goldens\/failures\/\n\s+apps\/\*\/test\/goldens\/failures\//u);
 });
 
 for (const exitCode of [0, 37]) {
@@ -1521,9 +1570,13 @@ for (const exitCode of [0, 37]) {
     t.after(() => fs.rmSync(root, {recursive: true, force: true}));
     const packageRoot = path.join(root, "widgetbook");
     const libraryRoot = path.join(root, "packages/catch_ui");
+    const hostRoot = path.join(root, "apps/host");
     const bin = path.join(root, "bin");
     fs.mkdirSync(packageRoot);
     fs.mkdirSync(libraryRoot, {recursive: true});
+    // Only an app package with test/goldens runs them.
+    fs.mkdirSync(path.join(hostRoot, "test/goldens"), {recursive: true});
+    fs.mkdirSync(path.join(root, "apps/consumer/test"), {recursive: true});
     fs.mkdirSync(bin);
     const trace = path.join(root, "invocation.json");
     // This executes the actual workflow shell, not Flutter discovery or rendering.
@@ -1537,6 +1590,7 @@ process.exit(Number(process.env.FAKE_FLUTTER_EXIT));
       ["Widgetbook corpus goldens (pass 2, determinism)", "test/primitive_goldens_test.dart", packageRoot],
       ["Flutter goldens (report pixel changes)", "test/goldens", root],
       ["Catch UI package goldens (report pixel changes)", "--tags=golden", libraryRoot],
+      ["App package goldens (report pixel changes)", "test/goldens", hostRoot],
     ]) {
       const step = steps.find((entry) => entry.name === name);
       assert.ok(step?.run, name);
@@ -1836,7 +1890,12 @@ test("complete source preflight runs beside the lanes and Required CI demands it
   // Preflight is off the critical path: every lane starts from the plan alone,
   // and no lane reads preflight's result or outputs.
   const jobs = ci.slice(ci.indexOf("\njobs:\n")).split(/\n  (?=[a-z][a-z0-9-]*:\n)/u).slice(1);
-  const lanes = jobs.filter(job => !/^(plan|source-preflight|required):/u.test(job));
+  // The proof-reuse shadow comparison waits on the lanes it compares; it is
+  // off every gate (continue-on-error, not in Required CI) and never reads preflight.
+  const shadow = jobs.find(job => job.startsWith("proof-reuse-shadow:"));
+  assert.ok(shadow, "proof-reuse-shadow job");
+  assert.doesNotMatch(shadow, /source-preflight/u);
+  const lanes = jobs.filter(job => !/^(plan|source-preflight|required|proof-reuse-shadow):/u.test(job));
   assert.ok(lanes.length >= 12, `found ${lanes.length} lanes`);
   for (const job of lanes) {
     const id = job.split(":")[0];
@@ -1986,48 +2045,30 @@ test("the merge queue never runs the macOS goldens or capture render; main runs 
   const step = extractSteps(ci).find((entry) => entry.name === "Select main's macOS jobs from the queue's plan");
   assert.ok(step?.run, "missing the main macOS selection step");
   assert.match(step.if, /github\.event_name == 'push' && steps\.queue\.outputs\.run_id != ''/u);
-  const sha = "a".repeat(40);
-  const select = ({artifacts, plan, failArtifacts = false, failZip = false}) => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "main-goldens-"));
+  // tool/ci/main_macos_selection.mjs reads the queue plans (its own tests cover
+  // every case); the step passes this run's range and fails safe around it.
+  assert.match(step.run, /node tool\/ci\/main_macos_selection\.mjs --head "\$SOURCE_SHA" --before "\$BEFORE_SHA" \\\n\s+--run-id "\$GITHUB_RUN_ID" --queue-run "\$QUEUE_RUN"/u);
+  assert.equal(parseYaml(ci).jobs.plan.steps.find((entry) => entry.id === "main_macos").env.BEFORE_SHA,
+    "${{ github.event.before }}");
+  assert.match(ci, /^            \/tool\/ci\/main_macos_selection\.mjs$/mu, "the plan job's sparse checkout has the script");
+  const select = (script) => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "main-macos-step-"));
     t.after(() => fs.rmSync(root, {recursive: true, force: true}));
-    const bin = path.join(root, "bin"); fs.mkdirSync(bin);
-    const zip = path.join(root, "plan.zip");
-    if (plan) {
-      fs.writeFileSync(path.join(root, "impact-plan.json"), JSON.stringify(plan));
-      assert.equal(spawnSync("zip", ["-q", "-j", zip, path.join(root, "impact-plan.json")]).status, 0);
-    }
-    fs.writeFileSync(path.join(bin, "gh"), `#!/usr/bin/env node
-const endpoint = process.argv[3];
-if (endpoint.includes("/artifacts?")) {
-  if (${failArtifacts}) process.exit(1);
-  console.log(JSON.stringify({artifacts: ${JSON.stringify(artifacts ?? [])}}));
-} else if (endpoint.endsWith("/zip")) {
-  if (${failZip} || !require("fs").existsSync(${JSON.stringify(zip)})) process.exit(1);
-  process.stdout.write(require("fs").readFileSync(${JSON.stringify(zip)}));
-} else process.exit(1);
-`, {mode: 0o755});
+    fs.mkdirSync(path.join(root, "tool/ci"), {recursive: true});
+    fs.writeFileSync(path.join(root, "tool/ci/main_macos_selection.mjs"), script);
     const output = path.join(root, "out"); fs.writeFileSync(output, "");
-    const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {...process.env,
-      PATH: `${bin}${path.delimiter}${process.env.PATH}`, GITHUB_REPOSITORY: "owner/repo", QUEUE_RUN: "41",
-      SOURCE_SHA: sha, GITHUB_OUTPUT: output, GITHUB_STEP_SUMMARY: path.join(root, "summary")}});
+    const result = spawnSync("bash", ["-c", step.run], {cwd: root, encoding: "utf8", env: {...process.env,
+      GITHUB_REPOSITORY: "owner/repo", GITHUB_RUN_ID: "9", QUEUE_RUN: "41", SOURCE_SHA: "a".repeat(40),
+      BEFORE_SHA: "b".repeat(40), GITHUB_OUTPUT: output, GITHUB_STEP_SUMMARY: path.join(root, "summary")}});
     assert.equal(result.status, 0, result.stderr);
     return fs.readFileSync(output, "utf8").trim();
   };
-  const listed = [{id: 7, name: `harness-plan-1-41-${sha}-1`, expired: false}, {id: 3, name: "selector-comparison-41-1", expired: false}];
-  const plan = (lanes, sourceSha = sha) => ({sourceSha, operations: {ciTargets: lanes}});
   const both = "goldens=true\ncaptures=true";
-  assert.equal(select({artifacts: listed, plan: plan(["flutter", "visual_integration"])}), "goldens=true\ncaptures=false");
-  assert.equal(select({artifacts: listed, plan: plan(["flutter", "tools"])}), "goldens=false\ncaptures=false",
-    "the queue's plan selected neither");
-  assert.equal(select({artifacts: listed, plan: plan(["capture_freshness"])}), "goldens=false\ncaptures=true");
-  assert.equal(select({artifacts: listed, plan: plan(["marketing", "visual_integration"])}), both, "marketing needs fresh captures");
-  // Every failure to read the queue's plan runs both; none skips them.
-  assert.equal(select({artifacts: listed, plan: plan(["tools"], "b".repeat(40))}), both, "a plan for another source");
-  assert.equal(select({failArtifacts: true, plan: plan(["tools"])}), both, "the artifact listing failed");
-  assert.equal(select({artifacts: [], plan: plan(["tools"])}), both, "no plan artifact");
-  assert.equal(select({artifacts: [{...listed[0], expired: true}], plan: plan(["tools"])}), both, "an expired plan");
-  assert.equal(select({artifacts: listed, plan: plan(["tools"]), failZip: true}), both, "the download failed");
-  assert.equal(select({artifacts: listed, plan: {sourceSha: sha}}), both, "a plan without lanes");
+  assert.equal(select(`process.stdout.write("goldens=false\\ncaptures=true\\ncommits=3\\nreason=covers_replaced_runs\\n")`),
+    "goldens=false\ncaptures=true", "the script's answer, and nothing else, becomes the outputs");
+  assert.equal(select("process.exit(1)"), both, "the script failed");
+  assert.equal(select(`process.stdout.write("goldens=maybe\\ncaptures=false\\n")`), both, "an answer it cannot read");
+  assert.equal(select(`process.stdout.write("captures=false\\n")`), both, "a missing answer");
 });
 
 test("the merge queue skips the capture render, and marketing builds without it only when the run proves it was deferred", (t) => {

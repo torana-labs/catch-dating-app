@@ -625,6 +625,14 @@ enter previews.
 | `onProgramPickupPointViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a pickup point's work shell label when it changes |
 | `onProgramStaffViewGrantChanged` | `src/programs/programStaffViewTriggers.ts` | Rewrites a staff member's row of the administrators' staff list when their grant changes |
 | `onProgramStaffViewProgramChanged` | `src/programs/programStaffViewTriggers.ts` | Rewrites every staff row when a programme's creator or organizer changes |
+| `onProgramSettingViewProgramChanged` | `src/programs/programWhatsapp/settingViewTriggers.ts` | Rewrites a programme's sender and assistant settings views when it appears, vanishes, moves organizer or binds another number |
+| `onProgramSettingViewSettingsChanged` | `src/programs/programWhatsapp/settingViewTriggers.ts` | Rewrites a programme's assistant settings view when its settings are saved |
+| `onProgramSettingViewGrantChanged` | `src/programs/programWhatsapp/settingViewTriggers.ts` | Rewrites the escalation staff in a programme's assistant settings view when a grant changes |
+| `onProgramSenderViewConnectionChanged` | `src/programs/programWhatsapp/settingViewTriggers.ts` | Rewrites the sender view of every programme of an organizer when one of its WhatsApp senders changes |
+| `onProgramGuestDirectoryGuestChanged` | `src/programs/programGuestDirectoryViewTriggers.ts` | Rewrites a guest's guest directory row, with contacts resolved from the field assertions |
+| `onProgramGuestDirectoryFunctionGuestChanged` | `src/programs/programGuestDirectoryViewTriggers.ts` | Rewrites the guest directory row of the guest a function RSVP or attendance row names |
+| `onProgramGuestDirectoryHouseholdChanged` | `src/programs/programGuestDirectoryViewTriggers.ts` | Rewrites a household's guest directory row |
+| `onProgramGuestDirectoryGroupChanged` | `src/programs/programGuestDirectoryViewTriggers.ts` | Rewrites a guest group's guest directory row |
 | `onProgramTripGuestChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites a guest's hotel inbound rows and legacy trip manifests when their name changes |
 | `onProgramTripViewChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites a transport trip's view when it is created, arrives, is cancelled or voided |
 | `onProgramVendorViewChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites a vendor's per-programme views when its name, active flag or bound programmes change |

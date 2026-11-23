@@ -3,8 +3,20 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('shared router does not import host management form implementations', () {
-    final router = File('lib/routing/go_router.dart').readAsStringSync();
+  test('the guest router imports no Host screens', () {
+    final router = File('lib/routing/consumer_router.dart').readAsStringSync();
+
+    expect(router, isNot(contains('package:catch_dating_app/hosts/')));
+    expect(
+      router,
+      isNot(
+        contains("import 'package:catch_dating_app/routing/host_router.dart'"),
+      ),
+    );
+  });
+
+  test('host router does not import host management form implementations', () {
+    final router = File('lib/routing/host_router.dart').readAsStringSync();
 
     expect(router, isNot(contains('organizers/presentation/create/')));
     expect(

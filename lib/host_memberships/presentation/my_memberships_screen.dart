@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
-import 'package:catch_dating_app/host_memberships/presentation/host_membership_copy.dart';
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_section.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_controller.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_state.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_view_model.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_copy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';

@@ -6,6 +6,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -143,7 +144,7 @@ void main() {
   });
   test('app action rows do not directly navigate to routes', () {
     final violations = <String>[];
-    for (final file in Directory(
+    for (final file in repoDirectory(
       'lib',
     ).listSync(recursive: true, followLinks: false).whereType<File>()) {
       final path = file.path;

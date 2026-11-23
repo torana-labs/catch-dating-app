@@ -41,6 +41,10 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'CATCH_WHATSAPP_WEBHOOK_ENABLED="false"',
     'CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED="false"',
     'CATCH_WHATSAPP_REPLIES_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_APP_LINK_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED="false"',
+    'CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED="false"',
     'CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY="false"',
     'CATCH_WHATSAPP_REPLY_ACTOR_UID=" "',
     'CATCH_WHATSAPP_REPLY_RECIPIENT_UID=" "',
@@ -108,6 +112,10 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'CATCH_WHATSAPP_WEBHOOK_ENABLED="false"',
     'CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED="false"',
     'CATCH_WHATSAPP_REPLIES_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_APP_LINK_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED="false"',
+    'CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED="false"',
+    'CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED="false"',
     'CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY="false"',
     'CATCH_WHATSAPP_REPLY_ACTOR_UID=" "',
     'CATCH_WHATSAPP_REPLY_RECIPIENT_UID=" "',
@@ -710,6 +718,59 @@ test("support replies need only the sender credential and Graph version", () => 
   for (const name of Object.keys(sender)) {
     rejectsCatchConfig({...catchSender, ...sender, ...gates, [name]: " "});
   }
+});
+
+test("the automatic host app link stays off by default and needs replies", () => {
+  const sender = {
+    CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION,
+    CATCH_WHATSAPP_REPLY_GRAPH_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION,
+  };
+  const gates = {CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "true",
+    CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "true",
+    CATCH_WHATSAPP_REPLIES_ENABLED: "true"};
+  const generate = (environment) => fs.readFileSync(prepareFunctionsParamsForDeploy({
+    functionsDir: fixture(), projectId: "catchdates-dev",
+    environment: {...publicIds, ...catchSender, ...sender, ...environment},
+  }).outputPath, "utf8");
+  assert.match(generate(gates), /^CATCH_WHATSAPP_HOST_APP_LINK_ENABLED="false"$/m);
+  assert.match(generate({...gates, CATCH_WHATSAPP_HOST_APP_LINK_ENABLED: "true"}),
+    /^CATCH_WHATSAPP_HOST_APP_LINK_ENABLED="true"$/m);
+  rejectsCatchConfig({...catchSender, ...sender,
+    CATCH_WHATSAPP_HOST_APP_LINK_ENABLED: "true"});
+  rejectsCatchConfig({...catchSender, ...sender, ...gates,
+    CATCH_WHATSAPP_HOST_APP_LINK_ENABLED: "yes"});
+});
+
+test("the automatic welcome and walkthrough messages stay off by default and need replies", () => {
+  const sender = {
+    CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION,
+    CATCH_WHATSAPP_REPLY_GRAPH_VERSION:
+      catchReplyScope.CATCH_WHATSAPP_REPLY_GRAPH_VERSION,
+  };
+  const gates = {CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "true",
+    CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "true",
+    CATCH_WHATSAPP_REPLIES_ENABLED: "true"};
+  const generate = (environment) => fs.readFileSync(prepareFunctionsParamsForDeploy({
+    functionsDir: fixture(), projectId: "catchdates-dev",
+    environment: {...publicIds, ...catchSender, ...sender, ...environment},
+  }).outputPath, "utf8");
+  const defaults = generate(gates);
+  for (const name of ["CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED",
+    "CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED", "CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED"]) {
+    assert.match(defaults, new RegExp(`^${name}="false"$`, "m"));
+  }
+  const on = generate({...gates, CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED: "true",
+    CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED: "true", CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED: "true"});
+  assert.match(on, /^CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED="true"$/m);
+  assert.match(on, /^CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED="true"$/m);
+  assert.match(on, /^CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED="true"$/m);
+  rejectsCatchConfig({...catchSender, ...sender, CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED: "true"});
+  rejectsCatchConfig({...catchSender, ...sender, CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED: "true"});
+  rejectsCatchConfig({...catchSender, ...sender, ...gates, CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED: "true"});
+  rejectsCatchConfig({...catchSender, ...sender, ...gates, CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED: "yes"});
 });
 
 test("malformed Catch scope rejects unsafe identities endpoints digests and versions", () => {

@@ -10,7 +10,7 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
