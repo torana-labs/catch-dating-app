@@ -10,7 +10,8 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../
 // The merge-queue gate the owner approved after the clean replay
 // (docs/plans/semantic_check_replay_report.md): 65 checks under 10 s at p95,
 // plus the Functions context, client-write and BigQuery export path checks
-// the architecture sign-off added (#2445). A check leaving the manifest,
+// the architecture sign-off added (#2445) and the account deletion erasure
+// check (#2444). A check leaving the manifest,
 // losing its queueGate, or a new gate added fails here until this list
 // changes on purpose.
 const approvedAlways = [
@@ -25,6 +26,7 @@ const approvedAlways = [
   "audit:route-string-literals",
   "audit:unused-code",
   "audit:widget-cleanup",
+  "contracts:account-deletion-erasure",
   "contracts:bigquery-export-paths",
   "contracts:client-write-contracts",
   "contracts:firestore-contract",
