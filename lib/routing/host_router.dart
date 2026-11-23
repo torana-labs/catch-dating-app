@@ -8,7 +8,6 @@ import 'package:catch_dating_app/contexts/events/domain/organizer_moment.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
-import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
@@ -63,6 +62,7 @@ import 'package:catch_dating_app/hosts/presentation/organizer_management/host_cr
 import 'package:catch_dating_app/hosts/programmes/programmes.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
+import 'package:catch_dating_app/pages/event/event_detail_screen.dart';
 import 'package:catch_dating_app/pages/start/start_welcome_route_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';

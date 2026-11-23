@@ -76,7 +76,6 @@
 
     {"path": "lib/hosts/events/", "layer": "app"},
 
-    {"path": "lib/locations/", "context": "events"},
 
     {"path": "lib/payments/", "context": "payments"},
 

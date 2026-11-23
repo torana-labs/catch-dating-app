@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
+import 'package:catch_dating_app/pages/event/event_detail_route_transition.dart';
 import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/app_error_message.dart';

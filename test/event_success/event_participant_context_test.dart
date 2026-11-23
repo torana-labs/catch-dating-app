@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_participant_context_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_participant_context.dart';
-import 'package:catch_dating_app/event_success/presentation/event_participant_context_provider.dart';
+import 'package:catch_dating_app/pages/event/messages/event_participant_context_provider.dart';
 import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

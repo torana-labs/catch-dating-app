@@ -19,7 +19,7 @@ import 'package:catch_dating_app/hosts/presentation/organizer_management/create/
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_host_contact_controller.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_host_contact_controller.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/errors/app_exception.dart';

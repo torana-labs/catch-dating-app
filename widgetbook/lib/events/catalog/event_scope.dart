@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_row.dart';
+import 'package:catch_dating_app/pages/event/widgets/event_hype_avatar_row.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

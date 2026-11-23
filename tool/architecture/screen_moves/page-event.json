@@ -1,0 +1,290 @@
+{
+  "version": 1,
+  "group": "page-event",
+  "sequence": 1795418406292,
+  "entries": [
+    {
+      "path": "lib/event_success/presentation/event_message_preferences_navigation_section.dart",
+      "moveTo": "lib/pages/event/messages/event_message_preferences_navigation_section.dart"
+    },
+    {
+      "path": "lib/event_success/presentation/event_assignment_feature_choices_page_body.dart",
+      "moveTo": "lib/pages/event/messages/event_assignment_feature_choices_page_body.dart"
+    },
+    {
+      "path": "lib/organizers/presentation/detail/organizer_host_contact_controller.dart",
+      "moveTo": "lib/pages/organizer/organizer_host_contact_controller.dart"
+    },
+    {
+      "path": "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
+      "moveTo": "lib/pages/event/cross_paths_event_consent_controller.dart"
+    },
+    {
+      "path": "lib/event_success/presentation/event_participant_context_provider.dart",
+      "moveTo": "lib/pages/event/messages/event_participant_context_provider.dart"
+    },
+    {
+      "path": "lib/event_success/presentation/event_sender_preference_controller.dart",
+      "moveTo": "lib/pages/event/messages/event_sender_preference_controller.dart"
+    },
+    {
+      "path": "lib/event_success/presentation/event_message_preference_section.dart",
+      "moveTo": "lib/pages/event/messages/event_message_preference_section.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/organizer_payment_method_sheet.dart",
+      "moveTo": "lib/pages/event/widgets/organizer_payment_method_sheet.dart"
+    },
+    {
+      "path": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+      "moveTo": "lib/pages/event/cross_paths_event_consent_section.dart"
+    },
+    {
+      "path": "lib/event_success/presentation/event_message_channel_accordion.dart",
+      "moveTo": "lib/pages/event/messages/event_message_channel_accordion.dart"
+    },
+    {
+      "path": "lib/event_success/presentation/event_message_preferences_sheet.dart",
+      "moveTo": "lib/pages/event/messages/event_message_preferences_sheet.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
+      "moveTo": "lib/pages/event/widgets/event_detail_loading_skeleton.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_overview_section.dart",
+      "moveTo": "lib/pages/event/widgets/event_detail_overview_section.dart"
+    },
+    {
+      "path": "lib/event_success/presentation/event_assignment_feature_sheet.dart",
+      "moveTo": "lib/pages/event/messages/event_assignment_feature_sheet.dart"
+    },
+    {
+      "path": "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
+      "moveTo": "lib/pages/event/cross_paths_event_consent_state.dart"
+    },
+    {
+      "path": "lib/events/presentation/organizer_event_checkout_controller.dart",
+      "moveTo": "lib/pages/event/organizer_event_checkout_controller.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_social_section.dart",
+      "moveTo": "lib/pages/event/widgets/event_detail_social_section.dart"
+    },
+    {
+      "path": "lib/event_success/presentation/event_message_sender_section.dart",
+      "moveTo": "lib/pages/event/messages/event_message_sender_section.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_route_section.dart",
+      "moveTo": "lib/pages/event/widgets/event_detail_route_section.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_surface_style.dart",
+      "moveTo": "lib/pages/event/widgets/event_detail_surface_style.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart",
+      "moveTo": "lib/pages/event/widgets/event_detail_hero_top_bar.dart"
+    },
+    {
+      "path": "lib/events/presentation/event_attendee_lookup_controller.dart",
+      "moveTo": "lib/pages/event/event_attendee_lookup_controller.dart"
+    },
+    {
+      "path": "lib/events/presentation/attendee_event_share_controller.dart",
+      "moveTo": "lib/pages/event/attendee_event_share_controller.dart"
+    },
+    {
+      "path": "lib/chats/presentation/widgets/event_chat_entry_section.dart",
+      "moveTo": "lib/pages/event/widgets/event_chat_entry_section.dart"
+    },
+    {
+      "path": "lib/events/presentation/event_detail_information_state.dart",
+      "moveTo": "lib/pages/event/event_detail_information_state.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+      "moveTo": "lib/pages/event/widgets/event_detail_fact_list.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_hype_avatar_row.dart",
+      "moveTo": "lib/pages/event/widgets/event_hype_avatar_row.dart"
+    },
+    {
+      "path": "lib/organizers/presentation/organizer_authority_badge.dart",
+      "moveTo": "lib/pages/organizer/organizer_authority_badge.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/who_is_going_section.dart",
+      "moveTo": "lib/pages/event/widgets/who_is_going_section.dart"
+    },
+    {
+      "path": "lib/events/presentation/event_detail_display_state.dart",
+      "moveTo": "lib/pages/event/event_detail_display_state.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_photo_header.dart",
+      "moveTo": "lib/pages/event/widgets/event_photo_header.dart"
+    },
+    {
+      "path": "lib/events/shared/event_tiles/event_date_rail_card.dart",
+      "moveTo": "lib/pages/event/tiles/event_date_rail_card.dart"
+    },
+    {
+      "path": "lib/events/presentation/event_detail_screen_state.dart",
+      "moveTo": "lib/pages/event/event_detail_screen_state.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_body.dart",
+      "moveTo": "lib/pages/event/widgets/event_detail_body.dart"
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_dock.dart",
+      "moveTo": "lib/pages/event/widgets/event_detail_dock.dart"
+    },
+    {
+      "path": "lib/events/shared/event_joined_celebration_screen.dart",
+      "moveTo": "lib/pages/event/event_joined_celebration_screen.dart"
+    },
+    {
+      "path": "lib/events/presentation/event_detail_controller.dart",
+      "moveTo": "lib/pages/event/event_detail_controller.dart"
+    },
+    {
+      "path": "lib/events/presentation/event_detail_view_model.dart",
+      "moveTo": "lib/pages/event/event_detail_view_model.dart"
+    },
+    {
+      "path": "lib/events/shared/event_detail_route_transition.dart",
+      "moveTo": "lib/pages/event/event_detail_route_transition.dart"
+    },
+    {
+      "path": "lib/events/shared/event_tiles/event_tile_atoms.dart",
+      "moveTo": "lib/pages/event/tiles/event_tile_atoms.dart"
+    },
+    {
+      "path": "lib/events/presentation/event_attendee_lookup.dart",
+      "moveTo": "lib/pages/event/event_attendee_lookup.dart"
+    },
+    {
+      "path": "lib/events/shared/event_tiles/event_rail_data.dart",
+      "moveTo": "lib/pages/event/tiles/event_rail_data.dart"
+    },
+    {
+      "path": "lib/events/shared/event_tiles/event_tile_data.dart",
+      "moveTo": "lib/pages/event/tiles/event_tile_data.dart"
+    },
+    {
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "moveTo": "lib/pages/event/event_detail_screen.dart"
+    },
+    {
+      "path": "lib/events/presentation/event_action_keys.dart",
+      "moveTo": "lib/pages/event/event_action_keys.dart"
+    },
+    {
+      "path": "lib/events/shared/event_invite_share_copy.dart",
+      "moveTo": "lib/pages/event/event_invite_share_copy.dart"
+    },
+    {
+      "path": "lib/events/shared/event_route_labels.dart",
+      "moveTo": "lib/pages/event/event_route_labels.dart"
+    },
+    {
+      "path": "lib/events/shared/event_price_copy.dart",
+      "moveTo": "lib/pages/event/event_price_copy.dart"
+    },
+    {
+      "path": "lib/events/shared/event_share_card.dart",
+      "moveTo": "lib/pages/event/event_share_card.dart"
+    },
+    {
+      "path": "lib/locations/shared/",
+      "moveTo": "lib/pages/event/location/"
+    }
+  ],
+  "moves": {
+    "lib/chats/presentation/widgets/event_chat_entry_section.dart": "lib/pages/event/widgets/event_chat_entry_section.dart",
+    "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart": "lib/pages/event/cross_paths_event_consent_controller.dart",
+    "lib/cross_paths/presentation/cross_paths_event_consent_controller.g.dart": "lib/pages/event/cross_paths_event_consent_controller.g.dart",
+    "lib/cross_paths/presentation/cross_paths_event_consent_section.dart": "lib/pages/event/cross_paths_event_consent_section.dart",
+    "lib/cross_paths/presentation/cross_paths_event_consent_state.dart": "lib/pages/event/cross_paths_event_consent_state.dart",
+    "lib/event_success/presentation/event_assignment_feature_choices_page_body.dart": "lib/pages/event/messages/event_assignment_feature_choices_page_body.dart",
+    "lib/event_success/presentation/event_assignment_feature_sheet.dart": "lib/pages/event/messages/event_assignment_feature_sheet.dart",
+    "lib/event_success/presentation/event_message_channel_accordion.dart": "lib/pages/event/messages/event_message_channel_accordion.dart",
+    "lib/event_success/presentation/event_message_preference_section.dart": "lib/pages/event/messages/event_message_preference_section.dart",
+    "lib/event_success/presentation/event_message_preferences_navigation_section.dart": "lib/pages/event/messages/event_message_preferences_navigation_section.dart",
+    "lib/event_success/presentation/event_message_preferences_sheet.dart": "lib/pages/event/messages/event_message_preferences_sheet.dart",
+    "lib/event_success/presentation/event_message_sender_section.dart": "lib/pages/event/messages/event_message_sender_section.dart",
+    "lib/event_success/presentation/event_participant_context_provider.dart": "lib/pages/event/messages/event_participant_context_provider.dart",
+    "lib/event_success/presentation/event_participant_context_provider.g.dart": "lib/pages/event/messages/event_participant_context_provider.g.dart",
+    "lib/event_success/presentation/event_sender_preference_controller.dart": "lib/pages/event/messages/event_sender_preference_controller.dart",
+    "lib/event_success/presentation/event_sender_preference_controller.g.dart": "lib/pages/event/messages/event_sender_preference_controller.g.dart",
+    "lib/events/presentation/attendee_event_share_controller.dart": "lib/pages/event/attendee_event_share_controller.dart",
+    "lib/events/presentation/attendee_event_share_controller.g.dart": "lib/pages/event/attendee_event_share_controller.g.dart",
+    "lib/events/presentation/event_action_keys.dart": "lib/pages/event/event_action_keys.dart",
+    "lib/events/presentation/event_attendee_lookup_controller.dart": "lib/pages/event/event_attendee_lookup_controller.dart",
+    "lib/events/presentation/event_attendee_lookup_controller.g.dart": "lib/pages/event/event_attendee_lookup_controller.g.dart",
+    "lib/events/presentation/event_attendee_lookup.dart": "lib/pages/event/event_attendee_lookup.dart",
+    "lib/events/presentation/event_detail_controller.dart": "lib/pages/event/event_detail_controller.dart",
+    "lib/events/presentation/event_detail_controller.g.dart": "lib/pages/event/event_detail_controller.g.dart",
+    "lib/events/presentation/event_detail_display_state.dart": "lib/pages/event/event_detail_display_state.dart",
+    "lib/events/presentation/event_detail_information_state.dart": "lib/pages/event/event_detail_information_state.dart",
+    "lib/events/presentation/event_detail_screen_actions.dart": "lib/pages/event/event_detail_screen_actions.dart",
+    "lib/events/presentation/event_detail_screen_state.dart": "lib/pages/event/event_detail_screen_state.dart",
+    "lib/events/presentation/event_detail_screen.dart": "lib/pages/event/event_detail_screen.dart",
+    "lib/events/presentation/event_detail_view_model.dart": "lib/pages/event/event_detail_view_model.dart",
+    "lib/events/presentation/event_detail_view_model.freezed.dart": "lib/pages/event/event_detail_view_model.freezed.dart",
+    "lib/events/presentation/event_detail_view_model.g.dart": "lib/pages/event/event_detail_view_model.g.dart",
+    "lib/events/presentation/organizer_event_checkout_controller.dart": "lib/pages/event/organizer_event_checkout_controller.dart",
+    "lib/events/presentation/organizer_event_checkout_controller.g.dart": "lib/pages/event/organizer_event_checkout_controller.g.dart",
+    "lib/events/presentation/widgets/event_detail_body.dart": "lib/pages/event/widgets/event_detail_body.dart",
+    "lib/events/presentation/widgets/event_detail_design_support.dart": "lib/pages/event/widgets/event_detail_design_support.dart",
+    "lib/events/presentation/widgets/event_detail_dock.dart": "lib/pages/event/widgets/event_detail_dock.dart",
+    "lib/events/presentation/widgets/event_detail_fact_list.dart": "lib/pages/event/widgets/event_detail_fact_list.dart",
+    "lib/events/presentation/widgets/event_detail_hero_top_bar.dart": "lib/pages/event/widgets/event_detail_hero_top_bar.dart",
+    "lib/events/presentation/widgets/event_detail_itinerary_row.dart": "lib/pages/event/widgets/event_detail_itinerary_row.dart",
+    "lib/events/presentation/widgets/event_detail_loading_skeleton.dart": "lib/pages/event/widgets/event_detail_loading_skeleton.dart",
+    "lib/events/presentation/widgets/event_detail_overview_section.dart": "lib/pages/event/widgets/event_detail_overview_section.dart",
+    "lib/events/presentation/widgets/event_detail_route_section.dart": "lib/pages/event/widgets/event_detail_route_section.dart",
+    "lib/events/presentation/widgets/event_detail_social_section.dart": "lib/pages/event/widgets/event_detail_social_section.dart",
+    "lib/events/presentation/widgets/event_detail_surface_style.dart": "lib/pages/event/widgets/event_detail_surface_style.dart",
+    "lib/events/presentation/widgets/event_hype_avatar_row.dart": "lib/pages/event/widgets/event_hype_avatar_row.dart",
+    "lib/events/presentation/widgets/event_hype_avatar_row.g.dart": "lib/pages/event/widgets/event_hype_avatar_row.g.dart",
+    "lib/events/presentation/widgets/event_photo_header.dart": "lib/pages/event/widgets/event_photo_header.dart",
+    "lib/events/presentation/widgets/organizer_payment_method_sheet.dart": "lib/pages/event/widgets/organizer_payment_method_sheet.dart",
+    "lib/events/presentation/widgets/who_is_going_section.dart": "lib/pages/event/widgets/who_is_going_section.dart",
+    "lib/events/presentation/widgets/who_is_going_section.g.dart": "lib/pages/event/widgets/who_is_going_section.g.dart",
+    "lib/events/shared/event_detail_route_transition.dart": "lib/pages/event/event_detail_route_transition.dart",
+    "lib/events/shared/event_invite_share_copy.dart": "lib/pages/event/event_invite_share_copy.dart",
+    "lib/events/shared/event_joined_celebration_screen.dart": "lib/pages/event/event_joined_celebration_screen.dart",
+    "lib/events/shared/event_price_copy.dart": "lib/pages/event/event_price_copy.dart",
+    "lib/events/shared/event_route_labels.dart": "lib/pages/event/event_route_labels.dart",
+    "lib/events/shared/event_share_card.dart": "lib/pages/event/event_share_card.dart",
+    "lib/events/shared/event_tiles/event_date_rail_card.dart": "lib/pages/event/tiles/event_date_rail_card.dart",
+    "lib/events/shared/event_tiles/event_rail_data.dart": "lib/pages/event/tiles/event_rail_data.dart",
+    "lib/events/shared/event_tiles/event_tile_atoms.dart": "lib/pages/event/tiles/event_tile_atoms.dart",
+    "lib/events/shared/event_tiles/event_tile_data.dart": "lib/pages/event/tiles/event_tile_data.dart",
+    "lib/locations/shared/google_maps_coordinate_adapter.dart": "lib/pages/event/location/google_maps_coordinate_adapter.dart",
+    "lib/locations/shared/location_map.dart": "lib/pages/event/location/location_map.dart",
+    "lib/locations/shared/map_preview.dart": "lib/pages/event/location/map_preview.dart",
+    "lib/organizers/presentation/detail/organizer_host_contact_controller.dart": "lib/pages/organizer/organizer_host_contact_controller.dart",
+    "lib/organizers/presentation/detail/organizer_host_contact_controller.g.dart": "lib/pages/organizer/organizer_host_contact_controller.g.dart",
+    "lib/organizers/presentation/organizer_authority_badge.dart": "lib/pages/organizer/organizer_authority_badge.dart",
+    "test/cross_paths/cross_paths_event_consent_section_test.dart": "test/pages/event/cross_paths_event_consent_section_test.dart",
+    "test/event_success/event_assignment_feature_sheet_test.dart": "test/pages/event/messages/event_assignment_feature_sheet_test.dart",
+    "test/event_success/event_sender_preference_controller_test.dart": "test/pages/event/messages/event_sender_preference_controller_test.dart",
+    "test/events/event_date_rail_card_test.dart": "test/pages/event/tiles/event_date_rail_card_test.dart",
+    "test/events/event_detail_controller_test.dart": "test/pages/event/event_detail_controller_test.dart",
+    "test/events/event_detail_dock_test.dart": "test/pages/event/widgets/event_detail_dock_test.dart",
+    "test/events/event_detail_information_state_test.dart": "test/pages/event/event_detail_information_state_test.dart",
+    "test/events/event_detail_screen_state_test.dart": "test/pages/event/event_detail_screen_state_test.dart",
+    "test/events/event_hype_avatar_row_test.dart": "test/pages/event/widgets/event_hype_avatar_row_test.dart",
+    "test/events/event_share_card_test.dart": "test/pages/event/event_share_card_test.dart",
+    "test/events/organizer_payment_method_sheet_test.dart": "test/pages/event/widgets/organizer_payment_method_sheet_test.dart"
+  },
+  "folders": {
+    "lib/locations/shared/": "lib/pages/event/location/"
+  }
+}

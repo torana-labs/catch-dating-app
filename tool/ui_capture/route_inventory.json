@@ -1921,15 +1921,6 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/events/presentation/widgets/event_detail_dock.dart:b78f6bac77f4bbd7ef1e4b4bc5e1b5083e2c42c1037f0d781e8e176e33bac412:1",
-      "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);}))",
-      "sourcePath": "lib/events/presentation/widgets/event_detail_dock.dart",
-      "ordinal": 1,
-      "presentationExpression": "(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);})",
-      "presentationTarget": "EventJoinedCelebrationScreen",
-      "fullscreenDialogExpression": "true"
-    },
-    {
       "siteId": "material-page:lib/hosts/create/create_screen.dart:a9757c5a245ad8fc1cf0e0e311b087da455c819ec36e7762b46646c18e90107f:1",
       "routeExpression": "MaterialPageRoute(builder:(_)=>LocationPickerScreen(countryIsoCode:city?.countryIsoCode,initialLocation:lat==null||lng==null?null:LocationCoordinate(lat,lng),initialCenter:city==null?null:LocationCoordinate(city.latitude,city.longitude),initialLabel:draft.meetingPoint),fullscreenDialog:true)",
       "sourcePath": "lib/hosts/create/create_screen.dart",
@@ -2206,6 +2197,15 @@
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>Consumer(builder:(_,ref,_)=>MatchCelebrationDialog(match:match,otherUid:otherUid,onSendMessage:(){Navigator.of(routeContext).pop();final otherProfile=ref.read(watchPublicProfileProvider(otherUid)).asData?.value;context.goNamed(Routes.chatScreen.name,pathParameters:{'matchId':match.id},extra:otherProfile);},onKeepSwiping:()=>Navigator.of(routeContext).pop()))",
       "presentationTarget": "MatchCelebrationDialog",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/pages/event/widgets/event_detail_dock.dart:b78f6bac77f4bbd7ef1e4b4bc5e1b5083e2c42c1037f0d781e8e176e33bac412:1",
+      "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);}))",
+      "sourcePath": "lib/pages/event/widgets/event_detail_dock.dart",
+      "ordinal": 1,
+      "presentationExpression": "(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);})",
+      "presentationTarget": "EventJoinedCelebrationScreen",
       "fullscreenDialogExpression": "true"
     },
     {

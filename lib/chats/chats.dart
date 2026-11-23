@@ -23,7 +23,5 @@ export 'presentation/widgets/chat_input.dart'; // public-api: shared presentatio
 export 'presentation/widgets/chat_message_list.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/chat_share_card.dart'; // public-api: shared presentation component used outside this feature
 // public-api: Event detail composes the admission-gated chat entry owned by Chats.
-export 'presentation/widgets/event_chat_entry_section.dart'
-    show EventChatEntrySection;
 export 'presentation/widgets/message_bubble.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/suvbot_dock.dart'; // public-api: shared presentation component used outside this feature

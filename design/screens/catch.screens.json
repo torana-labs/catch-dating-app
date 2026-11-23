@@ -20,7 +20,7 @@
             "dashboardEventDetailScreen",
             "hostAppEventDetailScreen"
           ],
-          "file": "lib/events/presentation/event_detail_screen.dart",
+          "file": "lib/pages/event/event_detail_screen.dart",
           "symbol": "_EventDetailScreenState",
           "family": "media-hero",
           "expression": "CatchScaffold.workspace",
@@ -35,7 +35,7 @@
             "dashboardEventDetailScreen",
             "hostAppEventDetailScreen"
           ],
-          "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart",
+          "file": "lib/pages/event/widgets/event_detail_loading_skeleton.dart",
           "symbol": "EventDetailLoadingScreen",
           "family": "media-hero",
           "expression": "CatchScaffold.workspace",
@@ -2269,28 +2269,28 @@
         }
       ],
       "source": {
-        "file": "lib/events/presentation/event_detail_screen.dart",
+        "file": "lib/pages/event/event_detail_screen.dart",
         "symbol": "EventDetailScreen"
       },
       "stateController": {
         "primary": "eventDetailViewModelProvider",
         "files": [
           {
-            "file": "lib/events/presentation/event_detail_view_model.dart",
+            "file": "lib/pages/event/event_detail_view_model.dart",
             "symbol": "eventDetailViewModel"
           },
           {
-            "file": "lib/events/presentation/widgets/event_detail_body.dart",
+            "file": "lib/pages/event/widgets/event_detail_body.dart",
             "symbol": "EventDetailBody"
           },
           {
-            "file": "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
+            "file": "lib/pages/event/cross_paths_event_consent_state.dart",
             "symbol": "CrossPathsEventConsentSectionState"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/events/presentation/event_detail_controller.dart",
+            "file": "lib/pages/event/event_detail_controller.dart",
             "symbol": "EventDetailController"
           },
           {
@@ -2302,7 +2302,7 @@
             "symbol": "EventCalendarController"
           },
           {
-            "file": "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
+            "file": "lib/pages/event/cross_paths_event_consent_controller.dart",
             "symbol": "CrossPathsEventConsentController"
           }
         ],
@@ -2592,7 +2592,7 @@
           "status": "captured",
           "source": "Host role suppresses consumer booking actions and treats hosted clubs as host context.",
           "tests": [
-            "test/events/event_detail_controller_test.dart",
+            "test/pages/event/event_detail_controller_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
           "nextAction": "Keep host app Event Detail in this read-only detail contract; host management actions belong to the future host event management contract.",
@@ -2616,7 +2616,7 @@
             "EventDetailBody/Prompt states"
           ],
           "tests": [
-            "test/events/event_detail_screen_state_test.dart",
+            "test/pages/event/event_detail_screen_state_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
           "nextAction": "Signed-up booking-dock mode derivation now maps through EventDetailBookingDockState; continue visual comparison only if the captured dock diverges from the booking dock reference."
@@ -2630,7 +2630,7 @@
             "EventBookingDock/BookingDock states"
           ],
           "tests": [
-            "test/events/event_detail_screen_state_test.dart",
+            "test/pages/event/event_detail_screen_state_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
           "captureIds": [
@@ -2648,7 +2648,7 @@
             "EventBookingDock/BookingDock states"
           ],
           "tests": [
-            "test/events/event_detail_screen_state_test.dart",
+            "test/pages/event/event_detail_screen_state_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
           "captureIds": [
@@ -2668,7 +2668,7 @@
             "EventBookingDock/BookingDock states"
           ],
           "tests": [
-            "test/events/event_detail_screen_state_test.dart",
+            "test/pages/event/event_detail_screen_state_test.dart",
             "test/events/event_detail_widgets_test.dart"
           ],
           "nextAction": "Split waitlist, offer, full, attended, cancelled, and past states into separate BookingDock adapter states after the adapter exists.",
@@ -2743,7 +2743,7 @@
               "EventHero"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart",
+              "file": "lib/pages/event/widgets/event_detail_hero_top_bar.dart",
               "symbol": "EventDetailHeroTopBar"
             },
             "currentOwner": "EventDetailBody",
@@ -2774,7 +2774,7 @@
               "TicketStub"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailTicketStubRow"
             },
             "currentOwner": "EventDetailBody",
@@ -2803,7 +2803,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
+              "file": "lib/pages/event/widgets/event_detail_overview_section.dart",
               "symbol": "EventDetailOverviewSection"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2830,7 +2830,7 @@
               "HintList"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailHintList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2857,7 +2857,7 @@
               "Itinerary"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailItineraryList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2884,7 +2884,7 @@
               "PhotoStrip"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailPhotoGrid"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2911,7 +2911,7 @@
               "MapCard"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailMapCard"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2939,7 +2939,7 @@
               "MechanismList"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailMechanismList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2967,7 +2967,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "file": "lib/pages/event/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailGoodToKnowList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2995,7 +2995,7 @@
               "HostCard"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_body.dart",
+              "file": "lib/pages/event/widgets/event_detail_body.dart",
               "symbol": "EventDetailHostsSection"
             },
             "currentOwner": "EventDetailBody",
@@ -3026,7 +3026,7 @@
               "AvatarStack"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
+              "file": "lib/pages/event/widgets/event_detail_social_section.dart",
               "symbol": "EventDetailSocialSection"
             },
             "currentOwner": "EventDetailSocialSection",
@@ -3054,7 +3054,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_social_section.dart",
+              "file": "lib/pages/event/widgets/event_detail_social_section.dart",
               "symbol": "EventDetailSocialSection"
             },
             "currentOwner": "EventDetailSocialSection",
@@ -3082,7 +3082,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
+              "file": "lib/pages/event/cross_paths_event_consent_section.dart",
               "symbol": "CrossPathsEventConsentSection"
             },
             "currentOwner": "EventDetailScreen + CrossPathsEventConsentSection",
@@ -3114,7 +3114,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_body.dart",
+              "file": "lib/pages/event/widgets/event_detail_body.dart",
               "symbol": "EventCompanionCard"
             },
             "currentOwner": "EventDetailBody",
@@ -3142,7 +3142,7 @@
               "BookingDock"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_dock.dart",
+              "file": "lib/pages/event/widgets/event_detail_dock.dart",
               "symbol": "EventBookingDock"
             },
             "currentOwner": "EventDetailBody",
@@ -3258,7 +3258,7 @@
             "symbol": "OrganizerFollowController"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_host_contact_controller.dart",
+            "file": "lib/pages/organizer/organizer_host_contact_controller.dart",
             "symbol": "OrganizerHostContactController"
           }
         ],
@@ -11957,7 +11957,7 @@
             "symbol": "OrganizerFollowController"
           },
           {
-            "file": "lib/organizers/presentation/detail/organizer_host_contact_controller.dart",
+            "file": "lib/pages/organizer/organizer_host_contact_controller.dart",
             "symbol": "OrganizerHostContactController"
           }
         ],
@@ -20512,7 +20512,7 @@
             "symbol": "EventLocationMapState"
           },
           {
-            "file": "lib/events/presentation/event_detail_view_model.dart",
+            "file": "lib/pages/event/event_detail_view_model.dart",
             "symbol": "EventDetailViewModel"
           },
           {

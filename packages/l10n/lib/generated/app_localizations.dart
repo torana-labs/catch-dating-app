@@ -3393,13 +3393,13 @@ abstract class AppLocalizations {
   /// **'Next'**
   String get eventsCalendarScreenLabelNext;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (body).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (body).
   ///
   /// In en, this message translates to:
   /// **'eventId'**
   String get eventsEventDetailScreenBodyEventid;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (body).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (body).
   ///
   /// In en, this message translates to:
   /// **'organizerId'**
@@ -3489,55 +3489,55 @@ abstract class AppLocalizations {
   /// **'Save events you want to revisit before booking.'**
   String get eventsSavedEventsScreenMessageSaveEventsYouWant;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Bring someone into the room'**
   String get eventsEventDetailBodyTitleBringSomeoneIntoThe;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (body).
+  /// Product copy used by lib/pages/event/widgets/event_detail_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Your spot is booked. Invite a friend who would make this event better.'**
   String get eventsEventDetailBodyBodyYourSpotIsBooked;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (actionLabel).
+  /// Product copy used by lib/pages/event/widgets/event_detail_body.dart (actionLabel).
   ///
   /// In en, this message translates to:
   /// **'Invite a friend'**
   String get eventsEventDetailBodyActionlabelInviteAFriend;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Event companion'**
   String get eventsEventDetailBodyTitleEventCompanion;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (body).
+  /// Product copy used by lib/pages/event/widgets/event_detail_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Check in, see your social prompt, and handle private follow-up after the event.'**
   String get eventsEventDetailBodyBodyCheckInSeeYour;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (actionLabel).
+  /// Product copy used by lib/pages/event/widgets/event_detail_body.dart (actionLabel).
   ///
   /// In en, this message translates to:
   /// **'Open companion'**
   String get eventsEventDetailBodyActionlabelOpenCompanion;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (label).
+  /// Product copy used by lib/pages/event/widgets/event_detail_body.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Sign in to book this event'**
   String get eventsEventDetailBodyLabelSignInToBook;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Hosted by'**
   String get eventsEventDetailBodyTitleHostedBy;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_body.dart (tooltip).
+  /// Product copy used by lib/pages/event/widgets/event_detail_body.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Message host'**
@@ -3609,121 +3609,121 @@ abstract class AppLocalizations {
   /// **'Save event'**
   String get eventsEventDetailHeroAppBarTooltipSaveEvent;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_loading_skeleton.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_loading_skeleton.dart (title).
   ///
   /// In en, this message translates to:
   /// **'The plan'**
   String get eventsEventDetailLoadingSkeletonTitleThePlan;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_loading_skeleton.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_loading_skeleton.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Why you might click'**
   String get eventsEventDetailLoadingSkeletonTitleWhyYouMightClick;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_loading_skeleton.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_loading_skeleton.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Itinerary'**
   String get eventsEventDetailLoadingSkeletonTitleItinerary;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_loading_skeleton.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_loading_skeleton.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Where'**
   String get eventsEventDetailLoadingSkeletonTitleWhere;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_loading_skeleton.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_loading_skeleton.dart (title).
   ///
   /// In en, this message translates to:
   /// **'How sign-ups work'**
   String get eventsEventDetailLoadingSkeletonTitleHowSignUpsWork;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_loading_skeleton.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_loading_skeleton.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Who\'\'s going'**
   String get eventsEventDetailLoadingSkeletonTitleWhoSGoing;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'The plan'**
   String get eventsEventDetailOverviewSectionTitleThePlan;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Why you might click'**
   String get eventsEventDetailOverviewSectionTitleWhyYouMightClick;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (Text).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Based on event format, capacity and booking rules — never shown to the group.'**
   String get eventsEventDetailOverviewSectionTextBasedOnEventFormat;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Itinerary'**
   String get eventsEventDetailOverviewSectionTitleItinerary;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Photos'**
   String get eventsEventDetailOverviewSectionTitlePhotos;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Where'**
   String get eventsEventDetailOverviewSectionTitleWhere;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'How sign-ups work'**
   String get eventsEventDetailOverviewSectionTitleHowSignUpsWork;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Good to know'**
   String get eventsEventDetailOverviewSectionTitleGoodToKnow;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (Text).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'About this event'**
   String get eventsEventDetailOverviewSectionTextAboutThisEvent;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Demand pricing'**
   String get eventsEventDetailOverviewSectionTitleDemandPricing;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_social_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_social_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Who\'\'s going'**
   String get eventsEventDetailSocialSectionTitleWhoSGoing;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_social_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_social_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Reviews'**
   String get eventsEventDetailSocialSectionTitleReviews;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_social_section.dart (Text).
+  /// Product copy used by lib/pages/event/widgets/event_detail_social_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Who\'\'s going'**
   String get eventsEventDetailSocialSectionTextWhoSGoing;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_social_section.dart (Text).
+  /// Product copy used by lib/pages/event/widgets/event_detail_social_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Sign in to see who has booked this event.'**
@@ -3837,67 +3837,67 @@ abstract class AppLocalizations {
   /// **'Back to home'**
   String get eventsEventCheckInCelebrationScreenLabelBackToHome;
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (eyebrow).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (eyebrow).
   ///
   /// In en, this message translates to:
   /// **'Booking confirmed'**
   String get eventsEventJoinedCelebrationScreenEyebrowBookingConfirmed;
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (title).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'You\'\'re in.'**
   String get eventsEventJoinedCelebrationScreenTitleYouReIn;
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (label).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'When'**
   String get eventsEventJoinedCelebrationScreenLabelWhen;
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (label).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Where'**
   String get eventsEventJoinedCelebrationScreenLabelWhere;
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (label).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Event'**
   String get eventsEventJoinedCelebrationScreenLabelEvent;
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (label).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Paid'**
   String get eventsEventJoinedCelebrationScreenLabelPaid;
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (label).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Payment ID'**
   String get eventsEventJoinedCelebrationScreenLabelPaymentId;
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (note).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (note).
   ///
   /// In en, this message translates to:
   /// **'Arrive by the meeting time. After the event, you can stay in touch with the people you met.'**
   String get eventsEventJoinedCelebrationScreenNoteArriveByTheMeeting;
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (label).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'View event'**
   String get eventsEventJoinedCelebrationScreenLabelViewEvent;
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (label).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Back to home'**
   String get eventsEventJoinedCelebrationScreenLabelBackToHome;
 
-  /// Product copy used by lib/events/shared/event_share_card.dart (Text).
+  /// Product copy used by lib/pages/event/event_share_card.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'CATCH INVITE'**
@@ -6475,13 +6475,13 @@ abstract class AppLocalizations {
   /// **'15s'**
   String get eventSuccessEventSuccessSetupBodyLabel15s;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (title).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Event not found'**
   String get eventsEventDetailScreenTitleEventNotFound;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (message).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (message).
   ///
   /// In en, this message translates to:
   /// **'This event is no longer available.'**
@@ -7021,7 +7021,7 @@ abstract class AppLocalizations {
     required Object length,
   });
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'{title} cancellation'**
@@ -7320,7 +7320,7 @@ abstract class AppLocalizations {
     required Object value1,
   });
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (message).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Your spot is confirmed for {title}{value2}.'**
@@ -7350,7 +7350,7 @@ abstract class AppLocalizations {
   /// **'{day}'**
   String eventsEventDateMarkerLabelDay({required Object day});
 
-  /// Product copy used by lib/events/shared/event_tiles/event_date_rail_card.dart (Text).
+  /// Product copy used by lib/pages/event/tiles/event_date_rail_card.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'{day}'**
@@ -8901,7 +8901,7 @@ abstract class AppLocalizations {
     required Object value1,
   });
 
-  /// Product copy used by lib/events/shared/event_joined_celebration_screen.dart (message).
+  /// Product copy used by lib/pages/event/event_joined_celebration_screen.dart (message).
   ///
   /// In en, this message translates to:
   /// **'with {organizerName}'**
@@ -10004,67 +10004,67 @@ abstract class AppLocalizations {
   /// **'Children'**
   String get userProfileSelfProfileEditTabStateLabelChildren;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Paid booking unavailable'**
   String get eventsEventDetailScreenStateLabelPaidBookingUnavailable;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (note): explains why paid booking is unavailable for an event that is not sold through the organiser's checkout.
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (note): explains why paid booking is unavailable for an event that is not sold through the organiser's checkout.
   ///
   /// In en, this message translates to:
   /// **'The organiser hasn’t opened paid booking in the app for this event.'**
   String get eventsEventDetailScreenStateNotePaidBookingNotInApp;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Accept spot'**
   String get eventsEventDetailScreenStateLabelAcceptSpot;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Accept spot and pay'**
   String get eventsEventDetailScreenStateLabelAcceptSpotAndPay;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Set run preferences'**
   String get eventsEventDetailScreenStateLabelSetRunPreferences;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Request to join'**
   String get eventsEventDetailScreenStateLabelRequestToJoin;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Join waitlist'**
   String get eventsEventDetailScreenStateLabelJoinWaitlist;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Withdraw request'**
   String get eventsEventDetailScreenStateLabelWithdrawRequest;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Leave waitlist'**
   String get eventsEventDetailScreenStateLabelLeaveWaitlist;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'You attended this event'**
   String get eventsEventDetailScreenStateLabelYouAttendedThisEvent;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'This event has ended'**
@@ -10076,7 +10076,7 @@ abstract class AppLocalizations {
   /// **'This event was cancelled'**
   String get eventsEventDetailScreenStateLabelEventCancelled;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Must be {minAge}+ to join'**
@@ -10084,7 +10084,7 @@ abstract class AppLocalizations {
     required Object minAge,
   });
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Must be {maxAge} or younger'**
@@ -10092,43 +10092,43 @@ abstract class AppLocalizations {
     required Object maxAge,
   });
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Invite required'**
   String get eventsEventDetailScreenStateLabelInviteRequired;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Request required'**
   String get eventsEventDetailScreenStateLabelRequestRequired;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Spots for your gender are full'**
   String get eventsEventDetailScreenStateLabelSpotsForYourGender;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Not eligible for this event'**
   String get eventsEventDetailScreenStateLabelNotEligibleForThis;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Join approved event'**
   String get eventsEventDetailScreenStateLabelJoinApprovedEvent;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Complete approved booking'**
   String get eventsEventDetailScreenStateLabelCompleteApprovedBooking;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Join event — {joinCtaAvailabilityLabel}'**
@@ -10136,7 +10136,7 @@ abstract class AppLocalizations {
     required Object joinCtaAvailabilityLabel,
   });
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Book event'**
@@ -10160,7 +10160,7 @@ abstract class AppLocalizations {
   /// **'Complete booking profile'**
   String get eventsEventDetailScreenLabelCompleteBookingProfile;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (label).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Cancel booking'**
@@ -10757,43 +10757,43 @@ abstract class AppLocalizations {
   /// **'View map'**
   String get eventsEventDetailDesignPrimitivesActionViewMap;
 
-  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (title).
+  /// Product copy used by lib/pages/event/event_detail_information_state.dart (title).
   ///
   /// In en, this message translates to:
   /// **'If it fills, spots reopen'**
   String get eventsEventDetailInformationStateTitleIfItFillsSpotsReopen;
 
-  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (body).
+  /// Product copy used by lib/pages/event/event_detail_information_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Eligible people are notified together; the first completed booking gets the spot.'**
   String get eventsEventDetailInformationStateBodyEligiblePeopleAreNotified;
 
-  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (title).
+  /// Product copy used by lib/pages/event/event_detail_information_state.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Host-managed waitlist'**
   String get eventsEventDetailInformationStateTitleHostManagedWaitlist;
 
-  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (body).
+  /// Product copy used by lib/pages/event/event_detail_information_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'The host reviews waiting requests when capacity opens.'**
   String get eventsEventDetailInformationStateBodyTheHostReviewsWaitingRequests;
 
-  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (title).
+  /// Product copy used by lib/pages/event/event_detail_information_state.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Variable pricing'**
   String get eventsEventDetailInformationStateTitleVariablePricing;
 
-  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (title).
+  /// Product copy used by lib/pages/event/event_detail_information_state.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Plans change?'**
   String get eventsEventDetailInformationStateTitlePlansChange;
 
-  /// Product copy used by lib/events/presentation/event_detail_information_state.dart (body).
+  /// Product copy used by lib/pages/event/event_detail_information_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Release your spot early so the waitlist can move.'**
@@ -11553,19 +11553,19 @@ abstract class AppLocalizations {
   /// **'Established'**
   String get organizersOrganizerDetailBodyLabelEst;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (title).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Attendance matters'**
   String get eventsEventDetailOverviewSectionTitleAttendanceMatters;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (body).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Check-in or host-marked attendance decides who can use post-event follow-up and feedback.'**
   String get eventsEventDetailOverviewSectionBodyCheckInOrHost;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{toStringAsFixed} km {toLowerCase} {toLowerCase2}'**
@@ -11576,61 +11576,61 @@ abstract class AppLocalizations {
     required Object toLowerCase2,
   });
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Arrive ready for the listed pace and route. The host may split attendees into smaller groups if the crowd needs structure.'**
   String get eventsEventDetailOverviewSectionVisiblecopyArriveReadyForThe;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Expect paired or court-based rotations so attendees can meet more people without managing the logistics themselves.'**
   String get eventsEventDetailOverviewSectionVisiblecopyExpectPairedOrCourt;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Expect team structure and host-led moments that create natural reasons to talk.'**
   String get eventsEventDetailOverviewSectionVisiblecopyExpectTeamStructureAnd;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Expect a seated format with table-level structure. Check in and see your seat once, then phones away while the host keeps conversation easy.'**
   String get eventsEventDetailOverviewSectionVisiblecopyExpectASeatedFormat;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy) for formats that move between stops.
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (visibleCopy) for formats that move between stops.
   ///
   /// In en, this message translates to:
   /// **'Expect a route with stops: meet people at the start, keep your phone away at each stop, and the host makes sure nobody is left behind.'**
   String get eventsEventDetailOverviewSectionVisiblecopyExpectARouteWith;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Expect a looser social format with host nudges when the room needs more mixing.'**
   String get eventsEventDetailOverviewSectionVisiblecopyExpectALooserSocial;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Expect a host-led activity with clear arrival, activity, and follow-up moments.'**
   String get eventsEventDetailOverviewSectionVisiblecopyExpectAHostLed;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Expect the host to shape the format around the room and venue.'**
   String get eventsEventDetailOverviewSectionVisiblecopyExpectTheHostTo;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Price can change based on live demand.'**
   String get eventsEventDetailOverviewSectionVisiblecopyPriceCanChangeBased;
 
-  /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/widgets/event_detail_overview_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Price can increase by {step} per demand step, capped at {max} above the base price.'**
@@ -12996,7 +12996,7 @@ abstract class AppLocalizations {
   /// **'F'**
   String get eventsCalendarScreenVisiblecopyF;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{eventId}:{inviteLinkId}'**
@@ -13005,62 +13005,62 @@ abstract class AppLocalizations {
     required Object inviteLinkId,
   });
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Booking confirmed!'**
   String get eventsEventDetailScreenVisiblecopyBookingConfirmed;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Booking cancelled.'**
   String get eventsEventDetailScreenVisiblecopyBookingCancelled;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Event saved.'**
   String get eventsEventDetailScreenVisiblecopyEventSaved;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Event removed.'**
   String get eventsEventDetailScreenVisiblecopyEventRemoved;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'EventDetailScreen._toggleSavedEvent failed'**
   String
   get eventsEventDetailScreenVisiblecopyEventdetailscreenTogglesavedeventFailed;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Could not open calendar.'**
   String get eventsEventDetailScreenVisiblecopyCouldNotOpenCalendar;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Failed to add event to calendar'**
   String get eventsEventDetailScreenVisiblecopyFailedToAddEvent;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'add event to calendar'**
   String get eventsEventDetailScreenVisiblecopyAddEventToCalendar;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'calendar_link'**
   String get eventsEventDetailScreenVisiblecopyCalendarLink;
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{spotsRemaining} spots left'**
@@ -13068,7 +13068,7 @@ abstract class AppLocalizations {
     required Object spotsRemaining,
   });
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'After the event, stay in touch with anyone who went'**
@@ -14388,7 +14388,7 @@ abstract class AppLocalizations {
     required int minutes,
   });
 
-  /// Product copy used by lib/events/presentation/event_detail_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/pages/event/event_detail_screen_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{rating} FROM {reviewCount} ORGANIZER REVIEWS'**

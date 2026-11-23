@@ -342,7 +342,7 @@ export const pageSeeds = [
   {page: "frame", files: ["lib/app.dart", "lib/app_bootstrap.dart", "lib/consumer_bootstrap.dart"]},
   {page: "start", files: ["lib/pages/start/start_welcome_route_screen.dart"]},
   {page: "sign_in", files: ["lib/auth/presentation/auth_screen.dart"]},
-  {page: "event", files: ["lib/events/presentation/event_detail_screen.dart"]},
+  {page: "event", files: ["lib/pages/event/event_detail_screen.dart"]},
   {page: "organizer", files: ["lib/organizers/presentation/detail/organizer_detail_screen.dart"]},
   {page: "chat", files: [
     "lib/chats/presentation/chat_screen.dart",
