@@ -210,9 +210,8 @@ export async function reconcileContactMergeCandidateView(db: Db,
  */
 export async function mergeCandidatePartners(db: Db, organizerId: string,
   contactId: string, viewsOnly = false): Promise<string[]> {
-  const reader: Reader = {get: ((ref: FirebaseFirestore.Query) =>
-    ref.get()) as Tx["get"]};
-  const partners = new Set<string>();
+  const partners = new Set<string>(viewsOnly ? [] :
+    await mergeCandidateSourcePartners(db, organizerId, contactId));
   const views = await db.collection(hostContactMergeCandidateViewsCollection)
     .where("contactIds", "array-contains", contactId)
     .limit(mergeCandidatePartnerScan).get();
@@ -221,26 +220,46 @@ export async function mergeCandidatePartners(db: Db, organizerId: string,
     if (view.organizerId !== organizerId) continue;
     for (const id of view.contactIds) partners.add(id);
   }
-  if (!viewsOnly) {
-    for (const claim of await claimsNaming(db, reader, organizerId,
-      contactId)) {
-      partners.add(claim.data.verifiedContactId);
-      for (const id of claim.data.conflictingContactIds) partners.add(id);
-    }
-    const keys = new Map<string, string>();
-    for (const link of await linksOf(db, reader, organizerId, contactId)) {
-      const key = proposedKey(link.data);
-      if (key) keys.set(key, link.data.identityHash);
-    }
-    for (const [key, hash] of keys) {
-      for (const link of await linksWithHash(db, reader, organizerId, hash)) {
-        if (proposedKey(link.data) === key) partners.add(link.data.contactId);
-      }
+  partners.delete(contactId);
+  return [...partners].sort();
+}
+
+/**
+ * The contacts a conflicted claim names with one contact, or that share one
+ * of its proposed phone or email links: every pair it can start from its
+ * sources, whatever views exist.
+ * @param {Db} db Firestore.
+ * @param {string} organizerId The organizer.
+ * @param {string} contactId The contact.
+ * @return {Promise<string[]>} The partner contact ids, sorted.
+ */
+export async function mergeCandidateSourcePartners(db: Db,
+  organizerId: string, contactId: string): Promise<string[]> {
+  const reader: Reader = {get: ((ref: FirebaseFirestore.Query) =>
+    ref.get()) as Tx["get"]};
+  const partners = new Set<string>();
+  for (const claim of await claimsNaming(db, reader, organizerId,
+    contactId)) {
+    partners.add(claim.data.verifiedContactId);
+    for (const id of claim.data.conflictingContactIds) partners.add(id);
+  }
+  const keys = new Map<string, string>();
+  for (const link of await linksOf(db, reader, organizerId, contactId)) {
+    const key = proposedKey(link.data);
+    if (key) keys.set(key, link.data.identityHash);
+  }
+  for (const [key, hash] of keys) {
+    for (const link of await linksWithHash(db, reader, organizerId, hash)) {
+      if (proposedKey(link.data) === key) partners.add(link.data.contactId);
     }
   }
   partners.delete(contactId);
   return [...partners].sort();
 }
+
+/** The view id of a pair, the candidate id the callables use. */
+export const organizerContactMergeCandidateViewId =
+  organizerContactMergeCandidateId;
 
 /**
  * Rewrites every pair one contact may stand in.
