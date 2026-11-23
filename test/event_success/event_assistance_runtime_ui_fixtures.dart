@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/data/event_assistance_runtime_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_configuration.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_result.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, Object?> runtimeUiFixture(String name) =>
     (jsonDecode(
-              File(
+              repoFile(
                 'test/event_success/fixtures/runtime_senders.json',
               ).readAsStringSync(),
             )

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
@@ -13,6 +12,7 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_pr
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_staff_controller.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/provider_retry_policy.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,7 +21,7 @@ const pacer = 'practice-staff:pacer';
 const sweep = 'practice-staff:sweep';
 Map<String, Object?> sample(String name) =>
     (jsonDecode(
-              File(
+              repoFile(
                 'test/event_rehearsal/fixtures/staff_reviews.json',
               ).readAsStringSync(),
             )

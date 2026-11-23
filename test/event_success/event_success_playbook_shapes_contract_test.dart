@@ -1,16 +1,16 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks/library.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_structure.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/schema_contracts/generated/event_success_playbook_shapes.g.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final catalog =
       jsonDecode(
-            File(
+            repoFile(
               'contracts/catalogs/event_success_playbook_shapes.json',
             ).readAsStringSync(),
           )

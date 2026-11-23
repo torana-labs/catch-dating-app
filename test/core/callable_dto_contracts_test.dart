@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_callable_response.dart';
 import 'package:catch_dating_app/contexts/discovery/data/explore_search_repository.dart';
@@ -41,6 +40,7 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
         UnblockUserCallableRequest,
         UpdateEventCallableRequest,
         UpdateEventReviewCallableRequest;
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
@@ -524,7 +524,9 @@ void _expectValid(String schemaName, Object? payload) {
 
 Map<String, Object?> _readValidFixtureMap(String fileName) {
   final decoded =
-      jsonDecode(File('contracts/fixtures/valid/$fileName').readAsStringSync())
+      jsonDecode(
+            repoFile('contracts/fixtures/valid/$fileName').readAsStringSync(),
+          )
           as Map<String, dynamic>;
   return Map<String, Object?>.from(decoded);
 }

@@ -1,10 +1,11 @@
 import 'dart:io';
 
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('explanatory production choices route through optionCards', () {
-    final dartFiles = Directory('lib')
+    final dartFiles = repoDirectory('lib')
         .listSync(recursive: true)
         .whereType<File>()
         .where((file) => file.path.endsWith('.dart'));
@@ -26,7 +27,7 @@ void main() {
       );
     }
 
-    final structureEditor = File(
+    final structureEditor = repoFile(
       'lib/event_success/presentation/event_success_structure_config_editor.dart',
     ).readAsStringSync();
     expect(
@@ -42,7 +43,7 @@ void main() {
       reason: 'Auto and Fixed need their own explanatory option cards.',
     );
 
-    final questionnaireEditor = File(
+    final questionnaireEditor = repoFile(
       'lib/event_success/presentation/event_success_questionnaire_config_editor.dart',
     ).readAsStringSync();
     expect(

@@ -35,6 +35,7 @@ import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/routing/route_contract.dart' as app_router;
 import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -1054,7 +1055,7 @@ File _welcomeStringsSource() {
     '${Platform.environment['HOME']}/Downloads/Catch Design System (2)/splash-welcome-handoff/strings.json',
   );
   if (handoff.existsSync()) return handoff;
-  return File('test/fixtures/splash_welcome_strings.json');
+  return repoFile('test/fixtures/splash_welcome_strings.json');
 }
 
 ActivityKind _welcomeActivityKind(String activity) => switch (activity) {

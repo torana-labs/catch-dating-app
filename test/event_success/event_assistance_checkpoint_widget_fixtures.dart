@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/data/event_assistance_checkpoint_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_history_repository.dart';
@@ -13,13 +12,14 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_pro
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../event_rehearsal/event_rehearsal_movement_fixtures.dart';
 
 Map<String, Object?> checkpointUiSample(String name) =>
     ((jsonDecode(
-                  File(
+                  repoFile(
                     'test/event_success/fixtures/checkpoint_reviews.json',
                   ).readAsStringSync(),
                 )

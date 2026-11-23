@@ -9,7 +9,6 @@
 // expects `cloud_firestore.Timestamp` objects. We rewrite the fixture's
 // timestamp blobs to `Timestamp` instances before calling `fromJson`.
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
@@ -24,6 +23,7 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -259,7 +259,9 @@ Map<String, dynamic> _loadFixture(
   required String? injectIdField,
 }) {
   final raw =
-      jsonDecode(File('contracts/fixtures/valid/$fileName').readAsStringSync())
+      jsonDecode(
+            repoFile('contracts/fixtures/valid/$fileName').readAsStringSync(),
+          )
           as Map<String, dynamic>;
   final hydrated = _hydrateTimestamps(raw) as Map<String, dynamic>;
   if (injectIdField != null && !hydrated.containsKey(injectIdField)) {

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
@@ -248,6 +247,7 @@ import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_platform/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
@@ -390,7 +390,9 @@ export 'screen_capture_entry.dart';
 
 part 'host_audience_capture_fixtures.dart';
 
-final _profileHeroImage = FileImage(File('test/goldens/fixtures/portrait.jpg'));
+final _profileHeroImage = FileImage(
+  repoFile('test/goldens/fixtures/portrait.jpg'),
+);
 const _organizerHeroPortraitAssetPath =
     'assets/fixtures/club_hero_portrait.jpg';
 const _organizerHeroPortraitAssetImage = AssetImage(
@@ -419,10 +421,12 @@ const _eventScenePhotoSizes = [
   (1200, 900),
   (1200, 900),
 ];
-final _organizerHeroPortraitBytes = File(
+final _organizerHeroPortraitBytes = repoFile(
   _organizerHeroPortraitAssetPath,
 ).readAsBytesSync();
-final _profilePortraitBytes = File(_profilePortraitAssetPath).readAsBytesSync();
+final _profilePortraitBytes = repoFile(
+  _profilePortraitAssetPath,
+).readAsBytesSync();
 final _hostMediaCaptureImages = <ImageProvider<Object>>[
   MemoryImage(_organizerHeroPortraitBytes),
   MemoryImage(_profilePortraitBytes),

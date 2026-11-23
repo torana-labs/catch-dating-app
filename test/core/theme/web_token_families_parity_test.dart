@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// the Flutter values, including CatchTextStyles, whose voice and mono roles
 /// still carry their own literals.
 void main() {
-  final css = File(
+  final css = repoFile(
     'packages/web-config/generated/catch-tokens.css',
   ).readAsStringSync();
 
