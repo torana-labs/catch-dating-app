@@ -100,6 +100,9 @@ export const notCalledByCi = {
   ".github/workflows/website-production-observability.yml": "operations: schedule and dispatch",
   ".github/workflows/website-release.yml": "deploy: after main CI (workflow_run), schedule and dispatch",
   ".github/workflows/widgetbook-golden-baselines.yml": "maintenance: dispatch only",
+  "tool/ci/fixtures/proof-reuse-daily/input.json": "test data read only by proof_reuse_report.test.mjs",
+  "tool/ci/fixtures/proof-reuse-daily/proof-reuse-daily-2026-11-22.json":
+    "test data read only by proof_reuse_report.test.mjs and the queue entry timings reader's tests",
 };
 
 // Variable command targets the scan cannot read, with the files they name.
