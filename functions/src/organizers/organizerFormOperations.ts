@@ -461,10 +461,42 @@ export async function getOrganizerFormAnalyticsHandler(
     data.organizerId,
     data.formId
   );
-  const aggregates = aggregateSnap.docs.map((doc) =>
-    doc.data() as OrganizerFormAggregateDocument);
+  return {
+    ...formVersionAnalytics({
+      organizerId: data.organizerId,
+      formId: data.formId,
+      versionId,
+      version,
+      aggregates: aggregateSnap.docs.map((doc) =>
+        doc.data() as OrganizerFormAggregateDocument),
+      now: deps.timestamp(),
+    }),
+    sources: formSourceFunnels(sourceSnap.docs),
+  };
+}
+
+type FormAnalytics = Omit<GetOrganizerFormAnalyticsCallableResponse,
+  "sources">;
+
+/**
+ * One published version's funnel and question aggregates, with the privacy
+ * threshold applied: a question below it, sensitive, or free text keeps only
+ * its response count. Shared by getOrganizerFormAnalytics and the
+ * hostFormAnalyticsViews trigger, so both apply the same threshold.
+ * @param {object} params The version and its stored aggregates.
+ * @return {FormAnalytics} The analytics without the source links.
+ */
+export function formVersionAnalytics(params: {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  version: OrganizerFormVersionDocument;
+  aggregates: OrganizerFormAggregateDocument[];
+  now: FirebaseFirestore.Timestamp;
+}): FormAnalytics {
+  const {organizerId, formId, versionId, version, aggregates} = params;
   const funnel = aggregates.find((item) => item.scope === "version") ??
-    emptyAggregate(data.organizerId, data.formId, versionId, deps.timestamp());
+    emptyAggregate(organizerId, formId, versionId, params.now);
   const questionById = new Map(version.definition.sections.flatMap((section) =>
     section.questions).map((question) => [question.questionId, question]));
   const questions = aggregates.filter((item) => item.scope === "question" &&
@@ -489,8 +521,8 @@ export async function getOrganizerFormAnalyticsHandler(
       };
     });
   return {
-    organizerId: data.organizerId,
-    formId: data.formId,
+    organizerId,
+    formId,
     versionId,
     version: version.version,
     opens: funnel.opens,
@@ -501,18 +533,28 @@ export async function getOrganizerFormAnalyticsHandler(
       Math.min(1, funnel.submissions / funnel.starts),
     medianCompletionMillis: medianCompletion(funnel),
     questions,
-    sources: sourceSnap.docs.map((doc) => {
-      const source = doc.data() as OrganizerFormShareLinkDocument;
-      return {
-        sourceLinkId: doc.id,
-        label: source.label,
-        opens: source.openCount,
-        starts: source.startCount,
-        submissions: source.submissionCount,
-      };
-    }),
     privacyThreshold,
   };
+}
+
+/**
+ * The opens, starts and submissions of each share link, never its token.
+ * @param {FirebaseFirestore.QueryDocumentSnapshot[]} docs The share links.
+ * @return {GetOrganizerFormAnalyticsCallableResponse["sources"]} The rows.
+ */
+export function formSourceFunnels(
+  docs: FirebaseFirestore.QueryDocumentSnapshot[]
+): GetOrganizerFormAnalyticsCallableResponse["sources"] {
+  return docs.map((doc) => {
+    const source = doc.data() as OrganizerFormShareLinkDocument;
+    return {
+      sourceLinkId: doc.id,
+      label: source.label,
+      opens: source.openCount,
+      starts: source.startCount,
+      submissions: source.submissionCount,
+    };
+  });
 }
 
 function matchesResponse(

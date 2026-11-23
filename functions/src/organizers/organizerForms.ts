@@ -1492,7 +1492,16 @@ function remapDefinition(
   };
 }
 
-function projectEditor(
+/**
+ * One form's editor state exactly as getOrganizerFormEditor returns it: the
+ * summary, the draft definition and its validation issues. Shared with the
+ * hostFormEditorViews trigger.
+ * @param {string} formId The form.
+ * @param {OrganizerFormDocument} form The form document.
+ * @param {OrganizerFormDraftDocument} draft The form's draft.
+ * @return {GetOrganizerFormEditorCallableResponse} The editor state.
+ */
+export function projectEditor(
   formId: string,
   form: OrganizerFormDocument,
   draft: OrganizerFormDraftDocument

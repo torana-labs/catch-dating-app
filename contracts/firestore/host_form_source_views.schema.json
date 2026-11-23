@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_form_source_views.schema.json",
+  "title": "HostFormSourceViewDocument",
+  "description": "Server-maintained manager read view of one native form's share-link funnel, at hostFormSourceViews/{formId}: each link's label, opens, starts and submissions, exactly the sources getOrganizerFormAnalytics returns (at most 200 links). Written by triggers on organizerFormShareLinks and organizerForms; absent while the form has no links. Never a link token, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostFormSourceViews",
+  "x-firestore-path": "hostFormSourceViews/{formId}",
+  "x-document-id-field": "formId",
+  "x-owner": "Host read model projector (hostReadModels form view triggers)",
+  "required": [
+    "organizerId",
+    "formId",
+    "sources",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "formId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "sources": {
+      "$ref": "../callable_responses/get_organizer_form_analytics_response.schema.json#/properties/sources",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

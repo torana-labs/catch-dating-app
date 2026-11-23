@@ -245,15 +245,17 @@ Future<bool> hostFormResponseCanApply(
   return preview.allowed;
 }
 
+/// One published version's analytics, live from its trigger-kept views:
+/// a new open, start or submission shows without a refresh.
 @riverpod
-Future<HostFormAnalytics> hostFormAnalytics(
+Stream<HostFormAnalytics> hostFormAnalytics(
   Ref ref, {
   required String organizerId,
   required String formId,
-  String? versionId,
+  required String versionId,
 }) => ref
-    .read(hostFormsRepositoryProvider)
-    .getAnalytics(
+    .watch(hostFormsRepositoryProvider)
+    .watchAnalytics(
       organizerId: organizerId,
       formId: formId,
       versionId: versionId,
