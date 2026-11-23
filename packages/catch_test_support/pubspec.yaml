@@ -24,6 +24,8 @@ dependencies:
   flutter_test:
     sdk: flutter
   go_router: ^17.1.0
+  image_picker: ^1.2.4
+  riverpod: '>=3.5.0 <3.6.0'
   shared_preferences: ^2.5.6
 
 dev_dependencies:
