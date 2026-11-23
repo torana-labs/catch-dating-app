@@ -797,7 +797,13 @@ rerun fetches only new or unfinished entries. `--fresh` ignores the old file.
 For each run, `report` gives:
 
 - the wait from enqueue to the run existing;
-- the critical-path job, meaning the last executed job before Required CI;
+- the time to Required CI, which the queue merges on (the primary end point),
+  and the time to the last job, which can be off the path;
+- the critical-path job, meaning the last executed lane job before Required
+  CI. The proof-reuse shadow's jobs (`Compute proof-reuse keys` and `Compare
+  proof-reuse verdicts with the lanes`) run outside Required CI's needs, so they
+  are never the critical path; since #2380 the comparison runs after every lane
+  and would otherwise be "last" in many runs;
 - the longest runner wait, macOS and Linux apart;
 - the outcome, and any removal with its reason and actor.
 
@@ -836,7 +842,8 @@ Each day shows:
 
 Runner time is summed job runtime, not wall-clock. The report also shows the
 critical-path time that hits would have saved. For each run with a hit that
-`--data` has jobs for, it takes the last gating finish (Required CI excluded)
+`--data` has jobs for, it takes the last gating finish (Required CI and the
+shadow's own jobs excluded)
 minus the last finish of the jobs left once the reused lanes' jobs are removed,
 so a lane saves only when it finished last. Jobs that waited on a reused lane
 keep their real times, so the figure is a lower bound. Checked and unchecked

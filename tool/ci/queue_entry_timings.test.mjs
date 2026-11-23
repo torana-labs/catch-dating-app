@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
-import {PROOF_REUSE_SCHEMA, THIN_BELOW, analyzeRun, baseOf, criticalPathSaving, fetchDataset, formatReport,
+import {OFF_PATH_JOBS, PROOF_REUSE_SCHEMA, THIN_BELOW, analyzeRun, baseOf, criticalPathSaving, fetchDataset, formatReport,
   loadProofReuseDays, parseArgs, prNumberOf, proofReuseSummary, queueEvents, queueRebuilds, report, runnerKind,
   stats} from "./queue_entry_timings.mjs";
 
@@ -291,4 +291,25 @@ test("end to end: --proof-reuse with and without a dataset", () => {
     fs.rmSync(dir, {recursive: true, force: true});
   }
   assert.throws(() => parseArgs(["report"]), /--data, --proof-reuse or both/u);
+});
+
+test("the critical path ends at Required CI; the proof-reuse shadow's jobs are never on it", () => {
+  // Since #2380 the verdict comparison runs after every lane, outside Required CI, so it finishes last.
+  const withShadow = [...jobs,
+    job("Compute proof-reuse keys", at(1, 0), at(1, 5), at(2, 0)),
+    job("Compare proof-reuse verdicts with the lanes", at(20, 0), at(20, 20), at(23, 0))];
+  const entry = analyzeRun(run(1, 10, "aaa", at(0), at(23, 0)), withShadow);
+  assert.equal(entry.criticalPath.name, "visual-integration / macOS goldens");
+  assert.equal(entry.criticalPath.finishedAfter, 1200);
+  assert.equal(entry.requiredCiAfter, 1210, "the queue merges on Required CI");
+  assert.equal(entry.runDuration, 1380, "the last job, off the path, is kept beside it");
+  assert.deepEqual([...OFF_PATH_JOBS].sort(), ["Compare proof-reuse verdicts with the lanes", "Compute proof-reuse keys", "Required CI"]);
+  // A run whose Required CI has not completed has no time to Required CI.
+  assert.equal(analyzeRun(run(2, 11, "bbb", at(0), at(20)), jobs.filter((item) => item.name !== "Required CI")).requiredCiAfter, null);
+  const text = formatReport(report({runs: [run(1, 10, "aaa", at(0), at(23, 0))], jobs: {1: withShadow}}));
+  assert.match(text, /time to Required CI: median 20\.2 min, p90 20\.2 min/u);
+  assert.match(text, /time to last job: median 23\.0 min/u);
+  assert.match(text, /critical-path jobs: visual-integration \/ macOS goldens ×1/u);
+  // A reused lane's saving ignores the shadow's jobs too.
+  assert.equal(criticalPathSaving(withShadow, ["visual-integration"]), 480);
 });
