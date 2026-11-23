@@ -27,6 +27,11 @@ const _eventDetailPathFragments = <String>[
   '/lib/events/presentation/widgets/event_photo_header.dart',
 ];
 
+// Shared test support (pump helpers, golden support, design fixtures) is test
+// code although it sits in a package's lib/: the root, app and Widgetbook
+// suites import it.
+const _testSupportPackage = '/packages/catch_test_support/';
+
 const _excludedPathFragments = <String>[
   '/packages/catch_tokens/lib/',
   '/packages/platform/lib/theme/',
@@ -629,7 +634,9 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
   }
 
   bool _isTestPath(String path) {
-    return (path.contains('/test/') || path.contains('/integration_test/')) &&
+    return (path.contains('/test/') ||
+            path.contains('/integration_test/') ||
+            path.contains(_testSupportPackage)) &&
         (!path.contains('/tool/') ||
             path.contains('/tool/catch_ui_lints_probe/')) &&
         !path.endsWith('.g.dart') &&
@@ -649,7 +656,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
   }
 
   bool _isSizingScannerPath(String path) {
-    return !path.contains('/packages/catch_test_support/lib/design_fixtures/');
+    return !path.contains('/lib/design_fixtures/');
   }
 
   // Shared app UI lives in context parts, shared pages, the platform media
