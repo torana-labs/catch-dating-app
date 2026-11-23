@@ -46,8 +46,8 @@ Typed handoffs:
 | Owner | Source | Responsibility |
 |---|---|---|
 | `HostInboxScreen` | `lib/hosts/presentation/inbox/host_inbox_screen.dart` | Actions: select_workspace, retry_inbox, select_scope, select_audience_segment, open_conversation. |
-| `ChatsSearchHeaderController` | `lib/chats/presentation/inbox/chats_search_header_controller.dart` | Actions: toggle_search. |
-| `ChatSearchQuery` | `lib/chats/presentation/inbox/chats_list_view_model.dart` | Actions: search_inquiries. |
+| `ChatsSearchHeaderController` | `lib/pages/inbox/chats_search_header_controller.dart` | Actions: toggle_search. |
+| `ChatSearchQuery` | `lib/pages/inbox/chats_list_view_model.dart` | Actions: search_inquiries. |
 | `HostBroadcastComposerSheet` | `lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart` | Actions: select_broadcast_audience, select_broadcast_template. |
 | `HostInboxBroadcastController` | `lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart` | Actions: send_broadcast. |
 | `_HostSendsPageBodySliverState` | `lib/hosts/presentation/inbox/host_sends_workspace.dart` | Actions: open_event_announcement_composer. |

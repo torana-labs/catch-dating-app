@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/pages/chat/widgets/chat_event_context_header.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:flutter/material.dart';

@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/chats/presentation/widgets/suvbot_dock.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
+import 'package:catch_dating_app/pages/chat/widgets/suvbot_dock.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';

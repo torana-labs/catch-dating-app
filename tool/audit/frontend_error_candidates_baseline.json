@@ -15,7 +15,7 @@
   "allowedReviewCandidates": [
     {
       "rule": "bare_catch",
-      "path": "lib/chats/presentation/chat_thread_action_controller.dart",
+      "path": "lib/pages/chat/chat_thread_action_controller.dart",
       "snippet": "} catch (_) {",
       "maxOccurrences": 2
     },

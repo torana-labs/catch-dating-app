@@ -35,7 +35,7 @@
       "routeName": "Routes.matchesListScreen.name",
       "surfaces": [
         {
-          "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+          "path": "lib/pages/inbox/widgets/chats_sliver_header.dart",
           "symbol": "ChatsBrowseHeader",
           "owner": "CatchLegacyTopBar.primaryRail"
         }
@@ -104,7 +104,7 @@
   ],
   "contracts": [
     {
-      "path": "lib/chats/presentation/chat_screen.dart",
+      "path": "lib/pages/chat/chat_screen.dart",
       "role": "identity",
       "expression": "CatchLegacyTopBar.identity",
       "owner": "CatchLegacyTopBar",
@@ -382,7 +382,7 @@
       "leading": "back"
     },
     {
-      "path": "lib/chats/presentation/event_chat_screen.dart",
+      "path": "lib/pages/chat/event_chat_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",
       "owner": "CatchLegacyTopBar",
@@ -398,7 +398,7 @@
       "leading": "back"
     },
     {
-      "path": "lib/chats/presentation/event_chat_participants_screen.dart",
+      "path": "lib/pages/chat/event_chat_participants_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",
       "owner": "CatchLegacyTopBar",
@@ -406,7 +406,7 @@
       "leading": "back"
     },
     {
-      "path": "lib/chats/presentation/event_profile_screen.dart",
+      "path": "lib/pages/chat/event_profile_screen.dart",
       "role": "compact",
       "expression": "CatchLegacyTopBar.route",
       "owner": "CatchLegacyTopBar",
@@ -493,7 +493,7 @@
       "reason": "Club and Event creation share one localized step adapter; CatchStepHeader owns progress and navigation."
     },
     {
-      "path": "lib/chats/presentation/widgets/chat_share_card.dart",
+      "path": "lib/pages/chat/widgets/chat_share_card.dart",
       "symbol": "ShareCardHeader",
       "role": "content",
       "owner": "CatchTextStyles.titleL",
@@ -528,7 +528,7 @@
       "reason": "Checkout hero: event identity on the activity backdrop above the payment body; it owns no navigation. Named a Header in Phase 7b.2, which exposed headline typography that the content role does not allow; move it to titleL or a registered hero recipe."
     },
     {
-      "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
+      "path": "lib/pages/inbox/widgets/chats_sliver_header.dart",
       "symbol": "ChatsBrowseHeader",
       "role": "screen",
       "owner": "CatchLegacyTopBar.primaryRail",

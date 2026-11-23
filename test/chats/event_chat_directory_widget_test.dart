@@ -2,11 +2,11 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_section.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -16,9 +16,9 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../pages/chat/event_chat_controller_test.dart' show roomAccess;
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
-import 'event_chat_controller_test.dart' show roomAccess;
 
 void main() {
   setUpAll(loadCatchTestFonts);

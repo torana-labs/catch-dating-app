@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/chats/chats.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -77,7 +77,6 @@ class HostInboxCatchPages extends _$HostInboxCatchPages {
   }
 }
 
-// provider-graph: cross-feature-presentation:hostInboxCatchViewModelProvider->chatsListViewModelProvider accepted -- Host composes the canonical Chat live read model through the annotated, narrowly exported lib/chats/chats.dart API, then adds account-scoped historical pages. Chat retains preview identity and live-window ownership; Host rechecks each older match's current membership before projecting it into organizer-authorized person collections. This is the sanctioned public read-model seam, not a dependency on sibling widgets or a second Chat subscription implementation. Chat projection, Host person identity, conversation revocation and pagination tests cover the constituent contracts; dependency-direction and topology checks enforce the exact public edge and reject cycles or stale decisions.
 /// Revalidates older endpoint membership against the live document before
 /// including it. A cached page never keeps a revoked conversation visible.
 @riverpod

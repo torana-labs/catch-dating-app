@@ -340,10 +340,10 @@ export const pageSeeds = [
   {page: "event", files: ["lib/events/presentation/event_detail_screen.dart"]},
   {page: "organizer", files: ["lib/organizers/presentation/detail/organizer_detail_screen.dart"]},
   {page: "chat", files: [
-    "lib/chats/presentation/chat_screen.dart",
-    "lib/chats/presentation/event_chat_screen.dart",
-    "lib/chats/presentation/event_chat_participants_screen.dart",
-    "lib/chats/presentation/event_profile_screen.dart",
+    "lib/pages/chat/chat_screen.dart",
+    "lib/pages/chat/event_chat_screen.dart",
+    "lib/pages/chat/event_chat_participants_screen.dart",
+    "lib/pages/chat/event_profile_screen.dart",
   ]},
 ];
 
