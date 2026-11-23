@@ -302,13 +302,16 @@ function applyOnCleanTree({root, plan, cleanupComments, external}) {
       written.add(carriedScreensPath);
     }
     if (cleanupComments) {
-      const movedDart = [...plan.sourceMoves.values()].filter((file) =>
-        file.endsWith(".dart") && !/\.(?:g|freezed)\.dart$/u.test(file));
+      // A moved file, or one whose imports the move rewrote: an importer that
+      // reached a legacy folder through a reasoned exception may now reach
+      // lib/pages, where nothing reports it, so the exception goes stale.
+      const touchedDart = [...new Set([...plan.sourceMoves.values(), ...plan.writes.keys()])]
+        .filter((file) => file.endsWith(".dart") && !/\.(?:g|freezed)\.dart$/u.test(file));
       const read = (file) => (fs.existsSync(path.join(root, file)) ? fs.readFileSync(path.join(root, file), "utf8") : null);
       removedComments = removeStaleComments({
-        files: movedDart,
+        files: touchedDart,
         staleReviewIds: staleReviewIds(root),
-        staleIgnores: staleIgnoreFindings(analyzerFindings(root), movedDart),
+        staleIgnores: staleIgnoreFindings(analyzerFindings(root), touchedDart),
         read,
         write: (file, text) => writeFile(root, file, text),
       });

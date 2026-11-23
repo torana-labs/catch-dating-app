@@ -117,3 +117,41 @@ test("records replay by sequence, and a move commit may only add its own", () =>
   });
   assert.deepEqual(problems, [`a move commit only adds its own record; it changed or removed ${recordPath("first")}`]);
 });
+
+test("--verify accepts a stale exception removed from an importer whose imports the move rewrote", () => {
+  const group = "page-chat";
+  const record = `${JSON.stringify({version: 1, group, sequence: 1, entries: [],
+    moves: {"lib/chats/presentation/chat_screen.dart": "lib/pages/chat/chat_screen.dart"}, folders: {}})}\n`;
+  const importer = "lib/hosts/presentation/inbox/host_inbox_screen.dart";
+  const before = [
+    "import 'package:catch_dating_app/contexts/messaging/domain/chat.dart';",
+    "// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- reason",
+    "import 'package:catch_dating_app/chats/presentation/chat_screen.dart';",
+    "",
+    "class HostInbox {}",
+    "",
+  ].join("\n");
+  const after = [
+    "import 'package:catch_dating_app/contexts/messaging/domain/chat.dart';",
+    "import 'package:catch_dating_app/pages/chat/chat_screen.dart';",
+    "",
+    "class HostInbox {}",
+    "",
+  ].join("\n");
+  const files = {
+    old: {[importer]: before, "lib/chats/presentation/chat_screen.dart": "class ChatScreen {}\n"},
+    new: {[importer]: after, "lib/pages/chat/chat_screen.dart": "class ChatScreen {}\n", [recordPath(group)]: record},
+  };
+  const problems = verifyScreenMove({
+    changes: [
+      {status: "A", file: recordPath(group)},
+      {status: "M", file: importer},
+      {status: "A", file: "lib/pages/chat/chat_screen.dart"},
+      {status: "D", file: "lib/chats/presentation/chat_screen.dart"},
+    ],
+    read: (side, file) => (files[side][file] == null ? null : Buffer.from(files[side][file])),
+    regenerated: new Set(),
+    packages: [],
+  });
+  assert.deepEqual(problems, []);
+});
