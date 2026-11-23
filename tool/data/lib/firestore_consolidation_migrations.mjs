@@ -694,6 +694,27 @@ async function contactCandidateViews(db, data, contactId) {
   return entries;
 }
 
+let guestEventStatusModule = null;
+function guestEventStatuses() {
+  try {
+    guestEventStatusModule ??=
+      createFunctionsRequire()("./lib/guestEvents/guestEventStatus.js");
+  } catch (error) {
+    throw new Error(
+      "The guest-roster-links migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return guestEventStatusModule;
+}
+
+/** The (at most two) roster rows linked to a guest at an event, by id. */
+async function linkedAttendeeIds(db, eventId, uid) {
+  const rows = await db.collection("eventAttendees").where("eventId", "==", eventId)
+    .where("linkedUid", "==", uid).limit(2).get();
+  return rows.docs.map((doc) => doc.id).sort();
+}
+
 let programArrivalViewModule = null;
 function functionsProgramArrivalViews() {
   try {
@@ -2288,6 +2309,48 @@ export const MIGRATIONS = [
         target: "hostContactMergeCandidateViews",
         skipReason: "no candidate pair starts at this contact, or already viewed",
         expand: (data, id, db) => contactCandidateViews(db, data, id),
+      },
+    ],
+  },
+  {
+    name: "guest-roster-links",
+    description:
+      "The Catch app's event message preferences read the guest's own " +
+      "guestEventStatuses.rosterLink instead of " +
+      "getEventAssistanceParticipantContext (#2306). Every guest status row " +
+      "gets its roster link (the guest's own linked attendee id, ambiguous, " +
+      "or null), and a guest linked to a roster row with no status row yet " +
+      "gets one. Only rosterLink is written on existing rows, with a " +
+      "last-update-time precondition. Build Functions first.",
+    steps: [
+      {
+        kind: "fill",
+        collection: "guestEventStatuses",
+        refresh: ["rosterLink"],
+        fill: async (data, id, db) => {
+          // The row's id names its guest; a row whose fields disagree with
+          // its id is left for the trigger to rebuild.
+          if (!validId(data.eventId) || !validId(data.uid) ||
+              id !== `${data.eventId}_${data.uid}`) return null;
+          const event = await db.collection("events").doc(data.eventId).get();
+          return {rosterLink: guestEventStatuses().guestRosterLink(
+            event.data()?.status, await linkedAttendeeIds(db, data.eventId, data.uid))};
+        },
+      },
+      {
+        source: "eventAttendees",
+        target: "guestEventStatuses",
+        skipReason: "no linked guest, a second row of the same guest, or a row already",
+        expand: async (data, id, db) => {
+          if (!validId(data.eventId) || !validId(data.linkedUid)) return [];
+          const ids = await linkedAttendeeIds(db, data.eventId, data.linkedUid);
+          if (ids[0] !== id) return [];
+          const targetId = `${data.eventId}_${data.linkedUid}`;
+          const row = await newView(db, "guestEventStatuses", targetId,
+            (tx) => guestEventStatuses().guestEventStatus({db, tx,
+              eventId: data.eventId, uid: data.linkedUid, nowMillis: Date.now()}));
+          return row ? [{targetId, data: row}] : [];
+        },
       },
     ],
   },
