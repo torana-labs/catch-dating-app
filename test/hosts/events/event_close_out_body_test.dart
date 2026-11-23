@@ -3,11 +3,11 @@ import 'package:catch_dating_app/contexts/live/domain/event_close_out.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_body.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../support/catch_test_fonts.dart';
 import 'events_fixtures.dart';
 
 void main() {

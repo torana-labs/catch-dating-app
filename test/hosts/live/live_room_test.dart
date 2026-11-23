@@ -9,12 +9,12 @@ import 'package:catch_dating_app/hosts/live/live_room_body.dart';
 import 'package:catch_dating_app/hosts/live/live_room_map_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../support/catch_test_fonts.dart';
 import 'live_fixtures.dart';
 
 const _tables = EventSuccessStructureConfig(

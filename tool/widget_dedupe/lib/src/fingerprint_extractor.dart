@@ -992,7 +992,7 @@ Map<String, Object?> analyzeRetirementSources(Map<String, String> sources) {
 
 String _retirementCategory(String file) {
   if (file.startsWith('widgetbook/') ||
-      file.startsWith('lib/design_fixtures/')) {
+      file.startsWith('packages/catch_test_support/lib/design_fixtures/')) {
     return 'preview';
   }
   if (file.startsWith('test/') ||

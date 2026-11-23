@@ -9,10 +9,10 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_message_body
 import 'package:catch_dating_app/hosts/programmes/planner/programme_messages_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programmes_home_body.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../support/catch_test_fonts.dart';
 import '../staff/staff_live_fixtures.dart';
 import 'planner_board_fixtures.dart';
 import 'planner_fixtures.dart';

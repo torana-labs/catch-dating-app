@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/utility_surface_fixtures.dart';
 
 /// Shared deterministic fixtures for Catches design review surfaces.
 final class CatchesSurfaceFixtures {

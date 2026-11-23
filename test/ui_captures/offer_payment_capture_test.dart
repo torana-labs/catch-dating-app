@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaul
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../hosts/event_controller_test_support.dart';
-import '../test_pump_helpers.dart';
 import 'support/capture_device.dart';
 import 'support/capture_pump.dart';
 

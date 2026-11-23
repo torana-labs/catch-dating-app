@@ -2,11 +2,11 @@ import 'package:catch_dating_app/event_success/presentation/event_success_room_m
 import 'package:catch_dating_app/hosts/live/live_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
 import '../ui_captures/catalog/screen_capture_catalog.dart'
     show findScreenCapture;
 

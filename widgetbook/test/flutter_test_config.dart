@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/goldens/catch_golden_file_comparator.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../test/goldens/support/catch_golden_file_comparator.dart';
-import '../../test/support/catch_test_fonts.dart';
 
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -4,11 +4,11 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_deliverie
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/repair_event_assistance_delivery_callable_request.g.dart';
+import 'package:catch_test_support/contract_schemas.dart';
 import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
-import '../support/contract_schemas.dart';
 import 'event_assistance_deliveries_fixtures.dart';
 
 void main() {

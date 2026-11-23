@@ -6,7 +6,6 @@ import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.d
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
-import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_staff_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_groups_section.dart';
@@ -23,6 +22,7 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_mem
 import 'package:catch_dating_app/event_success/presentation/event_assistance_sweep_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_visit_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_visit_sheet.dart';
+import 'package:catch_test_support/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

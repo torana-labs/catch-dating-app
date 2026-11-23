@@ -4,11 +4,11 @@ import 'package:catch_dating_app/hosts/events/event_plan_body.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_state.dart';
 import 'package:catch_dating_app/hosts/events/widgets/event_plan_step_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../support/catch_test_fonts.dart';
 import 'events_fixtures.dart';
 
 Future<void> _pump(WidgetTester tester, Widget body, {Widget? overlay}) async {

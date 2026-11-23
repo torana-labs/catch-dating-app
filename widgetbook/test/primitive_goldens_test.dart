@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/goldens/golden_pump.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,8 +14,6 @@ import 'package:widgetbook_workspace/primitives/catalog/event_information.dart';
 import 'package:widgetbook_workspace/primitives/notice_provider_use_cases.dart';
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
-import '../../test/goldens/support/golden_pump.dart';
-import '../../test/test_pump_helpers.dart';
 import 'support/triage_inventory.dart';
 
 // These ids select generated use cases; they do not redeclare component states.
