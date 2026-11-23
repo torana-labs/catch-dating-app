@@ -2294,7 +2294,7 @@
             "symbol": "EventDetailController"
           },
           {
-            "file": "lib/events/presentation/event_booking_controller.dart",
+            "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
             "symbol": "EventBookingController"
           },
           {
@@ -5037,7 +5037,7 @@
             "symbol": "DashboardEventFocusController"
           },
           {
-            "file": "lib/events/presentation/event_booking_controller.dart",
+            "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
             "symbol": "EventBookingController"
           }
         ],
@@ -5734,7 +5734,7 @@
             "symbol": "EventSuccessController"
           },
           {
-            "file": "lib/events/presentation/event_booking_controller.dart",
+            "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
             "symbol": "EventBookingController"
           }
         ],
@@ -19855,7 +19855,7 @@
             "symbol": "watchEvent"
           },
           {
-            "file": "lib/events/presentation/event_booking_controller.dart",
+            "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
             "symbol": "EventBookingController"
           },
           {
@@ -19865,7 +19865,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/events/presentation/event_booking_controller.dart",
+            "file": "lib/contexts/bookings/actions/event_booking_controller.dart",
             "symbol": "EventBookingController"
           },
           {
