@@ -455,7 +455,7 @@ function leadDetail(kind: string, lead: Data): string | null {
 
 /**
  * A website lead (joinWaitlist requestKind): a person waiting for a WhatsApp
- * reply. Apart from the automatic Host app link, nothing is sent for staff,
+ * reply. Apart from the automatic Host app link or welcome, nothing is sent for staff,
  * so it waits until someone replies (or sends the follow-up template) and
  * closes it with what they said. A referral closes itself when its listing
  * is approved and links it.
@@ -504,15 +504,17 @@ function projectLead(sourceId: string, data: Data): InboxProjection {
 
 const templateLabels: Record<string, string> = {
   host_app_link: `the ${BRAND.stores.hostAppName} app link`,
+  host_lead_welcome: "the welcome",
 };
 
 /**
  * What Catch's WhatsApp number sent the lead by itself: the automatic Host
- * app link. One step per settled outcome; a send still in flight shows once
- * it settles. Follow-ups staff send are in the person's Support thread.
+ * app link or welcome. One step per settled outcome; a send still in flight
+ * shows once it settles. Follow-ups staff send are in the person's Support
+ * thread.
  */
 function whatsappTemplateSteps(data: Data): JourneyStep[] {
-  return (["appLinkWhatsapp"] as const).flatMap((field) => {
+  return (["appLinkWhatsapp", "welcomeWhatsapp"] as const).flatMap((field) => {
     const send = record(data[field]);
     const state = text(send?.state);
     const occurredAt = iso(send?.attemptedAt);
@@ -524,7 +526,8 @@ function whatsappTemplateSteps(data: Data): JourneyStep[] {
         state === "failed" ? [`WhatsApp refused ${what}`, code ?? "Not sent; reply by hand", "danger"] :
           state === "unknown" ? [`Couldn't confirm ${what} was sent`, "Check their Support thread before sending anything", "warning"] :
             [`Didn't send ${what}`, send.skipReason === "stopped" ? "They sent STOP to Catch's number" :
-              "No WhatsApp sender is set up here", "muted"];
+              send.skipReason === "recentlySent" ? "Their number had a welcome in the last week" :
+                "No WhatsApp sender is set up here", "muted"];
     return [{stepId: `whatsapp-${text(send.messageId) ?? field}-${state}`, occurredAt, title, detail,
       actorUid: text(send.actorUid), tone}];
   });

@@ -3591,7 +3591,21 @@ the slot it names. All three are server-only; the website reads open slots
 through `getWalkthroughSlots`, which returns times only. A booking is the
 slot-attached form of the website `walkthrough` lead: a lead without a slot
 stays a `salesInboundIntents` lead, and a booking projects to its own Admin
-Inbox item (`walkthroughBooking` source kind, enquiry type).
+Inbox item (`walkthroughBooking` source kind, enquiry type). While
+`CATCH_WHATSAPP_WALKTHROUGH_BOOKED_ENABLED` (default off; needs
+`CATCH_WHATSAPP_REPLIES_ENABLED`) is on, `bookWalkthrough` and a move through
+`manageWalkthroughBooking` send the approved `host_walkthrough_booked`
+template (`{{1}}` the first word of the name or "there", `{{2}}` the slot in
+India time, "Tue 25 Nov, 11:00 AM") to the verified number once the slot is
+saved. It goes once per booking and slot: a move sends it again with the new
+time, a move back to a time already sent does not, and a retry never sends
+twice. The latest attempt is claimed before WhatsApp is called and recorded
+as `bookedWhatsapp` (the slot, state, WhatsApp message id or error code) and
+as Catch's automatic message in the person's Support thread. Internal test
+bookings, cancelled or started ones, a booking or move older than six hours
+and numbers that sent STOP get nothing; a refused or unconfirmed send is
+logged and shown in the Inbox item, never retried, and never fails the
+booking. Staff still confirm the time on WhatsApp.
 
 ### Waitlist City Attribution
 
@@ -3633,15 +3647,31 @@ attempt is claimed before WhatsApp is called and recorded on the lead as
 `appLinkWhatsapp` (state, WhatsApp message id or error code, the Support
 message it is) and as Catch's automatic message in the person's Support
 thread; a refused or unconfirmed send is logged and shown in the lead's Inbox
-journey, never retried. From an open host lead (any website lead but
+journey, never retried. The first message to a host lead who asked to be
+contacted is the approved `host_lead_welcome` template ("Hi {{1}}", the first
+word of the name or "there", with a static "Book a walkthrough" button), sent
+the same way from the same trigger and recorded as `welcomeWhatsapp`, while
+`CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED` (default off; needs
+`CATCH_WHATSAPP_REPLIES_ENABLED`) is on. It goes to website `guide`, `demo`
+and `venue` leads whose consent is `leadFollowUp` with version
+`playbook-lead-whatsapp-v2` (the form's "We reply on WhatsApp."). A Meta
+lead-form lead with a phone gets it only while
+`CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED` is also on, because that form
+mentions WhatsApp only on its thank-you screen, after it is sent; its six
+hours run from when the person sent the form. `app_link` (the app link),
+`walkthrough` (a request for a time), `referral`, `city_alerts`, `story` and
+`org_contact` leads and partner nominations get no welcome, and a number that
+had a welcome in the last seven days is skipped (`skipReason: recentlySent`).
+From an open host lead (any website lead but
 `referral` and `city_alerts`, or a Meta lead-form lead) staff can send the
 approved `host_lead_follow_up` template ("Hi {{1}}", the first word of the
 name or "there") through `adminSendCatchWhatsappReply` with
 `purpose: "hostLeadFollowUp"`: only when the person has not written in the
 last 24 hours, never after STOP, and at most once per WhatsApp number in any
 7 days (every attempt WhatsApp did not refuse counts). It is recorded in their
-Support thread, which it starts when they have none, and in the audit log. A reply to either
-template, a quick-reply button included, lands in the Support thread like any
+Support thread, which it starts when they have none, and in the audit log;
+an earlier welcome does not count toward its limit. A reply to any of these
+templates, a button included, lands in the Support thread like any
 inbound message.
 
 Each WhatsApp launch notice with a city counts its person once per city:
