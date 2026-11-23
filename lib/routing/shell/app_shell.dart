@@ -19,12 +19,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-// Transitional: host_planner_navigation_test.dart still reads the provider
-// through this file while another task holds it. Remove once that test imports
-// shell_chrome.dart (Phase 4, #2373).
-export 'package:catch_dating_app/routing/shell/shell_chrome.dart'
-    show appShellFcmInitializationProvider;
-
 // Tab indices — kept in sync with branch order in consumer_router.dart
 //   0  Home      (DashboardScreen)
 //   1  Explore   (ExploreScreen)
