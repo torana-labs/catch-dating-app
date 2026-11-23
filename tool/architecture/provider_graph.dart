@@ -1697,7 +1697,8 @@ List<ArchitectureCandidate> _architectureCandidates(
     }
     if (source.feature != target.feature &&
         source.layer == 'presentation' &&
-        target.layer == 'presentation') {
+        target.layer == 'presentation' &&
+        !_isScreenRoot(source.path)) {
       candidates.add(
         ArchitectureCandidate(
           id: 'cross-feature-presentation:${edge.source}->${edge.target}',
@@ -1985,6 +1986,12 @@ bool _isKeepAlive(List<Annotation> metadata) => metadata.any(
 // providers by hand and must not depend on feature data.
 bool _isPlatformFeature(String feature) =>
     feature == 'core' || feature == 'platform';
+
+// apps/*/lib and lib/pages compose screens from several features by design,
+// so a provider there reading another feature's presentation provider is the
+// screen's job, not a cross-feature reach.
+bool _isScreenRoot(String relativePath) =>
+    RegExp(r'^(?:apps/[^/]+/lib|lib/pages)/').hasMatch(relativePath);
 
 String _featureFor(String relativePath) {
   final parts = relativePath.split('/');

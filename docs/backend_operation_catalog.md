@@ -463,6 +463,16 @@ reads the staff attention alerts of `programAlertViews` (source
 `staffAttention`, alert id `{runId}_{duty}`), under the same duty rule. Both
 callables were retired in Nov 2026.
 
+**Read path decision (Nov 2026, #2306): sender display.** The programme sender
+(`listProgramWhatsappThreads`' header, `listOrganizerMoments`' new-message
+sender, `getProgramAssistantSettings`' number) moved to `programSenderViews`,
+and the assistant settings to `programAssistantSettingViews`: the trigger
+copies only the display number, verified name, status and connection id, so
+provider ids and secrets stay on `organizerSenderConnections`.
+`getEventAssistanceRuntimeConfig` stays a callable: its sender picker pages
+Catch SMS and RCS senders with WhatsApp ones and computes each choice's
+availability for the event and a review hash.
+
 **Read path decision (Nov 2026, #1339, revised by #2306).** `listProgramGuests`
 moved to `programGuestDirectoryViews`: its trigger resolves phone numbers and
 emails from the workspace field assertions exactly as the callable did, so that

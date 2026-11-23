@@ -21,7 +21,8 @@
       "id": "ROOT-SCREEN-COMPOSITION-001",
       "title": "Root screens declare semantic composition and clear adaptive shell chrome",
       "appliesTo": [
-        "lib/routing/go_router.dart",
+        "lib/routing/consumer_router.dart",
+        "lib/routing/host_router.dart",
         "apps/*/lib/**",
         "lib/**/presentation/**",
         "lib/routing/shell/**",

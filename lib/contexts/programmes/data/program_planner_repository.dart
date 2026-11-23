@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_access_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_assistant_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_message_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_whatsapp_models.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -16,8 +18,8 @@ part 'program_planner_repository.g.dart';
 /// planned messages (programme moments) and how guest pages look. The
 /// planned messages are a listener (#1339) on `organizerMomentViews`, gated
 /// on the communications duty (the owner holds it) so cached rows stop when
-/// it ends; the WhatsApp sender new messages send through stays on
-/// `listOrganizerMoments`, as sender connections are server-only.
+/// it ends; the WhatsApp sender new messages send through comes from the
+/// display-safe `programSenderViews` (#2306).
 class ProgramPlannerRepository {
   const ProgramPlannerRepository(
     this._functions,
@@ -70,24 +72,6 @@ class ProgramPlannerRepository {
           context: _viewsContext,
         ),
       );
-
-  /// The organiser's active WhatsApp sender that new planned messages send
-  /// through, or null when none is active. Sender connections are
-  /// server-only, so this stays on `listOrganizerMoments`.
-  Future<String?> messageSender(String programId) => _call(
-    name: 'listOrganizerMoments',
-    payload: ListOrganizerMomentsCallableRequest(
-      scope: _scope(programId),
-    ).toJson(),
-    action: 'load the message sender',
-    parse: (data) {
-      final sender = requiredMap(
-        data,
-        'planned messages',
-      )['senderConnectionId'];
-      return sender is String && sender.isNotEmpty ? sender : null;
-    },
-  );
 
   /// Saves [draft] as a draft moment (or revises [momentId]) and returns
   /// the moment id. With [approve], it is armed under the caller's
@@ -238,7 +222,10 @@ Stream<ProgramPlannedMessages> programPlannedMessages(
       .watchMessages(programId, uid);
 }
 
-/// The WhatsApp sender new planned messages send through, or null.
+/// The WhatsApp sender new planned messages send through, or null: the
+/// organiser's first active sender, as `listOrganizerMoments` offered it.
 @riverpod
-Future<String?> programMessageSender(Ref ref, String programId) =>
-    ref.watch(programPlannerRepositoryProvider).messageSender(programId);
+Future<String?> programMessageSender(Ref ref, String programId) async =>
+    programMessageSenderFromView(
+      await ref.watch(programSenderViewStreamProvider(programId).future),
+    );

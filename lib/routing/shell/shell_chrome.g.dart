@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'app_shell.dart';
+part of 'shell_chrome.dart';
 
 // **************************************************************************
 // RiverpodGenerator

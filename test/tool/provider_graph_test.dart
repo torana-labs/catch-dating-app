@@ -9,6 +9,7 @@ import '../../tool/architecture/provider_graph.dart';
 
 void main() {
   _appPackageProviderGraphTests();
+  _screenRootCrossFeatureTests();
   _cacheRuleTests();
   test(
     'provider graph resolves providers, consumers, aliases, and mutations',
@@ -801,6 +802,44 @@ int generatedOnly(Ref ref) => 1;
       );
     },
   );
+}
+
+void _screenRootCrossFeatureTests() {
+  test('screens under apps/*/lib and lib/pages compose other features '
+      'without a cross-feature-presentation candidate', () async {
+    final root = await _fixtureRoot('''
+@riverpod
+int eventViewModel(Ref ref) => 1;
+''', path: 'lib/events/presentation/event_view_model.dart');
+    addTearDown(() => root.delete(recursive: true));
+    for (final entry in const {
+      'apps/host/lib/today/today_view_model.dart': '''
+@riverpod
+int todayViewModel(Ref ref) => ref.watch(eventViewModelProvider);
+''',
+      'lib/pages/event/presentation/event_page_view_model.dart': '''
+@riverpod
+int eventPageViewModel(Ref ref) => ref.watch(eventViewModelProvider);
+''',
+      'lib/dashboard/presentation/dashboard_view_model.dart': '''
+@riverpod
+int dashboardViewModel(Ref ref) => ref.watch(eventViewModelProvider);
+''',
+    }.entries) {
+      final file = File('${root.path}/${entry.key}');
+      await file.parent.create(recursive: true);
+      await file.writeAsString(entry.value);
+    }
+
+    final graph = await buildProviderGraph(root);
+
+    expect(
+      graph.candidates
+          .where((c) => c.kind == 'cross-feature-presentation')
+          .map((c) => c.subject),
+      ['dashboardViewModelProvider -> eventViewModelProvider'],
+    );
+  });
 }
 
 void _cacheRuleTests() {

@@ -7,10 +7,12 @@ import 'package:catch_dating_app/contexts/bookings/data/event_participation_repo
 import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/consumer_router.dart';
+import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_dating_app/routing/shell/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
+import 'package:catch_dating_app/routing/shell/shell_chrome.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
@@ -657,7 +659,7 @@ class _ProductionRouterApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       theme: AppTheme.light,
-      routerConfig: ref.watch(goRouterProvider),
+      routerConfig: ref.watch(consumerGoRouterProvider),
     );
   }
 }

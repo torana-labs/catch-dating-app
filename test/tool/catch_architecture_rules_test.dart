@@ -893,8 +893,8 @@ final firstProvider = rp.FutureProvider.autoDispose.family<int, String>((ref, ke
     test('flags upward layer imports', () {
       for (final (path, uri) in const [
         ('lib/core/widgets/event_thumbnail.dart', 'events/domain/event.dart'),
-        ('lib/events/data/event_launcher.dart', 'routing/go_router.dart'),
-        ('lib/pages/event_page/event_page.dart', 'routing/go_router.dart'),
+        ('lib/events/data/event_launcher.dart', 'routing/consumer_router.dart'),
+        ('lib/pages/event_page/event_page.dart', 'routing/host_router.dart'),
         ('lib/activity/domain/activity_taxonomy.dart', 'core/labelled.dart'),
       ]) {
         expect(
@@ -928,7 +928,7 @@ final firstProvider = rp.FutureProvider.autoDispose.family<int, String>((ref, ke
     test('app screens may import anything', () {
       expect(
         _contextRules('lib/events/presentation/event_screen.dart', '''
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_dating_app/contexts/bookings/data/booking_repository.dart';
 '''),
         isEmpty,

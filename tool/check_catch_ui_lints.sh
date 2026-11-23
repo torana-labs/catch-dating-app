@@ -1202,7 +1202,7 @@ packages/platform/lib/push/fcm_service.dart|catch_arch_firestore_outside_data|im
 lib/hosts/events/presentation/host_events_cursor.dart|catch_arch_firestore_outside_data|import 'package:catch_platform/firebase/firebase_providers.dart';\nimport 'package:flutter_riverpod/flutter_riverpod.dart';\nObject read(ProviderContainer c) => c.read(firebaseFirestoreProvider).app;
 lib/force_update/presentation/force_update_diagnostics.dart|catch_arch_firestore_outside_data|import 'package:firebase_core/firebase_core.dart';\nbool failed(Object error) => error is FirebaseException;
 lib/contexts/events/parts/route_boundary.dart|catch_arch_provider_free_boundary|import 'package:catch_platform/routing/route_contract.dart';
-lib/contexts/events/data/event_store.dart|catch_arch_upward_layer_import|import 'package:catch_dating_app/routing/go_router.dart';
+lib/contexts/events/data/event_store.dart|catch_arch_upward_layer_import|import 'package:catch_dating_app/routing/host_router.dart';
 lib/contexts/account/data/session.dart|catch_arch_context_order_import|import 'package:catch_dating_app/contexts/events/events.dart';
 lib/contexts/bookings/domain/booking.dart|catch_arch_context_barrel_bypass|import 'package:catch_dating_app/contexts/events/domain/event.dart';
 lib/weddings/domain/wedding.dart|catch_arch_unmapped_file|class Wedding {}
@@ -1391,9 +1391,10 @@ expect_probe exact catch_no_raw_ui_spacing 0
 expect_probe exact catch_no_allow_debt 0
 expect_probe exact catch_no_raw_surface_shell 0
 
-# The two files that predate D24 keep what lib/ tolerates until their redraw, and
-# nothing else under lib/pages does. The scan runs on them: of everything it
-# checks, only what it found there when it first ran is held by the list.
+# The two files that predate D24 are carried as their own path
+# (tool/architecture/carried_screens.json): they keep what lib/ tolerates until
+# their redraw, and nothing else under lib/pages does. The scan runs on them: of
+# everything it checks, only what it found there when it first ran is held.
 probe_path="$probe_root/lib/pages/startup/splash_screen.dart"
 stage_probe "listed legacy file keeps the reasoned ignore" <<'DART'
 import 'package:flutter/material.dart';
@@ -1406,6 +1407,7 @@ Widget splash(BuildContext context) {
 DART
 expect_probe exact catch_no_allow_debt 0
 expect_probe exact catch_no_raw_surface_shell 0
+expect_probe exact catch_arch_stale_carry 0
 probe_path="$probe_root/lib/pages/celebration/celebration_screen.dart"
 stage_probe "the scan runs on a listed file" <<'DART'
 import 'package:flutter/material.dart';
@@ -1417,6 +1419,7 @@ DART
 expect_probe exact catch_no_raw_alpha 0
 expect_probe exact catch_no_raw_icon_size 0
 expect_probe exact catch_text_requires_style 1
+expect_probe exact catch_arch_stale_carry 0
 probe_path="$probe_root/lib/pages/celebration/celebration_confetti.dart"
 stage_probe "the rest of the celebration folder holds at zero" <<'DART'
 import 'package:flutter/material.dart';
@@ -1426,6 +1429,66 @@ Color fade(Color tone) => tone.withValues(alpha: 0.2);
 DART
 expect_probe exact catch_no_raw_surface_shell 1
 expect_probe exact catch_no_raw_alpha 1
+
+# Carried screens: a file the Phase 4 codemod moved keeps the rules of the legacy
+# path it came from, so its reasoned ignores and drawing stand, and
+# catch_arch_stale_carry reports it once it would be clean under the new-root
+# rules. This run carries what its own list names; arch/ lets the layer rules
+# place the fixtures too, so both rule sets run in shadow.
+cat >"$probe_root/carried_screens.json" <<'JSON'
+{"carried": [
+  {"path": "apps/host/lib/carried/stale_screen.dart", "from": "lib/hosts/presentation/stale_screen.dart"},
+  {"path": "apps/host/lib/carried/drawn_screen.dart", "from": "lib/hosts/presentation/drawn_screen.dart"},
+  {"path": "apps/host/lib/carried/themed_screen.dart", "from": "lib/hosts/presentation/themed_screen.dart"},
+  {"path": "apps/host/lib/carried/shared_body.dart", "from": "lib/events/shared/shared_body.dart"},
+  {"path": "apps/host/lib/carried/seam_screen.dart", "from": "lib/dashboard/presentation/seam_screen.dart"}
+]}
+JSON
+probe_path="$probe_root/arch/apps/host/lib/carried/stale_screen.dart"
+stage_probe "a carried file that meets the new-root rules is stale" <<'DART'
+const int seats = 1;
+DART
+expect_probe exact catch_arch_stale_carry 1
+probe_path="$probe_root/arch/apps/host/lib/carried/drawn_screen.dart"
+stage_probe "a carried file keeps its reasoned drawing ignore" <<'DART'
+import 'package:flutter/material.dart';
+
+Widget panel(BuildContext context) {
+  final theme = Theme.of(context);
+  // ignore: catch_ui_lints/catch_no_raw_surface_shell -- seeded reason
+  return ColoredBox(color: theme.cardColor);
+}
+DART
+expect_probe exact catch_no_allow_debt 0
+expect_probe exact catch_no_raw_surface_shell 0
+expect_probe exact catch_arch_stale_carry 0
+probe_path="$probe_root/arch/apps/host/lib/carried/themed_screen.dart"
+stage_probe "the screen rules run in shadow" <<'DART'
+import 'package:flutter/material.dart';
+
+Object read(BuildContext context) => Theme.of(context);
+DART
+expect_probe exact catch_no_raw_surface_shell 0
+expect_probe exact catch_arch_stale_carry 0
+probe_path="$probe_root/arch/apps/host/lib/carried/shared_body.dart"
+stage_probe "the layer rules run in shadow, and a carry adds none" <<'DART'
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+int rows(WidgetRef ref) => 1;
+DART
+expect_probe exact catch_arch_provider_free_boundary 0
+expect_probe exact catch_arch_widget_ref_parameter 0
+expect_probe exact catch_arch_stale_carry 0
+probe_path="$probe_root/arch/apps/host/lib/carried/seam_screen.dart"
+stage_probe "a carried file keeps its reasoned layer exception" <<'DART'
+// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- seeded reason
+import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
+
+const Type screen = ExploreScreen;
+DART
+expect_probe exact catch_arch_invalid_ignore 0
+expect_probe exact catch_arch_cross_feature_presentation_import 0
+expect_probe exact catch_arch_stale_carry 0
 
 # Outside lib/ and apps/*/lib/ the rules place nothing.
 probe_path="$probe_root/arch/packages/catch_ui/lib/src/ignored.dart"

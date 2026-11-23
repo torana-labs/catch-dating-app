@@ -1,0 +1,26 @@
+{
+  "id": "architecture:symbol-imports",
+  "category": "architecture",
+  "path": "tool/architecture/dart_symbol_imports.dart",
+  "command": "dart run tool/architecture/dart_symbol_imports.dart --out build/symbol_imports.json",
+  "surface": "local-writes-scratch",
+  "status": "active",
+  "role": "finder",
+  "description": "Report only: the analyzer-resolved import graph architecture:screen-move plans with. For every Dart file under lib, test, integration_test, apps, packages and widgetbook it lists each directive, the file its URI and each conditional configuration names, and the declaring libraries of the names the file actually uses through it, so a barrel is transparent.",
+  "checks": [
+    "dart format --output=none --set-exit-if-changed tool/architecture/dart_symbol_imports.dart",
+    "dart analyze --fatal-infos tool/architecture/dart_symbol_imports.dart",
+    "node --test tool/architecture/move_screens.test.mjs"
+  ],
+  "impactPaths": [
+    "tool/architecture/move_screens.test.mjs"
+  ],
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node",
+      "flutter",
+      "flutter-pub"
+    ]
+  }
+}

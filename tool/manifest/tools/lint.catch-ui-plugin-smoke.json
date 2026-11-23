@@ -13,6 +13,7 @@
     "widgetbook/lib/primitives/catalog/feedback.dart",
     "widgetbook/lib/primitives/contracts/feedback.dart",
     "tool/architecture/context_map.json",
+    "tool/architecture/carried_screens.json",
     "tool/check_catch_ui_lints.sh"
   ],
   "ciRequirements": {

@@ -1,4 +1,4 @@
-part of 'go_router.dart';
+part of 'host_router.dart';
 
 /// The Host app's four destinations, in branch order. People holds the
 /// audience and the inbox: each keeps its own index route.

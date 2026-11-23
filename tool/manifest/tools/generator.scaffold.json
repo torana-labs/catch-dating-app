@@ -14,6 +14,7 @@
   "impactPaths": [
     "tool/scaffold/**",
     "tool/scaffold.test.mjs",
+    "tool/ui_capture/check_route_inventory.mjs",
     "design/components/catch.components.schema.json",
     "packages/platform/lib/riverpod_ui/catch_async_boundary.dart",
     "packages/platform/lib/riverpod_ui/catch_async_boundary_builders.dart",

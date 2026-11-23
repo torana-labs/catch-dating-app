@@ -55,6 +55,8 @@ export const markdownReaders = {
 // Scripts that name Markdown without CI reading it: a pointer in a message, a
 // path filter that skips documents, an output, or a local-only tool.
 export const markdownMentions = {
+  "tool/architecture/lib/screen_move_apply.mjs": "the Phase 4 screen move run by hand; it rewrites moved paths in documents and CI runs only its fixture tests",
+  "tool/architecture/lib/screen_move_outputs.mjs": "names the host READMEs a generator writes during a hand-run screen move",
   "tool/architecture/rename_to_organizer.mjs": "a path filter that leaves documents out of the rename",
   "tool/ci/flutter_package_scope.mjs": "classifies Markdown as outside package code",
   "tool/contracts/generate_market_catalog.mjs": "a path filter that leaves documents out of the scan",

@@ -1,7 +1,10 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "logicalName": "catch-root-screen-composition",
-  "routerPath": "lib/routing/go_router.dart",
+  "routerPaths": [
+    "lib/routing/consumer_router.dart",
+    "lib/routing/host_router.dart"
+  ],
   "shells": [
     {
       "path": "lib/routing/shell/adaptive_tab_scaffold.dart",

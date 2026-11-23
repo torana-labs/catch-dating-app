@@ -22,8 +22,9 @@ import 'package:go_router/go_router.dart';
 
 final _random = Random.secure();
 
-/// Guest messages (RbProgInbox), from `listProgramWhatsappThreads` and
-/// `getProgramWhatsappThread`. Send runs `sendProgramWhatsappReply` inside
+/// Guest messages (RbProgInbox), from the thread, message and sender read
+/// models (`programWhatsappThreadViews`, `programWhatsappMessages`,
+/// `programSenderViews`). Send runs `sendProgramWhatsappReply` inside
 /// the 24-hour window; Take over and Hand back run
 /// `setProgramWhatsappThreadHandling`; saved replies fill the composer.
 class HostProgrammeInboxScreen extends ConsumerStatefulWidget {

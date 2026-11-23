@@ -70,12 +70,21 @@ export const DEFAULT_ASSISTANT_SETTINGS: AssistantSettings = {
   attachmentReads: [],
 };
 
-/** Lane W2's read: the stored settings or the defaults, never null. */
+/** Reads one document, inside [tx] when given. */
+function read<T>(ref: FirebaseFirestore.DocumentReference |
+  FirebaseFirestore.Query, tx?: FirebaseFirestore.Transaction): Promise<T> {
+  return (tx ? tx.get(ref as never) : ref.get()) as Promise<T>;
+}
+
+/** Lane W2's read: the stored settings or the defaults, never null. The
+ *  settings view reads it inside its transaction. */
 export async function readProgramAssistantSettings(
-  db: FirebaseFirestore.Firestore, programId: string):
+  db: FirebaseFirestore.Firestore, programId: string,
+  tx?: FirebaseFirestore.Transaction):
   Promise<AssistantSettings & {revision: number; usesDefaults: boolean}> {
-  const data = (await db.collection(PROGRAM_ASSISTANT_SETTINGS).doc(programId)
-    .get()).data() as ProgramAssistantSettingsDocument | undefined;
+  const data = (await read<FirebaseFirestore.DocumentSnapshot>(
+    db.collection(PROGRAM_ASSISTANT_SETTINGS).doc(programId), tx))
+    .data() as ProgramAssistantSettingsDocument | undefined;
   if (!data || data.programId !== programId) {
     return {...DEFAULT_ASSISTANT_SETTINGS, revision: 0, usesDefaults: true};
   }
@@ -92,26 +101,39 @@ function pickSettings(data: AssistantSettings): AssistantSettings {
     answerTopics: data.answerTopics, attachmentReads: data.attachmentReads};
 }
 
-/** The bound number, else the organiser's first active WhatsApp sender. */
+/** The bound number, else the organiser's first active WhatsApp sender.
+ *  The sender view reads it inside its transaction. */
 export async function resolveProgramSender(db: FirebaseFirestore.Firestore,
-  program: OrganizerProgramDocument):
+  program: OrganizerProgramDocument, tx?: FirebaseFirestore.Transaction):
   Promise<ProgramAssistantSettingsCallableResponse["sender"]> {
   if (program.whatsappSenderConnectionId) {
-    const snap = await db.collection("organizerSenderConnections")
-      .doc(program.whatsappSenderConnectionId).get();
+    const snap = await read<FirebaseFirestore.DocumentSnapshot>(
+      db.collection("organizerSenderConnections")
+        .doc(program.whatsappSenderConnectionId), tx);
     const connection = snap.data() as OrganizerSenderConnectionDocument |
       undefined;
     return connection && connection.organizerId === program.organizerId ?
       senderView(snap.id, connection, true) : null;
   }
-  const snap = await db.collection("organizerSenderConnections")
-    .where("organizerId", "==", program.organizerId)
-    .where("channel", "==", "whatsapp")
-    .where("status", "==", "active")
-    .limit(1).get();
-  const doc = snap.docs[0];
+  const doc = await firstActiveWhatsappConnection(db, program.organizerId,
+    tx);
   return doc ? senderView(doc.id,
     doc.data() as OrganizerSenderConnectionDocument, false) : null;
+}
+
+/** The organiser's first active WhatsApp sender by id, the one
+ *  listOrganizerMoments offers new planned messages. */
+export async function firstActiveWhatsappConnection(
+  db: FirebaseFirestore.Firestore, organizerId: string,
+  tx?: FirebaseFirestore.Transaction):
+  Promise<FirebaseFirestore.QueryDocumentSnapshot | undefined> {
+  const snap = await read<FirebaseFirestore.QuerySnapshot>(
+    db.collection("organizerSenderConnections")
+      .where("organizerId", "==", organizerId)
+      .where("channel", "==", "whatsapp")
+      .where("status", "==", "active")
+      .limit(1), tx);
+  return snap.docs[0];
 }
 
 function senderView(connectionId: string,

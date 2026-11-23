@@ -145,17 +145,20 @@ final class ProgramPlannedMessagesFamily extends $Family
   String toString() => r'programPlannedMessagesProvider';
 }
 
-/// The WhatsApp sender new planned messages send through, or null.
+/// The WhatsApp sender new planned messages send through, or null: the
+/// organiser's first active sender, as `listOrganizerMoments` offered it.
 
 @ProviderFor(programMessageSender)
 final programMessageSenderProvider = ProgramMessageSenderFamily._();
 
-/// The WhatsApp sender new planned messages send through, or null.
+/// The WhatsApp sender new planned messages send through, or null: the
+/// organiser's first active sender, as `listOrganizerMoments` offered it.
 
 final class ProgramMessageSenderProvider
     extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
     with $FutureModifier<String?>, $FutureProvider<String?> {
-  /// The WhatsApp sender new planned messages send through, or null.
+  /// The WhatsApp sender new planned messages send through, or null: the
+  /// organiser's first active sender, as `listOrganizerMoments` offered it.
   ProgramMessageSenderProvider._({
     required ProgramMessageSenderFamily super.from,
     required String super.argument,
@@ -200,9 +203,10 @@ final class ProgramMessageSenderProvider
 }
 
 String _$programMessageSenderHash() =>
-    r'1d182525b2e71dc099c492e20c47d84fb2509272';
+    r'3ee66afb40760c550c409c826f1278cf89250ec8';
 
-/// The WhatsApp sender new planned messages send through, or null.
+/// The WhatsApp sender new planned messages send through, or null: the
+/// organiser's first active sender, as `listOrganizerMoments` offered it.
 
 final class ProgramMessageSenderFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<String?>, String> {
@@ -215,7 +219,8 @@ final class ProgramMessageSenderFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The WhatsApp sender new planned messages send through, or null.
+  /// The WhatsApp sender new planned messages send through, or null: the
+  /// organiser's first active sender, as `listOrganizerMoments` offered it.
 
   ProgramMessageSenderProvider call(String programId) =>
       ProgramMessageSenderProvider._(argument: programId, from: this);

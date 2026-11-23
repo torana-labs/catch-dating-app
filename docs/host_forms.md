@@ -869,7 +869,7 @@ or user availability.
 
 | Capability | Source evidence | Current status |
 | --- | --- | --- |
-| Audience navigation and Host Forms UI | [Audience README](../lib/hosts/audience/README.md), [router](../lib/routing/go_router.dart), `lib/hosts/presentation/forms/` | Audience-owned source implementation; route/state capture and release proof remain separate. |
+| Audience navigation and Host Forms UI | [Audience README](../lib/hosts/audience/README.md), [router](../lib/routing/host_router.dart), `lib/hosts/presentation/forms/` | Audience-owned source implementation; route/state capture and release proof remain separate. |
 | Management, lifecycle, builder, validation, publication | [Functions inventory](../functions/README.md) management entries and `lib/hosts/presentation/forms/` | Source seams are present for draft/editor/lifecycle operations; exact released-client coverage remains a gate. |
 | Public respondent and distribution | Functions respondent/distribution entries, website `/f/` route metadata, and the `/f/:publicFormId/` contract above | Source route and callable seams are present; mobile/desktop runtime, environment, abuse, and deployment proof remain open. |
 | Responses, analytics, exports, automations, and conversion | [Functions inventory](../functions/README.md) operations entries and `functions/src/organizers/organizerForm*.ts` | Source seams are present; aggregate/export/automation replay and downstream receipt proof remain open. |

@@ -415,7 +415,7 @@ function scanHostCrmCountCopy(root) {
 
 function scanApplicationRouteOwnership(root) {
   const routeContractPath = "packages/platform/lib/routing/route_contract.dart";
-  const routerPath = "lib/routing/go_router.dart";
+  const routerPath = "lib/routing/host_router.dart";
   const routeContractFile = path.join(root, routeContractPath);
   const routerFile = path.join(root, routerPath);
   if (!fs.existsSync(routeContractFile) || !fs.existsSync(routerFile)) {

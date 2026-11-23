@@ -73,7 +73,7 @@ void main() {
       'package:hooks_riverpod/hooks_riverpod.dart',
       'package:riverpod_annotation/riverpod_annotation.dart',
       'package:go_router/go_router.dart',
-      'package:catch_dating_app/routing/go_router.dart',
+      'package:catch_dating_app/routing/router_frame.dart',
       'package:catch_dating_app/events/data/event_repository.dart',
       // The old path regex stopped matching data folders after the context move.
       'package:catch_dating_app/contexts/events/data/event_dtos.dart',
@@ -84,7 +84,7 @@ void main() {
     expect(
       _findings(
         'lib/sample/presentation/a.dart',
-        "$marker import '../../routing/go_router.dart';\n",
+        "$marker import '../../routing/router_frame.dart';\n",
       ),
       1,
     );
