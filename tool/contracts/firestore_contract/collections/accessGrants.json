@@ -1,6 +1,6 @@
 {
   "id": "accessGrants",
-  "path": "accessGrants/{scopeType}__{scopeId}__{uid}",
+  "path": "accessGrants/{accessId}",
   "rulesMatch": "/accessGrants/{accessId}",
   "typescriptInterface": "AccessGrantDocument",
   "dartModel": null,
