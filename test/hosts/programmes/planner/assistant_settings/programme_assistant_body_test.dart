@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_whatsapp_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/assistant_settings/programme_assistant_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../../support/catch_test_fonts.dart';
 import '../planner_test_pump.dart';
 import '../planner_whatsapp_fixtures.dart';
 

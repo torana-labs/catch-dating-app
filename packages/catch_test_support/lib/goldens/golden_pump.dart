@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../test_pump_helpers.dart';
 
 const _catchGoldenRootKey = ValueKey<String>('catch-golden-root');
 const _maximumGoldenPageHeight = 3000.0;

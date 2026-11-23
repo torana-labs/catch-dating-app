@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_group_override_draft.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_group_override_round_section.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_group_override_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_draft.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_round_section.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_sheet.dart';
+import 'package:catch_test_support/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

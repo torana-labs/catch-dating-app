@@ -58,6 +58,8 @@ import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -70,8 +72,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import '../organizers/organizers_test_helpers.dart';
-import '../support/catch_test_fonts.dart';
-import '../test_pump_helpers.dart';
 
 part 'host_operations_analytics_team_tests.dart';
 part 'host_operations_customer_add_tests.dart';

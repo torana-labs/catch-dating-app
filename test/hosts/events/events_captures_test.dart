@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_guests_controller.dart';
@@ -15,11 +14,12 @@ import 'package:catch_dating_app/hosts/events/events_controller.dart';
 import 'package:catch_dating_app/hosts/events/events_screen.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_controller.dart';
 import 'package:catch_dating_app/hosts/events/rehearsal_screen.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../support/catch_test_fonts.dart';
 import '../../ui_captures/support/capture_device.dart';
 import '../../ui_captures/support/capture_pump.dart';
 import 'events_fixtures.dart';

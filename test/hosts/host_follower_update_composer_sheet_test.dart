@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_callable_responses.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer_sheet.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../organizers/organizers_test_helpers.dart' as organizer_test;
-import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('submits trimmed follower copy and closes after acceptance', (

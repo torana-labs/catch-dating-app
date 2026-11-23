@@ -7,11 +7,10 @@ import 'package:catch_dating_app/event_success/presentation/event_assignment_fea
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../support/catch_test_fonts.dart';
 
 const _choice = EventAssignmentFeatureChoice(
   featureId: 'pace',

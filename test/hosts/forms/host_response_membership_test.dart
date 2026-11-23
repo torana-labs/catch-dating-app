@@ -2,11 +2,10 @@ import 'package:catch_dating_app/contexts/forms/data/host_application_repository
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../test_pump_helpers.dart';
 
 /// The application review screen grants and revokes community membership
 /// through the manager decision command, citing the approved application.

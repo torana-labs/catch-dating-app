@@ -6,10 +6,10 @@ import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.d
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/data/form_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
 import 'event_chat_profile_test.dart';
 
 class ProfileRepository extends Fake implements EventChatRepository {

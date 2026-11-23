@@ -4,14 +4,13 @@ import 'package:catch_dating_app/routing/consumer_router.dart';
 import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_test_support/analytics_test_helpers.dart';
+import 'package:catch_test_support/router_topology.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-
-import '../support/analytics_test_helpers.dart';
-import '../support/router_topology.dart';
 
 // The behaviour gate for the Phase 4 router split (issue #2373): both routers'
 // routes, flattened, against committed snapshots. Splitting or moving the

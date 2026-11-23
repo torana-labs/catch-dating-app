@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_admin.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_membership_rules_section.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_event_membership_rules_controller.dart';
@@ -7,6 +6,7 @@ import 'package:catch_dating_app/hosts/presentation/memberships/host_membership_
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_section.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_state.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/host_memberships/fixtures.dart';

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/safety/parts/block_user_dialog.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,8 +10,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('date picker uses Cupertino chrome on iOS', (tester) async {

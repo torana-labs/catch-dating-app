@@ -59,6 +59,7 @@ import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
@@ -72,7 +73,6 @@ import 'package:url_launcher/url_launcher.dart' show LaunchMode;
 import '../events/events_test_helpers.dart' as event_test;
 import '../organizers/organizers_test_helpers.dart';
 import '../support/profile_readiness_fixtures.dart';
-import '../test_pump_helpers.dart';
 import 'explore_device_location_fakes.dart';
 
 part 'explore_discovery_widgets_tests.dart';

@@ -26,11 +26,11 @@ import 'package:catch_dating_app/hosts/events/event_workspace_state.dart';
 import 'package:catch_dating_app/hosts/events/events_controller.dart';
 import 'package:catch_dating_app/hosts/events/events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/misc.dart' show Override;
 
-import '../../test_pump_helpers.dart';
 import 'events_fixtures.dart';
 
 final _eventsRequest = HostEventsRequest(

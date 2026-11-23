@@ -34,6 +34,7 @@ import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart'
     show CatchFieldTokens, CatchInsets, CatchLayout, CatchMotion, CatchTokens;
 import 'package:catch_ui/catch_ui.dart';
@@ -44,7 +45,6 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../events/events_test_helpers.dart';
-import '../test_pump_helpers.dart';
 
 part 'profile_choice_editors_tests.dart';
 part 'profile_editing_prompts_tests.dart';

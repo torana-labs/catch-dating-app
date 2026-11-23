@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/messaging/domain/activity_notification
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
-import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/dashboard_surface_fixtures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

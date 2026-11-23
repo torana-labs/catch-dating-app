@@ -7,8 +7,8 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
-import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/design_fixtures/utility_surface_fixtures.dart';
 
 /// Shared deterministic fixtures for Dashboard Home design review surfaces.
 ///

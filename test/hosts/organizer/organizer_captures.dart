@@ -5,7 +5,6 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defau
 import 'package:catch_dating_app/contexts/payments/data/host_organizer_bills_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_billing_status.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_controller.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_state.dart';
@@ -17,6 +16,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_cont
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/brand.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/misc.dart' show Override;
 

@@ -7,12 +7,12 @@ import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_d
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../test_pump_helpers.dart';
 import 'payment_test_fakes.dart';
 
 Future<PaymentConfirmationData> _payStripe(PaymentRepository repository) =>

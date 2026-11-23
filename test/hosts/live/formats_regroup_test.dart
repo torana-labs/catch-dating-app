@@ -6,12 +6,12 @@ import 'package:catch_dating_app/hosts/live/formats/formats_mix_body.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_mix_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_mix_state.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../support/catch_test_fonts.dart';
 import 'formats/formats_fixtures.dart';
 
 Future<void> _pump(WidgetTester tester, Widget body) async {

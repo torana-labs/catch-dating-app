@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_assignment_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_indicator.dart';
@@ -11,6 +10,7 @@ import 'package:catch_dating_app/event_success/presentation/reveal/event_success
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_round_stepper.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_waiting_notice.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_rotation_row_list.dart';
+import 'package:catch_test_support/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

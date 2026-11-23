@@ -11,14 +11,14 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/today/host_today_controller.dart';
 import 'package:catch_dating_app/hosts/today/host_today_state.dart';
 import 'package:catch_platform/schema_contracts/generated/host_attention_policies.g.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../test_pump_helpers.dart';
 import 'host_today_fixtures.dart';
 
 const _uid = 'host-1';

@@ -168,17 +168,18 @@ test("relative directives that leave a package join its closure transitively", (
   assert.deepEqual(relativeTargets("a/b.dart", "import '../../outside.dart';"), null);
 });
 
-test("Widgetbook and Consumer reach the root test helpers their tests import", () => {
+test("Widgetbook and Consumer reach the shared test support and the root test helpers their tests import", () => {
   const files = execFileSync("git", ["ls-files"], {cwd: repoRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024}).split("\n").filter(Boolean);
   const listFiles = (entry) => files.filter((name) => name.startsWith(entry));
   const widgetbook = packageClosure("widgetbook", readRepo, listFiles);
-  for (const helper of ["test/test_pump_helpers.dart", "test/goldens/support/golden_pump.dart", "test/support/catch_test_fonts.dart"]) {
-    assert.ok(widgetbook.owned.includes(helper), helper);
-  }
+  // The pump, golden and font helpers live in packages/catch_test_support, a
+  // path dependency; the fixtures Widgetbook bundles stay under test/.
+  assert.ok(widgetbook.owned.includes("packages/catch_test_support/"));
+  assert.ok(widgetbook.owned.some((entry) => entry.startsWith("test/") && entry.endsWith(".json")));
   assert.ok(packageClosure("apps/consumer", readRepo, listFiles).owned.some((entry) => entry.startsWith("test/") && entry.endsWith(".dart")));
   const decisions = decide({
     packages: ["widgetbook"],
-    changed: ["test/test_pump_helpers.dart"],
+    changed: ["packages/catch_test_support/lib/test_pump_helpers.dart"],
     event: "pull_request",
     manifests: repoManifests,
     files,

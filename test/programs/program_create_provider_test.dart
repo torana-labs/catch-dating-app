@@ -11,12 +11,12 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart'
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../organizers/organizers_test_helpers.dart' show buildOrganizer;
-import '../support/catch_test_fonts.dart';
 
 const _scope = (accountId: 'account', organizerId: 'organizer');
 const _empty = ProgramCreateJournalValues(

@@ -16,7 +16,6 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
@@ -24,6 +23,7 @@ import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_platform/schema_contracts/generated/host_attention_policies.g.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

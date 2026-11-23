@@ -50,6 +50,7 @@ class CatchFeedbackRules extends MultiAnalysisRule {
     if (!path.contains('/lib/') ||
         path.contains('/test/') ||
         path.contains('/integration_test/') ||
+        path.contains(_testSupportPackage) ||
         path.endsWith('.g.dart') ||
         path.endsWith('.freezed.dart')) {
       return;
