@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
+import 'package:catch_dating_app/pages/live_room/event_success_room_map.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

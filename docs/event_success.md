@@ -3693,7 +3693,7 @@ rather than embedded in event-type logic.
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |
 | Companion loading UI | `lib/event_success/presentation/companion/event_success_companion_loading_page_body.dart` (page, stage, and primary-action skeletons) |
 | Companion moment presentation | `lib/event_success/presentation/event_success_moment_presentation_state.dart` (localized copy, icons, and choreography projection) |
-| Shared Host/attendee room map | `lib/event_success/presentation/event_success_room_map.dart` |
+| Shared Host/attendee room map | `lib/pages/live_room/event_success_room_map.dart` |
 | Assignment overrides | `lib/event_success/presentation/assignments/` (override sheets and typed draft models) |
 | Live reveal UI | `lib/event_success/presentation/reveal/` (attendee surfaces, countdown, assignments, standings, and shared clock state) |
 | Backend generators/wingman callables | `functions/src/eventSuccess/` |

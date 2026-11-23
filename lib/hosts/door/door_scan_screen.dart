@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
-import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_body.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_state.dart';
+import 'package:catch_dating_app/pages/check_in/event_check_in_qr_scanner.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

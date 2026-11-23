@@ -13422,28 +13422,28 @@
   },
   "eventSuccessEventSuccessConversationCueCopyLabelLivePrompt": "Live prompt",
   "@eventSuccessEventSuccessConversationCueCopyLabelLivePrompt": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (label).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyLabelPostMatchOpener": "First-message opener",
   "@eventSuccessEventSuccessConversationCueCopyLabelPostMatchOpener": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (label).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyTitleSharedRoom": "Shared room",
   "@eventSuccessEventSuccessConversationCueCopyTitleSharedRoom": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyIAmGladWe": "I am glad we both made it to {label}.",
   "@eventSuccessEventSuccessConversationCueCopyBodyIAmGladWe": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "placeholders": {
       "label": {}
     },
@@ -13453,63 +13453,63 @@
   },
   "eventSuccessEventSuccessConversationCueCopyTitleEasyFollowUp": "Easy follow-up",
   "@eventSuccessEventSuccessConversationCueCopyTitleEasyFollowUp": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyWhatWasYourFavorite": "What was your favorite moment from the event?",
   "@eventSuccessEventSuccessConversationCueCopyBodyWhatWasYourFavorite": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyVisiblecopyLowPressure": "Low pressure",
   "@eventSuccessEventSuccessConversationCueCopyVisiblecopyLowPressure": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyAskSomeoneWhatRoute": "Ask someone what route, cafe, or park they would do again.",
   "@eventSuccessEventSuccessConversationCueCopyBodyAskSomeoneWhatRoute": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyAskYourNextPartner": "Ask your next partner what shot they are trying to improve.",
   "@eventSuccessEventSuccessConversationCueCopyBodyAskYourNextPartner": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey": "Ask which round they wanted more questions from.",
   "@eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyAskWhatDishThey": "Ask what dish they would order again.",
   "@eventSuccessEventSuccessConversationCueCopyBodyAskWhatDishThey": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyAskWhatAnswerFrom": "Ask what answer from tonight surprised them.",
   "@eventSuccessEventSuccessConversationCueCopyBodyAskWhatAnswerFrom": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyAskWhatMadeThem": "Ask what made them say yes to this event.",
   "@eventSuccessEventSuccessConversationCueCopyBodyAskWhatMadeThem": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
@@ -13532,49 +13532,49 @@
   "@eventSuccessSocialMissionLevelReflective": {"description": "Label for a reflective-disclosure social mission.", "x-audience": "consumer", "x-owner": "product", "x-surface": "event_success.presentation.social_missions"},
   "eventSuccessEventSuccessConversationCueCopyBodyILikedTalkingOn": "I liked talking on the run. Want to compare routes sometime?",
   "@eventSuccessEventSuccessConversationCueCopyBodyILikedTalkingOn": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyGoodGameTodayI": "Good game today. I am still thinking about that rally.",
   "@eventSuccessEventSuccessConversationCueCopyBodyGoodGameTodayI": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn": "I liked being on a quiz night with you. Which round was your favorite?",
   "@eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyILikedMeetingYou": "I liked meeting you over dinner. What was your favorite dish?",
   "@eventSuccessEventSuccessConversationCueCopyBodyILikedMeetingYou": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyILikedOurConversation": "I liked our conversation tonight. Want to keep it going?",
   "@eventSuccessEventSuccessConversationCueCopyBodyILikedOurConversation": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyBodyILikedMeetingYou957a50": "I liked meeting you at the event. What did you think of it?",
   "@eventSuccessEventSuccessConversationCueCopyBodyILikedMeetingYou957a50": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"
   },
   "eventSuccessEventSuccessConversationCueCopyTitleUseTheSharedMoment": "Use the shared moment",
   "@eventSuccessEventSuccessConversationCueCopyTitleUseTheSharedMoment": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).",
+    "description": "Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_conversation_cue_copy"

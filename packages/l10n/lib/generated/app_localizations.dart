@@ -11831,25 +11831,25 @@ abstract class AppLocalizations {
   /// **'Review'**
   String get hostsHostHomeScreenStateVisiblecopyReview;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (label).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Live prompt'**
   String get eventSuccessEventSuccessConversationCueCopyLabelLivePrompt;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (label).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'First-message opener'**
   String get eventSuccessEventSuccessConversationCueCopyLabelPostMatchOpener;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Shared room'**
   String get eventSuccessEventSuccessConversationCueCopyTitleSharedRoom;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'I am glad we both made it to {label}.'**
@@ -11857,55 +11857,55 @@ abstract class AppLocalizations {
     required Object label,
   });
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Easy follow-up'**
   String get eventSuccessEventSuccessConversationCueCopyTitleEasyFollowUp;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'What was your favorite moment from the event?'**
   String get eventSuccessEventSuccessConversationCueCopyBodyWhatWasYourFavorite;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (visibleCopy).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Low pressure'**
   String get eventSuccessEventSuccessConversationCueCopyVisiblecopyLowPressure;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Ask someone what route, cafe, or park they would do again.'**
   String get eventSuccessEventSuccessConversationCueCopyBodyAskSomeoneWhatRoute;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Ask your next partner what shot they are trying to improve.'**
   String get eventSuccessEventSuccessConversationCueCopyBodyAskYourNextPartner;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Ask which round they wanted more questions from.'**
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhichRoundThey;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Ask what dish they would order again.'**
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatDishThey;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Ask what answer from tonight surprised them.'**
   String get eventSuccessEventSuccessConversationCueCopyBodyAskWhatAnswerFrom;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Ask what made them say yes to this event.'**
@@ -11959,45 +11959,45 @@ abstract class AppLocalizations {
   /// **'Reflective disclosure'**
   String get eventSuccessSocialMissionLevelReflective;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'I liked talking on the run. Want to compare routes sometime?'**
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedTalkingOn;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Good game today. I am still thinking about that rally.'**
   String get eventSuccessEventSuccessConversationCueCopyBodyGoodGameTodayI;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'I liked being on a quiz night with you. Which round was your favorite?'**
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedBeingOn;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'I liked meeting you over dinner. What was your favorite dish?'**
   String get eventSuccessEventSuccessConversationCueCopyBodyILikedMeetingYou;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'I liked our conversation tonight. Want to keep it going?'**
   String
   get eventSuccessEventSuccessConversationCueCopyBodyILikedOurConversation;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (body).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (body).
   ///
   /// In en, this message translates to:
   /// **'I liked meeting you at the event. What did you think of it?'**
   String
   get eventSuccessEventSuccessConversationCueCopyBodyILikedMeetingYou957a50;
 
-  /// Product copy used by lib/event_success/presentation/event_success_conversation_cue_copy.dart (title).
+  /// Product copy used by lib/pages/live_room/event_success_conversation_cue_copy.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Use the shared moment'**

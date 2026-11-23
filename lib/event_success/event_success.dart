@@ -50,10 +50,8 @@ export 'presentation/event_sender_preference_controller.dart'; // public-api: ve
 export 'presentation/event_sms_preference_controller.dart'; // public-api: verified participant SMS review and mutation state for guest route composition
 export 'presentation/event_success_companion_screen.dart'; // public-api: route entry point exposed to app routing
 export 'presentation/event_success_controller.dart'; // public-api: command seam for route-owned actions
-export 'presentation/event_success_conversation_cue_copy.dart'; // public-api: localized presentation copy reused across feature boundaries
 export 'presentation/event_success_defaults_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/event_success_questionnaire_config_editor.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/event_success_room_map.dart'; // public-api: shared host and attendee spatial projection
 export 'presentation/event_success_room_setup_section.dart'; // public-api: shared create and post-creation room setup
 export 'presentation/host_components/event_success_compatibility_section.dart'; // public-api: shared presentation contract used outside this feature
 export 'presentation/host_setup/event_success_readiness_field.dart'; // public-api: Host presentation contract used outside this feature

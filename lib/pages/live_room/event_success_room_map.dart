@@ -5,7 +5,7 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_room_seat_positions.dart';
+import 'package:catch_dating_app/pages/live_room/event_success_room_seat_positions.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
