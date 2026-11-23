@@ -4,10 +4,10 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../test_pump_helpers.dart';
 import 'host_inbox_test_fixtures.dart';
 
 final _now = DateTime(2026, 9, 12);

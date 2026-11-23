@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
-import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/pages/inbox/host_inbox_filter.dart';
 import 'package:catch_dating_app/pages/inbox/widgets/chats_list.dart';
 import 'package:catch_dating_app/pages/inbox/widgets/chats_sliver_header.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_test_support/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

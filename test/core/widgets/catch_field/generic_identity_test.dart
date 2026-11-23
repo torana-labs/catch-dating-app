@@ -1,11 +1,10 @@
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../../test_pump_helpers.dart';
 
 void main() {
   testWidgets('generic mode changes retain state and replace typed selection', (

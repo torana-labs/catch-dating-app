@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_platform/streams/combine_latest.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../test_pump_helpers.dart';
 
 void main() {
   test('emits once both listeners delivered, then on every delivery', () async {

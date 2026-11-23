@@ -3,10 +3,11 @@
 
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_admin.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/organizer/memberships_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_state.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
+
 import '../../../hosts/organizer/organizer_captures.dart';
 import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';

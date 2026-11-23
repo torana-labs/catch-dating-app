@@ -3,10 +3,10 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_chan
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_help_requests.dart';
+import 'package:catch_test_support/contract_schemas.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
-import '../support/contract_schemas.dart';
 import 'event_rehearsal_assistance_fixtures.dart';
 
 void main() {

@@ -40,11 +40,10 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
         UnblockUserCallableRequest,
         UpdateEventCallableRequest,
         UpdateEventReviewCallableRequest;
+import 'package:catch_test_support/contract_schemas.dart';
 import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
-
-import '../support/contract_schemas.dart';
 
 void main() {
   group('callable request DTO contracts', () {

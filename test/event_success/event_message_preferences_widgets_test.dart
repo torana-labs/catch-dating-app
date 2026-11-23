@@ -9,13 +9,13 @@ import 'package:catch_dating_app/event_success/presentation/event_message_prefer
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../support/catch_test_fonts.dart';
-import '../test_pump_helpers.dart';
 import 'event_message_preferences_ui_fixtures.dart';
 import 'event_sender_preference_fixtures.dart';
 

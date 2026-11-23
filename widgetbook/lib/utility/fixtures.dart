@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/utility_surface_fixtures.dart';
 
 const widgetbookUtilityViewerUid = UtilitySurfaceFixtures.viewerUid;
 

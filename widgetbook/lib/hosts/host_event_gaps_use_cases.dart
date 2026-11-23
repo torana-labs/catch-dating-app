@@ -5,13 +5,13 @@ import 'package:catch_dating_app/contexts/events/domain/event_private_access.dar
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/access/event_door_screen.dart';
 import 'package:catch_dating_app/hosts/events/access/event_guest_sources_screen.dart';
 import 'package:catch_dating_app/hosts/events/access/event_share_body.dart';
 import 'package:catch_dating_app/hosts/events/access/event_share_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_reviews_screen.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

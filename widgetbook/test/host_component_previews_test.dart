@@ -6,6 +6,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_list.
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,8 +16,6 @@ import 'package:widgetbook_workspace/hosts/operations/create_organizer_profile.d
 import 'package:widgetbook_workspace/hosts/operations/inbox_components.dart';
 import 'package:widgetbook_workspace/hosts/operations/manage_components.dart';
 import 'package:widgetbook_workspace/hosts/operations/organizer_components.dart';
-
-import '../../test/test_pump_helpers.dart';
 
 // Each case renders offline: stateful owners read only their preview overrides.
 void main() {

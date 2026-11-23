@@ -28,6 +28,7 @@ import 'package:catch_dating_app/pages/chat/widgets/chat_input.dart';
 import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,7 +36,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../chats/chat_screen_conversation_repository.dart';
 import '../../events/events_test_helpers.dart';
-import '../../test_pump_helpers.dart';
 
 part '../../chats/chat_screen_suvbot_tests.dart';
 

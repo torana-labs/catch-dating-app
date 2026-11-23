@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/launch_access_repository.dart';
 import 'package:catch_dating_app/contexts/account/domain/launch_access_application.dart';
-import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
+import 'package:catch_test_support/design_fixtures/utility_surface_fixtures.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

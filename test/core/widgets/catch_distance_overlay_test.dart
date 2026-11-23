@@ -1,13 +1,12 @@
 import 'dart:ui' show Tristate;
 
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../support/catch_test_fonts.dart';
 
 Finder get _circle => find.byWidgetPredicate((widget) {
   if (widget is! DecoratedBox) return false;

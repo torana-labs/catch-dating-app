@@ -3,7 +3,7 @@
 // visitors came from. Only the files that import this one depend on it.
 
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 
 import 'door_capture.dart';
 

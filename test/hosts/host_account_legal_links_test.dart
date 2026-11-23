@@ -9,13 +9,12 @@ import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/repo_file.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../test_pump_helpers.dart';
 
 /// Configures AppConfig with the release define file the Host app ships with.
 void _useProdLegalUrlDefines() {
