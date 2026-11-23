@@ -221,6 +221,11 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
+/** A Markdown table cell: backslashes first, then pipes, so `\|` stays literal. */
+export function markdownCell(text) {
+  return text.replace(/\\/gu, "\\\\").replace(/\|/gu, "\\|").replace(/\r?\n/gu, " ");
+}
+
 /** The coverage table, one row per uid-bearing collection. */
 export function coverageTable(rows) {
   const counts = new Map();
@@ -237,7 +242,7 @@ export function coverageTable(rows) {
   ];
   for (const row of rows) {
     const handling = row.needsDecision ? "kept, needs decision" : row.handling;
-    lines.push(`| ${row.id} | ${row.fields.join(", ")} | ${handling} | ${row.note.replace(/\|/gu, "\\|")} |`);
+    lines.push(`| ${row.id} | ${row.fields.join(", ")} | ${handling} | ${markdownCell(row.note)} |`);
   }
   return lines.join("\n");
 }

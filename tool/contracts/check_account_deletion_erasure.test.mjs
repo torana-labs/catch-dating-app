@@ -9,6 +9,7 @@ import {
   checkAccountDeletionErasure,
   coverageTable,
   erasurePath,
+  markdownCell,
   uidFieldPattern,
 } from "./check_account_deletion_erasure.mjs";
 import {writeFirestoreContract} from "./lib/firestore_contract.mjs";
@@ -136,4 +137,10 @@ test("the repository's erasure entries cover every uid-bearing collection", () =
     "eventSuccessConversationGraphs", "eventRuntimeParticipants"]) {
     assert.equal(rows.find((row) => row.id === id)?.handling, "deleted", id);
   }
+});
+
+test("table cells escape backslashes before pipes", () => {
+  assert.equal(markdownCell("a|b"), "a\\|b");
+  assert.equal(markdownCell("a\\|b"), "a\\\\\\|b");
+  assert.equal(markdownCell("one\ntwo"), "one two");
 });

@@ -11,6 +11,11 @@
       "needsDecision": true,
       "reason": "Launch access application at accessApplications/{uid}, with the applicant's answers. Deletion leaves it. Proposed: delete the applicant's document and keep only the staff review outcome."
     },
+    "accessGrants": {
+      "handling": "kept",
+      "needsDecision": true,
+      "reason": "The account's current authority over one scope (ids, roles, duties, expiry; no name or phone). Rules already refuse a deleted account, but deletion leaves the document. Proposed: delete the account's access grants at deletion (the access lane's accountDeletion follow-up)."
+    },
     "accountSafetyActions": {
       "handling": "kept",
       "reason": "Safety case record kept 180 days after deletion: safetyRetention.ts sets retainUntil and purgeRetainedSafetyRecords purges it."
