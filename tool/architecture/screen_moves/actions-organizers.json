@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "group": "actions-organizers",
+  "sequence": 1795413175452,
+  "entries": [
+    {
+      "path": "lib/organizers/presentation/detail/organizer_follow_controller.dart",
+      "moveTo": "lib/contexts/organizers/actions/organizer_follow_controller.dart"
+    }
+  ],
+  "moves": {
+    "lib/organizers/presentation/detail/organizer_follow_controller.dart": "lib/contexts/organizers/actions/organizer_follow_controller.dart",
+    "lib/organizers/presentation/detail/organizer_follow_controller.g.dart": "lib/contexts/organizers/actions/organizer_follow_controller.g.dart"
+  },
+  "folders": {}
+}

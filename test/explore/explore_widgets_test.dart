@@ -7,6 +7,7 @@ import 'package:catch_dating_app/contexts/discovery/domain/explore_event_recomme
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
+import 'package:catch_dating_app/contexts/organizers/actions/organizer_follow_controller.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -35,7 +36,6 @@ import 'package:catch_dating_app/explore/presentation/widgets/featured_event_pos
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_body.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_dock.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart';
