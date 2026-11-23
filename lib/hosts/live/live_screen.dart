@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_activity_profile.dart';
+import 'package:catch_dating_app/contexts/live/actions/event_success_controller.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_sheet.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_courts_screen.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_crawl_screen.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_mix_screen.dart';
