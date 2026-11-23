@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
@@ -19,6 +18,7 @@ import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -116,7 +116,7 @@ void main() {
 
 Map<String, Object?> _readMatrix() {
   return (jsonDecode(
-        File('design/public_surface_behavior.json').readAsStringSync(),
+        repoFile('design/public_surface_behavior.json').readAsStringSync(),
       )
       as Map<String, Object?>);
 }
