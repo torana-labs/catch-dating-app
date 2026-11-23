@@ -84,8 +84,12 @@ export function loadMetaCampaigns(file = POLICY_PATH, catalog = readMarketCatalo
     limit(where, "thank-you body", form.thankYouBody, 160);
     limit(where, "thank-you button", form.thankYouButton, 30);
     // One line shown before Submit (Meta's custom disclaimer, no checkbox):
-    // the consent the first WhatsApp message needs.
-    if (form.consentLine !== undefined) limit(where, "consent line", form.consentLine, 120);
+    // the consent the first WhatsApp message needs. Meta refuses a disclaimer
+    // without a title, so the line is a short title and its end as the body.
+    if (form.consentLine !== undefined || form.consentTitle !== undefined) {
+      limit(where, "consent title", form.consentTitle, 60);
+      limit(where, "consent line", form.consentLine, 120);
+    }
     if (form.retired !== undefined && form.retired !== true) {
       throw new Error(`${where} retired must be true or left out.`);
     }
@@ -163,7 +167,8 @@ export function leadFormParams(form) {
         key: value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "")}))} : {}),
     }),
     privacy_policy: {url: site(form.privacyPath), link_text: `${brand.name} privacy policy`},
-    ...(form.consentLine ? {custom_disclaimer: {body: {text: form.consentLine}}} : {}),
+    ...(form.consentLine ? {custom_disclaimer: {title: form.consentTitle,
+      body: {text: form.consentLine}}} : {}),
     thank_you_page: {title: form.thankYouTitle, body: form.thankYouBody,
       button_type: "VIEW_WEBSITE", button_text: form.thankYouButton,
       website_url: site(form.thankYouPath)},

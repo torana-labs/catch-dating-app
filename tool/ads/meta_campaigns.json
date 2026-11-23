@@ -60,7 +60,8 @@
           "options": ["Every week", "A few times a month", "Once a month or less", "Planning my first"]
         }
       ],
-      "consentLine": "We'll reply on WhatsApp at the number you gave.",
+      "consentTitle": "We'll reply on WhatsApp",
+      "consentLine": "At the phone number you gave.",
       "privacyPath": "/privacy/",
       "thankYouTitle": "Thanks, we'll be in touch",
       "thankYouBody": "We'll help you set up your first event. You can get the Catch Host app now.",
