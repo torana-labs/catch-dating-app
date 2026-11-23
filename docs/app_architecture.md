@@ -451,10 +451,12 @@ Rules, checked by `node tool/architecture/check_functions_contexts.mjs`:
    never imports another surface (`surfaceImportsSurface`). Code two clients
    need belongs in a domain context or platform.
 3. A domain context imports only contexts declared before it
-   (`contextOrder`). Today's folders still mix contexts, so this rule is
-   bounded by the map's `contextOrderViolationCeiling`, which may only go
-   down; `--list-context-order` lists the imports. Issue #1350's file splits
-   bring it to zero.
+   (`contextOrder`). Today's folders still mix contexts, so the map lists
+   each existing import against the order in `knownContextOrderImports`
+   (file and target, printed by `--list-context-order`). Any other such
+   import fails, and so does a listed one that no longer happens
+   (`staleKnownViolation`), so the list only shrinks. Issue #1350's file
+   splits empty it.
 4. A collection is written only from the `writerContext` its entry in
    `tool/contracts/firestore_contract/collections/<id>.json` names: a domain context, a
    surface for its own read models, `platform`, or `shared` for a deliberate
@@ -462,9 +464,10 @@ Rules, checked by `node tool/architecture/check_functions_contexts.mjs`:
    `sharedWriterReason`). Other contexts call the owner's functions inside
    their own transaction (`foreignWrite`, `writerContext`). The write
    detector reads the syntax tree and follows references it can see, so it
-   is a lower bound. Existing cross-context writes are bounded by
-   `crossContextWriteCeiling`, which may only go down;
-   `--list-foreign-writes` lists them.
+   is a lower bound. Existing cross-context writes are listed one by one in
+   `knownCrossContextWrites` (file and collection, printed by
+   `--list-foreign-writes`), with the same rule: an unlisted write fails, and
+   a listed one that no longer happens must be removed.
 5. Every module is placed, and every placement still places a file
    (`unplaced`, `stalePlacement`).
 
