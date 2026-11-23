@@ -1399,3 +1399,119 @@ test("full account deletion releases its pair hold before retiring UID proof",
     assert.ok(h.deletedPublicDocs.includes("crossPathsPairHolds/hold1"));
     assert.deepEqual(h.deletedAuthUsers, ["runner1"]);
   });
+
+/** Runs a full deletion of runner-1 over the seed and returns the harness. */
+async function deleteRunnerOne(seed: Record<string, FakeDocumentData>) {
+  const harness = createAccountDeletionHarness({
+    seed: {"users/runner-1": {name: "Asha"}, ...seed},
+    now: {kind: "serverTimestamp"},
+  });
+  await requestAccountDeletionHandler({auth: {uid: "runner-1"}} as
+    Parameters<typeof requestAccountDeletionHandler>[0], harness.deps);
+  return harness;
+}
+
+test("deletion erases the account's signal facts as uid and as peerUid (#2444)",
+  async () => {
+    const harness = await deleteRunnerOne({
+      "participantSignalFacts/outgoing_like__runner-1__swipe": {
+        uid: "runner-1", peerUid: "runner-2", type: "outgoing_like"},
+      "participantSignalFacts/incoming_like__runner-2__swipe": {
+        uid: "runner-2", peerUid: "runner-1", type: "incoming_like"},
+      "participantSignalFacts/event_attended__runner-2__event1": {
+        uid: "runner-2", type: "event_attended"},
+    });
+    assert.ok(harness.deletedPublicDocs.includes(
+      "participantSignalFacts/outgoing_like__runner-1__swipe"));
+    assert.ok(harness.deletedPublicDocs.includes(
+      "participantSignalFacts/incoming_like__runner-2__swipe"));
+    assert.ok(!harness.deletedPublicDocs.includes(
+      "participantSignalFacts/event_attended__runner-2__event1"));
+    assert.ok(!harness.updateWrites.some((write) =>
+      write.path.startsWith("participantSignalFacts/")));
+  });
+
+test("deletion removes the account's own metric counters only (#2444)",
+  async () => {
+    const harness = await deleteRunnerOne({
+      "participantMetricCounters/runner-1": {uid: "runner-1",
+        counters: {outgoing_like: 1}},
+      "participantMetricCounters/runner-2": {uid: "runner-2",
+        counters: {incoming_like: 1}},
+    });
+    assert.ok(harness.deletedPublicDocs.includes(
+      "participantMetricCounters/runner-1"));
+    // The peer keeps its anonymous running total.
+    assert.ok(!harness.deletedPublicDocs.includes(
+      "participantMetricCounters/runner-2"));
+    assert.ok(!harness.updateWrites.some((write) =>
+      write.path === "participantMetricCounters/runner-2"));
+  });
+
+test("deletion erases the account's event feedback (#2444)", async () => {
+  const harness = await deleteRunnerOne({
+    "eventSuccessFeedback/event1_runner-1": {eventId: "event1",
+      organizerId: "club-1", uid: "runner-1", privateNote: "Private"},
+    "eventSuccessFeedback/event1_runner-2": {eventId: "event1",
+      organizerId: "club-1", uid: "runner-2"},
+  });
+  assert.ok(harness.deletedPublicDocs.includes(
+    "eventSuccessFeedback/event1_runner-1"));
+  assert.ok(!harness.deletedPublicDocs.includes(
+    "eventSuccessFeedback/event1_runner-2"));
+});
+
+test("deletion erases the account's compatibility answers (#2444)",
+  async () => {
+    const harness = await deleteRunnerOne({
+      "eventSuccessCompatibilityResponses/event1_runner-1": {
+        eventId: "event1", uid: "runner-1", answerIds: ["a1"]},
+      "eventSuccessCompatibilityResponses/event1_runner-2": {
+        eventId: "event1", uid: "runner-2", answerIds: ["a2"]},
+    });
+    assert.ok(harness.deletedPublicDocs.includes(
+      "eventSuccessCompatibilityResponses/event1_runner-1"));
+    assert.ok(!harness.deletedPublicDocs.includes(
+      "eventSuccessCompatibilityResponses/event1_runner-2"));
+  });
+
+test("deletion erases the account's conversation graphs and its edges in " +
+  "other guests' graphs (#2444)", async () => {
+  const harness = await deleteRunnerOne({
+    "eventSuccessConversationGraphs/event1_runner-1": {eventId: "event1",
+      uid: "runner-1", status: "submitted", selectedUids: ["runner-2"]},
+    "eventSuccessConversationGraphs/event1_runner-2": {eventId: "event1",
+      uid: "runner-2", status: "submitted",
+      selectedUids: ["runner-1", "runner-3"], assignedSelectedCount: 1},
+    "eventSuccessConversationGraphs/event1_runner-3": {eventId: "event1",
+      uid: "runner-3", status: "submitted", selectedUids: ["runner-2"]},
+  });
+  assert.ok(harness.deletedPublicDocs.includes(
+    "eventSuccessConversationGraphs/event1_runner-1"));
+  const peer = harness.updateWrites.filter((write) =>
+    write.path === "eventSuccessConversationGraphs/event1_runner-2");
+  assert.deepEqual(peer.map((write) => write.data),
+    [{selectedUids: ["runner-3"]}]);
+  assert.ok(!harness.deletedPublicDocs.includes(
+    "eventSuccessConversationGraphs/event1_runner-2"));
+  assert.ok(!harness.updateWrites.some((write) =>
+    write.path === "eventSuccessConversationGraphs/event1_runner-3"));
+});
+
+test("deletion erases the account's event runtime identities (#2444)",
+  async () => {
+    const harness = await deleteRunnerOne({
+      "eventRuntimeParticipants/event1_runner-1": {eventId: "event1",
+        uid: "runner-1", runtimeProfile: {firstName: "Asha"}},
+      "eventRuntimeParticipants/event2_runner-1": {eventId: "event2",
+        uid: "runner-1", runtimeProfile: {}},
+      "eventRuntimeParticipants/event1_runner-2": {eventId: "event1",
+        uid: "runner-2", runtimeProfile: {}},
+    });
+    for (const path of ["eventRuntimeParticipants/event1_runner-1",
+      "eventRuntimeParticipants/event2_runner-1"]) {
+      assert.ok(harness.deletedPublicDocs.includes(path), path);
+    }
+    assert.ok(!harness.deletedPublicDocs.includes(
+      "eventRuntimeParticipants/event1_runner-2"));
+  });

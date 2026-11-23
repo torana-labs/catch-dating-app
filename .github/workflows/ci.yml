@@ -795,10 +795,11 @@ jobs:
     # Every merge-queue entry, every non-draft pull request (reporting only),
     # the nightly (timings for the budget report) and a main push with no
     # merge-queue proof (a bypass or a stale proof). No plan selection: the
-    # 68 gates are whole-repo checks, run on every entry (owner decision after
+    # 69 gates are whole-repo checks, run on every entry (owner decision after
     # the clean replay, docs/plans/semantic_check_replay_report.md; the
     # Functions context, client-write and BigQuery export path checks joined
-    # with the architecture sign-off, #2445).
+    # with the architecture sign-off, #2445, and the account deletion erasure
+    # check with #2444).
     if: >-
       ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
         (github.event_name == 'merge_group' || github.event_name == 'schedule' ||
