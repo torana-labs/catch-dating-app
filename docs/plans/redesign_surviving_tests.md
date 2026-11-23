@@ -3566,7 +3566,7 @@ Layout only, deleted with the screen:
 - `domain` members-only and early access restrictions explain themselves
 - `domain` the booking cap falls back to list price with a note
 
-**`test/reviews/reviews_widgets_test.dart`** — mixed (2 layout cases go with the screen) · subject `lib/reviews/shared/reviews_section.dart` · decided by rules, 1 by hand · also under P6 you
+**`test/reviews/reviews_widgets_test.dart`** — mixed (2 layout cases go with the screen) · subject `lib/pages/reviews/reviews_section.dart` · decided by rules, 1 by hand · also under P6 you
 
 - `action` empty attended event section can submit a review
 - `body` empty event reviews stay hidden without write access
@@ -3575,7 +3575,7 @@ Layout only, deleted with the screen:
 - `parts` review cards display host responses
 - `action` hosts can respond to event reviews
 
-**`test/reviews/write_review_controller_test.dart`** — behaviour · subject `lib/reviews/shared/write_review_controller.dart` · decided by rules
+**`test/pages/reviews/write_review_controller_test.dart`** — behaviour · subject `lib/pages/reviews/write_review_controller.dart` · decided by rules
 
 - `action` submit creates a trimmed event review
 - `action` submit updates an existing review

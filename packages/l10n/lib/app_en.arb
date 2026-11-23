@@ -6109,189 +6109,189 @@
   },
   "reviewsReviewsSectionLabelEditYourReview": "Edit your review",
   "@reviewsReviewsSectionLabelEditYourReview": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (label).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionLabelWriteAReview": "Write a review",
   "@reviewsReviewsSectionLabelWriteAReview": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (label).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionMessageBeTheFirstToReviewThisEvent": "Be the first to review this event.",
   "@reviewsReviewsSectionMessageBeTheFirstToReviewThisEvent": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (message).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionTextReviews": "Reviews",
   "@reviewsReviewsSectionTextReviews": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (Text).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionTitleNoReviewsYet": "No reviews yet",
   "@reviewsReviewsSectionTitleNoReviewsYet": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (title).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionMessageReviewsAppearAfterMembers": "Reviews appear after members attend an event.",
   "@reviewsReviewsSectionMessageReviewsAppearAfterMembers": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (message).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionMessageReviewsFromAttendeesWill": "Reviews from attendees will appear here after an event.",
   "@reviewsReviewsSectionMessageReviewsFromAttendeesWill": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (message).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionTextYou": "You",
   "@reviewsReviewsSectionTextYou": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (Text).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionMessageEditReview": "Edit review",
   "@reviewsReviewsSectionMessageEditReview": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (message).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionMessageRespondAsHost": "Respond as host",
   "@reviewsReviewsSectionMessageRespondAsHost": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (message).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionMessageEditHostResponse": "Edit host response",
   "@reviewsReviewsSectionMessageEditHostResponse": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (message).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionTitleRespondToReview": "Respond to review",
   "@reviewsReviewsSectionTitleRespondToReview": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (title).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionTitleEditResponse": "Edit response",
   "@reviewsReviewsSectionTitleEditResponse": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (title).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionLabelSaveResponse": "Save response",
   "@reviewsReviewsSectionLabelSaveResponse": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (label).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionTitleResponse": "Response",
   "@reviewsReviewsSectionTitleResponse": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (title).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsReviewsSectionPlaceholderThankTheAttendeeOr": "Thank the attendee or clarify what happened",
   "@reviewsReviewsSectionPlaceholderThankTheAttendeeOr": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (placeholder).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (placeholder).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.reviews_section"
   },
   "reviewsStarRatingMessageS": "s",
   "@reviewsStarRatingMessageS": {
-    "description": "Product copy used by lib/reviews/shared/star_rating.dart (message).",
+    "description": "Product copy used by lib/pages/reviews/star_rating.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.star_rating"
   },
   "reviewsStarRatingLabelS": "s",
   "@reviewsStarRatingLabelS": {
-    "description": "Product copy used by lib/reviews/shared/star_rating.dart (label).",
+    "description": "Product copy used by lib/pages/reviews/star_rating.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.star_rating"
   },
   "reviewsWriteReviewSheetTitleDeleteReview": "Delete review?",
   "@reviewsWriteReviewSheetTitleDeleteReview": {
-    "description": "Product copy used by lib/reviews/shared/write_review_sheet.dart (title).",
+    "description": "Product copy used by lib/pages/reviews/write_review_sheet.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.write_review_sheet"
   },
   "reviewsWriteReviewSheetMessageThisRemovesYourReview": "This removes your review from this event.",
   "@reviewsWriteReviewSheetMessageThisRemovesYourReview": {
-    "description": "Product copy used by lib/reviews/shared/write_review_sheet.dart (message).",
+    "description": "Product copy used by lib/pages/reviews/write_review_sheet.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.write_review_sheet"
   },
   "reviewsWriteReviewSheetTitleEditReview": "Edit review",
   "@reviewsWriteReviewSheetTitleEditReview": {
-    "description": "Product copy used by lib/reviews/shared/write_review_sheet.dart (title).",
+    "description": "Product copy used by lib/pages/reviews/write_review_sheet.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.write_review_sheet"
   },
   "reviewsWriteReviewSheetTitleWriteAReview": "Write a review",
   "@reviewsWriteReviewSheetTitleWriteAReview": {
-    "description": "Product copy used by lib/reviews/shared/write_review_sheet.dart (title).",
+    "description": "Product copy used by lib/pages/reviews/write_review_sheet.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.write_review_sheet"
   },
   "reviewsWriteReviewSheetLabelDeleteReview": "Delete review",
   "@reviewsWriteReviewSheetLabelDeleteReview": {
-    "description": "Product copy used by lib/reviews/shared/write_review_sheet.dart (label).",
+    "description": "Product copy used by lib/pages/reviews/write_review_sheet.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.write_review_sheet"
   },
   "reviewsWriteReviewSheetLabelSave": "Save",
   "@reviewsWriteReviewSheetLabelSave": {
-    "description": "Product copy used by lib/reviews/shared/write_review_sheet.dart (label).",
+    "description": "Product copy used by lib/pages/reviews/write_review_sheet.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.write_review_sheet"
   },
   "reviewsWriteReviewSheetLabelSubmit": "Submit",
   "@reviewsWriteReviewSheetLabelSubmit": {
-    "description": "Product copy used by lib/reviews/shared/write_review_sheet.dart (label).",
+    "description": "Product copy used by lib/pages/reviews/write_review_sheet.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.write_review_sheet"
   },
   "reviewsWriteReviewSheetTitleReview": "Review",
   "@reviewsWriteReviewSheetTitleReview": {
-    "description": "Product copy used by lib/reviews/shared/write_review_sheet.dart (title).",
+    "description": "Product copy used by lib/pages/reviews/write_review_sheet.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.write_review_sheet"
   },
   "reviewsWriteReviewSheetPlaceholderShareYourExperience": "Share your experience",
   "@reviewsWriteReviewSheetPlaceholderShareYourExperience": {
-    "description": "Product copy used by lib/reviews/shared/write_review_sheet.dart (placeholder).",
+    "description": "Product copy used by lib/pages/reviews/write_review_sheet.dart (placeholder).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "reviews.shared.write_review_sheet"
@@ -8438,7 +8438,7 @@
   },
   "reviewsReviewsSectionTitleAllReviewsLength": "All reviews ({length})",
   "@reviewsReviewsSectionTitleAllReviewsLength": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (title).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (title).",
     "placeholders": {
       "length": {}
     },
@@ -8448,7 +8448,7 @@
   },
   "reviewsReviewsSectionTextTostringasfixedLength": "{toStringAsFixed} · {length}",
   "@reviewsReviewsSectionTextTostringasfixedLength": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (Text).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (Text).",
     "placeholders": {
       "toStringAsFixed": {},
       "length": {}
@@ -8459,7 +8459,7 @@
   },
   "reviewsReviewsSectionLabelSeeAllLengthReviews": "See all {length} reviews",
   "@reviewsReviewsSectionLabelSeeAllLengthReviews": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (label).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (label).",
     "placeholders": {
       "length": {}
     },
@@ -8469,7 +8469,7 @@
   },
   "reviewsReviewsSectionTextHostResponseHostname": "Host response · {hostName}",
   "@reviewsReviewsSectionTextHostResponseHostname": {
-    "description": "Product copy used by lib/reviews/shared/reviews_section.dart (Text).",
+    "description": "Product copy used by lib/pages/reviews/reviews_section.dart (Text).",
     "placeholders": {
       "hostName": {}
     },
@@ -8479,7 +8479,7 @@
   },
   "reviewsStarRatingMessageValueStarValue2": "{value} star{value2}",
   "@reviewsStarRatingMessageValueStarValue2": {
-    "description": "Product copy used by lib/reviews/shared/star_rating.dart (message).",
+    "description": "Product copy used by lib/pages/reviews/star_rating.dart (message).",
     "placeholders": {
       "value": {},
       "value2": {}
@@ -8490,7 +8490,7 @@
   },
   "reviewsStarRatingLabelRateValueStarValue2": "Rate {value} star{value2}",
   "@reviewsStarRatingLabelRateValueStarValue2": {
-    "description": "Product copy used by lib/reviews/shared/star_rating.dart (label).",
+    "description": "Product copy used by lib/pages/reviews/star_rating.dart (label).",
     "placeholders": {
       "value": {},
       "value2": {}

@@ -3,6 +3,14 @@
   "carried": [
     {"path": "lib/pages/celebration/celebration_screen.dart", "from": "lib/pages/celebration/celebration_screen.dart"},
 
+    {"path": "lib/pages/memberships/host_membership_plan_sheet.dart", "from": "lib/host_memberships/presentation/host_membership_plan_sheet.dart"},
+
+    {"path": "lib/pages/reviews/reviews_section.dart", "from": "lib/reviews/shared/reviews_section.dart"},
+
+    {"path": "lib/pages/reviews/star_rating_row.dart", "from": "lib/reviews/shared/star_rating_row.dart"},
+
+    {"path": "lib/pages/reviews/write_review_sheet.dart", "from": "lib/reviews/shared/write_review_sheet.dart"},
+
     {"path": "lib/pages/startup/splash_screen.dart", "from": "lib/pages/startup/splash_screen.dart"}
   ]
 }

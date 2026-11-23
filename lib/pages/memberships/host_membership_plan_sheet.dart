@@ -2,8 +2,8 @@ import 'package:catch_dating_app/contexts/payments/data/host_membership_reposito
 import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_checkout.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
-import 'package:catch_dating_app/host_memberships/presentation/host_membership_copy.dart';
-import 'package:catch_dating_app/host_memberships/presentation/host_membership_join_controller.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_copy.dart';
+import 'package:catch_dating_app/pages/memberships/host_membership_join_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
