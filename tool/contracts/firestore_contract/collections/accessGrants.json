@@ -1,0 +1,26 @@
+{
+  "id": "accessGrants",
+  "path": "accessGrants/{scopeType}__{scopeId}__{uid}",
+  "rulesMatch": "/accessGrants/{accessId}",
+  "typescriptInterface": "AccessGrantDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/access_grants.rules.test.cjs",
+  "rulesTestNames": [
+    "lets an account get and list only its own access grants",
+    "decides programme reads from the access grant even when the view is stale or missing"
+  ],
+  "owner": "access grant writer (functions/src/domain/access), called in the same transaction by every programme grant, owner and revocation command",
+  "writerContext": "access",
+  "read": "an account gets its own document by the id scopeType__scopeId__uid and lists its own documents by a query naming its uid, while its account is not deleted. Programme read models authorise through it with one get()",
+  "write": "server only; written in the transaction of the command that creates the programme or issues, claims or revokes a staff grant, never by a trigger",
+  "exportedFunctions": [
+    "createOrganizerProgram",
+    "grantProgramStaff",
+    "revokeProgramStaff",
+    "claimProgramStaffInvite"
+  ],
+  "migrationNotes": [
+    "Issue #2474 step 1 (STR-2 + FIX-10). The programme access document replaces programAccessViews as the rules authority: the same programAccessViewFor computes its reach, without the organizer manager flag, so security rules decide exactly as before but from a document written in the grant's transaction.",
+    "The access-grants-programs migration in tool/data/migrate_firestore_consolidation.mjs creates documents for programme owners and staff grants written before the transactional writers."
+  ]
+}
