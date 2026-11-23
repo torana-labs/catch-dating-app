@@ -19,6 +19,10 @@
       {
         "podfile": "apps/consumer/macos/Podfile",
         "lockfile": "apps/consumer/macos/Podfile.lock"
+      },
+      {
+        "podfile": "apps/host/macos/Podfile",
+        "lockfile": "apps/host/macos/Podfile.lock"
       }
     ]
   },

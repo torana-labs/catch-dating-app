@@ -1,0 +1,81 @@
+platform :osx, '12.0'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Debug-host-dev' => :debug,
+  'Debug-host-prod' => :debug,
+  'Profile' => :release,
+  'Profile-host-dev' => :release,
+  'Profile-host-prod' => :release,
+  'Release' => :release,
+  'Release-host-dev' => :release,
+  'Release-host-prod' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'ephemeral', 'Flutter-Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure \"flutter pub get\" is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Flutter-Generated.xcconfig, then run \"flutter pub get\""
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_macos_podfile_setup
+
+def normalize_versioned_sdk_framework_paths(pods_project)
+  pods_project.objects.each do |object|
+    next unless object.respond_to?(:source_tree) && object.respond_to?(:path)
+    next unless object.source_tree == 'DEVELOPER_DIR' && object.path
+
+    object.path = object.path
+      .gsub(%r{Platforms/MacOSX\.platform/Developer/SDKs/MacOSX[^/]*\.sdk}, 'Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk')
+  end
+end
+
+def enforce_minimum_deployment_target(config, key, minimum_version)
+  current_version = config.build_settings[key]
+  if current_version.nil? || Gem::Version.new(current_version) < Gem::Version.new(minimum_version)
+    config.build_settings[key] = minimum_version
+  end
+rescue ArgumentError
+  config.build_settings[key] = minimum_version
+end
+
+target 'Runner' do
+  use_frameworks!
+
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '12.19.3'
+  flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_macos_build_settings(target)
+    target.build_configurations.each do |config|
+      enforce_minimum_deployment_target(config, 'MACOSX_DEPLOYMENT_TARGET', '12.0')
+
+      # Suppress FlutterFire retroactive FlutterError:Error conformance warnings
+      # (upstream bug in firebase_storage, firebase_analytics, cloud_functions).
+      if %w[firebase_storage firebase_analytics cloud_functions].include?(target.name)
+        config.build_settings['SWIFT_SUPPRESS_WARNINGS'] = 'YES'
+      end
+    end
+  end
+
+  # CocoaPods/xcodeproj 1.27 emits versioned SDK framework paths that can lag
+  # behind the installed Xcode SDK and make the workspace lose destinations.
+  normalize_versioned_sdk_framework_paths(installer.pods_project)
+end

@@ -43,7 +43,7 @@
     {"pattern": "design/visual_baselines/**", "review": "aggregate", "kind": "generated_evidence", "owner": "design_system"},
     {"pattern": "apps/*/android/app/src/*/res/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
     {"pattern": "apps/*/ios/Runner/Assets.xcassets/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
-    {"pattern": "apps/consumer/macos/Runner/Assets.xcassets/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
+    {"pattern": "apps/*/macos/Runner/Assets.xcassets/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
     {"pattern": "apps/*/web/icons/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"}
   ],
   "patterns": [
@@ -67,6 +67,8 @@
     {"path": "apps/host/ios/.symlinks", "scope": "native", "reason": "Generated Host Flutter iOS links"},
     {"path": "apps/consumer/macos/Pods", "scope": "native", "reason": "Consumer macOS CocoaPods dependencies"},
     {"path": "apps/consumer/macos/Flutter/ephemeral", "scope": "native", "reason": "Generated Consumer Flutter macOS files"},
+    {"path": "apps/host/macos/Pods", "scope": "native", "reason": "Host macOS CocoaPods dependencies"},
+    {"path": "apps/host/macos/Flutter/ephemeral", "scope": "native", "reason": "Generated Host Flutter macOS files"},
     {"path": "apps/consumer/android/.gradle", "scope": "native", "reason": "Consumer Gradle project cache"},
     {"path": "apps/host/android/.gradle", "scope": "native", "reason": "Host Gradle project cache"},
     {"path": "node_modules", "scope": "node", "reason": "Root npm dependencies"},

@@ -15,6 +15,8 @@
     "assets/branding/generated/catch_icon_host_dev.png",
     "assets/branding/generated/catch_icon_host_prod.png",
     "apps/consumer/macos/Runner/Assets.xcassets/AppIcon-dev.appiconset",
+    "apps/host/macos/Runner/Assets.xcassets/AppIcon-host-dev.appiconset",
+    "apps/host/macos/Runner/Assets.xcassets/AppIcon-host-prod.appiconset",
     "apps/consumer/android/app/src/main/res/**/ic_launcher.png",
     "apps/consumer/android/app/src/main/res/**/ic_launcher_round.png",
     "apps/consumer/android/app/src/consumerDev/res/**/ic_launcher.png",
