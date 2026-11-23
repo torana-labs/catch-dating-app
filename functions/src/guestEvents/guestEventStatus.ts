@@ -54,6 +54,23 @@ const closedPayment = ["expired", "failed", "cancelled", "refunded"];
  * for the offer invitation's phone binding.
  * @return {Promise<GuestEventStatus | null>} The row.
  */
+/**
+ * Which roster row is the guest's own, from the ids of the (at most two)
+ * eventAttendees rows whose linkedUid is the guest, exactly as
+ * getEventAssistanceParticipantContext resolves it. Only an active or
+ * cancelled event has a link.
+ * @param {unknown} eventStatus The event's status.
+ * @param {string[]} attendeeIds The linked rows' ids.
+ * @return {GuestEventStatus["rosterLink"]} The link, or null.
+ */
+export function guestRosterLink(eventStatus: unknown,
+  attendeeIds: string[]): NonNullable<GuestEventStatus["rosterLink"]> | null {
+  if (eventStatus !== "active" && eventStatus !== "cancelled") return null;
+  if (attendeeIds.length > 1) return {kind: "ambiguous"};
+  return attendeeIds.length === 1 ?
+    {kind: "linked", attendeeId: attendeeIds[0]} : null;
+}
+
 export async function guestEventStatus(params: {
   db: FirebaseFirestore.Firestore; tx: FirebaseFirestore.Transaction;
   eventId: string; uid: string; nowMillis: number;
@@ -101,11 +118,8 @@ export async function guestEventStatus(params: {
   // Which roster row is the guest's own, as the participant context read
   // resolves it: only the linked uid decides, and two rows are ambiguous
   // rather than ranked. Names and phone guesses never match.
-  if (["active", "cancelled"].includes(event.status)) {
-    row.rosterLink = attendees.size > 1 ? {kind: "ambiguous"} :
-      attendees.size === 1 ?
-        {kind: "linked", attendeeId: attendees.docs[0].id} : null;
-  }
+  row.rosterLink = guestRosterLink(event.status,
+    attendees.docs.map((doc) => doc.id));
   const participation = native.data() as EventBookingDocument |
     undefined;
   if (participation && validateEventBookingDocument(participation) &&
