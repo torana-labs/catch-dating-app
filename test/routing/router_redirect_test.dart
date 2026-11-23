@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/routing/app_deep_links.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "group": "platform-deep-links",
+  "sequence": 1795414125957,
+  "entries": [
+    {
+      "path": "lib/routing/app_deep_links.dart",
+      "moveTo": "packages/platform/lib/routing/app_deep_links.dart"
+    }
+  ],
+  "moves": {
+    "lib/routing/app_deep_links.dart": "packages/platform/lib/routing/app_deep_links.dart"
+  },
+  "folders": {}
+}
