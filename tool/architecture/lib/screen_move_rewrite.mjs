@@ -1,8 +1,8 @@
 // The text side of a screen move, computed in memory before anything is
 // written: Dart directives (across packages, barrel imports in moving files
-// split into direct imports, barrel exports of files leaving lib/ or rising
-// above the barrel's layer deleted), whole-path mentions in text files, and
-// the scan for mentions of folders the move empties.
+// split into direct imports, barrel exports deleted when their file leaves
+// lib/ or lands where the barrel may not depend), whole-path mentions in text
+// files, and the scan for mentions of folders the move empties.
 import path from "node:path";
 import {
   dedupeImports,
@@ -67,7 +67,7 @@ export function rewriteScreenDirectives({file, source, graph, moves, packages, m
     if (directive.kind === "export" && isRepoPath(directive.target)) {
       const exported = after(directive.target);
       if ((appOf(exported) != null && packageOfPath(exported, packages)?.name !== newPackage) ||
-          risesIntoPages({exporter: newFile, library: directive.target, moves, map})) {
+          exportTurnsIllegal({exporter: newFile, library: directive.target, moves, map})) {
         replacement = "";
         deletedExports.push(directive.target);
       }
@@ -79,7 +79,7 @@ export function rewriteScreenDirectives({file, source, graph, moves, packages, m
     } else if (isBarrelImport(directive) && isRepoPath(directive.target)) {
       const lost = new Set(Object.keys(directive.uses).filter((library) =>
         library !== directive.target &&
-        risesIntoPages({exporter: after(directive.target), library, moves, map})));
+        exportTurnsIllegal({exporter: after(directive.target), library, moves, map})));
       if (lost.size > 0) {
         replacement = splitLostImports({
           directive, text, file, newFile, after, graph, packages, map, moves, barrelExports, lost,
@@ -154,18 +154,25 @@ function importLine({directive, library, names, newFile, after, packages}) {
   ].join("");
 }
 
-// Whether `library` moves into lib/pages while `exporter`, the file that
-// re-exports it, sits below the pages layer, as a legacy feature barrel placed
-// in its context does. Such an export would point upward, so the move deletes
-// it, and every import that reached the library through the barrel imports
-// the library directly instead.
-export function risesIntoPages({exporter, library, moves, map}) {
-  if (!moves.has(library) || !moves.get(library).startsWith(map.roots.pages)) return false;
-  const place = exporter.startsWith("lib/") ? placePath(exporter, map) : null;
-  return place != null && layerRank[place.layer] < layerRank.pages;
+// Whether the move makes `exporter`'s re-export of `library` an illegal
+// dependency: the library lands in a higher layer (a legacy feature barrel
+// placed in its context re-exporting a file that moves into lib/pages), or in
+// a context declared after the exporter's (a barrel of events re-exporting a
+// controller that moves into bookings). The move deletes such an export, and
+// every import that reached the library through the barrel imports the
+// library directly instead.
+export function exportTurnsIllegal({exporter, library, moves, map}) {
+  if (!moves.has(library)) return false;
+  const target = moves.get(library);
+  const from = exporter.startsWith("lib/") ? placePath(exporter, map) : null;
+  const to = target.startsWith("lib/") ? placePath(target, map) : null;
+  if (from == null || to == null) return false;
+  if (layerRank[to.layer] !== layerRank[from.layer]) return layerRank[to.layer] > layerRank[from.layer];
+  return from.layer === "context" && to.context !== from.context &&
+    (map.contextRank.get(to.context) ?? -1) > (map.contextRank.get(from.context) ?? -1);
 }
 
-// A barrel import that loses some of its libraries to lib/pages: those come
+// A barrel import that loses some of its libraries to the move: those come
 // in directly, and the barrel import stays for the rest. A staying file is
 // not un-barrelled further, since direct imports of legacy presentation
 // files would trip catch_arch_cross_feature_presentation_import.
