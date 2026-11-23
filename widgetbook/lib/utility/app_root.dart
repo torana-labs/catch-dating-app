@@ -1,8 +1,10 @@
 import 'package:catch_dating_app/app.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/routing/consumer_router.dart';
+import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +29,35 @@ Widget myAppRootState(BuildContext context) {
         label: 'router shell with force-update pass-through',
         child: WidgetbookUtilityDeviceFrame(child: _MyAppScope()),
       ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Loading route',
+  type: RouteLoadingScreen,
+  path: '[P3 utility surfaces]/App root',
+)
+Widget routeLoadingScreenState(BuildContext context) {
+  return WidgetbookPageCatalogFrame(
+    title: 'RouteLoadingScreen',
+    contractId: 'app.route_loading',
+    children: [
+      for (final (label, isHostApp) in const [
+        ('guest app, waiting on sign-in', false),
+        ('Host app', true),
+      ])
+        WidgetbookPageStateCard(
+          label: label,
+          child: WidgetbookUtilityDeviceFrame(
+            child: WidgetbookFixtureScope(
+              overrides: [
+                uidProvider.overrideWithValue(const AsyncLoading<String?>()),
+              ],
+              child: RouteLoadingScreen(isHostApp: isHostApp),
+            ),
+          ),
+        ),
     ],
   );
 }
