@@ -94,6 +94,9 @@ export function contactPermissionReceipt(sender: ContactSender,
  * A channel-wide opt-in recorded without a number (registration before
  * #2460) takes its number from the receipt copy or from the current
  * document's answer for the same receipt; without one it is never granted.
+ *
+ * The document's updatedAt is the preference's, so the migration and a
+ * live writer derive the same document from the same preference.
  */
 export function resolveContactPermission(params: {
   sender: ContactSender;
@@ -170,7 +173,7 @@ export function resolveContactPermission(params: {
     }
   }
   return {senderKind: sender.kind, senderId: senderId(sender), grants,
-    granted: granted.sort(), updatedAt: now};
+    granted: granted.sort(), updatedAt: fallbackAt};
 }
 
 /** What a consent writer read before its first write. */
