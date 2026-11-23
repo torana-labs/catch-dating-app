@@ -14,11 +14,12 @@ import {isToolsManifestPath, touchesToolsManifest} from "../lib/tools_manifest.m
 // changed; a field outside this list selects every lane until it is added here.
 // `safety` is the name `surface` replaced; it stays known so a diff against a
 // base from before the rename still selects by entry (meta:tool-manifest
-// rejects it in a head manifest).
+// rejects it in a head manifest). `queueGate` marks a merge-queue semantic gate
+// (tool/lib/semantic_gates.mjs); like any field, a change to it selects by entry.
 export const knownEntryFields = new Set(["id", "category", "path", "command", "surface", "guard", "guardWorkflow",
   "guardReason", "safety", "status", "description", "checks", "impactPaths", "ciRequirements", "role", "rules",
   "alsoEnforces", "alsoCheckIds", "checkSafety", "baseline", "platforms", "runbook", "retiredOn", "reason",
-  "lastCommit"]);
+  "lastCommit", "queueGate"]);
 const bookkeepingKeys = new Set(["version", "updated"]);
 
 /** JSON with object keys sorted at every level, so key order and whitespace never count as a change. */
