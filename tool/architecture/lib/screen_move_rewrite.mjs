@@ -25,12 +25,15 @@ const layerRank = {kernel: 0, platform: 1, context: 2, pages: 3, app: 4};
 export const screenMovesDir = "tool/architecture/screen_moves/";
 export const carriedScreensPath = "tool/architecture/carried_screens.json";
 
-// Phase 3's exclusions, plus the lint probe fixtures (synthetic
-// legacy-shaped paths) and the move's own records of old paths.
+// Phase 3's exclusions, plus the lint probe fixtures and rule tests
+// (synthetic legacy-shaped paths) and the move's own records of old paths.
 export const mentionExcluded = [
   ...pathTextExcluded,
   /^tool\/check_catch_ui_lints\.sh$/u,
   /^tool\/catch_ui_lints_probe\//u,
+  // The Catch lint rule tests place synthetic files at legacy-shaped paths,
+  // like the lint probe fixtures: a move must not turn them into new roots.
+  /^test\/tool\/catch_[a-z0-9_]+_test\.dart$/u,
   new RegExp(`^${escapeRegExp(screenMovesDir)}`, "u"),
   new RegExp(`^${escapeRegExp(carriedScreensPath)}$`, "u"),
 ];
