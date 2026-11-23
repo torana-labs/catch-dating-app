@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/consumer_bootstrap.dart';
+import 'package:catch_dating_app/pages/frame/consumer_bootstrap.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

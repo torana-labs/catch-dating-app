@@ -328,7 +328,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
-| <code>ForceUpdateGate</code> | <code>lib/app.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostAuthScaffold</code> | <code>lib/auth/presentation/auth_screen.dart</code> | — | — | Host auth frame shares its initial brand anchor with Flutter startup. The inset card enters below it, and one scroll owner can reveal any focused control on short screens or when the keyboard reduces the available height. |
 | <code>HostAuthCard</code> | <code>lib/auth/presentation/host_auth_card.dart</code> | — | — | The inset card shared by every Catch Host authentication state. |
 | <code>HostAuthHeader</code> | <code>lib/auth/presentation/host_auth_card.dart</code> | — | — | No class documentation or registry summary. |
@@ -339,7 +338,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventChatDirectoryRowList</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart</code> | — | — | Sliver directory of currently admitted events, including rooms not open yet. |
 | <code>EventChatDirectorySection</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatEntrySection</code> | <code>lib/chats/presentation/widgets/event_chat_entry_section.dart</code> | — | — | No class documentation or registry summary. |
-| <code>CatchConsumerBootstrap</code> | <code>lib/consumer_bootstrap.dart</code> | — | — | Consumer-only process bootstrap. |
 | <code>HostDoorGuestRow</code> | <code>lib/contexts/audience/parts/host_door_guest_row.dart</code> | — | — | A door guest as a system row: the avatar (marked once in), the name with "New" for a first-timer, the line for the guest's status and the one action that status takes. It draws nothing of its own. |
 | <code>HostEventGuestRow</code> | <code>lib/contexts/audience/parts/host_event_guest_row.dart</code> | <code>Row</code> | <code>catch.index_row</code> | One guest as a compact list row: the avatar, the name, how many nights they have had with the organizer (or that this is their first, with the New badge), and the row's one action or a chevron. It draws nothing of its own. |
 | <code>HostEventCloseOutRow</code> | <code>lib/contexts/bookings/parts/host_event_close_out_row.dart</code> | <code>Row</code> | <code>catch.index_row</code> | One booked guest nobody checked in, as a list row with Came and Didn't come. It draws nothing of its own. |
@@ -728,7 +726,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ExploreOrganizerTagList</code> | <code>lib/explore/presentation/widgets/organizer_card.dart</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerCard</code> | <code>lib/explore/presentation/widgets/organizer_card.dart</code> | <code>Card</code> | <code>catch.organizer_poster</code> | Explore spotlight adopter that composes organizer authority, rating, host identity, and tags into the canonical poster. |
 | <code>RecommendCard</code> | <code>lib/explore/presentation/widgets/recommend_card.dart</code> | — | — | Explore recommendation card. |
-| <code>UpdateRequiredBody</code> | <code>lib/force_update/presentation/update_required_screen.dart</code> | — | — | Provider-free full-screen update prompt rendered by [UpdateRequiredScreen]. |
 | <code>HostMembershipBadge</code> | <code>lib/host_memberships/presentation/host_membership_badge.dart</code> | — | — | Member badge for a paid host membership. Paused members keep a neutral badge; expired memberships render nothing. |
 | <code>HostMembershipProfileSection</code> | <code>lib/host_memberships/presentation/host_membership_profile_section.dart</code> | — | — | Own-profile membership badges and the entry to My memberships. Badges are shown to the member only; the public dating profile never lists clubs. |
 | <code>HostMembershipSection</code> | <code>lib/host_memberships/presentation/host_membership_section.dart</code> | — | — | One membership on My memberships: status, billing, tenure, savings and the self-serve actions the server will accept for its status. |
@@ -1051,7 +1048,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>LaunchAccessLoadingBody</code> | <code>lib/launch_access/presentation/launch_access_application_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>LocationMap</code> | <code>lib/locations/shared/location_map.dart</code> | — | — | No class documentation or registry summary. |
 | <code>MapPreview</code> | <code>lib/locations/shared/map_preview.dart</code> | <code>Preview</code> | — | A read-only, attribution-safe Google Maps viewport for compact previews. Also called: <code>LocationPreview</code>, <code>StaticMap</code>, <code>MiniMap</code>, <code>MapThumbnail</code>. |
-| <code>ForegroundNotificationListener</code> | <code>lib/notifications/presentation/foreground_notification_listener.dart</code> | — | — | App-level presentation adapter. Delivery never reads BuildContext; the shared notice never parses FCM, authenticates a user or chooses a route. |
 | <code>OnboardingStepBody</code> | <code>lib/onboarding/presentation/onboarding_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingTopBar</code> | <code>lib/onboarding/presentation/onboarding_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingGenderInterestBody</code> | <code>lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart</code> | — | — | No class documentation or registry summary. |
@@ -1125,6 +1121,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>SuvbotDock</code> | <code>lib/pages/chat/widgets/suvbot_dock.dart</code> | — | — | No class documentation or registry summary. |
 | <code>SuvbotResetActionRow</code> | <code>lib/pages/chat/widgets/suvbot_dock.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventCheckInQrScanner</code> | <code>lib/pages/check_in/event_check_in_qr_scanner.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ForceUpdateGate</code> | <code>lib/pages/frame/app.dart</code> | — | — | No class documentation or registry summary. |
+| <code>CatchConsumerBootstrap</code> | <code>lib/pages/frame/consumer_bootstrap.dart</code> | — | — | Consumer-only process bootstrap. |
+| <code>UpdateRequiredBody</code> | <code>lib/pages/frame/force_update/update_required_screen.dart</code> | — | — | Provider-free full-screen update prompt rendered by [UpdateRequiredScreen]. |
+| <code>ForegroundNotificationListener</code> | <code>lib/pages/frame/notifications/foreground_notification_listener.dart</code> | — | — | App-level presentation adapter. Delivery never reads BuildContext; the shared notice never parses FCM, authenticates a user or chooses a route. |
 | <code>MatchCelebrationDialog</code> | <code>lib/pages/inbox/match_celebration_dialog.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ChatConversationsList</code> | <code>lib/pages/inbox/widgets/chat_conversations_list.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ChatsEmptyState</code> | <code>lib/pages/inbox/widgets/chats_empty_state.dart</code> | — | — | No class documentation or registry summary. |
@@ -1282,11 +1282,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 |---|---|---|---|---|
 | <code>ConsumerPlatformApp</code> | <code>apps/consumer/lib/consumer_platform_app.dart</code> | — | — | Consumer routing shell; entrypoints install native bindings at bootstrap. |
 | <code>HostPlatformApp</code> | <code>apps/host/lib/host_platform_app.dart</code> | — | — | Host-owned app root selecting only the Host router and default capabilities. |
-| <code>ForceUpdateCheckErrorScreen</code> | <code>lib/app.dart</code> | — | — | No class documentation or registry summary. |
-| <code>MyApp</code> | <code>lib/app.dart</code> | — | — | No class documentation or registry summary. |
 | <code>AuthScreen</code> | <code>lib/auth/presentation/auth_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ChatsListScreen</code> | <code>lib/chats/presentation/inbox/chat_inbox_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>CatchConsumerBootScreen</code> | <code>lib/consumer_bootstrap.dart</code> | — | — | The animated Consumer cold-start surface shown above auth and routing. |
 | <code>CrossPathsInvitationScreen</code> | <code>lib/cross_paths/presentation/cross_paths_invitation_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ActivityScreen</code> | <code>lib/dashboard/presentation/activity_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>DashboardEmptyHomeScreen</code> | <code>lib/dashboard/presentation/dashboard_empty_home_screen.dart</code> | — | — | No class documentation or registry summary. |
@@ -1310,7 +1307,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventJoinedCelebrationScreen</code> | <code>lib/events/shared/event_joined_celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreMapScreen</code> | <code>lib/explore/presentation/explore_map_screen.dart</code> | — | — | Full-screen event map opened from the Explore feed's map pill. |
 | <code>ExploreScreen</code> | <code>lib/explore/presentation/explore_screen.dart</code> | — | — | Explore — the supply-side feed (design-system Explore). |
-| <code>UpdateRequiredScreen</code> | <code>lib/force_update/presentation/update_required_screen.dart</code> | — | — | Blocking screen shown when the running app version is below [minVersion]. |
 | <code>MyMembershipsScreen</code> | <code>lib/host_memberships/presentation/my_memberships_screen.dart</code> | — | — | Consumer "My memberships": every paid membership, its savings and the self-serve pause, resume and cancel actions. |
 | <code>PhoneImportReviewScreen</code> | <code>lib/hosts/audience/phone_import/presentation/phone_import_review_screen.dart</code> | — | — | Shared review view. Without a canonical submission controller this remains an explicitly labelled demo with sharing permanently disabled. |
 | <code>PhoneImportScreen</code> | <code>lib/hosts/audience/phone_import/presentation/phone_import_screen.dart</code> | — | — | Native-first program import. Both entry and every gateway operation require live canonical access; a cached program page can only navigate here. |
@@ -1450,6 +1446,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventChatParticipantsScreen</code> | <code>lib/pages/chat/event_chat_participants_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatScreen</code> | <code>lib/pages/chat/event_chat_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventProfileScreen</code> | <code>lib/pages/chat/event_profile_screen.dart</code> | — | — | Account-bound editor and protected participant view for one event chat. |
+| <code>ForceUpdateCheckErrorScreen</code> | <code>lib/pages/frame/app.dart</code> | — | — | No class documentation or registry summary. |
+| <code>MyApp</code> | <code>lib/pages/frame/app.dart</code> | — | — | No class documentation or registry summary. |
+| <code>CatchConsumerBootScreen</code> | <code>lib/pages/frame/consumer_bootstrap.dart</code> | — | — | The animated Consumer cold-start surface shown above auth and routing. |
+| <code>UpdateRequiredScreen</code> | <code>lib/pages/frame/force_update/update_required_screen.dart</code> | — | — | Blocking screen shown when the running app version is below [minVersion]. |
 | <code>StartWelcomeRouteScreen</code> | <code>lib/pages/start/start_welcome_route_screen.dart</code> | — | — | Route-level surface owner for the logged-out Welcome experience. |
 | <code>SplashScreen</code> | <code>lib/pages/startup/splash_screen.dart</code> | — | <code>catch.startup_loading_screen</code> | Branded app-start composition with the Catch logo and a delayed bounded loading indicator. Also called: <code>LaunchScreen</code>, <code>StartupScreen</code>, <code>StartupLoadingScreen</code>, <code>AppLoadingScreen</code>. |
 | <code>PaymentConfirmationLoadingScreen</code> | <code>lib/payments/presentation/payment_confirmation_loading_screen.dart</code> | — | — | No class documentation or registry summary. |

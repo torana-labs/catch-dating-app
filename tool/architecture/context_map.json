@@ -30,12 +30,6 @@
     {"id": "insights", "owns": "Reports, stats and the alerts that need a host's attention."}
   ],
   "legacy": [
-    {"path": "lib/app.dart", "layer": "app"},
-
-    {"path": "lib/app_bootstrap.dart", "layer": "app"},
-
-    {"path": "lib/consumer_bootstrap.dart", "layer": "app"},
-
     {"path": "lib/dashboard/", "layer": "app"},
 
     {"path": "lib/event_success/event_success_companion_launcher.dart", "layer": "app"},
@@ -46,11 +40,9 @@
 
     {"path": "lib/routing/", "layer": "app"},
 
-    {"path": "lib/firebase_options", "layer": "platform"},
 
     {"path": "lib/auth/", "context": "account"},
 
-    {"path": "lib/force_update/", "context": "account"},
 
     {"path": "lib/launch_access/", "context": "account"},
 

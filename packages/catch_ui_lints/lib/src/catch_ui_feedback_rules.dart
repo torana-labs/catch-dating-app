@@ -78,7 +78,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
         element.enclosingElement.name == 'CatchNoticeOverlay' &&
         uri == 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart' &&
         !const {
-          '/lib/app.dart',
+          '/lib/pages/frame/app.dart',
           '/widgetbook/lib/primitives/catalog/feedback.dart',
         }.any(path.endsWith)) {
       rule.reportAtNode(

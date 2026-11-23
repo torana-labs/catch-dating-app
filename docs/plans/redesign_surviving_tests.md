@@ -3031,7 +3031,7 @@ Layout only, deleted with the screen:
 
 Layout only, deleted with the screen:
 
-- `test/core/consumer_bootstrap_test.dart`: 7 cases · proves composition only: finds by type or text, with no input-driven condition · decided by rules and hand
+- `test/pages/frame/consumer_bootstrap_test.dart`: 7 cases · proves composition only: finds by type or text, with no input-driven condition · decided by rules and hand
 - `test/onboarding/onboarding_composition_test.dart`: 1 cases · proves composition only: finds by type or text, with no input-driven condition · decided by rules and hand
 
 
@@ -3039,7 +3039,7 @@ Layout only, deleted with the screen:
 
 `apps/consumer/lib/home`. 43 behaviours: 15 domain, 2 action, 3 parts, 17 body, 6 journey.
 
-**`test/chats/fcm_service_lifecycle_test.dart`** — behaviour · subject `lib/notifications/presentation/foreground_notification_controller.dart` · decided by rules
+**`test/chats/fcm_service_lifecycle_test.dart`** — behaviour · subject `lib/pages/frame/notifications/foreground_notification_controller.dart` · decided by rules
 
 - `action` shared shell initialization connects actual SDK stream to arrivals
 
@@ -3098,7 +3098,7 @@ Layout only, deleted with the screen:
 - `parts` shows a static rounded countdown when animations are disabled
 - `parts` updates the countdown while the window remains open
 
-**`test/notifications/foreground_notification_test.dart`** — behaviour · subject `lib/notifications/presentation/foreground_notification_controller.dart` · decided by rules
+**`test/notifications/foreground_notification_test.dart`** — behaviour · subject `lib/pages/frame/notifications/foreground_notification_controller.dart` · decided by rules
 
 - `action` session gate dedupes events and clears queue on account/lifecycle changes
 - `journey` foreground receipt renders globally, taps route, and active chat suppresses another card
@@ -3700,17 +3700,17 @@ Layout only, deleted with the screen:
 
 `lib/pages/startup`. 7 behaviours: 3 domain, 3 action, 1 body.
 
-**`test/app_force_update_error_test.dart`** — behaviour · subject `lib/force_update/presentation/force_update_diagnostics.dart` · decided by rules
+**`test/app_force_update_error_test.dart`** — behaviour · subject `lib/pages/frame/force_update/force_update_diagnostics.dart` · decided by rules
 
 - `domain` force update diagnostics show Remote Config guidance in dev
 - `domain` force update diagnostics stay hidden when there is no error
 - `domain` force update diagnostics stay hidden for non-Firebase errors in prod
 
-**`test/force_update/update_required_content_test.dart`** — behaviour · subject `lib/force_update/presentation/update_required_screen.dart` · decided by rules
+**`test/force_update/update_required_content_test.dart`** — behaviour · subject `lib/pages/frame/force_update/update_required_screen.dart` · decided by rules
 
 - `body` UpdateRequiredBody renders copy and delegates CTA
 
-**`test/force_update/update_required_controller_test.dart`** — behaviour · subject `lib/force_update/presentation/update_required_controller.dart` · decided by rules
+**`test/pages/frame/force_update/update_required_controller_test.dart`** — behaviour · subject `lib/pages/frame/force_update/update_required_controller.dart` · decided by rules
 
 - `action` opens the iOS store URL on iOS
 - `action` opens the Android store URL for non-iOS platforms
@@ -4493,7 +4493,7 @@ them to the context's test folder before deleting the file.
 | `test/architecture/keep_alive_provider_lifecycle_test.dart` | initial app location stays fixed for the container lifetime |
 | `test/chats/fcm_service_lifecycle_test.dart` | one subscription per session, explicit app/recipient validation, reset; logout during initial-message lookup cannot navigate afterwards; an upgraded installation rotates its previously unscoped address; logout during permission prompt cannot reattach token/tap listeners; account replacement rotates address and rejects previous recipient; unregister removes only this installation and matching legacy token; failed offline revocation blocks token reuse until rotation succeeds; backend {fixture} reminder routes through {delivery}; backend reminder rejects wrong {invalid} on {delivery}; delayed backend reminder cannot navigate after {transition}; backend event payload requires both route identifiers; Host accepts backend staff payloads and rejects Consumer payload |
 | `test/core/app_shell_test.dart` | treats empty and none-only results as offline; treats any real transport as online; chat navigation badge stays inside its icon box; iOS navigation bar uses floating adaptive chrome; large-text navigation stays icon-only inside floating chrome; iOS floating navigation keeps selected end tab close to edge; navigation bar accepts host destination sets; navigation bar selection fires haptic feedback; app notice controller dedupes notices by key; queued app notices render below the safe area; ephemeral app notices dismiss after their duration |
-| `test/core/consumer_bootstrap_test.dart` | animated bootstrap is consumer mobile only; initialized app waits for both startup work and the reel; startup work can outlast the reel without exposing the router; handoff never overlaps independent MaterialApp roots; bootstrap failure is retryable and never repeats native handoff; boot reel lands without mounting logged-out actions |
+| `test/pages/frame/consumer_bootstrap_test.dart` | animated bootstrap is consumer mobile only; initialized app waits for both startup work and the reel; startup work can outlast the reel without exposing the router; handoff never overlaps independent MaterialApp roots; bootstrap failure is retryable and never repeats native handoff; boot reel lands without mounting logged-out actions |
 | `test/core/forms/contract_alignment_test.dart` | seeded overlong UI limit proves the alignment gate is non-vacuous; choice alignment includes values without an app label interface |
 | `test/core/toolbar_control_contract_test.dart` | toolbar controls share paint extent, center and gaps on {platform}; selector published size equals painted layout at both text scales; search expansion stays valid during the transition and after typing; labelled toolbar {variant} supports semantic activation and disables it; collapsed search supports semantic activation and disabled search exposes no tap; app bar rejects {entry} |
 | `test/design/public_surface_behavior_test.dart` | synthetic organizers are never publicly browseable; public surface behavior contract enumerates every registered app row |

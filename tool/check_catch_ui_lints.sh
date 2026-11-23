@@ -909,7 +909,7 @@ DART
   expect_code_count "arrival delivery $feedback_scope" "catch_notification_delivery_is_service_owned" 1
 done
 
-probe_path="$probe_root/lib/app.dart"
+probe_path="$probe_root/lib/pages/frame/app.dart"
 stage_probe "global arrival host owner" <<'DART'
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:flutter/widgets.dart';

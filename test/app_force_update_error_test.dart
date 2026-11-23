@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/force_update/presentation/force_update_diagnostics.dart';
+import 'package:catch_dating_app/pages/frame/force_update/force_update_diagnostics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 

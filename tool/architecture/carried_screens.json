@@ -35,6 +35,14 @@
 
     {"path": "lib/pages/check_in/event_check_in_qr_scanner.dart", "from": "lib/events/shared/event_check_in_qr_scanner.dart"},
 
+    {"path": "lib/pages/frame/app.dart", "from": "lib/app.dart"},
+
+    {"path": "lib/pages/frame/app_bootstrap.dart", "from": "lib/app_bootstrap.dart"},
+
+    {"path": "lib/pages/frame/consumer_bootstrap.dart", "from": "lib/consumer_bootstrap.dart"},
+
+    {"path": "lib/pages/frame/force_update/update_required_screen.dart", "from": "lib/force_update/presentation/update_required_screen.dart"},
+
     {"path": "lib/pages/inbox/match_celebration_dialog.dart", "from": "lib/matches/shared/match_celebration_dialog.dart"},
 
     {"path": "lib/pages/inbox/widgets/chats_list.dart", "from": "lib/chats/presentation/inbox/widgets/chats_list.dart"},

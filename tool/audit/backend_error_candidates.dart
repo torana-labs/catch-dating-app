@@ -325,14 +325,14 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/app_bootstrap.dart') {
+  if (path == 'lib/pages/frame/app_bootstrap.dart') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,
       reason: 'bootstrap framework/platform error handler + central logging',
     );
   }
 
-  // #1956 moved the bootstrap failure checks here from lib/app_bootstrap.dart.
+  // #1956 moved the bootstrap failure checks here from lib/pages/frame/app_bootstrap.dart.
   if (path == 'packages/platform/lib/firebase/firebase_bootstrap.dart' &&
       rule.id == 'raw_firebase_exception_type') {
     return const CandidateDisposition(
@@ -400,7 +400,7 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/force_update/presentation/force_update_diagnostics.dart') {
+  if (path == 'lib/pages/frame/force_update/force_update_diagnostics.dart') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,
       reason: 'developer diagnostic surface inspects Remote Config errors',

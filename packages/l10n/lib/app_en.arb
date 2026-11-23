@@ -4477,14 +4477,14 @@
   },
   "forceUpdateUpdateRequiredScreenTextUpdateRequired": "Update required",
   "@forceUpdateUpdateRequiredScreenTextUpdateRequired": {
-    "description": "Product copy used by lib/force_update/presentation/update_required_screen.dart (Text).",
+    "description": "Product copy used by lib/pages/frame/force_update/update_required_screen.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "force_update.presentation.update_required_screen"
   },
   "forceUpdateUpdateRequiredScreenLabelUpdateNow": "Update now",
   "@forceUpdateUpdateRequiredScreenLabelUpdateNow": {
-    "description": "Product copy used by lib/force_update/presentation/update_required_screen.dart (label).",
+    "description": "Product copy used by lib/pages/frame/force_update/update_required_screen.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "force_update.presentation.update_required_screen"
@@ -10904,7 +10904,7 @@
   },
   "forceUpdateUpdateRequiredScreenTextANewVersionOf": "A new version of Catch is available. Please update to continue.",
   "@forceUpdateUpdateRequiredScreenTextANewVersionOf": {
-    "description": "Product copy used by lib/force_update/presentation/update_required_screen.dart (Text).",
+    "description": "Product copy used by lib/pages/frame/force_update/update_required_screen.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "force_update.presentation.update_required_screen"

@@ -719,7 +719,7 @@ CandidateDisposition _dispositionFor({
 
   // ── Bootstrap / framework / central logging seams ──────────────────────────
   if (rule.id == 'global_error_handler') {
-    if (path == 'lib/app_bootstrap.dart') {
+    if (path == 'lib/pages/frame/app_bootstrap.dart') {
       return const CandidateDisposition(
         status: CandidateStatus.intentional,
         reason: 'bootstrap owns framework/platform global error handlers',
@@ -748,7 +748,7 @@ CandidateDisposition _dispositionFor({
         reason: 'debug-only assert(() {...}) diagnostic, swallowed in release',
       );
     }
-    if (path == 'lib/app_bootstrap.dart') {
+    if (path == 'lib/pages/frame/app_bootstrap.dart') {
       // Bootstrap runs before ErrorLogger is constructed; best-effort warmup
       // diagnostics can only go to the console at this point.
       return const CandidateDisposition(
@@ -815,7 +815,7 @@ CandidateDisposition _throwDisposition(
   }
 
   // Bootstrap config invariants are programmer/setup errors.
-  if (path == 'lib/app_bootstrap.dart') {
+  if (path == 'lib/pages/frame/app_bootstrap.dart') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,
       reason: 'bootstrap configuration invariant (programmer/setup error)',

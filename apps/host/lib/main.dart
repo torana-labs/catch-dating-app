@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/app_bootstrap.dart';
+import 'package:catch_dating_app/pages/frame/app_bootstrap.dart';
 import 'package:catch_host_app/host_platform_app.dart';
 import 'package:catch_platform/app_config.dart';
 

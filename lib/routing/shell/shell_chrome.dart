@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/notifications/notifications.dart';
+import 'package:catch_dating_app/pages/frame/notifications/foreground_notification_controller.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/push/fcm_service.dart';
@@ -14,7 +14,6 @@ part 'shell_chrome.g.dart';
 // signed-in person and the destination bar and rail. Each app's shell owns its
 // own destinations and route frame.
 
-// provider-graph: routing-to-presentation:appShellFcmInitializationProvider->foregroundNotificationControllerProvider accepted -- The shared authenticated app shell owns transport-to-presentation composition for both app roles. It connects the FCM service callback to the public foreground notification controller command seam; delivery occurs outside provider construction, the service checks session generations, and the controller validates recipient, role and foreground state. Shell, FCM lifecycle and foreground notification tests cover delivery and account changes.
 @riverpod
 Future<void> appShellFcmInitialization(
   Ref ref,

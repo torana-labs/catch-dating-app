@@ -83,7 +83,7 @@ class ExampleScreen {
     final failures = analysisContextMembershipFailures(
       root: Directory.current.absolute.path,
       relativePaths: const <String>[
-        'lib/app.dart',
+        'lib/pages/frame/app.dart',
         'apps/consumer/lib/consumer_platform_app.dart',
         'apps/host/lib/host_platform_app.dart',
         'packages/catch_ui/lib/src/patterns/catch_scaffold.dart',

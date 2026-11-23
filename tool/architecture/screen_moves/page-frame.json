@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "group": "page-frame",
+  "sequence": 1795426409847,
+  "entries": [
+    {
+      "path": "lib/notifications/presentation/",
+      "moveTo": "lib/pages/frame/notifications/"
+    },
+    {
+      "path": "lib/force_update/presentation/",
+      "moveTo": "lib/pages/frame/force_update/"
+    },
+    {
+      "path": "lib/firebase_options_prod.dart",
+      "moveTo": "packages/platform/lib/firebase/firebase_options_prod.dart"
+    },
+    {
+      "path": "lib/firebase_options_dev.dart",
+      "moveTo": "packages/platform/lib/firebase/firebase_options_dev.dart"
+    },
+    {
+      "path": "lib/consumer_bootstrap.dart",
+      "moveTo": "lib/pages/frame/consumer_bootstrap.dart"
+    },
+    {
+      "path": "lib/firebase_options.dart",
+      "moveTo": "packages/platform/lib/firebase/firebase_options.dart"
+    },
+    {
+      "path": "lib/app_bootstrap.dart",
+      "moveTo": "lib/pages/frame/app_bootstrap.dart"
+    },
+    {
+      "path": "lib/app.dart",
+      "moveTo": "lib/pages/frame/app.dart"
+    }
+  ],
+  "moves": {
+    "lib/app_bootstrap.dart": "lib/pages/frame/app_bootstrap.dart",
+    "lib/app.dart": "lib/pages/frame/app.dart",
+    "lib/app.g.dart": "lib/pages/frame/app.g.dart",
+    "lib/consumer_bootstrap.dart": "lib/pages/frame/consumer_bootstrap.dart",
+    "lib/firebase_options_dev.dart": "packages/platform/lib/firebase/firebase_options_dev.dart",
+    "lib/firebase_options_prod.dart": "packages/platform/lib/firebase/firebase_options_prod.dart",
+    "lib/firebase_options.dart": "packages/platform/lib/firebase/firebase_options.dart",
+    "lib/force_update/presentation/force_update_diagnostics.dart": "lib/pages/frame/force_update/force_update_diagnostics.dart",
+    "lib/force_update/presentation/update_required_controller.dart": "lib/pages/frame/force_update/update_required_controller.dart",
+    "lib/force_update/presentation/update_required_controller.g.dart": "lib/pages/frame/force_update/update_required_controller.g.dart",
+    "lib/force_update/presentation/update_required_keys.dart": "lib/pages/frame/force_update/update_required_keys.dart",
+    "lib/force_update/presentation/update_required_screen.dart": "lib/pages/frame/force_update/update_required_screen.dart",
+    "lib/notifications/presentation/foreground_notification_controller.dart": "lib/pages/frame/notifications/foreground_notification_controller.dart",
+    "lib/notifications/presentation/foreground_notification_controller.g.dart": "lib/pages/frame/notifications/foreground_notification_controller.g.dart",
+    "lib/notifications/presentation/foreground_notification_listener.dart": "lib/pages/frame/notifications/foreground_notification_listener.dart",
+    "test/core/consumer_bootstrap_test.dart": "test/pages/frame/consumer_bootstrap_test.dart",
+    "test/force_update/update_required_controller_test.dart": "test/pages/frame/force_update/update_required_controller_test.dart"
+  },
+  "folders": {
+    "lib/force_update/presentation/": "lib/pages/frame/force_update/",
+    "lib/notifications/presentation/": "lib/pages/frame/notifications/"
+  }
+}
