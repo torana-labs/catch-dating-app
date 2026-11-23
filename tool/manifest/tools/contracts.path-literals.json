@@ -8,5 +8,6 @@
   "description": "Blocks retired raw schema path literals in production code.",
   "checks": [
     "node --check tool/contracts/check_schema_path_literals.mjs"
-  ]
+  ],
+  "queueGate": "always"
 }

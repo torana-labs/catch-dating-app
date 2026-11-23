@@ -23,5 +23,6 @@
     "node --test tool/firebase/check_functions_source_closure.test.mjs tool/git/pre_commit_generated_artifacts.test.mjs",
     "node tool/firebase/check_functions_source_closure.mjs"
   ],
-  "role": "gate"
+  "role": "gate",
+  "queueGate": "always"
 }

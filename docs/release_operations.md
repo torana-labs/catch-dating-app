@@ -619,6 +619,30 @@ every suite unless a closure bundles or imports one of its files. A skipped suit
 "not affected: <reason>" summary, so the Required CI names are unchanged.
 Merge queue, main, nightly, manual and full runs execute every suite.
 
+### Semantic checks gate
+
+Whole-repo semantic checks block a merge only after a clean replay (owner
+decision, 22 Nov 2026; evidence in
+[plans/semantic_check_replay_report.md](plans/semantic_check_replay_report.md)).
+
+**Which checks are in the gate.**
+- A check is in the gate when its own manifest file, `tool/manifest/tools/<id>.json`, carries `"queueGate": "always"`. There is no shared list.
+- `"candidate"` marks a check still gathering history: it runs and reports, and never blocks.
+- `node tool/ci/semantic_gates.mjs list --candidates` prints both.
+- `validateQueueGates` (`tool/lib/semantic_gates.mjs`, run by `meta:tool-manifest`) admits the field only on an active whole-repo check: local, non-generator, a repository script, no Flutter or browser setup.
+- `tool/lib/semantic_gates.test.mjs` pins the approved list. A gated check leaving the manifest, losing its field, or a new gate fails that test until the list changes on purpose.
+
+**How the runner works.**
+- `node tool/ci/semantic_gates.mjs run` runs each gate's manifest command, serially and all of them, even after a failure. It writes a step summary and, with `--timings <file>`, per-check timings.
+- It needs what the tools lane prepares: root and Functions dependencies, the schema contracts, and the Admin build modules.
+- A gate that also matches affected-tools still runs in the tools lane. That duplication goes in a later phase.
+
+**The budget.**
+- Every gate must stay under 10 s at p95.
+- `node tool/ci/semantic_gates.mjs budget --timings-dir <dir>` reads the newest nightly timings and lists any gate over budget, with the fix: speed it up, or drop its `queueGate` so affected-tools selects it only when its `impactPaths` change.
+- It is report-only: a slow check is not a broken `main`, so it posts a "Semantic gate over budget" issue instead of failing the nightly.
+- The CI job that runs the gate in the merge queue, and the nightly budget report, are wired separately and need the owner's confirmation before they gate.
+
 ### Selected Check Contracts
 
 The graph selects obligations; selection is not execution evidence. Selector-control

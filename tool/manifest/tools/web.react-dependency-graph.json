@@ -53,5 +53,6 @@
       ],
       "instruction": "Check the React dependency graph live from current TypeScript sources. Repo-local imports must resolve, website and admin may share through governed packages rather than importing each other directly, and runtime dependencies must be acyclic without an allowlist. Type-only cycles remain visible without blocking the check. Keep summary and JSON evidence available for unhealthy graphs; do not commit generated graph projections. Run node tool/web/react_dependency_graph.mjs --check whenever React imports or workspace exports move."
     }
-  ]
+  ],
+  "queueGate": "always"
 }

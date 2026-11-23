@@ -25,5 +25,6 @@
     "node --test tool/design/check_host_shell_coverage.test.mjs",
     "node tool/design/check_host_shell_coverage.mjs"
   ],
-  "role": "gate"
+  "role": "gate",
+  "queueGate": "always"
 }

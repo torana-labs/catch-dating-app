@@ -12,13 +12,18 @@
     ]
   },
   "role": "gate",
-  "description": "Validates the tool manifest: ids, paths and CI requirements, each tool's role, that a gate or ratchet has a check that executes it, that an internal gate's node tests run under an active tool, and that every rule sits complete on one active tool.",
+  "description": "Validates the tool manifest: ids, paths and CI requirements, each tool's role, that a gate or ratchet has a check that executes it, that an internal gate's node tests run under an active tool, and that every rule sits complete on one active tool, and that the merge-queue semantic gates (queueGate) are exactly the approved list of whole-repo checks.",
   "checks": [
     "node --check tool/lib/tool_manifest_rules.mjs",
     "node --test tool/lib/tool_manifest_rules.test.mjs",
+    "node --check tool/lib/semantic_gates.mjs",
+    "node --test tool/lib/semantic_gates.test.mjs",
     "node tool/run.mjs check --manifest-only"
   ],
   "impactPaths": [
-    "tool/lib/tool_manifest_rules.test.mjs"
-  ]
+    "tool/lib/tool_manifest_rules.test.mjs",
+    "tool/lib/semantic_gates.mjs",
+    "tool/lib/semantic_gates.test.mjs"
+  ],
+  "queueGate": "always"
 }

@@ -48,5 +48,6 @@
       ],
       "instruction": "Treat design/public_surface_behavior.json as the executable decision table for public app and marketing surfaces. Keep viewer-session resolution, app role, profile readiness, viewer relationship, app and web publication, organizer ownership/claim/verification, host/contact identity, event supply/lifecycle/availability/payment, location, independent claim/review capabilities, and their runtimes explicit. Every consumer route must have exactly one matrix owner, every configuration must be verified by the declared app or website harness, and excluded dimension values require a rationale. Public actions fail closed when relationship or runtime authority is unresolved."
     }
-  ]
+  ],
+  "queueGate": "always"
 }

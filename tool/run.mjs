@@ -5,6 +5,7 @@ import {spawnSync} from "node:child_process";
 import {repoRoot} from "./lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
 import {loadToolsManifestFromSnapshot, toolsManifestAt} from "./lib/tools_manifest.mjs";
+import {validateQueueGates} from "./lib/semantic_gates.mjs";
 import {changedPathsSince} from "./harness/lib/git_changes.mjs";
 import {
   toolSupportsPlatform,
@@ -415,7 +416,7 @@ function runTool(args) {
 }
 
 function validateManifest(manifest, componentGraph) {
-  const errors = [];
+  const errors = [...validateQueueGates(manifest.tools)];
   const ids = new Set();
   const paths = new Set();
 

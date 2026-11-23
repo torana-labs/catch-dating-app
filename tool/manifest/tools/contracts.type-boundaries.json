@@ -10,5 +10,6 @@
     "node --check tool/contracts/check_schema_type_boundaries.mjs",
     "node --test tool/contracts/check_schema_type_boundaries.test.mjs",
     "node tool/contracts/check_schema_type_boundaries.mjs"
-  ]
+  ],
+  "queueGate": "always"
 }

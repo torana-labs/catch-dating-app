@@ -27,5 +27,6 @@
     ]
   },
   "role": "ratchet",
-  "baseline": "tool/design/library_shims_baseline.json"
+  "baseline": "tool/design/library_shims_baseline.json",
+  "queueGate": "always"
 }

@@ -15,5 +15,6 @@
   "alsoEnforces": [
     "DESIGN-PRIMITIVES-001",
     "DESIGN-LEXICON-001"
-  ]
+  ],
+  "queueGate": "always"
 }

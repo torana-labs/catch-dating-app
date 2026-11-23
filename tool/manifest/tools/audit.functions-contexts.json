@@ -43,5 +43,6 @@
       "node",
       "root-npm"
     ]
-  }
+  },
+  "queueGate": "candidate"
 }

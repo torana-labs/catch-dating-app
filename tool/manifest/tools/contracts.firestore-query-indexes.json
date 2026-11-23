@@ -36,5 +36,6 @@
       ],
       "instruction": "Every repository-owned composite query builder declares its ordered firestore-index contract beside the query. The checked index configuration must contain every declared contract, retired collection indexes must not survive renames, duplicate composite definitions and non-deployable single-field plus __name__ pseudo-composites must be rejected, and the parity gate must run before deploy."
     }
-  ]
+  ],
+  "queueGate": "always"
 }

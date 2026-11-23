@@ -24,5 +24,6 @@
     "node tool/firebase/check_functions_params_coverage.mjs",
     "node --test tool/firebase/check_functions_params_coverage.test.mjs"
   ],
-  "role": "gate"
+  "role": "gate",
+  "queueGate": "always"
 }

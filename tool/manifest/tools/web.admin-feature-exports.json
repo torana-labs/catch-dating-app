@@ -20,5 +20,6 @@
   "role": "gate",
   "alsoEnforces": [
     "WEB-UI-COMPONENT-001"
-  ]
+  ],
+  "queueGate": "always"
 }

@@ -29,5 +29,6 @@
   "role": "gate",
   "alsoEnforces": [
     "APP-COPY-001"
-  ]
+  ],
+  "queueGate": "always"
 }

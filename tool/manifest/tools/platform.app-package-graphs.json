@@ -15,5 +15,6 @@
   "alsoEnforces": [
     "APP-TARGET-IDENTITY-001",
     "DESIGN-TOKENS-001"
-  ]
+  ],
+  "queueGate": "always"
 }

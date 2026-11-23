@@ -8,5 +8,6 @@
   "description": "Validates JSON schema source consistency.",
   "checks": [
     "node --check tool/contracts/validate_schema_contracts.mjs"
-  ]
+  ],
+  "queueGate": "always"
 }
