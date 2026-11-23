@@ -16,7 +16,8 @@ import {adProgrammes, adTargetingFromCatalog, readMarketCatalog} from "../lib/ma
 // from the city catalog (contracts/catalogs/markets.json, each city's `ads`
 // block), never from this file. Forms and campaigns that already exist are
 // left as they are, except that a campaign's ad set cities are brought in line
-// with the catalog, shown in the plan and changed with --apply. Only names
+// with the catalog, shown in the plan and changed with --apply. A form marked
+// retired stays in the file as history and is never created again. Only names
 // under the managed prefix are considered. If a create fails part-way, the
 // campaign made in that run is deleted again. The token comes from
 // META_ADS_ACCESS_TOKEN or Secret Manager (the CatchAds system user) and is
@@ -82,6 +83,12 @@ export function loadMetaCampaigns(file = POLICY_PATH, catalog = readMarketCatalo
     limit(where, "thank-you title", form.thankYouTitle, 60);
     limit(where, "thank-you body", form.thankYouBody, 160);
     limit(where, "thank-you button", form.thankYouButton, 30);
+    // One line shown before Submit (Meta's custom disclaimer, no checkbox):
+    // the consent the first WhatsApp message needs.
+    if (form.consentLine !== undefined) limit(where, "consent line", form.consentLine, 120);
+    if (form.retired !== undefined && form.retired !== true) {
+      throw new Error(`${where} retired must be true or left out.`);
+    }
   }
   for (const campaign of policy.campaigns ?? []) {
     const where = `campaign "${campaign.name}"`;
@@ -96,6 +103,7 @@ export function loadMetaCampaigns(file = POLICY_PATH, catalog = readMarketCatalo
       throw new Error(`${where} daily budget must be a whole number between 100 and 5000 INR.`);
     }
     if (!forms.has(campaign.leadForm)) throw new Error(`${where} names an undeclared lead form.`);
+    if (forms.get(campaign.leadForm).retired) throw new Error(`${where} names a retired lead form.`);
     if (!sitePath(campaign.landingPath)) throw new Error(`${where} needs a site landing path such as /host/.`);
     const targeting = campaign.targeting ?? {};
     if ("cities" in targeting) {
@@ -155,6 +163,7 @@ export function leadFormParams(form) {
         key: value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "")}))} : {}),
     }),
     privacy_policy: {url: site(form.privacyPath), link_text: `${brand.name} privacy policy`},
+    ...(form.consentLine ? {custom_disclaimer: {body: {text: form.consentLine}}} : {}),
     thank_you_page: {title: form.thankYouTitle, body: form.thankYouBody,
       button_type: "VIEW_WEBSITE", button_text: form.thankYouButton,
       website_url: site(form.thankYouPath)},
@@ -290,6 +299,7 @@ export async function planMetaCampaigns({policy, api, render = renderFeedImage})
   };
   const changes = [];
   for (const form of policy.leadForms) {
+    if (form.retired) continue;
     changes.push(formIds.has(form.name) ?
       {kind: "keep", target: form.name, what: "lead form", id: formIds.get(form.name)} :
       {kind: "create", target: form.name, what: "lead form", params: leadFormParams(form)});

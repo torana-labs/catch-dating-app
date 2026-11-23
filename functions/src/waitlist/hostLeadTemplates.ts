@@ -33,10 +33,10 @@ type TemplateSendRecord = NonNullable<
 // - host_lead_welcome: the first message to a host lead who asked to be
 //   contacted on WhatsApp. Website guide, demo and venue leads whose form
 //   said "We reply on WhatsApp" (consent playbook-lead-whatsapp-v2) get it;
-//   Meta lead-form leads get it only while
-//   CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED is also on, because that
-//   form mentions WhatsApp only on its thank-you screen, after the person
-//   has sent it. Recorded as welcomeWhatsapp. Switch:
+//   Meta lead-form leads get it only from a form listed in
+//   META_LEAD_FORM_WHATSAPP_CONSENT (one that says so before Submit) and
+//   only while CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED is also on.
+//   Recorded as welcomeWhatsapp. Switch:
 //   CATCH_WHATSAPP_HOST_LEAD_WELCOME_ENABLED.
 //
 // A lead gets at most one of each, and never throws, so it never causes a
@@ -57,6 +57,17 @@ export const HOST_APP_LINK_CONSENT_VERSION = "app-link-whatsapp-v1";
 export const HOST_LEAD_WELCOME_CONSENT_VERSIONS: ReadonlySet<string> =
   new Set(["playbook-lead-whatsapp-v2"]);
 /**
+ * The Meta lead forms (form id to consent version) whose wording covers a
+ * WhatsApp message before the person presses Submit: "We'll reply on
+ * WhatsApp at the number you gave." (tool/ads/meta_campaigns.json, form
+ * "Catch Host | Organisers | v3" and later). Forms before v3 said it only on
+ * their thank-you screen, after Submit, so they are never listed. A lead
+ * records its form id (metaLead.formId); add a new form's id here once it is
+ * created and still carries the line.
+ */
+export const META_LEAD_FORM_WHATSAPP_CONSENT: ReadonlyMap<string, string> =
+  new Map<string, string>([]);
+/**
  * Website host enquiries that get the welcome. Not app_link (it gets the app
  * link), walkthrough (a request for a time, which staff answer), referral or
  * city_alerts (not the person's own host enquiry), and story or org_contact
@@ -76,6 +87,8 @@ export interface HostLeadTemplateConfig {
   welcomeEnabled: boolean;
   /** CATCH_WHATSAPP_HOST_LEAD_WELCOME_META_ENABLED, with the welcome. */
   welcomeMetaLeads: boolean;
+  /** Tests only: defaults to META_LEAD_FORM_WHATSAPP_CONSENT. */
+  metaConsentForms?: ReadonlyMap<string, string>;
   wabaId: string;
   phoneNumberId: string;
 }
@@ -177,19 +190,24 @@ export function hostAppLinkRecipient(value: unknown): string | null {
 /**
  * Whether a new salesInboundIntents row is a host lead to welcome: a website
  * guide, demo or venue lead given under a consent whose wording covers a
- * WhatsApp reply, or (when metaLeads) a Meta lead-form lead; still awaiting
- * review, not an internal test, and with a number.
+ * WhatsApp reply, or (when metaLeads) a Meta lead-form lead from a form
+ * whose wording does; still awaiting review, not an internal test, and with
+ * a number.
  * @param {unknown} value The intent.
  * @param {boolean} metaLeads Whether Meta lead-form leads are welcomed.
+ * @param {ReadonlyMap} consentForms Meta form ids whose wording consents.
  * @return {string|null} The E.164 number to send to, or null.
  */
-export function hostLeadWelcomeRecipient(value: unknown, metaLeads: boolean):
+export function hostLeadWelcomeRecipient(value: unknown, metaLeads: boolean,
+  consentForms: ReadonlyMap<string, string> = META_LEAD_FORM_WHATSAPP_CONSENT):
   string | null {
   const intent = record(value);
   if (!intent || intent.status !== "needs_identity_review" ||
       isInternalTestLead(intent)) return null;
   if (intent.source === "meta_lead_ad") {
-    return metaLeads && record(intent.metaLead) ? phoneOf(intent) : null;
+    const formId = record(intent.metaLead)?.formId;
+    return metaLeads && typeof formId === "string" &&
+      consentForms.has(formId) ? phoneOf(intent) : null;
   }
   const consent = record(record(intent.lead)?.consent);
   if (intent.source !== "website" ||
@@ -219,7 +237,8 @@ const WELCOME: LeadTemplateSpec = {
   prefix: "cwwelcome_",
   enabled: (config) => config.welcomeEnabled,
   recipient: (intent, config) =>
-    hostLeadWelcomeRecipient(intent, config.welcomeMetaLeads),
+    hostLeadWelcomeRecipient(intent, config.welcomeMetaLeads,
+      config.metaConsentForms),
   variables: (intent) => ({first_name: leadFirstName(intent.fullName)}),
   gapMillis: HOST_LEAD_WELCOME_GAP_MILLIS,
 };

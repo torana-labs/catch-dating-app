@@ -8,7 +8,9 @@ import {supportConversationId} from "../supportInbox/conversations";
 import type {CatchTemplateName} from "../catchMessaging/catchTemplates";
 import {CATCH_TEMPLATES} from "../catchMessaging/catchTemplates";
 import {
+  META_LEAD_FORM_WHATSAPP_CONSENT,
   hostLeadWelcomeMessageId,
+  hostLeadWelcomeRecipient,
   sendHostAppLinkForLead,
   sendHostLeadWelcomeForLead,
   type HostLeadTemplateDeps,
@@ -56,6 +58,12 @@ function metaLead(patch: Record<string, unknown> = {}) {
     createdAt: Timestamp.fromMillis(T0), ...patch};
 }
 
+// A Meta form whose wording asks for WhatsApp before Submit (v3), and one
+// that said it only after Submit (v2). metaLead() comes from v3.
+const V3_FORM = "22222";
+const V2_FORM = "33333";
+const CONSENT_FORMS = new Map([[V3_FORM, "meta-leadform-whatsapp-v1"]]);
+
 function harness(options: {welcome?: boolean; meta?: boolean} = {}) {
   const db = new FakeFirestore({[`salesInboundIntents/${LEAD}`]: guideLead()});
   const clock = {millis: T0 + 1000};
@@ -72,7 +80,8 @@ function harness(options: {welcome?: boolean; meta?: boolean} = {}) {
   const deps: HostLeadTemplateDeps = {
     config: () => ({appLinkEnabled: true,
       welcomeEnabled: options.welcome ?? true,
-      welcomeMetaLeads: options.meta ?? false, ...scope}),
+      welcomeMetaLeads: options.meta ?? false,
+      metaConsentForms: CONSENT_FORMS, ...scope}),
     db: () => db as never,
     nowMillis: () => clock.millis,
     sender,
@@ -185,8 +194,9 @@ test("the welcome skips other kinds, other consent wording, internal tests, " +
   assert.equal(stopped.conversation(), undefined);
 });
 
-test("Meta lead-form leads get the welcome only with their own switch, and " +
-  "a late import is stale", async () => {
+test("Meta lead-form leads get the welcome only from a form that asks for " +
+  "WhatsApp before Submit, with their own switch, and a late import is " +
+  "stale", async () => {
   const without = harness();
   without.lead({}, LEAD, metaLead);
   assert.equal(await sendHostLeadWelcomeForLead(without.deps, LEAD),
@@ -197,6 +207,17 @@ test("Meta lead-form leads get the welcome only with their own switch, and " +
   assert.equal(await sendHostLeadWelcomeForLead(h.deps, LEAD), "accepted");
   assert.deepEqual(h.sent[0].variables, {first_name: "Noor"});
 
+  // A lead from a form that mentioned WhatsApp only after Submit, or from
+  // no recorded form, never gets it.
+  for (const formId of [V2_FORM, undefined]) {
+    const before = harness({meta: true});
+    before.lead({metaLead: {...metaLead().metaLead, formId}}, LEAD, metaLead);
+    assert.equal(await sendHostLeadWelcomeForLead(before.deps, LEAD),
+      "notApplicable");
+    assert.equal(before.sent.length, 0);
+    assert.equal(before.intent().welcomeWhatsapp, undefined);
+  }
+
   const late = harness({meta: true});
   late.lead({metaLead: {...metaLead().metaLead,
     leadCreatedAt: Timestamp.fromMillis(T0 - 2 * DAY)}}, LEAD, metaLead);
@@ -206,6 +227,18 @@ test("Meta lead-form leads get the welcome only with their own switch, and " +
   noPhone.lead({phone: undefined}, LEAD, metaLead);
   assert.equal(await sendHostLeadWelcomeForLead(noPhone.deps, LEAD),
     "notApplicable");
+});
+
+test("the consenting Meta forms are listed by form id with a consent " +
+  "version, and an unlisted form is never welcomed by default", () => {
+  for (const [formId, version] of META_LEAD_FORM_WHATSAPP_CONSENT) {
+    assert.match(formId, /^[0-9]{5,20}$/);
+    assert.match(version, /^meta-leadform-whatsapp-v[0-9]+$/);
+  }
+  assert.equal(hostLeadWelcomeRecipient(metaLead({metaLead: {
+    ...metaLead().metaLead, formId: V2_FORM}}), true), null);
+  assert.equal(hostLeadWelcomeRecipient(metaLead(), true, CONSENT_FORMS),
+    PHONE);
 });
 
 test("a number gets one welcome a week; a refused one does not count",
