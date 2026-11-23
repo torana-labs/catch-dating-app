@@ -34,6 +34,14 @@ export function prNumberOf(headBranch) {
   return match ? Number(match[1]) : null;
 }
 
+/**
+ * Jobs that are never the critical path: Required CI is the end point, and the
+ * proof-reuse shadow's jobs run beside the lanes, outside Required CI's needs
+ * (the comparison runs after every lane, so it is often the last job to finish).
+ */
+export const OFF_PATH_JOBS = Object.freeze(["Required CI", "Compute proof-reuse keys",
+  "Compare proof-reuse verdicts with the lanes"]);
+
 /** macos for any macOS runner label, otherwise linux. */
 export const runnerKind = (labels = []) => (labels.some((label) => /^macos/iu.test(label)) ? "macos" : "linux");
 
@@ -61,7 +69,7 @@ export const MERGE_AFTER_REMOVAL_SECONDS = 60;
 export function analyzeRun(run, jobs = [], timeline = null, {next = null} = {}) {
   const ran = jobs.filter(executed);
   const required = jobs.find((job) => job.name === "Required CI");
-  const gating = ran.filter((job) => job.name !== "Required CI" && job.completed_at);
+  const gating = ran.filter((job) => !OFF_PATH_JOBS.includes(job.name) && job.completed_at);
   const critical = gating.reduce((last, job) =>
     (!last || Date.parse(job.completed_at) > Date.parse(last.completed_at) ? job : last), null);
   const waits = {linux: [], macos: []};
@@ -101,7 +109,10 @@ export function analyzeRun(run, jobs = [], timeline = null, {next = null} = {}) 
     enqueuedAt: enqueued?.at ?? null, createdAt: run.created_at, startedAt: run.run_started_at ?? null, finishedAt,
     queueWaitBeforeRun: enqueued ? seconds(enqueued.at, run.created_at) : null,
     runStartDelay: seconds(run.created_at, run.run_started_at),
+    // The queue merges on Required CI, so its completion is the primary end
+    // point; the last job to finish (which can be off the path) is kept beside it.
     runDuration: seconds(run.run_started_at ?? run.created_at, finishedAt),
+    requiredCiAfter: required?.completed_at ? seconds(run.run_started_at ?? run.created_at, required.completed_at) : null,
     criticalPath: critical ? {name: critical.name, runner: runnerKind(critical.labels),
       finishedAfter: seconds(run.run_started_at ?? run.created_at, critical.completed_at),
       jobDuration: seconds(critical.started_at, critical.completed_at)} : null,
@@ -186,6 +197,7 @@ function summarizePeriod(entries) {
     queueWaitBeforeRun: stats(entries.map((entry) => entry.queueWaitBeforeRun)),
     runStartDelay: stats(entries.map((entry) => entry.runStartDelay)),
     runDuration: stats(entries.map((entry) => entry.runDuration)),
+    requiredCiAfter: stats(entries.map((entry) => entry.requiredCiAfter)),
     criticalPathFinishedAfter: stats(entries.map((entry) => entry.criticalPath?.finishedAfter ?? null)),
     criticalPathJobs: counts(entries.filter((entry) => entry.criticalPath).map((entry) => entry.criticalPath.name)),
     runnerWaitLinuxMax: stats(entries.map((entry) => (entry.runnerWait.linux.jobs ? entry.runnerWait.linux.max : null))),
@@ -257,7 +269,7 @@ const belongsTo = (job) => (entry) => entry.name === job || String(entry.name).s
  * times, so this is a lower bound. null when the run has no gating job.
  */
 export function criticalPathSaving(jobs, reusedJobs) {
-  const gating = (jobs ?? []).filter((job) => job.name !== "Required CI" && job.completed_at && job.started_at &&
+  const gating = (jobs ?? []).filter((job) => !OFF_PATH_JOBS.includes(job.name) && job.completed_at && job.started_at &&
     job.conclusion !== "skipped");
   if (!gating.length || !reusedJobs.length) return gating.length ? 0 : null;
   const last = (list) => Math.max(...list.map((job) => Date.parse(job.completed_at)));
@@ -336,8 +348,9 @@ export function formatReport(result) {
   for (const [name, period] of Object.entries(result.periods)) {
     lines.push("", `${name}: ${period.runs} runs${period.thin ? ` (thin: fewer than ${THIN_BELOW}; do not extrapolate)` : ""}`);
     lines.push(`  queue wait before a run exists: median ${minutes(period.queueWaitBeforeRun.median)}, p90 ${minutes(period.queueWaitBeforeRun.p90)}`);
-    lines.push(`  run duration: median ${minutes(period.runDuration.median)}, p90 ${minutes(period.runDuration.p90)}`);
-    lines.push(`  critical path done after: median ${minutes(period.criticalPathFinishedAfter.median)}, p90 ${minutes(period.criticalPathFinishedAfter.p90)}`);
+    lines.push(`  time to Required CI: median ${minutes(period.requiredCiAfter.median)}, p90 ${minutes(period.requiredCiAfter.p90)}`);
+    lines.push(`  time to last job: median ${minutes(period.runDuration.median)}, p90 ${minutes(period.runDuration.p90)}`);
+    lines.push(`  critical path (last lane job) done after: median ${minutes(period.criticalPathFinishedAfter.median)}, p90 ${minutes(period.criticalPathFinishedAfter.p90)}`);
     lines.push(`  critical-path jobs: ${period.criticalPathJobs.map(([job, count]) => `${job} ×${count}`).join(", ") || "none"}`);
     lines.push(`  longest runner wait per run, Linux: median ${period.runnerWaitLinuxMax.median ?? "-"} s, p90 ${period.runnerWaitLinuxMax.p90 ?? "-"} s, max ${period.runnerWaitLinuxMax.max ?? "-"} s`);
     lines.push(`  longest runner wait per run, macOS: ${period.runsUsingMacos} runs used macOS; median ${period.runnerWaitMacosMax.median ?? "-"} s, p90 ${period.runnerWaitMacosMax.p90 ?? "-"} s, max ${period.runnerWaitMacosMax.max ?? "-"} s`);
