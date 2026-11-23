@@ -1524,37 +1524,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Organizer-scoped WhatsApp/SMS grants are server-owned. Hosts receive
-    // only aggregate reachability counts; attendee self-service will use a
-    // callable rather than exposing this cross-organizer consent ledger.
-    // Catch platform permission is independent of organizer grants. All
-    // identity-bound decisions go through participant callables.
-    match /catchCommunicationPreferences/{uid} {
-      allow read, write: if false;
-    }
-    match /catchCommunicationPermissionReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    match /organizerCommunicationPreferences/{preferenceId} {
-      allow read, write: if false;
-    }
-
-    // Immutable participant permission evidence is server-only. Neither a
-    // manager nor a client may manufacture, rewrite, or delete consent history.
-    match /organizerCommunicationPermissionReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    // The one append-only receipt log for contact permissions. Legal
-    // evidence: no client and no organiser reads or writes it.
+    // The one append-only receipt log for contact permissions (Catch and
+    // every organizer). Legal evidence: no client and no organiser reads or
+    // writes it; every decision goes through a server consent writer.
     match /contactPermissionReceipts/{receiptId} {
       allow read, write: if false;
     }
 
-    // The guest's own messaging settings rows, projected from the preference
-    // and receipt ledgers. A row not written yet reads as missing. Withdrawals
-    // still go through the participant callable.
+    // The guest's own messaging settings rows, written with their contact
+    // permission until the guest build floor moves. A row not written yet
+    // reads as missing. Withdrawals still go through the participant callable.
     match /guestMessagingPermissions/{permissionId} {
       allow get: if (resource == null && isAuthed())
         || (isAuthed() && !isDeletedUser(request.auth.uid)
