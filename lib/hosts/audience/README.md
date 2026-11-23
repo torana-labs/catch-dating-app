@@ -106,7 +106,7 @@ These are schema declarations, not independent proof of runtime limits.
 **Who enforces access, and where does messaging happen?**
 
 - Source: [functions/src/organizers/organizerSavedAudiences.ts](../../../functions/src/organizers/organizerSavedAudiences.ts)
-- Source: [functions/src/shared/organizerCommunicationPreferences.ts](../../../functions/src/shared/organizerCommunicationPreferences.ts)
+- Source: [functions/src/shared/contactPermissions.ts](../../../functions/src/shared/contactPermissions.ts)
 - Source: [lib/hosts/presentation/customers/host_customers_screen_state.dart](../presentation/customers/host_customers_screen_state.dart)
 - Source: [lib/hosts/people/people_screen.dart](../people/people_screen.dart)
 - Source: [tool/architecture/check_host_crm_boundaries.mjs](../../../tool/architecture/check_host_crm_boundaries.mjs)

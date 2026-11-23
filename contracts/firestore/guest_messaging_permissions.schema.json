@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/guest_messaging_permissions.schema.json",
   "title": "GuestMessagingPermissionDocument",
-  "description": "Server-maintained guest-owned read view of one WhatsApp permission row on the guest's messaging settings page: the guest's Catch row (id catchpref_{uid}) or one organizer row (the organizerCommunicationPreferences id). preference is exactly what listParticipantMessagingPreferences summarizes for that sender, including receipt validation. Written by triggers on the preference and receipt collections. Never an endpoint, consent copy or receipt contents, and never consent or dispatch authority; withdrawals still go through withdrawParticipantMessagingPermission, fenced on receiptId.",
+  "description": "Server-maintained guest-owned read view of one WhatsApp permission row on the guest's messaging settings page: the guest's Catch row (id catchpref_{uid}) or one organizer row (an orgpref_ id derived from the organizer and the guest). preference is the sender's WhatsApp summary from the guest's users/{uid}/contactPermissions document, written in the same transaction as that document; released Catch builds read it until the guest minimum-build floor moves (issue #2460). Never an endpoint, consent copy or receipt contents, and never consent or dispatch authority; withdrawals still go through withdrawParticipantMessagingPermission, fenced on receiptId.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "guestMessagingPermissions",

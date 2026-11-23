@@ -134,6 +134,25 @@ export function contactPermissionStatus(
     "optedIn" : "unknown";
 }
 
+/**
+ * Whether the guest stopped every WhatsApp message from Catch, not only its
+ * marketing: the withdrawal's receipt names no purpose (a sender-wide
+ * settings withdrawal). Service replies honour only this. An unreadable or
+ * missing receipt fails closed.
+ */
+export async function catchWithdrewAllWhatsapp(
+  read: (ref: FirebaseFirestore.DocumentReference) =>
+    Promise<FirebaseFirestore.DocumentSnapshot>,
+  db: FirebaseFirestore.Firestore,
+  permission: Pick<ContactPermission, "grants">): Promise<boolean> {
+  const grant = permission.grants["whatsapp:marketing"];
+  if (grant?.status !== "optedOut") return false;
+  if (!grant.receiptId) return true;
+  const receipt = (await read(contactPermissionReceiptRef(db,
+    grant.receiptId))).data() as ContactPermissionReceipt | undefined;
+  return !receipt || receipt.senderKind !== "catch" || !receipt.purpose;
+}
+
 type Summary = Page["catchPreference"];
 
 /**

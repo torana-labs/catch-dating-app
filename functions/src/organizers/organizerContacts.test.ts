@@ -560,10 +560,12 @@ test("directory detail and CSV share stored fields across account linking",
       displayName: "Submitted name", phoneE164: "+919999999999",
       email: "submitted@example.test", initialNote: null,
       identitySecret: "x".repeat(32), origin: {kind: "hostManual"}, now: at});
-    const collections: string[] = [];
-    const collection = store.collection.bind(store);
-    store.collection = (name) => {
-      collections.push(name); return collection(name);
+    // The private profile is never read; the guest's own contact
+    // permission under users/{uid} is.
+    const reads: string[] = [];
+    const snapshot = store.snapshot.bind(store);
+    store.snapshot = (ref) => {
+      reads.push(ref.path); return snapshot(ref);
     };
     const deps = {firestore: () => store.asFirestore(),
       checkRateLimit: async () => undefined, identitySecret: () => "unused"};
@@ -592,5 +594,5 @@ test("directory detail and CSV share stored fields across account linking",
       assert.match(exported.csv, /Host label,.*submitted@example.test/);
       assert.doesNotMatch(exported.csv, /private@example.test|911111111111/);
     }
-    assert.equal(collections.includes("users"), false);
+    assert.equal(reads.includes("users/uid-1"), false);
   });

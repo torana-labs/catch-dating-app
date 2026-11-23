@@ -391,7 +391,7 @@
             "answer": "Server callables enforce organizer authorization; selecting an organizer in the UI is not an authorization boundary. Saved-audience operations require an authenticated organizer manager. Participant-controlled communication permission, verified identity, and organizer suppression remain separate authorities. Audience hands a saved audience or eligible contact context to Inbox, which owns composition, sender setup and delivery. Membership alone does not grant permission to send. The People-to-Inbox segment shortcut requires a scoped eligible selection; a generic all-contacts view or live search is not a substitute for a saved audience.",
             "sourcePaths": [
               "functions/src/organizers/organizerSavedAudiences.ts",
-              "functions/src/shared/organizerCommunicationPreferences.ts",
+              "functions/src/shared/contactPermissions.ts",
               "lib/hosts/presentation/customers/host_customers_screen_state.dart",
               "lib/hosts/people/people_screen.dart",
               "tool/architecture/check_host_crm_boundaries.mjs"

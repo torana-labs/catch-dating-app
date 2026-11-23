@@ -260,9 +260,13 @@ export async function prepareFormMessagingGrants(params: {
       grantedAt: decidedAt, revokedAt: null,
       supersedesReceiptId: previous?.receiptId ?? null, createdAt: now,
     };
+    // Ambiguous first-form copy is kept as evidence but never reverses a
+    // marketing withdrawal; only an expressly reviewed opt-in can.
+    const keepsWithdrawal = previous?.status === "optedOut";
     writes.push(() => writeContactPermissionState(tx, contact, {
-      next: nextContactPermission(contact, {"whatsapp:marketing":
-        grantFromReceipt(receipt, receiptId, decidedAt)}, now),
+      next: nextContactPermission(contact, keepsWithdrawal ? {} : {
+        "whatsapp:marketing": grantFromReceipt(receipt, receiptId, decidedAt),
+      }, now),
       receipts: [{id: receiptId, document: receipt}]}));
   });
   return () => {

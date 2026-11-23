@@ -123,8 +123,9 @@ preserved. Minimal accounts remain absent from public social projections.
 Its optional read `sections` (`plans`, `following`, `reviews`, `messages`)
 serve the website's `/account/` page from existing collections only: own
 `eventBookings` joined to events, active `organizerFollows`, own
-`reviews` with their verified state, and `organizerCommunicationPreferences`
-summarized per channel (opted in only with complete evidence). Each section is
+`reviews` with their verified state, and the guest's organizer
+`users/{uid}/contactPermissions` documents summarized per channel (SMS reads
+opted in only while granted). Each section is
 absent unless requested; no new collection or stored field backs the page.
 Website follow reads and mutations use canonical `organizerFollows` edges;
 legacy browser saves do not become follows or notification consent.
@@ -2031,8 +2032,8 @@ Everything else about a receipt is the shared module's job:
 
 Only pure replay lives here: a receipt whose sole job is to let a retry return
 the same result. A receipt that proves a decision to someone later keeps its
-own collection and retention: consent (`organizerCommunicationPermissionReceipts`,
-`catchCommunicationPermissionReceipts`, `eventAssistanceConsentReceipts`,
+own collection and retention: consent (`contactPermissionReceipts`,
+`eventAssistanceConsentReceipts`,
 `eventApprovalNotificationReceipts`), money (`hostMembershipWebhookReceipts`,
 `eventMessagingBudget*Receipts`, `publicEventAdmissionReceipts`), admission and
 conversion proofs other commands read (`organizerFormAdmissionReceipts`,
@@ -3161,7 +3162,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Short-lived Host venue authority | server-only `eventVenueSessions/{sessionId}` |
 | Per-attendee venue redemption | server-only `eventVenueSessionRedemptions/{sha256(eventId_sessionId_uid)}` |
 | Ambiguous or walk-in Event Success claim review | server-owned `eventRuntimeClaimRequests/{eventId_uid}` |
-| Organizer-scoped communication permission | server-only `organizerCommunicationPreferences/{organizerId_uid}` |
+| Contact permission for one sender (Catch or an organizer) | guest-readable, server-written `users/{uid}/contactPermissions/{senderKey}` |
 | Organizer-scoped operational contact | server-only `organizerContacts/{contactId}` |
 | Contact-to-event fact | server-only `organizerContactEventEdges/{attendeeId}` |
 | Contact identity evidence and verified claim | server-only `organizerContactIdentityLinks/{evidenceId}` and `organizerContactIdentityClaims/{claimId}` |
@@ -3740,22 +3741,20 @@ rows, rather than one private authority document per row. All client summary
 writes and raw CRM/response reads remain denied. No live rollout, backfill or
 latency improvement is asserted by this source change.
 
-`organizerCommunicationPreferences/{organizerId_uid}` is a server-only,
-organizer-scoped permission ledger. WhatsApp and SMS each have independent
-`unknown`, `optedIn`, or `optedOut` state, terms version, source event, source,
-and timestamp. Public registration writes only an explicit checked opt-in. An
-unchecked box does not grant permission and cannot revoke a prior grant;
-withdrawal belongs to the future self-service/STOP callable. Host imports and
-manual roster entry never create channel permission.
-
-Each non-unknown channel preference carries a permission receipt sufficient to
-explain the decision without reading private response content: source kind,
-nullable source event/form/response ids as applicable, terms version, consent
-copy hash, grant timestamp, and nullable revocation timestamp/source. A legacy
-row without complete evidence remains explicitly incomplete or unknown; a
-backfill must never infer or promote permission from a phone number, contact
-source, roster membership, form answer not bound to the reviewed consent copy,
-or prior send.
+Organizer messaging permission lives in the guest's
+`users/{uid}/contactPermissions/organizer_{organizerId}` document (see Form
+messaging decisions). Public registration writes only an explicit checked
+opt-in, bound to the verified registration phone. An unchecked box does not
+grant permission and cannot revoke a prior grant; withdrawal belongs to the
+self-service and STOP paths. Host imports and manual roster entry never
+create channel permission. Every answer names the `contactPermissionReceipts`
+receipt that explains it without private response content: source kind,
+nullable source event/form/response ids, terms version, consent copy hash,
+grant timestamp, and nullable revocation timestamp/source. Permission is
+never inferred from a phone number, contact source, roster membership, form
+answer not bound to the reviewed consent copy, or prior send. CRM contact
+statuses and saved audiences count only effective grants for the contact's
+own number.
 
 A one-off backfill for legacy CRM rows was written but never applied to any
 environment. It is retired, since wipe-and-reseed leaves no legacy rows.
@@ -4693,48 +4692,44 @@ copy hashes, timestamps, deletion and withdrawal before atomically promoting
 each selected principal and purpose. Replayed requests return current state;
 an older intent cannot reverse a later STOP or purpose withdrawal.
 
-Organizer decisions use `organizerCommunicationPreferences` and
-`organizerCommunicationPermissionReceipts`. Catch decisions use separate
-server-only `catchCommunicationPreferences/{uid}` and
-`catchCommunicationPermissionReceipts/{receiptId}`. Neither can authorize the
-other sender. A newer withdrawal wins over a delayed submission/capture, while
-replayed finalization is idempotent. Account deletion removes these preferences
-and receipts, and a deletion tombstone prevents a late payment from granting
-consent again. The settings page reads the signed-in guest's permissions from
-the guest-owned read model `guestMessagingPermissions/{permissionId}`: one row
-per sender (`catchpref_{uid}` for Catch, the `organizerCommunicationPreferences`
-id for an organizer), holding `uid`, `scope`, `organizerId` and the sender's
-`preference` summary, the same summary a withdrawal returns. The
-`listParticipantMessagingPreferences` callable it replaced is retired (Nov
-2026).
-Every writer of the two preference collections writes the row in its own
-transaction (the four triggers that did so retired with issue #2460); the
-guest may get and list only their own rows, and only the server writes them.
-
 Contact permissions (issue #2460) are the single answer to whether a sender
 may message a person: `users/{uid}/contactPermissions/{senderKey}`, where
 `senderKey` is `catch` or `organizer_{organizerId}`, holds `senderKind`,
 `senderId`, `grants` keyed `channel:purpose` (`whatsapp:marketing`,
 `whatsapp:eventOperations`, `whatsapp:followerUpdates`, `sms:marketing`), each
 `{status, endpointE164, receiptId, termsVersion, source, updatedAt}`, and
-`granted`, the sorted keys that are effective now. Each answer is the status
-today's send gates compute for that purpose, evaluated at the number the grant
-was given for: an opt-in covers only its `endpointE164`, a withdrawal covers
-every number, and a complete opt-in the gate does not honour yet stays in
-`grants` without entering `granted`. No document, or no key, means no
-consent. `contactPermissionReceipts/{receiptId}` is the one append-only receipt
-log: each Catch or organizer receipt's copy with the same id plus `senderKind`
-and `senderId`. Until the readers move, the old preference and receipt
-collections stay the source of truth and every consent writer (registration,
-follow by phone, form submission and promotion, inbound STOP, withdrawal)
-writes the permission document, the receipt copy and the guest row in the same
-transaction; account deletion deletes all three as it deletes the old
-receipts. The guest gets and lists their own permission documents by path; no
-client reads receipts and no organiser reads either collection directly.
+`granted`, the sorted keys that are effective now. An opt-in covers only its
+`endpointE164`; a withdrawal covers every number; a later decision replaces
+an earlier one. An opt-in is effective only with a number, a receipt and
+approved copy: form copy (`form-whatsapp-v1`, `form-whatsapp-v2`) awaits
+provider review, and follower updates need the reviewed follow-by-phone copy,
+so such answers stay in `grants` without entering `granted`. The first form
+copy named no purpose and is recorded as a marketing answer that never
+reverses a marketing withdrawal. No document, or no key, means no consent.
+Every send gate reads it through `contactPermissionAllows` and
+`contactPermissionStatus` in `functions/src/shared/contactPermissions.ts`.
+`contactPermissionReceipts/{receiptId}` is the one append-only receipt log.
+Neither sender's permission can authorize the other. A newer withdrawal wins
+over a delayed submission/capture, while replayed finalization is idempotent.
+Every consent writer (registration, follow by phone, form submission and
+promotion, inbound STOP, withdrawal) writes the receipt, the permission and
+the guest's `guestMessagingPermissions/{permissionId}` row in one
+transaction; account deletion deletes all three, and a deletion tombstone
+prevents a late payment from granting consent again. The guest gets and lists
+their own permission documents by path; no client reads receipts and no
+organiser reads either collection directly. Catch service replies stop only
+for a sender-wide Catch withdrawal (a receipt with no purpose), not for a
+marketing-only one.
+
+The settings page reads the signed-in guest's permissions from the
+guest-owned read model `guestMessagingPermissions/{permissionId}`: one row
+per sender (`catchpref_{uid}` for Catch, an `orgpref_` id for an organizer),
+holding `uid`, `scope`, `organizerId` and the sender's `preference` summary,
+the same summary a withdrawal returns, until the guest minimum-build floor
+passes a build that reads `contactPermissions`. The guest may get and list
+only their own rows, and only the server writes them.
 Organiser audiences use the server-only collection-group query on `senderId`
-and `granted`. The `contact-permissions` migration in
-`tool/data/migrate_firestore_consolidation.mjs` converts data recorded before
-the writers. Organizer
+and `granted`. Organizer
 names come from the public organizer lookup, so a rename never rewrites rows.
 Confirmed opt-in requires matching grant evidence. The exact authenticated
 `/settings/whatsapp` route remains available before profile setup.
@@ -5809,7 +5804,7 @@ withdrawn, foreign or mismatched source is redacted and cannot be accepted.
 Imported/connector data remains organizer-acquired and is labeled separately
 instead of receiving a fictional participant grant. Field visibility is not
 messaging permission: WhatsApp/SMS opt-in remains
-exclusively in `organizerCommunicationPreferences`, and an application grant
+exclusively in the guest's `contactPermissions`, and an application grant
 cannot create or broaden it.
 
 Customer Details can pass `contactId` to `listOrganizerApplications`. The

@@ -14,8 +14,27 @@ import type {Firestore} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {FormPaymentTestStore} from
   "../payments/formPayments/formPaymentTestStore";
-import {unknownOrganizerCommunicationChannel} from
-  "../shared/organizerCommunicationPreferences";
+import {effectiveContactKeys, type ContactGrant} from
+  "../shared/contactPermissions";
+
+const catchPermissionKey = "users/participant/contactPermissions/catch";
+
+/** The participant's Catch permission after a settings withdrawal. */
+function catchWithdrawal(fake: {records: Map<string, unknown>},
+  purpose: "marketing" | null, millis: number) {
+  const receiptId = purpose ? "pmpr_purpose" : "pmpr_sender";
+  const grant: ContactGrant = {status: "optedOut", endpointE164: null,
+    receiptId, termsVersion: null, source: "participantSettings",
+    updatedAt: Timestamp.fromMillis(millis)};
+  const grants = {"whatsapp:marketing": grant};
+  fake.records.set(catchPermissionKey, {senderKind: "catch",
+    senderId: "catch", grants, granted: effectiveContactKeys(grants),
+    updatedAt: Timestamp.fromMillis(millis)});
+  fake.records.set(`contactPermissionReceipts/${receiptId}`, {
+    senderKind: "catch", senderId: "catch", uid: "participant",
+    channel: "whatsapp", ...(purpose ? {purpose} : {}),
+    decision: "optedOut", source: "participantSettings"});
+}
 import {
   parseCatchWhatsappWebhook,
   WEBHOOK_RETENTION_MILLIS,
@@ -224,7 +243,7 @@ test(
     assert.equal(saved.purpose, "serviceSupport");
     assert.equal(JSON.stringify(saved).includes(f.input.body), false);
     assert.equal(JSON.stringify(saved).includes(config.recipientE164), false);
-    const preferenceKey = "catchCommunicationPreferences/participant";
+    const preferenceKey = catchPermissionKey;
     assert.equal(
       f.fake.records.has(preferenceKey),
 
@@ -355,19 +374,7 @@ test(
   async () => {
     for (const scope of ["global", "marketing"] as const) {
       const f = fixture();
-      const stopped = {
-        ...unknownOrganizerCommunicationChannel(),
-        status: "optedOut",
-        updatedAt: Timestamp.fromMillis(time),
-      };
-      f.fake.records.set("catchCommunicationPreferences/participant", {
-        uid: "participant",
-        whatsapp:
-        scope === "global" ? stopped : unknownOrganizerCommunicationChannel(),
-        whatsappPurposes: {marketing: stopped},
-        createdAt: Timestamp.fromMillis(time),
-        updatedAt: Timestamp.fromMillis(time),
-      });
+      catchWithdrawal(f.fake, scope === "global" ? null : "marketing", time);
       if (scope === "global") {
         await assert.rejects(sendCatchWhatsappReply(f.request, f.service));
         assert.equal(f.sends(), 0);
@@ -395,15 +402,7 @@ test(
           }
           if (change === "role") f.disableActor();
           if (change === "withdrawal") {
-            f.fake.records.set("catchCommunicationPreferences/participant", {
-              uid: "participant",
-              whatsapp: {
-                ...unknownOrganizerCommunicationChannel(),
-                status: "optedOut",
-              },
-              createdAt: Timestamp.fromMillis(time),
-              updatedAt: Timestamp.fromMillis(time),
-            });
+            catchWithdrawal(f.fake, null, time);
           }
           return f.service.prepare();
         },
@@ -868,7 +867,7 @@ test(
       CATCH_ENDPOINT_STOPS +
       "/" +
       catchStopId(config, catchEndpointHash(config.recipientE164)),
-      "catchCommunicationPreferences/participant",
+      catchPermissionKey,
       "deletedUsers/participant",
     ]) {
       const f = fixture();

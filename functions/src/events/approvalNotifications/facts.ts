@@ -34,6 +34,7 @@ import {preferences, receipts, settings} from "./preferences";
 import {readApplication, type LoadIdentity} from "./source";
 import {
   preferenceId,
+  timestampMillis,
   type Binding,
   type Intent,
 } from "./model";
@@ -184,10 +185,15 @@ export async function readFacts(
     ?.grants ?? {};
   // A new event-specific choice can supersede an older withdrawal, but
   // missing withdrawal evidence must never reopen a route.
-  const withdrawn = (grant?: {status?: string;
-    updatedAt?: {toMillis?: () => number}}) => {
+  const withdrawn = (grant?: {status?: string; updatedAt?: unknown}) => {
     if (grant?.status !== "optedOut") return false;
-    const at = grant.updatedAt?.toMillis?.() ?? NaN;
+    const value = grant.updatedAt as {toMillis?: () => number;
+      _seconds?: number; _nanoseconds?: number} | undefined;
+    const at = typeof value?.toMillis === "function" ? value.toMillis() :
+      typeof value?._seconds === "number" &&
+        typeof value._nanoseconds === "number" ?
+        timestampMillis({_seconds: value._seconds,
+          _nanoseconds: value._nanoseconds}) : NaN;
     return !Number.isFinite(at) || at >= preference.updatedAtMillis;
   };
   const endpointStop = phone ?

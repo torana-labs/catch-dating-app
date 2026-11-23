@@ -8,8 +8,8 @@ import {
 } from "firebase-functions/v2/https";
 import {runAssistanceTransaction as transact} from
   "../platform/transactionCallback";
-import {contactPermissionRef, readContactPermission} from
-  "../shared/contactPermissions";
+import {catchWithdrewAllWhatsapp, contactPermissionRef,
+  readContactPermission} from "../shared/contactPermissions";
 import {
   authorizeCatchReply,
   assertCatchReplyEnabled,
@@ -315,7 +315,7 @@ export class CatchWhatsappReplyStore {
         {kind: "catch"});
       if (
         !value ||
-        value.grants["whatsapp:marketing"]?.status === "optedOut"
+        await catchWithdrewAllWhatsapp((ref) => tx.get(ref), this.db, value)
       ) {
         throw new HttpsError(
           "failed-precondition",

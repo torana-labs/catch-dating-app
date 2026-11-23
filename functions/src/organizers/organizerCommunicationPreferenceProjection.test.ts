@@ -43,6 +43,10 @@ class FakeDocRef {
   get id() {
     return this.path.split("/").at(-1)!;
   }
+
+  collection(name: string) {
+    return query(this.db, `${this.path}/${name}`, []);
+  }
 }
 
 class FakeTransaction {
@@ -93,26 +97,37 @@ function query(db: FakeFirestore, name: string,
   };
 }
 
-const preferencePath = "organizerCommunicationPreferences/orgpref_fixture";
+const preferencePath = "users/guest-1/contactPermissions/organizer_org-1";
+const phone = "+919812345678";
+
+function grant(status: "optedIn" | "optedOut", receiptId: string) {
+  return {status, endpointE164: status === "optedIn" ? phone : null,
+    receiptId, termsVersion: status === "optedIn" ?
+      "organizer-updates-v1" : null,
+    source: status === "optedIn" ? "publicEventRegistration" : "inboundStop",
+    updatedAt: {toMillis: () => 1}};
+}
 
 function optedIn(): FakeData {
-  return {organizerId: "org-1", uid: "guest-1",
-    whatsapp: {status: "optedIn", evidenceStatus: "complete",
-      currentReceiptId: "receipt-1"},
-    sms: {status: "optedIn", evidenceStatus: "complete",
-      currentReceiptId: "receipt-2"}};
+  return {senderKind: "organizer", senderId: "org-1",
+    grants: {"whatsapp:marketing": grant("optedIn", "receipt-1"),
+      "sms:marketing": grant("optedIn", "receipt-2")},
+    granted: ["sms:marketing", "whatsapp:marketing"],
+    updatedAt: {toMillis: () => 1}};
 }
 
 function optedOut(): FakeData {
-  return {organizerId: "org-1", uid: "guest-1",
-    whatsapp: {status: "optedOut"}, sms: {status: "optedOut"}};
+  return {senderKind: "organizer", senderId: "org-1",
+    grants: {"whatsapp:marketing": grant("optedOut", "stop-1"),
+      "sms:marketing": grant("optedOut", "stop-1")},
+    granted: [], updatedAt: {toMillis: () => 2}};
 }
 
 function harness() {
   const db = new FakeFirestore();
   db.write("organizerContacts/contact-1", {organizerId: "org-1",
-    linkedUid: "guest-1", whatsappStatus: "unknown", smsStatus: "unknown",
-    revision: 1});
+    linkedUid: "guest-1", phoneE164: phone, whatsappStatus: "unknown",
+    smsStatus: "unknown", revision: 1});
   db.write("organizerContacts/contact-2", {organizerId: "org-1",
     linkedUid: "other-guest", whatsappStatus: "unknown", smsStatus: "unknown",
     revision: 1});
@@ -127,7 +142,7 @@ function harness() {
     identitySecret: () => "unused",
   };
   const apply = (eventVersion: unknown) =>
-    applyOrganizerCommunicationStatuses({preferenceId: "orgpref_fixture",
+    applyOrganizerCommunicationStatuses({
       organizerId: "org-1", uid: "guest-1",
       eventVersion: eventVersion as never}, deps);
   return {db, apply};
@@ -172,6 +187,17 @@ test("an opt-in applies when it is the current preference", async () => {
     ["contact-1"]);
   assert.equal(db.read("organizerContacts/contact-1")?.whatsappStatus,
     "optedIn");
+});
+
+test("an opt-in for another number leaves the contact unknown", async () => {
+  const {db, apply} = harness();
+  db.write("organizerContacts/contact-1", {...db.read(
+    "organizerContacts/contact-1"), phoneE164: "+919800000002"});
+  db.write(preferencePath, optedIn());
+  assert.deepEqual(await apply(db.updateTimes.get(preferencePath)),
+    ["contact-1"]);
+  assert.equal(db.read("organizerContacts/contact-1")?.whatsappStatus,
+    "unknown");
 });
 
 test("a deleted preference reads as unknown, and a stale delete event is " +

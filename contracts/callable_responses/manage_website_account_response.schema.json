@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/manage_website_account_response.schema.json",
   "title": "ManageWebsiteAccountCallableResponse",
-  "description": "Private account identity, optional own organizer-follow state and, when requested, the account page's messaging permissions (organizerCommunicationPreferences stays server-only). The page's plans, follows and reviews come from Firestore listeners on the guest's own rows (guestEventStatuses, organizerFollows, reviews).",
+  "description": "Private account identity, optional own organizer-follow state and, when requested, the account page's organizer messaging permissions, read from the guest's own users/{uid}/contactPermissions documents. The page's plans, follows and reviews come from Firestore listeners on the guest's own rows (guestEventStatuses, organizerFollows, reviews).",
   "type": "object",
   "additionalProperties": false,
   "required": [

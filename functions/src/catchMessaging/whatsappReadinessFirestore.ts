@@ -25,8 +25,8 @@ import {validateCatchWhatsappReadinessIngressDocument} from
   "../shared/generated/validators/catchWhatsappReadinessIngressDocument";
 import {validateCatchWhatsappReadinessAuditDocument} from
   "../shared/generated/validators/catchWhatsappReadinessAuditDocument";
-import {contactPermissionRef, readContactPermission} from
-  "../shared/contactPermissions";
+import {catchWithdrewAllWhatsapp, contactPermissionRef,
+  readContactPermission} from "../shared/contactPermissions";
 import {
   prepareCatchReadinessEvidence,
   loadProtectedCatchReadinessArchive,
@@ -566,8 +566,8 @@ export async function applyCatchReadinessReviewInFirestore(
                         const invalidPreference =
                           preference.exists &&
                           (!pref ||
-                            pref.grants["whatsapp:marketing"]?.status ===
-                              "optedOut");
+                            (await catchWithdrewAllWhatsapp(
+                              (ref) => tx.get(ref), db, pref)));
                         const identity = await fence.readCurrent(
                           structuredClone(approval),
                         );

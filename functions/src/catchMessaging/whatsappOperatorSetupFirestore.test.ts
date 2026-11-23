@@ -28,7 +28,8 @@ import type {CatchWhatsappReplyReadinessDocument} from
   "../shared/generated/catchWhatsappReplyReadinessDocument";
 
 type Data = Record<string, unknown>;
-type Ref = {path: string; id: string; get: () => Promise<unknown>};
+type Ref = {path: string; id: string; get: () => Promise<unknown>;
+  collection: (name: string) => {doc: (id: string) => Ref}};
 /** Synthetic serialized atomic store. Enforces create-only, read-before-write,
  * single SDK attempt and simulates a lost response AFTER the actual commit. */
 class TestDb {
@@ -39,7 +40,8 @@ class TestDb {
   private tail: Promise<unknown> = Promise.resolve();
   ref(path: string): Ref {
     return {path, id: path.split("/").at(-1)!,
-      get: async () => this.snapshot(path)};
+      get: async () => this.snapshot(path),
+      collection: (name: string) => this.collection(`${path}/${name}`)};
   }
   snapshot(path: string) {
     const value = this.records.get(path);

@@ -19,8 +19,8 @@ export function useWebsiteAccountController(scope: {organizerId?: string; eventI
   /** The account page's own-record reads; other callers read identity only. */
   sections?: readonly AccountSection[];} = {}) {
   const {organizerId, eventId, sections} = scope;
-  // organizerCommunicationPreferences stays server-only, so messages come
-  // through the account read; the guest's own rows come from listeners.
+  // Organizer messaging permissions are summarized by the account read; the
+  // guest's own rows come from listeners.
   const readsMessages = sections?.includes("messages") ?? false;
   const listens = sections?.some((section) => section !== "messages") ?? false;
   const id = useId();

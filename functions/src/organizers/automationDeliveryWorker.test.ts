@@ -26,8 +26,12 @@ import {MetaProviderError} from
   "../platform/delivery/organizerWhatsappProvider";
 import {organizerContactChannelStateId} from "./organizerCampaignModel";
 import {hashEndpoint} from "../platform/delivery/endpointHash";
-import {organizerCommunicationPreferenceId} from
-  "../shared/organizerCommunicationPreferences";
+import {
+  contactPermissionDocument,
+  contactPermissionPath,
+  optedInGrant,
+  optedOutGrant,
+} from "../shared/testing/contactPermissionFixtures";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
 import {runFromDocument} from "../moments/momentDocuments";
 import type {AutomationDeliveryMessageDocument}
@@ -142,25 +146,11 @@ function seedAutomation(
       deletedAt: null,
       hiddenAt: null,
     },
-    ["organizerCommunicationPreferences/" +
-      organizerCommunicationPreferenceId("org-1", "u-1")]: {
-      organizerId: "org-1",
-      uid: "u-1",
-      whatsappPurposes: {
-        marketing: {
-          status: "optedIn",
-          endpointE164: E164,
-          evidenceStatus: "complete",
-          currentReceiptId: "rcpt-1",
-          source: "manualImport",
-          termsVersion: "v1",
-          updatedAt: NOW,
-        },
-      },
-      whatsapp: null,
-      createdAt: NOW,
-      updatedAt: NOW,
-    },
+    [contactPermissionPath("u-1", {kind: "organizer",
+      organizerId: "org-1"})]: contactPermissionDocument(
+      {kind: "organizer", organizerId: "org-1"},
+      {"whatsapp:marketing": optedInGrant(E164,
+        {receiptId: "rcpt-1", updatedAt: NOW})}, NOW),
     ...overrides,
   };
 }
@@ -396,11 +386,9 @@ test("an opted-out contact suppresses at eligibility — no provider call",
     const db = new FakeFirestore(seedAutomation());
     const {deliveryMessageId} = await handoff(db);
     db.updateDoc(
-      `organizerCommunicationPreferences/${
-        organizerCommunicationPreferenceId("org-1", "u-1")}`,
-      {whatsappPurposes: {
-        marketing: {status: "optedOut", updatedAt: NOW},
-      }},
+      contactPermissionPath("u-1", {kind: "organizer", organizerId: "org-1"}),
+      {grants: {"whatsapp:marketing": optedOutGrant({updatedAt: NOW})},
+        granted: []},
     );
     const calls: unknown[] = [];
     const result = await worker(db, {
@@ -502,25 +490,11 @@ test("a contact merge moves the send to the surviving identity",
         deletedAt: null,
         hiddenAt: null,
       },
-      ["organizerCommunicationPreferences/" +
-        organizerCommunicationPreferenceId("org-1", "u-2")]: {
-        organizerId: "org-1",
-        uid: "u-2",
-        whatsappPurposes: {
-          marketing: {
-            status: "optedIn",
-            endpointE164: "+919800000010",
-            evidenceStatus: "complete",
-            currentReceiptId: "rcpt-2",
-            source: "manualImport",
-            termsVersion: "v1",
-            updatedAt: NOW,
-          },
-        },
-        whatsapp: null,
-        createdAt: NOW,
-        updatedAt: NOW,
-      },
+      [contactPermissionPath("u-2", {kind: "organizer",
+        organizerId: "org-1"})]: contactPermissionDocument(
+        {kind: "organizer", organizerId: "org-1"},
+        {"whatsapp:marketing": optedInGrant("+919800000010",
+          {receiptId: "rcpt-2", updatedAt: NOW})}, NOW),
     }));
     const {deliveryMessageId} = await handoff(db);
     const calls: Array<Record<string, unknown>> = [];

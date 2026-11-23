@@ -51,8 +51,10 @@ export async function readAccountSections(
         organizerId,
         organizerName: text(organizers.get(organizerId)?.name, 240),
         whatsapp: whatsapp.status as Channel,
-        sms: (permission.grants["sms:marketing"]?.status ??
-          "unknown") as Channel,
+        // Only an effective grant reads as opted in.
+        sms: (permission.grants["sms:marketing"]?.status === "optedOut" ?
+          "optedOut" : permission.granted.includes("sms:marketing") ?
+            "optedIn" : "unknown") as Channel,
         whatsappReceiptId: whatsapp.receiptId,
       };
     }).sort((a, b) => a.organizerName.localeCompare(b.organizerName)),

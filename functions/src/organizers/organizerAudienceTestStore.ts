@@ -20,6 +20,10 @@ class Ref {
   get id() {
     return this.path.split("/").at(-1)!;
   }
+  /** A subcollection of this document, as users/{uid}/... paths need. */
+  collection(name: string): Query {
+    return this.store.collection(`${this.path}/${name}`);
+  }
   async get() {
     return this.store.snapshot(this);
   }

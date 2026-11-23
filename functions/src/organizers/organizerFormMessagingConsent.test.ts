@@ -8,10 +8,32 @@ import {formMessagingOffer, formMessagingTerms,
 import {submitOrganizerFormResponseHandler} from "./organizerFormResponses";
 import {promoteFormCommunicationIntentHandler} from
   "./organizerFormConsentPromotion";
-import {organizerCommunicationPreferenceId,
-  effectiveOrganizerWhatsappPurposeStatus,
-  unknownOrganizerCommunicationChannel} from
-  "../shared/organizerCommunicationPreferences";
+import {effectiveContactKeys, organizerWhatsappKeys,
+  type ContactGrant, type ContactPermission} from
+  "../shared/contactPermissions";
+import {contractValidator} from "../shared/contractTestValidators";
+
+const validReceipt = contractValidator("ContactPermissionReceiptDocument");
+const validPermission = contractValidator("ContactPermissionDocument");
+const organizerPath = "users/person/contactPermissions/organizer_org";
+const catchPath = "users/person/contactPermissions/catch";
+
+function withdrawal(millis: number): ContactGrant {
+  return {status: "optedOut", endpointE164: null, receiptId: "receipt_stop",
+    termsVersion: null, source: "inboundStop",
+    updatedAt: Timestamp.fromMillis(millis)};
+}
+
+const receiptCount = (store: {records: Map<string, unknown>}) =>
+  [...store.records.keys()].filter((path) =>
+    path.startsWith("contactPermissionReceipts/")).length;
+
+function stored(grants: ContactPermission["grants"],
+  scope: "organizer" | "catch"): ContactPermission {
+  return {senderKind: scope, senderId: scope === "catch" ? "catch" : "org",
+    grants, granted: effectiveContactKeys(grants),
+    updatedAt: Timestamp.fromMillis(800)};
+}
 
 const chosenAt = Timestamp.fromMillis(500);
 const now = Timestamp.fromMillis(1000);
@@ -82,42 +104,40 @@ test("payment and submission with unchecked choices grant neither scope",
     const {paymentId} = await h.reserve();
     h.capture(paymentId);
     assert.equal(await h.finalize(paymentId), "submitted");
-    assert.equal(
-      h.records("organizerCommunicationPermissionReceipts").length, 0);
-    assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
+    assert.equal(h.records("contactPermissionReceipts").length, 0);
+    assert.equal(h.records("users").length, 0);
   });
 
 test("captured form creates independent immutable receipts exactly once",
   async () => {
     const h = fixture(true, true);
     const {paymentId} = await h.reserve();
-    assert.equal(
-      h.records("organizerCommunicationPermissionReceipts").length, 0);
+    assert.equal(h.records("contactPermissionReceipts").length, 0);
     h.capture(paymentId);
     await Promise.all([h.finalize(paymentId), h.finalize(paymentId)]);
-    const org = h.records("organizerCommunicationPermissionReceipts");
-    const platform = h.records("catchCommunicationPermissionReceipts");
-    assert.equal(org.length, 1);
-    assert.equal(platform.length, 1);
-    assert.notEqual(org[0][0], platform[0][0]);
-    assert.notEqual(org[0][1].consentCopyHash, platform[0][1].consentCopyHash);
-    assert.equal(org[0][1].organizerId, "org");
-    assert.equal(platform[0][1].sourceOrganizerId, "org");
-    assert.equal(platform[0][1].organizerId, undefined);
-    assert.equal(org[0][1].uid, "person");
-    assert.equal(org[0][1].sourceResponseId,
+    const receipts = h.records("contactPermissionReceipts");
+    assert.equal(receipts.length, 2);
+    const org = receipts.find(([, value]) => value.senderKind === "organizer")!;
+    const platform = receipts.find(([, value]) => value.senderKind === "catch")!;
+    for (const [, receipt] of receipts) {
+      assert.equal(validReceipt(receipt), true);
+    }
+    assert.notEqual(org[1].consentCopyHash, platform[1].consentCopyHash);
+    assert.equal(org[1].senderId, "org");
+    assert.equal(platform[1].senderId, "catch");
+    assert.equal(platform[1].sourceOrganizerId, "org");
+    assert.equal(org[1].uid, "person");
+    assert.equal(org[1].sourceResponseId,
       h.records("organizerFormResponses")[0][0].split("/")[1]);
     // No profile is created; only the person's contact permissions are.
-    assert.deepEqual(h.records("users").map(([path]) => path).sort(), [
-      "users/person/contactPermissions/catch",
-      "users/person/contactPermissions/organizer_org"]);
-    // Each receipt has its contactPermissionReceipts copy. The first form
-    // copy names no purpose, so neither sender gains a grant.
-    const copies = h.records("contactPermissionReceipts");
-    assert.deepEqual(copies.map(([path]) => path.split("/")[1]).sort(),
-      [org[0][0], platform[0][0]].map((path) => path.split("/")[1]).sort());
+    assert.deepEqual(h.records("users").map(([path]) => path).sort(),
+      [catchPath, organizerPath]);
+    // The first form copy named no purpose: it is recorded as a marketing
+    // answer the send gate does not honour.
     for (const [, permission] of h.records("users")) {
-      assert.deepEqual(permission.grants, {});
+      assert.equal(validPermission(permission), true);
+      const grants = permission.grants as ContactPermission["grants"];
+      assert.equal(grants["whatsapp:marketing"]?.status, "optedIn");
       assert.deepEqual(permission.granted, []);
     }
     assert.equal(h.records("guestMessagingPermissions").length, 2);
@@ -135,9 +155,9 @@ test("free submissions share the same consent transaction without a payment",
       },
     });
     assert.equal(result.status, "submitted");
-    assert.equal(
-      h.records("organizerCommunicationPermissionReceipts").length, 1);
-    assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
+    const receipts = h.records("contactPermissionReceipts");
+    assert.equal(receipts.length, 1);
+    assert.equal(receipts[0][1].senderKind, "organizer");
     assert.equal(h.records("guestPayments").length, 0);
   });
 
@@ -145,27 +165,16 @@ test("delayed capture cannot overwrite a later organizer STOP or Catch opt-out",
   async () => {
     const h = fixture(true, true);
     const {paymentId} = await h.reserve();
-    const withdrawal = {...unknownOrganizerCommunicationChannel(),
-      status: "optedOut", evidenceStatus: "complete",
-      currentReceiptId: "receipt_stop", termsVersion: null,
-      source: "inboundStop", updatedAt: Timestamp.fromMillis(800)};
-    const orgKey = "organizerCommunicationPreferences/" +
-      organizerCommunicationPreferenceId("org", "person");
-    const org = {organizerId: "org", uid: "person", whatsapp: withdrawal,
-      sms: unknownOrganizerCommunicationChannel(), createdAt: chosenAt,
-      updatedAt: withdrawal.updatedAt};
-    const platform = {uid: "person", whatsapp: withdrawal,
-      createdAt: chosenAt, updatedAt: withdrawal.updatedAt};
-    h.store.records.set(orgKey, org);
-    h.store.records.set("catchCommunicationPreferences/person", platform);
+    const org = stored(Object.fromEntries(organizerWhatsappKeys.map((key) =>
+      [key, withdrawal(800)])), "organizer");
+    const platform = stored({"whatsapp:marketing": withdrawal(800)}, "catch");
+    h.store.records.set(organizerPath, org);
+    h.store.records.set(catchPath, platform);
     h.capture(paymentId);
     await h.finalize(paymentId);
-    assert.deepEqual(h.store.records.get(orgKey), org);
-    assert.deepEqual(
-      h.store.records.get("catchCommunicationPreferences/person"), platform);
-    assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
-    assert.equal(
-      h.records("organizerCommunicationPermissionReceipts").length, 0);
+    assert.deepEqual(h.store.records.get(organizerPath), org);
+    assert.deepEqual(h.store.records.get(catchPath), platform);
+    assert.equal(h.records("contactPermissionReceipts").length, 0);
   });
 
 test("consent mutation after checkout invalidates frozen submission",
@@ -178,7 +187,7 @@ test("consent mutation after checkout invalidates frozen submission",
     h.capture(paymentId);
     assert.equal(await h.finalize(paymentId), "refundPending");
     assert.equal(h.records("organizerFormResponses").length, 0);
-    assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
+    assert.equal(h.records("contactPermissionReceipts").length, 0);
   });
 
 test("deleted participant cannot be re-subscribed by a delayed payment",
@@ -188,9 +197,8 @@ test("deleted participant cannot be re-subscribed by a delayed payment",
     h.store.records.set("deletedUsers/person", {status: "processing"});
     h.capture(paymentId);
     await h.finalize(paymentId);
-    assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
-    assert.equal(
-      h.records("organizerCommunicationPermissionReceipts").length, 0);
+    assert.equal(h.records("contactPermissionReceipts").length, 0);
+    assert.equal(h.records("users").length, 0);
   });
 
 test("v2 keeps unverified choices pending until same-source verified claim",
@@ -221,7 +229,7 @@ test("v2 keeps unverified choices pending until same-source verified claim",
       `formCommunicationConsentIntents/${responseId}`)!;
     assert.equal(pending.endpointE164, "+919000000001");
     assert.equal([...h.store.records.keys()].filter((path) =>
-      path.includes("CommunicationPermissionReceipts/")).length, 0);
+      path.startsWith("contactPermissionReceipts/")).length, 0);
     const request = {data: {responseId, withdrawalToken: null,
       requestId: "promote-1"}, auth: {uid: "person",
       token: {phone_number: "+919000000001"}}};
@@ -257,36 +265,24 @@ test("v2 keeps unverified choices pending until same-source verified claim",
       callableRequest, deps);
     assert.deepEqual(promoted.promotedPurposes,
       ["organizer:eventOperations", "catch:marketing"]);
+    // Promoted form choices are recorded, bound to the verified phone, and
+    // wait for provider review before any send gate honours them.
+    const organizer = h.store.records.get(organizerPath) as unknown as
+      ContactPermission;
+    assert.equal(validPermission(organizer), true);
+    assert.equal(organizer.grants["whatsapp:eventOperations"]?.endpointE164,
+      "+919000000001");
+    assert.deepEqual(organizer.granted, []);
+    assert.equal((h.store.records.get(catchPath) as unknown as
+      ContactPermission).grants["whatsapp:marketing"]?.status, "optedIn");
+    for (const [path, receipt] of h.store.records) {
+      if (path.startsWith("contactPermissionReceipts/")) {
+        assert.equal(validReceipt(receipt), true);
+      }
+    }
     assert.equal((await promoteFormCommunicationIntentHandler(
       callableRequest, deps))
       .replayed, true);
-  });
-
-test("purpose gate keeps operations out of marketing and honors STOP ordering",
-  () => {
-    const scoped = {status: "optedIn" as const,
-      evidenceStatus: "complete" as const, currentReceiptId: "receipt-op",
-      termsVersion: "reviewed-operations-v1",
-      source: "hostFormResponse" as const, sourceEventId: null,
-      sourceResponseId: "source-response",
-      endpointE164: "+919000000001", updatedAt: Timestamp.fromMillis(900)};
-    const stopped = {status: "optedOut" as const,
-      evidenceStatus: "complete" as const, currentReceiptId: "stop",
-      termsVersion: null, source: "inboundStop" as const,
-      sourceEventId: null, updatedAt: Timestamp.fromMillis(800)};
-    const preference = {organizerId: "org", uid: "person", whatsapp: stopped,
-      whatsappPurposes: {eventOperations: scoped},
-      sms: unknownOrganizerCommunicationChannel(),
-      createdAt: chosenAt, updatedAt: now};
-    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
-      "marketing", "+919000000001"), "optedOut");
-    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
-      "eventOperations", "+919000000001", "other-response"), "unknown");
-    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
-      "eventOperations", "+919000000001", "source-response"), "optedIn");
-    preference.whatsapp.updatedAt = Timestamp.fromMillis(1000);
-    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
-      "eventOperations", "+919000000001", "source-response"), "optedOut");
   });
 
 test("pending v2 choice cannot revive a later sender STOP", async () => {
@@ -310,79 +306,37 @@ test("pending v2 choice cannot revive a later sender STOP", async () => {
   assert.equal(await h.finalize(paymentId), "submitted");
   const responseId = [...h.store.records.keys()].find((path) =>
     path.startsWith("organizerFormResponses/"))!.split("/")[1];
-  const stopped = {...unknownOrganizerCommunicationChannel(),
-    status: "optedOut", evidenceStatus: "complete",
-    currentReceiptId: "stop", source: "inboundStop",
-    updatedAt: Timestamp.fromMillis(800)};
-  const preferenceId = "organizerCommunicationPreferences/" +
-    organizerCommunicationPreferenceId("org", "person");
-  h.store.records.set(preferenceId, {organizerId: "org", uid: "person",
-    whatsapp: stopped, sms: unknownOrganizerCommunicationChannel(),
-    createdAt: chosenAt, updatedAt: stopped.updatedAt});
+  const org = stored(Object.fromEntries(organizerWhatsappKeys.map((key) =>
+    [key, withdrawal(800)])), "organizer");
+  h.store.records.set(organizerPath, org);
   const result = await promoteFormCommunicationIntentHandler({
     data: {responseId, withdrawalToken: null, requestId: "promote-stop"},
     auth: {uid: "person", token: {phone_number: "+919000000001"}},
   } as never, {db: () => h.db, now: () => now,
     rateLimit: async () => undefined} as never);
   assert.deepEqual(result.promotedPurposes, []);
-  assert.equal([...h.store.records.keys()].filter((path) =>
-    path.startsWith("organizerCommunicationPermissionReceipts/")).length, 0);
-  assert.equal((h.store.records.get(preferenceId)!.whatsapp as
-    {status: string}).status, "optedOut");
+  assert.equal(receiptCount(h.store), 0);
+  assert.deepEqual(h.store.records.get(organizerPath), org);
 });
 
-test("later v1 submission keeps scoped grant and withdrawal decisions",
+test("later v1 submission keeps an earlier marketing withdrawal",
   async () => {
     const h = fixture(true, true);
-    const organizerId = "organizerCommunicationPreferences/" +
-    organizerCommunicationPreferenceId("org", "person");
-    const scoped = {status: "optedOut" as const,
-      evidenceStatus: "complete" as const, currentReceiptId: "scoped-stop",
-      termsVersion: null, source: "participantSettings" as const,
-      sourceEventId: null,
-      updatedAt: Timestamp.fromMillis(450)};
-    h.store.records.set(organizerId, {organizerId: "org", uid: "person",
-      whatsapp: unknownOrganizerCommunicationChannel(),
-      whatsappPurposes: {marketing: scoped},
-      sms: unknownOrganizerCommunicationChannel(),
-      createdAt: chosenAt, updatedAt: chosenAt});
-    h.store.records.set("catchCommunicationPreferences/person", {
-      uid: "person", whatsapp: unknownOrganizerCommunicationChannel(),
-      whatsappPurposes: {marketing: scoped},
-      createdAt: chosenAt, updatedAt: chosenAt,
-    });
+    const scoped = {...withdrawal(450), receiptId: "scoped-stop",
+      source: "participantSettings" as const};
+    h.store.records.set(organizerPath,
+      stored({"whatsapp:marketing": scoped}, "organizer"));
+    h.store.records.set(catchPath,
+      stored({"whatsapp:marketing": scoped}, "catch"));
     const {paymentId} = await h.reserve();
     h.capture(paymentId);
     assert.equal(await h.finalize(paymentId), "submitted");
-    assert.deepEqual(h.store.records.get(organizerId)!.whatsappPurposes,
-      {marketing: scoped});
-    assert.deepEqual(h.store.records.get(
-      "catchCommunicationPreferences/person")!.whatsappPurposes,
-    {marketing: scoped});
-    assert.equal(effectiveOrganizerWhatsappPurposeStatus(
-    h.store.records.get(organizerId) as never,
-    "marketing", "+919000000001"), "optedOut");
-  });
-
-test("only explicit newer registration marketing copy reverses scoped opt-out",
-  () => {
-    const scoped = {status: "optedOut" as const,
-      evidenceStatus: "complete" as const, currentReceiptId: "stop",
-      termsVersion: null, source: "participantSettings" as const,
-      sourceEventId: null,
-      updatedAt: Timestamp.fromMillis(800)};
-    const broad = {status: "optedIn" as const,
-      evidenceStatus: "complete" as const, currentReceiptId: "registration",
-      termsVersion: "organizer-updates-v1",
-      source: "publicEventRegistration" as const,
-      sourceEventId: "event", updatedAt: Timestamp.fromMillis(900)};
-    const preference = {organizerId: "org", uid: "person", whatsapp: broad,
-      whatsappPurposes: {marketing: scoped},
-      sms: unknownOrganizerCommunicationChannel(),
-      createdAt: chosenAt, updatedAt: now};
-    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
-      "marketing", "+919000000001"), "optedIn");
-    broad.source = "hostFormResponse" as never;
-    assert.equal(effectiveOrganizerWhatsappPurposeStatus(preference,
-      "marketing", "+919000000001"), "optedOut");
+    for (const path of [organizerPath, catchPath]) {
+      const permission = h.store.records.get(path) as unknown as
+        ContactPermission;
+      assert.deepEqual(permission.grants["whatsapp:marketing"], scoped);
+      assert.deepEqual(permission.granted, []);
+    }
+    // The ambiguous copy is still kept as evidence.
+    assert.equal(h.records("contactPermissionReceipts").length, 2);
   });
