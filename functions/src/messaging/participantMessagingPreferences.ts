@@ -17,13 +17,14 @@ import type {CatchCommunicationPreferenceDocument as CatchPreference,
   CatchCommunicationPermissionReceiptDocument as CatchReceipt,
   OrganizerCommunicationPermissionReceiptDocument as OrganizerReceipt} from
   "../shared/generated/firestoreAdminTypes";
-import type {ListParticipantMessagingPreferencesCallableResponse as Page} from
-  "../shared/generated/listParticipantMessagingPreferencesCallableResponse";
 import type {WithdrawParticipantMessagingPermissionCallableResponse as Result}
   from
   "../shared/generated/withdrawParticipantMessagingPermissionCallableResponse";
 import {validateWithdrawParticipantMessagingPermissionCallablePayload} from
   "../shared/generated/validators/withdrawParticipantMessagingPermissionInput";
+import {summarize} from "./guestMessagingPermissionStore";
+import {readContactPermissionState, writeContactPermissionState} from
+  "./contactPermissions";
 
 export type Preference = CatchPreference | OrganizerPreference;
 export type Scope = "catch" | "organizer";
@@ -49,88 +50,6 @@ export function readPreference(
       "Messaging permission ownership is inconsistent.");
   }
   return value;
-}
-
-/**
- * The participant's WhatsApp permission summary for one sender, as the
- * settings page shows it; also kept on guestMessagingPermissions.
- */
-export async function summarize(db: FirebaseFirestore.Firestore,
-  tx: FirebaseFirestore.Transaction, value: Preference | null, scope: Scope):
-  Promise<Page["catchPreference"]> {
-  const channel = value?.whatsapp;
-  const receiptId = channel?.currentReceiptId ?? null;
-  const purposes: NonNullable<Page["catchPreference"]["purposes"]> = {};
-  // Follower updates (organizer WhatsApp follow-by-phone) count towards the
-  // organizer's overall status so a follower can withdraw it here, but the
-  // listed purposes stay the two the settings page names.
-  const followerUpdates: typeof purposes = {};
-  for (const purpose of ["eventOperations", "marketing",
-    "followerUpdates"] as const) {
-    if (scope === "catch" && purpose !== "marketing") continue;
-    const target = purpose === "followerUpdates" ? followerUpdates :
-      purposes;
-    const scoped = value?.whatsappPurposes?.[purpose];
-    if (!scoped) continue;
-    const scopedReceiptId = scoped.currentReceiptId;
-    if (scoped.status === "optedOut" ||
-        (channel?.status === "optedOut" && channel.updatedAt &&
-          (!scoped.updatedAt ||
-            channel.updatedAt.toMillis() >= scoped.updatedAt.toMillis()))) {
-      target[purpose === "followerUpdates" ? "marketing" : purpose] =
-        {status: "optedOut", receiptId: scopedReceiptId};
-      continue;
-    }
-    const scopedReceipt = scopedReceiptId ?
-      (await tx.get(db.collection(scope === "catch" ?
-        "catchCommunicationPermissionReceipts" :
-        "organizerCommunicationPermissionReceipts")
-        .doc(scopedReceiptId))).data() as CatchReceipt | OrganizerReceipt |
-          undefined : undefined;
-    target[purpose === "followerUpdates" ? "marketing" : purpose] = {status:
-      scoped.status === "optedIn" && scoped.evidenceStatus === "complete" &&
-      scopedReceipt?.uid === value?.uid &&
-      scopedReceipt?.purpose === purpose &&
-      scopedReceipt?.endpointE164 === scoped.endpointE164 &&
-      (scopedReceipt?.sourceResponseId ?? null) ===
-        (scoped.sourceResponseId ?? null) &&
-      scopedReceipt?.decision === "optedIn" &&
-      scopedReceipt?.evidenceStatus === "complete" &&
-      typeof scopedReceipt?.consentCopyHash === "string" &&
-      /^[a-f0-9]{64}$/u.test(scopedReceipt.consentCopyHash) &&
-      scopedReceipt?.revokedAt === null &&
-      (scope === "catch" || (scopedReceipt as OrganizerReceipt)
-        .organizerId === (value as OrganizerPreference).organizerId) ?
-        "optedIn" : "unknown", receiptId: scopedReceiptId};
-  }
-  const firstActive = purposes.eventOperations?.status === "optedIn" ?
-    purposes.eventOperations : purposes.marketing?.status === "optedIn" ?
-      purposes.marketing : followerUpdates.marketing?.status === "optedIn" ?
-        followerUpdates.marketing : null;
-  if (firstActive) {
-    return {status: "optedIn", receiptId: firstActive.receiptId, purposes};
-  }
-  if (channel?.status === "optedOut") {
-    return {status: "optedOut", receiptId, purposes};
-  }
-  if (!value || channel?.status !== "optedIn" ||
-      channel.evidenceStatus !== "complete" || !receiptId) {
-    return {status: "unknown", receiptId, purposes};
-  }
-  const receipt = (await tx.get(db.collection(scope === "catch" ?
-    "catchCommunicationPermissionReceipts" :
-    "organizerCommunicationPermissionReceipts").doc(receiptId)))
-    .data() as CatchReceipt | OrganizerReceipt | undefined;
-  const complete = receipt?.uid === value.uid &&
-    receipt.channel === "whatsapp" && receipt.decision === "optedIn" &&
-    receipt.evidenceStatus === "complete" &&
-    receipt.termsVersion === channel.termsVersion &&
-    typeof receipt.consentCopyHash === "string" &&
-    /^[a-f0-9]{64}$/u.test(receipt.consentCopyHash) &&
-    receipt.grantedAt != null && receipt.revokedAt === null &&
-    (scope === "catch" || (receipt as OrganizerReceipt).organizerId ===
-      (value as OrganizerPreference).organizerId);
-  return {status: complete ? "optedIn" : "unknown", receiptId, purposes};
 }
 
 async function assertActiveAccount(db: FirebaseFirestore.Firestore,
@@ -209,6 +128,9 @@ export async function withdrawParticipantMessagingPermissionHandler(
       db.collection("organizers").doc(data.organizerId!))).exists) {
       throw new HttpsError("not-found", "This organizer is unavailable.");
     }
+    const contact = await readContactPermissionState(db, tx, {uid, previous,
+      sender: scope === "catch" ? {kind: "catch"} :
+        {kind: "organizer", organizerId: data.organizerId!}});
     const now = deps.now();
     // Server ordering, including same-millisecond decisions, fences old drafts.
     const decidedAt = Timestamp.fromMillis(Math.max(now.toMillis(),
@@ -247,6 +169,8 @@ export async function withdrawParticipantMessagingPermissionHandler(
       const evidence: CatchReceipt = {...receipt, sourceOrganizerId: null};
       tx.create(receiptRef, evidence);
       tx.set(preferenceRef, document);
+      writeContactPermissionState(tx, contact, {next: document, now,
+        receipts: [{id: receiptId, document: evidence, created: true}]});
       return {preference: projected, replayed: false};
     } else {
       const document: OrganizerPreference = {uid, organizerId:
@@ -267,6 +191,8 @@ export async function withdrawParticipantMessagingPermissionHandler(
         data.organizerId!};
       tx.create(receiptRef, evidence);
       tx.set(preferenceRef, document);
+      writeContactPermissionState(tx, contact, {next: document, now,
+        receipts: [{id: receiptId, document: evidence, created: true}]});
       return {preference: projected, replayed: false};
     }
   });

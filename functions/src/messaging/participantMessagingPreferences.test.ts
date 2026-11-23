@@ -12,7 +12,9 @@ import {normalizeFormMessagingDecision} from
   "../organizers/organizerFormMessagingConsent";
 import {withdrawParticipantMessagingPermissionHandler as withdraw} from
   "./participantMessagingPreferences";
-import {guestMessagingPermission} from "./guestMessagingPermissionStore";
+import {catchPermissionViewId, summarize} from
+  "./guestMessagingPermissionStore";
+import {contactSenderKey} from "./contactPermissions";
 import type {WithdrawParticipantMessagingPermissionCallableResponse} from
   "../shared/generated/withdrawParticipantMessagingPermissionCallableResponse";
 import {contractValidator} from "../shared/contractTestValidators";
@@ -39,14 +41,35 @@ function fixture() {
   const deps = {db: () => db, now: () => now, rateLimit: async () => undefined};
   return {store, db, deps};
 }
-/** One sender's settings row, as guestMessagingPermissions holds it. */
+/** One sender's settings row, as summarize computes it from the stored
+ * preference and receipts. */
 async function permission(db: FirebaseFirestore.Firestore,
   scope: "catch" | "organizer", uid = "person", organizerId = "org") {
-  const row = await db.runTransaction((tx) => guestMessagingPermission(db, tx,
-    scope === "catch" ? {scope, uid} : {scope,
-      preferenceId: organizerCommunicationPreferenceId(organizerId, uid)}));
-  assert.ok(row);
-  return row.preference;
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(scope === "catch" ?
+      db.collection("catchCommunicationPreferences").doc(uid) :
+      db.collection("organizerCommunicationPreferences")
+        .doc(organizerCommunicationPreferenceId(organizerId, uid)));
+    assert.ok(snap.exists);
+    return summarize(db, tx, snap.data() as never, scope);
+  });
+}
+/** The guest's stored row and permission document for one sender. */
+function storedRows(h: {store: FormPaymentTestStore},
+  scope: "catch" | "organizer",
+  uid = "person", organizerId = "org") {
+  const sender = scope === "catch" ? {kind: "catch" as const} :
+    {kind: "organizer" as const, organizerId};
+  return {
+    row: h.store.records.get("guestMessagingPermissions/" +
+      (scope === "catch" ? catchPermissionViewId(uid) :
+        organizerCommunicationPreferenceId(organizerId, uid))) as
+      {preference: unknown} | undefined,
+    permission: h.store.records.get(
+      `users/${uid}/contactPermissions/${contactSenderKey(sender)}`) as
+      {grants: Record<string, {status: string; receiptId: string | null}>;
+        granted: string[]} | undefined,
+  };
 }
 function grant(h: ReturnType<typeof fixture>, scope: "catch" | "organizer",
   uid = "person", organizerId = "org", receiptId = `${scope}-grant`) {
@@ -103,6 +126,23 @@ test("Catch and each organizer withdraw independently, preserving SMS",
     assert.equal(
       (saved.whatsapp as {currentReceiptId: string}).currentReceiptId,
       result.preference.receiptId);
+    // The same transaction wrote the guest's row, the permission document
+    // and the receipt copy for each sender.
+    for (const [scope, outcome] of [["catch", result],
+      ["organizer", org]] as const) {
+      const {row, permission: document} = storedRows(h, scope);
+      assert.deepEqual(row?.preference, outcome.preference);
+      assert.equal(document?.grants["whatsapp:marketing"]?.status,
+        "optedOut");
+      assert.equal(document?.grants["whatsapp:marketing"]?.receiptId,
+        outcome.preference.receiptId);
+      assert.deepEqual(document?.granted, []);
+      const copy = h.store.records.get(
+        `contactPermissionReceipts/${outcome.preference.receiptId}`);
+      assert.equal(copy?.senderKind, scope);
+      assert.equal(copy?.senderId, scope === "catch" ? "catch" : "org");
+      assert.equal(copy?.decision, "optedOut");
+    }
   });
 
 test("purpose grants are visible and sender withdrawal revokes every purpose",
@@ -144,6 +184,13 @@ test("purpose grants are visible and sender withdrawal revokes every purpose",
     const partial = await permission(h.db, "organizer");
     assert.equal(partial.purposes?.eventOperations?.status, "optedOut");
     assert.equal(partial.purposes?.marketing?.status, "optedIn");
+    // The form opt-in awaits provider review, so the permission keeps the
+    // answer but does not grant it.
+    const document = storedRows(h, "organizer").permission;
+    assert.equal(document?.grants["whatsapp:eventOperations"]?.status,
+      "optedOut");
+    assert.equal(document?.grants["whatsapp:marketing"]?.status, "optedIn");
+    assert.deepEqual(document?.granted, []);
     const result = await withdraw(request(input("organizer",
       "purpose-marketing")), h.deps);
     assert.equal(result.preference.status, "optedOut");

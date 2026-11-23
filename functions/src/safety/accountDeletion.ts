@@ -315,13 +315,19 @@ async function queueOrganizerAudienceIdentityCleanup(
   threadViews.forEach((view) => writer.update(view.ref, {linkedUid: null}));
 }
 
-/** Deletes permission evidence and redacts retained contact provenance. */
+/**
+ * Deletes permission evidence and redacts retained contact provenance. The
+ * contact permissions (issue #2460) go with their old copies: the person's
+ * permission documents, their contactPermissionReceipts exactly as the old
+ * receipt collections are deleted, and their guest permission rows.
+ */
 async function queueOrganizerCommunicationPreferenceCleanup(
   db: FirebaseFirestore.Firestore,
   uid: string,
   writer: BatchQueue
 ) {
-  const [preferences, receipts, origins, catchReceipts] = await Promise.all([
+  const [preferences, receipts, origins, catchReceipts, permissions,
+    permissionReceipts, guestRows] = await Promise.all([
     db.collection("organizerCommunicationPreferences")
       .where("uid", "==", uid).get(),
     db.collection("organizerCommunicationPermissionReceipts")
@@ -330,10 +336,18 @@ async function queueOrganizerCommunicationPreferenceCleanup(
       .where("actorUid", "==", uid).get(),
     db.collection("catchCommunicationPermissionReceipts")
       .where("uid", "==", uid).get(),
+    db.collection("users").doc(uid).collection("contactPermissions").get(),
+    db.collection("contactPermissionReceipts")
+      .where("uid", "==", uid).get(),
+    db.collection("guestMessagingPermissions")
+      .where("uid", "==", uid).get(),
   ]);
   preferences.forEach((doc) => writer.delete(doc.ref));
   receipts.forEach((doc) => writer.delete(doc.ref));
   catchReceipts.forEach((doc) => writer.delete(doc.ref));
+  permissions.forEach((doc) => writer.delete(doc.ref));
+  permissionReceipts.forEach((doc) => writer.delete(doc.ref));
+  guestRows.forEach((doc) => writer.delete(doc.ref));
   writer.delete(db.collection("catchCommunicationPreferences").doc(uid));
   origins.forEach((doc) => writer.update(doc.ref, {actorUid: null}));
 }

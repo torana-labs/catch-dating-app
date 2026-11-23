@@ -834,6 +834,16 @@ service cloud.firestore {
           && isValidPushInstallation(request.resource.data);
         allow delete: if isAuthed() && request.auth.uid == uid;
       }
+
+      // Who may message this guest, one document per sender (catch or
+      // organizer_{organizerId}). The guest reads their own by path; no
+      // organiser reads them directly, and only the server writes them.
+      match /contactPermissions/{senderKey} {
+        allow get, list: if isAuthed()
+          && request.auth.uid == uid
+          && !isDeletedUser(uid);
+        allow write: if false;
+      }
     }
 
     // Professional host identity. This is intentionally separate from
@@ -1526,6 +1536,12 @@ service cloud.firestore {
     // Immutable participant permission evidence is server-only. Neither a
     // manager nor a client may manufacture, rewrite, or delete consent history.
     match /organizerCommunicationPermissionReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    // The one append-only receipt log for contact permissions. Legal
+    // evidence: no client and no organiser reads or writes it.
+    match /contactPermissionReceipts/{receiptId} {
       allow read, write: if false;
     }
 

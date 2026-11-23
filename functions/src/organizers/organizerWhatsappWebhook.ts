@@ -28,6 +28,8 @@ import {
   verifyMetaWebhookSignature,
 } from "./organizerCampaignModel";
 import {hashEndpoint} from "../platform/delivery/endpointHash";
+import {readContactPermissionState, writeContactPermissionState} from
+  "../messaging/contactPermissions";
 import {metaWhatsappAppSecret} from "./organizerMessagingSetup";
 import {persistInboundWhatsappMessage} from "./organizerWhatsappThreads";
 import {prepareWhatsappStop} from "../shared/organizerWhatsappStops";
@@ -526,6 +528,9 @@ async function optOutPreference(params: {
     // A provider replay is the original STOP, even if a newer, explicit
     // purpose choice has since superseded it. Keep its original revokedAt.
     if ((await tx.get(receiptRef)).exists) return;
+    const contact = await readContactPermissionState(params.db, tx, {
+      uid: params.uid, previous: existing ?? null,
+      sender: {kind: "organizer", organizerId: params.organizerId}});
     const stopAt = admin.firestore.Timestamp.fromMillis(Math.max(
       params.now.toMillis(),
       (existing?.whatsapp.updatedAt?.toMillis() ?? -1) + 1,
@@ -541,8 +546,7 @@ async function optOutPreference(params: {
       supersedesReceiptId: existing?.whatsapp.currentReceiptId ?? null,
       now: stopAt,
     });
-    tx.create(receiptRef, receipt.document);
-    tx.set(ref, {
+    const next: OrganizerCommunicationPreferenceDocument = {
       organizerId: params.organizerId,
       uid: params.uid,
       whatsapp: {
@@ -571,7 +575,11 @@ async function optOutPreference(params: {
       sms: existing?.sms ?? unknownOrganizerCommunicationChannel(),
       createdAt: existing?.createdAt ?? stopAt,
       updatedAt: stopAt,
-    }, {merge: false});
+    };
+    tx.create(receiptRef, receipt.document);
+    tx.set(ref, next, {merge: false});
+    writeContactPermissionState(tx, contact, {next, now: stopAt,
+      receipts: [{id: receipt.id, document: receipt.document, created: true}]});
   });
 }
 

@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/contact_permissions.schema.json",
+  "title": "ContactPermissionDocument",
+  "description": "Server-owned answer to whether one sender may message this person, stored at users/{uid}/contactPermissions/{senderKey}: senderKey is catch or organizer_{organizerId}. grants holds one explicit answer per channel:purpose, each bound to the receipt in contactPermissionReceipts that proves it and, for an opt-in, to the phone number it was given for. granted lists the keys that are effective now. No document, or no key, means no consent. Until the readers move (issue #2460, step 3), every writer of catchCommunicationPreferences and organizerCommunicationPreferences rewrites this document from that preference in the same transaction.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "contactPermissions",
+  "x-firestore-path": "users/{uid}/contactPermissions/{senderKey}",
+  "x-document-id-field": "senderKey",
+  "x-owner": "messaging contact permission writer (functions/src/messaging/contactPermissions.ts), called by every consent writer",
+  "required": [
+    "senderKind",
+    "senderId",
+    "grants",
+    "granted",
+    "updatedAt"
+  ],
+  "properties": {
+    "senderKind": {
+      "type": "string",
+      "enum": ["catch", "organizer"],
+      "x-catch-ownership": "server-only"
+    },
+    "senderId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "catch for Catch itself, otherwise the organizer id. Organiser audiences query the contactPermissions collection group by senderId and granted.",
+      "x-catch-ownership": "server-only"
+    },
+    "grants": {
+      "type": "object",
+      "description": "One explicit answer per channel:purpose. An opted-in answer the send gate does not honour yet (for example a form opt-in awaiting provider review, or one with no known phone number) stays here but is left out of granted.",
+      "propertyNames": {"$ref": "#/definitions/grantKey"},
+      "additionalProperties": {"$ref": "#/definitions/grant"},
+      "x-catch-ownership": "server-only"
+    },
+    "granted": {
+      "type": "array",
+      "description": "The grants keys that are effective now, sorted.",
+      "uniqueItems": true,
+      "items": {"$ref": "#/definitions/grantKey"},
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
+  },
+  "definitions": {
+    "grantKey": {
+      "type": "string",
+      "enum": [
+        "whatsapp:eventOperations",
+        "whatsapp:marketing",
+        "whatsapp:followerUpdates",
+        "sms:marketing"
+      ]
+    },
+    "grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "endpointE164",
+        "receiptId",
+        "termsVersion",
+        "source",
+        "updatedAt"
+      ],
+      "properties": {
+        "status": {"type": "string", "enum": ["optedIn", "optedOut"]},
+        "endpointE164": {
+          "description": "The phone number an opt-in covers; it covers no other number. Null on a withdrawal, which covers every number, and on an older opt-in recorded without a number, which is never effective.",
+          "anyOf": [
+            {"type": "string", "pattern": "^\\+[1-9][0-9]{6,14}$"},
+            {"type": "null"}
+          ]
+        },
+        "receiptId": {
+          "description": "The contactPermissionReceipts document that proves this answer. Only an older withdrawal can lack one.",
+          "anyOf": [
+            {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ]
+        },
+        "termsVersion": {"type": ["string", "null"], "minLength": 1, "maxLength": 80},
+        "source": {
+          "type": ["string", "null"],
+          "enum": [null, "publicEventRegistration", "hostFormResponse", "participantSettings", "unsubscribeLink", "inboundStop", "providerWebhook", "legacyIncomplete", "organizerFollowByPhone"]
+        },
+        "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "optedIn"}}, "required": ["status"]},
+          "then": {
+            "properties": {
+              "receiptId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+              "source": {"type": "string"}
+            }
+          }
+        }
+      ]
+    }
+  }
+}

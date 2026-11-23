@@ -12,8 +12,7 @@
   "exportedFunctions": [
     "submitOrganizerFormResponse",
     "getOrganizerFormPayment",
-    "requestAccountDeletion",
-    "onGuestMessagingPermissionCatchPreferenceChanged"
+    "requestAccountDeletion"
   ],
   "migrationNotes": [
     "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",

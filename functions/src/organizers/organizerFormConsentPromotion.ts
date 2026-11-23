@@ -7,6 +7,8 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {formMessagingTerms} from "./organizerFormMessagingConsent";
+import {readContactPermissionState, writeContactPermissionState} from
+  "../messaging/contactPermissions";
 import {organizerCommunicationPreferenceId,
   unknownOrganizerCommunicationChannel} from
   "../shared/organizerCommunicationPreferences";
@@ -128,6 +130,19 @@ export async function promoteFormCommunicationIntentHandler(
     });
     const receiptSnaps = await Promise.all(evidence.map((entry) =>
       tx.get(entry.receiptRef)));
+    const asks = (principal: "organizer" | "catch") =>
+      evidence.some((entry) => entry.decision.principal === principal);
+    const [organizerContact, catchContact] = await Promise.all([
+      asks("organizer") ? readContactPermissionState(db, tx, {uid,
+        previous: organizer,
+        sender: {kind: "organizer", organizerId: response.organizerId}}) :
+        null,
+      asks("catch") ? readContactPermissionState(db, tx, {uid,
+        previous: catchPreference, sender: {kind: "catch"}}) : null,
+    ]);
+    const created: Record<"organizer" | "catch", Array<{id: string;
+      document: OrganizerReceipt | CatchReceipt; created: true}>> =
+      {organizer: [], catch: []};
     const genericUnknown = unknownOrganizerCommunicationChannel();
     const orgNext: OrganizerPreference = organizer ?? {
       organizerId: response.organizerId, uid, whatsapp: genericUnknown,
@@ -190,21 +205,27 @@ export async function promoteFormCommunicationIntentHandler(
         grantedAt: now, revokedAt: null,
         supersedesReceiptId: previous?.currentReceiptId ?? null,
         createdAt: now};
-      if (decision.principal === "organizer") {
-        tx.create(receiptRef, {organizerId: response.organizerId,
-          ...shared} satisfies OrganizerReceipt);
-      } else {
-        tx.create(receiptRef, {sourceOrganizerId: response.organizerId,
-          ...shared} satisfies CatchReceipt);
-      }
+      const receipt: OrganizerReceipt | CatchReceipt =
+        decision.principal === "organizer" ?
+          {organizerId: response.organizerId,
+            ...shared} satisfies OrganizerReceipt :
+          {sourceOrganizerId: response.organizerId,
+            ...shared} satisfies CatchReceipt;
+      tx.create(receiptRef, receipt);
+      created[decision.principal].push({id: receiptId, document: receipt,
+        created: true});
       promotedPurposes.push(key as Result["promotedPurposes"][number]);
       replayed = false;
     }
     if (promotedPurposes.some((key) => key.startsWith("organizer:"))) {
       tx.set(organizerRef, orgNext);
+      writeContactPermissionState(tx, organizerContact!, {next: orgNext, now,
+        receipts: created.organizer});
     }
     if (promotedPurposes.some((key) => key.startsWith("catch:"))) {
       tx.set(catchRef, catchNext);
+      writeContactPermissionState(tx, catchContact!, {next: catchNext, now,
+        receipts: created.catch});
     }
     return {responseId: data.responseId, promotedPurposes, replayed};
   });

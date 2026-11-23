@@ -11,6 +11,13 @@ import {reserveFormPayment, finalizeCapturedFormPayment} from
 
 type Data = Record<string, unknown>;
 type Ref = {path: string};
+interface TestRef {
+  path: string;
+  get: () => Promise<ReturnType<FormPaymentTestStore["snapshot"]>>;
+  /** A subcollection of this document, as users/{uid}/... paths need. */
+  collection: (name: string) =>
+    ReturnType<FormPaymentTestStore["collection"]>;
+}
 
 /** Serialized, atomic test transactions that preserve Timestamp prototypes. */
 export class FormPaymentTestStore {
@@ -69,8 +76,9 @@ export class FormPaymentTestStore {
         .slice(0, limit).map(([path]) => this.snapshot(path))}),
     };
   }
-  ref(path: string) {
-    return {path, get: async () => this.snapshot(path)};
+  ref(path: string): TestRef {
+    return {path, get: async () => this.snapshot(path),
+      collection: (name: string) => this.collection(`${path}/${name}`)};
   }
   snapshot(path: string) {
     const value = this.records.get(path);

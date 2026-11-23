@@ -8389,6 +8389,20 @@
       ]
     },
     {
+      "collectionGroup": "contactPermissions",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "senderId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "granted",
+          "arrayConfig": "CONTAINS"
+        }
+      ]
+    },
+    {
       "collectionGroup": "guestMessagingPermissions",
       "queryScope": "COLLECTION",
       "fields": [

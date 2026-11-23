@@ -11,8 +11,7 @@
   "write": "server only",
   "exportedFunctions": [
     "registerPublicEvent",
-    "requestAccountDeletion",
-    "onGuestMessagingPermissionOrganizerPreferenceChanged"
+    "requestAccountDeletion"
   ],
   "migrationNotes": [
     "A roster phone number never grants marketing permission. Only an explicit participant-controlled per-channel receipt creates or advances this projection.",

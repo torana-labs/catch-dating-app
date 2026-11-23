@@ -3,8 +3,3 @@
 
 export {withdrawParticipantMessagingPermission}
   from "./participantMessagingPreferences";
-export {onGuestMessagingPermissionCatchPreferenceChanged,
-  onGuestMessagingPermissionOrganizerPreferenceChanged,
-  onGuestMessagingPermissionCatchReceiptChanged,
-  onGuestMessagingPermissionOrganizerReceiptChanged}
-  from "./guestMessagingPermissionTriggers";
