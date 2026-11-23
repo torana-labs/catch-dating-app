@@ -309,7 +309,7 @@ a miss: a lane that would have been reused but failed. Both jobs are
 `continue-on-error` and outside `Required CI`; any unknown means not eligible.
 
 `Proof reuse daily` (`.github/workflows/proof-reuse-daily.yml`,
-`tool/ci/proof_reuse_report.mjs`) runs at 02:23 UTC and rolls up the previous
+`tool/ci/proof_reuse_report.mjs`) runs at 05:17 UTC and rolls up the previous
 UTC day's queue runs, bucketed by run creation time, into the
 `proof-reuse-daily-<date>` artifact (`proof-reuse-daily-<date>.json`, schema
 `proof-reuse-daily/1`, kept 90 days) and a summary table. `runs` counts the
@@ -2517,6 +2517,7 @@ dispatched run started after its cron time:
 | Deploy backend (`backend-deploy.yml`) | 21:13 | Dispatched once for dev; prod is never dispatched | "Scheduled run missed" |
 | CI nightly (`ci.yml`) | 02:23 | Dispatched once with `full`; the night counts as unknown | "Main CI is red" |
 | Test read map (`test-read-map.yml`) | 03:41 | Not dispatched: report-only shadow job | "Scheduled run missed" |
+| Proof reuse daily (`proof-reuse-daily.yml`) | 05:17 | Not dispatched: report-only; dispatch it with that day's `date` | "Scheduled run missed" |
 
 Each missed run gets one comment on its issue (opened if none is open) naming
 the run, what was dispatched and, for a prod run, the command to run it, for

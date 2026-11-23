@@ -79,6 +79,15 @@ export const TARGETS = Object.freeze([
     reportOnly: true,
     issue: MISSED_TITLE,
   },
+  {
+    id: "proof-reuse-daily",
+    name: "Proof reuse daily",
+    workflow: "proof-reuse-daily.yml",
+    cron: "17 5 * * *",
+    // Report-only: a missed day is noted; dispatch it with that day's date to rebuild it.
+    reportOnly: true,
+    issue: MISSED_TITLE,
+  },
 ]);
 
 /** The latest occurrence at or before `now` of a daily "M H * * *" cron, in UTC milliseconds. */

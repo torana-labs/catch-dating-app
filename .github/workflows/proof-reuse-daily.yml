@@ -10,7 +10,7 @@ name: Proof reuse daily
 
 on:
   schedule:
-    - cron: "23 2 * * *"
+    - cron: "17 5 * * *"
   workflow_dispatch:
     inputs:
       date:
