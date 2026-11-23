@@ -10,6 +10,7 @@ import {execFileSync} from "node:child_process";
 import {checkLegacyLayout} from "./check_context_map.mjs";
 import {pruneLegacyEntries} from "./lib/dart_moves.mjs";
 import {formatCarried} from "./lib/screen_move_outputs.mjs";
+import {isMentionText} from "./lib/screen_move_rewrite.mjs";
 import {parseRecord, readRecords, recordPath, verifyScreenMove} from "./lib/screen_move_verify.mjs";
 
 const map = [
@@ -116,4 +117,11 @@ test("records replay by sequence, and a move commit may only add its own", () =>
     packages: [],
   });
   assert.deepEqual(problems, [`a move commit only adds its own record; it changed or removed ${recordPath("first")}`]);
+});
+
+test("the Catch lint rule tests keep their synthetic legacy paths when a move runs", () => {
+  assert.equal(isMentionText("test/tool/catch_architecture_rules_test.dart"), false);
+  assert.equal(isMentionText("test/tool/catch_provider_free_rule_test.dart"), false);
+  assert.equal(isMentionText("test/tool/provider_graph_test.dart"), true);
+  assert.equal(isMentionText("test/chats/chat_screen_test.dart"), true);
 });
