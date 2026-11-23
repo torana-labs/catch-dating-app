@@ -13,7 +13,6 @@
   "read": "current organizer managers get their own organizer's document; nobody lists the collection",
   "write": "server only; written by every committed evaluation and deleted with the organizer",
   "exportedFunctions": [
-    "onOrganizerAttentionOrganizerChanged",
     "dispatchOrganizers",
     "onOrganizerAttentionEventChanged",
     "onOrganizerAttentionParticipationChanged",

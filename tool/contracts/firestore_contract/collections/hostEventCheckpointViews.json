@@ -23,7 +23,6 @@
     "onHostMovementViewMembershipChanged",
     "onHostMovementViewWorkItemChanged",
     "onHostMovementViewStaffGrantChanged",
-    "onHostMovementViewOrganizerChanged",
     "dispatchOrganizers"
   ],
   "migrationNotes": [

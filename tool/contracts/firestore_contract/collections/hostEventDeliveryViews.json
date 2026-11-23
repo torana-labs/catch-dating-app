@@ -19,7 +19,6 @@
     "onHostEventDeliveryViewEventChanged",
     "onHostEventDeliveryViewWorkItemChanged",
     "onHostEventDeliveryViewRunChanged",
-    "onHostEventDeliveryViewOrganizerChanged",
     "dispatchOrganizers",
     "repairEventAssistanceDelivery"
   ],

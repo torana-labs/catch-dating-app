@@ -189,15 +189,10 @@ async function reconcileForWrite(
     event.data?.before.data(), event.data?.after.data());
 }
 
-export const onOrganizerAttentionOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
-
 /**
  * An organizer write re-evaluates its attention queue.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const organizerAttentionProjections = defineProjections("organizers", [{
   id: "organizerAttention", kind: "projection", when: () => true,

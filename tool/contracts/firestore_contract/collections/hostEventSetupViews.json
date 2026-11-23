@@ -15,7 +15,6 @@
   "exportedFunctions": [
     "onHostEventSetupViewEventChanged",
     "onHostEventSetupViewPreferencesChanged",
-    "onHostEventSetupViewOrganizerChanged",
     "dispatchOrganizers",
     "onHostEventSetupViewAttendeeChanged",
     "onHostEventSetupViewAttendeeImportChanged",

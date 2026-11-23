@@ -16,7 +16,6 @@
     "onHostEventCaseViewCaseChanged",
     "onHostEventCaseViewAttendeeChanged",
     "onHostEventCaseViewEventChanged",
-    "onHostEventCaseViewOrganizerChanged",
     "dispatchOrganizers",
     "resolveEventAssistanceCase"
   ],

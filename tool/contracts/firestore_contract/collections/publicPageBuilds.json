@@ -13,7 +13,6 @@
   "read": "server only; rebuild commits",
   "write": "server only; each committed rebuild records when it read its sources",
   "exportedFunctions": [
-    "onPublicPageOrganizerWritten",
     "dispatchOrganizers",
     "onPublicPageEventWritten",
     "onPublicPageExternalEventWritten",

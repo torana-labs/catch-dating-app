@@ -13,7 +13,6 @@
   "read": "get by organizer id for the organizer's current owner and managers while their account is not deleted; never listed",
   "write": "server only; written from organizers, organizerInsights, organizerFollowerMessageQuotas, organizerSenderConnections and organizerMessageTemplates",
   "exportedFunctions": [
-    "onHostOrganizerAccountViewOrganizerChanged",
     "dispatchOrganizers",
     "onHostOrganizerOwnerViewInsightsChanged",
     "onHostOrganizerOwnerViewQuotaChanged",

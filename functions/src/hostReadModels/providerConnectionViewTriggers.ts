@@ -66,15 +66,11 @@ export const onHostProviderConnectionViewConnectionChanged =
   onDocumentWritten({
     ...options, document: "organizerProviderConnections/{documentId}",
   }, (event) => reconcileForWrite("organizerProviderConnections", event));
-export const onHostProviderConnectionViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
 
 /**
  * An organizer write: its provider connection view.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostProviderConnectionViewProjections = defineProjections(
   "organizers", [{

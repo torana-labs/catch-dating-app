@@ -253,15 +253,11 @@ export const onHostMovementViewWorkItemChanged = onDocumentWritten({
 export const onHostMovementViewStaffGrantChanged = onDocumentWritten({
   ...options, document: "eventStaffGrants/{documentId}",
 }, (event) => reconcileForWrite("eventStaffGrants", event));
-export const onHostMovementViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
 
 /**
  * An organizer's managers: its open checkpoint views.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostMovementViewProjections = defineProjections("organizers", [{
   id: "hostMovementView", kind: "projection", when: () => true,

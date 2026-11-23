@@ -198,15 +198,11 @@ export const onHostEventDeliveryViewWorkItemChanged = onDocumentWritten({
 export const onHostEventDeliveryViewRunChanged = onDocumentWritten({
   ...options, document: "operationRuns/{documentId}",
 }, (event) => reconcileForWrite("operationRuns", event));
-export const onHostEventDeliveryViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
 
 /**
  * An organizer's manager fields: its manually handled delivery views.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostEventDeliveryViewProjections = defineProjections(
   "organizers", [{
