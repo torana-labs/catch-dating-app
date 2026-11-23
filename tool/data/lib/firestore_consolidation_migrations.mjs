@@ -313,11 +313,11 @@ function guestMessagingPermissionRow(db, row) {
 let contactPermissionModules = null;
 function functionsContactPermissions() {
   try {
-    const require = createFunctionsRequire();
+    const load = createFunctionsRequire();
     contactPermissionModules ??= {
-      ...require("./lib/messaging/contactPermissions.js"),
-      ...require("./lib/messaging/guestMessagingPermissionStore.js"),
-      ...require("./lib/shared/organizerCommunicationPreferences.js"),
+      ...load("./lib/messaging/contactPermissions.js"),
+      ...load("./lib/messaging/guestMessagingPermissionStore.js"),
+      ...load("./lib/shared/organizerCommunicationPreferences.js"),
     };
   } catch (error) {
     throw new Error(
