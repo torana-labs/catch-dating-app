@@ -104,16 +104,10 @@ async function reconcileForWrite(
     event.data?.before.data(), event.data?.after.data());
 }
 
-/** Name, listing, claim and managers: who reads a journey and its steps. */
-export const onHostOrganizerJourneyViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
-
 /**
  * Name, listing, claim and managers: who reads a journey and its steps.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostOrganizerJourneyViewProjections = defineProjections(
   "organizers", [{
@@ -136,6 +130,20 @@ export const onHostOrganizerJourneyViewIntakeChanged = onDocumentWritten({
 export const onHostOrganizerJourneyViewEventChanged = onDocumentWritten({
   ...options, document: "events/{documentId}",
 }, (event) => reconcileForWrite("events", event));
+
+/**
+ * An event write: its organizer's journey steps.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostOrganizerJourneyViewEventProjections = defineProjections(
+  "events", [{
+    id: "hostOrganizerJourneyView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("events", change.documentId,
+      change.before, change.after),
+  }]);
 
 /** The first paid booking milestone. */
 export const onHostOrganizerJourneyViewGrowthChanged = onDocumentWritten({

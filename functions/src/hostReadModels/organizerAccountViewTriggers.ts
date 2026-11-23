@@ -44,17 +44,10 @@ async function reconcileOrganizerAccountViews(
   await reconcileOrganizerOwnerView(db, id);
 }
 
-export const onHostOrganizerAccountViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{organizerId}",
-}, (event) => reconcileOrganizerAccountViews(admin.firestore(),
-  event.params.organizerId, event.data?.before.data(),
-  event.data?.after.data()));
-
 /**
  * The organizer's billing and owner views.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostOrganizerAccountViewProjections = defineProjections(
   "organizers", [{

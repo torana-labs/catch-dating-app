@@ -14,11 +14,11 @@
   "write": "server only; one per event with an eventFormat and an endTime, deleted with the event",
   "exportedFunctions": [
     "onHostGuestViewEventChanged",
+    "dispatchEvents",
     "onHostGuestViewPlanChanged",
     "onHostGuestViewAttendeeChanged",
     "onHostGuestViewGuestChanged",
     "onHostGuestViewMembershipChanged",
-    "onHostGuestViewOrganizerChanged",
     "dispatchOrganizers",
     "onHostGuestViewStaffGrantChanged",
     "onHostGuestViewSettingChanged",

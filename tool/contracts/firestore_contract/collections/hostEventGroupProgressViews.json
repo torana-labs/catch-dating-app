@@ -14,6 +14,7 @@
   "write": "server only; one per configured group of an event with an eventFormat and an endTime, deleted with the group or the event",
   "exportedFunctions": [
     "onHostMovementViewEventChanged",
+    "dispatchEvents",
     "onHostMovementViewPlanChanged",
     "onHostMovementViewProgressChanged",
     "onHostMovementViewRosterChanged",
@@ -23,7 +24,6 @@
     "onHostMovementViewMembershipChanged",
     "onHostMovementViewWorkItemChanged",
     "onHostMovementViewStaffGrantChanged",
-    "onHostMovementViewOrganizerChanged",
     "dispatchOrganizers"
   ],
   "migrationNotes": [

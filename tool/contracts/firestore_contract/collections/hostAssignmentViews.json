@@ -17,8 +17,8 @@
     "onHostAssignmentProgramChanged",
     "onHostAssignmentEventGrantChanged",
     "onHostAssignmentEventChanged",
+    "dispatchEvents",
     "onHostAssignmentMembershipChanged",
-    "onHostAssignmentOrganizerChanged",
     "dispatchOrganizers"
   ],
   "migrationNotes": [

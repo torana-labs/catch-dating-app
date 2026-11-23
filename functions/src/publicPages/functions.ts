@@ -4,7 +4,6 @@
 export {
   onPublicPageEventWritten,
   onPublicPageExternalEventWritten,
-  onPublicPageOrganizerWritten,
   onPublicPageReviewWritten,
   reconcilePublicPages,
   refreshPublicPageFollowers,

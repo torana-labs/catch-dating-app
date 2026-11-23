@@ -13,9 +13,9 @@
   "read": "server only; the website server reads one document per organizer page with the Admin SDK",
   "write": "server only; rebuilt from published organizer, event, imported event and review sources by functions/src/publicPages",
   "exportedFunctions": [
-    "onPublicPageOrganizerWritten",
     "dispatchOrganizers",
     "onPublicPageEventWritten",
+    "dispatchEvents",
     "onPublicPageExternalEventWritten",
     "onPublicPageReviewWritten",
     "refreshPublicPageFollowers",

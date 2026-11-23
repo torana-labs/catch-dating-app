@@ -18,6 +18,7 @@
     "onHostContactDetailViewEdgeWritten",
     "onHostContactDetailViewPaymentWritten",
     "onHostContactDetailViewEventWritten",
+    "dispatchEvents",
     "onHostContactDetailViewMergeReceiptWritten"
   ],
   "migrationNotes": [

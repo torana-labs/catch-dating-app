@@ -463,6 +463,71 @@ async function newProgramAccessViewRow(db, programId, uid) {
   return existing.exists ? null : programAccessViewRow(db, programId, uid);
 }
 
+let programAccessGrantModules = null;
+function functionsProgramAccessGrant() {
+  try {
+    const load = createFunctionsRequire();
+    programAccessGrantModules ??= {
+      view: load("./lib/programs/programAccessView.js"),
+      grant: load("./lib/domain/access/programAccessGrants.js"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The access-grants-programs migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programAccessGrantModules;
+}
+
+/**
+ * An account's programme access document from current sources, read only:
+ * what the grant commands write in their own transaction (issue #2474). The
+ * authority is programAccessViewFor's, with no organizer manager standing.
+ */
+async function programAccessGrantRow(db, programId, uid) {
+  const {view, grant} = functionsProgramAccessGrant();
+  try {
+    return await db.runTransaction(async (tx) => {
+      const programSnap = await tx.get(
+        db.collection("organizerPrograms").doc(programId));
+      const program = programSnap.data();
+      if (!program) return null;
+      const grantSnap = await tx.get(db.collection("programStaffGrants")
+        .doc(`${programId}__${uid}`));
+      const staff = grantSnap.data();
+      const authority = view.programAccessViewFor(program, programId, uid,
+        staff, false, programAccessNowMillis);
+      const grantedBy = staff ?
+        staff.programAuthorization?.approvedByUid ?? staff.createdBy ?? null :
+        null;
+      const updatedAt = staff?.updatedAt ?? program.createdAt ??
+        program.updatedAt;
+      return grant.programAccessGrant(authority, grantedBy, updatedAt);
+    });
+  } catch {
+    // A source that fails its contract gets no document, as in the writers.
+    return null;
+  }
+}
+
+/**
+ * An access document to create, or null when the account already has one: a
+ * stale document is the refresh step's to repair, never a conflict here.
+ */
+async function newProgramAccessGrantRow(db, programId, uid) {
+  const existing = await db.collection("accessGrants")
+    .doc(`program__${programId}__${uid}`).get();
+  return existing.exists ? null : programAccessGrantRow(db, programId, uid);
+}
+
+/** Every field the refresh compares; updatedAt records when a command ran. */
+const accessGrantFields = [
+  "scopeType", "scopeId", "uid", "organizerId", "role", "status",
+  "activeFromMillis", "expiresAtMillis", "reach", "assignments", "grantedBy",
+  "revision", "version",
+];
+
 /** Every field of a view; the refresh rewrites any that differ. */
 const programAccessViewFields = [
   "programId", "organizerId", "uid", "ownerUid", "role", "status",
@@ -1465,6 +1530,69 @@ export const MIGRATIONS = [
         target: "programAccessViews",
         skipReason: "no organizer manager without a view, besides the creator",
         expand: (data, id, db) => newOrganizerManagerViewEntries(db, id, data),
+      },
+      {
+        kind: "fill",
+        collection: "programAccessViews",
+        refresh: programAccessViewFields,
+        fill: async (data, id, db) => {
+          if (!validId(data.programId) || typeof data.uid !== "string" ||
+              !validId(data.uid)) return null;
+          return programAccessViewRow(db, data.programId, data.uid);
+        },
+      },
+    ],
+  },
+  {
+    name: "access-grants-programs",
+    description:
+      "Security rules authorise programme reads from accessGrants (#2474, " +
+      "FIX-10), which createOrganizerProgram and the staff grant, claim and " +
+      "revoke commands write in their own transaction. Every programme " +
+      "owner and every staff grant without an access document gets one, " +
+      "built by programAccessViewFor as the commands build it; revoked or " +
+      "unapproved grants get an inactive one. Then every access document " +
+      "that differs from what the commands would write now is rewritten, and " +
+      "the program-access-views refresh runs over programAccessViews, so a " +
+      "rerun that writes nothing shows both agree with their sources. " +
+      "Programmes and grants are never changed and nothing is deleted. " +
+      "Build Functions first.",
+    steps: [
+      {
+        source: "organizerPrograms",
+        target: "accessGrants",
+        skipReason: "no creator recorded, or the owner already has an access " +
+          "document",
+        targetId: (id, data) => validId(id) &&
+          typeof data.createdBy === "string" && validId(data.createdBy) ?
+          `program__${id}__${data.createdBy}` : null,
+        transform: (data, id, db) =>
+          newProgramAccessGrantRow(db, id, data.createdBy),
+      },
+      {
+        source: "programStaffGrants",
+        target: "accessGrants",
+        skipReason: "not a grant of an existing programme, the owner's own, or " +
+          "already granted",
+        targetId: (id, data) => validId(data.programId) &&
+          validId(data.uid) && id === `${data.programId}__${data.uid}` ?
+          `program__${data.programId}__${data.uid}` : null,
+        transform: (data, id, db) =>
+          newProgramAccessGrantRow(db, data.programId, data.uid),
+      },
+      {
+        kind: "fill",
+        collection: "accessGrants",
+        refresh: accessGrantFields,
+        fill: async (data, id, db) => {
+          if (data.scopeType !== "program" || !validId(data.scopeId) ||
+              typeof data.uid !== "string" || !validId(data.uid)) return null;
+          const row = await programAccessGrantRow(db, data.scopeId, data.uid);
+          if (!row) return null;
+          // updatedAt records when a command ran; it is never refreshed.
+          delete row.updatedAt;
+          return row;
+        },
       },
       {
         kind: "fill",

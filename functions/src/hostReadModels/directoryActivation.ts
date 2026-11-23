@@ -1,5 +1,3 @@
-import * as admin from "firebase-admin";
-import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {activateContactSummaries} from "./contactBackfill";
 import {activateResponseSummaries} from "./responseStore";
 import {activateSimpleSummaries} from "./simpleStore";
@@ -27,17 +25,10 @@ export async function activateHostDirectory(
   }
 }
 
-export const onHostDirectoryOrganizerCreated = onDocumentCreated({
-  document: "organizers/{organizerId}", retry: true,
-  memory: "512MiB" as const,
-}, (event) => activateHostDirectory(admin.firestore(),
-  event.params.organizerId));
-
 /**
  * A new organizer: activate its directory read models.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostDirectoryActivationProjections = defineProjections(
   "organizers", [{

@@ -10,7 +10,6 @@ export {
 export {syncOrganizerFollowerStats} from
   "./syncOrganizerFollowerStats";
 export {syncOrganizerNextEvent} from "./syncOrganizerNextEvent";
-export {syncPublicOrganizer} from "./publicOrganizerProjection";
 export {syncExternalEventVisibility} from
   "./externalEventVisibility";
 export {updateOrganizer} from "./mutateOrganizer";

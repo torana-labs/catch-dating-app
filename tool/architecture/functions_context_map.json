@@ -11,6 +11,7 @@
   "entry": ["functions/src/index.ts", "functions/src/*/functions.ts"],
   "dispatchRegistries": "functions/src/*/dispatch/*.generated.ts",
   "contexts": [
+    {"id": "access", "owns": "Who may act on which programme, event or organiser: one accessGrants document per scope and person, written in the transaction of the command that grants, changes or revokes it, which security rules get() by id (issue #2474). Every other context calls it, so it imports platform only."},
     "profiles",
     "safety",
     "formats",

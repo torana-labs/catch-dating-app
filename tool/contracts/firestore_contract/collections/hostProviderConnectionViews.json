@@ -14,7 +14,6 @@
   "write": "server only; written by every evaluation that changes it and deleted with the organizer",
   "exportedFunctions": [
     "onHostProviderConnectionViewConnectionChanged",
-    "onHostProviderConnectionViewOrganizerChanged",
     "dispatchOrganizers"
   ],
   "migrationNotes": [

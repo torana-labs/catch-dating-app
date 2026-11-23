@@ -2,7 +2,10 @@
 // (read by functions/scripts/functionExports.cjs).
 
 export {listMyHostAssignments} from "./listMyHostAssignments";
-export {onHostAssignmentProgramGrantChanged, onHostAssignmentProgramChanged,
-  onHostAssignmentEventGrantChanged, onHostAssignmentEventChanged,
-  onHostAssignmentMembershipChanged, onHostAssignmentOrganizerChanged} from
-  "./hostAssignmentViewTriggers";
+export {
+  onHostAssignmentProgramGrantChanged,
+  onHostAssignmentProgramChanged,
+  onHostAssignmentEventGrantChanged,
+  onHostAssignmentEventChanged,
+  onHostAssignmentMembershipChanged,
+} from "./hostAssignmentViewTriggers";

@@ -14,11 +14,11 @@
   "write": "server only; one per configured group (event:whole included) and console workflow kind (late join) of an event with an eventFormat and an endTime, deleted with the group or the event",
   "exportedFunctions": [
     "onHostGuestViewEventChanged",
+    "dispatchEvents",
     "onHostGuestViewPlanChanged",
     "onHostGuestViewAttendeeChanged",
     "onHostGuestViewGuestChanged",
     "onHostGuestViewMembershipChanged",
-    "onHostGuestViewOrganizerChanged",
     "dispatchOrganizers",
     "onHostGuestViewStaffGrantChanged",
     "onHostGuestViewSettingChanged",

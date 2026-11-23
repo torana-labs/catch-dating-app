@@ -5,6 +5,7 @@ import {
   reconcileContactMergeCandidates,
   reconcileContactMergeCandidateView,
 } from "./contactMergeCandidateViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 const options = {retry: true};
 
@@ -76,6 +77,18 @@ export const onHostAudienceSourceViewEventChanged = onDocumentWritten({
   if (same(before, after, ["organizerId", "name"])) return;
   await audienceSources(before, after);
 });
+
+/**
+ * An event made, renamed, moved or deleted: its organizers' sources.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostAudienceSourceEventProjections = defineProjections("events", [{
+  id: "hostAudienceSourceView", kind: "projection",
+  when: (change) => !same(change.before, change.after, ["organizerId", "name"]),
+  run: (change) => audienceSources(change.before, change.after),
+}]);
 
 /** The organizer's manual tag list changed. */
 export const onHostAudienceSourceViewTagsChanged = onDocumentWritten({

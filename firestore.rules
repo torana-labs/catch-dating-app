@@ -191,42 +191,63 @@ service cloud.firestore {
       return programId + '__' + uid;
     }
 
-    // Programme authority for the signed-in account, read from the one
-    // programAccessViews document that mirrors requireProgramAccess: the
-    // programme owner as manager, or a staff member's duties with the owner's
-    // approval proof and every expiry folded into instants. A read model
-    // names its programme in a field the query or the document id fixes;
-    // these helpers then answer from the caller's own view. Pass the
-    // programme id the rule already trusts, never a field the client may
-    // choose freely. A deleted account holds no programme authority.
-    function programView(programId) {
-      return get(/databases/$(database)/documents/programAccessViews/$(programStaffGrantDocId(programId, request.auth.uid))).data;
+    function accessGrantDocId(scopeType, scopeId, uid) {
+      return scopeType + '__' + scopeId + '__' + uid;
     }
 
-    function programViewLive(view) {
-      return view.status == 'active'
-        && request.time.toMillis() >= view.activeFromMillis
-        && (view.expiresAtMillis == null
-          || request.time.toMillis() < view.expiresAtMillis);
+    // Programme authority for the signed-in account, read from its
+    // accessGrants/program__{programId}__{uid} document (#2474, FIX-10).
+    // createOrganizerProgram and the staff grant, claim and revoke commands
+    // write it in their own transaction, so a grant or revocation is in force
+    // the moment its command commits: no trigger-kept projection stands
+    // between a command and these helpers, and programAccessViews (still
+    // written beside it for released Host builds) authorises nothing. Role
+    // owner is the programme's creator and covers every duty and scope; staff
+    // hold the expiry instants in reach, which programAccessViewFor computes
+    // with the owner-approval proof and every expiry folded in, so rules only
+    // compare them with the request time. A read model names its programme in
+    // a field the query or the document id fixes; these helpers then answer
+    // from the caller's own grant. Pass the programme id the rule already
+    // trusts, never a field the client may choose freely. A deleted account
+    // holds no programme authority.
+    function programAccessPath(programId) {
+      return /databases/$(database)/documents/accessGrants/$(accessGrantDocId('program', programId, request.auth.uid));
     }
 
-    function hasProgramAccessView(programId) {
+    function programAccess(programId) {
+      return get(programAccessPath(programId)).data;
+    }
+
+    function programReach(programId) {
+      return programAccess(programId).reach;
+    }
+
+    function programAccessLive(access) {
+      return access.scopeType == 'program'
+        && access.uid == request.auth.uid
+        && access.status == 'active'
+        && request.time.toMillis() >= access.activeFromMillis
+        && (access.expiresAtMillis == null
+          || request.time.toMillis() < access.expiresAtMillis);
+    }
+
+    function hasProgramAccess(programId) {
       return isAuthed() && !isDeletedUser(request.auth.uid)
-        && exists(/databases/$(database)/documents/programAccessViews/$(programStaffGrantDocId(programId, request.auth.uid)))
-        && programViewLive(programView(programId));
+        && exists(programAccessPath(programId))
+        && programAccessLive(programAccess(programId));
     }
 
     function isProgramManager(programId) {
-      return hasProgramAccessView(programId)
-        && programView(programId).role == 'manager';
+      return hasProgramAccess(programId)
+        && programAccess(programId).role == 'owner';
     }
 
     // The duty is held in some scope. Coordinators hold every duty but
-    // programAdmin, as in the view.
+    // programAdmin, as in the grant's reach.
     function hasProgramDuty(programId, duty) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && programView(programId).duties.get(duty, 0) > request.time.toMillis());
+        || (hasProgramAccess(programId)
+          && programReach(programId).duties.get(duty, 0) > request.time.toMillis());
     }
 
     // The duty covers one pickup point, hotel or function: every one, or that
@@ -235,16 +256,16 @@ service cloud.firestore {
     // dimensions satisfied by the same assignment stays a callable.
     function programDutyCoversPickup(programId, duty, pickupPointId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).pickupAll.get(duty, 0) > request.time.toMillis()
-            || programView(programId).pickupScoped.get(duty + '__' + pickupPointId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).pickupAll.get(duty, 0) > request.time.toMillis()
+            || programReach(programId).pickupScoped.get(duty + '__' + pickupPointId, 0) > request.time.toMillis()));
     }
 
     function programDutyCoversHotel(programId, duty, hotelId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).hotelAll.get(duty, 0) > request.time.toMillis()
-            || programView(programId).hotelScoped.get(duty + '__' + hotelId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).hotelAll.get(duty, 0) > request.time.toMillis()
+            || programReach(programId).hotelScoped.get(duty + '__' + hotelId, 0) > request.time.toMillis()));
     }
 
     // What the work shell lists for the account: the pickup points, hotels
@@ -252,43 +273,43 @@ service cloud.firestore {
     // does. The key '*' stands for every one.
     function programWorkCoversPickup(programId, pickupPointId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).workPickup.get('*', 0) > request.time.toMillis()
-            || programView(programId).workPickup.get(pickupPointId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).workPickup.get('*', 0) > request.time.toMillis()
+            || programReach(programId).workPickup.get(pickupPointId, 0) > request.time.toMillis()));
     }
 
     function programWorkCoversHotel(programId, hotelId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).workHotel.get('*', 0) > request.time.toMillis()
-            || programView(programId).workHotel.get(hotelId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).workHotel.get('*', 0) > request.time.toMillis()
+            || programReach(programId).workHotel.get(hotelId, 0) > request.time.toMillis()));
     }
 
     function programWorkCoversFunction(programId, functionId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).workFunction.get('*', 0) > request.time.toMillis()
-            || programView(programId).workFunction.get(functionId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).workFunction.get('*', 0) > request.time.toMillis()
+            || programReach(programId).workFunction.get(functionId, 0) > request.time.toMillis()));
     }
 
     // Every pickup point, hotel or function, for a listing query: the work
     // key '*' is live. A scoped account reads its named ids one by one.
     function programWorkListsAllPickups(programId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && programView(programId).workPickup.get('*', 0) > request.time.toMillis());
+        || (hasProgramAccess(programId)
+          && programReach(programId).workPickup.get('*', 0) > request.time.toMillis());
     }
 
     function programWorkListsAllHotels(programId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && programView(programId).workHotel.get('*', 0) > request.time.toMillis());
+        || (hasProgramAccess(programId)
+          && programReach(programId).workHotel.get('*', 0) > request.time.toMillis());
     }
 
     function programWorkListsAllFunctions(programId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && programView(programId).workFunction.get('*', 0) > request.time.toMillis());
+        || (hasProgramAccess(programId)
+          && programReach(programId).workFunction.get('*', 0) > request.time.toMillis());
     }
 
     // The door of one function: function check-in or function lead duty
@@ -309,8 +330,8 @@ service cloud.firestore {
     // programAll existed holds none.
     function programGuestDirectory(programId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && programView(programId).get('programAll', {})
+        || (hasProgramAccess(programId)
+          && programReach(programId).get('programAll', {})
             .get('guestRelations', 0) > request.time.toMillis());
     }
 
@@ -320,11 +341,11 @@ service cloud.firestore {
     // which only '*' reaches.
     function programArrivalRoute(programId, pickupKey, hotelKey) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).arrivalRoutes.get('*|*', 0) > request.time.toMillis()
-            || programView(programId).arrivalRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
-            || programView(programId).arrivalRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
-            || programView(programId).arrivalRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).arrivalRoutes.get('*|*', 0) > request.time.toMillis()
+            || programReach(programId).arrivalRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
+            || programReach(programId).arrivalRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
+            || programReach(programId).arrivalRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
     }
 
     // A transport trip: one reconciliation viewer, dispatcher or coordinator
@@ -332,18 +353,18 @@ service cloud.firestore {
     // id or '*' per side; a trip with no hotel is '~').
     function programTripRoute(programId, pickupKey, hotelKey) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).tripRoutes.get('*|*', 0) > request.time.toMillis()
-            || programView(programId).tripRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
-            || programView(programId).tripRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
-            || programView(programId).tripRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).tripRoutes.get('*|*', 0) > request.time.toMillis()
+            || programReach(programId).tripRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
+            || programReach(programId).tripRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
+            || programReach(programId).tripRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
     }
 
     function programDutyCoversFunction(programId, duty, functionId) {
       return isProgramManager(programId)
-        || (hasProgramAccessView(programId)
-          && (programView(programId).functionAll.get(duty, 0) > request.time.toMillis()
-            || programView(programId).functionScoped.get(duty + '__' + functionId, 0) > request.time.toMillis()));
+        || (hasProgramAccess(programId)
+          && (programReach(programId).functionAll.get(duty, 0) > request.time.toMillis()
+            || programReach(programId).functionScoped.get(duty + '__' + functionId, 0) > request.time.toMillis()));
     }
 
     // When a grant's event-wide permissions end, as eventOperatorExpiryMillis
@@ -1444,9 +1465,10 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
-    // Public organizer projection (#1221). Synced by syncPublicOrganizer from
-    // an allowlist of organizers/{id} fields; contact details, host defaults,
-    // provenance, intake, admin search, ownership and claim never appear here.
+    // Public organizer projection (#1221). Synced by the publicOrganizer
+    // projection of dispatchOrganizers from an allowlist of organizers/{id}
+    // fields; contact details, host defaults, provenance, intake, admin
+    // search, ownership and claim never appear here.
     // Any single organizer resolves by id, so chats and deep links to hidden
     // organizers keep working; lists return only organizers the app shows.
     match /publicOrganizers/{organizerId} {
@@ -2704,12 +2726,28 @@ service cloud.firestore {
       allow list, write: if false;
     }
 
-    // One account's current authority over one programme, written by
-    // triggers on the grant, the programme and the organizer. The account
-    // reads its own view by its derived id; it holds ids, duty names, expiry
-    // instants and the organizer manager flag only. A query naming the
-    // account's own uid (and the organizer) lists its own views, so the
-    // programme list can be gated offline; nobody lists another account's.
+    // One account's programme view for released Host builds, written beside
+    // its accessGrants document in each grant command's transaction (and by
+    // the organizer trigger for the organizer manager flag). No rule
+    // authorises through it. The account reads its own view by its derived
+    // id; a query naming the account's own uid (and the organizer) lists its
+    // own views, so the programme list can be gated offline; nobody lists
+    // another account's.
+    // One account's authority over one scope (#2474): the document the
+    // programme helpers above get() by id. An account gets its own document
+    // by its derived id and lists its own documents by a query naming its
+    // uid while it is not deleted; nobody reads another account's, and no
+    // client writes one.
+    match /accessGrants/{accessId} {
+      allow get: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && resource.data.uid == request.auth.uid
+        && accessId == accessGrantDocId(resource.data.scopeType,
+          resource.data.scopeId, request.auth.uid);
+      allow list: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
     match /programAccessViews/{accessId} {
       allow get: if isAuthed() && !isDeletedUser(request.auth.uid)
         && accessId == programStaffGrantDocId(resource.data.programId, request.auth.uid)
@@ -2722,7 +2760,7 @@ service cloud.firestore {
     // The work shell's programme header: any account with live access to the
     // programme reads it by id. Never listed.
     match /programWorkSummaries/{programId} {
-      allow get: if hasProgramAccessView(programId);
+      allow get: if hasProgramAccess(programId);
       allow list, write: if false;
     }
 
@@ -2776,7 +2814,7 @@ service cloud.firestore {
       allow get, list: if programFullReach(resource.data.programId)
         || (hasProgramDuty(resource.data.programId, 'functionLead')
           && resource.data.duty != null
-          && programView(resource.data.programId).duties.get(resource.data.duty, 0) > request.time.toMillis());
+          && programReach(resource.data.programId).duties.get(resource.data.duty, 0) > request.time.toMillis());
       allow write: if false;
     }
     match /programTravelCountViews/{programId} {

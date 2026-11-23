@@ -14,8 +14,8 @@
   "write": "server only; written by every evaluation that changes it and deleted with the event or its setupRevision",
   "exportedFunctions": [
     "onHostEventSetupViewEventChanged",
+    "dispatchEvents",
     "onHostEventSetupViewPreferencesChanged",
-    "onHostEventSetupViewOrganizerChanged",
     "dispatchOrganizers",
     "onHostEventSetupViewAttendeeChanged",
     "onHostEventSetupViewAttendeeImportChanged",

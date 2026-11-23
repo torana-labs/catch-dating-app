@@ -192,21 +192,31 @@ export const onHostEventDeliveryViewAttendeeChanged = onDocumentWritten({
 export const onHostEventDeliveryViewEventChanged = onDocumentWritten({
   ...options, document: "events/{documentId}",
 }, (event) => reconcileForWrite("events", event));
+
+/**
+ * An event's organizer, status or end: its live delivery views.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostEventDeliveryViewEventProjections = defineProjections(
+  "events", [{
+    id: "hostEventDeliveryView", kind: "projection",
+    when: () => true,
+    run: (change) => reconcileForChange("events", change.documentId,
+      change.before, change.after),
+  }]);
 export const onHostEventDeliveryViewWorkItemChanged = onDocumentWritten({
   ...options, document: "operationWorkItems/{documentId}",
 }, (event) => reconcileForWrite("operationWorkItems", event));
 export const onHostEventDeliveryViewRunChanged = onDocumentWritten({
   ...options, document: "operationRuns/{documentId}",
 }, (event) => reconcileForWrite("operationRuns", event));
-export const onHostEventDeliveryViewOrganizerChanged = onDocumentWritten({
-  ...options, document: "organizers/{documentId}",
-}, (event) => reconcileForWrite("organizers", event));
 
 /**
  * An organizer's manager fields: its manually handled delivery views.
- * The organizers dispatcher (issue #2451) runs the same work; both run
- * until the old trigger retires, which is safe because it re-reads its
- * sources, so a retry, a replay or a second run converges.
+ * Served by the organizers dispatcher (issue #2451); it re-reads its
+ * sources, so a retry or a replay converges.
  */
 export const hostEventDeliveryViewProjections = defineProjections(
   "organizers", [{
