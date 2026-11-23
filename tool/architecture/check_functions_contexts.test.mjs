@@ -37,6 +37,7 @@ function fixtureMapSource(overrides = {}) {
       platform: "functions/src/platform/",
     },
     entry: ["functions/src/index.ts", "functions/src/*/functions.ts"],
+    dispatchRegistries: "functions/src/*/dispatch/*.generated.ts",
     contexts: ["events", "bookings", {id: "supply", owns: "Listings."}],
     surfaces: [{id: "admin", owns: "Console."}, {id: "host", owns: "Host."}],
     legacy: [
@@ -82,6 +83,11 @@ test("places target roots, the longest legacy path, and the entry point", () => 
   assert.deepEqual(placeFunctionsPath("functions/src/admin/listingPolicy.ts", map),
     {layer: "domain", context: "supply"});
   assert.equal(placeFunctionsPath("functions/src/unknown/thing.ts", map), null);
+  // A generated dispatch registry wins over its folder's legacy placement.
+  assert.deepEqual(placeFunctionsPath("functions/src/events/dispatch/events.generated.ts", map),
+    {layer: "dispatch"});
+  assert.deepEqual(placeFunctionsPath("functions/src/events/dispatch/helper.ts", map),
+    {layer: "domain", context: "events"});
 });
 
 test("checks handwritten sources only", () => {
@@ -147,6 +153,48 @@ test("rejects upward and cross-surface imports", () => {
     "surfaceImportsSurface functions/src/admin/a.ts",
     "entryImported functions/src/hostReadModels/view.ts",
   ]);
+});
+
+test("a generated dispatch registry is the one module that may import any context", () => {
+  const files = {
+    "functions/src/events/functions.ts":
+      "export {dispatchEvents} from \"./dispatch/events.generated\";\n",
+    "functions/src/events/dispatch/events.generated.ts": [
+      "import {dispatchTrigger} from \"../../platform/dispatch/runtime\";",
+      "import {seatProjections} from \"../../domain/supply/x\";",
+      "import {viewProjections} from \"../../hostReadModels/view\";",
+      "import {rosterProjections} from \"../eventAttendees\";",
+    ].join("\n"),
+    "functions/src/platform/dispatch/runtime.ts": "",
+    "functions/src/domain/supply/x.ts": "",
+    "functions/src/hostReadModels/view.ts": "",
+    "functions/src/events/eventAttendees.ts": "",
+  };
+  const allowed = check(files);
+  assert.deepEqual(allowed.findings, []);
+  assert.deepEqual(allowed.contextOrder, []);
+
+  // Anything but the area entry importing it fails, from any layer.
+  const imported = check({...files,
+    "functions/src/events/policy.ts": "import \"./dispatch/events.generated\";\n",
+    "functions/src/hostReadModels/view.ts": "import \"../events/dispatch/events.generated\";\n",
+    "functions/src/platform/dispatch/runtime.ts":
+      "import \"../../events/dispatch/events.generated\";\n",
+  });
+  assert.deepEqual(imported.findings.map(({rule, path}) => `${rule} ${path}`).sort(), [
+    "dispatchRegistryImported functions/src/events/policy.ts",
+    "dispatchRegistryImported functions/src/hostReadModels/view.ts",
+    "dispatchRegistryImported functions/src/platform/dispatch/runtime.ts",
+  ]);
+
+  // Without the pattern the same file is ordinary domain code and its
+  // imports are checked like any other.
+  const unmapped = check(files, fixtureMap({dispatchRegistries: undefined}));
+  assert.deepEqual(unmapped.findings.map(({rule}) => rule).sort(),
+    ["contextOrder", "contextOrder", "domainImportsSurface"]);
+  assert.equal(unmapped.contextOrder.length, 2);
+  assert.throws(() => fixtureMap({dispatchRegistries: "functions/src/dispatch.ts"}),
+    /dispatchRegistries must be a path pattern/);
 });
 
 test("lists known imports against the context order one by one", () => {

@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/dispatch_dead_letters.schema.json",
+  "title": "DispatchDeadLetterDocument",
+  "description": "Server-only record of one dispatched projection that still failed when its source dispatcher gave up on an event past the max age (one hour). One document per projection id and event id, at dispatchDeadLetters/{projectionId}_{eventId}; a drift sweep or reconcile tool repairs the projection, and effects are never re-run from it. It holds the error message and the source path, never document data. Deleted 30 days after it is written (issue #2451).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "dispatchDeadLetters",
+  "x-firestore-path": "dispatchDeadLetters/{deadLetterId}",
+  "x-owner": "the source dispatchers (functions/src/platform/dispatch/runtime.ts)",
+  "required": [
+    "projectionId",
+    "kind",
+    "eventId",
+    "source",
+    "sourcePath",
+    "error",
+    "eventTime",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "projectionId": {
+      "type": "string",
+      "pattern": "^[a-z][A-Za-z0-9]{0,63}$",
+      "description": "The dispatch spec that failed; the document id starts with it.",
+      "x-catch-ownership": "server-only"
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["projection", "effect"],
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "The Eventarc event id of the write the dispatcher gave up on.",
+      "x-catch-ownership": "server-only"
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^[a-z][A-Za-z0-9]{0,63}$",
+      "description": "The dispatch source, as functions/dispatch-sources.json names it.",
+      "x-catch-ownership": "server-only"
+    },
+    "sourcePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1500,
+      "description": "The written document's path, for the repair tool.",
+      "x-catch-ownership": "server-only"
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "The last error's name and message, cut to 1000 characters.",
+      "x-catch-ownership": "server-only"
+    },
+    "eventTime": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "Thirty days after the record is written; the collection's TTL policy deletes it then.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

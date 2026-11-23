@@ -2,13 +2,14 @@
   "version": 1,
   "owner": "app_architecture",
   "doc": "docs/app_architecture.md#backend-contexts",
-  "description": "Where each handwritten functions/src module sits (issue #1350). Contexts reuse the app's vocabulary from context_map.json, in its order, plus backend-only contexts. Platform imports only platform; a domain context imports platform and contexts declared before it; a surface imports platform, any domain context and its own files; only index.ts imports a surface. Target roots win; otherwise the longest legacy path decides (a path ending in / is a folder, any other path one file). Code moved before the scripted move goes under its target root. knownContextOrderImports and knownCrossContextWrites list today's context-order imports and cross-context writes one by one: the checker fails on any other, and on a listed one that no longer happens.",
+  "description": "Where each handwritten functions/src module sits (issue #1350). Contexts reuse the app's vocabulary from context_map.json, in its order, plus backend-only contexts. Platform imports only platform; a domain context imports platform and contexts declared before it; a surface imports platform, any domain context and its own files; only index.ts imports a surface. Target roots win; otherwise the longest legacy path decides (a path ending in / is a folder, any other path one file). Code moved before the scripted move goes under its target root. A generated dispatch registry (dispatchRegistries; issue #2451, tool/architecture/generate_dispatch_registries.mjs) is the one module that may import any context or surface, and only its area entry imports it. knownContextOrderImports and knownCrossContextWrites list today's context-order imports and cross-context writes one by one: the checker fails on any other, and on a listed one that no longer happens.",
   "roots": {
     "domain": "functions/src/domain/",
     "surfaces": "functions/src/surfaces/",
     "platform": "functions/src/platform/"
   },
   "entry": ["functions/src/index.ts", "functions/src/*/functions.ts"],
+  "dispatchRegistries": "functions/src/*/dispatch/*.generated.ts",
   "contexts": [
     "profiles",
     "safety",
