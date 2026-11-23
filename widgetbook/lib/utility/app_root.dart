@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/pages/frame/app.dart';
 import 'package:catch_dating_app/routing/consumer_router.dart';
 import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_ui/catch_ui.dart';

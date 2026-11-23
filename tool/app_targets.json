@@ -126,7 +126,7 @@
       "packageEntrypoint": "lib/main_dev.dart",
       "firebase": {
         "projectId": "catchdates-dev",
-        "dartOptionsFile": "lib/firebase_options_dev.dart",
+        "dartOptionsFile": "packages/platform/lib/firebase/firebase_options_dev.dart",
         "dartOptionsMembers": {
           "android": "android",
           "ios": "ios",
@@ -178,7 +178,7 @@
       "packageEntrypoint": "lib/main_dev.dart",
       "firebase": {
         "projectId": "catchdates-dev",
-        "dartOptionsFile": "lib/firebase_options_dev.dart",
+        "dartOptionsFile": "packages/platform/lib/firebase/firebase_options_dev.dart",
         "dartOptionsMembers": {
           "android": "hostAndroid",
           "ios": "hostIos",
@@ -230,7 +230,7 @@
       "packageEntrypoint": "lib/main_prod.dart",
       "firebase": {
         "projectId": "catch-dating-app-64e51",
-        "dartOptionsFile": "lib/firebase_options_prod.dart",
+        "dartOptionsFile": "packages/platform/lib/firebase/firebase_options_prod.dart",
         "dartOptionsMembers": {
           "android": "android",
           "ios": "ios",
@@ -287,7 +287,7 @@
       "packageEntrypoint": "lib/main_prod.dart",
       "firebase": {
         "projectId": "catch-dating-app-64e51",
-        "dartOptionsFile": "lib/firebase_options_prod.dart",
+        "dartOptionsFile": "packages/platform/lib/firebase/firebase_options_prod.dart",
         "dartOptionsMembers": {
           "android": "hostAndroid",
           "ios": "hostIos",

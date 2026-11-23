@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/contexts/account/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/contexts/account/domain/app_version_config.dart';
-import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
+import 'package:catch_dating_app/pages/frame/app.dart';
+import 'package:catch_dating_app/pages/frame/force_update/update_required_screen.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

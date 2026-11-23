@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
 import 'package:catch_dating_app/contexts/discovery/actions/profile_location_initializer.dart';
+import 'package:catch_dating_app/pages/frame/app.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';

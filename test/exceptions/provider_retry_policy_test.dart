@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/app_bootstrap.dart';
+import 'package:catch_dating_app/pages/frame/app_bootstrap.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/errors/error_logger.dart';

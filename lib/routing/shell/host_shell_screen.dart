@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/hosts/hosts.dart';
-import 'package:catch_dating_app/notifications/notifications.dart';
+import 'package:catch_dating_app/pages/frame/notifications/foreground_notification_controller.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_navigation.dart';
 import 'package:catch_dating_app/routing/shell/shell_chrome.dart';

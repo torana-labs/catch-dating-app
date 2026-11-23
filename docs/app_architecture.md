@@ -2539,7 +2539,7 @@ Candidate patterns:
 | Error banner | `packages/catch_ui/lib/src/components/catch_banner.dart` |
 | Mutation helpers | `packages/platform/lib/riverpod_ui/mutation_error_util.dart` |
 | Mutation subscriptions and transient error notices | `packages/platform/lib/riverpod_ui/catch_notice_feedback.dart` |
-| Global error handlers | `lib/app_bootstrap.dart` |
+| Global error handlers | `lib/pages/frame/app_bootstrap.dart` |
 
 ### Event conversation session ownership
 
@@ -3664,7 +3664,7 @@ Reference implementation:
 - `packages/l10n/l10n.yaml` — deterministic `gen_l10n` configuration;
 - `packages/l10n/lib/app_en.arb` — canonical typed English Flutter catalog;
 - `packages/l10n/lib/l10n.dart` — presentation access seam and isolated-preview fallback;
-- `lib/app.dart` — shared locale delegates, supported locales, and role-aware
+- `lib/pages/frame/app.dart` — shared locale delegates, supported locales, and role-aware
   app title;
 - `lib/routing/shell/app_shell.dart` and
   `lib/routing/shell/host_app_shell.dart` — semantic navigation destinations

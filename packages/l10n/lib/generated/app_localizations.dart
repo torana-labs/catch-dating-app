@@ -4101,13 +4101,13 @@ abstract class AppLocalizations {
   /// **'AREA'**
   String get exploreExploreFilterRailTextArea;
 
-  /// Product copy used by lib/force_update/presentation/update_required_screen.dart (Text).
+  /// Product copy used by lib/pages/frame/force_update/update_required_screen.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Update required'**
   String get forceUpdateUpdateRequiredScreenTextUpdateRequired;
 
-  /// Product copy used by lib/force_update/presentation/update_required_screen.dart (label).
+  /// Product copy used by lib/pages/frame/force_update/update_required_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Update now'**
@@ -9681,7 +9681,7 @@ abstract class AppLocalizations {
   /// **'Try another city from the location control, or create the first organizer when you are ready to host.'**
   String get exploreExploreScreenMessageTryAnotherCityFrom;
 
-  /// Product copy used by lib/force_update/presentation/update_required_screen.dart (Text).
+  /// Product copy used by lib/pages/frame/force_update/update_required_screen.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'A new version of Catch is available. Please update to continue.'**

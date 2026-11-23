@@ -160,7 +160,7 @@ export function namingFindings({declarations, symbolDeclarations}) {
 // A carried file (tool/architecture/carried_screens.json) keeps the rules of
 // the legacy path it moved from until its redraw, as the Catch lints and the
 // library-shims gate read it, so its naming is judged at that path: a Phase 4
-// move of lib/app.dart into lib/pages/frame/ adds no naming debt. Findings
+// move of lib/pages/frame/app.dart into lib/pages/frame/ adds no naming debt. Findings
 // still name the file where it is now.
 export function carriedNamingFindings({carried, declarations, symbolDeclarations}) {
   const asFrom = (entry) => (carried.has(entry.file) ? {...entry, file: carried.get(entry.file)} : entry);

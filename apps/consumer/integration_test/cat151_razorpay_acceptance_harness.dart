@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_consumer_app/consumer_platform_app.dart';
-import 'package:catch_dating_app/app_bootstrap.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/actions/event_booking_controller.dart';
@@ -16,6 +15,7 @@ import 'package:catch_dating_app/contexts/payments/data/payment_history_reposito
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/pages/frame/app_bootstrap.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';

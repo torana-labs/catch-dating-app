@@ -311,8 +311,8 @@ Use it against dev before production and before running any migration.
 3. Generate the Dart options file for that environment:
 
 ```bash
-flutterfire configure --project=<firebase-project-id> --out=lib/firebase_options_dev.dart
-flutterfire configure --project=<firebase-project-id> --out=lib/firebase_options_prod.dart
+flutterfire configure --project=<firebase-project-id> --out=packages/platform/lib/firebase/firebase_options_dev.dart
+flutterfire configure --project=<firebase-project-id> --out=packages/platform/lib/firebase/firebase_options_prod.dart
 ```
 
 4. Update `firebase/<env>/web/firebase-messaging-sw.js` with the web app config
