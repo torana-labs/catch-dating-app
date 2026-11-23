@@ -237,3 +237,38 @@ export const onEventChatDirectoryUserWritten = onDocumentWritten({
   await refreshEventChatDirectoryEntriesFor(admin.firestore(), "uid",
     event.params.documentId);
 });
+
+/** The organizer's managers, as isOrganizerManager decides them. */
+function managerUids(data: Data): Set<string> {
+  const ids = [data?.hostUserId, data?.ownerUserId,
+    ...(Array.isArray(data?.hostUserIds) ? data.hostUserIds : [])];
+  return new Set(ids.filter((id): id is string =>
+    typeof id === "string" && id.length > 0));
+}
+
+/**
+ * The people an organizer write added as managers or removed, sorted.
+ * @param {Data} before The previous organizer.
+ * @param {Data} after The new organizer.
+ * @return {string[]} Their uids.
+ */
+export function eventChatDirectoryManagerChanges(before: Data, after: Data):
+  string[] {
+  const was = managerUids(before);
+  const now = managerUids(after);
+  return [...new Set([...was, ...now])]
+    .filter((uid) => was.has(uid) !== now.has(uid)).sort();
+}
+
+/**
+ * A manager added to or removed from an organizer: that person's rows, so
+ * their host role and admission follow the organizer, as getEventChatAccess
+ * reads it. A person with no row has nothing to update.
+ */
+export const onEventChatDirectoryOrganizerWritten = onDocumentWritten({
+  ...options, document: "organizers/{documentId}",
+}, async (event) => {
+  for (const uid of eventChatDirectoryManagerChanges(...versions(event))) {
+    await refreshEventChatDirectoryEntriesFor(admin.firestore(), "uid", uid);
+  }
+});

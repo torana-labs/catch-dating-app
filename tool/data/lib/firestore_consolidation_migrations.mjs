@@ -694,6 +694,30 @@ async function contactCandidateViews(db, data, contactId) {
   return entries;
 }
 
+let guestEventDayModules = null;
+function guestEventDayViews() {
+  try {
+    const load = createFunctionsRequire();
+    guestEventDayModules ??= {
+      layouts: load("./lib/eventSuccess/layoutViews.js"),
+      statuses: load("./lib/guestEvents/guestEventStatus.js"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The guest-event-day-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return guestEventDayModules;
+}
+
+/** The (at most two) roster rows linked to a guest at an event, by id. */
+async function linkedAttendeeIds(db, eventId, uid) {
+  const rows = await db.collection("eventAttendees").where("eventId", "==", eventId)
+    .where("linkedUid", "==", uid).limit(2).get();
+  return rows.docs.map((doc) => doc.id).sort();
+}
+
 let programArrivalViewModule = null;
 function functionsProgramArrivalViews() {
   try {
@@ -2288,6 +2312,56 @@ export const MIGRATIONS = [
         target: "hostContactMergeCandidateViews",
         skipReason: "no candidate pair starts at this contact, or already viewed",
         expand: (data, id, db) => contactCandidateViews(db, data, id),
+      },
+    ],
+  },
+  {
+    name: "guest-event-day-views",
+    description:
+      "The Catch app's event day reads guestEventStatuses.rosterLink instead " +
+      "of getEventAssistanceParticipantContext and eventSuccessLayoutViews " +
+      "instead of getEventSuccessSpatialLayout (#2306). Every event plan gets " +
+      "its room layout view (geometry only); every guest status row gets its " +
+      "roster link (the guest's own linked attendee id, ambiguous, or null); " +
+      "and a guest linked to a roster row with no status row yet gets one. " +
+      "Existing views are never replaced and only rosterLink is written on " +
+      "existing rows, with a last-update-time precondition. Build Functions " +
+      "first.",
+    steps: [
+      {
+        source: "eventSuccessPlans",
+        target: "eventSuccessLayoutViews",
+        skipReason: "no event or plan, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "eventSuccessLayoutViews", id,
+          (tx) => guestEventDayViews().layouts.readEventSuccessLayoutView(db,
+            tx, id)),
+      },
+      {
+        kind: "fill",
+        collection: "guestEventStatuses",
+        refresh: ["rosterLink"],
+        fill: async (data, id, db) => {
+          if (!validId(data.eventId) || !validId(data.uid)) return null;
+          const event = await db.collection("events").doc(data.eventId).get();
+          return {rosterLink: guestEventDayViews().statuses.guestRosterLink(
+            event.data()?.status, await linkedAttendeeIds(db, data.eventId, data.uid))};
+        },
+      },
+      {
+        source: "eventAttendees",
+        target: "guestEventStatuses",
+        skipReason: "no linked guest, a second row of the same guest, or a row already",
+        expand: async (data, id, db) => {
+          if (!validId(data.eventId) || !validId(data.linkedUid)) return [];
+          const ids = await linkedAttendeeIds(db, data.eventId, data.linkedUid);
+          if (ids[0] !== id) return [];
+          const targetId = `${data.eventId}_${data.linkedUid}`;
+          const row = await newView(db, "guestEventStatuses", targetId,
+            (tx) => guestEventDayViews().statuses.guestEventStatus({db, tx,
+              eventId: data.eventId, uid: data.linkedUid, nowMillis: Date.now()}));
+          return row ? [{targetId, data: row}] : [];
+        },
       },
     ],
   },

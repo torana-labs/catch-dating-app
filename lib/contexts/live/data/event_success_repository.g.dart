@@ -566,24 +566,24 @@ final class WatchEventSuccessSelectedLayoutFamily extends $Family
   String toString() => r'watchEventSuccessSelectedLayoutProvider';
 }
 
-/// The selected room layout for a guest, through the participant projection.
+/// The selected room layout for a guest, live from its read model.
 
 @ProviderFor(eventSuccessSpatialLayout)
 final eventSuccessSpatialLayoutProvider = EventSuccessSpatialLayoutFamily._();
 
-/// The selected room layout for a guest, through the participant projection.
+/// The selected room layout for a guest, live from its read model.
 
 final class EventSuccessSpatialLayoutProvider
     extends
         $FunctionalProvider<
           AsyncValue<EventSuccessLayout?>,
           EventSuccessLayout?,
-          FutureOr<EventSuccessLayout?>
+          Stream<EventSuccessLayout?>
         >
     with
         $FutureModifier<EventSuccessLayout?>,
-        $FutureProvider<EventSuccessLayout?> {
-  /// The selected room layout for a guest, through the participant projection.
+        $StreamProvider<EventSuccessLayout?> {
+  /// The selected room layout for a guest, live from its read model.
   EventSuccessSpatialLayoutProvider._({
     required EventSuccessSpatialLayoutFamily super.from,
     required String super.argument,
@@ -607,12 +607,12 @@ final class EventSuccessSpatialLayoutProvider
 
   @$internal
   @override
-  $FutureProviderElement<EventSuccessLayout?> $createElement(
+  $StreamProviderElement<EventSuccessLayout?> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<EventSuccessLayout?> create(Ref ref) {
+  Stream<EventSuccessLayout?> create(Ref ref) {
     final argument = this.argument as String;
     return eventSuccessSpatialLayout(ref, argument);
   }
@@ -630,12 +630,12 @@ final class EventSuccessSpatialLayoutProvider
 }
 
 String _$eventSuccessSpatialLayoutHash() =>
-    r'eb7e2c95206f8173823738680fa9821bc8331ae5';
+    r'5ecffd052ba1a9de8eaf38e5d5ea98cbd421b1b1';
 
-/// The selected room layout for a guest, through the participant projection.
+/// The selected room layout for a guest, live from its read model.
 
 final class EventSuccessSpatialLayoutFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<EventSuccessLayout?>, String> {
+    with $FunctionalFamilyOverride<Stream<EventSuccessLayout?>, String> {
   EventSuccessSpatialLayoutFamily._()
     : super(
         retry: null,
@@ -645,7 +645,7 @@ final class EventSuccessSpatialLayoutFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The selected room layout for a guest, through the participant projection.
+  /// The selected room layout for a guest, live from its read model.
 
   EventSuccessSpatialLayoutProvider call(String eventId) =>
       EventSuccessSpatialLayoutProvider._(argument: eventId, from: this);

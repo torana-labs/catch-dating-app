@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {eventChatDirectoryPairs} from "./eventChatDirectory";
+import {eventChatDirectoryManagerChanges, eventChatDirectoryPairs} from
+  "./eventChatDirectory";
 
 test("a booking or membership write rebuilds its own row", () => {
   assert.deepEqual(eventChatDirectoryPairs(undefined,
@@ -29,4 +30,16 @@ test("a roster row relinked to another person rebuilds both rows", () => {
     "linkedUid", ["status"]), []);
   assert.deepEqual(eventChatDirectoryPairs(undefined,
     {eventId: "bad/path", uid: "guest-1"}, "uid", []), []);
+});
+
+test("a manager added or removed rebuilds only that person's rows", () => {
+  assert.deepEqual(eventChatDirectoryManagerChanges(
+    {ownerUserId: "owner", hostUserId: "owner", hostUserIds: ["a", "b"]},
+    {ownerUserId: "owner", hostUserId: "owner", hostUserIds: ["b", "c"]}),
+  ["a", "c"]);
+  assert.deepEqual(eventChatDirectoryManagerChanges(
+    {ownerUserId: "owner", hostUserIds: ["a"], name: "Old"},
+    {ownerUserId: "owner", hostUserIds: ["a"], name: "New"}), []);
+  assert.deepEqual(eventChatDirectoryManagerChanges(undefined,
+    {ownerUserId: "owner"}), ["owner"]);
 });

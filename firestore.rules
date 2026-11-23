@@ -3579,6 +3579,18 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    // One event's room layout (#2306): the selected layout's id, label and
+    // units exactly as getEventSuccessSpatialLayout returned them; geometry
+    // only, never a guest or a seat. Read by id by the event's organizer
+    // managers and by a guest whose own booking is signed up or attended or
+    // whose own runtime row is ready, as the callable admitted them.
+    match /eventSuccessLayoutViews/{eventId} {
+      allow get: if (resource == null && isAuthed())
+        || (isAuthed() && (isOrganizerHostForEvent(eventId)
+          || hasEventSuccessParticipantAccess(eventId, request.auth.uid)));
+      allow list, write: if false;
+    }
+
     match /eventSuccessPlans/{eventId} {
       // Guests see the plan unless the host turned it off for the event;
       // a missing planVisibleToGuests reads as visible.

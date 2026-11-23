@@ -593,6 +593,9 @@ enter previews.
 | `onEventChatDirectoryParticipationWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds the guest's chat directory row when their booking status changes |
 | `onEventChatDirectoryRoomWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds every chat directory row of an event when its room revision moves |
 | `onEventChatDirectoryUserWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds a person's chat directory rows when their profile claim or deletion changes |
+| `onEventChatDirectoryOrganizerWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds the chat directory rows of each person added to or removed from an organizer's managers |
+| `onEventSuccessLayoutViewPlanChanged` | `src/eventSuccess/layoutViewTriggers.ts` | Rewrites an event's room layout view when its plan selects another layout or seats the whole group |
+| `onEventSuccessLayoutViewLayoutChanged` | `src/eventSuccess/layoutViewTriggers.ts` | Rewrites the room layout view of every event that selects an organizer layout when the layout is saved or removed |
 | `onEventChatSignalMembershipWritten` | `src/chatSignals/eventChatSignals.ts` | Not yet described. |
 | `onEventChatSignalRoomWritten` | `src/chatSignals/eventChatSignals.ts` | Not yet described. |
 | `onEventGuestEntryEventWritten` | `src/guestEvents/triggers.ts` | Rebuilds the event's `eventGuestEntries` document, its guests' `guestEventStatuses` rows and its `savedEvents` cards when anything besides booking counters changes |

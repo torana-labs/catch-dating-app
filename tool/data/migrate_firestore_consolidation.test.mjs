@@ -1306,6 +1306,35 @@ test("host-crm-views creates each organizer's sources and each pair once, nothin
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("guest-event-day-views writes layouts, roster links and missing guest rows once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "guest-event-day-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const db = fakeDb({
+    "events/e1": {organizerId: "o1", status: "active", name: "Supper", startTime: at(1_790_000_000_000)},
+    "eventSuccessPlans/e1": {eventId: "e1", organizerId: "o1", layoutId: "hall",
+      structureConfig: {unitKind: "tables"}},
+    "organizerEventSuccessLayouts/o1_hall": {organizerId: "o1", layoutId: "hall", label: "Main hall",
+      units: [{id: "t1", label: "Table 1", shape: "round", capacity: 6, gridX: 0, gridY: 0, order: 1}],
+      createdByUid: "host-secret"},
+    "guestEventStatuses/e1_g1": {eventId: "e1", uid: "g1", organizerId: "o1", booking: "registered"},
+    "eventAttendees/a1": {eventId: "e1", organizerId: "o1", linkedUid: "g1", status: "registered",
+      phoneE164: "+919800000001"},
+    "eventAttendees/a2": {eventId: "e1", organizerId: "o1", linkedUid: "g2", status: "cancelled",
+      phoneE164: "+919800000002"},
+  });
+  const plan = await planMigration(db, migration);
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data["eventSuccessLayoutViews/e1"].layout.units.map((unit) => unit.id), ["t1"]);
+  assert.equal(JSON.stringify(db.data["eventSuccessLayoutViews/e1"]).includes("host-secret"), false);
+  assert.deepEqual(db.data["guestEventStatuses/e1_g1"].rosterLink, {kind: "linked", attendeeId: "a1"});
+  assert.equal(db.data["guestEventStatuses/e1_g1"].booking, "registered");
+  assert.deepEqual(db.data["guestEventStatuses/e1_g2"].rosterLink, {kind: "linked", attendeeId: "a2"});
+  assert.equal(JSON.stringify(db.data["guestEventStatuses/e1_g2"]).includes("+9198"), false);
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-live-board-views creates each alert and count once, one per run and duty", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-live-board-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});

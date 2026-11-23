@@ -16,6 +16,8 @@ import {eventGuestEntry, refreshEventGuestEntry} from "./eventGuestEntry";
 import {guestEventStatus, guestEventStatusId, refreshGuestEventStatus} from
   "./guestEventStatus";
 import {eventTermsChanged, guestEventStatusPairs} from "./triggers";
+import {readParticipantContext} from
+  "../eventSuccess/operations/participantContext";
 
 const validateEventGuestEntryDocument =
   contractValidator<EventGuestEntryDocument>("EventGuestEntryDocument");
@@ -158,6 +160,32 @@ test("waitlisted and cancelled Catch bookings keep a row for their lists",
     putBooking(h, "deleted");
     assert.equal(await readStatus(h.store, h.auth), null);
   });
+
+test("the roster link is the participant context: one linked row, or " +
+  "ambiguous, never a guess", async () => {
+  const h = await publicFixture();
+  const attendee = (id: string, linkedUid: string) => h.store.put(
+    `eventAttendees/${id}`, {eventId, organizerId: h.event.organizerId,
+      linkedUid, status: "cancelled", source: "hostImport",
+      displayName: "Guest", phoneE164: "+919800000001"});
+  const callable = async (who = uid) => (await readParticipantContext(
+    h.store.db(), who, eventId, () => now)).resolution;
+  assert.equal(await readStatus(h.store, h.auth), null);
+  assert.deepEqual(await callable(), {kind: "unlinked"});
+  attendee("row_own", uid);
+  attendee("row_other", "someone-else");
+  const linked = await readStatus(h.store, h.auth);
+  assert.deepEqual(linked?.rosterLink, {kind: "linked",
+    attendeeId: "row_own"});
+  // The callable resolves the same row; its source hash needs the stored
+  // documents' update times, which this test store does not keep.
+  assert.equal(JSON.stringify(linked).includes("row_other"), false);
+  assert.equal(JSON.stringify(linked).includes("+9198"), false);
+  attendee("row_twice", uid);
+  assert.deepEqual((await readStatus(h.store, h.auth))?.rosterLink,
+    {kind: "ambiguous"});
+  assert.deepEqual(await callable(), {kind: "ambiguous"});
+});
 
 test("a captured website payment admits; another account sees nothing",
   async () => {

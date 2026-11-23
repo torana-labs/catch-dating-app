@@ -14,5 +14,6 @@ export {getEventChatProfileSharing, updateEventChatProfileSharing,
 export {onEventChatDirectoryMembershipWritten,
   onEventChatDirectoryParticipationWritten,
   onEventChatDirectoryAttendeeWritten, onEventChatDirectoryRoomWritten,
-  onEventChatDirectoryEventWritten, onEventChatDirectoryUserWritten} from
+  onEventChatDirectoryEventWritten, onEventChatDirectoryUserWritten,
+  onEventChatDirectoryOrganizerWritten} from
   "./eventChatDirectory";

@@ -27,7 +27,6 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
         ConfigureEventAssignmentFeaturesCallableRequest,
         EventIdCallableRequest,
         EventSuccessSpatialActionCallableRequest,
-        GetEventSuccessSpatialLayoutCallableRequest,
         OverrideEventSuccessGroupsCallableRequest,
         OverrideEventSuccessRotationsCallableRequest,
         PrepareEventSuccessRotationDraftCallableRequest,
