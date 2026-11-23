@@ -2119,6 +2119,29 @@ attendee generations, check-in, episode and checkpoint hashes, the case
 binding hash, the staff source hash); a replay whose fence no longer matches
 live state is still rejected. Old documents stay.
 
+### Dispatch Dead Letters
+
+`dispatchDeadLetters/{projectionId}_{eventId}` records a dispatched projection
+that still failed when its source dispatcher gave up on an event (issue #2451;
+runtime in `functions/src/platform/dispatch/runtime.ts`). A source collection
+has one `onDocumentWritten` trigger with retry on; a failure in any of its
+projections throws so Eventarc retries the whole event. An event older than one
+hour gets one last run, then each projection that still fails gets one record
+and the event is acknowledged.
+
+- Shape (`contracts/firestore/dispatch_dead_letters.schema.json`):
+  `projectionId`, `kind`, `eventId`, `source`, `sourcePath`, `error` (name and
+  message, at most 1000 characters), `eventTime`, `createdAt`, `expiresAt`.
+  No document data is stored.
+- Id: `{projectionId}_{eventId}`; an event id that is not a short run of
+  letters, digits and `:._-` becomes `h` plus its SHA-256.
+- Retention: `expiresAt` is 30 days after the record is written; the
+  collection's TTL policy is a `fieldOverrides` entry for
+  `dispatchDeadLetters.expiresAt` in `firestore.indexes.json`.
+- Repair: the source's reconcile or backfill tool rebuilds the projection.
+  Effects are never re-run from a dead letter.
+- Server only: rules deny every client read and write.
+
 ### Public HTTP And Admin Callable Boundaries
 
 The public `/api/join-waitlist` endpoint uses the versioned schemas under

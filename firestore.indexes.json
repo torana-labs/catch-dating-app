@@ -9242,6 +9242,25 @@
       ]
     },
     {
+      "collectionGroup": "dispatchDeadLetters",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
       "collectionGroup": "programAlertViews",
       "fieldPath": "expiresAt",
       "ttl": true,

@@ -909,6 +909,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Dead letters from the source dispatchers (issue #2451): one record per
+    // projection id and event id that still failed past the max age, for a
+    // reconcile tool. Only Cloud Functions write it; TTL deletes it.
+    match /dispatchDeadLetters/{deadLetterId} {
+      allow read, write: if false;
+    }
+
     // Durable business-workflow state. Trusted operations workers use the
     // Admin SDK; browser and mobile clients never access these records directly.
     match /eventAssistanceSmsSenders/{senderId} {

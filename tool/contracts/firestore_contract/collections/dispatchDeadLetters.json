@@ -1,0 +1,16 @@
+{
+  "id": "dispatchDeadLetters",
+  "path": "dispatchDeadLetters/{deadLetterId}",
+  "rulesMatch": "/dispatchDeadLetters/{deadLetterId}",
+  "typescriptInterface": "DispatchDeadLetterDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/server_only_collections.rules.test.cjs",
+  "owner": "the source dispatchers (functions/src/platform/dispatch/runtime.ts)",
+  "writerContext": "platform",
+  "read": "server only; reconcile tools read it with the Admin SDK",
+  "write": "server only: one record per projection id and event id when a dispatcher gives up on an event past the max age; deleted by the expiresAt TTL policy after 30 days",
+  "exportedFunctions": [],
+  "migrationNotes": [
+    "Issue #2451. New with the dispatcher runtime; no source dispatcher writes it until the first source (organizers) is wired."
+  ]
+}

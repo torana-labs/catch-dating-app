@@ -14,6 +14,8 @@ import {
   type FirestoreEvent,
 } from "firebase-functions/v2/firestore";
 import type {MemoryOption} from "firebase-functions/v2/options";
+import type {DispatchDeadLetterDocument} from
+  "../../shared/generated/firestoreAdminTypes";
 
 /**
  * One Firestore trigger per source collection (issue #2451).
@@ -369,8 +371,7 @@ async function writeDeadLetters(source: string, input: DispatchEventInput,
   const now = deps.nowMillis();
   const batch = deps.db.batch();
   for (const {spec, error} of failures) {
-    batch.set(deps.db.collection(DISPATCH_DEAD_LETTERS)
-      .doc(deadLetterId(spec.id, input.id)), {
+    const record: DispatchDeadLetterDocument = {
       projectionId: spec.id,
       kind: spec.kind,
       eventId: input.id,
@@ -381,7 +382,9 @@ async function writeDeadLetters(source: string, input: DispatchEventInput,
         Timestamp.fromMillis(now) : Timestamp.fromDate(eventTime),
       createdAt: Timestamp.fromMillis(now),
       expiresAt: Timestamp.fromMillis(now + DISPATCH_DEAD_LETTER_RETENTION_MS),
-    });
+    };
+    batch.set(deps.db.collection(DISPATCH_DEAD_LETTERS)
+      .doc(deadLetterId(spec.id, input.id)), record);
   }
   await batch.commit();
 }
