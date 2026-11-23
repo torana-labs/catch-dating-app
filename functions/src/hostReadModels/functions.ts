@@ -54,6 +54,13 @@ export {onHostFormEditorViewFormChanged, onHostFormEditorViewDraftChanged,
   onHostFormAnalyticsViewVersionChanged,
   onHostFormAnalyticsViewAggregateChanged,
   onHostFormSourceViewLinkChanged} from "./formViewTriggers";
+export {onHostAudienceSourceViewFormChanged,
+  onHostAudienceSourceViewApplicationFormChanged,
+  onHostAudienceSourceViewVersionChanged,
+  onHostAudienceSourceViewEventChanged, onHostAudienceSourceViewTagsChanged,
+  onHostMergeCandidateViewClaimChanged, onHostMergeCandidateViewLinkChanged,
+  onHostMergeCandidateViewContactChanged, onHostMergeCandidateViewEdgeChanged,
+  onHostMergeCandidateViewDecisionChanged} from "./crmViewTriggers";
 export {onHostWhatsappThreadViewThreadChanged,
   onHostWhatsappThreadViewContactChanged} from
   "./whatsappThreadViewTriggers";

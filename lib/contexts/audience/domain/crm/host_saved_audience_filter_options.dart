@@ -49,10 +49,14 @@ class HostSavedAudienceFilterOptions {
 
   factory HostSavedAudienceFilterOptions.fromCallableData(Object? data) {
     final root = crmRequiredMap(data, 'audience source options');
-    final map = crmRequiredMap(
-      root['filterOptions'],
-      'audience source options',
+    return HostSavedAudienceFilterOptions.fromMap(
+      crmRequiredMap(root['filterOptions'], 'audience source options'),
     );
+  }
+
+  /// The options of a callable response's `filterOptions` or of a
+  /// `hostAudienceSourceViews` row: forms, questions, events and tags.
+  factory HostSavedAudienceFilterOptions.fromMap(Map<Object?, Object?> map) {
     return HostSavedAudienceFilterOptions(
       forms: crmMapList(map['forms'], 'audience forms')
           .map(

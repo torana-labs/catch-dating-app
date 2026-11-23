@@ -1266,6 +1266,46 @@ test("host-form-views creates each form, version and funnel view once, no token"
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("host-crm-views creates each organizer's sources and each pair once, nothing secret", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-crm-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const contact = (id, extra = {}) => ({organizerId: "o1", contactId: id, displayName: `Guest ${id}`,
+    displayNameOverride: null, phoneE164: null, email: null, linkedUid: id === "c1" ? "uid-secret" : null,
+    primarySource: "hostImport", revision: 1, deletedAt: null, hiddenAt: null, identityState: "active", ...extra});
+  const db = fakeDb({
+    "organizers/o1": {ownerUserId: "host-1", hostUserIds: ["host-1"]},
+    "organizerForms/f1": {organizerId: "o1", title: "Supper club", activeVersionId: null},
+    "events/e1": {organizerId: "o1", name: "Lantern walk"},
+    "organizerContactTagVocabularies/o1": {organizerId: "o1", tags: [{tagId: "a".repeat(32),
+      label: "Regular", normalizedLabel: "regular", createdByUid: "creator-secret", createdAt: at(1)}],
+    updatedAt: at(1)},
+    "organizerContacts/c1": contact("c1"),
+    "organizerContacts/c2": contact("c2"),
+    "organizerContacts/c3": contact("c3"),
+    "organizerContactIdentityClaims/k1": {organizerId: "o1", kind: "phone", identityHash: "hash-secret",
+      state: "conflicted", verifiedContactId: "c1", conflictingContactIds: ["c2"], updatedAt: at(5)},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 2);
+  await applyMigrationPlan(db, plan);
+  const sources = db.data["hostAudienceSourceViews/o1"];
+  assert.deepEqual(sources.forms, [{formId: "f1", title: "Supper club"}]);
+  assert.deepEqual(sources.events, [{eventId: "e1", title: "Lantern walk"}]);
+  assert.deepEqual(sources.tags, [{tagId: "a".repeat(32), label: "Regular"}]);
+  const pairs = Object.entries(db.data).filter(([key]) => key.startsWith("hostContactMergeCandidateViews/"));
+  assert.equal(pairs.length, 1);
+  assert.deepEqual(pairs[0][1].contactIds, ["c1", "c2"]);
+  assert.deepEqual(pairs[0][1].matchKinds, ["sameVerifiedPhone"]);
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(([key]) =>
+    key.startsWith("hostAudienceSourceViews/") || key.startsWith("hostContactMergeCandidateViews/"))));
+  for (const secret of ["hash-secret", "uid-secret", "creator-secret"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-live-board-views creates each alert and count once, one per run and duty", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-live-board-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
@@ -1580,8 +1620,8 @@ function fakeDb(seed) {
       limit: (value) => query(after, value, filters),
       startAfter: (doc) => query(doc.id, limit, filters),
       where: (field, op, value) => {
-        assert.equal(op, "==");
-        return query(after, limit, [...filters, [field, value]]);
+        assert.ok(op === "==" || op === "array-contains", op);
+        return query(after, limit, [...filters, [field, value, op]]);
       },
       async get() {
         const docs = Object.keys(data)
@@ -1589,8 +1629,11 @@ function fakeDb(seed) {
           .sort()
           .map((key) => ({id: key.split("/")[1], ref: docRef(key), data: () => clone(data[key])}))
           .filter((doc) => after === undefined || doc.id > after)
-          .filter((doc) => filters.every(([field, value]) => field.split(".")
-            .reduce((item, key) => item?.[key], doc.data()) === value))
+          .filter((doc) => filters.every(([field, value, op]) => {
+            const actual = field.split(".").reduce((item, key) => item?.[key], doc.data());
+            return op === "array-contains" ? Array.isArray(actual) && actual.includes(value) :
+              actual === value;
+          }))
           .slice(0, limit ?? Infinity);
         return {docs, empty: docs.length === 0};
       },

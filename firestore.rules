@@ -1634,6 +1634,25 @@ service cloud.firestore {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
     }
+    // One possible duplicate pair (#2306): the two contacts' names, phones
+    // and emails, the evidence and the review decision, as
+    // listOrganizerContactMergeCandidates returned them to the organizer's
+    // current managers. The trigger never copies identity hashes or linked
+    // uids. Merges and decisions stay on their revision-fenced callables.
+    match /hostContactMergeCandidateViews/{candidateId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    // What an organizer's audiences and automations can name (#2306): form
+    // titles, filterable question labels, event names and tag labels, as
+    // listOrganizerSavedAudiences returned them. Managers get it by id.
+    match /hostAudienceSourceViews/{organizerId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
     // One shown contact's traits, revenue and newest event rows for the Host
     // person page; the name, endpoints, tags and revision are on
     // hostContactSummaries. It holds no linked account, identity evidence or

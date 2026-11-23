@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_audience_source_views.schema.json",
+  "title": "HostAudienceSourceViewDocument",
+  "description": "Server-maintained manager read view of what one organizer's saved audiences and form automations can name, at hostAudienceSourceViews/{organizerId}: its forms (native and imported application forms), the filterable choice questions of each published version, its events and its manual contact tags, exactly as listOrganizerSavedAudiences returned them as filterOptions. When a source exceeds the callable's bounds (200 forms, versions or events, or 100 filterable questions) the view holds no options and unavailableReason holds the message the callable failed with. Written by triggers on organizerForms, organizerApplicationForms, organizerFormVersions, events and organizerContactTagVocabularies. Titles, labels and tag names only: never answers, contacts or form definitions, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostAudienceSourceViews",
+  "x-firestore-path": "hostAudienceSourceViews/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host read model projector (hostReadModels CRM view triggers)",
+  "required": [
+    "organizerId",
+    "forms",
+    "questions",
+    "events",
+    "tags",
+    "unavailableReason",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "forms": {
+      "$ref": "../callable_responses/list_organizer_saved_audiences_response.schema.json#/properties/filterOptions/properties/forms",
+      "x-catch-ownership": "server-only"
+    },
+    "questions": {
+      "$ref": "../callable_responses/list_organizer_saved_audiences_response.schema.json#/properties/filterOptions/properties/questions",
+      "x-catch-ownership": "server-only"
+    },
+    "events": {
+      "$ref": "../callable_responses/list_organizer_saved_audiences_response.schema.json#/properties/filterOptions/properties/events",
+      "x-catch-ownership": "server-only"
+    },
+    "tags": {
+      "$ref": "../callable_responses/list_organizer_saved_audiences_response.schema.json#/properties/filterOptions/properties/tags",
+      "x-catch-ownership": "server-only"
+    },
+    "unavailableReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300,
+      "description": "The message listOrganizerSavedAudiences failed with when a source exceeded its bounds; null otherwise.",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

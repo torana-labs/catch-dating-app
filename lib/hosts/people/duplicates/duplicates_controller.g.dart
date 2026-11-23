@@ -8,22 +8,25 @@ part of 'duplicates_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The organizer's duplicate review, a page at a time. Each command
-/// refreshes it with [refreshHostDuplicates]; the people it names update
-/// through their own listeners.
+/// The organizer's duplicate review from `hostContactMergeCandidateViews`,
+/// a page at a time, every pair kept live: a merge, a decision or new
+/// evidence shows once its trigger rewrites the pair, so commands never
+/// refresh it.
 
 @ProviderFor(HostDuplicateReviewPages)
 final hostDuplicateReviewPagesProvider = HostDuplicateReviewPagesFamily._();
 
-/// The organizer's duplicate review, a page at a time. Each command
-/// refreshes it with [refreshHostDuplicates]; the people it names update
-/// through their own listeners.
+/// The organizer's duplicate review from `hostContactMergeCandidateViews`,
+/// a page at a time, every pair kept live: a merge, a decision or new
+/// evidence shows once its trigger rewrites the pair, so commands never
+/// refresh it.
 final class HostDuplicateReviewPagesProvider
     extends
-        $AsyncNotifierProvider<HostDuplicateReviewPages, HostDuplicateReview> {
-  /// The organizer's duplicate review, a page at a time. Each command
-  /// refreshes it with [refreshHostDuplicates]; the people it names update
-  /// through their own listeners.
+        $StreamNotifierProvider<HostDuplicateReviewPages, HostDuplicateReview> {
+  /// The organizer's duplicate review from `hostContactMergeCandidateViews`,
+  /// a page at a time, every pair kept live: a merge, a decision or new
+  /// evidence shows once its trigger rewrites the pair, so commands never
+  /// refresh it.
   HostDuplicateReviewPagesProvider._({
     required HostDuplicateReviewPagesFamily super.from,
     required String super.argument,
@@ -62,11 +65,12 @@ final class HostDuplicateReviewPagesProvider
 }
 
 String _$hostDuplicateReviewPagesHash() =>
-    r'6c4c8347a9e471850b225c0ece2b1ba6067bacf6';
+    r'c169f5ee8dbe9a55f4e59c48780bfcad0fe73d99';
 
-/// The organizer's duplicate review, a page at a time. Each command
-/// refreshes it with [refreshHostDuplicates]; the people it names update
-/// through their own listeners.
+/// The organizer's duplicate review from `hostContactMergeCandidateViews`,
+/// a page at a time, every pair kept live: a merge, a decision or new
+/// evidence shows once its trigger rewrites the pair, so commands never
+/// refresh it.
 
 final class HostDuplicateReviewPagesFamily extends $Family
     with
@@ -74,7 +78,7 @@ final class HostDuplicateReviewPagesFamily extends $Family
           HostDuplicateReviewPages,
           AsyncValue<HostDuplicateReview>,
           HostDuplicateReview,
-          FutureOr<HostDuplicateReview>,
+          Stream<HostDuplicateReview>,
           String
         > {
   HostDuplicateReviewPagesFamily._()
@@ -86,9 +90,10 @@ final class HostDuplicateReviewPagesFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The organizer's duplicate review, a page at a time. Each command
-  /// refreshes it with [refreshHostDuplicates]; the people it names update
-  /// through their own listeners.
+  /// The organizer's duplicate review from `hostContactMergeCandidateViews`,
+  /// a page at a time, every pair kept live: a merge, a decision or new
+  /// evidence shows once its trigger rewrites the pair, so commands never
+  /// refresh it.
 
   HostDuplicateReviewPagesProvider call(String organizerId) =>
       HostDuplicateReviewPagesProvider._(argument: organizerId, from: this);
@@ -97,16 +102,17 @@ final class HostDuplicateReviewPagesFamily extends $Family
   String toString() => r'hostDuplicateReviewPagesProvider';
 }
 
-/// The organizer's duplicate review, a page at a time. Each command
-/// refreshes it with [refreshHostDuplicates]; the people it names update
-/// through their own listeners.
+/// The organizer's duplicate review from `hostContactMergeCandidateViews`,
+/// a page at a time, every pair kept live: a merge, a decision or new
+/// evidence shows once its trigger rewrites the pair, so commands never
+/// refresh it.
 
 abstract class _$HostDuplicateReviewPages
-    extends $AsyncNotifier<HostDuplicateReview> {
+    extends $StreamNotifier<HostDuplicateReview> {
   late final _$args = ref.$arg as String;
   String get organizerId => _$args;
 
-  FutureOr<HostDuplicateReview> build(String organizerId);
+  Stream<HostDuplicateReview> build(String organizerId);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
@@ -194,7 +200,7 @@ final class HostDuplicatesControllerProvider
 }
 
 String _$hostDuplicatesControllerHash() =>
-    r'9a1ce81b31e77d5e731ed88057a3cad9c1910394';
+    r'67d8a3da7e3578981d85c9df4dbeb7012c8505c2';
 
 /// The duplicate review page for one of its two lists.
 
@@ -300,7 +306,7 @@ final class HostPeopleDuplicateSummaryProvider
 }
 
 String _$hostPeopleDuplicateSummaryHash() =>
-    r'45410ed8317cfc57786f0e1dbdb32df9b24d5cdf';
+    r'e6ed8118de27028a2002d4f7588bc4124b98c33d';
 
 /// The People list's Possible duplicates row; null while the review is
 /// read or when it cannot be, so the row never stands in for an error.

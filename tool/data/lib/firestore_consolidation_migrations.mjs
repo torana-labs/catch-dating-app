@@ -654,6 +654,46 @@ function formViews() {
   return hostFormViewModule;
 }
 
+let hostCrmViewModules = null;
+function crmViews() {
+  try {
+    const load = createFunctionsRequire();
+    hostCrmViewModules ??= {
+      sources: load("./lib/hostReadModels/audienceSourceViewStore.js"),
+      candidates: load("./lib/hostReadModels/contactMergeCandidateViewStore.js"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The host-crm-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return hostCrmViewModules;
+}
+
+/**
+ * The duplicate candidate views one contact starts: a view for each partner
+ * whose id sorts after it, so each pair is planned once. Pairs that already
+ * have a view are left alone.
+ */
+async function contactCandidateViews(db, data, contactId) {
+  if (!validId(contactId) || !validId(data?.organizerId)) return [];
+  const {candidates} = crmViews();
+  const partners = await candidates.mergeCandidateSourcePartners(db,
+    data.organizerId, contactId);
+  const entries = [];
+  for (const partner of partners) {
+    if (partner <= contactId) continue;
+    const pair = [contactId, partner];
+    const view = await newView(db, "hostContactMergeCandidateViews",
+      candidates.organizerContactMergeCandidateViewId(data.organizerId, pair),
+      (tx) => candidates.readContactMergeCandidateView(db, tx,
+        data.organizerId, pair));
+    if (view) entries.push({targetId: view.candidateId, data: view});
+  }
+  return entries;
+}
+
 let programArrivalViewModule = null;
 function functionsProgramArrivalViews() {
   try {
@@ -2218,6 +2258,36 @@ export const MIGRATIONS = [
         targetId: (id) => validId(id) ? id : null,
         transform: (data, id, db) => newView(db, "hostFormSourceViews", id,
           (tx) => formViews().readFormSourceView(db, tx, id)),
+      },
+    ],
+  },
+  {
+    name: "host-crm-views",
+    description:
+      "Host form automations read hostAudienceSourceViews instead of the " +
+      "filterOptions of listOrganizerSavedAudiences, and the People " +
+      "duplicate review reads hostContactMergeCandidateViews instead of " +
+      "listOrganizerContactMergeCandidates (#2306). Every organizer gets its " +
+      "audience sources (form titles, filterable questions, event names and " +
+      "tag labels), and every pair a conflicted claim or a proposed phone or " +
+      "email link joins gets its candidate view (names, phones, emails, " +
+      "evidence and decision; never identity hashes or linked uids). " +
+      "Existing views are never replaced; sources are never changed. Build " +
+      "Functions first.",
+    steps: [
+      {
+        source: "organizers",
+        target: "hostAudienceSourceViews",
+        skipReason: "already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "hostAudienceSourceViews", id,
+          (tx) => crmViews().sources.readAudienceSourceView(db, tx, id)),
+      },
+      {
+        source: "organizerContacts",
+        target: "hostContactMergeCandidateViews",
+        skipReason: "no candidate pair starts at this contact, or already viewed",
+        expand: (data, id, db) => contactCandidateViews(db, data, id),
       },
     ],
   },

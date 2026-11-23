@@ -20,8 +20,10 @@ type Options = NonNullable<
   ListOrganizerSavedAudiencesCallableResponse["filterOptions"]>;
 const sourceLimit = 5000;
 
-async function bounded(query: FirebaseFirestore.Query, cap = sourceLimit) {
-  const snap = await query.limit(cap + 1).get();
+async function bounded(query: FirebaseFirestore.Query, cap = sourceLimit,
+  tx?: FirebaseFirestore.Transaction) {
+  const limited = query.limit(cap + 1);
+  const snap = tx ? await tx.get(limited) : await limited.get();
   if (snap.size > cap) {
     throw new HttpsError("resource-exhausted",
       `Audience source exceeds ${cap} records. Narrow the source first.`);
@@ -184,17 +186,29 @@ export async function savedAudienceSourceMatches(
 /**
  * Authoring labels come from immutable versions, never a mutable form draft.
  */
+/**
+ * The forms, filterable questions, events and manual tags an organizer's
+ * audiences and automations can name. Shared by listOrganizerSavedAudiences
+ * and the hostAudienceSourceViews trigger, which reads in [tx].
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {string} organizerId The organizer.
+ * @param {FirebaseFirestore.Transaction} tx The transaction to read in.
+ * @return {Promise<Options>} The options.
+ */
 export async function savedAudienceFilterOptions(
   db: FirebaseFirestore.Firestore,
-  organizerId: string): Promise<Options> {
+  organizerId: string,
+  tx?: FirebaseFirestore.Transaction): Promise<Options> {
   const scoped = (collection: string) => db.collection(collection)
     .where("organizerId", "==", organizerId);
+  const tagRef = db.collection("organizerContactTagVocabularies")
+    .doc(organizerId);
   const [forms, legacyForms, versions, events, tagSnap] = await Promise.all([
-    bounded(scoped("organizerForms"), 200),
-    bounded(scoped("organizerApplicationForms"), 200),
-    bounded(scoped("organizerFormVersions"), 200),
-    bounded(scoped("events"), 200),
-    db.collection("organizerContactTagVocabularies").doc(organizerId).get(),
+    bounded(scoped("organizerForms"), 200, tx),
+    bounded(scoped("organizerApplicationForms"), 200, tx),
+    bounded(scoped("organizerFormVersions"), 200, tx),
+    bounded(scoped("events"), 200, tx),
+    tx ? tx.get(tagRef) : tagRef.get(),
   ]);
   const formRows = new Map<string, {formId: string; title: string}>();
   for (const doc of [...forms, ...legacyForms]) {
