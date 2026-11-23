@@ -1,8 +1,8 @@
 // The text side of a screen move, computed in memory before anything is
 // written: Dart directives (across packages, barrel imports in moving files
-// split into direct imports, barrel exports of files leaving lib/ deleted),
-// whole-path mentions in text files, and the scan for mentions of folders the
-// move empties.
+// split into direct imports, barrel exports of files leaving lib/ or rising
+// above the barrel's layer deleted), whole-path mentions in text files, and
+// the scan for mentions of folders the move empties.
 import path from "node:path";
 import {
   dedupeImports,
@@ -16,8 +16,11 @@ import {
   resolveUri,
   rewritePathMentions,
 } from "./dart_moves.mjs";
+import {placePath} from "../check_context_map.mjs";
 import {isBarrelImport, isRepoPath} from "./screen_move_graph.mjs";
 import {appOf, isLegacyFile} from "./screen_move_plan.mjs";
+
+const layerRank = {kernel: 0, platform: 1, context: 2, pages: 3, app: 4};
 
 export const screenMoveLogPath = "tool/architecture/screen_move_log.json";
 export const carriedScreensPath = "tool/architecture/carried_screens.json";
@@ -63,7 +66,8 @@ export function rewriteScreenDirectives({file, source, graph, moves, packages, m
     let replacement = null;
     if (directive.kind === "export" && isRepoPath(directive.target)) {
       const exported = after(directive.target);
-      if (appOf(exported) != null && packageOfPath(exported, packages)?.name !== newPackage) {
+      if ((appOf(exported) != null && packageOfPath(exported, packages)?.name !== newPackage) ||
+          risesIntoPages({exporter: newFile, library: directive.target, moves, map})) {
         replacement = "";
         deletedExports.push(directive.target);
       }
@@ -72,6 +76,16 @@ export function rewriteScreenDirectives({file, source, graph, moves, packages, m
         Object.keys(directive.uses).every(isRepoPath)) {
       replacement = directImports({directive, file, newFile, after, graph, packages});
       splitBarrels += 1;
+    } else if (isBarrelImport(directive) && isRepoPath(directive.target)) {
+      const lost = new Set(Object.keys(directive.uses).filter((library) =>
+        library !== directive.target &&
+        risesIntoPages({exporter: after(directive.target), library, moves, map})));
+      if (lost.size > 0) {
+        replacement = splitLostImports({
+          directive, text, file, newFile, after, graph, packages, map, moves, barrelExports, lost,
+        });
+        splitBarrels += 1;
+      }
     }
     if (replacement == null) {
       replacement = rewriteDartDirectives({
@@ -106,32 +120,94 @@ export function rewriteScreenDirectives({file, source, graph, moves, packages, m
 // keeping its prefix and narrowing its show and hide lists.
 function directImports({directive, file, newFile, after, graph, packages}) {
   const ownLibrary = graph.libraryOf(file) ?? file;
+  return Object.entries(directive.uses).sort()
+    .filter(([library]) => library !== ownLibrary)
+    .map(([library, names]) => importLine({directive, library, names, newFile, after, packages}))
+    .filter((line) => line != null)
+    .join("\n");
+}
+
+// The import of one declaring library, with the barrel import's prefix and
+// its show and hide lists narrowed to that library; null when its show list
+// names nothing from it.
+function importLine({directive, library, names, newFile, after, packages}) {
+  const show = directive.show == null
+    ? null
+    : directive.show.filter((name) => names.includes(name));
+  if (show != null && show.length === 0) return null;
+  const hide = Object.entries(directive.hide ?? {})
+    .filter(([, declaring]) => declaring === library)
+    .map(([name]) => name);
+  const uri = formatUri({
+    keyword: "import",
+    originalUri: directive.uri,
+    fromFile: newFile,
+    target: after(library),
+    packages,
+  });
+  return [
+    `import '${uri}'`,
+    directive.prefix == null ? "" : ` as ${directive.prefix}`,
+    show == null ? "" : ` show ${show.join(", ")}`,
+    hide.length === 0 ? "" : ` hide ${hide.join(", ")}`,
+    ";",
+  ].join("");
+}
+
+// Whether `library` moves into lib/pages while `exporter`, the file that
+// re-exports it, sits below the pages layer, as a legacy feature barrel placed
+// in its context does. Such an export would point upward, so the move deletes
+// it, and every import that reached the library through the barrel imports
+// the library directly instead.
+export function risesIntoPages({exporter, library, moves, map}) {
+  if (!moves.has(library) || !moves.get(library).startsWith(map.roots.pages)) return false;
+  const place = exporter.startsWith("lib/") ? placePath(exporter, map) : null;
+  return place != null && layerRank[place.layer] < layerRank.pages;
+}
+
+// A barrel import that loses some of its libraries to lib/pages: those come
+// in directly, and the barrel import stays for the rest. A staying file is
+// not un-barrelled further, since direct imports of legacy presentation
+// files would trip catch_arch_cross_feature_presentation_import.
+function splitLostImports({directive, text, file, newFile, after, graph, packages, map, moves, barrelExports, lost}) {
+  const ownLibrary = graph.libraryOf(file) ?? file;
+  const lostLines = () => Object.entries(directive.uses).sort()
+    .filter(([library]) => lost.has(library) && library !== ownLibrary)
+    .map(([library, names]) => importLine({directive, library, names, newFile, after, packages}))
+    .filter((line) => line != null);
   const lines = [];
-  for (const [library, names] of Object.entries(directive.uses).sort()) {
-    if (library === ownLibrary) continue;
-    const show = directive.show == null
-      ? null
-      : directive.show.filter((name) => names.includes(name));
-    if (show != null && show.length === 0) continue;
-    const hide = Object.entries(directive.hide ?? {})
-      .filter(([, declaring]) => declaring === library)
-      .map(([name]) => name);
-    const uri = formatUri({
-      keyword: "import",
-      originalUri: directive.uri,
-      fromFile: newFile,
-      target: after(library),
-      packages,
-    });
-    lines.push([
-      `import '${uri}'`,
-      directive.prefix == null ? "" : ` as ${directive.prefix}`,
-      show == null ? "" : ` show ${show.join(", ")}`,
-      hide.length === 0 ? "" : ` hide ${hide.join(", ")}`,
-      ";",
-    ].join(""));
+  const kept = Object.entries(directive.uses).filter(([library]) => !lost.has(library));
+  if (kept.length > 0) {
+    const keptNames = new Set(kept.flatMap(([, names]) => names));
+    const lostNames = new Set(Object.entries(directive.uses)
+      .filter(([library]) => lost.has(library))
+      .flatMap(([, names]) => names));
+    const hidesLost = Object.values(directive.hide ?? {}).some((declaring) => lost.has(declaring));
+    if (directive.show == null && !hidesLost) {
+      lines.push(rewriteDartDirectives({file, source: text, moves, map, barrelExports, packages}).source);
+    } else {
+      const show = directive.show?.filter((name) => keptNames.has(name) || !lostNames.has(name)) ?? null;
+      if (show != null && show.length === 0) return lostLines().join("\n");
+      const hide = Object.entries(directive.hide ?? {})
+        .filter(([, declaring]) => !lost.has(declaring))
+        .map(([name]) => name);
+      const uri = formatUri({
+        keyword: "import",
+        originalUri: directive.uri,
+        fromFile: newFile,
+        target: after(directive.target),
+        packages,
+      });
+      lines.push([
+        `import '${uri}'`,
+        directive.prefix == null ? "" : ` as ${directive.prefix}`,
+        show == null ? "" : ` show ${show.join(", ")}`,
+        hide.length === 0 ? "" : ` hide ${hide.join(", ")}`,
+        ";",
+      ].join(""));
+    }
   }
-  return lines.join("\n");
+  return [...lines, ...lostLines()].join("\n");
 }
 
 // The text-only form of the barrel-export rule, for replays without a graph:

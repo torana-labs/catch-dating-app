@@ -332,6 +332,69 @@ test("barrel imports in moving files become direct imports; barrel exports of fi
   assert.equal(plan.writes.has("lib/hosts/elsewhere.dart"), false);
 });
 
+test("a feature barrel stops exporting files that move into lib/pages, and its importers import them directly", () => {
+  const root = fixtureRepo({
+    "tool/architecture/context_map.json": mapSource([
+      {path: "lib/reviews/", context: "events"},
+      {path: "lib/hosts/", layer: "app"},
+      {path: "lib/reviews/shared/", context: "events", moveTo: "lib/pages/reviews/", group: "page-reviews"},
+    ]),
+    "lib/reviews/reviews.dart": [
+      "export 'package:catch_dating_app/contexts/events/data/event_repository.dart';",
+      "export 'shared/reviews_section.dart'; // public-api: event page reviews",
+      "export 'presentation/review_badge.dart';",
+      "",
+    ].join("\n"),
+    "lib/reviews/presentation/review_badge.dart": "class ReviewBadge {}\n",
+    "lib/reviews/shared/reviews_section.dart": "class ReviewsSection {}\n",
+    "lib/hosts/mixed.dart": "import 'package:catch_dating_app/reviews/reviews.dart';\n\nclass Mixed {}\n",
+    "lib/hosts/shown.dart": "import 'package:catch_dating_app/reviews/reviews.dart' as r show ReviewsSection, ReviewBadge;\n\nclass Shown {}\n",
+    "lib/hosts/only.dart": "import 'package:catch_dating_app/reviews/reviews.dart';\n\nclass Only {}\n",
+    "lib/hosts/untouched.dart": "import 'package:catch_dating_app/reviews/reviews.dart';\n\nclass Untouched {}\n",
+  });
+  const barrel = "package:catch_dating_app/reviews/reviews.dart";
+  const {plan} = planFor(root, "page-reviews", {uses: {
+    "lib/hosts/mixed.dart": {[barrel]: {
+      "lib/contexts/events/data/event_repository.dart": ["EventRepository"],
+      "lib/reviews/shared/reviews_section.dart": ["ReviewsSection"],
+    }},
+    "lib/hosts/shown.dart": {[barrel]: {
+      "lib/reviews/presentation/review_badge.dart": ["ReviewBadge"],
+      "lib/reviews/shared/reviews_section.dart": ["ReviewsSection"],
+    }},
+    "lib/hosts/only.dart": {[barrel]: {"lib/reviews/shared/reviews_section.dart": ["ReviewsSection"]}},
+    "lib/hosts/untouched.dart": {[barrel]: {"lib/reviews/presentation/review_badge.dart": ["ReviewBadge"]}},
+  }});
+  assert.deepEqual(plan.errors, []);
+  // The barrel sits in the events context, below lib/pages: its export would
+  // point upward, so it goes, trailing comment and all.
+  assert.equal(plan.writes.get("lib/reviews/reviews.dart"), [
+    "export 'package:catch_dating_app/contexts/events/data/event_repository.dart';",
+    "export 'presentation/review_badge.dart';",
+    "",
+  ].join("\n"));
+  assert.deepEqual(plan.deletedExports, [{file: "lib/reviews/reviews.dart", target: "lib/reviews/shared/reviews_section.dart"}]);
+  assert.equal(plan.writes.get("lib/hosts/mixed.dart"), [
+    "import 'package:catch_dating_app/reviews/reviews.dart';",
+    "import 'package:catch_dating_app/pages/reviews/reviews_section.dart';",
+    "",
+    "class Mixed {}",
+    "",
+  ].join("\n"));
+  assert.equal(plan.writes.get("lib/hosts/shown.dart"), [
+    "import 'package:catch_dating_app/reviews/reviews.dart' as r show ReviewBadge;",
+    "import 'package:catch_dating_app/pages/reviews/reviews_section.dart' as r show ReviewsSection;",
+    "",
+    "class Shown {}",
+    "",
+  ].join("\n"));
+  // Nothing else comes through the barrel, so the barrel import goes.
+  assert.equal(plan.writes.get("lib/hosts/only.dart"),
+    "import 'package:catch_dating_app/pages/reviews/reviews_section.dart';\n\nclass Only {}\n");
+  assert.equal(plan.writes.has("lib/hosts/untouched.dart"), false);
+  assert.equal(plan.splitBarrels, 3);
+});
+
 test("path mentions move as repo paths and package URIs, honour the exclusions, and stale folders fail", () => {
   const moves = new Map([["lib/hosts/today/today_screen.dart", "apps/host/lib/today/today_screen.dart"]]);
   const folders = [["lib/hosts/today/", "apps/host/lib/today/"]];
@@ -658,7 +721,9 @@ test("dart_symbol_imports.dart resolves the names each directive uses, through b
     ]}));
     write("lib/a.dart", "class A {}\nclass Unused {}\n");
     write("lib/b.dart", "extension Shout on String {\n  String get shout => toUpperCase();\n}\n");
-    write("lib/barrel.dart", "export 'a.dart';\nexport 'b.dart';\n");
+    // A member reached through a value names no import: Box stays unrecorded.
+    write("lib/c.dart", "class Box {\n  int get size => 1;\n}\nBox makeBox() => Box();\n");
+    write("lib/barrel.dart", "export 'a.dart';\nexport 'b.dart';\nexport 'c.dart';\n");
     write("lib/io_impl.dart", "String platform() => 'io';\n");
     write("lib/web_impl.dart", "String platform() => 'web';\n");
     write("lib/screen.dart", [
@@ -667,7 +732,7 @@ test("dart_symbol_imports.dart resolves the names each directive uses, through b
       "",
       "part 'screen_part.dart';",
       "",
-      "String show(A a) => 'x'.shout + platform();",
+      "String show(A a) => 'x'.shout + platform() + '${makeBox().size}';",
       "",
     ].join("\n"));
     write("lib/screen_part.dart", "part of 'screen.dart';\n");
@@ -678,7 +743,7 @@ test("dart_symbol_imports.dart resolves the names each directive uses, through b
     const screen = graph.files["lib/screen.dart"];
     const [barrel, conditional, part] = screen.directives;
     assert.equal(barrel.target, "lib/barrel.dart");
-    assert.deepEqual(barrel.uses, {"lib/a.dart": ["A"], "lib/b.dart": ["Shout"]});
+    assert.deepEqual(barrel.uses, {"lib/a.dart": ["A"], "lib/b.dart": ["Shout"], "lib/c.dart": ["makeBox"]});
     assert.equal(conditional.target, "lib/io_impl.dart");
     assert.deepEqual(conditional.configurations.map((c) => [c.target, c.uses]),
       [["lib/web_impl.dart", {"lib/web_impl.dart": ["platform"]}]]);
