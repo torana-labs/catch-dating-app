@@ -110,16 +110,79 @@ export function loadFunctionsContextMap(source, appMap) {
     legacy.push(entry);
   }
   legacy.sort((a, b) => b.path.length - a.path.length);
-  const ceiling = map.contextOrderViolationCeiling ?? 0;
-  if (!Number.isSafeInteger(ceiling) || ceiling < 0) {
-    throw new Error("contextOrderViolationCeiling must be a whole number.");
-  }
-  const writeCeiling = map.crossContextWriteCeiling ?? 0;
-  if (!Number.isSafeInteger(writeCeiling) || writeCeiling < 0) {
-    throw new Error("crossContextWriteCeiling must be a whole number.");
+  for (const [retired, list] of [["contextOrderViolationCeiling", "knownContextOrderImports"],
+    ["crossContextWriteCeiling", "knownCrossContextWrites"]]) {
+    if (Object.hasOwn(map, retired)) {
+      throw new Error(`${retired} is retired: list each known violation in ${list} instead.`);
+    }
   }
   return {roots, contextRank, surfaces, entries, entryPatterns, legacy,
-    contextOrderViolationCeiling: ceiling, crossContextWriteCeiling: writeCeiling};
+    knownContextOrderImports: knownList(map, "knownContextOrderImports", "--list-context-order"),
+    knownCrossContextWrites: knownList(map, "knownCrossContextWrites", "--list-foreign-writes")};
+}
+
+// A list of today's known violations of one rule: unique strings in sorted
+// order, so a change to it reads as one added or removed line.
+function knownList(map, name, listFlag) {
+  const list = map[name] ?? [];
+  if (!Array.isArray(list) || list.some((item) => typeof item !== "string" || item.trim() === "")) {
+    throw new Error(`${name} must be a list of violations, one string each.`);
+  }
+  for (const [index, item] of list.entries()) {
+    if (index > 0 && list[index - 1] >= item) {
+      throw new Error(`${name} must be sorted with no repeats ("${item}"); ` +
+        `print it with ${listFlag}.`);
+    }
+  }
+  return list;
+}
+
+// The identity of one known violation. Line numbers move with every edit, so
+// a context-order import is its file and target, and a cross-context write is
+// its file and collection.
+export const contextOrderKey = (item) => `${item.path} imports ${item.target}`;
+export const foreignWriteKey = (item) => `${item.path} writes ${item.collection}`;
+
+// Compares one rule's violations with its known list, item by item. An
+// unlisted violation fails where it happens, and a listed one that no longer
+// happens fails as stale, so the list only shrinks and fixing one violation
+// never makes room for a different one.
+export function knownViolationFindings({items, known, keyOf, listName, rule, fix}) {
+  const findings = [];
+  const listed = new Set(known);
+  const current = new Set();
+  for (const item of items) {
+    const key = keyOf(item);
+    current.add(key);
+    if (!listed.has(key)) {
+      findings.push({rule, path: item.path, line: item.line,
+        reason: `${item.reason}; it is not in ${listName} in ${functionsMapPath}, so ${fix}`});
+    }
+  }
+  for (const key of known) {
+    if (!current.has(key)) {
+      findings.push({rule: "staleKnownViolation", path: functionsMapPath, line: 1,
+        reason: `${listName} lists "${key}", which no longer happens; remove it so it cannot return`});
+    }
+  }
+  return findings;
+}
+
+export function contextOrderFindings(contextOrder, map) {
+  return knownViolationFindings({items: contextOrder, known: map.knownContextOrderImports,
+    keyOf: contextOrderKey, listName: "knownContextOrderImports", rule: "contextOrder",
+    fix: "import only contexts declared earlier (or platform)"});
+}
+
+export function foreignWriteFindings(foreign, map) {
+  return knownViolationFindings({items: foreign, known: map.knownCrossContextWrites,
+    keyOf: foreignWriteKey, listName: "knownCrossContextWrites", rule: "foreignWrite",
+    fix: "write through the owning context's functions"});
+}
+
+// The map-ready list of known keys for a rule's current violations.
+export function knownKeys(items, keyOf) {
+  return [...new Set(items.map(keyOf))].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 }
 
 // Where a functions/src file sits: {layer, context?, surface?}. Target roots
@@ -233,17 +296,13 @@ export function checkFunctionsContexts({files, map, exists}) {
       if (to == null) continue;
       const result = importFinding(from, to, map);
       if (result == null) continue;
-      const item = {rule: result.rule, path: filePath, line, reason: `${result.reason} (${target})`};
+      const item = {rule: result.rule, path: filePath, line, target,
+        reason: `${result.reason} (${target})`};
       if (result.rule === "contextOrder") contextOrder.push(item);
       else findings.push(item);
     }
   }
-  if (contextOrder.length > map.contextOrderViolationCeiling) {
-    finding("contextOrder", functionsMapPath, 1,
-      `${contextOrder.length} imports go against the context order, above the ceiling of ` +
-      `${map.contextOrderViolationCeiling}; list them with --list-context-order and import only ` +
-      "contexts declared earlier (or platform) in new code");
-  }
+  findings.push(...contextOrderFindings(contextOrder, map));
   return {placed, contextOrder, findings};
 }
 
@@ -295,7 +354,7 @@ export function foreignWrites({writes, writers, map}) {
       if (place == null || place.layer === "entry") continue;
       const writer = placeId(place);
       if (writer !== owner) {
-        foreign.push({rule: "foreignWrite", path: file, line: 1,
+        foreign.push({rule: "foreignWrite", path: file, line: 1, collection,
           reason: `${describe(place)} writes ${collection}, which ${owner} owns`});
       }
     }
@@ -316,15 +375,8 @@ export function scanFunctionsContexts({snapshot}) {
   const result = checkFunctionsContexts({files, map, exists: (file) => known.has(file)});
   const registry = loadWriterContexts(loadFirestoreContractFromSnapshot(snapshot), map);
   const foreign = foreignWrites({writes: collectionWrites({files}), writers: registry.byName, map});
-  const findings = [...result.findings, ...registry.findings];
-  if (foreign.length > map.crossContextWriteCeiling) {
-    findings.push({rule: "foreignWrite", path: functionsMapPath, line: 1,
-      reason: `${foreign.length} modules write a collection another context owns, above the ceiling of ` +
-        `${map.crossContextWriteCeiling}; list them with --list-foreign-writes and write through the ` +
-        "owning context's functions"});
-  }
-  return {...result, findings, foreignWrites: foreign,
-    ceiling: map.contextOrderViolationCeiling, writeCeiling: map.crossContextWriteCeiling};
+  const findings = [...result.findings, ...registry.findings, ...foreignWriteFindings(foreign, map)];
+  return {...result, findings, foreignWrites: foreign};
 }
 
 function printHelp() {
@@ -338,8 +390,13 @@ Places every handwritten functions/src module by ${functionsMapPath} and
 checks its relative imports: platform imports only platform, domain code never
 imports a surface, a surface never imports another surface, and domain
 contexts import only contexts declared before them, and a collection is
-written only from the writerContext ${registryPath} names (both bounded by the
-map's ceilings until issue #1350's file splits land).`);
+written only from the writerContext ${registryPath} names.
+
+Until issue #1350's file splits land, today's context-order imports and
+cross-context writes are listed one by one in the map's
+knownContextOrderImports and knownCrossContextWrites. Any other violation
+fails, and so does a listed one that no longer happens: remove it. The two
+--list flags print the current violations in the form the lists use.`);
 }
 
 function runCli() {
@@ -356,11 +413,11 @@ function runCli() {
   }
   const result = scanFunctionsContexts({snapshot: createRepositorySnapshot({root: fromRepo()})});
   if (args.includes("--list-context-order")) {
-    for (const item of result.contextOrder) console.log(`${item.path}:${item.line} ${item.reason}`);
+    for (const key of knownKeys(result.contextOrder, contextOrderKey)) console.log(key);
     return;
   }
   if (args.includes("--list-foreign-writes")) {
-    for (const item of result.foreignWrites) console.log(`${item.path} ${item.reason}`);
+    for (const key of knownKeys(result.foreignWrites, foreignWriteKey)) console.log(key);
     return;
   }
   if (args.includes("--json")) console.log(JSON.stringify(result, null, 2));
@@ -374,15 +431,11 @@ function runCli() {
     process.exit(1);
   }
   if (!args.includes("--json")) {
-    const count = result.contextOrder.length;
-    const below = count < result.ceiling ?
-      ` Lower contextOrderViolationCeiling to ${count} in ${functionsMapPath}.` : "";
-    const writes = result.foreignWrites.length;
-    const writesBelow = writes < result.writeCeiling ?
-      ` Lower crossContextWriteCeiling to ${writes}.` : "";
+    const imports = knownKeys(result.contextOrder, contextOrderKey).length;
+    const writes = knownKeys(result.foreignWrites, foreignWriteKey).length;
     console.log(`Functions context check passed (${result.placed} modules placed; ` +
-      `${count} context-order imports, ceiling ${result.ceiling}; ` +
-      `${writes} cross-context writes, ceiling ${result.writeCeiling}).${below}${writesBelow}`);
+      `${imports} known context-order imports and ${writes} known cross-context writes, ` +
+      `each listed in ${functionsMapPath}).`);
   }
 }
 
