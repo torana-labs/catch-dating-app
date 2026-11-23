@@ -11,7 +11,6 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import type {ArchiveOrganizerSavedAudienceCallablePayload} from
   "../shared/generated/archiveOrganizerSavedAudienceCallablePayload";
 import type {
-  OrganizerCommunicationPreferenceDocument,
   OrganizerAudienceSummaryDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactDocument,
@@ -52,10 +51,11 @@ import {
 } from
   "../shared/generated/validators/upsertOrganizerSavedAudienceInput";
 import {
-  effectiveOrganizerCommunicationStatus,
-  organizerCommunicationPreferenceId,
-} from
-  "../shared/organizerCommunicationPreferences";
+  contactPermissionAllows,
+  contactPermissionRef,
+  readContactPermission,
+  type ContactPermission,
+} from "../shared/contactPermissions";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
@@ -88,7 +88,7 @@ export interface SavedAudienceEvaluationRow {
   contactId: string;
   contact: OrganizerContactDocument;
   trait: OrganizerContactTraitDocument;
-  preference: OrganizerCommunicationPreferenceDocument | null;
+  permission: ContactPermission | null;
   channelState: OrganizerContactChannelStateDocument | null;
   sourcePredicateKeys?: Set<string>;
 }
@@ -446,20 +446,17 @@ export async function resolveSavedAudienceRows(params: {
     ]),
   );
   const linkedContacts = contacts.filter((row) => row.contact.linkedUid);
-  const preferenceSnaps = await getAllChunked(
+  const sender = {kind: "organizer" as const,
+    organizerId: params.organizerId};
+  const permissionSnaps = await getAllChunked(
     params.db,
-    linkedContacts.map((row) => params.db
-      .collection("organizerCommunicationPreferences")
-      .doc(organizerCommunicationPreferenceId(
-        params.organizerId,
-        row.contact.linkedUid!,
-      ))),
+    linkedContacts.map((row) => contactPermissionRef(params.db,
+      row.contact.linkedUid!, sender)),
   );
-  const preferences = new Map(preferenceSnaps.filter((snap) => snap.exists)
-    .map((snap) => {
-      const value = snap.data() as OrganizerCommunicationPreferenceDocument;
-      return [value.uid, value] as const;
-    }));
+  const permissions = new Map(linkedContacts.map((row, index) => [
+    row.contact.linkedUid!,
+    readContactPermission(permissionSnaps[index]?.data(), sender),
+  ]));
   const channelSnaps = await getAllChunked(
     params.db,
     contacts.map((row) => params.db
@@ -483,8 +480,8 @@ export async function resolveSavedAudienceRows(params: {
       trait,
       sourcePredicateKeys: new Set([...sourceMatches.entries()]
         .filter(([, ids]) => ids.has(row.contactId)).map(([key]) => key)),
-      preference: row.contact.linkedUid ?
-        preferences.get(row.contact.linkedUid) ?? null : null,
+      permission: row.contact.linkedUid ?
+        permissions.get(row.contact.linkedUid) ?? null : null,
       channelState: channels.get(row.contactId) ?? null,
     };
     return savedAudienceDefinitionMatches(
@@ -544,18 +541,17 @@ function savedAudiencePredicateMatches(
 export function isReachableForOrganizerWhatsappCampaign(
   row: SavedAudienceEvaluationRow,
 ): boolean {
-  const {contact, preference, channelState} = row;
+  const {contact, permission, channelState} = row;
   if (
     contact.identityState !== "verified" ||
     contact.identityConfidence !== "verified" ||
     !contact.linkedUid ||
     !contact.phoneE164 ||
     !/^\+[1-9][0-9]{7,14}$/.test(contact.phoneE164) ||
-    !preference ||
-    preference.organizerId !== contact.organizerId ||
-    preference.uid !== contact.linkedUid ||
-    effectiveOrganizerCommunicationStatus(preference, "whatsapp") !==
-      "optedIn"
+    !permission ||
+    permission.senderId !== contact.organizerId ||
+    !contactPermissionAllows(permission, "whatsapp:marketing",
+      contact.phoneE164)
   ) return false;
   return channelState?.adminSuppressed !== true &&
     !["optedOut", "providerBlocked", "invalidEndpoint", "adminSuppressed"]

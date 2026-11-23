@@ -22,7 +22,6 @@ import {
 } from "../shared/notifications";
 import {readPushToken} from "../shared/consumerPushToken";
 import type {
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactDocument,
   UserProfileDocument,
@@ -39,10 +38,8 @@ import type {ProgramFcmSender} from "../programs/programActivityChannel";
 import {deliverProgramReminder} from "../programs/programReminderDelivery";
 import {deliverAutomationMessage} from
   "../organizers/automationMomentDelivery";
-import {
-  effectiveOrganizerWhatsappPurposeStatus,
-  organizerCommunicationPreferenceId,
-} from "../shared/organizerCommunicationPreferences";
+import {contactPermissionRef, contactPermissionStatus,
+  readContactPermission} from "../shared/contactPermissions";
 import {organizerContactChannelStateId} from
   "../organizers/organizerCampaignModel";
 
@@ -426,26 +423,24 @@ async function consentFacts(
       | OrganizerContactDocument
       | undefined;
     if (!contact) return {communicationPermission: "unknown"};
-    const [preferenceSnap, channelSnap] = await Promise.all([
+    const sender = {kind: "organizer" as const,
+      organizerId: contact.organizerId};
+    const [permissionSnap, channelSnap] = await Promise.all([
       contact.linkedUid ?
-        db.collection("organizerCommunicationPreferences")
-          .doc(organizerCommunicationPreferenceId(
-            contact.organizerId, contact.linkedUid)).get() :
+        contactPermissionRef(db, contact.linkedUid, sender).get() :
         Promise.resolve(null),
       db.collection("organizerContactChannelStates")
         .doc(organizerContactChannelStateId(
           contact.organizerId, contactId)).get(),
     ]);
-    const preference = preferenceSnap?.data() as
-      | OrganizerCommunicationPreferenceDocument
-      | undefined;
+    const permission = readContactPermission(permissionSnap?.data(), sender);
     const channel = channelSnap.data() as
       | OrganizerContactChannelStateDocument
       | undefined;
-    facts.communicationPermission = !contact.phoneE164 || !preference ?
+    facts.communicationPermission = !contact.phoneE164 || !permission ?
       "unknown" :
-      effectiveOrganizerWhatsappPurposeStatus(
-        preference, "marketing", contact.phoneE164);
+      contactPermissionStatus(permission, "whatsapp:marketing",
+        contact.phoneE164);
     facts.endpointSuppressed = channel?.adminSuppressed === true ||
       (channel?.suppressionStatus !== undefined &&
         channel.suppressionStatus !== "none");

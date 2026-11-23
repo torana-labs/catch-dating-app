@@ -1,3 +1,8 @@
+import {
+  contactPermissionsCollection,
+  readContactPermission,
+  whatsappPermissionSummary,
+} from "../shared/contactPermissions";
 import type {ManageWebsiteAccountCallableResponse as Account} from
   "../shared/generated/manageWebsiteAccountCallableResponse";
 import type {ManageWebsiteAccountCallablePayload as Payload} from
@@ -14,12 +19,11 @@ const messagesLimit = 50;
 
 /**
  * The account page's one server-read section: the signed-in UID's organizer
- * messaging permissions. organizerCommunicationPreferences is a consent
- * ledger that stays server-only, and the WhatsApp withdrawal it feeds is
- * fenced on the receipt id read here. The page's plans, follows and reviews
- * come from listeners on the guest's own rows (guestEventStatuses,
- * organizerFollows, reviews). The query filters by the signed-in UID only;
- * organizer names come from the organizer documents, capped to the
+ * messaging permissions, read from their own contactPermissions documents
+ * (issue #2460). The WhatsApp withdrawal they feed is fenced on the receipt
+ * id read here. The page's plans, follows and reviews come from listeners on
+ * the guest's own rows (guestEventStatuses, organizerFollows, reviews).
+ * Organizer names come from the organizer documents, capped to the
  * contract's length.
  */
 export async function readAccountSections(
@@ -28,35 +32,31 @@ export async function readAccountSections(
   sections: readonly AccountSection[]
 ): Promise<Sections> {
   if (!sections.includes("messages")) return {};
-  const snapshot = await db.collection("organizerCommunicationPreferences")
-    .where("uid", "==", uid).limit(messagesLimit).get();
-  const own = snapshot.docs.map((doc) => (doc.data() ?? {}) as Data)
-    .filter((data) => data.uid === uid && typeof data.organizerId === "string");
+  const snapshot = await db.collection("users").doc(uid)
+    .collection(contactPermissionsCollection)
+    .where("senderKind", "==", "organizer").limit(messagesLimit).get();
+  const own = snapshot.docs.flatMap((doc) => {
+    const organizerId = (doc.data() ?? {}).senderId;
+    if (typeof organizerId !== "string") return [];
+    const permission = readContactPermission(doc.data(),
+      {kind: "organizer", organizerId});
+    return permission ? [{organizerId, permission}] : [];
+  });
   const organizers = await loadById(db, "organizers",
-    own.map((data) => data.organizerId as string));
+    own.map((row) => row.organizerId));
   return {
-    messages: own.map((data) => {
-      const organizerId = data.organizerId as string;
-      const whatsapp = data.whatsapp as Data | undefined;
-      const receipt = whatsapp?.currentReceiptId;
+    messages: own.map(({organizerId, permission}) => {
+      const whatsapp = whatsappPermissionSummary(permission, "organizer");
       return {
         organizerId,
         organizerName: text(organizers.get(organizerId)?.name, 240),
-        whatsapp: channel(whatsapp),
-        sms: channel(data.sms as Data | undefined),
-        whatsappReceiptId: typeof receipt === "string" ? receipt : null,
+        whatsapp: whatsapp.status as Channel,
+        sms: (permission.grants["sms:marketing"]?.status ??
+          "unknown") as Channel,
+        whatsappReceiptId: whatsapp.receiptId,
       };
     }).sort((a, b) => a.organizerName.localeCompare(b.organizerName)),
   };
-}
-
-/** Only complete evidence reads as opted in; legacy rows read unknown. */
-function channel(value: Data | undefined): Channel {
-  if (value?.status === "optedOut") return "optedOut";
-  if (value?.status === "optedIn" && value.evidenceStatus === "complete") {
-    return "optedIn";
-  }
-  return "unknown";
 }
 
 async function loadById(

@@ -58,8 +58,6 @@ import type {
   OrganizerContactOutreachDocument,
   OrganizerContactTagVocabularyDocument,
   OrganizerContactTraitDocument,
-  OrganizerCommunicationPermissionReceiptDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerFormDocument,
   OrganizerFormResponseDocument,
   OrganizerManualSendTaskDocument,
@@ -122,8 +120,13 @@ import {
   manualOrganizerContactOrigin,
   organizerContactOriginId,
 } from "../shared/organizerContactOrigins";
-import {organizerCommunicationPreferenceId} from
-  "../shared/organizerCommunicationPreferences";
+import {
+  contactPermissionAllows,
+  contactPermissionReceiptRef,
+  contactPermissionRef,
+  readContactPermission,
+  type ContactPermissionReceipt,
+} from "../shared/contactPermissions";
 
 // Creating and changing contacts share one mutation budget.
 const mutateContactRateLimit = {maxRequests: 60, windowMs: 60 * 1000};
@@ -1089,78 +1092,53 @@ async function contactWhatsappPermission(params: {
     identityStrength: null,
   };
   if (params.contact.linkedUid === null) return unavailable;
-  const preferenceSnapshot = await optionalContactQuery(
-    params.db.collection("organizerCommunicationPreferences")
-      .doc(organizerCommunicationPreferenceId(
-        params.organizerId,
-        params.contact.linkedUid
-      )).get(),
+  const sender = {kind: "organizer" as const, organizerId: params.organizerId};
+  const permissionSnapshot = await optionalContactQuery(
+    contactPermissionRef(params.db, params.contact.linkedUid, sender).get(),
     "WhatsApp permission projection",
     params.organizerId,
     params.contact.linkedUid
   );
-  const preference = preferenceSnapshot?.data() as
-    OrganizerCommunicationPreferenceDocument | undefined;
-  if (!preference || preference.organizerId !== params.organizerId ||
-      preference.uid !== params.contact.linkedUid) {
-    return unavailable;
-  }
-  const channel = preference.whatsapp;
+  const permission = readContactPermission(permissionSnapshot?.data(),
+    sender);
+  if (!permission) return unavailable;
   const purposes: NonNullable<
     GetOrganizerContactDetailCallableResponse["whatsappPermission"]["purposes"]
   > = {};
   for (const purpose of ["eventOperations", "marketing"] as const) {
-    const scoped = preference.whatsappPurposes?.[purpose];
-    if (!scoped) continue;
-    const scopedReceipt = scoped.currentReceiptId === null ? null :
-      await optionalContactQuery(
-        params.db.collection("organizerCommunicationPermissionReceipts")
-          .doc(scoped.currentReceiptId).get(),
-        "WhatsApp purpose receipt", params.organizerId,
-        params.contact.linkedUid
-      );
-    const evidence = scopedReceipt?.data() as
-      OrganizerCommunicationPermissionReceiptDocument | undefined;
-    const belongsToContact = evidence?.organizerId === params.organizerId &&
-      evidence.uid === params.contact.linkedUid &&
-      evidence.channel === "whatsapp";
-    const completeGrant = scoped.status === "optedIn" &&
-      scoped.evidenceStatus === "complete" && belongsToContact &&
-      evidence?.decision === "optedIn" && evidence.purpose === purpose &&
-      evidence.endpointE164 === scoped.endpointE164 &&
-      evidence.sourceResponseId === scoped.sourceResponseId &&
-      evidence.source === scoped.source &&
-      evidence.termsVersion === scoped.termsVersion &&
-      evidence.evidenceStatus === "complete" &&
-      typeof evidence.consentCopyHash === "string" &&
-      /^[a-f0-9]{64}$/u.test(evidence.consentCopyHash) &&
-      evidence.grantedAt !== null &&
-      evidence.revokedAt === null;
-    const broadStop = channel.status === "optedOut" &&
-      channel.updatedAt && (!scoped.updatedAt ||
-        channel.updatedAt.toMillis() >= scoped.updatedAt.toMillis());
-    const stopped = scoped.status === "optedOut" || broadStop;
+    const key = `whatsapp:${purpose}` as const;
+    const grant = permission.grants[key];
+    if (!grant) continue;
     purposes[purpose] = {
-      status: stopped ? "optedOut" : completeGrant ? "optedIn" : "unknown",
-      evidenceStatus: stopped || completeGrant ? "complete" : "incomplete",
-      receiptId: belongsToContact ? scoped.currentReceiptId : null,
-      decisionAtMillis: scoped.updatedAt?.toMillis() ?? null,
-      deliveryAvailable: false,
+      status: grant.status,
+      evidenceStatus: grant.receiptId ? "complete" : "incomplete",
+      receiptId: grant.receiptId,
+      decisionAtMillis: grant.updatedAt.toMillis(),
+      deliveryAvailable: contactPermissionAllows(permission, key,
+        params.contact.phoneE164),
     };
   }
-  const receiptSnapshot = channel.currentReceiptId === null ? null :
+  // The headline answer is marketing, the purpose CRM campaigns send for.
+  const headline = permission.grants["whatsapp:marketing"] ??
+    permission.grants["whatsapp:eventOperations"] ??
+    permission.grants["whatsapp:followerUpdates"];
+  if (!headline) {
+    return {...unavailable, status: "unknown",
+      evidenceStatus: "notApplicable", purposes};
+  }
+  const receiptSnapshot = headline.receiptId === null ? null :
     await optionalContactQuery(
-      params.db.collection("organizerCommunicationPermissionReceipts")
-        .doc(channel.currentReceiptId).get(),
+      contactPermissionReceiptRef(params.db, headline.receiptId).get(),
       "WhatsApp permission receipt",
       params.organizerId,
       params.contact.linkedUid
     );
   const receipt = receiptSnapshot?.data() as
-    OrganizerCommunicationPermissionReceiptDocument | undefined;
-  const validReceipt = receipt && receipt.organizerId === params.organizerId &&
-    receipt.uid === params.contact.linkedUid && receipt.channel === "whatsapp" ?
-    receipt : null;
+    ContactPermissionReceipt | undefined;
+  const validReceipt = receipt && receipt.senderKind === "organizer" &&
+    receipt.senderId === params.organizerId &&
+    receipt.uid === params.contact.linkedUid &&
+    receipt.channel === "whatsapp" ? receipt : null;
   const sourceFormId = validReceipt?.sourceFormId ?? null;
   const formSnapshot = sourceFormId === null ? null :
     await optionalContactQuery(
@@ -1170,18 +1148,15 @@ async function contactWhatsappPermission(params: {
       params.contact.linkedUid
     );
   const form = formSnapshot?.data() as OrganizerFormDocument | undefined;
-  const decisionAt = validReceipt?.decision === "optedOut" ?
-    validReceipt.revokedAt : validReceipt?.grantedAt;
   return {
-    status: channel.status,
-    evidenceStatus: channel.evidenceStatus,
-    receiptId: validReceipt ? channel.currentReceiptId : null,
-    source: validReceipt?.source ?? channel.source,
+    status: headline.status,
+    evidenceStatus: validReceipt ? "complete" : "incomplete",
+    receiptId: validReceipt ? headline.receiptId : null,
+    source: validReceipt?.source ?? headline.source,
     sourceFormId,
     sourceFormTitle: form?.organizerId === params.organizerId ?
       form.title : null,
-    decisionAtMillis: decisionAt?.toMillis() ??
-      channel.updatedAt?.toMillis() ?? null,
+    decisionAtMillis: headline.updatedAt.toMillis(),
     identityStrength: validReceipt?.identityStrength ?? null,
     purposes,
   };

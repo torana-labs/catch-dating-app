@@ -21,7 +21,6 @@ import type {
   EventDocument,
   EventInviteLinkDocument,
   OrganizerCampaignDocument,
-  OrganizerCommunicationPreferenceDocument,
   OrganizerContactChannelStateDocument,
   OrganizerContactDocument,
   OrganizerDocument,
@@ -38,9 +37,11 @@ import {whatsappStatusCorrelation} from
 import type {AutomationWhatsappDispatchDocument} from
   "../shared/generated/automationWhatsappDispatchDocument";
 import {
-  effectiveOrganizerWhatsappPurposeStatus,
-  organizerCommunicationPreferenceId,
-} from "../shared/organizerCommunicationPreferences";
+  contactPermissionRef,
+  contactPermissionStatus,
+  readContactPermission,
+  type ContactPermission,
+} from "../shared/contactPermissions";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {
   organizerCampaignFrequencyCapMillis,
@@ -209,10 +210,10 @@ async function readAutomationFacts(
   const contact = contactSnap.data() as
     | OrganizerContactDocument
     | undefined;
-  const preferenceRef = contact?.linkedUid ?
-    db.collection("organizerCommunicationPreferences").doc(
-      organizerCommunicationPreferenceId(
-        context.organizerId, contact.linkedUid)) :
+  const sender = {kind: "organizer" as const,
+    organizerId: context.organizerId};
+  const permissionRef = contact?.linkedUid ?
+    contactPermissionRef(db, contact.linkedUid, sender) :
     null;
   const channelRef = db.collection("organizerContactChannelStates").doc(
     organizerContactChannelStateId(context.organizerId, liveContactId));
@@ -226,9 +227,9 @@ async function readAutomationFacts(
     db.collection("eventInviteLinkSecrets")
       .doc(intent.whatsapp.inviteLinkId) :
     null;
-  const [preferenceSnap, channelSnap, connectionSnap, templateSnap,
+  const [permissionSnap, channelSnap, connectionSnap, templateSnap,
     eventSnap, inviteLinkSnap, inviteSecretSnap] = await Promise.all([
-    preferenceRef ? tx.get(preferenceRef) : null,
+    permissionRef ? tx.get(permissionRef) : null,
     tx.get(channelRef),
     tx.get(connectionRef),
     tx.get(templateRef),
@@ -236,9 +237,7 @@ async function readAutomationFacts(
     inviteLinkRef ? tx.get(inviteLinkRef) : null,
     inviteSecretRef ? tx.get(inviteSecretRef) : null,
   ]);
-  const preference = preferenceSnap?.data() as
-    | OrganizerCommunicationPreferenceDocument
-    | undefined;
+  const permission = readContactPermission(permissionSnap?.data(), sender);
   const channelState = channelSnap.data() as
     | OrganizerContactChannelStateDocument
     | undefined;
@@ -258,7 +257,7 @@ async function readAutomationFacts(
   const now = admin.firestore.Timestamp.fromMillis(nowMillis);
   const suppression = automationSuppressionReason({
     organizerId: context.organizerId,
-    contact, preference, channelState, connection, template,
+    contact, permission, channelState, connection, template,
     recipe, event, inviteLink, inviteToken,
     intentInviteLinkId: intent.whatsapp.inviteLinkId,
     now,
@@ -269,7 +268,7 @@ async function readAutomationFacts(
   }
   return {gate, suppression: null, notBefore: null,
     snapshot: {
-      rule, moment, recipe, contact, preference, channelState,
+      rule, moment, recipe, contact, permission, channelState,
       connection, template, contactId: liveContactId,
       endpointHash: hashEndpoint(contact.phoneE164),
     }};
@@ -280,7 +279,7 @@ interface AutomationFactSnapshot {
   moment: NonNullable<ReturnType<typeof momentFromDocument>>;
   recipe: OrganizerCampaignDocument;
   contact: OrganizerContactDocument;
-  preference: OrganizerCommunicationPreferenceDocument | undefined;
+  permission: ContactPermission | null;
   channelState: OrganizerContactChannelStateDocument | undefined;
   connection: OrganizerSenderConnectionDocument;
   template: OrganizerMessageTemplateDocument;
@@ -297,7 +296,7 @@ interface AutomationFactSnapshot {
 function automationSuppressionReason(params: {
   organizerId: string;
   contact: OrganizerContactDocument | undefined;
-  preference: OrganizerCommunicationPreferenceDocument | undefined;
+  permission: ContactPermission | null;
   channelState: OrganizerContactChannelStateDocument | undefined;
   connection: OrganizerSenderConnectionDocument | undefined;
   template: OrganizerMessageTemplateDocument | undefined;
@@ -320,16 +319,12 @@ function automationSuppressionReason(params: {
   if (!params.contact.phoneE164) {
     return "invalidEndpoint";
   }
-  if (!params.preference ||
-      params.preference.organizerId !== params.organizerId ||
-      params.preference.uid !== params.contact.linkedUid) {
+  if (!params.permission ||
+      params.permission.senderId !== params.organizerId) {
     return "unknownPermission";
   }
-  const permissionStatus = effectiveOrganizerWhatsappPurposeStatus(
-    params.preference,
-    "marketing",
-    params.contact.phoneE164
-  );
+  const permissionStatus = contactPermissionStatus(params.permission,
+    "whatsapp:marketing", params.contact.phoneE164);
   if (permissionStatus === "unknown") return "unknownPermission";
   if (permissionStatus === "optedOut") return "optedOut";
   if (params.channelState?.adminSuppressed === true) {

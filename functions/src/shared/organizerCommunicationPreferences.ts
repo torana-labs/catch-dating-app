@@ -1,13 +1,7 @@
 import {createHash} from "crypto";
-import type {
-  OrganizerCommunicationPermissionReceiptDocument,
-  OrganizerCommunicationPreferenceDocument,
-} from "./generated/firestoreAdminTypes";
+import type {ContactPermissionReceipt} from "./contactPermissions";
 
 export type OrganizerCommunicationChannel = "whatsapp" | "sms";
-export type WhatsappPurpose = "eventOperations" | "marketing";
-
-type ChannelPreference = OrganizerCommunicationPreferenceDocument["whatsapp"];
 
 const organizerUpdatesConsentCopy = {
   "organizer-updates-v1": {
@@ -18,7 +12,10 @@ const organizerUpdatesConsentCopy = {
   },
 } as const;
 
-/** Returns the deterministic organizer-and-user preference document id. */
+/**
+ * The organizer-and-user id the guest's guestMessagingPermissions row has
+ * kept since before contact permissions (issue #2460).
+ */
 export function organizerCommunicationPreferenceId(
   organizerId: string,
   uid: string
@@ -32,7 +29,7 @@ export function organizerCommunicationPermissionReceiptId(params: {
   uid: string;
   channel: OrganizerCommunicationChannel;
   decision: "optedIn" | "optedOut";
-  source: OrganizerCommunicationPermissionReceiptDocument["source"];
+  source: ContactPermissionReceipt["source"];
   sourceIdentity: string;
 }): string {
   return `ocpr_${sha256([
@@ -55,17 +52,20 @@ export function organizerUpdatesConsentCopyHash(
   return copy ? sha256(`${termsVersion}|${channel}|${copy}`) : null;
 }
 
-/** Builds complete participant grant evidence for website OTP registration. */
+/**
+ * Builds complete participant grant evidence for website OTP registration,
+ * bound to the phone number the registration verified.
+ */
 export function publicRegistrationPermissionReceipt(params: {
   organizerId: string;
   uid: string;
   channel: OrganizerCommunicationChannel;
   eventId: string;
   termsVersion: string;
+  endpointE164: string;
   supersedesReceiptId: string | null;
   now: FirebaseFirestore.Timestamp;
-}): {id: string; document: OrganizerCommunicationPermissionReceiptDocument} |
-  null {
+}): {id: string; document: ContactPermissionReceipt} | null {
   const consentCopyHash = organizerUpdatesConsentCopyHash(
     params.termsVersion,
     params.channel
@@ -82,9 +82,12 @@ export function publicRegistrationPermissionReceipt(params: {
   return {
     id,
     document: {
-      organizerId: params.organizerId,
+      senderKind: "organizer",
+      senderId: params.organizerId,
       uid: params.uid,
       channel: params.channel,
+      purpose: "marketing",
+      endpointE164: params.endpointE164,
       decision: "optedIn",
       evidenceStatus: "complete",
       termsVersion: params.termsVersion,
@@ -112,7 +115,7 @@ export function inboundStopPermissionReceipt(params: {
   providerEventId: string;
   supersedesReceiptId: string | null;
   now: FirebaseFirestore.Timestamp;
-}): {id: string; document: OrganizerCommunicationPermissionReceiptDocument} {
+}): {id: string; document: ContactPermissionReceipt} {
   const id = organizerCommunicationPermissionReceiptId({
     organizerId: params.organizerId,
     uid: params.uid,
@@ -124,7 +127,8 @@ export function inboundStopPermissionReceipt(params: {
   return {
     id,
     document: {
-      organizerId: params.organizerId,
+      senderKind: "organizer",
+      senderId: params.organizerId,
       uid: params.uid,
       channel: "whatsapp",
       decision: "optedOut",
@@ -145,97 +149,6 @@ export function inboundStopPermissionReceipt(params: {
       createdAt: params.now,
     },
   };
-}
-
-/** New unknown channels cannot accidentally resemble permission. */
-export function unknownOrganizerCommunicationChannel(): ChannelPreference {
-  return {
-    status: "unknown",
-    evidenceStatus: "notApplicable",
-    currentReceiptId: null,
-    termsVersion: null,
-    source: null,
-    sourceEventId: null,
-    updatedAt: null,
-  };
-}
-
-/** Managed delivery requires a referenced, complete opted-in receipt. */
-export function hasCompleteOrganizerCommunicationGrant(
-  preference: OrganizerCommunicationPreferenceDocument | null | undefined,
-  channel: OrganizerCommunicationChannel
-): boolean {
-  const value = preference?.[channel];
-  return value?.status === "optedIn" &&
-    value.evidenceStatus === "complete" &&
-    typeof value.currentReceiptId === "string" &&
-    value.currentReceiptId.length > 0;
-}
-
-/**
- * Projects incomplete legacy grants to unknown while preserving withdrawals.
- */
-export function effectiveOrganizerCommunicationStatus(
-  preference: OrganizerCommunicationPreferenceDocument | null | undefined,
-  channel: OrganizerCommunicationChannel
-): "unknown" | "optedIn" | "optedOut" {
-  const value = preference?.[channel];
-  if (value?.status === "optedOut") return "optedOut";
-  return hasCompleteOrganizerCommunicationGrant(preference, channel) ?
-    "optedIn" : "unknown";
-}
-
-/** Purpose-aware campaign gate. Legacy copy is mapped only where its known
- * wording expressly covered the requested purpose; unknown copy stays dark. */
-export function effectiveOrganizerWhatsappPurposeStatus(
-  preference: OrganizerCommunicationPreferenceDocument | null | undefined,
-  purpose: WhatsappPurpose,
-  endpointE164?: string | null,
-  sourceResponseId?: string | null
-): "unknown" | "optedIn" | "optedOut" {
-  const scoped = preference?.whatsappPurposes?.[purpose];
-  const broad = preference?.whatsapp;
-  if (broad?.status === "optedOut" &&
-      (!scoped?.updatedAt || !broad.updatedAt ||
-        scoped.updatedAt.toMillis() <= broad.updatedAt.toMillis())) {
-    return "optedOut";
-  }
-  if (scoped?.status === "optedOut") {
-    // A later, expressly reviewed registration opt-in may reverse a prior
-    // marketing withdrawal. Ambiguous legacy copy cannot do so.
-    if (purpose === "marketing" && broad?.updatedAt && scoped.updatedAt &&
-        broad.updatedAt.toMillis() > scoped.updatedAt.toMillis() &&
-        isReviewedLegacyMarketingGrant(broad)) return "optedIn";
-    return "optedOut";
-  }
-  if (scoped?.status === "optedIn") {
-    if (!endpointE164 || scoped.endpointE164 !== endpointE164) return "unknown";
-    if (purpose === "eventOperations" &&
-        (!sourceResponseId || scoped.sourceResponseId !== sourceResponseId)) {
-      return "unknown";
-    }
-    // Capturing consent is separate from provider approval for this use case.
-    // Leave new form-originated WhatsApp sending disabled until reviewed.
-    if (scoped.source === "hostFormResponse" &&
-        scoped.termsVersion === "form-whatsapp-v2") return "unknown";
-    return scoped.evidenceStatus === "complete" && scoped.currentReceiptId ?
-      "optedIn" : "unknown";
-  }
-  const legacy = broad;
-  if (legacy?.status !== "optedIn" ||
-      legacy.evidenceStatus !== "complete" || !legacy.currentReceiptId) {
-    return "unknown";
-  }
-  if (purpose === "marketing" && isReviewedLegacyMarketingGrant(legacy)) {
-    return "optedIn";
-  }
-  return "unknown";
-}
-
-function isReviewedLegacyMarketingGrant(value: ChannelPreference): boolean {
-  return value.status === "optedIn" && value.evidenceStatus === "complete" &&
-    !!value.currentReceiptId && value.source === "publicEventRegistration" &&
-    value.termsVersion === "organizer-updates-v1";
 }
 
 function sha256(value: string): string {
