@@ -5151,11 +5151,13 @@ also updates the `programFunctionGuests` row and recomputes
 operations report per-operation reasons (`alreadyCheckedIn`,
 `notCheckedIn`, `functionCheckInDisabled`, `duplicateJournalId`,
 `invalidTransition`) without blocking the batch's valid writes.
-`getProgramFunctionDoorView` is the scoped read side of the same lane:
-door-duty holders (`functionCheckIn`, `functionLead`) receive the
-function header, live counts, a roster restricted to display names and
-operational attendance fields — never contact details — and the recent
-journal tail. `createProgramWalkIn` is the narrow door-scoped writer for
+The door read models (`programDoorFunctions`, `programDoorRows`,
+`programDoorJournalViews`, below) are the scoped read side of the same lane:
+door-duty holders (`functionCheckIn`, `functionLead`) read the function
+header, a roster restricted to display names and operational attendance
+fields — never contact details — and the recent journal tail; the retired
+`getProgramFunctionDoorView` callable (Nov 2026) returned the same fields.
+`createProgramWalkIn` is the narrow door-scoped writer for
 unlisted arrivals: it derives the `programGuests` id from the caller's
 `clientOperationId` and atomically records a `walkInCreate` journal fact,
 so offline outbox replays collapse onto one guest. The broader

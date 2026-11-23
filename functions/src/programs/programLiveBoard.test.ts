@@ -5,9 +5,7 @@ import {deps, request, now} from "../shared/testing/programFixtures";
 import {FakeFirestore, type FakeData} from
   "../shared/testing/programFirestore";
 import {
-  getProgramLiveBoardHandler,
   resolveProgramAlertHandler,
-  tonightFunctions,
   travelAlerts,
 } from "./programLiveBoard";
 
@@ -66,26 +64,6 @@ const seed = (): Record<string, FakeData> => ({
   },
 });
 
-test("tonight orders today's functions into done, now, next, later", () => {
-  const base = {name: "", venueName: "", expectedCount: null,
-    checkedInCount: null};
-  const day = Date.UTC(2027, 1, 20, 12);
-  const phases = tonightFunctions([
-    {...base, functionId: "dinner", startsAtMillis: day + 3 * HOUR,
-      endsAtMillis: day + 5 * HOUR},
-    {...base, functionId: "lunch", startsAtMillis: day - 2 * HOUR,
-      endsAtMillis: day - HOUR},
-    {...base, functionId: "tea", startsAtMillis: day - 10 * 60_000,
-      endsAtMillis: day + HOUR},
-    {...base, functionId: "party", startsAtMillis: day + 6 * HOUR,
-      endsAtMillis: day + 9 * HOUR},
-    {...base, functionId: "tomorrow", startsAtMillis: day + 24 * HOUR,
-      endsAtMillis: day + 25 * HOUR},
-  ], day, "UTC").map((fn) => [fn.functionId, fn.phase]);
-  assert.deepEqual(phases, [["lunch", "done"], ["tea", "now"],
-    ["dinner", "next"], ["party", "later"]]);
-});
-
 test("cancelled, diverted and disrupted journeys raise alerts", () => {
   const alerts = travelAlerts([
     {id: "a", flightNumber: "AI 1", flightStatus: "cancelled",
@@ -101,31 +79,7 @@ test("cancelled, diverted and disrupted journeys raise alerts", () => {
   ]);
 });
 
-test("the manager's board has now, travel and every alert", async () => {
-  const board = await getProgramLiveBoardHandler(
-    request({programId: "program-1"}, "manager-1"),
-    deps(new FakeFirestore(seed())));
-  assert.equal(board.now?.functionId, "sangeet");
-  assert.equal(board.now?.checkedInCount, 184);
-  assert.deepEqual(board.travel, {expected: 1, atCurb: 1, disrupted: 0});
-  assert.deepEqual(board.alerts.map((a) => a.alertId).sort(),
-    ["flight_leg-1", "run-a_functionLead"]);
-  assert.ok(board.alerts.every((a) => a.state === "open" && a.revision === 0));
-});
-
-test("a function lead sees only staff alerts; greeters are denied",
-  async () => {
-    const db = new FakeFirestore(seed());
-    const board = await getProgramLiveBoardHandler(
-      request({programId: "program-1"}, "lead-1"), deps(db));
-    assert.deepEqual(board.alerts.map((a) => a.source), ["staffAttention"]);
-    assert.deepEqual(board.travel, {expected: 0, atCurb: 0, disrupted: 0});
-    await assert.rejects(getProgramLiveBoardHandler(
-      request({programId: "program-1"}, "greeter-1"), deps(db)),
-    (err: unknown) => (err as {code?: string}).code === "permission-denied");
-  });
-
-test("resolving an alert is fenced, replayable and shows on the board",
+test("resolving an alert is fenced, replayable and stored for the views",
   async () => {
     const db = new FakeFirestore(seed());
     const resolve = (payload: Record<string, unknown>, uid = "lead-1") =>
@@ -144,10 +98,13 @@ test("resolving an alert is fenced, replayable and shows on the board",
     const done = await resolve({action: "done", expectedRevision: 1,
       requestId: "req-done-02"});
     assert.equal(done.state, "done");
-    const board = await getProgramLiveBoardHandler(
-      request({programId: "program-1"}, "lead-1"), deps(db));
-    const alert = board.alerts.find((a) => a.alertId === "run-a_functionLead");
-    assert.equal(alert?.state, "done");
-    assert.equal(alert?.assigneeName, "Lead One");
-    assert.equal(alert?.revision, 2);
+    const stored = db.getDoc(
+      "programAlerts/program-1_run-a_functionLead") as FakeData;
+    assert.equal(stored.state, "done");
+    assert.equal(stored.assigneeUid, "lead-1");
+    assert.equal(stored.assigneeName, "Lead One");
+    assert.equal(stored.revision, 2);
+    await assert.rejects(resolve({action: "claim", expectedRevision: 2,
+      requestId: "req-greet-1"}, "greeter-1"),
+    (err: unknown) => (err as {code?: string}).code === "permission-denied");
   });

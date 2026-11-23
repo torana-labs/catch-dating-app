@@ -82,8 +82,7 @@ export {
 } from "./programResources";
 export {importProgramManifest, importWeddingPhoneContacts} from
   "./programManifestImport";
-export {getProgramLiveBoard, resolveProgramAlert} from
-  "./programLiveBoard";
+export {resolveProgramAlert} from "./programLiveBoard";
 export {
   getProgramDriverTrip,
   getProgramVendorRunSheet,

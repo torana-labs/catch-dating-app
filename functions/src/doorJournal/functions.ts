@@ -3,5 +3,4 @@
 
 export {recordProgramDoorJournal} from
   "./recordProgramDoorJournal";
-export {getProgramFunctionDoorView, createProgramWalkIn} from
-  "./doorView";
+export {createProgramWalkIn} from "./doorView";
