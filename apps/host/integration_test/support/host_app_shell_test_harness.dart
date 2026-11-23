@@ -749,8 +749,14 @@ const _venueSessionRefreshCeiling = Duration(minutes: 5);
 
 /// Unmounts the app and lets self-refreshing reads observe disposal before
 /// the test ends.
+///
+/// Only the headless binding needs the wait: its fake clock makes it free,
+/// and its pending-timer check would fail on the refresh loop. The native
+/// binding pumps real time, where the wait would cost five minutes a
+/// journey, and it has no pending-timer check; the loop ends on its own.
 Future<void> unmountHostAppShell(WidgetTester tester) async {
   await tester.pumpWidget(const SizedBox.shrink());
+  if (tester.binding is LiveTestWidgetsFlutterBinding) return;
   await pumpFeatureUiFor(tester, _venueSessionRefreshCeiling);
 }
 

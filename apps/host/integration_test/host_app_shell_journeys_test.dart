@@ -540,6 +540,8 @@ Future<void> _enterKeyed(WidgetTester tester, String key, String text) async {
   );
   await tester.ensureVisible(field);
   await tester.enterText(field, text);
-  tester.testTextInput.hide();
+  // The native binding drives the platform's own text input, so only the
+  // headless test text input has a keyboard to hide.
+  if (tester.testTextInput.isRegistered) tester.testTextInput.hide();
   await tester.pump();
 }
