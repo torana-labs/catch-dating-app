@@ -8,11 +8,13 @@
 //   node tool/ci/semantic_check_replay.mjs run --out <results.jsonl>
 //     [--ref origin/main] [--commits 200] [--every 1] [--workers 3]
 //     [--reruns 2] [--timeout 600] [--checks id,id] [--workdir <dir>]
-//   node tool/ci/semantic_check_replay.mjs report --results <results.jsonl>
+//   node tool/ci/semantic_check_replay.mjs report --results <a.jsonl[,b.jsonl]>
 //     [--json <summary.json>] [--markdown <report.md>]
 //
-// `run` checks out each commit in its own worktrees under --workdir (never the
-// caller's checkout), installs the commit's locked dependencies when a lockfile
+// `run` checks out each commit in its own shared clones under --workdir (never
+// the caller's checkout or refs). In each clone origin/main points at the
+// commit's first parent, the base a merge-queue run compares with, so a ratchet
+// that reads origin/main sees what the queue saw. It installs the commit's locked dependencies when a lockfile
 // changes, prepares what CI prepares (schema contracts, Admin build modules),
 // records which checks the queue's affected-tools selection would have run on
 // that commit, and runs each check's manifest command as of that commit. A
@@ -353,6 +355,8 @@ function lockHash(dir) {
 // (run.mjs generateBuildModules).
 async function prepare(dir, sha, timeoutMs) {
   gitSync(["checkout", "--quiet", "--force", "--detach", sha], dir);
+  // Ratchets compare with origin/main; in the queue that is the base, sha^.
+  gitSync(["update-ref", "refs/remotes/origin/main", `${sha}^`], dir);
   gitSync(["clean", "-ffdxq", "-e", "node_modules"], dir);
   const marker = path.join(dir, "node_modules", ".replay-lock-hash");
   const hash = lockHash(dir);
@@ -411,7 +415,7 @@ async function replay(options) {
   const worker = async (slot) => {
     const dir = path.join(workdir, `worker-${slot}`);
     if (!fs.existsSync(path.join(dir, ".git"))) {
-      gitSync(["worktree", "add", "--quiet", "--detach", dir, pending[0] ?? options.ref]);
+      gitSync(["clone", "--quiet", "--shared", "--no-checkout", repoRoot, dir]);
     }
     while (next < pending.length) {
       const sha = pending[next++];
@@ -447,9 +451,19 @@ async function replay(options) {
   await Promise.all(Array.from({length: Math.min(options.workers, pending.length)}, (_, slot) => worker(slot)));
 }
 
-function loadRecords(file) {
-  return fs.readFileSync(file, "utf8").split("\n").filter(Boolean).map((line) => JSON.parse(line));
+/** Records from each file; a later file's record for a commit and check replaces an earlier one. */
+export function mergeRecords(texts) {
+  const merged = new Map();
+  for (const text of texts) {
+    for (const line of text.split("\n").filter(Boolean)) {
+      const record = JSON.parse(line);
+      merged.set(`${record.sha} ${record.id}`, record);
+    }
+  }
+  return [...merged.values()];
 }
+
+const loadRecords = (files) => mergeRecords(files.split(",").map((file) => fs.readFileSync(file, "utf8")));
 
 function report(options) {
   const records = loadRecords(options.results);

@@ -6,7 +6,7 @@ import {fileURLToPath} from "node:url";
 import {loadToolsManifest} from "../lib/tools_manifest.mjs";
 import {REPORTING_LANES} from "./required_ci_floor.mjs";
 import {
-  EXCLUDED, INCLUDED, commandScript, outcomeOf, parseArgs, queueRunMap, renderMarkdown,
+  EXCLUDED, INCLUDED, commandScript, mergeRecords, outcomeOf, parseArgs, queueRunMap, renderMarkdown,
   replayWindow, summarize, verdictOf, wholeRepoInventory,
 } from "./semantic_check_replay.mjs";
 
@@ -196,4 +196,10 @@ test("replayWindow lists first-parent commits oldest first and keeps the newest 
   assert.deepEqual(replayWindow(git, {ref: "main", commits: 5, every: 1}), ["s1", "s2", "s3", "s4", "s5"]);
   assert.deepEqual(calls[0], ["rev-list", "--first-parent", "--max-count=5", "main"]);
   assert.deepEqual(replayWindow(git, {ref: "main", commits: 5, every: 2}), ["s1", "s3", "s5"]);
+});
+
+test("mergeRecords lets a later result file replace a commit and check's earlier record", () => {
+  const line = (sha, id, status) => JSON.stringify(record(sha, id, [status]));
+  const merged = mergeRecords([`${line("c1", "x", 1)}\n${line("c1", "y", 0)}\n`, `${line("c1", "x", 0)}\n`]);
+  assert.deepEqual(merged.map((entry) => [entry.id, entry.attempts[0].status]), [["x", 0], ["y", 0]]);
 });
