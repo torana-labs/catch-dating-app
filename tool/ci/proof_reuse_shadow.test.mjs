@@ -6,7 +6,7 @@ import path from "node:path";
 import test from "node:test";
 import YAML from "yaml";
 import {ELIGIBLE_LANES, KEYS_JOB, LANE_JOBS, RECORD_TITLE, changesCi, compareShadow, decideVerdicts, hasherVersion,
-  laneClass, laneResult, readRecord, summaryMarkdown} from "./proof_reuse_shadow.mjs";
+  laneClass, laneResult, prFromHeadRef, readRecord, summaryMarkdown} from "./proof_reuse_shadow.mjs";
 import {comparedLanes} from "../nx/shadow_plan.mjs";
 
 const workflow = (file) => fs.readFileSync(new URL(`../../.github/workflows/${file}`, import.meta.url), "utf8");
@@ -52,6 +52,18 @@ test("a pull request that changes CI, the hasher or the toolchain is never eligi
     "tool/ci/proof_reuse_shadow.mjs", "tool/nx/lane_key.mjs"]) assert.equal(changesCi(file), true, file);
   for (const file of ["functions/src/index.ts", "tool/harness/component_graph.json", "docs/ci.md", ".github/zizmor.yml"]) {
     assert.equal(changesCi(file), false, file);
+  }
+});
+
+test("the queued pull request comes from the merge group's full head ref", () => {
+  const sha = "38af6dc3d".padEnd(40, "0");
+  // GitHub's merge_group.head_ref is a full ref (first shadow runs, 23 Nov 2026: every run read no pull request).
+  assert.equal(prFromHeadRef(`refs/heads/gh-readonly-queue/main/pr-2390-${sha}`), "2390");
+  assert.equal(prFromHeadRef(`gh-readonly-queue/main/pr-2390-${sha}`), "2390");
+  assert.equal(prFromHeadRef(`refs/heads/gh-readonly-queue/release/2026-11/pr-7-${sha}`), "7");
+  for (const ref of ["", null, undefined, "refs/heads/main", `refs/heads/gh-readonly-queue/main/pr-0-${sha}`,
+    `refs/heads/gh-readonly-queue/main/pr-2390-${sha.slice(1)}`, `refs/tags/gh-readonly-queue/main/pr-2390-${sha}`]) {
+    assert.equal(prFromHeadRef(ref), null, String(ref));
   }
 });
 

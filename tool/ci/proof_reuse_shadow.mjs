@@ -33,6 +33,16 @@ export const RECORD_TITLE = "proof-keys";
 export const KEYS_JOB = "Compute proof-reuse keys";
 const CI_PATH = ".github/workflows/ci.yml";
 
+/**
+ * The queued pull request's number from a merge group's head ref, or null.
+ * GitHub sends merge_group.head_ref as a full ref
+ * (refs/heads/gh-readonly-queue/<base>/pr-<n>-<sha>); the bare branch name is
+ * accepted too.
+ */
+export function prFromHeadRef(headRef) {
+  return /^(?:refs\/heads\/)?gh-readonly-queue\/.+\/pr-([1-9][0-9]*)-[0-9a-f]{40}$/u.exec(headRef ?? "")?.[1] ?? null;
+}
+
 /** The ci.yml job that runs each compared lane. */
 export const LANE_JOBS = Object.freeze({
   admin: "admin", capture_freshness: "capture-freshness", contracts: "contracts", docs: "docs-policy",
@@ -186,7 +196,7 @@ function parseArgs(argv) {
 }
 
 async function verdictsFor({repository, head, headRef}) {
-  const pr = /^gh-readonly-queue\/[^/]+\/pr-([1-9][0-9]*)-[0-9a-f]{40}$/u.exec(headRef ?? "")?.[1] ?? null;
+  const pr = prFromHeadRef(headRef);
   const {key, version, lanes} = await keyerFor();
   const result = (reason, extra = {}) => ({pr, head, version, lanes: decideVerdicts({lanes, reason, version, ...extra})});
   if (!pr) return result("no_pull_request");
