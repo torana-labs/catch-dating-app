@@ -7,8 +7,8 @@
 // whose replay was clean carries `"queueGate": "always"` in its own manifest
 // file and runs on every merge-queue entry (tool/ci/semantic_gates.mjs).
 // `"candidate"` marks a check still gathering history: the nightly runs it,
-// nothing blocks on it. This module has no dependencies, so the sparse
-// manifest preflight can validate the field.
+// nothing blocks on it. meta:tool-manifest runs tool/lib/semantic_gates.test.mjs,
+// which validates the field and pins the approved list.
 
 // A check that reads the whole repository or a whole surface: an active,
 // local, non-generator tool whose manifest command runs a repository script
