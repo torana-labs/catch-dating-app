@@ -35,7 +35,6 @@
     {"path": "lib/consumer_bootstrap.dart", "layer": "app"},
     {"path": "lib/dashboard/", "layer": "app"},
     {"path": "lib/event_success/event_success_companion_launcher.dart", "layer": "app"},
-    {"path": "lib/design_fixtures/", "layer": "app"},
     {"path": "lib/hosts/hosts.dart", "layer": "app"},
     {"path": "lib/hosts/presentation/", "layer": "app"},
     {"path": "lib/routing/", "layer": "app"},

@@ -10,6 +10,7 @@ import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,7 +18,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import '../events/events_test_helpers.dart' as event_test;
-import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('recipient sees accept and decline actions', (tester) async {

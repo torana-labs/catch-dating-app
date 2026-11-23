@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_operation_projection.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_operations.dart';
+import 'package:catch_test_support/programmes/program_operations_fixture.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'program_operations_fixture.dart';
 
 void main() {
   final now = DateTime(2026, 9, 23, 10);

@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +12,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../support/catch_test_fonts.dart';
-import '../../test_pump_helpers.dart';
 
 const _title = 'Important update to your upcoming event';
 const _message =

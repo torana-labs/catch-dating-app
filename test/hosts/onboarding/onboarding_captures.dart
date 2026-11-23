@@ -2,12 +2,12 @@ import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/contexts/organizers/organizers.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/onboarding/onboarding_controller.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/misc.dart' show Override;
 

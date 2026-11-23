@@ -38,7 +38,7 @@ Read this before changing:
 | Generated TypeScript interfaces, Ajv validators, and Admin SDK Timestamp types | `functions/src/shared/generated/` |
 | Generated website and Admin browser contract types | `website/src/shared/contracts/generated/` and `admin/src/generated/contracts/` |
 | Generated Dart callable DTOs, field constraints, and catalogs | `packages/platform/lib/schema_contracts/generated/` |
-| Dart test access to full schemas (read from `contracts/`, never generated) | `test/support/contract_schemas.dart` |
+| Dart test access to full schemas (read from `contracts/`, never generated) | `packages/catch_test_support/lib/contract_schemas.dart` |
 | Tool-side schema registry and validators | `tool/contracts/generated/` |
 | Firestore operation ownership metadata (one file per collection) | `tool/contracts/firestore_contract/` |
 | Human operation map | `docs/backend_operation_catalog.md` |
@@ -2458,7 +2458,7 @@ activation; the trigger does not invent historical guest refund terms.
 JSON Schema draft-07 is the canonical persisted-shape format. Ajv validates
 schemas in Functions/tooling, generated Dart constants support selected
 production validation, Flutter tests read full schemas from `contracts/`
-through `test/support/contract_schemas.dart` (which bundles `$ref`s exactly as
+through `packages/catch_test_support/lib/contract_schemas.dart` (which bundles `$ref`s exactly as
 the generator does), and Firestore rules remain behavioral security checks
 rather than a generated JSON Schema runtime.
 

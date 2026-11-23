@@ -3,9 +3,8 @@ import 'package:catch_dating_app/contexts/programmes/domain/travel_leg_revision.
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/persistence/local_command_journal.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
+import 'package:catch_test_support/programmes/program_operations_fixture.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'program_operations_fixture.dart';
 
 class MemoryOutboxStore
     extends LocalCommandJournal<ProgramOperationOutboxEntry> {

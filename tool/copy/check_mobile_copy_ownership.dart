@@ -320,7 +320,7 @@ String? _fileAllowanceReason(String source) {
 }
 
 bool _supportsFileAllowance(String file) =>
-    file.startsWith('lib/design_fixtures/') ||
+    file.startsWith('packages/catch_test_support/lib/design_fixtures/') ||
     file == 'packages/kernel/lib/city_catalog.dart' ||
     file == 'packages/kernel/lib/country_markets.dart' ||
     file == 'packages/kernel/lib/market_catalog.dart';
@@ -824,7 +824,7 @@ void fail() => throw BackendOperationException(
 Widget build(BuildContext context) => Text('Fixture title');
 ''';
   if (scanDartSource(
-    'lib/design_fixtures/example.dart',
+    'packages/catch_test_support/lib/design_fixtures/example.dart',
     fixtureSource,
   ).isNotEmpty) {
     throw StateError('File-level fixture exemption was not honored.');

@@ -28,6 +28,8 @@ import 'package:catch_platform/persistence/command_journal_provider.dart';
 import 'package:catch_platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -37,8 +39,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod_annotation/experimental/scope.dart';
 
-import '../../support/catch_test_fonts.dart';
-import '../../test_pump_helpers.dart';
 import '../../ui_captures/support/capture_device.dart';
 import '../../ui_captures/support/capture_pump.dart';
 import 'event_offer_controller_test_support.dart';

@@ -5,12 +5,11 @@ import 'package:catch_dating_app/event_success/presentation/event_message_prefer
 import 'package:catch_dating_app/event_success/presentation/event_message_sender_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/event_success/event_message_preferences_use_cases.dart';
-
-import '../../test/test_pump_helpers.dart';
 
 void main() {
   for (final scale in [1.0, 2.0]) {

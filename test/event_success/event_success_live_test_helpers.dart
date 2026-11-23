@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../test_pump_helpers.dart';
 
 EventSuccessPlan withoutModule(EventSuccessPlan plan, String moduleId) {
   return plan.copyWith(

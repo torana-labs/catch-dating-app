@@ -443,7 +443,7 @@ that.
     matrix-driven, golden-asserted; zero provider scaffolding required by
     construction once D1 lands.
   - **L5 bodies:** a bounded state set, always mounting the production widget
-    with `lib/design_fixtures` data — this is composition-regression
+    with `packages/catch_test_support/lib/design_fixtures` data — this is composition-regression
     coverage, not decoration.
   - **L6 screens under provider scopes:** lowest value, highest harness tax,
     and redundant with the UI capture pipeline. Each existing case either

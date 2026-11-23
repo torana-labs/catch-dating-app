@@ -1,7 +1,7 @@
 // Marketing capture `event_success_companion_micro_pod_assignment`. One file per marketing capture keeps each
 // capture's inputs to its own imports; see docs/marketing_app_media_pipeline.md.
 
-import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/event_success_companion_fixtures.dart';
 import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';
 import '../shared/event_success_companion_capture.dart';

@@ -1,9 +1,8 @@
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../test_pump_helpers.dart';
 
 enum _Decision { share, mute, block }
 

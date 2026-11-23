@@ -3,9 +3,10 @@
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show AsyncData;
+
 import '../../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';

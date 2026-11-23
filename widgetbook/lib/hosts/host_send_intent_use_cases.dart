@@ -3,11 +3,11 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_set
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_posts_repository.dart';
-import 'package:catch_dating_app/design_fixtures/host_inbox_surface_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcement_field.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_send_intent_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_back_button.dart';
+import 'package:catch_test_support/design_fixtures/host_inbox_surface_fixtures.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/page_preview.dart';
