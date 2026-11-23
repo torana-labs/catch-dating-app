@@ -4298,6 +4298,21 @@ only: the job summary lists goldens beyond the 0.30% hosted-macOS raster
 tolerance (0.60% for the Widgetbook corpus) or without a baseline, and their
 images are retained as artifacts, while the comparator's known-good/known-bad
 tests keep that tolerance honest.
+The Storybook visual reports of the marketing and admin websites
+(`react-surface-validation.yml`, "Report marketing and shared web UI visual
+changes" and "Report admin visual changes") run only in the CI nightly (owner
+decision, 23 Nov 2026). The marketing report was the merge queue's last job in
+every run measured, a median 8.1 minutes after the next lane, and it only
+reports. They no longer run in the merge queue, on main pushes or in the
+website workflows' push runs, so a visual change is attributed to the
+nightly's commit range, not to a single merge; the nightly keeps the job
+summary and the `marketing-visual-diagnostics-<run>` and
+`admin-visual-diagnostics-<run>` artifacts. The Storybook accessibility gates,
+which render every story and fail on a story that cannot render, still run on
+pull requests and in the queue, and so do the Storybook builds, which Tools
+reuses there. Baseline capture is unchanged: dispatch the Marketing Website or
+Admin Website workflow with `update_visual_baselines`. `npm run check:admin --
+--nightly` runs the admin lane as the nightly does.
 
 Use `bash tool/test_app_shell_integration.sh <device> smoke` for the bounded
 native lane and `bash tool/test_app_shell_integration.sh <device> all` for every
