@@ -10,9 +10,10 @@ name: Deck-era purge
 # their signal facts and counters; a rerun finds nothing left. On apply the
 # deleted participantSignalFacts and matches ids are kept for one day as an
 # artifact. `bigquery` takes that artifact from the apply run named by
-# source_run_id and deletes those documents' rows from the Firestore export
-# changelog tables, then refreshes the user analytics mart; a rerun deletes
-# only what is left. Dispatch only, from main only. Operator guide:
+# source_run_id and deletes the signal facts' rows from the Firestore export
+# changelog, then refreshes the user analytics mart; a rerun deletes only what
+# is left. The matches export is removed (#2463) and its changelog is dropped
+# by the owner, so matches ids in the manifest are accepted and ignored. Dispatch only, from main only. Operator guide:
 # docs/release_operations.md, "Retired swipe deck purge (one-off)".
 
 on:
@@ -198,9 +199,11 @@ jobs:
       - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
         if: ${{ inputs.mode == 'bigquery' }}
 
-      # The export extensions keep every version of a document, including its
-      # deletion, in <table>_raw_changelog: participantSignalFacts in
-      # catch_marketplace_metrics, matches in catch_analytics. The SQL is fixed
+      # The export extension keeps every version of a document, including its
+      # deletion, in participant_signal_facts_raw_changelog in
+      # catch_marketplace_metrics. The matches export is removed (#2463): its
+      # changelog is dropped whole, which takes every chat row with it, so
+      # matches ids in the manifest are not cleaned here. The SQL is fixed
       # and the ids reach BigQuery only as the @ids array parameter, which bq
       # reads from a file. A table with no manifest ids is not touched. The
       # summary gets counts only. Deleting ids that are already gone deletes
@@ -248,8 +251,6 @@ jobs:
             case "$1" in
               count:participant_signal_facts) echo 'SELECT COUNT(*) AS changelog_rows, COUNT(DISTINCT document_id) AS documents FROM `catch_marketplace_metrics.participant_signal_facts_raw_changelog` WHERE document_id IN UNNEST(@ids)' ;;
               delete:participant_signal_facts) echo 'DELETE FROM `catch_marketplace_metrics.participant_signal_facts_raw_changelog` WHERE document_id IN UNNEST(@ids)' ;;
-              count:matches) echo 'SELECT COUNT(*) AS changelog_rows, COUNT(DISTINCT document_id) AS documents FROM `catch_analytics.matches_raw_changelog` WHERE document_id IN UNNEST(@ids)' ;;
-              delete:matches) echo 'DELETE FROM `catch_analytics.matches_raw_changelog` WHERE document_id IN UNNEST(@ids)' ;;
               *) return 1 ;;
             esac
           }
@@ -313,7 +314,6 @@ jobs:
             echo "|---|---|---|---|"
           } >> "$GITHUB_STEP_SUMMARY"
           clean participant_signal_facts participantSignalFacts catch_marketplace_metrics.participant_signal_facts_raw_changelog
-          clean matches matches catch_analytics.matches_raw_changelog
 
       # The user mart counts likes, matches and chats from
       # participant_signal_facts_raw_latest, so refresh it now rather than

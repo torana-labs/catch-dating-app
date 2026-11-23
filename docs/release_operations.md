@@ -3790,7 +3790,8 @@ The `matches` and `participantMetricCounters` exports were removed because
 nothing reads them (FIX-5, #2447). Once the owner uninstalls `bq-host-matches`
 and drops `catch_analytics.matches_raw_changelog`, every exported chat row is
 gone, deck-era ones included, and the `matches` statements above no longer
-apply.
+apply. The `Deck-era purge` workflow's `bigquery` mode cleans only the signal
+facts changelog; it accepts and ignores the manifest's `matches` ids.
 
 **Follow-ups.** Today's rules still accept deck-shaped decisions (passes,
 reaction fields, comments) from old app builds. Pick one of these:
