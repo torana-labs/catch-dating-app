@@ -58,9 +58,11 @@ test("policy guards: paused, prefix, budget, copy limits, mapped questions", () 
 
 test("the campaign's form asks for WhatsApp consent before Submit; old forms are history", () => {
   // hostLeadTemplates.ts welcomes a Meta lead only from a form with this line.
-  assert.match(liveForm.consentLine, /WhatsApp/);
+  assert.match(`${liveForm.consentTitle} ${liveForm.consentLine}`, /WhatsApp/);
   const sent = leadFormParams(liveForm);
-  assert.deepEqual(sent.custom_disclaimer, {body: {text: liveForm.consentLine}});
+  // Meta answers a disclaimer without a title with (#100).
+  assert.deepEqual(sent.custom_disclaimer,
+    {title: liveForm.consentTitle, body: {text: liveForm.consentLine}});
   assert.doesNotMatch(sent.thank_you_page.body, /WhatsApp/);
   const history = policy.leadForms.filter((form) => form.retired);
   assert.ok(history.length > 0);
@@ -69,6 +71,9 @@ test("the campaign's form asks for WhatsApp consent before Submit; old forms are
   assert.throws(withPolicy((p) => {
     p.leadForms.find((form) => form.consentLine).consentLine = "x".repeat(121);
   }), /consent line over 120/);
+  assert.throws(withPolicy((p) => {
+    delete p.leadForms.find((form) => form.consentLine).consentTitle;
+  }), /needs a consent title/);
   assert.throws(withPolicy((p) => { p.leadForms[0].retired = "yes"; }), /retired must be true/);
 });
 
