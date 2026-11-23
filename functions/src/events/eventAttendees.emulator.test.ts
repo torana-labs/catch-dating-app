@@ -21,6 +21,8 @@ import {
 } from "./eventAttendees";
 import {deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {commandReceiptId} from "../shared/commandReceipts";
+import {organizerCommunicationPreferenceId} from
+  "../shared/organizerCommunicationPreferences";
 import {seatIdentityAliasId, seatIdentityValueHash} from
   "./seatIdentityAuthority";
 import {withEventSeatLedgers} from "./seatAuthority/eventSeatLedgerTestSupport";
@@ -47,6 +49,9 @@ class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
   get id() {
     return this.path.split("/").at(-1)!;
+  }
+  collection(name: string) {
+    return new FakeCollectionRef(this.firestore, `${this.path}/${name}`);
   }
   async get() {
     return new FakeSnapshot(this, this.firestore.get(this.path));
@@ -315,7 +320,9 @@ test("ready OTP links an imported external-ID guest at full capacity",
     const secondPhone = "+919876543211";
     const secondRequest = {auth: {uid: "user-2",
       token: {phone_number: secondPhone}},
-    data: {eventId: "event-1", displayName: "New Guest"},
+    data: {eventId: "event-1", displayName: "New Guest",
+      organizerUpdates: {whatsapp: true, sms: true,
+        termsVersion: "organizer-updates-v1"}},
     rawRequest: {}} as CallableRequest<unknown>;
     const freshDeps = {firestore: () => fresh as never,
       checkRateLimit: async () => undefined,
@@ -333,6 +340,23 @@ test("ready OTP links an imported external-ID guest at full capacity",
     const newResult = await registerPublicEventHandler(secondRequest,
       freshDeps);
     assert.equal(newResult.status, "registered");
+    // The organiser-updates ticks write the contact permission in the
+    // registration transaction, bound to the verified phone.
+    const permission = fresh.get(
+      "users/user-2/contactPermissions/organizer_organizer-1");
+    assert.deepEqual(permission?.granted, ["sms:marketing",
+      "whatsapp:marketing"]);
+    const grants = permission?.grants as Record<string,
+      {endpointE164: string; receiptId: string}>;
+    assert.equal(grants["whatsapp:marketing"].endpointE164, secondPhone);
+    assert.equal(grants["sms:marketing"].endpointE164, secondPhone);
+    const copy = fresh.get(
+      `contactPermissionReceipts/${grants["whatsapp:marketing"].receiptId}`);
+    assert.equal(copy?.senderId, "organizer-1");
+    assert.equal(copy?.endpointE164, secondPhone);
+    assert.equal((fresh.get(`guestMessagingPermissions/${
+      organizerCommunicationPreferenceId("organizer-1", "user-2")}`)
+      ?.preference as {status: string}).status, "optedIn");
     assert.equal(fresh.get("eventSeatLedgers/event-1")?.occupied, 2);
     assert.equal((await registerPublicEventHandler(secondRequest,
       freshDeps)).status, "alreadyRegistered");

@@ -74,10 +74,11 @@ export function contactPermissionRef(db: FirebaseFirestore.Firestore,
 export function contactPermissionReceipt(sender: ContactSender,
   receipt: Receipt, endpointE164?: string | null):
   ContactPermissionReceiptDocument {
-  const {organizerId: _organizerId, ...fields} =
-    receipt as Receipt & {organizerId?: string};
+  const fields: Record<string, unknown> = {...receipt};
+  delete fields.organizerId;
   const endpoint = receipt.endpointE164 ?? endpointE164 ?? null;
-  return {...fields, senderKind: sender.kind, senderId: senderId(sender),
+  return {...fields as Omit<OrganizerReceipt, "organizerId">,
+    senderKind: sender.kind, senderId: senderId(sender),
     ...(endpoint ? {endpointE164: endpoint} : {})};
 }
 

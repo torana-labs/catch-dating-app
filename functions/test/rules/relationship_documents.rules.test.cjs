@@ -31,6 +31,7 @@ const {
   useRulesEnvironment,
   where,
 } = require("./rulesHarness.cjs");
+const {collectionGroup} = require("firebase/firestore");
 
 let testEnv;
 
@@ -968,6 +969,66 @@ describe("firestore.rules", () => {
       await seed(["deletedUsers", "runner-1"], {deletedAt: Timestamp.now()});
       await assertFails(getDoc(doc(db, "guestMessagingPermissions",
         "catchpref_runner-1")));
+    });
+
+    it("lets a guest get and list only their own contact permissions", async () => {
+      const permission = (senderKind, senderId) => ({senderKind, senderId,
+        grants: {"whatsapp:marketing": {status: "optedIn",
+          endpointE164: "+919800000001", receiptId: "receipt-1",
+          termsVersion: "organizer-updates-v1",
+          source: "publicEventRegistration", updatedAt: Timestamp.now()}},
+        granted: ["whatsapp:marketing"], updatedAt: Timestamp.now()});
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["users", "runner-1", "contactPermissions", "catch"],
+        permission("catch", "catch"));
+      await seed(["users", "runner-1", "contactPermissions", "organizer_club-1"],
+        permission("organizer", "club-1"));
+      await seed(["users", "runner-2", "contactPermissions", "organizer_club-1"],
+        permission("organizer", "club-1"));
+      await seed(["contactPermissionReceipts", "receipt-1"], {
+        senderKind: "organizer", senderId: "club-1", uid: "runner-1",
+        channel: "whatsapp", decision: "optedIn"});
+      const db = authedDb("runner-1");
+      await assertSucceeds(getDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "organizer_club-1")));
+      const missing = await assertSucceeds(getDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "organizer_club-9")));
+      assert.equal(missing.exists(), false);
+      const own = await assertSucceeds(getDocs(collection(db, "users",
+        "runner-1", "contactPermissions")));
+      assert.deepEqual(own.docs.map((item) => item.id).sort(),
+        ["catch", "organizer_club-1"]);
+      // Another guest, the organiser's manager and an unrelated account.
+      for (const other of ["runner-2", "host-1", "stranger-1"]) {
+        const otherDb = authedDb(other);
+        await assertFails(getDoc(doc(otherDb, "users", "runner-1",
+          "contactPermissions", "organizer_club-1")));
+        await assertFails(getDocs(collection(otherDb, "users", "runner-1",
+          "contactPermissions")));
+        await assertFails(getDoc(doc(otherDb, "contactPermissionReceipts",
+          "receipt-1")));
+      }
+      await assertFails(getDocs(query(collectionGroup(authedDb("host-1"),
+        "contactPermissions"), where("senderId", "==", "club-1"))));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "users", "runner-1", "contactPermissions", "catch")));
+      // No client reads receipts, its own included, and nobody writes either.
+      await assertFails(getDoc(doc(db, "contactPermissionReceipts",
+        "receipt-1")));
+      await assertFails(getDocs(query(collection(db,
+        "contactPermissionReceipts"), where("uid", "==", "runner-1"))));
+      await assertFails(setDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "organizer_club-2"),
+      permission("organizer", "club-2")));
+      await assertFails(updateDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "catch"), {granted: []}));
+      await assertFails(deleteDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "catch")));
+      await assertFails(setDoc(doc(db, "contactPermissionReceipts",
+        "receipt-2"), {uid: "runner-1"}));
+      await seed(["deletedUsers", "runner-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDoc(doc(db, "users", "runner-1",
+        "contactPermissions", "catch")));
     });
 
     it("keeps invite secrets, touches, share intents, and attribution server-only", async () => {
