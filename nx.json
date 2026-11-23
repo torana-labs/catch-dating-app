@@ -575,7 +575,7 @@
                   "{workspaceRoot}/packages/catch_ui/lib/**/*",
                   "{workspaceRoot}/packages/catch_tokens/lib/**/*",
                   "{workspaceRoot}/lib/contexts/events/parts/**/*",
-                  "{workspaceRoot}/lib/locations/shared/**/*",
+                  "{workspaceRoot}/lib/pages/event/location/**/*",
                   "{workspaceRoot}/widgetbook/lib/primitives/**/*"
                 ]
               }
