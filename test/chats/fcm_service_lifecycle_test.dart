@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';
@@ -9,6 +8,7 @@ import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/firebase/push_installation_store.dart';
 import 'package:catch_platform/push/fcm_service.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -112,7 +112,7 @@ void main() {
 
   final momentPayloads =
       jsonDecode(
-            File(
+            repoFile(
               'test/chats/fixtures/moment_push_payloads.json',
             ).readAsStringSync(),
           )

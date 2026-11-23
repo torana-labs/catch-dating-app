@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/payments/data/host_organizer_bills_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
 import 'package:catch_dating_app/contexts/payments/parts/host_organizer_bill_row.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -89,7 +89,7 @@ void main() {
   // Admin's test reads the same file, so the two surfaces can't drift apart on
   // money.
   group('the figures shared with Admin', () {
-    final file = File(
+    final file = repoFile(
       'test/contexts/payments/fixtures/organizer_kept_months.json',
     );
     final months =
