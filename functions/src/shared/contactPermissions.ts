@@ -171,8 +171,9 @@ export function whatsappPermissionSummary(
     ["eventOperations", "marketing"] as const;
   for (const purpose of listed) {
     const grant = grants[`whatsapp:${purpose}`];
-    if (grant) purposes[purpose] = {status: grant.status,
-      receiptId: grant.receiptId};
+    if (grant) {
+      purposes[purpose] = {status: grant.status, receiptId: grant.receiptId};
+    }
   }
   const whatsapp: ContactGrant[] = [
     ...listed.map((purpose) => grants[`whatsapp:${purpose}`]),

@@ -38,24 +38,26 @@ test("Firestore serializes sender withdrawals",
       const rejected = race.find((r) => r.status === "rejected");
       assert.ok(rejected?.status === "rejected");
       assert.equal(rejected.reason.code, "aborted");
-      const catchPreference = await db
-        .doc(`catchCommunicationPreferences/${uid}`).get();
-      assert.equal(catchPreference.get("whatsapp.status"), "optedOut");
-      const organizerPreference = await db.doc(
-        "organizerCommunicationPreferences/" +
-        organizerCommunicationPreferenceId(organizerId, uid)).get();
-      assert.equal(organizerPreference.get("organizerId"), organizerId);
-      assert.equal(organizerPreference.get("whatsapp.status"), "optedOut");
+      const catchPermission = (await db
+        .doc(`users/${uid}/contactPermissions/catch`).get()).data();
+      assert.equal(catchPermission?.grants["whatsapp:marketing"].status,
+        "optedOut");
+      const organizerPermission = (await db.doc(
+        `users/${uid}/contactPermissions/organizer_${organizerId}`).get())
+        .data();
+      assert.equal(organizerPermission?.senderId, organizerId);
+      assert.equal(organizerPermission?.grants["whatsapp:marketing"].status,
+        "optedOut");
     } finally {
       const batch = db.batch();
-      for (const collection of ["catchCommunicationPermissionReceipts",
-        "organizerCommunicationPermissionReceipts"]) {
-        const rows = await db.collection(collection).where("uid", "==", uid)
-          .limit(10).get();
-        for (const row of rows.docs) batch.delete(row.ref);
-      }
-      batch.delete(db.doc(`catchCommunicationPreferences/${uid}`));
-      batch.delete(db.doc("organizerCommunicationPreferences/" +
+      const rows = await db.collection("contactPermissionReceipts")
+        .where("uid", "==", uid).limit(10).get();
+      for (const row of rows.docs) batch.delete(row.ref);
+      batch.delete(db.doc(`users/${uid}/contactPermissions/catch`));
+      batch.delete(db.doc(
+        `users/${uid}/contactPermissions/organizer_${organizerId}`));
+      batch.delete(db.doc(`guestMessagingPermissions/catchpref_${uid}`));
+      batch.delete(db.doc("guestMessagingPermissions/" +
         organizerCommunicationPreferenceId(organizerId, uid)));
       batch.delete(db.doc(`organizers/${organizerId}`));
       await batch.commit();

@@ -118,7 +118,8 @@ test("captured form creates independent immutable receipts exactly once",
     const receipts = h.records("contactPermissionReceipts");
     assert.equal(receipts.length, 2);
     const org = receipts.find(([, value]) => value.senderKind === "organizer")!;
-    const platform = receipts.find(([, value]) => value.senderKind === "catch")!;
+    const platform = receipts.find(([, value]) =>
+      value.senderKind === "catch")!;
     for (const [, receipt] of receipts) {
       assert.equal(validReceipt(receipt), true);
     }

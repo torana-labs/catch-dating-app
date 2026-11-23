@@ -410,9 +410,7 @@ test("processing the same STOP after a fresh v2 grant preserves its decision", {
   const contactRef = db.collection("organizerContacts").doc(contactId);
   const stateRef = db.collection("organizerContactChannelStates")
     .doc(organizerContactChannelStateId(organizerId, contactId));
-  const preferenceRef = db.collection("organizerCommunicationPreferences")
-    .doc(organizerCommunicationPreferenceId(organizerId, uid));
-  const grantRef = db.collection("organizerCommunicationPermissionReceipts")
+  const grantRef = db.collection("contactPermissionReceipts")
     .doc(`fresh-${id}`);
   const permissionRef = db.collection("users").doc(uid)
     .collection("contactPermissions").doc(`organizer_${organizerId}`);
@@ -443,49 +441,43 @@ test("processing the same STOP after a fresh v2 grant preserves its decision", {
       OrganizerMessagingWebhookEventDocument;
     await processOrganizerMessagingWebhookEvent({db, eventId: eventRef.id,
       event, now: firstAt});
-    const stopped = (await preferenceRef.get()).data()!;
-    const stopReceiptRef = db.collection(
-      "organizerCommunicationPermissionReceipts")
-      .doc(stopped.whatsapp.currentReceiptId);
-    const stopReceipt = (await stopReceiptRef.get()).data()!;
-    assert.equal(stopReceipt.revokedAt.toMillis(), firstAt.toMillis());
-    // The STOP transaction also withdrew every WhatsApp purpose in the
-    // contact permission and copied its receipt.
-    const permission = (await permissionRef.get()).data()!;
-    assert.deepEqual(permission.granted, []);
+    // The STOP withdrew every WhatsApp purpose with one receipt.
+    const stopped = (await permissionRef.get()).data()!;
+    assert.deepEqual(stopped.granted, []);
+    const stopReceiptRef = db.collection("contactPermissionReceipts")
+      .doc(stopped.grants["whatsapp:marketing"].receiptId);
     for (const key of ["whatsapp:eventOperations", "whatsapp:marketing",
       "whatsapp:followerUpdates"]) {
-      assert.equal(permission.grants[key].status, "optedOut", key);
-      assert.equal(permission.grants[key].receiptId, stopReceiptRef.id, key);
+      assert.equal(stopped.grants[key].status, "optedOut", key);
+      assert.equal(stopped.grants[key].receiptId, stopReceiptRef.id, key);
     }
-    const stopCopy = (await db.collection("contactPermissionReceipts")
-      .doc(stopReceiptRef.id).get()).data()!;
-    assert.equal(stopCopy.senderKind, "organizer");
-    assert.equal(stopCopy.senderId, organizerId);
-    assert.equal(stopCopy.source, "inboundStop");
-    const grant = {organizerId, uid, channel: "whatsapp",
-      purpose: "marketing", endpointE164: "+919999999999",
-      sourceVersionId: `version-${id}`, sourceDecidedAt: grantAt,
-      decision: "optedIn", evidenceStatus: "complete",
-      termsVersion: "form-whatsapp-v2", consentCopyHash: "a".repeat(64),
-      source: "hostFormResponse", sourceEventId: null,
-      sourceFormId: `form-${id}`, sourceResponseId: `response-${id}`,
-      sourceProviderEventId: null, actorClass: "participant", actorUid: uid,
+    const stopReceipt = (await stopReceiptRef.get()).data()!;
+    assert.equal(stopReceipt.revokedAt.toMillis(), firstAt.toMillis());
+    assert.equal(stopReceipt.senderKind, "organizer");
+    assert.equal(stopReceipt.senderId, organizerId);
+    assert.equal(stopReceipt.source, "inboundStop");
+    // A newer explicit choice after the STOP is not undone by its replay.
+    const grant = {senderKind: "organizer", senderId: organizerId, uid,
+      channel: "whatsapp", purpose: "marketing",
+      endpointE164: "+919999999999", sourceVersionId: `version-${id}`,
+      sourceDecidedAt: grantAt, decision: "optedIn",
+      evidenceStatus: "complete", termsVersion: "form-whatsapp-v2",
+      consentCopyHash: "a".repeat(64), source: "hostFormResponse",
+      sourceEventId: null, sourceFormId: `form-${id}`,
+      sourceResponseId: `response-${id}`, sourceProviderEventId: null,
+      actorClass: "participant", actorUid: uid,
       identityStrength: "phoneVerified", grantedAt: grantAt, revokedAt: null,
       supersedesReceiptId: stopReceiptRef.id, createdAt: grantAt};
     await grantRef.create(grant);
-    const fresh = {...stopped, whatsappPurposes: {
-      ...stopped.whatsappPurposes,
-      marketing: {status: "optedIn", evidenceStatus: "complete",
-        currentReceiptId: `fresh-${id}`, termsVersion: "form-whatsapp-v2",
-        source: "hostFormResponse", sourceEventId: null,
-        sourceResponseId: `response-${id}`,
-        endpointE164: "+919999999999", updatedAt: grantAt},
-    }, updatedAt: grantAt};
-    await preferenceRef.set(fresh);
+    const fresh = {...stopped, grants: {...stopped.grants,
+      "whatsapp:marketing": {status: "optedIn",
+        endpointE164: "+919999999999", receiptId: `fresh-${id}`,
+        termsVersion: "form-whatsapp-v2", source: "hostFormResponse",
+        updatedAt: grantAt}}, updatedAt: grantAt};
+    await permissionRef.set(fresh);
     await processOrganizerMessagingWebhookEvent({db, eventId: eventRef.id,
       event, now: replayAt});
-    assert.deepEqual((await preferenceRef.get()).data(), fresh);
+    assert.deepEqual((await permissionRef.get()).data(), fresh);
     assert.deepEqual((await stopReceiptRef.get()).data(), stopReceipt);
     assert.deepEqual((await grantRef.get()).data(), grant);
     const nextRawBody = webhook([incoming({id: `wamid.${id}.next`,
@@ -501,30 +493,24 @@ test("processing the same STOP after a fresh v2 grant preserves its decision", {
       event: nextEvents.docs[0].data() as
         OrganizerMessagingWebhookEventDocument,
       now: nextStopAt});
-    const stoppedAgain = (await preferenceRef.get()).data()!;
-    assert.equal(stoppedAgain.whatsapp.updatedAt.toMillis(),
-      nextStopAt.toMillis());
-    assert.equal(stoppedAgain.whatsappPurposes.eventOperations.status,
+    const stoppedAgain = (await permissionRef.get()).data()!;
+    const marketing = stoppedAgain.grants["whatsapp:marketing"];
+    assert.equal(marketing.status, "optedOut");
+    assert.equal(marketing.updatedAt.toMillis(), nextStopAt.toMillis());
+    assert.equal(stoppedAgain.grants["whatsapp:eventOperations"].status,
       "optedOut");
-    assert.equal(stoppedAgain.whatsappPurposes.marketing.status, "optedOut");
-    assert.notEqual(stoppedAgain.whatsapp.currentReceiptId,
-      stopReceiptRef.id);
+    assert.notEqual(marketing.receiptId, stopReceiptRef.id);
     assert.deepEqual((await grantRef.get()).data(), grant);
-    assert.equal((await db.collection(
-      "organizerCommunicationPermissionReceipts")
-      .where("organizerId", "==", organizerId).get()).size, 3);
+    assert.equal((await db.collection("contactPermissionReceipts")
+      .where("senderId", "==", organizerId).get()).size, 3);
   } finally {
-    const receipts = await db.collection(
-      "organizerCommunicationPermissionReceipts")
-      .where("organizerId", "==", organizerId).get();
+    const receipts = await db.collection("contactPermissionReceipts")
+      .where("senderId", "==", organizerId).get();
     const batch = db.batch();
     for (const ref of [eventRef, nextEventRef, connectionRef, contactRef,
-      stateRef, preferenceRef, permissionRef, guestRowRef]
+      stateRef, permissionRef, guestRowRef]
       .filter((item) => item !== null)) {
       batch.delete(ref!);
-    }
-    for (const receipt of receipts.docs) {
-      batch.delete(db.collection("contactPermissionReceipts").doc(receipt.id));
     }
     for (const queued of [eventRef, nextEventRef]) {
       if (queued) {

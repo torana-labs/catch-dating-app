@@ -36,9 +36,7 @@ test("Firestore serializes payment reservations, finalization and late capture",
       "participantFormProfileProposals", "participantFormProfileViews",
       "participantOrganizerCards",
       "commandReceipts", "users", "participantIntakeProfiles",
-      "organizerCommunicationPreferences",
-      "organizerCommunicationPermissionReceipts",
-      "catchCommunicationPreferences", "catchCommunicationPermissionReceipts"];
+      "contactPermissionReceipts", "guestMessagingPermissions"];
     fixture.version.definition.sections[0].questions[0].answerDestination =
       "catchProfile";
     fixture.version.definition.messagingConsent = {
@@ -140,12 +138,12 @@ test("Firestore serializes payment reservations, finalization and late capture",
       assert.equal(outsider.payment, null);
       await db.doc("organizerForms/form").update({status: "published",
         activeVersionId: "version"});
-      for (const collection of ["organizerCommunicationPermissionReceipts",
-        "catchCommunicationPermissionReceipts"]) {
-        const receipts = await db.collection(collection).get();
-        assert.equal(receipts.size, 1);
-        assert.equal(receipts.docs[0].get("uid"), "person");
-        assert.equal(receipts.docs[0].get("grantedAt").toMillis(), 500);
+      const receipts = await db.collection("contactPermissionReceipts").get();
+      assert.deepEqual(receipts.docs.map((doc) => doc.get("senderKind"))
+        .sort(), ["catch", "organizer"]);
+      for (const receipt of receipts.docs) {
+        assert.equal(receipt.get("uid"), "person");
+        assert.equal(receipt.get("grantedAt").toMillis(), 500);
       }
 
       const proposals = await db.collection("participantFormProfileProposals")

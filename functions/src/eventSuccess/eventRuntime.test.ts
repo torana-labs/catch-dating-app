@@ -10,8 +10,6 @@ import {deriveEventSeatPolicy} from
 import {seatIdentityAliasId, seatIdentityValueHash,
   seatVerifiedPhoneProofId} from "../events/seatIdentityAuthority";
 import {eventVenueSessionRedemptionId} from "../events/venueSessions";
-import {organizerCommunicationPreferenceId} from
-  "../shared/organizerCommunicationPreferences";
 import {loadEventSuccessRoster} from "./eventSuccessRoster";
 import {requiredDataRequestId} from
   "./operations/runtimeRequiredDataStore";
@@ -853,13 +851,10 @@ test("canonical import feeds verified claim, readiness and checked-in roster",
       row.source]), [["runner-1", "attended", "externalRuntime"]]);
     assert.equal(h.firestore.get("eventBookings/event-1_runner-1"),
       undefined);
-    assert.equal(h.firestore.get("organizerCommunicationPreferences/" +
-      organizerCommunicationPreferenceId("organizer-1", "runner-1")),
-    undefined);
-    for (const collection of ["organizerCommunicationPreferences",
-      "organizerCommunicationPermissionReceipts",
-      "catchCommunicationPreferences",
-      "catchCommunicationPermissionReceipts"]) {
+    assert.equal(h.firestore.get(
+      "users/runner-1/contactPermissions/organizer_organizer-1"), undefined);
+    for (const collection of ["contactPermissionReceipts",
+      "guestMessagingPermissions"]) {
       assert.equal(h.firestore.query(collection, []).length, 0,
         `${collection} must not be inferred from the imported ticket`);
     }
