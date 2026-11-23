@@ -167,7 +167,7 @@ export function outcomeOf(record) {
  * queue would have blocked that merge if affected-tools selected the check
  * there. Each failing commit where it was selected is a blocked merge.
  */
-export function summarize(records, {order}) {
+export function summarize(records, {order, timeOf = () => null}) {
   const position = new Map(order.map((sha, index) => [sha, index]));
   const byCheck = new Map();
   for (const record of records) {
@@ -190,13 +190,15 @@ export function summarize(records, {order}) {
         if (!open) {
           open = {introducedAt: record.sha, subject: record.subject, commits: 0, blockedMerges: 0,
             selectedAtIntroduction: record.selected === true, signature: record.attempts[0].tail,
-            fixedAt: null};
+            fixedAt: null, redHours: null};
           incidents.push(open);
         }
         open.commits += 1;
         if (record.selected === true) open.blockedMerges += 1;
       } else if (outcome === "pass" && open) {
         open.fixedAt = record.sha;
+        const [from, to] = [timeOf(open.introducedAt), timeOf(record.sha)];
+        open.redHours = from === null || to === null ? null : Math.round(((to - from) / 3600) * 10) / 10;
         open = null;
       }
     }
@@ -262,6 +264,7 @@ export function renderMarkdown(summaries, {queueMap = {}, thresholds = {}, windo
       lines.push(`- \`${summary.id}\`: failed on ${incident.commits} commit(s) from ` +
         `${incident.introducedAt.slice(0, 8)} (${incident.subject})` +
         `${incident.fixedAt ? `, passing again at ${incident.fixedAt.slice(0, 8)}` : ", still failing at the newest"}` +
+        `${incident.redHours === null ? "" : ` (red on main for ${incident.redHours} h)`}` +
         `; selected at introduction: ${incident.selectedAtIntroduction ? "yes" : "no"}; ` +
         `blocked merges: ${incident.blockedMerges}.`,
         `  \`${(incident.signature.split("\n").filter(Boolean).at(-1) ?? "").slice(0, 200).replace(/`/gu, "'")}\``);
@@ -475,7 +478,14 @@ function report(options) {
     const known = listed.filter((sha) => shas.includes(sha));
     if (known.length === shas.length) order = known;
   } catch { /* keep file order */ }
-  const summaries = summarize(records, {order});
+  const times = new Map();
+  try {
+    for (const line of gitSync(["log", "--no-walk=unsorted", "--format=%H %ct", ...order]).trim().split("\n")) {
+      const [sha, seconds] = line.split(" ");
+      times.set(sha, Number(seconds));
+    }
+  } catch { /* durations stay unknown */ }
+  const summaries = summarize(records, {order, timeOf: (sha) => times.get(sha) ?? null});
   const manifest = loadToolsManifest({root: repoRoot});
   const {checks} = wholeRepoInventory(manifest);
   const queueMap = queueRunMap(checks, {readWorkflow: (file) =>

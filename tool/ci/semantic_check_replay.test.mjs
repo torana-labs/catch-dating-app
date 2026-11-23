@@ -144,13 +144,15 @@ test("summarize groups consecutive failures into incidents and counts the merges
     {sha: "c1", subject: "s", id: "y", present: false},
     record("c2", "y", [0]),
   ];
-  const [x, y] = summarize(records, {order});
+  const time = {c3: 3600, c5: 3600 * 4.5};
+  const [x, y] = summarize(records, {order, timeOf: (sha) => time[sha] ?? null});
   assert.equal(x.id, "x");
   assert.deepEqual([x.commits, x.pass, x.fail, x.flaky, x.setup], [6, 2, 3, 1, 0]);
   assert.equal(x.passRate, 2 / 6);
   assert.deepEqual(x.flakes, [{sha: "c2", statuses: [1, 0]}]);
   assert.deepEqual(x.incidents.map((incident) => [incident.introducedAt, incident.commits, incident.fixedAt,
     incident.selectedAtIntroduction, incident.blockedMerges]), [["c3", 2, "c5", true, 1], ["c6", 1, null, false, 0]]);
+  assert.deepEqual(x.incidents.map((incident) => incident.redHours), [3.5, null]);
   assert.equal(x.blockedMerges, 1);
   assert.deepEqual([y.commits, y.absent, y.pass], [1, 1, 1]);
 });
