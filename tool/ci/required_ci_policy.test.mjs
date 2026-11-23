@@ -205,6 +205,12 @@ test("the semantic gates block every merge-queue entry, the nightly and an unpro
   assert.match(job, /continue-on-error: \$\{\{ github\.event_name == 'pull_request' \}\}/u);
   assert.match(job, /node tool\/ci\/semantic_gates\.mjs run --candidates --timings build\/ci\/semantic-timings\.json/u);
   assert.match(job, /fetch-depth: 0/u);
+  // Every setup a gate may declare (tool/lib/semantic_gates.mjs admits no
+  // Flutter or browser): Node, root and Functions dependencies, and ripgrep.
+  for (const step of [/- run: npm ci\n/u, /- run: npm --prefix functions ci --ignore-scripts\n/u,
+    /uses: \.\/\.github\/actions\/install-ripgrep\n/u, /uses: \.\/\.github\/actions\/generate-contracts\n/u]) {
+    assert.match(job, step);
+  }
 
   const withGate = (result, env) => {
     const needs = successfulNeeds();

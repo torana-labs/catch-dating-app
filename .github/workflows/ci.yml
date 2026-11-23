@@ -820,6 +820,8 @@ jobs:
             functions/package-lock.json
       - run: npm ci
       - run: npm --prefix functions ci --ignore-scripts
+      # audit:widget-cleanup scans with rg; the other gates need only Node.
+      - uses: ./.github/actions/install-ripgrep
       # Uncached, like source preflight: only validation-lane workflows may
       # restore cached contracts (tool/ci/generate_contracts_cache.test.mjs).
       - uses: ./.github/actions/generate-contracts
