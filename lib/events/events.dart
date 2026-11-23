@@ -39,7 +39,6 @@ export 'shared/event_check_in_celebration_screen.dart';
 export 'shared/event_joined_celebration_screen.dart';
 
 // ── Presentation — view models & controllers ────────────────────────────────
-export 'presentation/event_booking_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/event_detail_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/event_detail_view_model.dart'; // public-api: read-model seam for route composition
 export 'presentation/event_map_view_model.dart'; // public-api: read-model seam for route composition

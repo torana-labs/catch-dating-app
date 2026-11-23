@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/bookings/actions/event_booking_controller.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
