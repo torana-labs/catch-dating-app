@@ -8,14 +8,12 @@ import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {resolveUri} from "./dart_moves.mjs";
 
-export const branchLibrary = "lib/routing/go_router.dart";
-export const branchFlag = "isHostApp";
-
-// The apps the classifier walks from, and the value the router's flag takes
-// in each.
+// The apps the classifier walks from. Each app's router is its own library
+// (lib/routing/host_router.dart, lib/routing/consumer_router.dart), so an app
+// reaches only its own screens through ordinary imports.
 export const appWalks = [
-  {app: "host", root: "apps/host/lib/", flag: "true"},
-  {app: "consumer", root: "apps/consumer/lib/", flag: "false"},
+  {app: "host", root: "apps/host/lib/"},
+  {app: "consumer", root: "apps/consumer/lib/"},
 ];
 
 const generatedPart = /\.(?:g|freezed)\.dart$/u;
@@ -32,7 +30,7 @@ export function isRepoPath(value) {
 // Runs the analyzer over the repository and returns the raw graph. The Dart
 // packages must be fetched (bash tool/git/bootstrap_worktree.sh --target
 // flutter).
-export function runSymbolGraph(root, {branches = [`${branchLibrary}:${branchFlag}`]} = {}) {
+export function runSymbolGraph(root) {
   const out = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "screen-move-")), "graph.json");
   execFileSync("dart", [
     "run",
@@ -41,7 +39,6 @@ export function runSymbolGraph(root, {branches = [`${branchLibrary}:${branchFlag
     root,
     "--out",
     out,
-    ...branches.flatMap((branch) => ["--branch", branch]),
   ], {cwd: root, stdio: ["ignore", "ignore", "inherit"], maxBuffer: 1 << 28});
   return JSON.parse(fs.readFileSync(out, "utf8"));
 }
@@ -91,7 +88,6 @@ export function createGraph(raw, packages) {
   }
   return {
     files,
-    branches: raw.branches ?? {},
     parts,
     importers,
     exporters,
@@ -170,72 +166,32 @@ function textualLibraryOf(file, read) {
 }
 
 // The libraries an app reaches from its own lib/ folder. Imports are followed
-// through the names they use. The branch library (the router) is walked
-// declaration by declaration, following only references that run when its
-// flag takes this app's value.
-export function reachableLibraries(graph, {root, flag}) {
+// through the names they use.
+export function reachableLibraries(graph, {root}) {
   const reached = new Set();
-  const reachedDeclarations = new Set();
   const libraries = [];
-  const declarations = [];
-  const branch = graph.branches[branchLibrary];
-  const visitLibrary = (library, names = []) => {
-    if (library === branchLibrary && branch != null) {
-      reached.add(library);
-      for (const name of names) visitDeclaration(name);
-      return;
-    }
+  const visitLibrary = (library) => {
     if (reached.has(library)) return;
     reached.add(library);
     libraries.push(library);
   };
-  const visitDeclaration = (name) => {
-    if (reachedDeclarations.has(name)) return;
-    reachedDeclarations.add(name);
-    declarations.push(name);
-  };
   for (const [file, entry] of graph.files) {
     if (file.startsWith(root) && entry.library === file) visitLibrary(file);
   }
-  while (libraries.length > 0 || declarations.length > 0) {
-    if (declarations.length > 0) {
-      const name = declarations.pop();
-      for (const reference of branch.declarations[name] ?? []) {
-        if (!reference.when.includes(flag)) continue;
-        const split = reference.target.lastIndexOf("#");
-        const library = reference.target.slice(0, split);
-        const target = reference.target.slice(split + 1);
-        if (library === "") visitDeclaration(target);
-        else if (isRepoPath(library)) visitLibrary(library, [target]);
-      }
-      continue;
-    }
+  while (libraries.length > 0) {
     const library = libraries.pop();
     const unit = [library, ...(graph.parts.get(library) ?? [])];
     for (const file of unit) {
       for (const directive of graph.files.get(file)?.directives ?? []) {
         if (directive.kind !== "import") continue;
-        const usesByLibrary = mergedUses(directive);
-        for (const used of usedLibraries(directive)) {
-          visitLibrary(used, usesByLibrary.get(used) ?? []);
-        }
+        for (const used of usedLibraries(directive)) visitLibrary(used);
       }
     }
   }
-  return {libraries: reached, declarations: reachedDeclarations};
+  return {libraries: reached};
 }
 
-function mergedUses(directive) {
-  const merged = new Map();
-  for (const uses of [directive.uses, ...directive.configurations.map((c) => c.uses)]) {
-    for (const [library, names] of Object.entries(uses ?? {})) {
-      merged.set(library, [...new Set([...(merged.get(library) ?? []), ...names])]);
-    }
-  }
-  return merged;
-}
-
-// The libraries a set of seed libraries reaches, ignoring the router's flag.
+// The libraries a set of seed libraries reaches.
 export function closureOf(graph, seeds) {
   const reached = new Set();
   const queue = [...seeds].filter((seed) => graph.files.has(seed));

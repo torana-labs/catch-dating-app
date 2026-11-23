@@ -77,10 +77,10 @@ function fixtureRepo(files) {
 // A stand-in for dart_symbol_imports.dart: directives by their text, each
 // import using its own target unless `uses` names the declaring libraries
 // (a barrel).
-function fixtureGraph(root, uses = {}, branches = {}) {
+function fixtureGraph(root, uses = {}) {
   const files = trackedFiles(root);
   const packages = packageRoots(root, files);
-  const graph = {version: 1, files: {}, branches};
+  const graph = {version: 1, files: {}};
   for (const file of files.filter((candidate) => candidate.endsWith(".dart"))) {
     const source = fs.readFileSync(path.join(root, file), "utf8");
     const partOf = /^part of '([^']+)';/mu.exec(source);
@@ -111,8 +111,8 @@ function fixtureGraph(root, uses = {}, branches = {}) {
   return {graph: createGraph(graph, packages), packages, files};
 }
 
-function planFor(root, group, {uses, branches} = {}) {
-  const {graph, packages, files} = fixtureGraph(root, uses, branches);
+function planFor(root, group, {uses} = {}) {
+  const {graph, packages, files} = fixtureGraph(root, uses);
   const map = loadContextMap(fs.readFileSync(path.join(root, "tool/architecture/context_map.json"), "utf8"));
   return {plan: buildGroupPlan({root, group, graph, files, packages, map}), graph, packages, files, map};
 }
@@ -588,7 +588,7 @@ test("--imports-only replays logged moves onto another branch, including files i
   assert.deepEqual(replayEntries({root, since: "main-after-move"}), []);
 });
 
-test("--classify walks each app from its own code and the router by its flag", () => {
+test("--classify walks each app from its own code through its own router", () => {
   const root = fixtureRepo({
     "tool/architecture/context_map.json": mapSource([
       {path: "lib/hosts/", layer: "app"},
@@ -596,27 +596,20 @@ test("--classify walks each app from its own code and the router by its flag", (
       {path: "lib/events/", layer: "app"},
       {path: "lib/home/", layer: "app"},
     ]),
-    "lib/routing/go_router.dart": "import 'package:catch_dating_app/hosts/today/today_screen.dart';\nimport 'package:catch_dating_app/home/home_screen.dart';\nimport 'package:catch_dating_app/events/event_screen.dart';\n",
-    "lib/routing/router.dart": "import 'package:catch_dating_app/routing/go_router.dart';\n",
+    "apps/host/lib/main.dart": "import 'package:catch_dating_app/routing/host_router.dart';\n\nvoid main() => hostRouter;\n",
+    "apps/consumer/lib/main.dart": "import 'package:catch_dating_app/routing/consumer_router.dart';\n\nvoid main() => consumerRouter;\n",
+    "lib/routing/host_router.dart": "import 'package:catch_dating_app/hosts/today/today_screen.dart';\nimport 'package:catch_dating_app/events/event_screen.dart';\n",
+    "lib/routing/consumer_router.dart": "import 'package:catch_dating_app/home/home_screen.dart';\nimport 'package:catch_dating_app/events/event_screen.dart';\n",
     "lib/hosts/today/today_screen.dart": "class TodayScreen {}\n",
     "lib/home/home_screen.dart": "class HomeScreen {}\n",
     "lib/events/event_screen.dart": "class EventScreen {}\n",
     "lib/events/orphan.dart": "class Orphan {}\n",
   });
-  const branches = {"lib/routing/go_router.dart": {flag: "isHostApp", declarations: {
-    hostRouter: [{target: "#build", when: ["false", "true"]}],
-    consumerRouter: [{target: "#build", when: ["false", "true"]}],
-    build: [
-      {target: "lib/hosts/today/today_screen.dart#TodayScreen", when: ["true"]},
-      {target: "lib/home/home_screen.dart#HomeScreen", when: ["false"]},
-      {target: "lib/events/event_screen.dart#EventScreen", when: ["false", "true"]},
-    ],
-  }}};
   const uses = {
-    "apps/host/lib/main.dart": {"package:catch_dating_app/routing/router.dart": {"lib/routing/go_router.dart": ["hostRouter"]}},
-    "apps/consumer/lib/main.dart": {"package:catch_dating_app/routing/router.dart": {"lib/routing/go_router.dart": ["consumerRouter"]}},
+    "apps/host/lib/main.dart": {"package:catch_dating_app/routing/host_router.dart": {"lib/routing/host_router.dart": ["hostRouter"]}},
+    "apps/consumer/lib/main.dart": {"package:catch_dating_app/routing/consumer_router.dart": {"lib/routing/consumer_router.dart": ["consumerRouter"]}},
   };
-  const {graph, files} = fixtureGraph(root, uses, branches);
+  const {graph, files} = fixtureGraph(root, uses);
   const map = loadContextMap(fs.readFileSync(path.join(root, "tool/architecture/context_map.json"), "utf8"));
   const result = classify({graph, files, map});
   const labels = Object.fromEntries(result.files.map((row) => [row.path, row.label]));
