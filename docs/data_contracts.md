@@ -4684,34 +4684,8 @@ id for an organizer), holding `uid`, `scope`, `organizerId` and the sender's
 `preference` summary, the same summary a withdrawal returns. The
 `listParticipantMessagingPreferences` callable it replaced is retired (Nov
 2026).
-Every writer of the two preference collections writes the row in its own
-transaction (the four triggers that did so retired with issue #2460); the
-guest may get and list only their own rows, and only the server writes them.
-
-Contact permissions (issue #2460) are the single answer to whether a sender
-may message a person: `users/{uid}/contactPermissions/{senderKey}`, where
-`senderKey` is `catch` or `organizer_{organizerId}`, holds `senderKind`,
-`senderId`, `grants` keyed `channel:purpose` (`whatsapp:marketing`,
-`whatsapp:eventOperations`, `whatsapp:followerUpdates`, `sms:marketing`), each
-`{status, endpointE164, receiptId, termsVersion, source, updatedAt}`, and
-`granted`, the sorted keys that are effective now. Each answer is the status
-today's send gates compute for that purpose, evaluated at the number the grant
-was given for: an opt-in covers only its `endpointE164`, a withdrawal covers
-every number, and a complete opt-in the gate does not honour yet stays in
-`grants` without entering `granted`. No document, or no key, means no
-consent. `contactPermissionReceipts/{receiptId}` is the one append-only receipt
-log: each Catch or organizer receipt's copy with the same id plus `senderKind`
-and `senderId`. Until the readers move, the old preference and receipt
-collections stay the source of truth and every consent writer (registration,
-follow by phone, form submission and promotion, inbound STOP, withdrawal)
-writes the permission document, the receipt copy and the guest row in the same
-transaction; account deletion deletes all three as it deletes the old
-receipts. The guest gets and lists their own permission documents by path; no
-client reads receipts and no organiser reads either collection directly.
-Organiser audiences use the server-only collection-group query on `senderId`
-and `granted`. The `contact-permissions` migration in
-`tool/data/migrate_firestore_consolidation.mjs` converts data recorded before
-the writers. Organizer
+Triggers on both preference and both receipt collections keep it current; the
+guest may get and list only their own rows, and nobody writes them. Organizer
 names come from the public organizer lookup, so a rename never rewrites rows.
 Confirmed opt-in requires matching grant evidence. The exact authenticated
 `/settings/whatsapp` route remains available before profile setup.
