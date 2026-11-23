@@ -4,7 +4,9 @@
 // runs under load: the :30 Deploy backend schedule started 5-7 hours late on 17
 // and 18 Nov 2026, and a nightly that never ran looked the same as a quiet one.
 //
-// Each hour this looks at the latest daily occurrence of each watched cron whose
+// Each hour, and after each CI run on main (the scheduler it watches can stall
+// for hours, so a main push wakes it too), this looks at the latest daily
+// occurrence of each watched cron whose
 // grace period (WATCHDOG_GRACE_HOURS, default 3) has passed. If no run of that
 // workflow started since the occurrence, the run is missing:
 // - a dev-only run (the nightly CI, the dev half of Deploy backend) is
@@ -16,7 +18,9 @@
 // as green (C5), on the "Main CI is red" issue, since it is about CI health.
 // Every action leaves a marker comment on its issue, and an occurrence that
 // already has a marker is never acted on again, so each expected run is
-// dispatched or reported at most once.
+// dispatched or reported at most once. An occurrence from before the
+// workflow file reached main is not owed (no commit on main touched the file
+// by then), so a newly added workflow is never reported for the day before.
 //
 // Usage (Scheduled run watchdog workflow): GH_TOKEN and GITHUB_REPOSITORY set.
 // --dry-run prints what it would do and writes nothing. --now <ISO time>
@@ -142,11 +146,15 @@ function command(repository, workflow, inputs) {
  * @param {Record<string, Array<{created_at:string, event:string}>>} input.runs
  *   Each target's recent runs on main, by target id.
  * @param {Set<string>} input.records Keys of occurrences already acted on.
+ * @param {Record<string, boolean>} [input.onMainBy] Whether each target's
+ *   workflow file was on main by its expected occurrence, by target id. false
+ *   means the occurrence predates the workflow and is not owed; a target
+ *   without an entry is owed.
  * @param {readonly object[]} [input.targets]
  * @returns {{checks: object[], dispatches: object[], reports: Record<string, string>}}
  *   `reports` maps an issue title to the comment to post there.
  */
-export function decide({now, graceHours, repository, runs, records, targets = TARGETS}) {
+export function decide({now, graceHours, repository, runs, records, onMainBy = {}, targets = TARGETS}) {
   assert.ok(Number.isFinite(graceHours) && graceHours > 0 && graceHours < 24, "graceHours must be between 0 and 24");
   const checks = [];
   const dispatches = [];
@@ -158,6 +166,10 @@ export function decide({now, graceHours, repository, runs, records, targets = TA
     // runs on main are not the nightly.
     const started = (runs[target.id] ?? []).some((run) => ["schedule", "workflow_dispatch"].includes(run.event) &&
       Date.parse(run.created_at) >= expected);
+    if (onMainBy[target.id] === false) {
+      checks.push({target: target.id, expected: expectedIso, status: "not_scheduled_yet"});
+      continue;
+    }
     const key = `${target.id}@${expectedIso}`;
     const status = started ? "started" : target.nightly ? "unknown" : "missing";
     if (started) {
@@ -238,7 +250,13 @@ function main() {
   const graceHours = Number(process.env.WATCHDOG_GRACE_HOURS || DEFAULT_GRACE_HOURS);
   const from = new Date(args.now - 2 * DAY).toISOString().slice(0, 10);
   const runs = {};
+  const onMainBy = {};
   for (const target of TARGETS) {
+    // Any commit on main touching the file by the expected occurrence means it
+    // existed then; none means the workflow was added later.
+    const until = new Date(expectedRun(target.cron, args.now, graceHours)).toISOString();
+    onMainBy[target.id] = JSON.parse(gh(["api",
+      `repos/${repository}/commits?sha=main&path=.github/workflows/${target.workflow}&until=${until}&per_page=1`])).length > 0;
     runs[target.id] = target.id === args.assumeMissing ? [] : JSON.parse(gh(["api",
       `repos/${repository}/actions/workflows/${target.workflow}/runs?branch=main&created=%3E%3D${from}&per_page=100`]))
       .workflow_runs ?? [];
@@ -252,7 +270,7 @@ function main() {
     .filter((issue) => titles.has(issue.title) && !issue.pull_request);
   const texts = issues.flatMap((issue) => [issue.body, ...JSON.parse(gh(["api", "--paginate", "--slurp",
     `repos/${repository}/issues/${issue.number}/comments?per_page=100`])).flat().map((comment) => comment.body)]);
-  const decision = decide({now: args.now, graceHours, repository, runs, records: recordsFrom(texts)});
+  const decision = decide({now: args.now, graceHours, repository, runs, records: recordsFrom(texts), onMainBy});
   for (const check of decision.checks) {
     console.log(`${check.target}: expected ${check.expected}, ${check.status}` +
       (check.action ? ` (${check.action})` : check.actions ? ` (${check.actions.join(", ")})` : ""));

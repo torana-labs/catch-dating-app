@@ -170,3 +170,36 @@ test("a missed proof-reuse daily roll-up is reported once, never dispatched", ()
     records: new Set(), targets: only("proof-reuse-daily")});
   assert.deepEqual(ran.reports, {});
 });
+
+test("an occurrence from before the workflow reached main is not owed", () => {
+  // test-read-map.yml reached main about 20:41 UTC on 22 Nov; the 01:09 check on
+  // 23 Nov owed 22 Nov 03:41, which predates it.
+  const now = at("2026-11-23T01:09:00Z");
+  const before = decide({now, graceHours: 3, repository, runs: {"test-read-map": []}, records: new Set(),
+    onMainBy: {"test-read-map": false}, targets: only("test-read-map")});
+  assert.deepEqual(before.checks, [{target: "test-read-map", expected: "2026-11-22T03:41:00.000Z", status: "not_scheduled_yet"}]);
+  assert.deepEqual(before.reports, {});
+  assert.deepEqual(before.dispatches, []);
+  // The first slot after it reached main is owed as usual.
+  const after = decide({now: at("2026-11-23T07:00:00Z"), graceHours: 3, repository, runs: {"test-read-map": []},
+    records: new Set(), onMainBy: {"test-read-map": true}, targets: only("test-read-map")});
+  assert.equal(after.checks[0].status, "missing");
+  assert.match(after.reports[MISSED_TITLE], /no run started between 2026-11-23T03:41:00\.000Z/u);
+  // No entry means owed: a dispatch-backed target is never skipped by omission.
+  const unknown = decide({now: at("2026-11-23T00:30:00Z"), graceHours: 3, repository, runs: {"deploy-backend": []},
+    records: new Set(), onMainBy: {}, targets: only("deploy-backend")});
+  assert.equal(unknown.dispatches.length, 1);
+});
+
+test("the watchdog also wakes after main CI, one check at a time, with unchanged permissions", () => {
+  const workflow = fs.readFileSync(new URL("../../.github/workflows/cron-watchdog.yml", import.meta.url), "utf8");
+  assert.match(workflow, /schedule:\n\s+# [^\n]*\n\s+- cron: "47 \* \* \* \*"/u);
+  assert.match(workflow, /workflow_run:\n\s+workflows: \[CI\]\n\s+types: \[completed\]\n\s+branches: \[main\]/u);
+  assert.match(workflow, /if: github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.head_branch == 'main'/u);
+  assert.match(workflow, /concurrency:\n\s+group: cron-watchdog\n\s+cancel-in-progress: false/u);
+  assert.match(workflow, /^permissions: \{\}$/mu);
+  const granted = [...workflow.matchAll(/^ {6}(contents|actions|issues|[a-z-]+): (read|write)$/gmu)].map((match) => `${match[1]}:${match[2]}`);
+  assert.deepEqual(granted, ["contents:read", "actions:write", "issues:write"]);
+  // A workflow_run wake is never a dry run and uses the default grace.
+  assert.match(workflow, /DRY_RUN: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.dry_run \}\}/u);
+});
