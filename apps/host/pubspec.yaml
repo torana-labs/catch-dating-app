@@ -39,6 +39,8 @@ dependencies:
 dev_dependencies:
   archive: ^4.6.0
   build_runner: ^2.11.1
+  catch_test_support:
+    path: ../../packages/catch_test_support
   cloud_firestore: ^6.10.2
   cloud_functions: ^6.5.1
   connectivity_plus: ^7.1.1

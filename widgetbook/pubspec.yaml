@@ -28,6 +28,10 @@ dependencies:
     path: ../apps/consumer
   catch_host_app:
     path: ../apps/host
+  # Design fixtures and the pump and golden helpers its tests share with the
+  # root suite.
+  catch_test_support:
+    path: ../packages/catch_test_support
   firebase_auth: ^6.7.1
   firebase_messaging: ^16.7.1
   # One Riverpod minor; see the root pubspec.
