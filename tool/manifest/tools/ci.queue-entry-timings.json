@@ -7,7 +7,7 @@
   "checkSafety": "local-readonly",
   "status": "active",
   "role": "finder",
-  "description": "Report only: fetches merge_group CI runs, their jobs and each queued PR's timeline through gh api (fetch), then reports per entry the wait before its run existed, the critical-path job, runner waits split macOS and Linux, outcomes, removals with their cause, and queue rebuilds where an entry was regrouped onto a new base (report, offline over the saved file).",
+  "description": "Report only: fetches merge_group CI runs, their jobs and each queued PR's timeline through gh api (fetch), then reports per entry the wait before its run existed, the critical-path job, runner waits split macOS and Linux, outcomes, removals with their cause, and queue rebuilds where an entry was regrouped onto a new base (report, offline over the saved file). With --proof-reuse <dir> it also reads the proof-reuse shadow's daily roll-ups (proof-reuse-daily/1): runner time saved against the potential, unchecked numbers, cancelled runs and the critical-path time hits would have saved.",
   "ciRequirements": {
     "repositoryView": "full",
     "setup": [
@@ -15,6 +15,8 @@
     ]
   },
   "impactPaths": [
+    "tool/ci/fixtures/proof-reuse-daily/proof-reuse-daily-2026-11-22.json",
+    "tool/ci/proof_reuse_shadow.mjs",
     "tool/ci/queue_entry_timings.test.mjs"
   ],
   "checks": [

@@ -651,7 +651,15 @@ decision, 22 Nov 2026; evidence in
 - Every gate must stay under 10 s at p95.
 - `node tool/ci/semantic_gates.mjs budget --timings-dir <dir>` reads the newest nightly timings and lists any gate over budget, with the fix: speed it up, or drop its `queueGate` so affected-tools selects it only when its `impactPaths` change.
 - It is report-only: a slow check is not a broken `main`, so it posts a "Semantic gate over budget" issue instead of failing the nightly.
-- The CI job that runs the gate in the merge queue, and the nightly budget report, are wired separately and need the owner's confirmation before they gate.
+- The nightly budget report is the `semantic-budget` job of `Main CI alert`: it keeps that one issue in step (opened, its body updated, closed once every gate is back within budget).
+
+**Where it runs and gates.** The `Semantic checks` job in `ci.yml` runs the gates (with `--candidates`) on:
+- every `merge_group` run. Required CI needs it, so a failed gate fails Required CI. Its "Require every selected lane" step also demands `success` in a merge-queue run, the nightly and a `main` push with no queue proof, so a skipped job cannot pass there either;
+- every non-draft pull request. It continues on error there, so an author sees a red job before queueing, but Required CI is not blocked;
+- the nightly, which provides the budget timings;
+- a `main` push with no merge-queue proof (a bypass or a stale proof), where it feeds Main CI alert like any other lane.
+
+The job takes no plan selection, and uploads `semantic-timings-<run>-<attempt>` for the budget report.
 
 ### Selected Check Contracts
 
@@ -4298,6 +4306,23 @@ only: the job summary lists goldens beyond the 0.30% hosted-macOS raster
 tolerance (0.60% for the Widgetbook corpus) or without a baseline, and their
 images are retained as artifacts, while the comparator's known-good/known-bad
 tests keep that tolerance honest.
+The Storybook visual reports of the marketing and admin websites
+(`react-surface-validation.yml`, "Report marketing and shared web UI visual
+changes" and "Report admin visual changes") run only in the CI nightly (owner
+decision, 23 Nov 2026): ci.yml sets their `visual_report` input on a scheduled
+run and on the Scheduled run watchdog's `full` dispatch that replaces a missed
+one. The marketing report was the merge queue's last job in
+every run measured, a median 8.1 minutes after the next lane, and it only
+reports. They no longer run in the merge queue, on main pushes or in the
+website workflows' push runs, so a visual change is attributed to the
+nightly's commit range, not to a single merge; the nightly keeps the job
+summary and the `marketing-visual-diagnostics-<run>` and
+`admin-visual-diagnostics-<run>` artifacts. The Storybook accessibility gates,
+which render every story and fail on a story that cannot render, still run on
+pull requests and in the queue, and so do the Storybook builds, which Tools
+reuses there. Baseline capture is unchanged: dispatch the Marketing Website or
+Admin Website workflow with `update_visual_baselines`. `npm run check:admin --
+--nightly` runs the admin lane as the nightly does.
 
 Use `bash tool/test_app_shell_integration.sh <device> smoke` for the bounded
 native lane and `bash tool/test_app_shell_integration.sh <device> all` for every

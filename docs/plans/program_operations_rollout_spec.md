@@ -188,7 +188,7 @@ receipts, since either can resend an already contacted guest.
 | Program logistics editors (pickup points, hotels) | **in review** (#474) — workspace Logistics section |
 | Entitlements (`organizerEntitlements`, SKU catalog, limits enforcement) | **in review** — rebased onto current main and re-verified (#455) |
 | Attendance report / export per function | **built** (#460) — `/host/work/:programId/attendance` + CSV export |
-| Retention / anonymization on archive | **built in source** — dedicated archive/unarchive callables, 14-day grace, deleted-account and organizer/revision fences, resumable anonymization journal and scheduled sweep |
+| Retention / anonymization on archive | **built in source** — dedicated archive/unarchive callables, 60-day grace, deleted-account and organizer/revision fences, resumable anonymization journal and scheduled sweep |
 
 ---
 

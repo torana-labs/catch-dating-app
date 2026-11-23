@@ -21,8 +21,11 @@ name: Main CI alert
 # drifted", which dispatches the drifted suite's baseline workflow at that
 # commit. Those workflows only upload baselines for a person to commit.
 # It reads only main's own runs and checks out main's code.
-# Logic and tests: tool/ci/main_red_alert.mjs, tool/ci/golden_policy.mjs and
-# tool/ci/selection_miss_report.mjs. Operator guide:
+# After each nightly, the semantic-budget job keeps one report-only "Semantic
+# gate over budget" issue in step with the merge-queue gates' nightly p95
+# (release engineer, 23 Nov 2026).
+# Logic and tests: tool/ci/main_red_alert.mjs, tool/ci/golden_policy.mjs,
+# tool/ci/selection_miss_report.mjs and tool/ci/semantic_gates.mjs. Operator guide:
 # docs/release_operations.md, "Main CI alert" and "Test selection miss report".
 
 on:
@@ -122,3 +125,34 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.event.workflow_run.id }}
         run: node tool/ci/selection_miss_report.mjs
+
+  semantic-budget:
+    name: Report semantic gates over budget
+    # After every nightly, whatever its result: the gates' p95 over the last 7
+    # nightlies, report-only (release engineer, 23 Nov 2026). A slow gate is not
+    # a broken main, so this never touches the "Main CI is red" issue.
+    if: ${{ github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.event == 'schedule' && contains(fromJSON('["success", "failure", "timed_out"]'), github.event.workflow_run.conclusion) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            tool/lib
+            tool/manifest
+            .github/actions/load-toolchain
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Open, update or close the semantic gate budget issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/ci/semantic_gates.mjs budget --github

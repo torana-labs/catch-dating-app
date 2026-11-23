@@ -7,16 +7,24 @@
 //   node tool/ci/queue_entry_timings.mjs fetch --since <ISO date> --out <file>
 //     [--repo owner/name] [--workflow ci.yml] [--limit <runs>]
 //   node tool/ci/queue_entry_timings.mjs report --data <file> [--split <ISO time>] [--json]
+//     [--proof-reuse <dir>]
 //
 // `fetch` saves runs, their jobs (filter=all) and each queued PR's timeline
 // (added_to_merge_queue, removed_from_merge_queue, merged). `report` reads that
 // file, so the analysis is repeatable and testable offline. A dataset without
 // timelines still reports everything except the enqueue wait and removal
 // reasons, which it marks as not measured.
+//
+// `--proof-reuse <dir>` adds the proof-reuse shadow's daily roll-ups
+// (proof-reuse-daily-<date>.json, schema proof-reuse-daily/1, written by
+// tool/ci/proof_reuse_report.mjs): per day the runner time hits saved against
+// the potential, the unchecked numbers, cancelled runs, and the critical-path
+// time hits would have saved in the runs the dataset has jobs for.
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {LANE_JOBS} from "./proof_reuse_shadow.mjs";
 
 const seconds = (from, to) => (from && to ? Math.round((Date.parse(to) - Date.parse(from)) / 1000) : null);
 
@@ -189,7 +197,7 @@ function summarizePeriod(entries) {
 }
 
 /** The report: per-run entries, periods before and after `split`, and every removal or cancellation. */
-export function report(dataset, {split = null} = {}) {
+export function report(dataset, {split = null, proofReuse = null} = {}) {
   const byPr = new Map();
   for (const run of [...dataset.runs].sort((left, right) => Date.parse(left.created_at) - Date.parse(right.created_at))) {
     const pr = prNumberOf(run.head_branch);
@@ -219,12 +227,110 @@ export function report(dataset, {split = null} = {}) {
       entry.cancelledJobs.length).map((entry) => ({runId: entry.runId, pr: entry.pr, createdAt: entry.createdAt,
       outcome: entry.outcome, failedJobs: entry.failedJobs, cancelledJobs: entry.cancelledJobs, removal: entry.removal})),
     entries,
+    ...(proofReuse ? {proofReuse: proofReuseSummary(proofReuse, dataset.jobs ?? {})} : {}),
   };
+}
+
+export const PROOF_REUSE_SCHEMA = "proof-reuse-daily/1";
+const DAILY_FILE = /^proof-reuse-daily-(\d{4}-\d{2}-\d{2})\.json$/u;
+
+/**
+ * Reads every proof-reuse-daily-<date>.json in `dir`, oldest first. A file
+ * with another schema, or one whose name and date disagree, is refused.
+ */
+export function loadProofReuseDays(dir, {read = (file) => fs.readFileSync(file, "utf8"), list = fs.readdirSync} = {}) {
+  return list(dir).filter((name) => DAILY_FILE.test(name)).sort().map((name) => {
+    const day = JSON.parse(read(path.join(dir, name)));
+    if (day.schema !== PROOF_REUSE_SCHEMA) throw new Error(`${name}: schema ${day.schema ?? "missing"}, expected ${PROOF_REUSE_SCHEMA}.`);
+    if (day.date !== DAILY_FILE.exec(name)[1]) throw new Error(`${name}: date ${day.date} does not match its name.`);
+    return day;
+  });
+}
+
+const belongsTo = (job) => (entry) => entry.name === job || String(entry.name).startsWith(`${job} / `);
+
+/**
+ * Seconds the run's critical path would have been shorter had the given
+ * ci.yml jobs (and their called jobs) been reused: the last gating finish
+ * minus the last finish of what remains. A reused lane that was not last to
+ * finish saves nothing. Jobs that waited on a reused lane keep their real
+ * times, so this is a lower bound. null when the run has no gating job.
+ */
+export function criticalPathSaving(jobs, reusedJobs) {
+  const gating = (jobs ?? []).filter((job) => job.name !== "Required CI" && job.completed_at && job.started_at &&
+    job.conclusion !== "skipped");
+  if (!gating.length || !reusedJobs.length) return gating.length ? 0 : null;
+  const last = (list) => Math.max(...list.map((job) => Date.parse(job.completed_at)));
+  const remaining = gating.filter((job) => !reusedJobs.some((reused) => belongsTo(reused)(job)));
+  const start = Math.min(...gating.map((job) => Date.parse(job.started_at)));
+  return Math.max(0, Math.round((last(gating) - (remaining.length ? last(remaining) : start)) / 1000));
+}
+
+/**
+ * The proof-reuse section: one row per daily file, checked against its own
+ * counts, with the critical-path saving of its hits measured against the
+ * dataset's job records. A run+attempt seen in an earlier file is skipped.
+ */
+export function proofReuseSummary(days, jobsByRun = {}) {
+  const seen = new Set();
+  const rows = days.map((day) => {
+    const problems = [];
+    const withoutReport = day.runsWithoutReport ?? [];
+    if (day.runs !== day.runsWithVerdicts + withoutReport.length) {
+      problems.push(`runs ${day.runs} != runsWithVerdicts ${day.runsWithVerdicts} + runsWithoutReport ${withoutReport.length}`);
+    }
+    const cancelledListed = withoutReport.filter((entry) => entry.conclusion === "cancelled").length;
+    if (day.cancelledRuns !== cancelledListed) problems.push(`cancelledRuns ${day.cancelledRuns} != ${cancelledListed} cancelled in runsWithoutReport`);
+    const critical = {checked: {savedSeconds: 0, runs: 0}, unchecked: {savedSeconds: 0, runs: 0}, runsWithHits: 0,
+      notMeasured: 0, duplicates: 0};
+    for (const entry of day.perRun ?? []) {
+      const key = `${entry.run}:${entry.attempt}`;
+      if (seen.has(key)) {
+        critical.duplicates += 1;
+        continue;
+      }
+      seen.add(key);
+      const lanes = Object.entries(entry.lanes ?? {});
+      const hits = (outcome) => lanes.filter(([, lane]) => lane.outcome === outcome).map(([name]) => LANE_JOBS[name] ?? name);
+      const [checked, unchecked] = [hits("hit"), hits("hit_unchecked")];
+      if (!checked.length && !unchecked.length) continue;
+      critical.runsWithHits += 1;
+      const jobs = jobsByRun[entry.run] ?? [];
+      if (!jobs.length) {
+        critical.notMeasured += 1;
+        continue;
+      }
+      for (const [kind, reused] of [["checked", checked], ["unchecked", unchecked]]) {
+        const saved = reused.length ? criticalPathSaving(jobs, reused) : 0;
+        if (saved) {
+          critical[kind].savedSeconds += saved;
+          critical[kind].runs += 1;
+        }
+      }
+    }
+    const totals = day.totals ?? {};
+    return {date: day.date, runs: day.runs, runsWithVerdicts: day.runsWithVerdicts, cancelledRuns: day.cancelledRuns,
+      runsWithoutReport: withoutReport.length, savedSeconds: totals.savedSeconds ?? 0,
+      potentialSavedSeconds: totals.potentialSavedSeconds ?? 0, uncheckedSavedSeconds: totals.uncheckedSavedSeconds ?? 0,
+      misses: totals.misses ?? 0, uncheckedMisses: totals.uncheckedMisses ?? 0, potentialMisses: totals.potentialMisses ?? 0,
+      criticalPath: critical, problems};
+  });
+  const sum = (pick) => rows.reduce((total, row) => total + pick(row), 0);
+  return {days: rows.length, rows, totals: {
+    savedSeconds: sum((row) => row.savedSeconds), potentialSavedSeconds: sum((row) => row.potentialSavedSeconds),
+    uncheckedSavedSeconds: sum((row) => row.uncheckedSavedSeconds), misses: sum((row) => row.misses),
+    uncheckedMisses: sum((row) => row.uncheckedMisses), potentialMisses: sum((row) => row.potentialMisses),
+    cancelledRuns: sum((row) => row.cancelledRuns),
+    criticalPathSavedSeconds: sum((row) => row.criticalPath.checked.savedSeconds),
+    uncheckedCriticalPathSavedSeconds: sum((row) => row.criticalPath.unchecked.savedSeconds),
+  }};
 }
 
 const minutes = (value) => (value === null ? "not measured" : `${(value / 60).toFixed(1)} min`);
 
 export function formatReport(result) {
+  // A proof-reuse-only report (no --data) has no queue entries to describe.
+  if (!result.runs && result.proofReuse) return formatProofReuse(result.proofReuse).join("\n");
   const lines = [`${result.runs} merge_group runs; ${result.runsWithJobs} with job timings.` +
     (result.timelines ? "" : " No PR timelines: enqueue wait and removal reasons are not measured.")];
   for (const [name, period] of Object.entries(result.periods)) {
@@ -254,7 +360,34 @@ export function formatReport(result) {
       (flag.failedJobs.length ? `; failed: ${flag.failedJobs.join(", ")}` : "") +
       (flag.cancelledJobs.length ? `; cancelled: ${flag.cancelledJobs.join(", ")}` : ""));
   }
+  if (result.proofReuse) lines.push("", ...formatProofReuse(result.proofReuse));
   return lines.join("\n");
+}
+
+/** The proof-reuse section. Runner time is summed job runtime; critical path is wall-clock. */
+export function formatProofReuse(summary) {
+  const lines = [`Proof reuse shadow (${summary.days} daily files; runner time is summed job runtime, not wall-clock):`];
+  for (const row of summary.rows) {
+    const critical = row.criticalPath;
+    lines.push(`  ${row.date}: ${row.runs} runs, ${row.runsWithVerdicts} with verdicts, ${row.cancelledRuns} cancelled` +
+      (row.runsWithoutReport > row.cancelledRuns ? `, ${row.runsWithoutReport - row.cancelledRuns} more without a report` : ""));
+    lines.push(`    runner time saved by hits ${minutes(row.savedSeconds)} of ${minutes(row.potentialSavedSeconds)} potential; ` +
+      `misses ${row.misses}, potential misses ${row.potentialMisses}`);
+    lines.push(`    unchecked: runner time ${minutes(row.uncheckedSavedSeconds)}, misses ${row.uncheckedMisses}`);
+    lines.push(`    critical path saved: ${minutes(critical.checked.savedSeconds)} over ${critical.checked.runs} runs` +
+      `, unchecked ${minutes(critical.unchecked.savedSeconds)} over ${critical.unchecked.runs}; ` +
+      `${critical.runsWithHits} runs with hits, ${critical.notMeasured} not in the dataset` +
+      (critical.duplicates ? `, ${critical.duplicates} already counted on an earlier day` : ""));
+    for (const problem of row.problems) lines.push(`    PROBLEM: ${problem}`);
+  }
+  const totals = summary.totals;
+  if (summary.days > 1) {
+    lines.push(`  all days: runner time saved ${minutes(totals.savedSeconds)} of ${minutes(totals.potentialSavedSeconds)} potential, ` +
+      `unchecked ${minutes(totals.uncheckedSavedSeconds)}; critical path saved ${minutes(totals.criticalPathSavedSeconds)}, ` +
+      `unchecked ${minutes(totals.uncheckedCriticalPathSavedSeconds)}; misses ${totals.misses}, unchecked ${totals.uncheckedMisses}, ` +
+      `potential ${totals.potentialMisses}; cancelled runs ${totals.cancelledRuns}`);
+  }
+  return lines;
 }
 
 function gh(endpoint, {paginate = false} = {}) {
@@ -319,7 +452,8 @@ export function writeJson(file, value) {
 
 const usage = "Usage: node tool/ci/queue_entry_timings.mjs fetch --since <ISO date> --out <file> " +
   "[--repo owner/name] [--workflow ci.yml] [--limit <n>] [--fresh]\n" +
-  "       node tool/ci/queue_entry_timings.mjs report --data <file> [--split <ISO time>] [--json]";
+  "       node tool/ci/queue_entry_timings.mjs report (--data <file> | --proof-reuse <dir>) [--data <file>] " +
+  "[--proof-reuse <dir>] [--split <ISO time>] [--json]";
 
 export function parseArgs(argv) {
   const [command, ...rest] = argv;
@@ -333,12 +467,14 @@ export function parseArgs(argv) {
     const value = rest[++index];
     if (value === undefined) throw new Error(`${flag} needs a value.\n${usage}`);
     const key = {"--since": "since", "--out": "out", "--repo": "repo", "--workflow": "workflow", "--data": "data",
-      "--split": "split", "--limit": "limit"}[flag];
+      "--split": "split", "--limit": "limit", "--proof-reuse": "proofReuse"}[flag];
     if (!key) throw new Error(`Unknown option ${flag}.\n${usage}`);
     options[key] = key === "limit" ? Number(value) : value;
   }
   if (command === "fetch" && (!options.since || !options.out)) throw new Error(`fetch needs --since and --out.\n${usage}`);
-  if (command === "report" && !options.data) throw new Error(`report needs --data.\n${usage}`);
+  if (command === "report" && !options.data && !options.proofReuse) {
+    throw new Error(`report needs --data, --proof-reuse or both.\n${usage}`);
+  }
   for (const key of ["since", "split"]) {
     if (options[key] && Number.isNaN(Date.parse(options[key]))) throw new Error(`--${key} must be an ISO date or time.`);
   }
@@ -357,7 +493,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
         console.log(`Wrote ${options.out}: ${dataset.runs.length} runs, ${calls} API calls` +
           (previous ? " (resumed; completed runs and settled timelines reused)." : "."));
       } else {
-        const result = report(JSON.parse(fs.readFileSync(options.data, "utf8")), {split: options.split ?? null});
+        const dataset = options.data ? JSON.parse(fs.readFileSync(options.data, "utf8")) : {runs: [], jobs: {}};
+        const result = report(dataset, {split: options.split ?? null,
+          proofReuse: options.proofReuse ? loadProofReuseDays(options.proofReuse) : null});
         console.log(options.json ? JSON.stringify(result, null, 2) : formatReport(result));
       }
     } catch (error) {

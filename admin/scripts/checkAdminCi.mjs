@@ -82,6 +82,8 @@ export function laneSteps(workflow, {event = "merge_group", surface = "admin"} =
   const context = {
     "inputs.surface": surface,
     "inputs.update_visual_baselines": false,
+    // CI sets visual_report for its nightly only.
+    "inputs.visual_report": event === "schedule",
     "inputs.skip_deployable_build": false,
     "github.event_name": event,
     "github.workflow": "Admin Website",
@@ -126,8 +128,9 @@ Runs CI's Admin lane locally, reading its steps from ${workflowPath}.
 Every step runs even after a failure, so one run shows everything CI would.
 Logs are in build/admin-ci/.
 
-  --pr            What a pull request runs: leaves out the Storybook build and
-                  visual report. The default is what the merge queue runs.
+  --pr            What a pull request runs: leaves out the Storybook build.
+                  The default is what the merge queue runs.
+  --nightly       What the CI nightly runs: adds the visual report.
   --only <text>   Only the steps whose name contains <text>.
   --list          Print the steps and stop.`);
 }
@@ -142,7 +145,7 @@ async function main(argv) {
   const workflow = YAML.parse(fs.readFileSync(path.join(repoRoot, workflowPath), "utf8"));
   const steps = [
     ...otherLaneGates.map((gate) => ({...gate, env: {}})),
-    ...laneSteps(workflow, {event: argv.includes("--pr") ? "pull_request" : "merge_group"}),
+    ...laneSteps(workflow, {event: argv.includes("--pr") ? "pull_request" : argv.includes("--nightly") ? "schedule" : "merge_group"}),
   ].filter((step) => !only || step.name.toLowerCase().includes(only));
   if (argv.includes("--list")) {
     for (const step of steps) console.log(`${step.name}\n    ${step.run.trim()}`);

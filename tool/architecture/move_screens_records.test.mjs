@@ -188,3 +188,13 @@ test("a file that moves into another package with the files it imports needs no 
   assert.equal(errors.length, 1);
   assert.match(errors[0].message, /does not declare catch_dating_app, which 1 moving file\(s\) import/u);
 });
+
+test("the carried list sorts by code unit, as the Dart carried-list test does", () => {
+  const entry = (file) => ({path: file, from: file.replace("lib/pages/", "lib/old/")});
+  const text = formatCarried({description: "d", carried: [
+    entry("lib/pages/event/event_detail_screen_actions.dart"),
+    entry("lib/pages/event/event_detail_screen.dart"),
+  ]});
+  assert.deepEqual(JSON.parse(text).carried.map((e) => e.path),
+    ["lib/pages/event/event_detail_screen.dart", "lib/pages/event/event_detail_screen_actions.dart"]);
+});

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  DEFAULT_LIMIT_MS, DEFAULT_RUNS, gateChecks, overBudget, parseArgs, renderBudgetIssue, renderSummary, runGates,
+  BUDGET_ISSUE_TITLE, DEFAULT_LIMIT_MS, DEFAULT_RUNS, decideBudgetIssue, gateChecks, overBudget, parseArgs, renderBudgetIssue, renderSummary, runGates,
 } from "./semantic_gates.mjs";
 
 const manifest = {tools: [
@@ -65,12 +65,23 @@ test("renderBudgetIssue names each slow check and the fix, or nothing when all a
 
 test("parseArgs validates commands and options", () => {
   assert.deepEqual(parseArgs(["run", "--candidates", "--timings", "t.json"]),
-    {command: "run", candidates: true, json: false, timings: "t.json", timingsDir: null,
+    {command: "run", candidates: true, json: false, github: false, timings: "t.json", timingsDir: null,
       runs: DEFAULT_RUNS, limitMs: DEFAULT_LIMIT_MS, issueBody: null});
   assert.equal(parseArgs(["budget", "--timings-dir", "d", "--limit-ms", "5000"]).limitMs, 5000);
   assert.throws(() => parseArgs(["gate"]), /Usage/u);
-  assert.throws(() => parseArgs(["budget"]), /--timings-dir/u);
+  assert.throws(() => parseArgs(["budget"]), /exactly one of --timings-dir <dir> or --github/u);
+  assert.throws(() => parseArgs(["budget", "--github", "--timings-dir", "d"]), /exactly one/u);
+  assert.equal(parseArgs(["budget", "--github"]).github, true);
   assert.throws(() => parseArgs(["run", "--runs", "0"]), /positive integer/u);
   assert.throws(() => parseArgs(["run", "--timings"]), /needs a value/u);
   assert.throws(() => parseArgs(["run", "--bogus"]), /Unknown option/u);
+});
+
+test("decideBudgetIssue opens, updates only on change, and closes once within budget", () => {
+  const open = {number: 7, body: "old"};
+  assert.deepEqual(decideBudgetIssue({body: "slow", openIssue: null}), {action: "open", title: BUDGET_ISSUE_TITLE, body: "slow"});
+  assert.deepEqual(decideBudgetIssue({body: "slow", openIssue: open}), {action: "update", issue: 7, body: "slow"});
+  assert.deepEqual(decideBudgetIssue({body: "old", openIssue: open}), {action: "none"});
+  assert.deepEqual(decideBudgetIssue({body: null, openIssue: open}), {action: "close", issue: 7});
+  assert.deepEqual(decideBudgetIssue({body: null, openIssue: null}), {action: "none"});
 });
