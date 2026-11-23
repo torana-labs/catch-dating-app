@@ -759,13 +759,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>RecommendCard</code> | <code>lib/explore/presentation/widgets/recommend_card.dart</code> | — | — | Explore recommendation card. |
 | <code>UpdateRequiredBody</code> | <code>lib/force_update/presentation/update_required_screen.dart</code> | — | — | Provider-free full-screen update prompt rendered by [UpdateRequiredScreen]. |
 | <code>HostMembershipBadge</code> | <code>lib/host_memberships/presentation/host_membership_badge.dart</code> | — | — | Member badge for a paid host membership. Paused members keep a neutral badge; expired memberships render nothing. |
-| <code>HostMembershipJoinSheet</code> | <code>lib/host_memberships/presentation/host_membership_plan_sheet.dart</code> | — | — | No class documentation or registry summary. |
-| <code>HostMembershipPlanSheet</code> | <code>lib/host_memberships/presentation/host_membership_plan_sheet.dart</code> | — | — | Plan details and the join flow: choose a billing interval, authorize the mandate on Razorpay's hosted page, then confirm the membership started. |
-| <code>HostMembershipPlansList</code> | <code>lib/host_memberships/presentation/host_membership_plans_section.dart</code> | — | — | Provider-free plan rows, reused by previews and tests. |
-| <code>HostMembershipPlansSection</code> | <code>lib/host_memberships/presentation/host_membership_plans_section.dart</code> | — | — | The organizer page's membership offer. Renders nothing until the organizer has a published plan, so it never adds an empty section. |
 | <code>HostMembershipProfileSection</code> | <code>lib/host_memberships/presentation/host_membership_profile_section.dart</code> | — | — | Own-profile membership badges and the entry to My memberships. Badges are shown to the member only; the public dating profile never lists clubs. |
 | <code>HostMembershipSection</code> | <code>lib/host_memberships/presentation/host_membership_section.dart</code> | — | — | One membership on My memberships: status, billing, tenure, savings and the self-serve actions the server will accept for its status. |
-| <code>HostMembershipUpsellBanner</code> | <code>lib/host_memberships/presentation/host_membership_upsell_banner.dart</code> | — | — | Checkout upsell when a membership would make this event cheaper, free or bookable at all. |
 | <code>MyMembershipsBody</code> | <code>lib/host_memberships/presentation/my_memberships_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>MyMembershipsList</code> | <code>lib/host_memberships/presentation/my_memberships_screen.dart</code> | — | — | Provider-free list for previews and tests. |
 | <code>PhoneImportGuestSection</code> | <code>lib/hosts/audience/phone_import/presentation/widgets/phone_import_guest_section.dart</code> | — | — | One guest's local review fields. Controller commands own all draft changes; text-controller lifetime and focus remain Flutter mechanics here. |
@@ -1146,6 +1141,20 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaperCelebrationDetailsCard</code> | <code>lib/pages/celebration/celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaperCelebrationIcon</code> | <code>lib/pages/celebration/celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaperCelebrationScaffold</code> | <code>lib/pages/celebration/celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>HostMembershipJoinSheet</code> | <code>lib/pages/memberships/host_membership_plan_sheet.dart</code> | — | — | No class documentation or registry summary. |
+| <code>HostMembershipPlanSheet</code> | <code>lib/pages/memberships/host_membership_plan_sheet.dart</code> | — | — | Plan details and the join flow: choose a billing interval, authorize the mandate on Razorpay's hosted page, then confirm the membership started. |
+| <code>HostMembershipPlansList</code> | <code>lib/pages/memberships/host_membership_plans_section.dart</code> | — | — | Provider-free plan rows, reused by previews and tests. |
+| <code>HostMembershipPlansSection</code> | <code>lib/pages/memberships/host_membership_plans_section.dart</code> | — | — | The organizer page's membership offer. Renders nothing until the organizer has a published plan, so it never adds an empty section. |
+| <code>HostMembershipUpsellBanner</code> | <code>lib/pages/memberships/host_membership_upsell_banner.dart</code> | — | — | Checkout upsell when a membership would make this event cheaper, free or bookable at all. |
+| <code>EventReviewsSection</code> | <code>lib/pages/reviews/reviews_section.dart</code> | — | — | Event-scoped reviews with write/edit CTA for attended attendees. |
+| <code>OrganizerReviewsSection</code> | <code>lib/pages/reviews/reviews_section.dart</code> | — | — | Read-only club review aggregate. |
+| <code>ReviewCard</code> | <code>lib/pages/reviews/reviews_section.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ReviewOwnerResponseCard</code> | <code>lib/pages/reviews/reviews_section.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ReviewResponseSheet</code> | <code>lib/pages/reviews/reviews_section.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ReviewsPreviewSection</code> | <code>lib/pages/reviews/reviews_section.dart</code> | — | — | No class documentation or registry summary. |
+| <code>StarRatingPicker</code> | <code>lib/pages/reviews/star_rating_row.dart</code> | — | — | Tappable star row for picking a rating. |
+| <code>StarRatingRow</code> | <code>lib/pages/reviews/star_rating_row.dart</code> | — | — | Read-only star row. [rating] is 1-5 (integers for filled stars). |
+| <code>WriteReviewSheet</code> | <code>lib/pages/reviews/write_review_sheet.dart</code> | — | — | No class documentation or registry summary. |
 | <code>StartupBrandHeader</code> | <code>lib/pages/startup/splash_screen.dart</code> | <code>Header</code> | <code>catch.startup_loading_screen</code> | The shared role-specific brand anchor used by Host startup and auth. |
 | <code>PaymentCheckoutHeader</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentCheckoutSheet</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart</code> | — | — | No class documentation or registry summary. |
@@ -1182,15 +1191,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ReviewsHistoryBody</code> | <code>lib/reviews/presentation/reviews_history_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistoryList</code> | <code>lib/reviews/presentation/reviews_history_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistorySkeleton</code> | <code>lib/reviews/presentation/reviews_history_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventReviewsSection</code> | <code>lib/reviews/shared/reviews_section.dart</code> | — | — | Event-scoped reviews with write/edit CTA for attended attendees. |
-| <code>OrganizerReviewsSection</code> | <code>lib/reviews/shared/reviews_section.dart</code> | — | — | Read-only club review aggregate. |
-| <code>ReviewCard</code> | <code>lib/reviews/shared/reviews_section.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ReviewOwnerResponseCard</code> | <code>lib/reviews/shared/reviews_section.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ReviewResponseSheet</code> | <code>lib/reviews/shared/reviews_section.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ReviewsPreviewSection</code> | <code>lib/reviews/shared/reviews_section.dart</code> | — | — | No class documentation or registry summary. |
-| <code>StarRatingPicker</code> | <code>lib/reviews/shared/star_rating_row.dart</code> | — | — | Tappable star row for picking a rating. |
-| <code>StarRatingRow</code> | <code>lib/reviews/shared/star_rating_row.dart</code> | — | — | Read-only star row. [rating] is 1-5 (integers for filled stars). |
-| <code>WriteReviewSheet</code> | <code>lib/reviews/shared/write_review_sheet.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostNavigationWorkspace</code> | <code>lib/routing/host_navigation_workspace.dart</code> | — | — | Sole adapter from semantic workspaces and router ancestry to physical panes. |
 | <code>HostWorkspaceContentScope</code> | <code>lib/routing/host_navigation_workspace.dart</code> | — | — | Publishes route record keys and editor preview attachments. |
 | <code>HostWorkspaceEditorPane</code> | <code>lib/routing/host_navigation_workspace.dart</code> | — | — | A routed editor contributes its preview to the enclosing strip. It never starts a second horizontal viewport inside an existing navigation pane. |

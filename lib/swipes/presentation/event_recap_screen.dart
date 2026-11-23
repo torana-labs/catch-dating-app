@@ -15,7 +15,7 @@ import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.d
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_follow_controller.dart';
-import 'package:catch_dating_app/reviews/shared/star_rating_row.dart';
+import 'package:catch_dating_app/pages/reviews/star_rating_row.dart';
 import 'package:catch_dating_app/swipes/presentation/event_host_photo_viewer_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_host_photos_section.dart';

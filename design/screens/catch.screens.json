@@ -3775,7 +3775,7 @@
               "ReviewList"
             ],
             "flutter": {
-              "file": "lib/reviews/shared/reviews_section.dart",
+              "file": "lib/pages/reviews/reviews_section.dart",
               "symbol": "OrganizerReviewsSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -11947,7 +11947,7 @@
             "symbol": "CatchMetricSection"
           },
           {
-            "file": "lib/reviews/shared/reviews_section.dart",
+            "file": "lib/pages/reviews/reviews_section.dart",
             "symbol": "OrganizerReviewsSection"
           }
         ],
@@ -12569,7 +12569,7 @@
               "OrganizerReviewsSection"
             ],
             "flutter": {
-              "file": "lib/reviews/shared/reviews_section.dart",
+              "file": "lib/pages/reviews/reviews_section.dart",
               "symbol": "OrganizerReviewsSection"
             },
             "currentOwner": "OrganizerDetailBody",
@@ -21471,13 +21471,13 @@
             "symbol": "watchOwnEventCardsForEvents"
           },
           {
-            "file": "lib/reviews/shared/write_review_sheet.dart",
+            "file": "lib/pages/reviews/write_review_sheet.dart",
             "symbol": "showWriteReviewSheet"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/reviews/shared/write_review_sheet.dart",
+            "file": "lib/pages/reviews/write_review_sheet.dart",
             "symbol": "showWriteReviewSheet"
           },
           {
@@ -21687,7 +21687,7 @@
           "source": "Event-backed own reviews open the shared Edit review sheet through showWriteReviewSheet; submit/delete pending freezes rating, comment, both write actions, and sheet dismissal while WriteReviewController returns the active write future to duplicate callers.",
           "tests": [
             "test/reviews/reviews_widgets_test.dart",
-            "test/reviews/write_review_controller_test.dart"
+            "test/pages/reviews/write_review_controller_test.dart"
           ],
           "nextAction": "Keep the frozen review snapshot intact while adding a dedicated sheet capture and later visual comparison.",
           "previewIds": [
