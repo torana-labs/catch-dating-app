@@ -4,11 +4,11 @@ import 'package:catch_dating_app/hosts/people/duplicates/duplicates_state.dart';
 import 'package:catch_dating_app/hosts/people/duplicates/widgets/merge_confirm_sheet.dart';
 import 'package:catch_dating_app/hosts/people/parts/people_duplicates_row.dart';
 import 'package:catch_l10n/l10n.dart';
-import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../test_pump_helpers.dart';
 import '../people_test_pump.dart';
 import 'duplicates_fixtures.dart';
 
