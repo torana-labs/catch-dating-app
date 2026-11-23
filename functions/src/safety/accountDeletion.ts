@@ -103,56 +103,9 @@ export async function requestAccountDeletionHandler(
   await removeOrganizerHostIdentity(db, uid);
   await retainSafetyRecordsForDeletedAccount(db, uid, Date.now());
 
-  writer.set(db.collection("users").doc(uid), {
-    deleted: true,
-    deletedAt: now,
-    email: "",
-    name: "Deleted user",
-    firstName: "",
-    lastName: "",
-    displayName: "Deleted user",
-    dateOfBirth: admin.firestore.Timestamp.fromMillis(0),
-    profilePrompts: [],
-    gender: "other",
-    phoneNumber: "",
-    profileComplete: false,
-    profilePhotos: [],
-    city: admin.firestore.FieldValue.delete(),
-    interestedInGenders: [],
-    minAgePreference: 18,
-    maxAgePreference: 99,
-    height: admin.firestore.FieldValue.delete(),
-    occupation: admin.firestore.FieldValue.delete(),
-    company: admin.firestore.FieldValue.delete(),
-    education: admin.firestore.FieldValue.delete(),
-    religion: admin.firestore.FieldValue.delete(),
-    languages: [],
-    relationshipGoal: admin.firestore.FieldValue.delete(),
-    drinking: admin.firestore.FieldValue.delete(),
-    smoking: admin.firestore.FieldValue.delete(),
-    workout: admin.firestore.FieldValue.delete(),
-    diet: admin.firestore.FieldValue.delete(),
-    children: admin.firestore.FieldValue.delete(),
-    activityPreferences: {
-      running: {
-        paceMinSecsPerKm: 300,
-        paceMaxSecsPerKm: 420,
-        preferredDistances: [],
-        runningReasons: [],
-        preferredRunTimes: [],
-        version: 1,
-      },
-    },
-    paceMinSecsPerKm: admin.firestore.FieldValue.delete(),
-    paceMaxSecsPerKm: admin.firestore.FieldValue.delete(),
-    preferredDistances: admin.firestore.FieldValue.delete(),
-    runningReasons: admin.firestore.FieldValue.delete(),
-    preferredRunTimes: admin.firestore.FieldValue.delete(),
-    runPreferencesVersion: admin.firestore.FieldValue.delete(),
-    prefsShowInCrossPaths: admin.firestore.FieldValue.delete(),
-    prefsCrossPathsInvitations: admin.firestore.FieldValue.delete(),
-    fcmToken: admin.firestore.FieldValue.delete(),
-  }, {merge: true});
+  // Replacement write: every field not in the tombstone is gone, including
+  // any field added to the profile later.
+  writer.set(db.collection("users").doc(uid), deletedUserProfileTombstone(now));
 
   await writer.commit();
 
@@ -167,6 +120,40 @@ export async function requestAccountDeletionHandler(
   await deleteAuthUserIfPresent(deps.auth(), uid);
 
   return {deleted: true};
+}
+
+/**
+ * The fixed shape of `users/{uid}` after account deletion. Readers need only
+ * `deleted`/`deletedAt` (every server gate and audience builder), a
+ * non-personal display name for staff inboxes and the people index, and the
+ * three fields the app's profile model requires (`name`, `phoneNumber`,
+ * `profileComplete`) so a listener that fires before sign-out still parses.
+ */
+export const DELETED_USER_PROFILE_KEYS = [
+  "deleted",
+  "deletedAt",
+  "name",
+  "displayName",
+  "phoneNumber",
+  "profileComplete",
+] as const;
+
+/**
+ * Builds the account-deletion tombstone for `users/{uid}`.
+ * @param {FirebaseFirestore.FieldValue} now Server timestamp sentinel.
+ * @return {Record<string, unknown>} The full replacement document.
+ */
+export function deletedUserProfileTombstone(
+  now: FirebaseFirestore.FieldValue
+): Record<(typeof DELETED_USER_PROFILE_KEYS)[number], unknown> {
+  return {
+    deleted: true,
+    deletedAt: now,
+    name: "Deleted user",
+    displayName: "Deleted user",
+    phoneNumber: "",
+    profileComplete: false,
+  };
 }
 
 /** Removes personal Host projections and preserves shared business records. */

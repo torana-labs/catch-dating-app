@@ -12,6 +12,8 @@ import {deleteAccountEventParticipations} from "./accountDeletionSeats";
 import {communityMembershipRows} from
   "../memberships/communityMembershipFixture";
 import {
+  DELETED_USER_PROFILE_KEYS,
+  deletedUserProfileTombstone,
   requestAccountDeletionHandler,
   storagePathFromDownloadUrl,
 } from "./accountDeletion";
@@ -357,57 +359,16 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     (write) => write.path === "users/runner-1"
   );
   assert.ok(retainedUserWrite);
-  assert.deepEqual(retainedUserWrite.options, {merge: true});
-
-  const data = retainedUserWrite.data;
-  assert.equal(data.deleted, true);
-  assert.equal(data.deletedAt, now);
-  assert.equal(data.name, "Deleted user");
-  assert.equal(data.firstName, "");
-  assert.equal(data.lastName, "");
-  assert.equal(data.displayName, "Deleted user");
-  assert.equal(
-    (data.dateOfBirth as FirebaseFirestore.Timestamp).toMillis(),
-    0
-  );
-  assert.equal(data.phoneNumber, "");
-  assert.deepEqual(data.profilePhotos, []);
-  assert.deepEqual(data.activityPreferences, {
-    running: {
-      paceMinSecsPerKm: 300,
-      paceMaxSecsPerKm: 420,
-      preferredDistances: [],
-      runningReasons: [],
-      preferredRunTimes: [],
-      version: 1,
-    },
+  // A replacement write: no merge, so no unlisted field can survive.
+  assert.equal(retainedUserWrite.options, undefined);
+  assert.deepEqual(retainedUserWrite.data, {
+    deleted: true,
+    deletedAt: now,
+    name: "Deleted user",
+    displayName: "Deleted user",
+    phoneNumber: "",
+    profileComplete: false,
   });
-
-  for (const field of [
-    "city",
-    "height",
-    "occupation",
-    "company",
-    "education",
-    "religion",
-    "relationshipGoal",
-    "drinking",
-    "smoking",
-    "workout",
-    "diet",
-    "children",
-    "paceMinSecsPerKm",
-    "paceMaxSecsPerKm",
-    "preferredDistances",
-    "runningReasons",
-    "preferredRunTimes",
-    "runPreferencesVersion",
-    "prefsShowInCrossPaths",
-    "prefsCrossPathsInvitations",
-    "fcmToken",
-  ]) {
-    assert.equal(hasOwn(data, field), true);
-  }
 
   assert.ok(harness.deletedPublicDocs.includes("publicProfiles/runner-1"));
   assert.ok(
@@ -819,6 +780,42 @@ test("requestAccountDeletionHandler tolerates an already-removed Auth user",
     );
   }
 );
+
+test("the users tombstone replaces the profile with a fixed key set (#2443)",
+  async () => {
+    const now = {kind: "serverTimestamp"};
+    const harness = createAccountDeletionHarness({
+      seed: {"users/runner-1": {
+        name: "Asha Runner", displayName: "Asha", phoneNumber: "+919876543210",
+        countryCode: "+91", instagramHandle: "asha.runs", city: "mumbai",
+        latitude: 19.0761, longitude: 72.8775, profileComplete: true,
+        email: "asha@example.com", prefsShowOnMap: true,
+        fieldNobodyListed: "still private",
+      }},
+      now,
+    });
+
+    await requestAccountDeletionHandler(
+      {auth: {uid: "runner-1"}} as Parameters<
+        typeof requestAccountDeletionHandler
+      >[0],
+      harness.deps
+    );
+
+    const writes = harness.setWrites.filter(
+      (write) => write.path === "users/runner-1");
+    assert.equal(writes.length, 1);
+    const [write] = writes;
+    assert.equal(write.options, undefined, "no merge: true");
+    assert.deepEqual(Object.keys(write.data).sort(),
+      [...DELETED_USER_PROFILE_KEYS].sort());
+    for (const field of ["latitude", "longitude", "instagramHandle",
+      "countryCode", "city", "email", "fieldNobodyListed"]) {
+      assert.equal(hasOwn(write.data, field), false, field);
+    }
+    assert.deepEqual(write.data, deletedUserProfileTombstone(
+      now as unknown as FirebaseFirestore.FieldValue));
+  });
 
 type FakeDocumentData = Record<string, unknown>;
 
