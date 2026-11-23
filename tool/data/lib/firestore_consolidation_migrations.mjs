@@ -310,6 +310,105 @@ function guestMessagingPermissionRow(db, row) {
   return db.runTransaction((tx) => guestMessagingPermission(db, tx, row));
 }
 
+let contactPermissionModules = null;
+function functionsContactPermissions() {
+  try {
+    const require = createFunctionsRequire();
+    contactPermissionModules ??= {
+      ...require("./lib/messaging/contactPermissions.js"),
+      ...require("./lib/messaging/guestMessagingPermissionStore.js"),
+      ...require("./lib/shared/organizerCommunicationPreferences.js"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The contact-permissions migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return contactPermissionModules;
+}
+
+const e164 = /^\+[1-9][0-9]{6,14}$/u;
+
+/**
+ * The phone number a registration receipt was given with. Registration
+ * before issue #2460 recorded it only on the guest's roster row for that
+ * event, which the verified phone created, so one row with one phone
+ * names it; anything else names none.
+ */
+async function registrationEndpoint(db, receipt) {
+  if (typeof receipt?.endpointE164 === "string") return receipt.endpointE164;
+  if (receipt?.source !== "publicEventRegistration" ||
+      !validId(receipt.sourceEventId) || !validId(receipt.uid)) return null;
+  const rows = await db.collection("eventAttendees")
+    .where("eventId", "==", receipt.sourceEventId)
+    .where("linkedUid", "==", receipt.uid).limit(2).get();
+  const phones = new Set(rows.docs.map((row) => row.data().phoneE164)
+    .filter((phone) => typeof phone === "string" && e164.test(phone)));
+  return phones.size === 1 ? [...phones][0] : null;
+}
+
+const contactSender = (scope, organizerId) => scope === "catch" ?
+  {kind: "catch"} : {kind: "organizer", organizerId};
+
+/** Why a preference or receipt has no contact permission copy, or null. */
+async function contactPermissionSkip(scope, data, id, db, kind) {
+  if (!validId(data.uid)) return "no guest";
+  if (scope === "organizer" && !validId(data.organizerId)) return "no organizer";
+  if (kind === "preference") {
+    const {organizerCommunicationPreferenceId} = functionsContactPermissions();
+    if (scope === "catch" ? id !== data.uid :
+      id !== organizerCommunicationPreferenceId(data.organizerId, data.uid)) {
+      return "inconsistent owner";
+    }
+  }
+  if ((await db.collection("deletedUsers").doc(data.uid).get()).exists) {
+    return "deleted account";
+  }
+  return null;
+}
+
+/** The contactPermissionReceipts copy of one receipt, same id. */
+async function contactReceiptCopies(scope, data, id, db) {
+  if (await contactPermissionSkip(scope, data, id, db, "receipt")) return [];
+  const {contactPermissionReceipt} = functionsContactPermissions();
+  return [{targetId: id, data: contactPermissionReceipt(
+    contactSender(scope, data.organizerId), data,
+    await registrationEndpoint(db, data))}];
+}
+
+/**
+ * The permission document a preference stands for, computed by the Functions
+ * resolver live writers use, from the preference and the receipts it names.
+ * An effective channel-wide opt-in whose phone number cannot be found is
+ * kept but not granted, and noted.
+ */
+async function contactPermissionDocuments(scope, data, id, db) {
+  if (await contactPermissionSkip(scope, data, id, db, "preference")) return [];
+  const {resolveContactPermission, contactPermissionReceipt,
+    contactSenderKey, summaryReceiptIds} = functionsContactPermissions();
+  const sender = contactSender(scope, data.organizerId);
+  const collection = scope === "catch" ? "catchCommunicationPermissionReceipts" :
+    "organizerCommunicationPermissionReceipts";
+  const receipts = new Map();
+  for (const receiptId of summaryReceiptIds(data)) {
+    const receipt = (await db.collection(collection).doc(receiptId).get()).data();
+    if (!receipt || receipt.uid !== data.uid ||
+        (scope === "organizer" && receipt.organizerId !== data.organizerId)) continue;
+    receipts.set(receiptId, contactPermissionReceipt(sender, receipt,
+      await registrationEndpoint(db, receipt)));
+  }
+  const permission = resolveContactPermission({sender, preference: data, receipts,
+    existing: null, now: data.updatedAt ?? data.createdAt});
+  const unbound = Object.entries(permission.grants)
+    .filter(([, grant]) => grant.status === "optedIn" && grant.endpointE164 === null)
+    .map(([key]) => key);
+  return [{targetId: `${data.uid}/contactPermissions/${contactSenderKey(sender)}`,
+    data: permission,
+    ...(unbound.length ? {note: `opt-in without a known phone number, not granted: ${
+      unbound.join(", ")}`} : {})}];
+}
+
 let formProfileViewModule = null;
 function functionsFormProfileViews() {
   try {
@@ -1406,6 +1505,54 @@ export const MIGRATIONS = [
           id : null,
         transform: (data, id, db) => guestMessagingPermissionRow(db,
           {scope: "organizer", preferenceId: id}),
+      },
+    ],
+  },
+  {
+    name: "contact-permissions",
+    description:
+      "Issue #2460 phase 1: one contact permission per sender and person at " +
+      "users/{uid}/contactPermissions/{catch|organizer_<organizerId>} and one " +
+      "receipt log, contactPermissionReceipts. Every Catch and organizer " +
+      "receipt gets its copy (same id, plus senderKind and senderId), and " +
+      "every Catch and organizer preference gets its permission document, " +
+      "each channel:purpose answer computed by the same effective-status " +
+      "functions the send gates use. A registration grant takes the phone " +
+      "on the guest's roster row for that event. Deleted accounts and " +
+      "inconsistent owners are skipped. Existing documents are never " +
+      "replaced; a differing one is a conflict. Sources are never changed. " +
+      "Build Functions first.",
+    steps: [
+      {
+        source: "organizerCommunicationPermissionReceipts",
+        target: "contactPermissionReceipts",
+        skipReason: (data, id, db) => contactPermissionSkip("organizer", data, id,
+          db, "receipt"),
+        expand: (data, id, db) => contactReceiptCopies("organizer", data, id, db),
+      },
+      {
+        source: "catchCommunicationPermissionReceipts",
+        target: "contactPermissionReceipts",
+        skipReason: (data, id, db) => contactPermissionSkip("catch", data, id,
+          db, "receipt"),
+        expand: (data, id, db) => contactReceiptCopies("catch", data, id, db),
+      },
+      {
+        source: "organizerCommunicationPreferences",
+        target: "users",
+        targetLabel: "users/{uid}/contactPermissions",
+        skipReason: (data, id, db) => contactPermissionSkip("organizer", data, id,
+          db, "preference"),
+        expand: (data, id, db) => contactPermissionDocuments("organizer", data, id,
+          db),
+      },
+      {
+        source: "catchCommunicationPreferences",
+        target: "users",
+        targetLabel: "users/{uid}/contactPermissions",
+        skipReason: (data, id, db) => contactPermissionSkip("catch", data, id,
+          db, "preference"),
+        expand: (data, id, db) => contactPermissionDocuments("catch", data, id, db),
       },
     ],
   },

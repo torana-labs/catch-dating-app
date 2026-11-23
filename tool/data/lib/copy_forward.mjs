@@ -22,6 +22,12 @@ import {isDeepStrictEqual} from "node:util";
  * one source can then produce several targets (a guest's row at every
  * function), and an empty list skips it.
  *
+ * `skipReason` is a string, or a function (data, id, db) returning the
+ * reason one source is skipped. An expanded target may carry a `note`: the
+ * plan lists it (for example a grant it could not bind to a phone number)
+ * without blocking the copy. `targetLabel` names a target in the summary
+ * when `target` is a parent collection and `targetId` a nested path.
+ *
  * A fill step is {kind: "fill", collection, fill(data, id)}: `fill` returns
  * fields to add to the same document, or null. Only fields the document does
  * not already hold (absent, null, or an empty list or map) may be returned, so
@@ -55,12 +61,13 @@ async function planStep(db, step) {
   if (step.kind === "fill") return planFillStep(db, step);
   const result = {
     source: step.source,
-    target: step.target,
+    target: step.targetLabel ?? step.target,
     scanned: 0,
     toCreate: [],
     alreadyCopied: 0,
     conflicts: [],
     skipped: [],
+    notes: [],
   };
   const sourceRef = step.collectionGroup ?
     db.collectionGroup(step.collectionGroup) : db.collection(step.source);
@@ -74,11 +81,14 @@ async function planStep(db, step) {
       await step.expand(data, doc.id, db, doc.ref) :
       await singleEntry(step, doc, data, db);
     if (entries.length === 0) {
-      result.skipped.push({sourcePath: doc.ref.path, reason: step.skipReason ?? "not migrated"});
+      const reason = typeof step.skipReason === "function" ?
+        await step.skipReason(data, doc.id, db, doc.ref) : step.skipReason;
+      result.skipped.push({sourcePath: doc.ref.path, reason: reason ?? "not migrated"});
       continue;
     }
-    for (const {targetId, data: next} of entries) {
+    for (const {targetId, data: next, note} of entries) {
       const targetRef = db.collection(step.target).doc(targetId);
+      if (note) result.notes.push({sourcePath: doc.ref.path, targetPath: targetRef.path, note});
       const existing = await targetRef.get();
       if (existing.exists) {
         if (isDeepStrictEqual(existing.data(), next)) {
@@ -223,6 +233,7 @@ export function writePlanBackup(filePath, plans) {
         })),
         conflicts: step.conflicts,
         skipped: step.skipped,
+        notes: step.notes ?? [],
       })),
     })),
   }, null, 2));
@@ -249,6 +260,14 @@ export function summarizePlan(plan) {
       alreadyCopied: step.alreadyCopied,
       conflicts: step.conflicts,
       skipped: step.skipped.length,
+      skippedReasons: countBy(step.skipped, (entry) => entry.reason),
+      notes: step.notes ?? [],
     })),
   };
+}
+
+function countBy(items, key) {
+  const counts = {};
+  for (const item of items) counts[key(item)] = (counts[key(item)] ?? 0) + 1;
+  return counts;
 }
