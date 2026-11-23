@@ -6,9 +6,9 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/events/presentation/event_attendee_lookup_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_guests_state.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
+import 'package:catch_dating_app/pages/event/event_attendee_lookup_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

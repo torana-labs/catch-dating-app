@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_action_card.dart';
-import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
+import 'package:catch_dating_app/pages/event/tiles/event_date_rail_card.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

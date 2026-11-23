@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_participant_context_repository.dart';
 import 'package:catch_dating_app/contexts/live/data/event_sender_preference_repository.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_preferences_navigation_section.dart';
+import 'package:catch_dating_app/pages/event/messages/event_message_preferences_navigation_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/theme/app_theme.dart';

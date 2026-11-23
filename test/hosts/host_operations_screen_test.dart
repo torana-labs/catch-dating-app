@@ -27,7 +27,6 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defau
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
-import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
@@ -43,6 +42,7 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
+import 'package:catch_dating_app/pages/event/tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';

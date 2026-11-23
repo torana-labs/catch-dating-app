@@ -24,7 +24,7 @@ part 'catch_ui_text_rules.dart';
 
 const _eventDetailPathFragments = <String>[
   '/lib/events/presentation/widgets/event_detail_',
-  '/lib/events/presentation/widgets/event_photo_header.dart',
+  '/lib/pages/event/widgets/event_photo_header.dart',
 ];
 
 // Shared test support (pump helpers, golden support, design fixtures) is test
@@ -678,7 +678,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
           '/lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart',
         ) ||
         path.endsWith(
-          '/lib/events/presentation/widgets/event_detail_hero_top_bar.dart',
+          '/lib/pages/event/widgets/event_detail_hero_top_bar.dart',
         );
   }
 }

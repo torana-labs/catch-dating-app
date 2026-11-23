@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
 import 'package:catch_dating_app/contexts/events/parts/activity_map_pin.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
-import 'package:catch_dating_app/locations/shared/location_map.dart';
+import 'package:catch_dating_app/pages/event/location/location_map.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/activity_palette.dart';
