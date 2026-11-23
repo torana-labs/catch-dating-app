@@ -1202,7 +1202,7 @@ packages/platform/lib/push/fcm_service.dart|catch_arch_firestore_outside_data|im
 lib/hosts/events/presentation/host_events_cursor.dart|catch_arch_firestore_outside_data|import 'package:catch_platform/firebase/firebase_providers.dart';\nimport 'package:flutter_riverpod/flutter_riverpod.dart';\nObject read(ProviderContainer c) => c.read(firebaseFirestoreProvider).app;
 lib/force_update/presentation/force_update_diagnostics.dart|catch_arch_firestore_outside_data|import 'package:firebase_core/firebase_core.dart';\nbool failed(Object error) => error is FirebaseException;
 lib/contexts/events/parts/route_boundary.dart|catch_arch_provider_free_boundary|import 'package:catch_platform/routing/route_contract.dart';
-lib/contexts/events/data/event_store.dart|catch_arch_upward_layer_import|import 'package:catch_dating_app/routing/go_router.dart';
+lib/contexts/events/data/event_store.dart|catch_arch_upward_layer_import|import 'package:catch_dating_app/routing/host_router.dart';
 lib/contexts/account/data/session.dart|catch_arch_context_order_import|import 'package:catch_dating_app/contexts/events/events.dart';
 lib/contexts/bookings/domain/booking.dart|catch_arch_context_barrel_bypass|import 'package:catch_dating_app/contexts/events/domain/event.dart';
 lib/weddings/domain/wedding.dart|catch_arch_unmapped_file|class Wedding {}

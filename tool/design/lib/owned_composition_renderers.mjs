@@ -47,7 +47,7 @@ declare("lib/programs/presentation/program_events_row.dart",
 declare("lib/host_memberships/presentation/host_membership_profile_section.dart",
   "lib/host_memberships/presentation/host_membership_profile_section.dart", null,
   ["hostMembershipProfileField"], ["CatchField"]);
-declare("lib/routing/host_inbox_route.dart", "lib/routing/go_router.dart", null,
+declare("lib/routing/host_inbox_route.dart", "lib/routing/host_router.dart", null,
   ["hostInboxScreenForUri"], ["HostInboxScreen"]);
 
 // The owner-approved route-shell-construction-ownership family retains each

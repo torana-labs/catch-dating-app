@@ -6,7 +6,7 @@ import 'package:catch_dating_app/app_bootstrap.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/consumer_router.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';

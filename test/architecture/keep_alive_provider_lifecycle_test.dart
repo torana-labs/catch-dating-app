@@ -9,7 +9,7 @@ import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/routing/route_contract.dart';

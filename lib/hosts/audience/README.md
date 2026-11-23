@@ -64,7 +64,7 @@ These are schema declarations, not independent proof of runtime limits.
 - Source: [lib/hosts/presentation/host_audience_view.dart](../presentation/host_audience_view.dart)
 - Source: [lib/hosts/people/people_screen.dart](../people/people_screen.dart)
 - Source: [lib/hosts/forms/forms_screen.dart](../forms/forms_screen.dart)
-- Source: [lib/routing/go_router.dart](../../routing/go_router.dart)
+- Source: [lib/routing/host_router.dart](../../routing/host_router.dart)
 - Source: [lib/routing/shell/host_shell_screen.dart](../../routing/shell/host_shell_screen.dart)
 
 **What can a host do with People?**

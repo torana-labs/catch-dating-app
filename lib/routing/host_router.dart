@@ -1,33 +1,15 @@
-// size-exemption: the single home of the route table; check_route_inventory.mjs allows GoRoute nowhere else.
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
-import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
+// size-exemption: the Host app's canonical route graph; check_route_inventory.mjs allows GoRoute only here and in consumer_router.dart.
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_profile_screen.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
-import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/organizer_moment.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
-import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
-import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
-import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
-import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
-import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
-import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
-import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
-import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
-import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_defaults_screen.dart';
@@ -80,50 +62,28 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_s
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_create_organizer_screen.dart';
 import 'package:catch_dating_app/hosts/programmes/programmes.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
-import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
-import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
-import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
-import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
-import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
-import 'package:catch_dating_app/routing/shell/app_shell.dart';
+import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
-import 'package:catch_dating_app/safety/presentation/messaging_permissions_screen.dart';
-import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
-import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
-import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
-import 'package:catch_dating_app/user_profile/presentation/form_profile_review_screen.dart';
-import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.dart';
-import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
-import 'package:catch_platform/app_config.dart';
-import 'package:catch_platform/errors/app_error_message.dart';
-import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_platform/routing/onboarding_completion_location.dart';
 import 'package:catch_platform/routing/route_contract.dart';
-import 'package:catch_platform/schema_contracts/generated/profile_requirements.g.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'detail_route_pages.dart';
-part 'go_router.g.dart';
 part 'host_inbox_route.dart';
 part 'host_response_review_routes.dart';
 part 'host_route_extras.dart';
+part 'host_router.g.dart';
 part 'host_workspace_destination.dart';
 part 'host_workspace_index_screen.dart';
-part 'route_destinations.dart';
 
 @visibleForTesting
 /// The organiser whose planner home `/host/programs?view=home` opens, or
@@ -218,25 +178,25 @@ Widget hostAudienceScreenForUri(Uri uri) {
   };
 }
 
-GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
-  final notifier = _RouterRefreshNotifier();
+// keepalive: account-free: Host navigation is the app-wide route graph for the
+// Host root.
+@Riverpod(keepAlive: true)
+GoRouter hostGoRouter(Ref ref) {
   final analytics = ref.read(appAnalyticsProvider);
-  final keys = _RouterNavigatorKeys();
-
-  _wireRouterRefresh(ref, notifier, isHostApp: isHostApp);
+  final keys = _HostNavigatorKeys();
+  final refresh = appRouterRefresh(ref, isHostApp: true);
 
   final router = GoRouter(
     navigatorKey: keys.root,
     initialLocation: ref.watch(initialAppLocationProvider),
-    refreshListenable: notifier,
+    refreshListenable: refresh,
     observers: [AnalyticsRouteObserver(analytics)],
-    redirect: (context, state) =>
-        _appRedirectFor(ref, state, isHostApp: isHostApp),
+    redirect: (context, state) => appRedirectFor(ref, state, isHostApp: true),
     routes: [
       GoRoute(
         path: Routes.loadingScreen.path,
         name: Routes.loadingScreen.name,
-        builder: (context, state) => _RouteLoadingScreen(isHostApp: isHostApp),
+        builder: (context, state) => const RouteLoadingScreen(isHostApp: true),
       ),
       GoRoute(
         path: Routes.startScreen.path,
@@ -246,281 +206,18 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
       GoRoute(
         path: Routes.authScreen.path,
         name: Routes.authScreen.name,
-        builder: (context, state) => _AuthRouteScreen(isHostApp: isHostApp),
+        builder: (context, state) => const HostSignInScreen(),
       ),
-      if (!isHostApp) ...[
-        GoRoute(
-          path: Routes.crossPathsInvitationScreen.path,
-          name: Routes.crossPathsInvitationScreen.name,
-          builder: (context, state) => CrossPathsInvitationScreen(
-            invitationId: state.pathParameters['invitationId']!,
-          ),
-        ),
-        GoRoute(
-          path: Routes.onboardingScreen.path,
-          name: Routes.onboardingScreen.name,
-          builder: (context, state) => OnboardingScreen(
-            eventRequirements:
-                state.uri.queryParameters[_onboardingIntentQueryParam] ==
-                    _completeProfileIntent
-                ? _eventRequirementsFromUri(state.uri)
-                : null,
-            profileCompletionOnly:
-                state.uri.queryParameters[_onboardingIntentQueryParam] ==
-                _completeProfileIntent,
-            runPreferencesOnly:
-                state.uri.queryParameters[_onboardingIntentQueryParam] ==
-                _completeRunPreferencesIntent,
-          ),
-        ),
-        GoRoute(
-          path: Routes.calendarScreen.path,
-          name: Routes.calendarScreen.name,
-          builder: (context, state) => const CalendarScreen(),
-        ),
-        GoRoute(
-          path: Routes.calendarEventDetailScreen.path,
-          name: Routes.calendarEventDetailScreen.name,
-          builder: (context, state) => _eventDetailScreen(state),
-        ),
-        GoRoute(
-          path: Routes.savedEventsScreen.path,
-          name: Routes.savedEventsScreen.name,
-          builder: (context, state) => const SavedEventsScreen(),
-        ),
-        GoRoute(
-          path: Routes.savedEventDetailScreen.path,
-          name: Routes.savedEventDetailScreen.name,
-          builder: (context, state) => _eventDetailScreen(state),
-        ),
-        GoRoute(
-          path: Routes.filtersScreen.path,
-          name: Routes.filtersScreen.name,
-          builder: (context, state) => const FiltersScreen(),
-        ),
-        GoRoute(
-          path: Routes.swipeHubScreen.path,
-          name: Routes.swipeHubScreen.name,
-          redirect: (context, state) => Routes.dashboardScreen.path,
-        ),
-        GoRoute(
-          path: Routes.dashboardEventDetailScreen.path,
-          name: Routes.dashboardEventDetailScreen.name,
-          builder: (context, state) => _eventDetailScreen(state),
-        ),
-        GoRoute(
-          path: Routes.paymentHistoryScreen.path,
-          name: Routes.paymentHistoryScreen.name,
-          builder: (context, state) => const PaymentHistoryScreen(),
-        ),
-        GoRoute(
-          path: Routes.myMembershipsScreen.path,
-          name: Routes.myMembershipsScreen.name,
-          builder: (context, state) => const MyMembershipsScreen(),
-        ),
-        GoRoute(
-          path: Routes.reviewsHistoryScreen.path,
-          name: Routes.reviewsHistoryScreen.name,
-          builder: (context, state) => const ReviewsHistoryScreen(),
-        ),
-        GoRoute(
-          path: Routes.paymentConfirmationScreen.path,
-          name: Routes.paymentConfirmationScreen.name,
-          builder: (context, state) => PaymentConfirmationScreen(
-            data: state.extra! as PaymentConfirmationData,
-          ),
-        ),
-      ],
-      if (!isHostApp) ..._sharedEventWorkspaceRoutes(),
-      if (!isHostApp) ...[
-        GoRoute(
-          path: Routes.settingsScreen.path,
-          name: Routes.settingsScreen.name,
-          builder: (context, state) => const SettingsScreen(),
-        ),
-        GoRoute(
-          path: Routes.messagingPermissionsScreen.path,
-          name: Routes.messagingPermissionsScreen.name,
-          builder: (context, state) => const MessagingPermissionsScreen(),
-        ),
-        GoRoute(
-          path: Routes.launchAccessScreen.path,
-          name: Routes.launchAccessScreen.name,
-          builder: (context, state) => const LaunchAccessApplicationScreen(),
-        ),
-        GoRoute(
-          path: Routes.publicProfileScreen.path,
-          name: Routes.publicProfileScreen.name,
-          builder: (context, state) => PublicProfileScreen(
-            uid: state.pathParameters['uid']!,
-            initialProfile: switch (state.extra) {
-              final PublicProfile p => p,
-              _ => null,
-            },
-          ),
-        ),
-      ],
-      if (isHostApp)
-        _hostShellRoute(analytics, keys)
-      else
-        StatefulShellRoute.indexedStack(
-          builder: (context, state, navigationShell) =>
-              AppShell(navigationShell: navigationShell),
-          branches: [
-            // ── Branch 0: Home / Dashboard ───────────────────────────────
-            StatefulShellBranch(
-              navigatorKey: keys.dashboard,
-              observers: [AnalyticsRouteObserver(analytics)],
-              routes: [
-                GoRoute(
-                  path: Routes.dashboardScreen.path,
-                  name: Routes.dashboardScreen.name,
-                  builder: (context, state) => const DashboardScreen(),
-                  routes: [
-                    GoRoute(
-                      path: 'notifications',
-                      name: Routes.notificationsScreen.name,
-                      parentNavigatorKey: keys.root,
-                      builder: (context, state) => const ActivityScreen(),
-                    ),
-                    GoRoute(
-                      path: 'catches/:eventId/recap',
-                      name: Routes.eventRecapScreen.name,
-                      parentNavigatorKey: keys.root,
-                      builder: (context, state) => EventRecapScreen(
-                        eventId: state.pathParameters['eventId']!,
-                      ),
-                    ),
-                    // The retired swipe deck's address; older links open
-                    // the event's after-event screen instead.
-                    GoRoute(
-                      path: 'catches/:eventId',
-                      name: Routes.swipeEventScreen.name,
-                      parentNavigatorKey: keys.root,
-                      redirect: (context, state) =>
-                          Routes.eventRecapScreen.path.replaceFirst(
-                            ':eventId',
-                            state.pathParameters['eventId']!,
-                          ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            // ── Branch 1: Explore ────────────────────────────────────────
-            StatefulShellBranch(
-              navigatorKey: keys.explore,
-              observers: [AnalyticsRouteObserver(analytics)],
-              routes: [
-                GoRoute(
-                  path: Routes.exploreScreen.path,
-                  name: Routes.exploreScreen.name,
-                  builder: (context, state) => const ExploreScreen(),
-                  routes: [
-                    GoRoute(
-                      path: 'map',
-                      name: Routes.exploreMapScreen.name,
-                      parentNavigatorKey: keys.root,
-                      pageBuilder: _exploreMapPage,
-                    ),
-                    GoRoute(
-                      path: ':organizerId',
-                      name: Routes.organizerDetailScreen.name,
-                      parentNavigatorKey: keys.root,
-                      pageBuilder: _organizerDetailPage,
-                      routes: [
-                        GoRoute(
-                          path: 'events/:eventId',
-                          name: Routes.eventDetailScreen.name,
-                          parentNavigatorKey: keys.root,
-                          pageBuilder: _eventDetailPage,
-                          routes: [
-                            GoRoute(
-                              path: 'companion',
-                              name: Routes.eventSuccessCompanionScreen.name,
-                              parentNavigatorKey: keys.root,
-                              builder: (context, state) =>
-                                  EventSuccessCompanionRouteScreen(
-                                    organizerId:
-                                        state.pathParameters['organizerId']!,
-                                    eventId: state.pathParameters['eventId']!,
-                                    initialEvent: _routeEventExtra(state),
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            // ── Branch 2: Chats ──────────────────────────────────────────
-            StatefulShellBranch(
-              navigatorKey: keys.chats,
-              observers: [AnalyticsRouteObserver(analytics)],
-              routes: [
-                GoRoute(
-                  path: Routes.matchesListScreen.path,
-                  name: Routes.matchesListScreen.name,
-                  builder: (context, state) => const ChatsListScreen(),
-                  routes: [
-                    GoRoute(
-                      path: ':matchId',
-                      name: Routes.chatScreen.name,
-                      parentNavigatorKey: keys.root,
-                      builder: (context, state) => ChatScreen(
-                        matchId: state.pathParameters['matchId']!,
-                        otherProfile: switch (state.extra) {
-                          final PublicProfile p => p,
-                          _ => null,
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            // ── Branch 3: Profile ────────────────────────────────────────
-            StatefulShellBranch(
-              navigatorKey: keys.profile,
-              observers: [AnalyticsRouteObserver(analytics)],
-              routes: [
-                GoRoute(
-                  path: Routes.profileScreen.path,
-                  name: Routes.profileScreen.name,
-                  builder: (context, state) => const ProfileScreen(),
-                  routes: [
-                    GoRoute(
-                      path: 'forms',
-                      name: Routes.formProfilesScreen.name,
-                      builder: (context, state) => const FormProfilesScreen(),
-                      routes: [
-                        GoRoute(
-                          path: ':responseId',
-                          name: Routes.formProfileReviewScreen.name,
-                          builder: (context, state) => FormProfileReviewScreen(
-                            responseId: state.pathParameters['responseId']!,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
+      _hostShellRoute(analytics, keys),
     ],
   );
   ref.onDispose(router.dispose);
   return router;
 }
 
-List<HostWorkspaceDestination> _sharedEventWorkspaceRoutes() => [
+List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
+  // The event's location map and chat pages; consumer_router.dart declares
+  // the same pages for the guest app.
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.events,
     contextualParent: (state) => _routeOrganizerQueryId(state) == null
@@ -567,10 +264,6 @@ List<HostWorkspaceDestination> _sharedEventWorkspaceRoutes() => [
     builder: (context, state) =>
         EventProfileScreen(eventId: state.pathParameters['eventId']!),
   ),
-];
-
-List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
-  ..._sharedEventWorkspaceRoutes(),
   HostWorkspaceDestination(
     root: HostWorkspaceRoot.people,
     path: Routes.hostNewMessageScreen.path,
@@ -588,7 +281,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => DoorScreen(
       organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
-      initialEvent: _routeEventExtra(state),
+      initialEvent: routeEventExtra(state),
     ),
   ),
   HostWorkspaceDestination(
@@ -983,7 +676,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     name: Routes.hostOrganizerDetailScreen.name,
     builder: (context, state) => OrganizerDetailScreen(
       organizerId: state.pathParameters['organizerId']!,
-      initialOrganizer: _organizerDetailInitialOrganizer(state),
+      initialOrganizer: routeOrganizerExtra(state),
     ),
   ),
   HostWorkspaceDestination(
@@ -1063,7 +756,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => HostEventManageRouteScreen(
       organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
-      initialEvent: _routeEventExtra(state),
+      initialEvent: routeEventExtra(state),
       initialSection: _hostManageSectionFromState(state),
     ),
   ),
@@ -1075,7 +768,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => EditHostedEventRouteScreen(
       organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
-      initialEvent: _routeEventExtra(state),
+      initialEvent: routeEventExtra(state),
     ),
   ),
   HostWorkspaceDestination(
@@ -1085,7 +778,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => HostEventManageRouteScreen(
       organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
-      initialEvent: _routeEventExtra(state),
+      initialEvent: routeEventExtra(state),
       initialSection: HostEventManageSection.live,
     ),
   ),
@@ -1096,7 +789,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     builder: (context, state) => HostEventManageRouteScreen(
       organizerId: state.pathParameters['organizerId']!,
       eventId: state.pathParameters['eventId']!,
-      initialEvent: _routeEventExtra(state),
+      initialEvent: routeEventExtra(state),
       initialSection: _hostManageSectionFromState(state),
     ),
   ),
@@ -1107,7 +800,7 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     name: Routes.hostAppEventMomentsScreen.name,
     builder: (context, state) => OrganizerMomentsScreen(
       scope: _eventMomentScope(state),
-      scopeTitle: _routeEventExtra(state)?.title,
+      scopeTitle: routeEventExtra(state)?.title,
     ),
   ),
   HostWorkspaceDestination(
@@ -1389,7 +1082,7 @@ String _hostWorkspaceRouteLocation(GoRoute route, GoRouterState state) => state
 
 @visibleForTesting
 StatefulShellRoute hostWorkspaceRouteGraph(AppAnalytics analytics) =>
-    _hostShellRoute(analytics, _RouterNavigatorKeys());
+    _hostShellRoute(analytics, _HostNavigatorKeys());
 
 Uri _hostWorkspaceUri(Routes root, GoRouterState state) {
   return state.uri.replace(
@@ -1463,7 +1156,7 @@ List<GoRoute> _hostWorkspaceRootRecipes() => [
 
 StatefulShellRoute _hostShellRoute(
   AppAnalytics analytics,
-  _RouterNavigatorKeys keys,
+  _HostNavigatorKeys keys,
 ) {
   final roots = _hostWorkspaceRootRecipes();
   final routes = _hostWorkspaceDestinationRoutes();
@@ -1561,64 +1254,18 @@ StatefulShellRoute _hostShellRoute(
   );
 }
 
-EventDetailScreen _eventDetailScreen(GoRouterState state) => EventDetailScreen(
-  organizerId: state.pathParameters['organizerId']!,
-  eventId: state.pathParameters['eventId']!,
-  inviteCode: state.uri.queryParameters['invite'],
-  inviteLinkId:
-      state.uri.queryParameters['il'] ??
-      state.uri.queryParameters['inviteLinkId'],
-  initialEvent: _eventDetailInitialEvent(state),
-  presentationMode: _eventDetailPresentationMode(state),
-  heroTag: _eventDetailHeroTag(state),
-  attribution: _eventDetailAttribution(state),
-);
-
-/// Sign-in: Catch Host's own screens on the system, the guest app's
-/// shared auth screen otherwise.
-class _AuthRouteScreen extends StatelessWidget {
-  const _AuthRouteScreen({required this.isHostApp});
-
-  final bool isHostApp;
-
-  @override
-  Widget build(BuildContext context) =>
-      isHostApp ? const HostSignInScreen() : const AuthScreen();
-}
-
-class _RouteLoadingScreen extends StatelessWidget {
-  const _RouteLoadingScreen({required this.isHostApp});
-
-  final bool isHostApp;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchScaffold.standalone(
-      backgroundColor: CatchTokens.of(context).bg,
-      body: Consumer(
-        builder: (context, ref, _) {
-          const loading = CatchStateViewport.loading(
-            accountForBottomOverlay: false,
-          );
-          final uidAsync = ref.watch(uidProvider);
-          final needsProfile =
-              !isHostApp && !uidAsync.isLoading && uidAsync.value != null;
-          return needsProfile
-              ? CatchStateViewport(
-                  accountForBottomOverlay: false,
-                  child: CatchAsyncBoundary<UserProfile?>(
-                    value: ref.watch(watchUserProfileProvider),
-                    errorContext: AppErrorContext.profile,
-                    retainDataOn: const {},
-                    onRetry: () => ref.invalidate(watchUserProfileProvider),
-                    loadingBuilder: (_) => loading,
-                    // The router refresh resumes the destination once resolved.
-                    builder: (_, _) => loading,
-                  ),
-                )
-              : loading;
-        },
-      ),
-    );
-  }
+EventDetailScreen _eventDetailScreen(GoRouterState state) {
+  final extra = eventDetailRouteExtra(state);
+  return EventDetailScreen(
+    organizerId: state.pathParameters['organizerId']!,
+    eventId: state.pathParameters['eventId']!,
+    inviteCode: state.uri.queryParameters['invite'],
+    inviteLinkId:
+        state.uri.queryParameters['il'] ??
+        state.uri.queryParameters['inviteLinkId'],
+    initialEvent: extra.initialEvent,
+    presentationMode: extra.presentationMode,
+    heroTag: extra.heroTag,
+    attribution: extra.attribution,
+  );
 }

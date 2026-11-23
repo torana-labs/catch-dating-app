@@ -45,7 +45,7 @@ test("scanFile allows named routes and route constants", () => {
 
 test("scanFile allows raw route paths in route definitions", () => {
   const findings = scanFile({
-    relativePath: "lib/routing/go_router.dart",
+    relativePath: "lib/routing/consumer_router.dart",
     source: "final path = '/calendar/clubs/:organizerId/events/:eventId';\n",
   });
 
@@ -61,7 +61,7 @@ test("scanRouteStringLiterals scans production files and skips routing files", (
   );
   writeFile(
     root,
-    "lib/routing/go_router.dart",
+    "lib/routing/host_router.dart",
     "final route = GoRoute(path: '/calendar/clubs/:organizerId/events/:eventId');\n",
   );
 

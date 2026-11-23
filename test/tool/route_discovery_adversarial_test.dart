@@ -8,21 +8,24 @@ void main() {
   test(
     'canonical local GoRoute helpers remain analyzable without duplicate sites',
     () async {
-      final summaries = await resolveRouteConstructionSummariesForFile(
-        root: Directory.current.absolute.path,
-        relativePath: 'lib/routing/go_router.dart',
-      );
-      final goRoutes = summaries
-          .where((summary) => summary.startsWith('go-route:'))
-          .toList();
+      for (final router in canonicalRouterFiles) {
+        final summaries = await resolveRouteConstructionSummariesForFile(
+          root: Directory.current.absolute.path,
+          relativePath: router,
+        );
+        final goRoutes = summaries
+            .where((summary) => summary.startsWith('go-route:'))
+            .toList();
 
-      expect(goRoutes, isNotEmpty);
-      expect(
-        goRoutes,
-        everyElement(
-          allOf(startsWith('go-route:constructor:'), endsWith(':true')),
-        ),
-      );
+        expect(goRoutes, isNotEmpty, reason: router);
+        expect(
+          goRoutes,
+          everyElement(
+            allOf(startsWith('go-route:constructor:'), endsWith(':true')),
+          ),
+          reason: router,
+        );
+      }
     },
   );
 

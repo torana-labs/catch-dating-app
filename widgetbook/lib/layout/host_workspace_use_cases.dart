@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
-import 'package:catch_dating_app/routing/shell/app_shell.dart';
+import 'package:catch_dating_app/routing/shell/shell_chrome.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

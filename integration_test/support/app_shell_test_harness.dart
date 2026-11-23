@@ -52,7 +52,8 @@ import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/explore/explore.dart';
 import 'package:catch_dating_app/pages/celebration/celebration_effects_controller.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/consumer_router.dart';
+import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_kernel/city_data.dart';
@@ -94,7 +95,8 @@ const _appShellTestFrame = Duration(milliseconds: 100);
 const _mutationPresentationInterval = Duration(milliseconds: 350);
 
 /// Pumps the installable app root. Host journeys pass the Host entrypoint's
-/// [hostGoRouterProvider]; consumer journeys keep the role-selected default.
+/// `hostGoRouterProvider`; consumer journeys default to the guest app's
+/// [consumerGoRouterProvider].
 Future<void> pumpCatchAppShell(
   WidgetTester tester, {
   String initialRoute = '/',
@@ -113,7 +115,7 @@ Future<void> pumpCatchAppShell(
         initialAppLocationProvider.overrideWithValue(initialRoute),
         ...overrides.cast(),
       ],
-      child: MyApp(routerProvider: routerProvider ?? goRouterProvider),
+      child: MyApp(routerProvider: routerProvider ?? consumerGoRouterProvider),
     ),
   );
   await pumpAppShellFrames(tester);

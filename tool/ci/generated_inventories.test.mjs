@@ -24,7 +24,8 @@ function fixture(t) {
     return result.stdout.trim();
   };
   write("packages/platform/lib/routing/route_contract.dart", "enum Routes {\n  home('/'),\n  ;\n}\n");
-  write("lib/routing/go_router.dart", "GoRouter router() { return GoRouter(routes: [GoRoute(path: Routes.home.path, name: Routes.home.name, builder: (_) => const HomeScreen())]); }\n");
+  write("lib/routing/consumer_router.dart", "GoRouter router() { return GoRouter(routes: [GoRoute(path: Routes.home.path, name: Routes.home.name, builder: (_) => const HomeScreen())]); }\n");
+  write("lib/routing/host_router.dart", "GoRouter router() { return GoRouter(routes: []); }\n");
   write("apps/host/lib/feature.dart", "/// Host-only feature.\nclass HostScreen extends StatelessWidget {}\nvoid open() { MaterialPageRoute(builder: (_) => const HostScreen()); }\n");
   write("lib/home.dart", "/// Home contract.\nclass HomeScreen extends StatelessWidget {}\n");
   write("apps/consumer/lib/entry.dart", "// Consumer root.\n");
@@ -117,7 +118,7 @@ test("partial sparse checkout fails even when every production root still exists
   const f = fixture(t);
   f.git("sparse-checkout", "init", "--no-cone");
   f.git("sparse-checkout", "set", "--no-cone", "/*", "!/lib/home.dart");
-  assert.ok(fs.existsSync(path.join(f.root, "lib/routing/go_router.dart")));
+  assert.ok(fs.existsSync(path.join(f.root, "lib/routing/consumer_router.dart")));
   assert.ok(!fs.existsSync(path.join(f.root, "lib/home.dart")));
   assert.throws(() => materializeInventories({repoRoot: f.root, sourceSha: f.sourceSha}), /skip-worktree/);
   assert.equal(f.read(routePath), "stale route inventory\n");
@@ -148,7 +149,7 @@ test("a newly generated route still fails the actual authored capture coverage g
   const before = check();
   assert.equal(before.status, 0, before.stderr);
   f.write("packages/platform/lib/routing/route_contract.dart", "enum Routes {\n  home('/'),\n  detail('/detail'),\n  ;\n}\n");
-  f.write("lib/routing/go_router.dart", "GoRouter router() { return GoRouter(routes: [GoRoute(path: Routes.home.path, name: Routes.home.name, builder: (_) => const HomeScreen()), GoRoute(path: Routes.detail.path, name: Routes.detail.name, builder: (_) => const DetailScreen())]); }\n");
+  f.write("lib/routing/consumer_router.dart", "GoRouter router() { return GoRouter(routes: [GoRoute(path: Routes.home.path, name: Routes.home.name, builder: (_) => const HomeScreen()), GoRoute(path: Routes.detail.path, name: Routes.detail.name, builder: (_) => const DetailScreen())]); }\n");
   sourceSha = f.commit();
   materializeInventories({repoRoot: f.root, sourceSha});
   assert.deepEqual(JSON.parse(f.read(routePath)).routes.map(route => route.id), ["home", "detail"]);
@@ -169,11 +170,11 @@ test("invalid authored widget identity prevents both writes even after route der
 
 test("invalid route ownership and malformed catalog boundaries cannot partially materialize", t => {
   const f = fixture(t);
-  f.write("lib/routing/go_router.dart", "GoRouter router() { return GoRouter(routes: []); }\n");
+  f.write("lib/routing/consumer_router.dart", "GoRouter router() { return GoRouter(routes: []); }\n");
   let sourceSha = f.commit();
   assert.throws(() => materializeInventories({repoRoot: f.root, sourceSha}), /not wired/);
   assert.equal(f.read(routePath), "stale route inventory\n");
-  f.write("lib/routing/go_router.dart", "GoRouter router() { return GoRouter(routes: [GoRoute(path: '/', name: Routes.home.name, builder: (_) => const HomeScreen())]); }\n");
+  f.write("lib/routing/consumer_router.dart", "GoRouter router() { return GoRouter(routes: [GoRoute(path: '/', name: Routes.home.name, builder: (_) => const HomeScreen())]); }\n");
   f.write(catalogPath, `${catalogStart}\n${catalogEnd}\n${catalogStart}`);
   sourceSha = f.commit();
   assert.throws(() => materializeInventories({repoRoot: f.root, sourceSha}), /exactly one/);
@@ -346,7 +347,7 @@ test("receipt destination must be ignored, untracked and regular before generati
 test("committed semantic route errors prevent a fresh CI receipt, while coverage remains an authored gate", t => {
   const f = ciFixture(t);
   f.materialize();
-  f.write("lib/routing/go_router.dart", "GoRouter router() { return GoRouter(routes: []); }\n");
+  f.write("lib/routing/consumer_router.dart", "GoRouter router() { return GoRouter(routes: []); }\n");
   const sourceSha = f.commit();
   const env = {...f.env, GITHUB_SHA: sourceSha, GITHUB_WORKFLOW_SHA: sourceSha};
   assert.throws(() => materializeCiInventories({repoRoot: f.root, sourceSha, env}), /not wired/);

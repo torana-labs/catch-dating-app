@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/routing/shell/adaptive_tab_scaffold.dart';
-import 'package:catch_dating_app/routing/shell/app_shell.dart'
+import 'package:catch_dating_app/routing/shell/shell_chrome.dart'
     show AppShellSideNavigation;
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';

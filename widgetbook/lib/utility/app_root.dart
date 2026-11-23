@@ -2,7 +2,7 @@ import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/consumer_router.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,7 +65,7 @@ class _MyAppScopeState extends State<_MyAppScope> {
   Widget build(BuildContext context) {
     return WidgetbookFixtureScope(
       overrides: [
-        goRouterProvider.overrideWithValue(_router),
+        consumerGoRouterProvider.overrideWithValue(_router),
         forceUpdateRequiredProvider.overrideWithValue(
           const AsyncData<bool>(false),
         ),
@@ -73,7 +73,7 @@ class _MyAppScopeState extends State<_MyAppScope> {
           (ref) => Stream<UserProfile?>.value(null),
         ),
       ],
-      child: MyApp(routerProvider: goRouterProvider),
+      child: MyApp(routerProvider: consumerGoRouterProvider),
     );
   }
 }
