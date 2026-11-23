@@ -1,0 +1,22 @@
+{
+  "id": "hostOrganizerEntitlementViews",
+  "path": "hostOrganizerEntitlementViews/{organizerId}",
+  "rulesMatch": "/hostOrganizerEntitlementViews/{organizerId}",
+  "typescriptInterface": "HostOrganizerEntitlementViewDocument",
+  "dartModel": null,
+  "rulesTestFile": "functions/test/rules/host_organizer_account_views.rules.test.cjs",
+  "rulesTestNames": [
+    "lets the organizer's managers get its entitlement view"
+  ],
+  "owner": "Host read model projector: hostReadModels organizerAccountViewTriggers",
+  "writerContext": "host",
+  "read": "get by organizer id for the organizer's current owner and managers while their account is not deleted; a missing view reads as no grants; never listed",
+  "write": "server only; written from organizerEntitlements",
+  "exportedFunctions": [
+    "onHostOrganizerEntitlementViewChanged"
+  ],
+  "migrationNotes": [
+    "Replaces getOrganizerEntitlement for the Host app (#2306): grants with validity windows and revocation instants instead of the active flag, meters and catalog version. Admin keeps calling the callable (it has no Firestore client), so it stays deployed. The host-organizer-account-views copy-forward migration creates views for entitlement documents that predate the trigger.",
+    "No personal data: admin internals (grantedBy, receiptRef, note) are never copied."
+  ]
+}
