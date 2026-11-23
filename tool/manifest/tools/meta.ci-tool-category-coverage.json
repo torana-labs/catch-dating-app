@@ -11,5 +11,6 @@
     "node --test tool/ci/check_tool_category_coverage.test.mjs",
     "node tool/ci/check_tool_category_coverage.mjs"
   ],
-  "role": "gate"
+  "role": "gate",
+  "queueGate": "always"
 }

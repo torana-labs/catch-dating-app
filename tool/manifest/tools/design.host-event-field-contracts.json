@@ -29,5 +29,6 @@
   "alsoEnforces": [
     "DESIGN-TOKENS-001",
     "UI-LINT-001"
-  ]
+  ],
+  "queueGate": "always"
 }

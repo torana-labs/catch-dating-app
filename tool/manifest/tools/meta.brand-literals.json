@@ -28,5 +28,6 @@
     "node packages/brand/generate.mjs --check",
     "node --test packages/brand/brand.test.mjs",
     "node packages/brand/check_brand_literals.mjs"
-  ]
+  ],
+  "queueGate": "always"
 }

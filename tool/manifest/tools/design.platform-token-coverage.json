@@ -31,5 +31,6 @@
   "role": "gate",
   "alsoEnforces": [
     "UI-LINT-001"
-  ]
+  ],
+  "queueGate": "always"
 }

@@ -22,5 +22,6 @@
       ],
       "instruction": "Every migration contract must declare schemaVersion, logicalName, currentPhase, reason, unique phases with known statuses, operational evidence such as guards or known consumers, and liveApply evidence when any phase is complete_remote."
     }
-  ]
+  ],
+  "queueGate": "always"
 }

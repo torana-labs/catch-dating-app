@@ -33,5 +33,6 @@
       ],
       "instruction": "Every root entry must match exactly one manifest classification. Cleanup is dry-run first and mutates only an explicit allowlisted scope; tracked files, protected paths, worktrees, symlinks, path escapes, and machine-local Markdown links are rejected."
     }
-  ]
+  ],
+  "queueGate": "always"
 }

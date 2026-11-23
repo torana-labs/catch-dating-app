@@ -22,5 +22,6 @@
     "node --check tool/design/playbook/check_playbook.mjs",
     "node tool/design/playbook/check_playbook.mjs"
   ],
-  "role": "gate"
+  "role": "gate",
+  "queueGate": "always"
 }

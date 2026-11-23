@@ -47,5 +47,6 @@
       "node",
       "root-npm"
     ]
-  }
+  },
+  "queueGate": "always"
 }

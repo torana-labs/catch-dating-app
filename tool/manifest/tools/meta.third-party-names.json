@@ -22,5 +22,6 @@
     "node --check tool/check_third_party_names.mjs",
     "node --test tool/check_third_party_names.test.mjs",
     "node tool/check_third_party_names.mjs"
-  ]
+  ],
+  "queueGate": "always"
 }

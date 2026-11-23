@@ -32,5 +32,6 @@
     "node --check tool/contracts/generate_market_catalog.mjs",
     "node --test tool/contracts/generate_market_catalog.test.mjs",
     "node tool/contracts/generate_market_catalog.mjs --check"
-  ]
+  ],
+  "queueGate": "always"
 }

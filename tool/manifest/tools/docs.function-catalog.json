@@ -24,5 +24,6 @@
     "node --test tool/docs/function_catalog.test.mjs",
     "node tool/docs/function_catalog.mjs --check"
   ],
-  "role": "gate"
+  "role": "gate",
+  "queueGate": "candidate"
 }

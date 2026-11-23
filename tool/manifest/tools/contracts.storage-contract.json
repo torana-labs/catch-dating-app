@@ -21,5 +21,6 @@
       ],
       "instruction": "Every storage path schema must declare x-storage-rules-match, x-storage-read, x-storage-write, x-storage-rules-test-file, and matching storage.rules coverage. Review passes for storage contracts should run the static storage checker and, when feasible, the firestore/storage emulator rules suite."
     }
-  ]
+  ],
+  "queueGate": "always"
 }

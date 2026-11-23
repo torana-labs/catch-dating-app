@@ -1,0 +1,26 @@
+{
+  "id": "ci:semantic-gates",
+  "category": "ci",
+  "path": "tool/ci/semantic_gates.mjs",
+  "command": "node tool/ci/semantic_gates.mjs list",
+  "surface": "local-read",
+  "status": "active",
+  "role": "operator",
+  "description": "Runs the merge-queue semantic gate: every tool whose manifest file carries queueGate always, by its manifest command, serially and all of them, with a step summary and per-check timings; --candidates adds the candidate checks, which never fail the run. budget reads recent nightly timings and reports any gate over 10 s at p95, report-only.",
+  "ciRequirements": {
+    "repositoryView": "full",
+    "setup": [
+      "node"
+    ]
+  },
+  "impactPaths": [
+    "tool/ci/semantic_gates.test.mjs",
+    "tool/lib/semantic_gates.mjs"
+  ],
+  "checks": [
+    "node --check tool/ci/semantic_gates.mjs",
+    "node --test tool/ci/semantic_gates.test.mjs",
+    "node tool/ci/semantic_gates.mjs list"
+  ],
+  "runbook": "docs/release_operations.md#semantic-checks-gate"
+}
