@@ -2347,61 +2347,61 @@ abstract class AppLocalizations {
   /// **'Create a mutual pick'**
   String get chatsSuvbotActionBarLabelCreateMatch;
 
-  /// Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).
+  /// Product copy used by lib/pages/organizer/organizer_detail_screen.dart (body).
   ///
   /// In en, this message translates to:
   /// **'organizerId'**
   String get organizersOrganizerDetailScreenBodyOrganizerid;
 
-  /// Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).
+  /// Product copy used by lib/pages/organizer/organizer_detail_screen.dart (body).
   ///
   /// In en, this message translates to:
   /// **'eventId'**
   String get organizersOrganizerDetailScreenBodyEventid;
 
-  /// Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (body).
+  /// Product copy used by lib/pages/organizer/organizer_detail_screen.dart (body).
   ///
   /// In en, this message translates to:
   /// **'uid'**
   String get organizersOrganizerDetailScreenBodyUid;
 
-  /// Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (title).
+  /// Product copy used by lib/pages/organizer/organizer_detail_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Organizer not found'**
   String get organizersOrganizerDetailScreenTitleOrganizerNotFound;
 
-  /// Product copy used by lib/organizers/presentation/detail/organizer_detail_screen.dart (message).
+  /// Product copy used by lib/pages/organizer/organizer_detail_screen.dart (message).
   ///
   /// In en, this message translates to:
   /// **'This organizer is no longer available.'**
   String get organizersOrganizerDetailScreenMessageThisOrganizerIsNo;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_contact_section.dart (title).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_contact_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Contact'**
   String get organizersOrganizerContactSectionTitleContact;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'About'**
   String get organizersOrganizerDetailBodyTitleAbout;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'What we do'**
   String get organizersOrganizerDetailBodyTitleWhatWeDo;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'From the organizer'**
   String get organizersOrganizerDetailBodyTitleFromTheOrganizer;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Your hosts'**
@@ -2449,62 +2449,62 @@ abstract class AppLocalizations {
   /// **'Unavailable'**
   String get organizersAuthorityBadgeUnavailable;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Reviews'**
   String get organizersOrganizerDetailBodyTitleReviews;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (title).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Get in touch'**
   String get organizersOrganizerDetailBodyTitleGetInTouch;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Disable organizer push notifications'**
   String
   get organizersOrganizerDetailDockLabelDisableOrganizerPushNotifications;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Enable organizer push notifications'**
   String get organizersOrganizerDetailDockLabelEnableOrganizerPushNotifications;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (tooltip).
+  /// Product copy used by lib/pages/organizer/widgets/club_hero_app_bar.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Back'**
   String get organizersOrganizerHeroAppBarTooltipBack;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (tooltip).
+  /// Product copy used by lib/pages/organizer/widgets/club_hero_app_bar.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Share organizer'**
   String get organizersOrganizerHeroAppBarTooltipShareOrganizer;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_host_section.dart (message).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_host_section.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Message host'**
   String get organizersOrganizerHostSectionMessageMessageHost;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/club_photo_strip.dart (Text).
+  /// Product copy used by lib/pages/organizer/widgets/club_photo_strip.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'FROM THE ORGANIZER'**
   String get organizersOrganizerPhotoStripTextFromTheOrganizer;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart (title).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_schedule_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'No events scheduled'**
   String get organizersOrganizerScheduleSectionTitleNoEventsScheduled;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart (message).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_schedule_section.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Future events will appear here once the host publishes one.'**
@@ -2522,13 +2522,13 @@ abstract class AppLocalizations {
   /// **'Organizer directory'**
   String get organizersOrganizerDiscoverListTitleOrganizerDirectory;
 
-  /// Product copy used by lib/organizers/shared/club_identity_atoms.dart (label).
+  /// Product copy used by lib/pages/organizer/club_identity_atoms.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Owner'**
   String get organizersOrganizerIdentityAtomsLabelOwner;
 
-  /// Product copy used by lib/organizers/shared/club_identity_atoms.dart (label).
+  /// Product copy used by lib/pages/organizer/club_identity_atoms.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Host'**
@@ -6379,25 +6379,25 @@ abstract class AppLocalizations {
   /// **'Photos'**
   String get userProfileProfileTabSkeletonTitlePhotos;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (title).
+  /// Product copy used by lib/pages/organizer/widgets/club_hero_app_bar.dart (title).
   ///
   /// In en, this message translates to:
   /// **'club-detail-collapsed-title'**
   String get organizersOrganizerHeroAppBarTitleOrganizerDetailCollapsedTitle;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (Text).
+  /// Product copy used by lib/pages/organizer/widgets/club_hero_app_bar.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'club-detail-expanded-title'**
   String get organizersOrganizerHeroAppBarTextOrganizerDetailExpandedTitle;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_schedule_section.dart (title).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_schedule_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Schedule'**
   String get organizersOrganizerScheduleSectionTitleSchedule;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_share_card.dart (Text).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_share_card.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'ORGANIZER ON CATCH'**
@@ -6898,13 +6898,13 @@ abstract class AppLocalizations {
     required Object date,
   });
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (Text).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'{members}'**
   String organizersOrganizerDetailDockTextMembers({required Object members});
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/club_hero_app_bar.dart (semanticLabel).
+  /// Product copy used by lib/pages/organizer/widgets/club_hero_app_bar.dart (semanticLabel).
   ///
   /// In en, this message translates to:
   /// **'{name} cover photo'**
@@ -6912,7 +6912,7 @@ abstract class AppLocalizations {
     required Object name,
   });
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_host_section.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_host_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'View {displayName} profile'**
@@ -6920,7 +6920,7 @@ abstract class AppLocalizations {
     required Object displayName,
   });
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/club_photo_strip.dart (Text).
+  /// Product copy used by lib/pages/organizer/widgets/club_photo_strip.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'{length} PHOTOS'**
@@ -6928,7 +6928,7 @@ abstract class AppLocalizations {
     required Object length,
   });
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_share_card.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_share_card.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{area}, {cityLabel}'**
@@ -6937,7 +6937,7 @@ abstract class AppLocalizations {
     required Object cityLabel,
   });
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_share_card.dart (semanticLabel).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_share_card.dart (semanticLabel).
   ///
   /// In en, this message translates to:
   /// **'{name} cover photo'**
@@ -10978,13 +10978,13 @@ abstract class AppLocalizations {
   String
   get eventsEventDetailDesignPrimitivesVisiblecopyOnlyActiveOrganizerMembers;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (visibleCopy).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'FREE TO JOIN · LEAVE ANYTIME'**
   String get organizersOrganizerDetailDockVisiblecopyFreeToJoinLeave;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (visibleCopy).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'MEMBER · MANAGE ANYTIME'**
@@ -11529,25 +11529,25 @@ abstract class AppLocalizations {
     required Object title,
   });
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Followers'**
   String get organizersOrganizerDetailBodyLabelMembers;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Rating'**
   String get organizersOrganizerDetailBodyLabelRating;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Reviews'**
   String get organizersOrganizerDetailBodyLabelReviews;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_body.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_body.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Established'**
@@ -11693,31 +11693,31 @@ abstract class AppLocalizations {
   /// **'Next event'**
   String get dashboardEventFocusRailBadgelabelNextEvent;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Sign in to follow'**
   String get organizersOrganizerDetailDockLabelSignInToJoin;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Follow organizer'**
   String get organizersOrganizerDetailDockLabelJoinOrganizer;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Following'**
   String get organizersOrganizerDetailDockLabelJoined;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Manage'**
   String get organizersOrganizerDetailDockLabelManage;
 
-  /// Product copy used by lib/organizers/presentation/detail/widgets/organizer_detail_dock.dart (label).
+  /// Product copy used by lib/pages/organizer/widgets/organizer_detail_dock.dart (label).
   ///
   /// In en, this message translates to:
   /// **'New event'**

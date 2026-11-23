@@ -617,8 +617,8 @@ the detail, acceptance criteria, and screen-by-screen state inventory.
   `lib/pages/chat/widgets/chat_input.dart`, and
   `lib/pages/chat/widgets/message_bubble.dart` inline action/media
   progress, `lib/events/presentation/location_picker_screen.dart` search
-  suffix progress, `lib/organizers/presentation/detail/widgets/catch_club_dock.dart`
-  and `lib/organizers/presentation/detail/widgets/membership_button.dart`
+  suffix progress, `lib/pages/organizer/widgets/catch_club_dock.dart`
+  and `lib/pages/organizer/widgets/membership_button.dart`
   notification-toggle progress, Settings delete/sign-out mutation progress,
   `lib/pages/startup/splash_screen.dart` startup loading, and
   `packages/platform/lib/riverpod_ui/catch_async_value_view.dart` core async primitive defaults.

@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_body.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_screen_state.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_detail_body.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';

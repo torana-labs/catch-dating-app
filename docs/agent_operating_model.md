@@ -501,9 +501,10 @@ node tool/run.mjs check agent:context-pack
 `node tool/git/sweep_merged_worktrees.mjs --apply` is the routine cleanup and
 runs at the start of every session (AGENTS.md Starting Loop). It removes a
 linked worktree only when all of these hold: its HEAD is in `origin/main` or is
-the exact head of a merged PR, it has no modified or untracked files, it is not
-locked, no process runs inside it, its branch has no open PR, and it has been
-idle for six hours. It releases any guard claim with `finish --abandon`, then
+a commit of a merged PR (its final head or any earlier commit, since PRs often
+gain a merge-main or fixup commit after a checkout's last one), it has no
+modified or untracked files, it is not locked, no process runs inside it, its
+branch has no open PR, and it has been idle for six hours. It releases any guard claim with `finish --abandon`, then
 runs non-forced `git worktree remove`; ignored dependency and build folders go
 with the checkout, and branches, refs and stashes stay. Without `--apply` it
 only reports. Merged work meeting those conditions needs no further retirement
@@ -516,6 +517,10 @@ already in main. Second, sessions usually end once their PR is queued, before
 it merges, so their own closeout never runs. The sweep handles both. The app's
 "Auto-archive sessions when their pull request closes" setting also removes
 session worktrees once their PR merges.
+
+A process left running inside a worktree keeps it forever: the sweep never
+removes a checkout something is running in. Stop emulators, watchers and dev
+servers you started before the session ends.
 
 Retire accepted disposable worktrees while their context is fresh. Retained
 worktrees need an exact path, owner, reason and next action in the existing task

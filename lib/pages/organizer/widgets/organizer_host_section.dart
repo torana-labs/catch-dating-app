@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_formatters.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_detail_formatters.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_tokens/catch_tokens.dart';

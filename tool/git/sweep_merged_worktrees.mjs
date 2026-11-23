@@ -17,7 +17,8 @@ export function sweepHelp() {
 
 Lists every linked worktree of this repository and removes (with --apply) the
 ones that are finished:
-  - HEAD is an ancestor of origin/main, or is the exact head of a merged PR;
+  - HEAD is an ancestor of origin/main, or is a commit of a merged PR (its
+    final head or any earlier commit);
   - no modified or untracked files (ignored files such as node_modules go with it);
   - not locked, not the primary checkout, no process has its cwd inside it;
   - no open PR for its branch;
@@ -96,10 +97,27 @@ export function githubFromCli({cwd}) {
   };
   const merged = list("merged");
   const open = list("open");
+  const ghJson = (args) => {
+    const out = spawnSync("gh", args, {cwd, encoding: "utf8", maxBuffer: 64 * 1024 * 1024});
+    if (out.status !== 0) return null;
+    try { return JSON.parse(out.stdout); } catch { return null; }
+  };
   return {
     available: merged != null && open != null,
     mergedByHead: new Map((merged ?? []).map((pr) => [pr.headRefOid, pr.number])),
     openBranches: new Set((open ?? []).map((pr) => pr.headRefName)),
+    // A PR often gains commits after a checkout's last one (merge-main,
+    // update-branch, a fixup from another checkout), so its final head never
+    // matches. Search finds merged PRs that contain the commit; the commit
+    // list confirms it, since search also matches the SHA quoted in text.
+    mergedContaining: (sha) => {
+      const hits = ghJson(["pr", "list", "--state", "merged", "--search", sha, "--limit", "5", "--json", "number"]);
+      for (const {number} of hits ?? []) {
+        const pr = ghJson(["pr", "view", String(number), "--json", "commits"]);
+        if ((pr?.commits ?? []).some((c) => c.oid === sha)) return number;
+      }
+      return null;
+    },
   };
 }
 
@@ -165,6 +183,11 @@ export function sweepWorktrees({
       facts.ancestorOfMain = mainSha.ok && entry.head != null &&
         git(["merge-base", "--is-ancestor", entry.head, mainSha.stdout], top.stdout).ok;
       facts.mergedPullRequest = gh.mergedByHead.get(entry.head) ?? null;
+      const stillUndecided = !facts.ancestorOfMain && facts.mergedPullRequest == null &&
+        !facts.dirty && !facts.inUse && !facts.openPullRequest && !entry.locked;
+      if (stillUndecided && entry.head != null && gh.mergedContaining) {
+        facts.mergedPullRequest = gh.mergedContaining(entry.head) ?? null;
+      }
       const claim = claimFileFor(commonDir, entry.path);
       facts.unstartedClaim = claim != null && entry.head != null && claim.baseSha === entry.head;
       facts.idleHours = idleHoursFor(entry.path, now);

@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {reconcileEventSetupDefaultView} from "./eventSetupDefaultViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type SourceData = FirebaseFirestore.DocumentData | undefined;
 
@@ -44,3 +45,18 @@ export const onHostEventSetupDefaultViewOrganizerChanged = onDocumentWritten({
   await reconcileEventSetupDefaultView(admin.firestore(),
     event.params.organizerId);
 });
+
+/**
+ * An organizer write that can change its defaults view.
+ * The organizers dispatcher (issue #2451) runs the same work; both run
+ * until the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostEventSetupDefaultViewProjections = defineProjections(
+  "organizers", [{
+    id: "hostEventSetupDefaultView", kind: "projection",
+    when: (change) => organizerWriteAffectsDefaultView(change.before,
+      change.after),
+    run: (change, ctx) => reconcileEventSetupDefaultView(ctx.db,
+      change.documentId),
+  }]);

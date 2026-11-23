@@ -675,7 +675,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   bool _isRawChromeExceptionPath(String path) {
     return path.endsWith(
-          '/lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart',
+          '/lib/pages/organizer/widgets/organizer_hero_top_bar.dart',
         ) ||
         path.endsWith(
           '/lib/pages/event/widgets/event_detail_hero_top_bar.dart',

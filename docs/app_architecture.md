@@ -470,6 +470,19 @@ Rules, checked by `node tool/architecture/check_functions_contexts.mjs`:
    a listed one that no longer happens must be removed.
 5. Every module is placed, and every placement still places a file
    (`unplaced`, `stalePlacement`).
+6. A source collection served by a dispatcher (issue #2451) has one
+   Firestore trigger, `dispatch<Source>`, built by
+   `functions/src/platform/dispatch/runtime.ts`. Each context registers its
+   projections for it with `export const <name> =
+   defineProjections("<source>", [...])` beside the code they run, and
+   `node tool/architecture/generate_dispatch_registries.mjs` writes the
+   generated registry `functions/src/<area>/dispatch/<source>.generated.ts`
+   from `functions/dispatch-sources.json`. That registry is the one module
+   that may import any context or surface (the map's `dispatchRegistries`
+   pattern); only its area's `functions.ts` imports it
+   (`dispatchRegistryImported`), and `--check` fails on a stale registry.
+   Only convergent work registers: a projection re-reads its source, and an
+   effect names the `commandReceipts` command it dedupes with by event id.
 
 Until the scripted move, the map's `legacy` list places today's folders; the
 longest path wins, and a path that does not end in `/` places one file, so a
@@ -4769,7 +4782,7 @@ Reference files:
 
 - `packages/catch_ui/lib/src/components/catch_poster.dart`
 - `packages/catch_ui/lib/src/components/catch_polaroid.dart`
-- `lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart`
+- `lib/pages/organizer/widgets/organizer_hero_top_bar.dart`
 - `lib/swipes/shared/profile_surface/profile_body.dart`
 - `design/components/catch.components.json`
 - `widgetbook/lib/organizers/catalog/poster.dart`

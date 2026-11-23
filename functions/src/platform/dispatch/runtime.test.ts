@@ -10,6 +10,7 @@ import {
   deadLetterId,
   defineProjections,
   dispatchEvent,
+  dispatcherConcurrency,
   dispatcherMemory,
   dispatcherTimeoutSeconds,
   fieldsChanged,
@@ -137,6 +138,21 @@ test("the dispatcher takes the largest timeout and memory its specs ask for",
     ]);
     assert.equal(dispatcherTimeoutSeconds([plain, heavy]), 300);
     assert.equal(dispatcherMemory([plain, heavy]), "1GiB");
+  });
+
+test("concurrency keeps each projection run's memory share of one trigger",
+  () => {
+    const specs = (count: number) => Array.from({length: count},
+      (_, index) => projection(`spec${index}`));
+    // The organizers pilot: 15 specs at 512 MiB serve 5 events at once.
+    assert.equal(dispatcherConcurrency(
+      [defineProjections("organizers", specs(15))]), 5);
+    assert.equal(dispatcherConcurrency(
+      [defineProjections("organizers", specs(1))]), 80);
+    assert.equal(dispatcherConcurrency([defineProjections("organizers",
+      [...specs(14), {...projection("big"), memory: "1GiB"}])]), 10);
+    assert.equal(dispatcherConcurrency(
+      [defineProjections("organizers", specs(200))]), 1);
   });
 
 test("when filters which specs run, and sees the derived operation",

@@ -1,5 +1,8 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/pages/event/event_price_copy.dart';
+import 'package:catch_dating_app/pages/event/tiles/event_date_rail_card.dart';
+import 'package:catch_dating_app/pages/event/tiles/event_tile_atoms.dart';
+import 'package:catch_dating_app/pages/event/tiles/event_tile_data.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

@@ -2,6 +2,7 @@
 // (read by functions/scripts/functionExports.cjs).
 
 export {createOrganizer} from "./createOrganizer";
+export {dispatchOrganizers} from "./dispatch/organizers.generated";
 export {
   startOrganizerContactConversation,
   startOrganizerConversation,

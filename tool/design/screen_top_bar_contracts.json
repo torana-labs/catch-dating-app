@@ -457,7 +457,7 @@
   ],
   "rawChromeExceptions": [
     {
-      "path": "lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart",
+      "path": "lib/pages/organizer/widgets/organizer_hero_top_bar.dart",
       "expression": "SliverAppBar",
       "occurrences": 1,
       "reason": "Club detail media hero owns collapsing photo chrome, not a route title bar."

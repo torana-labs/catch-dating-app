@@ -1893,7 +1893,7 @@
           ]
         },
         {
-          "path": "test/organizers/organizer_detail_dock_test.dart",
+          "path": "test/pages/organizer/widgets/organizer_detail_dock_test.dart",
           "contains": [
             "OrganizerBellButton retains toggle and pending semantics over icon chrome"
           ]

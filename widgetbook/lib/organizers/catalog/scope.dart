@@ -7,11 +7,11 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_read_only_preview.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_body.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_detail_dock.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_screen.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_screen_state.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_detail_body.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_detail_dock.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_schedule_section.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_schedule_section.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

@@ -14,7 +14,8 @@
   "write": "server only; written by every evaluation that changes it and deleted with the organizer",
   "exportedFunctions": [
     "onHostProviderConnectionViewConnectionChanged",
-    "onHostProviderConnectionViewOrganizerChanged"
+    "onHostProviderConnectionViewOrganizerChanged",
+    "dispatchOrganizers"
   ],
   "migrationNotes": [
     "Rows never carry secretVersionResource, connectedByUid or lastErrorCode. More than 20 connections records overCap with the first 20; an invalid connection records invalidSource and keeps the previous rows. Either means the door must not claim a complete setup."

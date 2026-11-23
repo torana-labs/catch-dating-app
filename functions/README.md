@@ -562,6 +562,7 @@ enter previews.
 | `createPromotionKit` | `src/commands/createPromotionKit.ts` | Command `promotion.create-kit`: one tracked invite link per channel or promoter for an event the caller manages. |
 | `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
 | `deleteEventHostPhoto` | `src/events/eventHostPhotos.ts` | Removes a shared host photo and its files. |
+| `dispatchOrganizers` | `src/organizers/dispatch/organizers.generated.ts` | The one dispatcher trigger for `organizers/{organizerId}` (#2451): runs the 15 convergent organizer projections registered with `defineProjections` (Host views, directory activation, guest entries, public organizer, public pages), retried as one event, with a dead letter per projection past one hour. The old per-projection triggers run beside it until they retire. |
 | `ensureTryItWorkspace` | `src/commands/ensureTryItWorkspace.ts` | Command `workspace.ensure`: gives a phone-verified caller their one private try-it organizer workspace. |
 | `expireTryItWorkspaces` | `src/commands/workspaceExpiry.ts` | Daily: removes try-it workspaces unused for 30 days, unless kept. |
 | `findClaimableOrganizers` | `src/organizers/phoneLeads/find.ts` | Shadow profiles (off): the "Is this you?" read for Catch Host setup; unclaimed organizers matched to the caller's verified phone, with prefill and missing fields. |

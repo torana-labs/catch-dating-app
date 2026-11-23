@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/organizers/organizers.dart';
 import 'package:catch_dating_app/pages/organizer/organizer_authority_badge.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_host_identity_row.dart';
 import 'package:catch_l10n/l10n.dart';
 
 enum ExploreOrganizerMembershipActionState {

@@ -8874,12 +8874,12 @@
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart:48",
+          "name": "lib/pages/organizer/widgets/organizer_photo_rail.dart:48",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/organizers/presentation/detail/widgets/organizer_photo_rail.dart:53",
+          "name": "lib/pages/organizer/widgets/organizer_photo_rail.dart:53",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },

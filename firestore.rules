@@ -367,20 +367,31 @@ service cloud.firestore {
             || programReach(programId).functionScoped.get(duty + '__' + functionId, 0) > request.time.toMillis()));
     }
 
+    // When a grant's event-wide permissions end, as eventOperatorExpiryMillis
+    // reads it for the callables: operatorExpiresAt (null grants none); a
+    // grant written before that field holds its expiresAt for a check-in
+    // operator and nothing for an event operator. Group duties keep
+    // expiresAt later and never extend it.
+    function eventOperatorExpiresAt(grant) {
+      return grant.keys().hasAny(['operatorExpiresAt'])
+        ? grant.operatorExpiresAt
+        : (grant.role == 'checkInOperator' ? grant.expiresAt : null);
+    }
+
     function hasActiveEventOperatorGrant(eventId, permission) {
-      let grantId = eventStaffGrantDocId(eventId, request.auth.uid);
+      let grantPath = /databases/$(database)/documents/eventStaffGrants/$(
+        eventStaffGrantDocId(eventId, request.auth.uid));
       return isAuthed()
-        && exists(/databases/$(database)/documents/eventStaffGrants/$(grantId))
-        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.eventId == eventId
-        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.uid == request.auth.uid
-        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.organizerId == (
-          get(/databases/$(database)/documents/events/$(eventId)).data.keys().hasAny(['organizerId'])
-            ? get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
-            : get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
-        )
-        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.status == 'active'
-        && get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.expiresAt > request.time
-        && permission in get(/databases/$(database)/documents/eventStaffGrants/$(grantId)).data.permissions;
+        && exists(grantPath)
+        && get(grantPath).data.eventId == eventId
+        && get(grantPath).data.uid == request.auth.uid
+        && get(grantPath).data.organizerId
+          == get(/databases/$(database)/documents/events/$(eventId)).data.organizerId
+        && get(grantPath).data.status == 'active'
+        && get(grantPath).data.expiresAt > request.time
+        && eventOperatorExpiresAt(get(grantPath).data) != null
+        && eventOperatorExpiresAt(get(grantPath).data) > request.time
+        && permission in get(grantPath).data.permissions;
     }
 
     function hasEventBookingStatus(eventId, uid, statuses) {
