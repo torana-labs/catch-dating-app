@@ -3,12 +3,14 @@ import test from "node:test";
 import {loadContextMap} from "./check_context_map.mjs";
 import {
   checkFunctionsContexts,
+  foreignWriteFindings,
   foreignWrites,
   isCheckedSource,
   loadFunctionsContextMap,
   loadWriterContexts,
   placeFunctionsPath,
   relativeImports,
+  scanFunctionsContexts,
 } from "./check_functions_contexts.mjs";
 import {collectionWrites} from "./lib/functions_collection_writes.mjs";
 
@@ -27,8 +29,8 @@ const appMap = loadContextMap(JSON.stringify({
   legacy: [],
 }));
 
-function fixtureMap(overrides = {}) {
-  return loadFunctionsContextMap(JSON.stringify({
+function fixtureMapSource(overrides = {}) {
+  return JSON.stringify({
     roots: {
       domain: "functions/src/domain/",
       surfaces: "functions/src/surfaces/",
@@ -46,7 +48,11 @@ function fixtureMap(overrides = {}) {
       {path: "functions/src/hostReadModels/", surface: "host"},
     ],
     ...overrides,
-  }), appMap);
+  });
+}
+
+function fixtureMap(overrides = {}) {
+  return loadFunctionsContextMap(fixtureMapSource(overrides), appMap);
 }
 
 function check(files, map = fixtureMap(), {keepStale = false} = {}) {
@@ -143,17 +149,54 @@ test("rejects upward and cross-surface imports", () => {
   ]);
 });
 
-test("bounds imports against the context order by the ceiling", () => {
+test("lists known imports against the context order one by one", () => {
+  const policyImport = "functions/src/events/policy.ts imports functions/src/events/eventAttendees.ts";
   const files = {
     "functions/src/events/policy.ts": "import \"./eventAttendees\";\n",
     "functions/src/events/eventAttendees.ts": "",
+    "functions/src/events/rules.ts": "",
   };
   const strict = check(files);
   assert.equal(strict.contextOrder.length, 1);
-  assert.deepEqual(strict.findings.map(({rule}) => rule), ["contextOrder"]);
-  const bounded = check(files, fixtureMap({contextOrderViolationCeiling: 1}));
-  assert.deepEqual(bounded.findings, []);
-  assert.equal(bounded.contextOrder.length, 1);
+  assert.deepEqual(strict.findings.map(({rule, path}) => `${rule} ${path}`),
+    ["contextOrder functions/src/events/policy.ts"]);
+  const listed = check(files, fixtureMap({knownContextOrderImports: [policyImport]}));
+  assert.deepEqual(listed.findings, []);
+  assert.equal(listed.contextOrder.length, 1);
+
+  // Fixing the listed import and adding a different one fails twice: the new
+  // import is not listed, and the listed one is stale.
+  const swapped = check({
+    "functions/src/events/policy.ts": "",
+    "functions/src/events/rules.ts": "import \"./eventAttendees\";\n",
+    "functions/src/events/eventAttendees.ts": "",
+  }, fixtureMap({knownContextOrderImports: [policyImport]}));
+  assert.deepEqual(swapped.findings.map(({rule, path}) => `${rule} ${path}`), [
+    "contextOrder functions/src/events/rules.ts",
+    "staleKnownViolation tool/architecture/functions_context_map.json",
+  ]);
+  assert.match(swapped.findings[1].reason, /knownContextOrderImports lists "functions\/src\/events\/policy.ts imports/u);
+});
+
+test("fails on a listed context-order import that no longer happens", () => {
+  const result = check({
+    "functions/src/events/policy.ts": "",
+    "functions/src/events/eventAttendees.ts": "",
+  }, fixtureMap({knownContextOrderImports:
+    ["functions/src/events/policy.ts imports functions/src/events/eventAttendees.ts"]}));
+  assert.deepEqual(result.findings.map(({rule}) => rule), ["staleKnownViolation"]);
+});
+
+test("keeps the known lists sorted, unique and free of the retired ceilings", () => {
+  assert.throws(() => fixtureMap({knownCrossContextWrites: ["b writes x", "a writes x"]}),
+    /must be sorted with no repeats/u);
+  assert.throws(() => fixtureMap({knownContextOrderImports: ["a imports b", "a imports b"]}),
+    /must be sorted with no repeats/u);
+  assert.throws(() => fixtureMap({knownCrossContextWrites: [""]}), /one string each/u);
+  assert.throws(() => fixtureMap({contextOrderViolationCeiling: 1}),
+    /retired: list each known violation in knownContextOrderImports/u);
+  assert.throws(() => fixtureMap({crossContextWriteCeiling: 1}),
+    /retired: list each known violation in knownCrossContextWrites/u);
 });
 
 test("reports unplaced modules, unknown target ids and stale placements", () => {
@@ -253,4 +296,88 @@ test("reports writes from outside the owning context, not shared outboxes", () =
   assert.deepEqual(foreign.map(({path, reason}) => `${path}: ${reason}`), [
     "functions/src/events/policy.ts: domain context events writes eventBookings, which bookings owns",
   ]);
+});
+
+test("lists known cross-context writes one by one", () => {
+  const writers = new Map([["eventBookings", new Set(["bookings"])],
+    ["eventAttendees", new Set(["bookings"])]]);
+  const writesFrom = (entries) => new Map(entries.map(([collection, file]) =>
+    [collection, new Map([[file, 1]])]));
+  const known = ["functions/src/events/policy.ts writes eventBookings"];
+  const rules = (map, entries) => foreignWriteFindings(
+    foreignWrites({writes: writesFrom(entries), writers, map}), map)
+    .map(({rule, path}) => `${rule} ${path}`);
+
+  // (a) A new cross-context write fails.
+  assert.deepEqual(rules(fixtureMap(), [["eventBookings", "functions/src/events/policy.ts"]]),
+    ["foreignWrite functions/src/events/policy.ts"]);
+  assert.deepEqual(rules(fixtureMap({knownCrossContextWrites: known}),
+    [["eventBookings", "functions/src/events/policy.ts"]]), []);
+  // (b) Fixing the listed write and adding a different one fails, even though
+  // the total stays at one.
+  assert.deepEqual(rules(fixtureMap({knownCrossContextWrites: known}),
+    [["eventAttendees", "functions/src/events/policy.ts"]]), [
+    "foreignWrite functions/src/events/policy.ts",
+    "staleKnownViolation tool/architecture/functions_context_map.json",
+  ]);
+  // (c) A listed write that no longer happens fails, so the list only shrinks.
+  assert.deepEqual(rules(fixtureMap({knownCrossContextWrites: known}), []),
+    ["staleKnownViolation tool/architecture/functions_context_map.json"]);
+});
+
+// An in-memory repository snapshot for scanFunctionsContexts.
+function memorySnapshot(files) {
+  const texts = new Map(Object.entries(files));
+  return {
+    listFiles: ({prefix}) => [...texts.keys()].filter((file) => file.startsWith(prefix)).sort(),
+    readTexts: (paths) => new Map(paths.map((file) => {
+      assert.ok(texts.has(file), `missing fixture ${file}`);
+      return [file, texts.get(file)];
+    })),
+  };
+}
+
+function scanFixture({sources, knownCrossContextWrites = []}) {
+  return scanFunctionsContexts({snapshot: memorySnapshot({
+    "tool/architecture/functions_context_map.json": fixtureMapSource({knownCrossContextWrites,
+      legacy: [{path: "functions/src/events/", context: "events"},
+        {path: "functions/src/bookings/", context: "bookings"}]}),
+    "tool/architecture/context_map.json": JSON.stringify({
+      roots: {contexts: "lib/contexts/", pages: "lib/pages/",
+        kernel: "packages/kernel/lib/", platform: "packages/platform/lib/"},
+      contexts: [{id: "events", owns: "Events."}, {id: "bookings", owns: "Bookings."}],
+      legacy: [],
+    }),
+    "tool/contracts/firestore_contract/contract.json": JSON.stringify({schemaVersion: 2}),
+    "tool/contracts/firestore_contract/collections/eventBookings.json": JSON.stringify({
+      id: "eventBookings", path: "eventBookings/{id}", writerContext: "bookings"}),
+    "tool/contracts/firestore_contract/collections/events.json": JSON.stringify({
+      id: "events", path: "events/{id}", writerContext: "events"}),
+    ...sources,
+  })});
+}
+
+test("a change that adds one cross-context write fails the scan", () => {
+  const bookingWrite = (id) =>
+    `export async function run(db: Db) {\n  await db.collection("eventBookings").doc("${id}").set({});\n}\n`;
+  const clean = scanFixture({sources: {
+    "functions/src/bookings/book.ts": bookingWrite("a"),
+    "functions/src/events/publish.ts": "export const x = 1;\n",
+  }});
+  assert.deepEqual(clean.findings, []);
+  const added = scanFixture({sources: {
+    "functions/src/bookings/book.ts": bookingWrite("a"),
+    "functions/src/events/publish.ts": bookingWrite("b"),
+  }});
+  assert.deepEqual(added.findings.map(({rule, path}) => `${rule} ${path}`),
+    ["foreignWrite functions/src/events/publish.ts"]);
+  assert.match(added.findings[0].reason, /not in knownCrossContextWrites/u);
+  const listed = scanFixture({
+    knownCrossContextWrites: ["functions/src/events/publish.ts writes eventBookings"],
+    sources: {
+      "functions/src/bookings/book.ts": bookingWrite("a"),
+      "functions/src/events/publish.ts": bookingWrite("b"),
+    },
+  });
+  assert.deepEqual(listed.findings, []);
 });

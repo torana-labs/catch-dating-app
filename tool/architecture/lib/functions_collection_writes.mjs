@@ -16,8 +16,17 @@ import {fromRepo} from "../../lib/repo_paths.mjs";
 const writeMethods = new Set(["set", "update", "create", "delete"]);
 const maxDepth = 8;
 
+// The Functions package's own TypeScript, which the Functions CI lane
+// installs; the root workspace's copy serves a checkout without it.
 export function loadTypescript() {
-  return createRequire(fromRepo("package.json"))("typescript");
+  for (const manifest of ["functions/package.json", "package.json"]) {
+    try {
+      return createRequire(fromRepo(manifest))("typescript");
+    } catch (error) {
+      if (error?.code !== "MODULE_NOT_FOUND") throw error;
+    }
+  }
+  throw new Error("TypeScript is not installed: run npm --prefix functions ci (or npm ci at the root).");
 }
 
 // Map<collection, Map<file, count>> for the given {path: source} files.

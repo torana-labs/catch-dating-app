@@ -59,3 +59,14 @@ jobs:
 
       - name: Check Firestore rules semantics against schemas
         run: node tool/contracts/check_firestore_rules_semantics.mjs
+
+      # This lane is in Required CI's needs, so each of these blocks the merge:
+      # client-write schemas for every write the rules allow, BigQuery export
+      # paths, composite query indexes and repository read limits.
+      - name: Check client writes, BigQuery export paths, query indexes and read limits
+        run: >-
+          node tool/run.mjs check
+          contracts:client-write-contracts
+          contracts:bigquery-export-paths
+          contracts:firestore-query-indexes
+          contracts:firestore-read-limits
