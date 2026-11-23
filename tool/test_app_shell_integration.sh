@@ -67,9 +67,43 @@ run_native_flutter_test() {
 
 mode="${1:-headless}"
 scope="${2:-all}"
+runner="${BASH_SOURCE[0]}"
+runner_root="$(cd "$(dirname "${runner}")/.." && pwd)"
+
+# Each suite is <project>:<path>, and runs from that Flutter project.
+# `flutter test` runs device tests only from the current project's own
+# integration_test/ directory, and each app keeps its macOS runner in its own
+# project, so the Consumer suites run from apps/consumer and the Host journeys
+# from apps/host. The headless entrypoints under test/integration/ import the
+# same suites through the fast test binding.
+native_suites=(
+  apps/consumer:integration_test/app_shell_smoke_test.dart
+  apps/consumer:integration_test/app_shell_organizer_flows_test.dart
+  apps/consumer:integration_test/app_shell_event_flows_test.dart
+  apps/consumer:integration_test/app_shell_dashboard_flows_test.dart
+  apps/consumer:integration_test/app_shell_catches_flows_test.dart
+  apps/consumer:integration_test/app_shell_chat_settings_review_flows_test.dart
+  apps/consumer:integration_test/app_shell_regression_test.dart
+  apps/host:integration_test/host_app_shell_journeys_test.dart
+)
+# The bounded native scope boots each app's runner once.
+native_smoke_suites=(
+  apps/consumer:integration_test/app_shell_smoke_test.dart
+  apps/host:integration_test/host_app_shell_journeys_test.dart
+)
+headless_suites=(
+  .:test/integration/app_shell_smoke_test.dart
+  .:test/integration/app_shell_organizer_flows_test.dart
+  .:test/integration/app_shell_event_flows_test.dart
+  .:test/integration/app_shell_dashboard_flows_test.dart
+  .:test/integration/app_shell_catches_flows_test.dart
+  .:test/integration/app_shell_chat_settings_review_flows_test.dart
+  .:test/integration/app_shell_regression_test.dart
+  apps/host:test/integration/host_app_shell_journeys_test.dart
+)
+headless_smoke_suites=(.:test/integration/app_shell_smoke_test.dart)
 
 if [[ "${mode}" == "--self-test" ]]; then
-  runner="${BASH_SOURCE[0]}"
   headless_plan="$(
     APP_SHELL_INTEGRATION_DRY_RUN=true bash "${runner}" headless smoke
   )"
@@ -79,35 +113,31 @@ if [[ "${mode}" == "--self-test" ]]; then
   headless_all_plan="$(
     APP_SHELL_INTEGRATION_DRY_RUN=true bash "${runner}" headless all
   )"
-  [[ "${headless_all_plan}" == *"test/integration/host_app_shell_journeys_test.dart"* ]]
+  [[ "${headless_all_plan}" == *"==> [.] flutter test --concurrency=1 test/integration/app_shell_smoke_test.dart"* ]]
+  [[ "${headless_all_plan}" == *"==> [apps/host] flutter test --concurrency=1 test/integration/host_app_shell_journeys_test.dart"* ]]
 
   native_plan="$(
     APP_SHELL_INTEGRATION_DRY_RUN=true bash "${runner}" macos smoke
   )"
   [[ "${native_plan}" == *"--dart-define=APP_SHELL_NATIVE_INTEGRATION=true"* ]]
-  [[ "${native_plan}" == *"integration_test/app_shell_smoke_test.dart"* ]]
-  [[ "${native_plan}" == *"-d macos"* ]]
+  [[ "${native_plan}" == *"[apps/consumer] flutter test --dart-define=APP_SHELL_NATIVE_INTEGRATION=true integration_test/app_shell_smoke_test.dart -d macos"* ]]
+  [[ "${native_plan}" == *"[apps/host] flutter test --dart-define=APP_SHELL_NATIVE_INTEGRATION=true integration_test/host_app_shell_journeys_test.dart -d macos"* ]]
   [[ "${native_plan}" != *"app_shell_event_flows_test.dart"* ]]
 
-  # The macOS runner lives in apps/consumer, and Flutter runs device tests only
-  # from that project's own integration_test/ directory, so every native suite
-  # needs a Consumer entrypoint that delegates to the shared suite.
-  native_all_plan="$(
-    APP_SHELL_INTEGRATION_DRY_RUN=true bash "${runner}" macos all
-  )"
-  runner_root="$(cd "$(dirname "${runner}")/.." && pwd)"
-  native_suite_count=0
-  while IFS= read -r suite; do
-    native_suite_count=$((native_suite_count + 1))
-    if [[ ! -f "${runner_root}/apps/consumer/${suite}" ]]; then
-      echo "Native suite ${suite} has no apps/consumer/${suite} entrypoint." >&2
+  # Every suite must exist in the project it runs from, and every native
+  # project must ship the macOS runner the device run builds.
+  for suite in "${native_suites[@]}" "${headless_suites[@]}"; do
+    if [[ ! -f "${runner_root}/${suite%%:*}/${suite#*:}" ]]; then
+      echo "Suite ${suite#*:} is missing from ${suite%%:*}." >&2
       exit 1
     fi
-  done < <(grep -oE 'integration_test/[A-Za-z0-9_]+\.dart' <<<"${native_all_plan}" | sort -u)
-  if ((native_suite_count == 0)); then
-    echo "Expected the native plan to name at least one suite." >&2
-    exit 1
-  fi
+  done
+  for suite in "${native_suites[@]}"; do
+    if [[ ! -f "${runner_root}/${suite%%:*}/macos/Runner.xcodeproj/project.pbxproj" ]]; then
+      echo "Native suite ${suite#*:} runs from ${suite%%:*}, which has no macOS runner." >&2
+      exit 1
+    fi
+  done
 
   if APP_SHELL_INTEGRATION_DRY_RUN=true \
     bash "${runner}" headless unknown >/dev/null 2>&1; then
@@ -186,17 +216,6 @@ if [[ "${mode}" == "--self-test" ]]; then
   exit 0
 fi
 
-native_suites=(
-  integration_test/app_shell_smoke_test.dart
-  integration_test/app_shell_organizer_flows_test.dart
-  integration_test/app_shell_event_flows_test.dart
-  integration_test/app_shell_dashboard_flows_test.dart
-  integration_test/app_shell_catches_flows_test.dart
-  integration_test/app_shell_chat_settings_review_flows_test.dart
-  integration_test/app_shell_regression_test.dart
-  integration_test/host_app_shell_journeys_test.dart
-)
-
 if [[ "${scope}" != "all" && "${scope}" != "smoke" ]]; then
   echo "Unknown app-shell integration scope: ${scope} (expected all or smoke)." >&2
   exit 64
@@ -204,7 +223,6 @@ fi
 
 run_flutter() {
   if [[ "${APP_SHELL_INTEGRATION_DRY_RUN:-false}" == "true" ]]; then
-    printf '==> '
     printf '%q ' "$@"
     printf '\n'
     return
@@ -212,34 +230,53 @@ run_flutter() {
   "$@"
 }
 
-if [[ "${mode}" == "headless" ]]; then
-  headless_suites=(
-    test/integration/app_shell_smoke_test.dart
-    test/integration/app_shell_organizer_flows_test.dart
-    test/integration/app_shell_event_flows_test.dart
-    test/integration/app_shell_dashboard_flows_test.dart
-    test/integration/app_shell_catches_flows_test.dart
-    test/integration/app_shell_chat_settings_review_flows_test.dart
-    test/integration/app_shell_regression_test.dart
-    test/integration/host_app_shell_journeys_test.dart
-  )
-  if [[ "${scope}" == "smoke" ]]; then
-    headless_suites=(test/integration/app_shell_smoke_test.dart)
+# Runs a command from <project>, printing it with the project in the plan.
+run_in_project() {
+  local project="$1"
+  local runner_fn="$2"
+  shift 2
+  if [[ "${APP_SHELL_INTEGRATION_DRY_RUN:-false}" == "true" ]]; then
+    printf '==> [%s] ' "${project}"
+    run_flutter "$@"
+    return
   fi
-  echo "==> flutter test --concurrency=1 test/integration"
-  run_flutter flutter test --concurrency=1 "${headless_suites[@]}"
+  echo "==> [${project}] $*"
+  (cd "${runner_root}/${project}" && "${runner_fn}" "$@")
+}
+
+if [[ "${mode}" == "headless" ]]; then
+  selected_suites=("${headless_suites[@]}")
+  if [[ "${scope}" == "smoke" ]]; then
+    selected_suites=("${headless_smoke_suites[@]}")
+  fi
+  # One flutter test per project, in suite order.
+  projects=()
+  for suite in "${selected_suites[@]}"; do
+    project="${suite%%:*}"
+    if [[ " ${projects[*]} " != *" ${project} "* ]]; then
+      projects+=("${project}")
+    fi
+  done
+  for project in "${projects[@]}"; do
+    files=()
+    for suite in "${selected_suites[@]}"; do
+      if [[ "${suite%%:*}" == "${project}" ]]; then
+        files+=("${suite#*:}")
+      fi
+    done
+    run_in_project "${project}" run_flutter flutter test --concurrency=1 "${files[@]}"
+  done
   exit 0
 fi
 
-selected_native_suites=("${native_suites[@]}")
+selected_suites=("${native_suites[@]}")
 if [[ "${scope}" == "smoke" ]]; then
-  selected_native_suites=(integration_test/app_shell_smoke_test.dart)
+  selected_suites=("${native_smoke_suites[@]}")
 fi
 
-for suite in "${selected_native_suites[@]}"; do
-  echo "==> flutter test ${suite} -d ${mode} (native integration binding)"
-  run_native_flutter_test flutter test \
+for suite in "${selected_suites[@]}"; do
+  run_in_project "${suite%%:*}" run_native_flutter_test flutter test \
     --dart-define=APP_SHELL_NATIVE_INTEGRATION=true \
-    "${suite}" \
+    "${suite#*:}" \
     -d "${mode}"
 done

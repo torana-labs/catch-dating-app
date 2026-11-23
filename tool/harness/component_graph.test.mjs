@@ -873,6 +873,7 @@ test("web and desktop shells never select signed mobile builds", () => {
     "apps/host/web/index.html",
     "apps/consumer/web/index.html",
     "apps/consumer/macos/Runner/Info.plist",
+    "apps/host/macos/Runner/Info.plist",
   ]) {
     for (const mode of graph.modes) {
       const result = plan(path, mode);

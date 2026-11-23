@@ -29,10 +29,11 @@ import 'package:flutter/widgets.dart' show SizedBox;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../test/hosts/support/host_crm_response_fixtures.dart';
-import '../../test/organizers/organizers_test_helpers.dart' show buildOrganizer;
-import '../../test/test_pump_helpers.dart';
-import 'app_shell_test_harness.dart';
+import '../../../../integration_test/support/app_shell_test_harness.dart';
+import '../../../../test/hosts/support/host_crm_response_fixtures.dart';
+import '../../../../test/organizers/organizers_test_helpers.dart'
+    show buildOrganizer;
+import '../../../../test/test_pump_helpers.dart';
 
 /// Answers one callable from a Host journey before the backend's own
 /// fixtures. Return `null` to defer to [HostShellBackend].
@@ -748,8 +749,14 @@ const _venueSessionRefreshCeiling = Duration(minutes: 5);
 
 /// Unmounts the app and lets self-refreshing reads observe disposal before
 /// the test ends.
+///
+/// Only the headless binding needs the wait: its fake clock makes it free,
+/// and its pending-timer check would fail on the refresh loop. The native
+/// binding pumps real time, where the wait would cost five minutes a
+/// journey, and it has no pending-timer check; the loop ends on its own.
 Future<void> unmountHostAppShell(WidgetTester tester) async {
   await tester.pumpWidget(const SizedBox.shrink());
+  if (tester.binding is LiveTestWidgetsFlutterBinding) return;
   await pumpFeatureUiFor(tester, _venueSessionRefreshCeiling);
 }
 

@@ -67,9 +67,9 @@ Current state:
 - iOS schemes and build configurations are wired for consumer `dev`
   and `prod` in `apps/consumer/ios`, and host `host-dev` and
   `host-prod` in `apps/host/ios`, through
-  `tool/platform/configure_apple_flavors.rb`. Only `apps/consumer` has a
-  macOS runner, with the consumer flavors; it hosts the native app-shell
-  smoke suite.
+  `tool/platform/configure_apple_flavors.rb`. Each app package also has a
+  macOS runner with its own flavors (`apps/consumer/macos`,
+  `apps/host/macos`); each hosts that app's native integration journeys.
 - Apple builds copy the matching `firebase/<env>/<platform>/GoogleService-Info.plist`
   into the app bundle at build time.
 - App Check is registered for Android, iOS/macOS, and web in both Firebase
