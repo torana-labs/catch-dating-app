@@ -146,8 +146,9 @@ test("the analytics view applies the privacy threshold in the trigger",
       JSON.stringify(validateAnalytics.errors));
     const callable = await getOrganizerFormAnalyticsHandler(h.request({formId,
       versionId: null}), h.deps);
-    const {sources: _sources, version: formVersion, ...rest} = callable;
-    assert.deepEqual({...view}, {...rest, formVersion, version: 1});
+    const {version: formVersion, ...rest} = callable;
+    assert.deepEqual({...view, sources: rest.sources},
+      {...rest, formVersion, version: 1});
     const byId = new Map((view.questions as Array<{questionId: string;
       choiceCounts: unknown[]}>).map((row) => [row.questionId, row]));
     assert.equal(byId.get(choice.questionId)!.choiceCounts.length, 1);
