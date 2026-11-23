@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
+import 'package:catch_dating_app/pages/start/onboarding_welcome_body.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/startup/startup_animation_scope.dart';
 import 'package:catch_platform/theme/app_theme.dart';

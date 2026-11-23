@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_controller.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
 import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_platform/firebase/firestore_cache_wipe.dart';
 import 'package:catch_platform/push/fcm_service.dart';
@@ -11,7 +11,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_session_controller.g.dart';
 
-// provider-graph: cross-feature-presentation:authSessionControllerProvider->onboardingControllerProvider accepted -- Sign-out is the app-session boundary and must reset the public onboarding controller plus its Mutations. This is the documented controller-to-controller command seam, not a read-model or widget dependency.
 /// **Pattern A: Action controller + static Mutations**
 ///
 /// Owns session-level auth side effects such as sign-out. This keeps widgets

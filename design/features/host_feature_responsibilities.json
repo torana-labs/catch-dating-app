@@ -912,7 +912,7 @@
         },
         {
           "id": "auth_controller",
-          "file": "lib/auth/presentation/auth_session_controller.dart",
+          "file": "lib/pages/account/auth_session_controller.dart",
           "symbol": "AuthSessionController",
           "role": "Actions: sign_out."
         },

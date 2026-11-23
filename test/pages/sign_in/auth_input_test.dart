@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/auth/presentation/auth_input.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_input.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

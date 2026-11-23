@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/pages/account/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_account_state.dart';
 import 'package:catch_dating_app/safety/presentation/settings_account_view_model.dart';
-import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

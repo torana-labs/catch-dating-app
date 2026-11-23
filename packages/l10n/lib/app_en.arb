@@ -10967,140 +10967,140 @@
   },
   "onboardingOnboardingStepTitleWelcome": "Welcome",
   "@onboardingOnboardingStepTitleWelcome": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepTitleWhatSYourName": "What''s your name?",
   "@onboardingOnboardingStepTitleWhatSYourName": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepSubtitleLastNameStaysPrivate": "Last name stays private until you message someone.",
   "@onboardingOnboardingStepSubtitleLastNameStaysPrivate": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepTitleHowDoYouIdentify": "How do you identify?",
   "@onboardingOnboardingStepTitleHowDoYouIdentify": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepTitleYourInstagram": "Your Instagram",
   "@onboardingOnboardingStepTitleYourInstagram": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepSubtitleHelpsUsVerifyYou": "Helps us verify you for early access. Your handle is never shown to other users.",
   "@onboardingOnboardingStepSubtitleHelpsUsVerifyYou": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepTitleCompleteYourProfileFor": "Complete your profile to stay in touch",
   "@onboardingOnboardingStepTitleCompleteYourProfileFor": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepSubtitleCatchesNeedPhotosSo": "People you met see your photos when you pick them. You can still book events with your current details.",
   "@onboardingOnboardingStepSubtitleCatchesNeedPhotosSo": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepTitleShowYourself": "Show yourself",
   "@onboardingOnboardingStepTitleShowYourself": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepSubtitleAddAtLeast2": "Add at least 2 photos so others can find you.",
   "@onboardingOnboardingStepSubtitleAddAtLeast2": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepTitleAddPromptsToStart": "Add prompts so people know you",
   "@onboardingOnboardingStepTitleAddPromptsToStart": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepSubtitlePromptsGivePeopleSomething": "Prompts give people something real to talk about.",
   "@onboardingOnboardingStepSubtitlePromptsGivePeopleSomething": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepTitleShowYourPersonality": "Show your personality",
   "@onboardingOnboardingStepTitleShowYourPersonality": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepSubtitleAnswer3PromptsTo": "Answer 3 prompts to complete your profile.",
   "@onboardingOnboardingStepSubtitleAnswer3PromptsTo": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepTitleFinishYourCatchesProfile": "Finish your profile",
   "@onboardingOnboardingStepTitleFinishYourCatchesProfile": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepSubtitleTheseAreOptionalBut": "These are optional, but they help us suggest people you’d get on with.",
   "@onboardingOnboardingStepSubtitleTheseAreOptionalBut": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepTitleSetYourRunPreferences": "Set your run preferences",
   "@onboardingOnboardingStepTitleSetYourRunPreferences": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepSubtitleWeOnlyAskFor": "We only ask for these before run events so hosts can plan pace groups and distances.",
   "@onboardingOnboardingStepSubtitleWeOnlyAskFor": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepTitleYourRunningStyle": "Your running style",
   "@onboardingOnboardingStepTitleYourRunningStyle": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepSubtitleHelpUsFindCompatible": "Help us find compatible running partners.",
   "@onboardingOnboardingStepSubtitleHelpUsFindCompatible": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
@@ -15436,49 +15436,49 @@
   },
   "onboardingOnboardingStepVisiblecopyWelcome": "Welcome",
   "@onboardingOnboardingStepVisiblecopyWelcome": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepVisiblecopyYourName": "Your name",
   "@onboardingOnboardingStepVisiblecopyYourName": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepVisiblecopyGender": "Gender",
   "@onboardingOnboardingStepVisiblecopyGender": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepVisiblecopyInstagram": "Instagram",
   "@onboardingOnboardingStepVisiblecopyInstagram": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepVisiblecopyPhotos": "Photos",
   "@onboardingOnboardingStepVisiblecopyPhotos": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepVisiblecopyPrompts": "Prompts",
   "@onboardingOnboardingStepVisiblecopyPrompts": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"
   },
   "onboardingOnboardingStepVisiblecopyRunningStyle": "Running style",
   "@onboardingOnboardingStepVisiblecopyRunningStyle": {
-    "description": "Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "onboarding.presentation.onboarding_step"

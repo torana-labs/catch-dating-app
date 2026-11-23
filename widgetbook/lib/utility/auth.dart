@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/auth/presentation/host_auth_card.dart';
 import 'package:catch_dating_app/auth/presentation/otp_step.dart';
 import 'package:catch_dating_app/auth/presentation/phone_step.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_ui/catch_ui.dart';

@@ -11,6 +11,12 @@
 
     {"path": "lib/pages/reviews/write_review_sheet.dart", "from": "lib/reviews/shared/write_review_sheet.dart"},
 
+    {"path": "lib/pages/start/onboarding_welcome_body.dart", "from": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart"},
+
+    {"path": "lib/pages/start/start_welcome_route_screen.dart", "from": "lib/onboarding/presentation/start_welcome_route_screen.dart"},
+
+    {"path": "lib/pages/start/welcome_motion.dart", "from": "lib/onboarding/presentation/pages/welcome_motion.dart"},
+
     {"path": "lib/pages/startup/splash_screen.dart", "from": "lib/pages/startup/splash_screen.dart"}
   ]
 }

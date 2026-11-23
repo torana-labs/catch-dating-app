@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
-import 'package:catch_dating_app/auth/presentation/auth_input.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_input.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 
 class AuthPhoneEntryViewState {

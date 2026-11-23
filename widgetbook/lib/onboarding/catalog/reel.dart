@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
+import 'package:catch_dating_app/pages/start/onboarding_welcome_body.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_tokens/catch_tokens.dart';
