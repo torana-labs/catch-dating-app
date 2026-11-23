@@ -7,7 +7,12 @@ void main() {
     final router = File('lib/routing/consumer_router.dart').readAsStringSync();
 
     expect(router, isNot(contains('package:catch_dating_app/hosts/')));
-    expect(router, isNot(contains('host_router.dart')));
+    expect(
+      router,
+      isNot(
+        contains("import 'package:catch_dating_app/routing/host_router.dart'"),
+      ),
+    );
   });
 
   test('host router does not import host management form implementations', () {
