@@ -451,6 +451,90 @@ describe("firestore.rules", () => {
       }
     });
 
+    // Event-wide permissions end at operatorExpiresAt, as
+    // eventOperatorExpiryMillis caps them for the callables. A live group
+    // duty keeps the grant's expiresAt later, but it never extends the
+    // roster, the claim queue, the door list or a private event.
+    it("ends event-wide permissions at operatorExpiresAt while a group duty lives",
+      async () => {
+        await seed(["organizers", "club-1"], organizer());
+        await seed(["events", "event-1"], event());
+        await seed(["events", "event-private"],
+          event({publicationState: "private"}));
+        await seed(["eventAttendees", "attendee-1"], {
+          eventId: "event-1",
+          organizerId: "club-1",
+          displayName: "Asha Shah",
+          phoneE164: "+919876543210",
+          linkedUid: "runner-1",
+          source: "hostImport",
+          status: "registered",
+        });
+        await seed(
+          ["eventRuntimeClaimRequests", "event-1_runner-1"],
+          eventRuntimeClaimRequest(),
+        );
+        const past = Timestamp.fromDate(new Date("2020-08-12T10:00:00.000Z"));
+        const future = Timestamp.fromDate(new Date("2030-08-12T10:00:00.000Z"));
+        const groupDuties = [{
+          groupId: "group-1",
+          duty: "sweep",
+          expiresAtMillis: future.toMillis(),
+          sourceHash: "hash-1",
+          grantedBy: "host-1",
+          grantedAtMillis: past.toMillis(),
+        }];
+        const operator = (uid, eventId, overrides) => seed(
+          ["eventStaffGrants", `${eventId}__${uid}`],
+          eventStaffGrant({uid, eventId, role: "eventOperator", groupDuties,
+            expiresAt: future, ...overrides}),
+        );
+        const readsRoster = (uid) => getDocs(query(
+          collection(authedDb(uid), "eventAttendees"),
+          where("eventId", "==", "event-1")));
+        const readsClaims = (uid) => getDocs(query(
+          collection(authedDb(uid), "eventRuntimeClaimRequests"),
+          where("eventId", "==", "event-1")));
+        const readsPrivate = (uid) => getDoc(doc(authedDb(uid), "events",
+          "event-private"));
+
+        // Operator window over, group duty still live: nothing event-wide.
+        await operator("lapsed-operator", "event-1",
+          {operatorExpiresAt: past});
+        await operator("lapsed-operator", "event-private",
+          {operatorExpiresAt: past});
+        await assertFails(readsRoster("lapsed-operator"));
+        await assertFails(readsClaims("lapsed-operator"));
+        await assertFails(readsPrivate("lapsed-operator"));
+
+        // Group duties only (operatorExpiresAt null): nothing event-wide.
+        await operator("group-only", "event-1",
+          {operatorExpiresAt: null, permissions: []});
+        await assertFails(readsRoster("group-only"));
+        // A stale permissions list does not revive a null operator window.
+        await operator("group-only-stale", "event-1",
+          {operatorExpiresAt: null});
+        await assertFails(readsRoster("group-only-stale"));
+
+        // A live operator window still reads them.
+        await operator("live-operator", "event-1",
+          {operatorExpiresAt: future});
+        await operator("live-operator", "event-private",
+          {operatorExpiresAt: future});
+        await assertSucceeds(readsRoster("live-operator"));
+        await assertSucceeds(readsClaims("live-operator"));
+        await assertSucceeds(readsPrivate("live-operator"));
+
+        // A grant written without operatorExpiresAt: a check-in operator
+        // falls back to expiresAt, an event operator holds nothing
+        // event-wide, as the callables read it.
+        await seed(["eventStaffGrants", "event-1__legacy-checkin"],
+          eventStaffGrant({uid: "legacy-checkin"}));
+        await assertSucceeds(readsRoster("legacy-checkin"));
+        await operator("legacy-operator", "event-1", {});
+        await assertFails(readsRoster("legacy-operator"));
+      });
+
     it("keeps live operator positions server-only", async () => {
       const position = {
         eventId: "event-1",
