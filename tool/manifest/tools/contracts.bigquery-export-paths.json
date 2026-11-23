@@ -20,5 +20,5 @@
     "node --test tool/contracts/check_bigquery_export_paths.test.mjs",
     "node tool/contracts/check_bigquery_export_paths.mjs"
   ],
-  "queueGate": "candidate"
+  "queueGate": "always"
 }

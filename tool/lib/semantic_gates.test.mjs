@@ -8,20 +8,25 @@ import {semanticGateIds, validateQueueGates, wholeRepoInventory} from "./semanti
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 // The merge-queue gate the owner approved after the clean replay
-// (docs/plans/semantic_check_replay_report.md): the 65 checks under 10 s at
-// p95. A check leaving the manifest, losing its queueGate, or a new gate
-// added fails here until this list changes on purpose.
+// (docs/plans/semantic_check_replay_report.md): 65 checks under 10 s at p95,
+// plus the Functions context, client-write and BigQuery export path checks
+// the architecture sign-off added (#2445). A check leaving the manifest,
+// losing its queueGate, or a new gate added fails here until this list
+// changes on purpose.
 const approvedAlways = [
   "audit:app-architecture-exhibits",
   "audit:context-map",
   "audit:flutter-source-size",
   "audit:fn-rate-limits",
   "audit:fn-readme-inventory",
+  "audit:functions-contexts",
   "audit:host-crm-boundaries",
   "audit:mutation-error-surfaces",
   "audit:route-string-literals",
   "audit:unused-code",
   "audit:widget-cleanup",
+  "contracts:bigquery-export-paths",
+  "contracts:client-write-contracts",
   "contracts:firestore-contract",
   "contracts:firestore-query-indexes",
   "contracts:firestore-read-limits",
@@ -79,9 +84,6 @@ const approvedAlways = [
   "web:website-copy-ownership",
 ];
 const approvedCandidates = [
-  "audit:functions-contexts",
-  "contracts:bigquery-export-paths",
-  "contracts:client-write-contracts",
   "docs:function-catalog",
 ];
 
