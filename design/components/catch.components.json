@@ -18796,7 +18796,7 @@
       },
       "dart": {
         "symbol": "ChatInput",
-        "file": "lib/chats/presentation/widgets/chat_input.dart",
+        "file": "lib/pages/chat/widgets/chat_input.dart",
         "constructors": [
           "ChatInput"
         ]

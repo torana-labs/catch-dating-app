@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
@@ -9,6 +8,7 @@ import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/pages/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/routing/router_frame.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_platform/app_config.dart';

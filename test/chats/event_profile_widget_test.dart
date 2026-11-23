@@ -2,19 +2,19 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:catch_dating_app/chats/presentation/event_profile_controller.dart';
-import 'package:catch_dating_app/chats/presentation/event_profile_screen.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/event_chat_message_tile.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/event_profile_answer_field.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/event_profile_editor_section.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/event_profile_identity_section.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/event_profile_photo_field.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/data/form_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile_photo_preview.dart';
+import 'package:catch_dating_app/pages/chat/event_profile_controller.dart';
+import 'package:catch_dating_app/pages/chat/event_profile_screen.dart';
+import 'package:catch_dating_app/pages/chat/widgets/event_chat_message_tile.dart';
+import 'package:catch_dating_app/pages/chat/widgets/event_profile_answer_field.dart';
+import 'package:catch_dating_app/pages/chat/widgets/event_profile_editor_section.dart';
+import 'package:catch_dating_app/pages/chat/widgets/event_profile_identity_section.dart';
+import 'package:catch_dating_app/pages/chat/widgets/event_profile_photo_field.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_test_support/repo_file.dart';
@@ -24,12 +24,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../pages/chat/event_profile_controller_test.dart'
+    show CardsRepository, ProfileRepository, miniProfile;
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 import 'event_chat_profile_test.dart';
 import 'event_chat_widget_test.dart' show fixture;
-import 'event_profile_controller_test.dart'
-    show CardsRepository, ProfileRepository, miniProfile;
 
 final pixel = repoFile('test/goldens/fixtures/portrait.jpg').readAsBytesSync();
 const captureKey = ValueKey('event-profile-capture');

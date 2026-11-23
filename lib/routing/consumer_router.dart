@@ -1,8 +1,4 @@
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
-import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
-import 'package:catch_dating_app/chats/presentation/event_chat_participants_screen.dart';
-import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
-import 'package:catch_dating_app/chats/presentation/event_profile_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
@@ -22,6 +18,10 @@ import 'package:catch_dating_app/launch_access/presentation/launch_access_applic
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
+import 'package:catch_dating_app/pages/chat/chat_screen.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_participants_screen.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_screen.dart';
+import 'package:catch_dating_app/pages/chat/event_profile_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';

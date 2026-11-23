@@ -668,13 +668,13 @@
         },
         {
           "id": "search_header",
-          "file": "lib/chats/presentation/inbox/chats_search_header_controller.dart",
+          "file": "lib/pages/inbox/chats_search_header_controller.dart",
           "symbol": "ChatsSearchHeaderController",
           "role": "Actions: toggle_search."
         },
         {
           "id": "search_query",
-          "file": "lib/chats/presentation/inbox/chats_list_view_model.dart",
+          "file": "lib/pages/inbox/chats_list_view_model.dart",
           "symbol": "ChatSearchQuery",
           "role": "Actions: search_inquiries."
         },

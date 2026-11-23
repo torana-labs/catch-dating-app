@@ -16,7 +16,7 @@
   "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
   "x-storage-related-collection": "matches",
   "x-storage-known-consumers": [
-    "lib/chats/presentation/chat_screen.dart",
+    "lib/pages/chat/chat_screen.dart",
     "lib/contexts/messaging/data/chat_repository.dart",
     "functions/src/safety/moderateChatMessage.ts"
   ],

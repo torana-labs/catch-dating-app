@@ -715,7 +715,7 @@ applied after this spec uses these owners:
   is an event agenda surface. Do not recreate top-level `lib/calendar`.
 - Chat and host-inbox list UI lives under `lib/chats/presentation/inbox`.
   Match lifecycle data and domain behavior live in `lib/contexts/connections`;
-  `lib/matches/presentation` keeps match-specific screens such as the
+  `lib/pages/inbox` keeps match-specific screens such as the
   celebration dialog.
 - Event formatters, arrival policy, QR payloads, map links, calendar links,
   invite/share copy, and check-in location services live in
@@ -5250,7 +5250,7 @@ Reference files:
 
 - `packages/catch_ui/lib/src/components/catch_top_bar.dart`
 - `lib/dashboard/presentation/dashboard_home_screen.dart`
-- `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart`
+- `lib/pages/inbox/widgets/chats_sliver_header.dart`
 - `lib/explore/presentation/widgets/explore_header.dart`
 - `lib/user_profile/presentation/profile_screen.dart`
 

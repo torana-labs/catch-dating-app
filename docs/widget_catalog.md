@@ -336,35 +336,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>OtpStep</code> | <code>lib/auth/presentation/otp_step.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PhoneCountryCodePicker</code> | <code>lib/auth/presentation/phone_step.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PhoneStep</code> | <code>lib/auth/presentation/phone_step.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatParticipantsRowList</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatPageBody</code> | <code>lib/chats/presentation/event_chat_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatDirectoryRowList</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart</code> | — | — | Sliver directory of currently admitted events, including rooms not open yet. |
 | <code>EventChatDirectorySection</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ChatConversationsList</code> | <code>lib/chats/presentation/inbox/widgets/chat_conversations_list.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ChatsEmptyState</code> | <code>lib/chats/presentation/inbox/widgets/chats_empty_state.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ChatPersonRowSkeleton</code> | <code>lib/chats/presentation/inbox/widgets/chats_list.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ChatsList</code> | <code>lib/chats/presentation/inbox/widgets/chats_list.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ChatsListSkeleton</code> | <code>lib/chats/presentation/inbox/widgets/chats_list.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ChatsListBody</code> | <code>lib/chats/presentation/inbox/widgets/chats_list_body.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ChatsBrowseHeader</code> | <code>lib/chats/presentation/inbox/widgets/chats_sliver_header.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ChatEventContextHeader</code> | <code>lib/chats/presentation/widgets/chat_event_context_header.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ChatInput</code> | <code>lib/chats/presentation/widgets/chat_input.dart</code> | <code>Input</code> | — | Canonical chat composer. Also called: <code>ChatInputBar</code>, <code>MessageInput</code>, <code>MessageComposer</code>, <code>ChatComposer</code>. |
-| <code>ChatMessageList</code> | <code>lib/chats/presentation/widgets/chat_message_list.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ChatShareCard</code> | <code>lib/chats/presentation/widgets/chat_share_card.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ShareCardBubble</code> | <code>lib/chats/presentation/widgets/chat_share_card.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ShareCardHeader</code> | <code>lib/chats/presentation/widgets/chat_share_card.dart</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatEntrySection</code> | <code>lib/chats/presentation/widgets/event_chat_entry_section.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatMessageTile</code> | <code>lib/chats/presentation/widgets/event_chat_message_tile.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatReactionSection</code> | <code>lib/chats/presentation/widgets/event_chat_message_tile.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventProfileAnswerField</code> | <code>lib/chats/presentation/widgets/event_profile_answer_field.dart</code> | — | — | An entire reviewed answer, never an ellipsized summary of what will be shared. The optional toggle uses the same interaction and tokens as CatchField. |
-| <code>EventProfileEditorSection</code> | <code>lib/chats/presentation/widgets/event_profile_editor_section.dart</code> | — | — | Explicit sharing choices for eligible core values and one claimed organizer card. |
-| <code>EventProfileIdentitySection</code> | <code>lib/chats/presentation/widgets/event_profile_identity_section.dart</code> | — | — | Renders the protected event projection with an ephemeral in-memory photo. |
-| <code>EventProfilePhotoField</code> | <code>lib/chats/presentation/widgets/event_profile_photo_field.dart</code> | — | — | An owned photo choice that stays disabled until its current preview decodes. |
-| <code>MediaMessageBody</code> | <code>lib/chats/presentation/widgets/message_bubble.dart</code> | — | — | No class documentation or registry summary. |
-| <code>MessageBubble</code> | <code>lib/chats/presentation/widgets/message_bubble.dart</code> | — | — | No class documentation or registry summary. |
-| <code>MatchTesterSheet</code> | <code>lib/chats/presentation/widgets/suvbot_dock.dart</code> | — | — | No class documentation or registry summary. |
-| <code>SuvbotDock</code> | <code>lib/chats/presentation/widgets/suvbot_dock.dart</code> | — | — | No class documentation or registry summary. |
-| <code>SuvbotResetActionRow</code> | <code>lib/chats/presentation/widgets/suvbot_dock.dart</code> | — | — | No class documentation or registry summary. |
 | <code>CatchConsumerBootstrap</code> | <code>lib/consumer_bootstrap.dart</code> | — | — | Consumer-only process bootstrap. |
 | <code>HostDoorGuestRow</code> | <code>lib/contexts/audience/parts/host_door_guest_row.dart</code> | — | — | A door guest as a system row: the avatar (marked once in), the name with "New" for a first-timer, the line for the guest's status and the one action that status takes. It draws nothing of its own. |
 | <code>HostEventGuestRow</code> | <code>lib/contexts/audience/parts/host_event_guest_row.dart</code> | <code>Row</code> | <code>catch.index_row</code> | One guest as a compact list row: the avatar, the name, how many nights they have had with the organizer (or that this is their first, with the New badge), and the row's one action or a chevron. It draws nothing of its own. |
@@ -1080,7 +1054,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>LaunchAccessLoadingBody</code> | <code>lib/launch_access/presentation/launch_access_application_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>LocationMap</code> | <code>lib/locations/shared/location_map.dart</code> | — | — | No class documentation or registry summary. |
 | <code>MapPreview</code> | <code>lib/locations/shared/map_preview.dart</code> | <code>Preview</code> | — | A read-only, attribution-safe Google Maps viewport for compact previews. Also called: <code>LocationPreview</code>, <code>StaticMap</code>, <code>MiniMap</code>, <code>MapThumbnail</code>. |
-| <code>MatchCelebrationDialog</code> | <code>lib/matches/shared/match_celebration_dialog.dart</code> | — | — | No class documentation or registry summary. |
 | <code>ForegroundNotificationListener</code> | <code>lib/notifications/presentation/foreground_notification_listener.dart</code> | — | — | App-level presentation adapter. Delivery never reads BuildContext; the shared notice never parses FCM, authenticates a user or chooses a route. |
 | <code>OnboardingStepBody</code> | <code>lib/onboarding/presentation/onboarding_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingTopBar</code> | <code>lib/onboarding/presentation/onboarding_screen.dart</code> | — | — | No class documentation or registry summary. |
@@ -1141,6 +1114,33 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaperCelebrationDetailsCard</code> | <code>lib/pages/celebration/celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaperCelebrationIcon</code> | <code>lib/pages/celebration/celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaperCelebrationScaffold</code> | <code>lib/pages/celebration/celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatParticipantsRowList</code> | <code>lib/pages/chat/event_chat_participants_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatPageBody</code> | <code>lib/pages/chat/event_chat_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ChatEventContextHeader</code> | <code>lib/pages/chat/widgets/chat_event_context_header.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ChatInput</code> | <code>lib/pages/chat/widgets/chat_input.dart</code> | <code>Input</code> | — | Canonical chat composer. Also called: <code>ChatInputBar</code>, <code>MessageInput</code>, <code>MessageComposer</code>, <code>ChatComposer</code>. |
+| <code>ChatMessageList</code> | <code>lib/pages/chat/widgets/chat_message_list.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ChatShareCard</code> | <code>lib/pages/chat/widgets/chat_share_card.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ShareCardBubble</code> | <code>lib/pages/chat/widgets/chat_share_card.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ShareCardHeader</code> | <code>lib/pages/chat/widgets/chat_share_card.dart</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatMessageTile</code> | <code>lib/pages/chat/widgets/event_chat_message_tile.dart</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatReactionSection</code> | <code>lib/pages/chat/widgets/event_chat_message_tile.dart</code> | — | — | No class documentation or registry summary. |
+| <code>EventProfileAnswerField</code> | <code>lib/pages/chat/widgets/event_profile_answer_field.dart</code> | — | — | An entire reviewed answer, never an ellipsized summary of what will be shared. The optional toggle uses the same interaction and tokens as CatchField. |
+| <code>EventProfileEditorSection</code> | <code>lib/pages/chat/widgets/event_profile_editor_section.dart</code> | — | — | Explicit sharing choices for eligible core values and one claimed organizer card. |
+| <code>EventProfileIdentitySection</code> | <code>lib/pages/chat/widgets/event_profile_identity_section.dart</code> | — | — | Renders the protected event projection with an ephemeral in-memory photo. |
+| <code>EventProfilePhotoField</code> | <code>lib/pages/chat/widgets/event_profile_photo_field.dart</code> | — | — | An owned photo choice that stays disabled until its current preview decodes. |
+| <code>MediaMessageBody</code> | <code>lib/pages/chat/widgets/message_bubble.dart</code> | — | — | No class documentation or registry summary. |
+| <code>MessageBubble</code> | <code>lib/pages/chat/widgets/message_bubble.dart</code> | — | — | No class documentation or registry summary. |
+| <code>MatchTesterSheet</code> | <code>lib/pages/chat/widgets/suvbot_dock.dart</code> | — | — | No class documentation or registry summary. |
+| <code>SuvbotDock</code> | <code>lib/pages/chat/widgets/suvbot_dock.dart</code> | — | — | No class documentation or registry summary. |
+| <code>SuvbotResetActionRow</code> | <code>lib/pages/chat/widgets/suvbot_dock.dart</code> | — | — | No class documentation or registry summary. |
+| <code>MatchCelebrationDialog</code> | <code>lib/pages/inbox/match_celebration_dialog.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ChatConversationsList</code> | <code>lib/pages/inbox/widgets/chat_conversations_list.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ChatsEmptyState</code> | <code>lib/pages/inbox/widgets/chats_empty_state.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ChatPersonRowSkeleton</code> | <code>lib/pages/inbox/widgets/chats_list.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ChatsList</code> | <code>lib/pages/inbox/widgets/chats_list.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ChatsListSkeleton</code> | <code>lib/pages/inbox/widgets/chats_list.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ChatsListBody</code> | <code>lib/pages/inbox/widgets/chats_list_body.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ChatsBrowseHeader</code> | <code>lib/pages/inbox/widgets/chats_sliver_header.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostMembershipJoinSheet</code> | <code>lib/pages/memberships/host_membership_plan_sheet.dart</code> | — | — | No class documentation or registry summary. |
 | <code>HostMembershipPlanSheet</code> | <code>lib/pages/memberships/host_membership_plan_sheet.dart</code> | — | — | Plan details and the join flow: choose a billing interval, authorize the mandate on Razorpay's hosted page, then confirm the membership started. |
 | <code>HostMembershipPlansList</code> | <code>lib/pages/memberships/host_membership_plans_section.dart</code> | — | — | Provider-free plan rows, reused by previews and tests. |
@@ -1285,10 +1285,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ForceUpdateCheckErrorScreen</code> | <code>lib/app.dart</code> | — | — | No class documentation or registry summary. |
 | <code>MyApp</code> | <code>lib/app.dart</code> | — | — | No class documentation or registry summary. |
 | <code>AuthScreen</code> | <code>lib/auth/presentation/auth_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>ChatScreen</code> | <code>lib/chats/presentation/chat_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatParticipantsScreen</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatScreen</code> | <code>lib/chats/presentation/event_chat_screen.dart</code> | — | — | No class documentation or registry summary. |
-| <code>EventProfileScreen</code> | <code>lib/chats/presentation/event_profile_screen.dart</code> | — | — | Account-bound editor and protected participant view for one event chat. |
 | <code>ChatsListScreen</code> | <code>lib/chats/presentation/inbox/chat_inbox_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>CatchConsumerBootScreen</code> | <code>lib/consumer_bootstrap.dart</code> | — | — | The animated Consumer cold-start surface shown above auth and routing. |
 | <code>CrossPathsInvitationScreen</code> | <code>lib/cross_paths/presentation/cross_paths_invitation_screen.dart</code> | — | — | No class documentation or registry summary. |
@@ -1451,6 +1447,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>StartWelcomeRouteScreen</code> | <code>lib/onboarding/presentation/start_welcome_route_screen.dart</code> | — | — | Route-level surface owner for the logged-out Welcome experience. |
 | <code>OrganizerDetailScreen</code> | <code>lib/organizers/presentation/detail/organizer_detail_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>CelebrationScreen</code> | <code>lib/pages/celebration/celebration_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>ChatScreen</code> | <code>lib/pages/chat/chat_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatParticipantsScreen</code> | <code>lib/pages/chat/event_chat_participants_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatScreen</code> | <code>lib/pages/chat/event_chat_screen.dart</code> | — | — | No class documentation or registry summary. |
+| <code>EventProfileScreen</code> | <code>lib/pages/chat/event_profile_screen.dart</code> | — | — | Account-bound editor and protected participant view for one event chat. |
 | <code>SplashScreen</code> | <code>lib/pages/startup/splash_screen.dart</code> | — | <code>catch.startup_loading_screen</code> | Branded app-start composition with the Catch logo and a delayed bounded loading indicator. Also called: <code>LaunchScreen</code>, <code>StartupScreen</code>, <code>StartupLoadingScreen</code>, <code>AppLoadingScreen</code>. |
 | <code>PaymentConfirmationLoadingScreen</code> | <code>lib/payments/presentation/payment_confirmation_loading_screen.dart</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentConfirmationScreen</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart</code> | — | — | No class documentation or registry summary. |

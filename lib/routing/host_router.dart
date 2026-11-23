@@ -1,8 +1,4 @@
 // size-exemption: the Host app's canonical route graph; check_route_inventory.mjs allows GoRoute only here and in consumer_router.dart.
-import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
-import 'package:catch_dating_app/chats/presentation/event_chat_participants_screen.dart';
-import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
-import 'package:catch_dating_app/chats/presentation/event_profile_screen.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/organizer_moment.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -64,6 +60,10 @@ import 'package:catch_dating_app/hosts/programmes/programmes.dart';
 import 'package:catch_dating_app/hosts/today/host_today_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen.dart';
+import 'package:catch_dating_app/pages/chat/chat_screen.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_participants_screen.dart';
+import 'package:catch_dating_app/pages/chat/event_chat_screen.dart';
+import 'package:catch_dating_app/pages/chat/event_profile_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_rooms_screen.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';

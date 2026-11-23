@@ -2173,43 +2173,43 @@ abstract class AppLocalizations {
   /// **'All'**
   String get hostInboxAllFilter;
 
-  /// Product copy used by lib/chats/presentation/chat_screen.dart (label).
+  /// Product copy used by lib/pages/chat/chat_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Share card'**
   String get chatsChatScreenLabelShareCard;
 
-  /// Product copy used by lib/chats/presentation/chat_screen.dart (label).
+  /// Product copy used by lib/pages/chat/chat_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Report'**
   String get chatsChatScreenLabelReport;
 
-  /// Product copy used by lib/chats/presentation/chat_screen.dart (label).
+  /// Product copy used by lib/pages/chat/chat_screen.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Block'**
   String get chatsChatScreenLabelBlock;
 
-  /// Product copy used by lib/chats/presentation/chat_screen.dart (tooltip).
+  /// Product copy used by lib/pages/chat/chat_screen.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Chat actions'**
   String get chatsChatScreenTooltipChatActions;
 
-  /// Product copy used by lib/chats/presentation/chat_screen.dart (title).
+  /// Product copy used by lib/pages/chat/chat_screen.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Messages unavailable'**
   String get chatsChatScreenTitleMessagesUnavailable;
 
-  /// Product copy used by lib/chats/presentation/chat_screen.dart (CatchErrorState).
+  /// Product copy used by lib/pages/chat/chat_screen.dart (CatchErrorState).
   ///
   /// In en, this message translates to:
   /// **'Reload messages'**
   String get chatsChatScreenCatcherrorstateReloadMessages;
 
-  /// Product copy used by lib/chats/presentation/widgets/chat_event_context_header.dart (title).
+  /// Product copy used by lib/pages/chat/widgets/chat_event_context_header.dart (title).
   ///
   /// In en, this message translates to:
   /// **'the same event'**
@@ -2251,25 +2251,25 @@ abstract class AppLocalizations {
   /// **'Sending message'**
   String get chatsChatInputBarLabelSendingMessage;
 
-  /// Product copy used by lib/chats/presentation/widgets/chat_message_list.dart (title).
+  /// Product copy used by lib/pages/chat/widgets/chat_message_list.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Messages unavailable'**
   String get chatsChatMessageListTitleMessagesUnavailable;
 
-  /// Product copy used by lib/chats/presentation/widgets/chat_message_list.dart (message).
+  /// Product copy used by lib/pages/chat/widgets/chat_message_list.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Unable to load messages.'**
   String get chatsChatMessageListMessageUnableToLoadMessages;
 
-  /// Product copy used by lib/chats/presentation/widgets/chat_message_list.dart (title).
+  /// Product copy used by lib/pages/chat/widgets/chat_message_list.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Say hi'**
   String get chatsChatMessageListTitleSayHi;
 
-  /// Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (text).
+  /// Product copy used by lib/pages/chat/widgets/chat_share_card.dart (text).
   ///
   /// In en, this message translates to:
   /// **'Shared from Catch.'**
@@ -5242,37 +5242,37 @@ abstract class AppLocalizations {
   /// **'Update application'**
   String get launchAccessLaunchAccessApplicationScreenLabelUpdateApplication;
 
-  /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (eyebrow).
+  /// Product copy used by lib/pages/inbox/match_celebration_dialog.dart (eyebrow).
   ///
   /// In en, this message translates to:
   /// **'New connection'**
   String get matchesMatchCelebrationDialogEyebrowNewCatch;
 
-  /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (title).
+  /// Product copy used by lib/pages/inbox/match_celebration_dialog.dart (title).
   ///
   /// In en, this message translates to:
   /// **'You picked each other.'**
   String get matchesMatchCelebrationDialogTitleItSACatch;
 
-  /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (label).
+  /// Product copy used by lib/pages/inbox/match_celebration_dialog.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Mutual pick'**
   String get matchesMatchCelebrationDialogLabelMatch;
 
-  /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (note).
+  /// Product copy used by lib/pages/inbox/match_celebration_dialog.dart (note).
   ///
   /// In en, this message translates to:
   /// **'Start with something specific from their profile or event history.'**
   String get matchesMatchCelebrationDialogNoteStartWithSomethingSpecific;
 
-  /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (label).
+  /// Product copy used by lib/pages/inbox/match_celebration_dialog.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Send a message'**
   String get matchesMatchCelebrationDialogLabelSendAMessage;
 
-  /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (label).
+  /// Product copy used by lib/pages/inbox/match_celebration_dialog.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Not now'**
@@ -6889,7 +6889,7 @@ abstract class AppLocalizations {
   /// **'Payouts'**
   String get hostsHostPaymentAccountCardTitlePayouts;
 
-  /// Product copy used by lib/chats/presentation/widgets/chat_event_context_header.dart (Text).
+  /// Product copy used by lib/pages/chat/widgets/chat_event_context_header.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'{title} · {date}'**
@@ -7427,7 +7427,7 @@ abstract class AppLocalizations {
   /// **'Apply for access'**
   String get launchAccessLaunchAccessApplicationScreenTitleApplyForAccess;
 
-  /// Product copy used by lib/matches/shared/match_celebration_dialog.dart (message).
+  /// Product copy used by lib/pages/inbox/match_celebration_dialog.dart (message).
   ///
   /// In en, this message translates to:
   /// **'You and {name} both want to stay in touch.'**
@@ -12003,31 +12003,31 @@ abstract class AppLocalizations {
   /// **'Use the shared moment'**
   String get eventSuccessEventSuccessConversationCueCopyTitleUseTheSharedMoment;
 
-  /// Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (visibleCopy).
+  /// Product copy used by lib/pages/chat/widgets/chat_share_card.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'catch-chat-card.png'**
   String get chatsChatShareCardVisiblecopyCatchChatCardPng;
 
-  /// Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (visibleCopy).
+  /// Product copy used by lib/pages/chat/widgets/chat_share_card.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Share card'**
   String get chatsChatShareCardVisiblecopyShareCard;
 
-  /// Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (visibleCopy).
+  /// Product copy used by lib/pages/chat/widgets/chat_share_card.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Names, photos, and timestamps are hidden.'**
   String get chatsChatShareCardVisiblecopyNamesPhotosAndTimestamps;
 
-  /// Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (visibleCopy).
+  /// Product copy used by lib/pages/chat/widgets/chat_share_card.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Catch chat card'**
   String get chatsChatShareCardVisiblecopyCatchChatCard;
 
-  /// Product copy used by lib/chats/presentation/widgets/message_bubble.dart (visibleCopy).
+  /// Product copy used by lib/pages/chat/widgets/message_bubble.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Sending...'**

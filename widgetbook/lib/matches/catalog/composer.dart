@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
+import 'package:catch_dating_app/pages/chat/widgets/chat_input.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

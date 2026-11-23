@@ -2275,49 +2275,49 @@
   },
   "chatsChatScreenLabelShareCard": "Share card",
   "@chatsChatScreenLabelShareCard": {
-    "description": "Product copy used by lib/chats/presentation/chat_screen.dart (label).",
+    "description": "Product copy used by lib/pages/chat/chat_screen.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.chat_screen"
   },
   "chatsChatScreenLabelReport": "Report",
   "@chatsChatScreenLabelReport": {
-    "description": "Product copy used by lib/chats/presentation/chat_screen.dart (label).",
+    "description": "Product copy used by lib/pages/chat/chat_screen.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.chat_screen"
   },
   "chatsChatScreenLabelBlock": "Block",
   "@chatsChatScreenLabelBlock": {
-    "description": "Product copy used by lib/chats/presentation/chat_screen.dart (label).",
+    "description": "Product copy used by lib/pages/chat/chat_screen.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.chat_screen"
   },
   "chatsChatScreenTooltipChatActions": "Chat actions",
   "@chatsChatScreenTooltipChatActions": {
-    "description": "Product copy used by lib/chats/presentation/chat_screen.dart (tooltip).",
+    "description": "Product copy used by lib/pages/chat/chat_screen.dart (tooltip).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.chat_screen"
   },
   "chatsChatScreenTitleMessagesUnavailable": "Messages unavailable",
   "@chatsChatScreenTitleMessagesUnavailable": {
-    "description": "Product copy used by lib/chats/presentation/chat_screen.dart (title).",
+    "description": "Product copy used by lib/pages/chat/chat_screen.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.chat_screen"
   },
   "chatsChatScreenCatcherrorstateReloadMessages": "Reload messages",
   "@chatsChatScreenCatcherrorstateReloadMessages": {
-    "description": "Product copy used by lib/chats/presentation/chat_screen.dart (CatchErrorState).",
+    "description": "Product copy used by lib/pages/chat/chat_screen.dart (CatchErrorState).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.chat_screen"
   },
   "chatsChatEventContextHeaderTitleTheSameEvent": "the same event",
   "@chatsChatEventContextHeaderTitleTheSameEvent": {
-    "description": "Product copy used by lib/chats/presentation/widgets/chat_event_context_header.dart (title).",
+    "description": "Product copy used by lib/pages/chat/widgets/chat_event_context_header.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.chat_event_context_header"
@@ -2366,28 +2366,28 @@
   },
   "chatsChatMessageListTitleMessagesUnavailable": "Messages unavailable",
   "@chatsChatMessageListTitleMessagesUnavailable": {
-    "description": "Product copy used by lib/chats/presentation/widgets/chat_message_list.dart (title).",
+    "description": "Product copy used by lib/pages/chat/widgets/chat_message_list.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.chat_message_list"
   },
   "chatsChatMessageListMessageUnableToLoadMessages": "Unable to load messages.",
   "@chatsChatMessageListMessageUnableToLoadMessages": {
-    "description": "Product copy used by lib/chats/presentation/widgets/chat_message_list.dart (message).",
+    "description": "Product copy used by lib/pages/chat/widgets/chat_message_list.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.chat_message_list"
   },
   "chatsChatMessageListTitleSayHi": "Say hi",
   "@chatsChatMessageListTitleSayHi": {
-    "description": "Product copy used by lib/chats/presentation/widgets/chat_message_list.dart (title).",
+    "description": "Product copy used by lib/pages/chat/widgets/chat_message_list.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.chat_message_list"
   },
   "chatsChatShareCardTextSharedFromCatch": "Shared from Catch.",
   "@chatsChatShareCardTextSharedFromCatch": {
-    "description": "Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (text).",
+    "description": "Product copy used by lib/pages/chat/widgets/chat_share_card.dart (text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.chat_share_card"
@@ -5658,42 +5658,42 @@
   },
   "matchesMatchCelebrationDialogEyebrowNewCatch": "New connection",
   "@matchesMatchCelebrationDialogEyebrowNewCatch": {
-    "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (eyebrow).",
+    "description": "Product copy used by lib/pages/inbox/match_celebration_dialog.dart (eyebrow).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "matches.shared.match_celebration_dialog"
   },
   "matchesMatchCelebrationDialogTitleItSACatch": "You picked each other.",
   "@matchesMatchCelebrationDialogTitleItSACatch": {
-    "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (title).",
+    "description": "Product copy used by lib/pages/inbox/match_celebration_dialog.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "matches.shared.match_celebration_dialog"
   },
   "matchesMatchCelebrationDialogLabelMatch": "Mutual pick",
   "@matchesMatchCelebrationDialogLabelMatch": {
-    "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (label).",
+    "description": "Product copy used by lib/pages/inbox/match_celebration_dialog.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "matches.shared.match_celebration_dialog"
   },
   "matchesMatchCelebrationDialogNoteStartWithSomethingSpecific": "Start with something specific from their profile or event history.",
   "@matchesMatchCelebrationDialogNoteStartWithSomethingSpecific": {
-    "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (note).",
+    "description": "Product copy used by lib/pages/inbox/match_celebration_dialog.dart (note).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "matches.shared.match_celebration_dialog"
   },
   "matchesMatchCelebrationDialogLabelSendAMessage": "Send a message",
   "@matchesMatchCelebrationDialogLabelSendAMessage": {
-    "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (label).",
+    "description": "Product copy used by lib/pages/inbox/match_celebration_dialog.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "matches.shared.match_celebration_dialog"
   },
   "matchesMatchCelebrationDialogLabelKeepCatching": "Not now",
   "@matchesMatchCelebrationDialogLabelKeepCatching": {
-    "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (label).",
+    "description": "Product copy used by lib/pages/inbox/match_celebration_dialog.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "matches.shared.match_celebration_dialog"
@@ -7594,7 +7594,7 @@
   },
   "chatsChatEventContextHeaderTextTitleDate": "{title} · {date}",
   "@chatsChatEventContextHeaderTextTitleDate": {
-    "description": "Product copy used by lib/chats/presentation/widgets/chat_event_context_header.dart (Text).",
+    "description": "Product copy used by lib/pages/chat/widgets/chat_event_context_header.dart (Text).",
     "placeholders": {
       "title": {},
       "date": {}
@@ -8307,7 +8307,7 @@
   },
   "matchesMatchCelebrationDialogMessageYouAndNameBoth": "You and {name} both want to stay in touch.",
   "@matchesMatchCelebrationDialogMessageYouAndNameBoth": {
-    "description": "Product copy used by lib/matches/shared/match_celebration_dialog.dart (message).",
+    "description": "Product copy used by lib/pages/inbox/match_celebration_dialog.dart (message).",
     "placeholders": {
       "name": {}
     },
@@ -13581,35 +13581,35 @@
   },
   "chatsChatShareCardVisiblecopyCatchChatCardPng": "catch-chat-card.png",
   "@chatsChatShareCardVisiblecopyCatchChatCardPng": {
-    "description": "Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/chat/widgets/chat_share_card.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.chat_share_card"
   },
   "chatsChatShareCardVisiblecopyShareCard": "Share card",
   "@chatsChatShareCardVisiblecopyShareCard": {
-    "description": "Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/chat/widgets/chat_share_card.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.chat_share_card"
   },
   "chatsChatShareCardVisiblecopyNamesPhotosAndTimestamps": "Names, photos, and timestamps are hidden.",
   "@chatsChatShareCardVisiblecopyNamesPhotosAndTimestamps": {
-    "description": "Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/chat/widgets/chat_share_card.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.chat_share_card"
   },
   "chatsChatShareCardVisiblecopyCatchChatCard": "Catch chat card",
   "@chatsChatShareCardVisiblecopyCatchChatCard": {
-    "description": "Product copy used by lib/chats/presentation/widgets/chat_share_card.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/chat/widgets/chat_share_card.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.chat_share_card"
   },
   "chatsMessageBubbleVisiblecopySending": "Sending...",
   "@chatsMessageBubbleVisiblecopySending": {
-    "description": "Product copy used by lib/chats/presentation/widgets/message_bubble.dart (visibleCopy).",
+    "description": "Product copy used by lib/pages/chat/widgets/message_bubble.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "chats.presentation.widgets.message_bubble"
