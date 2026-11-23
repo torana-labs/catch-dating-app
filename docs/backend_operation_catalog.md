@@ -250,17 +250,29 @@ answer to it, not just a read model.
 **Read path decision (Nov 2026): server-trust, per-viewer filtering.**
 `fetchEventSuccessWingmanCandidates` is roster-private and drops blocked people
 in both directions, like the swipe candidates. `getEventChatProfile` applies
-blocks both ways for each viewer. `getEventAssistanceParticipantContext` matches
-the roster on the caller's linked uid and hides ambiguous candidates rather than
-guessing. Rules cannot express these filters over documents the reader may not
-otherwise hold.
+blocks both ways for each viewer. Rules cannot express these filters over
+documents the reader may not otherwise hold.
+
+**Read path decision (Nov 2026, #2306 batch E): guest event day.**
+`getEventAssistanceParticipantContext` moved to `rosterLink` on the guest's own
+`guestEventStatuses/{eventId}_{uid}` row: the link depends only on the guest's
+own linked roster rows, so the existing guest status triggers resolve it the
+same way (one row, or ambiguous, never a guess), and the get rule authorises
+the row by its id, never by the stored `uid` field. The callable stays deployed
+for released Catch builds, retire-later (#2174).
+`getEventSuccessSpatialLayout` stays a callable: a layout view would need a new
+trigger, and the Functions count is frozen near the regional limit.
+`getEventChatAccess` stays a callable: it is a fence read, because its room and
+membership revisions fence `updateEventChatAccess`.
 
 **Read path decision (Nov 2026): server-trust, review fences the next command.**
 `getEventChatProfileSharing` returns the revisions that fence the sharing
 update. `getEventRehearsalMovement` is the review that fences
 `controlEventRehearsal`, built over private practice documents.
 `listEventAssignmentFeatureChoices` compares the signed phone claim with the
-form responses, and its revision is the consent fence of the assignment write.
+form responses, and its revision is the consent fence of the assignment write;
+the claim lives in the live ID token and can change with no Firestore write a
+trigger could follow.
 `previewEventAssignmentFeatures`,
 `previewOrganizerFormConversion` and `previewOrganizerFormAdmission` are
 reviews computed before a commit and checked again by it.

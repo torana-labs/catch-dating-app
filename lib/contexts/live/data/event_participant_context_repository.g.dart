@@ -59,4 +59,4 @@ final class EventParticipantContextRepositoryProvider
 }
 
 String _$eventParticipantContextRepositoryHash() =>
-    r'441bbff391f45802958d655444be339f5b3fd853';
+    r'343b45f5e4e5f8ff2313693ab57c1210a8965725';

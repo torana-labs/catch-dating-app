@@ -84,11 +84,13 @@ export function guestEventStatusPairs(
  * Rebuilds every existing guest row of one event, a page at a time.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {string} eventId The event.
+ * @param {Set<string>} refreshed Collects the guests whose rows it rebuilt.
  * @return {Promise<number>} Rows rebuilt.
  */
 export async function refreshGuestEventStatusesForEvent(
   db: FirebaseFirestore.Firestore,
   eventId: string,
+  refreshed: Set<string> = new Set(),
 ): Promise<number> {
   let count = 0;
   let after: FirebaseFirestore.QueryDocumentSnapshot | undefined;
@@ -103,6 +105,59 @@ export async function refreshGuestEventStatusesForEvent(
       const uid = row.get("uid");
       if (typeof uid === "string") {
         await refreshGuestEventStatus(db, eventId, uid);
+        refreshed.add(uid);
+        count++;
+      }
+    }
+    if (page.docs.length < pageSize) return count;
+    after = page.docs.at(-1);
+  }
+}
+
+/** Event states in which a guest's roster row is their roster link. */
+const rosterLinkStates = new Set(["active", "cancelled"]);
+
+/**
+ * Whether an event write moved it into a state that carries roster links
+ * (draft to active, say), so linked guests with no row yet may need one.
+ * @param {Data} before The previous version.
+ * @param {Data} after The new version.
+ * @return {boolean} True when the event now carries links and did not.
+ */
+export function rosterLinksOpened(before: Data, after: Data): boolean {
+  return rosterLinkStates.has(after?.status) &&
+    !rosterLinkStates.has(before?.status);
+}
+
+/**
+ * Rebuilds the row of every guest linked to one of the event's roster rows,
+ * a page at a time, skipping guests already rebuilt. A guest whose only
+ * record is a linked roster row has no row until the event carries links,
+ * so the existing rows alone would miss them.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {string} eventId The event.
+ * @param {Set<string>} refreshed Guests already rebuilt; extended here.
+ * @return {Promise<number>} Rows rebuilt.
+ */
+export async function refreshLinkedGuestStatusesForEvent(
+  db: FirebaseFirestore.Firestore,
+  eventId: string,
+  refreshed: Set<string> = new Set(),
+): Promise<number> {
+  let count = 0;
+  let after: FirebaseFirestore.QueryDocumentSnapshot | undefined;
+  for (;;) {
+    let query = db.collection("eventAttendees")
+      .where("eventId", "==", eventId)
+      .orderBy(admin.firestore.FieldPath.documentId())
+      .limit(pageSize);
+    if (after) query = query.startAfter(after);
+    const page = await query.get();
+    for (const row of page.docs) {
+      const uid = id(row.data(), "linkedUid");
+      if (uid && !refreshed.has(uid)) {
+        await refreshGuestEventStatus(db, eventId, uid);
+        refreshed.add(uid);
         count++;
       }
     }
@@ -192,7 +247,15 @@ export const onEventGuestEntryEventWritten = onDocumentWritten({
   const db = admin.firestore();
   await refreshEventGuestEntry(db, event.params.documentId);
   // Status rows carry the guest's list card, so this also refreshes it.
-  await refreshGuestEventStatusesForEvent(db, event.params.documentId);
+  const refreshed = new Set<string>();
+  await refreshGuestEventStatusesForEvent(db, event.params.documentId,
+    refreshed);
+  // Going live gives linked guests their roster link, even those with no
+  // row yet (a cancelled roster row alone keeps no row on a draft).
+  if (rosterLinksOpened(before, after)) {
+    await refreshLinkedGuestStatusesForEvent(db, event.params.documentId,
+      refreshed);
+  }
   await refreshSavedEventCardsForEvent(db, event.params.documentId);
 });
 

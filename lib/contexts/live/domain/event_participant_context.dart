@@ -16,7 +16,10 @@ final class EventParticipantAmbiguous extends EventParticipantIdentity {
 final class EventParticipantLinked extends EventParticipantIdentity {
   const EventParticipantLinked._(this.scope, this.sourceHash);
   final EventAssistanceGuestScope scope;
-  final String sourceHash;
+
+  /// The callable's source hash; null when read from the guest's own
+  /// `guestEventStatuses` row, which carries no hash. Nothing fences on it.
+  final String? sourceHash;
 }
 
 /// A self-only identity projection, not consent, attendance or write authority.
@@ -79,6 +82,58 @@ final class EventParticipantContext {
       eventId: eventId,
       subjectUid: subjectUid,
       serverTime: assistanceInteger(map['serverTime']),
+      identity: identity,
+    );
+  }
+
+  /// The identity from the guest's own `guestEventStatuses` row
+  /// (`rosterLink`, #2306), resolved exactly as
+  /// `getEventAssistanceParticipantContext` resolves it: the one roster row
+  /// whose linked uid is the guest, more than one (ambiguous), or none. A
+  /// guest with no row, or a row without a link, is unlinked. [serverTime]
+  /// is the app clock when the row was read.
+  factory EventParticipantContext.fromStatusRow(
+    Map<String, Object?>? row, {
+    required String eventId,
+    required String subjectUid,
+    required int serverTime,
+  }) {
+    assistanceId(eventId);
+    assistanceText(subjectUid, 128);
+    if (row != null &&
+        (row['eventId'] != eventId || row['uid'] != subjectUid)) {
+      throw const FormatException(
+        'Event identity belongs to another participant.',
+      );
+    }
+    final link = row?['rosterLink'];
+    final EventParticipantIdentity identity;
+    if (link == null) {
+      identity = const EventParticipantUnlinked();
+    } else {
+      final raw = assistanceObject(link);
+      switch (raw['kind']) {
+        case 'linked':
+          assistanceObject(raw, {'kind', 'attendeeId'});
+          identity = EventParticipantLinked._(
+            EventAssistanceGuestScope(
+              organizerId: assistanceId(row!['organizerId']),
+              eventId: eventId,
+              attendeeId: assistanceId(raw['attendeeId']),
+            ),
+            null,
+          );
+        case 'ambiguous':
+          assistanceObject(raw, {'kind'});
+          identity = const EventParticipantAmbiguous();
+        default:
+          throw const FormatException('Unknown event participant identity.');
+      }
+    }
+    return EventParticipantContext._(
+      eventId: eventId,
+      subjectUid: subjectUid,
+      serverTime: serverTime,
       identity: identity,
     );
   }

@@ -2630,14 +2630,26 @@ service cloud.firestore {
       allow get: if isAuthed();
       allow list, write: if false;
     }
-    // One guest's own records about one event, for the website's event page.
-    // Triggers write it; only that guest gets it, and a guest with no row
-    // reads it as missing.
+    // One guest's own records about one event, for the website's event page
+    // and the Catch app's roster link. Triggers write it; only that guest
+    // gets it, and a guest with no row reads it as missing.
+    // The id is {eventId}_{uid}, so a get is authorised by the id the server
+    // chose, never by a field a trigger wrote: the part after the last
+    // underscore must be the caller. Auth uids hold no underscore; an id
+    // whose last part is not the caller is denied.
     // A guest lists only their own rows: the booking lists read the event
-    // card each row carries instead of joining events.
+    // card each row carries instead of joining events. A query cannot be
+    // checked against each document's id, so list stays on the uid field,
+    // which the trigger sets from that same id.
+    function isOwnGuestEventStatusId(statusId) {
+      let parts = statusId.split('_');
+      return parts.size() >= 2
+        && parts[0].size() > 0
+        && parts[parts.size() - 1] == request.auth.uid;
+    }
     match /guestEventStatuses/{statusId} {
       allow get: if isAuthed() && !isDeletedUser(request.auth.uid)
-        && (resource == null || resource.data.uid == request.auth.uid);
+        && isOwnGuestEventStatusId(statusId);
       allow list: if isAuthed() && !isDeletedUser(request.auth.uid)
         && resource.data.uid == request.auth.uid;
       allow write: if false;
