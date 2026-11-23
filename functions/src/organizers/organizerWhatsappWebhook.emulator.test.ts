@@ -414,6 +414,10 @@ test("processing the same STOP after a fresh v2 grant preserves its decision", {
     .doc(organizerCommunicationPreferenceId(organizerId, uid));
   const grantRef = db.collection("organizerCommunicationPermissionReceipts")
     .doc(`fresh-${id}`);
+  const permissionRef = db.collection("users").doc(uid)
+    .collection("contactPermissions").doc(`organizer_${organizerId}`);
+  const guestRowRef = db.collection("guestMessagingPermissions")
+    .doc(organizerCommunicationPreferenceId(organizerId, uid));
   const endpointHash = hashEndpoint("+919999999999");
   const firstAt = Timestamp.fromMillis(1720000001000);
   const grantAt = Timestamp.fromMillis(1720000005000);
@@ -445,6 +449,20 @@ test("processing the same STOP after a fresh v2 grant preserves its decision", {
       .doc(stopped.whatsapp.currentReceiptId);
     const stopReceipt = (await stopReceiptRef.get()).data()!;
     assert.equal(stopReceipt.revokedAt.toMillis(), firstAt.toMillis());
+    // The STOP transaction also withdrew every WhatsApp purpose in the
+    // contact permission and copied its receipt.
+    const permission = (await permissionRef.get()).data()!;
+    assert.deepEqual(permission.granted, []);
+    for (const key of ["whatsapp:eventOperations", "whatsapp:marketing",
+      "whatsapp:followerUpdates"]) {
+      assert.equal(permission.grants[key].status, "optedOut", key);
+      assert.equal(permission.grants[key].receiptId, stopReceiptRef.id, key);
+    }
+    const stopCopy = (await db.collection("contactPermissionReceipts")
+      .doc(stopReceiptRef.id).get()).data()!;
+    assert.equal(stopCopy.senderKind, "organizer");
+    assert.equal(stopCopy.senderId, organizerId);
+    assert.equal(stopCopy.source, "inboundStop");
     const grant = {organizerId, uid, channel: "whatsapp",
       purpose: "marketing", endpointE164: "+919999999999",
       sourceVersionId: `version-${id}`, sourceDecidedAt: grantAt,
@@ -501,8 +519,12 @@ test("processing the same STOP after a fresh v2 grant preserves its decision", {
       .where("organizerId", "==", organizerId).get();
     const batch = db.batch();
     for (const ref of [eventRef, nextEventRef, connectionRef, contactRef,
-      stateRef, preferenceRef].filter((item) => item !== null)) {
+      stateRef, preferenceRef, permissionRef, guestRowRef]
+      .filter((item) => item !== null)) {
       batch.delete(ref!);
+    }
+    for (const receipt of receipts.docs) {
+      batch.delete(db.collection("contactPermissionReceipts").doc(receipt.id));
     }
     for (const queued of [eventRef, nextEventRef]) {
       if (queued) {
