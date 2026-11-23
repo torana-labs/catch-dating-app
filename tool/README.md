@@ -113,7 +113,10 @@ same transitive `alsoCheckIds`; an unavailable required check fails planning.
 Identical check commands run once per invocation, preserving their first owner's
 order. When the required same-run React marketing lane owns validation, Tools
 reuses its exact site build, Storybook build, accessibility gate, and visual
-comparisons. Postbuild, build-output, and Storybook configuration tests still run
+comparisons. The React lane runs the visual comparisons only in the CI nightly
+(owner decision, 23 Nov 2026), so in the merge queue the report-only
+`web:storybook-visuals` check is deferred to the nightly with them; a story
+that cannot render still fails the accessibility gate there. Postbuild, build-output, and Storybook configuration tests still run
 in Tools. Standalone tool checks keep their own builds and browser gates. This
 reuse requires the React caller to retain its normal deployable build; changed
 commands execute until their equivalence is verified.

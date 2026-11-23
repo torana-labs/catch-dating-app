@@ -33,7 +33,8 @@ test("the real lane resolves to the Admin checks", () => {
   assert.ok(steps.includes("npm run web:admin:build"));
   assert.ok(steps.includes("npm --workspace catch-admin run test:storybook:a11y"));
   assert.ok(steps.includes("npm --workspace catch-admin run build:storybook"));
-  assert.ok(steps.includes("node tool/web/check_storybook_visuals.mjs --surface admin --report"));
+  // The visual report runs only in the CI nightly, never in the merge queue.
+  assert.ok(!steps.includes("node tool/web/check_storybook_visuals.mjs --surface admin --report"));
   assert.ok(steps.includes("node tool/audit/check_unused_code.mjs --check --workspace admin --workspace packages/web-ui --workspace packages/web-config"));
   assert.ok(!steps.includes("npm ci"));
   assert.ok(!steps.some((step) => step.includes("catch-marketing")));
@@ -44,6 +45,13 @@ test("a pull request leaves out the Storybook build and visual report", () => {
   assert.ok(steps.includes("npm run web:admin:build"));
   assert.ok(!steps.includes("npm --workspace catch-admin run build:storybook"));
   assert.ok(!steps.includes("node tool/web/check_storybook_visuals.mjs --surface admin --report"));
+});
+
+test("the nightly adds the visual report", () => {
+  const steps = commands("schedule");
+  assert.ok(steps.includes("npm --workspace catch-admin run build:storybook"));
+  assert.ok(steps.includes("node tool/web/check_storybook_visuals.mjs --surface admin --report"));
+  assert.ok(steps.includes("npm --workspace catch-admin run test:storybook:a11y"));
 });
 
 test("the build gets the workflow's synthetic production environment", () => {

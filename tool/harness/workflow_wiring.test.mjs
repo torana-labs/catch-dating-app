@@ -1105,8 +1105,8 @@ test("Tools reuses only marketing builds and browser checks owned by the require
     /if: \$\{\{ inputs.surface == 'marketing' && !inputs.skip_deployable_build \}\}/u);
   assert.match(namedStep(react, "Build marketing Storybook"),
     /if: \$\{\{ inputs.surface == 'marketing' && \(github\.event_name != 'pull_request' \|\| inputs\.update_visual_baselines\) \}\}/u);
-  // Pull requests skip screenshots; merge_group, main and deploy runs render every story
-  // and report pixel changes without failing. Render errors still fail the step.
+  // The visual reports run only in the CI nightly and report pixel changes
+  // without failing (owner decision, 23 Nov 2026). Render errors still fail the step.
   const marketingVisuals = namedStep(react, "Report marketing and shared web UI visual changes");
   assert.match(marketingVisuals, /^          node tool\/web\/check_storybook_visuals\.mjs --surface website --report$/mu);
   assert.match(marketingVisuals, /^          node tool\/web\/check_storybook_visuals\.mjs --surface webui --report$/mu);
@@ -1118,8 +1118,16 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   ]) {
     const step = namedStep(react, name);
     assert.match(step, new RegExp(`id: ${id}\\n`, "u"), name);
-    assert.match(step, /!inputs\.update_visual_baselines && github\.event_name != 'pull_request' \}\}/u, name);
+    assert.match(step, /!inputs\.update_visual_baselines && github\.event_name == 'schedule' \}\}/u, name);
     assert.doesNotMatch(step, /continue-on-error|--check/u, name);
+    // Never in the merge queue, on a pull request or on a main push.
+    assert.doesNotMatch(step, /merge_group|!=/u, name);
+  }
+  // The accessibility gates render every story, so they keep a broken story out
+  // of the queue: they run for their surface on every event, merge_group included.
+  for (const [name, surface] of [["Run marketing Storybook accessibility gate", "marketing"],
+    ["Run admin Storybook accessibility gate", "admin"]]) {
+    assert.match(namedStep(react, name), new RegExp(`if: \\$\\{\\{ inputs\\.surface == '${surface}' \\}\\}\\n`, "u"), name);
   }
   for (const [name, id] of [
     ["Upload marketing visual diagnostics", "marketing-visual-check"],
