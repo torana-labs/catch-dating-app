@@ -10,6 +10,10 @@ rules:
       # and can only write issues and dispatch the dispatch-only golden
       # baseline workflows (golden-policy job).
       - main-red-alert.yml
+      # Wakes only after CI on main completes, checks out main, reads no
+      # artifact or event payload beyond the branch name, and keeps its own
+      # permissions (read contents, dispatch dev-only runs, write issues).
+      - cron-watchdog.yml
   unpinned-uses:
     ignore:
       # Open work owns these files: codex/deploy-one-cli-run (backend deploy,
