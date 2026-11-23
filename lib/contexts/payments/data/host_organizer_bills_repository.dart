@@ -1,27 +1,32 @@
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_bill.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_organizer_billing_status.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
-import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
+import 'package:catch_platform/streams/clocked_listener.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_organizer_bills_repository.g.dart';
 
 /// Catch's bills to one organizer, newest first, from the owner's
-/// `hostOrganizerBillViews`, which only the organizer's owner may read. The
-/// billing status stays an owner-authorized callable.
+/// `hostOrganizerBillViews`, and its billing status from the owner's
+/// `hostOrganizerBillingViews` (#2306) instead of `getOrganizerBillingStatus`.
+/// Only the organizer's owner may read either.
 class HostOrganizerBillsRepository {
-  const HostOrganizerBillsRepository(this._functions, this._firestore);
+  const HostOrganizerBillsRepository(
+    this._firestore, [
+    this._clock = const AppClock(),
+  ]);
 
   static const views = 'hostOrganizerBillViews';
+  static const billingViews = 'hostOrganizerBillingViews';
   static final _documentId = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$');
 
-  final FirebaseFunctions _functions;
   final FirebaseFirestore _firestore;
+  final AppClock _clock;
 
   /// The newest [ReadLimitPolicy.historyPage] bills (one a month: years of
   /// billing), updated while listened to, so a bill paid elsewhere loses
@@ -68,34 +73,60 @@ class HostOrganizerBillsRepository {
     return HostOrganizerBill.fromJson(Map<String, Object?>.from(bill));
   }
 
-  /// The free trial and other billing status. Status only, never prices.
-  Future<HostOrganizerBillingStatus> status(String organizerId) =>
-      withBackendErrorContext(
-        () async {
-          final result = await _functions
-              .httpsCallable('getOrganizerBillingStatus')
-              .call<Object?>(
-                GetOrganizerBillingStatusCallableRequest(
-                  organizerId: organizerId,
-                ).toJson(),
-              );
-          return HostOrganizerBillingStatus.fromJson(
-            Map<String, Object?>.from(result.data! as Map),
-          );
-        },
-        context: const BackendErrorContext(
-          service: BackendService.functions,
-          action: 'read organizer billing status',
-          resource: 'getOrganizerBillingStatus',
-        ),
-      );
+  /// The free trial and plan, live. Status only, never prices. The trial
+  /// state and days left are worked out from the view's facts and the app
+  /// clock, and rebuilt when they change by time alone.
+  Stream<HostOrganizerBillingStatus> watchStatus(String organizerId) {
+    if (!_documentId.hasMatch(organizerId)) {
+      throw ArgumentError.value(organizerId, 'organizerId');
+    }
+    return withBackendErrorStream(
+      () =>
+          clockedListener<
+                Map<String, Object?>,
+                ({HostOrganizerBillingStatus status, DateTime? next})
+              >(
+                _firestore
+                    .collection(billingViews)
+                    .doc(organizerId)
+                    .snapshots()
+                    .map(
+                      (snapshot) =>
+                          snapshot.data() ??
+                          (throw const DocumentNotFoundException(
+                            'organizer billing',
+                          )),
+                    ),
+                clock: _clock,
+                build: (view, now) {
+                  if (view['organizerId'] != organizerId) {
+                    throw const FormatException(
+                      'Organizer billing view changed identity',
+                    );
+                  }
+                  final status = HostOrganizerBillingStatus.fromView(view, now);
+                  return (
+                    status: status,
+                    next: status.trial.nextChangeAfter(now),
+                  );
+                },
+                nextRebuildAt: (built) => built.next,
+              )
+              .map((built) => built.status),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch organizer billing status',
+        resource: billingViews,
+      ),
+    );
+  }
 }
 
 @riverpod
 HostOrganizerBillsRepository hostOrganizerBillsRepository(Ref ref) =>
     HostOrganizerBillsRepository(
-      ref.watch(firebaseFunctionsProvider),
       ref.watch(firebaseFirestoreProvider),
+      ref.watch(appClockProvider),
     );
 
 /// The owner's bills listener. It is a Firestore listener: it declares no
@@ -106,8 +137,16 @@ Stream<List<HostOrganizerBill>> hostOrganizerBills(
   String organizerId,
 ) => ref.watch(hostOrganizerBillsRepositoryProvider).watch(organizerId);
 
+/// The owner's billing status listener.
+@riverpod
+Stream<HostOrganizerBillingStatus> hostOrganizerBillingStatusStream(
+  Ref ref,
+  String organizerId,
+) => ref.watch(hostOrganizerBillsRepositoryProvider).watchStatus(organizerId);
+
+/// The owner's billing status, following its listener.
 @riverpod
 Future<HostOrganizerBillingStatus> hostOrganizerBillingStatus(
   Ref ref,
   String organizerId,
-) => ref.watch(hostOrganizerBillsRepositoryProvider).status(organizerId);
+) => ref.watch(hostOrganizerBillingStatusStreamProvider(organizerId).future);
