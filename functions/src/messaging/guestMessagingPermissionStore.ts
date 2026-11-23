@@ -1,8 +1,13 @@
+import {HttpsError} from "firebase-functions/v2/https";
 import type {CatchCommunicationPermissionReceiptDocument as CatchReceipt,
   CatchCommunicationPreferenceDocument as CatchPreference,
+  GuestMessagingPermissionDocument,
   OrganizerCommunicationPermissionReceiptDocument as OrganizerReceipt,
   OrganizerCommunicationPreferenceDocument as OrganizerPreference} from
   "../shared/generated/firestoreAdminTypes";
+import {organizerCommunicationPreferenceId} from
+  "../shared/organizerCommunicationPreferences";
+import {requireDoc} from "../shared/validation";
 import type {ListParticipantMessagingPreferencesCallableResponse as Page} from
   "../shared/generated/listParticipantMessagingPreferencesCallableResponse";
 
@@ -14,12 +19,70 @@ import type {ListParticipantMessagingPreferencesCallableResponse as Page} from
  */
 export const guestMessagingPermissionsCollection = "guestMessagingPermissions";
 
-type Preference = CatchPreference | OrganizerPreference;
-type Scope = "catch" | "organizer";
+export type Preference = CatchPreference | OrganizerPreference;
+export type Scope = "catch" | "organizer";
 
 /** The view id of the guest's Catch row; organizer rows reuse source ids. */
 export function catchPermissionViewId(uid: string): string {
   return `catchpref_${uid}`;
+}
+
+/** A stored preference checked against its contract and its owner. */
+export function readPreference(
+  snap: FirebaseFirestore.DocumentSnapshot, uid: string,
+  scope: Scope, organizerId: string | null): Preference | null {
+  if (!snap.exists) return null;
+  const value = scope === "catch" ?
+    requireDoc<CatchPreference>(snap, "CatchCommunicationPreferenceDocument") :
+    requireDoc<OrganizerPreference>(snap,
+      "OrganizerCommunicationPreferenceDocument");
+  if (value.uid !== uid || (scope === "organizer" &&
+      (value as OrganizerPreference).organizerId !== organizerId)) {
+    throw new HttpsError("failed-precondition",
+      "Messaging permission ownership is inconsistent.");
+  }
+  return value;
+}
+
+/** Which permission row a view id names. */
+export type PermissionRow =
+  | {scope: "catch"; uid: string}
+  | {scope: "organizer"; preferenceId: string};
+
+/**
+ * The guest's permission row for one sender from the stored preference and
+ * the receipts it names, or null when the guest has no preference document
+ * for that sender. Reads in the transaction; never writes. Consent writers
+ * write the row themselves; the guest-messaging-permissions migration uses
+ * this to copy rows forward.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {FirebaseFirestore.Transaction} tx The read transaction.
+ * @param {PermissionRow} row The row to compute.
+ * @return {Promise<GuestMessagingPermissionDocument|null>} The view.
+ */
+export async function guestMessagingPermission(
+  db: FirebaseFirestore.Firestore, tx: FirebaseFirestore.Transaction,
+  row: PermissionRow): Promise<GuestMessagingPermissionDocument | null> {
+  if (row.scope === "catch") {
+    const snap = await tx.get(db.collection("catchCommunicationPreferences")
+      .doc(row.uid));
+    const value = readPreference(snap, row.uid, "catch", null);
+    if (!value) return null;
+    return {uid: row.uid, scope: "catch", organizerId: null,
+      preference: await summarize(db, tx, value, "catch"), version: 1};
+  }
+  const snap = await tx.get(db.collection("organizerCommunicationPreferences")
+    .doc(row.preferenceId));
+  if (!snap.exists) return null;
+  const {uid, organizerId} = snap.data() ?? {};
+  if (typeof uid !== "string" || typeof organizerId !== "string" ||
+      organizerCommunicationPreferenceId(organizerId, uid) !==
+        row.preferenceId) {
+    throw new Error("Messaging permission ownership is inconsistent.");
+  }
+  const value = readPreference(snap, uid, "organizer", organizerId);
+  return {uid, scope: "organizer", organizerId,
+    preference: await summarize(db, tx, value, "organizer"), version: 1};
 }
 
 export type PermissionReceipt = CatchReceipt | OrganizerReceipt;

@@ -8,7 +8,7 @@ import {runAssistanceTransaction as transact} from
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
-import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {validateCallableWithAjv} from "../shared/validation";
 import {organizerCommunicationPreferenceId,
   unknownOrganizerCommunicationChannel} from
   "../shared/organizerCommunicationPreferences";
@@ -22,7 +22,7 @@ import type {WithdrawParticipantMessagingPermissionCallableResponse as Result}
   "../shared/generated/withdrawParticipantMessagingPermissionCallableResponse";
 import {validateWithdrawParticipantMessagingPermissionCallablePayload} from
   "../shared/generated/validators/withdrawParticipantMessagingPermissionInput";
-import {summarize} from "./guestMessagingPermissionStore";
+import {readPreference, summarize} from "./guestMessagingPermissionStore";
 import {readContactPermissionState, writeContactPermissionState} from
   "./contactPermissions";
 
@@ -36,21 +36,6 @@ interface Deps {
 const defaults: Deps = {db: () => admin.firestore(), now: () => Timestamp.now(),
   rateLimit: checkRateLimit};
 
-export function readPreference(
-  snap: FirebaseFirestore.DocumentSnapshot, uid: string,
-  scope: Scope, organizerId: string | null): Preference | null {
-  if (!snap.exists) return null;
-  const value = scope === "catch" ?
-    requireDoc<CatchPreference>(snap, "CatchCommunicationPreferenceDocument") :
-    requireDoc<OrganizerPreference>(snap,
-      "OrganizerCommunicationPreferenceDocument");
-  if (value.uid !== uid || (scope === "organizer" &&
-      (value as OrganizerPreference).organizerId !== organizerId)) {
-    throw new HttpsError("failed-precondition",
-      "Messaging permission ownership is inconsistent.");
-  }
-  return value;
-}
 
 async function assertActiveAccount(db: FirebaseFirestore.Firestore,
   tx: FirebaseFirestore.Transaction, uid: string): Promise<void> {
