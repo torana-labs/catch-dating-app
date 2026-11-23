@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/organizers/shared/organizer_action_keys.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_action_keys.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 

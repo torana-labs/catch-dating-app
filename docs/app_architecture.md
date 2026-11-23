@@ -4769,7 +4769,7 @@ Reference files:
 
 - `packages/catch_ui/lib/src/components/catch_poster.dart`
 - `packages/catch_ui/lib/src/components/catch_polaroid.dart`
-- `lib/organizers/presentation/detail/widgets/organizer_hero_top_bar.dart`
+- `lib/pages/organizer/widgets/organizer_hero_top_bar.dart`
 - `lib/swipes/shared/profile_surface/profile_body.dart`
 - `design/components/catch.components.json`
 - `widgetbook/lib/organizers/catalog/poster.dart`

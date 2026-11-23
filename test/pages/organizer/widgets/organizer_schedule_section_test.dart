@@ -1,11 +1,12 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
-import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/widgets/organizer_schedule_section.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_agenda_tile.dart';
+import 'package:catch_dating_app/pages/event/tiles/event_date_rail_card.dart';
+import 'package:catch_dating_app/pages/organizer/widgets/organizer_schedule_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'organizers_test_helpers.dart';
+import '../../../organizers/organizers_test_helpers.dart';
 
 void main() {
   group('OrganizerScheduleSection', () {

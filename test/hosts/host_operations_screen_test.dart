@@ -41,8 +41,8 @@ import 'package:catch_dating_app/hosts/presentation/organizer_management/host_or
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
 import 'package:catch_dating_app/pages/event/tiles/event_date_rail_card.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_view_model.dart';
 import 'package:catch_dating_app/routing/host_router.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';

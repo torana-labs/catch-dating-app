@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_host_identity_row.dart';
-import 'package:catch_dating_app/organizers/shared/organizer_placeholder_cover.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_host_identity_row.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_placeholder_cover.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_share.dart';

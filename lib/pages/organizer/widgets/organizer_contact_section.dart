@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_screen_state.dart';
+import 'package:catch_dating_app/pages/organizer/organizer_detail_screen_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
