@@ -19,7 +19,17 @@
     "tool/ci/required_ci_floor.mjs",
     "tool/lib/tools_manifest.mjs",
     "tool/manifest/**",
-    ".github/workflows/*.yml"
+    ".github/workflows/ci.yml",
+    ".github/workflows/app-build-matrix.yml",
+    ".github/workflows/contracts-ci.yml",
+    ".github/workflows/firestore-rules-ci.yml",
+    ".github/workflows/flutter-ci.yml",
+    ".github/workflows/functions-ci.yml",
+    ".github/workflows/marketing-captures.yml",
+    ".github/workflows/operations-ci.yml",
+    ".github/workflows/react-surface-validation.yml",
+    ".github/workflows/tools-ci.yml",
+    ".github/workflows/visual-integration-ci.yml"
   ],
   "checks": [
     "node --check tool/ci/semantic_check_replay.mjs",
