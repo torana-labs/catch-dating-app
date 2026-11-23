@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_kernel/brand.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Store review requires in-app Privacy, Terms and Help destinations, and
@@ -19,7 +19,7 @@ void main() {
     test('$environment dart defines configure the public legal links', () {
       final defines =
           jsonDecode(
-                File(
+                repoFile(
                   'tool/env/dart_defines/$environment.json',
                 ).readAsStringSync(),
               )

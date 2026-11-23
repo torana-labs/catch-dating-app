@@ -251,6 +251,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  catch_test_support:
+    dependency: "direct main"
+    description:
+      path: "../packages/catch_test_support"
+      relative: true
+    source: path
+    version: "0.1.0"
   catch_tokens:
     dependency: "direct main"
     description:

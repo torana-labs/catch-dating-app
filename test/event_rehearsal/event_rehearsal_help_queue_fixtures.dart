@@ -1,16 +1,16 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_test_support/repo_file.dart';
 
 import 'event_rehearsal_assistance_fixtures.dart';
 
 Map<String, Object?> practiceHelpQueueFixture(String key) =>
     Map<String, Object?>.from(
       (jsonDecode(
-                File(
+                repoFile(
                   'test/event_rehearsal/fixtures/help_queue.json',
                 ).readAsStringSync(),
               )

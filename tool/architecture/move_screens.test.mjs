@@ -332,20 +332,24 @@ test("barrel imports in moving files become direct imports; barrel exports of fi
   assert.equal(plan.writes.has("lib/hosts/elsewhere.dart"), false);
 });
 
-test("a feature barrel stops exporting files that move into lib/pages, and its importers import them directly", () => {
+test("a feature barrel stops exporting files that move into lib/pages or a later context, and its importers import them directly", () => {
   const root = fixtureRepo({
     "tool/architecture/context_map.json": mapSource([
       {path: "lib/reviews/", context: "events"},
       {path: "lib/hosts/", layer: "app"},
       {path: "lib/reviews/shared/", context: "events", moveTo: "lib/pages/reviews/", group: "page-reviews"},
+      {path: "lib/reviews/presentation/review_actions.dart", context: "events",
+        moveTo: "lib/contexts/live/actions/review_actions.dart", group: "page-reviews"},
     ]),
     "lib/reviews/reviews.dart": [
       "export 'package:catch_dating_app/contexts/events/data/event_repository.dart';",
       "export 'shared/reviews_section.dart'; // public-api: event page reviews",
       "export 'presentation/review_badge.dart';",
+      "export 'presentation/review_actions.dart';",
       "",
     ].join("\n"),
     "lib/reviews/presentation/review_badge.dart": "class ReviewBadge {}\n",
+    "lib/reviews/presentation/review_actions.dart": "class ReviewActions {}\n",
     "lib/reviews/shared/reviews_section.dart": "class ReviewsSection {}\n",
     "lib/hosts/mixed.dart": "import 'package:catch_dating_app/reviews/reviews.dart';\n\nclass Mixed {}\n",
     "lib/hosts/shown.dart": "import 'package:catch_dating_app/reviews/reviews.dart' as r show ReviewsSection, ReviewBadge;\n\nclass Shown {}\n",
@@ -362,18 +366,22 @@ test("a feature barrel stops exporting files that move into lib/pages, and its i
       "lib/reviews/presentation/review_badge.dart": ["ReviewBadge"],
       "lib/reviews/shared/reviews_section.dart": ["ReviewsSection"],
     }},
-    "lib/hosts/only.dart": {[barrel]: {"lib/reviews/shared/reviews_section.dart": ["ReviewsSection"]}},
+    "lib/hosts/only.dart": {[barrel]: {
+      "lib/reviews/presentation/review_actions.dart": ["ReviewActions"],
+      "lib/reviews/shared/reviews_section.dart": ["ReviewsSection"],
+    }},
     "lib/hosts/untouched.dart": {[barrel]: {"lib/reviews/presentation/review_badge.dart": ["ReviewBadge"]}},
   }});
   assert.deepEqual(plan.errors, []);
-  // The barrel sits in the events context, below lib/pages: its export would
-  // point upward, so it goes, trailing comment and all.
+  // The barrel sits in the events context, below lib/pages and before live:
+  // both exports would point the wrong way, so they go, comments and all.
   assert.equal(plan.writes.get("lib/reviews/reviews.dart"), [
     "export 'package:catch_dating_app/contexts/events/data/event_repository.dart';",
     "export 'presentation/review_badge.dart';",
     "",
   ].join("\n"));
-  assert.deepEqual(plan.deletedExports, [{file: "lib/reviews/reviews.dart", target: "lib/reviews/shared/reviews_section.dart"}]);
+  assert.deepEqual(plan.deletedExports.map(({target}) => target).sort(),
+    ["lib/reviews/presentation/review_actions.dart", "lib/reviews/shared/reviews_section.dart"]);
   assert.equal(plan.writes.get("lib/hosts/mixed.dart"), [
     "import 'package:catch_dating_app/reviews/reviews.dart';",
     "import 'package:catch_dating_app/pages/reviews/reviews_section.dart';",
@@ -389,8 +397,13 @@ test("a feature barrel stops exporting files that move into lib/pages, and its i
     "",
   ].join("\n"));
   // Nothing else comes through the barrel, so the barrel import goes.
-  assert.equal(plan.writes.get("lib/hosts/only.dart"),
-    "import 'package:catch_dating_app/pages/reviews/reviews_section.dart';\n\nclass Only {}\n");
+  assert.equal(plan.writes.get("lib/hosts/only.dart"), [
+    "import 'package:catch_dating_app/contexts/live/actions/review_actions.dart';",
+    "import 'package:catch_dating_app/pages/reviews/reviews_section.dart';",
+    "",
+    "class Only {}",
+    "",
+  ].join("\n"));
   assert.equal(plan.writes.has("lib/hosts/untouched.dart"), false);
   assert.equal(plan.splitBarrels, 3);
 });
@@ -581,6 +594,31 @@ test("a carried file that moves again keeps its from; stale carries are dropped"
   ]}), ["lib/pages/b.dart"]);
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, "tool/architecture/carried_screens.json"), "utf8")).carried,
     [{path: "lib/pages/a.dart", from: "lib/pages/a.dart"}]);
+});
+
+test("a stale carry stays, with its library's parts, while check_library_shims would flag the library", () => {
+  const root = carriedFixture(`${JSON.stringify({description: "d", carried: [
+    {path: "lib/pages/sheet.dart", from: "lib/old/sheet.dart"},
+    {path: "lib/pages/sheet_part.dart", from: "lib/old/sheet_part.dart"},
+    {path: "lib/pages/clean.dart", from: "lib/old/clean.dart"},
+  ]}, null, 2)}\n`);
+  fs.mkdirSync(path.join(root, "packages/catch_ui/lib/src"), {recursive: true});
+  fs.writeFileSync(path.join(root, "packages/catch_ui/lib/catch_ui.dart"), "export 'src/text.dart';\n");
+  fs.writeFileSync(path.join(root, "packages/catch_ui/lib/src/text.dart"),
+    "class CatchText {}\n\n@Deprecated('Use CatchText.')\nclass CatchOldText extends CatchText {}\n");
+  fs.mkdirSync(path.join(root, "lib/pages"), {recursive: true});
+  fs.writeFileSync(path.join(root, "lib/pages/sheet.dart"),
+    "import 'package:catch_ui/catch_ui.dart';\n\npart 'sheet_part.dart';\n\nfinal text = CatchOldText();\n");
+  fs.writeFileSync(path.join(root, "lib/pages/sheet_part.dart"), "part of 'sheet.dart';\n\nfinal other = text;\n");
+  fs.writeFileSync(path.join(root, "lib/pages/clean.dart"), "import 'package:catch_ui/catch_ui.dart';\n\nfinal text = CatchText();\n");
+  const stale = (file) => ({code: "CATCH_ARCH_STALE_CARRY", file, line: 1, message: "stale"});
+  // The library names a deprecated catch_ui class, which the lints leave to
+  // deprecated_member_use and the shims gate reports; its clean part stays too.
+  assert.deepEqual(dropStaleCarries({root, findings: [
+    stale("lib/pages/sheet.dart"), stale("lib/pages/sheet_part.dart"), stale("lib/pages/clean.dart"),
+  ]}), ["lib/pages/clean.dart"]);
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, "tool/architecture/carried_screens.json"), "utf8")).carried
+    .map((entry) => entry.path).sort(), ["lib/pages/sheet.dart", "lib/pages/sheet_part.dart"]);
 });
 
 test("--apply refuses a dirty tree and rolls back its own work when a step fails", () => {

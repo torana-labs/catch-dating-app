@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/bookings/bookings.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_presence_derivation.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_presence_policy.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _start = 1000000;
@@ -61,7 +61,7 @@ void main() {
   test('the policy constant carries the catalog values', () {
     final catalog =
         jsonDecode(
-              File(
+              repoFile(
                 'contracts/catalogs/event_success_presence_policy.json',
               ).readAsStringSync(),
             )

@@ -1,8 +1,11 @@
 #!/usr/bin/env node
-// Shadow read map for the Flutter tests that import dart:io (RE decision,
-// 22 Nov 2026: shadow only, nothing consumes it yet).
+// Shadow read map for the root and app-package Flutter tests that read files
+// (RE decision, 22 Nov 2026: shadow only, nothing consumes it yet): those
+// that import dart:io or read repository paths through repoFile()
+// (packages/catch_test_support/lib/repo_file.dart).
 //
-// Each such test file runs in its own `flutter test` under `strace -f`, and
+// Each such test file runs in its own `flutter test`, from its package
+// directory, under `strace -f`, and
 // the log is reduced to the repository paths each kind of process touched:
 // the test runtime (flutter_tester, where a test's own dart:io reads happen),
 // the compiler (frontend_server, which reads every imported source) and
@@ -24,8 +27,8 @@ import {fileURLToPath} from "node:url";
 
 export const TRACED_CALLS = ["execve", "clone", "clone3", "fork", "vfork", "open", "openat", "openat2", "stat",
   "lstat", "newfstatat", "statx", "access", "faccessat", "faccessat2"];
-// Generated or tool state, not repository inputs.
-const IGNORED = /^(\.dart_tool|build|\.git)(\/|$)/u;
+// Generated or tool state, not repository inputs, at the root or an app.
+const IGNORED = /^(?:apps\/[^/]+\/)?(\.dart_tool|build|\.git)(\/|$)/u;
 
 const newKind = () => ({opened: new Set(), listed: new Set(), probed: new Set(), missing: new Set()});
 
@@ -42,12 +45,17 @@ function kindOf(executable) {
  * @param {string} log The strace output (`-f`, one `PID call(...)` per line).
  * @param {string} root The repository root the test ran in.
  */
-export function parseStraceLog(log, root) {
+/**
+ * @param {string} [cwd] The directory the test ran in, which relative paths
+ *   in the log resolve against (default: the repository root).
+ */
+export function parseStraceLog(log, root, cwd = root) {
   const base = path.resolve(root) + "/";
+  const workingDirectory = path.resolve(cwd);
   const exe = new Map();
   const kinds = {runtime: newKind(), compiler: newKind(), tool: newKind()};
   const repoPath = (raw) => {
-    const absolute = path.isAbsolute(raw) ? path.normalize(raw) : path.normalize(path.join(base, raw));
+    const absolute = path.isAbsolute(raw) ? path.normalize(raw) : path.normalize(path.join(workingDirectory, raw));
     if (!absolute.startsWith(base)) return null;
     const relative = absolute.slice(base.length);
     return relative && !IGNORED.test(relative) ? relative : null;
@@ -89,10 +97,21 @@ export function parseStraceLog(log, root) {
   return out;
 }
 
-/** The test files under test/ that import dart:io, sorted. */
-export function dartIoTests(files, read) {
-  return files.filter((file) => file.startsWith("test/") && file.endsWith("_test.dart"))
-    .filter((file) => /^import\s+['"]dart:io['"]/mu.test(read(file))).sort();
+const readsFiles = /^import\s+['"](?:dart:io|package:catch_test_support\/repo_file\.dart)['"]/mu;
+
+/**
+ * The root and app-package test files that import dart:io or repoFile(),
+ * sorted.
+ */
+export function fileReadingTests(files, read) {
+  return files.filter((file) => packageOf(file) != null && file.endsWith("_test.dart"))
+    .filter((file) => readsFiles.test(read(file))).sort();
+}
+
+/** The package directory a test runs from: "." or apps/<app>, else null. */
+export function packageOf(test) {
+  if (test.startsWith("test/")) return ".";
+  return /^(apps\/[^/]+)\/test\//u.exec(test)?.[1] ?? null;
 }
 
 /** Round-robin shard `index` of `count`, so slow directories spread out. */
@@ -128,11 +147,11 @@ function parseArgs(argv) {
 function main() {
   const {shard, shards, out} = parseArgs(process.argv.slice(2));
   const root = process.cwd();
-  const listed = spawnSync("git", ["ls-files", "test"], {encoding: "utf8", maxBuffer: 32 * 1024 * 1024});
+  const listed = spawnSync("git", ["ls-files", "test", "apps"], {encoding: "utf8", maxBuffer: 32 * 1024 * 1024});
   assert.equal(listed.status, 0, listed.stderr);
-  const tests = shardOf(dartIoTests(listed.stdout.split("\n").filter(Boolean),
+  const tests = shardOf(fileReadingTests(listed.stdout.split("\n").filter(Boolean),
     (file) => fs.readFileSync(path.join(root, file), "utf8")), shard, shards);
-  console.log(`Read map shard ${shard}/${shards}: ${tests.length} dart:io test files`);
+  console.log(`Read map shard ${shard}/${shards}: ${tests.length} file-reading test files`);
   const log = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "read-map-")), "strace.log");
   fs.writeFileSync(out, "");
   let failed = 0;
@@ -140,13 +159,14 @@ function main() {
     const started = Date.now();
     // Golden-tagged tests are excluded on Linux, as in the CI shards; a file
     // with only golden tests exits 79 (no tests ran) and still yields a map.
+    const cwd = path.join(root, packageOf(test));
     const result = spawnSync("strace", ["-f", "-qq", "-e", `trace=${TRACED_CALLS.join(",")}`, "-o", log,
-      "flutter", "test", "--concurrency=1", "--exclude-tags=golden", test],
-    {stdio: ["ignore", "ignore", "ignore"], timeout: 15 * 60 * 1000});
+      "flutter", "test", "--concurrency=1", "--exclude-tags=golden", path.relative(cwd, path.join(root, test))],
+    {cwd, stdio: ["ignore", "ignore", "ignore"], timeout: 15 * 60 * 1000});
     const seconds = (Date.now() - started) / 1000;
     const text = fs.existsSync(log) ? fs.readFileSync(log, "utf8") : "";
     const row = readMapRow({test, seconds, exit: result.status ?? -1, logBytes: Buffer.byteLength(text),
-      map: parseStraceLog(text, root)});
+      map: parseStraceLog(text, root, cwd)});
     fs.rmSync(log, {force: true});
     if (row.exit !== 0 && row.exit !== 79) failed += 1;
     fs.appendFileSync(out, `${JSON.stringify(row)}\n`);

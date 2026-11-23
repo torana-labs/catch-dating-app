@@ -10,6 +10,7 @@ import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -55,7 +56,9 @@ void main() {
         tester,
       ) async {
         final photo = FormProfilePhotoPreview(
-          bytes: File('test/goldens/fixtures/portrait.jpg').readAsBytesSync(),
+          bytes: repoFile(
+            'test/goldens/fixtures/portrait.jpg',
+          ).readAsBytesSync(),
           width: 160,
           height: 200,
         );

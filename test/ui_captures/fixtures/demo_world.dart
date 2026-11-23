@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:catch_test_support/repo_file.dart';
 import 'package:timezone/data/latest.dart' as timezone_data;
 import 'package:timezone/timezone.dart' as timezone;
 
@@ -12,7 +12,7 @@ class DemoWorld {
   DemoWorld._(this._json);
 
   factory DemoWorld.load(String path) {
-    final json = jsonDecode(File(path).readAsStringSync());
+    final json = jsonDecode(repoFile(path).readAsStringSync());
     if (json is! Map<String, Object?> || json['schemaVersion'] != 2) {
       throw FormatException('$path is not a schemaVersion 2 demo world.');
     }

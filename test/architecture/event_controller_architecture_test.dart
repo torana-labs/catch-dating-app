@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -17,7 +18,7 @@ void main() {
       ];
       for (final controller in controllers) {
         final path = 'lib/hosts/presentation/$controller.dart';
-        final source = File(path).readAsStringSync();
+        final source = repoFile(path).readAsStringSync();
         expect(source, isNot(contains('extends ChangeNotifier')), reason: path);
         expect(source, isNot(contains('notifyListeners(')), reason: path);
         expect(
@@ -26,7 +27,7 @@ void main() {
           reason: path,
         );
         expect(
-          File('lib/hosts/presentation/$controller.g.dart').existsSync(),
+          repoFile('lib/hosts/presentation/$controller.g.dart').existsSync(),
           isTrue,
           reason: path,
         );
@@ -35,7 +36,7 @@ void main() {
         'lib/events',
         'lib/hosts/presentation/event_management',
       ]) {
-        for (final file in Directory(
+        for (final file in repoDirectory(
           root,
         ).listSync(recursive: true).whereType<File>()) {
           if (!file.path.endsWith('.dart') ||

@@ -517,7 +517,7 @@ Each packet must be reviewable **without opening any other file**:
 
 | member | file | role | usage | LOC | params | tokens | widgetbook |
 |---|---|---|---|---|---|---|---|
-| ChatShareCard | lib/matches/… | composition | 11 | 84 | 6 | 9 | yes |
+| ChatShareCard | lib/chats/… | composition | 11 | 84 | 6 | 9 | yes |
 | …
 
 **Similarity**: cohesion 0.87 · exact-shape subset: {OrganizerShareCard, EventShareCard}

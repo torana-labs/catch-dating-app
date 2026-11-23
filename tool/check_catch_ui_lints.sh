@@ -1441,7 +1441,8 @@ cat >"$probe_root/carried_screens.json" <<'JSON'
   {"path": "apps/host/lib/carried/drawn_screen.dart", "from": "lib/hosts/presentation/drawn_screen.dart"},
   {"path": "apps/host/lib/carried/themed_screen.dart", "from": "lib/hosts/presentation/themed_screen.dart"},
   {"path": "apps/host/lib/carried/shared_body.dart", "from": "lib/events/shared/shared_body.dart"},
-  {"path": "apps/host/lib/carried/seam_screen.dart", "from": "lib/dashboard/presentation/seam_screen.dart"}
+  {"path": "apps/host/lib/carried/seam_screen.dart", "from": "lib/dashboard/presentation/seam_screen.dart"},
+  {"path": "apps/host/lib/carried/legacy_text_screen.dart", "from": "lib/hosts/presentation/legacy_text_screen.dart"}
 ]}
 JSON
 probe_path="$probe_root/arch/apps/host/lib/carried/stale_screen.dart"
@@ -1488,6 +1489,13 @@ const Type screen = ExploreScreen;
 DART
 expect_probe exact catch_arch_invalid_ignore 0
 expect_probe exact catch_arch_cross_feature_presentation_import 0
+expect_probe exact catch_arch_stale_carry 0
+probe_path="$probe_root/arch/apps/host/lib/carried/legacy_text_screen.dart"
+stage_probe "a carried file that uses a legacy catch_ui member stays carried for the shims gate" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+
+const Type text = CatchLegacyText;
+DART
 expect_probe exact catch_arch_stale_carry 0
 
 # Outside lib/ and apps/*/lib/ the rules place nothing.

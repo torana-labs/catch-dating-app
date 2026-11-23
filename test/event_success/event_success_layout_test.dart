@@ -1,13 +1,13 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
+import 'package:catch_test_support/repo_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final catalog =
       jsonDecode(
-            File(
+            repoFile(
               'contracts/catalogs/event_success_layout.json',
             ).readAsStringSync(),
           )
