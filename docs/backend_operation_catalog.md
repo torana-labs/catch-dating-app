@@ -261,8 +261,7 @@ update. `getEventRehearsalMovement` is the review that fences
 `controlEventRehearsal`, built over private practice documents.
 `listEventAssignmentFeatureChoices` compares the signed phone claim with the
 form responses, and its revision is the consent fence of the assignment write.
-`getOrganizerFormEditor` reads raw drafts that clients cannot read and fences
-the draft update. `previewEventAssignmentFeatures`,
+`previewEventAssignmentFeatures`,
 `previewOrganizerFormConversion` and `previewOrganizerFormAdmission` are
 reviews computed before a commit and checked again by it.
 
@@ -274,12 +273,23 @@ sender connections. `getOrganizerBillingStatus` is computed from server-only
 commercial terms.
 
 **Read path decision (Nov 2026): server-trust, computed or issued data.**
-`getUserAnalytics` queries BigQuery. `getOrganizerFormAnalytics` returns
-aggregates over every response of a form. `getOrganizerFormShareAssets` issues
-token links and QR codes. `getOrganizerFormResponseDetail` signs photo links
-under a dedicated signing identity, and `listEventHostPhotos` returns signed
-URLs. `listOrganizerFormTemplates` and `listSuvbotDemoActions` return catalogs
-generated in code, with no stored documents to listen to.
+`getUserAnalytics` queries BigQuery. `getOrganizerFormResponseDetail` signs
+photo links under a dedicated signing identity, and `listEventHostPhotos`
+returns signed URLs. `listSuvbotDemoActions` returns a catalog generated in
+code, with no stored documents to listen to.
+
+**Read path decision (Nov 2026, #2306 batch C): form editor, analytics and
+templates.** `getOrganizerFormEditor` moved to `hostFormEditorViews`: the
+trigger copies the draft into a view only current managers read, and the
+draft revision that fences `updateOrganizerFormDraft` travels on the view as
+`form.draftRevision`, so a save from a stale view still fails on the server.
+`getOrganizerFormAnalytics` moved to `hostFormAnalyticsViews` and
+`hostFormSourceViews`: the aggregates were already precomputed, and the
+trigger applies the privacy threshold through the callable's own projection,
+so thresholded counts never reach a view. `getOrganizerFormShareAssets` was
+already replaced by a link built on the device from `hostFormSummaries`
+(#2309). `listOrganizerFormTemplates` returned a catalog in code; the Host app
+now ships the gallery, generated from the same catalog.
 
 **Read path decision (Nov 2026): recorded fallback.** `listOrganizerFormResponses`
 is called only when `HostResponseSummaryReads.supports` is false: answer,

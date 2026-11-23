@@ -1601,6 +1601,31 @@ service cloud.firestore {
         || isHostSummaryManager(resource.data.organizerId);
       allow list, write: if false;
     }
+    // One form's editor (#2306): the summary, draft definition and
+    // validation issues getOrganizerFormEditor returned. The organizer's
+    // current managers get it by id, as requireOrganizerManager admitted
+    // them; saves stay on the draft callable, fenced by form.draftRevision.
+    // A view not written yet reads as missing.
+    match /hostFormEditorViews/{formId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    // One published version's funnel and question aggregates (#2306). The
+    // trigger applies the privacy threshold, so a question below it keeps
+    // only its count. Managers get it by version id.
+    match /hostFormAnalyticsViews/{versionId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    // One form's share-link counters (#2306), never a link token. Managers
+    // get it by form id; a form with no links has none.
+    match /hostFormSourceViews/{formId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
     match /hostResponseSummaries/{summaryId} {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
