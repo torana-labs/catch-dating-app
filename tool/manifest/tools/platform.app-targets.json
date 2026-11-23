@@ -46,7 +46,7 @@
         "apps/*/macos/**",
         "apps/*/android/**",
         ".github/workflows/**",
-        "lib/force_update/**"
+        "lib/force_update/presentation/**"
       ],
       "instruction": "Consumer and Host are separate installable products. Entrypoints, native ids and capabilities, Firebase registrations, links, force-update keys, routine release ownership, and enabled release-critical callable dependencies must match checked target contracts. A production client feature cannot be enabled until its callable export and live Firebase callable/IAM reachability pass the release preflight; temporary release exceptions require a stable debt id and explicit removal proof."
     }

@@ -340,7 +340,7 @@ can move a section:
 - Event-success setup screens go to P5 events (`EventSetup`). Host reports go to
   P3.5.
 - Create-organizer goes to P5 onboarding, edit-organizer to P5 organizer.
-- `lib/force_update` has no row, so it goes to `lib/pages/startup`, since both
+- The force-update screens have no row, so they go to `lib/pages/startup`, since both
   apps show it. `lib/image_uploads`, `lib/user_analytics` and
   `lib/host_memberships` go to P6 you.
 - Re-home targets follow the same rule table throughout; a controller test is
