@@ -1168,6 +1168,68 @@ test("program-access-views-organizer-managers adds manager views and the flag on
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("access-grants-programs grants each owner and staff member once, then agrees with the views", async () => {
+  const views = MIGRATIONS.find((entry) => entry.name === "program-access-views");
+  const migration = MIGRATIONS.find((entry) => entry.name === "access-grants-programs");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const grant = (uid, overrides = {}) => ({organizerId: "o1", programId: "p1", uid,
+    displayName: "Arjun", phoneLastFour: "0001", status: "active", createdBy: "owner-1",
+    duties: [{duty: "guestRelations", pickupPointIds: [], hotelIds: [], expiresAtMillis: later}],
+    expiresAt: at(later), updatedAt: at(7), revokedBy: null, revokedAt: null, revision: 2,
+    ...overrides});
+  const db = fakeDb({
+    "organizers/o1": {hostUserId: "owner-1", ownerUserId: "owner-1",
+      hostUserIds: ["owner-1", "host-2"], hostProfiles: []},
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active",
+      createdAt: at(3)},
+    "organizerPrograms/p2": {organizerId: "o1", status: "active"},
+    "programStaffGrants/p1__desk-1": grant("desk-1"),
+    "programStaffGrants/p1__revoked-1": grant("revoked-1", {status: "revoked",
+      revokedBy: "owner-1", revokedAt: at(5)}),
+    "programStaffGrants/p9__orphan-1": {...grant("orphan-1"), programId: "p9"},
+  });
+  // The views as the triggers wrote them before the transactional writers.
+  await applyMigrationPlan(db, await planMigration(db, views));
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.steps[0].toCreate.length, 1, "the owner");
+  assert.equal(plan.steps[1].toCreate.length, 2, "two staff grants");
+  assert.equal(plan.totals.conflicts, 0);
+  await applyMigrationPlan(db, plan);
+  const owner = db.data["accessGrants/program__p1__owner-1"];
+  assert.equal(owner.role, "owner");
+  assert.equal(owner.grantedBy, null);
+  assert.deepEqual(owner.reach.programAll, {});
+  const desk = db.data["accessGrants/program__p1__desk-1"];
+  assert.equal(desk.role, "staff");
+  assert.equal(desk.status, "active");
+  assert.equal(desk.grantedBy, "owner-1");
+  assert.deepEqual(desk.reach.programAll, {guestRelations: later});
+  // The access document's reach is the view's maps, with no manager flag.
+  const view = db.data["programAccessViews/p1__desk-1"];
+  for (const key of Object.keys(desk.reach)) {
+    assert.deepEqual(desk.reach[key], view[key], key);
+  }
+  assert.equal("organizerManager" in desk, false);
+  assert.equal(JSON.stringify(desk).includes("Arjun"), false);
+  assert.equal(db.data["accessGrants/program__p1__revoked-1"].status, "inactive");
+  // An organizer manager with no grant has no access document (setup only).
+  assert.equal(db.data["accessGrants/program__p1__host-2"], undefined);
+  assert.equal(db.data["accessGrants/program__p9__orphan-1"], undefined);
+  // A rerun writes nothing: access documents and views agree with sources.
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0, "a rerun writes nothing");
+  assert.equal(again.totals.conflicts, 0);
+  // A stale access document is repaired by the refresh step, once.
+  db.data["accessGrants/program__p1__desk-1"] = {...desk, status: "active",
+    reach: {...desk.reach, programAll: {guestRelations: later + 1}}};
+  const repair = await planMigration(db, migration);
+  assert.equal(repair.steps[2].toFill.length, 1);
+  await applyMigrationPlan(db, repair);
+  assert.deepEqual(db.data["accessGrants/program__p1__desk-1"].reach.programAll,
+    {guestRelations: later});
+});
+
 test("program-door-views creates headers, roster rows and journal views once, without contacts", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-door-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});

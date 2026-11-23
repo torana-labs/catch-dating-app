@@ -610,9 +610,7 @@ enter previews.
 | `onOrganizerProgramPickupPointChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a pickup point's programme when the point changes |
 | `onOrganizerProgramTravelLegCountChanged` | `src/programs/organizerProgramCountTriggers.ts` | Moves a programme view's flying-in count when an inbound journey is added, removed or enters or leaves no-show |
 | `onOrganizerProgramViewChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites a programme's setup view when its settings, dates, status, branding or retention dates change |
-| `onProgramAccessViewGrantChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites that account's programme access view when a staff grant changes |
-| `onProgramAccessViewOrganizerChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites an account's view of every programme of the organizer when it becomes or stops being an organizer manager |
-| `onProgramAccessViewProgramChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites the owner's view, and every staff and organizer manager view when the creator or organizer changes, when a programme changes |
+| `onProgramAccessViewOrganizerChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites an account's view of every programme of the organizer when it becomes or stops being an organizer manager (the display-only setup flag; grant commands write programme authority in their own transaction) |
 | `onProgramAlertLegChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Rewrites a journey's live board alerts and the programme's travel counts when its status changes |
 | `onProgramAlertResolutionChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Merges a taken, finished or deleted alert resolution into its live board alert |
 | `onProgramAlertSendChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Rewrites a live board alert when a staff attention send fires |
@@ -643,8 +641,6 @@ enter previews.
 | `onProgramHotelViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a hotel's work shell label when it changes |
 | `onProgramHouseholdWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a household's primary phone changes. |
 | `onProgramPickupPointViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a pickup point's work shell label when it changes |
-| `onProgramStaffViewGrantChanged` | `src/programs/programStaffViewTriggers.ts` | Rewrites a staff member's row of the administrators' staff list when their grant changes |
-| `onProgramStaffViewProgramChanged` | `src/programs/programStaffViewTriggers.ts` | Rewrites every staff row when a programme's creator or organizer changes |
 | `onProgramSettingViewProgramChanged` | `src/programs/programWhatsapp/settingViewTriggers.ts` | Rewrites a programme's sender and assistant settings views when it appears, vanishes, moves organizer or binds another number |
 | `onProgramSettingViewSettingsChanged` | `src/programs/programWhatsapp/settingViewTriggers.ts` | Rewrites a programme's assistant settings view when its settings are saved |
 | `onProgramSettingViewGrantChanged` | `src/programs/programWhatsapp/settingViewTriggers.ts` | Rewrites the escalation staff in a programme's assistant settings view when a grant changes |

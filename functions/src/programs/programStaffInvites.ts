@@ -28,6 +28,7 @@ import {
   requireProgramAccess,
   requireProgramMutable,
 } from "../shared/programAuthority";
+import {stageProgramAuthority} from "./programAuthorityWrites";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {normalizeRosterPhone} from "../events/eventAttendees";
 import {
@@ -258,7 +259,7 @@ export async function claimProgramStaffInviteHandler(
         "This invite was sent to a different phone number."
       );
     }
-    const {program} = await loadProgramBundle({
+    const {program, organizer} = await loadProgramBundle({
       db, programId: invite.programId, transaction: tx,
     });
     requireProgramMutable(program);
@@ -352,6 +353,10 @@ export async function claimProgramStaffInviteHandler(
       revision: current ? nextRevision(current.revision, committedAt) : 1,
     };
     tx.set(grantRef, grant);
+    // The claimed grant is in force for rules the moment it commits (FIX-10).
+    stageProgramAuthority(tx, db, {programId: invite.programId, program, uid,
+      grant, organizer, nowMillis: committedAt.toMillis(),
+      updatedAt: committedAt});
     tx.set(inviteRef, {
       ...invite,
       status: "claimed",

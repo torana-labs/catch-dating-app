@@ -23,9 +23,15 @@ import {loadFlightProviderConfig} from "../transport/flightProviderConfig";
 import {deleteFlightSubscription} from "../transport/flightSubscriptions";
 import type {FetchImpl} from "../transport/aeroDataBox";
 import {programAssetPrefix} from "./programAssets";
+import {
+  programStaffView,
+  programStaffViewId,
+  programStaffViewsCollection,
+} from "./programStaffViews";
 import type {
   OrganizerProgramDocument,
   ProgramRetentionRunDocument,
+  ProgramStaffGrantDocument,
   ProgramStaffInviteDocument,
   ProgramTravelLegDocument,
 } from "../shared/generated/firestoreAdminTypes";
@@ -258,6 +264,32 @@ const retentionCollections = [
   "programAssistantRuns",
   "programAssistantBudgets",
 ] as const;
+
+/**
+ * Rewrites one staff list row from its scrubbed grant on the anonymization
+ * batch, so the name and phone digits leave both documents in one commit.
+ * @param {FirebaseFirestore.WriteBatch} batch The scrub batch.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {OrganizerProgramDocument} program The programme.
+ * @param {string} programId The programme document id.
+ * @param {ProgramStaffGrantDocument} grant The grant as scrubbed.
+ * @param {number} nowMillis The scrub time.
+ */
+function stageAnonymizedStaffView(batch: FirebaseFirestore.WriteBatch,
+  db: FirebaseFirestore.Firestore, program: OrganizerProgramDocument,
+  programId: string, grant: ProgramStaffGrantDocument,
+  nowMillis: number): void {
+  const ref = db.collection(programStaffViewsCollection)
+    .doc(programStaffViewId(programId, grant.uid));
+  let row = null;
+  try {
+    row = programStaffView(program, programId, grant, nowMillis);
+  } catch {
+    row = null; // A malformed grant keeps no row with its personal data.
+  }
+  if (row) batch.set(ref, row);
+  else batch.delete(ref);
+}
 
 function shortId(docId: string): string {
   return docId.replace(/[^A-Za-z0-9]/g, "").slice(0, 6) || "anon";
@@ -522,6 +554,13 @@ export async function anonymizeProgram(
             batch.delete(doc.ref);
           } else {
             batch.update(doc.ref, fields);
+          }
+          if (collection === "programStaffGrants" && fields !== null) {
+            // The staff list row carries the same name and phone digits;
+            // it is scrubbed in the same commit as its grant (no trigger).
+            stageAnonymizedStaffView(batch, db, claimed.program, programId,
+              {...data, ...fields} as ProgramStaffGrantDocument,
+              deps.now().toMillis());
           }
           pending += 1;
         }

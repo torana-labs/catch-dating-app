@@ -14,6 +14,8 @@ const {
   setDoc,
   where,
 } = require("firebase/firestore");
+const {accessGrantFromView, accessGrantPath} =
+  require("./programAccessGrantFixture.cjs");
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -49,8 +51,11 @@ function view(uid, overrides = {}) {
     functionAll: {}, functionScoped: {}, workPickup: {}, workHotel: {},
     workFunction: {}, revision: 1, version: 1, ...overrides};
 }
+// Rules authorise from the access grant (#2474); fixtures keep the view's
+// shape and become the document the transactional writers store.
 const seedView = (uid, overrides) => seedRaw(
-  ["programAccessViews", `program-1__${uid}`], view(uid, overrides));
+  accessGrantPath("program-1", uid),
+  accessGrantFromView(view(uid, overrides)));
 
 function resource(kind, id, overrides = {}) {
   return {programId: "program-1", organizerId: "org-1", kind, resourceId: id,

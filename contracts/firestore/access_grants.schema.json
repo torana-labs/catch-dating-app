@@ -1,0 +1,196 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/access_grants.schema.json",
+  "title": "AccessGrantDocument",
+  "description": "One person's current authority over one scope, the document security rules get() by id to decide access (STR-2, FIX-10). Written in the same transaction as every grant, owner or revocation that changes it, never by a trigger, so a revocation is in force the moment its command commits. Holds authorisation only: ids, roles, duty names and expiry instants, no name, phone number or free text. Step 1 writes programme scopes (#2474); event and organiser scopes follow. No document, an inactive document, or an expiry instant at or before the request time means no access.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "accessGrants",
+  "x-firestore-path": "accessGrants/{accessId}",
+  "x-document-id-field": "accessId",
+  "x-owner": "Access grant writers (functions/src/domain/access), called inside each grant command's transaction",
+  "required": [
+    "scopeType",
+    "scopeId",
+    "uid",
+    "organizerId",
+    "role",
+    "status",
+    "activeFromMillis",
+    "expiresAtMillis",
+    "reach",
+    "assignments",
+    "grantedBy",
+    "revision",
+    "updatedAt",
+    "version"
+  ],
+  "properties": {
+    "scopeType": {
+      "type": "string",
+      "enum": [
+        "program"
+      ],
+      "description": "The kind of scope. The document id is scopeType__scopeId__uid."
+    },
+    "scopeId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The scope's document id: an organizerPrograms id for a programme."
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The account the grant describes."
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The organiser that owns the scope. It never changes for a programme."
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "owner",
+        "staff"
+      ],
+      "description": "owner is the programme's creator and holds every duty and scope; staff hold the duties in reach. Organiser managers who neither created the programme nor hold a grant have no document: their setup access comes from the organiser."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "description": "inactive when the grant is revoked, unapproved by the owner, expired or malformed. Rules deny an inactive document."
+    },
+    "activeFromMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "The owner approval instant; authority is not live before it. 0 for the owner and legacy creator-issued grants."
+    },
+    "expiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive end of the last live duty, bounded by the grant expiry and the owner's authorization deadline. Null for the owner."
+    },
+    "reach": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "duties",
+        "pickupAll",
+        "pickupScoped",
+        "hotelAll",
+        "hotelScoped",
+        "functionAll",
+        "functionScoped",
+        "programAll",
+        "workPickup",
+        "workHotel",
+        "workFunction",
+        "arrivalRoutes",
+        "tripRoutes"
+      ],
+      "properties": {
+        "duties": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "Duty name to the latest exclusive expiry at which the duty is held in some scope, with the coordinator duty counted for every duty but programAdmin."
+        },
+        "pickupAll": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "Duty name to the latest expiry of an assignment that covers every pickup point."
+        },
+        "pickupScoped": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "Key duty__pickupPointId to the latest expiry of an assignment that names that pickup point."
+        },
+        "hotelAll": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "Duty name to the latest expiry of an assignment that covers every hotel."
+        },
+        "hotelScoped": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "Key duty__hotelId to the latest expiry of an assignment that names that hotel."
+        },
+        "functionAll": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "Duty name to the latest expiry of an assignment that covers every function."
+        },
+        "functionScoped": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "Key duty__functionId to the latest expiry of an assignment that names that function."
+        },
+        "programAll": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "Duty name to the latest expiry of one assignment that covers every pickup point, hotel and function at once, with the coordinator duty counted for every duty but programAdmin. pickupAll, hotelAll and functionAll cannot say this, because each can be raised by a different assignment. The guest directory rules read guestRelations here, as requireProgramGuestDirectoryAccess admits a whole-programme guest relations duty only."
+        },
+        "workPickup": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "The pickup points the work shell lists for this account, as the work-access callable resolves them: key \"*\" when some live operational duty covers every one, otherwise one key per named id; each value is the latest exclusive expiry of a duty reaching it. Hotel desk duties reach hotels only; programAdmin reaches none; functions come from door and guest-desk duties."
+        },
+        "workHotel": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "The hotels the work shell lists for this account, as the work-access callable resolves them: key \"*\" when some live operational duty covers every one, otherwise one key per named id; each value is the latest exclusive expiry of a duty reaching it. Hotel desk duties reach hotels only; programAdmin reaches none; functions come from door and guest-desk duties."
+        },
+        "workFunction": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "The functions the work shell lists for this account, as the work-access callable resolves them: key \"*\" when some live operational duty covers every one, otherwise one key per named id; each value is the latest exclusive expiry of a duty reaching it. Hotel desk duties reach hotels only; programAdmin reaches none; functions come from door and guest-desk duties."
+        },
+        "arrivalRoutes": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "The arrivals journeys the account's airport greeter, transport dispatcher and coordinator assignments reach, as the arrivals roster resolves them: key pickup|hotel, where either side is an id or * for every one, so one assignment's pickup and hotel scopes cover a journey together; the value is the latest exclusive expiry of an assignment reaching it. A journey with no pickup point or hotel is ~ on that side, which only * reaches. An assignment whose scopes would expand past 300 routes grants none."
+        },
+        "tripRoutes": {
+          "$ref": "#/definitions/expiryMap",
+          "description": "The transport trips the account's reconciliation viewer, transport dispatcher and coordinator assignments reach, as the retired listProgramTrips callable resolved them: key pickup|hotel with the same meaning as arrivalRoutes (an id or * on each side; a trip with no hotel is ~ on that side, which only * reaches). Capped at 300 routes per assignment, failing closed."
+        }
+      },
+      "description": "The expiry maps security rules compare with request.time, computed by the same function that builds programAccessViews (programAccessViewFor), so rules need no clock-driven write. Empty for the owner, whose role covers every duty and scope."
+    },
+    "assignments": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programStaffGrantedDuty"
+      },
+      "description": "The staff member's live duty assignments with their resource scopes and own expiries; empty for the owner and for an inactive grant. A transport route needs one assignment to cover both ends, which the flattened maps cannot say."
+    },
+    "grantedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Who approved the grant: the owner-approval proof's approver, else the grant's creator. Null for the owner."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "The source grant's revision; 0 for the owner."
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "When the command that last changed the grant committed."
+    },
+    "version": {
+      "const": 1
+    }
+  },
+  "definitions": {
+    "expiryMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9007199254740991
+      }
+    }
+  }
+}
