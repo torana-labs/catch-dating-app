@@ -1,5 +1,5 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {cleanup, fireEvent, render as renderInto, screen, waitFor, within} from "@testing-library/react";
+import {act, cleanup, fireEvent, render as renderInto, screen, waitFor, within} from "@testing-library/react";
 import {StrictMode} from "react";
 import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 import {signInCopy} from "@content/account";
@@ -72,6 +72,14 @@ describe("walkthrough slot picker", () => {
     expect(screen.getByText("30 minutes")).toBeTruthy();
     fireEvent.click(within(dayGroup()).getByRole("radio", {name: "Tue 24 Nov"}));
     expect(within(timeGroup()).getAllByRole("radio").map((radio) => radio.textContent)).toEqual(["11:00 AM"]);
+  });
+
+  it("leaves focus where it is when the times arrive", async () => {
+    render({client: scriptedWalkthroughClient().client, timeZone: "Asia/Kolkata"});
+    await screen.findByRole("heading", {name: copy.title});
+    // Flush every pending effect: the slots loading is not a step change, so nothing may move focus or scroll the page.
+    await act(async () => undefined);
+    expect(document.activeElement).toBe(document.body);
   });
 
   it("moves between days with the arrow keys", async () => {

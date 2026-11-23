@@ -190,7 +190,7 @@ function Body({controller, focus}: {controller: WalkthroughManageController; foc
  */
 export function WalkthroughManagePage({search, hash}: {search: string; hash: string}) {
   const controller = useWalkthroughManageController({search, hash});
-  const focus = useStepFocus(controller.stage.name);
+  const focus = useStepFocus(controller.stage.name === "loading" ? null : controller.stage.name);
   return (
     <CatchRoot theme="day">
       <PublicSiteHeader variant="minimal" />

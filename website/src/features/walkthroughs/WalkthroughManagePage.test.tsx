@@ -1,5 +1,5 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {cleanup, fireEvent, render as renderInto, screen, waitFor, within} from "@testing-library/react";
+import {act, cleanup, fireEvent, render as renderInto, screen, waitFor, within} from "@testing-library/react";
 import {StrictMode} from "react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {walkthroughBookingCopy as copy} from "@content/walkthroughBooking";
@@ -42,6 +42,20 @@ describe("walkthrough manage page", () => {
     expect(screen.getByText(words.status.booked)).toBeTruthy();
     expect(screen.getByText(words.pending)).toBeTruthy();
     expect(calls.manage[0]).toEqual({bookingId: walkthroughFixtureBookingId, action: "read", manageToken: walkthroughFixtureToken});
+  });
+
+  it("moves focus to the move step's heading", async () => {
+    render({client: scriptedWalkthroughClient().client, timeZone: "Asia/Kolkata"});
+    fireEvent.click(await screen.findByRole("button", {name: words.move}));
+    const heading = await screen.findByRole("heading", {name: words.moveTitle});
+    await waitFor(() => expect(document.activeElement).toBe(heading));
+  });
+
+  it("does not take focus when the booking first shows", async () => {
+    render({client: scriptedWalkthroughClient().client, timeZone: "Asia/Kolkata"});
+    await screen.findByRole("button", {name: words.move});
+    await act(async () => undefined);
+    expect(document.activeElement).toBe(document.body);
   });
 
   it("moves the booking to another open time", async () => {
