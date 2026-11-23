@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_page_presentation.dart';
 import 'package:catch_dating_app/auth/presentation/otp_step.dart';
 import 'package:catch_dating_app/auth/presentation/phone_step.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
 import 'package:catch_dating_app/pages/startup/splash_screen.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_tokens/catch_tokens.dart';

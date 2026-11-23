@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
@@ -12,7 +11,8 @@ import 'package:catch_dating_app/hosts/organizer/settings_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
-import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
+import 'package:catch_dating_app/pages/account/auth_session_controller.dart';
+import 'package:catch_dating_app/pages/account/settings_controller.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/external_links.dart';

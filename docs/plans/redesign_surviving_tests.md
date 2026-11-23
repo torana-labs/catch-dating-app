@@ -227,7 +227,7 @@ These appear under more than one destination. Delete only your own cases.
 | `test/explore/explore_widgets_test.dart` | P5 onboarding 4, P6 explore 52, shared lib/pages/organizer 17 |
 | `test/event_success/event_success_live_screens_test.dart` | P3.4 live 15, P3.5 insights 4, P5 events 3, P5 live/formats 9, P6 live 25 |
 | `test/chats/chat_screen_test.dart` | P5 people 8, P6 chats 34 |
-| `test/auth/presentation/auth_controller_test.dart` | P5 onboarding 1, P6 onboarding 39 |
+| `test/pages/sign_in/auth_controller_test.dart` | P5 onboarding 1, P6 onboarding 39 |
 | `test/organizers/organizers_controllers_test.dart` | P5 organizer 4, P5 onboarding 9, shared lib/pages/organizer 27 |
 | `test/hosts/host_create_event_screen_test.dart` | P3.2 events/create 30, P5 events 9 |
 | `test/events/events_widgets_test.dart` | P3.2 events/create 3, P6 explore 2, shared lib/pages/event 16 |
@@ -2339,7 +2339,7 @@ Layout only, deleted with the screen:
 
 - `journey` host club descriptors stay aligned with patch contracts
 
-**`test/hosts/host_account_deletion_test.dart`** — behaviour · subject `lib/safety/presentation/settings_controller.dart` · decided by rules
+**`test/hosts/host_account_deletion_test.dart`** — behaviour · subject `lib/pages/account/settings_controller.dart` · decided by rules
 
 - `body` Host without an organizer can cancel account deletion
 - `body` Host deletion requires confirmation and freezes account actions
@@ -2467,7 +2467,7 @@ Layout only, deleted with the screen:
 
 `apps/host/lib/onboarding`. 29 behaviours: 8 domain, 10 action, 1 parts, 9 body, 1 journey.
 
-**`test/auth/presentation/auth_controller_test.dart`** — behaviour · subject `lib/auth/presentation/auth_controller.dart` · decided by rules · also under P6 onboarding
+**`test/pages/sign_in/auth_controller_test.dart`** — behaviour · subject `lib/pages/sign_in/auth_controller.dart` · decided by rules · also under P6 onboarding
 
 - `action` AuthController state management: host app defaults phone auth to the Catch market
 
@@ -2838,12 +2838,12 @@ Layout only, deleted with the screen:
 
 `apps/consumer/lib/onboarding`. 144 behaviours: 29 domain, 74 action, 36 body, 5 journey; 2 more in `widgetbook/test`.
 
-**`test/architecture/keep_alive_provider_lifecycle_test.dart`** — behaviour · subject `lib/onboarding/presentation/onboarding_controller.dart`, `lib/onboarding/presentation/onboarding_step.dart` · decided by rules · also under P6 explore, P6 live, P6 chats
+**`test/architecture/keep_alive_provider_lifecycle_test.dart`** — behaviour · subject `lib/pages/onboarding/onboarding_controller.dart`, `lib/pages/onboarding/onboarding_step.dart` · decided by rules · also under P6 explore, P6 live, P6 chats
 
 - `action` keepAlive provider lifecycle: auth OTP flow state survives route listener disposal
 - `action` keepAlive provider lifecycle: onboarding form state survives step listener disposal
 
-**`test/auth/presentation/auth_controller_test.dart`** — behaviour · subject `lib/auth/presentation/auth_controller.dart` · decided by rules · also under P5 onboarding
+**`test/pages/sign_in/auth_controller_test.dart`** — behaviour · subject `lib/pages/sign_in/auth_controller.dart` · decided by rules · also under P5 onboarding
 
 - `action` AuthController OTP attempt ownership: already-dispatched automatic auth cannot clear replacement B
 - `action` AuthController OTP attempt ownership: late registration error for A cannot settle pending B
@@ -2885,7 +2885,7 @@ Layout only, deleted with the screen:
 - `action` AuthSessionController: signOut clears keepAlive Explore browse state
 - `action` AuthSessionController: signOut returns one active session operation
 
-**`test/auth/presentation/auth_input_test.dart`** — behaviour · subject `lib/auth/presentation/auth_input.dart` · decided by rules
+**`test/pages/sign_in/auth_input_test.dart`** — behaviour · subject `lib/pages/sign_in/auth_input.dart` · decided by rules
 
 - `domain` AuthInput: normalizes national phone numbers
 - `domain` AuthInput: normalizes international phone numbers
@@ -2895,7 +2895,7 @@ Layout only, deleted with the screen:
 - `domain` AuthInput: rejects malformed OTP codes
 - `domain` AuthInput: formats and masks phone numbers for UI/logging
 
-**`test/auth/presentation/auth_presentation_state_test.dart`** — behaviour · subject `lib/auth/presentation/auth_presentation_state.dart` · decided by rules
+**`test/pages/sign_in/auth_presentation_state_test.dart`** — behaviour · subject `lib/pages/sign_in/auth_presentation_state.dart` · decided by rules
 
 - `domain` AuthPhoneEntryViewState: derives country, autofocus, and loading state from auth inputs
 - `domain` AuthPhoneEntryViewState: does not autofocus outside the phone step
@@ -2928,7 +2928,7 @@ Layout only, deleted with the screen:
 - `action` LaunchAccessController: edits and submits the current user application draft
 - `action` LaunchAccessController: draft resets after route listener disposal
 
-**`test/onboarding/onboarding_account_policy_test.dart`** — behaviour · subject `lib/onboarding/presentation/onboarding_controller.dart`, `lib/onboarding/presentation/onboarding_step.dart` · decided by rules
+**`test/onboarding/onboarding_account_policy_test.dart`** — behaviour · subject `lib/pages/onboarding/onboarding_controller.dart`, `lib/pages/onboarding/onboarding_step.dart` · decided by rules
 
 - `action` account saves a single name and optional birthday {birthday}
 - `action` account switch rejects a stale profile draft before writing
@@ -2942,7 +2942,7 @@ Layout only, deleted with the screen:
 - `body` age-only event form saves birthday and omits name and matching questions
 - `action` account save disables controls and shows retryable errors
 
-**`test/onboarding/onboarding_controller_test.dart`** — behaviour · subject `lib/onboarding/presentation/onboarding_controller.dart` · decided by rules
+**`test/pages/onboarding/onboarding_controller_test.dart`** — behaviour · subject `lib/pages/onboarding/onboarding_controller.dart` · decided by rules
 
 - `action` OnboardingController.initStep: {label} does not fetch a draft or initialize a new profile
 - `action` OnboardingController.initStep: cached profile identity survives a failed refresh on entry
@@ -2971,7 +2971,7 @@ Layout only, deleted with the screen:
 - `action` OnboardingFlowState: freezes backward navigation while a step mutation is pending
 - `domain` OnboardingFlowState: locks run-preferences entry to a single-step flow
 
-**`test/onboarding/onboarding_step_test.dart`** — behaviour · subject `lib/onboarding/presentation/onboarding_step.dart` · decided by rules
+**`test/pages/onboarding/onboarding_step_test.dart`** — behaviour · subject `lib/pages/onboarding/onboarding_step.dart` · decided by rules
 
 - `domain` OnboardingStepX: shows progress for every step after welcome
 - `domain` OnboardingStepX: locks back navigation to name step once profile steps begin
@@ -3016,7 +3016,7 @@ Layout only, deleted with the screen:
 - `body` OnboardingRunningPrefsBody: pending completion freezes every run-preference control
 - `body` OnboardingRunningPrefsBody: explains run preferences as event-specific booking data
 
-**`test/onboarding/welcome_reel_handoff_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/onboarding/presentation/pages/onboarding_welcome_body.dart`, `lib/onboarding/presentation/onboarding_controller.dart` · decided by rules
+**`test/onboarding/welcome_reel_handoff_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/pages/start/onboarding_welcome_body.dart`, `lib/pages/onboarding/onboarding_controller.dart` · decided by rules
 
 - `body` Welcome reel handoff: does not replay after the consumer cold-start reel
 
@@ -3024,7 +3024,7 @@ Layout only, deleted with the screen:
 
 - `journey` production router retries profile failure before {variant}
 
-**`widgetbook/test/onboarding_previews_test.dart`** — behaviour · subject `lib/onboarding/presentation/onboarding_controller.dart`, `lib/onboarding/presentation/onboarding_step.dart` · decided by rules · adjacent, not in the totals
+**`widgetbook/test/onboarding_previews_test.dart`** — behaviour · subject `lib/pages/onboarding/onboarding_controller.dart`, `lib/pages/onboarding/onboarding_step.dart` · decided by rules · adjacent, not in the totals
 
 - `body` onboarding specimens have independent prepared initial states
 - `body` changing a preview mode replaces pending state before mounting
@@ -4421,7 +4421,7 @@ Layout only, deleted with the screen:
 - `domain` reports a surface-wide operation while any write domain is pending
 - `domain` models profile provider loading, error, and missing states
 
-**`test/safety/settings_controller_test.dart`** — behaviour · subject `lib/safety/presentation/settings_controller.dart` · decided by rules
+**`test/pages/account/settings_controller_test.dart`** — behaviour · subject `lib/pages/account/settings_controller.dart` · decided by rules
 
 - `action` savePreference writes the selected settings field
 - `action` Cross Paths preference uses the private global-consent field
@@ -4547,7 +4547,7 @@ them to the context's test folder before deleting the file.
 | `test/routing/app_shell_guest_cta_test.dart` | guest app shell waits for auth before showing phone CTA; guest app shell shows phone CTA without tab destinations; authenticated app shell loads Chats and Profile branches; authenticated iOS shell overlays the floating tab bar |
 | `test/routing/router_redirect_test.dart` | initial and cached-null failures retain the intended destination; successful absence still enters onboarding with the same intent; cached real profile remains usable after a failed refresh; public browsing remains available during profile failure; Host routes remain independent of the Consumer profile; {intent} survives error and retry when returning to own account; {path} requires resolved auth but not a loaded profile; does not waive adjacent private or booking routes; requires sign-in but not a dating or booking-ready profile; returns to form review after authentication, preserving other gates; host management routes are not available to consumer role; consumer routes are not mounted for the Host app role; launch access is a normal Consumer Settings route; shared bootstrap and development routes remain role-neutral; consumer in-app event deep links stay on consumer event routes; allows only the declared public discovery route shapes; rejects nested account routes under public organizer paths; organizer settings spokes use canonical top-level routes; organizer route forwards stable edit field query keys; host app starts on host tooling instead of the consumer welcome; host app sends unauthenticated users directly to auth; host app does not resume stale consumer destinations; unauthenticated users are sent to the start screen with the pending route; unauthenticated users can stay on the start screen; unauthenticated users can browse Explore; legacy unauthenticated onboarding links move to start and preserve from; authenticated users without a profile may still browse public routes; authenticated users without a profile still gate private routes; club detail deep links are accessible to unauthenticated users; event detail deep links are accessible to unauthenticated users; event companion deep links require authentication; identity-incomplete profiles stay in onboarding and preserve the pending route; booking-ready users can access event routes without a social-ready profile; booking-ready users are sent to profile completion for catches; booking-ready users may hit the retired catches hub redirect; profile-completion onboarding is allowed until social ready; run-preference onboarding is allowed until run preferences are ready; run-preference onboarding resumes once run preferences are ready; loading auth state routes through the loading screen; fully set-up users resume the preserved destination from onboarding; fully set-up users visiting the auth route land on dashboard; fully set-up users visiting start resume the preserved destination; unauthenticated users can access the auth route; pending OTP verification returns signed-out users from start to auth; pending OTP verification returns signed-out users from default route to auth; pending OTP verification does not steal signed-out public club browsing; invalid from values are discarded on resume; authority-style from values are discarded on resume; transient pending destinations resume to dashboard |
 | `test/routing/router_widgets_test.dart` | legacy Programs URL preserves organizer, saved ID and remaining query on Events; saved audience compose restores its organizer from the URI |
-| `test/safety/settings_controller_test.dart` | watchBlockedUsersProvider auto-disposes settings listeners; watchBlockedUsersProvider propagates uid auth errors |
+| `test/pages/account/settings_controller_test.dart` | watchBlockedUsersProvider auto-disposes settings listeners; watchBlockedUsersProvider propagates uid auth errors |
 | `test/ui_captures/fixtures/host_marketing_india_fixture_test.dart` | the Mumbai story is a capture world, not a seed world; all four phases share the same named event, venue, schedule and free/open policy; phase clocks and attendance advance without checked-in guests before the event |
 | `test/ui_captures/host_sheet_review_test.dart` | Host sheet review {entry} |
 | `test/user_profile/form_profile_photo_test.dart` | preview rejects oversized, wrong-type and non-JPEG payloads |

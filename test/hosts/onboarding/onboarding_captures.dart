@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/contexts/organizers/organizers.dart';
@@ -8,6 +7,7 @@ import 'package:catch_dating_app/hosts/onboarding/setup_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/setup_state.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/misc.dart' show Override;
 

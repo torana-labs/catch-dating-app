@@ -68,7 +68,7 @@ Typed handoffs:
 | `HostTeamManagementSection` | `lib/hosts/presentation/widgets/host_team_management_section.dart` | Structural owner. |
 | `HostTeamManagementController` | `lib/hosts/presentation/organizer_management/host_team_management_controller.dart` | Actions: add_host, remove_host, transfer_organizer_ownership. |
 | `HostProfileController` | `lib/hosts/presentation/host_profile_controller.dart` | Actions: create_host_profile, save_host_profile. |
-| `AuthSessionController` | `lib/auth/presentation/auth_session_controller.dart` | Actions: sign_out. |
+| `AuthSessionController` | `lib/pages/account/auth_session_controller.dart` | Actions: sign_out. |
 | `HostShellScreen` | `lib/routing/shell/host_shell_screen.dart` | Actions: switch_organizer. |
 
 ## Shared dependencies

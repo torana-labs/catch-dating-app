@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/pages/account/auth_session_controller.dart';
 import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/firebase/firestore_cache_wipe.dart';

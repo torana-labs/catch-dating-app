@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
-import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/hosts/onboarding/code_screen.dart';
 import 'package:catch_dating_app/hosts/onboarding/sign_in_body.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_controller.dart';
+import 'package:catch_dating_app/pages/sign_in/auth_input.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/brand/live_brand.dart';

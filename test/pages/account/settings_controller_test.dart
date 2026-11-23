@@ -5,11 +5,11 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
-import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
+import 'package:catch_dating_app/pages/account/settings_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../auth/auth_test_helpers.dart';
+import '../../auth/auth_test_helpers.dart';
 
 Future<void> _primeUidProvider(ProviderContainer container) async {
   final uidSubscription = container.listen(

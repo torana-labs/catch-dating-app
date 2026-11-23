@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/pages/account/auth_session_controller.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/errors/app_error_context.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -62,7 +62,6 @@ enum SettingsPreference {
   }
 }
 
-// provider-graph: cross-feature-presentation:settingsControllerProvider->authSessionControllerProvider accepted -- Account deletion completes through the public auth-session command seam so auth and onboarding flow state are cleared centrally. Moving that cleanup into Safety would duplicate session ownership.
 /// **Pattern A: Action controller + static Mutations**
 ///
 /// Owns settings writes so the settings screen stays focused on local toggles,

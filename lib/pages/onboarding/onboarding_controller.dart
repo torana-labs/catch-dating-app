@@ -12,8 +12,8 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_validation.dar
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_profile_draft.dart';
+import 'package:catch_dating_app/pages/onboarding/onboarding_step.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/errors/app_exception.dart';

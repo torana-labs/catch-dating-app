@@ -757,7 +757,7 @@
           "routes": [
             "startScreen"
           ],
-          "file": "lib/onboarding/presentation/start_welcome_route_screen.dart",
+          "file": "lib/pages/start/start_welcome_route_screen.dart",
           "symbol": "StartWelcomeRouteScreen",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -10308,7 +10308,7 @@
             "symbol": "watchOrganizersHostedBy"
           },
           {
-            "file": "lib/auth/presentation/auth_session_controller.dart",
+            "file": "lib/pages/account/auth_session_controller.dart",
             "symbol": "AuthSessionController"
           }
         ],
@@ -16187,14 +16187,14 @@
         }
       ],
       "source": {
-        "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+        "file": "lib/pages/start/onboarding_welcome_body.dart",
         "symbol": "OnboardingWelcomeBody"
       },
       "stateController": {
         "primary": "OnboardingWelcomeBody + local welcome animation controllers + appAnalyticsProvider",
         "files": [
           {
-            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "file": "lib/pages/start/onboarding_welcome_body.dart",
             "symbol": "OnboardingWelcomeBody"
           },
           {
@@ -16353,7 +16353,7 @@
               "StartWelcomeScreenState"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "file": "lib/pages/start/onboarding_welcome_body.dart",
               "symbol": "OnboardingWelcomeBody"
             },
             "currentOwner": "OnboardingWelcomeBody",
@@ -16378,7 +16378,7 @@
               "WelcomeSceneLayout"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "file": "lib/pages/start/onboarding_welcome_body.dart",
               "symbol": "WelcomeSceneLayout"
             },
             "currentOwner": "OnboardingWelcomeBody",
@@ -16403,7 +16403,7 @@
               "WelcomeActions"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "file": "lib/pages/start/onboarding_welcome_body.dart",
               "symbol": "OnboardingWelcomeBody"
             },
             "currentOwner": "OnboardingWelcomeBody",
@@ -16482,23 +16482,23 @@
             "symbol": "AuthScreen"
           },
           {
-            "file": "lib/auth/presentation/auth_controller.dart",
+            "file": "lib/pages/sign_in/auth_controller.dart",
             "symbol": "AuthController"
           },
           {
-            "file": "lib/auth/presentation/auth_controller.dart",
+            "file": "lib/pages/sign_in/auth_controller.dart",
             "symbol": "AuthScreenState"
           },
           {
-            "file": "lib/auth/presentation/auth_controller.dart",
+            "file": "lib/pages/sign_in/auth_controller.dart",
             "symbol": "AuthStep"
           },
           {
-            "file": "lib/auth/presentation/auth_presentation_state.dart",
+            "file": "lib/pages/sign_in/auth_presentation_state.dart",
             "symbol": "AuthPhoneEntryViewState"
           },
           {
-            "file": "lib/auth/presentation/auth_presentation_state.dart",
+            "file": "lib/pages/sign_in/auth_presentation_state.dart",
             "symbol": "AuthOtpEntryViewState"
           },
           {
@@ -16516,7 +16516,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/auth/presentation/auth_controller.dart",
+            "file": "lib/pages/sign_in/auth_controller.dart",
             "symbol": "AuthController"
           },
           {
@@ -16538,7 +16538,7 @@
           "id": "repo.auth-input-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/auth/presentation/auth_input_test.dart",
+          "path": "test/pages/sign_in/auth_input_test.dart",
           "notes": "Auth input tests cover phone and OTP validation/normalization logic used by the visible form states."
         },
         {
@@ -16708,7 +16708,7 @@
             "auth_phone_validation_error"
           ],
           "tests": [
-            "test/auth/presentation/auth_input_test.dart",
+            "test/pages/sign_in/auth_input_test.dart",
             "test/auth/presentation/auth_screen_test.dart"
           ],
           "nextAction": "Phone validation-error UI is captured; add incomplete-OTP validation capture only if product treats it as visually distinct."
@@ -16813,7 +16813,7 @@
               "AuthScreenState"
             ],
             "flutter": {
-              "file": "lib/auth/presentation/auth_presentation_state.dart",
+              "file": "lib/pages/sign_in/auth_presentation_state.dart",
               "symbol": "AuthPhoneEntryViewState"
             },
             "currentOwner": "AuthScreen + AuthController + AuthPhoneEntryViewState + AuthOtpEntryViewState",
@@ -16978,15 +16978,15 @@
             "symbol": "OnboardingScreen"
           },
           {
-            "file": "lib/onboarding/presentation/onboarding_controller.dart",
+            "file": "lib/pages/onboarding/onboarding_controller.dart",
             "symbol": "OnboardingController"
           },
           {
-            "file": "lib/onboarding/presentation/onboarding_controller.dart",
+            "file": "lib/pages/onboarding/onboarding_controller.dart",
             "symbol": "OnboardingData"
           },
           {
-            "file": "lib/onboarding/presentation/onboarding_step.dart",
+            "file": "lib/pages/onboarding/onboarding_step.dart",
             "symbol": "OnboardingStep"
           },
           {
@@ -16998,7 +16998,7 @@
             "symbol": "OnboardingTopBarState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "file": "lib/pages/start/onboarding_welcome_body.dart",
             "symbol": "OnboardingWelcomeBody"
           },
           {
@@ -17076,7 +17076,7 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/onboarding/presentation/onboarding_controller.dart",
+            "file": "lib/pages/onboarding/onboarding_controller.dart",
             "symbol": "OnboardingController"
           },
           {
@@ -17102,7 +17102,7 @@
           "id": "repo.onboarding-controller-tests",
           "kind": "repo",
           "status": "available",
-          "path": "test/onboarding/onboarding_controller_test.dart",
+          "path": "test/pages/onboarding/onboarding_controller_test.dart",
           "notes": "Controller tests cover entry-step selection, draft resume, profile completion mode, run-preferences mode, saveProfile, and completion mutations."
         },
         {
@@ -17406,7 +17406,7 @@
             "onboarding_running_prefs"
           ],
           "tests": [
-            "test/onboarding/onboarding_controller_test.dart",
+            "test/pages/onboarding/onboarding_controller_test.dart",
             "test/onboarding/onboarding_widgets_test.dart"
           ],
           "nextAction": "Provider-free step adapter coverage validates pace label display, mode-specific copy, pending/error display, typed submit payload, and continue callback. Deterministic route captures cover run-preferences-only entry, completion pending/error, and text scale 2.0; the main Claude running-preferences reference is exported and masked. Add profile-completion, mutation, and accessibility references only if strict comparison needs them."
@@ -17442,7 +17442,7 @@
             "onboarding_saved_draft"
           ],
           "tests": [
-            "test/onboarding/onboarding_controller_test.dart",
+            "test/pages/onboarding/onboarding_controller_test.dart",
             "test/onboarding/onboarding_widgets_test.dart"
           ],
           "nextAction": "Deterministic route capture covers gender-interest draft resume. Add deeper draft-step/reference variants only where the resume UI diverges."
@@ -17461,7 +17461,7 @@
             "onboarding_save_profile_error"
           ],
           "tests": [
-            "test/onboarding/onboarding_controller_test.dart"
+            "test/pages/onboarding/onboarding_controller_test.dart"
           ],
           "nextAction": "Save pending and visible save failure captures are registered for the gender/interest step."
         },
@@ -17480,7 +17480,7 @@
             "onboarding_complete_run_prefs_error"
           ],
           "tests": [
-            "test/onboarding/onboarding_controller_test.dart"
+            "test/pages/onboarding/onboarding_controller_test.dart"
           ],
           "nextAction": "Run-preferences completion pending and visible failure captures are registered; add success-exit route assertions only if redirect behavior changes."
         },
@@ -17579,7 +17579,7 @@
               "OnboardingWelcomeStep"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "file": "lib/pages/start/onboarding_welcome_body.dart",
               "symbol": "OnboardingWelcomeBody"
             },
             "currentOwner": "OnboardingWelcomeBody",
@@ -21935,7 +21935,7 @@
             "symbol": "SettingsAccountState"
           },
           {
-            "file": "lib/safety/presentation/settings_controller.dart",
+            "file": "lib/pages/account/settings_controller.dart",
             "symbol": "SettingsController"
           },
           {
@@ -21951,17 +21951,17 @@
             "symbol": "PublicProfilesQuery"
           },
           {
-            "file": "lib/auth/presentation/auth_session_controller.dart",
+            "file": "lib/pages/account/auth_session_controller.dart",
             "symbol": "AuthSessionController"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/safety/presentation/settings_controller.dart",
+            "file": "lib/pages/account/settings_controller.dart",
             "symbol": "SettingsController"
           },
           {
-            "file": "lib/auth/presentation/auth_session_controller.dart",
+            "file": "lib/pages/account/auth_session_controller.dart",
             "symbol": "AuthSessionController"
           },
           {
@@ -22237,7 +22237,7 @@
           ],
           "tests": [
             "test/safety/settings_screen_test.dart",
-            "test/safety/settings_controller_test.dart",
+            "test/pages/account/settings_controller_test.dart",
             "test/safety/settings_account_state_test.dart"
           ],
           "nextAction": "Keep whole-surface exclusivity intact while comparing the disabled-toggle pending affordance during visual polish.",
@@ -22336,7 +22336,7 @@
           ],
           "tests": [
             "test/safety/settings_screen_test.dart",
-            "test/safety/settings_controller_test.dart"
+            "test/pages/account/settings_controller_test.dart"
           ],
           "nextAction": "Compare unblock pending/error affordances during visual polish without weakening whole-surface exclusivity.",
           "previewIds": [
@@ -22354,7 +22354,7 @@
           ],
           "tests": [
             "test/safety/settings_screen_test.dart",
-            "test/safety/settings_controller_test.dart"
+            "test/pages/account/settings_controller_test.dart"
           ],
           "nextAction": "Add a dedicated confirm-dialog capture if destructive-dialog pixel parity becomes blocking.",
           "previewIds": [
@@ -22373,7 +22373,7 @@
           ],
           "tests": [
             "test/safety/settings_screen_test.dart",
-            "test/auth/presentation/auth_controller_test.dart"
+            "test/pages/sign_in/auth_controller_test.dart"
           ],
           "nextAction": "Compare sign-out pending/error affordances during visual polish without weakening whole-surface exclusivity.",
           "previewIds": [

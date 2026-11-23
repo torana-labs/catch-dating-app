@@ -9735,121 +9735,121 @@ abstract class AppLocalizations {
   /// **'This removes your public profile, signs you out, and keeps only the minimal records required for safety and payment history.'**
   String get safetySettingsScreenMessageThisRemovesYourPublic;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Welcome'**
   String get onboardingOnboardingStepTitleWelcome;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
   /// **'What\'\'s your name?'**
   String get onboardingOnboardingStepTitleWhatSYourName;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'Last name stays private until you message someone.'**
   String get onboardingOnboardingStepSubtitleLastNameStaysPrivate;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
   /// **'How do you identify?'**
   String get onboardingOnboardingStepTitleHowDoYouIdentify;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Your Instagram'**
   String get onboardingOnboardingStepTitleYourInstagram;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'Helps us verify you for early access. Your handle is never shown to other users.'**
   String get onboardingOnboardingStepSubtitleHelpsUsVerifyYou;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Complete your profile to stay in touch'**
   String get onboardingOnboardingStepTitleCompleteYourProfileFor;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'People you met see your photos when you pick them. You can still book events with your current details.'**
   String get onboardingOnboardingStepSubtitleCatchesNeedPhotosSo;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Show yourself'**
   String get onboardingOnboardingStepTitleShowYourself;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'Add at least 2 photos so others can find you.'**
   String get onboardingOnboardingStepSubtitleAddAtLeast2;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Add prompts so people know you'**
   String get onboardingOnboardingStepTitleAddPromptsToStart;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'Prompts give people something real to talk about.'**
   String get onboardingOnboardingStepSubtitlePromptsGivePeopleSomething;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Show your personality'**
   String get onboardingOnboardingStepTitleShowYourPersonality;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'Answer 3 prompts to complete your profile.'**
   String get onboardingOnboardingStepSubtitleAnswer3PromptsTo;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Finish your profile'**
   String get onboardingOnboardingStepTitleFinishYourCatchesProfile;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'These are optional, but they help us suggest people you’d get on with.'**
   String get onboardingOnboardingStepSubtitleTheseAreOptionalBut;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Set your run preferences'**
   String get onboardingOnboardingStepTitleSetYourRunPreferences;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'We only ask for these before run events so hosts can plan pace groups and distances.'**
   String get onboardingOnboardingStepSubtitleWeOnlyAskFor;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (title).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Your running style'**
   String get onboardingOnboardingStepTitleYourRunningStyle;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (subtitle).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'Help us find compatible running partners.'**
@@ -13616,43 +13616,43 @@ abstract class AppLocalizations {
   /// **'Delete'**
   String get imageUploadsProfilePhotoEditorScreenVisiblecopyDelete;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Welcome'**
   String get onboardingOnboardingStepVisiblecopyWelcome;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Your name'**
   String get onboardingOnboardingStepVisiblecopyYourName;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Gender'**
   String get onboardingOnboardingStepVisiblecopyGender;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Instagram'**
   String get onboardingOnboardingStepVisiblecopyInstagram;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Photos'**
   String get onboardingOnboardingStepVisiblecopyPhotos;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Prompts'**
   String get onboardingOnboardingStepVisiblecopyPrompts;
 
-  /// Product copy used by lib/onboarding/presentation/onboarding_step.dart (visibleCopy).
+  /// Product copy used by lib/pages/onboarding/onboarding_step.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Running style'**
