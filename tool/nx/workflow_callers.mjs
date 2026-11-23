@@ -65,6 +65,7 @@ export const notCalledByCi = {
   ".github/workflows/brand-config-publish.yml": "deploy: push to main and dispatch",
   ".github/workflows/capture-freshness-ci.yml": "reusable workflow with no caller",
   ".github/workflows/ci-metrics.yml": "maintenance: weekly schedule and dispatch, report-only",
+  ".github/workflows/proof-reuse-daily.yml": "maintenance: daily schedule and dispatch, report-only",
   ".github/workflows/cron-watchdog.yml": "maintenance: hourly schedule and dispatch; dispatches only missed dev-only runs",
   ".github/workflows/functions-drift.yml": "maintenance: weekly schedule and dispatch, report-only, read-only on dev",
   ".github/workflows/city-interest-backfill.yml": "operations: dispatch only",
@@ -99,6 +100,9 @@ export const notCalledByCi = {
   ".github/workflows/website-production-observability.yml": "operations: schedule and dispatch",
   ".github/workflows/website-release.yml": "deploy: after main CI (workflow_run), schedule and dispatch",
   ".github/workflows/widgetbook-golden-baselines.yml": "maintenance: dispatch only",
+  "tool/ci/fixtures/proof-reuse-daily/input.json": "test data read only by proof_reuse_report.test.mjs",
+  "tool/ci/fixtures/proof-reuse-daily/proof-reuse-daily-2026-11-22.json":
+    "test data read only by proof_reuse_report.test.mjs and the queue entry timings reader's tests",
 };
 
 // Variable command targets the scan cannot read, with the files they name.

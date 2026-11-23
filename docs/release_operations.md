@@ -308,6 +308,23 @@ the lanes` job joins each verdict with the lane's real queue result, writes the
 a miss: a lane that would have been reused but failed. Both jobs are
 `continue-on-error` and outside `Required CI`; any unknown means not eligible.
 
+`Proof reuse daily` (`.github/workflows/proof-reuse-daily.yml`,
+`tool/ci/proof_reuse_report.mjs`) runs at 05:17 UTC and rolls up the previous
+UTC day's queue runs, bucketed by run creation time, into the
+`proof-reuse-daily-<date>` artifact (`proof-reuse-daily-<date>.json`, schema
+`proof-reuse-daily/1`, kept 90 days) and a summary table. `runs` counts the
+day's queue runs; `runsWithoutReport` lists those with no shadow report
+(cancelled or replaced groups among them); `perRun` holds each reported run's
+lane verdicts. Per lane, `savedSeconds` sums the runtime of the lane's jobs in
+runs where it would have been reused and passed, and `potentialSavedSeconds`
+does the same for narrowed lanes whose keys matched and that passed on the
+pull request, the evidence for running those lanes queue-equivalent on pull
+requests. Times are runner time (summed job runtimes), not wall-clock. Each
+miss is posted once to the open `Proof reuse shadow miss` issue, opened if
+none is open; close it once the miss is understood. To rebuild a day, run the
+workflow from the Actions tab with its `date` input (`YYYY-MM-DD`). The report
+is read-only on Actions and writes only that issue.
+
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
 path, and invokes reusable validation workflows only for affected targets.
@@ -2505,6 +2522,7 @@ dispatched run started after its cron time:
 | Deploy backend (`backend-deploy.yml`) | 21:13 | Dispatched once for dev; prod is never dispatched | "Scheduled run missed" |
 | CI nightly (`ci.yml`) | 02:23 | Dispatched once with `full`; the night counts as unknown | "Main CI is red" |
 | Test read map (`test-read-map.yml`) | 03:41 | Not dispatched: report-only shadow job | "Scheduled run missed" |
+| Proof reuse daily (`proof-reuse-daily.yml`) | 05:17 | Not dispatched: report-only; dispatch it with that day's `date` | "Scheduled run missed" |
 
 Each missed run gets one comment on its issue (opened if none is open) naming
 the run, what was dispatched and, for a prod run, the command to run it, for

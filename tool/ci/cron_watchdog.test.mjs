@@ -155,3 +155,18 @@ test("a missed shadow read map is reported once, never dispatched", () => {
     runs: {"test-read-map": [run("2026-11-22T03:42:00Z")]}, records: recordsFrom([report]), targets: only("test-read-map")});
   assert.deepEqual(again.reports, {});
 });
+
+test("a missed proof-reuse daily roll-up is reported once, never dispatched", () => {
+  const now = at("2026-11-23T09:00:00Z");
+  const runs = {"proof-reuse-daily": [run("2026-11-22T05:18:00Z")]};
+  const decision = decide({now, graceHours: 3, repository, runs, records: new Set(), targets: only("proof-reuse-daily")});
+  assert.deepEqual(decision.dispatches, []);
+  const report = decision.reports[MISSED_TITLE];
+  assert.match(report, /Proof reuse daily.*no run started between 2026-11-23T05:17:00\.000Z/u);
+  assert.match(report, /Report only: not dispatched/u);
+  assert.doesNotMatch(report, /gh workflow run/u);
+  // Started on time: nothing to report.
+  const ran = decide({now, graceHours: 3, repository, runs: {"proof-reuse-daily": [run("2026-11-23T05:40:00Z")]},
+    records: new Set(), targets: only("proof-reuse-daily")});
+  assert.deepEqual(ran.reports, {});
+});

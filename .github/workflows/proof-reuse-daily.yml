@@ -1,0 +1,67 @@
+name: Proof reuse daily
+
+# Rolls up one UTC day of the merge queue's proof-reuse shadow reports
+# (proof-reuse-shadow-<run>-<attempt>, from ci.yml) into the
+# proof-reuse-daily-<date> artifact, schema proof-reuse-daily/1, and posts each
+# miss once to the "Proof reuse shadow miss" issue (Phase 1, 22 Nov 2026).
+# Report-only: it reads Actions and writes that issue, nothing else. Logic and
+# tests: tool/ci/proof_reuse_report.mjs. Operator guide:
+# docs/release_operations.md, "Required PR Checks".
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: UTC day to roll up (YYYY-MM-DD); empty means yesterday
+        required: false
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: proof-reuse-daily-${{ inputs.date || 'scheduled' }}
+  cancel-in-progress: false
+
+jobs:
+  report:
+    name: Roll up the proof-reuse shadow day
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci
+            .github/actions/load-toolchain
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Roll up the day and post any miss
+        id: rollup
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPORT_DATE: ${{ inputs.date }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$REPORT_DATE" ]]; then
+            node tool/ci/proof_reuse_report.mjs --date "$REPORT_DATE" --out build/ci/proof-reuse-daily
+          else
+            node tool/ci/proof_reuse_report.mjs --out build/ci/proof-reuse-daily
+          fi
+      - name: Upload the daily roll-up
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: proof-reuse-daily-${{ steps.rollup.outputs.date }}
+          path: build/ci/proof-reuse-daily/
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: true
