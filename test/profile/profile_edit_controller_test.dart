@@ -8,11 +8,11 @@ import 'package:catch_dating_app/contexts/profiles/profiles.dart'
 import 'package:catch_dating_app/user_profile/presentation/profile_edit_controller.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_test_support/profile_test_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
-import '../support/profile_test_helpers.dart';
 
 void main() {
   group('ProfileEditController', () {

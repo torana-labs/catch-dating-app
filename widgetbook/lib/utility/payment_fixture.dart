@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
-import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/utility_surface_fixtures.dart';
 import 'package:flutter/material.dart';
 
 import '../support/widgetbook_harness.dart';

@@ -4,10 +4,10 @@ import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart'
 import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
 import 'payment_test_fakes.dart';
 
 final class _ObservedPayment {

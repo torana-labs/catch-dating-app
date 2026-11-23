@@ -2,11 +2,10 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcemen
 import 'package:catch_dating_app/hosts/presentation/inbox/host_send_intent_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_back_button.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart';
-
-import '../../test/test_pump_helpers.dart';
 
 void main() {
   for (final scale in [1.0, 2.0]) {

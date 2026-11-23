@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_platform/streams/dependent_listeners.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../test_pump_helpers.dart';
 
 /// A primary listener whose values carry the secondary's key.
 typedef _Primary = ({String? key, int value});

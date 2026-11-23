@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/messaging/domain/activity_notification
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
-import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
+import 'package:catch_test_support/design_fixtures/dashboard_surface_fixtures.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

@@ -8,11 +8,11 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_travel_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_trips_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_tab_bar.dart';
+import 'package:catch_test_support/catch_test_fonts.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../support/catch_test_fonts.dart';
 import 'planner_fixtures.dart';
 import 'planner_test_pump.dart';
 

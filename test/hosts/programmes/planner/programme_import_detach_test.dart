@@ -12,12 +12,11 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_controller.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../../test_pump_helpers.dart';
 
 const _programId = 'program-1';
 const _blocked = 'Remove this journey from its old party before moving it.';

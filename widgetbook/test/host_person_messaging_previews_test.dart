@@ -1,12 +1,11 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart';
-
-import '../../test/test_pump_helpers.dart';
 
 void main() {
   final cases = <String, WidgetBuilder>{

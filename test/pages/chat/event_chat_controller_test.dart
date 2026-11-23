@@ -6,11 +6,11 @@ import 'package:catch_dating_app/contexts/messaging/data/event_chat_signals.dart
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_timing.dart';
 import 'package:catch_dating_app/pages/chat/event_chat_controller.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../chats/event_chat_signal_fake.dart';
-import '../../test_pump_helpers.dart';
 
 EventChatAccess roomAccess({bool admitted = true, bool join = false}) =>
     EventChatAccess(

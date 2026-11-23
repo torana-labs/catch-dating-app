@@ -7,7 +7,6 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_time
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/people/automations_state.dart';
 import 'package:catch_dating_app/hosts/people/compose_state.dart';
 import 'package:catch_dating_app/hosts/people/messages_state.dart';
@@ -15,6 +14,7 @@ import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/people/person_state.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_state.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 
 import '../../events/events_test_helpers.dart';
 

@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
+import 'package:catch_test_support/contract_schemas.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
-import '../support/contract_schemas.dart';
 import 'event_assistance_membership_fixtures.dart';
 
 Map<String, Object?> _wire() {

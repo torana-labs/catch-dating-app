@@ -3,13 +3,13 @@ import 'package:catch_dating_app/contexts/live/data/event_success_repository.dar
 import 'package:catch_dating_app/hosts/events/event_plan_body.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_controller.dart';
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../test_pump_helpers.dart';
 import 'events_fixtures.dart';
 
 void main() {

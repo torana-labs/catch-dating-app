@@ -1,12 +1,11 @@
 import 'dart:ui' show CheckedState, Tristate;
 
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../test_pump_helpers.dart';
 
 Widget _app(Widget child) => MaterialApp(
   theme: CatchTheme.light,

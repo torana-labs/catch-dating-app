@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 /// Loads catch_ui's text fonts plus icon fonts for the package's goldens.
 ///
-/// The package copy of the app's `test/support/catch_test_fonts.dart`: the
+/// The package copy of the app's `packages/catch_test_support/lib/catch_test_fonts.dart`: the
 /// same families from the same files, but read from `assets/fonts/` relative
 /// to the package root (the directory `flutter test` runs in) instead of
 /// through the app's package config. Flutter widget tests do not register

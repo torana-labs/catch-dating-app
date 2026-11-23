@@ -5,10 +5,11 @@ import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
-import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/access/event_share_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
+import 'package:catch_test_support/design_fixtures/host_operations_fixtures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show AsyncData;
+
 import '../../support/capture_device.dart';
 import '../screen_capture_entry.dart';
 

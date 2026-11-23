@@ -6,13 +6,13 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_s
 import 'package:catch_l10n/generated/app_localizations.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/theme/app_theme.dart';
+import 'package:catch_test_support/test_pump_helpers.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../organizers/organizers_test_helpers.dart';
-import '../test_pump_helpers.dart';
 
 void main() {
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
