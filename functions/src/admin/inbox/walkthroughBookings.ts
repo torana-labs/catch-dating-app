@@ -7,9 +7,11 @@ import {WALKTHROUGH_COLLECTIONS} from "../../walkthroughs/model";
 import {isConfirmed, walkthroughInboxItemId} from "../../walkthroughs/store";
 
 // A walkthrough booking is a staff task in the Admin Inbox: reply on WhatsApp
-// to confirm the slot (decision 28: nothing is sent automatically), then
-// record it with adminUpdateWalkthroughBooking confirm, which closes the task.
-// A move reopens it for the new time; a cancellation closes it.
+// to confirm the slot, then record it with adminUpdateWalkthroughBooking
+// confirm, which closes the task. A move reopens it for the new time; a
+// cancellation closes it. Catch's automatic "your walkthrough is booked"
+// WhatsApp (walkthroughs/bookedWhatsapp.ts) shows as a step; it does not
+// confirm the task.
 //
 // The Admin Inbox projects each source kind from functions/src/admin/inbox/
 // model.ts. This file is the projection for the walkthroughBooking kind; the
@@ -48,6 +50,19 @@ export function projectWalkthroughBooking(bookingId: string, data: Record<string
     actorUid: null,
     tone: "warning",
   }));
+  const sent = booking.bookedWhatsapp;
+  if (sent && sent.state !== "sending") {
+    const what = `the booking message for ${slotLabel(sent.slotStartAt)}`;
+    const [title, detail, tone]: [string, string | null, JourneyStep["tone"]] =
+      sent.state === "accepted" ? [`Sent ${what} on WhatsApp`, "From Catch's number; replies land in Support", "success"] :
+        sent.state === "failed" ? [`WhatsApp refused ${what}`,
+          sent.deliveryErrorCode === null ? "Not sent" : `WhatsApp error ${sent.deliveryErrorCode}`, "danger"] :
+          sent.state === "unknown" ? [`Couldn't confirm ${what} was sent`, "Check their Support thread", "warning"] :
+            [`Didn't send ${what}`, sent.skipReason === "stopped" ? "They sent STOP to Catch's number" :
+              "No WhatsApp sender is set up here", "muted"];
+    journey.push({stepId: `whatsapp-${sent.messageId ?? "booked"}-${sent.state}`, occurredAt: sent.attemptedAt,
+      title, detail, actorUid: null, tone});
+  }
   if (booking.staffConfirmation) {
     journey.push({
       stepId: `confirmed-${booking.staffConfirmation.slotStartAt.slice(0, 16).replace(/[-:]/gu, "")}`,

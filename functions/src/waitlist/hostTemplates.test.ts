@@ -17,8 +17,8 @@ import {
 import {
   hostAppLinkMessageId,
   sendHostAppLinkForLead,
-  type HostAppLinkDeps,
-} from "./hostAppLink";
+  type HostLeadTemplateDeps,
+} from "./hostLeadTemplates";
 import {
   hostLeadFollowUpMessageId,
   sendHostLeadFollowUp,
@@ -77,8 +77,9 @@ function harness(options: {enabled?: boolean; noSender?: boolean} = {}) {
       sent.push({to, template, variables});
       return `wamid.tpl${sent.length}`;
     };
-  const appLink: HostAppLinkDeps = {
-    config: () => ({enabled: options.enabled ?? true, ...scope}),
+  const appLink: HostLeadTemplateDeps = {
+    config: () => ({appLinkEnabled: options.enabled ?? true,
+      welcomeEnabled: false, welcomeMetaLeads: false, ...scope}),
     db: () => db as never,
     nowMillis: () => clock.millis,
     sender,
