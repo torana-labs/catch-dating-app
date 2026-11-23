@@ -1,9 +1,7 @@
 import type {CreatePublicOrganizerReviewCallablePayload} from "../../../../functions/src/shared/generated/createPublicOrganizerReviewCallablePayload";
 import type {CreatePublicOrganizerReviewCallableResponse} from "../../../../functions/src/shared/generated/createPublicOrganizerReviewCallableResponse";
-import type {GetOrganizerOwnerViewCallablePayload} from "../../../../functions/src/shared/generated/getOrganizerOwnerViewCallablePayload";
 import type {ManageOrganizerOwnerPageCallablePayload} from "../../../../functions/src/shared/generated/manageOrganizerOwnerPageCallablePayload";
 import type {ManageOrganizerOwnerPageCallableResponse} from "../../../../functions/src/shared/generated/manageOrganizerOwnerPageCallableResponse";
-import type {OrganizerOwnerViewCallableResponse} from "../../../../functions/src/shared/generated/organizerOwnerViewCallableResponse";
 import type {OrganizerTrackingSettingsCallableResponse} from "../../../../functions/src/shared/generated/organizerTrackingSettingsCallableResponse";
 import type {RecordOrganizerAnalyticsEventCallablePayload} from "../../../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallablePayload";
 import type {RecordOrganizerAnalyticsEventCallableResponse} from "../../../../functions/src/shared/generated/recordOrganizerAnalyticsEventCallableResponse";
@@ -67,19 +65,10 @@ export async function recordOrganizerAnalyticsEvent(
     "recordOrganizerAnalyticsEvent", payload, publicAnalyticsFirebaseConfigured, "Organiser analytics events");
 }
 /** The host billing portal's owner callables; the feature parses the replies. */
-export type HostBillingCallable = "getOrganizerBillingStatus" | "manageOrganizerBillingPlan";
+export type HostBillingCallable = "manageOrganizerBillingPlan";
 export function invokeHostBillingCallable(name: HostBillingCallable,
   payload: Record<string, unknown>): Promise<unknown> {
   return invokeWebsiteCallable(name, payload, claimFirebaseConfigured, "Host billing");
-}
-/**
- * The organiser owner view on a claimed organiser page. Every call acts as
- * the signed-in owner, editor or analyst; the server checks the role.
- */
-export function getOrganizerOwnerView(
-  payload: GetOrganizerOwnerViewCallablePayload
-): Promise<OrganizerOwnerViewCallableResponse> {
-  return invokeWebsiteCallable("getOrganizerOwnerView", payload, claimFirebaseConfigured, "Organizer owner tools");
 }
 export function manageOrganizerOwnerPage(
   payload: ManageOrganizerOwnerPageCallablePayload

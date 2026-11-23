@@ -72,7 +72,10 @@ export function ownerViewStoryBackends(view: OwnerViewData): OwnerViewBackends {
     canEdit: true, live: false, notLiveReason: "policyReview" as const};
   return {
     watchUser: () => () => undefined,
-    getView: async () => view,
+    watchView: async (_organizerId, _uid, onValue) => {
+      onValue(view);
+      return () => undefined;
+    },
     manage: async (command) => ({action: command.action, idempotentReplay: false, links: null, photoIds: null,
       followerMessages: command.action === "sendFollowerMessage" ? {...view.followerMessages,
         used: Math.min(2, view.followerMessages.used + 1), delivery: {appRecipientCount: 214,

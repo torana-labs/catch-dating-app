@@ -4,9 +4,10 @@ import type {PropsWithChildren} from "react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
 import type {User} from "../../firebase";
 
-const api = vi.hoisted(() => ({call: vi.fn(), watch: vi.fn(), organizers: vi.fn(), bills: vi.fn()}));
+const api = vi.hoisted(() => ({call: vi.fn(), watch: vi.fn(), organizers: vi.fn(), bills: vi.fn(), status: vi.fn()}));
 vi.mock("../../firebase", () => ({invokeHostBillingCallable: api.call, watchWebsiteAccountAuthState: api.watch}));
-vi.mock("../../firebaseReadModels", () => ({watchOwnedOrganizers: api.organizers, watchOrganizerBills: api.bills}));
+vi.mock("../../firebaseReadModels", () => ({watchOwnedOrganizers: api.organizers, watchOrganizerBills: api.bills,
+  watchOrganizerBillingView: api.status}));
 import {useHostBillingController} from "./useHostBillingController";
 
 let signIn: (user: User | null) => void = () => undefined;
@@ -16,6 +17,7 @@ beforeEach(() => {
   api.call.mockReset();
   api.organizers.mockReset();
   api.bills.mockReset();
+  api.status.mockReset();
   api.watch.mockImplementation((listener: (user: User | null) => void) => {
     signIn = listener;
     return () => undefined;
@@ -33,8 +35,11 @@ function wrapper({children}: PropsWithChildren) {
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }
 
-const status = {organizerId: "lantern", trial: {state: "active", daysLeft: 12, endsAtMillis: 2e12, startsAtMillis: 1e12},
-  plan: {plan: "ticketing", status: "none", startsAtMillis: null, endsAtMillis: null}};
+const dayMillis = 86_400_000;
+/** The owner's billing view: a 30-day trial that started 18 days ago. */
+const status = {trial: {days: 30, anchor: "firstEvent", startsAtMillis: Date.now() - 18 * dayMillis,
+  endsAtMillis: Date.now() + 12 * dayMillis - 1}, plan: {plan: "ticketing", status: "none", startsAtMillis: null,
+  endsAtMillis: null}};
 const plan = {organizerId: "lantern", plan: status.plan, revision: 0, paymentUrl: null, amountDueMinor: null,
   prices: {toolsOnlyFeeMinor: 500000, commissionRateBasisPoints: 500, commissionCapMinor: 1000000, cycleDays: 30,
     gstRegistered: false, gstRateBasisPoints: 1800}};
@@ -52,7 +57,12 @@ const sentBill = {billId: "lantern_2026-10", month: "2026-10", periodKind: "cale
 
 /** The listeners answer at once; a value that is an Error arrives as the listener's error. */
 function listen(organizers: unknown = [owned("lantern", "Lantern Lane"), owned("harbor", "Harbor Social")],
-  bills: unknown = []) {
+  bills: unknown = [], billing: unknown = status) {
+  api.status.mockImplementation(async (_organizerId: string, onValue: (view: unknown) => void,
+    onError: (error: unknown) => void) => {
+    if (billing instanceof Error) onError(billing); else onValue(billing);
+    return () => undefined;
+  });
   api.organizers.mockImplementation(async (_uid: string, onValue: (rows: unknown) => void,
     onError: (error: unknown) => void) => {
     if (organizers instanceof Error) onError(organizers); else onValue(organizers);
@@ -73,7 +83,6 @@ function answer(overrides: Record<string, unknown> = {}) {
       if (value instanceof Error) throw value;
       return value;
     }
-    if (name === "getOrganizerBillingStatus") return status;
     if (name === "manageOrganizerBillingPlan" && payload.action === "buyToolsOnly") {
       return {...plan, revision: 1, paymentUrl: "https://rzp.io/l/tools", amountDueMinor: 500000,
         plan: {plan: "toolsOnly", status: "pendingPayment", startsAtMillis: 3e12, endsAtMillis: null}};
@@ -125,7 +134,8 @@ it("an organizers read that fails shows the failure", async () => {
 });
 
 it("a manager is told only the owner sees billing", async () => {
-  answer({getOrganizerBillingStatus: Object.assign(new Error("denied"), {code: "functions/permission-denied"})});
+  listen(undefined, [], Object.assign(new Error("denied"), {code: "permission-denied"}));
+  answer();
   const {result} = renderHook(() => useHostBillingController(), {wrapper});
   act(() => signIn({uid: "manager"} as User));
   await waitFor(() => expect(result.current.phase).toBe("notOwner"));
@@ -171,5 +181,6 @@ it("a bill email's ?organizerId= preselects that organizer", async () => {
 
   await waitFor(() => expect(result.current.phase).toBe("ready"));
   expect(result.current.organizerId).toBe("harbor");
-  expect(api.call).toHaveBeenCalledWith("getOrganizerBillingStatus", {organizerId: "harbor"});
+  expect(api.status).toHaveBeenCalledWith("harbor", expect.any(Function), expect.any(Function));
+  expect(api.call).not.toHaveBeenCalledWith("getOrganizerBillingStatus", expect.anything());
 });

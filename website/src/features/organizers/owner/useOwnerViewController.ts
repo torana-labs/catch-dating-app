@@ -1,4 +1,4 @@
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useMutation} from "@tanstack/react-query";
 import {useEffect, useMemo, useState} from "react";
 import {ownerViewBackends, type OwnerViewBackends} from "./ownerViewBackends";
 import {useLiveRead} from "../../../shared/query/useLiveRead";
@@ -29,11 +29,6 @@ const requestId = () => (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${M
 
 const newLinkId = () => `link-${requestId().slice(0, 24)}`;
 
-function permissionDenied(error: unknown) {
-  return typeof error === "object" && error !== null && "code" in error &&
-    (error.code === "functions/permission-denied" || error.code === "permission-denied");
-}
-
 /**
  * The owner view on a claimed organiser's own page (#1109). A signed-out
  * visitor gets a quiet sign-in prompt; a signed-in member of the team gets
@@ -56,19 +51,14 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
   initialUid?: string | null;
   organizerId: string;
 }) {
-  const queryClient = useQueryClient();
   const [uid, setUid] = useState<string | null>(initialUid ?? null);
   useEffect(() => (initialUid === undefined && claimed ? backends.watchUser(setUid) : undefined),
     [backends, claimed, initialUid]);
 
-  const viewKey = ["ownerView", organizerId, uid] as const;
-  const view = useQuery({
-    queryKey: viewKey,
-    queryFn: () => backends.getView(organizerId),
-    enabled: claimed && uid !== null,
-    retry: (count, error) => !permissionDenied(error) && count < 1,
-    staleTime: 30_000,
-  });
+  // The page as this reader sees it, live from hostOrganizerOwnerViews
+  // (#2306): a save shows when its trigger rewrites the row.
+  const view = useLiveRead<OwnerViewData>(claimed && uid !== null ? `${uid}/${organizerId}` : null,
+    (onValue, onError) => backends.watchView(organizerId, uid!, onValue, onError));
   const data: OwnerViewData | null = view.data ?? null;
   const tabs = useMemo(() => (data ? ownerTabsFor(data.capabilities) : []), [data]);
   const can = (capability: OwnerCapability) => data?.capabilities.includes(capability) ?? false;
@@ -130,7 +120,8 @@ export function useOwnerViewController({backends = ownerViewBackends, claimed, i
     setPixelDraft(null); setGaDraft(null); setNotice(null);
   }, [organizerId, uid]);
 
-  const refresh = () => queryClient.invalidateQueries({queryKey: viewKey});
+  // The listener carries the saved result; nothing to refetch.
+  const refresh = async () => undefined;
   async function run(panel: OwnerTab, what: string, action: () => Promise<unknown>, after?: () => void) {
     setNotice(null);
     try {

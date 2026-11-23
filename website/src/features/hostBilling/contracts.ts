@@ -4,8 +4,6 @@
  * feature reaches into functions/src/shared/generated (the website import
  * boundary scanner allowlists this file only).
  */
-export type {GetOrganizerBillingStatusCallablePayload} from
-  "../../../../functions/src/shared/generated/getOrganizerBillingStatusCallablePayload";
 export type {GetOrganizerBillingStatusCallableResponse} from
   "../../../../functions/src/shared/generated/getOrganizerBillingStatusCallableResponse";
 export type {ListOrganizerBillsCallableResponse} from
