@@ -144,10 +144,9 @@ test("the delete is fixed SQL with the ids only as the @ids parameter", () => {
   assert.deepEqual(statements, [
     "SELECT COUNT(*) AS changelog_rows, COUNT(DISTINCT document_id) AS documents FROM `catch_marketplace_metrics.participant_signal_facts_raw_changelog` WHERE document_id IN UNNEST(@ids)",
     "DELETE FROM `catch_marketplace_metrics.participant_signal_facts_raw_changelog` WHERE document_id IN UNNEST(@ids)",
-    "SELECT COUNT(*) AS changelog_rows, COUNT(DISTINCT document_id) AS documents FROM `catch_analytics.matches_raw_changelog` WHERE document_id IN UNNEST(@ids)",
-    "DELETE FROM `catch_analytics.matches_raw_changelog` WHERE document_id IN UNNEST(@ids)",
   ]);
-  assert.equal(script.match(/DELETE FROM/gu).length, 2, "no other DELETE");
+  assert.equal(script.match(/DELETE FROM/gu).length, 1, "no other DELETE");
+  assert.doesNotMatch(script, /matches_raw_changelog/u, "the dropped matches changelog is never touched");
   // Every query goes through bq_run, which pins the project and location.
   assert.match(script, /bq_run\(\) \{ bq --quiet --headless --project_id="\$project" --location=asia-south1 "\$@"; \}/u);
   assert.equal(script.match(/\bbq /gu).length, 1, "bq runs only through bq_run");
@@ -294,18 +293,16 @@ test("bigquery mode counts, dry-runs, deletes and recounts only the manifest's s
   assert.equal(run.summary, [
     "## Deck-era purge: prod (bigquery)", "",
     "| Export changelog | Manifest ids | Before | After |", "|---|---|---|---|",
-    "| participant_signal_facts | 2 | 4 rows, 2 documents | 0 rows, 0 documents |",
-    "| matches | 0 | not touched | not touched |", ""].join("\n"));
+    "| participant_signal_facts | 2 | 4 rows, 2 documents | 0 rows, 0 documents |", ""].join("\n"));
   assert.equal(cleanBigQuery({manifest: `${factLine("a")}\n`, targetEnv: "dev"}).calls[0].args[2], "--project_id=catchdates-dev");
 });
 
-test("bigquery mode cleans the matches changelog too when the manifest has chats", () => {
+test("bigquery mode accepts and ignores the manifest's chats: the matches changelog is dropped (#2463)", () => {
   const run = cleanBigQuery({manifest: `${factLine("fact-a")}\n${matchLine("match-a")}\n`});
   assert.equal(run.result.status, 0, run.result.stdout + run.result.stderr);
-  const matchCalls = run.calls.filter((call) => call.args.at(-1).includes("matches_raw_changelog"));
-  assert.deepEqual(matchCalls.map(kind), ["show catch_analytics.matches_raw_changelog", "SELECT", "dry-run DELETE", "DELETE", "SELECT"]);
-  for (const call of matchCalls.filter((item) => item.ids)) assert.deepEqual(call.ids, ["match-a"]);
-  assert.match(run.summary, /\| matches \| 1 \| 4 rows, 2 documents \| 0 rows, 0 documents \|\n$/u);
+  assert.ok(run.calls.every((call) => !call.args.at(-1).includes("matches_raw_changelog")), "no call reaches the matches changelog");
+  for (const call of run.calls.filter((item) => item.ids)) assert.deepEqual(call.ids, ["fact-a"]);
+  assert.doesNotMatch(run.summary, /\| matches \|/u);
   assert.doesNotMatch(run.summary, /fact-a|match-a/u, "the summary holds counts only");
 });
 
