@@ -39966,7 +39966,7 @@ abstract class AppLocalizations {
   /// Attendance archive row subtitle and dialog body.
   ///
   /// In en, this message translates to:
-  /// **'Guest details are anonymised after the retention window.'**
+  /// **'Guest details are anonymised 60 days after closing. Until then, the programme can be reopened.'**
   String get hostProgrammeAttendanceArchiveBody;
 
   /// Attendance archive row action and dialog confirm.

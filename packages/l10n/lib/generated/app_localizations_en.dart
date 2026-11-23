@@ -24629,7 +24629,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostProgrammeAttendanceArchiveBody =>
-      'Guest details are anonymised after the retention window.';
+      'Guest details are anonymised 60 days after closing. Until then, the programme can be reopened.';
 
   @override
   String get hostProgrammeAttendanceArchiveAction => 'Close';

@@ -28593,7 +28593,7 @@
   "@hostProgrammeAttendanceExportSubject": {"description": "Attendance export share subject.", "placeholders": {"programme": {}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.programmes"},
   "hostProgrammeAttendanceArchive": "Close and archive the programme",
   "@hostProgrammeAttendanceArchive": {"description": "Attendance archive row title and dialog title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.programmes"},
-  "hostProgrammeAttendanceArchiveBody": "Guest details are anonymised after the retention window.",
+  "hostProgrammeAttendanceArchiveBody": "Guest details are anonymised 60 days after closing. Until then, the programme can be reopened.",
   "@hostProgrammeAttendanceArchiveBody": {"description": "Attendance archive row subtitle and dialog body.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.programmes"},
   "hostProgrammeAttendanceArchiveAction": "Close",
   "@hostProgrammeAttendanceArchiveAction": {"description": "Attendance archive row action and dialog confirm.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.programmes"},
