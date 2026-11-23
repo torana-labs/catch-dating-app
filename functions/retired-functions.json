@@ -88,6 +88,7 @@
   "onHostRosterInsightPaymentChanged",
   "onInstantDraftPhoneLeads",
   "onNativeCancellationRefund",
+  "onOrganizerCommunicationPreferenceAudienceProjected",
   "onOrganizerGrowthNativePaymentWritten",
   "onOrganizerGrowthOfferPaymentWritten",
   "onOrganizerGrowthPublicPaymentWritten",

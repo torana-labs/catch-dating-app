@@ -805,10 +805,11 @@ export const onEventAttendeeAudienceProjected = onDocumentWritten(
 
 // Retried: the status is re-read from the contact permission in each
 // contact's transaction, stale events write nothing, and rebuild receipts
-// are keyed by the event id, so a rerun is idempotent. It keeps its name from
-// when organizer consent lived in organizerCommunicationPreferences
-// (issue #2460), so moving the source adds no Function.
-export const onOrganizerCommunicationPreferenceAudienceProjected =
+// are keyed by the event id, so a rerun is idempotent. It replaced
+// onOrganizerCommunicationPreferenceAudienceProjected (issue #2460): a new
+// name, so the deploy deletes the old trigger and creates this one rather
+// than patching a live trigger's document filter.
+export const onContactPermissionAudienceProjected =
   onDocumentWritten(
     {document: "users/{uid}/contactPermissions/{senderKey}", retry: true},
     async (event) => {

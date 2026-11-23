@@ -150,7 +150,7 @@ export {
 export {
   onEventAttendeeAudienceProjected,
   onHostMembershipAudienceProjected,
-  onOrganizerCommunicationPreferenceAudienceProjected,
+  onContactPermissionAudienceProjected,
 } from "./organizerAudienceProjection";
 export {
   adminDecideOrganizerClaim,
