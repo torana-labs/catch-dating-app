@@ -54,3 +54,15 @@ const catchRawButtonControlConstructors = <String>{
   'TextField',
   'TextFormField',
 };
+
+const catchLegacyComponentSymbols = <String>{
+  'CatchCountText',
+  'CatchLegacyDock',
+  'CatchLegacySurface',
+  'CatchLegacyText',
+  'CatchLegacyTopBar',
+  'CatchMetadataText',
+  'CatchRootScreenScaffold',
+  'CatchRouteScaffold',
+  'CatchScaffold',
+};
