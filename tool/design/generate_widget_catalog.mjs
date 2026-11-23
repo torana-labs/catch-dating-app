@@ -157,6 +157,28 @@ export function namingFindings({declarations, symbolDeclarations}) {
   return [...findings.values()].sort((a, b) => compare(a.file, b.file) || compare(a.name, b.name));
 }
 
+// A carried file (tool/architecture/carried_screens.json) keeps the rules of
+// the legacy path it moved from until its redraw, as the Catch lints and the
+// library-shims gate read it, so its naming is judged at that path: a Phase 4
+// move of lib/app.dart into lib/pages/frame/ adds no naming debt. Findings
+// still name the file where it is now.
+export function carriedNamingFindings({carried, declarations, symbolDeclarations}) {
+  const asFrom = (entry) => (carried.has(entry.file) ? {...entry, file: carried.get(entry.file)} : entry);
+  const back = new Map([...carried].map(([to, from]) => [from, to]));
+  return namingFindings({
+    declarations: declarations.map(asFrom),
+    symbolDeclarations: symbolDeclarations.map(asFrom),
+  }).map((finding) => (back.has(finding.file) ? {...finding, file: back.get(finding.file)} : finding))
+    .sort((a, b) => compare(a.file, b.file) || compare(a.name, b.name));
+}
+
+function readCarried(repoRoot) {
+  const file = path.join(repoRoot, "tool/architecture/carried_screens.json");
+  if (!fs.existsSync(file)) return new Map();
+  const json = JSON.parse(fs.readFileSync(file, "utf8"));
+  return new Map((json.carried ?? []).map((entry) => [entry.path, entry.from]));
+}
+
 // Debt is keyed by symbol so moving a file never turns carried debt into new debt.
 export function namingRatchetProblems({findings, baseline, redirects = {}}) {
   const allowed = new Map((baseline?.allowedFindings ?? []).map((entry) => [entry.name, entry]));
@@ -226,7 +248,8 @@ export function runCatalog({repoRoot = fromRepo("."), mode = "check"} = {}) {
 function runNamingRatchet({repoRoot, mode}) {
   const registry = JSON.parse(fs.readFileSync(
     path.join(repoRoot, "design/components/catch.components.json"), "utf8"));
-  const findings = namingFindings({
+  const findings = carriedNamingFindings({
+    carried: readCarried(repoRoot),
     declarations: collectProductionWidgetClassificationDeclarations({repoRoot}),
     symbolDeclarations: productionDartFiles(repoRoot).flatMap((file) =>
       topLevelDeclarations(file, fs.readFileSync(path.join(repoRoot, file), "utf8"))),
