@@ -84,12 +84,12 @@ export const publicPageOrganizerProjections = defineProjections(
       change.before as Raw, change.after as Raw),
   }]);
 
-export const onPublicPageEventWritten = onDocumentWritten({
-  ...options, document: "events/{eventId}",
-}, async (event) => {
-  const eventId = event.params.eventId;
-  const before = event.data?.before.data() as Raw;
-  const after = event.data?.after.data() as Raw;
+/**
+ * Rebuilds the scopes an event write can change: its organizers', and an
+ * imported twin's when publishing or withdrawing makes it ambiguous.
+ */
+async function rebuildForEventWrite(eventId: string, before: Raw,
+  after: Raw): Promise<void> {
   const now = Date.now();
   const previous = catchEventContribution(eventId, before, now);
   const next = catchEventContribution(eventId, after, now);
@@ -102,7 +102,26 @@ export const onPublicPageEventWritten = onDocumentWritten({
     ids.push(...externalEventOrganizerIds(twin.data()));
   }
   await rebuildAll(ids, "event");
-});
+}
+
+export const onPublicPageEventWritten = onDocumentWritten({
+  ...options, document: "events/{eventId}",
+}, (event) => rebuildForEventWrite(event.params.eventId,
+  event.data?.before.data() as Raw, event.data?.after.data() as Raw));
+
+/**
+ * An event write that changes its public page contribution.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const publicPageEventProjections = defineProjections("events", [{
+  id: "publicPages", kind: "projection", timeoutSeconds: 300,
+  memory: "512MiB",
+  when: () => true,
+  run: (change) => rebuildForEventWrite(change.documentId,
+    change.before as Raw, change.after as Raw),
+}]);
 
 export const onPublicPageExternalEventWritten = onDocumentWritten({
   ...options, document: "externalEvents/{eventId}",

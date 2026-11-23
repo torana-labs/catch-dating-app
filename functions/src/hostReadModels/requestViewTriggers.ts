@@ -7,6 +7,7 @@ import {
   requestViewEventFacts,
   requestViewParticipationFacts,
 } from "./requestViewStore";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 const options = {retry: true};
@@ -80,6 +81,19 @@ export const onHostRequestViewEventWritten = onDocumentWritten({
   await reconcileHostEventRequestView(admin.firestore(),
     event.params.eventId);
 });
+
+/**
+ * Event name, time, capacity, bookings, status and waitlist policy.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostRequestViewEventProjections = defineProjections("events", [{
+  id: "hostRequestView", kind: "projection",
+  when: (change) => requestViewEventChanged(change.before, change.after),
+  run: (change, ctx) => reconcileHostEventRequestView(ctx.db,
+    change.documentId),
+}]);
 
 /** A person's name on every coming event they wait on. */
 export const onHostRequestViewProfileWritten = onDocumentWritten({

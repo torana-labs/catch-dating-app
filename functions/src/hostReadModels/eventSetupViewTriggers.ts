@@ -117,6 +117,19 @@ async function reconcileForWrite(
 export const onHostEventSetupViewEventChanged = onDocumentWritten({
   ...options, document: "events/{documentId}",
 }, (event) => reconcileForWrite("events", event));
+
+/**
+ * An event write: its setup view.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostEventSetupViewEventProjections = defineProjections("events", [{
+  id: "hostEventSetupView", kind: "projection",
+  when: () => true,
+  run: (change) => reconcileForChange("events", change.documentId,
+    change.before, change.after),
+}]);
 export const onHostEventSetupViewPreferencesChanged = onDocumentWritten({
   ...options, document: "eventSetupPreferences/{documentId}",
 }, (event) => reconcileForWrite("eventSetupPreferences", event));

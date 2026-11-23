@@ -226,6 +226,19 @@ async function reconcileForWrite(
 export const onHostMovementViewEventChanged = onDocumentWritten({
   ...options, document: "events/{documentId}",
 }, (event) => reconcileForWrite("events", event));
+
+/**
+ * An event write: its group, roster and checkpoint views.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostMovementViewEventProjections = defineProjections("events", [{
+  id: "hostMovementView", kind: "projection",
+  when: () => true,
+  run: (change) => reconcileForChange("events", change.documentId,
+    change.before, change.after),
+}]);
 export const onHostMovementViewPlanChanged = onDocumentWritten({
   ...options, document: "eventSuccessPlans/{documentId}",
 }, (event) => reconcileForWrite("eventSuccessPlans", event));

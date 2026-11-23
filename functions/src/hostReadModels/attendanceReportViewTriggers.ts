@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import {isDeepStrictEqual} from "node:util";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {reconcileHostEventAttendanceReport} from "./attendanceReportView";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 const options = {retry: true};
@@ -97,3 +98,17 @@ export const onHostEventAttendanceReportEventWritten = onDocumentWritten({
   await reconcileHostEventAttendanceReport(admin.firestore(),
     event.params.eventId);
 });
+
+/**
+ * An event cancelled, moved or deleted: its attendance report view.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const hostAttendanceReportEventProjections = defineProjections(
+  "events", [{
+    id: "hostAttendanceReport", kind: "projection",
+    when: (change) => attendanceReportEventChanged(change.before, change.after),
+    run: (change, ctx) => reconcileHostEventAttendanceReport(ctx.db,
+      change.documentId),
+  }]);

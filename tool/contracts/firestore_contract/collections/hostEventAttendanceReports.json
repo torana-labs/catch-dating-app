@@ -15,7 +15,8 @@
   "exportedFunctions": [
     "onHostEventAttendanceReportAttendeeWritten",
     "onHostEventAttendanceReportDispositionWritten",
-    "onHostEventAttendanceReportEventWritten"
+    "onHostEventAttendanceReportEventWritten",
+    "dispatchEvents"
   ],
   "migrationNotes": [
     "view equals what getEventAttendanceReport returns as of view.serverTime. Events that ended before the triggers have no view until their next attendee or closeout write; Host close-out then shows its own counts without the report section.",

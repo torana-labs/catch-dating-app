@@ -15,6 +15,7 @@
   "exportedFunctions": [
     "dispatchOrganizers",
     "onPublicPageEventWritten",
+    "dispatchEvents",
     "onPublicPageExternalEventWritten",
     "onPublicPageReviewWritten",
     "refreshPublicPageFollowers",

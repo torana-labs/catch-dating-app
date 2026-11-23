@@ -19,6 +19,7 @@
     "onGuestEventStatusApplicationWritten",
     "onGuestEventStatusOfferRecipientWritten",
     "onEventGuestEntryEventWritten",
+    "dispatchEvents",
     "requestAccountDeletion"
   ],
   "migrationNotes": [

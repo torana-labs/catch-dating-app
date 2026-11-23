@@ -18,6 +18,7 @@
     "onHostOrganizerJourneyViewClaimChanged",
     "onHostOrganizerJourneyViewIntakeChanged",
     "onHostOrganizerJourneyViewEventChanged",
+    "dispatchEvents",
     "onHostOrganizerJourneyViewGrowthChanged"
   ],
   "migrationNotes": [

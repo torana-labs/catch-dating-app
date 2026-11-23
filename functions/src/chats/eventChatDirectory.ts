@@ -6,6 +6,7 @@ import {
   onDocumentWritten,
 } from "firebase-functions/v2/firestore";
 import {readEventChatAccess} from "./eventChatAccess";
+import {defineProjections} from "../platform/dispatch/runtime";
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 
@@ -225,6 +226,21 @@ export const onEventChatDirectoryEventWritten = onDocumentWritten({
   await refreshEventChatDirectoryEntriesFor(admin.firestore(), "eventId",
     event.params.documentId);
 });
+
+/**
+ * An event's name, status, organizer or start: its chat directory rows.
+ * The events dispatcher (issue #2451) runs the same work; both run until
+ * the old trigger retires, which is safe because it re-reads its
+ * sources, so a retry, a replay or a second run converges.
+ */
+export const eventChatDirectoryEventProjections = defineProjections("events", [{
+  id: "eventChatDirectory", kind: "projection",
+  when: ({before, after}) => !before || !after ||
+    changed(before, after, ["name", "status", "organizerId",
+      "startTime"]),
+  run: (change, ctx) => refreshEventChatDirectoryEntriesFor(ctx.db,
+    "eventId", change.documentId),
+}]);
 
 export const onEventChatDirectoryUserWritten = onDocumentWritten({
   ...options, document: "users/{documentId}",
