@@ -11,9 +11,6 @@ const defaultRepoRoot = path.resolve(toolDir, "../..");
 // path must not recreate their recurring infrastructure until product usage and
 // an explicit operating budget justify activation.
 export const dormantFirebaseFunctionTargets = Object.freeze([
-  // Irreversible archived-program scrubbing needs explicit runtime approval.
-  // This prevents new deployment; it does not disable an existing scheduler.
-  "functions:anonymizeDueProgramsSweep",
   "functions:eventAssistanceSmsDeliveryWebhook",
   "functions:onAssistanceEventChanged",
   "functions:onAssistancePlanChangeChanged",
