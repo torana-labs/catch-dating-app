@@ -638,6 +638,7 @@ decision, 22 Nov 2026; evidence in
 **Which checks are in the gate.**
 - A check is in the gate when its own manifest file, `tool/manifest/tools/<id>.json`, carries `"queueGate": "always"`. There is no shared list.
 - `"candidate"` marks a check still gathering history: it runs and reports, and never blocks.
+- Three checks joined the gate with a short but clean replay (21 to 27 commits, no failures) at the architecture sign-off (#2445): `audit:functions-contexts`, `contracts:client-write-contracts` and `contracts:bigquery-export-paths`. They also block in the functions and contracts lanes, which run them only when Nx selects the lane; the gate blocks every merge-queue entry, so a change to a file only the check reads (the context map, an export env file) cannot skip them.
 - `node tool/ci/semantic_gates.mjs list --candidates` prints both.
 - `validateQueueGates` (`tool/lib/semantic_gates.mjs`, run by `meta:tool-manifest`) admits the field only on an active whole-repo check: local, non-generator, a repository script, no Flutter or browser setup.
 - `tool/lib/semantic_gates.test.mjs` pins the approved list. A gated check leaving the manifest, losing its field, or a new gate fails that test until the list changes on purpose.
