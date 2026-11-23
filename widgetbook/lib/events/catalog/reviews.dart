@@ -7,8 +7,8 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
+import 'package:catch_dating_app/pages/reviews/reviews_section.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
-import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

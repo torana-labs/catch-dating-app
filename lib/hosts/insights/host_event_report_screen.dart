@@ -9,7 +9,7 @@ import 'package:catch_dating_app/hosts/insights/host_event_report_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_reviews_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
-import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
+import 'package:catch_dating_app/pages/reviews/reviews_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/errors/app_error_message.dart';

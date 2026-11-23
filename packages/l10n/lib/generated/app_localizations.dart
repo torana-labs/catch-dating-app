@@ -5623,163 +5623,163 @@ abstract class AppLocalizations {
   /// **'Other safety concern'**
   String get publicProfilePublicProfileScreenLabelOtherSafetyConcern;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (label).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Edit your review'**
   String get reviewsReviewsSectionLabelEditYourReview;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (label).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Write a review'**
   String get reviewsReviewsSectionLabelWriteAReview;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (message).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Be the first to review this event.'**
   String get reviewsReviewsSectionMessageBeTheFirstToReviewThisEvent;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (Text).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Reviews'**
   String get reviewsReviewsSectionTextReviews;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (title).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'No reviews yet'**
   String get reviewsReviewsSectionTitleNoReviewsYet;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (message).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Reviews appear after members attend an event.'**
   String get reviewsReviewsSectionMessageReviewsAppearAfterMembers;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (message).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Reviews from attendees will appear here after an event.'**
   String get reviewsReviewsSectionMessageReviewsFromAttendeesWill;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (Text).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'You'**
   String get reviewsReviewsSectionTextYou;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (message).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Edit review'**
   String get reviewsReviewsSectionMessageEditReview;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (message).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Respond as host'**
   String get reviewsReviewsSectionMessageRespondAsHost;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (message).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Edit host response'**
   String get reviewsReviewsSectionMessageEditHostResponse;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (title).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Respond to review'**
   String get reviewsReviewsSectionTitleRespondToReview;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (title).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Edit response'**
   String get reviewsReviewsSectionTitleEditResponse;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (label).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Save response'**
   String get reviewsReviewsSectionLabelSaveResponse;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (title).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Response'**
   String get reviewsReviewsSectionTitleResponse;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (placeholder).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (placeholder).
   ///
   /// In en, this message translates to:
   /// **'Thank the attendee or clarify what happened'**
   String get reviewsReviewsSectionPlaceholderThankTheAttendeeOr;
 
-  /// Product copy used by lib/reviews/shared/star_rating.dart (message).
+  /// Product copy used by lib/pages/reviews/star_rating.dart (message).
   ///
   /// In en, this message translates to:
   /// **'s'**
   String get reviewsStarRatingMessageS;
 
-  /// Product copy used by lib/reviews/shared/star_rating.dart (label).
+  /// Product copy used by lib/pages/reviews/star_rating.dart (label).
   ///
   /// In en, this message translates to:
   /// **'s'**
   String get reviewsStarRatingLabelS;
 
-  /// Product copy used by lib/reviews/shared/write_review_sheet.dart (title).
+  /// Product copy used by lib/pages/reviews/write_review_sheet.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Delete review?'**
   String get reviewsWriteReviewSheetTitleDeleteReview;
 
-  /// Product copy used by lib/reviews/shared/write_review_sheet.dart (message).
+  /// Product copy used by lib/pages/reviews/write_review_sheet.dart (message).
   ///
   /// In en, this message translates to:
   /// **'This removes your review from this event.'**
   String get reviewsWriteReviewSheetMessageThisRemovesYourReview;
 
-  /// Product copy used by lib/reviews/shared/write_review_sheet.dart (title).
+  /// Product copy used by lib/pages/reviews/write_review_sheet.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Edit review'**
   String get reviewsWriteReviewSheetTitleEditReview;
 
-  /// Product copy used by lib/reviews/shared/write_review_sheet.dart (title).
+  /// Product copy used by lib/pages/reviews/write_review_sheet.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Write a review'**
   String get reviewsWriteReviewSheetTitleWriteAReview;
 
-  /// Product copy used by lib/reviews/shared/write_review_sheet.dart (label).
+  /// Product copy used by lib/pages/reviews/write_review_sheet.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Delete review'**
   String get reviewsWriteReviewSheetLabelDeleteReview;
 
-  /// Product copy used by lib/reviews/shared/write_review_sheet.dart (label).
+  /// Product copy used by lib/pages/reviews/write_review_sheet.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Save'**
   String get reviewsWriteReviewSheetLabelSave;
 
-  /// Product copy used by lib/reviews/shared/write_review_sheet.dart (label).
+  /// Product copy used by lib/pages/reviews/write_review_sheet.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Submit'**
   String get reviewsWriteReviewSheetLabelSubmit;
 
-  /// Product copy used by lib/reviews/shared/write_review_sheet.dart (title).
+  /// Product copy used by lib/pages/reviews/write_review_sheet.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Review'**
   String get reviewsWriteReviewSheetTitleReview;
 
-  /// Product copy used by lib/reviews/shared/write_review_sheet.dart (placeholder).
+  /// Product copy used by lib/pages/reviews/write_review_sheet.dart (placeholder).
   ///
   /// In en, this message translates to:
   /// **'Share your experience'**
@@ -7537,13 +7537,13 @@ abstract class AppLocalizations {
   /// **'Review history'**
   String get reviewsReviewsHistoryScreenTitleReviewHistory;
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (title).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (title).
   ///
   /// In en, this message translates to:
   /// **'All reviews ({length})'**
   String reviewsReviewsSectionTitleAllReviewsLength({required Object length});
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (Text).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'{toStringAsFixed} · {length}'**
@@ -7552,7 +7552,7 @@ abstract class AppLocalizations {
     required Object length,
   });
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (label).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'See all {length} reviews'**
@@ -7560,7 +7560,7 @@ abstract class AppLocalizations {
     required Object length,
   });
 
-  /// Product copy used by lib/reviews/shared/reviews_section.dart (Text).
+  /// Product copy used by lib/pages/reviews/reviews_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Host response · {hostName}'**
@@ -7568,7 +7568,7 @@ abstract class AppLocalizations {
     required Object hostName,
   });
 
-  /// Product copy used by lib/reviews/shared/star_rating.dart (message).
+  /// Product copy used by lib/pages/reviews/star_rating.dart (message).
   ///
   /// In en, this message translates to:
   /// **'{value} star{value2}'**
@@ -7577,7 +7577,7 @@ abstract class AppLocalizations {
     required Object value2,
   });
 
-  /// Product copy used by lib/reviews/shared/star_rating.dart (label).
+  /// Product copy used by lib/pages/reviews/star_rating.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Rate {value} star{value2}'**
