@@ -40,11 +40,6 @@ export const hostExports = {
     tableId: "event_invite_links",
     requiredInMart: true,
   },
-  "bq-host-matches": {
-    collectionPath: "matches",
-    tableId: "matches",
-    requiredInMart: false,
-  },
 };
 
 export const hostRawViews = Object.values(hostExports)
